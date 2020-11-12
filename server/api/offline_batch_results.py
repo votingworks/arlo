@@ -1,3 +1,4 @@
+import enum
 from typing import List
 from datetime import datetime
 from collections import defaultdict
@@ -12,12 +13,25 @@ from .rounds import is_round_complete, end_round, get_current_round, sampled_all
 from ..util.jsonschema import JSONDict, validate
 from ..util.isoformat import isoformat
 
+
+class BatchType(str, enum.Enum):
+    ABSENTEE_BY_MAIL = "Absentee By Mail"
+    ADVANCE = "Advance"
+    ELECTION_DAY = "Election Day"
+    PROVISIONAL = "Provisional"
+    OTHER = "Other"
+
+
 OFFLINE_BATCH_RESULTS_SCHEMA = {
     "type": "array",
     "items": {
         "type": "object",
         "properties": {
             "batchName": {"type": "string"},
+            "batchType": {
+                "type": "string",
+                "enum": [batch_type.value for batch_type in BatchType],
+            },
             "choiceResults": {
                 "type": "object",
                 "patternProperties": {"^.*$": {"type": "integer", "minimum": 0},},
@@ -62,6 +76,10 @@ def validate_offline_batch_results(
 
     contest_choice_ids = {choice.id for choice in contest.choices}
 
+    batch_names = [result["batchName"] for result in offline_batch_results]
+    if len(batch_names) != len(set(batch_names)):
+        raise BadRequest("Batch names must be unique")
+
     for batch_results in offline_batch_results:
         if set(batch_results["choiceResults"].keys()) != contest_choice_ids:
             raise BadRequest(
@@ -91,6 +109,7 @@ def record_offline_batch_results(
                 OfflineBatchResult(
                     jurisdiction_id=jurisdiction.id,
                     batch_name=batch_results["batchName"],
+                    batch_type=batch_results["batchType"],
                     contest_choice_id=contest_choice_id,
                     result=result,
                 )

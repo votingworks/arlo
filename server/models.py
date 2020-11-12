@@ -597,6 +597,7 @@ class OfflineBatchResult(BaseModel):
         String(200), ForeignKey("jurisdiction.id", ondelete="cascade"), nullable=False,
     )
     batch_name = Column(String(200), nullable=False)
+    batch_type = Column(String(200), nullable=False)
     contest_choice_id = Column(
         String(200),
         ForeignKey("contest_choice.id", ondelete="cascade"),

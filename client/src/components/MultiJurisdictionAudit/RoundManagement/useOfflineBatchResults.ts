@@ -3,6 +3,13 @@ import { api } from '../../utilities'
 
 export interface IOfflineBatchResult {
   batchName: string
+  batchType:
+    | 'Absentee By Mail'
+    | 'Advance'
+    | 'Election Day'
+    | 'Provisional'
+    | 'Other'
+    | null
   choiceResults: {
     [choiceId: string]: number
   }

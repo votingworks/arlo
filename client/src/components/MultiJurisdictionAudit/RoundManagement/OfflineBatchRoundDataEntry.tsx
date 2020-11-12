@@ -88,6 +88,7 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
   const emptyResultRow = () => ({
     rowKey: uuidv4(),
     batchName: '',
+    batchType: null,
     choiceResults: {},
   })
 
@@ -101,7 +102,6 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
       }}
       enableReinitialize
       onSubmit={async (values, actions) => {
-        console.log('submitting')
         // TODO validation to prevent partially empty rows
         // Omit empty rows
         const cleanResults = values.results
@@ -113,7 +113,11 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
               )
           )
           // Drop rowKey field
-          .map(({ batchName, choiceResults }) => ({ batchName, choiceResults }))
+          .map(({ batchName, choiceResults, batchType }) => ({
+            batchName,
+            choiceResults,
+            batchType,
+          }))
         await updateResults(cleanResults)
         actions.setSubmitting(false)
       }}
@@ -178,12 +182,27 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
                           <Field
                             type="text"
                             name={`results.${r}.batchName`}
-                            placeholder="Enter a batch name..."
                             component={InputWithValidation}
                             validate={(value: string) =>
                               !value ? 'Required' : null
                             }
                           />
+                        </td>
+                        <td>
+                          <Field
+                            as="select"
+                            name={`results.${r}.batchType`}
+                            // component={InputWithValidation}
+                            validate={(value: string) =>
+                              !value ? 'Required' : null
+                            }
+                          >
+                            <option>Absentee By Mail</option>
+                            <option>Advance</option>
+                            <option>Election Day</option>
+                            <option>Provisional</option>
+                            <option>Other</option>
+                          </Field>
                         </td>
                         {contest.choices.map(choice => (
                           // eslint-disable-next-line react/no-array-index-key

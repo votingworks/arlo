@@ -24,6 +24,7 @@ def upgrade():
         sa.Column("updated_at", sa.DateTime(), nullable=False),
         sa.Column("jurisdiction_id", sa.String(length=200), nullable=False),
         sa.Column("batch_name", sa.String(length=200), nullable=False),
+        sa.Column("batch_type", sa.String(length=200), nullable=False),
         sa.Column("contest_choice_id", sa.String(length=200), nullable=False),
         sa.Column("result", sa.Integer(), nullable=False),
         sa.ForeignKeyConstraint(
