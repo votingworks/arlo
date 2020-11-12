@@ -17,6 +17,7 @@ import {
   Colors,
   Label,
   FormGroup,
+  H4,
 } from '@blueprintjs/core'
 import styled from 'styled-components'
 import useContestsJurisdictionAdmin from './useContestsJurisdictionAdmin'
@@ -28,16 +29,6 @@ import { testNumber } from '../../utilities'
 import { replaceAtIndex } from '../../../utils/array'
 
 const OfflineBatchResultsForm = styled.form`
-  /* Disable up/down toggle arrows on number inputs */
-  input::-webkit-outer-spin-button,
-  input::-webkit-inner-spin-button {
-    margin: 0;
-    -webkit-appearance: none; /* stylelint-disable-line property-no-vendor-prefix */
-  }
-  input[type='number'] {
-    -moz-appearance: textfield; /* stylelint-disable-line property-no-vendor-prefix */
-  }
-
   table {
     position: relative;
     border: 1px solid ${Colors.LIGHT_GRAY3};
@@ -60,11 +51,23 @@ const OfflineBatchResultsForm = styled.form`
   }
 `
 
+const Input = styled.input`
+  /* Disable up/down toggle arrows on number inputs */
+  ::-webkit-outer-spin-button,
+  ::-webkit-inner-spin-button {
+    margin: 0;
+    -webkit-appearance: none; /* stylelint-disable-line property-no-vendor-prefix */
+  }
+  [type='number'] {
+    -moz-appearance: textfield; /* stylelint-disable-line property-no-vendor-prefix */
+  }
+`
+
 const InputWithValidation = ({ field, form, ...props }: FieldProps) => {
   const error = getIn(form.errors, field.name)
   return (
     <div>
-      <input
+      <Input
         className={`bp3-input bp3-fill ${error ? 'bp3-intent-danger' : ''}`}
         {...field}
         {...props}
@@ -258,46 +261,57 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
                   onClose={handleReset}
                   title={addingBatch ? 'Add Batch' : 'Edit Batch'}
                   isOpen={values.editingBatchIndex !== null}
+                  style={{ width: 'none' }}
                 >
-                  <div className={Classes.DIALOG_BODY} style={{ width: '50%' }}>
-                    <FormGroup label="Batch Name">
-                      <Field
-                        type="text"
-                        name="editingBatch.batchName"
-                        component={InputWithValidation}
-                        validate={(value: string) =>
-                          !value ? 'Required' : null
-                        }
-                      />
-                    </FormGroup>
-                    <FormGroup label="Batch Type">
-                      <Field
-                        name="editingBatch.batchType"
-                        component={SelectWithValidation}
-                        validate={(value: string) =>
-                          !value ? 'Required' : null
-                        }
-                      >
-                        <option></option>
-                        <option>Absentee By Mail</option>
-                        <option>Advance</option>
-                        <option>Election Day</option>
-                        <option>Provisional</option>
-                        <option>Other</option>
-                      </Field>
-                    </FormGroup>
-                    {contest.choices.map(choice => (
-                      <div key={`editing-${choice.id}`}>
-                        <FormGroup label={choice.name}>
-                          <Field
-                            type="number"
-                            name={`editingBatch.choiceResults.${choice.id}`}
-                            component={InputWithValidation}
-                            validate={testNumber()}
-                          />
-                        </FormGroup>
-                      </div>
-                    ))}
+                  <div
+                    className={Classes.DIALOG_BODY}
+                    style={{ display: 'flex' }}
+                  >
+                    <div style={{ flexGrow: 1 }}>
+                      <H4>Batch Info</H4>
+                      <FormGroup label="Batch Name">
+                        <Field
+                          type="text"
+                          name="editingBatch.batchName"
+                          component={InputWithValidation}
+                          validate={(value: string) =>
+                            !value ? 'Required' : null
+                          }
+                          autoFocus
+                        />
+                      </FormGroup>
+                      <FormGroup label="Batch Type">
+                        <Field
+                          name="editingBatch.batchType"
+                          component={SelectWithValidation}
+                          validate={(value: string) =>
+                            !value ? 'Required' : null
+                          }
+                        >
+                          <option></option>
+                          <option>Absentee By Mail</option>
+                          <option>Advance</option>
+                          <option>Election Day</option>
+                          <option>Provisional</option>
+                          <option>Other</option>
+                        </Field>
+                      </FormGroup>
+                    </div>
+                    <div style={{ marginLeft: '20px', flexGrow: 1 }}>
+                      <H4>Audited Votes</H4>
+                      {contest.choices.map(choice => (
+                        <div key={`editing-${choice.id}`}>
+                          <FormGroup label={choice.name}>
+                            <Field
+                              type="number"
+                              name={`editingBatch.choiceResults.${choice.id}`}
+                              component={InputWithValidation}
+                              validate={testNumber()}
+                            />
+                          </FormGroup>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                   <div className={Classes.DIALOG_FOOTER}>
                     <div className={Classes.DIALOG_FOOTER_ACTIONS}>
@@ -305,9 +319,10 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
                         style={{
                           display: 'flex',
                           justifyContent: 'space-between',
+                          flexGrow: 1,
                         }}
                       >
-                        {!addingBatch && (
+                        {!addingBatch ? (
                           <Button
                             onClick={async () => {
                               await submit(
@@ -317,12 +332,17 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
                             }}
                             intent="danger"
                             style={{ marginLeft: 0 }}
+                            tabIndex={-1}
                           >
                             Remove Batch
                           </Button>
+                        ) : (
+                          <div />
                         )}
                         <div>
-                          <Button onClick={handleReset}>Cancel</Button>
+                          <Button onClick={handleReset} tabIndex={-1}>
+                            Cancel
+                          </Button>
                           <Button
                             intent="primary"
                             loading={isSubmitting}
@@ -345,7 +365,20 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
               isOpen={isConfirmOpen}
             >
               <div className={Classes.DIALOG_BODY}>
-                <p>This action cannot be undone.</p>
+                <p>
+                  <strong>This action cannot be undone.</strong>
+                </p>
+                <p>
+                  You should only finalize your results once you have finished
+                  auditing every batch of ballots and have entered the results
+                  for each batch on this page.
+                </p>
+                <p>
+                  <strong>
+                    Before finalizing your results, check the results you have
+                    entered into Arlo page against the tally sheets.
+                  </strong>
+                </p>
               </div>
               <div className={Classes.DIALOG_FOOTER}>
                 <div className={Classes.DIALOG_FOOTER_ACTIONS}>
