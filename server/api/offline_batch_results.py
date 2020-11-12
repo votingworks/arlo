@@ -27,17 +27,23 @@ OFFLINE_BATCH_RESULTS_SCHEMA = {
     "items": {
         "type": "object",
         "properties": {
-            "batchName": {"type": "string"},
+            "batchName": {"type": "string", "minLength": 1},
             "batchType": {
                 "type": "string",
                 "enum": [batch_type.value for batch_type in BatchType],
             },
             "choiceResults": {
                 "type": "object",
-                "patternProperties": {"^.*$": {"type": "integer", "minimum": 0},},
+                "patternProperties": {
+                    "^.*$": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 1000 * 1000 * 1000,
+                    },
+                },
             },
         },
-        "required": ["batchName", "choiceResults"],
+        "required": ["batchName", "batchType", "choiceResults"],
         "additionalProperties": False,
     },
 }
@@ -62,6 +68,9 @@ def validate_offline_batch_results(
             "Offline batch results only supported if all ballots are sampled"
         )
 
+    if jurisdiction.finalized_offline_batch_results_at is not None:
+        raise Conflict("Results have already been finalized")
+
     current_round = get_current_round(election)
     if not current_round or round.id != current_round.id:
         raise Conflict(f"Round {round.round_num} is not the current round")
@@ -85,8 +94,6 @@ def validate_offline_batch_results(
             raise BadRequest(
                 f"Invalid choice ids for batch {batch_results['batchName']}"
             )
-
-    # TODO validate total results does not exceed ballot manifest
 
 
 def load_offline_batch_results(jurisdiction: Jurisdiction) -> List[OfflineBatchResult]:

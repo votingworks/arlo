@@ -26,13 +26,12 @@ import useOfflineBatchResults, {
 import { testNumber } from '../../utilities'
 
 const OfflineBatchResultsForm = styled.form`
+  /* Disable up/down toggle arrows on number inputs */
   input::-webkit-outer-spin-button,
   input::-webkit-inner-spin-button {
     margin: 0;
     -webkit-appearance: none; /* stylelint-disable-line property-no-vendor-prefix */
   }
-
-  /* Firefox */
   input[type='number'] {
     -moz-appearance: textfield; /* stylelint-disable-line property-no-vendor-prefix */
   }
@@ -136,6 +135,7 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
         values,
         isSubmitting,
         errors,
+        dirty,
       }: FormikProps<{ results: IResultRow[] }>) => (
         <OfflineBatchResultsForm>
           <div style={{ width: '510px', marginBottom: '20px' }}>
@@ -255,7 +255,10 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
                     >
                       Save Results
                     </Button>
-                    <Button onClick={() => setIsConfirmOpen(true)}>
+                    <Button
+                      onClick={() => setIsConfirmOpen(true)}
+                      disabled={dirty}
+                    >
                       Finalize Results
                     </Button>
                   </div>
