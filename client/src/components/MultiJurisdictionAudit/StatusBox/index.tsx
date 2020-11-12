@@ -282,7 +282,9 @@ export const JurisdictionAdminStatusBox = ({
     )
   }
 
-  const { roundNum, isAuditComplete } = rounds[rounds.length - 1]
+  const { roundNum, isAuditComplete, sampledAllBallots } = rounds[
+    rounds.length - 1
+  ]
   const inProgressHeadline = `Round ${roundNum} of the audit is in progress.`
 
   // Round in progress, hasn't set up audit boards
@@ -298,6 +300,16 @@ export const JurisdictionAdminStatusBox = ({
 
   // Round in progress, audit boards set up
   if (!isAuditComplete) {
+    if (sampledAllBallots)
+      return (
+        <StatusBox
+          headline={inProgressHeadline}
+          details={['Auditing ballots.']}
+        >
+          {children}
+        </StatusBox>
+      )
+
     const numCompleted = auditBoards.filter(
       ({ currentRoundStatus }) =>
         currentRoundStatus.numAuditedBallots ===
@@ -316,6 +328,15 @@ export const JurisdictionAdminStatusBox = ({
       </StatusBox>
     )
   }
+
+  // Special case: when auditing all ballots, we don't have a good audit report
+  // yet for the JA
+  if (sampledAllBallots)
+    return (
+      <StatusBox headline="The audit is complete" details={[]}>
+        {children}
+      </StatusBox>
+    )
 
   // Audit complete
   return (
