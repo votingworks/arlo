@@ -43,7 +43,11 @@ def bulk_update_jurisdictions(
     with session.begin_nested():
         # Clear existing admins.
         session.query(JurisdictionAdministration).filter(
-            Jurisdiction.election == election
+            JurisdictionAdministration.jurisdiction_id.in_(
+                Jurisdiction.query.filter_by(election_id=election.id)
+                .with_entities(Jurisdiction.id)
+                .subquery()
+            )
         ).delete(synchronize_session="fetch")
         new_admins: List[JurisdictionAdministration] = []
 
