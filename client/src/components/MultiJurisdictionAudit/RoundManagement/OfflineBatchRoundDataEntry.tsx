@@ -16,6 +16,7 @@ import {
   Callout,
   Colors,
   Label,
+  FormGroup,
 } from '@blueprintjs/core'
 import styled from 'styled-components'
 import useContestsJurisdictionAdmin from './useContestsJurisdictionAdmin'
@@ -218,12 +219,6 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
                       {contest.choices.map(choice => (
                         <td key={`${batch.batchName}-${choice.id}`}>
                           {batch.choiceResults[choice.id].toLocaleString()}
-                          {/* <Field
-                              type="number"
-                              name={`results.${r}.choiceResults.${choice.id}`}
-                              component={InputWithValidation}
-                              validate={testNumber()}
-                            /> */}
                         </td>
                       ))}
                     </tr>
@@ -264,36 +259,43 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
                   title={addingBatch ? 'Add Batch' : 'Edit Batch'}
                   isOpen={values.editingBatchIndex !== null}
                 >
-                  <div className={Classes.DIALOG_BODY}>
-                    <Label>Batch Name</Label>
-                    <Field
-                      type="text"
-                      name="editingBatch.batchName"
-                      component={InputWithValidation}
-                      validate={(value: string) => (!value ? 'Required' : null)}
-                    />
-                    <Label>Batch Type</Label>
-                    <Field
-                      name="editingBatch.batchType"
-                      component={SelectWithValidation}
-                      validate={(value: string) => (!value ? 'Required' : null)}
-                    >
-                      <option></option>
-                      <option>Absentee By Mail</option>
-                      <option>Advance</option>
-                      <option>Election Day</option>
-                      <option>Provisional</option>
-                      <option>Other</option>
-                    </Field>
+                  <div className={Classes.DIALOG_BODY} style={{ width: '50%' }}>
+                    <FormGroup label="Batch Name">
+                      <Field
+                        type="text"
+                        name="editingBatch.batchName"
+                        component={InputWithValidation}
+                        validate={(value: string) =>
+                          !value ? 'Required' : null
+                        }
+                      />
+                    </FormGroup>
+                    <FormGroup label="Batch Type">
+                      <Field
+                        name="editingBatch.batchType"
+                        component={SelectWithValidation}
+                        validate={(value: string) =>
+                          !value ? 'Required' : null
+                        }
+                      >
+                        <option></option>
+                        <option>Absentee By Mail</option>
+                        <option>Advance</option>
+                        <option>Election Day</option>
+                        <option>Provisional</option>
+                        <option>Other</option>
+                      </Field>
+                    </FormGroup>
                     {contest.choices.map(choice => (
                       <div key={`editing-${choice.id}`}>
-                        <Label>{choice.name}</Label>
-                        <Field
-                          type="number"
-                          name={`editingBatch.choiceResults.${choice.id}`}
-                          component={InputWithValidation}
-                          validate={testNumber()}
-                        />
+                        <FormGroup label={choice.name}>
+                          <Field
+                            type="number"
+                            name={`editingBatch.choiceResults.${choice.id}`}
+                            component={InputWithValidation}
+                            validate={testNumber()}
+                          />
+                        </FormGroup>
                       </div>
                     ))}
                   </div>
