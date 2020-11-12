@@ -138,7 +138,7 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
         errors,
       }: FormikProps<{ results: IResultRow[] }>) => (
         <OfflineBatchResultsForm>
-          <div style={{ width: '510px' }}>
+          <div style={{ width: '510px', marginBottom: '20px' }}>
             <p>
               When you have examined all the ballots assigned to you, enter the
               number of votes recorded for each candidate/choice for each batch

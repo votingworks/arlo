@@ -158,11 +158,15 @@ def test_all_ballots_audit(
     # TODO test trying to record more results than were in the manifest
 
     # Record partial results
-    jurisdiction_1_results = {
-        "Batch One": {
-            choice["id"]: choice["numVotes"] / 4 for choice in contest["choices"]
-        },
-    }
+    jurisdiction_1_results = [
+        {
+            "batchName": "Batch One",
+            "batchType": "Provisional",
+            "choiceResults": {
+                choice["id"]: choice["numVotes"] / 4 for choice in contest["choices"]
+            },
+        }
+    ]
 
     rv = put_json(
         client,
@@ -196,17 +200,29 @@ def test_all_ballots_audit(
     # Record full results and finalize
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
 
-    jurisdiction_1_results = {
-        "Batch One": {
-            choice["id"]: int(choice["numVotes"] / 8) for choice in contest["choices"]
+    jurisdiction_1_results = [
+        {
+            "batchName": "Batch One",
+            "batchType": "Provisional",
+            "choiceResults": {
+                choice["id"]: choice["numVotes"] / 8 for choice in contest["choices"]
+            },
         },
-        "Batch Two": {
-            choice["id"]: int(choice["numVotes"] / 4) for choice in contest["choices"]
+        {
+            "batchName": "Batch Two",
+            "batchType": "Other",
+            "choiceResults": {
+                choice["id"]: choice["numVotes"] / 4 for choice in contest["choices"]
+            },
         },
-        "Batch Three": {
-            choice["id"]: int(choice["numVotes"] / 8) for choice in contest["choices"]
+        {
+            "batchName": "Batch Three",
+            "batchType": "Election Day",
+            "choiceResults": {
+                choice["id"]: choice["numVotes"] / 8 for choice in contest["choices"]
+            },
         },
-    }
+    ]
 
     rv = put_json(
         client,
@@ -274,14 +290,22 @@ def test_all_ballots_audit(
         [{"name": "Audit Board #1"}],
     )
 
-    jurisdiction_2_results = {
-        "Batch One": {
-            choice["id"]: int(choice["numVotes"] / 4) for choice in contest["choices"]
+    jurisdiction_2_results = [
+        {
+            "batchName": "Batch One",
+            "batchType": "Absentee By Mail",
+            "choiceResults": {
+                choice["id"]: choice["numVotes"] / 4 for choice in contest["choices"]
+            },
         },
-        "Batch Two": {
-            choice["id"]: int(choice["numVotes"] / 4) for choice in contest["choices"]
+        {
+            "batchName": "Batch Two",
+            "batchType": "Advance",
+            "choiceResults": {
+                choice["id"]: choice["numVotes"] / 4 for choice in contest["choices"]
+            },
         },
-    }
+    ]
 
     rv = put_json(
         client,
