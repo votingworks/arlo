@@ -31,3 +31,10 @@ export function hashBy<T>(
 ): string | null {
   return arr && arr.map(hashFn).join(';')
 }
+
+export function replaceAtIndex<T>(arr: T[], index: number, newElement: T): T[] {
+  return arr
+    .slice(0, index)
+    .concat([newElement])
+    .concat(arr.slice(index + 1))
+}
