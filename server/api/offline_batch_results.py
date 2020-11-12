@@ -34,7 +34,13 @@ OFFLINE_BATCH_RESULTS_SCHEMA = {
             },
             "choiceResults": {
                 "type": "object",
-                "patternProperties": {"^.*$": {"type": "integer", "minimum": 0},},
+                "patternProperties": {
+                    "^.*$": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 1000 * 1000 * 1000,
+                    },
+                },
             },
         },
         "required": ["batchName", "batchType", "choiceResults"],
@@ -88,16 +94,6 @@ def validate_offline_batch_results(
             raise BadRequest(
                 f"Invalid choice ids for batch {batch_results['batchName']}"
             )
-
-    total_results = sum(
-        sum(batch_results["choiceResults"].values())
-        for batch_results in offline_batch_results
-    )
-    assert jurisdiction.manifest_num_ballots
-    if total_results > jurisdiction.manifest_num_ballots:
-        raise BadRequest(
-            f"Total results ({total_results}) cannot be greater than the number of ballots reported in the ballot manifest ({jurisdiction.manifest_num_ballots})"
-        )
 
 
 def load_offline_batch_results(jurisdiction: Jurisdiction) -> List[OfflineBatchResult]:

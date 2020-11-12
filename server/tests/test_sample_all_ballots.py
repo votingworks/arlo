@@ -457,19 +457,6 @@ def test_offline_batch_results_validation(
             [
                 {
                     "batchName": "Batch 1",
-                    "batchType": "bad type",
-                    "choiceResults": {
-                        choice["id"]: choice["numVotes"] / 4
-                        for choice in contest["choices"]
-                    },
-                }
-            ],
-            "'bad type' is not one of ['Absentee By Mail', 'Advance', 'Election Day', 'Provisional', 'Other']",
-        ),
-        (
-            [
-                {
-                    "batchName": "Batch 1",
                     "batchType": "Provisional",
                     "choiceResults": {
                         choice["id"]: choice["numVotes"] / 4
@@ -495,12 +482,12 @@ def test_offline_batch_results_validation(
                     "batchName": "Batch 1",
                     "batchType": "Provisional",
                     "choiceResults": {
-                        choice["id"]: choice["numVotes"]
+                        choice["id"]: 1000 * 1000 * 1000 + 1
                         for choice in contest["choices"]
                     },
                 }
             ],
-            "Total results (2000000) cannot be greater than the number of ballots reported in the ballot manifest (1000000)",
+            "1000000001 is greater than the maximum of 1000000000",
         ),
         (
             [
