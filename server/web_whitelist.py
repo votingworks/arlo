@@ -11,7 +11,7 @@ from typing import List, Union
 from flask import request, abort
 
 # list of Cloudflare IPs: https://www.cloudflare.com/ips/
-from server.app import app
+from .app import app
 
 cloudflare_ip_list = [
     # V4 address blocks
