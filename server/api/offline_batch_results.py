@@ -6,7 +6,7 @@ from flask import jsonify, request
 from werkzeug.exceptions import BadRequest, Conflict
 
 from . import api
-from ..auth import restrict_access, UserType
+from ..auth import restrict_access, UserType, get_loggedin_user
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
 from .rounds import is_round_complete, end_round, get_current_round, sampled_all_ballots
@@ -89,6 +89,43 @@ def validate_offline_batch_results(
     # TODO validate total results does not exceed ballot manifest
 
 
+def load_offline_batch_results(jurisdiction: Jurisdiction) -> List[OfflineBatchResult]:
+    return list(
+        OfflineBatchResult.query.filter_by(jurisdiction_id=jurisdiction.id)
+        .order_by(OfflineBatchResult.created_at)
+        .all()
+    )
+
+
+def serialize_offline_batch_results(
+    offline_batch_results: List[OfflineBatchResult], contest: Contest
+) -> List[JSONDict]:
+    # We want to display batches in the order the user created them. Dict keys
+    # are ordered, so we use a dict to dedupe the batch names while preserving
+    # order. (Assumes offline_batch_results is already ordered by created_at)
+    ordered_batches = list(
+        dict.fromkeys(
+            (result.batch_name, result.batch_type) for result in offline_batch_results
+        )
+    )
+
+    results_by_batch: JSONDict = defaultdict(
+        lambda: {choice.id: None for choice in contest.choices}
+    )
+    for result in offline_batch_results:
+        results_by_batch[result.batch_name][result.contest_choice_id] = result.result
+
+    results = [
+        {
+            "batchName": batch_name,
+            "batchType": batch_type,
+            "choiceResults": results_by_batch[batch_name],
+        }
+        for batch_name, batch_type in ordered_batches
+    ]
+    return results
+
+
 @api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/results/batch",
     methods=["PUT"],
@@ -102,6 +139,13 @@ def record_offline_batch_results(
     offline_batch_results = request.get_json()
     validate_offline_batch_results(election, jurisdiction, round, offline_batch_results)
 
+    # We only support one contest for now
+    contest = list(election.contests)[0]
+
+    before = serialize_offline_batch_results(
+        load_offline_batch_results(jurisdiction), contest
+    )
+
     OfflineBatchResult.query.filter_by(jurisdiction_id=jurisdiction.id).delete()
     for batch_results in offline_batch_results:
         for contest_choice_id, result in batch_results["choiceResults"].items():
@@ -114,6 +158,20 @@ def record_offline_batch_results(
                     result=result,
                 )
             )
+
+    after = serialize_offline_batch_results(
+        load_offline_batch_results(jurisdiction), contest
+    )
+
+    _, user_key = get_loggedin_user()
+    db_session.add(
+        OfflineBatchResultChangelog(
+            user_id=User.query.filter_by(email=user_key).one().id,
+            jurisdiction_id=jurisdiction.id,
+            before=before,
+            after=after,
+        )
+    )
 
     db_session.commit()
 
@@ -175,38 +233,11 @@ def get_offline_batch_results(
     # We only support one contest for now
     contest = list(election.contests)[0]
 
-    recorded_results = list(
-        OfflineBatchResult.query.filter_by(jurisdiction_id=jurisdiction.id)
-        .order_by(OfflineBatchResult.created_at)
-        .all()
-    )
-    # We want to display batches in the order the user created them. Dict keys
-    # are ordered, so we use a dict to dedupe the batch names while preserving
-    # order.
-    ordered_batches = list(
-        dict.fromkeys(
-            (result.batch_name, result.batch_type) for result in recorded_results
-        )
-    )
-
-    results_by_batch: JSONDict = defaultdict(
-        lambda: {choice.id: None for choice in contest.choices}
-    )
-    for result in recorded_results:
-        results_by_batch[result.batch_name][result.contest_choice_id] = result.result
-
-    results = [
-        {
-            "batchName": batch_name,
-            "batchType": batch_type,
-            "choiceResults": results_by_batch[batch_name],
-        }
-        for batch_name, batch_type in ordered_batches
-    ]
-
     return jsonify(
         {
             "finalizedAt": isoformat(jurisdiction.finalized_offline_batch_results_at),
-            "results": results,
+            "results": serialize_offline_batch_results(
+                load_offline_batch_results(jurisdiction), contest
+            ),
         }
     )
