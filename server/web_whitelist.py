@@ -7,12 +7,10 @@ from ipaddress import (
     ip_address,
 )
 from typing import List, Union
-
 from flask import request, abort
-
-# list of Cloudflare IPs: https://www.cloudflare.com/ips/
 from .app import app
 
+# list of Cloudflare IPs: https://www.cloudflare.com/ips/
 cloudflare_ip_list = [
     # V4 address blocks
     "173.245.48.0/20",
@@ -39,7 +37,9 @@ cloudflare_ip_list = [
     "2c0f:f248::/32",
 ]
 
-_whitelist: List[Union[IPv4Network, IPv6Network]] = [ip_network(x) for x in cloudflare_ip_list]
+_whitelist: List[Union[IPv4Network, IPv6Network]] = [
+    ip_network(x) for x in cloudflare_ip_list
+]
 
 
 def addr_is_whitelisted(remote_addr: Union[IPv4Address, IPv6Address]) -> bool:
