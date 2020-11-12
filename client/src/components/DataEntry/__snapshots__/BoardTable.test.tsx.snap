@@ -58,32 +58,36 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
             style="cursor: pointer;"
             title="Tabulator"
           >
-            <span
-              style="margin-right: 3px;"
+            <div
+              style="display: flex; align-items: center; padding-right: 15px;"
             >
-              Tabulator
-            </span>
-            <span>
               <span
-                class="bp3-icon bp3-icon-double-caret-vertical"
-                icon="double-caret-vertical"
+                style="margin-right: 5px;"
               >
-                <svg
-                  data-icon="double-caret-vertical"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  width="16"
-                >
-                  <desc>
-                    double-caret-vertical
-                  </desc>
-                  <path
-                    d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                    fill-rule="evenodd"
-                  />
-                </svg>
+                Tabulator
               </span>
-            </span>
+              <span>
+                <span
+                  class="bp3-icon bp3-icon-double-caret-vertical"
+                  icon="double-caret-vertical"
+                >
+                  <svg
+                    data-icon="double-caret-vertical"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    width="16"
+                  >
+                    <desc>
+                      double-caret-vertical
+                    </desc>
+                    <path
+                      d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+              </span>
+            </div>
           </th>
           <th
             colspan="1"
@@ -91,32 +95,36 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
             style="cursor: pointer;"
             title="Batch"
           >
-            <span
-              style="margin-right: 3px;"
+            <div
+              style="display: flex; align-items: center; padding-right: 15px;"
             >
-              Batch
-            </span>
-            <span>
               <span
-                class="bp3-icon bp3-icon-double-caret-vertical"
-                icon="double-caret-vertical"
+                style="margin-right: 5px;"
               >
-                <svg
-                  data-icon="double-caret-vertical"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  width="16"
-                >
-                  <desc>
-                    double-caret-vertical
-                  </desc>
-                  <path
-                    d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                    fill-rule="evenodd"
-                  />
-                </svg>
+                Batch
               </span>
-            </span>
+              <span>
+                <span
+                  class="bp3-icon bp3-icon-double-caret-vertical"
+                  icon="double-caret-vertical"
+                >
+                  <svg
+                    data-icon="double-caret-vertical"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    width="16"
+                  >
+                    <desc>
+                      double-caret-vertical
+                    </desc>
+                    <path
+                      d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+              </span>
+            </div>
           </th>
           <th
             colspan="1"
@@ -124,32 +132,36 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
             style="cursor: pointer;"
             title="Ballot Position"
           >
-            <span
-              style="margin-right: 3px;"
+            <div
+              style="display: flex; align-items: center; padding-right: 15px;"
             >
-              Ballot Position
-            </span>
-            <span>
               <span
-                class="bp3-icon bp3-icon-double-caret-vertical"
-                icon="double-caret-vertical"
+                style="margin-right: 5px;"
               >
-                <svg
-                  data-icon="double-caret-vertical"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  width="16"
-                >
-                  <desc>
-                    double-caret-vertical
-                  </desc>
-                  <path
-                    d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                    fill-rule="evenodd"
-                  />
-                </svg>
+                Ballot Position
               </span>
-            </span>
+              <span>
+                <span
+                  class="bp3-icon bp3-icon-double-caret-vertical"
+                  icon="double-caret-vertical"
+                >
+                  <svg
+                    data-icon="double-caret-vertical"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    width="16"
+                  >
+                    <desc>
+                      double-caret-vertical
+                    </desc>
+                    <path
+                      d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+              </span>
+            </div>
           </th>
           <th
             colspan="1"
@@ -157,32 +169,36 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
             style="cursor: pointer;"
             title="Status"
           >
-            <span
-              style="margin-right: 3px;"
+            <div
+              style="display: flex; align-items: center; padding-right: 15px;"
             >
-              Status
-            </span>
-            <span>
               <span
-                class="bp3-icon bp3-icon-double-caret-vertical"
-                icon="double-caret-vertical"
+                style="margin-right: 5px;"
               >
-                <svg
-                  data-icon="double-caret-vertical"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  width="16"
-                >
-                  <desc>
-                    double-caret-vertical
-                  </desc>
-                  <path
-                    d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                    fill-rule="evenodd"
-                  />
-                </svg>
+                Status
               </span>
-            </span>
+              <span>
+                <span
+                  class="bp3-icon bp3-icon-double-caret-vertical"
+                  icon="double-caret-vertical"
+                >
+                  <svg
+                    data-icon="double-caret-vertical"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    width="16"
+                  >
+                    <desc>
+                      double-caret-vertical
+                    </desc>
+                    <path
+                      d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+              </span>
+            </div>
           </th>
         </tr>
       </thead>
@@ -381,32 +397,36 @@ exports[`BoardTable renders container and no tabulator columns 1`] = `
             style="cursor: pointer;"
             title="Container"
           >
-            <span
-              style="margin-right: 3px;"
+            <div
+              style="display: flex; align-items: center; padding-right: 15px;"
             >
-              Container
-            </span>
-            <span>
               <span
-                class="bp3-icon bp3-icon-double-caret-vertical"
-                icon="double-caret-vertical"
+                style="margin-right: 5px;"
               >
-                <svg
-                  data-icon="double-caret-vertical"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  width="16"
-                >
-                  <desc>
-                    double-caret-vertical
-                  </desc>
-                  <path
-                    d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                    fill-rule="evenodd"
-                  />
-                </svg>
+                Container
               </span>
-            </span>
+              <span>
+                <span
+                  class="bp3-icon bp3-icon-double-caret-vertical"
+                  icon="double-caret-vertical"
+                >
+                  <svg
+                    data-icon="double-caret-vertical"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    width="16"
+                  >
+                    <desc>
+                      double-caret-vertical
+                    </desc>
+                    <path
+                      d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+              </span>
+            </div>
           </th>
           <th
             colspan="1"
@@ -414,32 +434,36 @@ exports[`BoardTable renders container and no tabulator columns 1`] = `
             style="cursor: pointer;"
             title="Batch"
           >
-            <span
-              style="margin-right: 3px;"
+            <div
+              style="display: flex; align-items: center; padding-right: 15px;"
             >
-              Batch
-            </span>
-            <span>
               <span
-                class="bp3-icon bp3-icon-double-caret-vertical"
-                icon="double-caret-vertical"
+                style="margin-right: 5px;"
               >
-                <svg
-                  data-icon="double-caret-vertical"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  width="16"
-                >
-                  <desc>
-                    double-caret-vertical
-                  </desc>
-                  <path
-                    d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                    fill-rule="evenodd"
-                  />
-                </svg>
+                Batch
               </span>
-            </span>
+              <span>
+                <span
+                  class="bp3-icon bp3-icon-double-caret-vertical"
+                  icon="double-caret-vertical"
+                >
+                  <svg
+                    data-icon="double-caret-vertical"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    width="16"
+                  >
+                    <desc>
+                      double-caret-vertical
+                    </desc>
+                    <path
+                      d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+              </span>
+            </div>
           </th>
           <th
             colspan="1"
@@ -447,32 +471,36 @@ exports[`BoardTable renders container and no tabulator columns 1`] = `
             style="cursor: pointer;"
             title="Ballot Position"
           >
-            <span
-              style="margin-right: 3px;"
+            <div
+              style="display: flex; align-items: center; padding-right: 15px;"
             >
-              Ballot Position
-            </span>
-            <span>
               <span
-                class="bp3-icon bp3-icon-double-caret-vertical"
-                icon="double-caret-vertical"
+                style="margin-right: 5px;"
               >
-                <svg
-                  data-icon="double-caret-vertical"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  width="16"
-                >
-                  <desc>
-                    double-caret-vertical
-                  </desc>
-                  <path
-                    d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                    fill-rule="evenodd"
-                  />
-                </svg>
+                Ballot Position
               </span>
-            </span>
+              <span>
+                <span
+                  class="bp3-icon bp3-icon-double-caret-vertical"
+                  icon="double-caret-vertical"
+                >
+                  <svg
+                    data-icon="double-caret-vertical"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    width="16"
+                  >
+                    <desc>
+                      double-caret-vertical
+                    </desc>
+                    <path
+                      d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+              </span>
+            </div>
           </th>
           <th
             colspan="1"
@@ -480,32 +508,36 @@ exports[`BoardTable renders container and no tabulator columns 1`] = `
             style="cursor: pointer;"
             title="Status"
           >
-            <span
-              style="margin-right: 3px;"
+            <div
+              style="display: flex; align-items: center; padding-right: 15px;"
             >
-              Status
-            </span>
-            <span>
               <span
-                class="bp3-icon bp3-icon-double-caret-vertical"
-                icon="double-caret-vertical"
+                style="margin-right: 5px;"
               >
-                <svg
-                  data-icon="double-caret-vertical"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  width="16"
-                >
-                  <desc>
-                    double-caret-vertical
-                  </desc>
-                  <path
-                    d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                    fill-rule="evenodd"
-                  />
-                </svg>
+                Status
               </span>
-            </span>
+              <span>
+                <span
+                  class="bp3-icon bp3-icon-double-caret-vertical"
+                  icon="double-caret-vertical"
+                >
+                  <svg
+                    data-icon="double-caret-vertical"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    width="16"
+                  >
+                    <desc>
+                      double-caret-vertical
+                    </desc>
+                    <path
+                      d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+              </span>
+            </div>
           </th>
         </tr>
       </thead>
@@ -608,32 +640,36 @@ exports[`BoardTable renders container and tabulator columns 1`] = `
             style="cursor: pointer;"
             title="Container"
           >
-            <span
-              style="margin-right: 3px;"
+            <div
+              style="display: flex; align-items: center; padding-right: 15px;"
             >
-              Container
-            </span>
-            <span>
               <span
-                class="bp3-icon bp3-icon-double-caret-vertical"
-                icon="double-caret-vertical"
+                style="margin-right: 5px;"
               >
-                <svg
-                  data-icon="double-caret-vertical"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  width="16"
-                >
-                  <desc>
-                    double-caret-vertical
-                  </desc>
-                  <path
-                    d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                    fill-rule="evenodd"
-                  />
-                </svg>
+                Container
               </span>
-            </span>
+              <span>
+                <span
+                  class="bp3-icon bp3-icon-double-caret-vertical"
+                  icon="double-caret-vertical"
+                >
+                  <svg
+                    data-icon="double-caret-vertical"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    width="16"
+                  >
+                    <desc>
+                      double-caret-vertical
+                    </desc>
+                    <path
+                      d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+              </span>
+            </div>
           </th>
           <th
             colspan="1"
@@ -641,32 +677,36 @@ exports[`BoardTable renders container and tabulator columns 1`] = `
             style="cursor: pointer;"
             title="Tabulator"
           >
-            <span
-              style="margin-right: 3px;"
+            <div
+              style="display: flex; align-items: center; padding-right: 15px;"
             >
-              Tabulator
-            </span>
-            <span>
               <span
-                class="bp3-icon bp3-icon-double-caret-vertical"
-                icon="double-caret-vertical"
+                style="margin-right: 5px;"
               >
-                <svg
-                  data-icon="double-caret-vertical"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  width="16"
-                >
-                  <desc>
-                    double-caret-vertical
-                  </desc>
-                  <path
-                    d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                    fill-rule="evenodd"
-                  />
-                </svg>
+                Tabulator
               </span>
-            </span>
+              <span>
+                <span
+                  class="bp3-icon bp3-icon-double-caret-vertical"
+                  icon="double-caret-vertical"
+                >
+                  <svg
+                    data-icon="double-caret-vertical"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    width="16"
+                  >
+                    <desc>
+                      double-caret-vertical
+                    </desc>
+                    <path
+                      d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+              </span>
+            </div>
           </th>
           <th
             colspan="1"
@@ -674,32 +714,36 @@ exports[`BoardTable renders container and tabulator columns 1`] = `
             style="cursor: pointer;"
             title="Batch"
           >
-            <span
-              style="margin-right: 3px;"
+            <div
+              style="display: flex; align-items: center; padding-right: 15px;"
             >
-              Batch
-            </span>
-            <span>
               <span
-                class="bp3-icon bp3-icon-double-caret-vertical"
-                icon="double-caret-vertical"
+                style="margin-right: 5px;"
               >
-                <svg
-                  data-icon="double-caret-vertical"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  width="16"
-                >
-                  <desc>
-                    double-caret-vertical
-                  </desc>
-                  <path
-                    d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                    fill-rule="evenodd"
-                  />
-                </svg>
+                Batch
               </span>
-            </span>
+              <span>
+                <span
+                  class="bp3-icon bp3-icon-double-caret-vertical"
+                  icon="double-caret-vertical"
+                >
+                  <svg
+                    data-icon="double-caret-vertical"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    width="16"
+                  >
+                    <desc>
+                      double-caret-vertical
+                    </desc>
+                    <path
+                      d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+              </span>
+            </div>
           </th>
           <th
             colspan="1"
@@ -707,32 +751,36 @@ exports[`BoardTable renders container and tabulator columns 1`] = `
             style="cursor: pointer;"
             title="Ballot Position"
           >
-            <span
-              style="margin-right: 3px;"
+            <div
+              style="display: flex; align-items: center; padding-right: 15px;"
             >
-              Ballot Position
-            </span>
-            <span>
               <span
-                class="bp3-icon bp3-icon-double-caret-vertical"
-                icon="double-caret-vertical"
+                style="margin-right: 5px;"
               >
-                <svg
-                  data-icon="double-caret-vertical"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  width="16"
-                >
-                  <desc>
-                    double-caret-vertical
-                  </desc>
-                  <path
-                    d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                    fill-rule="evenodd"
-                  />
-                </svg>
+                Ballot Position
               </span>
-            </span>
+              <span>
+                <span
+                  class="bp3-icon bp3-icon-double-caret-vertical"
+                  icon="double-caret-vertical"
+                >
+                  <svg
+                    data-icon="double-caret-vertical"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    width="16"
+                  >
+                    <desc>
+                      double-caret-vertical
+                    </desc>
+                    <path
+                      d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+              </span>
+            </div>
           </th>
           <th
             colspan="1"
@@ -740,32 +788,36 @@ exports[`BoardTable renders container and tabulator columns 1`] = `
             style="cursor: pointer;"
             title="Status"
           >
-            <span
-              style="margin-right: 3px;"
+            <div
+              style="display: flex; align-items: center; padding-right: 15px;"
             >
-              Status
-            </span>
-            <span>
               <span
-                class="bp3-icon bp3-icon-double-caret-vertical"
-                icon="double-caret-vertical"
+                style="margin-right: 5px;"
               >
-                <svg
-                  data-icon="double-caret-vertical"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  width="16"
-                >
-                  <desc>
-                    double-caret-vertical
-                  </desc>
-                  <path
-                    d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                    fill-rule="evenodd"
-                  />
-                </svg>
+                Status
               </span>
-            </span>
+              <span>
+                <span
+                  class="bp3-icon bp3-icon-double-caret-vertical"
+                  icon="double-caret-vertical"
+                >
+                  <svg
+                    data-icon="double-caret-vertical"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    width="16"
+                  >
+                    <desc>
+                      double-caret-vertical
+                    </desc>
+                    <path
+                      d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+              </span>
+            </div>
           </th>
         </tr>
       </thead>
@@ -873,32 +925,36 @@ exports[`BoardTable renders no container and no tabulator columns 1`] = `
             style="cursor: pointer;"
             title="Batch"
           >
-            <span
-              style="margin-right: 3px;"
+            <div
+              style="display: flex; align-items: center; padding-right: 15px;"
             >
-              Batch
-            </span>
-            <span>
               <span
-                class="bp3-icon bp3-icon-double-caret-vertical"
-                icon="double-caret-vertical"
+                style="margin-right: 5px;"
               >
-                <svg
-                  data-icon="double-caret-vertical"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  width="16"
-                >
-                  <desc>
-                    double-caret-vertical
-                  </desc>
-                  <path
-                    d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                    fill-rule="evenodd"
-                  />
-                </svg>
+                Batch
               </span>
-            </span>
+              <span>
+                <span
+                  class="bp3-icon bp3-icon-double-caret-vertical"
+                  icon="double-caret-vertical"
+                >
+                  <svg
+                    data-icon="double-caret-vertical"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    width="16"
+                  >
+                    <desc>
+                      double-caret-vertical
+                    </desc>
+                    <path
+                      d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+              </span>
+            </div>
           </th>
           <th
             colspan="1"
@@ -906,32 +962,36 @@ exports[`BoardTable renders no container and no tabulator columns 1`] = `
             style="cursor: pointer;"
             title="Ballot Position"
           >
-            <span
-              style="margin-right: 3px;"
+            <div
+              style="display: flex; align-items: center; padding-right: 15px;"
             >
-              Ballot Position
-            </span>
-            <span>
               <span
-                class="bp3-icon bp3-icon-double-caret-vertical"
-                icon="double-caret-vertical"
+                style="margin-right: 5px;"
               >
-                <svg
-                  data-icon="double-caret-vertical"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  width="16"
-                >
-                  <desc>
-                    double-caret-vertical
-                  </desc>
-                  <path
-                    d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                    fill-rule="evenodd"
-                  />
-                </svg>
+                Ballot Position
               </span>
-            </span>
+              <span>
+                <span
+                  class="bp3-icon bp3-icon-double-caret-vertical"
+                  icon="double-caret-vertical"
+                >
+                  <svg
+                    data-icon="double-caret-vertical"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    width="16"
+                  >
+                    <desc>
+                      double-caret-vertical
+                    </desc>
+                    <path
+                      d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+              </span>
+            </div>
           </th>
           <th
             colspan="1"
@@ -939,32 +999,36 @@ exports[`BoardTable renders no container and no tabulator columns 1`] = `
             style="cursor: pointer;"
             title="Status"
           >
-            <span
-              style="margin-right: 3px;"
+            <div
+              style="display: flex; align-items: center; padding-right: 15px;"
             >
-              Status
-            </span>
-            <span>
               <span
-                class="bp3-icon bp3-icon-double-caret-vertical"
-                icon="double-caret-vertical"
+                style="margin-right: 5px;"
               >
-                <svg
-                  data-icon="double-caret-vertical"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  width="16"
-                >
-                  <desc>
-                    double-caret-vertical
-                  </desc>
-                  <path
-                    d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                    fill-rule="evenodd"
-                  />
-                </svg>
+                Status
               </span>
-            </span>
+              <span>
+                <span
+                  class="bp3-icon bp3-icon-double-caret-vertical"
+                  icon="double-caret-vertical"
+                >
+                  <svg
+                    data-icon="double-caret-vertical"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    width="16"
+                  >
+                    <desc>
+                      double-caret-vertical
+                    </desc>
+                    <path
+                      d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+              </span>
+            </div>
           </th>
         </tr>
       </thead>
@@ -1062,32 +1126,36 @@ exports[`BoardTable renders tabulator and no container columns 1`] = `
             style="cursor: pointer;"
             title="Tabulator"
           >
-            <span
-              style="margin-right: 3px;"
+            <div
+              style="display: flex; align-items: center; padding-right: 15px;"
             >
-              Tabulator
-            </span>
-            <span>
               <span
-                class="bp3-icon bp3-icon-double-caret-vertical"
-                icon="double-caret-vertical"
+                style="margin-right: 5px;"
               >
-                <svg
-                  data-icon="double-caret-vertical"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  width="16"
-                >
-                  <desc>
-                    double-caret-vertical
-                  </desc>
-                  <path
-                    d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                    fill-rule="evenodd"
-                  />
-                </svg>
+                Tabulator
               </span>
-            </span>
+              <span>
+                <span
+                  class="bp3-icon bp3-icon-double-caret-vertical"
+                  icon="double-caret-vertical"
+                >
+                  <svg
+                    data-icon="double-caret-vertical"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    width="16"
+                  >
+                    <desc>
+                      double-caret-vertical
+                    </desc>
+                    <path
+                      d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+              </span>
+            </div>
           </th>
           <th
             colspan="1"
@@ -1095,32 +1163,36 @@ exports[`BoardTable renders tabulator and no container columns 1`] = `
             style="cursor: pointer;"
             title="Batch"
           >
-            <span
-              style="margin-right: 3px;"
+            <div
+              style="display: flex; align-items: center; padding-right: 15px;"
             >
-              Batch
-            </span>
-            <span>
               <span
-                class="bp3-icon bp3-icon-double-caret-vertical"
-                icon="double-caret-vertical"
+                style="margin-right: 5px;"
               >
-                <svg
-                  data-icon="double-caret-vertical"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  width="16"
-                >
-                  <desc>
-                    double-caret-vertical
-                  </desc>
-                  <path
-                    d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                    fill-rule="evenodd"
-                  />
-                </svg>
+                Batch
               </span>
-            </span>
+              <span>
+                <span
+                  class="bp3-icon bp3-icon-double-caret-vertical"
+                  icon="double-caret-vertical"
+                >
+                  <svg
+                    data-icon="double-caret-vertical"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    width="16"
+                  >
+                    <desc>
+                      double-caret-vertical
+                    </desc>
+                    <path
+                      d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+              </span>
+            </div>
           </th>
           <th
             colspan="1"
@@ -1128,32 +1200,36 @@ exports[`BoardTable renders tabulator and no container columns 1`] = `
             style="cursor: pointer;"
             title="Ballot Position"
           >
-            <span
-              style="margin-right: 3px;"
+            <div
+              style="display: flex; align-items: center; padding-right: 15px;"
             >
-              Ballot Position
-            </span>
-            <span>
               <span
-                class="bp3-icon bp3-icon-double-caret-vertical"
-                icon="double-caret-vertical"
+                style="margin-right: 5px;"
               >
-                <svg
-                  data-icon="double-caret-vertical"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  width="16"
-                >
-                  <desc>
-                    double-caret-vertical
-                  </desc>
-                  <path
-                    d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                    fill-rule="evenodd"
-                  />
-                </svg>
+                Ballot Position
               </span>
-            </span>
+              <span>
+                <span
+                  class="bp3-icon bp3-icon-double-caret-vertical"
+                  icon="double-caret-vertical"
+                >
+                  <svg
+                    data-icon="double-caret-vertical"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    width="16"
+                  >
+                    <desc>
+                      double-caret-vertical
+                    </desc>
+                    <path
+                      d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+              </span>
+            </div>
           </th>
           <th
             colspan="1"
@@ -1161,32 +1237,36 @@ exports[`BoardTable renders tabulator and no container columns 1`] = `
             style="cursor: pointer;"
             title="Status"
           >
-            <span
-              style="margin-right: 3px;"
+            <div
+              style="display: flex; align-items: center; padding-right: 15px;"
             >
-              Status
-            </span>
-            <span>
               <span
-                class="bp3-icon bp3-icon-double-caret-vertical"
-                icon="double-caret-vertical"
+                style="margin-right: 5px;"
               >
-                <svg
-                  data-icon="double-caret-vertical"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  width="16"
-                >
-                  <desc>
-                    double-caret-vertical
-                  </desc>
-                  <path
-                    d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                    fill-rule="evenodd"
-                  />
-                </svg>
+                Status
               </span>
-            </span>
+              <span>
+                <span
+                  class="bp3-icon bp3-icon-double-caret-vertical"
+                  icon="double-caret-vertical"
+                >
+                  <svg
+                    data-icon="double-caret-vertical"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    width="16"
+                  >
+                    <desc>
+                      double-caret-vertical
+                    </desc>
+                    <path
+                      d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+              </span>
+            </div>
           </th>
         </tr>
       </thead>

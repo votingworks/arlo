@@ -46,12 +46,12 @@ describe('Progress screen', () => {
     screen.getByText('Audit Progress by Jurisdiction')
     screen.getByRole('columnheader', { name: 'Jurisdiction' })
     screen.getByRole('columnheader', { name: 'Status' })
-    screen.getByRole('columnheader', { name: 'Total in Manifest' })
+    screen.getByRole('columnheader', { name: 'Ballots in Manifest' })
     expect(
-      screen.queryByRole('columnheader', { name: 'Audited' })
+      screen.queryByRole('columnheader', { name: 'Ballots Audited' })
     ).not.toBeInTheDocument()
     expect(
-      screen.queryByRole('columnheader', { name: 'Still to Audit' })
+      screen.queryByRole('columnheader', { name: 'Ballots Remaining' })
     ).not.toBeInTheDocument()
     const rows = screen.getAllByRole('row')
     expect(rows).toHaveLength(jurisdictionMocks.oneManifest.length + 1) // includes headers
@@ -78,9 +78,9 @@ describe('Progress screen', () => {
     screen.getByText('Audit Progress by Jurisdiction')
     screen.getByRole('columnheader', { name: 'Jurisdiction' })
     screen.getByRole('columnheader', { name: 'Status' })
-    screen.getByRole('columnheader', { name: 'Total in Manifest' })
-    screen.getByRole('columnheader', { name: 'Audited' })
-    screen.getByRole('columnheader', { name: 'Still to Audit' })
+    screen.getByRole('columnheader', { name: 'Ballots in Manifest' })
+    screen.getByRole('columnheader', { name: 'Ballots Audited' })
+    screen.getByRole('columnheader', { name: 'Ballots Remaining' })
     const rows = screen.getAllByRole('row')
     expect(rows).toHaveLength(jurisdictionMocks.oneManifest.length + 1) // includes headers
     within(rows[1]).getByRole('cell', { name: 'Jurisdiction 1' })
@@ -149,7 +149,7 @@ describe('Progress screen', () => {
       <Progress
         jurisdictions={jurisdictionMocks.oneManifest}
         auditSettings={auditSettings.all}
-        round={roundMocks.singleIncomplete[0]}
+        round={null}
       />
     )
 
