@@ -35,6 +35,18 @@ const OfflineBatchResultsForm = styled.form`
   input[type='number'] {
     -moz-appearance: textfield; /* stylelint-disable-line property-no-vendor-prefix */
   }
+
+  table {
+    position: relative;
+    border-collapse: separate;
+  }
+  th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    border-bottom: 1px solid ${Colors.GRAY3};
+    background: #ffffff;
+  }
 `
 
 const InputWithValidation = ({ field, form, ...props }: FieldProps) => {
