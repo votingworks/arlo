@@ -51,6 +51,9 @@ const OfflineBatchResultsForm = styled.form`
   }
 `
 
+const fixNumber = (s: string): string =>
+  Number(s.replace(/[^0-9]+/g, '')).toLocaleString()
+
 const Input = styled.input`
   /* Disable up/down toggle arrows on number inputs */
   ::-webkit-outer-spin-button,
@@ -71,6 +74,22 @@ const InputWithValidation = ({ field, form, ...props }: FieldProps) => {
         className={`bp3-input bp3-fill ${error ? 'bp3-intent-danger' : ''}`}
         {...field}
         {...props}
+      />
+    </div>
+  )
+}
+
+const NumberWithValidation = ({ field, form, ...props }: FieldProps) => {
+  const error = getIn(form.errors, field.name)
+  return (
+    <div>
+      <input
+        className={`bp3-input bp3-fill ${error ? 'bp3-intent-danger' : ''}`}
+        {...field}
+        {...props}
+        onChange={({ target: { value } }) =>
+          form.setFieldValue(field.name, fixNumber(value))
+        }
       />
     </div>
   )
@@ -303,9 +322,8 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
                         <div key={`editing-${choice.id}`}>
                           <FormGroup label={choice.name}>
                             <Field
-                              type="number"
                               name={`editingBatch.choiceResults.${choice.id}`}
-                              component={InputWithValidation}
+                              component={NumberWithValidation}
                               validate={testNumber()}
                             />
                           </FormGroup>
