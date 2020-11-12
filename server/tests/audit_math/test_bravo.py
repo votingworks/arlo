@@ -299,6 +299,13 @@ def test_compute_risk(contests):
             ("cand1", "cand2"): 0.000561,
             ("cand1", "cand3"): 0,
         },
+        "test_ga_presidential": {
+            ("Biden", "Trump"): 2.035688053599178e-09,
+            ("Biden", "Jorgensen"): 0.0,
+            ("Biden", "Write-in"): 0.0,
+            ("Biden", "Overvote"): 0.0,
+            ("Biden", "Undervote/Blank"): 0.0,
+        },
     }
 
     expected_decisions = {
@@ -315,11 +322,13 @@ def test_compute_risk(contests):
         "test11": False,
         "test12": True,
         "test_small_third_candidate": True,
+        "test_ga_presidential": True,
     }
 
     for contest in contests.values():
         sample = round1_sample_results[contest.name]
         T, decision = bravo.compute_risk(RISK_LIMIT, contest, sample)
+        print(T, decision)
         expected_T = expected_Ts[contest.name]
         for pair in expected_T:
             diff = T[pair] - expected_T[pair]
@@ -353,6 +362,13 @@ def test_compute_risk_empty(contests):
         "test11": {("cand1", "cand2"): 1,},
         "test12": {("cand1", "cand2"): 1, ("cand1", "cand3"): 1,},
         "test_small_third_candidate": {("cand1", "cand2"): 1, ("cand1", "cand3"): 1,},
+        "test_ga_presidential": {
+            ("Biden", "Trump"): 1,
+            ("Biden", "Jorgensen"): 1,
+            ("Biden", "Write-in"): 1,
+            ("Biden", "Overvote"): 1,
+            ("Biden", "Undervote/Blank"): 1,
+        },
     }
 
     expected_decisions = {
@@ -369,6 +385,7 @@ def test_compute_risk_empty(contests):
         "test11": False,
         "test12": False,
         "test_small_third_candidate": False,
+        "test_ga_presidential": False,
     }
 
     for contest in contests.values():
@@ -513,6 +530,17 @@ bravo_contests = {
         "votesAllowed": 1,
         "numWinners": 1,
     },
+    "test_ga_presidential": {
+        "Trump": 2457924,
+        "Biden": 2471981,
+        "Jorgensen": 62058,
+        "Write-in": 457,
+        "Overvote": 0,
+        "Undervote/Blank": 0,
+        "ballots": 4992420,
+        "votesAllowed": 1,
+        "numWinners": 1,
+    },
 }
 
 # Useful test data
@@ -530,6 +558,7 @@ round0_sample_results = {
     "test11": None,
     "test12": None,
     "test_small_third_candidate": None,
+    "test_ga_presidential": None,
 }
 
 round1_sample_results = {
@@ -547,6 +576,16 @@ round1_sample_results = {
     "test12": {"round1": {"cand1": 72, "cand2": 47, "cand3": 0}},
     "test_small_third_candidate": {
         "round1": {"cand1": 1200, "cand2": 1000, "cand3": 10}
+    },
+    "test_ga_presidential": {
+        "round1": {
+            "Trump": 2457924,
+            "Biden": 2471971,  # Take 10 away to make the sample "fewer" ballots
+            "Jorgensen": 62058,
+            "Write-in": 457,
+            "Overvote": 0,
+            "Undervote/Blank": 0,
+        }
     },
 }
 
@@ -593,5 +632,11 @@ true_sample_sizes = {
         "0.7": {"type": None, "size": 2837, "prob": 0.7},
         "0.8": {"type": None, "size": 3760, "prob": 0.8},
         "0.9": {"type": None, "size": 5426, "prob": 0.9},
+    },
+    "test_ga_presidential": {
+        "asn": {"type": "ASN", "size": 573956, "prob": 0.5},
+        "0.7": {"type": None, "size": 930691, "prob": 0.7},
+        "0.8": {"type": None, "size": 1233334, "prob": 0.8},
+        "0.9": {"type": None, "size": 1780697, "prob": 0.9},
     },
 }
