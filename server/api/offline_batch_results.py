@@ -183,8 +183,10 @@ def get_offline_batch_results(
     # We want to display batches in the order the user created them. Dict keys
     # are ordered, so we use a dict to dedupe the batch names while preserving
     # order.
-    ordered_batch_names = list(
-        dict.fromkeys(result.batch_name for result in recorded_results)
+    ordered_batches = list(
+        dict.fromkeys(
+            (result.batch_name, result.batch_type) for result in recorded_results
+        )
     )
 
     results_by_batch: JSONDict = defaultdict(
@@ -194,8 +196,12 @@ def get_offline_batch_results(
         results_by_batch[result.batch_name][result.contest_choice_id] = result.result
 
     results = [
-        {"batchName": batch_name, "choiceResults": results_by_batch[batch_name],}
-        for batch_name in ordered_batch_names
+        {
+            "batchName": batch_name,
+            "batchType": batch_type,
+            "choiceResults": results_by_batch[batch_name],
+        }
+        for batch_name, batch_type in ordered_batches
     ]
 
     return jsonify(

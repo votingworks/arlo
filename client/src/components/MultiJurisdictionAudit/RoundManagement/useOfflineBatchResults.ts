@@ -9,7 +9,7 @@ export interface IOfflineBatchResult {
     | 'Election Day'
     | 'Provisional'
     | 'Other'
-    | null
+    | ''
   choiceResults: {
     [choiceId: string]: number
   }

@@ -19,6 +19,7 @@ import {
   NumericInput,
   Tag,
   Colors,
+  HTMLSelect,
 } from '@blueprintjs/core'
 import styled from 'styled-components'
 import uuidv4 from 'uuidv4'
@@ -44,14 +45,24 @@ const OfflineBatchResultsForm = styled.form`
   }
 `
 
-const InputWithValidation = (props: FieldProps) => {
-  const error = getIn(props.form.errors, props.field.name)
+const InputWithValidation = ({ field, form, ...props }: FieldProps) => {
+  const error = getIn(form.errors, field.name)
   return (
     <div>
       <input
         className={`bp3-input bp3-fill ${error ? 'bp3-intent-danger' : ''}`}
-        {...props.field}
+        {...field}
+        {...props}
       />
+    </div>
+  )
+}
+
+const SelectWithValidation = ({ field, form, ...props }: FieldProps) => {
+  const error = getIn(form.errors, field.name)
+  return (
+    <div className={`bp3-select bp3-fill ${error ? 'bp3-intent-danger' : ''}`}>
+      <select {...field} {...props} />
     </div>
   )
 }
@@ -85,10 +96,10 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
 
   const { results, finalizedAt } = batchResults
 
-  const emptyResultRow = () => ({
+  const emptyResultRow = (): IResultRow => ({
     rowKey: uuidv4(),
     batchName: '',
-    batchType: null,
+    batchType: '',
     choiceResults: {},
   })
 
@@ -102,7 +113,6 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
       }}
       enableReinitialize
       onSubmit={async (values, actions) => {
-        // TODO validation to prevent partially empty rows
         // Omit empty rows
         const cleanResults = values.results
           .filter(
@@ -126,7 +136,6 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
     >
       {({
         handleSubmit,
-        handleReset,
         values,
         isSubmitting,
         errors,
@@ -157,6 +166,7 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
                     <tr>
                       <th />
                       <th>Batch Name</th>
+                      <th>Batch Type</th>
                       {contest.choices.map(choice => (
                         <th key={`th-${choice.id}`}>{choice.name}</th>
                       ))}
@@ -190,13 +200,13 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
                         </td>
                         <td>
                           <Field
-                            as="select"
                             name={`results.${r}.batchType`}
-                            // component={InputWithValidation}
+                            component={SelectWithValidation}
                             validate={(value: string) =>
                               !value ? 'Required' : null
                             }
                           >
+                            <option></option>
                             <option>Absentee By Mail</option>
                             <option>Advance</option>
                             <option>Election Day</option>
@@ -210,7 +220,6 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
                             <Field
                               type="number"
                               name={`results.${r}.choiceResults.${choice.id}`}
-                              className="bp3-input bp3-fill"
                               component={InputWithValidation}
                               validate={testNumber()}
                             />
