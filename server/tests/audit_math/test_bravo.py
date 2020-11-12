@@ -209,50 +209,12 @@ def test_bravo_sample_sizes_round1_incomplete():
 
 
 def test_get_sample_size(contests):
-
     for contest in contests:
         computed = bravo.get_sample_size(
             RISK_LIMIT, contests[contest], round0_sample_results[contest]
         )
-
         expected = true_sample_sizes[contest]
-
-        assert (
-            computed.keys() == expected.keys()
-        ), "{} get_sample_sizes returning the wrong keys! got {}, expected {}".format(
-            contest, computed.keys(), expected.keys()
-        )
-
-        assert (
-            computed["asn"]["size"] == expected["asn"]["size"]
-        ), "{} get_sample_sizes returning the wrong ASN! got {}, expected {}".format(
-            contest, computed["asn"]["size"], expected["asn"]["size"]
-        )
-
-        if expected["asn"]["prob"]:
-            assert (
-                round(computed["asn"]["prob"], 2) == expected["asn"]["prob"]
-            ), "{} get_sample_sizes returning the wrong ASN probs! got {}, expected {}".format(
-                contest, round(computed["asn"]["prob"], 2), expected["asn"]["prob"]
-            )
-
-        else:
-            assert not computed["asn"][
-                "prob"
-            ], "Returned ASN probability when there shouldn't be one!"
-
-        for item in computed:
-            assert (
-                computed[item]["type"] == expected[item]["type"]
-                and computed[item]["size"] == expected[item]["size"]
-                and (
-                    round(computed[item]["prob"], 2) == expected[item]["prob"]
-                    if expected[item]["prob"]
-                    else not computed[item]["prob"]
-                )
-            ), "get_sample_size failed! got {}, expected {}".format(
-                computed[item], expected[item]
-            )
+        assert computed == expected
 
 
 def test_bravo_expected_prob():
@@ -633,9 +595,6 @@ true_sample_sizes = {
         "0.9": {"type": None, "size": 5426, "prob": 0.9},
     },
     "test_ga_presidential": {
-        "asn": {"type": "ASN", "size": 573956, "prob": 0.5},
-        "0.7": {"type": None, "size": 930691, "prob": 0.7},
-        "0.8": {"type": None, "size": 1233334, "prob": 0.8},
-        "0.9": {"type": None, "size": 1780697, "prob": 0.9},
+        "all-ballots": {"type": "all-ballots", "size": 4992420, "prob": None},
     },
 }
