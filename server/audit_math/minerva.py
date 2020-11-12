@@ -153,7 +153,8 @@ def get_sample_size(
             if str(e) == "Too many winners":
                 # Tied election
                 round_size_options = [contest.ballots for quant in quants]
-            elif str(e) == "Margin needs to be different than 0 or 1":
+            else:
+                # E.g. str(e) == "Margin needs to be different than 0 or 1" ?
                 # Handle landslides. TODO: this works for a 10% risk limit.
                 round_size_options = [4 for quant in quants]
 
