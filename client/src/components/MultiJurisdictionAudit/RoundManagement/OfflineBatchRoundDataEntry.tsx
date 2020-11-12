@@ -6,8 +6,6 @@ import {
   Field,
   FieldArray,
   FieldProps,
-  FieldInputProps,
-  ErrorMessage,
   getIn,
 } from 'formik'
 import {
@@ -16,20 +14,15 @@ import {
   Dialog,
   Classes,
   Callout,
-  NumericInput,
-  Tag,
   Colors,
-  HTMLSelect,
 } from '@blueprintjs/core'
 import styled from 'styled-components'
 import uuidv4 from 'uuidv4'
 import useContestsJurisdictionAdmin from './useContestsJurisdictionAdmin'
 import { IRound } from '../useRoundsAuditAdmin'
 import useOfflineBatchResults, {
-  IOfflineBatchResults,
   IOfflineBatchResult,
 } from './useOfflineBatchResults'
-import FormField from '../../Atoms/Form/FormField'
 import { testNumber } from '../../utilities'
 
 const OfflineBatchResultsForm = styled.form`
@@ -61,8 +54,12 @@ const InputWithValidation = ({ field, form, ...props }: FieldProps) => {
 const SelectWithValidation = ({ field, form, ...props }: FieldProps) => {
   const error = getIn(form.errors, field.name)
   return (
-    <div className={`bp3-select bp3-fill ${error ? 'bp3-intent-danger' : ''}`}>
-      <select {...field} {...props} />
+    <div className="bp3-select bp3-fill">
+      <select
+        className={error ? 'bp3-input bp3-intent-danger' : ''}
+        {...field}
+        {...props}
+      />
     </div>
   )
 }
