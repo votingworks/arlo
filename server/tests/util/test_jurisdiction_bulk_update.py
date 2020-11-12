@@ -77,12 +77,18 @@ def test_dont_clobber_other_elections(client: FlaskClient, election_id, org_id):
     )
     db_session.commit()
 
-    # make sure first election admins were not clobbered
+    # Now change them
+    bulk_update_jurisdictions(
+        db_session, other_election, [("Jurisdiction #3", "ja4@ca.gov")]
+    )
+    db_session.commit()
+
+    # Make sure first election admins were not clobbered
     assert (
         len(
-            Jurisdiction.query.filter_by(election_id=election.id)[
-                0
-            ].jurisdiction_administrations
+            Jurisdiction.query.filter_by(election_id=election.id)
+            .first()
+            .jurisdiction_administrations
         )
         == 1
     )
