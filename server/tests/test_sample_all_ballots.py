@@ -184,6 +184,19 @@ def test_all_ballots_audit(
         "results": jurisdiction_1_results,
     }
 
+    # Check changelog
+    changelogs = list(
+        OfflineBatchResultChangelog.query.filter_by(
+            jurisdiction_id=jurisdiction_ids[0]
+        ).all()
+    )
+    assert len(changelogs) == 1
+    assert (
+        changelogs[0].user_id == User.query.filter_by(email=DEFAULT_JA_EMAIL).one().id
+    )
+    assert changelogs[0].before == []
+    assert changelogs[0].after == jurisdiction_1_results
+
     # Check jurisdiction progress
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
@@ -197,10 +210,10 @@ def test_all_ballots_audit(
         "status": "IN_PROGRESS",
     }
 
-    # Record full results and finalize
+    # Record full results
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
 
-    jurisdiction_1_results = [
+    updated_jurisdiction_1_results = [
         {
             "batchName": "Batch One",
             "batchType": "Provisional",
@@ -227,7 +240,7 @@ def test_all_ballots_audit(
     rv = put_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/results/batch",
-        jurisdiction_1_results,
+        updated_jurisdiction_1_results,
     )
     assert_ok(rv)
 
@@ -237,7 +250,7 @@ def test_all_ballots_audit(
     assert rv.status_code == 200
     assert json.loads(rv.data) == {
         "finalizedAt": None,
-        "results": jurisdiction_1_results,
+        "results": updated_jurisdiction_1_results,
     }
 
     rv = post_json(
@@ -246,13 +259,27 @@ def test_all_ballots_audit(
     )
     assert_ok(rv)
 
+    # Check changelog
+    changelogs = list(
+        OfflineBatchResultChangelog.query.filter_by(
+            jurisdiction_id=jurisdiction_ids[0]
+        ).all()
+    )
+    assert len(changelogs) == 2
+    assert (
+        changelogs[1].user_id == User.query.filter_by(email=DEFAULT_JA_EMAIL).one().id
+    )
+    assert changelogs[1].before == jurisdiction_1_results
+    assert changelogs[1].after == updated_jurisdiction_1_results
+
+    # Finalize the results
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/results/batch",
     )
     assert rv.status_code == 200
     compare_json(
         json.loads(rv.data),
-        {"finalizedAt": assert_is_date, "results": jurisdiction_1_results,},
+        {"finalizedAt": assert_is_date, "results": updated_jurisdiction_1_results,},
     )
 
     # Round shouldn't be over yet, since we haven't recorded results for all jurisdictions with sampled ballots
