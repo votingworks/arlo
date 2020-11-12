@@ -55,6 +55,7 @@ app.register_blueprint(superadmin)
 # pylint: disable=wrong-import-position,cyclic-import,unused-import
 from . import static
 from . import errors
+from . import web_whitelist
 
 
 @app.teardown_appcontext
