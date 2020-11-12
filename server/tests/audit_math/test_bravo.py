@@ -328,7 +328,6 @@ def test_compute_risk(contests):
     for contest in contests.values():
         sample = round1_sample_results[contest.name]
         T, decision = bravo.compute_risk(RISK_LIMIT, contest, sample)
-        print(T, decision)
         expected_T = expected_Ts[contest.name]
         for pair in expected_T:
             diff = T[pair] - expected_T[pair]
