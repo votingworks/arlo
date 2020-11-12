@@ -8,11 +8,11 @@ from ipaddress import (
 )
 from typing import List, Union
 
-from flask import Flask, request, abort
-
-app = Flask(__name__)
+from flask import request, abort
 
 # list of Cloudflare IPs: https://www.cloudflare.com/ips/
+from server.app import app
+
 cloudflare_ip_list = [
     # V4 address blocks
     "173.245.48.0/20",
