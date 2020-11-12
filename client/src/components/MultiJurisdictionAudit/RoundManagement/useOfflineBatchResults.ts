@@ -1,14 +1,16 @@
 import { useEffect, useState } from 'react'
 import { api } from '../../utilities'
 
+export interface IOfflineBatchResult {
+  batchName: string
+  choiceResults: {
+    [choiceId: string]: number
+  }
+}
+
 export interface IOfflineBatchResults {
   finalizedAt: string
-  results: {
-    batchName: string
-    choiceResults: {
-      [choiceId: string]: number
-    }
-  }[]
+  results: IOfflineBatchResult[]
 }
 
 const getResults = async (
