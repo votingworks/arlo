@@ -289,6 +289,7 @@ def test_auth_me_jurisdiction_admin(
                     "electionName": None,
                     "state": None,
                 },
+                "numBallots": None,
             }
         ],
     }

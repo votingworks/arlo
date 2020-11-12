@@ -19,9 +19,11 @@ DEFAULT_AA_EMAIL = "admin@example.com"
 DEFAULT_JA_EMAIL = "jurisdiction.admin@example.com"
 
 
-def post_json(client: FlaskClient, url: str, obj) -> Any:
+def post_json(client: FlaskClient, url: str, obj=None) -> Any:
     return client.post(
-        url, headers={"Content-Type": "application/json"}, data=json.dumps(obj)
+        url,
+        headers={"Content-Type": "application/json"},
+        data=json.dumps(obj) if obj else None,
     )
 
 

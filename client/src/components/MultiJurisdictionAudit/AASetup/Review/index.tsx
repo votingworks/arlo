@@ -281,15 +281,21 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
                                 </Radio>
                               ) : (
                                 <Radio value={option.key} key={option.key}>
+                                  {option.key === 'all-ballots' &&
+                                    'All ballots: '}
                                   {option.key === 'asn'
                                     ? 'BRAVO Average Sample Number: '
                                     : ''}
-                                  {`${option.size} samples`}
+                                  {`${Number(
+                                    option.size
+                                  ).toLocaleString()} samples`}
                                   {option.prob
                                     ? ` (${percentFormatter.format(
                                         option.prob
                                       )} chance of reaching risk limit and completing the audit in one round)`
                                     : ''}
+                                  {option.key === 'all-ballots' &&
+                                    ' (recommended for this contest due to the small margin of victory)'}
                                 </Radio>
                               )
                             }

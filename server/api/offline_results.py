@@ -5,7 +5,7 @@ from werkzeug.exceptions import BadRequest, Conflict
 from . import api
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
-from .rounds import is_round_complete, end_round, get_current_round
+from .rounds import is_round_complete, end_round, get_current_round, sampled_all_ballots
 from ..auth import restrict_access, UserType
 from ..util.jsonschema import JSONDict, validate
 
@@ -64,14 +64,23 @@ def validate_offline_results(
         .filter_by(jurisdiction_id=jurisdiction.id)
         .count()
     )
+
     for contest in jurisdiction.contests:
-        num_ballots = (
-            ballot_draws_by_contest.get(contest.id, 0)
-            if contest.is_targeted
-            else ballots_sampled
-        )
-        total_results = sum(results[contest.id].values())
+        num_ballots: int
+        # Special case: if we sampled all ballots, then the max results allowed
+        # should be based on the ballot manifest, since we don't have any
+        # sampled ballots in the db
+        if sampled_all_ballots(round, election):
+            assert jurisdiction.manifest_num_ballots is not None
+            num_ballots = jurisdiction.manifest_num_ballots
+        elif contest.is_targeted:
+            num_ballots = ballot_draws_by_contest.get(contest.id, 0)
+        else:
+            num_ballots = ballots_sampled
+
+        assert contest.votes_allowed is not None
         allowed_results = num_ballots * contest.votes_allowed
+        total_results = sum(results[contest.id].values())
         if total_results > allowed_results:
             raise BadRequest(
                 f"Total results for contest {contest.name} should not exceed"

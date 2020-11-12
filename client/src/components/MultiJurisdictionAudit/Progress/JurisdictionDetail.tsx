@@ -5,6 +5,7 @@ import {
   IJurisdiction,
   FileProcessingStatus,
   IFileInfo,
+  JurisdictionRoundStatus,
 } from '../useJurisdictions'
 import { JAFileDownloadButtons } from '../RoundManagement'
 import { IAuditSettings } from '../../../types'
@@ -138,24 +139,43 @@ const RoundStatusSection = ({
   const [auditBoards] = useAuditBoards(electionId, jurisdiction.id, [round])
   const ballots = useBallots(electionId, jurisdiction.id, round.id, auditBoards)
   if (!auditBoards || !ballots) return null
+
+  const status = (() => {
+    const jurisdictionStatus =
+      jurisdiction.currentRoundStatus && jurisdiction.currentRoundStatus.status
+
+    if (round.sampledAllBallots) {
+      if (jurisdictionStatus === JurisdictionRoundStatus.COMPLETE)
+        return <p>Data entry complete</p>
+      if (auditBoards.length === 0)
+        return <p>Waiting for jurisdiction to set up audit boards</p>
+      return (
+        <p>Auditing all {jurisdiction.ballotManifest.numBallots} ballots</p>
+      )
+    }
+
+    if (ballots.length === 0) return <p>No ballots sampled</p>
+    if (jurisdictionStatus === JurisdictionRoundStatus.COMPLETE)
+      return <p>Data entry complete</p>
+    if (auditBoards.length === 0)
+      return <p>Waiting for jurisdiction to set up audit boards</p>
+    return (
+      <JAFileDownloadButtons
+        electionId={electionId}
+        jurisdictionId={jurisdiction.id}
+        jurisdictionName={jurisdiction.name}
+        round={round}
+        auditSettings={auditSettings}
+        ballots={ballots}
+        auditBoards={auditBoards}
+      />
+    )
+  })()
+
   return (
     <Section>
       <H5>Round {round.roundNum} Data Entry</H5>
-      {ballots.length === 0 ? (
-        <p>No ballots sampled</p>
-      ) : auditBoards.length === 0 ? (
-        <p>Waiting for jurisdiction to set up audit boards</p>
-      ) : (
-        <JAFileDownloadButtons
-          electionId={electionId}
-          jurisdictionId={jurisdiction.id}
-          jurisdictionName={jurisdiction.name}
-          round={round}
-          auditSettings={auditSettings}
-          ballots={ballots}
-          auditBoards={auditBoards}
-        />
-      )}
+      {status}
     </Section>
   )
 }

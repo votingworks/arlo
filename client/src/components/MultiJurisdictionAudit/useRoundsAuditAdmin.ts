@@ -7,6 +7,7 @@ export interface IRound {
   startedAt: string
   endedAt: string | null
   isAuditComplete: boolean
+  sampledAllBallots: boolean
 }
 
 const useRoundsAuditAdmin = (electionId: string, refreshId?: string) => {

@@ -114,6 +114,7 @@ def test_two_rounds(
                     "startedAt": assert_is_date,
                     "endedAt": assert_is_date,
                     "isAuditComplete": False,
+                    "sampledAllBallots": False,
                 }
             ]
         },
@@ -173,6 +174,7 @@ def test_two_rounds(
                     "startedAt": assert_is_date,
                     "endedAt": assert_is_date,
                     "isAuditComplete": False,
+                    "sampledAllBallots": False,
                 },
                 {
                     "id": assert_is_id,
@@ -180,6 +182,7 @@ def test_two_rounds(
                     "startedAt": assert_is_date,
                     "endedAt": None,
                     "isAuditComplete": None,
+                    "sampledAllBallots": False,
                 },
             ]
         },
@@ -207,6 +210,7 @@ def test_two_rounds(
                     "startedAt": assert_is_date,
                     "endedAt": assert_is_date,
                     "isAuditComplete": False,
+                    "sampledAllBallots": False,
                 },
                 {
                     "id": assert_is_id,
@@ -214,6 +218,7 @@ def test_two_rounds(
                     "startedAt": assert_is_date,
                     "endedAt": assert_is_date,
                     "isAuditComplete": True,
+                    "sampledAllBallots": False,
                 },
             ]
         },

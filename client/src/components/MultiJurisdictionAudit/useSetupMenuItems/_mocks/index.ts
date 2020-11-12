@@ -120,6 +120,7 @@ export const roundMocks: {
       isAuditComplete: false,
       startedAt: '2019-07-18T16:34:07.000Z',
       id: 'round-1',
+      sampledAllBallots: false,
     },
   ],
   twoIncomplete: [
@@ -129,6 +130,7 @@ export const roundMocks: {
       isAuditComplete: false,
       startedAt: '2019-07-18T16:34:07.000Z',
       id: 'round-1',
+      sampledAllBallots: false,
     },
     {
       endedAt: null,
@@ -136,6 +138,7 @@ export const roundMocks: {
       isAuditComplete: false,
       startedAt: '2019-07-18T16:34:07.000Z',
       id: 'round-2',
+      sampledAllBallots: false,
     },
   ],
   singleComplete: [
@@ -145,6 +148,7 @@ export const roundMocks: {
       isAuditComplete: true,
       startedAt: '2019-07-18T16:34:07.000Z',
       id: 'round-1',
+      sampledAllBallots: false,
     },
   ],
   needAnother: [
@@ -154,6 +158,7 @@ export const roundMocks: {
       isAuditComplete: false,
       startedAt: '2019-07-18T16:34:07.000Z',
       id: 'round-1',
+      sampledAllBallots: false,
     },
   ],
 }
