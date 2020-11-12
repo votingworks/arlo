@@ -620,8 +620,8 @@ class OfflineBatchResultChangelog(BaseModel):
         String(200), ForeignKey("jurisdiction.id", ondelete="cascade"), nullable=False,
     )
 
-    before = Column(JSON)
-    after = Column(JSON)
+    before = Column(JSON, nullable=False)
+    after = Column(JSON, nullable=False)
 
     __table_args__ = (PrimaryKeyConstraint("jurisdiction_id", "user_id", "created_at"),)
 

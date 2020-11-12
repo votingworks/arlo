@@ -24,8 +24,8 @@ def upgrade():
         sa.Column("updated_at", sa.DateTime(), nullable=False),
         sa.Column("user_id", sa.String(length=200), nullable=False),
         sa.Column("jurisdiction_id", sa.String(length=200), nullable=False),
-        sa.Column("before", sa.JSON(), nullable=True),
-        sa.Column("after", sa.JSON(), nullable=True),
+        sa.Column("before", sa.JSON(), nullable=False),
+        sa.Column("after", sa.JSON(), nullable=False),
         sa.ForeignKeyConstraint(
             ["jurisdiction_id"],
             ["jurisdiction.id"],
