@@ -82,20 +82,28 @@ export const Table = <T extends object>({ data, columns }: ITableProps<T>) => {
                 column.getSortByToggleProps({ title: column.Header })
               )}
             >
-              <span style={{ marginRight: '3px' }}>
-                {column.render('Header')}
-              </span>
-              <span>
-                {column.isSorted ? (
-                  column.isSortedDesc ? (
-                    <Icon icon="caret-down" />
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  paddingRight: '15px',
+                }}
+              >
+                <span style={{ marginRight: '5px' }}>
+                  {column.render('Header')}
+                </span>
+                <span>
+                  {column.isSorted ? (
+                    column.isSortedDesc ? (
+                      <Icon icon="caret-down" />
+                    ) : (
+                      <Icon icon="caret-up" />
+                    )
                   ) : (
-                    <Icon icon="caret-up" />
-                  )
-                ) : (
-                  <Icon icon="double-caret-vertical" />
-                )}
-              </span>
+                    <Icon icon="double-caret-vertical" />
+                  )}
+                </span>
+              </div>
             </th>
           ))}
         </tr>

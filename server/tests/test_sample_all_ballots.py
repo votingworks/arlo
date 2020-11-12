@@ -202,9 +202,10 @@ def test_all_ballots_audit(
     jurisdiction_sample_size = int(selected_sample_sizes[contest_id] / 2)
     assert jurisdictions[0]["currentRoundStatus"] == {
         "numSamples": jurisdiction_sample_size,
-        "numSamplesAudited": jurisdiction_sample_size / 2,
+        "numSamplesAudited": int(jurisdiction_sample_size / 2),
         "numUnique": jurisdiction_sample_size,
-        "numUniqueAudited": jurisdiction_sample_size / 2,
+        "numUniqueAudited": int(jurisdiction_sample_size / 2),
+        "numBatchesAudited": 1,
         "status": "IN_PROGRESS",
     }
 
@@ -297,6 +298,7 @@ def test_all_ballots_audit(
         "numSamplesAudited": jurisdiction_sample_size,
         "numUnique": jurisdiction_sample_size,
         "numUniqueAudited": jurisdiction_sample_size,
+        "numBatchesAudited": 3,
         "status": "COMPLETE",
     }
     assert jurisdictions[1]["currentRoundStatus"] == {
@@ -304,6 +306,7 @@ def test_all_ballots_audit(
         "numSamplesAudited": 0,
         "numUnique": jurisdiction_sample_size,
         "numUniqueAudited": 0,
+        "numBatchesAudited": 0,
         "status": "NOT_STARTED",
     }
 

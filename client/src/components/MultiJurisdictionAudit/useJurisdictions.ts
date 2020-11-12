@@ -44,6 +44,7 @@ export interface IJurisdiction {
     numSamplesAudited: number
     numUnique: number
     numUniqueAudited: number
+    numBatchesAudited?: number
   } | null
 }
 

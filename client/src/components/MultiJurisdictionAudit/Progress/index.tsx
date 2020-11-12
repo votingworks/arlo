@@ -55,6 +55,9 @@ const Progress: React.FC<IProps> = ({
     setJurisdictionDetail,
   ] = useState<IJurisdiction | null>(null)
 
+  const ballotsOrBatches =
+    auditSettings.auditType === 'BATCH_COMPARISON' ? 'Batches' : 'Ballots'
+
   const columns: Column<IJurisdiction>[] = [
     {
       Header: 'Jurisdiction',
@@ -160,15 +163,19 @@ const Progress: React.FC<IProps> = ({
       ),
     },
     {
-      Header: 'Total in Manifest',
-      accessor: ({ ballotManifest: { numBallots } }) =>
-        formatNumber(numBallots),
+      Header: `${ballotsOrBatches} in Manifest`,
+      accessor: ({ ballotManifest: { numBallots, numBatches } }) =>
+        formatNumber(
+          auditSettings.auditType === 'BATCH_COMPARISON'
+            ? numBatches
+            : numBallots
+        ),
     },
   ]
   if (round) {
     columns.push(
       {
-        Header: 'Audited',
+        Header: `${ballotsOrBatches} Audited`,
         accessor: ({ currentRoundStatus: s }) =>
           s &&
           formatNumber(
@@ -176,7 +183,7 @@ const Progress: React.FC<IProps> = ({
           ),
       },
       {
-        Header: 'Still to Audit',
+        Header: `${ballotsOrBatches} Remaining`,
         accessor: ({ currentRoundStatus: s }) =>
           s &&
           formatNumber(
@@ -186,6 +193,13 @@ const Progress: React.FC<IProps> = ({
           ),
       }
     )
+    if (jurisdictions[0].currentRoundStatus!.numBatchesAudited !== undefined) {
+      columns.push({
+        Header: 'Batches Audited',
+        accessor: ({ currentRoundStatus: s }) =>
+          s && formatNumber(s.numBatchesAudited!),
+      })
+    }
   }
 
   const filteredJurisdictions = jurisdictions.filter(({ name }) =>
@@ -204,11 +218,7 @@ const Progress: React.FC<IProps> = ({
       <TableControls>
         <Switch
           checked={isShowingUnique}
-          label={`Count unique sampled ${
-            auditSettings.auditType === 'BATCH_COMPARISON'
-              ? 'batches'
-              : 'ballots'
-          }`}
+          label={`Count unique sampled ${ballotsOrBatches.toLowerCase()}`}
           onChange={() => setIsShowingUnique(!isShowingUnique)}
         />
         <FilterInput

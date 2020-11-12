@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+from typing import Dict, Optional, Mapping
 import enum
 import uuid
 import datetime
@@ -54,7 +54,7 @@ class JurisdictionStatus(str, enum.Enum):
 
 def round_status_by_jurisdiction(
     election: Election, round: Optional[Round],
-) -> Dict[str, Optional[JSONDict]]:
+) -> Mapping[str, Optional[JSONDict]]:
     if not round:
         return {j.id: None for j in election.jurisdictions}
     if election.audit_type == AuditType.BATCH_COMPARISON:
@@ -63,9 +63,7 @@ def round_status_by_jurisdiction(
         return ballot_round_status(election, round)
 
 
-def ballot_round_status(
-    election: Election, round: Round
-) -> Dict[str, Optional[JSONDict]]:
+def ballot_round_status(election: Election, round: Round) -> Dict[str, JSONDict]:
     audit_boards_set_up = dict(
         AuditBoard.query.filter_by(round_id=round.id)
         .group_by(AuditBoard.jurisdiction_id)
@@ -144,11 +142,10 @@ def ballot_round_status(
     # on the offline batch results
     jurisdiction_offline_batch_result_totals = (
         dict(
-            OfflineBatchResult.query.group_by(
-                OfflineBatchResult.jurisdiction_id
-            ).values(
-                OfflineBatchResult.jurisdiction_id, func.sum(OfflineBatchResult.result)
-            )
+            OfflineBatchResult.query.join(Jurisdiction)
+            .filter_by(election_id=election.id)
+            .group_by(Jurisdiction.id)
+            .values(Jurisdiction.id, func.sum(OfflineBatchResult.result))
         )
         if did_sample_all_ballots
         else {}
@@ -221,7 +218,7 @@ def ballot_round_status(
                 else 0
             )
 
-    return {
+    statuses: Dict[str, JSONDict] = {
         jurisdiction.id: {
             "status": status(jurisdiction),
             "numSamples": num_samples(jurisdiction),
@@ -232,10 +229,26 @@ def ballot_round_status(
         for jurisdiction in election.jurisdictions
     }
 
+    # Special case: when all ballots sampled, also add a count of batches
+    # submitted.
+    if did_sample_all_ballots:
+        num_batches_by_jurisdiction = dict(
+            OfflineBatchResult.query.join(Jurisdiction)
+            .filter_by(election_id=election.id)
+            .group_by(Jurisdiction.id)
+            .values(
+                Jurisdiction.id, func.count(OfflineBatchResult.batch_name.distinct())
+            )
+        )
+        for jurisdiction_id in statuses:
+            statuses[jurisdiction_id][
+                "numBatchesAudited"
+            ] = num_batches_by_jurisdiction.get(jurisdiction_id, 0)
 
-def batch_round_status(
-    election: Election, round: Round
-) -> Dict[str, Optional[JSONDict]]:
+    return statuses
+
+
+def batch_round_status(election: Election, round: Round) -> Dict[str, JSONDict]:
     jurisdictions_with_audit_boards = set(
         jurisdiction_id
         for jurisdiction_id, in AuditBoard.query.filter_by(round_id=round.id).values(
