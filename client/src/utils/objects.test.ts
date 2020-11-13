@@ -17,4 +17,7 @@ test('stringifyObject', () => {
   expect(stringifyObject({ a: 1 })).toDeepEqual({ a: '1' })
   expect(stringifyObject({ a: 1, b: 2 })).toDeepEqual({ a: '1', b: '2' })
   expect(stringifyObject({ a: 1000 })).toDeepEqual({ a: '1000' })
+  expect(
+    stringifyObject({ a: 1 }, (s: string): string => s.repeat(2))
+  ).toDeepEqual({ a: '11' })
 })

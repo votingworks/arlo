@@ -236,7 +236,8 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
                               editingBatch: {
                                 ...batch,
                                 choiceResults: stringifyObject(
-                                  batch.choiceResults
+                                  batch.choiceResults,
+                                  fixNumber
                                 ),
                               },
                               editingBatchIndex: index,

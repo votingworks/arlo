@@ -8,18 +8,21 @@ export const numberifyObject = (object: {
   Object.keys(object).reduce(
     (a, o) => ({
       ...a,
-      [o]: Number(object[o].replace(/[^09]+/g, '')),
+      [o]: Number(object[o].replace(/[^0-9]+/g, '')),
     }),
     {}
   )
 
-export const stringifyObject = (object: {
-  [key: string]: number
-}): { [key: string]: string } =>
+export const stringifyObject = (
+  object: {
+    [key: string]: number
+  },
+  callback = (s: string) => s
+): { [key: string]: string } =>
   Object.keys(object).reduce(
     (a, o) => ({
       ...a,
-      [o]: `${object[o]}`,
+      [o]: callback(`${object[o]}`),
     }),
     {}
   )
