@@ -203,7 +203,7 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
                   )}
                   {results.map((batch, index) => (
                     <tr key={batch.batchName}>
-                      <td>
+                      <td style={{ textAlign: 'center' }}>
                         <Button
                           icon="edit"
                           onClick={() =>
@@ -329,12 +329,10 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
                       >
                         {!addingBatch ? (
                           <Button
-                            onClick={async () => {
-                              await submit(
-                                { ...values, editingBatch: null },
-                                props
-                              )
-                            }}
+                            onClick={() =>
+                              // Use null to signify that we want to delete this batch
+                              submit({ ...values, editingBatch: null }, props)
+                            }
                             intent="danger"
                             style={{ marginLeft: 0 }}
                             tabIndex={-1}
