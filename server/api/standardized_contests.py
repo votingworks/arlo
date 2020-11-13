@@ -1,4 +1,5 @@
 import uuid
+import re
 from datetime import datetime
 from flask import request, jsonify, Request
 from sqlalchemy.orm.session import Session
@@ -56,9 +57,14 @@ def process_standardized_contests_file(
                         f"Invalid jurisdictions for contest {row[CONTEST_NAME]}: {', '.join(sorted(invalid_jurisdictions))}"
                     )
 
+            contest_name = " ".join(row[CONTEST_NAME].splitlines())
+            # Strip off Dominion's vote-for designation"
+            if "Vote For=" in contest_name:
+                contest_name = re.match(r"^(.+) \(Vote For=(\d+)\)$", contest_name)[1]
+
             standardized_contests.append(
                 dict(
-                    name=(" ".join(row[CONTEST_NAME].splitlines())),
+                    name=contest_name,
                     jurisdictionIds=[jurisdiction.id for jurisdiction in jurisdictions],
                 )
             )
