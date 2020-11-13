@@ -56,12 +56,9 @@ def process_standardized_contests_file(
                         f"Invalid jurisdictions for contest {row[CONTEST_NAME]}: {', '.join(sorted(invalid_jurisdictions))}"
                     )
 
-            contest = row[CONTEST_NAME].replace("\r", "").replace("\n", " ")
-            print(contest)
-
             standardized_contests.append(
                 dict(
-                    name=contest,
+                    name=(" ".join(row[CONTEST_NAME].splitlines())),
                     jurisdictionIds=[jurisdiction.id for jurisdiction in jurisdictions],
                 )
             )
