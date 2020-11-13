@@ -68,7 +68,9 @@ def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
 
         # Parse out all the initial metadata
         _election_name = next(cvrs)[0]
-        contest_row = next(cvrs)
+        contest_row = [
+            contest.replace("\r", "").replace("\n", "  ") for contest in next(cvrs)
+        ]
         first_contest_column = next(
             c for c, value in enumerate(contest_row) if value != ""
         )
