@@ -210,7 +210,9 @@ def run_audit_round(
     db_session.commit()
 
 
-DATETIME_REGEX = re.compile(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}.\d{6})?")
+DATETIME_REGEX = re.compile(
+    r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}.\d{6})?(\+\d\d:\d\d)?"
+)
 
 
 def scrub_datetime(string: str) -> str:
