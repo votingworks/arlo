@@ -1,4 +1,4 @@
-import { groupBy, sortBy, hashBy } from './array'
+import { groupBy, sortBy, hashBy, replaceAtIndex } from './array'
 
 test('groupBy', () => {
   expect(groupBy([], () => '')).toEqual({})
@@ -32,4 +32,17 @@ test('hashBy', () => {
   expect(hashBy([{ a: 'b' }, { a: 'c' }, { a: 'a' }], x => x.a)).toEqual(
     'b;c;a'
   )
+})
+
+test('replaceAtIndex', () => {
+  expect(replaceAtIndex([], 0, 'a')).toEqual(['a'])
+  expect(replaceAtIndex(['a'], 0, 'b')).toEqual(['b'])
+  expect(replaceAtIndex(['a'], 1, 'b')).toEqual(['a', 'b'])
+  expect(replaceAtIndex(['a', 'b'], 0, 'c')).toEqual(['c', 'b'])
+  expect(replaceAtIndex(['a', 'b'], 1, 'c')).toEqual(['a', 'c'])
+  expect(replaceAtIndex(['a', 'b'], 2, 'c')).toEqual(['a', 'b', 'c'])
+  expect(replaceAtIndex(['a', 'b', 'c'], 0, 'd')).toEqual(['d', 'b', 'c'])
+  expect(replaceAtIndex(['a', 'b', 'c'], 1, 'd')).toEqual(['a', 'd', 'c'])
+  expect(replaceAtIndex(['a', 'b', 'c'], 2, 'd')).toEqual(['a', 'b', 'd'])
+  expect(replaceAtIndex(['a', 'b', 'c'], 3, 'd')).toEqual(['a', 'b', 'c', 'd'])
 })
