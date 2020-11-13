@@ -282,7 +282,7 @@ def test_standardized_contests_newlines(
             "standardized-contests": (
                 io.BytesIO(
                     b"Contest Name,Jurisdictions\n"
-                    b"Contest\r\n1,all\n"
+                    b'"Contest\r\n1",all\n'
                     b'Contest 2,"J1, J3"\n'
                     b"Contest 3,J2\n"
                 ),
