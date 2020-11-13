@@ -337,3 +337,69 @@ def test_standardized_contests_newlines(
         },
         {"name": "Contest 3", "jurisdictionIds": [jurisdiction_ids[1]]},
     ]
+
+
+def test_standardized_contests_dominion_vote_for(
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+):
+    rv = client.put(
+        f"/api/election/{election_id}/standardized-contests/file",
+        data={
+            "standardized-contests": (
+                io.BytesIO(
+                    b"Contest Name,Jurisdictions\n"
+                    b'"Contest\r\n1 (Vote For=2)",all\n'
+                    b'Contest 2,"J1, J3"\n'
+                    b"Contest 3,J2\n"
+                ),
+                "standardized-contests.csv",
+            )
+        },
+    )
+    assert_ok(rv)
+
+    rv = client.get(f"/api/election/{election_id}/standardized-contests/file")
+    compare_json(
+        json.loads(rv.data),
+        {
+            "file": {
+                "name": "standardized-contests.csv",
+                "uploadedAt": assert_is_date,
+            },
+            "processing": {
+                "status": ProcessingStatus.READY_TO_PROCESS,
+                "startedAt": None,
+                "completedAt": None,
+                "error": None,
+            },
+        },
+    )
+
+    bgcompute_update_standardized_contests_file()
+
+    rv = client.get(f"/api/election/{election_id}/standardized-contests/file")
+    compare_json(
+        json.loads(rv.data),
+        {
+            "file": {
+                "name": "standardized-contests.csv",
+                "uploadedAt": assert_is_date,
+            },
+            "processing": {
+                "status": ProcessingStatus.PROCESSED,
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": None,
+            },
+        },
+    )
+
+    rv = client.get(f"/api/election/{election_id}/standardized-contests")
+    assert json.loads(rv.data) == [
+        {"name": "Contest 1", "jurisdictionIds": jurisdiction_ids},
+        {
+            "name": "Contest 2",
+            "jurisdictionIds": [jurisdiction_ids[0], jurisdiction_ids[2]],
+        },
+        {"name": "Contest 3", "jurisdictionIds": [jurisdiction_ids[1]]},
+    ]
