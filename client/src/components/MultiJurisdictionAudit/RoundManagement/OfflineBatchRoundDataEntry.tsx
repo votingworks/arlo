@@ -22,10 +22,12 @@ import styled from 'styled-components'
 import useContestsJurisdictionAdmin from './useContestsJurisdictionAdmin'
 import { IRound } from '../useRoundsAuditAdmin'
 import useOfflineBatchResults, {
-  IOfflineBatchResult,
+  IOfflineBatchResultApi,
+  IOfflineBatchResultForm,
 } from './useOfflineBatchResults'
 import { testNumber } from '../../utilities'
 import { replaceAtIndex } from '../../../utils/array'
+import { numberifyObject, stringifyObject } from '../../../utils/objects'
 
 const OfflineBatchResultsForm = styled.form`
   table {
@@ -113,7 +115,7 @@ interface IProps {
 }
 
 // In order to add/remove rows and let users edit the batch name, we need to generate our own unique keys for each row
-interface IResultRow extends IOfflineBatchResult {
+interface IResultRow extends IOfflineBatchResultForm {
   rowKey: string
 }
 
@@ -137,14 +139,14 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
 
   const { results, finalizedAt } = batchResults
 
-  const emptyBatch = (): IOfflineBatchResult => ({
+  const emptyBatch = (): IOfflineBatchResultForm => ({
     batchName: '',
     batchType: '',
     choiceResults: {},
   })
 
   interface FormValues {
-    editingBatch: IOfflineBatchResult | null
+    editingBatch: IOfflineBatchResultForm | null
     editingBatchIndex: number | null
   }
 
@@ -152,10 +154,13 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
     { editingBatch, editingBatchIndex }: FormValues,
     actions: FormikHelpers<FormValues>
   ) => {
-    const newResults = replaceAtIndex(
+    const newResults: IOfflineBatchResultApi[] = replaceAtIndex(
       results,
       editingBatchIndex!,
-      editingBatch!
+      {
+        ...editingBatch!,
+        choiceResults: numberifyObject(editingBatch!.choiceResults),
+      }
     ).filter(b => b) // Filter out null (used to delete a batch)
     if (await updateResults(newResults)) actions.resetForm()
     actions.setSubmitting(false)
@@ -228,7 +233,12 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
                           icon="edit"
                           onClick={() =>
                             setValues({
-                              editingBatch: batch,
+                              editingBatch: {
+                                ...batch,
+                                choiceResults: stringifyObject(
+                                  batch.choiceResults
+                                ),
+                              },
                               editingBatchIndex: index,
                             })
                           }

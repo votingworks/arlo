@@ -11,13 +11,25 @@ export interface IOfflineBatchResult {
     | 'Other'
     | ''
   choiceResults: {
+    [choiceId: string]: number | string
+  }
+}
+
+export interface IOfflineBatchResultApi extends IOfflineBatchResult {
+  choiceResults: {
     [choiceId: string]: number
+  }
+}
+
+export interface IOfflineBatchResultForm extends IOfflineBatchResult {
+  choiceResults: {
+    [choiceId: string]: string
   }
 }
 
 export interface IOfflineBatchResults {
   finalizedAt: string
-  results: IOfflineBatchResult[]
+  results: IOfflineBatchResultApi[]
 }
 
 const getResults = async (
