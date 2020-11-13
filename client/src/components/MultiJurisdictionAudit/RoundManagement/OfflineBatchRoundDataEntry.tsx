@@ -30,7 +30,7 @@ import { replaceAtIndex } from '../../../utils/array'
 const OfflineBatchResultsForm = styled.form`
   table {
     position: relative;
-    border: 1px solid ${Colors.LIGHT_GRAY3};
+    border: 1px solid ${Colors.LIGHT_GRAY1};
     width: 100%;
     table-layout: fixed;
     border-collapse: separate;
@@ -39,8 +39,8 @@ const OfflineBatchResultsForm = styled.form`
       position: sticky;
       top: 0;
       z-index: 1;
-      border-bottom: 1px solid ${Colors.GRAY3};
-      background: #ffffff;
+      border-bottom: 1px solid ${Colors.GRAY2};
+      background: ${Colors.WHITE};
     }
 
     th,
