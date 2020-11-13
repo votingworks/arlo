@@ -6,18 +6,18 @@ test('isObjectEmpty', () => {
 })
 
 test('numberifyObject', () => {
-  expect(numberifyObject({})).toDeepEqual({})
-  expect(numberifyObject({ a: '1' })).toDeepEqual({ a: 1 })
-  expect(numberifyObject({ a: '1', b: '2' })).toDeepEqual({ a: 1, b: 2 })
-  expect(numberifyObject({ a: '1,000' })).toDeepEqual({ a: 1000 })
+  expect(numberifyObject({})).toEqual({})
+  expect(numberifyObject({ a: '1' })).toEqual({ a: 1 })
+  expect(numberifyObject({ a: '1', b: '2' })).toEqual({ a: 1, b: 2 })
+  expect(numberifyObject({ a: '1,000' })).toEqual({ a: 1000 })
 })
 
 test('stringifyObject', () => {
-  expect(stringifyObject({})).toDeepEqual({})
-  expect(stringifyObject({ a: 1 })).toDeepEqual({ a: '1' })
-  expect(stringifyObject({ a: 1, b: 2 })).toDeepEqual({ a: '1', b: '2' })
-  expect(stringifyObject({ a: 1000 })).toDeepEqual({ a: '1000' })
-  expect(
-    stringifyObject({ a: 1 }, (s: string): string => s.repeat(2))
-  ).toDeepEqual({ a: '11' })
+  expect(stringifyObject({})).toEqual({})
+  expect(stringifyObject({ a: 1 })).toEqual({ a: '1' })
+  expect(stringifyObject({ a: 1, b: 2 })).toEqual({ a: '1', b: '2' })
+  expect(stringifyObject({ a: 1000 })).toEqual({ a: '1000' })
+  expect(stringifyObject({ a: 1 }, (s: string): string => s.repeat(2))).toEqual(
+    { a: '11' }
+  )
 })
