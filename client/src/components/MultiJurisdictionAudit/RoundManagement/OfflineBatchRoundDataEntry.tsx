@@ -15,7 +15,6 @@ import {
   Classes,
   Callout,
   Colors,
-  Label,
   FormGroup,
   H4,
 } from '@blueprintjs/core'
@@ -161,7 +160,7 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
           values,
           setValues,
           isSubmitting,
-          dirty,
+          errors,
           handleReset,
         } = props
         return (
@@ -247,7 +246,7 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
                 >
                   Add batch
                 </Button>
-                <Button onClick={() => setIsConfirmOpen(true)} disabled={dirty}>
+                <Button onClick={() => setIsConfirmOpen(true)}>
                   Finalize Results
                 </Button>
               </div>
@@ -314,6 +313,12 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
                     </div>
                   </div>
                   <div className={Classes.DIALOG_FOOTER}>
+                    {errors && errors.editingBatch && (
+                      <p style={{ color: Colors.RED2, textAlign: 'center' }}>
+                        Please fill in the empty fields above before saving this
+                        batch.
+                      </p>
+                    )}
                     <div className={Classes.DIALOG_FOOTER_ACTIONS}>
                       <div
                         style={{
