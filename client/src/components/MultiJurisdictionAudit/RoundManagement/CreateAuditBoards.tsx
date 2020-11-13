@@ -61,7 +61,7 @@ const CreateAuditBoards = ({ createAuditBoards }: IProps) => {
                 }
                 disabled={submitting}
               >
-                {generateOptions(15)}
+                {generateOptions(200)}
               </AuditBoardsInput>
             </FormSection>
             <FormButton
