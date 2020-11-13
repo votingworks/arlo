@@ -1,6 +1,6 @@
 import enum
 from typing import List
-from datetime import datetime
+from datetime import datetime, timezone
 from collections import defaultdict
 from flask import jsonify, request
 from werkzeug.exceptions import BadRequest, Conflict
@@ -27,7 +27,7 @@ OFFLINE_BATCH_RESULTS_SCHEMA = {
     "items": {
         "type": "object",
         "properties": {
-            "batchName": {"type": "string", "minLength": 1},
+            "batchName": {"type": "string", "minLength": 1, "maxLength": 200},
             "batchType": {
                 "type": "string",
                 "enum": [batch_type.value for batch_type in BatchType],
@@ -195,7 +195,7 @@ def finalize_offline_batch_results(
     jurisdiction: Jurisdiction,
     round: Round,
 ):
-    jurisdiction.finalized_offline_batch_results_at = datetime.utcnow()
+    jurisdiction.finalized_offline_batch_results_at = datetime.now(timezone.utc)
 
     sum_results_by_choice = (
         OfflineBatchResult.query.filter_by(jurisdiction_id=jurisdiction.id)

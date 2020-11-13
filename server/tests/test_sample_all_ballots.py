@@ -421,6 +421,19 @@ def test_offline_batch_results_validation(
         (
             [
                 {
+                    "batchName": "a" * 201,
+                    "batchType": "Provisional",
+                    "choiceResults": {
+                        choice["id"]: choice["numVotes"] / 4
+                        for choice in contest["choices"]
+                    },
+                }
+            ],
+            f"'{'a' * 201}' is too long",
+        ),
+        (
+            [
+                {
                     "batchName": None,
                     "batchType": "Provisional",
                     "choiceResults": {

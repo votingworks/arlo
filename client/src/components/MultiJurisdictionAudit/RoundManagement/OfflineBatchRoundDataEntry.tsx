@@ -46,6 +46,7 @@ const OfflineBatchResultsForm = styled.form`
     th,
     td {
       vertical-align: middle;
+      word-wrap: break-word;
     }
   }
 `
@@ -394,6 +395,7 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
                       await finalizeResults()
                       setIsConfirmOpen(false)
                     }}
+                    disabled={results.length === 0}
                   >
                     Finalize Results
                   </Button>
