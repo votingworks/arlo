@@ -344,7 +344,7 @@ def calculate_risk_measurements(election: Election, round: Round):
 def end_round(election: Election, round: Round):
     count_audited_votes(election, round)
     calculate_risk_measurements(election, round)
-    round.ended_at = datetime.utcnow()
+    round.ended_at = datetime.now(timezone.utc)
 
 
 def is_round_complete(election: Election, round: Round) -> bool:

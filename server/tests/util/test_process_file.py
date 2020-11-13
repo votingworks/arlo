@@ -13,7 +13,7 @@ def test_success():
         id=str(uuid.uuid4()),
         name="Test File",
         contents="abcdefg",
-        uploaded_at=datetime.datetime.utcnow(),
+        uploaded_at=datetime.datetime.now(timezone.utc),
     )
     db_session.add(file)
     db_session.commit()
@@ -37,7 +37,7 @@ def test_error():
         id=str(uuid.uuid4()),
         name="Test File",
         contents="abcdefg",
-        uploaded_at=datetime.datetime.utcnow(),
+        uploaded_at=datetime.datetime.now(timezone.utc),
     )
     db_session.add(file)
     db_session.commit()
@@ -64,7 +64,7 @@ def test_session_stuck():
         id=str(uuid.uuid4()),
         name="Test File",
         contents="abcdefg",
-        uploaded_at=datetime.datetime.utcnow(),
+        uploaded_at=datetime.datetime.now(timezone.utc),
     )
     db_session.add(file)
     db_session.commit()
@@ -79,7 +79,7 @@ def test_session_stuck():
                 id=file.id,
                 name="Test File2",
                 contents="abcdefg",
-                uploaded_at=datetime.datetime.utcnow(),
+                uploaded_at=datetime.datetime.now(timezone.utc),
             )
         )
 

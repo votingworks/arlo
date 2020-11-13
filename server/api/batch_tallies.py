@@ -134,7 +134,7 @@ def upload_batch_tallies(
         id=str(uuid.uuid4()),
         name=batch_tallies.filename,
         contents=decode_csv_file(batch_tallies.read()),
-        uploaded_at=datetime.utcnow(),
+        uploaded_at=datetime.now(timezone.utc),
     )
     db_session.commit()
     return jsonify(status="ok")

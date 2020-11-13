@@ -318,7 +318,7 @@ def sign_off_audit_board(
 ):
     validate_sign_off(request.get_json(), audit_board)
 
-    audit_board.signed_off_at = datetime.utcnow()
+    audit_board.signed_off_at = datetime.now(timezone.utc)
 
     if is_round_complete(election, round):
         end_round(election, round)

@@ -133,7 +133,7 @@ def create_election(
         client,
         "/api/election",
         {
-            "auditName": audit_name or f"Test Audit {datetime.utcnow()}",
+            "auditName": audit_name or f"Test Audit {datetime.now(timezone.utc)}",
             "auditType": audit_type,
             "auditMathType": audit_math_type,
             "organizationId": organization_id,

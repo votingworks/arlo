@@ -393,7 +393,7 @@ def update_jurisdictions_file(election: Election):
         id=str(uuid.uuid4()),
         name=jurisdictions_file.filename,
         contents=jurisdictions_file_string,
-        uploaded_at=datetime.datetime.utcnow(),
+        uploaded_at=datetime.datetime.now(timezone.utc),
     )
 
     jurisdictions_csv = csv.DictReader(

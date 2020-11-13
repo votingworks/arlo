@@ -234,7 +234,7 @@ def save_cvr_file(cvr, jurisdiction: Jurisdiction):
         id=str(uuid.uuid4()),
         name=cvr.filename,
         contents=cvr_string,
-        uploaded_at=datetime.utcnow(),
+        uploaded_at=datetime.now(timezone.utc),
     )
 
 

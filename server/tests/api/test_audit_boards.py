@@ -133,7 +133,7 @@ def test_audit_boards_list_one(
     audit_board = AuditBoard.query.get(audit_boards[0]["id"])
     for ballot in audit_board.sampled_ballots[10:]:
         audit_ballot(ballot, contest_ids[0], Interpretation.BLANK)
-    audit_board.signed_off_at = datetime.utcnow()
+    audit_board.signed_off_at = datetime.now(timezone.utc)
     db_session.commit()
 
     rv = client.get(
@@ -248,7 +248,7 @@ def test_audit_boards_list_two(
     audit_board_1 = AuditBoard.query.get(audit_boards[0]["id"])
     for ballot in audit_board_1.sampled_ballots[10:]:
         audit_ballot(ballot, contest_ids[0], Interpretation.BLANK)
-    audit_board_1.signed_off_at = datetime.utcnow()
+    audit_board_1.signed_off_at = datetime.now(timezone.utc)
     db_session.commit()
 
     rv = client.get(

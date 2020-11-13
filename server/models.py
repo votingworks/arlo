@@ -1,6 +1,6 @@
 import enum
 from typing import Type, TypeVar, cast as typing_cast
-from datetime import datetime as dt
+from datetime import datetime as dt, timezone
 from werkzeug.exceptions import NotFound
 from sqlalchemy import *  # pylint: disable=wildcard-import
 from sqlalchemy.orm import relationship, backref, validates, deferred as sa_deferred
@@ -15,8 +15,13 @@ def deferred(col: C) -> C:
 
 class BaseModel(Base):
     __abstract__ = True
-    created_at = Column(DateTime, default=dt.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=dt.utcnow, onupdate=dt.utcnow, nullable=False)
+    created_at = Column(DateTime, default=lambda: dt.now(timezone.utc), nullable=False)
+    updated_at = Column(
+        DateTime,
+        default=lambda: dt.now(timezone.utc),
+        onupdate=lambda: dt.now(timezone.utc),
+        nullable=False,
+    )
 
 
 # on-delete-cascade is done in SQLAlchemy like this:
