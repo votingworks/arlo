@@ -724,3 +724,140 @@ def test_offline_batch_results_old_endpoint(
             }
         ]
     }
+
+
+def test_offline_batch_results_unfinalize(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    round_1_id: str,
+):
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
+        [{"name": "Audit Board #1"}, {"name": "Audit Board #2"}],
+    )
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/contest"
+    )
+    contest = json.loads(rv.data)["contests"][0]
+
+    # JA uploads results
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch/",
+        {
+            "batchName": "Batch 1",
+            "batchType": "Provisional",
+            "choiceResults": {
+                choice["id"]: choice["numVotes"] / 4 for choice in contest["choices"]
+            },
+        },
+    )
+    assert_ok(rv)
+
+    # AA tries to unfinalize the results before they have been finalized
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.delete(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch/finalize"
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {"errorType": "Conflict", "message": "Results have not been finalized"}
+        ]
+    }
+
+    # JA uploads results
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch/finalize",
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch"
+    )
+    assert_is_date(json.loads(rv.data)["finalizedAt"])
+
+    # AA unfinalizes the results
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.delete(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch/finalize"
+    )
+    assert_ok(rv)
+
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch"
+    )
+    assert json.loads(rv.data)["finalizedAt"] is None
+
+    # JA updates the results
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch/",
+        {
+            "batchName": "Batch 2",
+            "batchType": "Election Day",
+            "choiceResults": {
+                choice["id"]: choice["numVotes"] / 4 for choice in contest["choices"]
+            },
+        },
+    )
+    assert_ok(rv)
+
+    # JA refinalizes the results
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch/finalize",
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch"
+    )
+    assert_is_date(json.loads(rv.data)["finalizedAt"])
+
+    # Other jurisdiction enters results and finalizes to end the round
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/audit-board",
+        [{"name": "Audit Board #1"}, {"name": "Audit Board #2"}],
+    )
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/results/batch/",
+        {
+            "batchName": "Batch 1",
+            "batchType": "Election Day",
+            "choiceResults": {
+                choice["id"]: choice["numVotes"] / 4 for choice in contest["choices"]
+            },
+        },
+    )
+    assert_ok(rv)
+
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/results/batch/finalize",
+    )
+    assert_ok(rv)
+
+    # AA tries to unfinalize results but can't
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.delete(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch/finalize"
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Results cannot be unfinalized after the audit round ends",
+            }
+        ]
+    }
