@@ -25,7 +25,6 @@ import useOfflineBatchResults, {
   IOfflineBatchResult,
 } from './useOfflineBatchResults'
 import { testNumber } from '../../utilities'
-import { replaceAtIndex } from '../../../utils/array'
 
 const OfflineBatchResultsForm = styled.form`
   table {
@@ -93,22 +92,19 @@ interface IProps {
   round: IRound
 }
 
-// In order to add/remove rows and let users edit the batch name, we need to generate our own unique keys for each row
-interface IResultRow extends IOfflineBatchResult {
-  rowKey: string
-}
-
 const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
   const { electionId, jurisdictionId } = useParams<{
     electionId: string
     jurisdictionId: string
   }>()
   const contests = useContestsJurisdictionAdmin(electionId, jurisdictionId)
-  const [batchResults, updateResults, finalizeResults] = useOfflineBatchResults(
-    electionId,
-    jurisdictionId,
-    round.id
-  )
+  const [
+    batchResults,
+    addResult,
+    updateResult,
+    removeResult,
+    finalizeResults,
+  ] = useOfflineBatchResults(electionId, jurisdictionId, round.id)
   const [isConfirmOpen, setIsConfirmOpen] = useState(false)
 
   if (!contests || !batchResults) return null
@@ -133,12 +129,21 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
     { editingBatch, editingBatchIndex }: FormValues,
     actions: FormikHelpers<FormValues>
   ) => {
-    const newResults = replaceAtIndex(
-      results,
-      editingBatchIndex!,
-      editingBatch!
-    ).filter(b => b) // Filter out null (used to delete a batch)
-    if (await updateResults(newResults)) actions.resetForm()
+    let success = false
+    if (editingBatchIndex === results.length) {
+      success = await addResult(editingBatch!)
+    } else if (editingBatch === null) {
+      success = await removeResult(results[editingBatchIndex!].batchName)
+    } else {
+      success = await updateResult(
+        results[editingBatchIndex!].batchName,
+        editingBatch
+      )
+    }
+    if (success) {
+      actions.setFieldValue('editingBatchIndex', null)
+      actions.resetForm()
+    }
     actions.setSubmitting(false)
   }
 
@@ -262,6 +267,7 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
                   title={addingBatch ? 'Add Batch' : 'Edit Batch'}
                   isOpen={values.editingBatchIndex !== null}
                   style={{ width: 'none' }}
+                  transitionDuration={0}
                 >
                   <div
                     className={Classes.DIALOG_BODY}

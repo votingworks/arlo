@@ -6,7 +6,7 @@ from flask import jsonify, request
 from werkzeug.exceptions import BadRequest, Conflict
 
 from . import api
-from ..auth import restrict_access, UserType, get_loggedin_user
+from ..auth import restrict_access, UserType
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
 from .rounds import is_round_complete, end_round, get_current_round, sampled_all_ballots
@@ -22,42 +22,37 @@ class BatchType(str, enum.Enum):
     OTHER = "Other"
 
 
-OFFLINE_BATCH_RESULTS_SCHEMA = {
-    "type": "array",
-    "items": {
-        "type": "object",
-        "properties": {
-            "batchName": {"type": "string", "minLength": 1, "maxLength": 200},
-            "batchType": {
-                "type": "string",
-                "enum": [batch_type.value for batch_type in BatchType],
-            },
-            "choiceResults": {
-                "type": "object",
-                "patternProperties": {
-                    "^.*$": {
-                        "type": "integer",
-                        "minimum": 0,
-                        "maximum": 1000 * 1000 * 1000,
-                    },
+OFFLINE_BATCH_RESULT_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "batchName": {"type": "string", "minLength": 1, "maxLength": 200},
+        "batchType": {
+            "type": "string",
+            "enum": [batch_type.value for batch_type in BatchType],
+        },
+        "choiceResults": {
+            "type": "object",
+            "patternProperties": {
+                "^.*$": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000 * 1000 * 1000,
                 },
             },
         },
-        "required": ["batchName", "batchType", "choiceResults"],
-        "additionalProperties": False,
     },
+    "required": ["batchName", "batchType", "choiceResults"],
+    "additionalProperties": False,
 }
 
 
-def validate_offline_batch_results(
-    election: Election,
-    jurisdiction: Jurisdiction,
-    round: Round,
-    offline_batch_results: List[JSONDict],
+def validate_offline_batch_result_request(
+    election: Election, jurisdiction: Jurisdiction, round: Round,
 ):
     if len(list(election.contests)) > 1:
         raise Conflict("Offline batch results only supported for single contest audits")
 
+    # We only support one contest for now
     contest = list(election.contests)[0]
 
     if not any(c.id == contest.id for c in jurisdiction.contests):
@@ -81,19 +76,23 @@ def validate_offline_batch_results(
     if num_audit_boards == 0:
         raise Conflict("Must set up audit boards before recording results")
 
-    validate(offline_batch_results, OFFLINE_BATCH_RESULTS_SCHEMA)
 
+def validate_offline_batch_result(
+    election: Election,
+    jurisdiction: Jurisdiction,
+    round: Round,
+    batch_result: JSONDict,
+):
+    validate_offline_batch_result_request(election, jurisdiction, round)
+
+    validate(batch_result, OFFLINE_BATCH_RESULT_SCHEMA)
+
+    # We only support one contest for now
+    contest = list(election.contests)[0]
     contest_choice_ids = {choice.id for choice in contest.choices}
 
-    batch_names = [result["batchName"] for result in offline_batch_results]
-    if len(batch_names) != len(set(batch_names)):
-        raise BadRequest("Batch names must be unique")
-
-    for batch_results in offline_batch_results:
-        if set(batch_results["choiceResults"].keys()) != contest_choice_ids:
-            raise BadRequest(
-                f"Invalid choice ids for batch {batch_results['batchName']}"
-            )
+    if set(batch_result["choiceResults"].keys()) != contest_choice_ids:
+        raise BadRequest(f"Invalid choice ids for batch {batch_result['batchName']}")
 
 
 def load_offline_batch_results(jurisdiction: Jurisdiction) -> List[OfflineBatchResult]:
@@ -143,46 +142,9 @@ def record_offline_batch_results(
     jurisdiction: Jurisdiction,
     round: Round,
 ):
-    offline_batch_results = request.get_json()
-    validate_offline_batch_results(election, jurisdiction, round, offline_batch_results)
-
-    # We only support one contest for now
-    contest = list(election.contests)[0]
-
-    before = serialize_offline_batch_results(
-        load_offline_batch_results(jurisdiction), contest
+    raise Conflict(
+        "Arlo has been updated. Please refresh your browser for the latest version."
     )
-
-    OfflineBatchResult.query.filter_by(jurisdiction_id=jurisdiction.id).delete()
-    for batch_results in offline_batch_results:
-        for contest_choice_id, result in batch_results["choiceResults"].items():
-            db_session.add(
-                OfflineBatchResult(
-                    jurisdiction_id=jurisdiction.id,
-                    batch_name=batch_results["batchName"],
-                    batch_type=batch_results["batchType"],
-                    contest_choice_id=contest_choice_id,
-                    result=result,
-                )
-            )
-
-    after = serialize_offline_batch_results(
-        load_offline_batch_results(jurisdiction), contest
-    )
-
-    _, user_key = get_loggedin_user()
-    db_session.add(
-        OfflineBatchResultChangelog(
-            user_id=User.query.filter_by(email=user_key).one().id,
-            jurisdiction_id=jurisdiction.id,
-            before=before,
-            after=after,
-        )
-    )
-
-    db_session.commit()
-
-    return jsonify(status="ok")
 
 
 @api.route(
@@ -190,13 +152,18 @@ def record_offline_batch_results(
     methods=["POST"],
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
-def record_offline_batch_results_add(
+def add_offline_batch_result(
     election: Election,  # pylint: disable=unused-argument
     jurisdiction: Jurisdiction,
     round: Round,
 ):
     batch_result = request.get_json()
-    validate_offline_batch_results(election, jurisdiction, round, [batch_result])
+    validate_offline_batch_result(election, jurisdiction, round, batch_result)
+
+    if OfflineBatchResult.query.filter_by(
+        jurisdiction_id=jurisdiction.id, batch_name=batch_result["batchName"]
+    ).first():
+        raise Conflict("Batch names must be unique")
 
     for contest_choice_id, result in batch_result["choiceResults"].items():
         db_session.add(
@@ -219,14 +186,14 @@ def record_offline_batch_results_add(
     methods=["PUT"],
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
-def record_offline_batch_results_update(
+def update_offline_batch_result(
     election: Election,  # pylint: disable=unused-argument
     jurisdiction: Jurisdiction,
     round: Round,
     batch_name: str,
 ):
     batch_result = request.get_json()
-    validate_offline_batch_results(election, jurisdiction, round, [batch_result])
+    validate_offline_batch_result(election, jurisdiction, round, batch_result)
 
     for contest_choice_id, result in batch_result["choiceResults"].items():
         new_batch_result = OfflineBatchResult.query.filter_by(
@@ -234,9 +201,8 @@ def record_offline_batch_results_update(
             batch_name=batch_name,
             contest_choice_id=contest_choice_id,
         ).one_or_none()
-
-        if not new_batch_result:
-            raise Conflict("this batch has been deleted")
+        if new_batch_result is None:
+            raise Conflict("This batch has been deleted")
 
         new_batch_result.batch_name = batch_result["batchName"]
         new_batch_result.batch_type = batch_result["batchType"]
@@ -253,12 +219,14 @@ def record_offline_batch_results_update(
     methods=["DELETE"],
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
-def record_offline_batch_results_delete(
+def delete_offline_batch_result(
     election: Election,  # pylint: disable=unused-argument
     jurisdiction: Jurisdiction,
     round: Round,  # pylint: disable=unused-argument
     batch_name: str,
 ):
+    validate_offline_batch_result_request(election, jurisdiction, round)
+
     OfflineBatchResult.query.filter_by(
         jurisdiction_id=jurisdiction.id, batch_name=batch_name
     ).delete()

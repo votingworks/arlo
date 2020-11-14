@@ -30,20 +30,53 @@ const getResults = async (
   )
 }
 
-const putResults = async (
+const postResult = async (
   electionId: string,
   jurisdictionId: string,
   roundId: string,
-  newResults: IOfflineBatchResults['results']
+  newResult: IOfflineBatchResult
 ): Promise<boolean> => {
   return !!(await api(
-    `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/results/batch`,
+    `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/results/batch/`,
     {
-      method: 'PUT',
-      body: JSON.stringify(newResults),
+      method: 'POST',
+      body: JSON.stringify(newResult),
       headers: {
         'Content-Type': 'application/json',
       },
+    }
+  ))
+}
+
+const putResult = async (
+  electionId: string,
+  jurisdictionId: string,
+  roundId: string,
+  batchName: string,
+  newResult: IOfflineBatchResult
+): Promise<boolean> => {
+  return !!(await api(
+    `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/results/batch/${batchName}`,
+    {
+      method: 'PUT',
+      body: JSON.stringify(newResult),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  ))
+}
+
+const deleteResult = async (
+  electionId: string,
+  jurisdictionId: string,
+  roundId: string,
+  batchName: string
+): Promise<boolean> => {
+  return !!(await api(
+    `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/results/batch/${batchName}`,
+    {
+      method: 'DELETE',
     }
   ))
 }
@@ -67,19 +100,49 @@ const useOfflineBatchResults = (
   roundId: string
 ): [
   IOfflineBatchResults | null,
-  (newResults: IOfflineBatchResults['results']) => Promise<boolean>,
+  (newResult: IOfflineBatchResult) => Promise<boolean>,
+  (batchName: string, newResult: IOfflineBatchResult) => Promise<boolean>,
+  (batchName: string) => Promise<boolean>,
   () => Promise<boolean>
 ] => {
   const [results, setResults] = useState<IOfflineBatchResults | null>(null)
 
-  const updateResults = async (
-    newResults: IOfflineBatchResults['results']
+  const addResult = async (
+    newResult: IOfflineBatchResult
   ): Promise<boolean> => {
-    const success = await putResults(
+    const success = await postResult(
       electionId,
       jurisdictionId,
       roundId,
-      newResults
+      newResult
+    )
+    if (success)
+      setResults(await getResults(electionId, jurisdictionId, roundId))
+    return success
+  }
+
+  const updateResult = async (
+    batchName: string,
+    newResult: IOfflineBatchResult
+  ): Promise<boolean> => {
+    const success = await putResult(
+      electionId,
+      jurisdictionId,
+      roundId,
+      batchName,
+      newResult
+    )
+    if (success)
+      setResults(await getResults(electionId, jurisdictionId, roundId))
+    return success
+  }
+
+  const removeResult = async (batchName: string): Promise<boolean> => {
+    const success = await deleteResult(
+      electionId,
+      jurisdictionId,
+      roundId,
+      batchName
     )
     if (success)
       setResults(await getResults(electionId, jurisdictionId, roundId))
@@ -108,7 +171,8 @@ const useOfflineBatchResults = (
       if (loadedResults) setResults(loadedResults)
     })()
   }, [electionId, jurisdictionId, roundId])
-  return [results, updateResults, finalizeResults]
+
+  return [results, addResult, updateResult, removeResult, finalizeResults]
 }
 
 export default useOfflineBatchResults
