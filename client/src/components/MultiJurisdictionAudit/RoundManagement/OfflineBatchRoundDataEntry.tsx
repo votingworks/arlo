@@ -258,115 +258,116 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
             {(() => {
               const addingBatch = values.editingBatchIndex === results.length
               return (
-                <Dialog
-                  icon={addingBatch ? 'plus' : 'edit'}
-                  onClose={handleReset}
-                  title={
-                    addingBatch
-                      ? 'Add Batch'
-                      : `Edit Batch: ${values.editingBatch &&
-                          values.editingBatch.batchName}`
-                  }
-                  isOpen={values.editingBatchIndex !== null}
-                  style={{ width: 'none' }}
-                  transitionDuration={0}
-                >
-                  <div
-                    className={Classes.DIALOG_BODY}
-                    style={{ display: 'flex' }}
+                values.editingBatchIndex !== null && (
+                  <Dialog
+                    icon={addingBatch ? 'plus' : 'edit'}
+                    onClose={handleReset}
+                    title={
+                      addingBatch
+                        ? 'Add Batch'
+                        : `Edit Batch: ${results[values.editingBatchIndex!].batchName}`
+                    }
+                    isOpen={values.editingBatchIndex !== null}
+                    style={{ width: 'none' }}
+                    transitionDuration={0}
                   >
-                    <div style={{ flexGrow: 1 }}>
-                      <H4>Batch Info</H4>
-                      <FormGroup label="Batch Name">
-                        <Field
-                          type="text"
-                          name="editingBatch.batchName"
-                          component={InputWithValidation}
-                          validate={(value: string) =>
-                            !value ? 'Required' : null
-                          }
-                          autoFocus
-                        />
-                      </FormGroup>
-                      <FormGroup label="Batch Type">
-                        <Field
-                          name="editingBatch.batchType"
-                          component={SelectWithValidation}
-                          validate={(value: string) =>
-                            !value ? 'Required' : null
-                          }
-                        >
-                          <option></option>
-                          <option>Absentee By Mail</option>
-                          <option>Advance</option>
-                          <option>Election Day</option>
-                          <option>Provisional</option>
-                          <option>Other</option>
-                        </Field>
-                      </FormGroup>
-                    </div>
-                    <div style={{ marginLeft: '20px', flexGrow: 1 }}>
-                      <H4>Audited Votes</H4>
-                      {contest.choices.map(choice => (
-                        <div key={`editing-${choice.id}`}>
-                          <FormGroup label={choice.name}>
-                            <Field
-                              type="number"
-                              name={`editingBatch.choiceResults.${choice.id}`}
-                              component={InputWithValidation}
-                              validate={testNumber()}
-                            />
-                          </FormGroup>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  <div className={Classes.DIALOG_FOOTER}>
-                    {errors && errors.editingBatch && (
-                      <p style={{ color: Colors.RED2, textAlign: 'center' }}>
-                        Please fill in the empty fields above before saving this
-                        batch.
-                      </p>
-                    )}
-                    <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-                      <div
-                        style={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          flexGrow: 1,
-                        }}
-                      >
-                        {!addingBatch ? (
-                          <Button
-                            onClick={() =>
-                              // Use null to signify that we want to delete this batch
-                              submit({ ...values, editingBatch: null }, props)
+                    <div
+                      className={Classes.DIALOG_BODY}
+                      style={{ display: 'flex' }}
+                    >
+                      <div style={{ flexGrow: 1 }}>
+                        <H4>Batch Info</H4>
+                        <FormGroup label="Batch Name">
+                          <Field
+                            type="text"
+                            name="editingBatch.batchName"
+                            component={InputWithValidation}
+                            validate={(value: string) =>
+                              !value ? 'Required' : null
                             }
-                            intent="danger"
-                            style={{ marginLeft: 0 }}
-                            tabIndex={-1}
+                            autoFocus
+                          />
+                        </FormGroup>
+                        <FormGroup label="Batch Type">
+                          <Field
+                            name="editingBatch.batchType"
+                            component={SelectWithValidation}
+                            validate={(value: string) =>
+                              !value ? 'Required' : null
+                            }
                           >
-                            Remove Batch
-                          </Button>
-                        ) : (
-                          <div />
-                        )}
-                        <div>
-                          <Button onClick={handleReset} tabIndex={-1}>
-                            Cancel
-                          </Button>
-                          <Button
-                            intent="primary"
-                            loading={isSubmitting}
-                            onClick={handleSubmit as React.FormEventHandler}
-                          >
-                            Save Batch
-                          </Button>
+                            <option></option>
+                            <option>Absentee By Mail</option>
+                            <option>Advance</option>
+                            <option>Election Day</option>
+                            <option>Provisional</option>
+                            <option>Other</option>
+                          </Field>
+                        </FormGroup>
+                      </div>
+                      <div style={{ marginLeft: '20px', flexGrow: 1 }}>
+                        <H4>Audited Votes</H4>
+                        {contest.choices.map(choice => (
+                          <div key={`editing-${choice.id}`}>
+                            <FormGroup label={choice.name}>
+                              <Field
+                                type="number"
+                                name={`editingBatch.choiceResults.${choice.id}`}
+                                component={InputWithValidation}
+                                validate={testNumber()}
+                              />
+                            </FormGroup>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div className={Classes.DIALOG_FOOTER}>
+                      {errors && errors.editingBatch && (
+                        <p style={{ color: Colors.RED2, textAlign: 'center' }}>
+                          Please fill in the empty fields above before saving
+                          this batch.
+                        </p>
+                      )}
+                      <div className={Classes.DIALOG_FOOTER_ACTIONS}>
+                        <div
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            flexGrow: 1,
+                          }}
+                        >
+                          {!addingBatch ? (
+                            <Button
+                              onClick={() =>
+                                // Use null to signify that we want to delete this batch
+                                submit({ ...values, editingBatch: null }, props)
+                              }
+                              intent="danger"
+                              style={{ marginLeft: 0 }}
+                              tabIndex={-1}
+                            >
+                              Remove Batch
+                            </Button>
+                          ) : (
+                            <div />
+                          )}
+                          <div>
+                            <Button onClick={handleReset} tabIndex={-1}>
+                              Cancel
+                            </Button>
+                            <Button
+                              intent="primary"
+                              loading={isSubmitting}
+                              onClick={handleSubmit as React.FormEventHandler}
+                            >
+                              Save Batch
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </Dialog>
+                  </Dialog>
+                )
               )
             })()}
 
