@@ -195,6 +195,14 @@ def update_offline_batch_result(
     batch_result = request.get_json()
     validate_offline_batch_result(election, jurisdiction, round, batch_result)
 
+    if (
+        batch_name != batch_result["batchName"]
+        and OfflineBatchResult.query.filter_by(
+            jurisdiction_id=jurisdiction.id, batch_name=batch_result["batchName"]
+        ).first()
+    ):
+        raise Conflict("Batch names must be unique")
+
     for contest_choice_id, result in batch_result["choiceResults"].items():
         new_batch_result = OfflineBatchResult.query.filter_by(
             jurisdiction_id=jurisdiction.id,
