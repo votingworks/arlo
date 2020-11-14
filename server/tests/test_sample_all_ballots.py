@@ -770,7 +770,7 @@ def test_offline_batch_results_unfinalize(
         ]
     }
 
-    # JA uploads results
+    # JA finalizes results
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = post_json(
         client,

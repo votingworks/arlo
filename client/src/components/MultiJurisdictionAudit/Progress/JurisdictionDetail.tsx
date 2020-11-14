@@ -1,6 +1,15 @@
 import React from 'react'
-import { Classes, Dialog, H5, H6, Card, Colors } from '@blueprintjs/core'
+import {
+  Classes,
+  Dialog,
+  H5,
+  H6,
+  Card,
+  Colors,
+  Button,
+} from '@blueprintjs/core'
 import styled from 'styled-components'
+import { Formik, FormikProps } from 'formik'
 import {
   IJurisdiction,
   FileProcessingStatus,
@@ -13,6 +22,7 @@ import { IRound } from '../useRoundsAuditAdmin'
 import useAuditBoards from '../useAuditBoards'
 import useBallots from '../RoundManagement/useBallots'
 import StatusTag from '../../Atoms/StatusTag'
+import { api } from '../../utilities'
 
 const FileStatusTag = ({
   processing,
@@ -125,6 +135,17 @@ const JurisdictionDetail = ({
   </Dialog>
 )
 
+const unfinalizeResults = async (
+  electionId: string,
+  jurisdictionId: string,
+  roundId: string
+): Promise<boolean> => {
+  return !!(await api(
+    `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/results/batch/finalize`,
+    { method: 'DELETE' }
+  ))
+}
+
 const RoundStatusSection = ({
   electionId,
   jurisdiction,
@@ -146,7 +167,33 @@ const RoundStatusSection = ({
 
     if (round.sampledAllBallots) {
       if (jurisdictionStatus === JurisdictionRoundStatus.COMPLETE)
-        return <p>Data entry complete</p>
+        return (
+          <Formik
+            initialValues={{}}
+            onSubmit={async () => {
+              if (
+                await unfinalizeResults(electionId, jurisdiction.id, round.id)
+              )
+                // Hack: for now just reload the whole page here instead of
+                // properly refreshing the state from the server, since the
+                // state is way high up in the component hierarchy
+                window.location.reload()
+            }}
+          >
+            {({ handleSubmit, isSubmitting }: FormikProps<{}>) => (
+              <div>
+                <p>Data entry complete and results finalized.</p>
+                <Button
+                  intent="danger"
+                  onClick={handleSubmit as React.FormEventHandler}
+                  loading={isSubmitting}
+                >
+                  Unfinalize Results
+                </Button>
+              </div>
+            )}
+          </Formik>
+        )
       if (auditBoards.length === 0)
         return <p>Waiting for jurisdiction to set up audit boards</p>
       return (
