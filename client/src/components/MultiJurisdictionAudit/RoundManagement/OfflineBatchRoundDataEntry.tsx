@@ -261,7 +261,12 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
                 <Dialog
                   icon={addingBatch ? 'plus' : 'edit'}
                   onClose={handleReset}
-                  title={addingBatch ? 'Add Batch' : 'Edit Batch'}
+                  title={
+                    addingBatch
+                      ? 'Add Batch'
+                      : `Edit Batch: ${values.editingBatch &&
+                          values.editingBatch.batchName}`
+                  }
                   isOpen={values.editingBatchIndex !== null}
                   style={{ width: 'none' }}
                   transitionDuration={0}

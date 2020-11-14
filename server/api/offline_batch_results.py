@@ -87,11 +87,6 @@ def validate_offline_batch_result(
 
     validate(batch_result, OFFLINE_BATCH_RESULT_SCHEMA)
 
-    if OfflineBatchResult.query.filter_by(
-        jurisdiction_id=jurisdiction.id, batch_name=batch_result["batchName"]
-    ).first():
-        raise Conflict("Batch names must be unique")
-
     # We only support one contest for now
     contest = list(election.contests)[0]
     contest_choice_ids = {choice.id for choice in contest.choices}
@@ -165,6 +160,11 @@ def add_offline_batch_result(
     batch_result = request.get_json()
     validate_offline_batch_result(election, jurisdiction, round, batch_result)
 
+    if OfflineBatchResult.query.filter_by(
+        jurisdiction_id=jurisdiction.id, batch_name=batch_result["batchName"]
+    ).first():
+        raise Conflict("Batch names must be unique")
+
     for contest_choice_id, result in batch_result["choiceResults"].items():
         db_session.add(
             OfflineBatchResult(
@@ -194,6 +194,14 @@ def update_offline_batch_result(
 ):
     batch_result = request.get_json()
     validate_offline_batch_result(election, jurisdiction, round, batch_result)
+
+    if (
+        batch_name != batch_result["batchName"]
+        and OfflineBatchResult.query.filter_by(
+            jurisdiction_id=jurisdiction.id, batch_name=batch_result["batchName"]
+        ).first()
+    ):
+        raise Conflict("Batch names must be unique")
 
     for contest_choice_id, result in batch_result["choiceResults"].items():
         new_batch_result = OfflineBatchResult.query.filter_by(
