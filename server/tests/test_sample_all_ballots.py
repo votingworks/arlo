@@ -578,12 +578,42 @@ def test_offline_batch_results_validation(
         "errors": [{"errorType": "Conflict", "message": "Batch names must be unique"}]
     }
 
+    # No renaming to another batch's name
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch/",
+        {
+            "batchName": "Batch 2",
+            "batchType": "Provisional",
+            "choiceResults": {
+                choice["id"]: choice["numVotes"] / 4 for choice in contest["choices"]
+            },
+        },
+    )
+    assert_ok(rv)
+
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch/Batch 2",
+        {
+            "batchName": "Batch 1",
+            "batchType": "Provisional",
+            "choiceResults": {
+                choice["id"]: choice["numVotes"] / 4 for choice in contest["choices"]
+            },
+        },
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [{"errorType": "Conflict", "message": "Batch names must be unique"}]
+    }
+
     # Can't edit a batch that doesn't exist
     rv = put_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch/not a real batch",
         {
-            "batchName": "Batch 1",
+            "batchName": "Batch 3",
             "batchType": "Election Day",
             "choiceResults": {
                 choice["id"]: choice["numVotes"] / 4 for choice in contest["choices"]
