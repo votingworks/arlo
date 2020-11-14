@@ -26,6 +26,8 @@ import useOfflineBatchResults, {
 } from './useOfflineBatchResults'
 import { testNumber } from '../../utilities'
 
+const sum = (nums: number[]) => nums.reduce((a, b) => a + b, 0)
+
 const OfflineBatchResultsForm = styled.form`
   table {
     position: relative;
@@ -61,6 +63,8 @@ const Input = styled.input`
     -moz-appearance: textfield; /* stylelint-disable-line property-no-vendor-prefix */
   }
 `
+
+const totalStyle = { color: Colors.BLUE3, fontWeight: 600 }
 
 const InputWithValidation = ({ field, form, ...props }: FieldProps) => {
   const error = getIn(form.errors, field.name)
@@ -113,6 +117,9 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
   const contest = contests[0]
 
   const { results, finalizedAt } = batchResults
+
+  const total = (choiceId: string) =>
+    sum(results.map(batch => batch.choiceResults[choiceId]))
 
   const emptyBatch = (): IOfflineBatchResult => ({
     batchName: '',
@@ -194,6 +201,7 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
                     {contest.choices.map(choice => (
                       <th key={`th-${choice.id}`}>{choice.name}</th>
                     ))}
+                    <th style={totalStyle}>Total</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -226,8 +234,28 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
                           {batch.choiceResults[choice.id].toLocaleString()}
                         </td>
                       ))}
+                      <td style={totalStyle}>
+                        {sum(
+                          Object.values(batch.choiceResults)
+                        ).toLocaleString()}
+                      </td>
                     </tr>
                   ))}
+                  <tr>
+                    <td style={totalStyle} />
+                    <td style={totalStyle}>Total</td>
+                    <td style={totalStyle} />
+                    {contest.choices.map(choice => (
+                      <td style={totalStyle} key={`total-${choice.id}`}>
+                        {total(choice.id).toLocaleString()}
+                      </td>
+                    ))}
+                    <td style={totalStyle}>
+                      {sum(
+                        contest.choices.map(choice => total(choice.id))
+                      ).toLocaleString()}
+                    </td>
+                  </tr>
                 </tbody>
               </HTMLTable>
               <div
