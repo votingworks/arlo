@@ -186,6 +186,89 @@ def record_offline_batch_results(
 
 
 @api.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/results/batch/",
+    methods=["POST"],
+)
+@restrict_access([UserType.JURISDICTION_ADMIN])
+def record_offline_batch_results_add(
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
+    round: Round,
+):
+    batch_result = request.get_json()
+    validate_offline_batch_results(election, jurisdiction, round, [batch_result])
+
+    for contest_choice_id, result in batch_result["choiceResults"].items():
+        db_session.add(
+            OfflineBatchResult(
+                jurisdiction_id=jurisdiction.id,
+                batch_name=batch_result["batchName"],
+                batch_type=batch_result["batchType"],
+                contest_choice_id=contest_choice_id,
+                result=result,
+            )
+        )
+
+    db_session.commit()
+
+    return jsonify(status="ok")
+
+
+@api.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/results/batch/<batch_name>",
+    methods=["PUT"],
+)
+@restrict_access([UserType.JURISDICTION_ADMIN])
+def record_offline_batch_results_update(
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
+    round: Round,
+    batch_name: str,
+):
+    batch_result = request.get_json()
+    validate_offline_batch_results(election, jurisdiction, round, [batch_result])
+
+    for contest_choice_id, result in batch_result["choiceResults"].items():
+        new_batch_result = OfflineBatchResult.query.filter_by(
+            jurisdiction_id=jurisdiction.id,
+            batch_name=batch_name,
+            contest_choice_id=contest_choice_id,
+        ).one_or_none()
+
+        if not new_batch_result:
+            raise Conflict("this batch has been deleted")
+
+        new_batch_result.batch_name = batch_result["batchName"]
+        new_batch_result.batch_type = batch_result["batchType"]
+        new_batch_result.result = result
+        db_session.add(new_batch_result)
+
+    db_session.commit()
+
+    return jsonify(status="ok")
+
+
+@api.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/results/batch/<batch_name>",
+    methods=["DELETE"],
+)
+@restrict_access([UserType.JURISDICTION_ADMIN])
+def record_offline_batch_results_delete(
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
+    round: Round,  # pylint: disable=unused-argument
+    batch_name: str,
+):
+    OfflineBatchResult.query.filter_by(
+        jurisdiction_id=jurisdiction.id, batch_name=batch_name
+    ).delete()
+
+    db_session.commit()
+
+    return jsonify(status="ok")
+
+
+@api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/results/batch/finalize",
     methods=["POST"],
 )
