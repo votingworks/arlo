@@ -182,7 +182,7 @@ def add_offline_batch_result(
 
 
 @api.route(
-    "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/results/batch/<batch_name>",
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/results/batch/<path:batch_name>",
     methods=["PUT"],
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
@@ -214,8 +214,10 @@ def update_offline_batch_result(
     return jsonify(status="ok")
 
 
+# We use the `path:` converter for the batch_name parameter because it's
+# URI-encoded and we want to decode it with support for slashes
 @api.route(
-    "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/results/batch/<batch_name>",
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/results/batch/<path:batch_name>",
     methods=["DELETE"],
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])

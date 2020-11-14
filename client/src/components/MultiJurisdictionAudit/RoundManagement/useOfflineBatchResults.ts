@@ -56,7 +56,9 @@ const putResult = async (
   newResult: IOfflineBatchResult
 ): Promise<boolean> => {
   return !!(await api(
-    `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/results/batch/${batchName}`,
+    `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/results/batch/${encodeURIComponent(
+      batchName
+    )}`,
     {
       method: 'PUT',
       body: JSON.stringify(newResult),
@@ -74,7 +76,9 @@ const deleteResult = async (
   batchName: string
 ): Promise<boolean> => {
   return !!(await api(
-    `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/results/batch/${batchName}`,
+    `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/results/batch/${encodeURIComponent(
+      batchName
+    )}`,
     {
       method: 'DELETE',
     }

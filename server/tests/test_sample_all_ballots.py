@@ -158,7 +158,7 @@ def test_all_ballots_audit(
 
     # Record partial results
     jurisdiction_1_results = {
-        "batchName": "Batch Zero",
+        "batchName": "Batch/Zero",  # Make sure we support slashes in the URL
         "batchType": "Election Day",
         "choiceResults": {
             choice["id"]: int(choice["numVotes"] / 4) for choice in contest["choices"]
@@ -181,7 +181,7 @@ def test_all_ballots_audit(
         "results": [jurisdiction_1_results],
     }
 
-    # Update the batch (from Batch Zero to Batch One)
+    # Update the batch (from Batch/Zero to Batch One)
     jurisdiction_1_results = {
         "batchName": "Batch One",
         "batchType": "Provisional",
@@ -192,7 +192,7 @@ def test_all_ballots_audit(
 
     rv = put_json(
         client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/results/batch/{urllib.parse.quote('Batch Zero')}",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/results/batch/{urllib.parse.quote('Batch/Zero')}",
         jurisdiction_1_results,
     )
     assert_ok(rv)
@@ -240,7 +240,7 @@ def test_all_ballots_audit(
     }
 
     next_jurisdiction_1_results_c = {
-        "batchName": "Batch Bogus",
+        "batchName": "Batch/Bogus",  # Make sure we support slashes in the URL
         "batchType": "Election Day",
         "choiceResults": {
             choice["id"]: int(choice["numVotes"] / 2) for choice in contest["choices"]
@@ -287,7 +287,7 @@ def test_all_ballots_audit(
     # Delete a result
     updated_jurisdiction_1_results = updated_jurisdiction_1_results[:-1]
     rv = client.delete(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/results/batch/{urllib.parse.quote('Batch Bogus')}"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/results/batch/{urllib.parse.quote('Batch/Bogus')}"
     )
     assert_ok(rv)
     rv = client.get(
