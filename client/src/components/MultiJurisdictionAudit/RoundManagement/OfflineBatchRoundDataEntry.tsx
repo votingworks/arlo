@@ -140,10 +140,7 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
         editingBatch
       )
     }
-    if (success) {
-      actions.setFieldValue('editingBatchIndex', null)
-      actions.resetForm()
-    }
+    if (success) actions.resetForm()
     actions.setSubmitting(false)
   }
 
