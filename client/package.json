@@ -64,8 +64,8 @@
       "global": {
         "statements": 79,
         "branches": 70,
-        "functions": 78,
-        "lines": 81
+        "functions": 77,
+        "lines": 80
       }
     }
   },

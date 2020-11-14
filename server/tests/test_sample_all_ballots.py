@@ -1,6 +1,7 @@
 import io
 import uuid, json
-from typing import List
+from typing import List, Tuple
+import urllib.parse
 import pytest
 from flask.testing import FlaskClient
 
@@ -156,19 +157,17 @@ def test_all_ballots_audit(
     contest = json.loads(rv.data)["contests"][0]
 
     # Record partial results
-    jurisdiction_1_results = [
-        {
-            "batchName": "Batch One",
-            "batchType": "Provisional",
-            "choiceResults": {
-                choice["id"]: choice["numVotes"] / 4 for choice in contest["choices"]
-            },
-        }
-    ]
+    jurisdiction_1_results = {
+        "batchName": "Batch/Zero",  # Make sure we support slashes in the URL
+        "batchType": "Election Day",
+        "choiceResults": {
+            choice["id"]: int(choice["numVotes"] / 4) for choice in contest["choices"]
+        },
+    }
 
-    rv = put_json(
+    rv = post_json(
         client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/results/batch",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/results/batch/",
         jurisdiction_1_results,
     )
     assert_ok(rv)
@@ -179,21 +178,33 @@ def test_all_ballots_audit(
     assert rv.status_code == 200
     assert json.loads(rv.data) == {
         "finalizedAt": None,
-        "results": jurisdiction_1_results,
+        "results": [jurisdiction_1_results],
     }
 
-    # Check changelog
-    changelogs = list(
-        OfflineBatchResultChangelog.query.filter_by(
-            jurisdiction_id=jurisdiction_ids[0]
-        ).all()
+    # Update the batch (from Batch/Zero to Batch One)
+    jurisdiction_1_results = {
+        "batchName": "Batch One",
+        "batchType": "Provisional",
+        "choiceResults": {
+            choice["id"]: choice["numVotes"] / 8 for choice in contest["choices"]
+        },
+    }
+
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/results/batch/{urllib.parse.quote('Batch/Zero')}",
+        jurisdiction_1_results,
     )
-    assert len(changelogs) == 1
-    assert (
-        changelogs[0].user_id == User.query.filter_by(email=DEFAULT_JA_EMAIL).one().id
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/results/batch",
     )
-    assert changelogs[0].before == []
-    assert changelogs[0].after == jurisdiction_1_results
+    assert rv.status_code == 200
+    assert json.loads(rv.data) == {
+        "finalizedAt": None,
+        "results": [jurisdiction_1_results],
+    }
 
     # Check jurisdiction progress
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -202,47 +213,83 @@ def test_all_ballots_audit(
     jurisdiction_sample_size = int(selected_sample_sizes[contest_id] / 2)
     assert jurisdictions[0]["currentRoundStatus"] == {
         "numSamples": jurisdiction_sample_size,
-        "numSamplesAudited": int(jurisdiction_sample_size / 2),
+        "numSamplesAudited": int(jurisdiction_sample_size / 4),
         "numUnique": jurisdiction_sample_size,
-        "numUniqueAudited": int(jurisdiction_sample_size / 2),
+        "numUniqueAudited": int(jurisdiction_sample_size / 4),
         "numBatchesAudited": 1,
         "status": "IN_PROGRESS",
     }
 
-    # Record full results
+    # Add next results
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
 
+    next_jurisdiction_1_results_a = {
+        "batchName": "Batch Two",
+        "batchType": "Other",
+        "choiceResults": {
+            choice["id"]: int(choice["numVotes"] / 4) for choice in contest["choices"]
+        },
+    }
+
+    next_jurisdiction_1_results_b = {
+        "batchName": "Batch Three",
+        "batchType": "Election Day",
+        "choiceResults": {
+            choice["id"]: int(choice["numVotes"] / 8) for choice in contest["choices"]
+        },
+    }
+
+    next_jurisdiction_1_results_c = {
+        "batchName": "Batch/Bogus",  # Make sure we support slashes in the URL
+        "batchType": "Election Day",
+        "choiceResults": {
+            choice["id"]: int(choice["numVotes"] / 2) for choice in contest["choices"]
+        },
+    }
+
     updated_jurisdiction_1_results = [
-        {
-            "batchName": "Batch One",
-            "batchType": "Provisional",
-            "choiceResults": {
-                choice["id"]: choice["numVotes"] / 8 for choice in contest["choices"]
-            },
-        },
-        {
-            "batchName": "Batch Two",
-            "batchType": "Other",
-            "choiceResults": {
-                choice["id"]: choice["numVotes"] / 4 for choice in contest["choices"]
-            },
-        },
-        {
-            "batchName": "Batch Three",
-            "batchType": "Election Day",
-            "choiceResults": {
-                choice["id"]: choice["numVotes"] / 8 for choice in contest["choices"]
-            },
-        },
+        jurisdiction_1_results,
+        next_jurisdiction_1_results_a,
+        next_jurisdiction_1_results_b,
+        next_jurisdiction_1_results_c,
     ]
 
-    rv = put_json(
+    rv = post_json(
         client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/results/batch",
-        updated_jurisdiction_1_results,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/results/batch/",
+        next_jurisdiction_1_results_a,
     )
     assert_ok(rv)
 
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/results/batch/",
+        next_jurisdiction_1_results_b,
+    )
+    assert_ok(rv)
+
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/results/batch/",
+        next_jurisdiction_1_results_c,
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/results/batch",
+    )
+    assert rv.status_code == 200
+    assert json.loads(rv.data) == {
+        "finalizedAt": None,
+        "results": updated_jurisdiction_1_results,
+    }
+
+    # Delete a result
+    updated_jurisdiction_1_results = updated_jurisdiction_1_results[:-1]
+    rv = client.delete(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/results/batch/{urllib.parse.quote('Batch/Bogus')}"
+    )
+    assert_ok(rv)
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/results/batch",
     )
@@ -257,19 +304,6 @@ def test_all_ballots_audit(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/results/batch/finalize",
     )
     assert_ok(rv)
-
-    # Check changelog
-    changelogs = list(
-        OfflineBatchResultChangelog.query.filter_by(
-            jurisdiction_id=jurisdiction_ids[0]
-        ).all()
-    )
-    assert len(changelogs) == 2
-    assert (
-        changelogs[1].user_id == User.query.filter_by(email=DEFAULT_JA_EMAIL).one().id
-    )
-    assert changelogs[1].before == jurisdiction_1_results
-    assert changelogs[1].after == updated_jurisdiction_1_results
 
     # Finalize the results
     rv = client.get(
@@ -335,12 +369,13 @@ def test_all_ballots_audit(
         },
     ]
 
-    rv = put_json(
-        client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_id}/results/batch",
-        jurisdiction_2_results,
-    )
-    assert_ok(rv)
+    for result in jurisdiction_2_results:
+        rv = post_json(
+            client,
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_id}/results/batch/",
+            result,
+        )
+        assert_ok(rv)
 
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_id}/results/batch",
@@ -404,134 +439,97 @@ def test_offline_batch_results_validation(
     contest = json.loads(rv.data)["contests"][0]
 
     # Record invalid results
-    invalid_results = [
+    invalid_results: List[Tuple[dict, str]] = [
         (
-            [
-                {
-                    "batchName": "",
-                    "batchType": "Provisional",
-                    "choiceResults": {
-                        choice["id"]: choice["numVotes"] / 4
-                        for choice in contest["choices"]
-                    },
-                }
-            ],
+            {
+                "batchName": "",
+                "batchType": "Provisional",
+                "choiceResults": {
+                    choice["id"]: choice["numVotes"] / 4
+                    for choice in contest["choices"]
+                },
+            },
             "'' is too short",
         ),
         (
-            [
-                {
-                    "batchName": "a" * 201,
-                    "batchType": "Provisional",
-                    "choiceResults": {
-                        choice["id"]: choice["numVotes"] / 4
-                        for choice in contest["choices"]
-                    },
-                }
-            ],
+            {
+                "batchName": "a" * 201,
+                "batchType": "Provisional",
+                "choiceResults": {
+                    choice["id"]: choice["numVotes"] / 4
+                    for choice in contest["choices"]
+                },
+            },
             f"'{'a' * 201}' is too long",
         ),
         (
-            [
-                {
-                    "batchName": None,
-                    "batchType": "Provisional",
-                    "choiceResults": {
-                        choice["id"]: choice["numVotes"] / 4
-                        for choice in contest["choices"]
-                    },
-                }
-            ],
+            {
+                "batchName": None,
+                "batchType": "Provisional",
+                "choiceResults": {
+                    choice["id"]: choice["numVotes"] / 4
+                    for choice in contest["choices"]
+                },
+            },
             "None is not of type 'string'",
         ),
         (
-            [
-                {
-                    "batchType": "Provisional",
-                    "choiceResults": {
-                        choice["id"]: choice["numVotes"] / 4
-                        for choice in contest["choices"]
-                    },
-                }
-            ],
+            {
+                "batchType": "Provisional",
+                "choiceResults": {
+                    choice["id"]: choice["numVotes"] / 4
+                    for choice in contest["choices"]
+                },
+            },
             "'batchName' is a required property",
         ),
         (
-            [
-                {
-                    "batchName": "Batch 1",
-                    "batchType": "bad type",
-                    "choiceResults": {
-                        choice["id"]: choice["numVotes"] / 4
-                        for choice in contest["choices"]
-                    },
-                }
-            ],
+            {
+                "batchName": "Batch 1",
+                "batchType": "bad type",
+                "choiceResults": {
+                    choice["id"]: choice["numVotes"] / 4
+                    for choice in contest["choices"]
+                },
+            },
             "'bad type' is not one of ['Absentee By Mail', 'Advance', 'Election Day', 'Provisional', 'Other']",
         ),
         (
-            [
-                {
-                    "batchName": "Batch 1",
-                    "batchType": "Provisional",
-                    "choiceResults": {
-                        choice["id"]: choice["numVotes"] / 4
-                        for choice in contest["choices"][:1]
-                    },
-                }
-            ],
+            {
+                "batchName": "Batch 1",
+                "batchType": "Provisional",
+                "choiceResults": {
+                    choice["id"]: choice["numVotes"] / 4
+                    for choice in contest["choices"][:1]
+                },
+            },
             "Invalid choice ids for batch Batch 1",
         ),
         (
-            [
-                {
-                    "batchName": "Batch 1",
-                    "batchType": "Provisional",
-                    "choiceResults": {"not a real id": 0},
-                }
-            ],
+            {
+                "batchName": "Batch 1",
+                "batchType": "Provisional",
+                "choiceResults": {"not a real id": 0},
+            },
             "Invalid choice ids for batch Batch 1",
         ),
         (
-            [
-                {
-                    "batchName": "Batch 1",
-                    "batchType": "Provisional",
-                    "choiceResults": {
-                        choice["id"]: 1000 * 1000 * 1000 + 1
-                        for choice in contest["choices"]
-                    },
-                }
-            ],
+            {
+                "batchName": "Batch 1",
+                "batchType": "Provisional",
+                "choiceResults": {
+                    choice["id"]: 1000 * 1000 * 1000 + 1
+                    for choice in contest["choices"]
+                },
+            },
             "1000000001 is greater than the maximum of 1000000000",
-        ),
-        (
-            [
-                {
-                    "batchName": "Batch 1",
-                    "batchType": "Provisional",
-                    "choiceResults": {
-                        choice["id"]: choice["numVotes"] / 4
-                        for choice in contest["choices"]
-                    },
-                },
-                {
-                    "batchName": "Batch 1",
-                    "batchType": "Election Day",
-                    "choiceResults": {
-                        choice["id"]: choice["numVotes"] / 4
-                        for choice in contest["choices"]
-                    },
-                },
-            ],
-            "Batch names must be unique",
         ),
     ]
 
     for invalid_result, expected_message in invalid_results:
-        rv = put_json(
+        rv = post_json(
             client,
-            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch",
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch/",
             invalid_result,
         )
         assert rv.status_code == 400
@@ -539,13 +537,170 @@ def test_offline_batch_results_validation(
             "errors": [{"errorType": "Bad Request", "message": expected_message}]
         }
 
+        if invalid_result.get("batchName"):
+            rv = put_json(
+                client,
+                f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch/{invalid_result['batchName']}",
+                invalid_result,
+            )
+            assert rv.status_code == 400
+            assert json.loads(rv.data) == {
+                "errors": [{"errorType": "Bad Request", "message": expected_message}]
+            }
+
+    # No duplicate batch names
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch/",
+        {
+            "batchName": "Batch 1",
+            "batchType": "Provisional",
+            "choiceResults": {
+                choice["id"]: choice["numVotes"] / 4 for choice in contest["choices"]
+            },
+        },
+    )
+    assert_ok(rv)
+
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch/",
+        {
+            "batchName": "Batch 1",
+            "batchType": "Election Day",
+            "choiceResults": {
+                choice["id"]: choice["numVotes"] / 4 for choice in contest["choices"]
+            },
+        },
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [{"errorType": "Conflict", "message": "Batch names must be unique"}]
+    }
+
+    # Can't edit a batch that doesn't exist
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch/not a real batch",
+        {
+            "batchName": "Batch 1",
+            "batchType": "Election Day",
+            "choiceResults": {
+                choice["id"]: choice["numVotes"] / 4 for choice in contest["choices"]
+            },
+        },
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [{"errorType": "Conflict", "message": "This batch has been deleted"}]
+    }
+
+    # Special case: deleting a batch that doesn't exist is ok (maybe somebody else already deleted it)
+    rv = client.delete(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch/not a real batch",
+    )
+    assert_ok(rv)
+
+    # Can't edit a batch that's been deleted
+    rv = client.delete(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch/Batch 1",
+    )
+    assert_ok(rv)
+
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch/Batch 1",
+        {
+            "batchName": "Batch 1",
+            "batchType": "Provisional",
+            "choiceResults": {
+                choice["id"]: choice["numVotes"] / 4 for choice in contest["choices"]
+            },
+        },
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [{"errorType": "Conflict", "message": "This batch has been deleted"}]
+    }
+
+    # Can't add/edit/delete results after finalizing
     rv = post_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch/finalize",
     )
     assert_ok(rv)
 
-    # Can't save results after finalizing
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch/",
+        [
+            {
+                "batchName": "Batch 1",
+                "batchType": "Provisional",
+                "choiceResults": {
+                    choice["id"]: choice["numVotes"] / 4
+                    for choice in contest["choices"]
+                },
+            }
+        ],
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {"errorType": "Conflict", "message": "Results have already been finalized"}
+        ]
+    }
+
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch/Batch 1",
+        [
+            {
+                "batchName": "Batch 1",
+                "batchType": "Provisional",
+                "choiceResults": {
+                    choice["id"]: choice["numVotes"] / 4
+                    for choice in contest["choices"]
+                },
+            }
+        ],
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {"errorType": "Conflict", "message": "Results have already been finalized"}
+        ]
+    }
+
+    rv = client.delete(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch/Batch 1",
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {"errorType": "Conflict", "message": "Results have already been finalized"}
+        ]
+    }
+
+
+def test_offline_batch_results_old_endpoint(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    round_1_id: str,
+):
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
+        [{"name": "Audit Board #1"}, {"name": "Audit Board #2"}],
+    )
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/contest"
+    )
+    contest = json.loads(rv.data)["contests"][0]
+
     rv = put_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch",
@@ -563,6 +718,9 @@ def test_offline_batch_results_validation(
     assert rv.status_code == 409
     assert json.loads(rv.data) == {
         "errors": [
-            {"errorType": "Conflict", "message": "Results have already been finalized"}
+            {
+                "errorType": "Conflict",
+                "message": "Arlo has been updated. Please refresh your browser for the latest version.",
+            }
         ]
     }
