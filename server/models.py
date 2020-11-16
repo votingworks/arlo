@@ -1,10 +1,16 @@
 import enum
-from typing import Type
+from typing import Type, TypeVar, cast as typing_cast
 from datetime import datetime as dt
 from werkzeug.exceptions import NotFound
 from sqlalchemy import *  # pylint: disable=wildcard-import
-from sqlalchemy.orm import relationship, backref, validates, deferred
+from sqlalchemy.orm import relationship, backref, validates, deferred as sa_deferred
 from .database import Base  # pylint: disable=cyclic-import
+
+C = TypeVar("C")  # pylint: disable=invalid-name
+
+# Workaround to make sqlalchemy.orm.deferred have the right type
+def deferred(col: C) -> C:
+    return typing_cast(C, sa_deferred(col))
 
 
 class BaseModel(Base):
