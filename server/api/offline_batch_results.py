@@ -9,7 +9,7 @@ from . import api
 from ..auth import restrict_access, UserType
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
-from .rounds import is_round_complete, end_round, get_current_round, sampled_all_ballots
+from .rounds import get_current_round, sampled_all_ballots
 from ..util.jsonschema import JSONDict, validate
 from ..util.isoformat import isoformat
 
@@ -279,9 +279,6 @@ def finalize_offline_batch_results(
                 result=sum_result,
             )
         )
-
-    if is_round_complete(election, round):
-        end_round(election, round)
 
     db_session.commit()
 
