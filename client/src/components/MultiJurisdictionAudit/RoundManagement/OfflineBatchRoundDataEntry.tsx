@@ -187,7 +187,8 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
                   intent="success"
                   style={{ margin: '20px 0 20px 0' }}
                 >
-                  Results finalized at {new Date(finalizedAt).toLocaleString()}
+                  Results finalized at{' '}
+                  {new Date(`${finalizedAt}Z`).toLocaleString()}
                 </Callout>
               )}
             </div>
