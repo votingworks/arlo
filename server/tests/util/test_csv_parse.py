@@ -289,7 +289,14 @@ def test_parse_csv_duplicate_value_with_composite_unique_columns():
 
 
 def test_parse_csv_total_row():
-    for total_word in ["Total", "total", "Totals", "totals"]:
+    for total_word in [
+        "Total",
+        "total",
+        "Totals",
+        "totals",
+        "Total Ballots",
+        "total ballots",
+    ]:
         with pytest.raises(CSVParseError) as error:
             list(
                 parse_csv(
