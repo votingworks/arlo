@@ -38,7 +38,9 @@ CSVDictIterator = Iterator[Dict[str, Any]]
 # https://en.wikipedia.org/wiki/Robustness_principle
 def parse_csv(csv_string: str, columns: List[CSVColumnType]) -> CSVDictIterator:
     validate_is_csv(csv_string)
-    csv: CSVIterator = py_csv.reader(io.StringIO(csv_string), delimiter=",")
+    csv: CSVIterator = py_csv.reader(
+        io.StringIO(csv_string, newline=None), delimiter=","
+    )
     csv = strip_whitespace(csv)
     csv = reject_no_rows(csv)
     csv = skip_empty_trailing_columns(csv)

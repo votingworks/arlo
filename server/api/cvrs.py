@@ -64,7 +64,9 @@ def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
     assert jurisdiction.cvr_file_id == file.id
 
     def process():
-        cvrs = csv.reader(io.StringIO(jurisdiction.cvr_file.contents), delimiter=",")
+        cvrs = csv.reader(
+            io.StringIO(jurisdiction.cvr_file.contents, newline=None), delimiter=","
+        )
 
         # Parse out all the initial metadata
         _election_name = next(cvrs)[0]
