@@ -52,11 +52,11 @@ const CSVFileForm = ({
 
   return (
     <Formik
-      initialValues={{ csv: null }}
+      initialValues={{ csv: isProcessing ? new File([], file!.name) : null }}
       validationSchema={schema}
       onSubmit={async (values: IValues) => {
         if (values.csv) {
-          uploadCSVFile(values.csv)
+          await uploadCSVFile(values.csv)
         }
       }}
     >
@@ -67,6 +67,7 @@ const CSVFileForm = ({
         touched,
         errors,
         handleBlur,
+        isSubmitting,
       }: FormikProps<IValues>) => (
         <form>
           <FormWrapper>
@@ -107,7 +108,7 @@ const CSVFileForm = ({
                     hasSelection={!!values.csv}
                     text={values.csv ? values.csv.name : 'Select a CSV...'}
                     onBlur={handleBlur}
-                    disabled={isProcessing || !enabled}
+                    disabled={isSubmitting || isProcessing || !enabled}
                   />
                   {errors.csv && touched.csv && (
                     <ErrorLabel>{errors.csv}</ErrorLabel>
@@ -130,7 +131,7 @@ const CSVFileForm = ({
                   type="submit"
                   intent="primary"
                   onClick={handleSubmit}
-                  loading={isProcessing}
+                  loading={isSubmitting || isProcessing}
                   disabled={!enabled}
                 >
                   Upload File
