@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "a0fd5be378c9349221c17cb6f790dccc7f625ff95d7cfc0930fd82736bb08219"
+            "sha256": "6f84b57400ede1eb559aaed5c1c5ae1795c01ff7e94e316426807a8f4962f7e7"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -27,7 +27,7 @@
         "athena": {
             "editable": true,
             "git": "https://github.com/filipzz/athena.git",
-            "ref": "183d8f2c4be1a23943a8713ef35340af9fa9bddc"
+            "ref": "7767506efeb5cc081dd225c0dcf9166168fe538a"
         },
         "attrs": {
             "hashes": [
