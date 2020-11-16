@@ -3,7 +3,7 @@ from typing import Type
 from datetime import datetime as dt
 from werkzeug.exceptions import NotFound
 from sqlalchemy import *  # pylint: disable=wildcard-import
-from sqlalchemy.orm import relationship, backref, validates
+from sqlalchemy.orm import relationship, backref, validates, deferred
 from .database import Base  # pylint: disable=cyclic-import
 
 
@@ -707,7 +707,7 @@ class CvrBallot(Base):
 class File(BaseModel):
     id = Column(String(200), primary_key=True)
     name = Column(String(250), nullable=False)
-    contents = Column(Text, nullable=False)
+    contents = deferred(Column(Text, nullable=False))
     uploaded_at = Column(DateTime, nullable=False)
 
     # Metadata for processing files in the background.
