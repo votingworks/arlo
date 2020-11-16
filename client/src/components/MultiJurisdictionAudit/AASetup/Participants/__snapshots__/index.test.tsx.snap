@@ -14,7 +14,7 @@ exports[`Audit Setup > Participants renders empty state correctly 1`] = `
         Participants
       </h2>
       <div
-        class="sc-gzVnrw coBAaV"
+        class="sc-htoDjs dVdNvH"
       >
         <label
           for="state"
@@ -22,7 +22,7 @@ exports[`Audit Setup > Participants renders empty state correctly 1`] = `
           Choose your state from the options below
           <br />
           <div
-            class="bp3-html-select sc-iwsKbI iYAkEx"
+            class="bp3-html-select sc-gZMcBi kTUmIo"
           >
             <select
               data-testid="state-field"
@@ -363,10 +363,10 @@ exports[`Audit Setup > Participants renders empty state correctly 1`] = `
         </label>
       </div>
       <div
-        class="sc-gzVnrw coBAaV"
+        class="sc-htoDjs dVdNvH"
       >
         <div
-          class="sc-htoDjs GlcDy"
+          class="sc-dnqmqq kGMqKN"
         >
           Click "Browse" to choose the appropriate file from your computer. This file should be a comma-separated list of all the jurisdictions participating in the audit, plus email addresses for audit administrators in each participating jurisdiction.
           <br />
@@ -381,7 +381,7 @@ exports[`Audit Setup > Participants renders empty state correctly 1`] = `
         </div>
       </div>
       <div
-        class="sc-gzVnrw coBAaV"
+        class="sc-htoDjs dVdNvH"
       >
         <label
           class="bp3-file-input"
@@ -431,7 +431,7 @@ exports[`Audit Setup > Participants renders filled state correctly & resets file
         Participants
       </h2>
       <div
-        class="sc-gzVnrw coBAaV"
+        class="sc-htoDjs dVdNvH"
       >
         <label
           for="state"
@@ -439,7 +439,7 @@ exports[`Audit Setup > Participants renders filled state correctly & resets file
           Choose your state from the options below
           <br />
           <div
-            class="bp3-html-select sc-iwsKbI iYAkEx"
+            class="bp3-html-select sc-gZMcBi kTUmIo"
           >
             <select
               data-testid="state-field"
@@ -780,10 +780,10 @@ exports[`Audit Setup > Participants renders filled state correctly & resets file
         </label>
       </div>
       <div
-        class="sc-gzVnrw coBAaV"
+        class="sc-htoDjs dVdNvH"
       >
         <div
-          class="sc-htoDjs GlcDy"
+          class="sc-dnqmqq kGMqKN"
         >
           Click "Browse" to choose the appropriate file from your computer. This file should be a comma-separated list of all the jurisdictions participating in the audit, plus email addresses for audit administrators in each participating jurisdiction.
           <br />
@@ -798,7 +798,7 @@ exports[`Audit Setup > Participants renders filled state correctly & resets file
         </div>
       </div>
       <div
-        class="sc-gzVnrw coBAaV"
+        class="sc-htoDjs dVdNvH"
       >
         <span>
           filename.csv
@@ -848,7 +848,7 @@ exports[`Audit Setup > Participants renders filled state correctly & resets file
         Participants
       </h2>
       <div
-        class="sc-gzVnrw coBAaV"
+        class="sc-htoDjs dVdNvH"
       >
         <label
           for="state"
@@ -856,7 +856,7 @@ exports[`Audit Setup > Participants renders filled state correctly & resets file
           Choose your state from the options below
           <br />
           <div
-            class="bp3-html-select sc-iwsKbI iYAkEx"
+            class="bp3-html-select sc-gZMcBi kTUmIo"
           >
             <select
               data-testid="state-field"
@@ -1197,10 +1197,10 @@ exports[`Audit Setup > Participants renders filled state correctly & resets file
         </label>
       </div>
       <div
-        class="sc-gzVnrw coBAaV"
+        class="sc-htoDjs dVdNvH"
       >
         <div
-          class="sc-htoDjs GlcDy"
+          class="sc-dnqmqq kGMqKN"
         >
           Click "Browse" to choose the appropriate file from your computer. This file should be a comma-separated list of all the jurisdictions participating in the audit, plus email addresses for audit administrators in each participating jurisdiction.
           <br />
@@ -1215,7 +1215,7 @@ exports[`Audit Setup > Participants renders filled state correctly & resets file
         </div>
       </div>
       <div
-        class="sc-gzVnrw coBAaV"
+        class="sc-htoDjs dVdNvH"
       >
         <label
           class="bp3-file-input"
