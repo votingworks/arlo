@@ -25,6 +25,7 @@ import useOfflineBatchResults, {
   IOfflineBatchResult,
 } from './useOfflineBatchResults'
 import { testNumber } from '../../utilities'
+import CopyToClipboard from '../../Atoms/CopyToClipboard'
 
 const sum = (nums: number[]) => nums.reduce((a, b) => a + b, 0)
 
@@ -48,6 +49,14 @@ const OfflineBatchResultsForm = styled.form`
     td {
       vertical-align: middle;
       word-wrap: break-word;
+    }
+
+    /* Exclude edit buttons from copy/paste */
+    th:first-child,
+    td:first-child {
+      -moz-user-select: none; /* stylelint-disable-line property-no-vendor-prefix */
+      -webkit-user-select: none; /* stylelint-disable-line property-no-vendor-prefix */
+      user-select: none;
     }
   }
 `
@@ -193,7 +202,7 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
               )}
             </div>
             <fieldset disabled={!!finalizedAt}>
-              <HTMLTable striped bordered>
+              <HTMLTable striped bordered id="results-table">
                 <thead>
                   <tr>
                     <th />
@@ -278,6 +287,11 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
                 >
                   Add batch
                 </Button>
+                <CopyToClipboard
+                  getText={() =>
+                    document.getElementById('results-table')!.outerHTML
+                  }
+                />
                 <Button onClick={() => setIsConfirmOpen(true)}>
                   Finalize Results
                 </Button>
