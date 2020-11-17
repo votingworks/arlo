@@ -2,22 +2,24 @@ import jsPDF from 'jspdf'
 import { IAuditBoard } from '../useAuditBoards'
 import { IBallot } from './useBallots'
 
+// Label constants in points
+const LABEL_HEIGHT = 72
+const LABEL_WIDTH = 190
+const LABEL_START_Y = 36
+const LABEL_START_X = 13
+const LABEL_MARGIN_X = 9
+const LABEL_PADDING_Y = 7
+const LABEL_PADDING_X = 7
+
 export const downloadLabels = (
   roundNum: number,
   ballots: IBallot[],
   jurisdictionName: string,
   auditName: string
 ): string => {
-  /* istanbul ignore else */
   if (ballots.length) {
-    const getX = (l: number): number => (l % 3) * 60 + 9 * ((l % 3) + 1)
-    const getY = (l: number): number[] => [
-      Math.floor(l / 3) * 25.5 + 20,
-      Math.floor(l / 3) * 25.5 + 25,
-      Math.floor(l / 3) * 25.5 + 34,
-    ]
-    const labels = new jsPDF({ format: 'letter' })
-    labels.setFontSize(9)
+    const labels = new jsPDF({ format: 'letter', unit: 'pt' })
+    labels.setFontSize(10)
     let labelCount = 0
     ballots.forEach(ballot => {
       labelCount += 1
@@ -25,19 +27,30 @@ export const downloadLabels = (
         labels.addPage('letter')
         labelCount = 1
       }
-      const x = getX(labelCount - 1)
-      const y = getY(labelCount - 1)
-      labels.text(
-        labels.splitTextToSize(ballot.auditBoard!.name, 60)[0],
-        x,
-        y[0]
-      )
-      labels.text(
-        labels.splitTextToSize(`Batch Name: ${ballot.batch.name}`, 60),
-        x,
-        y[1]
-      )
-      labels.text(`Ballot Number: ${ballot.position}`, x, y[2])
+      const column = (labelCount - 1) % 3
+      const row = Math.floor((labelCount - 1) / 3)
+      const leftX = LABEL_START_X + column * (LABEL_WIDTH + LABEL_MARGIN_X)
+      const topY = LABEL_START_Y + row * LABEL_HEIGHT
+
+      // Useful for drawing the actual label boundary when testing
+      // labels.roundedRect(leftX, topY, LABEL_WIDTH, LABEL_HEIGHT, 7, 7, 'S')
+
+      const lines = [
+        ballot.auditBoard!.name,
+        ballot.batch.container && `Container: ${ballot.batch.container}`,
+        ballot.batch.tabulator && `Tabulator: ${ballot.batch.tabulator}`,
+        `Batch: ${ballot.batch.name}`,
+        `Ballot Number: ${ballot.position}`,
+      ]
+        .filter(line => line)
+        .map(
+          line =>
+            labels.splitTextToSize(line!, LABEL_WIDTH - LABEL_PADDING_X * 2)[0]
+        )
+
+      labels.text(leftX + LABEL_PADDING_X, topY + LABEL_PADDING_Y, lines, {
+        baseline: 'top',
+      })
     })
     labels.autoPrint()
     labels.save(
@@ -48,30 +61,38 @@ export const downloadLabels = (
   return ''
 }
 
+// Placeholder constants in millimeters
+const PLACEHOLDERS_WIDTH = 180
+const PLACEHOLDERS_START_X = 20
+const PLACEHOLDERS_START_Y = 20
+
 export const downloadPlaceholders = (
   roundNum: number,
   ballots: IBallot[],
   jurisdictionName: string,
   auditName: string
 ): string => {
-  /* istanbul ignore else */
   if (ballots.length) {
     const placeholders = new jsPDF({ format: 'letter' })
     placeholders.setFontSize(20)
     let pageCount = 0
     ballots.forEach(ballot => {
       if (pageCount > 0) placeholders.addPage('letter')
-      placeholders.text(
-        placeholders.splitTextToSize(ballot.auditBoard!.name, 180),
-        20,
-        20
-      )
-      placeholders.text(
-        placeholders.splitTextToSize(`Batch Name: ${ballot.batch.name}`, 180),
-        20,
-        40
-      )
-      placeholders.text(`Ballot Number: ${ballot.position}`, 20, 100)
+
+      const lines = [
+        ballot.auditBoard!.name,
+        ballot.batch.container && `Container: ${ballot.batch.container}`,
+        ballot.batch.tabulator && `Tabulator: ${ballot.batch.tabulator}`,
+        `Batch: ${ballot.batch.name}`,
+        `Ballot Number: ${ballot.position}`,
+      ]
+        .filter(line => line)
+        .map(line => placeholders.splitTextToSize(line!, PLACEHOLDERS_WIDTH)[0])
+
+      placeholders.text(lines, PLACEHOLDERS_START_X, PLACEHOLDERS_START_Y, {
+        baseline: 'top',
+        lineHeightFactor: 2,
+      })
       pageCount += 1
     })
     placeholders.autoPrint()
