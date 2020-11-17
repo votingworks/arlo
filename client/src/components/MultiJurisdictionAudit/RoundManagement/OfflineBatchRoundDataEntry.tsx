@@ -196,7 +196,9 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
               <HTMLTable striped bordered>
                 <thead>
                   <tr>
-                    <th />
+                    {/* Add a space to the first header so that the headers
+                    copy-paste with the same length as the body rows */}
+                    <th>&nbsp;</th>
                     <th>Batch Name</th>
                     <th>Batch Type</th>
                     {contest.choices.map(choice => (
