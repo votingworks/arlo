@@ -258,7 +258,7 @@ describe('StatusBox', () => {
         </Router>
       )
       screen.getByText('The audit has not started.')
-      screen.getByText('Ballot manifest uploaded.')
+      screen.getByText('Ballot manifest successfully uploaded.')
       screen.getByText('Waiting for Audit Administrator to launch audit.')
     })
 

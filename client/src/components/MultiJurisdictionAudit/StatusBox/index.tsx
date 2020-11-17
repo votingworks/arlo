@@ -267,14 +267,14 @@ export const JurisdictionAdminStatusBox = ({
       details =
         numComplete === 1
           ? [
-              'Ballot manifest uploaded.',
+              'Ballot manifest successfully uploaded.',
               'Waiting for Audit Administrator to launch audit.',
             ]
           : ['Ballot manifest not uploaded.']
     }
     // When we have multiple files
     else {
-      details = [`${numComplete}/${files.length} files uploaded.`]
+      details = [`${numComplete}/${files.length} files successfully uploaded.`]
       if (numComplete === files.length)
         details.push('Waiting for Audit Administrator to launch audit.')
     }
