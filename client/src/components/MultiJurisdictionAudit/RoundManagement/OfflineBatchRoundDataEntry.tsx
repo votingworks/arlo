@@ -49,6 +49,14 @@ const OfflineBatchResultsForm = styled.form`
       vertical-align: middle;
       word-wrap: break-word;
     }
+
+    /* Exclude edit buttons from copy/paste */
+    th:first-child,
+    td:first-child {
+      -moz-user-select: none; /* stylelint-disable-line property-no-vendor-prefix */
+      -webkit-user-select: none; /* stylelint-disable-line property-no-vendor-prefix */
+      user-select: none;
+    }
   }
 `
 
@@ -196,9 +204,7 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
               <HTMLTable striped bordered>
                 <thead>
                   <tr>
-                    {/* Add a space to the first header so that the headers
-                    copy-paste with the same length as the body rows */}
-                    <th>&nbsp;</th>
+                    <th />
                     <th>Batch Name</th>
                     <th>Batch Type</th>
                     {contest.choices.map(choice => (
