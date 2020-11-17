@@ -25,6 +25,7 @@ import useOfflineBatchResults, {
   IOfflineBatchResult,
 } from './useOfflineBatchResults'
 import { testNumber } from '../../utilities'
+import CopyToClipboard from '../../Atoms/CopyToClipboard'
 
 const sum = (nums: number[]) => nums.reduce((a, b) => a + b, 0)
 
@@ -201,7 +202,7 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
               )}
             </div>
             <fieldset disabled={!!finalizedAt}>
-              <HTMLTable striped bordered>
+              <HTMLTable striped bordered id="results-table">
                 <thead>
                   <tr>
                     <th />
@@ -286,6 +287,11 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
                 >
                   Add batch
                 </Button>
+                <CopyToClipboard
+                  getText={() =>
+                    document.getElementById('results-table')!.outerHTML
+                  }
+                />
                 <Button onClick={() => setIsConfirmOpen(true)}>
                   Finalize Results
                 </Button>
