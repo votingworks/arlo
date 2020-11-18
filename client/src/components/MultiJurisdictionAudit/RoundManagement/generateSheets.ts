@@ -2,12 +2,12 @@ import jsPDF from 'jspdf'
 import { IAuditBoard } from '../useAuditBoards'
 import { IBallot } from './useBallots'
 
-export const downloadLabels = async (
+export const downloadLabels = (
   roundNum: number,
   ballots: IBallot[],
   jurisdictionName: string,
   auditName: string
-): Promise<string> => {
+): string => {
   /* istanbul ignore else */
   if (ballots.length) {
     const getX = (l: number): number => (l % 3) * 60 + 9 * ((l % 3) + 1)
@@ -48,12 +48,12 @@ export const downloadLabels = async (
   return ''
 }
 
-export const downloadPlaceholders = async (
+export const downloadPlaceholders = (
   roundNum: number,
   ballots: IBallot[],
   jurisdictionName: string,
   auditName: string
-): Promise<string> => {
+): string => {
   /* istanbul ignore else */
   if (ballots.length) {
     const placeholders = new jsPDF({ format: 'letter' })

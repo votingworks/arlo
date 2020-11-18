@@ -16,9 +16,9 @@ const mockJurisdiction = jaApiCalls.getUser.response.jurisdictions[0]
 const mockSavePDF = jest.fn()
 jest.mock('jspdf', () => {
   const realjspdf = jest.requireActual('jspdf')
-  const mockjspdf = new realjspdf({ format: 'letter' })
   // eslint-disable-next-line func-names
-  return function() {
+  return function(options: any) {
+    const mockjspdf = new realjspdf(options)
     return {
       ...mockjspdf,
       addImage: jest.fn(),
@@ -33,64 +33,54 @@ describe('generateSheets', () => {
   beforeEach(() => mockSavePDF.mockClear())
 
   describe('downloadLabels', () => {
-    it('generates label sheets', async () => {
-      const pdf = await downloadLabels(
+    it('generates label sheets', () => {
+      const pdf = downloadLabels(
         1,
         dummyBallots.ballots,
         mockJurisdiction.name,
         mockJurisdiction.election.auditName
       )
-      const deterministicPDF = pdf
-        .replace(/CreationDate \([^)]+\)/g, '') // remove the timestamp
-        .replace(/ID \[[^\]]+\]/g, '') // remove the unique id
-      expect(deterministicPDF).toMatchSnapshot()
+      expect(Buffer.from(pdf)).toMatchPdfSnapshot()
       expect(mockSavePDF).toHaveBeenCalledWith(
         'Round 1 Labels - Jurisdiction One - audit one.pdf'
       )
     })
 
-    it('does nothing with no ballots', async () => {
-      const pdf = await downloadLabels(
+    it('does nothing with no ballots', () => {
+      const pdf = downloadLabels(
         1,
         [],
         mockJurisdiction.name,
         mockJurisdiction.election.auditName
       )
-      const deterministicPDF = pdf
-        .replace(/CreationDate \([^)]+\)/g, '') // remove the timestamp
-        .replace(/ID \[[^\]]+\]/g, '') // remove the unique id
-      expect(deterministicPDF).toMatchSnapshot()
+      expect(pdf).toEqual('')
+      expect(mockSavePDF).not.toHaveBeenCalled()
     })
   })
 
   describe('downloadPlaceholders', () => {
-    it('generates placeholder sheets', async () => {
-      const pdf = await downloadPlaceholders(
+    it('generates placeholder sheets', () => {
+      const pdf = downloadPlaceholders(
         1,
         dummyBallots.ballots,
         mockJurisdiction.name,
         mockJurisdiction.election.auditName
       )
-      const deterministicPDF = pdf
-        .replace(/CreationDate \([^)]+\)/g, '') // remove the timestamp
-        .replace(/ID \[[^\]]+\]/g, '') // remove the unique id
-      expect(deterministicPDF).toMatchSnapshot()
+      expect(Buffer.from(pdf)).toMatchPdfSnapshot()
       expect(mockSavePDF).toHaveBeenCalledWith(
         'Round 1 Placeholders - Jurisdiction One - audit one.pdf'
       )
     })
 
-    it('does nothing with no ballots', async () => {
-      const pdf = await downloadPlaceholders(
+    it('does nothing with no ballots', () => {
+      const pdf = downloadPlaceholders(
         1,
         [],
         mockJurisdiction.name,
         mockJurisdiction.election.auditName
       )
-      const deterministicPDF = pdf
-        .replace(/CreationDate \([^)]+\)/g, '') // remove the timestamp
-        .replace(/ID \[[^\]]+\]/g, '') // remove the unique id
-      expect(deterministicPDF).toMatchSnapshot()
+      expect(pdf).toEqual('')
+      expect(mockSavePDF).not.toHaveBeenCalled()
     })
   })
 
@@ -108,9 +98,7 @@ describe('generateSheets', () => {
         mockJurisdiction.name,
         mockJurisdiction.election.auditName
       )
-        .replace(/CreationDate \([^)]+\)/g, '') // remove the timestamp
-        .replace(/ID \[[^\]]+\]/g, '') // remove the unique id
-      expect(pdf).toMatchSnapshot() // test the rest of the file now it's deterministic
+      expect(Buffer.from(pdf)).toMatchPdfSnapshot()
       expect(mockSavePDF).toHaveBeenCalledWith(
         'Audit Board Credentials - Jurisdiction One - audit one.pdf'
       )
@@ -129,9 +117,10 @@ describe('generateSheets', () => {
         mockJurisdiction.name,
         mockJurisdiction.election.auditName
       )
-        .replace(/CreationDate \([^)]+\)/g, '') // remove the timestamp
-        .replace(/ID \[[^\]]+\]/g, '') // remove the unique id
-      expect(pdf).toMatchSnapshot() // test the rest of the file now it's deterministic
+      expect(Buffer.from(pdf)).toMatchPdfSnapshot()
+      expect(mockSavePDF).toHaveBeenCalledWith(
+        'Audit Board Credentials - Jurisdiction One - audit one.pdf'
+      )
     })
   })
 })
