@@ -1,5 +1,6 @@
 import io, csv
 from typing import Dict, List, Optional
+from collections import defaultdict
 
 from . import api
 from ..models import *  # pylint: disable=wildcard-import
@@ -292,11 +293,51 @@ def round_rows(election: Election):
     return rows
 
 
+def offline_batch_result_rows(election: Election, jurisdiction: Jurisdiction = None):
+    rows = [heading("BATCH RESULTS")]
+
+    results_query = (
+        OfflineBatchResult.query.join(Jurisdiction)
+        .filter_by(election_id=election.id)
+        .order_by(Jurisdiction.name, OfflineBatchResult.created_at)
+    )
+    if jurisdiction:
+        results_query = results_query.filter(Jurisdiction.id == jurisdiction.id)
+    results = list(
+        results_query.with_entities(Jurisdiction.name, OfflineBatchResult).all()
+    )
+
+    # For now, we only support one contest
+    contest = list(election.contests)[0]
+    results_by_batch: dict = defaultdict(
+        lambda: {choice.id: None for choice in contest.choices}
+    )
+    for jurisdiction_name, result in results:
+        results_by_batch[(jurisdiction_name, result.batch_name, result.batch_type)][
+            result.contest_choice_id
+        ] = result.result
+
+    rows.append(
+        ["Jurisdiction Name", "Batch Name", "Batch Type"]
+        + [choice.name for choice in contest.choices]
+    )
+
+    for (
+        (jurisdiction_name, batch_name, batch_type),
+        choice_results,
+    ) in results_by_batch.items():
+        rows.append(
+            [jurisdiction_name, batch_name, batch_type] + list(choice_results.values())
+        )
+
+    return rows
+
+
 def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
     # Special case: if we sampled all ballots, don't show this section
     rounds = list(election.rounds)
     if len(rounds) > 0 and sampled_all_ballots(rounds[0], election):
-        return []
+        return offline_batch_result_rows(election, jurisdiction)
 
     rows = [heading("SAMPLED BALLOTS")]
 

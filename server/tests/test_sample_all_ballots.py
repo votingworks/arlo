@@ -430,6 +430,11 @@ def test_all_ballots_audit(
         }
     )
 
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/report"
+    )
+    assert_match_report(rv.data, snapshot)
+
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/report")
     assert_match_report(rv.data, snapshot)

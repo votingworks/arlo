@@ -2,6 +2,7 @@
 import sys
 
 from server.models import Election
+from server.database import db_session
 from server.api.rounds import get_current_round, is_round_complete, end_round
 
 if __name__ == "__main__":
@@ -30,3 +31,4 @@ if __name__ == "__main__":
 
     print("Ending round")
     end_round(election, round)
+    db_session.commit()
