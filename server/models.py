@@ -4,6 +4,7 @@ from datetime import datetime as dt, timezone
 from werkzeug.exceptions import NotFound
 from sqlalchemy import *  # pylint: disable=wildcard-import
 from sqlalchemy.orm import relationship, backref, validates, deferred as sa_deferred
+from sqlalchemy.types import TypeDecorator
 from .database import Base  # pylint: disable=cyclic-import
 
 C = TypeVar("C")  # pylint: disable=invalid-name
@@ -13,11 +14,30 @@ def deferred(col: C) -> C:
     return typing_cast(C, sa_deferred(col))
 
 
+class UTCDateTime(TypeDecorator):  # pylint: disable=abstract-method
+    # Store with no timezone
+    impl = DateTime
+
+    # Ensure UTC timezone on write
+    def process_bind_param(self, value, dialect):
+        if value:
+            assert (
+                value.tzinfo == timezone.utc
+            ), "All datetimes must have UTC timezone - use datetime.now(timezone.utc)"
+        return value
+
+    # Repopulate UTC timezone on read
+    def process_result_value(self, value, dialect):
+        return value and value.replace(tzinfo=timezone.utc)
+
+
 class BaseModel(Base):
     __abstract__ = True
-    created_at = Column(DateTime, default=lambda: dt.now(timezone.utc), nullable=False)
+    created_at = Column(
+        UTCDateTime, default=lambda: dt.now(timezone.utc), nullable=False
+    )
     updated_at = Column(
-        DateTime,
+        UTCDateTime,
         default=lambda: dt.now(timezone.utc),
         onupdate=lambda: dt.now(timezone.utc),
         nullable=False,
@@ -177,7 +197,7 @@ class Jurisdiction(BaseModel):
     cvr_contests_metadata = Column(JSON)
 
     # For ballot polling audits where offline batch results are recorded
-    finalized_offline_batch_results_at = Column(DateTime)
+    finalized_offline_batch_results_at = Column(UTCDateTime)
 
     batches = relationship(
         "Batch", back_populates="jurisdiction", uselist=True, passive_deletes=True
@@ -395,7 +415,7 @@ class AuditBoard(BaseModel):
     member_2 = Column(String(200))
     member_2_affiliation = Column(Enum(Affiliation))
     passphrase = Column(String(1000), unique=True)
-    signed_off_at = Column(DateTime)
+    signed_off_at = Column(UTCDateTime)
 
     sampled_ballots = relationship(
         "SampledBallot",
@@ -416,7 +436,7 @@ class Round(BaseModel):
     election = relationship("Election", back_populates="rounds")
 
     round_num = Column(Integer, nullable=False)
-    ended_at = Column(DateTime)
+    ended_at = Column(UTCDateTime)
 
     __table_args__ = (UniqueConstraint("election_id", "round_num"),)
 
@@ -719,11 +739,11 @@ class File(BaseModel):
     id = Column(String(200), primary_key=True)
     name = Column(String(250), nullable=False)
     contents = deferred(Column(Text, nullable=False))
-    uploaded_at = Column(DateTime, nullable=False)
+    uploaded_at = Column(UTCDateTime, nullable=False)
 
     # Metadata for processing files in the background.
-    processing_started_at = Column(DateTime)
-    processing_completed_at = Column(DateTime)
+    processing_started_at = Column(UTCDateTime)
+    processing_completed_at = Column(UTCDateTime)
     processing_error = Column(Text)
 
 
