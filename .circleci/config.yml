@@ -152,7 +152,6 @@ jobs:
       - restore-yarn-cache
       - install-yarn
       - save-yarn-cache
-      - install-chrome
       - run:
         name: install-graphicsmagick
         command: |
