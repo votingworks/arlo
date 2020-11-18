@@ -146,17 +146,17 @@ jobs:
     executor: arlo
     resource_class: xlarge
     steps:
+      - run:
+          name: install-graphicsmagick
+          command: |
+            sudo apt-get update
+            sudo apt-get install graphicsmagick
       - checkout
       - setup_remote_docker:
           docker_layer_caching: true
       - restore-yarn-cache
       - install-yarn
       - save-yarn-cache
-      - run:
-          name: install-graphicsmagick
-          command: |
-            sudo apt-get update
-            sudo apt-get install graphicsmagick
 
       - run:
           name: test-client
