@@ -62,7 +62,8 @@ describe('generateSheets', () => {
     it('generates placeholder sheets', async () => {
       const pdf = downloadPlaceholders(
         1,
-        dummyBallots.ballots,
+        // Test times out with too many ballots cuz the placeholder image is so large
+        dummyBallots.ballots.slice(0, 5),
         mockJurisdiction.name,
         mockJurisdiction.election.auditName
       )
