@@ -155,6 +155,7 @@ jobs:
       - run:
           name: install-graphicsmagick
           command: |
+            sudo apt-get update
             sudo apt-get install graphicsmagick
 
       - run:
