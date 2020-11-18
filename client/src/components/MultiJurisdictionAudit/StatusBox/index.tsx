@@ -31,7 +31,6 @@ interface IStatusBoxProps {
   buttonLabel?: string
   onButtonClick?: () => void
   children?: ReactElement
-  success?: boolean
 }
 
 const StatusBox: React.FC<IStatusBoxProps> = ({
@@ -40,10 +39,9 @@ const StatusBox: React.FC<IStatusBoxProps> = ({
   buttonLabel,
   onButtonClick,
   children,
-  success,
 }: IStatusBoxProps) => {
   return (
-    <Wrapper intent={success ? 'success' : 'none'} icon={null}>
+    <Wrapper icon={null}>
       <Inner>
         <div className="text">
           <H4>{headline}</H4>
@@ -220,7 +218,6 @@ export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
       details={[]}
       buttonLabel="Download Audit Report"
       onButtonClick={() => downloadAuditAdminReport(electionId)}
-      success
     >
       {children}
     </StatusBox>
@@ -280,11 +277,7 @@ export const JurisdictionAdminStatusBox = ({
     }
 
     return (
-      <StatusBox
-        headline="The audit has not started."
-        details={details}
-        success={numComplete === files.length}
-      >
+      <StatusBox headline="The audit has not started." details={details}>
         {children}
       </StatusBox>
     )
