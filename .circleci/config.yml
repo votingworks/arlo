@@ -153,6 +153,10 @@ jobs:
       - install-yarn
       - save-yarn-cache
       - install-chrome
+      - run:
+        name: install-graphicsmagick
+        command: |
+          sudo apt-get install graphicsmagick
 
       - run:
           name: test-client
