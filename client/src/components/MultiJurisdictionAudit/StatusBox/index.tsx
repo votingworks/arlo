@@ -1,14 +1,13 @@
 import React, { ReactElement } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
-import { Callout, H4 } from '@blueprintjs/core'
+import { Callout, H4, Button } from '@blueprintjs/core'
 import {
   IJurisdiction,
   FileProcessingStatus,
   JurisdictionRoundStatus,
   IFileInfo,
 } from '../useJurisdictions'
-import FormButton from '../../Atoms/Form/FormButton'
 import { api, apiDownload } from '../../utilities'
 import { Inner } from '../../Atoms/Wrapper'
 import { IAuditSettings, IContest } from '../../../types'
@@ -52,9 +51,11 @@ const StatusBox: React.FC<IStatusBoxProps> = ({
           {children}
         </div>
         {buttonLabel && onButtonClick && (
-          <FormButton intent="success" onClick={onButtonClick}>
-            {buttonLabel}
-          </FormButton>
+          <div>
+            <Button intent="success" onClick={onButtonClick}>
+              {buttonLabel}
+            </Button>
+          </div>
         )}
       </Inner>
     </Wrapper>
@@ -328,15 +329,6 @@ export const JurisdictionAdminStatusBox = ({
       </StatusBox>
     )
   }
-
-  // Special case: when auditing all ballots, we don't have a good audit report
-  // yet for the JA
-  if (sampledAllBallots)
-    return (
-      <StatusBox headline="The audit is complete" details={[]}>
-        {children}
-      </StatusBox>
-    )
 
   // Audit complete
   return (
