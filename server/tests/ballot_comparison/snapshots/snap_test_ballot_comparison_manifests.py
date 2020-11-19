@@ -23,8 +23,8 @@ CONTAINER1,TABULATOR2,BATCH2,15,2-2-15,0.017856797084428910,N,Audit Board #2
 snapshots[
     "test_ballot_comparison_container_manifest 2"
 ] = """######## ELECTION INFO ########\r
-Election Name,State\r
-Test Election,CA\r
+Organization,Election Name,State\r
+Test Org test_ballot_comparison_container_manifest,Test Election,CA\r
 \r
 ######## CONTESTS ########\r
 Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes\r

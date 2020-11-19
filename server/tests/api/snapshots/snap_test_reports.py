@@ -10,8 +10,8 @@ snapshots = Snapshot()
 snapshots[
     "test_audit_admin_report 1"
 ] = """######## ELECTION INFO ########\r
-Election Name,State\r
-Test Election,CA\r
+Organization,Election Name,State\r
+Test Org test_audit_admin_report,Test Election,CA\r
 \r
 ######## CONTESTS ########\r
 Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes\r
@@ -151,8 +151,8 @@ J2,4,37,Round 1: 0.092786549356518562,NOT_AUDITED,,\r
 snapshots[
     "test_audit_admin_report_round_2 1"
 ] = """######## ELECTION INFO ########\r
-Election Name,State\r
-Test Election,CA\r
+Organization,Election Name,State\r
+Test Org test_audit_admin_report_round_2,Test Election,CA\r
 \r
 ######## CONTESTS ########\r
 Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes\r

@@ -14,8 +14,8 @@ snapshots["test_multi_winner_sample_size 1"] = [
 snapshots[
     "test_multi_winner_two_rounds 1"
 ] = """######## ELECTION INFO ########\r
-Election Name,State\r
-Test Election,CA\r
+Organization,Election Name,State\r
+Test Org test_multi_winner_two_rounds,Test Election,CA\r
 \r
 ######## CONTESTS ########\r
 Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes\r

@@ -45,8 +45,8 @@ snapshots["test_ballot_comparison_two_rounds 3"] = {
 snapshots[
     "test_ballot_comparison_two_rounds 4"
 ] = """######## ELECTION INFO ########\r
-Election Name,State\r
-Test Election,CA\r
+Organization,Election Name,State\r
+Test Org test_ballot_comparison_two_rounds,Test Election,CA\r
 \r
 ######## CONTESTS ########\r
 Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes\r
@@ -92,8 +92,8 @@ J2,TABULATOR2,BATCH2,6,2-2-6,Round 1: 0.414184312862040881,AUDITED,,,,"Choice 2-
 snapshots[
     "test_ballot_comparison_two_rounds 5"
 ] = """######## ELECTION INFO ########\r
-Election Name,State\r
-Test Election,CA\r
+Organization,Election Name,State\r
+Test Org test_ballot_comparison_two_rounds,Test Election,CA\r
 \r
 ######## CONTESTS ########\r
 Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes\r
@@ -113,7 +113,7 @@ J2,Audit Board #1,,,,\r
 Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes\r
 1,Contest 1,Targeted,22,No,3.9787903602,DATETIME,DATETIME,Choice 1-1: 10; Choice 1-2: 8\r
 1,Contest 2,Opportunistic,,No,3.1903597519,DATETIME,DATETIME,Choice 2-1: 14; Choice 2-2: 8; Choice 2-3: 8\r
-2,Contest 1,Targeted,24,Yes,<0.0000000001,DATETIME,DATETIME,Choice 1-1: 12; Choice 1-2: 7\r
+2,Contest 1,Targeted,24,Yes,0,DATETIME,DATETIME,Choice 1-1: 12; Choice 1-2: 7\r
 2,Contest 2,Opportunistic,,No,0.8846022263,DATETIME,DATETIME,Choice 2-1: 15; Choice 2-2: 5; Choice 2-3: 12\r
 \r
 ######## SAMPLED BALLOTS ########\r
