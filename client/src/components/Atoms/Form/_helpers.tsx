@@ -10,7 +10,10 @@ export const generateOptions = (count: number): JSX.Element[] => {
 }
 
 export const ErrorLabel = styled.p`
-  color: #ff0000;
+  color: #a82a2a;
+`
+export const SuccessLabel = styled.p`
+  color: #0a6640;
 `
 
 export default generateOptions

@@ -6,11 +6,11 @@ import { HTMLSelect, FileInput, H4 } from '@blueprintjs/core'
 import FormWrapper from '../../Atoms/Form/FormWrapper'
 import FormButton from '../../Atoms/Form/FormButton'
 import schema from './schema'
-import { ErrorLabel } from '../../Atoms/Form/_helpers'
+import { ErrorLabel, SuccessLabel } from '../../Atoms/Form/_helpers'
 import FormSection, {
   FormSectionDescription,
 } from '../../Atoms/Form/FormSection'
-import { IFileInfo } from '../useJurisdictions'
+import { FileProcessingStatus, IFileInfo } from '../useJurisdictions'
 
 export const Select = styled(HTMLSelect)`
   margin-top: 5px;
@@ -122,6 +122,16 @@ const CSVFileForm = ({
                   {processing && processing.error && (
                     <ErrorLabel>{processing.error}</ErrorLabel>
                   )}
+                  {processing &&
+                    processing.status === FileProcessingStatus.PROCESSED && (
+                      <SuccessLabel>
+                        Upload successfully completed at{' '}
+                        {new Date(
+                          `${processing.completedAt}Z`
+                        ).toLocaleString()}
+                        !
+                      </SuccessLabel>
+                    )}
                 </>
               )}
             </FormSection>
