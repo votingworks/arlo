@@ -18,8 +18,8 @@ snapshots["test_run_offline_audit 1"] = {
 snapshots[
     "test_run_offline_audit 2"
 ] = """######## ELECTION INFO ########\r
-Election Name,State\r
-Test Election,CA\r
+Organization,Election Name,State\r
+Test Org test_run_offline_audit,Test Election,CA\r
 \r
 ######## CONTESTS ########\r
 Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes\r

@@ -81,8 +81,8 @@ Batch 4,,,Audit Board #2
 snapshots[
     "test_batch_comparison_round_2 8"
 ] = """######## ELECTION INFO ########\r
-Election Name,State\r
-Test Election,CA\r
+Organization,Election Name,State\r
+Test Org test_batch_comparison_round_2,Test Election,CA\r
 \r
 ######## CONTESTS ########\r
 Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes\r
