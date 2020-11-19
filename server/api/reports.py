@@ -42,12 +42,15 @@ def pretty_targeted(is_targeted: bool) -> str:
 def pretty_pvalue(value: float) -> str:
     if value is None:
         return ""
+    elif value == 0:
+        return "0"
     elif value < 10 ** -10:
         return "<0.0000000001"
     else:
         ret = "{:1.10f}".format(round(value, 10)).rstrip("0")
+        # If we've stripped off the zero right after the decimal, put it back
         if ret[-1] == ".":
-            ret += "0"  # If we've stripped off the zero right after the decimal, put it back
+            ret += "0"
         return ret
 
 
@@ -150,8 +153,8 @@ def heading(heading: str):
 def election_info_rows(election: Election):
     return [
         heading("ELECTION INFO"),
-        ["Election Name", "State"],
-        [election.election_name, election.state],
+        ["Organization", "Election Name", "State"],
+        [election.organization.name, election.election_name, election.state],
     ]
 
 
@@ -299,7 +302,7 @@ def offline_batch_result_rows(election: Election, jurisdiction: Jurisdiction = N
     results_query = (
         OfflineBatchResult.query.join(Jurisdiction)
         .filter_by(election_id=election.id)
-        .order_by(Jurisdiction.name, OfflineBatchResult.created_at)
+        .order_by(Jurisdiction.name, OfflineBatchResult.batch_name)
     )
     if jurisdiction:
         results_query = results_query.filter(Jurisdiction.id == jurisdiction.id)
