@@ -140,7 +140,7 @@ jobs:
       - run:
           name: test server
           command: |
-            pipenv run pytest -n 2 --cov=.
+            pipenv run pytest -n 8 --cov=.
 
   build-and-test-client:
     executor: arlo
