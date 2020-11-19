@@ -70,13 +70,13 @@ describe('AA setup flow', () => {
     aaApiCalls.getSettings(auditSettings.all),
   ]
 
-  it.skip('sidebar changes stages', async () => {
-    // TEST TODO
+  it('sidebar changes stages', async () => {
     const expectedCalls = [
       aaApiCalls.getUser,
       ...loadEach,
       ...loadEach,
       aaApiCalls.getSettings(auditSettings.all),
+      ...loadEach,
       aaApiCalls.getJurisdictionFile,
       aaApiCalls.getSettings(auditSettings.all),
       ...loadEach,
@@ -153,13 +153,13 @@ describe('AA setup flow', () => {
     })
   })
 
-  it.skip('renders sidebar when authenticated on /setup', async () => {
-    // TEST TODO
+  it('renders sidebar when authenticated on /setup', async () => {
     const expectedCalls = [
       aaApiCalls.getUser,
       ...loadEach,
       ...loadEach,
       aaApiCalls.getSettings(auditSettings.all),
+      ...loadEach,
       aaApiCalls.getJurisdictionFile,
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -178,13 +178,17 @@ describe('AA setup flow', () => {
     })
   })
 
-  it.skip('renders sidebar when authenticated on /progress', async () => {
-    // TEST TODO
+  it('renders sidebar when authenticated on /progress', async () => {
     paramsMock.mockReturnValue({
       electionId: '1',
       view: 'progress',
     })
-    const expectedCalls = [aaApiCalls.getUser, ...loadEach, ...loadEach]
+    const expectedCalls = [
+      aaApiCalls.getUser,
+      ...loadEach,
+      ...loadEach,
+      ...loadEach,
+    ]
     await withMockFetch(expectedCalls, async () => {
       const { container, queryAllByText } = render(
         <AuthDataProvider>
