@@ -8,6 +8,7 @@ import {
   auditSettings,
   manifestMocks,
   talliesMocks,
+  cvrsMocks,
 } from './components/MultiJurisdictionAudit/useSetupMenuItems/_mocks'
 import {
   jaApiCalls,
@@ -130,14 +131,14 @@ describe('App', () => {
       })
     })
 
-    it.skip('renders ja logged in properly', async () => {
-      // TEST TODO
+    it('renders ja logged in properly', async () => {
       const expectedCalls = [
         jaApiCalls.getUser,
         jaApiCalls.getSettings(auditSettings.batchComparisonAll),
         jaApiCalls.getRounds,
         jaApiCalls.getBallotManifestFile(manifestMocks.empty),
         jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
+        jaApiCalls.getCVRSfile(cvrsMocks.empty),
       ]
       await withMockFetch(expectedCalls, async () => {
         const { container } = renderView(

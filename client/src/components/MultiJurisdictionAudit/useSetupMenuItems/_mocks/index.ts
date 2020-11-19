@@ -225,6 +225,34 @@ export const talliesMocks: { [key: string]: IFileInfo } = {
   },
 }
 
+export const cvrsMocks: { [key: string]: IFileInfo } = {
+  empty: {
+    file: null,
+    processing: null,
+  },
+  processed: {
+    file: { name: 'cvrs.csv', uploadedAt: '2020-11-18T21:39:05.765Z' },
+    processing: {
+      status: FileProcessingStatus.PROCESSED,
+      startedAt: '2020-11-18T21:39:05.765Z',
+      completedAt: '2020-11-18T21:39:14.574Z',
+      error: null,
+    },
+  },
+  errored: {
+    file: {
+      name: 'cvrs.csv',
+      uploadedAt: '2020-11-15T17:25:25.663592',
+    },
+    processing: {
+      completedAt: '2020-11-15T17:25:26.099157',
+      error: 'Invalid CSV',
+      startedAt: '2020-11-15T17:25:26.097433',
+      status: FileProcessingStatus.ERRORED,
+    },
+  },
+}
+
 export const jurisdictionMocks: { [key: string]: IJurisdiction[] } = {
   empty: [],
   // Setup - Ballot polling
