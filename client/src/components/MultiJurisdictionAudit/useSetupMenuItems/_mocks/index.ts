@@ -143,7 +143,7 @@ export const roundMocks: {
   ],
   singleComplete: [
     {
-      endedAt: 'a time most proper',
+      endedAt: '2019-08-18T16:34:07.000',
       roundNum: 1,
       isAuditComplete: true,
       startedAt: '2019-07-18T16:34:07.000',
@@ -153,7 +153,7 @@ export const roundMocks: {
   ],
   needAnother: [
     {
-      endedAt: 'a time most proper',
+      endedAt: '2019-08-18T16:34:07.000',
       roundNum: 1,
       isAuditComplete: false,
       startedAt: '2019-07-18T16:34:07.000',
