@@ -6,6 +6,7 @@ from flask import jsonify, request
 from jsonschema import validate
 from werkzeug.exceptions import BadRequest, Conflict
 from sqlalchemy import and_
+from sqlalchemy.orm import load_only
 
 from . import api
 from ..database import db_session
@@ -543,6 +544,13 @@ def sample_ballots(
                 Batch.jurisdiction_id.in_([j.id for j in participating_jurisdictions])
             )
             .with_entities(CvrBallot, Batch.jurisdiction_id)
+            .options(
+                load_only(
+                    CvrBallot.batch_id,
+                    CvrBallot.interpretations,
+                    CvrBallot.ballot_position,
+                )
+            )
             .all()
         )
 
@@ -560,9 +568,7 @@ def sample_ballots(
             # In ballot polling audits, we can include all the ballot positions
             # from each batch
             manifest = {
-                (jurisdiction.name, batch.tabulator, batch.name): list(
-                    range(1, batch.num_ballots + 1)
-                )
+                batch_id_to_key[batch.id]: list(range(1, batch.num_ballots + 1))
                 for jurisdiction in contest.jurisdictions
                 for batch in jurisdiction.batches
             }
