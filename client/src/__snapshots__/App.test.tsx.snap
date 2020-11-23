@@ -1084,13 +1084,13 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders ja logge
     class="Toastify"
   />
   <div
-    class="sc-dqBHgY hjqzBG"
+    class="sc-cmTdod ftrAGQ"
   >
     <div
       class="bp3-navbar sc-EHOje gMcVig"
     >
       <div
-        class="sc-bxivhb sc-bZQynM ftKVqf"
+        class="sc-bxivhb sc-bZQynM ezCmGO"
       >
         <div
           class="bp3-navbar-group bp3-align-left"
@@ -1134,13 +1134,13 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders ja logge
       </div>
     </div>
     <div
-      class="sc-htpNat eniUlo"
+      class="sc-htpNat cBZqYS"
     >
       <div
-        class="bp3-callout sc-cvbbAY diAOwm"
+        class="bp3-callout sc-brqgnP jodPLw"
       >
         <div
-          class="sc-bxivhb ddQihQ"
+          class="sc-bxivhb hMnACT"
         >
           <div
             class="text"
@@ -1151,13 +1151,13 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders ja logge
               The audit has not started.
             </h4>
             <p>
-              Ballot manifest not uploaded.
+              0/2 files successfully uploaded.
             </p>
           </div>
         </div>
       </div>
       <div
-        class="sc-bxivhb sc-caSCKo dwxpIg"
+        class="sc-bxivhb sc-TOsTZ dNNkJG"
       >
         <h2
           class="bp3-heading sc-gzVnrw hQaoin"
@@ -1172,7 +1172,7 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders ja logge
               class="bp3-heading sc-gzVnrw hQaoin"
             />
             <div
-              class="sc-VigVT jXYKmK"
+              class="sc-jTzLTM hPHXqn"
             >
               <h4
                 class="bp3-heading"
@@ -1180,7 +1180,7 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders ja logge
                 Ballot Manifest
               </h4>
               <div
-                class="sc-jTzLTM jNuIPn"
+                class="sc-fjdhpX kBSvWX"
               >
                 Click "Browse" to choose the appropriate Ballot Manifest file from your computer. This file should be a comma-separated list of all the ballot boxes/containers used to store ballots for this particular election, plus a count of how many ballot cards (individual pieces of paper) are stored in each container.
                 <br />
@@ -1195,7 +1195,7 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders ja logge
               </div>
             </div>
             <div
-              class="sc-VigVT jXYKmK"
+              class="sc-jTzLTM hPHXqn"
             >
               <label
                 class="bp3-file-input"
@@ -1234,7 +1234,7 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders ja logge
               class="bp3-heading sc-gzVnrw hQaoin"
             />
             <div
-              class="sc-VigVT jXYKmK"
+              class="sc-jTzLTM hPHXqn"
             >
               <h4
                 class="bp3-heading"
@@ -1242,7 +1242,7 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders ja logge
                 Candidate Totals by Batch
               </h4>
               <div
-                class="sc-jTzLTM jNuIPn"
+                class="sc-fjdhpX kBSvWX"
               >
                 Click "Browse" to choose the appropriate Candidate Totals by Batch file from your computer. This file should be a comma-separated list of all the ballot boxes/containers used to store ballots for this particular election, plus a count of how many votes were counted for each candidate in each of those containers.
                 <br />
@@ -1257,7 +1257,7 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders ja logge
               </div>
             </div>
             <div
-              class="sc-VigVT jXYKmK"
+              class="sc-jTzLTM hPHXqn"
             >
               <label
                 class="bp3-file-input bp3-disabled"

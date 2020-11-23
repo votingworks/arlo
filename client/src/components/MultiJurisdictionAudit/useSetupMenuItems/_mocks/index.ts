@@ -118,7 +118,7 @@ export const roundMocks: {
       endedAt: null,
       roundNum: 1,
       isAuditComplete: false,
-      startedAt: '2019-07-18T16:34:07.000Z',
+      startedAt: '2019-07-18T16:34:07.000+00:00',
       id: 'round-1',
       sampledAllBallots: false,
     },
@@ -128,7 +128,7 @@ export const roundMocks: {
       endedAt: null,
       roundNum: 1,
       isAuditComplete: false,
-      startedAt: '2019-07-18T16:34:07.000Z',
+      startedAt: '2019-07-18T16:34:07.000+00:00',
       id: 'round-1',
       sampledAllBallots: false,
     },
@@ -136,27 +136,27 @@ export const roundMocks: {
       endedAt: null,
       roundNum: 2,
       isAuditComplete: false,
-      startedAt: '2019-07-18T16:34:07.000Z',
+      startedAt: '2019-07-18T16:34:07.000+00:00',
       id: 'round-2',
       sampledAllBallots: false,
     },
   ],
   singleComplete: [
     {
-      endedAt: 'a time most proper',
+      endedAt: '2019-08-18T16:34:07.000+00:00',
       roundNum: 1,
       isAuditComplete: true,
-      startedAt: '2019-07-18T16:34:07.000Z',
+      startedAt: '2019-07-18T16:34:07.000+00:00',
       id: 'round-1',
       sampledAllBallots: false,
     },
   ],
   needAnother: [
     {
-      endedAt: 'a time most proper',
+      endedAt: '2019-08-18T16:34:07.000+00:00',
       roundNum: 1,
       isAuditComplete: false,
-      startedAt: '2019-07-18T16:34:07.000Z',
+      startedAt: '2019-07-18T16:34:07.000+00:00',
       id: 'round-1',
       sampledAllBallots: false,
     },
@@ -171,11 +171,11 @@ export const manifestMocks: { [key: string]: IBallotManifestInfo } = {
     numBallots: 0,
   },
   processed: {
-    file: { name: 'manifest.csv', uploadedAt: '2020-06-08T21:39:05.765Z' },
+    file: { name: 'manifest.csv', uploadedAt: '2020-06-08T21:39:05.765+00:00' },
     processing: {
       status: FileProcessingStatus.PROCESSED,
-      startedAt: '2020-06-08T21:39:05.765Z',
-      completedAt: '2020-06-08T21:39:14.574Z',
+      startedAt: '2020-06-08T21:39:05.765+00:00',
+      completedAt: '2020-06-08T21:39:14.574+00:00',
       error: null,
     },
     numBatches: 10,
@@ -184,12 +184,12 @@ export const manifestMocks: { [key: string]: IBallotManifestInfo } = {
   errored: {
     file: {
       name: 'manifest.csv',
-      uploadedAt: '2020-05-05T17:25:25.663592',
+      uploadedAt: '2020-05-05T17:25:25.663592+00:00',
     },
     processing: {
-      completedAt: '2020-05-05T17:25:26.099157',
+      completedAt: '2020-05-05T17:25:26.09915+00:00',
       error: 'Invalid CSV',
-      startedAt: '2020-05-05T17:25:26.097433',
+      startedAt: '2020-05-05T17:25:26.09743+00:00',
       status: FileProcessingStatus.ERRORED,
     },
     numBallots: null,
@@ -203,23 +203,51 @@ export const talliesMocks: { [key: string]: IFileInfo } = {
     processing: null,
   },
   processed: {
-    file: { name: 'tallies.csv', uploadedAt: '2020-06-08T21:39:05.765Z' },
+    file: { name: 'tallies.csv', uploadedAt: '2020-06-08T21:39:05.765+00:00' },
     processing: {
       status: FileProcessingStatus.PROCESSED,
-      startedAt: '2020-06-08T21:39:05.765Z',
-      completedAt: '2020-06-08T21:39:14.574Z',
+      startedAt: '2020-06-08T21:39:05.765+00:00',
+      completedAt: '2020-06-08T21:39:14.574+00:00',
       error: null,
     },
   },
   errored: {
     file: {
       name: 'tallies.csv',
-      uploadedAt: '2020-05-05T17:25:25.663592',
+      uploadedAt: '2020-05-05T17:25:25.663592+00:00',
     },
     processing: {
-      completedAt: '2020-05-05T17:25:26.099157',
+      completedAt: '2020-05-05T17:25:26.09915+00:00',
       error: 'Invalid CSV',
-      startedAt: '2020-05-05T17:25:26.097433',
+      startedAt: '2020-05-05T17:25:26.09743+00:00',
+      status: FileProcessingStatus.ERRORED,
+    },
+  },
+}
+
+export const cvrsMocks: { [key: string]: IFileInfo } = {
+  empty: {
+    file: null,
+    processing: null,
+  },
+  processed: {
+    file: { name: 'cvrs.csv', uploadedAt: '2020-11-18T21:39:05.765+00:00' },
+    processing: {
+      status: FileProcessingStatus.PROCESSED,
+      startedAt: '2020-11-18T21:39:05.765+00:00',
+      completedAt: '2020-11-18T21:39:14.574+00:00',
+      error: null,
+    },
+  },
+  errored: {
+    file: {
+      name: 'cvrs.csv',
+      uploadedAt: '2020-11-15T17:25:25.663592+00:00',
+    },
+    processing: {
+      completedAt: '2020-11-15T17:25:26.09915+00:00',
+      error: 'Invalid CSV',
+      startedAt: '2020-11-15T17:25:26.09743+00:00',
       status: FileProcessingStatus.ERRORED,
     },
   },
@@ -503,8 +531,8 @@ export const fileProcessingMocks: {
   null: null,
   processed: {
     status: FileProcessingStatus.PROCESSED,
-    startedAt: 'sometime',
-    completedAt: 'a different time',
+    startedAt: '2019-07-18T16:34:07.000+00:00',
+    completedAt: '2019-07-18T16:35:07.000+00:00',
     error: null,
   },
 }
@@ -617,7 +645,7 @@ export const auditBoardMocks: {
     {
       id: 'audit-board-1',
       name: 'Audit Board #01',
-      signedOffAt: '2019-07-18T16:34:07.000Z',
+      signedOffAt: '2019-07-18T16:34:07.000+00:00',
       passphrase: 'happy-randomness',
       currentRoundStatus: {
         numSampledBallots: 30,

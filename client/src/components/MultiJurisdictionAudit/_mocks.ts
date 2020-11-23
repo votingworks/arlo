@@ -70,6 +70,10 @@ export const jaApiCalls = {
     url: '/api/election/1/jurisdiction/jurisdiction-id-1/batch-tallies',
     response,
   }),
+  getCVRSfile: (response: IFileInfo) => ({
+    url: '/api/election/1/jurisdiction/jurisdiction-id-1/cvrs',
+    response,
+  }),
   getSettings: (response: IAuditSettings) => ({
     url: '/api/election/1/jurisdiction/jurisdiction-id-1/settings',
     response,

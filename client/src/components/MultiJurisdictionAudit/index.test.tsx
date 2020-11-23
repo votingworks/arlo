@@ -14,6 +14,7 @@ import {
 import {
   manifestMocks,
   talliesMocks,
+  cvrsMocks,
   manifestFile,
   talliesFile,
   auditSettings,
@@ -70,13 +71,13 @@ describe('AA setup flow', () => {
     aaApiCalls.getSettings(auditSettings.all),
   ]
 
-  it.skip('sidebar changes stages', async () => {
-    // TEST TODO
+  it('sidebar changes stages', async () => {
     const expectedCalls = [
       aaApiCalls.getUser,
       ...loadEach,
       ...loadEach,
       aaApiCalls.getSettings(auditSettings.all),
+      ...loadEach,
       aaApiCalls.getJurisdictionFile,
       aaApiCalls.getSettings(auditSettings.all),
       ...loadEach,
@@ -153,13 +154,13 @@ describe('AA setup flow', () => {
     })
   })
 
-  it.skip('renders sidebar when authenticated on /setup', async () => {
-    // TEST TODO
+  it('renders sidebar when authenticated on /setup', async () => {
     const expectedCalls = [
       aaApiCalls.getUser,
       ...loadEach,
       ...loadEach,
       aaApiCalls.getSettings(auditSettings.all),
+      ...loadEach,
       aaApiCalls.getJurisdictionFile,
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -178,13 +179,17 @@ describe('AA setup flow', () => {
     })
   })
 
-  it.skip('renders sidebar when authenticated on /progress', async () => {
-    // TEST TODO
+  it('renders sidebar when authenticated on /progress', async () => {
     paramsMock.mockReturnValue({
       electionId: '1',
       view: 'progress',
     })
-    const expectedCalls = [aaApiCalls.getUser, ...loadEach, ...loadEach]
+    const expectedCalls = [
+      aaApiCalls.getUser,
+      ...loadEach,
+      ...loadEach,
+      ...loadEach,
+    ]
     await withMockFetch(expectedCalls, async () => {
       const { container, queryAllByText } = render(
         <AuthDataProvider>
@@ -262,14 +267,14 @@ describe('JA setup', () => {
     })
   })
 
-  it.skip('renders initial state', async () => {
-    // TEST TODO
+  it('renders initial state', async () => {
     const expectedCalls = [
       jaApiCalls.getUser,
       jaApiCalls.getSettings(auditSettings.batchComparisonAll),
       jaApiCalls.getRounds,
       jaApiCalls.getBallotManifestFile(manifestMocks.empty),
       jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
+      jaApiCalls.getCVRSfile(cvrsMocks.empty),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderView()
@@ -278,14 +283,14 @@ describe('JA setup', () => {
     })
   })
 
-  it.skip('submits ballot manifest', async () => {
-    // TEST TODO
+  it('submits ballot manifest', async () => {
     const expectedCalls = [
       jaApiCalls.getUser,
       jaApiCalls.getSettings(auditSettings.batchComparisonAll),
       jaApiCalls.getRounds,
       jaApiCalls.getBallotManifestFile(manifestMocks.empty),
       jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
+      jaApiCalls.getCVRSfile(cvrsMocks.empty),
       jaApiCalls.putManifest,
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
     ]
@@ -314,14 +319,14 @@ describe('JA setup', () => {
     })
   })
 
-  it.skip('submits batch tallies', async () => {
-    // TEST TODO
+  it('submits batch tallies', async () => {
     const expectedCalls = [
       jaApiCalls.getUser,
       jaApiCalls.getSettings(auditSettings.batchComparisonAll),
       jaApiCalls.getRounds,
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
       jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
+      jaApiCalls.getCVRSfile(cvrsMocks.empty),
       jaApiCalls.putTallies,
       jaApiCalls.getBatchTalliesFile(talliesMocks.processed),
     ]
