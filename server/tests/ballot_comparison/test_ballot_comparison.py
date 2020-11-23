@@ -270,26 +270,35 @@ def test_ballot_comparison_two_rounds(
                     vote_choice_2_3,
                 ) = interpretation_str.split(",")
 
-                if vote_choice_1_1 != "":
-                    target_choices = (
-                        [choice_1_1] if vote_choice_1_1 == "1" else []
-                    ) + ([choice_1_2] if vote_choice_1_2 == "1" else [])
-                    audit_ballot(
-                        ballot, target_contest_id, Interpretation.VOTE, target_choices
-                    )
+                target_choices = ([choice_1_1] if vote_choice_1_1 == "1" else []) + (
+                    [choice_1_2] if vote_choice_1_2 == "1" else []
+                )
+                audit_ballot(
+                    ballot,
+                    target_contest_id,
+                    (
+                        Interpretation.VOTE
+                        if vote_choice_1_1 != ""
+                        else Interpretation.CONTEST_NOT_ON_BALLOT
+                    ),
+                    target_choices,
+                )
 
-                if vote_choice_2_1 != "":
-                    opportunistic_choices = (
-                        ([choice_2_1] if vote_choice_2_1 == "1" else [])
-                        + ([choice_2_2] if vote_choice_2_2 == "1" else [])
-                        + ([choice_2_3] if vote_choice_2_3 == "1" else [])
-                    )
-                    audit_ballot(
-                        ballot,
-                        opportunistic_contest_id,
-                        Interpretation.VOTE,
-                        opportunistic_choices,
-                    )
+                opportunistic_choices = (
+                    ([choice_2_1] if vote_choice_2_1 == "1" else [])
+                    + ([choice_2_2] if vote_choice_2_2 == "1" else [])
+                    + ([choice_2_3] if vote_choice_2_3 == "1" else [])
+                )
+                audit_ballot(
+                    ballot,
+                    opportunistic_contest_id,
+                    (
+                        Interpretation.VOTE
+                        if vote_choice_2_1 != ""
+                        else Interpretation.CONTEST_NOT_ON_BALLOT
+                    ),
+                    opportunistic_choices,
+                )
 
         end_round(round.election, round)
         db_session.commit()
