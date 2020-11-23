@@ -99,7 +99,7 @@ def upload_standardized_contests_file(election: Election):
         id=str(uuid.uuid4()),
         name=file.filename,
         contents=decode_csv_file(file.read()),
-        uploaded_at=datetime.utcnow(),
+        uploaded_at=datetime.now(timezone.utc),
     )
     election.standardized_contests = None
     db_session.commit()

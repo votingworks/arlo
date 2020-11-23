@@ -241,7 +241,7 @@ def test_jurisdictions_status_round_1_with_audit_boards(
     audit_board_1 = AuditBoard.query.get(audit_board_round_1_ids[0])
     for ballot in audit_board_1.sampled_ballots:
         ballot.status = BallotStatus.AUDITED
-    audit_board_1.signed_off_at = datetime.utcnow()
+    audit_board_1.signed_off_at = datetime.now(timezone.utc)
     db_session.commit()
 
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
@@ -253,7 +253,7 @@ def test_jurisdictions_status_round_1_with_audit_boards(
     audit_board_2 = AuditBoard.query.get(audit_board_round_1_ids[1])
     for ballot in audit_board_2.sampled_ballots:
         ballot.status = BallotStatus.AUDITED
-    audit_board_2.signed_off_at = datetime.utcnow()
+    audit_board_2.signed_off_at = datetime.now(timezone.utc)
     db_session.commit()
 
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
@@ -279,7 +279,7 @@ def test_jurisdictions_status_round_1_with_audit_boards_without_ballots(
     audit_board_2 = AuditBoard.query.get(audit_board_round_1_ids[1])
     for ballot in audit_board_2.sampled_ballots:
         ballot.status = BallotStatus.AUDITED
-    audit_board_2.signed_off_at = datetime.utcnow()
+    audit_board_2.signed_off_at = datetime.now(timezone.utc)
     db_session.commit()
 
     rv = client.get(f"/api/election/{election_id}/jurisdiction")

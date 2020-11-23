@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime, timezone
 import uuid
 from sqlalchemy import insert
 from sqlalchemy.exc import SQLAlchemyError
@@ -13,7 +13,7 @@ def test_success():
         id=str(uuid.uuid4()),
         name="Test File",
         contents="abcdefg",
-        uploaded_at=datetime.datetime.utcnow(),
+        uploaded_at=datetime.now(timezone.utc),
     )
     db_session.add(file)
     db_session.commit()
@@ -27,8 +27,8 @@ def test_success():
 
     process_file(db_session, file, process)
 
-    assert isinstance(file.processing_started_at, datetime.datetime)
-    assert isinstance(file.processing_completed_at, datetime.datetime)
+    assert isinstance(file.processing_started_at, datetime)
+    assert isinstance(file.processing_completed_at, datetime)
     assert file.processing_error is None
 
 
@@ -37,7 +37,7 @@ def test_error():
         id=str(uuid.uuid4()),
         name="Test File",
         contents="abcdefg",
-        uploaded_at=datetime.datetime.utcnow(),
+        uploaded_at=datetime.now(timezone.utc),
     )
     db_session.add(file)
     db_session.commit()
@@ -54,8 +54,8 @@ def test_error():
     except Exception as error:
         assert str(error) == "NOPE"
 
-    assert isinstance(file.processing_started_at, datetime.datetime)
-    assert isinstance(file.processing_completed_at, datetime.datetime)
+    assert isinstance(file.processing_started_at, datetime)
+    assert isinstance(file.processing_completed_at, datetime)
     assert file.processing_error == "NOPE"
 
 
@@ -64,7 +64,7 @@ def test_session_stuck():
         id=str(uuid.uuid4()),
         name="Test File",
         contents="abcdefg",
-        uploaded_at=datetime.datetime.utcnow(),
+        uploaded_at=datetime.now(timezone.utc),
     )
     db_session.add(file)
     db_session.commit()
@@ -79,7 +79,7 @@ def test_session_stuck():
                 id=file.id,
                 name="Test File2",
                 contents="abcdefg",
-                uploaded_at=datetime.datetime.utcnow(),
+                uploaded_at=datetime.now(timezone.utc),
             )
         )
 
@@ -88,6 +88,6 @@ def test_session_stuck():
     except SQLAlchemyError:
         pass
 
-    assert isinstance(file.processing_started_at, datetime.datetime)
-    assert isinstance(file.processing_completed_at, datetime.datetime)
+    assert isinstance(file.processing_started_at, datetime)
+    assert isinstance(file.processing_completed_at, datetime)
     assert file.processing_error
