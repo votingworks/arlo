@@ -9,7 +9,7 @@ from .sampler_contest import Contest
 
 
 def draw_sample(
-    seed: str, manifest: Dict[Any, int], sample_size: int, num_sampled=0
+    seed: str, manifest: Dict[Any, List[int]], sample_size: int, num_sampled=0
 ) -> List[Tuple[str, Tuple[Any, int], int]]:
     """
     Draws uniform random sample with replacement of size <sample_size> from the
@@ -38,17 +38,18 @@ def draw_sample(
                 ]
     """
 
-    ballots: List[Tuple[str, int]] = []
-    # First build a faux list of ballots
-    for batch in manifest:
-        for i in range(manifest[batch]):
-            ballots.append((batch, i + 1))
+    # First build a list of ballots
+    ballots: List[Tuple[Any, int]] = [
+        (batch, ballot_position)
+        for batch, ballot_positions in manifest.items()
+        for ballot_position in ballot_positions
+    ]
 
     return cast(
         # The signature of `consistent_sampler.sampler` can't be represented by
         # mypy yet, so it is typed as a less specific version of what it really
         # is. This casts it back to the more specific version.
-        List[Tuple[str, Tuple[str, int], int]],
+        List[Tuple[str, Tuple[Any, int], int]],
         list(
             consistent_sampler.sampler(
                 ballots,

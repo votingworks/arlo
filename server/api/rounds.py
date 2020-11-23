@@ -534,7 +534,9 @@ def sample_ballots(
         # (deterministic real world ids) instead of the jurisdiction and batch
         # ids (non-deterministic uuids that we generate for each audit).
         manifest = {
-            (jurisdiction.name, batch.tabulator, batch.name): batch.num_ballots
+            (jurisdiction.name, batch.tabulator, batch.name): list(
+                range(1, batch.num_ballots + 1)
+            )
             for jurisdiction in contest.jurisdictions
             for batch in jurisdiction.batches
         }
