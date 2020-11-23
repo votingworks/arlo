@@ -33,14 +33,14 @@ describe('generateSheets', () => {
   beforeEach(() => mockSavePDF.mockClear())
 
   describe('downloadLabels', () => {
-    it('generates label sheets', () => {
+    it('generates label sheets', async () => {
       const pdf = downloadLabels(
         1,
         dummyBallots.ballots,
         mockJurisdiction.name,
         mockJurisdiction.election.auditName
       )
-      expect(Buffer.from(pdf)).toMatchPdfSnapshot()
+      await expect(Buffer.from(pdf)).toMatchPdfSnapshot()
       expect(mockSavePDF).toHaveBeenCalledWith(
         'Round 1 Labels - Jurisdiction One - audit one.pdf'
       )
@@ -59,14 +59,15 @@ describe('generateSheets', () => {
   })
 
   describe('downloadPlaceholders', () => {
-    it('generates placeholder sheets', () => {
+    it('generates placeholder sheets', async () => {
       const pdf = downloadPlaceholders(
         1,
-        dummyBallots.ballots,
+        // Test times out with too many ballots cuz the placeholder image is so large
+        dummyBallots.ballots.slice(0, 5),
         mockJurisdiction.name,
         mockJurisdiction.election.auditName
       )
-      expect(Buffer.from(pdf)).toMatchPdfSnapshot()
+      await expect(Buffer.from(pdf)).toMatchPdfSnapshot()
       expect(mockSavePDF).toHaveBeenCalledWith(
         'Round 1 Placeholders - Jurisdiction One - audit one.pdf'
       )
@@ -85,7 +86,7 @@ describe('generateSheets', () => {
   })
 
   describe('downloadAuditBoardCredentials', () => {
-    it('generates audit board credentials sheets', () => {
+    it('generates audit board credentials sheets', async () => {
       render(
         <QRs
           passphrases={auditBoardMocks.double.map(
@@ -98,13 +99,13 @@ describe('generateSheets', () => {
         mockJurisdiction.name,
         mockJurisdiction.election.auditName
       )
-      expect(Buffer.from(pdf)).toMatchPdfSnapshot()
+      await expect(Buffer.from(pdf)).toMatchPdfSnapshot()
       expect(mockSavePDF).toHaveBeenCalledWith(
         'Audit Board Credentials - Jurisdiction One - audit one.pdf'
       )
     })
 
-    it('generates audit board credentials sheets with ballotless audit board', () => {
+    it('generates audit board credentials sheets with ballotless audit board', async () => {
       render(
         <QRs
           passphrases={auditBoardMocks.noBallots.map(
@@ -117,7 +118,7 @@ describe('generateSheets', () => {
         mockJurisdiction.name,
         mockJurisdiction.election.auditName
       )
-      expect(Buffer.from(pdf)).toMatchPdfSnapshot()
+      await expect(Buffer.from(pdf)).toMatchPdfSnapshot()
       expect(mockSavePDF).toHaveBeenCalledWith(
         'Audit Board Credentials - Jurisdiction One - audit one.pdf'
       )
