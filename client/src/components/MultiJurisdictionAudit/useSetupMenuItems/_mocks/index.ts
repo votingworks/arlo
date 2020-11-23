@@ -531,8 +531,8 @@ export const fileProcessingMocks: {
   null: null,
   processed: {
     status: FileProcessingStatus.PROCESSED,
-    startedAt: 'sometim',
-    completedAt: 'a different tim',
+    startedAt: '2019-07-18T16:34:07.000',
+    completedAt: '2019-07-18T16:35:07.000',
     error: null,
   },
 }
