@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { Formik, FormikProps, getIn } from 'formik'
+import { Formik, FormikProps } from 'formik'
 import { Checkbox, Spinner } from '@blueprintjs/core'
 import { Column, Cell } from 'react-table'
 import FormWrapper from '../../../Atoms/Form/FormWrapper'
@@ -9,7 +9,6 @@ import FormButtonBar from '../../../Atoms/Form/FormButtonBar'
 import FormButton from '../../../Atoms/Form/FormButton'
 import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
 import useStandardizedContests, {
-  IStandardizedContest,
   IStandardizedContestOption,
 } from '../../useStandardizedContests'
 import useJurisdictions from '../../useJurisdictions'
@@ -60,11 +59,11 @@ const ContestSelect: React.FC<IProps> = ({
   )
 
   const columns = (
-    values: { contests: IStandardizedContest[] },
+    values: { contests: IStandardizedContestOption[] },
     setFieldValue: FormikProps<{
-      contests: IStandardizedContest[]
+      contests: IStandardizedContestOption[]
     }>['setFieldValue']
-  ): Column<IStandardizedContest>[] => [
+  ): Column<IStandardizedContestOption>[] => [
     {
       id: 'select',
       Header: 'Select',
@@ -72,10 +71,10 @@ const ContestSelect: React.FC<IProps> = ({
       // eslint-disable-next-line react/display-name
       Cell: ({
         row: { original: contest, index },
-      }: Cell<IStandardizedContest>) => (
+      }: Cell<IStandardizedContestOption>) => (
         <Checkbox
           inline
-          checked={getIn(values, `contests[${index}].checked`)}
+          checked={values.contests.some(c => c.id === contest.id && c.checked)}
           onChange={({
             currentTarget: { checked },
           }: React.ChangeEvent<HTMLInputElement>) =>
@@ -112,7 +111,7 @@ const ContestSelect: React.FC<IProps> = ({
         values,
         handleSubmit,
         setFieldValue,
-      }: FormikProps<{ contests: IStandardizedContest[] }>) => (
+      }: FormikProps<{ contests: IStandardizedContestOption[] }>) => (
         <form>
           <FormWrapper
             title={isTargeted ? 'Target Contests' : 'Opportunistic Contests'}
