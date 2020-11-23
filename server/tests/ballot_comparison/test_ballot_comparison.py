@@ -195,21 +195,18 @@ def test_ballot_comparison_two_rounds(
         ("J1", "TABULATOR1", "BATCH1", 1): "0,1,1,1,0",
         ("J1", "TABULATOR1", "BATCH2", 2): "0,1,1,1,0",
         ("J1", "TABULATOR1", "BATCH2", 3): "1,1,0,1,1",  # CVR: 1,0,1,0,1
-        ("J1", "TABULATOR2", "BATCH2", 2): "1,1,1,1,0",
+        ("J1", "TABULATOR2", "BATCH2", 1): "1,0,1,0,1",
+        ("J1", "TABULATOR2", "BATCH2", 2): "1,1,1,1,1",
         ("J1", "TABULATOR2", "BATCH2", 3): "blank",  # CVR: 1,0,1,0,1
-        ("J1", "TABULATOR2", "BATCH2", 4): ",,1,0,1",
-        ("J1", "TABULATOR2", "BATCH2", 5): ",,1,1,0",
-        ("J1", "TABULATOR2", "BATCH2", 6): ",,1,0,1",
         ("J2", "TABULATOR1", "BATCH1", 1): "0,1,1,1,0",
         ("J2", "TABULATOR1", "BATCH1", 2): "1,0,1,0,1",
-        ("J2", "TABULATOR1", "BATCH1", 3): "not found",  # CVR: 0,1,1,1,0
+        ("J2", "TABULATOR1", "BATCH1", 3): "0,1,1,1,0",
         ("J2", "TABULATOR1", "BATCH2", 1): "1,0,1,0,1",
+        ("J2", "TABULATOR1", "BATCH2", 3): "not found",  # CVR: 1,0,1,0,1
         ("J2", "TABULATOR2", "BATCH1", 1): "0,1,1,1,0",
-        ("J2", "TABULATOR2", "BATCH2", 1): "1,0,1,0,1",
-        ("J2", "TABULATOR2", "BATCH2", 2): "1,1,1,1,0",
+        ("J2", "TABULATOR2", "BATCH2", 1): ",,,,",  # CVR:1,0,1,0,1
+        ("J2", "TABULATOR2", "BATCH2", 2): "1,1,1,1,1",
         ("J2", "TABULATOR2", "BATCH2", 3): "1,0,1,0,1",
-        ("J2", "TABULATOR2", "BATCH2", 5): "1,0,,,",  # CVR: ,,1,1,0
-        ("J2", "TABULATOR2", "BATCH2", 6): ",,1,0,1",
     }
 
     def ballot_key(ballot: SampledBallot):
@@ -236,6 +233,19 @@ def test_ballot_comparison_two_rounds(
             .all()
         )
         sampled_ballot_keys = [ballot_key(ballot) for ballot in sampled_ballots]
+
+        # Ballots that don't have a result recorded for the targeted contest shouldn't be sampled
+        ballots_without_targeted_contest = [
+            ("J1", "TABULATOR2", "BATCH2", 4),
+            ("J1", "TABULATOR2", "BATCH2", 5),
+            ("J1", "TABULATOR2", "BATCH2", 6),
+            ("J2", "TABULATOR2", "BATCH2", 4),
+            ("J2", "TABULATOR2", "BATCH2", 5),
+            ("J2", "TABULATOR2", "BATCH2", 6),
+        ]
+        for bad_ballot_key in ballots_without_targeted_contest:
+            assert bad_ballot_key not in sampled_ballot_keys
+
         assert sorted(sampled_ballot_keys) == sorted(list(audit_results.keys()))
 
         for ballot in sampled_ballots:
@@ -307,11 +317,11 @@ def test_ballot_comparison_two_rounds(
     # For round 2, audit results should match the CVR exactly.
     audit_results = {
         ("J1", "TABULATOR1", "BATCH1", 2): "1,0,1,0,1",
+        ("J1", "TABULATOR1", "BATCH2", 1): "1,0,1,0,1",
         ("J1", "TABULATOR2", "BATCH1", 2): "1,0,1,0,1",
-        ("J1", "TABULATOR2", "BATCH2", 1): "1,0,1,0,1",
-        ("J2", "TABULATOR1", "BATCH2", 3): "1,0,1,0,1",
+        ("J2", "TABULATOR1", "BATCH2", 2): "0,1,1,1,0",
         ("J2", "TABULATOR2", "BATCH1", 2): "1,0,1,0,1",
-        ("J2", "TABULATOR2", "BATCH2", 4): ",,1,0,1",
+        ("J2", "TABULATOR2", "BATCH1", 3): "1,0,1,1,0",
     }
 
     audit_all_ballots(round_2_id, audit_results)
