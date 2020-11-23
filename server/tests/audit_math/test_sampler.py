@@ -69,10 +69,10 @@ def close_macro_contest():
 def test_draw_sample(snapshot):
     # Test getting a sample
     manifest = {
-        "pct 1": 25,
-        "pct 2": 25,
-        "pct 3": 25,
-        "pct 4": 25,
+        "pct 1": list(range(1, 26)),
+        "pct 2": list(range(1, 26)),
+        "pct 3": list(range(1, 26)),
+        "pct 4": list(range(1, 26)),
     }
 
     sample = sampler.draw_sample(SEED, manifest, 20, 0)
@@ -82,10 +82,10 @@ def test_draw_sample(snapshot):
 def test_draw_more_samples(snapshot):
     # Test getting a sample
     manifest = {
-        "pct 1": 25,
-        "pct 2": 25,
-        "pct 3": 25,
-        "pct 4": 25,
+        "pct 1": list(range(1, 26)),
+        "pct 2": list(range(1, 26)),
+        "pct 3": list(range(1, 26)),
+        "pct 4": list(range(1, 26)),
     }
 
     sample = sampler.draw_sample(SEED, manifest, 10, 0)
@@ -136,7 +136,10 @@ def test_macro_recount_sample(close_macro_batches, close_macro_contest, snapshot
 
 def random_manifest():
     rand = random.Random(12345)
-    return {f"pct {n}": rand.randint(1, 10) for n in range(rand.randint(1, 10))}
+    return {
+        f"pct {n}": list(range(1, rand.randint(2, 11)))
+        for n in range(rand.randint(1, 10))
+    }
 
 
 def test_ballot_labels():
@@ -144,4 +147,4 @@ def test_ballot_labels():
         manifest = random_manifest()
         sample = sampler.draw_sample(SEED, manifest, 100, 0)
         for (_, (batch, ballot_number), _) in sample:
-            assert 1 <= ballot_number <= manifest[batch]
+            assert 1 <= ballot_number <= max(manifest[batch])
