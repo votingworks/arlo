@@ -518,6 +518,34 @@ def sample_ballots(
     contests: List[Contest],
     sample_sizes: Dict[str, int],
 ):
+    participating_jurisdictions = {
+        jurisdiction for contest in contests for jurisdiction in contest.jurisdictions
+    }
+
+    # Audits must be deterministic and repeatable for the same real world
+    # inputs. So the sampler expects the same input for the same real world
+    # data. Thus, we use the jurisdiction name and batch keys
+    # (deterministic real world ids) instead of the jurisdiction and batch
+    # ids (non-deterministic uuids that we generate for each audit).
+    batch_id_to_key = {
+        batch.id: (jurisdiction.name, batch.tabulator, batch.name)
+        for jurisdiction in participating_jurisdictions
+        for batch in jurisdiction.batches
+    }
+    batch_key_to_id = {
+        batch_key: batch_id for batch_id, batch_key in batch_id_to_key.items()
+    }
+
+    if election.audit_type == AuditType.BALLOT_COMPARISON:
+        cvr_ballots = list(
+            CvrBallot.query.join(Batch)
+            .filter(
+                Batch.jurisdiction_id.in_([j.id for j in participating_jurisdictions])
+            )
+            .with_entities(CvrBallot, Batch.jurisdiction_id)
+            .all()
+        )
+
     def draw_sample_for_contest(contest: Contest, sample_size: int) -> List[BallotDraw]:
         # Compute the total number of ballot samples in all rounds leading up to
         # this one. Note that this corresponds to the number of SampledBallotDraws,
@@ -528,22 +556,49 @@ def sample_ballots(
 
         # Create the pool of ballots to sample (aka manifest) by combining the
         # manifests from every jurisdiction in the contest's universe.
-        # Audits must be deterministic and repeatable for the same real world
-        # inputs. So the sampler expects the same input for the same real world
-        # data. Thus, we use the jurisdiction name and batch keys
-        # (deterministic real world ids) instead of the jurisdiction and batch
-        # ids (non-deterministic uuids that we generate for each audit).
-        manifest = {
-            (jurisdiction.name, batch.tabulator, batch.name): list(
-                range(1, batch.num_ballots + 1)
-            )
-            for jurisdiction in contest.jurisdictions
-            for batch in jurisdiction.batches
-        }
+        if election.audit_type == AuditType.BALLOT_POLLING:
+            # In ballot polling audits, we can include all the ballot positions
+            # from each batch
+            manifest = {
+                (jurisdiction.name, batch.tabulator, batch.name): list(
+                    range(1, batch.num_ballots + 1)
+                )
+                for jurisdiction in contest.jurisdictions
+                for batch in jurisdiction.batches
+            }
+        else:
+            assert election.audit_type == AuditType.BALLOT_COMPARISON
+
+            # In ballot comparison audits, we only include ballots that had a
+            # result recorded for this contest in the CVR
+            manifest = defaultdict(list)
+
+            for jurisdiction in contest.jurisdictions:
+                cvr_contests_metadata = typing_cast(
+                    JSONDict, jurisdiction.cvr_contests_metadata
+                )
+                contest_columns = [
+                    choice["column"]
+                    for choice in cvr_contests_metadata[contest.name][
+                        "choices"
+                    ].values()
+                ]
+
+                for cvr_ballot, jurisdiction_id in cvr_ballots:
+                    if jurisdiction_id != jurisdiction.id:
+                        continue
+                    interpretations = cvr_ballot.interpretations.split(",")
+                    if any(interpretations[column] != "" for column in contest_columns):
+                        manifest[batch_id_to_key[cvr_ballot.batch_id]].append(
+                            cvr_ballot.ballot_position
+                        )
 
         # Do the math! i.e. compute the actual sample
         sample = sampler.draw_sample(
-            str(election.random_seed), manifest, sample_size, num_previously_sampled
+            str(election.random_seed),
+            dict(manifest),
+            sample_size,
+            num_previously_sampled,
         )
         return [
             BallotDraw(
@@ -565,18 +620,6 @@ def sample_ballots(
         [sample_draw for sample in samples for sample_draw in sample],
         key=lambda sample_draw: sample_draw.ballot_key,
     )
-
-    # Create a mapping from batch keys used in the sampling back to batch ids
-    batches = (
-        Batch.query.join(Jurisdiction)
-        .filter_by(election_id=election.id)
-        .with_entities(Jurisdiction.name, Batch)
-        .all()
-    )
-    batch_key_to_id = {
-        (jurisdiction_name, batch.tabulator, batch.name): batch.id
-        for (jurisdiction_name, batch) in batches
-    }
 
     # Record which ballots are sampled in the db.
     # Note that a ballot may be sampled more than once (within a round or
