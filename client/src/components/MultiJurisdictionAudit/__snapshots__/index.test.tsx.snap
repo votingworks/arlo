@@ -1800,7 +1800,7 @@ exports[`JA setup submits ballot manifest 1`] = `
             >
               Upload successfully completed at
                
-              6/8/2020, 2:39:14 PM
+              Invalid Date
               !
             </p>
           </div>
@@ -1976,7 +1976,7 @@ exports[`JA setup submits batch tallies 1`] = `
             >
               Upload successfully completed at
                
-              6/8/2020, 2:39:14 PM
+              Invalid Date
               !
             </p>
           </div>
@@ -2049,7 +2049,7 @@ exports[`JA setup submits batch tallies 1`] = `
             >
               Upload successfully completed at
                
-              6/8/2020, 2:39:14 PM
+              Invalid Date
               !
             </p>
           </div>
