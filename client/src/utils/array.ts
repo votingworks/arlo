@@ -38,3 +38,7 @@ export function replaceAtIndex<T>(arr: T[], index: number, newElement: T): T[] {
     .concat([newElement])
     .concat(arr.slice(index + 1))
 }
+
+export function range(start: number, stop: number) {
+  return [...Array(stop - start + 1)].map((_, i) => start + i)
+}

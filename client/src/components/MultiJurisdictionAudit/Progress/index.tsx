@@ -12,9 +12,9 @@ import {
 } from '../useJurisdictions'
 import JurisdictionDetail from './JurisdictionDetail'
 import { Table, sortByRank, FilterInput } from '../../Atoms/Table'
-import { IAuditSettings } from '../../../types'
 import { IRound } from '../useRoundsAuditAdmin'
 import StatusTag from '../../Atoms/StatusTag'
+import { IAuditSettings } from '../useAuditSettings'
 
 const Wrapper = styled.div`
   flex-grow: 1;

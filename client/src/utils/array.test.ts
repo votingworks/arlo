@@ -1,4 +1,4 @@
-import { groupBy, sortBy, hashBy, replaceAtIndex } from './array'
+import { groupBy, sortBy, hashBy, replaceAtIndex, range } from './array'
 
 test('groupBy', () => {
   expect(groupBy([], () => '')).toEqual({})
@@ -45,4 +45,15 @@ test('replaceAtIndex', () => {
   expect(replaceAtIndex(['a', 'b', 'c'], 1, 'd')).toEqual(['a', 'd', 'c'])
   expect(replaceAtIndex(['a', 'b', 'c'], 2, 'd')).toEqual(['a', 'b', 'd'])
   expect(replaceAtIndex(['a', 'b', 'c'], 3, 'd')).toEqual(['a', 'b', 'c', 'd'])
+})
+
+test('range', () => {
+  expect(range(0, 0)).toEqual([0])
+  expect(range(0, 1)).toEqual([0, 1])
+  expect(range(0, 2)).toEqual([0, 1, 2])
+  expect(range(1, 1)).toEqual([1])
+  expect(range(1, 2)).toEqual([1, 2])
+  expect(range(1, 3)).toEqual([1, 2, 3])
+  expect(range(1, 5)).toEqual([1, 2, 3, 4, 5])
+  expect(range(3, 5)).toEqual([3, 4, 5])
 })

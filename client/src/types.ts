@@ -172,14 +172,3 @@ export interface IAuthData {
   isAuthenticated: boolean | null
   meta?: IUserMeta
 }
-
-export interface IAuditSettings {
-  state: string | null
-  electionName: string | null
-  online: boolean | null
-  randomSeed: string | null
-  riskLimit: number | null
-  auditType: 'BALLOT_POLLING' | 'BATCH_COMPARISON' | 'BALLOT_COMPARISON'
-  auditMathType: 'BRAVO' | 'MINERVA' | 'SUPERSIMPLE' | 'MACRO'
-  auditName: string
-}

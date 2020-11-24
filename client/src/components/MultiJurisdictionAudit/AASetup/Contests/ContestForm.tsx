@@ -22,11 +22,12 @@ import schema from './schema'
 import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
 import useContests from '../../useContests'
 import useJurisdictions from '../../useJurisdictions'
-import { IContest, ICandidate, IAuditSettings } from '../../../../types'
+import { IContest, ICandidate } from '../../../../types'
 import DropdownCheckboxList from './DropdownCheckboxList'
 import Card from '../../../Atoms/SpacedCard'
 import { testNumber } from '../../../utilities'
 import isObjectEmpty from '../../../../utils/objects'
+import { IAuditSettings } from '../../useAuditSettings'
 
 interface IProps {
   isTargeted: boolean

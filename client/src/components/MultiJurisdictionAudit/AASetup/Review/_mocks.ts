@@ -1,4 +1,4 @@
-import { IAuditSettings } from '../../../../types'
+import { IAuditSettings } from '../../useAuditSettings'
 
 export const settingsMock: {
   [key in 'empty' | 'full' | 'offline' | 'batch']: IAuditSettings

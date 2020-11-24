@@ -3,16 +3,16 @@
 exports[`DataEntry ballot interaction renders ballot route 1`] = `
 <div>
   <div
-    class="sc-jKJlTe cdRmtQ"
+    class="sc-ckVGcZ FQwY"
   >
     <div
-      class="sc-eNQAEJ sc-hMqMXs iVQcXK"
+      class="sc-jKJlTe sc-eNQAEJ hHsOrt"
     >
       <div
-        class="sc-dxgOiQ cnAnsE"
+        class="sc-kpOJdX dGWCjw"
       >
         <h1
-          class="bp3-heading sc-kpOJdX dYIVuZ"
+          class="bp3-heading sc-kGXeez dPLzLx"
         >
           Audit Board #1
           : Ballot Card Data Entry
@@ -23,7 +23,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
           Enter Ballot Information
         </h3>
         <div
-          class="bp3-callout sc-ckVGcZ fWvioO"
+          class="bp3-callout sc-dxgOiQ imJcEu"
         >
           Auditing ballot 
           2
@@ -31,7 +31,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
           27
         </div>
         <div
-          class="sc-htoDjs djrRRx"
+          class="sc-gzVnrw iQbkBU"
         >
           <div
             class="ballot-side"
@@ -55,7 +55,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
             </div>
           </div>
           <div
-            class="bp3-divider sc-gzVnrw fleORm"
+            class="bp3-divider sc-bZQynM fCIzYl"
           />
           <div
             class="ballot-main"
@@ -93,7 +93,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
           </div>
         </div>
         <div
-          class="sc-htoDjs djrRRx"
+          class="sc-gzVnrw iQbkBU"
         >
           <div
             class="ballot-side"
@@ -121,7 +121,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
             </p>
             <form>
               <div
-                class="sc-dnqmqq fUlqUV"
+                class="sc-htoDjs gdMSDV"
               >
                 <h3
                   class="bp3-heading"
@@ -129,10 +129,10 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                   Contest 1
                 </h3>
                 <div
-                  class="bp3-divider sc-gzVnrw fleORm"
+                  class="bp3-divider sc-bZQynM fCIzYl"
                 />
                 <label
-                  class="bp3-control bp3-checkbox sc-chPdSV eLfnnR"
+                  class="bp3-control bp3-checkbox sc-kAzzGY cVcuEP"
                 >
                   <input
                     type="checkbox"
@@ -148,7 +148,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                   </span>
                 </label>
                 <label
-                  class="bp3-control bp3-checkbox sc-chPdSV eLfnnR"
+                  class="bp3-control bp3-checkbox sc-kAzzGY cVcuEP"
                 >
                   <input
                     type="checkbox"
@@ -164,7 +164,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                   </span>
                 </label>
                 <label
-                  class="bp3-control bp3-checkbox sc-chPdSV eLfnnR"
+                  class="bp3-control bp3-checkbox sc-kAzzGY cVcuEP"
                 >
                   <input
                     type="checkbox"
@@ -180,7 +180,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                   </span>
                 </label>
                 <label
-                  class="bp3-control bp3-checkbox sc-chPdSV eLfnnR"
+                  class="bp3-control bp3-checkbox sc-kAzzGY cVcuEP"
                 >
                   <input
                     type="checkbox"
@@ -226,7 +226,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                 </button>
               </div>
               <div
-                class="sc-dnqmqq fUlqUV"
+                class="sc-htoDjs gdMSDV"
               >
                 <h3
                   class="bp3-heading"
@@ -234,10 +234,10 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                   Contest 2
                 </h3>
                 <div
-                  class="bp3-divider sc-gzVnrw fleORm"
+                  class="bp3-divider sc-bZQynM fCIzYl"
                 />
                 <label
-                  class="bp3-control bp3-checkbox sc-chPdSV eLfnnR"
+                  class="bp3-control bp3-checkbox sc-kAzzGY cVcuEP"
                 >
                   <input
                     type="checkbox"
@@ -253,7 +253,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                   </span>
                 </label>
                 <label
-                  class="bp3-control bp3-checkbox sc-chPdSV eLfnnR"
+                  class="bp3-control bp3-checkbox sc-kAzzGY cVcuEP"
                 >
                   <input
                     type="checkbox"
@@ -269,7 +269,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                   </span>
                 </label>
                 <label
-                  class="bp3-control bp3-checkbox sc-chPdSV eLfnnR"
+                  class="bp3-control bp3-checkbox sc-kAzzGY cVcuEP"
                 >
                   <input
                     type="checkbox"
@@ -285,7 +285,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                   </span>
                 </label>
                 <label
-                  class="bp3-control bp3-checkbox sc-chPdSV eLfnnR"
+                  class="bp3-control bp3-checkbox sc-kAzzGY cVcuEP"
                 >
                   <input
                     type="checkbox"
@@ -331,10 +331,10 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                 </button>
               </div>
               <div
-                class="sc-gZMcBi eEnNvu"
+                class="sc-iwsKbI iYiMCG"
               >
                 <button
-                  class="bp3-button bp3-intent-success sc-bZQynM iFVUEu"
+                  class="bp3-button bp3-intent-success sc-EHOje gmpgQN"
                   type="submit"
                 >
                   <span
@@ -366,10 +366,10 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
 exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
 <div>
   <div
-    class="sc-jKJlTe cdRmtQ"
+    class="sc-ckVGcZ FQwY"
   >
     <div
-      class="sc-eNQAEJ sc-hMqMXs iVQcXK"
+      class="sc-jKJlTe sc-eNQAEJ hHsOrt"
     >
       <div
         class="board-table-container"
@@ -1377,10 +1377,10 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
 exports[`DataEntry ballot interaction renders board table with no ballots 1`] = `
 <div>
   <div
-    class="sc-jKJlTe cdRmtQ"
+    class="sc-ckVGcZ FQwY"
   >
     <div
-      class="sc-eNQAEJ sc-hMqMXs iVQcXK"
+      class="sc-jKJlTe sc-eNQAEJ hHsOrt"
     >
       <div
         class="board-table-container"
@@ -1558,10 +1558,10 @@ exports[`DataEntry ballot interaction renders board table with no ballots 1`] = 
 exports[`DataEntry member form submits and goes to ballot table 1`] = `
 <div>
   <div
-    class="sc-jKJlTe cdRmtQ"
+    class="sc-ckVGcZ FQwY"
   >
     <div
-      class="sc-eNQAEJ sc-hMqMXs iVQcXK"
+      class="sc-jKJlTe sc-eNQAEJ hHsOrt"
     >
       <div
         class="board-table-container"

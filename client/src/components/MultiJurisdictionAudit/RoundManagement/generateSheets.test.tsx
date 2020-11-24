@@ -16,7 +16,7 @@ const mockJurisdiction = jaApiCalls.getUser.response.jurisdictions[0]
 const mockSavePDF = jest.fn()
 jest.mock('jspdf', () => {
   const realjspdf = jest.requireActual('jspdf')
-  // eslint-disable-next-line func-names
+  // eslint-disable-next-line func-names, @typescript-eslint/no-explicit-any
   return function(options: any) {
     const mockjspdf = new realjspdf(options)
     return {

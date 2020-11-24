@@ -1,128 +1,114 @@
 import React from 'react'
-import { fireEvent, waitFor, render, screen } from '@testing-library/react'
-import { BrowserRouter as Router, useParams } from 'react-router-dom'
+import { waitFor, screen } from '@testing-library/react'
+import { Route } from 'react-router-dom'
+import userEvent from '@testing-library/user-event'
 import relativeStages from '../_mocks'
 import Settings from './index'
-import useAuditSettings from '../../useAuditSettings'
-
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'), // use actual for all non-hook parts
-  useParams: jest.fn(),
-}))
-const routeMock = useParams as jest.Mock
-routeMock.mockReturnValue({
-  electionId: '1',
-  view: 'setup',
-})
-
-const auditSettingsMock = useAuditSettings as jest.Mock
-jest.mock('../../useAuditSettings')
-auditSettingsMock.mockReturnValue([
-  {
-    state: 'AL',
-    electionName: null,
-    online: null,
-    randomSeed: null,
-    riskLimit: null,
-    auditType: 'BALLOT_POLLING',
-  },
-  async () => true,
-])
+import { renderWithRouter, withMockFetch } from '../../../testUtilities'
+import { aaApiCalls } from '../../_mocks'
+import { auditSettings } from '../../useSetupMenuItems/_mocks'
 
 const { nextStage, prevStage } = relativeStages('settings')
 
-describe('Setup > BALLOT_POLLING Settings', () => {
-  it('handles failure to update settings', async () => {
-    auditSettingsMock.mockReturnValue([
-      {
-        state: 'AL',
-        electionName: null,
-        online: null,
-        randomSeed: null,
-        riskLimit: null,
-        auditType: 'BALLOT_POLLING',
-      },
-      async () => false,
-    ])
+const renderSettings = () =>
+  renderWithRouter(
+    <Route path="/election/:electionId/setup">
+      <Settings locked={false} nextStage={nextStage} prevStage={prevStage} />
+    </Route>,
+    { route: '/election/1/setup' }
+  )
 
-    render(
-      <Router>
-        <Settings locked={false} nextStage={nextStage} prevStage={prevStage} />
-      </Router>
-    )
+describe('Setup > Settings', () => {
+  jest.setTimeout(10000)
+  it('updates settings', async () => {
+    const expectedCalls = [
+      aaApiCalls.getSettings(auditSettings.blank),
+      aaApiCalls.getSettings(auditSettings.blank),
+      aaApiCalls.putSettings({
+        ...auditSettings.blank,
+        state: 'CA',
+        electionName: 'Election Name',
+        online: true,
+        riskLimit: 5,
+        randomSeed: '12345',
+      }),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderSettings()
 
-    fireEvent.change(screen.getByLabelText('Election Name'), {
-      target: { value: 'Election Name' },
-    })
+      await screen.findByRole('heading', { name: 'Audit Settings' })
 
-    const auditToggleOffline = screen.getByLabelText('Offline')
-    expect(auditToggleOffline).toBeInstanceOf(HTMLInputElement)
-    if (auditToggleOffline instanceof HTMLInputElement) {
-      fireEvent.click(auditToggleOffline, { bubbles: true })
-    }
+      screen.getByRole('heading', { name: 'State' })
+      userEvent.selectOptions(
+        screen.getByLabelText(/Choose your state from the options below./),
+        'CA'
+      )
 
-    fireEvent.change(
-      screen.getByLabelText(
-        'Enter the random characters to seed the pseudo-random number generator.'
-      ),
-      {
-        target: { value: '12345' },
-      }
-    )
+      screen.getByRole('heading', { name: 'Election Name' })
+      userEvent.type(
+        screen.getByLabelText(
+          'Enter the name of the election you are auditing.'
+        ),
+        'Election Name'
+      )
 
-    fireEvent.change(screen.getByTestId('risk-limit'), {
-      target: { value: '5' },
-    })
+      screen.getByRole('heading', { name: 'Audit Board Data Entry' })
+      expect(screen.getByLabelText('Offline')).toBeChecked()
+      userEvent.click(screen.getByLabelText('Online'))
 
-    fireEvent.click(screen.getByText('Save & Next'), { bubbles: true })
+      screen.getByRole('heading', { name: 'Desired Risk Limit' })
+      screen.getByRole('option', { name: '1%' })
+      screen.getByRole('option', { name: '20%' })
+      // Defaults to 10% selected
+      screen.getByRole('option', { name: '10%', selected: true })
+      userEvent.selectOptions(
+        screen.getByLabelText(/Set the risk limit for the audit./),
+        '5'
+      )
 
-    await waitFor(() => {
-      expect(nextStage.activate).toHaveBeenCalledTimes(0)
+      screen.getByRole('heading', { name: 'Random Seed' })
+      userEvent.type(
+        screen.getByLabelText(
+          'Enter the random characters to seed the pseudo-random number generator.'
+        ),
+        '12345'
+      )
+
+      userEvent.click(screen.getByRole('button', { name: 'Save & Next' }))
+
+      await waitFor(() => {
+        expect(nextStage.activate).toHaveBeenCalled()
+      })
     })
   })
-})
 
-describe('Setup > BATCH_COMPARISON Settings', () => {
-  it('handles failure to update settings', async () => {
-    auditSettingsMock.mockReturnValue([
-      {
-        state: 'AL',
-        electionName: null,
-        online: null,
-        randomSeed: null,
-        riskLimit: null,
-        auditType: 'BATCH_COMPARISON',
-      },
-      async () => false,
-    ])
+  it('hides online/offline toggle for batch comparison audits', async () => {
+    const expectedCalls = [
+      aaApiCalls.getSettings(auditSettings.batchComparisonAll),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderSettings()
 
-    render(
-      <Router>
-        <Settings locked={false} nextStage={nextStage} prevStage={prevStage} />
-      </Router>
-    )
+      await screen.findByRole('heading', { name: 'Audit Settings' })
 
-    fireEvent.change(screen.getByLabelText('Election Name'), {
-      target: { value: 'Election Name' },
+      expect(
+        screen.queryByRole('heading', { name: 'Audit Board Data Entry' })
+      ).not.toBeInTheDocument()
     })
+  })
 
-    fireEvent.change(
-      screen.getByLabelText(
-        'Enter the random characters to seed the pseudo-random number generator.'
-      ),
-      {
-        target: { value: '12345' },
-      }
-    )
+  it('hides online/offline toggle for ballot comparison audits', async () => {
+    const expectedCalls = [
+      aaApiCalls.getSettings(auditSettings.ballotComparisonAll),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderSettings()
 
-    fireEvent.change(screen.getByTestId('risk-limit'), {
-      target: { value: '5' },
-    })
+      await screen.findByRole('heading', { name: 'Audit Settings' })
 
-    fireEvent.click(screen.getByText('Save & Next'), { bubbles: true })
-
-    await waitFor(() => {
-      expect(nextStage.activate).toHaveBeenCalledTimes(0)
+      expect(
+        screen.queryByRole('heading', { name: 'Audit Board Data Entry' })
+      ).not.toBeInTheDocument()
     })
   })
 })

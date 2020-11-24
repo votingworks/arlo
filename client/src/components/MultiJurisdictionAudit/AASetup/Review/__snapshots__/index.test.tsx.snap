@@ -39,10 +39,10 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
       Audit Settings
     </h4>
     <div
-      class="bp3-card bp3-elevation-2 sc-ckVGcZ kiOdNq"
+      class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
     >
       <table
-        class="sc-kEYyzF knqkQg"
+        class="sc-hMqMXs kgAdZo"
       >
         <tbody>
           <tr>
@@ -67,6 +67,7 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
             </td>
             <td>
               10
+              %
             </td>
           </tr>
           <tr>
@@ -100,7 +101,7 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
         </tbody>
       </table>
       <table
-        class="sc-hMqMXs fRxVKz"
+        class="sc-eNQAEJ jcIdqs"
       >
         <thead>
           <tr>
@@ -115,7 +116,7 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
         <tbody />
       </table>
       <table
-        class="sc-hMqMXs fRxVKz"
+        class="sc-eNQAEJ jcIdqs"
       >
         <thead>
           <tr>
@@ -227,10 +228,10 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
       Audit Settings
     </h4>
     <div
-      class="bp3-card bp3-elevation-2 sc-ckVGcZ kiOdNq"
+      class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
     >
       <table
-        class="sc-kEYyzF knqkQg"
+        class="sc-hMqMXs kgAdZo"
       >
         <tbody>
           <tr>
@@ -255,6 +256,7 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
             </td>
             <td>
               10
+              %
             </td>
           </tr>
           <tr>
@@ -288,7 +290,7 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
         </tbody>
       </table>
       <table
-        class="sc-hMqMXs fRxVKz"
+        class="sc-eNQAEJ jcIdqs"
       >
         <thead>
           <tr>
@@ -312,7 +314,7 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
         </tbody>
       </table>
       <table
-        class="sc-hMqMXs fRxVKz"
+        class="sc-eNQAEJ jcIdqs"
       >
         <thead>
           <tr>
@@ -415,10 +417,10 @@ exports[`Audit Setup > Review & Launch renders empty state 1`] = `
       Audit Settings
     </h4>
     <div
-      class="bp3-card bp3-elevation-2 sc-ckVGcZ kiOdNq"
+      class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
     >
       <table
-        class="sc-kEYyzF knqkQg"
+        class="sc-hMqMXs kgAdZo"
       >
         <tbody>
           <tr>
@@ -443,6 +445,7 @@ exports[`Audit Setup > Review & Launch renders empty state 1`] = `
             </td>
             <td>
               10
+              %
             </td>
           </tr>
           <tr>
@@ -476,7 +479,7 @@ exports[`Audit Setup > Review & Launch renders empty state 1`] = `
         </tbody>
       </table>
       <table
-        class="sc-hMqMXs fRxVKz"
+        class="sc-eNQAEJ jcIdqs"
       >
         <thead>
           <tr>
@@ -500,7 +503,7 @@ exports[`Audit Setup > Review & Launch renders empty state 1`] = `
         </tbody>
       </table>
       <table
-        class="sc-hMqMXs fRxVKz"
+        class="sc-eNQAEJ jcIdqs"
       >
         <thead>
           <tr>
@@ -525,7 +528,7 @@ exports[`Audit Setup > Review & Launch renders empty state 1`] = `
       data-testid="sample-size-form"
     >
       <div
-        class="sc-htoDjs dVdNvH"
+        class="sc-htoDjs jcQPAQ"
       >
         <div
           class="sc-dnqmqq kGMqKN"
@@ -533,7 +536,7 @@ exports[`Audit Setup > Review & Launch renders empty state 1`] = `
           Choose the initial sample size for each contest you would like to use for Round 1 of the audit from the options below.
         </div>
         <div
-          class="bp3-card bp3-elevation-2 sc-ckVGcZ kiOdNq"
+          class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
         >
           <div
             class="sc-dnqmqq kGMqKN"
@@ -690,10 +693,10 @@ exports[`Audit Setup > Review & Launch renders full state 1`] = `
       Audit Settings
     </h4>
     <div
-      class="bp3-card bp3-elevation-2 sc-ckVGcZ kiOdNq"
+      class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
     >
       <table
-        class="sc-kEYyzF knqkQg"
+        class="sc-hMqMXs kgAdZo"
       >
         <tbody>
           <tr>
@@ -718,6 +721,7 @@ exports[`Audit Setup > Review & Launch renders full state 1`] = `
             </td>
             <td>
               10
+              %
             </td>
           </tr>
           <tr>
@@ -751,7 +755,7 @@ exports[`Audit Setup > Review & Launch renders full state 1`] = `
         </tbody>
       </table>
       <table
-        class="sc-hMqMXs fRxVKz"
+        class="sc-eNQAEJ jcIdqs"
       >
         <thead>
           <tr>
@@ -775,7 +779,7 @@ exports[`Audit Setup > Review & Launch renders full state 1`] = `
         </tbody>
       </table>
       <table
-        class="sc-hMqMXs fRxVKz"
+        class="sc-eNQAEJ jcIdqs"
       >
         <thead>
           <tr>
@@ -800,7 +804,7 @@ exports[`Audit Setup > Review & Launch renders full state 1`] = `
       data-testid="sample-size-form"
     >
       <div
-        class="sc-htoDjs dVdNvH"
+        class="sc-htoDjs jcQPAQ"
       >
         <div
           class="sc-dnqmqq kGMqKN"
@@ -808,7 +812,7 @@ exports[`Audit Setup > Review & Launch renders full state 1`] = `
           Choose the initial sample size for each contest you would like to use for Round 1 of the audit from the options below.
         </div>
         <div
-          class="bp3-card bp3-elevation-2 sc-ckVGcZ kiOdNq"
+          class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
         >
           <div
             class="sc-dnqmqq kGMqKN"
@@ -965,10 +969,10 @@ exports[`Audit Setup > Review & Launch renders full state with batch comparison 
       Audit Settings
     </h4>
     <div
-      class="bp3-card bp3-elevation-2 sc-ckVGcZ kiOdNq"
+      class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
     >
       <table
-        class="sc-kEYyzF knqkQg"
+        class="sc-hMqMXs kgAdZo"
       >
         <tbody>
           <tr>
@@ -993,6 +997,7 @@ exports[`Audit Setup > Review & Launch renders full state with batch comparison 
             </td>
             <td>
               10
+              %
             </td>
           </tr>
           <tr>
@@ -1026,7 +1031,7 @@ exports[`Audit Setup > Review & Launch renders full state with batch comparison 
         </tbody>
       </table>
       <table
-        class="sc-hMqMXs fRxVKz"
+        class="sc-eNQAEJ jcIdqs"
       >
         <thead>
           <tr>
@@ -1050,7 +1055,7 @@ exports[`Audit Setup > Review & Launch renders full state with batch comparison 
         </tbody>
       </table>
       <table
-        class="sc-hMqMXs fRxVKz"
+        class="sc-eNQAEJ jcIdqs"
       >
         <thead>
           <tr>
@@ -1075,7 +1080,7 @@ exports[`Audit Setup > Review & Launch renders full state with batch comparison 
       data-testid="sample-size-form"
     >
       <div
-        class="sc-htoDjs dVdNvH"
+        class="sc-htoDjs jcQPAQ"
       >
         <div
           class="sc-dnqmqq kGMqKN"
@@ -1083,7 +1088,7 @@ exports[`Audit Setup > Review & Launch renders full state with batch comparison 
           Choose the initial sample size for each contest you would like to use for Round 1 of the audit from the options below.
         </div>
         <div
-          class="bp3-card bp3-elevation-2 sc-ckVGcZ kiOdNq"
+          class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
         >
           <div
             class="sc-dnqmqq kGMqKN"
@@ -1240,10 +1245,10 @@ exports[`Audit Setup > Review & Launch renders full state with batch comparison 
       Audit Settings
     </h4>
     <div
-      class="bp3-card bp3-elevation-2 sc-ckVGcZ kiOdNq"
+      class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
     >
       <table
-        class="sc-kEYyzF knqkQg"
+        class="sc-hMqMXs kgAdZo"
       >
         <tbody>
           <tr>
@@ -1268,6 +1273,7 @@ exports[`Audit Setup > Review & Launch renders full state with batch comparison 
             </td>
             <td>
               10
+              %
             </td>
           </tr>
           <tr>
@@ -1301,7 +1307,7 @@ exports[`Audit Setup > Review & Launch renders full state with batch comparison 
         </tbody>
       </table>
       <table
-        class="sc-hMqMXs fRxVKz"
+        class="sc-eNQAEJ jcIdqs"
       >
         <thead>
           <tr>
@@ -1325,7 +1331,7 @@ exports[`Audit Setup > Review & Launch renders full state with batch comparison 
         </tbody>
       </table>
       <table
-        class="sc-hMqMXs fRxVKz"
+        class="sc-eNQAEJ jcIdqs"
       >
         <thead>
           <tr>
@@ -1428,10 +1434,10 @@ exports[`Audit Setup > Review & Launch renders full state with jurisdictions wit
       Audit Settings
     </h4>
     <div
-      class="bp3-card bp3-elevation-2 sc-ckVGcZ kiOdNq"
+      class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
     >
       <table
-        class="sc-kEYyzF knqkQg"
+        class="sc-hMqMXs kgAdZo"
       >
         <tbody>
           <tr>
@@ -1456,6 +1462,7 @@ exports[`Audit Setup > Review & Launch renders full state with jurisdictions wit
             </td>
             <td>
               10
+              %
             </td>
           </tr>
           <tr>
@@ -1489,7 +1496,7 @@ exports[`Audit Setup > Review & Launch renders full state with jurisdictions wit
         </tbody>
       </table>
       <table
-        class="sc-hMqMXs fRxVKz"
+        class="sc-eNQAEJ jcIdqs"
       >
         <thead>
           <tr>
@@ -1513,7 +1520,7 @@ exports[`Audit Setup > Review & Launch renders full state with jurisdictions wit
         </tbody>
       </table>
       <table
-        class="sc-hMqMXs fRxVKz"
+        class="sc-eNQAEJ jcIdqs"
       >
         <thead>
           <tr>
@@ -1547,7 +1554,7 @@ exports[`Audit Setup > Review & Launch renders full state with jurisdictions wit
       data-testid="sample-size-form"
     >
       <div
-        class="sc-htoDjs dVdNvH"
+        class="sc-htoDjs jcQPAQ"
       >
         <div
           class="sc-dnqmqq kGMqKN"
@@ -1555,7 +1562,7 @@ exports[`Audit Setup > Review & Launch renders full state with jurisdictions wit
           Choose the initial sample size for each contest you would like to use for Round 1 of the audit from the options below.
         </div>
         <div
-          class="bp3-card bp3-elevation-2 sc-ckVGcZ kiOdNq"
+          class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
         >
           <div
             class="sc-dnqmqq kGMqKN"
@@ -1712,10 +1719,10 @@ exports[`Audit Setup > Review & Launch renders full state with offline setting 1
       Audit Settings
     </h4>
     <div
-      class="bp3-card bp3-elevation-2 sc-ckVGcZ kiOdNq"
+      class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
     >
       <table
-        class="sc-kEYyzF knqkQg"
+        class="sc-hMqMXs kgAdZo"
       >
         <tbody>
           <tr>
@@ -1740,6 +1747,7 @@ exports[`Audit Setup > Review & Launch renders full state with offline setting 1
             </td>
             <td>
               10
+              %
             </td>
           </tr>
           <tr>
@@ -1773,7 +1781,7 @@ exports[`Audit Setup > Review & Launch renders full state with offline setting 1
         </tbody>
       </table>
       <table
-        class="sc-hMqMXs fRxVKz"
+        class="sc-eNQAEJ jcIdqs"
       >
         <thead>
           <tr>
@@ -1797,7 +1805,7 @@ exports[`Audit Setup > Review & Launch renders full state with offline setting 1
         </tbody>
       </table>
       <table
-        class="sc-hMqMXs fRxVKz"
+        class="sc-eNQAEJ jcIdqs"
       >
         <thead>
           <tr>
@@ -1822,7 +1830,7 @@ exports[`Audit Setup > Review & Launch renders full state with offline setting 1
       data-testid="sample-size-form"
     >
       <div
-        class="sc-htoDjs dVdNvH"
+        class="sc-htoDjs jcQPAQ"
       >
         <div
           class="sc-dnqmqq kGMqKN"
@@ -1830,7 +1838,7 @@ exports[`Audit Setup > Review & Launch renders full state with offline setting 1
           Choose the initial sample size for each contest you would like to use for Round 1 of the audit from the options below.
         </div>
         <div
-          class="bp3-card bp3-elevation-2 sc-ckVGcZ kiOdNq"
+          class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
         >
           <div
             class="sc-dnqmqq kGMqKN"

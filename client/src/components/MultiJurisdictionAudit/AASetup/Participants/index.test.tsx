@@ -56,11 +56,7 @@ const fillAndSubmit = async () => {
     </Router>
   )
 
-  fireEvent.change(await screen.findByTestId('state-field'), {
-    target: { value: 'WA' },
-  })
-
-  const csvInput = screen.getByLabelText('Select a CSV...')
+  const csvInput = await screen.findByLabelText('Select a CSV...')
   fireEvent.change(csvInput, { target: { files: [] } })
   fireEvent.blur(csvInput)
   await waitFor(() =>
@@ -138,7 +134,7 @@ describe('Audit Setup > Participants', () => {
     expect(container).toMatchSnapshot()
   })
 
-  it('selects a state and submits it', async () => {
+  it('submits', async () => {
     apiMock
       .mockResolvedValueOnce({ file: null, processing: null })
       .mockResolvedValue({ status: 'ok' })
@@ -165,28 +161,6 @@ describe('Audit Setup > Participants', () => {
     await waitFor(() => {
       expect(apiMock).toBeCalledTimes(2)
       expect(toastSpy).toBeCalledTimes(1)
-      expect(nextStage.activate).toHaveBeenCalledTimes(0)
-    })
-  })
-
-  it('handles failure to update settings', async () => {
-    auditSettingsMock.mockReturnValue([
-      {
-        state: null,
-        electionName: null,
-        online: null,
-        randomSeed: null,
-        riskLimit: null,
-      },
-      async () => false,
-    ])
-
-    await fillAndSubmit()
-
-    await waitFor(() => {
-      expect(apiMock).toBeCalledTimes(1)
-      expect(toastSpy).toBeCalledTimes(0)
-      expect(checkAndToastMock).toBeCalledTimes(0)
       expect(nextStage.activate).toHaveBeenCalledTimes(0)
     })
   })

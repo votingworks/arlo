@@ -6,7 +6,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
     class="sc-bdVaJa bKocXA"
   >
     <div
-      class="bp3-callout sc-eHgmQL gudjM"
+      class="bp3-callout sc-hSdWYo gMDgEE"
     >
       <div
         class="sc-bwzfXH jiphYj"
@@ -26,7 +26,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
             0 of 2 jurisdictions have completed file uploads.
           </p>
           <span
-            class="bp3-tag sc-kjoXOD MZvgy"
+            class="bp3-tag sc-gisBJw cMOlJh"
           >
             <span
               class="bp3-text-overflow-ellipsis bp3-fill"
@@ -67,7 +67,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
         </ul>
       </div>
       <div
-        class="sc-eqIVtm iNmiJy"
+        class="sc-dVhcbM fuvLzy"
       >
         <h2
           class="bp3-heading sc-htpNat fysvnw"
@@ -80,7 +80,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
            To view a single jurisdiction's data, click the name of the jurisdiction.
         </p>
         <div
-          class="sc-fAjcbJ AALyq"
+          class="sc-eqIVtm fSLOun"
         >
           <label
             class="bp3-control bp3-switch"
@@ -109,7 +109,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
           </div>
         </div>
         <table
-          class="sc-kEYyzF kuHQA"
+          class="sc-hMqMXs cMJMNh"
           role="table"
         >
           <thead>
@@ -251,7 +251,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
                 role="cell"
               >
                 <span
-                  class="bp3-tag bp3-interactive bp3-minimal sc-fBuWsC doFBeY"
+                  class="bp3-tag bp3-interactive bp3-minimal sc-jhAzac foPKCQ"
                   tabindex="0"
                 >
                   <span
@@ -288,7 +288,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
                 role="cell"
               >
                 <span
-                  class="bp3-tag bp3-interactive bp3-minimal sc-fBuWsC doFBeY"
+                  class="bp3-tag bp3-interactive bp3-minimal sc-jhAzac foPKCQ"
                   tabindex="0"
                 >
                   <span
@@ -318,7 +318,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 2`] = `
     class="sc-bdVaJa bKocXA"
   >
     <div
-      class="bp3-callout sc-eHgmQL gudjM"
+      class="bp3-callout sc-hSdWYo gMDgEE"
     >
       <div
         class="sc-bwzfXH jiphYj"
@@ -338,7 +338,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 2`] = `
             0 of 2 jurisdictions have completed file uploads.
           </p>
           <span
-            class="bp3-tag sc-kjoXOD MZvgy"
+            class="bp3-tag sc-gisBJw cMOlJh"
           >
             <span
               class="bp3-text-overflow-ellipsis bp3-fill"
@@ -379,7 +379,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 2`] = `
         </ul>
       </div>
       <div
-        class="sc-eqIVtm iNmiJy"
+        class="sc-dVhcbM fuvLzy"
       >
         <h2
           class="bp3-heading sc-htpNat fysvnw"
@@ -392,7 +392,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 2`] = `
            To view a single jurisdiction's data, click the name of the jurisdiction.
         </p>
         <div
-          class="sc-fAjcbJ AALyq"
+          class="sc-eqIVtm fSLOun"
         >
           <label
             class="bp3-control bp3-switch"
@@ -421,7 +421,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 2`] = `
           </div>
         </div>
         <table
-          class="sc-kEYyzF kuHQA"
+          class="sc-hMqMXs cMJMNh"
           role="table"
         >
           <thead>
@@ -563,7 +563,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 2`] = `
                 role="cell"
               >
                 <span
-                  class="bp3-tag bp3-interactive bp3-minimal sc-fBuWsC doFBeY"
+                  class="bp3-tag bp3-interactive bp3-minimal sc-jhAzac foPKCQ"
                   tabindex="0"
                 >
                   <span
@@ -600,7 +600,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 2`] = `
                 role="cell"
               >
                 <span
-                  class="bp3-tag bp3-interactive bp3-minimal sc-fBuWsC doFBeY"
+                  class="bp3-tag bp3-interactive bp3-minimal sc-jhAzac foPKCQ"
                   tabindex="0"
                 >
                   <span
@@ -630,7 +630,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 3`] = `
     class="sc-bdVaJa bKocXA"
   >
     <div
-      class="bp3-callout sc-eHgmQL gudjM"
+      class="bp3-callout sc-hSdWYo gMDgEE"
     >
       <div
         class="sc-bwzfXH jiphYj"
@@ -650,7 +650,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 3`] = `
             0 of 2 jurisdictions have completed file uploads.
           </p>
           <span
-            class="bp3-tag sc-kjoXOD MZvgy"
+            class="bp3-tag sc-gisBJw cMOlJh"
           >
             <span
               class="bp3-text-overflow-ellipsis bp3-fill"
@@ -691,7 +691,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 3`] = `
         </ul>
       </div>
       <div
-        class="sc-eqIVtm iNmiJy"
+        class="sc-dVhcbM fuvLzy"
       >
         <h2
           class="bp3-heading sc-htpNat fysvnw"
@@ -704,7 +704,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 3`] = `
            To view a single jurisdiction's data, click the name of the jurisdiction.
         </p>
         <div
-          class="sc-fAjcbJ AALyq"
+          class="sc-eqIVtm fSLOun"
         >
           <label
             class="bp3-control bp3-switch"
@@ -733,7 +733,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 3`] = `
           </div>
         </div>
         <table
-          class="sc-kEYyzF kuHQA"
+          class="sc-hMqMXs cMJMNh"
           role="table"
         >
           <thead>
@@ -875,7 +875,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 3`] = `
                 role="cell"
               >
                 <span
-                  class="bp3-tag bp3-interactive bp3-minimal sc-fBuWsC doFBeY"
+                  class="bp3-tag bp3-interactive bp3-minimal sc-jhAzac foPKCQ"
                   tabindex="0"
                 >
                   <span
@@ -912,7 +912,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 3`] = `
                 role="cell"
               >
                 <span
-                  class="bp3-tag bp3-interactive bp3-minimal sc-fBuWsC doFBeY"
+                  class="bp3-tag bp3-interactive bp3-minimal sc-jhAzac foPKCQ"
                   tabindex="0"
                 >
                   <span
@@ -942,7 +942,7 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
     class="sc-bdVaJa bKocXA"
   >
     <div
-      class="bp3-callout sc-eHgmQL gudjM"
+      class="bp3-callout sc-hSdWYo gMDgEE"
     >
       <div
         class="sc-bwzfXH jiphYj"
@@ -962,7 +962,7 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
             0 of 2 jurisdictions have completed file uploads.
           </p>
           <span
-            class="bp3-tag sc-kjoXOD MZvgy"
+            class="bp3-tag sc-gisBJw cMOlJh"
           >
             <span
               class="bp3-text-overflow-ellipsis bp3-fill"
@@ -1140,356 +1140,7 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
             Participants
           </h2>
           <div
-            class="sc-gZMcBi lhlqaq"
-          >
-            <label
-              for="state"
-            >
-              Choose your state from the options below
-              <br />
-              <div
-                class="bp3-html-select sc-jTzLTM hmeDmq"
-              >
-                <select
-                  data-testid="state-field"
-                  field="[object Object]"
-                  form="[object Object]"
-                  id="state"
-                >
-                  <option
-                    value=""
-                  />
-                  <option
-                    label="Alabama"
-                    value="AL"
-                  >
-                    Alabama
-                  </option>
-                  <option
-                    label="Alaska"
-                    value="AK"
-                  >
-                    Alaska
-                  </option>
-                  <option
-                    label="Arizona"
-                    value="AZ"
-                  >
-                    Arizona
-                  </option>
-                  <option
-                    label="Arkansas"
-                    value="AR"
-                  >
-                    Arkansas
-                  </option>
-                  <option
-                    label="California"
-                    value="CA"
-                  >
-                    California
-                  </option>
-                  <option
-                    label="Colorado"
-                    value="CO"
-                  >
-                    Colorado
-                  </option>
-                  <option
-                    label="Connecticut"
-                    value="CT"
-                  >
-                    Connecticut
-                  </option>
-                  <option
-                    label="Delaware"
-                    value="DE"
-                  >
-                    Delaware
-                  </option>
-                  <option
-                    label="District Of Columbia"
-                    value="DC"
-                  >
-                    District Of Columbia
-                  </option>
-                  <option
-                    label="Florida"
-                    value="FL"
-                  >
-                    Florida
-                  </option>
-                  <option
-                    label="Georgia"
-                    value="GA"
-                  >
-                    Georgia
-                  </option>
-                  <option
-                    label="Hawaii"
-                    value="HI"
-                  >
-                    Hawaii
-                  </option>
-                  <option
-                    label="Idaho"
-                    value="ID"
-                  >
-                    Idaho
-                  </option>
-                  <option
-                    label="Illinois"
-                    value="IL"
-                  >
-                    Illinois
-                  </option>
-                  <option
-                    label="Indiana"
-                    value="IN"
-                  >
-                    Indiana
-                  </option>
-                  <option
-                    label="Iowa"
-                    value="IA"
-                  >
-                    Iowa
-                  </option>
-                  <option
-                    label="Kansas"
-                    value="KS"
-                  >
-                    Kansas
-                  </option>
-                  <option
-                    label="Kentucky"
-                    value="KY"
-                  >
-                    Kentucky
-                  </option>
-                  <option
-                    label="Louisiana"
-                    value="LA"
-                  >
-                    Louisiana
-                  </option>
-                  <option
-                    label="Maine"
-                    value="ME"
-                  >
-                    Maine
-                  </option>
-                  <option
-                    label="Maryland"
-                    value="MD"
-                  >
-                    Maryland
-                  </option>
-                  <option
-                    label="Massachusetts"
-                    value="MA"
-                  >
-                    Massachusetts
-                  </option>
-                  <option
-                    label="Michigan"
-                    value="MI"
-                  >
-                    Michigan
-                  </option>
-                  <option
-                    label="Minnesota"
-                    value="MN"
-                  >
-                    Minnesota
-                  </option>
-                  <option
-                    label="Mississippi"
-                    value="MS"
-                  >
-                    Mississippi
-                  </option>
-                  <option
-                    label="Missouri"
-                    value="MO"
-                  >
-                    Missouri
-                  </option>
-                  <option
-                    label="Montana"
-                    value="MT"
-                  >
-                    Montana
-                  </option>
-                  <option
-                    label="Nebraska"
-                    value="NE"
-                  >
-                    Nebraska
-                  </option>
-                  <option
-                    label="Nevada"
-                    value="NV"
-                  >
-                    Nevada
-                  </option>
-                  <option
-                    label="New Hampshire"
-                    value="NH"
-                  >
-                    New Hampshire
-                  </option>
-                  <option
-                    label="New Jersey"
-                    value="NJ"
-                  >
-                    New Jersey
-                  </option>
-                  <option
-                    label="New Mexico"
-                    value="NM"
-                  >
-                    New Mexico
-                  </option>
-                  <option
-                    label="New York"
-                    value="NY"
-                  >
-                    New York
-                  </option>
-                  <option
-                    label="North Carolina"
-                    value="NC"
-                  >
-                    North Carolina
-                  </option>
-                  <option
-                    label="North Dakota"
-                    value="ND"
-                  >
-                    North Dakota
-                  </option>
-                  <option
-                    label="Ohio"
-                    value="OH"
-                  >
-                    Ohio
-                  </option>
-                  <option
-                    label="Oklahoma"
-                    value="OK"
-                  >
-                    Oklahoma
-                  </option>
-                  <option
-                    label="Oregon"
-                    value="OR"
-                  >
-                    Oregon
-                  </option>
-                  <option
-                    label="Pennsylvania"
-                    value="PA"
-                  >
-                    Pennsylvania
-                  </option>
-                  <option
-                    label="Rhode Island"
-                    value="RI"
-                  >
-                    Rhode Island
-                  </option>
-                  <option
-                    label="South Carolina"
-                    value="SC"
-                  >
-                    South Carolina
-                  </option>
-                  <option
-                    label="South Dakota"
-                    value="SD"
-                  >
-                    South Dakota
-                  </option>
-                  <option
-                    label="Tennessee"
-                    value="TN"
-                  >
-                    Tennessee
-                  </option>
-                  <option
-                    label="Texas"
-                    value="TX"
-                  >
-                    Texas
-                  </option>
-                  <option
-                    label="Utah"
-                    value="UT"
-                  >
-                    Utah
-                  </option>
-                  <option
-                    label="Vermont"
-                    value="VT"
-                  >
-                    Vermont
-                  </option>
-                  <option
-                    label="Virginia"
-                    value="VA"
-                  >
-                    Virginia
-                  </option>
-                  <option
-                    label="Washington"
-                    value="WA"
-                  >
-                    Washington
-                  </option>
-                  <option
-                    label="West Virginia"
-                    value="WV"
-                  >
-                    West Virginia
-                  </option>
-                  <option
-                    label="Wisconsin"
-                    value="WI"
-                  >
-                    Wisconsin
-                  </option>
-                  <option
-                    label="Wyoming"
-                    value="WY"
-                  >
-                    Wyoming
-                  </option>
-                </select>
-                <span
-                  class="bp3-icon bp3-icon-double-caret-vertical"
-                  icon="double-caret-vertical"
-                >
-                  <svg
-                    data-icon="double-caret-vertical"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    width="16"
-                  >
-                    <desc>
-                      double-caret-vertical
-                    </desc>
-                    <path
-                      d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                      fill-rule="evenodd"
-                    />
-                  </svg>
-                </span>
-              </div>
-            </label>
-          </div>
-          <div
-            class="sc-gZMcBi lhlqaq"
+            class="sc-gZMcBi ekJoNA"
           >
             <div
               class="sc-gqjmRU fOytwc"
@@ -1507,7 +1158,7 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
             </div>
           </div>
           <div
-            class="sc-gZMcBi lhlqaq"
+            class="sc-gZMcBi ekJoNA"
           >
             <span>
               file name
@@ -1563,7 +1214,7 @@ exports[`JA setup renders initial state 1`] = `
     class="sc-bdVaJa bKocXA"
   >
     <div
-      class="bp3-callout sc-eHgmQL gudjM"
+      class="bp3-callout sc-hSdWYo gMDgEE"
     >
       <div
         class="sc-bwzfXH jiphYj"
@@ -1583,7 +1234,7 @@ exports[`JA setup renders initial state 1`] = `
       </div>
     </div>
     <div
-      class="sc-bwzfXH sc-gisBJw giLvNa"
+      class="sc-bwzfXH sc-caSCKo kUEbdR"
     >
       <h2
         class="bp3-heading sc-htpNat fysvnw"
@@ -1598,7 +1249,7 @@ exports[`JA setup renders initial state 1`] = `
             class="bp3-heading sc-htpNat fysvnw"
           />
           <div
-            class="sc-gZMcBi lhlqaq"
+            class="sc-gZMcBi ekJoNA"
           >
             <h4
               class="bp3-heading"
@@ -1621,7 +1272,7 @@ exports[`JA setup renders initial state 1`] = `
             </div>
           </div>
           <div
-            class="sc-gZMcBi lhlqaq"
+            class="sc-gZMcBi ekJoNA"
           >
             <label
               class="bp3-file-input"
@@ -1660,7 +1311,7 @@ exports[`JA setup renders initial state 1`] = `
             class="bp3-heading sc-htpNat fysvnw"
           />
           <div
-            class="sc-gZMcBi lhlqaq"
+            class="sc-gZMcBi ekJoNA"
           >
             <h4
               class="bp3-heading"
@@ -1683,7 +1334,7 @@ exports[`JA setup renders initial state 1`] = `
             </div>
           </div>
           <div
-            class="sc-gZMcBi lhlqaq"
+            class="sc-gZMcBi ekJoNA"
           >
             <label
               class="bp3-file-input bp3-disabled"
@@ -1728,7 +1379,7 @@ exports[`JA setup submits ballot manifest 1`] = `
     class="sc-bdVaJa bKocXA"
   >
     <div
-      class="bp3-callout sc-eHgmQL gudjM"
+      class="bp3-callout sc-hSdWYo gMDgEE"
     >
       <div
         class="sc-bwzfXH jiphYj"
@@ -1748,7 +1399,7 @@ exports[`JA setup submits ballot manifest 1`] = `
       </div>
     </div>
     <div
-      class="sc-bwzfXH sc-gisBJw giLvNa"
+      class="sc-bwzfXH sc-caSCKo kUEbdR"
     >
       <h2
         class="bp3-heading sc-htpNat fysvnw"
@@ -1763,7 +1414,7 @@ exports[`JA setup submits ballot manifest 1`] = `
             class="bp3-heading sc-htpNat fysvnw"
           />
           <div
-            class="sc-gZMcBi lhlqaq"
+            class="sc-gZMcBi ekJoNA"
           >
             <h4
               class="bp3-heading"
@@ -1786,7 +1437,7 @@ exports[`JA setup submits ballot manifest 1`] = `
             </div>
           </div>
           <div
-            class="sc-gZMcBi lhlqaq"
+            class="sc-gZMcBi ekJoNA"
           >
             <p>
               <strong>
@@ -1836,7 +1487,7 @@ exports[`JA setup submits ballot manifest 1`] = `
             class="bp3-heading sc-htpNat fysvnw"
           />
           <div
-            class="sc-gZMcBi lhlqaq"
+            class="sc-gZMcBi ekJoNA"
           >
             <h4
               class="bp3-heading"
@@ -1859,7 +1510,7 @@ exports[`JA setup submits ballot manifest 1`] = `
             </div>
           </div>
           <div
-            class="sc-gZMcBi lhlqaq"
+            class="sc-gZMcBi ekJoNA"
           >
             <label
               class="bp3-file-input"
@@ -1901,7 +1552,7 @@ exports[`JA setup submits batch tallies 1`] = `
     class="sc-bdVaJa bKocXA"
   >
     <div
-      class="bp3-callout sc-eHgmQL gudjM"
+      class="bp3-callout sc-hSdWYo gMDgEE"
     >
       <div
         class="sc-bwzfXH jiphYj"
@@ -1924,7 +1575,7 @@ exports[`JA setup submits batch tallies 1`] = `
       </div>
     </div>
     <div
-      class="sc-bwzfXH sc-gisBJw giLvNa"
+      class="sc-bwzfXH sc-caSCKo kUEbdR"
     >
       <h2
         class="bp3-heading sc-htpNat fysvnw"
@@ -1939,7 +1590,7 @@ exports[`JA setup submits batch tallies 1`] = `
             class="bp3-heading sc-htpNat fysvnw"
           />
           <div
-            class="sc-gZMcBi lhlqaq"
+            class="sc-gZMcBi ekJoNA"
           >
             <h4
               class="bp3-heading"
@@ -1962,7 +1613,7 @@ exports[`JA setup submits batch tallies 1`] = `
             </div>
           </div>
           <div
-            class="sc-gZMcBi lhlqaq"
+            class="sc-gZMcBi ekJoNA"
           >
             <p>
               <strong>
@@ -2012,7 +1663,7 @@ exports[`JA setup submits batch tallies 1`] = `
             class="bp3-heading sc-htpNat fysvnw"
           />
           <div
-            class="sc-gZMcBi lhlqaq"
+            class="sc-gZMcBi ekJoNA"
           >
             <h4
               class="bp3-heading"
@@ -2035,7 +1686,7 @@ exports[`JA setup submits batch tallies 1`] = `
             </div>
           </div>
           <div
-            class="sc-gZMcBi lhlqaq"
+            class="sc-gZMcBi ekJoNA"
           >
             <p>
               <strong>

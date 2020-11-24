@@ -12,7 +12,8 @@ import { jurisdictionMocks } from '../../useSetupMenuItems/_mocks'
 import { withMockFetch, renderWithRouter } from '../../../testUtilities'
 import { ISampleSizes } from './useSampleSizes'
 import { IJurisdiction } from '../../useJurisdictions'
-import { IAuditSettings, IContest } from '../../../../types'
+import { IContest } from '../../../../types'
+import { IAuditSettings } from '../../useAuditSettings'
 
 const apiCalls = {
   getSettings: (response: IAuditSettings) => ({

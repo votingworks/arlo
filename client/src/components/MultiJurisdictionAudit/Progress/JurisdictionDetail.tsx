@@ -17,12 +17,12 @@ import {
   JurisdictionRoundStatus,
 } from '../useJurisdictions'
 import { JAFileDownloadButtons } from '../RoundManagement'
-import { IAuditSettings } from '../../../types'
 import { IRound } from '../useRoundsAuditAdmin'
 import useAuditBoards from '../useAuditBoards'
 import useBallots from '../RoundManagement/useBallots'
 import StatusTag from '../../Atoms/StatusTag'
 import { api } from '../../utilities'
+import { IAuditSettings } from '../useAuditSettings'
 
 const FileStatusTag = ({
   processing,

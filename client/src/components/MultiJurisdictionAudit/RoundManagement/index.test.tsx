@@ -15,10 +15,11 @@ import {
   auditBoardMocks,
   contestMocks,
 } from '../useSetupMenuItems/_mocks'
-import { IAuditSettings, IContest } from '../../../types'
+import { IContest } from '../../../types'
 import { IBatch } from './useBatchResults'
 import { jaApiCalls } from '../_mocks'
 import AuthDataProvider from '../../UserContext'
+import { IAuditSettings } from '../useAuditSettings'
 
 const renderView = (props: IRoundManagementProps) =>
   renderWithRouter(

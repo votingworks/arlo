@@ -12,13 +12,14 @@ import styled from 'styled-components'
 import { Formik, FormikProps, Field } from 'formik'
 import { useAuthDataContext } from './UserContext'
 import { api } from './utilities'
-import { IAuditSettings, IUserMeta } from '../types'
+import { IUserMeta } from '../types'
 import LinkButton from './Atoms/LinkButton'
 import FormSection from './Atoms/Form/FormSection'
 import FormButton from './Atoms/Form/FormButton'
 import { Wrapper, Inner } from './Atoms/Wrapper'
 import FormField from './Atoms/Form/FormField'
 import { groupBy, sortBy } from '../utils/array'
+import { IAuditSettings } from './MultiJurisdictionAudit/useAuditSettings'
 
 const HomeScreen: React.FC = () => {
   const { isAuthenticated, meta } = useAuthDataContext()

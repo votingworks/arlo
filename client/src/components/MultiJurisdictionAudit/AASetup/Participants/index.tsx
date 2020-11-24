@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useState, useEffect } from 'react'
-import { Formik, FormikProps, Field, ErrorMessage, useFormik } from 'formik'
+import { Formik, FormikProps, useFormik } from 'formik'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import styled from 'styled-components'
@@ -9,17 +9,15 @@ import { HTMLSelect, Spinner, FileInput, H5 } from '@blueprintjs/core'
 import FormWrapper from '../../../Atoms/Form/FormWrapper'
 import FormButtonBar from '../../../Atoms/Form/FormButtonBar'
 import FormButton from '../../../Atoms/Form/FormButton'
-import labelValueStates from './states'
 import { ErrorLabel } from '../../../Atoms/Form/_helpers'
 import FormSection, {
   FormSectionDescription,
 } from '../../../Atoms/Form/FormSection'
 import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
-import useAuditSettings from '../../useAuditSettings'
+import useAuditSettings, { IAuditSettings } from '../../useAuditSettings'
 import useJurisdictionFile from './useJurisdictionFile'
 import { IFileInfo } from '../../useJurisdictions'
 import useStandardizedContestFile from './useStandardizedContestFile'
-import { IAuditSettings } from '../../../../types'
 
 export const Select = styled(HTMLSelect)`
   margin-top: 5px;
@@ -32,9 +30,9 @@ interface IProps {
 
 type IFileSubmitStatus = 'submit' | 'success' | 'failure' | null
 
-const Participants: React.FC<IProps> = ({ locked, nextStage }: IProps) => {
+const Participants: React.FC<IProps> = ({ nextStage }: IProps) => {
   const { electionId } = useParams<{ electionId: string }>()
-  const [auditSettings, updateSettings] = useAuditSettings(electionId)
+  const [auditSettings] = useAuditSettings(electionId)
   const [jurisdictionFileStatus, setJurisdictionFileStatus] = useState<
     IFileSubmitStatus
   >(null)
@@ -65,9 +63,7 @@ const Participants: React.FC<IProps> = ({ locked, nextStage }: IProps) => {
 
   const isBallotComparison = auditSettings.auditType === 'BALLOT_COMPARISON'
 
-  const submit = async ({ state }: { state: IAuditSettings['state'] }) => {
-    const response = await updateSettings({ state })
-    if (!response) return
+  const submit = () => {
     setJurisdictionFileStatus('submit') // tell the jurisdiction file component to submit
     if (isBallotComparison) setContestFileStatus('submit') // tell the contest file component to submit
   }
@@ -75,42 +71,16 @@ const Participants: React.FC<IProps> = ({ locked, nextStage }: IProps) => {
   return (
     <Formik
       initialValues={{ state: auditSettings.state || '' }}
-      validationSchema={Yup.object().shape({
-        state: Yup.string().required('Required'),
-      })}
       onSubmit={submit}
       enableReinitialize
     >
-      {({
-        handleSubmit,
-        setFieldValue,
-        values,
-      }: FormikProps<{ state: IAuditSettings['state'] }>) => (
+      {({ handleSubmit }: FormikProps<{ state: IAuditSettings['state'] }>) => (
         <form data-testid="form-one">
           <FormWrapper
             title={
               isBallotComparison ? 'Participants & Contests' : 'Participants'
             }
           >
-            <FormSection>
-              <label htmlFor="state">
-                Choose your state from the options below
-                <br />
-                <Field
-                  component={Select}
-                  id="state"
-                  data-testid="state-field"
-                  name="state"
-                  onChange={(e: React.FormEvent<HTMLSelectElement>) =>
-                    setFieldValue('state', e.currentTarget.value)
-                  }
-                  disabled={locked}
-                  value={values.state || ''}
-                  options={[{ value: '' }, ...labelValueStates]}
-                />
-              </label>
-              <ErrorMessage name="state" component={ErrorLabel} />
-            </FormSection>
             {isBallotComparison && <H5>Participants File</H5>}
             <JurisdictionFileForm
               electionId={electionId}

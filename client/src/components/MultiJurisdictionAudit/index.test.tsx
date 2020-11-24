@@ -114,7 +114,7 @@ describe('AA setup flow', () => {
       aaApiCalls.getSettings(auditSettings.all),
       ...loadEach,
       aaApiCalls.getSettings(auditSettings.all),
-      aaApiCalls.putSettings,
+      aaApiCalls.putSettings(auditSettings.all),
       ...loadEach,
       aaApiCalls.getSettings(auditSettings.all),
       aaApiCalls.getJurisdictions,

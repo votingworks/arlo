@@ -3,7 +3,6 @@ import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { ButtonGroup, Button, H2, H3 } from '@blueprintjs/core'
 import { Wrapper } from '../../Atoms/Wrapper'
-import { IAuditSettings } from '../../../types'
 import { apiDownload } from '../../utilities'
 import CreateAuditBoards from './CreateAuditBoards'
 import RoundProgress from './RoundProgress'
@@ -21,6 +20,7 @@ import { useAuthDataContext } from '../../UserContext'
 import useBallots, { IBallot } from './useBallots'
 import { IRound } from '../useRoundsAuditAdmin'
 import OfflineBatchRoundDataEntry from './OfflineBatchRoundDataEntry'
+import { IAuditSettings } from '../useAuditSettings'
 
 const PaddedWrapper = styled(Wrapper)`
   flex-direction: column;
