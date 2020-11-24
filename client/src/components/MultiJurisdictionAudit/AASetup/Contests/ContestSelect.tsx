@@ -80,7 +80,9 @@ const ContestSelect: React.FC<IProps> = ({
           }: React.ChangeEvent<HTMLInputElement>) =>
             setFieldValue(`contests[${index}]`, { ...contest, checked })
           }
-          disabled={standardizedContests[index].isTargeted !== isTargeted}
+          disabled={values.contests.some(
+            c => c.id === contest.id && c.isTargeted !== isTargeted
+          )}
         />
       ),
     },
