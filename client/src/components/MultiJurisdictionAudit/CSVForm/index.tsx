@@ -126,9 +126,7 @@ const CSVFileForm = ({
                     processing.status === FileProcessingStatus.PROCESSED && (
                       <SuccessLabel>
                         Upload successfully completed at{' '}
-                        {new Date(
-                          `${processing.completedAt}Z`
-                        ).toLocaleString()}
+                        {new Date(`${processing.completedAt}`).toLocaleString()}
                         !
                       </SuccessLabel>
                     )}

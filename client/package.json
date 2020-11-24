@@ -7,7 +7,7 @@
     "lint": "eslint --ext ts --ext tsx src",
     "lint:fix": "yarn lint --fix",
     "start": "react-scripts start",
-    "test": "is-ci \"test:ci\" \"test:watch\"",
+    "test": "TZ=UTC is-ci \"test:ci\" \"test:watch\"",
     "test:ci": "CI=true tsc && react-scripts test --maxWorkers 4 --env=jest-environment-jsdom-sixteen --coverage",
     "test:coverage": "react-scripts test --coverage --watchAll=false --env=jest-environment-jsdom-sixteen",
     "test:update": "react-scripts test -u  --watchAll=false --env=jest-environment-jsdom-sixteen",
