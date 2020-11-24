@@ -46,6 +46,7 @@ def set_logged_in_user(
 ):
     with client.session_transaction() as session:  # type: ignore
         session[_USER] = {"type": user_type, "key": user_key}
+        session.permanent = True
 
 
 def clear_logged_in_user(client: FlaskClient):
@@ -56,6 +57,7 @@ def clear_logged_in_user(client: FlaskClient):
 def set_superadmin(client: FlaskClient):
     with client.session_transaction() as session:  # type: ignore
         session[_SUPERADMIN] = True
+        session.permanent = True
 
 
 def clear_superadmin(client: FlaskClient):

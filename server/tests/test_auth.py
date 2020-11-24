@@ -120,8 +120,9 @@ def test_superadmin_callback(
             assert urlparse(rv.location).path == "/superadmin/"
 
             with client.session_transaction() as session:  # type: ignore
-                assert session["_superadmin"]
-                assert list(session.keys()) == ["_superadmin"]
+                assert session["_superadmin"] is True
+                assert session["_permanent"] is True
+                assert len(session.keys()) == 2
 
             assert auth0_sa.authorize_access_token.called
             assert auth0_sa.get.called
@@ -166,6 +167,7 @@ def test_auditadmin_callback(client: FlaskClient, aa_email: str):
             with client.session_transaction() as session:  # type: ignore
                 assert session["_user"]["type"] == UserType.AUDIT_ADMIN
                 assert session["_user"]["key"] == aa_email
+                assert session["_permanent"] is True
 
             assert auth0_aa.authorize_access_token.called
             assert auth0_aa.get.called
@@ -189,6 +191,7 @@ def test_jurisdictionadmin_callback(client: FlaskClient, ja_email: str):
             with client.session_transaction() as session:  # type: ignore
                 assert session["_user"]["type"] == UserType.JURISDICTION_ADMIN
                 assert session["_user"]["key"] == ja_email
+                assert session["_permanent"] is True
 
             assert auth0_ja.authorize_access_token.called
             assert auth0_ja.get.called
@@ -206,6 +209,7 @@ def test_audit_board_log_in(
     with client.session_transaction() as session:  # type: ignore
         assert session["_user"]["type"] == UserType.AUDIT_BOARD
         assert session["_user"]["key"] == audit_board.id
+        assert session["_permanent"] is True
 
 
 def test_logout(client: FlaskClient, aa_email: str):
@@ -331,13 +335,13 @@ def test_session_expiration(client: FlaskClient, aa_email: str):
     # off.
     assert app.config["SESSION_REFRESH_EACH_REQUEST"] is True
 
-    app.permanent_session_lifetime = timedelta(milliseconds=1)
+    app.permanent_session_lifetime = timedelta(seconds=1)
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, aa_email)
     rv = client.get("/api/me")
     assert json.loads(rv.data) is not None
 
-    time.sleep(1.0)
+    time.sleep(1.5)
 
     rv = client.get("/api/me")
     assert json.loads(rv.data) is None

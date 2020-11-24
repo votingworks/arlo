@@ -30,6 +30,7 @@ _USER = "_user"
 
 def set_loggedin_user(user_type: UserType, user_key: str):
     session[_USER] = {"type": user_type, "key": user_key}
+    session.permanent = True
 
 
 def get_loggedin_user() -> Union[Tuple[UserType, str], Tuple[None, None]]:
@@ -51,6 +52,7 @@ def clear_loggedin_user():
 ## to re-login
 def set_superadmin():
     session[_SUPERADMIN] = True  # pragma: no cover
+    session.permanent = True
 
 
 def clear_superadmin():  # pragma: no cover
