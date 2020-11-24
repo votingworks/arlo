@@ -190,7 +190,11 @@ def list_ballots_for_jurisdiction(
         .filter_by(round_id=round.id)
         .outerjoin(SampledBallot.audit_board)
         .order_by(
-            AuditBoard.name, Batch.tabulator, Batch.name, SampledBallot.ballot_position
+            AuditBoard.name,
+            Batch.container,
+            Batch.tabulator,
+            Batch.name,
+            SampledBallot.ballot_position,
         )
         .options(
             contains_eager(SampledBallot.batch),
@@ -216,7 +220,9 @@ def list_ballots_for_audit_board(
     ballots = (
         SampledBallot.query.filter_by(audit_board_id=audit_board.id)
         .join(Batch)
-        .order_by(Batch.tabulator, Batch.name, SampledBallot.ballot_position)
+        .order_by(
+            Batch.container, Batch.tabulator, Batch.name, SampledBallot.ballot_position
+        )
         .options(contains_eager(SampledBallot.batch))
         .all()
     )
