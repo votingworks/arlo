@@ -1,6 +1,6 @@
 import io, csv
 from sqlalchemy import func, literal_column
-from sqlalchemy.orm import contains_eager
+from sqlalchemy.orm import contains_eager, joinedload
 from sqlalchemy.dialects.postgresql import aggregate_order_by
 from flask import jsonify, request
 from werkzeug.exceptions import BadRequest, NotFound
@@ -149,7 +149,7 @@ def serialize_interpretation(interpretation: BallotInterpretation) -> JSONDict:
     }
 
 
-def serialize_ballot(ballot: SampledBallot, election: Election) -> JSONDict:
+def serialize_ballot(ballot: SampledBallot, imprinted_id: str = None) -> JSONDict:
     batch = ballot.batch
     audit_board = ballot.audit_board
     json_ballot = {
@@ -167,9 +167,8 @@ def serialize_ballot(ballot: SampledBallot, election: Election) -> JSONDict:
         },
         "auditBoard": audit_board and {"id": audit_board.id, "name": audit_board.name,},
     }
-    if election.audit_type == AuditType.BALLOT_COMPARISON:
-        cvr = CvrBallot.query.get((batch.id, ballot.ballot_position))
-        json_ballot["imprintedId"] = cvr.imprinted_id
+    if imprinted_id:
+        json_ballot["imprintedId"] = imprinted_id
     return json_ballot
 
 
@@ -199,10 +198,13 @@ def list_ballots_for_jurisdiction(
         .options(
             contains_eager(SampledBallot.batch),
             contains_eager(SampledBallot.audit_board),
+            joinedload(SampledBallot.interpretations)
+            .joinedload(BallotInterpretation.selected_choices)
+            .load_only(ContestChoice.id),
         )
         .all()
     )
-    json_ballots = [serialize_ballot(b, election) for b in ballots]
+    json_ballots = [serialize_ballot(ballot) for ballot in ballots]
     return jsonify({"ballots": json_ballots})
 
 
@@ -212,7 +214,7 @@ def list_ballots_for_jurisdiction(
 )
 @restrict_access([UserType.AUDIT_BOARD])
 def list_ballots_for_audit_board(
-    election: Election,
+    election: Election,  # pylint: disable=unused-argument
     jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
     round: Round,  # pylint: disable=unused-argument
     audit_board: AuditBoard,
@@ -220,13 +222,28 @@ def list_ballots_for_audit_board(
     ballots = (
         SampledBallot.query.filter_by(audit_board_id=audit_board.id)
         .join(Batch)
+        .outerjoin(
+            CvrBallot,
+            and_(
+                CvrBallot.batch_id == SampledBallot.batch_id,
+                CvrBallot.ballot_position == SampledBallot.ballot_position,
+            ),
+        )
         .order_by(
             Batch.container, Batch.tabulator, Batch.name, SampledBallot.ballot_position
         )
-        .options(contains_eager(SampledBallot.batch))
+        .with_entities(SampledBallot, CvrBallot.imprinted_id)
+        .options(
+            contains_eager(SampledBallot.batch),
+            joinedload(SampledBallot.interpretations)
+            .joinedload(BallotInterpretation.selected_choices)
+            .load_only(ContestChoice.id),
+        )
         .all()
     )
-    json_ballots = [serialize_ballot(b, election) for b in ballots]
+    json_ballots = [
+        serialize_ballot(ballot, imprinted_id) for ballot, imprinted_id in ballots
+    ]
     return jsonify({"ballots": json_ballots})
 
 
