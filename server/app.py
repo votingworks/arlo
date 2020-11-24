@@ -42,7 +42,7 @@ T = Talisman(
     },
 )
 app.secret_key = SESSION_SECRET
-app.permanent_session_lifetime = timedelta(hours=2)
+app.permanent_session_lifetime = timedelta(hours=5)
 
 init_db()
 
