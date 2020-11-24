@@ -15,9 +15,11 @@ import FormSection, {
 } from '../../../Atoms/Form/FormSection'
 import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
 import useAuditSettings, { IAuditSettings } from '../../useAuditSettings'
-import useJurisdictionFile from './useJurisdictionFile'
-import { IFileInfo } from '../../useJurisdictions'
-import useStandardizedContestFile from './useStandardizedContestFile'
+import {
+  useJurisdictionsFile,
+  useStandardizedContestsFile,
+  IFileInfo,
+} from '../../useCSV'
 
 export const Select = styled(HTMLSelect)`
   margin-top: 5px;
@@ -120,7 +122,7 @@ const JurisdictionFileForm = ({
   jurisdictionFileStatus: IFileSubmitStatus
   setJurisdictionFileStatus: (status: IFileSubmitStatus) => void
 }) => {
-  const [jurisdictionFile, uploadJurisdictionFile] = useJurisdictionFile(
+  const [jurisdictionFile, uploadJurisdictionFile] = useJurisdictionsFile(
     electionId
   )
   const text =
@@ -147,7 +149,7 @@ const ContestFileForm = ({
   contestFileStatus: IFileSubmitStatus
   setContestFileStatus: (status: IFileSubmitStatus) => void
 }) => {
-  const [contestFile, uploadContestFile] = useStandardizedContestFile(
+  const [contestFile, uploadContestFile] = useStandardizedContestsFile(
     electionId
   )
   const text =

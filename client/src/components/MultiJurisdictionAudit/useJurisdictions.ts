@@ -1,25 +1,6 @@
 import { useState, useEffect } from 'react'
 import { api } from '../utilities'
-
-export enum FileProcessingStatus {
-  READY_TO_PROCESS = 'READY_TO_PROCESS',
-  PROCESSING = 'PROCESSING',
-  PROCESSED = 'PROCESSED',
-  ERRORED = 'ERRORED',
-}
-
-export interface IFileInfo {
-  file: {
-    name: string
-    uploadedAt: string
-  } | null
-  processing: {
-    status: FileProcessingStatus
-    startedAt: string | null
-    completedAt: string | null
-    error: string | null
-  } | null
-}
+import { IFileInfo } from './useCSV'
 
 export interface IBallotManifestInfo extends IFileInfo {
   numBallots: number | null
