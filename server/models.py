@@ -545,7 +545,10 @@ class BallotInterpretation(BaseModel):
 
     interpretation = Column(Enum(Interpretation), nullable=False)
     selected_choices = relationship(
-        "ContestChoice", uselist=True, secondary="ballot_interpretation_contest_choice"
+        "ContestChoice",
+        uselist=True,
+        secondary="ballot_interpretation_contest_choice",
+        order_by="ContestChoice.created_at",
     )
     comment = Column(Text)
 
