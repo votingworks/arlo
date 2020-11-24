@@ -28,7 +28,7 @@ const percentFormatter = new Intl.NumberFormat(undefined, {
 })
 
 interface IFormOptions {
-  [key: string]: IStringSampleSizeOption
+  [contestId: string]: IStringSampleSizeOption
 }
 
 interface IProps {
@@ -43,7 +43,6 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
   const jurisdictions = useJurisdictions(electionId)
   const [jurisdictionFile] = useJurisdictionFile(electionId)
   const [contests] = useContests(electionId)
-  const [sampleSizes, setSampleSizes] = useState<IFormOptions>({})
   const history = useHistory()
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
 
@@ -65,7 +64,7 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
   )
     return null // Still loading
 
-  const submit = async () => {
+  const submit = async ({ sampleSizes }: { sampleSizes: IFormOptions }) => {
     if (
       await uploadSampleSizes(
         Object.keys(sampleSizes).reduce((a, contestId) => {
@@ -228,17 +227,15 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
           sampleSizes: initialValues,
         }}
         enableReinitialize
-        onSubmit={({ sampleSizes: sizes }) => {
-          setSampleSizes(sizes)
-          setIsConfirmDialogOpen(true)
-        }}
+        onSubmit={submit}
       >
         {({
           values,
           handleSubmit,
+          isSubmitting,
           setFieldValue,
         }: FormikProps<{
-          sampleSizes: { [key: string]: IStringSampleSizeOption }
+          sampleSizes: IFormOptions
         }>) => (
           <form data-testid="sample-size-form">
             {sampleSizeOptions ? (
@@ -338,24 +335,25 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
                   locked ||
                   !isSetupComplete(jurisdictions, contests, auditSettings)
                 }
-                onClick={handleSubmit}
+                onClick={() => setIsConfirmDialogOpen(true)}
               >
                 Launch Audit
               </FormButton>
             </FormButtonBar>
+            <ConfirmLaunch
+              isOpen={isConfirmDialogOpen}
+              handleClose={() => setIsConfirmDialogOpen(false)}
+              handleSubmit={handleSubmit}
+              isSubmitting={isSubmitting}
+              message={
+                auditType === 'BALLOT_POLLING'
+                  ? `${numManifestUploadsComplete} of ${participatingJurisdictions.length} jurisdictions have uploaded ballot manifests.`
+                  : undefined
+              }
+            />
           </form>
         )}
       </Formik>
-      <ConfirmLaunch
-        isOpen={isConfirmDialogOpen}
-        handleClose={() => setIsConfirmDialogOpen(false)}
-        onLaunch={submit}
-        message={
-          auditType === 'BALLOT_POLLING'
-            ? `${numManifestUploadsComplete} of ${participatingJurisdictions.length} jurisdictions have uploaded ballot manifests.`
-            : undefined
-        }
-      />
     </div>
   )
 }

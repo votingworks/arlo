@@ -193,7 +193,10 @@ const Progress: React.FC<IProps> = ({
           ),
       }
     )
-    if (jurisdictions[0].currentRoundStatus!.numBatchesAudited !== undefined) {
+    if (
+      jurisdictions[0].currentRoundStatus &&
+      jurisdictions[0].currentRoundStatus.numBatchesAudited !== undefined
+    ) {
       columns.push({
         Header: 'Batches Audited',
         accessor: ({ currentRoundStatus: s }) =>

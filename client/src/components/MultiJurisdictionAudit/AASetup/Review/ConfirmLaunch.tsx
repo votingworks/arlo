@@ -5,12 +5,14 @@ import FormButton from '../../../Atoms/Form/FormButton'
 const ConfirmLaunch = ({
   isOpen,
   handleClose,
-  onLaunch,
+  handleSubmit,
+  isSubmitting,
   message,
 }: {
   isOpen: boolean
   handleClose: () => void
-  onLaunch: () => void
+  handleSubmit: () => void
+  isSubmitting: boolean
   message?: string
 }) => {
   return (
@@ -26,8 +28,14 @@ const ConfirmLaunch = ({
       </div>
       <div className={Classes.DIALOG_FOOTER}>
         <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-          <FormButton onClick={handleClose}>Close Without Launching</FormButton>
-          <FormButton intent={Intent.PRIMARY} onClick={onLaunch}>
+          <FormButton disabled={isSubmitting} onClick={handleClose}>
+            Cancel
+          </FormButton>
+          <FormButton
+            intent={Intent.PRIMARY}
+            onClick={handleSubmit}
+            loading={isSubmitting}
+          >
             Launch Audit
           </FormButton>
         </div>

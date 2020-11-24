@@ -258,7 +258,7 @@ describe('Audit Setup > Review & Launch', () => {
       const launchButton = screen.getByText('Launch Audit')
       userEvent.click(launchButton)
       await screen.findByText('Are you sure you want to launch the audit?')
-      const cancelLaunchButton = screen.getByText('Close Without Launching')
+      const cancelLaunchButton = screen.getByText('Cancel')
       userEvent.click(cancelLaunchButton)
       await waitFor(() => expect(refreshMock).not.toHaveBeenCalled())
     })
