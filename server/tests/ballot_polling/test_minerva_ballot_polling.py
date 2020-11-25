@@ -247,3 +247,89 @@ def test_minerva_ballot_polling_two_rounds(
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/report")
     assert_match_report(rv.data, snapshot)
+
+    # Start a second round
+    rv = post_json(client, f"/api/election/{election_id}/round", {"roundNum": 2},)
+    assert_ok(rv)
+
+    rv = client.get(f"/api/election/{election_id}/round",)
+    round_2_id = json.loads(rv.data)["rounds"][1]["id"]
+
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/audit-board",
+        [{"name": "Audit Board #1"}, {"name": "Audit Board #2"}],
+    )
+
+    jurisdiction_1_results = {
+        contests[0]["id"]: {
+            contests[0]["choices"][0]["id"]: 50,
+            contests[0]["choices"][1]["id"]: 0,
+        },
+    }
+
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/results",
+        jurisdiction_1_results,
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/results",
+    )
+    assert rv.status_code == 200
+    assert json.loads(rv.data) == jurisdiction_1_results
+
+    # Round shouldn't be over yet, since we haven't recorded results for all jurisdictions with sampled ballots
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round"
+    )
+    rounds = json.loads(rv.data)["rounds"]
+    assert rounds[1]["endedAt"] is None
+
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_2_id}/audit-board",
+        [{"name": "Audit Board #1"}],
+    )
+
+    jurisdiction_2_results = {
+        contests[0]["id"]: {
+            contests[0]["choices"][0]["id"]: 30,
+            contests[0]["choices"][1]["id"]: 0,
+        },
+    }
+
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_2_id}/results",
+        jurisdiction_2_results,
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_2_id}/results",
+    )
+    assert rv.status_code == 200
+    assert json.loads(rv.data) == jurisdiction_2_results
+
+    # Round should be over
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round"
+    )
+    rounds = json.loads(rv.data)["rounds"]
+    assert rounds[0]["endedAt"] is not None
+
+    snapshot.assert_match(
+        {
+            f"{result.contest.name} - {result.contest_choice.name}": result.result
+            for result in RoundContestResult.query.filter_by(round_id=round_2_id).all()
+        }
+    )
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/report")
+    assert_match_report(rv.data, snapshot)
