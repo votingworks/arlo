@@ -52,10 +52,10 @@ describe('timers', () => {
     clock = FakeTimers.install()
   })
   afterEach(() => clock.uninstall())
-  it.skip('refreshes every five minutes on progress', async () => {
-    // TEST TODO
+  it('refreshes every five minutes on progress', async () => {
     const expectedCalls = [
       aaApiCalls.getUser,
+      ...loadEach,
       ...loadEach,
       ...loadEach,
       ...loadEach,
