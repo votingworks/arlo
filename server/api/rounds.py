@@ -765,7 +765,7 @@ def create_round(election: Election):
         def select_sample_size(options):
             audit_type = AuditType(election.audit_type)
             if audit_type == AuditType.BALLOT_POLLING:
-                return options.get("0.9", options["asn"])
+                return options.get("0.9", options.get("asn"))
             elif audit_type == AuditType.BATCH_COMPARISON:
                 return options["macro"]
             else:
