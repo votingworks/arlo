@@ -1,6 +1,7 @@
 import io, csv
 from typing import Dict, List, Optional
 from collections import defaultdict
+from sqlalchemy.orm import joinedload, contains_eager
 
 from . import api
 from ..models import *  # pylint: disable=wildcard-import
@@ -369,7 +370,19 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
     if jurisdiction:
         ballots_query = ballots_query.filter(Jurisdiction.id == jurisdiction.id)
     ballots = list(
-        ballots_query.with_entities(SampledBallot, CvrBallot.imprinted_id).all()
+        ballots_query.with_entities(SampledBallot, CvrBallot.imprinted_id)
+        .options(
+            contains_eager(SampledBallot.batch)
+            .contains_eager(Batch.jurisdiction)
+            .load_only(Jurisdiction.name),
+            contains_eager(SampledBallot.draws).load_only(
+                SampledBallotDraw.ticket_number
+            ),
+            joinedload(SampledBallot.interpretations)
+            .joinedload(BallotInterpretation.selected_choices)
+            .load_only(ContestChoice.name),
+        )
+        .all()
     )
 
     round_id_to_num = {round.id: round.round_num for round in election.rounds}
