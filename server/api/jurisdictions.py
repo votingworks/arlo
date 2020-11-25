@@ -6,6 +6,7 @@ import csv
 import io
 from flask import jsonify, request
 from sqlalchemy import func
+from sqlalchemy.orm import joinedload
 from werkzeug.exceptions import Conflict
 
 from . import api
@@ -335,9 +336,19 @@ def list_jurisdictions(election: Election):
     current_round = get_current_round(election)
     round_status = round_status_by_jurisdiction(election, current_round)
 
+    jurisdictions = (
+        Jurisdiction.query.filter_by(election_id=election.id)
+        .order_by(Jurisdiction.name)
+        .options(
+            joinedload(Jurisdiction.manifest_file),
+            joinedload(Jurisdiction.batch_tallies_file),
+            joinedload(Jurisdiction.cvr_file),
+        )
+        .all()
+    )
     json_jurisdictions = [
         serialize_jurisdiction(election, jurisdiction, round_status[jurisdiction.id])
-        for jurisdiction in election.jurisdictions
+        for jurisdiction in jurisdictions
     ]
     return jsonify({"jurisdictions": json_jurisdictions})
 
