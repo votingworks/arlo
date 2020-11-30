@@ -1,9 +1,8 @@
 import os
 import logging
 from typing import Tuple
+from datetime import timedelta
 
-###
-###
 
 DEVELOPMENT_ENVS = ("development", "test")
 
@@ -105,6 +104,11 @@ def read_session_secret() -> str:
 
 
 SESSION_SECRET = read_session_secret()
+
+# Max time a session can be used after it's created
+SESSION_LIFETIME = timedelta(hours=8)
+# Max time a session can be used after the last request
+SESSION_INACTIVITY_TIMEOUT = timedelta(hours=1)
 
 
 def read_http_origin() -> str:

@@ -1,11 +1,13 @@
 import functools
 import enum
+from datetime import datetime, timezone
 from typing import Callable, Tuple, Union, List
 from flask import session
 from werkzeug.exceptions import Forbidden, Unauthorized
 from sqlalchemy.orm import Query
 
 from ..models import *  # pylint: disable=wildcard-import
+from .. import config
 
 
 class UserType(str, enum.Enum):
@@ -26,19 +28,45 @@ class UserType(str, enum.Enum):
 
 _SUPERADMIN = "_superadmin"
 _USER = "_user"
+_CREATED_AT = "_created_at"
+_LAST_REQUEST_AT = "_last_request_at"
 
 
-def set_loggedin_user(user_type: UserType, user_key: str):
+def is_session_expired(session):
+    return (
+        datetime.now(timezone.utc)
+        > datetime.fromisoformat(session[_CREATED_AT]) + config.SESSION_LIFETIME
+    ) or (
+        datetime.now(timezone.utc)
+        > datetime.fromisoformat(session[_LAST_REQUEST_AT])
+        + config.SESSION_INACTIVITY_TIMEOUT
+    )
+
+
+def set_loggedin_user(
+    session, user_type: UserType, user_key: str, from_superadmin: bool = False
+):
     session[_USER] = {"type": user_type, "key": user_key}
+    # We don't want to set the created time when a superadmin logs in as
+    # another user, since it was already set when the superadmin logged in.
+    if not from_superadmin:
+        session[_CREATED_AT] = datetime.now(timezone.utc).isoformat()
+    session[_LAST_REQUEST_AT] = datetime.now(timezone.utc).isoformat()
 
 
-def get_loggedin_user() -> Union[Tuple[UserType, str], Tuple[None, None]]:
+def get_loggedin_user(session) -> Union[Tuple[UserType, str], Tuple[None, None]]:
     user = session.get(_USER, None)
-    return (user["type"], user["key"]) if user else (None, None)
+    if not user or is_session_expired(session):
+        return (None, None)
+    return (user["type"], user["key"])
 
 
-def clear_loggedin_user():
+def clear_loggedin_user(session):
     session[_USER] = None
+
+
+def update_last_request_timestamp(session):
+    session[_LAST_REQUEST_AT] = datetime.now(timezone.utc).isoformat()
 
 
 ## The super admin bit lets a user impersonate any other user
@@ -49,17 +77,19 @@ def clear_loggedin_user():
 ## field so that impersonation can be as close as possible to the same user session
 ## and so that a superadmin can become any other user at any other time without having
 ## to re-login
-def set_superadmin():
-    session[_SUPERADMIN] = True  # pragma: no cover
+def set_superadmin(session):
+    session[_SUPERADMIN] = True
+    session[_CREATED_AT] = datetime.now(timezone.utc).isoformat()
+    session[_LAST_REQUEST_AT] = datetime.now(timezone.utc).isoformat()
 
 
-def clear_superadmin():  # pragma: no cover
+def clear_superadmin(session):
     if _SUPERADMIN in session:
         del session[_SUPERADMIN]
 
 
-def is_superadmin():
-    return session.get(_SUPERADMIN, False)  # pragma: no cover
+def is_superadmin(session):
+    return session.get(_SUPERADMIN, False) and not is_session_expired(session)
 
 
 def find_or_404(query: Query):
@@ -76,7 +106,7 @@ def check_access(
     audit_board: AuditBoard = None,
 ):
     # Check user type is allowed
-    user_type, user_key = get_loggedin_user()
+    user_type, user_key = get_loggedin_user(session)
     if not user_key:
         raise Unauthorized("Please log in to access Arlo")
 
@@ -169,6 +199,8 @@ def restrict_access(user_types: List[UserType]):
 
             check_access(user_types, election, jurisdiction, audit_board)
 
+            update_last_request_timestamp(session)
+
             return route(*args, **kwargs)
 
         return wrapper
@@ -183,8 +215,11 @@ def restrict_access_superadmin(route: Callable):
 
     @functools.wraps(route)
     def wrapper(*args, **kwargs):
-        if not is_superadmin():
+        if not is_superadmin(session):
             raise Forbidden(description="requires superadmin privileges")
+
+        update_last_request_timestamp(session)
+
         return route(*args, **kwargs)
 
     return wrapper
