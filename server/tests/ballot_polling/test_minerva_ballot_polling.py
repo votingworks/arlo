@@ -107,7 +107,7 @@ def test_minerva_ballot_polling_one_round(
         contests[1]["id"]: {
             contests[1]["choices"][0]["id"]: 10,
             contests[1]["choices"][1]["id"]: 15,
-            contests[1]["choices"][2]["id"]: 10,
+            contests[1]["choices"][2]["id"]: 5,
         },
     }
 
