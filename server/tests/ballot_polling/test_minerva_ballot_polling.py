@@ -29,6 +29,25 @@ def election_settings(client: FlaskClient, election_id: str):
     assert_ok(rv)
 
 
+def test_minerva_sample_size(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    contest_ids: List[str],
+    election_settings,  # pylint: disable=unused-argument
+    manifests,  # pylint: disable=unused-argument
+    snapshot,
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    assert rv.status_code == 200
+
+    sample_size_options = json.loads(rv.data)["sampleSizes"][contest_ids[0]]
+    assert len(sample_size_options) == 3
+    print(sample_size_options)
+    snapshot.assert_match(sample_size_options)
+
+
 def test_minerva_ballot_polling_one_round(
     client: FlaskClient,
     election_id: str,
