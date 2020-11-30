@@ -108,8 +108,7 @@ describe('Home screen', () => {
     })
   })
 
-  it.skip('shows a list of audits and create audit form for audit admins', async () => {
-    // TEST TODO
+  it('shows a list of audits and create audit form for audit admins', async () => {
     const expectedCalls = [
       aaApiCalls.getUser,
       aaApiCalls.getUser, // Extra call to load the list of audits
@@ -125,12 +124,18 @@ describe('Home screen', () => {
       ...setupScreenCalls,
       aaApiCalls.getSettings(auditSettings.blank),
       aaApiCalls.getJurisdictionFile,
+      aaApiCalls.getRounds([]),
+      ...setupScreenCalls,
+      aaApiCalls.getJurisdictionFile,
       apiCalls.getUserWithAudit,
       ...setupScreenCalls,
       aaApiCalls.getJurisdictionFile,
       aaApiCalls.getRounds([]),
       ...setupScreenCalls,
+      aaApiCalls.getJurisdictionFile,
+      aaApiCalls.getRounds([]),
       aaApiCalls.getSettings(auditSettings.blank),
+      ...setupScreenCalls,
       aaApiCalls.getJurisdictionFile,
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -180,8 +185,7 @@ describe('Home screen', () => {
     })
   })
 
-  it.skip('shows a list of audits and create audit form for audit admins with multiple orgs', async () => {
-    // TEST TODO
+  it('shows a list of audits and create audit form for audit admins with multiple orgs', async () => {
     const expectedCalls = [
       apiCalls.getUserMultipleOrgs,
       apiCalls.getUserMultipleOrgs,
@@ -196,6 +200,9 @@ describe('Home screen', () => {
       aaApiCalls.getRounds([]),
       ...setupScreenCalls,
       aaApiCalls.getSettings(auditSettings.blank),
+      aaApiCalls.getJurisdictionFile,
+      aaApiCalls.getRounds([]),
+      ...setupScreenCalls,
       aaApiCalls.getJurisdictionFile,
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -244,14 +251,14 @@ describe('Home screen', () => {
     })
   })
 
-  it.skip('shows a list of audits for jurisdiction admins', async () => {
-    // TEST TODO
+  it('shows a list of audits for jurisdiction admins', async () => {
     const expectedCalls = [
       jaApiCalls.getUser,
       jaApiCalls.getSettings(auditSettings.blank),
       jaApiCalls.getRounds,
       jaApiCalls.getBallotManifestFile({ file: null, processing: null }),
       jaApiCalls.getBatchTalliesFile({ file: null, processing: null }),
+      jaApiCalls.getCVRSfile({ file: null, processing: null }),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView('/')
