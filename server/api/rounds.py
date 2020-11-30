@@ -6,7 +6,7 @@ from flask import jsonify, request
 from jsonschema import validate
 from werkzeug.exceptions import BadRequest, Conflict
 from sqlalchemy import and_
-from sqlalchemy.orm import load_only
+from sqlalchemy.orm import load_only, joinedload
 
 from . import api
 from ..database import db_session
@@ -264,16 +264,21 @@ def sampled_ballot_interpretations_to_cvrs(contest: Contest) -> supersimple.SAMP
     )
     # For targeted contests, count the number of times the ballot was sampled
     if contest.is_targeted:
-        ballots = (
+        ballots_query = (
             ballots_query.join(SampledBallotDraw)
             .filter_by(contest_id=contest.id)
             .group_by(SampledBallot.id)
             .with_entities(SampledBallot, func.count(SampledBallotDraw.ticket_number))
-            .all()
         )
     # For opportunistic contests, we say each ballot was only sampled once
     else:
-        ballots = ballots_query.with_entities(SampledBallot, literal(1)).all()
+        ballots_query = ballots_query.with_entities(SampledBallot, literal(1))
+
+    ballots = ballots_query.options(
+        joinedload(SampledBallot.interpretations)
+        .joinedload(BallotInterpretation.selected_choices)
+        .load_only(ContestChoice.id)
+    ).all()
 
     # The CVR we build should have a 1 for each choice that got voted for,
     # and a 0 otherwise. There are a couple special cases:
