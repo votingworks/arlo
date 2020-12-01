@@ -1,4 +1,4 @@
-from flask import render_template, redirect, request, Blueprint
+from flask import render_template, redirect, request, Blueprint, session
 from werkzeug.exceptions import Forbidden
 
 from .models import *  # pylint: disable=wildcard-import
@@ -38,7 +38,7 @@ def superadmin_jurisdictions():
 @restrict_access_superadmin
 def superadmin_auditadmin_login():
     user_email = request.form["email"]
-    set_loggedin_user(UserType.AUDIT_ADMIN, user_email)
+    set_loggedin_user(session, UserType.AUDIT_ADMIN, user_email, from_superadmin=True)
     return redirect("/")
 
 
@@ -48,7 +48,9 @@ def superadmin_auditadmin_login():
 @restrict_access_superadmin
 def superadmin_jurisdictionadmin_login():
     user_email = request.form["email"]
-    set_loggedin_user(UserType.JURISDICTION_ADMIN, user_email)
+    set_loggedin_user(
+        session, UserType.JURISDICTION_ADMIN, user_email, from_superadmin=True
+    )
     return redirect("/")
 
 

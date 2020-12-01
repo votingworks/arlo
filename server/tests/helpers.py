@@ -5,11 +5,8 @@ from flask.testing import FlaskClient
 from werkzeug.wrappers import Response
 from sqlalchemy.exc import IntegrityError
 
-from ..auth.lib import (
-    UserType,
-    _USER,
-    _SUPERADMIN,
-)
+from ..auth.lib import UserType
+from ..auth import lib as auth_lib
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
 from ..api.audit_boards import end_round
@@ -42,26 +39,28 @@ def assert_ok(rv: Response):
 
 
 def set_logged_in_user(
-    client: FlaskClient, user_type: UserType, user_key=DEFAULT_AA_EMAIL
+    client: FlaskClient,
+    user_type: UserType,
+    user_key=DEFAULT_AA_EMAIL,
+    from_superadmin=False,
 ):
     with client.session_transaction() as session:  # type: ignore
-        session[_USER] = {"type": user_type, "key": user_key}
+        auth_lib.set_loggedin_user(session, user_type, user_key, from_superadmin)
 
 
 def clear_logged_in_user(client: FlaskClient):
     with client.session_transaction() as session:  # type: ignore
-        session[_USER] = None
+        auth_lib.clear_loggedin_user(session)
 
 
 def set_superadmin(client: FlaskClient):
     with client.session_transaction() as session:  # type: ignore
-        session[_SUPERADMIN] = True
+        auth_lib.set_superadmin(session)
 
 
 def clear_superadmin(client: FlaskClient):
     with client.session_transaction() as session:  # type: ignore
-        if _SUPERADMIN in session:
-            del session[_SUPERADMIN]
+        auth_lib.clear_superadmin(session)
 
 
 def create_user(email=DEFAULT_AA_EMAIL) -> User:
