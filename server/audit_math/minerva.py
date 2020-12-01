@@ -74,7 +74,12 @@ def make_athena_audit(arlo_contest, alpha):
         "contest_ballots": arlo_contest.ballots,
         "tally": arlo_contest.candidates,
         "num_winners": arlo_contest.num_winners,
-        "reported_winners": list(arlo_contest.margins["winners"].keys()),
+        "reported_winners": [
+            k
+            for k, v in sorted(
+                arlo_contest.margins["winners"].items(), key=lambda item: item[1]["p_w"]
+            )
+        ],
         "contest_type": "PLURALITY",
     }
 
