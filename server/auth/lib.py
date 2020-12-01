@@ -32,17 +32,6 @@ _CREATED_AT = "_created_at"
 _LAST_REQUEST_AT = "_last_request_at"
 
 
-def is_session_expired(session):
-    return (
-        datetime.now(timezone.utc)
-        > datetime.fromisoformat(session[_CREATED_AT]) + config.SESSION_LIFETIME
-    ) or (
-        datetime.now(timezone.utc)
-        > datetime.fromisoformat(session[_LAST_REQUEST_AT])
-        + config.SESSION_INACTIVITY_TIMEOUT
-    )
-
-
 def set_loggedin_user(
     session, user_type: UserType, user_key: str, from_superadmin: bool = False
 ):
@@ -55,18 +44,33 @@ def set_loggedin_user(
 
 
 def get_loggedin_user(session) -> Union[Tuple[UserType, str], Tuple[None, None]]:
+    check_session_expiration(session)
     user = session.get(_USER, None)
-    if not user or is_session_expired(session):
-        return (None, None)
-    return (user["type"], user["key"])
+    return (user["type"], user["key"]) if user else (None, None)
 
 
 def clear_loggedin_user(session):
     session[_USER] = None
 
 
-def update_last_request_timestamp(session):
-    session[_LAST_REQUEST_AT] = datetime.now(timezone.utc).isoformat()
+def check_session_expiration(session):
+    if (
+        _CREATED_AT not in session
+        or _LAST_REQUEST_AT not in session
+        or (
+            datetime.now(timezone.utc)
+            > datetime.fromisoformat(session[_CREATED_AT]) + config.SESSION_LIFETIME
+        )
+        or (
+            datetime.now(timezone.utc)
+            > datetime.fromisoformat(session[_LAST_REQUEST_AT])
+            + config.SESSION_INACTIVITY_TIMEOUT
+        )
+    ):
+        clear_superadmin(session)
+        clear_loggedin_user(session)
+    else:
+        session[_LAST_REQUEST_AT] = datetime.now(timezone.utc).isoformat()
 
 
 ## The super admin bit lets a user impersonate any other user
@@ -89,7 +93,8 @@ def clear_superadmin(session):
 
 
 def is_superadmin(session):
-    return session.get(_SUPERADMIN, False) and not is_session_expired(session)
+    check_session_expiration(session)
+    return session.get(_SUPERADMIN, False)
 
 
 def find_or_404(query: Query):
@@ -199,8 +204,6 @@ def restrict_access(user_types: List[UserType]):
 
             check_access(user_types, election, jurisdiction, audit_board)
 
-            update_last_request_timestamp(session)
-
             return route(*args, **kwargs)
 
         return wrapper
@@ -217,8 +220,6 @@ def restrict_access_superadmin(route: Callable):
     def wrapper(*args, **kwargs):
         if not is_superadmin(session):
             raise Forbidden(description="requires superadmin privileges")
-
-        update_last_request_timestamp(session)
 
         return route(*args, **kwargs)
 
