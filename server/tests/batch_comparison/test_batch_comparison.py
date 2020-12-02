@@ -130,7 +130,7 @@ def test_batch_comparison_too_many_votes(
         data={"batchTallies": (io.BytesIO(batch_tallies_file), "batchTallies.csv",)},
     )
     assert_ok(rv)
-    bgcompute_update_batch_tallies_file()
+    bgcompute_update_batch_tallies_file(election_id)
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = post_json(

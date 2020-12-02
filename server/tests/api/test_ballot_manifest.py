@@ -48,7 +48,7 @@ def test_ballot_manifest_upload(
         },
     )
 
-    bgcompute_update_ballot_manifest_file()
+    bgcompute_update_ballot_manifest_file(election_id)
 
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"
@@ -97,7 +97,7 @@ def test_ballot_manifest_replace(
 
     file_id = Jurisdiction.query.get(jurisdiction_ids[0]).manifest_file_id
 
-    bgcompute_update_ballot_manifest_file()
+    bgcompute_update_ballot_manifest_file(election_id)
 
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
@@ -115,7 +115,7 @@ def test_ballot_manifest_replace(
     assert File.query.get(file_id) is None
     assert jurisdiction.manifest_file_id != file_id
 
-    bgcompute_update_ballot_manifest_file()
+    bgcompute_update_ballot_manifest_file(election_id)
 
     jurisdiction = Jurisdiction.query.get(jurisdiction_ids[0])
     assert jurisdiction.manifest_num_batches == 2
@@ -144,7 +144,7 @@ def test_ballot_manifest_clear(
 
     file_id = Jurisdiction.query.get(jurisdiction_ids[0]).manifest_file_id
 
-    bgcompute_update_ballot_manifest_file()
+    bgcompute_update_ballot_manifest_file(election_id)
 
     rv = client.delete(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
@@ -193,7 +193,7 @@ def test_ballot_manifest_upload_bad_csv(
     )
     assert_ok(rv)
 
-    bgcompute_update_ballot_manifest_file()
+    bgcompute_update_ballot_manifest_file(election_id)
 
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"
@@ -231,7 +231,7 @@ def test_ballot_manifest_upload_missing_field(
         )
         assert_ok(rv)
 
-        bgcompute_update_ballot_manifest_file()
+        bgcompute_update_ballot_manifest_file(election_id)
 
         rv = client.get(
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"
@@ -265,7 +265,7 @@ def test_ballot_manifest_upload_invalid_num_ballots(
     )
     assert_ok(rv)
 
-    bgcompute_update_ballot_manifest_file()
+    bgcompute_update_ballot_manifest_file(election_id)
 
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"
@@ -301,7 +301,7 @@ def test_ballot_manifest_upload_duplicate_batch_name(
     )
     assert_ok(rv)
 
-    bgcompute_update_ballot_manifest_file()
+    bgcompute_update_ballot_manifest_file(election_id)
 
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"

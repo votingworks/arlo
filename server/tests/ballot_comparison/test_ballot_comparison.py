@@ -119,7 +119,7 @@ def test_ballot_comparison_two_rounds(
     )
     assert_ok(rv)
 
-    bgcompute_update_standardized_contests_file()
+    bgcompute_update_standardized_contests_file(election_id)
 
     # AA selects a contest to target from the standardized contest list
     rv = client.get(f"/api/election/{election_id}/standardized-contests")

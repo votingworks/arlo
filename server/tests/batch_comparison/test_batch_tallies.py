@@ -30,7 +30,7 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
         },
     )
     assert_ok(rv)
-    bgcompute_update_ballot_manifest_file()
+    bgcompute_update_ballot_manifest_file(election_id)
 
 
 def test_batch_tallies_upload(
@@ -69,7 +69,7 @@ def test_batch_tallies_upload(
         },
     )
 
-    bgcompute_update_batch_tallies_file()
+    bgcompute_update_batch_tallies_file(election_id)
 
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies"
@@ -171,7 +171,7 @@ def test_batch_tallies_replace(
 
     file_id = Jurisdiction.query.get(jurisdiction_ids[0]).batch_tallies_file_id
 
-    bgcompute_update_batch_tallies_file()
+    bgcompute_update_batch_tallies_file(election_id)
 
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
@@ -194,7 +194,7 @@ def test_batch_tallies_replace(
     assert File.query.get(file_id) is None
     assert jurisdiction.batch_tallies_file_id != file_id
 
-    bgcompute_update_batch_tallies_file()
+    bgcompute_update_batch_tallies_file(election_id)
 
     jurisdiction = Jurisdiction.query.get(jurisdiction_ids[0])
     contest = Contest.query.get(contest_id)
@@ -252,7 +252,7 @@ def test_batch_tallies_clear(
 
     file_id = Jurisdiction.query.get(jurisdiction_ids[0]).batch_tallies_file_id
 
-    bgcompute_update_batch_tallies_file()
+    bgcompute_update_batch_tallies_file(election_id)
 
     rv = client.delete(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
@@ -313,7 +313,7 @@ def test_batch_tallies_upload_bad_csv(
     )
     assert_ok(rv)
 
-    bgcompute_update_batch_tallies_file()
+    bgcompute_update_batch_tallies_file(election_id)
 
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies"
@@ -356,7 +356,7 @@ def test_batch_tallies_upload_missing_choice(
         )
         assert_ok(rv)
 
-        bgcompute_update_batch_tallies_file()
+        bgcompute_update_batch_tallies_file(election_id)
 
         rv = client.get(
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies"
@@ -426,7 +426,7 @@ def test_batch_tallies_wrong_batch_names(
         )
         assert_ok(rv)
 
-        bgcompute_update_batch_tallies_file()
+        bgcompute_update_batch_tallies_file(election_id)
 
         rv = client.get(
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies"
@@ -469,7 +469,7 @@ def test_batch_tallies_too_many_tallies(
     )
     assert_ok(rv)
 
-    bgcompute_update_batch_tallies_file()
+    bgcompute_update_batch_tallies_file(election_id)
 
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies"

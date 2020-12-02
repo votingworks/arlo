@@ -74,7 +74,7 @@ def test_jurisdictions_list_with_manifest(
         data={"manifest": (io.BytesIO(manifest), "manifest.csv",)},
     )
     assert_ok(rv)
-    bgcompute_update_ballot_manifest_file()
+    bgcompute_update_ballot_manifest_file(election_id)
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
@@ -150,7 +150,7 @@ def test_duplicate_batch_name(client, election_id, jurisdiction_ids):
     )
     assert_ok(rv)
 
-    bgcompute_update_ballot_manifest_file()
+    bgcompute_update_ballot_manifest_file(election_id)
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/jurisdiction")

@@ -99,7 +99,7 @@ def test_metadata(client, election_id):
     assert processing["error"] is None
 
     # Actually process the file.
-    bgcompute_update_election_jurisdictions_file()
+    bgcompute_update_election_jurisdictions_file(election_id)
 
     # Now there should be data.
     rv = client.get(f"/api/election/{election_id}/jurisdiction/file")
@@ -169,7 +169,7 @@ def test_no_jurisdiction(client, election_id):
     assert_ok(rv)
 
     # Process the file in the background.
-    bgcompute_update_election_jurisdictions_file()
+    bgcompute_update_election_jurisdictions_file(election_id)
 
     election = Election.query.filter_by(id=election_id).one()
     assert election.jurisdictions == []
@@ -188,7 +188,7 @@ def test_single_jurisdiction_single_admin(client, election_id):
     assert_ok(rv)
 
     # Process the file in the background.
-    bgcompute_update_election_jurisdictions_file()
+    bgcompute_update_election_jurisdictions_file(election_id)
 
     election = Election.query.filter_by(id=election_id).one()
     assert [j.name for j in election.jurisdictions] == ["J1"]
@@ -214,7 +214,7 @@ def test_single_jurisdiction_multiple_admins(client, election_id):
     assert_ok(rv)
 
     # Process the file in the background.
-    bgcompute_update_election_jurisdictions_file()
+    bgcompute_update_election_jurisdictions_file(election_id)
 
     election = Election.query.filter_by(id=election_id).one()
     assert [j.name for j in election.jurisdictions] == ["J1"]
@@ -241,7 +241,7 @@ def test_multiple_jurisdictions_single_admin(client, election_id):
     assert_ok(rv)
 
     # Process the file in the background.
-    bgcompute_update_election_jurisdictions_file()
+    bgcompute_update_election_jurisdictions_file(election_id)
 
     election = Election.query.filter_by(id=election_id).one()
     assert [j.name for j in election.jurisdictions] == ["J1", "J2"]
@@ -275,7 +275,7 @@ def test_convert_emails_to_lowercase(client, election_id):
     assert_ok(rv)
 
     # Process the file in the background.
-    bgcompute_update_election_jurisdictions_file()
+    bgcompute_update_election_jurisdictions_file(election_id)
 
     election = Election.query.filter_by(id=election_id).one()
     for jurisdiction in election.jurisdictions:

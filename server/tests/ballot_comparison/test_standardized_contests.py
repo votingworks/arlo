@@ -43,7 +43,7 @@ def test_upload_standardized_contests(
         },
     )
 
-    bgcompute_update_standardized_contests_file()
+    bgcompute_update_standardized_contests_file(election_id)
 
     rv = client.get(f"/api/election/{election_id}/standardized-contests/file")
     compare_json(
@@ -94,7 +94,7 @@ def test_standardized_contests_replace(
 
     file_id = Election.query.get(election_id).standardized_contests_file_id
 
-    bgcompute_update_standardized_contests_file()
+    bgcompute_update_standardized_contests_file(election_id)
 
     rv = client.put(
         f"/api/election/{election_id}/standardized-contests/file",
@@ -112,7 +112,7 @@ def test_standardized_contests_replace(
     assert Election.query.get(election_id).standardized_contests_file_id != file_id
     assert Election.query.get(election_id).standardized_contests is None
 
-    bgcompute_update_standardized_contests_file()
+    bgcompute_update_standardized_contests_file(election_id)
 
     rv = client.get(f"/api/election/{election_id}/standardized-contests")
     assert json.loads(rv.data) == [
@@ -139,7 +139,7 @@ def test_standardized_contests_bad_jurisdiction(
     )
     assert_ok(rv)
 
-    bgcompute_update_standardized_contests_file()
+    bgcompute_update_standardized_contests_file(election_id)
 
     rv = client.get(f"/api/election/{election_id}/standardized-contests/file")
     compare_json(
@@ -195,7 +195,7 @@ def test_standardized_contests_bad_csv(
     )
     assert_ok(rv)
 
-    bgcompute_update_standardized_contests_file()
+    bgcompute_update_standardized_contests_file(election_id)
 
     rv = client.get(f"/api/election/{election_id}/standardized-contests/file")
     compare_json(
@@ -309,7 +309,7 @@ def test_standardized_contests_newlines(
         },
     )
 
-    bgcompute_update_standardized_contests_file()
+    bgcompute_update_standardized_contests_file(election_id)
 
     rv = client.get(f"/api/election/{election_id}/standardized-contests/file")
     compare_json(
@@ -375,7 +375,7 @@ def test_standardized_contests_dominion_vote_for(
         },
     )
 
-    bgcompute_update_standardized_contests_file()
+    bgcompute_update_standardized_contests_file(election_id)
 
     rv = client.get(f"/api/election/{election_id}/standardized-contests/file")
     compare_json(

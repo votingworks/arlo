@@ -71,7 +71,7 @@ def test_bgcompute_jurisdictions_file_errors(
 
     monkeypatch.setattr(bgcompute, "process_jurisdictions_file", raise_exception)
 
-    bgcompute_update_election_jurisdictions_file()
+    bgcompute_update_election_jurisdictions_file(election_id)
 
     assert find_log(
         caplog,
@@ -113,7 +113,7 @@ def test_bgcompute_ballot_manifest_errors(
 
     monkeypatch.setattr(bgcompute, "process_ballot_manifest_file", raise_exception)
 
-    bgcompute_update_ballot_manifest_file()
+    bgcompute_update_ballot_manifest_file(election_id)
 
     assert find_log(
         caplog,
@@ -164,7 +164,7 @@ def test_bgcompute_batch_tallies_errors(
 
     monkeypatch.setattr(bgcompute, "process_batch_tallies_file", raise_exception)
 
-    bgcompute_update_batch_tallies_file()
+    bgcompute_update_batch_tallies_file(election_id)
 
     assert find_log(
         caplog,

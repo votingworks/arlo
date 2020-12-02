@@ -41,7 +41,7 @@ def test_cvr_upload(
         },
     )
 
-    bgcompute_update_cvr_file()
+    bgcompute_update_cvr_file(election_id)
 
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
@@ -142,7 +142,7 @@ def test_cvrs_counting_group(
     )
     assert_ok(rv)
 
-    bgcompute_update_cvr_file()
+    bgcompute_update_cvr_file(election_id)
 
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
@@ -196,7 +196,7 @@ def test_cvrs_replace(
 
     file_id = Jurisdiction.query.get(jurisdiction_ids[0]).cvr_file_id
 
-    bgcompute_update_cvr_file()
+    bgcompute_update_cvr_file(election_id)
 
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
@@ -214,7 +214,7 @@ def test_cvrs_replace(
     assert File.query.get(file_id) is None
     assert jurisdiction.cvr_file_id != file_id
 
-    bgcompute_update_cvr_file()
+    bgcompute_update_cvr_file(election_id)
 
     cvr_ballots = (
         CvrBallot.query.join(Batch).filter_by(jurisdiction_id=jurisdiction_ids[0]).all()
@@ -237,7 +237,7 @@ def test_cvrs_clear(
 
     file_id = Jurisdiction.query.get(jurisdiction_ids[0]).cvr_file_id
 
-    bgcompute_update_cvr_file()
+    bgcompute_update_cvr_file(election_id)
 
     rv = client.delete(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
@@ -299,7 +299,7 @@ def test_cvrs_upload_bad_csv(
     )
     assert_ok(rv)
 
-    bgcompute_update_cvr_file()
+    bgcompute_update_cvr_file(election_id)
 
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
@@ -404,7 +404,7 @@ def test_cvrs_newlines(
     )
     assert_ok(rv)
 
-    bgcompute_update_cvr_file()
+    bgcompute_update_cvr_file(election_id)
 
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"

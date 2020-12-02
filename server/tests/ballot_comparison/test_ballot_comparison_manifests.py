@@ -64,7 +64,7 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
         },
     )
     assert_ok(rv)
-    bgcompute_update_ballot_manifest_file()
+    bgcompute_update_ballot_manifest_file(election_id)
 
 
 @pytest.fixture
@@ -114,7 +114,7 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,PrecinctPortion,BallotType,R
         data={"cvrs": (io.BytesIO(j2_cvr.encode()), "cvrs.csv",)},
     )
     assert_ok(rv)
-    bgcompute_update_cvr_file()
+    bgcompute_update_cvr_file(election_id)
 
 
 def test_ballot_comparison_container_manifest(
@@ -283,7 +283,7 @@ def test_ballot_comparison_manifest_missing_tabulator(
     )
     assert_ok(rv)
 
-    bgcompute_update_ballot_manifest_file()
+    bgcompute_update_ballot_manifest_file(election_id)
 
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",

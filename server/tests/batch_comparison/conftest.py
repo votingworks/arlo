@@ -93,7 +93,7 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
         },
     )
     assert_ok(rv)
-    bgcompute_update_ballot_manifest_file()
+    bgcompute_update_ballot_manifest_file(election_id)
 
 
 @pytest.fixture
@@ -135,7 +135,7 @@ def batch_tallies(
         data={"batchTallies": (io.BytesIO(batch_tallies_file), "batchTallies.csv",)},
     )
     assert_ok(rv)
-    bgcompute_update_batch_tallies_file()
+    bgcompute_update_batch_tallies_file(election_id)
 
 
 @pytest.fixture
