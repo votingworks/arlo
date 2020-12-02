@@ -22,16 +22,16 @@ commands:
       - restore_cache:
           name: Restore Pip Cache
           keys:
-            - pip-packages-v6-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
-            - pip-packages-v6-{{ .Branch }}-
-            - pip-packages-v6-
+            - pip-packages-v7-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+            - pip-packages-v7-{{ .Branch }}-
+            - pip-packages-v7-
   save-pip-cache:
     steps:
       - run: sudo chown -R circleci:circleci /usr/local/bin
       - run: sudo chown -R circleci:circleci /usr/local/lib/python3.8/site-packages
       - save_cache:
           name: Save Pip Cache
-          key: pip-packages-v6-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+          key: pip-packages-v7-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
           paths:
             - ~/.local
             - ~/.cache
