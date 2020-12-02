@@ -44,7 +44,6 @@ def test_minerva_sample_size(
 
     sample_size_options = json.loads(rv.data)["sampleSizes"][contest_ids[0]]
     assert len(sample_size_options) == 3
-    print(sample_size_options)
     snapshot.assert_match(sample_size_options)
 
 
