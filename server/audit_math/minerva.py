@@ -150,7 +150,7 @@ def get_sample_size(
                 "future_round_sizes"
             ]
         except ValueError as e:
-            if str(e) == "Too many winners":
+            if str(e) == "Incorrect reported winners":
                 # Tied election
                 round_size_options = [contest.ballots for quant in quants]
             else:
