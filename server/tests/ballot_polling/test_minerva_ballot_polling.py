@@ -71,7 +71,9 @@ def test_minerva_ballot_polling_one_round(
     rounds = json.loads(rv.data)["rounds"]
     round_id = rounds[0]["id"]
 
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
 
     rv = post_json(
         client,
@@ -185,7 +187,9 @@ def test_minerva_ballot_polling_two_rounds(
     rounds = json.loads(rv.data)["rounds"]
     round_id = rounds[0]["id"]
 
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
 
     rv = post_json(
         client,
@@ -274,7 +278,9 @@ def test_minerva_ballot_polling_two_rounds(
     rv = client.get(f"/api/election/{election_id}/round",)
     round_2_id = json.loads(rv.data)["rounds"][1]["id"]
 
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
 
     rv = post_json(
         client,

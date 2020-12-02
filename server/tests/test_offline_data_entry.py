@@ -24,7 +24,9 @@ def test_offline_results_empty(
     contest_ids: List[str],
     round_1_id: str,
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     contests = Contest.query.filter(Contest.id.in_(contest_ids)).all()
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results",
@@ -60,7 +62,9 @@ def test_run_offline_audit(
     rounds = json.loads(rv.data)["rounds"]
     round_id = rounds[0]["id"]
 
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
 
     rv = post_json(
         client,
@@ -153,7 +157,9 @@ def test_run_offline_audit(
 def test_offline_results_without_audit_boards(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = put_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results",
@@ -178,7 +184,9 @@ def test_offline_results_invalid(
     round_1_id: str,
     audit_board_round_1_ids: List[str],  # pylint: disable=unused-argument
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     contests = Contest.query.filter(Contest.id.in_(contest_ids)).all()
 
     invalid_results = [
@@ -251,7 +259,9 @@ def test_offline_results_bad_round(
     rv = client.get(f"/api/election/{election_id}/contest")
     contests = json.loads(rv.data)["contests"]
 
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
 
     for jurisdiction_id in jurisdiction_ids[:2]:
         rv = post_json(
@@ -275,7 +285,9 @@ def test_offline_results_bad_round(
     rv = post_json(client, f"/api/election/{election_id}/round", {"roundNum": 2})
     assert_ok(rv)
 
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = put_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results",
@@ -322,7 +334,9 @@ def test_offline_results_in_online_election(
     election.online = True
     db_session.commit()
 
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = put_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results",
@@ -347,7 +361,9 @@ def test_offline_results_jurisdiction_with_no_ballots(
     rv = client.get(f"/api/election/{election_id}/contest")
     contests = json.loads(rv.data)["contests"]
 
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, "j3@example.com")
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, f"j3-{election_id}@example.com"
+    )
 
     rv = post_json(
         client,

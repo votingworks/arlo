@@ -77,9 +77,9 @@ def jurisdiction_ids(client: FlaskClient, election_id: str) -> List[str]:
                 io.BytesIO(
                     (
                         "Jurisdiction,Admin Email\n"
-                        f"J2,{DEFAULT_JA_EMAIL}\n"
-                        "J3,j3@example.com\n"
-                        f"J1,{DEFAULT_JA_EMAIL}\n"
+                        f"J2,{default_ja_email(election_id)}\n"
+                        f"J3,j3-{election_id}@example.com\n"
+                        f"J1,{default_ja_email(election_id)}\n"
                     ).encode()
                 ),
                 "jurisdictions.csv",
@@ -87,12 +87,7 @@ def jurisdiction_ids(client: FlaskClient, election_id: str) -> List[str]:
         },
     )
     assert_ok(rv)
-    # Sometimes we run into race-conditions creating the DEFAULT_JA_EMAIL user,
-    # so we just retry once if it fails
-    try:
-        bgcompute_update_election_jurisdictions_file(election_id)
-    except Exception:
-        bgcompute_update_election_jurisdictions_file(election_id)
+    bgcompute_update_election_jurisdictions_file(election_id)
     jurisdictions = (
         Jurisdiction.query.filter_by(election_id=election_id)
         .order_by(Jurisdiction.name)
@@ -155,7 +150,9 @@ def election_settings(client: FlaskClient, election_id: str):
 
 @pytest.fixture
 def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
         data={
@@ -188,7 +185,7 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
         },
     )
     assert_ok(rv)
-    bgcompute_update_ballot_manifest_file(election_id)
+    bgcompute_update_ballot_manifest_file()
 
 
 @pytest.fixture
@@ -242,7 +239,9 @@ def round_2_id(
 def audit_board_round_1_ids(
     client: FlaskClient, election_id: str, jurisdiction_ids: str, round_1_id: str,
 ) -> List[str]:
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = post_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
@@ -260,7 +259,9 @@ def audit_board_round_1_ids(
 def audit_board_round_2_ids(
     client: FlaskClient, election_id: str, jurisdiction_ids: str, round_2_id: str,
 ) -> List[str]:
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = post_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/audit-board",

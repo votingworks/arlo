@@ -19,7 +19,9 @@ from ...bgcompute import (
 
 @pytest.fixture
 def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
         data={
@@ -88,7 +90,9 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,PrecinctPortion,BallotType,R
         [f"{i},{line}" for i, line in enumerate(j1_cvr_lines)]
     )
 
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
         data={"cvrs": (io.BytesIO(j1_cvr.encode()), "cvrs.csv",)},
@@ -164,7 +168,9 @@ def test_ballot_comparison_container_manifest(
     round_1_id = json.loads(rv.data)["rounds"][0]["id"]
 
     # JAs create audit boards
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     for jurisdiction_id in jurisdiction_ids[:2]:
         rv = post_json(
             client,
@@ -216,7 +222,9 @@ def test_ballot_comparison_container_manifest(
         ), "Different audit boards assigned ballots from the same container"
 
     # Check that the second jurisdiction's audit boards have ballots divvied up by tabulator+batch name
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/audit-board"
     )
@@ -239,7 +247,9 @@ def test_ballot_comparison_container_manifest(
         ), "Different audit boards assigned ballots from the same tabulator+name"
 
     # Check that ballots are ordered by audit board then container for JA
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/ballots"
     )
@@ -261,7 +271,9 @@ def test_ballot_comparison_manifest_missing_tabulator(
     election_id: str,
     jurisdiction_ids: List[str],  # pylint: disable=unused-argument
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
         data={

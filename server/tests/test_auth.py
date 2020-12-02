@@ -559,7 +559,7 @@ def test_restrict_access_jurisdiction_admin_wrong_org(
     org_id_2, _ = create_org_and_admin("Org 2", "aa2@example.com")
     set_logged_in_user(client, UserType.AUDIT_ADMIN, "aa2@example.com")
     election_id_2 = create_election(client, organization_id=org_id_2)
-    create_jurisdiction_and_admin(election_id_2, user_email="ja2@example.com")
+    create_jurisdiction_and_admin(election_id_2, "Test Jurisdiction", "ja2@example.com")
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, "ja2@example.com")
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/test_auth"
@@ -583,7 +583,7 @@ def test_restrict_access_jurisdiction_admin_wrong_election(
         client, audit_name="Audit 2", organization_id=org_id
     )
     jurisdiction_id_2, _ = create_jurisdiction_and_admin(
-        election_id_2, user_email="ja2@example.com"
+        election_id_2, "Test Jurisdiction", "ja2@example.com"
     )
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, "ja2@example.com")
     rv = client.get(
@@ -596,7 +596,7 @@ def test_restrict_access_jurisdiction_admin_wrong_jurisdiction(
     client: FlaskClient, election_id: str, ja_email: str,
 ):
     jurisdiction_id_2, _ = create_jurisdiction_and_admin(
-        election_id, jurisdiction_name="Jurisdiction 2", user_email="ja2@example.com"
+        election_id, "Jurisdiction 2", "ja2@example.com"
     )
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, ja_email)
     rv = client.get(
@@ -774,7 +774,7 @@ def test_restrict_access_audit_board_wrong_org(
     set_logged_in_user(client, UserType.AUDIT_ADMIN, "aa3@example.com")
     election_id_2 = create_election(client, organization_id=org_id_2)
     jurisdiction_id_2, _ = create_jurisdiction_and_admin(
-        election_id_2, user_email="ja3@example.com"
+        election_id_2, "Test Jurisdiction", "ja3@example.com"
     )
     round_id_2 = create_round(election_id_2)
     audit_board_id_2 = create_audit_board(jurisdiction_id_2, round_id_2)
@@ -802,7 +802,7 @@ def test_restrict_access_audit_board_wrong_election(
     set_logged_in_user(client, UserType.AUDIT_ADMIN, "aa4@example.com")
     election_id_2 = create_election(client, organization_id=org_id_2)
     jurisdiction_id_2, _ = create_jurisdiction_and_admin(
-        election_id_2, user_email="ja4@example.com"
+        election_id_2, "Test Jurisdiction", "ja4@example.com"
     )
     round_id_2 = create_round(election_id_2)
 
@@ -823,7 +823,7 @@ def test_restrict_access_audit_board_wrong_jurisdiction(
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, aa_email)
     jurisdiction_id_2, _ = create_jurisdiction_and_admin(
-        election_id, jurisdiction_name="J5", user_email="ja5@example.com"
+        election_id, "J5", "ja5@example.com"
     )
 
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_id)

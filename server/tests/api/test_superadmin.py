@@ -49,23 +49,26 @@ def test_superadmin_organizations(client: FlaskClient, organization_id):
 
 
 def test_superadmin_jurisdictions(client: FlaskClient, election_id):
-    create_jurisdiction_and_admin(election_id=election_id, user_email=DEFAULT_JA_EMAIL)
+    create_jurisdiction_and_admin(
+        election_id, "Test Jurisdiction", default_ja_email(election_id),
+    )
 
     data = assert_superadmin_access(
         client, f"/superadmin/jurisdictions?election_id={election_id}"
     )
 
     assert "Jurisdictions" in data
-    assert DEFAULT_JA_EMAIL in data
+    assert default_ja_email(election_id) in data
 
     rv = client.post(
-        "/superadmin/jurisdictionadmin-login", data={"email": DEFAULT_JA_EMAIL}
+        "/superadmin/jurisdictionadmin-login",
+        data={"email": default_ja_email(election_id)},
     )
     assert rv.status_code == 302
 
     rv = client.get("/api/me")
     auth_data = json.loads(rv.data)
-    assert auth_data["email"] == DEFAULT_JA_EMAIL
+    assert auth_data["email"] == default_ja_email(election_id)
     assert auth_data["type"] == UserType.JURISDICTION_ADMIN
 
 

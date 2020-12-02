@@ -94,7 +94,9 @@ def test_bgcompute_ballot_manifest_errors(
     caplog,
     monkeypatch,
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, user_key=DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, user_key=default_ja_email(election_id)
+    )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
         data={
@@ -145,7 +147,9 @@ def test_bgcompute_batch_tallies_errors(
     db_session.delete(contest_2)
     db_session.commit()
 
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, user_key=DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, user_key=default_ja_email(election_id)
+    )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
         data={

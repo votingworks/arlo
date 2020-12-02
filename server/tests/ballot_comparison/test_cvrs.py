@@ -18,7 +18,9 @@ def test_cvr_upload(
     manifests,  # pylint: disable=unused-argument
     snapshot,
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
         data={"cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",)},
@@ -135,7 +137,9 @@ def test_cvrs_counting_group(
     manifests,  # pylint: disable=unused-argument
     snapshot,
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
         data={"cvrs": (io.BytesIO(COUNTING_GROUP_CVR.encode()), "cvrs.csv",)},
@@ -187,7 +191,9 @@ def test_cvrs_replace(
     jurisdiction_ids: List[str],
     manifests,  # pylint: disable=unused-argument
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
         data={"cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",)},
@@ -228,7 +234,9 @@ def test_cvrs_clear(
     jurisdiction_ids: List[str],
     manifests,  # pylint: disable=unused-argument
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
         data={"cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",)},
@@ -271,7 +279,9 @@ def test_cvrs_upload_missing_file(
     jurisdiction_ids: List[str],
     manifests,  # pylint: disable=unused-argument
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs", data={},
     )
@@ -292,7 +302,9 @@ def test_cvrs_upload_bad_csv(
     jurisdiction_ids: List[str],
     manifests,  # pylint: disable=unused-argument
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
         data={"cvrs": (io.BytesIO(b"not a CSV file"), "random.txt")},
@@ -331,7 +343,9 @@ def test_cvrs_wrong_audit_type(
         db_session.add(election)
         db_session.commit()
 
-        set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+        set_logged_in_user(
+            client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+        )
         rv = client.put(
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
             data={"cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",)},
@@ -350,7 +364,9 @@ def test_cvrs_wrong_audit_type(
 def test_cvrs_before_manifests(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str],
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
         data={"cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",)},
@@ -397,7 +413,9 @@ def test_cvrs_newlines(
     manifests,  # pylint: disable=unused-argument
     snapshot,
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
         data={"cvrs": (io.BytesIO(NEWLINE_CVR.encode()), "cvrs.csv",)},

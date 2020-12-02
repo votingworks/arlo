@@ -37,7 +37,9 @@ def assert_ballots_got_assigned_correctly(
 def test_audit_boards_list_empty(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
     )
@@ -52,7 +54,9 @@ def test_audit_boards_create_one(
     round_1_id: str,
     snapshot,
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = post_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
@@ -85,7 +89,9 @@ def test_audit_boards_list_one(
     round_1_id: str,
     snapshot,
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = post_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
@@ -160,7 +166,9 @@ def test_audit_boards_create_two(
     round_1_id: str,
     snapshot,
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = post_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
@@ -193,7 +201,9 @@ def test_audit_boards_list_two(
     round_1_id: str,
     snapshot,
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
 
     rv = post_json(
         client,
@@ -276,7 +286,9 @@ def test_audit_boards_create_round_2(
     round_2_id: str,
     snapshot,
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = post_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/audit-board",
@@ -313,7 +325,9 @@ def test_audit_boards_list_round_2(
     round_2_id: str,
     snapshot,
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
 
     rv = post_json(
         client,
@@ -353,7 +367,9 @@ def test_audit_boards_list_round_2(
 def test_audit_boards_missing_field(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = post_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
@@ -370,7 +386,9 @@ def test_audit_boards_missing_field(
 def test_audit_boards_duplicate_name(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = post_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
@@ -387,7 +405,9 @@ def test_audit_boards_duplicate_name(
 def test_audit_boards_already_created(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = post_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
@@ -418,7 +438,9 @@ def test_audit_boards_wrong_round(
     round_1_id: str,
     round_2_id: str,  # pylint: disable=unused-argument
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = post_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
@@ -438,7 +460,9 @@ def test_audit_boards_bad_round_id(
     jurisdiction_ids: List[str],
     round_1_id: str,  # pylint: disable=unused-argument
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = post_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/not-a-valid-id/audit-board",

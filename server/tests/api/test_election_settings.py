@@ -23,7 +23,9 @@ def test_settings_get_empty(client: FlaskClient, election_id: str):
 def test_jurisdiction_settings_get_empty(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/settings"
     )
@@ -70,7 +72,9 @@ def test_update_election(
     assert rv.status_code == 200
     assert json.loads(rv.data) == expected_settings
 
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/settings"
     )
