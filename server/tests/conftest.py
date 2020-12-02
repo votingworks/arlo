@@ -87,7 +87,12 @@ def jurisdiction_ids(client: FlaskClient, election_id: str) -> List[str]:
         },
     )
     assert_ok(rv)
-    bgcompute_update_election_jurisdictions_file(election_id)
+    # Sometimes we run into race-conditions creating the DEFAULT_JA_EMAIL user,
+    # so we just retry once if it fails
+    try:
+        bgcompute_update_election_jurisdictions_file(election_id)
+    except Exception:
+        bgcompute_update_election_jurisdictions_file(election_id)
     jurisdictions = (
         Jurisdiction.query.filter_by(election_id=election_id)
         .order_by(Jurisdiction.name)
