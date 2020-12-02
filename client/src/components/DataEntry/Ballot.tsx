@@ -2,11 +2,17 @@ import React, { useState, useEffect } from 'react'
 import { H1, H3, Callout, H4, Button } from '@blueprintjs/core'
 import styled from 'styled-components'
 import { Redirect, Link } from 'react-router-dom'
-import BallotAudit from './BallotAudit'
+import BallotAudit, { IContest } from './BallotAudit'
 import BallotReview from './BallotReview'
-import { IBallotInterpretation, IContest, BallotStatus } from '../../types'
+import {
+  IBallotInterpretation,
+  IContest as IContestApi,
+  BallotStatus,
+  Interpretation,
+} from '../../types'
 import { BallotRow, FlushDivider } from './Atoms'
 import { IBallot } from '../MultiJurisdictionAudit/RoundManagement/useBallots'
+import { hashBy } from '../../utils/array'
 
 const TopH1 = styled(H1)`
   margin: 40px 0 25px 0;
@@ -34,7 +40,7 @@ interface IProps {
   batchId: string
   ballotPosition: number
   ballots: IBallot[]
-  contests: IContest[]
+  contests: IContestApi[]
   previousBallot: () => void
   nextBallot: () => void
   submitBallot: (
@@ -44,12 +50,19 @@ interface IProps {
   ) => void
 }
 
-const emptyInterpretation = (contest: IContest) => ({
-  contestId: contest.id,
-  interpretation: null,
-  choiceIds: [],
-  comment: null,
-})
+const emptyInterpretation = (contest: IContest) => {
+  // Special case for ballot comparison audits: if we know a contest isn't on
+  // the ballot from the CVR, pre-set the interpretation to
+  // CONTEST_NOT_ON_BALLOT.
+  return {
+    contestId: contest.id,
+    interpretation: !contest.isOnBallot
+      ? Interpretation.CONTEST_NOT_ON_BALLOT
+      : null,
+    choiceIds: [],
+    comment: null,
+  }
+}
 
 const Ballot: React.FC<IProps> = ({
   home,
@@ -57,26 +70,34 @@ const Ballot: React.FC<IProps> = ({
   batchId,
   ballotPosition,
   ballots,
-  contests,
+  contests: contestsFromApi,
   previousBallot,
   nextBallot,
   submitBallot,
 }: IProps) => {
-  const [auditing, setAuditing] = useState(true)
-  const [interpretations, setInterpretations] = useState<
-    IBallotInterpretation[]
-  >(contests.map(emptyInterpretation))
-
   const ballotIx = ballots.findIndex(
     b => b.position === ballotPosition && b.batch.id === batchId
   )
   const ballot = ballots[ballotIx]
+  const contests = contestsFromApi.map(contest => ({
+    ...contest,
+    isOnBallot:
+      ballot &&
+      (!ballot.contestsOnBallot ||
+        ballot.contestsOnBallot.includes(contest.id)),
+  }))
+
+  const [auditing, setAuditing] = useState(true)
+  const [interpretations, setInterpretations] = useState<
+    IBallotInterpretation[]
+  >(contests.map(emptyInterpretation))
 
   const submitNotFound = async () => {
     await submitBallot(ballot.id, BallotStatus.NOT_FOUND, [])
     nextBallot()
   }
 
+  const contestsHash = hashBy(contests, c => c.id)
   useEffect(() => {
     if (ballot) {
       setInterpretations(
@@ -87,7 +108,7 @@ const Ballot: React.FC<IProps> = ({
         )
       )
     }
-  }, [ballot, contests])
+  }, [ballot, contestsHash]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return !ballot ? (
     <Redirect to={home} />

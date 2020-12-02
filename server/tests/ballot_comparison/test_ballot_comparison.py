@@ -392,9 +392,15 @@ def test_ballot_comparison_cvr_metadata(
         [
             {
                 "id": str(uuid.uuid4()),
-                "name": "Contest 1",
+                "name": "Contest 2",
                 "jurisdictionIds": jurisdiction_ids[:2],
                 "isTargeted": True,
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "name": "Contest 1",
+                "jurisdictionIds": jurisdiction_ids[:2],
+                "isTargeted": False,
             },
         ],
     )
@@ -405,15 +411,10 @@ def test_ballot_comparison_cvr_metadata(
     contests = json.loads(rv.data)["contests"]
     target_contest_id = contests[0]["id"]
 
-    rv = client.get(f"/api/election/{election_id}/sample-sizes")
-    sample_size_options = json.loads(rv.data)["sampleSizes"]
-    assert len(sample_size_options) == 1
-    sample_size = sample_size_options[target_contest_id][0]
-
     rv = post_json(
         client,
         f"/api/election/{election_id}/round",
-        {"roundNum": 1, "sampleSizes": {target_contest_id: sample_size["size"]}},
+        {"roundNum": 1, "sampleSizes": {target_contest_id: 20}},
     )
     assert_ok(rv)
 
@@ -456,3 +457,7 @@ def test_ballot_comparison_cvr_metadata(
     assert ballots[0]["batch"]["tabulator"] == "TABULATOR1"
     assert ballots[0]["position"] == 1
     assert ballots[0]["imprintedId"] == "1-1-1"
+    assert ballots[0]["contestsOnBallot"] == [contests[0]["id"], contests[1]["id"]]
+
+    ballot_missing_contest = next(b for b in ballots if b["imprintedId"] == "2-2-4")
+    assert ballot_missing_contest["contestsOnBallot"] == [contests[0]["id"]]

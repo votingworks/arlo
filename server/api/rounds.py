@@ -463,6 +463,16 @@ def sampled_all_ballots(round: Round, election: Election):
     )
 
 
+def is_contest_on_cvr_ballot(
+    contest: Contest, cvr_ballot: CvrBallot, cvr_contests_metadata: JSONDict
+) -> bool:
+    interpretations = cvr_ballot.interpretations.split(",")
+    return any(
+        interpretations[choice["column"]] != ""
+        for choice in cvr_contests_metadata[contest.name]["choices"].values()
+    )
+
+
 class BallotDraw(NamedTuple):
     # ballot_key: ((jurisdiction name, batch name), ballot_position)
     ballot_key: Tuple[Tuple[str, str], int]
@@ -585,21 +595,14 @@ def sample_ballots(
             manifest = defaultdict(list)
 
             for jurisdiction in contest.jurisdictions:
-                cvr_contests_metadata = typing_cast(
-                    JSONDict, jurisdiction.cvr_contests_metadata
-                )
-                contest_columns = [
-                    choice["column"]
-                    for choice in cvr_contests_metadata[contest.name][
-                        "choices"
-                    ].values()
-                ]
-
                 for cvr_ballot, jurisdiction_id in cvr_ballots:
                     if jurisdiction_id != jurisdiction.id:
                         continue
-                    interpretations = cvr_ballot.interpretations.split(",")
-                    if any(interpretations[column] != "" for column in contest_columns):
+                    if is_contest_on_cvr_ballot(
+                        contest,
+                        cvr_ballot,
+                        typing_cast(JSONDict, jurisdiction.cvr_contests_metadata),
+                    ):
                         manifest[batch_id_to_key[cvr_ballot.batch_id]].append(
                             cvr_ballot.ballot_position
                         )

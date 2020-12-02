@@ -3,9 +3,17 @@ import { Formik, FormikProps, Field } from 'formik'
 import { H4, H3, Button } from '@blueprintjs/core'
 import { BallotRow, ContestCard, ProgressActions, FlushDivider } from './Atoms'
 import FormButton from '../Atoms/Form/FormButton'
-import { IBallotInterpretation, Interpretation, IContest } from '../../types'
+import {
+  IBallotInterpretation,
+  Interpretation,
+  IContest as IContestApi,
+} from '../../types'
 import FormField from '../Atoms/Form/FormField'
 import BlockCheckbox from './BlockCheckbox'
+
+export interface IContest extends IContestApi {
+  isOnBallot: boolean
+}
 
 interface IProps {
   contests: IContest[]
@@ -59,16 +67,22 @@ const BallotAudit: React.FC<IProps> = ({
           }: FormikProps<{ interpretations: IBallotInterpretation[] }>) => {
             return (
               <form>
-                {contests.map((contest, i) => (
-                  <BallotAuditContest
-                    key={contest.id}
-                    contest={contest}
-                    interpretation={values.interpretations[i]}
-                    setInterpretation={newInterpretation =>
-                      setFieldValue(`interpretations[${i}]`, newInterpretation)
-                    }
-                  />
-                ))}
+                {contests.map(
+                  (contest, i) =>
+                    contest.isOnBallot && (
+                      <BallotAuditContest
+                        key={contest.id}
+                        contest={contest}
+                        interpretation={values.interpretations[i]}
+                        setInterpretation={newInterpretation =>
+                          setFieldValue(
+                            `interpretations[${i}]`,
+                            newInterpretation
+                          )
+                        }
+                      />
+                    )
+                )}
                 <ProgressActions>
                   <FormButton
                     type="submit"

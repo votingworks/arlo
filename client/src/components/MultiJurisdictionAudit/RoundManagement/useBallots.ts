@@ -15,8 +15,9 @@ export interface IBallot {
     tabulator: string | null
     container: string | null
   }
-  auditBoard?: Pick<IAuditBoard, 'id' | 'name'>
+  auditBoard: Pick<IAuditBoard, 'id' | 'name'> | null
   imprintedId?: string
+  contestsOnBallot?: string[]
 }
 
 const getBallots = async (

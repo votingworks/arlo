@@ -1,9 +1,10 @@
 import React from 'react'
 import { H3, Button } from '@blueprintjs/core'
 import styled from 'styled-components'
-import { IContest, IBallotInterpretation, Interpretation } from '../../types'
+import { IBallotInterpretation, Interpretation } from '../../types'
 import { BallotRow, ContestCard, ProgressActions, FlushDivider } from './Atoms'
 import FormButton from '../Atoms/Form/FormButton'
+import { IContest } from './BallotAudit'
 
 const Wrapper = styled.div`
   display: flex;
@@ -81,24 +82,27 @@ const BallotReview: React.FC<IProps> = ({
     <BallotRow>
       <div className="ballot-side"></div>
       <div className="ballot-main">
-        {contests.map((contest, i) => (
-          <ContestCard key={contest.name}>
-            <H3>{contest.name}</H3>
-            <FlushDivider />
-            <Wrapper>
-              {/* <ButtonGroup fill large vertical> */}
-              {renderInterpretation(interpretations[i], contest)}
-              <Button icon="edit" minimal onClick={goAudit}>
-                Edit
-              </Button>
-              {/* </ButtonGroup> */}
-            </Wrapper>
-            <p>
-              {interpretations[i].comment &&
-                `COMMENT: ${interpretations[i].comment}`}
-            </p>
-          </ContestCard>
-        ))}
+        {contests.map(
+          (contest, i) =>
+            contest.isOnBallot && (
+              <ContestCard key={contest.name}>
+                <H3>{contest.name}</H3>
+                <FlushDivider />
+                <Wrapper>
+                  {/* <ButtonGroup fill large vertical> */}
+                  {renderInterpretation(interpretations[i], contest)}
+                  <Button icon="edit" minimal onClick={goAudit}>
+                    Edit
+                  </Button>
+                  {/* </ButtonGroup> */}
+                </Wrapper>
+                <p>
+                  {interpretations[i].comment &&
+                    `COMMENT: ${interpretations[i].comment}`}
+                </p>
+              </ContestCard>
+            )
+        )}
         <ProgressActions>
           <FormButton type="submit" onClick={handleSubmit} intent="success">
             Submit &amp; Next Ballot
