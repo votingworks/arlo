@@ -102,8 +102,8 @@ describe('App', () => {
       })
     })
 
-    it.skip('renders ab logged in properly', async () => {
-      const expectedCalls = [apiMocks.abAuth]
+    it('renders ab logged in properly', async () => {
+      const expectedCalls = [apiMocks.abAuth, apiMocks.abAuth]
       await withMockFetch(expectedCalls, async () => {
         const { container } = render(
           <MemoryRouter
@@ -113,7 +113,7 @@ describe('App', () => {
             <App />
           </MemoryRouter>
         )
-        await screen.findByText('Audit Board #1: Member Sign-in')
+        await screen.findByText('Audit Board #2: Member Sign-in')
         expect(container).toMatchSnapshot()
       })
     })

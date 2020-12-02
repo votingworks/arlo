@@ -650,7 +650,318 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders aa logged i
 </div>
 `;
 
-exports[`App /election/:electionId/audit-board/:auditBoardId renders ab logged in properly 1`] = `<div />`;
+exports[`App /election/:electionId/audit-board/:auditBoardId renders ab logged in properly 1`] = `
+<div>
+  <div
+    class="Toastify"
+  />
+  <div
+    class="sc-cmTdod ftrAGQ"
+  >
+    <div
+      class="bp3-navbar sc-EHOje gMcVig"
+    >
+      <div
+        class="sc-bxivhb sc-bZQynM ezCmGO"
+      >
+        <div
+          class="bp3-navbar-group bp3-align-left"
+        >
+          <div
+            class="bp3-navbar-heading"
+          >
+            <a
+              href="/"
+            >
+              <img
+                alt="Arlo, by VotingWorks"
+                src="/arlo.png"
+              />
+            </a>
+          </div>
+        </div>
+        <div
+          class="bp3-navbar-group bp3-align-right"
+        >
+          <div
+            class="sc-ifAKCX jNLPyG"
+            id="reset-button-wrapper"
+          />
+          <button
+            class="bp3-button bp3-small sc-bwzfXH eBfcXh"
+            type="button"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Log out
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div
+      class="sc-htpNat cBZqYS"
+    >
+      <div
+        class="sc-bxivhb sc-tilXH daimQC"
+      >
+        <div>
+          <h1
+            class="bp3-heading"
+          >
+            Audit Board #2
+            : Member Sign-in
+          </h1>
+          <p>
+            Enter the information below for each member of 
+            Jurisdiction 1
+             
+            Audit Board #2
+             below, then click "Next" to proceed.
+          </p>
+          <form>
+            <div
+              class="sc-jTzLTM hPHXqn"
+            >
+              <h3
+                class="bp3-heading sc-jzJRlG uBwws"
+              >
+                Audit Board Member
+              </h3>
+              <label
+                class="sc-jbKcbu dvaTrG"
+                for="[0]name"
+              >
+                Full Name
+              </label>
+              <input
+                class="sc-dNLxif bUssQM"
+                id="[0]name"
+                name="[0]name"
+                value=""
+              />
+              <label
+                class="sc-jbKcbu dvaTrG"
+                for="[0]affiliation"
+              >
+                Party Affiliation 
+                <i>
+                  (optional)
+                </i>
+              </label>
+              <div>
+                <label
+                  class="bp3-control bp3-radio"
+                >
+                  <input
+                    name="[0]affiliation"
+                    type="radio"
+                    value="DEM"
+                  />
+                  <span
+                    class="bp3-control-indicator"
+                  />
+                  Democrat
+                </label>
+                <label
+                  class="bp3-control bp3-radio"
+                >
+                  <input
+                    name="[0]affiliation"
+                    type="radio"
+                    value="REP"
+                  />
+                  <span
+                    class="bp3-control-indicator"
+                  />
+                  Republican
+                </label>
+                <label
+                  class="bp3-control bp3-radio"
+                >
+                  <input
+                    name="[0]affiliation"
+                    type="radio"
+                    value="LIB"
+                  />
+                  <span
+                    class="bp3-control-indicator"
+                  />
+                  Libertarian
+                </label>
+                <label
+                  class="bp3-control bp3-radio"
+                >
+                  <input
+                    name="[0]affiliation"
+                    type="radio"
+                    value="IND"
+                  />
+                  <span
+                    class="bp3-control-indicator"
+                  />
+                  Independent/Unaffiliated
+                </label>
+                <label
+                  class="bp3-control bp3-radio"
+                >
+                  <input
+                    name="[0]affiliation"
+                    type="radio"
+                    value="OTH"
+                  />
+                  <span
+                    class="bp3-control-indicator"
+                  />
+                  Other
+                </label>
+                <label
+                  class="bp3-control bp3-radio"
+                >
+                  <input
+                    checked=""
+                    name="[0]affiliation"
+                    type="radio"
+                    value=""
+                  />
+                  <span
+                    class="bp3-control-indicator"
+                  />
+                  None
+                </label>
+              </div>
+            </div>
+            <div
+              class="sc-jTzLTM hPHXqn"
+            >
+              <h3
+                class="bp3-heading sc-jzJRlG uBwws"
+              >
+                Audit Board Member
+              </h3>
+              <label
+                class="sc-jbKcbu dvaTrG"
+                for="[1]name"
+              >
+                Full Name
+              </label>
+              <input
+                class="sc-dNLxif bUssQM"
+                id="[1]name"
+                name="[1]name"
+                value=""
+              />
+              <label
+                class="sc-jbKcbu dvaTrG"
+                for="[1]affiliation"
+              >
+                Party Affiliation 
+                <i>
+                  (optional)
+                </i>
+              </label>
+              <div>
+                <label
+                  class="bp3-control bp3-radio"
+                >
+                  <input
+                    name="[1]affiliation"
+                    type="radio"
+                    value="DEM"
+                  />
+                  <span
+                    class="bp3-control-indicator"
+                  />
+                  Democrat
+                </label>
+                <label
+                  class="bp3-control bp3-radio"
+                >
+                  <input
+                    name="[1]affiliation"
+                    type="radio"
+                    value="REP"
+                  />
+                  <span
+                    class="bp3-control-indicator"
+                  />
+                  Republican
+                </label>
+                <label
+                  class="bp3-control bp3-radio"
+                >
+                  <input
+                    name="[1]affiliation"
+                    type="radio"
+                    value="LIB"
+                  />
+                  <span
+                    class="bp3-control-indicator"
+                  />
+                  Libertarian
+                </label>
+                <label
+                  class="bp3-control bp3-radio"
+                >
+                  <input
+                    name="[1]affiliation"
+                    type="radio"
+                    value="IND"
+                  />
+                  <span
+                    class="bp3-control-indicator"
+                  />
+                  Independent/Unaffiliated
+                </label>
+                <label
+                  class="bp3-control bp3-radio"
+                >
+                  <input
+                    name="[1]affiliation"
+                    type="radio"
+                    value="OTH"
+                  />
+                  <span
+                    class="bp3-control-indicator"
+                  />
+                  Other
+                </label>
+                <label
+                  class="bp3-control bp3-radio"
+                >
+                  <input
+                    checked=""
+                    name="[1]affiliation"
+                    type="radio"
+                    value=""
+                  />
+                  <span
+                    class="bp3-control-indicator"
+                  />
+                  None
+                </label>
+              </div>
+            </div>
+            <button
+              class="bp3-button bp3-disabled bp3-intent-primary sc-bwzfXH eBfcXh"
+              disabled=""
+              tabindex="-1"
+              type="button"
+            >
+              <span
+                class="bp3-button-text"
+              >
+                Next
+              </span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
 
 exports[`App /election/:electionId/audit-board/:auditBoardId renders ja logged in properly 1`] = `
 <div>
