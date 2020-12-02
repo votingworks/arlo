@@ -140,7 +140,9 @@ def test_create_election_jurisdiction_admin(
     org_id: str,
     election_id: str,  # pylint: disable=unused-argument
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
 
     rv = post_json(
         client,

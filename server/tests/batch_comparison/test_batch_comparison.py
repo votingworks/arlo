@@ -130,7 +130,7 @@ def test_batch_comparison_too_many_votes(
         data={"batchTallies": (io.BytesIO(batch_tallies_file), "batchTallies.csv",)},
     )
     assert_ok(rv)
-    bgcompute_update_batch_tallies_file()
+    bgcompute_update_batch_tallies_file(election_id)
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = post_json(
@@ -211,7 +211,9 @@ def test_batch_comparison_round_1(
     sampled_jurisdictions = {draw.batch.jurisdiction_id for draw in batch_draws}
     assert sampled_jurisdictions == set(jurisdiction_ids[:2])
 
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = post_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{rounds[0]['id']}/audit-board",
@@ -268,7 +270,9 @@ def test_batch_comparison_round_2(
     assert rv.status_code == 200
     contests = json.loads(rv.data)["contests"]
 
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches"
     )
@@ -297,7 +301,9 @@ def test_batch_comparison_round_2(
     snapshot.assert_match(jurisdictions[1]["currentRoundStatus"])
 
     # Now do the second jurisdiction
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = post_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/audit-board",
@@ -377,7 +383,9 @@ def test_batch_comparison_round_2(
     sampled_jurisdictions = {draw.batch.jurisdiction_id for draw in batch_draws}
     assert sampled_jurisdictions == set(jurisdiction_ids[:2])
 
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = post_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{rounds[1]['id']}/audit-board",
@@ -397,7 +405,9 @@ def test_batch_comparison_round_2(
     rv = client.get(f"/api/election/{election_id}/report")
     assert_match_report(rv.data, snapshot)
 
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/report"
     )

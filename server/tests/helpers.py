@@ -13,7 +13,10 @@ from ..api.audit_boards import end_round
 
 
 DEFAULT_AA_EMAIL = "admin@example.com"
-DEFAULT_JA_EMAIL = "jurisdiction.admin@example.com"
+
+
+def default_ja_email(election_id: str):
+    return f"jurisdiction.admin-{election_id}@example.com"
 
 
 def post_json(client: FlaskClient, url: str, obj=None) -> Any:
@@ -87,9 +90,7 @@ def create_org_and_admin(
     return org.id, audit_admin.id
 
 
-def create_jurisdiction_admin(
-    jurisdiction_id: str, user_email: str = DEFAULT_JA_EMAIL
-) -> str:
+def create_jurisdiction_admin(jurisdiction_id: str, user_email: str) -> str:
     jurisdiction_admin = create_user(user_email)
     db_session.add(jurisdiction_admin)
     admin = JurisdictionAdministration(
@@ -112,9 +113,7 @@ def create_jurisdiction(
 
 
 def create_jurisdiction_and_admin(
-    election_id: str,
-    jurisdiction_name: str = "Test Jurisdiction",
-    user_email: str = DEFAULT_JA_EMAIL,
+    election_id: str, jurisdiction_name: str, user_email: str,
 ) -> Tuple[str, str]:
     jurisdiction = create_jurisdiction(election_id, jurisdiction_name)
     ja_id = create_jurisdiction_admin(jurisdiction.id, user_email)

@@ -119,7 +119,7 @@ def test_ballot_comparison_two_rounds(
     )
     assert_ok(rv)
 
-    bgcompute_update_standardized_contests_file()
+    bgcompute_update_standardized_contests_file(election_id)
 
     # AA selects a contest to target from the standardized contest list
     rv = client.get(f"/api/election/{election_id}/standardized-contests")
@@ -176,7 +176,9 @@ def test_ballot_comparison_two_rounds(
     snapshot.assert_match(jurisdictions[1]["currentRoundStatus"])
 
     # JAs create audit boards
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     for jurisdiction_id in target_contest["jurisdictionIds"]:
         rv = post_json(
             client,
@@ -422,7 +424,9 @@ def test_ballot_comparison_cvr_metadata(
     round_1_id = json.loads(rv.data)["rounds"][0]["id"]
 
     # JA creates audit boards
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = post_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",

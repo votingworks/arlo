@@ -53,7 +53,9 @@ def contest_id(contest_ids: List[str]) -> str:
 
 @pytest.fixture
 def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
         data={
@@ -93,7 +95,7 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
         },
     )
     assert_ok(rv)
-    bgcompute_update_ballot_manifest_file()
+    bgcompute_update_ballot_manifest_file(election_id)
 
 
 @pytest.fixture
@@ -104,7 +106,9 @@ def batch_tallies(
     contest_ids: List[str],  # pylint: disable=unused-argument
     manifests,  # pylint: disable=unused-argument
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     batch_tallies_file = (
         b"Batch Name,candidate 1,candidate 2,candidate 3\n"
         b"Batch 1,500,250,250\n"
@@ -135,7 +139,7 @@ def batch_tallies(
         data={"batchTallies": (io.BytesIO(batch_tallies_file), "batchTallies.csv",)},
     )
     assert_ok(rv)
-    bgcompute_update_batch_tallies_file()
+    bgcompute_update_batch_tallies_file(election_id)
 
 
 @pytest.fixture

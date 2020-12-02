@@ -3,14 +3,7 @@ from typing import List
 from flask.testing import FlaskClient
 
 from ...models import *  # pylint: disable=wildcard-import
-from ..helpers import (
-    set_logged_in_user,
-    DEFAULT_JA_EMAIL,
-    UserType,
-    compare_json,
-    assert_is_date,
-    assert_ok,
-)
+from ..helpers import *  # pylint: disable=wildcard-import
 from ...bgcompute import bgcompute_update_ballot_manifest_file
 from ...util.process_file import ProcessingStatus
 
@@ -18,7 +11,9 @@ from ...util.process_file import ProcessingStatus
 def test_ballot_manifest_upload(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
         data={
@@ -48,7 +43,7 @@ def test_ballot_manifest_upload(
         },
     )
 
-    bgcompute_update_ballot_manifest_file()
+    bgcompute_update_ballot_manifest_file(election_id)
 
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"
@@ -81,7 +76,9 @@ def test_ballot_manifest_upload(
 def test_ballot_manifest_replace(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
         data={
@@ -97,7 +94,7 @@ def test_ballot_manifest_replace(
 
     file_id = Jurisdiction.query.get(jurisdiction_ids[0]).manifest_file_id
 
-    bgcompute_update_ballot_manifest_file()
+    bgcompute_update_ballot_manifest_file(election_id)
 
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
@@ -115,7 +112,7 @@ def test_ballot_manifest_replace(
     assert File.query.get(file_id) is None
     assert jurisdiction.manifest_file_id != file_id
 
-    bgcompute_update_ballot_manifest_file()
+    bgcompute_update_ballot_manifest_file(election_id)
 
     jurisdiction = Jurisdiction.query.get(jurisdiction_ids[0])
     assert jurisdiction.manifest_num_batches == 2
@@ -130,7 +127,9 @@ def test_ballot_manifest_replace(
 def test_ballot_manifest_clear(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
         data={
@@ -144,7 +143,7 @@ def test_ballot_manifest_clear(
 
     file_id = Jurisdiction.query.get(jurisdiction_ids[0]).manifest_file_id
 
-    bgcompute_update_ballot_manifest_file()
+    bgcompute_update_ballot_manifest_file(election_id)
 
     rv = client.delete(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
@@ -167,7 +166,9 @@ def test_ballot_manifest_clear(
 def test_ballot_manifest_upload_missing_file(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
         data={},
@@ -186,14 +187,16 @@ def test_ballot_manifest_upload_missing_file(
 def test_ballot_manifest_upload_bad_csv(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
         data={"manifest": (io.BytesIO(b"not a CSV file"), "random.txt")},
     )
     assert_ok(rv)
 
-    bgcompute_update_ballot_manifest_file()
+    bgcompute_update_ballot_manifest_file(election_id)
 
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"
@@ -219,7 +222,9 @@ def test_ballot_manifest_upload_missing_field(
         headers = ["Batch Name", "Number of Ballots", "Container", "Tabulator"]
         header_row = ",".join(h for h in headers if h != missing_field)
 
-        set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+        set_logged_in_user(
+            client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+        )
         rv = client.put(
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
             data={
@@ -231,7 +236,7 @@ def test_ballot_manifest_upload_missing_field(
         )
         assert_ok(rv)
 
-        bgcompute_update_ballot_manifest_file()
+        bgcompute_update_ballot_manifest_file(election_id)
 
         rv = client.get(
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"
@@ -253,7 +258,9 @@ def test_ballot_manifest_upload_missing_field(
 def test_ballot_manifest_upload_invalid_num_ballots(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
         data={
@@ -265,7 +272,7 @@ def test_ballot_manifest_upload_invalid_num_ballots(
     )
     assert_ok(rv)
 
-    bgcompute_update_ballot_manifest_file()
+    bgcompute_update_ballot_manifest_file(election_id)
 
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"
@@ -287,7 +294,9 @@ def test_ballot_manifest_upload_invalid_num_ballots(
 def test_ballot_manifest_upload_duplicate_batch_name(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
         data={
@@ -301,7 +310,7 @@ def test_ballot_manifest_upload_duplicate_batch_name(
     )
     assert_ok(rv)
 
-    bgcompute_update_ballot_manifest_file()
+    bgcompute_update_ballot_manifest_file(election_id)
 
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"

@@ -13,7 +13,9 @@ def test_list_batches_bad_round_id(
     election_id: str,
     jurisdiction_ids: List[str],  # pylint: disable=unused-argument
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/not-a-real-round/batches"
     )
@@ -26,7 +28,9 @@ def test_list_batches(
     jurisdiction_ids: List[str],  # pylint: disable=unused-argument
     round_1_id: str,
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches"
     )
@@ -66,7 +70,9 @@ def test_batch_retrieval_list_bad_round_id(
     election_id: str,
     jurisdiction_ids: List[str],  # pylint: disable=unused-argument
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/not-a-real-round/batches/retrieval-list"
     )
@@ -81,7 +87,9 @@ def test_batch_retrieval_list_round_1(
     round_1_id: str,
     snapshot,
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/retrieval-list"
     )
@@ -117,7 +125,9 @@ def test_record_batch_results(
     audit_board_round_1_ids: List[str],  # pylint: disable=unused-argument
     snapshot,
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/contest"
     )
@@ -232,7 +242,9 @@ def test_record_batch_results(
     rv = post_json(client, f"/api/election/{election_id}/round", {"roundNum": 2})
     assert_ok(rv)
 
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round"
     )
@@ -287,7 +299,9 @@ def test_record_batch_results(
 def test_record_batch_results_without_audit_boards(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = put_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/results",
@@ -311,7 +325,9 @@ def test_record_batch_results_invalid(
     round_1_id: str,  # pylint: disable=unused-argument
     audit_board_round_1_ids: List[str],  # pylint: disable=unused-argument
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/contest"
     )
@@ -398,7 +414,9 @@ def test_record_batch_results_bad_round(
 
     choice_ids = [choice["id"] for choice in contests[0]["choices"]]
 
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
 
     for jurisdiction_id in jurisdiction_ids[:2]:
         rv = post_json(
@@ -427,7 +445,9 @@ def test_record_batch_results_bad_round(
     rv = post_json(client, f"/api/election/{election_id}/round", {"roundNum": 2})
     assert_ok(rv)
 
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = put_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/results",
@@ -456,7 +476,9 @@ def test_record_batch_results_bad_round(
     db_session.add(round)
     db_session.commit()
 
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = put_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/results",

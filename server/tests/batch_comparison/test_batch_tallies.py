@@ -14,7 +14,9 @@ from ...util.process_file import ProcessingStatus
 
 @pytest.fixture
 def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
         data={
@@ -30,7 +32,7 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
         },
     )
     assert_ok(rv)
-    bgcompute_update_ballot_manifest_file()
+    bgcompute_update_ballot_manifest_file(election_id)
 
 
 def test_batch_tallies_upload(
@@ -40,7 +42,9 @@ def test_batch_tallies_upload(
     contest_id: str,
     manifests,  # pylint: disable=unused-argument
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     batch_tallies_file = (
         b"Batch Name,candidate 1,candidate 2,candidate 3\n"
         b"Batch 1,1,10,100\n"
@@ -69,7 +73,7 @@ def test_batch_tallies_upload(
         },
     )
 
-    bgcompute_update_batch_tallies_file()
+    bgcompute_update_batch_tallies_file(election_id)
 
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies"
@@ -152,7 +156,9 @@ def test_batch_tallies_replace(
     contest_id: str,
     manifests,  # pylint: disable=unused-argument
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
         data={
@@ -171,7 +177,7 @@ def test_batch_tallies_replace(
 
     file_id = Jurisdiction.query.get(jurisdiction_ids[0]).batch_tallies_file_id
 
-    bgcompute_update_batch_tallies_file()
+    bgcompute_update_batch_tallies_file(election_id)
 
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
@@ -194,7 +200,7 @@ def test_batch_tallies_replace(
     assert File.query.get(file_id) is None
     assert jurisdiction.batch_tallies_file_id != file_id
 
-    bgcompute_update_batch_tallies_file()
+    bgcompute_update_batch_tallies_file(election_id)
 
     jurisdiction = Jurisdiction.query.get(jurisdiction_ids[0])
     contest = Contest.query.get(contest_id)
@@ -233,7 +239,9 @@ def test_batch_tallies_clear(
     contest_ids: List[str],  # pylint: disable=unused-argument
     manifests,  # pylint: disable=unused-argument
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
         data={
@@ -252,7 +260,7 @@ def test_batch_tallies_clear(
 
     file_id = Jurisdiction.query.get(jurisdiction_ids[0]).batch_tallies_file_id
 
-    bgcompute_update_batch_tallies_file()
+    bgcompute_update_batch_tallies_file(election_id)
 
     rv = client.delete(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
@@ -283,7 +291,9 @@ def test_batch_tallies_upload_missing_file(
     contest_ids: List[str],  # pylint: disable=unused-argument
     manifests,  # pylint: disable=unused-argument
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
         data={},
@@ -306,14 +316,16 @@ def test_batch_tallies_upload_bad_csv(
     contest_ids: List[str],  # pylint: disable=unused-argument
     manifests,  # pylint: disable=unused-argument
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
         data={"batchTallies": (io.BytesIO(b"not a CSV file"), "random.txt")},
     )
     assert_ok(rv)
 
-    bgcompute_update_batch_tallies_file()
+    bgcompute_update_batch_tallies_file(election_id)
 
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies"
@@ -339,7 +351,9 @@ def test_batch_tallies_upload_missing_choice(
     contest_ids: List[str],  # pylint: disable=unused-argument
     manifests,  # pylint: disable=unused-argument
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
 
     headers = ["Batch Name", "candidate 1", "candidate 2", "candidate 3"]
     for missing_field in headers:
@@ -356,7 +370,7 @@ def test_batch_tallies_upload_missing_choice(
         )
         assert_ok(rv)
 
-        bgcompute_update_batch_tallies_file()
+        bgcompute_update_batch_tallies_file(election_id)
 
         rv = client.get(
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies"
@@ -382,7 +396,9 @@ def test_batch_tallies_wrong_batch_names(
     contest_ids: List[str],  # pylint: disable=unused-argument
     manifests,  # pylint: disable=unused-argument
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
 
     bad_files = [
         (
@@ -426,7 +442,7 @@ def test_batch_tallies_wrong_batch_names(
         )
         assert_ok(rv)
 
-        bgcompute_update_batch_tallies_file()
+        bgcompute_update_batch_tallies_file(election_id)
 
         rv = client.get(
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies"
@@ -452,7 +468,9 @@ def test_batch_tallies_too_many_tallies(
     contest_ids: List[str],  # pylint: disable=unused-argument
     manifests,  # pylint: disable=unused-argument
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
         data={
@@ -469,7 +487,7 @@ def test_batch_tallies_too_many_tallies(
     )
     assert_ok(rv)
 
-    bgcompute_update_batch_tallies_file()
+    bgcompute_update_batch_tallies_file(election_id)
 
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies"
@@ -501,7 +519,9 @@ def test_batch_tallies_ballot_polling(
     db_session.add(election)
     db_session.commit()
 
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
         data={
@@ -534,7 +554,9 @@ def test_batch_tallies_bad_jurisdiction(
     contest_ids: List[str],  # pylint: disable=unused-argument
     manifests,  # pylint: disable=unused-argument
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, "j3@example.com")
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, f"j3-{election_id}@example.com"
+    )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[2]}/batch-tallies",
         data={
@@ -566,7 +588,9 @@ def test_batch_tallies_before_manifests(
     jurisdiction_ids: List[str],
     contest_ids: List[str],  # pylint: disable=unused-argument
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
         data={

@@ -71,7 +71,7 @@ def test_bgcompute_jurisdictions_file_errors(
 
     monkeypatch.setattr(bgcompute, "process_jurisdictions_file", raise_exception)
 
-    bgcompute_update_election_jurisdictions_file()
+    bgcompute_update_election_jurisdictions_file(election_id)
 
     assert find_log(
         caplog,
@@ -94,7 +94,9 @@ def test_bgcompute_ballot_manifest_errors(
     caplog,
     monkeypatch,
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, user_key=DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, user_key=default_ja_email(election_id)
+    )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
         data={
@@ -113,7 +115,7 @@ def test_bgcompute_ballot_manifest_errors(
 
     monkeypatch.setattr(bgcompute, "process_ballot_manifest_file", raise_exception)
 
-    bgcompute_update_ballot_manifest_file()
+    bgcompute_update_ballot_manifest_file(election_id)
 
     assert find_log(
         caplog,
@@ -145,7 +147,9 @@ def test_bgcompute_batch_tallies_errors(
     db_session.delete(contest_2)
     db_session.commit()
 
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, user_key=DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, user_key=default_ja_email(election_id)
+    )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
         data={
@@ -164,7 +168,7 @@ def test_bgcompute_batch_tallies_errors(
 
     monkeypatch.setattr(bgcompute, "process_batch_tallies_file", raise_exception)
 
-    bgcompute_update_batch_tallies_file()
+    bgcompute_update_batch_tallies_file(election_id)
 
     assert find_log(
         caplog,

@@ -337,7 +337,9 @@ def test_contest_too_many_votes(client: FlaskClient, election_id: str):
 def test_jurisdictions_contests_list_empty(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str],
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, user_key=DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, user_key=default_ja_email(election_id)
+    )
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/contest"
     )
@@ -350,7 +352,9 @@ def test_jurisdictions_contests_list(
     rv = put_json(client, f"/api/election/{election_id}/contest", json_contests)
     assert_ok(rv)
 
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, user_key=DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, user_key=default_ja_email(election_id)
+    )
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/contest"
     )

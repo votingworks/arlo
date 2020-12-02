@@ -65,7 +65,9 @@ def test_jurisdictions_list_no_manifest(
 def test_jurisdictions_list_with_manifest(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     manifest = (
         b"Batch Name,Number of Ballots\n" b"1,23\n" b"2,101\n" b"3,122\n" b"4,400"
     )
@@ -74,7 +76,7 @@ def test_jurisdictions_list_with_manifest(
         data={"manifest": (io.BytesIO(manifest), "manifest.csv",)},
     )
     assert_ok(rv)
-    bgcompute_update_ballot_manifest_file()
+    bgcompute_update_ballot_manifest_file(election_id)
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
@@ -138,7 +140,9 @@ def test_download_ballot_manifest_not_found(client, election_id, jurisdiction_id
 
 
 def test_duplicate_batch_name(client, election_id, jurisdiction_ids):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
         data={
@@ -150,7 +154,7 @@ def test_duplicate_batch_name(client, election_id, jurisdiction_ids):
     )
     assert_ok(rv)
 
-    bgcompute_update_ballot_manifest_file()
+    bgcompute_update_ballot_manifest_file(election_id)
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
@@ -330,7 +334,9 @@ def test_jurisdictions_round_status_offline(
 
     snapshot.assert_match(jurisdictions[0]["currentRoundStatus"])
 
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
 
     rv = post_json(
         client,
@@ -345,7 +351,9 @@ def test_jurisdictions_round_status_offline(
 
     snapshot.assert_match(jurisdictions[0]["currentRoundStatus"])
 
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
 
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/results",

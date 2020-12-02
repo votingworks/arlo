@@ -18,14 +18,19 @@ def bgcompute():
     bgcompute_update_cvr_file()
 
 
-def bgcompute_update_election_jurisdictions_file() -> int:
-    files = (
-        File.query.join(Election, File.id == Election.jurisdictions_file_id)
-        .filter(File.processing_started_at.is_(None))
-        .all()
-    )
+# All bgcompute functions take an optional election_id parameter in order to
+# make them thread-safe for testing. Each test has its own election, and we
+# don't want tests running in parallel to influence each other.
 
-    for file in files:
+
+def bgcompute_update_election_jurisdictions_file(election_id: str = None):
+    files = File.query.join(Election, File.id == Election.jurisdictions_file_id).filter(
+        File.processing_started_at.is_(None)
+    )
+    if election_id:
+        files = files.filter(Election.id == election_id)
+
+    for file in files.all():
         try:
             election = Election.query.filter_by(jurisdictions_file_id=file.id).one()
 
@@ -47,17 +52,15 @@ def bgcompute_update_election_jurisdictions_file() -> int:
                 f"ERROR updating jurisdictions file. election_id: {election_id}"
             )
 
-    return len(files)
 
+def bgcompute_update_standardized_contests_file(election_id: str = None):
+    files = File.query.join(
+        Election, File.id == Election.standardized_contests_file_id
+    ).filter(File.processing_started_at.is_(None))
+    if election_id:
+        files = files.filter(Election.id == election_id)
 
-def bgcompute_update_standardized_contests_file() -> int:
-    files = (
-        File.query.join(Election, File.id == Election.standardized_contests_file_id)
-        .filter(File.processing_started_at.is_(None))
-        .all()
-    )
-
-    for file in files:
+    for file in files.all():
         try:
             election = Election.query.filter_by(
                 standardized_contests_file_id=file.id
@@ -81,17 +84,15 @@ def bgcompute_update_standardized_contests_file() -> int:
                 f"ERROR updating standardized contests file. election_id: {election_id}"
             )
 
-    return len(files)
 
+def bgcompute_update_ballot_manifest_file(election_id: str = None):
+    files = File.query.join(
+        Jurisdiction, File.id == Jurisdiction.manifest_file_id
+    ).filter(File.processing_started_at.is_(None))
+    if election_id:
+        files = files.filter(Election.id == election_id)
 
-def bgcompute_update_ballot_manifest_file() -> int:
-    files = (
-        File.query.join(Jurisdiction, File.id == Jurisdiction.manifest_file_id)
-        .filter(File.processing_started_at.is_(None))
-        .all()
-    )
-
-    for file in files:
+    for file in files.all():
         try:
             jurisdiction = Jurisdiction.query.filter_by(manifest_file_id=file.id).one()
 
@@ -114,17 +115,15 @@ def bgcompute_update_ballot_manifest_file() -> int:
                 f"ERROR updating ballot manifest file. election_id: {election_id}, jurisdiction_id: {jurisdiction_id}"
             )
 
-    return len(files)
 
+def bgcompute_update_batch_tallies_file(election_id: str = None):
+    files = File.query.join(
+        Jurisdiction, File.id == Jurisdiction.batch_tallies_file_id
+    ).filter(File.processing_started_at.is_(None))
+    if election_id:
+        files = files.filter(Election.id == election_id)
 
-def bgcompute_update_batch_tallies_file() -> int:
-    files = (
-        File.query.join(Jurisdiction, File.id == Jurisdiction.batch_tallies_file_id)
-        .filter(File.processing_started_at.is_(None))
-        .all()
-    )
-
-    for file in files:
+    for file in files.all():
         try:
             jurisdiction = Jurisdiction.query.filter_by(
                 batch_tallies_file_id=file.id
@@ -149,17 +148,15 @@ def bgcompute_update_batch_tallies_file() -> int:
                 f"ERROR updating batch tallies file. election_id: {election_id}, jurisdiction_id: {jurisdiction_id}"
             )
 
-    return len(files)
 
-
-def bgcompute_update_cvr_file() -> int:
-    files = (
-        File.query.join(Jurisdiction, File.id == Jurisdiction.cvr_file_id)
-        .filter(File.processing_started_at.is_(None))
-        .all()
+def bgcompute_update_cvr_file(election_id: str = None):
+    files = File.query.join(Jurisdiction, File.id == Jurisdiction.cvr_file_id).filter(
+        File.processing_started_at.is_(None)
     )
+    if election_id:
+        files = files.filter(Election.id == election_id)
 
-    for file in files:
+    for file in files.all():
         try:
             jurisdiction = Jurisdiction.query.filter_by(cvr_file_id=file.id).one()
 
@@ -181,8 +178,6 @@ def bgcompute_update_cvr_file() -> int:
             app.logger.exception(
                 f"ERROR updating CVR file. election_id: {election_id}, jurisdiction_id: {jurisdiction_id}"
             )
-
-    return len(files)
 
 
 def bgcompute_forever():

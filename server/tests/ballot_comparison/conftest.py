@@ -45,7 +45,9 @@ def election_id(client: FlaskClient, org_id: str, request):
 
 @pytest.fixture
 def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
         data={
@@ -78,7 +80,7 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
         },
     )
     assert_ok(rv)
-    bgcompute_update_ballot_manifest_file()
+    bgcompute_update_ballot_manifest_file(election_id)
 
 
 @pytest.fixture
@@ -88,7 +90,9 @@ def cvrs(
     jurisdiction_ids: List[str],
     manifests,  # pylint: disable=unused-argument
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
         data={"cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",)},
@@ -99,4 +103,4 @@ def cvrs(
         data={"cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",)},
     )
     assert_ok(rv)
-    bgcompute_update_cvr_file()
+    bgcompute_update_cvr_file(election_id)

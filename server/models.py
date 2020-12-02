@@ -3,7 +3,12 @@ from typing import Type, TypeVar, cast as typing_cast
 from datetime import datetime as dt, timezone
 from werkzeug.exceptions import NotFound
 from sqlalchemy import *  # pylint: disable=wildcard-import
-from sqlalchemy.orm import relationship, backref, validates, deferred as sa_deferred
+from sqlalchemy.orm import (
+    relationship,
+    backref,
+    validates,
+    deferred as sa_deferred,
+)
 from sqlalchemy.types import TypeDecorator
 from .database import Base  # pylint: disable=cyclic-import
 
