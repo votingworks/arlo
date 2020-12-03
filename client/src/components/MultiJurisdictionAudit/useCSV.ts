@@ -22,6 +22,9 @@ export interface IFileInfo {
   } | null
 }
 
+export const isFileProcessed = (file: IFileInfo): boolean =>
+  !!file.processing && file.processing.status === FileProcessingStatus.PROCESSED
+
 const loadCSVFile = async (url: string): Promise<IFileInfo | null> =>
   api<IFileInfo>(url)
 
@@ -54,11 +57,11 @@ const useCSV = (
 ] => {
   const [csv, setCSV] = useState<IFileInfo | null>(null)
 
-  // useEffect(() => {
-  //   ;(async () => {
-  //     setCSV(await loadCSVFile(url))
-  //   })()
-  // }, [url])
+  useEffect(() => {
+    ;(async () => {
+      setCSV(await loadCSVFile(url))
+    })()
+  }, [url])
 
   const uploadCSV = async (csvFile: File): Promise<boolean> => {
     if (await putCSVFile(url, csvFile, formKey)) {
@@ -95,14 +98,27 @@ const useCSV = (
   return [csv, uploadCSV, deleteCSV]
 }
 
-export const useJurisdictionsFile = (electionId: string) =>
-  useCSV(`/election/${electionId}/jurisdiction/file`, 'jurisdictions')
+export const useJurisdictionsFile = (
+  electionId: string
+): [IFileInfo | null, (csv: File) => Promise<boolean>] => {
+  const [csv, uploadCSV] = useCSV(
+    `/election/${electionId}/jurisdiction/file`,
+    'jurisdictions'
+  )
+  // Delete not supported
+  return [csv, uploadCSV]
+}
 
-export const useStandardizedContestsFile = (electionId: string) =>
-  useCSV(
+export const useStandardizedContestsFile = (
+  electionId: string
+): [IFileInfo | null, (csv: File) => Promise<boolean>] => {
+  const [csv, uploadCSV] = useCSV(
     `/election/${electionId}/standardized-contests/file`,
     'standardized-contests'
   )
+  // Delete not supported
+  return [csv, uploadCSV]
+}
 
 export const useBallotManifest = (electionId: string, jurisdictionId: string) =>
   useCSV(

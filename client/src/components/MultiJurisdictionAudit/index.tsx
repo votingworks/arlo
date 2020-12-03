@@ -12,10 +12,15 @@ import useSetupMenuItems from './useSetupMenuItems'
 import RoundManagement from './RoundManagement'
 import useRoundsJurisdictionAdmin from './useRoundsJurisdictionAdmin'
 import { AuditAdminStatusBox, JurisdictionAdminStatusBox } from './StatusBox'
-import { useBallotManifest, useBatchTallies, useCVRS } from './useCSV'
+import {
+  useBallotManifest,
+  useBatchTallies,
+  useCVRs,
+  FileProcessingStatus,
+} from './useCSV'
 import useAuditBoards from './useAuditBoards'
 import useAuditSettings from './useAuditSettings'
-import useJurisdictions, { FileProcessingStatus } from './useJurisdictions'
+import useJurisdictions from './useJurisdictions'
 import useContests from './useContests'
 import useRoundsAuditAdmin from './useRoundsAuditAdmin'
 import useAuditSettingsJurisdictionAdmin from './RoundManagement/useAuditSettingsJurisdictionAdmin'
@@ -157,7 +162,7 @@ export const JurisdictionAdminView: React.FC = () => {
     uploadBatchTallies,
     deleteBatchTallies,
   ] = useBatchTallies(electionId, jurisdictionId)
-  const [cvrs, uploadCVRS, deleteCVRS] = useCVRS(electionId, jurisdictionId)
+  const [cvrs, uploadCVRS, deleteCVRS] = useCVRs(electionId, jurisdictionId)
   const [auditBoards, createAuditBoards] = useAuditBoards(
     electionId,
     jurisdictionId,

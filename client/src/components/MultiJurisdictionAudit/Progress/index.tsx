@@ -4,17 +4,13 @@ import styled from 'styled-components'
 import { Column, Cell } from 'react-table'
 import { Button, Switch, ITagProps } from '@blueprintjs/core'
 import H2Title from '../../Atoms/H2Title'
-import {
-  JurisdictionRoundStatus,
-  IJurisdiction,
-  FileProcessingStatus,
-  IFileInfo,
-} from '../useJurisdictions'
+import { JurisdictionRoundStatus, IJurisdiction } from '../useJurisdictions'
 import JurisdictionDetail from './JurisdictionDetail'
 import { Table, sortByRank, FilterInput } from '../../Atoms/Table'
 import { IRound } from '../useRoundsAuditAdmin'
 import StatusTag from '../../Atoms/StatusTag'
 import { IAuditSettings } from '../useAuditSettings'
+import { FileProcessingStatus, IFileInfo } from '../useCSV'
 
 const Wrapper = styled.div`
   flex-grow: 1;

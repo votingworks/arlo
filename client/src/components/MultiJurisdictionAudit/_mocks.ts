@@ -1,5 +1,5 @@
 import { contestMocks } from './AASetup/Contests/_mocks'
-import { IFileInfo } from './useJurisdictions'
+import { IFileInfo } from './useCSV'
 import { manifestFile, talliesFile } from './useSetupMenuItems/_mocks'
 import { FileProcessingStatus } from './useSetupMenuItems/getJurisdictionFileStatus'
 import { IBallot } from './RoundManagement/useBallots'
