@@ -68,18 +68,20 @@ def test_dont_clobber_other_elections(client: FlaskClient, election_id, org_id):
     other_election = Election.query.get(other_election_id)
 
     # Add jurisdictions.
-    bulk_update_jurisdictions(db_session, election, [("Jurisdiction #1", "ja2@ca.gov")])
+    bulk_update_jurisdictions(
+        db_session, election, [("Jurisdiction #1", "j1-ja@ca.gov")]
+    )
     db_session.commit()
 
     # Add jurisdictions for other election
     bulk_update_jurisdictions(
-        db_session, other_election, [("Jurisdiction #2", "ja3@ca.gov")]
+        db_session, other_election, [("Jurisdiction #2", "j2-ja@ca.gov")]
     )
     db_session.commit()
 
     # Now change them
     bulk_update_jurisdictions(
-        db_session, other_election, [("Jurisdiction #3", "ja4@ca.gov")]
+        db_session, other_election, [("Jurisdiction #3", "j3-ja@ca.gov")]
     )
     db_session.commit()
 
