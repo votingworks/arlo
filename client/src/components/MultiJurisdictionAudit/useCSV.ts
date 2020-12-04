@@ -123,7 +123,7 @@ export const useStandardizedContestsFile = (
 export const useBallotManifest = (electionId: string, jurisdictionId: string) =>
   useCSV(
     `/election/${electionId}/jurisdiction/${jurisdictionId}/ballot-manifest`,
-    'ballotManifest'
+    'manifest'
   )
 
 export const useBatchTallies = (electionId: string, jurisdictionId: string) =>

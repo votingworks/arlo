@@ -77,6 +77,8 @@ describe('AA setup flow', () => {
       ...loadEach,
       ...loadEach,
       aaApiCalls.getSettings(auditSettings.all),
+      aaApiCalls.getJurisdictionFile,
+      aaApiCalls.getStandardizedContestsFile,
       ...loadEach,
       aaApiCalls.getJurisdictionFile,
       aaApiCalls.getSettings(auditSettings.all),
@@ -160,6 +162,8 @@ describe('AA setup flow', () => {
       ...loadEach,
       ...loadEach,
       aaApiCalls.getSettings(auditSettings.all),
+      aaApiCalls.getJurisdictionFile,
+      aaApiCalls.getStandardizedContestsFile,
       ...loadEach,
       aaApiCalls.getJurisdictionFile,
     ]
@@ -314,7 +318,7 @@ describe('JA setup', () => {
         expect(screen.queryByLabelText('manifest.csv')).toBeTruthy()
       )
       userEvent.click(screen.getAllByText('Upload File')[0])
-      await screen.findByText('Candidate Totals by Batch')
+      await screen.findByText('Current file:')
       expect(container).toMatchSnapshot()
     })
   })

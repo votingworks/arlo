@@ -45,6 +45,16 @@ export const auditSettings: {
     auditMathType: 'MACRO',
     auditName: 'Test Audit',
   },
+  blankBallotComparison: {
+    state: null,
+    electionName: null,
+    online: null,
+    randomSeed: null,
+    riskLimit: null,
+    auditType: 'BALLOT_COMPARISON',
+    auditMathType: 'SUPERSIMPLE',
+    auditName: 'Test Audit',
+  },
   onlyState: {
     state: 'AL',
     electionName: null,

@@ -124,9 +124,10 @@ describe('Home screen', () => {
       ...setupScreenCalls,
       aaApiCalls.getSettings(auditSettings.blank),
       aaApiCalls.getJurisdictionFile,
+      aaApiCalls.getStandardizedContestsFile,
+      aaApiCalls.getJurisdictionFile,
       aaApiCalls.getRounds([]),
       ...setupScreenCalls,
-      aaApiCalls.getJurisdictionFile,
       apiCalls.getUserWithAudit,
       ...setupScreenCalls,
       aaApiCalls.getJurisdictionFile,
@@ -135,8 +136,9 @@ describe('Home screen', () => {
       aaApiCalls.getJurisdictionFile,
       aaApiCalls.getRounds([]),
       aaApiCalls.getSettings(auditSettings.blank),
-      ...setupScreenCalls,
       aaApiCalls.getJurisdictionFile,
+      aaApiCalls.getStandardizedContestsFile,
+      ...setupScreenCalls,
     ]
     await withMockFetch(expectedCalls, async () => {
       const { history } = renderView('/')
@@ -182,6 +184,7 @@ describe('Home screen', () => {
       )
       await screen.findByText('The audit has not started.')
       expect(history.location.pathname).toEqual('/election/1/setup')
+      await screen.findByText('Current file:')
     })
   })
 
@@ -201,9 +204,10 @@ describe('Home screen', () => {
       ...setupScreenCalls,
       aaApiCalls.getSettings(auditSettings.blank),
       aaApiCalls.getJurisdictionFile,
+      aaApiCalls.getStandardizedContestsFile,
+      aaApiCalls.getJurisdictionFile,
       aaApiCalls.getRounds([]),
       ...setupScreenCalls,
-      aaApiCalls.getJurisdictionFile,
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView('/')
@@ -248,6 +252,7 @@ describe('Home screen', () => {
 
       // Should be on the setup screen
       await screen.findByText('The audit has not started.')
+      await screen.findByText('Current file:')
     })
   })
 
