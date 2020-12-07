@@ -14,8 +14,8 @@ import logging
 from typing import List, Dict, Tuple, Optional
 
 from athena.audit import Audit as AthenaAudit  # type: ignore
-from .sampler_contest import Contest
-from ..config import MINERVA_MULTIPLE
+from ..sampler_contest import Contest
+from ...config import MINERVA_MULTIPLE
 
 
 def make_arlo_contest(tally, num_winners=1, votes_allowed=1):

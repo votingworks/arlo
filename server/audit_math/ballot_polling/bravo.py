@@ -13,7 +13,7 @@ import logging
 from typing import Dict, Tuple, Optional
 from scipy import stats
 
-from .sampler_contest import Contest
+from ..sampler_contest import Contest
 
 
 def get_expected_sample_sizes(

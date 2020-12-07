@@ -4,8 +4,8 @@ ballot polling audits.
 """
 from typing import Dict, Tuple, Optional
 from typing_extensions import Literal, TypedDict
-from ..models import AuditMathType
-from .sampler_contest import Contest
+from ...models import AuditMathType
+from ..sampler_contest import Contest
 from . import bravo, minerva
 
 

@@ -2,8 +2,8 @@
 import pytest
 
 from pytest import approx
-from ...audit_math import minerva
-from ...audit_math.sampler_contest import Contest
+from ....audit_math.ballot_polling import minerva
+from ....audit_math.sampler_contest import Contest
 
 
 @pytest.fixture

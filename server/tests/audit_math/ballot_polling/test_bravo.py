@@ -3,8 +3,8 @@ from decimal import Decimal
 import math
 import pytest
 
-from ...audit_math import bravo
-from ...audit_math.sampler_contest import Contest
+from ....audit_math.ballot_polling import bravo
+from ....audit_math.sampler_contest import Contest
 
 SEED = "12345678901234567890abcdefghijklmnopqrstuvwxyz😊"
 RISK_LIMIT = 10
