@@ -268,9 +268,9 @@ J2,4,37,Round 1: 0.092786549356518562\r
 snapshots["test_minerva_ballot_polling_two_rounds 3"] = {
     "Contest 1 - candidate 1": 80,
     "Contest 1 - candidate 2": 0,
-    "Contest 2 - candidate 1": 40,
-    "Contest 2 - candidate 2": 60,
-    "Contest 2 - candidate 3": 20,
+    "Contest 2 - candidate 1": 28,
+    "Contest 2 - candidate 2": 40,
+    "Contest 2 - candidate 3": 12,
 }
 
 snapshots[
@@ -293,7 +293,7 @@ Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Ti
 1,Contest 1,Targeted,100,No,0.5769520971,DATETIME,DATETIME,candidate 1: 30; candidate 2: 30\r
 1,Contest 2,Opportunistic,,No,0.5681117927,DATETIME,DATETIME,candidate 1: 20; candidate 2: 30; candidate 3: 20\r
 2,Contest 1,Targeted,150,Yes,0.0000014985,DATETIME,DATETIME,candidate 1: 80; candidate 2: 0\r
-2,Contest 2,Opportunistic,,Yes,0.0640905487,DATETIME,DATETIME,candidate 1: 40; candidate 2: 60; candidate 3: 20\r
+2,Contest 2,Opportunistic,,No,0.1112202182,DATETIME,DATETIME,candidate 1: 28; candidate 2: 40; candidate 3: 12\r
 \r
 ######## SAMPLED BALLOTS ########\r
 Jurisdiction Name,Batch Name,Ballot Position,Ticket Numbers: Contest 1\r
