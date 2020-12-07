@@ -10,6 +10,7 @@ from ..auth import restrict_access, UserType
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
 from ..util.csv_parse import decode_csv_file, parse_csv, CSVColumnType, CSVValueType
+from ..util.csv_download import csv_response
 from ..util.process_file import (
     process_file,
     UserError,
@@ -120,3 +121,15 @@ def get_standardized_contests_file(election: Election):
 @restrict_access([UserType.AUDIT_ADMIN])
 def get_standardized_contests(election: Election):
     return jsonify(election.standardized_contests)
+
+
+@api.route("/election/<election_id>/standardized-contests/file/csv", methods=["GET"])
+@restrict_access([UserType.AUDIT_ADMIN])
+def download_standardized_contests_file(election: Election):
+    if not election.standardized_contests_file:
+        return NotFound()
+
+    return csv_response(
+        election.standardized_contests_file.contents,
+        election.standardized_contests_file.name,
+    )
