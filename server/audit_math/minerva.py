@@ -156,7 +156,7 @@ def get_sample_size(
             else:
                 # E.g. str(e) == "Margin needs to be different than 0 or 1" ?
                 # Handle landslides. TODO: this works for a 10% risk limit.
-                round_size_options = [4 for quant in quants]
+                raise e
 
     return {
         str(quant): {"type": None, "size": size, "prob": quant}
