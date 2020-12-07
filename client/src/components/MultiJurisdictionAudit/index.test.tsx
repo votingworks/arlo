@@ -78,7 +78,6 @@ describe('AA setup flow', () => {
       ...loadEach,
       aaApiCalls.getSettings(auditSettings.all),
       aaApiCalls.getJurisdictionFile,
-      aaApiCalls.getStandardizedContestsFile,
       ...loadEach,
       aaApiCalls.getSettings(auditSettings.all),
       ...loadEach,
@@ -162,7 +161,6 @@ describe('AA setup flow', () => {
       ...loadEach,
       aaApiCalls.getSettings(auditSettings.all),
       aaApiCalls.getJurisdictionFile,
-      aaApiCalls.getStandardizedContestsFile,
       ...loadEach,
     ]
     await withMockFetch(expectedCalls, async () => {

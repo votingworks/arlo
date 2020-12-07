@@ -27,7 +27,7 @@ const Participants: React.FC<IProps> = ({ nextStage, refresh }: IProps) => {
   const [
     standardizedContestsFile,
     uploadStandardizedContestsFile,
-  ] = useStandardizedContestsFile(electionId)
+  ] = useStandardizedContestsFile(electionId, auditSettings)
 
   // Once the file uploads are complete, we need to notify the setupMenuItems to
   // refresh and unlock the next stage.
