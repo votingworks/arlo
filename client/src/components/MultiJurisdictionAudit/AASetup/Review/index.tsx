@@ -168,7 +168,7 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
             </tr>
             <tr>
               <td>Risk Limit:</td>
-              <td>{riskLimit}%</td>
+              <td>{riskLimit && `${riskLimit}%`}</td>
             </tr>
             <tr>
               <td>Random Seed:</td>

@@ -3304,8 +3304,7 @@ exports[`Setup renders Review & Launch stage 1`] = `
               Risk Limit:
             </td>
             <td>
-              10
-              %
+              10%
             </td>
           </tr>
           <tr>
@@ -3489,8 +3488,7 @@ exports[`Setup renders Review & Launch stage with locked next stage 1`] = `
               Risk Limit:
             </td>
             <td>
-              10
-              %
+              10%
             </td>
           </tr>
           <tr>
@@ -3674,8 +3672,7 @@ exports[`Setup renders Review & Launch stage with processing next stage 1`] = `
               Risk Limit:
             </td>
             <td>
-              10
-              %
+              10%
             </td>
           </tr>
           <tr>
