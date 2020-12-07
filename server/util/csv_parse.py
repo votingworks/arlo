@@ -252,7 +252,7 @@ def reject_duplicate_values(
 def reject_total_rows(csv: CSVDictIterator) -> CSVDictIterator:
     for r, row in enumerate(csv):  # pylint: disable=invalid-name
         for value in row.values():
-            if value.lower() in ["total", "totals", "total ballots"]:
+            if value.lower() in ["total", "totals", "total ballots", "county totals"]:
                 raise CSVParseError(f"Remove total row (row {r+2})")
 
         yield row
