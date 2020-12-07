@@ -296,6 +296,7 @@ def test_parse_csv_total_row():
         "totals",
         "Total Ballots",
         "total ballots",
+        "COUNTY TOTALS",
     ]:
         with pytest.raises(CSVParseError) as error:
             list(
