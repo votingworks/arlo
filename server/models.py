@@ -650,21 +650,6 @@ class OfflineBatchResult(BaseModel):
     )
 
 
-# Log of changes to OfflineBatchResult
-class OfflineBatchResultChangelog(BaseModel):
-    user_id = Column(
-        String(200), ForeignKey("user.id", ondelete="cascade"), nullable=False,
-    )
-    jurisdiction_id = Column(
-        String(200), ForeignKey("jurisdiction.id", ondelete="cascade"), nullable=False,
-    )
-
-    before = Column(JSON, nullable=False)
-    after = Column(JSON, nullable=False)
-
-    __table_args__ = (PrimaryKeyConstraint("jurisdiction_id", "user_id", "created_at"),)
-
-
 class JurisdictionResult(BaseModel):
     round_id = Column(
         String(200), ForeignKey("round.id", ondelete="cascade"), nullable=False
