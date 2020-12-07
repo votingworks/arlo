@@ -21,6 +21,11 @@ export const talliesFile = new File(
   'tallies.csv',
   { type: 'text/csv' }
 )
+export const cvrsFile = new File(
+  [readFileSync(join(__dirname, './test_cvrs.csv'), 'utf8')],
+  'cvrs.csv',
+  { type: 'text/csv' }
+)
 
 export const auditSettings: {
   [key: string]: IAuditSettings
@@ -216,11 +221,11 @@ export const talliesMocks: { [key: string]: IFileInfo } = {
     processing: null,
   },
   processed: {
-    file: { name: 'tallies.csv', uploadedAt: '2020-06-08T21:39:05.765+00:00' },
+    file: { name: 'tallies.csv', uploadedAt: '2020-07-08T21:39:05.765+00:00' },
     processing: {
       status: FileProcessingStatus.PROCESSED,
-      startedAt: '2020-06-08T21:39:05.765+00:00',
-      completedAt: '2020-06-08T21:39:14.574+00:00',
+      startedAt: '2020-07-08T21:39:05.765+00:00',
+      completedAt: '2020-07-08T21:39:14.574+00:00',
       error: null,
     },
   },

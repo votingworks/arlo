@@ -66,7 +66,6 @@ const CSVFileForm = ({
         values,
         touched,
         errors,
-        handleBlur,
         isSubmitting,
       }: FormikProps<IValues>) => (
         <form>
@@ -107,7 +106,6 @@ const CSVFileForm = ({
                     }}
                     hasSelection={!!values.csv}
                     text={values.csv ? values.csv.name : 'Select a CSV...'}
-                    onBlur={handleBlur}
                     disabled={isSubmitting || isProcessing || !enabled}
                   />
                   {errors.csv && touched.csv && (
