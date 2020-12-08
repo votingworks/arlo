@@ -25,6 +25,7 @@ def test_set_contest_metadata_from_cvrs(
             {
                 "id": contest_id,
                 "name": "Contest 2",
+                "numWinners": 1,
                 "jurisdictionIds": jurisdiction_ids[:2],
                 "isTargeted": True,
             }
@@ -35,7 +36,6 @@ def test_set_contest_metadata_from_cvrs(
     contest = Contest.query.get(contest_id)
     assert contest.total_ballots_cast is None
     assert contest.votes_allowed is None
-    assert contest.num_winners is None
     assert contest.choices == []
 
     set_contest_metadata_from_cvrs(contest)
@@ -44,7 +44,6 @@ def test_set_contest_metadata_from_cvrs(
         dict(
             total_ballots_cast=contest.total_ballots_cast,
             votes_allowed=contest.votes_allowed,
-            num_winners=contest.num_winners,
             choices=[
                 dict(name=choice.name, num_votes=choice.num_votes,)
                 for choice in contest.choices
@@ -70,6 +69,7 @@ def test_require_cvr_uploads(
             {
                 "id": str(uuid.uuid4()),
                 "name": "Contest 1",
+                "numWinners": 1,
                 "jurisdictionIds": jurisdiction_ids[:2],
                 "isTargeted": True,
             },
@@ -134,12 +134,14 @@ def test_ballot_comparison_two_rounds(
             {
                 "id": str(uuid.uuid4()),
                 "name": target_contest["name"],
+                "numWinners": 1,
                 "jurisdictionIds": target_contest["jurisdictionIds"],
                 "isTargeted": True,
             },
             {
                 "id": str(uuid.uuid4()),
                 "name": opportunistic_contest["name"],
+                "numWinners": 1,
                 "jurisdictionIds": opportunistic_contest["jurisdictionIds"],
                 "isTargeted": False,
             },
@@ -395,12 +397,14 @@ def test_ballot_comparison_cvr_metadata(
             {
                 "id": str(uuid.uuid4()),
                 "name": "Contest 2",
+                "numWinners": 1,
                 "jurisdictionIds": jurisdiction_ids[:2],
                 "isTargeted": True,
             },
             {
                 "id": str(uuid.uuid4()),
                 "name": "Contest 1",
+                "numWinners": 1,
                 "jurisdictionIds": jurisdiction_ids[:2],
                 "isTargeted": False,
             },
