@@ -92,17 +92,19 @@ export const Table = <T extends object>({ data, columns }: ITableProps<T>) => {
                 <span style={{ marginRight: '5px' }}>
                   {column.render('Header')}
                 </span>
-                <span>
-                  {column.isSorted ? (
-                    column.isSortedDesc ? (
-                      <Icon icon="caret-down" />
+                {column.canSort && (
+                  <span>
+                    {column.isSorted ? (
+                      column.isSortedDesc ? (
+                        <Icon icon="caret-down" />
+                      ) : (
+                        <Icon icon="caret-up" />
+                      )
                     ) : (
-                      <Icon icon="caret-up" />
-                    )
-                  ) : (
-                    <Icon icon="double-caret-vertical" />
-                  )}
-                </span>
+                      <Icon icon="double-caret-vertical" />
+                    )}
+                  </span>
+                )}
               </div>
             </th>
           ))}

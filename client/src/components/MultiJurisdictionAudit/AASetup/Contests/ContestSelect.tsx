@@ -1,20 +1,22 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { Formik, FormikProps, getIn } from 'formik'
+import { Formik, FormikProps, Field } from 'formik'
 import { Checkbox, Spinner } from '@blueprintjs/core'
-import { Column, Cell } from 'react-table'
+import { Cell } from 'react-table'
+import uuidv4 from 'uuidv4'
 import FormWrapper from '../../../Atoms/Form/FormWrapper'
 import FormButtonBar from '../../../Atoms/Form/FormButtonBar'
 import FormButton from '../../../Atoms/Form/FormButton'
 import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
-import useStandardizedContests, {
-  IStandardizedContest,
-  IStandardizedContestOption,
-} from '../../useStandardizedContests'
+import useStandardizedContests from '../../useStandardizedContests'
 import useJurisdictions from '../../useJurisdictions'
 import { Table, FilterInput } from '../../../Atoms/Table'
 import { IAuditSettings } from '../../useAuditSettings'
+import useContestsBallotComparison, {
+  IContest,
+} from '../../useContestsBallotComparison'
+import FormField from '../../../Atoms/Form/FormField'
 
 interface IProps {
   isTargeted: boolean
@@ -24,6 +26,16 @@ interface IProps {
   auditType: IAuditSettings['auditType']
 }
 
+interface IFormValues {
+  [contestName: string]: {
+    id: string
+    isTargeted: boolean
+    numWinners: number
+    jurisdictionIds: string[]
+    checked: boolean
+  }
+}
+
 const ContestSelect: React.FC<IProps> = ({
   isTargeted,
   nextStage,
@@ -31,21 +43,41 @@ const ContestSelect: React.FC<IProps> = ({
   //   locked,
 }) => {
   const { electionId } = useParams<{ electionId: string }>()
-  const [standardizedContests, updateContests] = useStandardizedContests(
-    electionId,
-    isTargeted
-  )
+  const standardizedContests = useStandardizedContests(electionId)
+  const [contests, updateContests] = useContestsBallotComparison(electionId)
   const [filter, setFilter] = useState('')
   const jurisdictions = useJurisdictions(electionId)
 
-  if (!standardizedContests || !jurisdictions) return null // Still loading
+  if (!standardizedContests || !jurisdictions || !contests) return null // Still loading
 
-  const submit = async ({
-    contests,
-  }: {
-    contests: IStandardizedContestOption[]
-  }) => {
-    const response = await updateContests(contests)
+  const initialValues: IFormValues = Object.fromEntries(
+    standardizedContests.map(({ name, jurisdictionIds }) => {
+      const matchingContest = contests.find(contest => contest.name === name)
+      return [
+        name,
+        {
+          id: matchingContest ? matchingContest.id : uuidv4(),
+          isTargeted: matchingContest ? matchingContest.isTargeted : isTargeted,
+          numWinners: matchingContest ? matchingContest.numWinners : 1,
+          jurisdictionIds,
+          checked: !!matchingContest,
+        },
+      ]
+    })
+  )
+
+  const submit = async (values: IFormValues) => {
+    const newContests: IContest[] = Object.entries(values)
+      .filter(([_, { checked }]) => checked)
+      // eslint-disable-next-line no-shadow
+      .map(([name, { id, isTargeted, numWinners, jurisdictionIds }]) => ({
+        name,
+        id,
+        isTargeted,
+        numWinners,
+        jurisdictionIds,
+      }))
+    const response = await updateContests(newContests)
     // TEST TODO
     /* istanbul ignore next */
     if (!response) return
@@ -54,65 +86,21 @@ const ContestSelect: React.FC<IProps> = ({
     else throw new Error('Wrong menuItems passed in: activate() is missing')
   }
 
-  // TODO filter by jurisdiction names as well
-  const filteredContests = standardizedContests.filter(({ name }) =>
-    name.toLowerCase().includes(filter.toLowerCase())
+  const filteredStandardizedContests = standardizedContests.filter(
+    ({ name, jurisdictionIds }) => {
+      const jurisdictionNames = jurisdictionIds.map(
+        jurisdictionId =>
+          jurisdictions.find(({ id }) => id === jurisdictionId)!.name
+      )
+      return [name, ...jurisdictionNames].some(str =>
+        str.toLowerCase().includes(filter.toLowerCase())
+      )
+    }
   )
 
-  const columns = (
-    values: { contests: IStandardizedContest[] },
-    setFieldValue: FormikProps<{
-      contests: IStandardizedContest[]
-    }>['setFieldValue']
-  ): Column<IStandardizedContest>[] => [
-    {
-      id: 'select',
-      Header: 'Select',
-      accessor: row => row,
-      // eslint-disable-next-line react/display-name
-      Cell: ({
-        row: { original: contest, index },
-      }: Cell<IStandardizedContest>) => (
-        <Checkbox
-          inline
-          checked={getIn(values, `contests[${index}].checked`)}
-          onChange={({
-            currentTarget: { checked },
-          }: React.ChangeEvent<HTMLInputElement>) =>
-            setFieldValue(`contests[${index}]`, { ...contest, checked })
-          }
-          disabled={standardizedContests[index].isTargeted !== isTargeted}
-        />
-      ),
-    },
-    {
-      Header: 'Contest Name',
-      accessor: 'name',
-    },
-    {
-      Header: 'Jurisdiction(s)',
-      accessor: row =>
-        row.jurisdictionIds.length === jurisdictions.length
-          ? 'All'
-          : row.jurisdictionIds
-              .map(id => jurisdictions.find(j => j.id === id)!.name)
-              .join(' - '),
-    },
-  ]
-
   return (
-    <Formik
-      initialValues={{
-        contests: standardizedContests,
-      }}
-      enableReinitialize
-      onSubmit={submit}
-    >
-      {({
-        values,
-        handleSubmit,
-        setFieldValue,
-      }: FormikProps<{ contests: IStandardizedContest[] }>) => (
+    <Formik initialValues={initialValues} onSubmit={submit}>
+      {({ values, handleSubmit, setFieldValue }: FormikProps<IFormValues>) => (
         <form>
           <FormWrapper
             title={isTargeted ? 'Target Contests' : 'Opportunistic Contests'}
@@ -129,8 +117,67 @@ const ContestSelect: React.FC<IProps> = ({
               onChange={value => setFilter(value)}
             />
             <Table
-              data={filteredContests}
-              columns={columns(values, setFieldValue)}
+              data={filteredStandardizedContests}
+              columns={[
+                {
+                  id: 'select',
+                  Header: 'Select',
+                  accessor: 'name',
+                  // eslint-disable-next-line react/display-name
+                  Cell: ({ value: contestName }: Cell) => (
+                    <Checkbox
+                      inline
+                      checked={values[contestName].checked}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setFieldValue(
+                          `${contestName}.checked`,
+                          e.currentTarget.checked
+                        )
+                      }
+                      disabled={values[contestName].isTargeted !== isTargeted}
+                    />
+                  ),
+                },
+                {
+                  id: 'name',
+                  Header: 'Contest Name',
+                  accessor: 'name',
+                },
+                {
+                  id: 'jurisdictions',
+                  Header: 'Jurisdictions',
+                  accessor: 'jurisdictionIds',
+                  disableSortBy: true,
+                  Cell: ({ value: jurisdictionIds }: Cell) =>
+                    jurisdictionIds.length === jurisdictions.length
+                      ? 'All'
+                      : jurisdictionIds
+                          .map(
+                            (id: string) =>
+                              jurisdictions.find(j => j.id === id)!.name
+                          )
+                          .join(' - '),
+                },
+                {
+                  id: 'winners',
+                  Header: 'Winners',
+                  accessor: 'name',
+                  disableSortBy: true,
+                  // eslint-disable-next-line react/display-name
+                  Cell: ({ value: contestName }: Cell) => (
+                    <Field
+                      type="number"
+                      name={`${contestName}.numWinners`}
+                      disabled={
+                        !values[contestName].checked ||
+                        values[contestName].isTargeted !== isTargeted
+                      }
+                      min={1}
+                      component={FormField}
+                    />
+                  ),
+                },
+              ]}
             />
           </FormWrapper>
           {nextStage.state === 'processing' ? (
