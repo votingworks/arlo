@@ -108,15 +108,16 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
       ),
     }))
 
-  const initialValues: IFormOptions = sampleSizeOptions
-    ? Object.keys(sampleSizeOptions).reduce(
-        (a, contestId) => ({
-          ...a,
-          [contestId]: sampleSizeOptions[contestId][0],
-        }),
-        {}
-      )
-    : {}
+  const initialValues: IFormOptions =
+    sampleSizeOptions && !locked
+      ? Object.keys(sampleSizeOptions).reduce(
+          (a, contestId) => ({
+            ...a,
+            [contestId]: sampleSizeOptions[contestId][0],
+          }),
+          {}
+        )
+      : {}
 
   const participatingJurisdictions = contests
     ? jurisdictions.filter(({ id }) =>
