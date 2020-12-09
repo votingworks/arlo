@@ -92,6 +92,9 @@ Like any open-source software, Arlo welcomes suggested changes in the form of pu
 
 Before submitting a pull request, please review our [Contribution Guidelines](./docs/contribution-guidelines.md).
 
+## Reference Docs
+https://docs.contour.so/votingworks/arlo/getting-started
+
 ### Configuration
 
 [Auth0](https://auth0.com/) is used for authentication, as documented at [Auth0](docs/auth0.md).
