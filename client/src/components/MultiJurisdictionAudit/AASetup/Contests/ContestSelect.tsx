@@ -14,7 +14,7 @@ import useJurisdictions from '../../useJurisdictions'
 import { Table, FilterInput } from '../../../Atoms/Table'
 import { IAuditSettings } from '../../useAuditSettings'
 import useContestsBallotComparison, {
-  IContest,
+  INewContest,
 } from '../../useContestsBallotComparison'
 import FormField from '../../../Atoms/Form/FormField'
 
@@ -67,7 +67,7 @@ const ContestSelect: React.FC<IProps> = ({
   )
 
   const submit = async (values: IFormValues) => {
-    const newContests: IContest[] = Object.entries(values)
+    const newContests: INewContest[] = Object.entries(values)
       .filter(([_, { checked }]) => checked)
       // eslint-disable-next-line no-shadow
       .map(([name, { id, isTargeted, numWinners, jurisdictionIds }]) => ({

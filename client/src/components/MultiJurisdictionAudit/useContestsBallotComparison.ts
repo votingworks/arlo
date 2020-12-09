@@ -1,12 +1,18 @@
 import { useEffect, useState } from 'react'
 import { api } from '../utilities'
 
-export interface IContest {
+export interface INewContest {
   id: string
   name: string
   isTargeted: boolean
   numWinners: number
   jurisdictionIds: string[]
+}
+
+export interface IContest extends INewContest {
+  votesAllowed: null
+  totalBallotsCast: null
+  choices: []
 }
 
 const getContests = async (electionId: string): Promise<IContest[] | null> => {
@@ -18,7 +24,7 @@ const getContests = async (electionId: string): Promise<IContest[] | null> => {
 
 const putContests = async (
   electionId: string,
-  newContests: IContest[]
+  newContests: INewContest[]
 ): Promise<boolean> =>
   !!api(`/election/${electionId}/contest`, {
     method: 'PUT',
@@ -28,10 +34,10 @@ const putContests = async (
 
 const useContestsBallotComparison = (
   electionId: string
-): [IContest[] | null, (newContests: IContest[]) => Promise<boolean>] => {
+): [IContest[] | null, (newContests: INewContest[]) => Promise<boolean>] => {
   const [contests, setContests] = useState<IContest[] | null>(null)
 
-  const updateContests = async (newContests: IContest[]) => {
+  const updateContests = async (newContests: INewContest[]) => {
     if (putContests(electionId, newContests)) {
       setContests(await getContests(electionId))
       return true
