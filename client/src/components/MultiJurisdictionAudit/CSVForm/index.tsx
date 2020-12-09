@@ -10,7 +10,7 @@ import { ErrorLabel, SuccessLabel } from '../../Atoms/Form/_helpers'
 import FormSection, {
   FormSectionDescription,
 } from '../../Atoms/Form/FormSection'
-import { FileProcessingStatus, IFileInfo } from '../useJurisdictions'
+import { FileProcessingStatus, IFileInfo } from '../useCSV'
 
 export const Select = styled(HTMLSelect)`
   margin-top: 5px;
@@ -23,8 +23,8 @@ interface IValues {
 interface IProps {
   csvFile: IFileInfo
   uploadCSVFile: (csv: File) => Promise<boolean>
-  deleteCSVFile: () => Promise<boolean>
-  title: string
+  deleteCSVFile?: () => Promise<boolean>
+  title?: string
   description: string
   sampleFileLink: string
   enabled: boolean
@@ -72,7 +72,7 @@ const CSVFileForm = ({
         <form>
           <FormWrapper>
             <FormSection>
-              <H4>{title}</H4>
+              {title && <H4>{title}</H4>}
               <FormSectionDescription>
                 {description}
                 {sampleFileLink && (
@@ -127,7 +127,7 @@ const CSVFileForm = ({
                       <SuccessLabel>
                         Upload successfully completed at{' '}
                         {new Date(`${processing.completedAt}`).toLocaleString()}
-                        !
+                        .
                       </SuccessLabel>
                     )}
                 </>
@@ -155,13 +155,15 @@ const CSVFileForm = ({
                   >
                     Replace File
                   </FormButton>
-                  <FormButton
-                    key="delete"
-                    onClick={deleteCSVFile}
-                    disabled={!enabled}
-                  >
-                    Delete File
-                  </FormButton>
+                  {deleteCSVFile && (
+                    <FormButton
+                      key="delete"
+                      onClick={deleteCSVFile}
+                      disabled={!enabled}
+                    >
+                      Delete File
+                    </FormButton>
+                  )}
                 </>
               )}
             </div>

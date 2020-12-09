@@ -3,14 +3,13 @@ import { join } from 'path'
 import { IContest } from '../../../../types'
 import {
   IJurisdiction,
-  FileProcessingStatus,
-  IFileInfo,
   JurisdictionRoundStatus,
   IBallotManifestInfo,
 } from '../../useJurisdictions' // uses IFileInfo instead of IBallotManifest and allows `file: null`
 import { IAuditBoard } from '../../useAuditBoards'
 import { IRound } from '../../useRoundsAuditAdmin'
 import { IAuditSettings } from '../../useAuditSettings'
+import { FileProcessingStatus, IFileInfo } from '../../useCSV'
 
 export const manifestFile = new File(
   [readFileSync(join(__dirname, './test_manifest.csv'), 'utf8')],
@@ -44,6 +43,16 @@ export const auditSettings: {
     riskLimit: null,
     auditType: 'BATCH_COMPARISON',
     auditMathType: 'MACRO',
+    auditName: 'Test Audit',
+  },
+  blankBallotComparison: {
+    state: null,
+    electionName: null,
+    online: null,
+    randomSeed: null,
+    riskLimit: null,
+    auditType: 'BALLOT_COMPARISON',
+    auditMathType: 'SUPERSIMPLE',
     auditName: 'Test Audit',
   },
   onlyState: {

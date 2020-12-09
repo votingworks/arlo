@@ -26,7 +26,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
             0 of 2 jurisdictions have completed file uploads.
           </p>
           <span
-            class="bp3-tag sc-gisBJw cMOlJh"
+            class="bp3-tag sc-caSCKo lhZHST"
           >
             <span
               class="bp3-text-overflow-ellipsis bp3-fill"
@@ -338,7 +338,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 2`] = `
             0 of 2 jurisdictions have completed file uploads.
           </p>
           <span
-            class="bp3-tag sc-gisBJw cMOlJh"
+            class="bp3-tag sc-caSCKo lhZHST"
           >
             <span
               class="bp3-text-overflow-ellipsis bp3-fill"
@@ -650,7 +650,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 3`] = `
             0 of 2 jurisdictions have completed file uploads.
           </p>
           <span
-            class="bp3-tag sc-gisBJw cMOlJh"
+            class="bp3-tag sc-caSCKo lhZHST"
           >
             <span
               class="bp3-text-overflow-ellipsis bp3-fill"
@@ -962,7 +962,7 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
             0 of 2 jurisdictions have completed file uploads.
           </p>
           <span
-            class="bp3-tag sc-gisBJw cMOlJh"
+            class="bp3-tag sc-caSCKo lhZHST"
           >
             <span
               class="bp3-text-overflow-ellipsis bp3-fill"
@@ -1128,81 +1128,87 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
           </li>
         </ul>
       </div>
-      <form
-        data-testid="form-one"
+      <div
+        class="sc-htoDjs tELUi"
       >
-        <div
-          class="sc-ifAKCX dOqzfM"
+        <h2
+          class="bp3-heading sc-htpNat fysvnw"
         >
-          <h2
-            class="bp3-heading sc-htpNat fysvnw"
-          >
-            Participants
-          </h2>
+          Participants
+        </h2>
+        <form>
           <div
-            class="sc-gZMcBi ekJoNA"
+            class="sc-htoDjs tELUi"
           >
+            <h2
+              class="bp3-heading sc-htpNat fysvnw"
+            />
             <div
-              class="sc-gqjmRU fOytwc"
+              class="sc-gZMcBi ekJoNA"
             >
-              Click "Browse" to choose the appropriate file from your computer. This file should be a comma-separated list of all the jurisdictions participating in the audit, plus email addresses for audit administrators in each participating jurisdiction.
-              <br />
-              <br />
-              <a
-                href="/sample_jurisdiction_filesheet.csv"
-                rel="noopener noreferrer"
-                target="_blank"
+              <div
+                class="sc-gqjmRU fOytwc"
               >
-                (Click here to view a sample file in the correct format.)
-              </a>
+                Click "Browse" to choose the appropriate file from your computer. This file should be a comma-separated list of all the jurisdictions participating in the audit, plus email addresses for audit administrators in each participating jurisdiction.
+                <br />
+                <br />
+                <a
+                  href="/sample_jurisdiction_filesheet.csv"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  (Click here to view a sample file in the correct format.)
+                </a>
+              </div>
+            </div>
+            <div
+              class="sc-gZMcBi ekJoNA"
+            >
+              <p>
+                <strong>
+                  Current file:
+                </strong>
+                 
+                file name
+              </p>
+              <p
+                class="sc-iwsKbI hwKioB"
+              >
+                Upload successfully completed at
+                 
+                12/4/2020, 2:32:15 AM
+                .
+              </p>
+            </div>
+            <div>
+              <button
+                class="bp3-button sc-gzVnrw kdzzfK"
+                type="button"
+              >
+                <span
+                  class="bp3-button-text"
+                >
+                  Replace File
+                </span>
+              </button>
             </div>
           </div>
-          <div
-            class="sc-gZMcBi ekJoNA"
-          >
-            <span>
-              file name
-               
-            </span>
-            <button
-              class="bp3-button sc-htoDjs dESvso"
-              type="button"
-            >
-              <span
-                class="bp3-button-text"
-              >
-                Replace File
-              </span>
-            </button>
-          </div>
-        </div>
+        </form>
         <div
-          class="bp3-spinner"
+          class="sc-ifAKCX jylclZ"
         >
-          <div
-            class="bp3-spinner-animation"
+          <button
+            class="bp3-button bp3-intent-primary sc-gzVnrw kdzzfK"
+            type="submit"
           >
-            <svg
-              height="50"
-              stroke-width="8.00"
-              viewBox="1.00 1.00 98.00 98.00"
-              width="50"
+            <span
+              class="bp3-button-text"
             >
-              <path
-                class="bp3-spinner-track"
-                d="M 50,50 m 0,-45 a 45,45 0 1 1 0,90 a 45,45 0 1 1 0,-90"
-              />
-              <path
-                class="bp3-spinner-head"
-                d="M 50,50 m 0,-45 a 45,45 0 1 1 0,90 a 45,45 0 1 1 0,-90"
-                pathLength="280"
-                stroke-dasharray="280 280"
-                stroke-dashoffset="210"
-              />
-            </svg>
-          </div>
+              Next
+            </span>
+          </button>
         </div>
-      </form>
+      </div>
     </div>
   </div>
 </div>
@@ -1234,7 +1240,7 @@ exports[`JA setup renders initial state 1`] = `
       </div>
     </div>
     <div
-      class="sc-bwzfXH sc-caSCKo kUEbdR"
+      class="sc-bwzfXH sc-fAjcbJ fopIRB"
     >
       <h2
         class="bp3-heading sc-htpNat fysvnw"
@@ -1243,7 +1249,7 @@ exports[`JA setup renders initial state 1`] = `
       </h2>
       <form>
         <div
-          class="sc-ifAKCX dOqzfM"
+          class="sc-htoDjs tELUi"
         >
           <h2
             class="bp3-heading sc-htpNat fysvnw"
@@ -1291,7 +1297,7 @@ exports[`JA setup renders initial state 1`] = `
           </div>
           <div>
             <button
-              class="bp3-button bp3-intent-primary sc-htoDjs dESvso"
+              class="bp3-button bp3-intent-primary sc-gzVnrw kdzzfK"
               type="submit"
             >
               <span
@@ -1305,7 +1311,7 @@ exports[`JA setup renders initial state 1`] = `
       </form>
       <form>
         <div
-          class="sc-ifAKCX dOqzfM"
+          class="sc-htoDjs tELUi"
         >
           <h2
             class="bp3-heading sc-htpNat fysvnw"
@@ -1354,7 +1360,7 @@ exports[`JA setup renders initial state 1`] = `
           </div>
           <div>
             <button
-              class="bp3-button bp3-disabled bp3-intent-primary sc-htoDjs dESvso"
+              class="bp3-button bp3-disabled bp3-intent-primary sc-gzVnrw kdzzfK"
               disabled=""
               tabindex="-1"
               type="submit"
@@ -1399,7 +1405,7 @@ exports[`JA setup submits ballot manifest 1`] = `
       </div>
     </div>
     <div
-      class="sc-bwzfXH sc-caSCKo kUEbdR"
+      class="sc-bwzfXH sc-fAjcbJ fopIRB"
     >
       <h2
         class="bp3-heading sc-htpNat fysvnw"
@@ -1408,7 +1414,7 @@ exports[`JA setup submits ballot manifest 1`] = `
       </h2>
       <form>
         <div
-          class="sc-ifAKCX dOqzfM"
+          class="sc-htoDjs tELUi"
         >
           <h2
             class="bp3-heading sc-htpNat fysvnw"
@@ -1452,12 +1458,12 @@ exports[`JA setup submits ballot manifest 1`] = `
               Upload successfully completed at
                
               6/8/2020, 9:39:14 PM
-              !
+              .
             </p>
           </div>
           <div>
             <button
-              class="bp3-button sc-htoDjs dESvso"
+              class="bp3-button sc-gzVnrw kdzzfK"
               type="button"
             >
               <span
@@ -1467,7 +1473,7 @@ exports[`JA setup submits ballot manifest 1`] = `
               </span>
             </button>
             <button
-              class="bp3-button sc-htoDjs dESvso"
+              class="bp3-button sc-gzVnrw kdzzfK"
               type="button"
             >
               <span
@@ -1481,7 +1487,7 @@ exports[`JA setup submits ballot manifest 1`] = `
       </form>
       <form>
         <div
-          class="sc-ifAKCX dOqzfM"
+          class="sc-htoDjs tELUi"
         >
           <h2
             class="bp3-heading sc-htpNat fysvnw"
@@ -1529,7 +1535,7 @@ exports[`JA setup submits ballot manifest 1`] = `
           </div>
           <div>
             <button
-              class="bp3-button bp3-intent-primary sc-htoDjs dESvso"
+              class="bp3-button bp3-intent-primary sc-gzVnrw kdzzfK"
               type="submit"
             >
               <span
@@ -1575,7 +1581,7 @@ exports[`JA setup submits batch tallies 1`] = `
       </div>
     </div>
     <div
-      class="sc-bwzfXH sc-caSCKo kUEbdR"
+      class="sc-bwzfXH sc-fAjcbJ fopIRB"
     >
       <h2
         class="bp3-heading sc-htpNat fysvnw"
@@ -1584,7 +1590,7 @@ exports[`JA setup submits batch tallies 1`] = `
       </h2>
       <form>
         <div
-          class="sc-ifAKCX dOqzfM"
+          class="sc-htoDjs tELUi"
         >
           <h2
             class="bp3-heading sc-htpNat fysvnw"
@@ -1628,12 +1634,12 @@ exports[`JA setup submits batch tallies 1`] = `
               Upload successfully completed at
                
               6/8/2020, 9:39:14 PM
-              !
+              .
             </p>
           </div>
           <div>
             <button
-              class="bp3-button sc-htoDjs dESvso"
+              class="bp3-button sc-gzVnrw kdzzfK"
               type="button"
             >
               <span
@@ -1643,7 +1649,7 @@ exports[`JA setup submits batch tallies 1`] = `
               </span>
             </button>
             <button
-              class="bp3-button sc-htoDjs dESvso"
+              class="bp3-button sc-gzVnrw kdzzfK"
               type="button"
             >
               <span
@@ -1657,7 +1663,7 @@ exports[`JA setup submits batch tallies 1`] = `
       </form>
       <form>
         <div
-          class="sc-ifAKCX dOqzfM"
+          class="sc-htoDjs tELUi"
         >
           <h2
             class="bp3-heading sc-htpNat fysvnw"
@@ -1701,12 +1707,12 @@ exports[`JA setup submits batch tallies 1`] = `
               Upload successfully completed at
                
               6/8/2020, 9:39:14 PM
-              !
+              .
             </p>
           </div>
           <div>
             <button
-              class="bp3-button sc-htoDjs dESvso"
+              class="bp3-button sc-gzVnrw kdzzfK"
               type="button"
             >
               <span
@@ -1716,7 +1722,7 @@ exports[`JA setup submits batch tallies 1`] = `
               </span>
             </button>
             <button
-              class="bp3-button sc-htoDjs dESvso"
+              class="bp3-button sc-gzVnrw kdzzfK"
               type="button"
             >
               <span

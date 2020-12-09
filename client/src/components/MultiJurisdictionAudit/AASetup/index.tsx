@@ -49,6 +49,7 @@ const AASetup: React.FC<IProps> = ({
         <Participants
           nextStage={nextStage!}
           locked={activeStage!.state === 'locked'}
+          refresh={refresh}
         />
       )
     case 'target-contests':

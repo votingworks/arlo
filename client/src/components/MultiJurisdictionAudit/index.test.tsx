@@ -77,8 +77,9 @@ describe('AA setup flow', () => {
       ...loadEach,
       ...loadEach,
       aaApiCalls.getSettings(auditSettings.all),
-      ...loadEach,
       aaApiCalls.getJurisdictionFile,
+      aaApiCalls.getStandardizedContestsFile,
+      ...loadEach,
       aaApiCalls.getSettings(auditSettings.all),
       ...loadEach,
     ]
@@ -160,8 +161,9 @@ describe('AA setup flow', () => {
       ...loadEach,
       ...loadEach,
       aaApiCalls.getSettings(auditSettings.all),
-      ...loadEach,
       aaApiCalls.getJurisdictionFile,
+      aaApiCalls.getStandardizedContestsFile,
+      ...loadEach,
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container, queryAllByText } = render(
@@ -314,7 +316,7 @@ describe('JA setup', () => {
         expect(screen.queryByLabelText('manifest.csv')).toBeTruthy()
       )
       userEvent.click(screen.getAllByText('Upload File')[0])
-      await screen.findByText('Candidate Totals by Batch')
+      await screen.findByText('Current file:')
       expect(container).toMatchSnapshot()
     })
   })

@@ -4,7 +4,7 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
 <div>
   <div>
     <h2
-      class="bp3-heading sc-bdVaJa ibVpPq"
+      class="bp3-heading sc-ifAKCX cmZyyF"
     >
       Review & Launch
     </h2>
@@ -159,10 +159,10 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
         </a>
       </p>
       <div
-        class="sc-htpNat gtULUV"
+        class="sc-bdVaJa kcYonD"
       >
         <button
-          class="bp3-button sc-EHOje gmpgQN"
+          class="bp3-button sc-bxivhb WkpPV"
           type="button"
         >
           <span
@@ -172,7 +172,7 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
           </span>
         </button>
         <button
-          class="bp3-button bp3-disabled bp3-intent-primary sc-EHOje gmpgQN"
+          class="bp3-button bp3-disabled bp3-intent-primary sc-bxivhb WkpPV"
           disabled=""
           tabindex="-1"
           type="button"
@@ -193,7 +193,7 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
 <div>
   <div>
     <h2
-      class="bp3-heading sc-bdVaJa ibVpPq"
+      class="bp3-heading sc-ifAKCX cmZyyF"
     >
       Review & Launch
     </h2>
@@ -348,10 +348,10 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
         </a>
       </p>
       <div
-        class="sc-htpNat gtULUV"
+        class="sc-bdVaJa kcYonD"
       >
         <button
-          class="bp3-button sc-EHOje gmpgQN"
+          class="bp3-button sc-bxivhb WkpPV"
           type="button"
         >
           <span
@@ -361,7 +361,7 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
           </span>
         </button>
         <button
-          class="bp3-button bp3-disabled bp3-intent-primary sc-EHOje gmpgQN"
+          class="bp3-button bp3-disabled bp3-intent-primary sc-bxivhb WkpPV"
           disabled=""
           tabindex="-1"
           type="button"
@@ -382,7 +382,7 @@ exports[`Audit Setup > Review & Launch renders empty state 1`] = `
 <div>
   <div>
     <h2
-      class="bp3-heading sc-bdVaJa ibVpPq"
+      class="bp3-heading sc-ifAKCX cmZyyF"
     >
       Review & Launch
     </h2>
@@ -626,10 +626,10 @@ exports[`Audit Setup > Review & Launch renders empty state 1`] = `
         </div>
       </div>
       <div
-        class="sc-htpNat gtULUV"
+        class="sc-bdVaJa kcYonD"
       >
         <button
-          class="bp3-button sc-EHOje gmpgQN"
+          class="bp3-button sc-bxivhb WkpPV"
           type="button"
         >
           <span
@@ -639,7 +639,7 @@ exports[`Audit Setup > Review & Launch renders empty state 1`] = `
           </span>
         </button>
         <button
-          class="bp3-button bp3-intent-primary sc-EHOje gmpgQN"
+          class="bp3-button bp3-intent-primary sc-bxivhb WkpPV"
           type="button"
         >
           <span
@@ -658,7 +658,7 @@ exports[`Audit Setup > Review & Launch renders full state 1`] = `
 <div>
   <div>
     <h2
-      class="bp3-heading sc-bdVaJa ibVpPq"
+      class="bp3-heading sc-ifAKCX cmZyyF"
     >
       Review & Launch
     </h2>
@@ -902,10 +902,10 @@ exports[`Audit Setup > Review & Launch renders full state 1`] = `
         </div>
       </div>
       <div
-        class="sc-htpNat gtULUV"
+        class="sc-bdVaJa kcYonD"
       >
         <button
-          class="bp3-button sc-EHOje gmpgQN"
+          class="bp3-button sc-bxivhb WkpPV"
           type="button"
         >
           <span
@@ -915,7 +915,7 @@ exports[`Audit Setup > Review & Launch renders full state 1`] = `
           </span>
         </button>
         <button
-          class="bp3-button bp3-intent-primary sc-EHOje gmpgQN"
+          class="bp3-button bp3-intent-primary sc-bxivhb WkpPV"
           type="button"
         >
           <span
@@ -934,7 +934,7 @@ exports[`Audit Setup > Review & Launch renders full state with batch comparison 
 <div>
   <div>
     <h2
-      class="bp3-heading sc-bdVaJa ibVpPq"
+      class="bp3-heading sc-ifAKCX cmZyyF"
     >
       Review & Launch
     </h2>
@@ -1178,10 +1178,10 @@ exports[`Audit Setup > Review & Launch renders full state with batch comparison 
         </div>
       </div>
       <div
-        class="sc-htpNat gtULUV"
+        class="sc-bdVaJa kcYonD"
       >
         <button
-          class="bp3-button sc-EHOje gmpgQN"
+          class="bp3-button sc-bxivhb WkpPV"
           type="button"
         >
           <span
@@ -1191,7 +1191,7 @@ exports[`Audit Setup > Review & Launch renders full state with batch comparison 
           </span>
         </button>
         <button
-          class="bp3-button bp3-intent-primary sc-EHOje gmpgQN"
+          class="bp3-button bp3-intent-primary sc-bxivhb WkpPV"
           type="button"
         >
           <span
@@ -1210,7 +1210,7 @@ exports[`Audit Setup > Review & Launch renders full state with batch comparison 
 <div>
   <div>
     <h2
-      class="bp3-heading sc-bdVaJa ibVpPq"
+      class="bp3-heading sc-ifAKCX cmZyyF"
     >
       Review & Launch
     </h2>
@@ -1365,10 +1365,10 @@ exports[`Audit Setup > Review & Launch renders full state with batch comparison 
         </a>
       </p>
       <div
-        class="sc-htpNat gtULUV"
+        class="sc-bdVaJa kcYonD"
       >
         <button
-          class="bp3-button sc-EHOje gmpgQN"
+          class="bp3-button sc-bxivhb WkpPV"
           type="button"
         >
           <span
@@ -1378,7 +1378,7 @@ exports[`Audit Setup > Review & Launch renders full state with batch comparison 
           </span>
         </button>
         <button
-          class="bp3-button bp3-disabled bp3-intent-primary sc-EHOje gmpgQN"
+          class="bp3-button bp3-disabled bp3-intent-primary sc-bxivhb WkpPV"
           disabled=""
           tabindex="-1"
           type="button"
@@ -1399,7 +1399,7 @@ exports[`Audit Setup > Review & Launch renders full state with jurisdictions wit
 <div>
   <div>
     <h2
-      class="bp3-heading sc-bdVaJa ibVpPq"
+      class="bp3-heading sc-ifAKCX cmZyyF"
     >
       Review & Launch
     </h2>
@@ -1652,10 +1652,10 @@ exports[`Audit Setup > Review & Launch renders full state with jurisdictions wit
         </div>
       </div>
       <div
-        class="sc-htpNat gtULUV"
+        class="sc-bdVaJa kcYonD"
       >
         <button
-          class="bp3-button sc-EHOje gmpgQN"
+          class="bp3-button sc-bxivhb WkpPV"
           type="button"
         >
           <span
@@ -1665,7 +1665,7 @@ exports[`Audit Setup > Review & Launch renders full state with jurisdictions wit
           </span>
         </button>
         <button
-          class="bp3-button bp3-intent-primary sc-EHOje gmpgQN"
+          class="bp3-button bp3-intent-primary sc-bxivhb WkpPV"
           type="button"
         >
           <span
@@ -1684,7 +1684,7 @@ exports[`Audit Setup > Review & Launch renders full state with offline setting 1
 <div>
   <div>
     <h2
-      class="bp3-heading sc-bdVaJa ibVpPq"
+      class="bp3-heading sc-ifAKCX cmZyyF"
     >
       Review & Launch
     </h2>
@@ -1928,10 +1928,10 @@ exports[`Audit Setup > Review & Launch renders full state with offline setting 1
         </div>
       </div>
       <div
-        class="sc-htpNat gtULUV"
+        class="sc-bdVaJa kcYonD"
       >
         <button
-          class="bp3-button sc-EHOje gmpgQN"
+          class="bp3-button sc-bxivhb WkpPV"
           type="button"
         >
           <span
@@ -1941,7 +1941,7 @@ exports[`Audit Setup > Review & Launch renders full state with offline setting 1
           </span>
         </button>
         <button
-          class="bp3-button bp3-intent-primary sc-EHOje gmpgQN"
+          class="bp3-button bp3-intent-primary sc-bxivhb WkpPV"
           type="button"
         >
           <span

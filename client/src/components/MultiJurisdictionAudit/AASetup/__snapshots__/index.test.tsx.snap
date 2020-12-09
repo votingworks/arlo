@@ -6,10 +6,10 @@ exports[`Setup renders Audit Settings stage 1`] = `
     data-testid="form-one"
   >
     <div
-      class="sc-bwzfXH jFbAHP"
+      class="sc-EHOje bjGJmd"
     >
       <h2
-        class="bp3-heading sc-bdVaJa ibVpPq"
+        class="bp3-heading sc-ifAKCX cmZyyF"
       >
         Audit Settings
       </h2>
@@ -631,10 +631,10 @@ exports[`Setup renders Audit Settings stage 1`] = `
       </div>
     </div>
     <div
-      class="sc-htpNat gtULUV"
+      class="sc-bdVaJa kcYonD"
     >
       <button
-        class="bp3-button sc-EHOje gmpgQN"
+        class="bp3-button sc-bxivhb WkpPV"
         type="button"
       >
         <span
@@ -644,7 +644,7 @@ exports[`Setup renders Audit Settings stage 1`] = `
         </span>
       </button>
       <button
-        class="bp3-button bp3-intent-primary sc-EHOje gmpgQN"
+        class="bp3-button bp3-intent-primary sc-bxivhb WkpPV"
         type="button"
       >
         <span
@@ -664,10 +664,10 @@ exports[`Setup renders Audit Settings stage with locked next stage 1`] = `
     data-testid="form-one"
   >
     <div
-      class="sc-bwzfXH jFbAHP"
+      class="sc-EHOje bjGJmd"
     >
       <h2
-        class="bp3-heading sc-bdVaJa ibVpPq"
+        class="bp3-heading sc-ifAKCX cmZyyF"
       >
         Audit Settings
       </h2>
@@ -1295,10 +1295,10 @@ exports[`Setup renders Audit Settings stage with locked next stage 1`] = `
       </div>
     </div>
     <div
-      class="sc-htpNat gtULUV"
+      class="sc-bdVaJa kcYonD"
     >
       <button
-        class="bp3-button sc-EHOje gmpgQN"
+        class="bp3-button sc-bxivhb WkpPV"
         type="button"
       >
         <span
@@ -1308,7 +1308,7 @@ exports[`Setup renders Audit Settings stage with locked next stage 1`] = `
         </span>
       </button>
       <button
-        class="bp3-button bp3-disabled bp3-intent-primary sc-EHOje gmpgQN"
+        class="bp3-button bp3-disabled bp3-intent-primary sc-bxivhb WkpPV"
         disabled=""
         tabindex="-1"
         type="button"
@@ -1330,10 +1330,10 @@ exports[`Setup renders Audit Settings stage with processing next stage 1`] = `
     data-testid="form-one"
   >
     <div
-      class="sc-bwzfXH jFbAHP"
+      class="sc-EHOje bjGJmd"
     >
       <h2
-        class="bp3-heading sc-bdVaJa ibVpPq"
+        class="bp3-heading sc-ifAKCX cmZyyF"
       >
         Audit Settings
       </h2>
@@ -1990,10 +1990,10 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
     data-testid="form-one"
   >
     <div
-      class="sc-bwzfXH jFbAHP"
+      class="sc-EHOje bjGJmd"
     >
       <h2
-        class="bp3-heading sc-bdVaJa ibVpPq"
+        class="bp3-heading sc-ifAKCX cmZyyF"
       >
         Opportunistic Contests
       </h2>
@@ -2255,7 +2255,7 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
               class="bp3-popover-target"
             >
               <button
-                class="bp3-button sc-EHOje gmpgQN"
+                class="bp3-button sc-bxivhb WkpPV"
                 type="button"
               >
                 <span
@@ -2269,10 +2269,10 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
         </div>
       </div>
       <div
-        class="sc-htpNat gtULUV"
+        class="sc-bdVaJa kcYonD"
       >
         <button
-          class="bp3-button sc-EHOje gmpgQN"
+          class="bp3-button sc-bxivhb WkpPV"
           type="button"
         >
           <span
@@ -2287,10 +2287,10 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
       </div>
     </div>
     <div
-      class="sc-htpNat gtULUV"
+      class="sc-bdVaJa kcYonD"
     >
       <button
-        class="bp3-button sc-EHOje gmpgQN"
+        class="bp3-button sc-bxivhb WkpPV"
         type="button"
       >
         <span
@@ -2300,7 +2300,7 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
         </span>
       </button>
       <button
-        class="bp3-button bp3-intent-primary sc-EHOje gmpgQN"
+        class="bp3-button bp3-intent-primary sc-bxivhb WkpPV"
         type="submit"
       >
         <span
@@ -2320,10 +2320,10 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
     data-testid="form-one"
   >
     <div
-      class="sc-bwzfXH jFbAHP"
+      class="sc-EHOje bjGJmd"
     >
       <h2
-        class="bp3-heading sc-bdVaJa ibVpPq"
+        class="bp3-heading sc-ifAKCX cmZyyF"
       >
         Opportunistic Contests
       </h2>
@@ -2588,7 +2588,7 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
               class="bp3-popover-target"
             >
               <button
-                class="bp3-button sc-EHOje gmpgQN"
+                class="bp3-button sc-bxivhb WkpPV"
                 type="button"
               >
                 <span
@@ -2602,10 +2602,10 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
         </div>
       </div>
       <div
-        class="sc-htpNat gtULUV"
+        class="sc-bdVaJa kcYonD"
       >
         <button
-          class="bp3-button sc-EHOje gmpgQN"
+          class="bp3-button sc-bxivhb WkpPV"
           type="button"
         >
           <span
@@ -2620,10 +2620,10 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
       </div>
     </div>
     <div
-      class="sc-htpNat gtULUV"
+      class="sc-bdVaJa kcYonD"
     >
       <button
-        class="bp3-button sc-EHOje gmpgQN"
+        class="bp3-button sc-bxivhb WkpPV"
         type="button"
       >
         <span
@@ -2633,7 +2633,7 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
         </span>
       </button>
       <button
-        class="bp3-button bp3-disabled bp3-intent-primary sc-EHOje gmpgQN"
+        class="bp3-button bp3-disabled bp3-intent-primary sc-bxivhb WkpPV"
         disabled=""
         tabindex="-1"
         type="submit"
@@ -2655,10 +2655,10 @@ exports[`Setup renders Opportunistic Contests stage with processing next stage 1
     data-testid="form-one"
   >
     <div
-      class="sc-bwzfXH jFbAHP"
+      class="sc-EHOje bjGJmd"
     >
       <h2
-        class="bp3-heading sc-bdVaJa ibVpPq"
+        class="bp3-heading sc-ifAKCX cmZyyF"
       >
         Opportunistic Contests
       </h2>
@@ -2920,7 +2920,7 @@ exports[`Setup renders Opportunistic Contests stage with processing next stage 1
               class="bp3-popover-target"
             >
               <button
-                class="bp3-button sc-EHOje gmpgQN"
+                class="bp3-button sc-bxivhb WkpPV"
                 type="button"
               >
                 <span
@@ -2934,10 +2934,10 @@ exports[`Setup renders Opportunistic Contests stage with processing next stage 1
         </div>
       </div>
       <div
-        class="sc-htpNat gtULUV"
+        class="sc-bdVaJa kcYonD"
       >
         <button
-          class="bp3-button sc-EHOje gmpgQN"
+          class="bp3-button sc-bxivhb WkpPV"
           type="button"
         >
           <span
@@ -2983,109 +2983,258 @@ exports[`Setup renders Opportunistic Contests stage with processing next stage 1
 
 exports[`Setup renders Participants stage 1`] = `
 <div>
-  <form
-    data-testid="form-one"
+  <div
+    class="sc-EHOje bjGJmd"
   >
-    <div
-      class="sc-bwzfXH jFbAHP"
+    <h2
+      class="bp3-heading sc-ifAKCX cmZyyF"
     >
-      <h2
-        class="bp3-heading sc-bdVaJa ibVpPq"
+      Participants
+    </h2>
+    <form>
+      <div
+        class="sc-EHOje bjGJmd"
       >
-        Participants
-      </h2>
-    </div>
+        <h2
+          class="bp3-heading sc-ifAKCX cmZyyF"
+        />
+        <div
+          class="sc-htoDjs jcQPAQ"
+        >
+          <div
+            class="sc-dnqmqq kGMqKN"
+          >
+            Click "Browse" to choose the appropriate file from your computer. This file should be a comma-separated list of all the jurisdictions participating in the audit, plus email addresses for audit administrators in each participating jurisdiction.
+            <br />
+            <br />
+            <a
+              href="/sample_jurisdiction_filesheet.csv"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              (Click here to view a sample file in the correct format.)
+            </a>
+          </div>
+        </div>
+        <div
+          class="sc-htoDjs jcQPAQ"
+        >
+          <label
+            class="bp3-file-input"
+          >
+            <input
+              accept=".csv"
+              name="csv"
+              type="file"
+            />
+            <span
+              class="bp3-file-upload-input"
+            >
+              Select a CSV...
+            </span>
+          </label>
+        </div>
+        <div>
+          <button
+            class="bp3-button bp3-intent-primary sc-bxivhb WkpPV"
+            type="submit"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Upload File
+            </span>
+          </button>
+        </div>
+      </div>
+    </form>
     <div
-      class="sc-htpNat gtULUV"
+      class="sc-bdVaJa kcYonD"
     >
       <button
-        class="bp3-button bp3-intent-primary sc-EHOje gmpgQN"
+        class="bp3-button bp3-intent-primary sc-bxivhb WkpPV"
         type="submit"
       >
         <span
           class="bp3-button-text"
         >
-          Save & Next
+          Next
         </span>
       </button>
     </div>
-  </form>
+  </div>
 </div>
 `;
 
 exports[`Setup renders Participants stage with locked next stage 1`] = `
 <div>
-  <form
-    data-testid="form-one"
+  <div
+    class="sc-EHOje bjGJmd"
   >
-    <div
-      class="sc-bwzfXH jFbAHP"
+    <h2
+      class="bp3-heading sc-ifAKCX cmZyyF"
     >
-      <h2
-        class="bp3-heading sc-bdVaJa ibVpPq"
+      Participants
+    </h2>
+    <form>
+      <div
+        class="sc-EHOje bjGJmd"
       >
-        Participants
-      </h2>
-    </div>
+        <h2
+          class="bp3-heading sc-ifAKCX cmZyyF"
+        />
+        <div
+          class="sc-htoDjs jcQPAQ"
+        >
+          <div
+            class="sc-dnqmqq kGMqKN"
+          >
+            Click "Browse" to choose the appropriate file from your computer. This file should be a comma-separated list of all the jurisdictions participating in the audit, plus email addresses for audit administrators in each participating jurisdiction.
+            <br />
+            <br />
+            <a
+              href="/sample_jurisdiction_filesheet.csv"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              (Click here to view a sample file in the correct format.)
+            </a>
+          </div>
+        </div>
+        <div
+          class="sc-htoDjs jcQPAQ"
+        >
+          <label
+            class="bp3-file-input"
+          >
+            <input
+              accept=".csv"
+              name="csv"
+              type="file"
+            />
+            <span
+              class="bp3-file-upload-input"
+            >
+              Select a CSV...
+            </span>
+          </label>
+        </div>
+        <div>
+          <button
+            class="bp3-button bp3-intent-primary sc-bxivhb WkpPV"
+            type="submit"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Upload File
+            </span>
+          </button>
+        </div>
+      </div>
+    </form>
     <div
-      class="sc-htpNat gtULUV"
+      class="sc-bdVaJa kcYonD"
     >
       <button
-        class="bp3-button bp3-intent-primary sc-EHOje gmpgQN"
+        class="bp3-button bp3-disabled bp3-intent-primary sc-bxivhb WkpPV"
+        disabled=""
+        tabindex="-1"
         type="submit"
       >
         <span
           class="bp3-button-text"
         >
-          Save & Next
+          Next
         </span>
       </button>
     </div>
-  </form>
+  </div>
 </div>
 `;
 
 exports[`Setup renders Participants stage with processing next stage 1`] = `
 <div>
-  <form
-    data-testid="form-one"
+  <div
+    class="sc-EHOje bjGJmd"
   >
-    <div
-      class="sc-bwzfXH jFbAHP"
+    <h2
+      class="bp3-heading sc-ifAKCX cmZyyF"
     >
-      <h2
-        class="bp3-heading sc-bdVaJa ibVpPq"
-      >
-        Participants
-      </h2>
-    </div>
-    <div
-      class="bp3-spinner"
-    >
+      Participants
+    </h2>
+    <form>
       <div
-        class="bp3-spinner-animation"
+        class="sc-EHOje bjGJmd"
       >
-        <svg
-          height="50"
-          stroke-width="8.00"
-          viewBox="1.00 1.00 98.00 98.00"
-          width="50"
+        <h2
+          class="bp3-heading sc-ifAKCX cmZyyF"
+        />
+        <div
+          class="sc-htoDjs jcQPAQ"
         >
-          <path
-            class="bp3-spinner-track"
-            d="M 50,50 m 0,-45 a 45,45 0 1 1 0,90 a 45,45 0 1 1 0,-90"
-          />
-          <path
-            class="bp3-spinner-head"
-            d="M 50,50 m 0,-45 a 45,45 0 1 1 0,90 a 45,45 0 1 1 0,-90"
-            pathLength="280"
-            stroke-dasharray="280 280"
-            stroke-dashoffset="210"
-          />
-        </svg>
+          <div
+            class="sc-dnqmqq kGMqKN"
+          >
+            Click "Browse" to choose the appropriate file from your computer. This file should be a comma-separated list of all the jurisdictions participating in the audit, plus email addresses for audit administrators in each participating jurisdiction.
+            <br />
+            <br />
+            <a
+              href="/sample_jurisdiction_filesheet.csv"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              (Click here to view a sample file in the correct format.)
+            </a>
+          </div>
+        </div>
+        <div
+          class="sc-htoDjs jcQPAQ"
+        >
+          <label
+            class="bp3-file-input"
+          >
+            <input
+              accept=".csv"
+              name="csv"
+              type="file"
+            />
+            <span
+              class="bp3-file-upload-input"
+            >
+              Select a CSV...
+            </span>
+          </label>
+        </div>
+        <div>
+          <button
+            class="bp3-button bp3-intent-primary sc-bxivhb WkpPV"
+            type="submit"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Upload File
+            </span>
+          </button>
+        </div>
       </div>
+    </form>
+    <div
+      class="sc-bdVaJa kcYonD"
+    >
+      <button
+        class="bp3-button bp3-intent-primary sc-bxivhb WkpPV"
+        type="submit"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Next
+        </span>
+      </button>
     </div>
-  </form>
+  </div>
 </div>
 `;
 
@@ -3093,7 +3242,7 @@ exports[`Setup renders Review & Launch stage 1`] = `
 <div>
   <div>
     <h2
-      class="bp3-heading sc-bdVaJa ibVpPq"
+      class="bp3-heading sc-ifAKCX cmZyyF"
     >
       Review & Launch
     </h2>
@@ -3244,10 +3393,10 @@ exports[`Setup renders Review & Launch stage 1`] = `
         </a>
       </p>
       <div
-        class="sc-htpNat gtULUV"
+        class="sc-bdVaJa kcYonD"
       >
         <button
-          class="bp3-button sc-EHOje gmpgQN"
+          class="bp3-button sc-bxivhb WkpPV"
           type="button"
         >
           <span
@@ -3257,7 +3406,7 @@ exports[`Setup renders Review & Launch stage 1`] = `
           </span>
         </button>
         <button
-          class="bp3-button bp3-disabled bp3-intent-primary sc-EHOje gmpgQN"
+          class="bp3-button bp3-disabled bp3-intent-primary sc-bxivhb WkpPV"
           disabled=""
           tabindex="-1"
           type="button"
@@ -3278,7 +3427,7 @@ exports[`Setup renders Review & Launch stage with locked next stage 1`] = `
 <div>
   <div>
     <h2
-      class="bp3-heading sc-bdVaJa ibVpPq"
+      class="bp3-heading sc-ifAKCX cmZyyF"
     >
       Review & Launch
     </h2>
@@ -3429,10 +3578,10 @@ exports[`Setup renders Review & Launch stage with locked next stage 1`] = `
         </a>
       </p>
       <div
-        class="sc-htpNat gtULUV"
+        class="sc-bdVaJa kcYonD"
       >
         <button
-          class="bp3-button sc-EHOje gmpgQN"
+          class="bp3-button sc-bxivhb WkpPV"
           type="button"
         >
           <span
@@ -3442,7 +3591,7 @@ exports[`Setup renders Review & Launch stage with locked next stage 1`] = `
           </span>
         </button>
         <button
-          class="bp3-button bp3-disabled bp3-intent-primary sc-EHOje gmpgQN"
+          class="bp3-button bp3-disabled bp3-intent-primary sc-bxivhb WkpPV"
           disabled=""
           tabindex="-1"
           type="button"
@@ -3463,7 +3612,7 @@ exports[`Setup renders Review & Launch stage with processing next stage 1`] = `
 <div>
   <div>
     <h2
-      class="bp3-heading sc-bdVaJa ibVpPq"
+      class="bp3-heading sc-ifAKCX cmZyyF"
     >
       Review & Launch
     </h2>
@@ -3614,10 +3763,10 @@ exports[`Setup renders Review & Launch stage with processing next stage 1`] = `
         </a>
       </p>
       <div
-        class="sc-htpNat gtULUV"
+        class="sc-bdVaJa kcYonD"
       >
         <button
-          class="bp3-button sc-EHOje gmpgQN"
+          class="bp3-button sc-bxivhb WkpPV"
           type="button"
         >
           <span
@@ -3627,7 +3776,7 @@ exports[`Setup renders Review & Launch stage with processing next stage 1`] = `
           </span>
         </button>
         <button
-          class="bp3-button bp3-disabled bp3-intent-primary sc-EHOje gmpgQN"
+          class="bp3-button bp3-disabled bp3-intent-primary sc-bxivhb WkpPV"
           disabled=""
           tabindex="-1"
           type="button"
@@ -3650,10 +3799,10 @@ exports[`Setup renders Target Contests stage 1`] = `
     data-testid="form-one"
   >
     <div
-      class="sc-bwzfXH jFbAHP"
+      class="sc-EHOje bjGJmd"
     >
       <h2
-        class="bp3-heading sc-bdVaJa ibVpPq"
+        class="bp3-heading sc-ifAKCX cmZyyF"
       >
         Target Contests
       </h2>
@@ -3915,7 +4064,7 @@ exports[`Setup renders Target Contests stage 1`] = `
               class="bp3-popover-target"
             >
               <button
-                class="bp3-button sc-EHOje gmpgQN"
+                class="bp3-button sc-bxivhb WkpPV"
                 type="button"
               >
                 <span
@@ -3929,10 +4078,10 @@ exports[`Setup renders Target Contests stage 1`] = `
         </div>
       </div>
       <div
-        class="sc-htpNat gtULUV"
+        class="sc-bdVaJa kcYonD"
       >
         <button
-          class="bp3-button sc-EHOje gmpgQN"
+          class="bp3-button sc-bxivhb WkpPV"
           type="button"
         >
           <span
@@ -3947,10 +4096,10 @@ exports[`Setup renders Target Contests stage 1`] = `
       </div>
     </div>
     <div
-      class="sc-htpNat gtULUV"
+      class="sc-bdVaJa kcYonD"
     >
       <button
-        class="bp3-button sc-EHOje gmpgQN"
+        class="bp3-button sc-bxivhb WkpPV"
         type="button"
       >
         <span
@@ -3960,7 +4109,7 @@ exports[`Setup renders Target Contests stage 1`] = `
         </span>
       </button>
       <button
-        class="bp3-button bp3-intent-primary sc-EHOje gmpgQN"
+        class="bp3-button bp3-intent-primary sc-bxivhb WkpPV"
         type="submit"
       >
         <span
@@ -3980,10 +4129,10 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
     data-testid="form-one"
   >
     <div
-      class="sc-bwzfXH jFbAHP"
+      class="sc-EHOje bjGJmd"
     >
       <h2
-        class="bp3-heading sc-bdVaJa ibVpPq"
+        class="bp3-heading sc-ifAKCX cmZyyF"
       >
         Target Contests
       </h2>
@@ -4248,7 +4397,7 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
               class="bp3-popover-target"
             >
               <button
-                class="bp3-button sc-EHOje gmpgQN"
+                class="bp3-button sc-bxivhb WkpPV"
                 type="button"
               >
                 <span
@@ -4262,10 +4411,10 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
         </div>
       </div>
       <div
-        class="sc-htpNat gtULUV"
+        class="sc-bdVaJa kcYonD"
       >
         <button
-          class="bp3-button sc-EHOje gmpgQN"
+          class="bp3-button sc-bxivhb WkpPV"
           type="button"
         >
           <span
@@ -4280,10 +4429,10 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
       </div>
     </div>
     <div
-      class="sc-htpNat gtULUV"
+      class="sc-bdVaJa kcYonD"
     >
       <button
-        class="bp3-button sc-EHOje gmpgQN"
+        class="bp3-button sc-bxivhb WkpPV"
         type="button"
       >
         <span
@@ -4293,7 +4442,7 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
         </span>
       </button>
       <button
-        class="bp3-button bp3-disabled bp3-intent-primary sc-EHOje gmpgQN"
+        class="bp3-button bp3-disabled bp3-intent-primary sc-bxivhb WkpPV"
         disabled=""
         tabindex="-1"
         type="submit"
@@ -4315,10 +4464,10 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
     data-testid="form-one"
   >
     <div
-      class="sc-bwzfXH jFbAHP"
+      class="sc-EHOje bjGJmd"
     >
       <h2
-        class="bp3-heading sc-bdVaJa ibVpPq"
+        class="bp3-heading sc-ifAKCX cmZyyF"
       >
         Target Contests
       </h2>
@@ -4580,7 +4729,7 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
               class="bp3-popover-target"
             >
               <button
-                class="bp3-button sc-EHOje gmpgQN"
+                class="bp3-button sc-bxivhb WkpPV"
                 type="button"
               >
                 <span
@@ -4594,10 +4743,10 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
         </div>
       </div>
       <div
-        class="sc-htpNat gtULUV"
+        class="sc-bdVaJa kcYonD"
       >
         <button
-          class="bp3-button sc-EHOje gmpgQN"
+          class="bp3-button sc-bxivhb WkpPV"
           type="button"
         >
           <span

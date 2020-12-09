@@ -1,5 +1,5 @@
 import { contestMocks } from './AASetup/Contests/_mocks'
-import { IFileInfo } from './useJurisdictions'
+import { IFileInfo } from './useCSV'
 import { manifestFile, talliesFile } from './useSetupMenuItems/_mocks'
 import { FileProcessingStatus } from './useSetupMenuItems/getJurisdictionFileStatus'
 import { IBallot } from './RoundManagement/useBallots'
@@ -166,17 +166,20 @@ export const aaApiCalls = {
     url: '/api/election/1/jurisdiction/file',
     response: {
       file: {
-        contents: null,
         name: 'file name',
         uploadedAt: 'a long time ago in a galaxy far far away',
       },
       processing: {
         status: FileProcessingStatus.Processed,
         error: null,
-        startedAt: 'once upon a time',
-        endedAt: 'and they lived happily ever after',
+        startedAt: '2020-12-04T02:32:15.419+00:00',
+        completedAt: '2020-12-04T02:32:15.419+00:00',
       },
     },
+  },
+  getStandardizedContestsFile: {
+    url: '/api/election/1/standardized-contests/file',
+    response: { file: null, processing: null },
   },
   getContests: {
     url: '/api/election/1/contest',

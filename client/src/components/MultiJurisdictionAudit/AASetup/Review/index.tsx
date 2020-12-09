@@ -9,7 +9,7 @@ import H2Title from '../../../Atoms/H2Title'
 import useAuditSettings from '../../useAuditSettings'
 import useContests from '../../useContests'
 import { IContest, ISampleSizeOption } from '../../../../types'
-import useJurisdictions, { FileProcessingStatus } from '../../useJurisdictions'
+import useJurisdictions from '../../useJurisdictions'
 import { testNumber } from '../../../utilities'
 import FormSection, {
   FormSectionDescription,
@@ -17,11 +17,11 @@ import FormSection, {
 import ContestsTable from './ContestsTable'
 import SettingsTable from './SettingsTable'
 import { isSetupComplete } from '../../StatusBox'
-import useJurisdictionFile from '../Participants/useJurisdictionFile'
 import ConfirmLaunch from './ConfirmLaunch'
 import FormField from '../../../Atoms/Form/FormField'
 import ElevatedCard from '../../../Atoms/SpacedCard'
 import useSampleSizes, { IStringSampleSizeOption } from './useSampleSizes'
+import { useJurisdictionsFile, isFileProcessed } from '../../useCSV'
 
 const percentFormatter = new Intl.NumberFormat(undefined, {
   style: 'percent',
@@ -41,7 +41,7 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
   const { electionId } = useParams<{ electionId: string }>()
   const [auditSettings] = useAuditSettings(electionId)
   const jurisdictions = useJurisdictions(electionId)
-  const [jurisdictionFile] = useJurisdictionFile(electionId)
+  const [jurisdictionsFile] = useJurisdictionsFile(electionId)
   const [contests] = useContests(electionId)
   const history = useHistory()
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
@@ -124,10 +124,8 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
       )
     : []
 
-  const numManifestUploadsComplete = participatingJurisdictions.filter(
-    j =>
-      j.ballotManifest.processing &&
-      j.ballotManifest.processing.status === FileProcessingStatus.PROCESSED
+  const numManifestUploadsComplete = participatingJurisdictions.filter(j =>
+    isFileProcessed(j.ballotManifest)
   ).length
 
   return (
@@ -175,8 +173,8 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  {jurisdictionFile && jurisdictionFile.file
-                    ? jurisdictionFile.file.name
+                  {jurisdictionsFile && jurisdictionsFile.file
+                    ? jurisdictionsFile.file.name
                     : ''}
                 </a>
               </td>

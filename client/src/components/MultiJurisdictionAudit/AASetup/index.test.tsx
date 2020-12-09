@@ -59,6 +59,7 @@ afterEach(() => {
 
 describe('Setup', () => {
   it('renders Participants stage', async () => {
+    apiMock.mockImplementation(async () => ({ file: null, processing: null }))
     const { container } = render(
       <MemoryRouter>
         <Setup
@@ -69,11 +70,13 @@ describe('Setup', () => {
         />
       </MemoryRouter>
     )
-    expect(container).toMatchSnapshot()
     await waitFor(() => expect(apiMock).toHaveBeenCalled())
+    await screen.findByRole('heading', { name: 'Participants' })
+    expect(container).toMatchSnapshot()
   })
 
   it('renders Participants stage with locked next stage', async () => {
+    apiMock.mockImplementation(async () => ({ file: null, processing: null }))
     const { container } = render(
       <MemoryRouter>
         <Setup
@@ -85,10 +88,12 @@ describe('Setup', () => {
       </MemoryRouter>
     )
     await waitFor(() => expect(apiMock).toHaveBeenCalled())
+    await screen.findByRole('heading', { name: 'Participants' })
     expect(container).toMatchSnapshot()
   })
 
   it('renders Participants stage with processing next stage', async () => {
+    apiMock.mockImplementation(async () => ({ file: null, processing: null }))
     const { container } = render(
       <MemoryRouter>
         <Setup
@@ -100,6 +105,7 @@ describe('Setup', () => {
       </MemoryRouter>
     )
     await waitFor(() => expect(apiMock).toHaveBeenCalled())
+    await screen.findByRole('heading', { name: 'Participants' })
     expect(container).toMatchSnapshot()
   })
 

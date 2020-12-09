@@ -10,12 +10,8 @@ import {
 } from '@blueprintjs/core'
 import styled from 'styled-components'
 import { Formik, FormikProps } from 'formik'
-import {
-  IJurisdiction,
-  FileProcessingStatus,
-  IFileInfo,
-  JurisdictionRoundStatus,
-} from '../useJurisdictions'
+import { IJurisdiction, JurisdictionRoundStatus } from '../useJurisdictions'
+import { FileProcessingStatus, IFileInfo } from '../useCSV'
 import { JAFileDownloadButtons } from '../RoundManagement'
 import { IRound } from '../useRoundsAuditAdmin'
 import useAuditBoards from '../useAuditBoards'
