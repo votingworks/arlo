@@ -48,19 +48,20 @@ CONTEST_SCHEMA = {
 }
 
 # In ballot comparison audits, the AA selects contests from the standardized
-# contests file, so we create contests without choices, totalBallotsCast,
-# numWinners, and votesAllowed. We later populate these fields using the
-# metadata in the CVRs that the jurisdictions provide.
+# contests file, so we create contests without choices, totalBallotsCast, and
+# votesAllowed. We later populate these fields using the metadata in the CVRs
+# that the jurisdictions provide.
 BALLOT_COMPARISON_CONTEST_SCHEMA = {
     "type": "object",
     "properties": {
         "id": {"type": "string"},
         "name": {"type": "string"},
         "isTargeted": {"type": "boolean"},
+        "numWinners": {"type": "integer", "minimum": 1},
         "jurisdictionIds": {"type": "array", "items": {"type": "string"}},
     },
     "additionalProperties": False,
-    "required": ["id", "name", "isTargeted", "jurisdictionIds"],
+    "required": ["id", "name", "isTargeted", "numWinners", "jurisdictionIds"],
 }
 
 

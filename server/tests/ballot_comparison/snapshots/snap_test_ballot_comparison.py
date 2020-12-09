@@ -144,7 +144,6 @@ snapshots["test_set_contest_metadata_from_cvrs 1"] = {
         {"name": "Choice 2-2", "num_votes": 12},
         {"name": "Choice 2-3", "num_votes": 16},
     ],
-    "num_winners": 1,
     "total_ballots_cast": 30,
     "votes_allowed": 2,
 }

@@ -140,6 +140,7 @@ def test_ballot_comparison_container_manifest(
             {
                 "id": str(uuid.uuid4()),
                 "name": "Contest 1",
+                "numWinners": 1,
                 "jurisdictionIds": jurisdiction_ids[:2],
                 "isTargeted": True,
             },

@@ -30,7 +30,6 @@ def set_contest_metadata_from_cvrs(contest: Contest):
     if contest.total_ballots_cast is not None:
         return
 
-    contest.num_winners = 1  # TODO how do we get this from the CVRs?
     contest.total_ballots_cast = 0
 
     for jurisdiction in contest.jurisdictions:
