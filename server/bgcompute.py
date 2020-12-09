@@ -90,7 +90,7 @@ def bgcompute_update_ballot_manifest_file(election_id: str = None):
         Jurisdiction, File.id == Jurisdiction.manifest_file_id
     ).filter(File.processing_started_at.is_(None))
     if election_id:
-        files = files.filter(Election.id == election_id)
+        files = files.filter(Jurisdiction.election_id == election_id)
 
     for file in files.all():
         try:
@@ -121,7 +121,7 @@ def bgcompute_update_batch_tallies_file(election_id: str = None):
         Jurisdiction, File.id == Jurisdiction.batch_tallies_file_id
     ).filter(File.processing_started_at.is_(None))
     if election_id:
-        files = files.filter(Election.id == election_id)
+        files = files.filter(Jurisdiction.election_id == election_id)
 
     for file in files.all():
         try:
@@ -154,7 +154,7 @@ def bgcompute_update_cvr_file(election_id: str = None):
         File.processing_started_at.is_(None)
     )
     if election_id:
-        files = files.filter(Election.id == election_id)
+        files = files.filter(Jurisdiction.election_id == election_id)
 
     for file in files.all():
         try:
