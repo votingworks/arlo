@@ -89,8 +89,7 @@ describe('useSetupMenuItems', () => {
     expect(result.current[0].every(i => i.state === 'locked')).toBeTruthy()
   })
 
-  it.skip('handles ERRORED response from /jurisdiction/file api', async () => {
-    // TEST TODO
+  it('handles ERRORED response from /jurisdiction/file api', async () => {
     apiMock.mockImplementation(
       generateApiMock(
         { rounds: roundMocks.empty },
@@ -110,12 +109,11 @@ describe('useSetupMenuItems', () => {
     )
     act(() => result.current[1]())
     await waitForNextUpdate()
+    expect(result.current[0][1].state === 'locked').toBeTruthy()
     expect(result.current[0][2].state === 'locked').toBeTruthy()
-    expect(result.current[0][3].state === 'locked').toBeTruthy()
   })
 
-  it.skip('handles NULL response from /jurisdiction/file api', async () => {
-    // TEST TODO
+  it('handles NULL response from /jurisdiction/file api', async () => {
     apiMock.mockImplementation(
       generateApiMock(
         { rounds: roundMocks.empty },
@@ -135,12 +133,11 @@ describe('useSetupMenuItems', () => {
     )
     act(() => result.current[1]())
     await waitForNextUpdate()
+    expect(result.current[0][1].state === 'locked').toBeTruthy()
     expect(result.current[0][2].state === 'locked').toBeTruthy()
-    expect(result.current[0][3].state === 'locked').toBeTruthy()
   })
 
-  it.skip('handles PROCESSING response from /jurisdiction/file api', async () => {
-    // TEST TODO
+  it('handles PROCESSING response from /jurisdiction/file api', async () => {
     apiMock.mockImplementation(
       generateApiMock(
         { rounds: roundMocks.empty },
@@ -160,8 +157,8 @@ describe('useSetupMenuItems', () => {
     )
     act(() => result.current[1]())
     await waitForNextUpdate()
+    expect(result.current[0][1].state === 'processing').toBeTruthy()
     expect(result.current[0][2].state === 'processing').toBeTruthy()
-    expect(result.current[0][3].state === 'processing').toBeTruthy()
   })
 
   it('handles change of PROCESSING to PROCESSED response from /jurisdiction/file api', async () => {
@@ -203,8 +200,7 @@ describe('useSetupMenuItems', () => {
     expect(result.current[0][3].state).toBe('live')
   })
 
-  it.skip('handles change of PROCESSING to ERRORED response from /jurisdiction/file api', async () => {
-    // TEST TODO
+  it('handles change of PROCESSING to ERRORED response from /jurisdiction/file api', async () => {
     apiMock
       .mockImplementationOnce(
         generateApiMock(
@@ -239,8 +235,8 @@ describe('useSetupMenuItems', () => {
     )
     act(() => result.current[1]())
     await waitForNextUpdate()
-    expect(result.current[0][2].state).toBe('processing')
-    expect(result.current[0][3].state).toBe('processing')
+    expect(result.current[0][1].state).toBe('locked')
+    expect(result.current[0][2].state).toBe('locked')
   })
 
   it('handles PROCESSED response from /jurisdiction/file api', async () => {
@@ -267,8 +263,7 @@ describe('useSetupMenuItems', () => {
     expect(result.current[0][3].state === 'live').toBeTruthy()
   })
 
-  it.skip('handles READY_TO_PROCESS response from /jurisdiction/file api', async () => {
-    // TEST TODO
+  it('handles READY_TO_PROCESS response from /jurisdiction/file api', async () => {
     apiMock.mockImplementation(
       generateApiMock(
         { rounds: roundMocks.empty },
@@ -288,12 +283,11 @@ describe('useSetupMenuItems', () => {
     )
     act(() => result.current[1]())
     await waitForNextUpdate()
+    expect(result.current[0][1].state === 'processing').toBeTruthy()
     expect(result.current[0][2].state === 'processing').toBeTruthy()
-    expect(result.current[0][3].state === 'processing').toBeTruthy()
   })
 
-  it.skip('handles background process timeout', async () => {
-    // TEST TODO
+  it('handles background process timeout', async () => {
     const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
     const dateIncrementor = (function* incr() {
       let i = 10
@@ -327,7 +321,7 @@ describe('useSetupMenuItems', () => {
     expect(apiMock).toHaveBeenCalledTimes(3)
     expect(dateSpy).toHaveBeenCalled()
     expect(toastSpy).toHaveBeenCalledTimes(1)
-    expect(result.current[0][2].state === 'processing').toBeTruthy()
-    expect(result.current[0][3].state === 'processing').toBeTruthy()
+    expect(result.current[0][1].state === 'locked').toBeTruthy()
+    expect(result.current[0][2].state === 'locked').toBeTruthy()
   })
 })
