@@ -1,17 +1,21 @@
 import { useEffect, useCallback, useState } from 'react'
 import { api } from '../utilities'
-import { IAuditSettings } from '../../types'
 
-type TNewSettings =
-  | {
-      state: IAuditSettings['state']
-    }
-  | {
-      electionName: IAuditSettings['electionName']
-      online: IAuditSettings['online']
-      randomSeed: IAuditSettings['randomSeed']
-      riskLimit: IAuditSettings['riskLimit']
-    }
+export interface IAuditSettings {
+  state: string | null
+  electionName: string | null
+  online: boolean | null
+  randomSeed: string | null
+  riskLimit: number | null
+  auditType: 'BALLOT_POLLING' | 'BATCH_COMPARISON' | 'BALLOT_COMPARISON'
+  auditMathType: 'BRAVO' | 'MINERVA' | 'SUPERSIMPLE' | 'MACRO'
+  auditName: string
+}
+
+type TNewSettings = Pick<
+  IAuditSettings,
+  'state' | 'electionName' | 'online' | 'randomSeed' | 'riskLimit'
+>
 
 const useAuditSettings = (
   electionId: string,

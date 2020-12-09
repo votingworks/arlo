@@ -1,9 +1,9 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React from 'react'
 import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
-import { IAuditSettings } from '../../../../types'
 import ContestForm from './ContestForm'
 import ContestSelect from './ContestSelect'
+import { IAuditSettings } from '../../useAuditSettings'
 
 interface IProps {
   isTargeted: boolean

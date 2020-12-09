@@ -10,9 +10,10 @@ import {
 } from '../useJurisdictions'
 import { api, apiDownload } from '../../utilities'
 import { Inner } from '../../Atoms/Wrapper'
-import { IAuditSettings, IContest } from '../../../types'
+import { IContest } from '../../../types'
 import { IAuditBoard } from '../useAuditBoards'
 import { IRound } from '../useRoundsAuditAdmin'
+import { IAuditSettings } from '../useAuditSettings'
 
 const Wrapper = styled(Callout)`
   display: flex;

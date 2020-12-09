@@ -6,14 +6,15 @@ import { RadioGroup, Radio, Spinner, HTMLSelect } from '@blueprintjs/core'
 import FormButtonBar from '../../../Atoms/Form/FormButtonBar'
 import FormButton from '../../../Atoms/Form/FormButton'
 import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
-import { IValues } from './types'
 import FormWrapper from '../../../Atoms/Form/FormWrapper'
 import FormSection from '../../../Atoms/Form/FormSection'
-import { generateOptions, ErrorLabel } from '../../../Atoms/Form/_helpers'
+import { ErrorLabel } from '../../../Atoms/Form/_helpers'
 import { parse as parseNumber } from '../../../../utils/number-schema'
 import FormField from '../../../Atoms/Form/FormField'
 import schema from './schema'
-import useAuditSettings from '../../useAuditSettings'
+import useAuditSettings, { IAuditSettings } from '../../useAuditSettings'
+import labelValueStates from './states'
+import { range } from '../../../../utils/array'
 
 const Select = styled(HTMLSelect)`
   margin-left: 5px;
@@ -25,23 +26,30 @@ interface IProps {
   prevStage: ISidebarMenuItem
 }
 
+type IValues = Pick<
+  IAuditSettings,
+  'state' | 'electionName' | 'online' | 'randomSeed' | 'riskLimit'
+>
+
 const Settings: React.FC<IProps> = ({
   nextStage,
   prevStage,
   locked,
 }: IProps) => {
   const { electionId } = useParams<{ electionId: string }>()
-  const [auditSettings, updateState] = useAuditSettings(electionId!)
+  const [auditSettings, updateSettings] = useAuditSettings(electionId!)
   if (!auditSettings) return null // still loading
   const {
+    state,
     electionName,
     randomSeed,
     riskLimit,
     online,
     auditType,
   } = auditSettings
+
   const submit = async (values: IValues) => {
-    const response = await updateState({
+    const response = await updateSettings({
       ...values,
       riskLimit: parseNumber(values.riskLimit), // Formik stringifies internally
     })
@@ -50,12 +58,15 @@ const Settings: React.FC<IProps> = ({
     if (nextStage.activate) nextStage.activate()
     else throw new Error('Wrong menuItems passed in: activate() is missing')
   }
+
   const initialValues = {
+    state: state === null ? '' : state,
     electionName: electionName === null ? '' : electionName,
     randomSeed: randomSeed === null ? '' : randomSeed,
     riskLimit: riskLimit === null ? 10 : riskLimit,
     online,
   }
+
   return (
     <Formik
       initialValues={initialValues}
@@ -66,10 +77,30 @@ const Settings: React.FC<IProps> = ({
       {({ handleSubmit, setFieldValue, values }: FormikProps<IValues>) => (
         <form data-testid="form-one">
           <FormWrapper title="Audit Settings">
-            <FormSection>
+            <FormSection label="State">
+              {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+              <label htmlFor="state">
+                <p>Choose your state from the options below.</p>
+                <div>
+                  <Field
+                    component={Select}
+                    id="state"
+                    name="state"
+                    onChange={(e: React.FormEvent<HTMLSelectElement>) =>
+                      setFieldValue('state', e.currentTarget.value)
+                    }
+                    disabled={locked}
+                    value={values.state}
+                    options={[{ value: '' }, ...labelValueStates]}
+                  />
+                  <ErrorMessage name="state" component={ErrorLabel} />
+                </div>
+              </label>
+            </FormSection>
+            <FormSection label="Election Name">
               {/* eslint-disable jsx-a11y/label-has-associated-control */}
               <label htmlFor="election-name" id="election-name-label">
-                Election Name
+                <p>Enter the name of the election you are auditing.</p>
                 <Field
                   id="election-name"
                   aria-labelledby="election-name-label"
@@ -80,9 +111,9 @@ const Settings: React.FC<IProps> = ({
               </label>
             </FormSection>
             {auditType === 'BALLOT_POLLING' && (
-              <FormSection>
+              <FormSection label="Audit Board Data Entry">
                 <label htmlFor="online">
-                  Audit boards will enter data about each audited ballot:
+                  <p>Audit boards will enter data about each audited ballot:</p>
                   <RadioGroup
                     name="online"
                     data-testid="online-toggle"
@@ -103,28 +134,36 @@ const Settings: React.FC<IProps> = ({
             )}
             <FormSection label="Desired Risk Limit">
               <label htmlFor="risk-limit">
-                {`Set the risk for the audit as a percentage (e.g. "5" = 5%)`}
-                <Field
-                  id="risk-limit"
-                  data-testid="risk-limit"
-                  name="riskLimit"
-                  disabled={locked}
-                  component={Select}
-                  value={values.riskLimit}
-                  onChange={(e: React.FormEvent<HTMLSelectElement>) =>
-                    setFieldValue('riskLimit', e.currentTarget.value)
-                  }
-                >
-                  {generateOptions(20)}
-                </Field>
-                <ErrorMessage name="riskLimit" component={ErrorLabel} />
+                <p>Set the risk limit for the audit.</p>
+                <div>
+                  <Field
+                    id="risk-limit"
+                    data-testid="risk-limit"
+                    name="riskLimit"
+                    disabled={locked}
+                    component={Select}
+                    value={values.riskLimit}
+                    onChange={(e: React.FormEvent<HTMLSelectElement>) =>
+                      setFieldValue('riskLimit', e.currentTarget.value)
+                    }
+                  >
+                    {range(1, 20).map(n => (
+                      <option value={n} key={n}>
+                        {n}%
+                      </option>
+                    ))}
+                  </Field>
+                  <ErrorMessage name="riskLimit" component={ErrorLabel} />
+                </div>
               </label>
             </FormSection>
             <FormSection label="Random Seed">
-              {/* eslint-disable jsx-a11y/label-has-associated-control */}
+              {}
               <label htmlFor="random-seed" id="random-seed-label">
-                Enter the random characters to seed the pseudo-random number
-                generator.
+                <p>
+                  Enter the random characters to seed the pseudo-random number
+                  generator.
+                </p>
                 <Field
                   id="random-seed"
                   aria-labelledby="random-seed-label"
@@ -142,7 +181,6 @@ const Settings: React.FC<IProps> = ({
             <FormButtonBar>
               <FormButton onClick={prevStage.activate}>Back</FormButton>
               <FormButton
-                type="submit"
                 intent="primary"
                 disabled={nextStage.state === 'locked'}
                 onClick={handleSubmit}

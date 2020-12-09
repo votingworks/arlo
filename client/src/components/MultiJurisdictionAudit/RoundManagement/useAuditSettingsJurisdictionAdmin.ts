@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { api } from '../../utilities'
-import { IAuditSettings } from '../../../types'
+import { IAuditSettings } from '../useAuditSettings'
 
 const getSettings = async (
   electionId: string,

@@ -263,6 +263,7 @@ describe('Setup', () => {
       </MemoryRouter>
     )
     await waitFor(() => expect(apiMock).toHaveBeenCalled())
+    screen.getByText('Review & Launch')
     expect(container).toMatchSnapshot()
   })
 
@@ -278,6 +279,7 @@ describe('Setup', () => {
       </MemoryRouter>
     )
     await waitFor(() => expect(apiMock).toHaveBeenCalled())
+    screen.getByText('Review & Launch')
     expect(container).toMatchSnapshot()
   })
 
@@ -293,6 +295,7 @@ describe('Setup', () => {
       </MemoryRouter>
     )
     await waitFor(() => expect(apiMock).toHaveBeenCalled())
+    screen.getByText('Review & Launch')
     expect(container).toMatchSnapshot()
   })
 })

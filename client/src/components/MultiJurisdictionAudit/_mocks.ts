@@ -1,15 +1,11 @@
 import { contestMocks } from './AASetup/Contests/_mocks'
 import { IFileInfo } from './useJurisdictions'
-import {
-  auditSettings,
-  manifestFile,
-  talliesFile,
-} from './useSetupMenuItems/_mocks'
+import { manifestFile, talliesFile } from './useSetupMenuItems/_mocks'
 import { FileProcessingStatus } from './useSetupMenuItems/getJurisdictionFileStatus'
-import { IAuditSettings } from '../../types'
 import { IBallot } from './RoundManagement/useBallots'
 import { IAuditBoard } from './useAuditBoards'
 import { IRound } from './useRoundsAuditAdmin'
+import { IAuditSettings } from './useAuditSettings'
 
 const manifestFormData: FormData = new FormData()
 manifestFormData.append('manifest', manifestFile, manifestFile.name)
@@ -190,15 +186,15 @@ export const aaApiCalls = {
     url: '/api/election/1/settings',
     response,
   }),
-  putSettings: {
+  putSettings: (settings: IAuditSettings) => ({
     url: '/api/election/1/settings',
     options: {
       method: 'PUT',
-      body: JSON.stringify(auditSettings.all),
+      body: JSON.stringify(settings),
       headers: { 'Content-Type': 'application/json' },
     },
     response: { status: 'ok' },
-  },
+  }),
   getSampleSizes: {
     url: '/api/election/1/sample-sizes',
     response: { sampleSizes: null },

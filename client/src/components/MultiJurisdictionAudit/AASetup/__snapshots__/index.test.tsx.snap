@@ -14,18 +14,381 @@ exports[`Setup renders Audit Settings stage 1`] = `
         Audit Settings
       </h2>
       <div
-        class="sc-htoDjs dVdNvH"
+        class="sc-htoDjs jcQPAQ"
       >
+        <h5
+          class="bp3-heading"
+        >
+          State
+        </h5>
+        <label
+          for="state"
+        >
+          <p>
+            Choose your state from the options below.
+          </p>
+          <div>
+            <div
+              class="bp3-html-select sc-jKJlTe WCGaW"
+            >
+              <select
+                field="[object Object]"
+                form="[object Object]"
+                id="state"
+              >
+                <option
+                  value=""
+                />
+                <option
+                  label="Alabama"
+                  value="AL"
+                >
+                  Alabama
+                </option>
+                <option
+                  label="Alaska"
+                  value="AK"
+                >
+                  Alaska
+                </option>
+                <option
+                  label="Arizona"
+                  value="AZ"
+                >
+                  Arizona
+                </option>
+                <option
+                  label="Arkansas"
+                  value="AR"
+                >
+                  Arkansas
+                </option>
+                <option
+                  label="California"
+                  value="CA"
+                >
+                  California
+                </option>
+                <option
+                  label="Colorado"
+                  value="CO"
+                >
+                  Colorado
+                </option>
+                <option
+                  label="Connecticut"
+                  value="CT"
+                >
+                  Connecticut
+                </option>
+                <option
+                  label="Delaware"
+                  value="DE"
+                >
+                  Delaware
+                </option>
+                <option
+                  label="District Of Columbia"
+                  value="DC"
+                >
+                  District Of Columbia
+                </option>
+                <option
+                  label="Florida"
+                  value="FL"
+                >
+                  Florida
+                </option>
+                <option
+                  label="Georgia"
+                  value="GA"
+                >
+                  Georgia
+                </option>
+                <option
+                  label="Hawaii"
+                  value="HI"
+                >
+                  Hawaii
+                </option>
+                <option
+                  label="Idaho"
+                  value="ID"
+                >
+                  Idaho
+                </option>
+                <option
+                  label="Illinois"
+                  value="IL"
+                >
+                  Illinois
+                </option>
+                <option
+                  label="Indiana"
+                  value="IN"
+                >
+                  Indiana
+                </option>
+                <option
+                  label="Iowa"
+                  value="IA"
+                >
+                  Iowa
+                </option>
+                <option
+                  label="Kansas"
+                  value="KS"
+                >
+                  Kansas
+                </option>
+                <option
+                  label="Kentucky"
+                  value="KY"
+                >
+                  Kentucky
+                </option>
+                <option
+                  label="Louisiana"
+                  value="LA"
+                >
+                  Louisiana
+                </option>
+                <option
+                  label="Maine"
+                  value="ME"
+                >
+                  Maine
+                </option>
+                <option
+                  label="Maryland"
+                  value="MD"
+                >
+                  Maryland
+                </option>
+                <option
+                  label="Massachusetts"
+                  value="MA"
+                >
+                  Massachusetts
+                </option>
+                <option
+                  label="Michigan"
+                  value="MI"
+                >
+                  Michigan
+                </option>
+                <option
+                  label="Minnesota"
+                  value="MN"
+                >
+                  Minnesota
+                </option>
+                <option
+                  label="Mississippi"
+                  value="MS"
+                >
+                  Mississippi
+                </option>
+                <option
+                  label="Missouri"
+                  value="MO"
+                >
+                  Missouri
+                </option>
+                <option
+                  label="Montana"
+                  value="MT"
+                >
+                  Montana
+                </option>
+                <option
+                  label="Nebraska"
+                  value="NE"
+                >
+                  Nebraska
+                </option>
+                <option
+                  label="Nevada"
+                  value="NV"
+                >
+                  Nevada
+                </option>
+                <option
+                  label="New Hampshire"
+                  value="NH"
+                >
+                  New Hampshire
+                </option>
+                <option
+                  label="New Jersey"
+                  value="NJ"
+                >
+                  New Jersey
+                </option>
+                <option
+                  label="New Mexico"
+                  value="NM"
+                >
+                  New Mexico
+                </option>
+                <option
+                  label="New York"
+                  value="NY"
+                >
+                  New York
+                </option>
+                <option
+                  label="North Carolina"
+                  value="NC"
+                >
+                  North Carolina
+                </option>
+                <option
+                  label="North Dakota"
+                  value="ND"
+                >
+                  North Dakota
+                </option>
+                <option
+                  label="Ohio"
+                  value="OH"
+                >
+                  Ohio
+                </option>
+                <option
+                  label="Oklahoma"
+                  value="OK"
+                >
+                  Oklahoma
+                </option>
+                <option
+                  label="Oregon"
+                  value="OR"
+                >
+                  Oregon
+                </option>
+                <option
+                  label="Pennsylvania"
+                  value="PA"
+                >
+                  Pennsylvania
+                </option>
+                <option
+                  label="Rhode Island"
+                  value="RI"
+                >
+                  Rhode Island
+                </option>
+                <option
+                  label="South Carolina"
+                  value="SC"
+                >
+                  South Carolina
+                </option>
+                <option
+                  label="South Dakota"
+                  value="SD"
+                >
+                  South Dakota
+                </option>
+                <option
+                  label="Tennessee"
+                  value="TN"
+                >
+                  Tennessee
+                </option>
+                <option
+                  label="Texas"
+                  value="TX"
+                >
+                  Texas
+                </option>
+                <option
+                  label="Utah"
+                  value="UT"
+                >
+                  Utah
+                </option>
+                <option
+                  label="Vermont"
+                  value="VT"
+                >
+                  Vermont
+                </option>
+                <option
+                  label="Virginia"
+                  value="VA"
+                >
+                  Virginia
+                </option>
+                <option
+                  label="Washington"
+                  value="WA"
+                >
+                  Washington
+                </option>
+                <option
+                  label="West Virginia"
+                  value="WV"
+                >
+                  West Virginia
+                </option>
+                <option
+                  label="Wisconsin"
+                  value="WI"
+                >
+                  Wisconsin
+                </option>
+                <option
+                  label="Wyoming"
+                  value="WY"
+                >
+                  Wyoming
+                </option>
+              </select>
+              <span
+                class="bp3-icon bp3-icon-double-caret-vertical"
+                icon="double-caret-vertical"
+              >
+                <svg
+                  data-icon="double-caret-vertical"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  width="16"
+                >
+                  <desc>
+                    double-caret-vertical
+                  </desc>
+                  <path
+                    d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                    fill-rule="evenodd"
+                  />
+                </svg>
+              </span>
+            </div>
+          </div>
+        </label>
+      </div>
+      <div
+        class="sc-htoDjs jcQPAQ"
+      >
+        <h5
+          class="bp3-heading"
+        >
+          Election Name
+        </h5>
         <label
           for="election-name"
           id="election-name-label"
         >
-          Election Name
+          <p>
+            Enter the name of the election you are auditing.
+          </p>
           <div
-            class="sc-gqjmRU egaEhI"
+            class="sc-gZMcBi ggdJUe"
           >
             <div
-              class="bp3-input-group sc-VigVT hfLuvB"
+              class="bp3-input-group sc-gqjmRU kmAUGh"
             >
               <input
                 aria-labelledby="election-name-label"
@@ -40,12 +403,19 @@ exports[`Setup renders Audit Settings stage 1`] = `
         </label>
       </div>
       <div
-        class="sc-htoDjs dVdNvH"
+        class="sc-htoDjs jcQPAQ"
       >
+        <h5
+          class="bp3-heading"
+        >
+          Audit Board Data Entry
+        </h5>
         <label
           for="online"
         >
-          Audit boards will enter data about each audited ballot:
+          <p>
+            Audit boards will enter data about each audited ballot:
+          </p>
           <div>
             <label
               class="bp3-control bp3-radio"
@@ -78,127 +448,173 @@ exports[`Setup renders Audit Settings stage 1`] = `
         </label>
       </div>
       <div
-        class="sc-htoDjs dVdNvH"
+        class="sc-htoDjs jcQPAQ"
       >
-        <h3
-          class="bp3-heading sc-iwsKbI khhkcw"
+        <h5
+          class="bp3-heading"
         >
           Desired Risk Limit
-        </h3>
+        </h5>
         <label
           for="risk-limit"
         >
-          Set the risk for the audit as a percentage (e.g. "5" = 5%)
-          <div
-            class="bp3-html-select sc-eNQAEJ izJEOO"
-          >
-            <select
-              data-testid="risk-limit"
-              field="[object Object]"
-              form="[object Object]"
-              id="risk-limit"
+          <p>
+            Set the risk limit for the audit.
+          </p>
+          <div>
+            <div
+              class="bp3-html-select sc-jKJlTe WCGaW"
             >
-              <option>
-                1
-              </option>
-              <option>
-                2
-              </option>
-              <option>
-                3
-              </option>
-              <option>
-                4
-              </option>
-              <option>
-                5
-              </option>
-              <option>
-                6
-              </option>
-              <option>
-                7
-              </option>
-              <option>
-                8
-              </option>
-              <option>
-                9
-              </option>
-              <option>
-                10
-              </option>
-              <option>
-                11
-              </option>
-              <option>
-                12
-              </option>
-              <option>
-                13
-              </option>
-              <option>
-                14
-              </option>
-              <option>
-                15
-              </option>
-              <option>
-                16
-              </option>
-              <option>
-                17
-              </option>
-              <option>
-                18
-              </option>
-              <option>
-                19
-              </option>
-              <option>
-                20
-              </option>
-            </select>
-            <span
-              class="bp3-icon bp3-icon-double-caret-vertical"
-              icon="double-caret-vertical"
-            >
-              <svg
-                data-icon="double-caret-vertical"
-                height="16"
-                viewBox="0 0 16 16"
-                width="16"
+              <select
+                data-testid="risk-limit"
+                field="[object Object]"
+                form="[object Object]"
+                id="risk-limit"
               >
-                <desc>
-                  double-caret-vertical
-                </desc>
-                <path
-                  d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-            </span>
+                <option
+                  value="1"
+                >
+                  1%
+                </option>
+                <option
+                  value="2"
+                >
+                  2%
+                </option>
+                <option
+                  value="3"
+                >
+                  3%
+                </option>
+                <option
+                  value="4"
+                >
+                  4%
+                </option>
+                <option
+                  value="5"
+                >
+                  5%
+                </option>
+                <option
+                  value="6"
+                >
+                  6%
+                </option>
+                <option
+                  value="7"
+                >
+                  7%
+                </option>
+                <option
+                  value="8"
+                >
+                  8%
+                </option>
+                <option
+                  value="9"
+                >
+                  9%
+                </option>
+                <option
+                  value="10"
+                >
+                  10%
+                </option>
+                <option
+                  value="11"
+                >
+                  11%
+                </option>
+                <option
+                  value="12"
+                >
+                  12%
+                </option>
+                <option
+                  value="13"
+                >
+                  13%
+                </option>
+                <option
+                  value="14"
+                >
+                  14%
+                </option>
+                <option
+                  value="15"
+                >
+                  15%
+                </option>
+                <option
+                  value="16"
+                >
+                  16%
+                </option>
+                <option
+                  value="17"
+                >
+                  17%
+                </option>
+                <option
+                  value="18"
+                >
+                  18%
+                </option>
+                <option
+                  value="19"
+                >
+                  19%
+                </option>
+                <option
+                  value="20"
+                >
+                  20%
+                </option>
+              </select>
+              <span
+                class="bp3-icon bp3-icon-double-caret-vertical"
+                icon="double-caret-vertical"
+              >
+                <svg
+                  data-icon="double-caret-vertical"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  width="16"
+                >
+                  <desc>
+                    double-caret-vertical
+                  </desc>
+                  <path
+                    d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                    fill-rule="evenodd"
+                  />
+                </svg>
+              </span>
+            </div>
           </div>
         </label>
       </div>
       <div
-        class="sc-htoDjs dVdNvH"
+        class="sc-htoDjs jcQPAQ"
       >
-        <h3
-          class="bp3-heading sc-iwsKbI khhkcw"
+        <h5
+          class="bp3-heading"
         >
           Random Seed
-        </h3>
+        </h5>
         <label
           for="random-seed"
           id="random-seed-label"
         >
-          Enter the random characters to seed the pseudo-random number generator.
+          <p>
+            Enter the random characters to seed the pseudo-random number generator.
+          </p>
           <div
-            class="sc-gqjmRU egaEhI"
+            class="sc-gZMcBi ggdJUe"
           >
             <div
-              class="bp3-input-group sc-VigVT hfLuvB"
+              class="bp3-input-group sc-gqjmRU kmAUGh"
             >
               <input
                 aria-labelledby="random-seed-label"
@@ -229,7 +645,7 @@ exports[`Setup renders Audit Settings stage 1`] = `
       </button>
       <button
         class="bp3-button bp3-intent-primary sc-EHOje gmpgQN"
-        type="submit"
+        type="button"
       >
         <span
           class="bp3-button-text"
@@ -256,18 +672,382 @@ exports[`Setup renders Audit Settings stage with locked next stage 1`] = `
         Audit Settings
       </h2>
       <div
-        class="sc-htoDjs dVdNvH"
+        class="sc-htoDjs jcQPAQ"
       >
+        <h5
+          class="bp3-heading"
+        >
+          State
+        </h5>
+        <label
+          for="state"
+        >
+          <p>
+            Choose your state from the options below.
+          </p>
+          <div>
+            <div
+              class="bp3-html-select bp3-disabled sc-jKJlTe WCGaW"
+            >
+              <select
+                disabled=""
+                field="[object Object]"
+                form="[object Object]"
+                id="state"
+              >
+                <option
+                  value=""
+                />
+                <option
+                  label="Alabama"
+                  value="AL"
+                >
+                  Alabama
+                </option>
+                <option
+                  label="Alaska"
+                  value="AK"
+                >
+                  Alaska
+                </option>
+                <option
+                  label="Arizona"
+                  value="AZ"
+                >
+                  Arizona
+                </option>
+                <option
+                  label="Arkansas"
+                  value="AR"
+                >
+                  Arkansas
+                </option>
+                <option
+                  label="California"
+                  value="CA"
+                >
+                  California
+                </option>
+                <option
+                  label="Colorado"
+                  value="CO"
+                >
+                  Colorado
+                </option>
+                <option
+                  label="Connecticut"
+                  value="CT"
+                >
+                  Connecticut
+                </option>
+                <option
+                  label="Delaware"
+                  value="DE"
+                >
+                  Delaware
+                </option>
+                <option
+                  label="District Of Columbia"
+                  value="DC"
+                >
+                  District Of Columbia
+                </option>
+                <option
+                  label="Florida"
+                  value="FL"
+                >
+                  Florida
+                </option>
+                <option
+                  label="Georgia"
+                  value="GA"
+                >
+                  Georgia
+                </option>
+                <option
+                  label="Hawaii"
+                  value="HI"
+                >
+                  Hawaii
+                </option>
+                <option
+                  label="Idaho"
+                  value="ID"
+                >
+                  Idaho
+                </option>
+                <option
+                  label="Illinois"
+                  value="IL"
+                >
+                  Illinois
+                </option>
+                <option
+                  label="Indiana"
+                  value="IN"
+                >
+                  Indiana
+                </option>
+                <option
+                  label="Iowa"
+                  value="IA"
+                >
+                  Iowa
+                </option>
+                <option
+                  label="Kansas"
+                  value="KS"
+                >
+                  Kansas
+                </option>
+                <option
+                  label="Kentucky"
+                  value="KY"
+                >
+                  Kentucky
+                </option>
+                <option
+                  label="Louisiana"
+                  value="LA"
+                >
+                  Louisiana
+                </option>
+                <option
+                  label="Maine"
+                  value="ME"
+                >
+                  Maine
+                </option>
+                <option
+                  label="Maryland"
+                  value="MD"
+                >
+                  Maryland
+                </option>
+                <option
+                  label="Massachusetts"
+                  value="MA"
+                >
+                  Massachusetts
+                </option>
+                <option
+                  label="Michigan"
+                  value="MI"
+                >
+                  Michigan
+                </option>
+                <option
+                  label="Minnesota"
+                  value="MN"
+                >
+                  Minnesota
+                </option>
+                <option
+                  label="Mississippi"
+                  value="MS"
+                >
+                  Mississippi
+                </option>
+                <option
+                  label="Missouri"
+                  value="MO"
+                >
+                  Missouri
+                </option>
+                <option
+                  label="Montana"
+                  value="MT"
+                >
+                  Montana
+                </option>
+                <option
+                  label="Nebraska"
+                  value="NE"
+                >
+                  Nebraska
+                </option>
+                <option
+                  label="Nevada"
+                  value="NV"
+                >
+                  Nevada
+                </option>
+                <option
+                  label="New Hampshire"
+                  value="NH"
+                >
+                  New Hampshire
+                </option>
+                <option
+                  label="New Jersey"
+                  value="NJ"
+                >
+                  New Jersey
+                </option>
+                <option
+                  label="New Mexico"
+                  value="NM"
+                >
+                  New Mexico
+                </option>
+                <option
+                  label="New York"
+                  value="NY"
+                >
+                  New York
+                </option>
+                <option
+                  label="North Carolina"
+                  value="NC"
+                >
+                  North Carolina
+                </option>
+                <option
+                  label="North Dakota"
+                  value="ND"
+                >
+                  North Dakota
+                </option>
+                <option
+                  label="Ohio"
+                  value="OH"
+                >
+                  Ohio
+                </option>
+                <option
+                  label="Oklahoma"
+                  value="OK"
+                >
+                  Oklahoma
+                </option>
+                <option
+                  label="Oregon"
+                  value="OR"
+                >
+                  Oregon
+                </option>
+                <option
+                  label="Pennsylvania"
+                  value="PA"
+                >
+                  Pennsylvania
+                </option>
+                <option
+                  label="Rhode Island"
+                  value="RI"
+                >
+                  Rhode Island
+                </option>
+                <option
+                  label="South Carolina"
+                  value="SC"
+                >
+                  South Carolina
+                </option>
+                <option
+                  label="South Dakota"
+                  value="SD"
+                >
+                  South Dakota
+                </option>
+                <option
+                  label="Tennessee"
+                  value="TN"
+                >
+                  Tennessee
+                </option>
+                <option
+                  label="Texas"
+                  value="TX"
+                >
+                  Texas
+                </option>
+                <option
+                  label="Utah"
+                  value="UT"
+                >
+                  Utah
+                </option>
+                <option
+                  label="Vermont"
+                  value="VT"
+                >
+                  Vermont
+                </option>
+                <option
+                  label="Virginia"
+                  value="VA"
+                >
+                  Virginia
+                </option>
+                <option
+                  label="Washington"
+                  value="WA"
+                >
+                  Washington
+                </option>
+                <option
+                  label="West Virginia"
+                  value="WV"
+                >
+                  West Virginia
+                </option>
+                <option
+                  label="Wisconsin"
+                  value="WI"
+                >
+                  Wisconsin
+                </option>
+                <option
+                  label="Wyoming"
+                  value="WY"
+                >
+                  Wyoming
+                </option>
+              </select>
+              <span
+                class="bp3-icon bp3-icon-double-caret-vertical"
+                icon="double-caret-vertical"
+              >
+                <svg
+                  data-icon="double-caret-vertical"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  width="16"
+                >
+                  <desc>
+                    double-caret-vertical
+                  </desc>
+                  <path
+                    d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                    fill-rule="evenodd"
+                  />
+                </svg>
+              </span>
+            </div>
+          </div>
+        </label>
+      </div>
+      <div
+        class="sc-htoDjs jcQPAQ"
+      >
+        <h5
+          class="bp3-heading"
+        >
+          Election Name
+        </h5>
         <label
           for="election-name"
           id="election-name-label"
         >
-          Election Name
+          <p>
+            Enter the name of the election you are auditing.
+          </p>
           <div
-            class="sc-gqjmRU egaEhI"
+            class="sc-gZMcBi ggdJUe"
           >
             <div
-              class="bp3-input-group bp3-disabled sc-VigVT hfLuvB"
+              class="bp3-input-group bp3-disabled sc-gqjmRU kmAUGh"
             >
               <input
                 aria-labelledby="election-name-label"
@@ -283,12 +1063,19 @@ exports[`Setup renders Audit Settings stage with locked next stage 1`] = `
         </label>
       </div>
       <div
-        class="sc-htoDjs dVdNvH"
+        class="sc-htoDjs jcQPAQ"
       >
+        <h5
+          class="bp3-heading"
+        >
+          Audit Board Data Entry
+        </h5>
         <label
           for="online"
         >
-          Audit boards will enter data about each audited ballot:
+          <p>
+            Audit boards will enter data about each audited ballot:
+          </p>
           <div>
             <label
               class="bp3-control bp3-radio bp3-disabled"
@@ -323,128 +1110,174 @@ exports[`Setup renders Audit Settings stage with locked next stage 1`] = `
         </label>
       </div>
       <div
-        class="sc-htoDjs dVdNvH"
+        class="sc-htoDjs jcQPAQ"
       >
-        <h3
-          class="bp3-heading sc-iwsKbI khhkcw"
+        <h5
+          class="bp3-heading"
         >
           Desired Risk Limit
-        </h3>
+        </h5>
         <label
           for="risk-limit"
         >
-          Set the risk for the audit as a percentage (e.g. "5" = 5%)
-          <div
-            class="bp3-html-select bp3-disabled sc-eNQAEJ izJEOO"
-          >
-            <select
-              data-testid="risk-limit"
-              disabled=""
-              field="[object Object]"
-              form="[object Object]"
-              id="risk-limit"
+          <p>
+            Set the risk limit for the audit.
+          </p>
+          <div>
+            <div
+              class="bp3-html-select bp3-disabled sc-jKJlTe WCGaW"
             >
-              <option>
-                1
-              </option>
-              <option>
-                2
-              </option>
-              <option>
-                3
-              </option>
-              <option>
-                4
-              </option>
-              <option>
-                5
-              </option>
-              <option>
-                6
-              </option>
-              <option>
-                7
-              </option>
-              <option>
-                8
-              </option>
-              <option>
-                9
-              </option>
-              <option>
-                10
-              </option>
-              <option>
-                11
-              </option>
-              <option>
-                12
-              </option>
-              <option>
-                13
-              </option>
-              <option>
-                14
-              </option>
-              <option>
-                15
-              </option>
-              <option>
-                16
-              </option>
-              <option>
-                17
-              </option>
-              <option>
-                18
-              </option>
-              <option>
-                19
-              </option>
-              <option>
-                20
-              </option>
-            </select>
-            <span
-              class="bp3-icon bp3-icon-double-caret-vertical"
-              icon="double-caret-vertical"
-            >
-              <svg
-                data-icon="double-caret-vertical"
-                height="16"
-                viewBox="0 0 16 16"
-                width="16"
+              <select
+                data-testid="risk-limit"
+                disabled=""
+                field="[object Object]"
+                form="[object Object]"
+                id="risk-limit"
               >
-                <desc>
-                  double-caret-vertical
-                </desc>
-                <path
-                  d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-            </span>
+                <option
+                  value="1"
+                >
+                  1%
+                </option>
+                <option
+                  value="2"
+                >
+                  2%
+                </option>
+                <option
+                  value="3"
+                >
+                  3%
+                </option>
+                <option
+                  value="4"
+                >
+                  4%
+                </option>
+                <option
+                  value="5"
+                >
+                  5%
+                </option>
+                <option
+                  value="6"
+                >
+                  6%
+                </option>
+                <option
+                  value="7"
+                >
+                  7%
+                </option>
+                <option
+                  value="8"
+                >
+                  8%
+                </option>
+                <option
+                  value="9"
+                >
+                  9%
+                </option>
+                <option
+                  value="10"
+                >
+                  10%
+                </option>
+                <option
+                  value="11"
+                >
+                  11%
+                </option>
+                <option
+                  value="12"
+                >
+                  12%
+                </option>
+                <option
+                  value="13"
+                >
+                  13%
+                </option>
+                <option
+                  value="14"
+                >
+                  14%
+                </option>
+                <option
+                  value="15"
+                >
+                  15%
+                </option>
+                <option
+                  value="16"
+                >
+                  16%
+                </option>
+                <option
+                  value="17"
+                >
+                  17%
+                </option>
+                <option
+                  value="18"
+                >
+                  18%
+                </option>
+                <option
+                  value="19"
+                >
+                  19%
+                </option>
+                <option
+                  value="20"
+                >
+                  20%
+                </option>
+              </select>
+              <span
+                class="bp3-icon bp3-icon-double-caret-vertical"
+                icon="double-caret-vertical"
+              >
+                <svg
+                  data-icon="double-caret-vertical"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  width="16"
+                >
+                  <desc>
+                    double-caret-vertical
+                  </desc>
+                  <path
+                    d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                    fill-rule="evenodd"
+                  />
+                </svg>
+              </span>
+            </div>
           </div>
         </label>
       </div>
       <div
-        class="sc-htoDjs dVdNvH"
+        class="sc-htoDjs jcQPAQ"
       >
-        <h3
-          class="bp3-heading sc-iwsKbI khhkcw"
+        <h5
+          class="bp3-heading"
         >
           Random Seed
-        </h3>
+        </h5>
         <label
           for="random-seed"
           id="random-seed-label"
         >
-          Enter the random characters to seed the pseudo-random number generator.
+          <p>
+            Enter the random characters to seed the pseudo-random number generator.
+          </p>
           <div
-            class="sc-gqjmRU egaEhI"
+            class="sc-gZMcBi ggdJUe"
           >
             <div
-              class="bp3-input-group bp3-disabled sc-VigVT hfLuvB"
+              class="bp3-input-group bp3-disabled sc-gqjmRU kmAUGh"
             >
               <input
                 aria-labelledby="random-seed-label"
@@ -478,7 +1311,7 @@ exports[`Setup renders Audit Settings stage with locked next stage 1`] = `
         class="bp3-button bp3-disabled bp3-intent-primary sc-EHOje gmpgQN"
         disabled=""
         tabindex="-1"
-        type="submit"
+        type="button"
       >
         <span
           class="bp3-button-text"
@@ -505,18 +1338,381 @@ exports[`Setup renders Audit Settings stage with processing next stage 1`] = `
         Audit Settings
       </h2>
       <div
-        class="sc-htoDjs dVdNvH"
+        class="sc-htoDjs jcQPAQ"
       >
+        <h5
+          class="bp3-heading"
+        >
+          State
+        </h5>
+        <label
+          for="state"
+        >
+          <p>
+            Choose your state from the options below.
+          </p>
+          <div>
+            <div
+              class="bp3-html-select sc-jKJlTe WCGaW"
+            >
+              <select
+                field="[object Object]"
+                form="[object Object]"
+                id="state"
+              >
+                <option
+                  value=""
+                />
+                <option
+                  label="Alabama"
+                  value="AL"
+                >
+                  Alabama
+                </option>
+                <option
+                  label="Alaska"
+                  value="AK"
+                >
+                  Alaska
+                </option>
+                <option
+                  label="Arizona"
+                  value="AZ"
+                >
+                  Arizona
+                </option>
+                <option
+                  label="Arkansas"
+                  value="AR"
+                >
+                  Arkansas
+                </option>
+                <option
+                  label="California"
+                  value="CA"
+                >
+                  California
+                </option>
+                <option
+                  label="Colorado"
+                  value="CO"
+                >
+                  Colorado
+                </option>
+                <option
+                  label="Connecticut"
+                  value="CT"
+                >
+                  Connecticut
+                </option>
+                <option
+                  label="Delaware"
+                  value="DE"
+                >
+                  Delaware
+                </option>
+                <option
+                  label="District Of Columbia"
+                  value="DC"
+                >
+                  District Of Columbia
+                </option>
+                <option
+                  label="Florida"
+                  value="FL"
+                >
+                  Florida
+                </option>
+                <option
+                  label="Georgia"
+                  value="GA"
+                >
+                  Georgia
+                </option>
+                <option
+                  label="Hawaii"
+                  value="HI"
+                >
+                  Hawaii
+                </option>
+                <option
+                  label="Idaho"
+                  value="ID"
+                >
+                  Idaho
+                </option>
+                <option
+                  label="Illinois"
+                  value="IL"
+                >
+                  Illinois
+                </option>
+                <option
+                  label="Indiana"
+                  value="IN"
+                >
+                  Indiana
+                </option>
+                <option
+                  label="Iowa"
+                  value="IA"
+                >
+                  Iowa
+                </option>
+                <option
+                  label="Kansas"
+                  value="KS"
+                >
+                  Kansas
+                </option>
+                <option
+                  label="Kentucky"
+                  value="KY"
+                >
+                  Kentucky
+                </option>
+                <option
+                  label="Louisiana"
+                  value="LA"
+                >
+                  Louisiana
+                </option>
+                <option
+                  label="Maine"
+                  value="ME"
+                >
+                  Maine
+                </option>
+                <option
+                  label="Maryland"
+                  value="MD"
+                >
+                  Maryland
+                </option>
+                <option
+                  label="Massachusetts"
+                  value="MA"
+                >
+                  Massachusetts
+                </option>
+                <option
+                  label="Michigan"
+                  value="MI"
+                >
+                  Michigan
+                </option>
+                <option
+                  label="Minnesota"
+                  value="MN"
+                >
+                  Minnesota
+                </option>
+                <option
+                  label="Mississippi"
+                  value="MS"
+                >
+                  Mississippi
+                </option>
+                <option
+                  label="Missouri"
+                  value="MO"
+                >
+                  Missouri
+                </option>
+                <option
+                  label="Montana"
+                  value="MT"
+                >
+                  Montana
+                </option>
+                <option
+                  label="Nebraska"
+                  value="NE"
+                >
+                  Nebraska
+                </option>
+                <option
+                  label="Nevada"
+                  value="NV"
+                >
+                  Nevada
+                </option>
+                <option
+                  label="New Hampshire"
+                  value="NH"
+                >
+                  New Hampshire
+                </option>
+                <option
+                  label="New Jersey"
+                  value="NJ"
+                >
+                  New Jersey
+                </option>
+                <option
+                  label="New Mexico"
+                  value="NM"
+                >
+                  New Mexico
+                </option>
+                <option
+                  label="New York"
+                  value="NY"
+                >
+                  New York
+                </option>
+                <option
+                  label="North Carolina"
+                  value="NC"
+                >
+                  North Carolina
+                </option>
+                <option
+                  label="North Dakota"
+                  value="ND"
+                >
+                  North Dakota
+                </option>
+                <option
+                  label="Ohio"
+                  value="OH"
+                >
+                  Ohio
+                </option>
+                <option
+                  label="Oklahoma"
+                  value="OK"
+                >
+                  Oklahoma
+                </option>
+                <option
+                  label="Oregon"
+                  value="OR"
+                >
+                  Oregon
+                </option>
+                <option
+                  label="Pennsylvania"
+                  value="PA"
+                >
+                  Pennsylvania
+                </option>
+                <option
+                  label="Rhode Island"
+                  value="RI"
+                >
+                  Rhode Island
+                </option>
+                <option
+                  label="South Carolina"
+                  value="SC"
+                >
+                  South Carolina
+                </option>
+                <option
+                  label="South Dakota"
+                  value="SD"
+                >
+                  South Dakota
+                </option>
+                <option
+                  label="Tennessee"
+                  value="TN"
+                >
+                  Tennessee
+                </option>
+                <option
+                  label="Texas"
+                  value="TX"
+                >
+                  Texas
+                </option>
+                <option
+                  label="Utah"
+                  value="UT"
+                >
+                  Utah
+                </option>
+                <option
+                  label="Vermont"
+                  value="VT"
+                >
+                  Vermont
+                </option>
+                <option
+                  label="Virginia"
+                  value="VA"
+                >
+                  Virginia
+                </option>
+                <option
+                  label="Washington"
+                  value="WA"
+                >
+                  Washington
+                </option>
+                <option
+                  label="West Virginia"
+                  value="WV"
+                >
+                  West Virginia
+                </option>
+                <option
+                  label="Wisconsin"
+                  value="WI"
+                >
+                  Wisconsin
+                </option>
+                <option
+                  label="Wyoming"
+                  value="WY"
+                >
+                  Wyoming
+                </option>
+              </select>
+              <span
+                class="bp3-icon bp3-icon-double-caret-vertical"
+                icon="double-caret-vertical"
+              >
+                <svg
+                  data-icon="double-caret-vertical"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  width="16"
+                >
+                  <desc>
+                    double-caret-vertical
+                  </desc>
+                  <path
+                    d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                    fill-rule="evenodd"
+                  />
+                </svg>
+              </span>
+            </div>
+          </div>
+        </label>
+      </div>
+      <div
+        class="sc-htoDjs jcQPAQ"
+      >
+        <h5
+          class="bp3-heading"
+        >
+          Election Name
+        </h5>
         <label
           for="election-name"
           id="election-name-label"
         >
-          Election Name
+          <p>
+            Enter the name of the election you are auditing.
+          </p>
           <div
-            class="sc-gqjmRU egaEhI"
+            class="sc-gZMcBi ggdJUe"
           >
             <div
-              class="bp3-input-group sc-VigVT hfLuvB"
+              class="bp3-input-group sc-gqjmRU kmAUGh"
             >
               <input
                 aria-labelledby="election-name-label"
@@ -531,12 +1727,19 @@ exports[`Setup renders Audit Settings stage with processing next stage 1`] = `
         </label>
       </div>
       <div
-        class="sc-htoDjs dVdNvH"
+        class="sc-htoDjs jcQPAQ"
       >
+        <h5
+          class="bp3-heading"
+        >
+          Audit Board Data Entry
+        </h5>
         <label
           for="online"
         >
-          Audit boards will enter data about each audited ballot:
+          <p>
+            Audit boards will enter data about each audited ballot:
+          </p>
           <div>
             <label
               class="bp3-control bp3-radio"
@@ -569,127 +1772,173 @@ exports[`Setup renders Audit Settings stage with processing next stage 1`] = `
         </label>
       </div>
       <div
-        class="sc-htoDjs dVdNvH"
+        class="sc-htoDjs jcQPAQ"
       >
-        <h3
-          class="bp3-heading sc-iwsKbI khhkcw"
+        <h5
+          class="bp3-heading"
         >
           Desired Risk Limit
-        </h3>
+        </h5>
         <label
           for="risk-limit"
         >
-          Set the risk for the audit as a percentage (e.g. "5" = 5%)
-          <div
-            class="bp3-html-select sc-eNQAEJ izJEOO"
-          >
-            <select
-              data-testid="risk-limit"
-              field="[object Object]"
-              form="[object Object]"
-              id="risk-limit"
+          <p>
+            Set the risk limit for the audit.
+          </p>
+          <div>
+            <div
+              class="bp3-html-select sc-jKJlTe WCGaW"
             >
-              <option>
-                1
-              </option>
-              <option>
-                2
-              </option>
-              <option>
-                3
-              </option>
-              <option>
-                4
-              </option>
-              <option>
-                5
-              </option>
-              <option>
-                6
-              </option>
-              <option>
-                7
-              </option>
-              <option>
-                8
-              </option>
-              <option>
-                9
-              </option>
-              <option>
-                10
-              </option>
-              <option>
-                11
-              </option>
-              <option>
-                12
-              </option>
-              <option>
-                13
-              </option>
-              <option>
-                14
-              </option>
-              <option>
-                15
-              </option>
-              <option>
-                16
-              </option>
-              <option>
-                17
-              </option>
-              <option>
-                18
-              </option>
-              <option>
-                19
-              </option>
-              <option>
-                20
-              </option>
-            </select>
-            <span
-              class="bp3-icon bp3-icon-double-caret-vertical"
-              icon="double-caret-vertical"
-            >
-              <svg
-                data-icon="double-caret-vertical"
-                height="16"
-                viewBox="0 0 16 16"
-                width="16"
+              <select
+                data-testid="risk-limit"
+                field="[object Object]"
+                form="[object Object]"
+                id="risk-limit"
               >
-                <desc>
-                  double-caret-vertical
-                </desc>
-                <path
-                  d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-            </span>
+                <option
+                  value="1"
+                >
+                  1%
+                </option>
+                <option
+                  value="2"
+                >
+                  2%
+                </option>
+                <option
+                  value="3"
+                >
+                  3%
+                </option>
+                <option
+                  value="4"
+                >
+                  4%
+                </option>
+                <option
+                  value="5"
+                >
+                  5%
+                </option>
+                <option
+                  value="6"
+                >
+                  6%
+                </option>
+                <option
+                  value="7"
+                >
+                  7%
+                </option>
+                <option
+                  value="8"
+                >
+                  8%
+                </option>
+                <option
+                  value="9"
+                >
+                  9%
+                </option>
+                <option
+                  value="10"
+                >
+                  10%
+                </option>
+                <option
+                  value="11"
+                >
+                  11%
+                </option>
+                <option
+                  value="12"
+                >
+                  12%
+                </option>
+                <option
+                  value="13"
+                >
+                  13%
+                </option>
+                <option
+                  value="14"
+                >
+                  14%
+                </option>
+                <option
+                  value="15"
+                >
+                  15%
+                </option>
+                <option
+                  value="16"
+                >
+                  16%
+                </option>
+                <option
+                  value="17"
+                >
+                  17%
+                </option>
+                <option
+                  value="18"
+                >
+                  18%
+                </option>
+                <option
+                  value="19"
+                >
+                  19%
+                </option>
+                <option
+                  value="20"
+                >
+                  20%
+                </option>
+              </select>
+              <span
+                class="bp3-icon bp3-icon-double-caret-vertical"
+                icon="double-caret-vertical"
+              >
+                <svg
+                  data-icon="double-caret-vertical"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  width="16"
+                >
+                  <desc>
+                    double-caret-vertical
+                  </desc>
+                  <path
+                    d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                    fill-rule="evenodd"
+                  />
+                </svg>
+              </span>
+            </div>
           </div>
         </label>
       </div>
       <div
-        class="sc-htoDjs dVdNvH"
+        class="sc-htoDjs jcQPAQ"
       >
-        <h3
-          class="bp3-heading sc-iwsKbI khhkcw"
+        <h5
+          class="bp3-heading"
         >
           Random Seed
-        </h3>
+        </h5>
         <label
           for="random-seed"
           id="random-seed-label"
         >
-          Enter the random characters to seed the pseudo-random number generator.
+          <p>
+            Enter the random characters to seed the pseudo-random number generator.
+          </p>
           <div
-            class="sc-gqjmRU egaEhI"
+            class="sc-gZMcBi ggdJUe"
           >
             <div
-              class="bp3-input-group sc-VigVT hfLuvB"
+              class="bp3-input-group sc-gqjmRU kmAUGh"
             >
               <input
                 aria-labelledby="random-seed-label"
@@ -749,16 +1998,16 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
         Opportunistic Contests
       </h2>
       <div
-        class="bp3-card bp3-elevation-2 sc-ckVGcZ kiOdNq"
+        class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
       >
         <div
-          class="sc-htoDjs dVdNvH"
+          class="sc-htoDjs jcQPAQ"
         >
-          <h3
-            class="bp3-heading sc-iwsKbI khhkcw"
+          <h5
+            class="bp3-heading"
           >
             Contest  Info
-          </h3>
+          </h5>
           <div
             class="sc-dnqmqq kGMqKN"
           >
@@ -773,10 +2022,10 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
              
             Name
             <div
-              class="sc-gqjmRU egaEhI"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group sc-VigVT hfLuvB"
+                class="bp3-input-group sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -798,10 +2047,10 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
           >
             Winners
             <div
-              class="sc-gqjmRU egaEhI"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group sc-VigVT hfLuvB"
+                class="bp3-input-group sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -823,10 +2072,10 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
           >
             Votes Allowed
             <div
-              class="sc-gqjmRU egaEhI"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group sc-VigVT hfLuvB"
+                class="bp3-input-group sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -840,34 +2089,34 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
           </label>
         </div>
         <div
-          class="sc-htoDjs dVdNvH"
+          class="sc-htoDjs jcQPAQ"
         >
-          <h3
-            class="bp3-heading sc-iwsKbI khhkcw"
+          <h5
+            class="bp3-heading"
           >
             Candidates/Choices & Vote Totals
-          </h3>
+          </h5>
           <div
             class="sc-dnqmqq kGMqKN"
           >
             Enter the name of each candidate choice that appears on the ballot for this contest.
           </div>
           <div
-            class="sc-kAzzGY uRaXj"
+            class="sc-cSHVUG cNFbaH"
           >
             <div
-              class="sc-chPdSV dgIYMX"
+              class="sc-kAzzGY gvpNKy"
             >
               <label
-                class="bp3-label sc-kGXeez dYUnwd"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Name of Candidate/Choice 
                 1
                 <div
-                  class="sc-kgoBCf gMmAfd sc-gqjmRU egaEhI"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group sc-VigVT hfLuvB"
+                    class="bp3-input-group sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -879,15 +2128,15 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
                 </div>
               </label>
               <label
-                class="bp3-label sc-kGXeez dYUnwd"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Votes for Candidate/Choice 
                 1
                 <div
-                  class="sc-kgoBCf gMmAfd sc-gqjmRU egaEhI"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group sc-VigVT hfLuvB"
+                    class="bp3-input-group sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -900,18 +2149,18 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
               </label>
             </div>
             <div
-              class="sc-chPdSV dgIYMX"
+              class="sc-kAzzGY gvpNKy"
             >
               <label
-                class="bp3-label sc-kGXeez dYUnwd"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Name of Candidate/Choice 
                 2
                 <div
-                  class="sc-kgoBCf gMmAfd sc-gqjmRU egaEhI"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group sc-VigVT hfLuvB"
+                    class="bp3-input-group sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -923,15 +2172,15 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
                 </div>
               </label>
               <label
-                class="bp3-label sc-kGXeez dYUnwd"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Votes for Candidate/Choice 
                 2
                 <div
-                  class="sc-kgoBCf gMmAfd sc-gqjmRU egaEhI"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group sc-VigVT hfLuvB"
+                    class="bp3-input-group sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -944,20 +2193,20 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
               </label>
             </div>
             <p
-              class="sc-kpOJdX cSaVTX"
+              class="sc-kGXeez hibFwE"
             >
               Add a new candidate/choice
             </p>
           </div>
         </div>
         <div
-          class="sc-htoDjs dVdNvH"
+          class="sc-htoDjs jcQPAQ"
         >
-          <h3
-            class="bp3-heading sc-iwsKbI khhkcw"
+          <h5
+            class="bp3-heading"
           >
             Total Ballots Cast
-          </h3>
+          </h5>
           <div
             class="sc-dnqmqq kGMqKN"
           >
@@ -970,10 +2219,10 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
              
             
             <div
-              class="sc-gqjmRU egaEhI"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group sc-VigVT hfLuvB"
+                class="bp3-input-group sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -987,13 +2236,13 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
           </label>
         </div>
         <div
-          class="sc-htoDjs dVdNvH"
+          class="sc-htoDjs jcQPAQ"
         >
-          <h3
-            class="bp3-heading sc-iwsKbI khhkcw"
+          <h5
+            class="bp3-heading"
           >
             Contest Universe
-          </h3>
+          </h5>
           <div
             class="sc-dnqmqq kGMqKN"
           >
@@ -1079,16 +2328,16 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
         Opportunistic Contests
       </h2>
       <div
-        class="bp3-card bp3-elevation-2 sc-ckVGcZ kiOdNq"
+        class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
       >
         <div
-          class="sc-htoDjs dVdNvH"
+          class="sc-htoDjs jcQPAQ"
         >
-          <h3
-            class="bp3-heading sc-iwsKbI khhkcw"
+          <h5
+            class="bp3-heading"
           >
             Contest  Info
-          </h3>
+          </h5>
           <div
             class="sc-dnqmqq kGMqKN"
           >
@@ -1103,10 +2352,10 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
              
             Name
             <div
-              class="sc-gqjmRU egaEhI"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group bp3-disabled sc-VigVT hfLuvB"
+                class="bp3-input-group bp3-disabled sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -1129,10 +2378,10 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
           >
             Winners
             <div
-              class="sc-gqjmRU egaEhI"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group bp3-disabled sc-VigVT hfLuvB"
+                class="bp3-input-group bp3-disabled sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -1155,10 +2404,10 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
           >
             Votes Allowed
             <div
-              class="sc-gqjmRU egaEhI"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group bp3-disabled sc-VigVT hfLuvB"
+                class="bp3-input-group bp3-disabled sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -1173,34 +2422,34 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
           </label>
         </div>
         <div
-          class="sc-htoDjs dVdNvH"
+          class="sc-htoDjs jcQPAQ"
         >
-          <h3
-            class="bp3-heading sc-iwsKbI khhkcw"
+          <h5
+            class="bp3-heading"
           >
             Candidates/Choices & Vote Totals
-          </h3>
+          </h5>
           <div
             class="sc-dnqmqq kGMqKN"
           >
             Enter the name of each candidate choice that appears on the ballot for this contest.
           </div>
           <div
-            class="sc-kAzzGY uRaXj"
+            class="sc-cSHVUG cNFbaH"
           >
             <div
-              class="sc-chPdSV dgIYMX"
+              class="sc-kAzzGY gvpNKy"
             >
               <label
-                class="bp3-label sc-kGXeez dYUnwd"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Name of Candidate/Choice 
                 1
                 <div
-                  class="sc-kgoBCf gMmAfd sc-gqjmRU egaEhI"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group bp3-disabled sc-VigVT hfLuvB"
+                    class="bp3-input-group bp3-disabled sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -1213,15 +2462,15 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
                 </div>
               </label>
               <label
-                class="bp3-label sc-kGXeez dYUnwd"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Votes for Candidate/Choice 
                 1
                 <div
-                  class="sc-kgoBCf gMmAfd sc-gqjmRU egaEhI"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group bp3-disabled sc-VigVT hfLuvB"
+                    class="bp3-input-group bp3-disabled sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -1235,18 +2484,18 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
               </label>
             </div>
             <div
-              class="sc-chPdSV dgIYMX"
+              class="sc-kAzzGY gvpNKy"
             >
               <label
-                class="bp3-label sc-kGXeez dYUnwd"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Name of Candidate/Choice 
                 2
                 <div
-                  class="sc-kgoBCf gMmAfd sc-gqjmRU egaEhI"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group bp3-disabled sc-VigVT hfLuvB"
+                    class="bp3-input-group bp3-disabled sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -1259,15 +2508,15 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
                 </div>
               </label>
               <label
-                class="bp3-label sc-kGXeez dYUnwd"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Votes for Candidate/Choice 
                 2
                 <div
-                  class="sc-kgoBCf gMmAfd sc-gqjmRU egaEhI"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group bp3-disabled sc-VigVT hfLuvB"
+                    class="bp3-input-group bp3-disabled sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -1283,13 +2532,13 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
           </div>
         </div>
         <div
-          class="sc-htoDjs dVdNvH"
+          class="sc-htoDjs jcQPAQ"
         >
-          <h3
-            class="bp3-heading sc-iwsKbI khhkcw"
+          <h5
+            class="bp3-heading"
           >
             Total Ballots Cast
-          </h3>
+          </h5>
           <div
             class="sc-dnqmqq kGMqKN"
           >
@@ -1302,10 +2551,10 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
              
             
             <div
-              class="sc-gqjmRU egaEhI"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group bp3-disabled sc-VigVT hfLuvB"
+                class="bp3-input-group bp3-disabled sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -1320,13 +2569,13 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
           </label>
         </div>
         <div
-          class="sc-htoDjs dVdNvH"
+          class="sc-htoDjs jcQPAQ"
         >
-          <h3
-            class="bp3-heading sc-iwsKbI khhkcw"
+          <h5
+            class="bp3-heading"
           >
             Contest Universe
-          </h3>
+          </h5>
           <div
             class="sc-dnqmqq kGMqKN"
           >
@@ -1414,16 +2663,16 @@ exports[`Setup renders Opportunistic Contests stage with processing next stage 1
         Opportunistic Contests
       </h2>
       <div
-        class="bp3-card bp3-elevation-2 sc-ckVGcZ kiOdNq"
+        class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
       >
         <div
-          class="sc-htoDjs dVdNvH"
+          class="sc-htoDjs jcQPAQ"
         >
-          <h3
-            class="bp3-heading sc-iwsKbI khhkcw"
+          <h5
+            class="bp3-heading"
           >
             Contest  Info
-          </h3>
+          </h5>
           <div
             class="sc-dnqmqq kGMqKN"
           >
@@ -1438,10 +2687,10 @@ exports[`Setup renders Opportunistic Contests stage with processing next stage 1
              
             Name
             <div
-              class="sc-gqjmRU egaEhI"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group sc-VigVT hfLuvB"
+                class="bp3-input-group sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -1463,10 +2712,10 @@ exports[`Setup renders Opportunistic Contests stage with processing next stage 1
           >
             Winners
             <div
-              class="sc-gqjmRU egaEhI"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group sc-VigVT hfLuvB"
+                class="bp3-input-group sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -1488,10 +2737,10 @@ exports[`Setup renders Opportunistic Contests stage with processing next stage 1
           >
             Votes Allowed
             <div
-              class="sc-gqjmRU egaEhI"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group sc-VigVT hfLuvB"
+                class="bp3-input-group sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -1505,34 +2754,34 @@ exports[`Setup renders Opportunistic Contests stage with processing next stage 1
           </label>
         </div>
         <div
-          class="sc-htoDjs dVdNvH"
+          class="sc-htoDjs jcQPAQ"
         >
-          <h3
-            class="bp3-heading sc-iwsKbI khhkcw"
+          <h5
+            class="bp3-heading"
           >
             Candidates/Choices & Vote Totals
-          </h3>
+          </h5>
           <div
             class="sc-dnqmqq kGMqKN"
           >
             Enter the name of each candidate choice that appears on the ballot for this contest.
           </div>
           <div
-            class="sc-kAzzGY uRaXj"
+            class="sc-cSHVUG cNFbaH"
           >
             <div
-              class="sc-chPdSV dgIYMX"
+              class="sc-kAzzGY gvpNKy"
             >
               <label
-                class="bp3-label sc-kGXeez dYUnwd"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Name of Candidate/Choice 
                 1
                 <div
-                  class="sc-kgoBCf gMmAfd sc-gqjmRU egaEhI"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group sc-VigVT hfLuvB"
+                    class="bp3-input-group sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -1544,15 +2793,15 @@ exports[`Setup renders Opportunistic Contests stage with processing next stage 1
                 </div>
               </label>
               <label
-                class="bp3-label sc-kGXeez dYUnwd"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Votes for Candidate/Choice 
                 1
                 <div
-                  class="sc-kgoBCf gMmAfd sc-gqjmRU egaEhI"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group sc-VigVT hfLuvB"
+                    class="bp3-input-group sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -1565,18 +2814,18 @@ exports[`Setup renders Opportunistic Contests stage with processing next stage 1
               </label>
             </div>
             <div
-              class="sc-chPdSV dgIYMX"
+              class="sc-kAzzGY gvpNKy"
             >
               <label
-                class="bp3-label sc-kGXeez dYUnwd"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Name of Candidate/Choice 
                 2
                 <div
-                  class="sc-kgoBCf gMmAfd sc-gqjmRU egaEhI"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group sc-VigVT hfLuvB"
+                    class="bp3-input-group sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -1588,15 +2837,15 @@ exports[`Setup renders Opportunistic Contests stage with processing next stage 1
                 </div>
               </label>
               <label
-                class="bp3-label sc-kGXeez dYUnwd"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Votes for Candidate/Choice 
                 2
                 <div
-                  class="sc-kgoBCf gMmAfd sc-gqjmRU egaEhI"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group sc-VigVT hfLuvB"
+                    class="bp3-input-group sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -1609,20 +2858,20 @@ exports[`Setup renders Opportunistic Contests stage with processing next stage 1
               </label>
             </div>
             <p
-              class="sc-kpOJdX cSaVTX"
+              class="sc-kGXeez hibFwE"
             >
               Add a new candidate/choice
             </p>
           </div>
         </div>
         <div
-          class="sc-htoDjs dVdNvH"
+          class="sc-htoDjs jcQPAQ"
         >
-          <h3
-            class="bp3-heading sc-iwsKbI khhkcw"
+          <h5
+            class="bp3-heading"
           >
             Total Ballots Cast
-          </h3>
+          </h5>
           <div
             class="sc-dnqmqq kGMqKN"
           >
@@ -1635,10 +2884,10 @@ exports[`Setup renders Opportunistic Contests stage with processing next stage 1
              
             
             <div
-              class="sc-gqjmRU egaEhI"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group sc-VigVT hfLuvB"
+                class="bp3-input-group sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -1652,13 +2901,13 @@ exports[`Setup renders Opportunistic Contests stage with processing next stage 1
           </label>
         </div>
         <div
-          class="sc-htoDjs dVdNvH"
+          class="sc-htoDjs jcQPAQ"
         >
-          <h3
-            class="bp3-heading sc-iwsKbI khhkcw"
+          <h5
+            class="bp3-heading"
           >
             Contest Universe
-          </h3>
+          </h5>
           <div
             class="sc-dnqmqq kGMqKN"
           >
@@ -1745,355 +2994,6 @@ exports[`Setup renders Participants stage 1`] = `
       >
         Participants
       </h2>
-      <div
-        class="sc-htoDjs dVdNvH"
-      >
-        <label
-          for="state"
-        >
-          Choose your state from the options below
-          <br />
-          <div
-            class="bp3-html-select sc-gZMcBi kTUmIo"
-          >
-            <select
-              data-testid="state-field"
-              field="[object Object]"
-              form="[object Object]"
-              id="state"
-            >
-              <option
-                value=""
-              />
-              <option
-                label="Alabama"
-                value="AL"
-              >
-                Alabama
-              </option>
-              <option
-                label="Alaska"
-                value="AK"
-              >
-                Alaska
-              </option>
-              <option
-                label="Arizona"
-                value="AZ"
-              >
-                Arizona
-              </option>
-              <option
-                label="Arkansas"
-                value="AR"
-              >
-                Arkansas
-              </option>
-              <option
-                label="California"
-                value="CA"
-              >
-                California
-              </option>
-              <option
-                label="Colorado"
-                value="CO"
-              >
-                Colorado
-              </option>
-              <option
-                label="Connecticut"
-                value="CT"
-              >
-                Connecticut
-              </option>
-              <option
-                label="Delaware"
-                value="DE"
-              >
-                Delaware
-              </option>
-              <option
-                label="District Of Columbia"
-                value="DC"
-              >
-                District Of Columbia
-              </option>
-              <option
-                label="Florida"
-                value="FL"
-              >
-                Florida
-              </option>
-              <option
-                label="Georgia"
-                value="GA"
-              >
-                Georgia
-              </option>
-              <option
-                label="Hawaii"
-                value="HI"
-              >
-                Hawaii
-              </option>
-              <option
-                label="Idaho"
-                value="ID"
-              >
-                Idaho
-              </option>
-              <option
-                label="Illinois"
-                value="IL"
-              >
-                Illinois
-              </option>
-              <option
-                label="Indiana"
-                value="IN"
-              >
-                Indiana
-              </option>
-              <option
-                label="Iowa"
-                value="IA"
-              >
-                Iowa
-              </option>
-              <option
-                label="Kansas"
-                value="KS"
-              >
-                Kansas
-              </option>
-              <option
-                label="Kentucky"
-                value="KY"
-              >
-                Kentucky
-              </option>
-              <option
-                label="Louisiana"
-                value="LA"
-              >
-                Louisiana
-              </option>
-              <option
-                label="Maine"
-                value="ME"
-              >
-                Maine
-              </option>
-              <option
-                label="Maryland"
-                value="MD"
-              >
-                Maryland
-              </option>
-              <option
-                label="Massachusetts"
-                value="MA"
-              >
-                Massachusetts
-              </option>
-              <option
-                label="Michigan"
-                value="MI"
-              >
-                Michigan
-              </option>
-              <option
-                label="Minnesota"
-                value="MN"
-              >
-                Minnesota
-              </option>
-              <option
-                label="Mississippi"
-                value="MS"
-              >
-                Mississippi
-              </option>
-              <option
-                label="Missouri"
-                value="MO"
-              >
-                Missouri
-              </option>
-              <option
-                label="Montana"
-                value="MT"
-              >
-                Montana
-              </option>
-              <option
-                label="Nebraska"
-                value="NE"
-              >
-                Nebraska
-              </option>
-              <option
-                label="Nevada"
-                value="NV"
-              >
-                Nevada
-              </option>
-              <option
-                label="New Hampshire"
-                value="NH"
-              >
-                New Hampshire
-              </option>
-              <option
-                label="New Jersey"
-                value="NJ"
-              >
-                New Jersey
-              </option>
-              <option
-                label="New Mexico"
-                value="NM"
-              >
-                New Mexico
-              </option>
-              <option
-                label="New York"
-                value="NY"
-              >
-                New York
-              </option>
-              <option
-                label="North Carolina"
-                value="NC"
-              >
-                North Carolina
-              </option>
-              <option
-                label="North Dakota"
-                value="ND"
-              >
-                North Dakota
-              </option>
-              <option
-                label="Ohio"
-                value="OH"
-              >
-                Ohio
-              </option>
-              <option
-                label="Oklahoma"
-                value="OK"
-              >
-                Oklahoma
-              </option>
-              <option
-                label="Oregon"
-                value="OR"
-              >
-                Oregon
-              </option>
-              <option
-                label="Pennsylvania"
-                value="PA"
-              >
-                Pennsylvania
-              </option>
-              <option
-                label="Rhode Island"
-                value="RI"
-              >
-                Rhode Island
-              </option>
-              <option
-                label="South Carolina"
-                value="SC"
-              >
-                South Carolina
-              </option>
-              <option
-                label="South Dakota"
-                value="SD"
-              >
-                South Dakota
-              </option>
-              <option
-                label="Tennessee"
-                value="TN"
-              >
-                Tennessee
-              </option>
-              <option
-                label="Texas"
-                value="TX"
-              >
-                Texas
-              </option>
-              <option
-                label="Utah"
-                value="UT"
-              >
-                Utah
-              </option>
-              <option
-                label="Vermont"
-                value="VT"
-              >
-                Vermont
-              </option>
-              <option
-                label="Virginia"
-                value="VA"
-              >
-                Virginia
-              </option>
-              <option
-                label="Washington"
-                value="WA"
-              >
-                Washington
-              </option>
-              <option
-                label="West Virginia"
-                value="WV"
-              >
-                West Virginia
-              </option>
-              <option
-                label="Wisconsin"
-                value="WI"
-              >
-                Wisconsin
-              </option>
-              <option
-                label="Wyoming"
-                value="WY"
-              >
-                Wyoming
-              </option>
-            </select>
-            <span
-              class="bp3-icon bp3-icon-double-caret-vertical"
-              icon="double-caret-vertical"
-            >
-              <svg
-                data-icon="double-caret-vertical"
-                height="16"
-                viewBox="0 0 16 16"
-                width="16"
-              >
-                <desc>
-                  double-caret-vertical
-                </desc>
-                <path
-                  d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-            </span>
-          </div>
-        </label>
-      </div>
     </div>
     <div
       class="sc-htpNat gtULUV"
@@ -2126,356 +3026,6 @@ exports[`Setup renders Participants stage with locked next stage 1`] = `
       >
         Participants
       </h2>
-      <div
-        class="sc-htoDjs dVdNvH"
-      >
-        <label
-          for="state"
-        >
-          Choose your state from the options below
-          <br />
-          <div
-            class="bp3-html-select bp3-disabled sc-gZMcBi kTUmIo"
-          >
-            <select
-              data-testid="state-field"
-              disabled=""
-              field="[object Object]"
-              form="[object Object]"
-              id="state"
-            >
-              <option
-                value=""
-              />
-              <option
-                label="Alabama"
-                value="AL"
-              >
-                Alabama
-              </option>
-              <option
-                label="Alaska"
-                value="AK"
-              >
-                Alaska
-              </option>
-              <option
-                label="Arizona"
-                value="AZ"
-              >
-                Arizona
-              </option>
-              <option
-                label="Arkansas"
-                value="AR"
-              >
-                Arkansas
-              </option>
-              <option
-                label="California"
-                value="CA"
-              >
-                California
-              </option>
-              <option
-                label="Colorado"
-                value="CO"
-              >
-                Colorado
-              </option>
-              <option
-                label="Connecticut"
-                value="CT"
-              >
-                Connecticut
-              </option>
-              <option
-                label="Delaware"
-                value="DE"
-              >
-                Delaware
-              </option>
-              <option
-                label="District Of Columbia"
-                value="DC"
-              >
-                District Of Columbia
-              </option>
-              <option
-                label="Florida"
-                value="FL"
-              >
-                Florida
-              </option>
-              <option
-                label="Georgia"
-                value="GA"
-              >
-                Georgia
-              </option>
-              <option
-                label="Hawaii"
-                value="HI"
-              >
-                Hawaii
-              </option>
-              <option
-                label="Idaho"
-                value="ID"
-              >
-                Idaho
-              </option>
-              <option
-                label="Illinois"
-                value="IL"
-              >
-                Illinois
-              </option>
-              <option
-                label="Indiana"
-                value="IN"
-              >
-                Indiana
-              </option>
-              <option
-                label="Iowa"
-                value="IA"
-              >
-                Iowa
-              </option>
-              <option
-                label="Kansas"
-                value="KS"
-              >
-                Kansas
-              </option>
-              <option
-                label="Kentucky"
-                value="KY"
-              >
-                Kentucky
-              </option>
-              <option
-                label="Louisiana"
-                value="LA"
-              >
-                Louisiana
-              </option>
-              <option
-                label="Maine"
-                value="ME"
-              >
-                Maine
-              </option>
-              <option
-                label="Maryland"
-                value="MD"
-              >
-                Maryland
-              </option>
-              <option
-                label="Massachusetts"
-                value="MA"
-              >
-                Massachusetts
-              </option>
-              <option
-                label="Michigan"
-                value="MI"
-              >
-                Michigan
-              </option>
-              <option
-                label="Minnesota"
-                value="MN"
-              >
-                Minnesota
-              </option>
-              <option
-                label="Mississippi"
-                value="MS"
-              >
-                Mississippi
-              </option>
-              <option
-                label="Missouri"
-                value="MO"
-              >
-                Missouri
-              </option>
-              <option
-                label="Montana"
-                value="MT"
-              >
-                Montana
-              </option>
-              <option
-                label="Nebraska"
-                value="NE"
-              >
-                Nebraska
-              </option>
-              <option
-                label="Nevada"
-                value="NV"
-              >
-                Nevada
-              </option>
-              <option
-                label="New Hampshire"
-                value="NH"
-              >
-                New Hampshire
-              </option>
-              <option
-                label="New Jersey"
-                value="NJ"
-              >
-                New Jersey
-              </option>
-              <option
-                label="New Mexico"
-                value="NM"
-              >
-                New Mexico
-              </option>
-              <option
-                label="New York"
-                value="NY"
-              >
-                New York
-              </option>
-              <option
-                label="North Carolina"
-                value="NC"
-              >
-                North Carolina
-              </option>
-              <option
-                label="North Dakota"
-                value="ND"
-              >
-                North Dakota
-              </option>
-              <option
-                label="Ohio"
-                value="OH"
-              >
-                Ohio
-              </option>
-              <option
-                label="Oklahoma"
-                value="OK"
-              >
-                Oklahoma
-              </option>
-              <option
-                label="Oregon"
-                value="OR"
-              >
-                Oregon
-              </option>
-              <option
-                label="Pennsylvania"
-                value="PA"
-              >
-                Pennsylvania
-              </option>
-              <option
-                label="Rhode Island"
-                value="RI"
-              >
-                Rhode Island
-              </option>
-              <option
-                label="South Carolina"
-                value="SC"
-              >
-                South Carolina
-              </option>
-              <option
-                label="South Dakota"
-                value="SD"
-              >
-                South Dakota
-              </option>
-              <option
-                label="Tennessee"
-                value="TN"
-              >
-                Tennessee
-              </option>
-              <option
-                label="Texas"
-                value="TX"
-              >
-                Texas
-              </option>
-              <option
-                label="Utah"
-                value="UT"
-              >
-                Utah
-              </option>
-              <option
-                label="Vermont"
-                value="VT"
-              >
-                Vermont
-              </option>
-              <option
-                label="Virginia"
-                value="VA"
-              >
-                Virginia
-              </option>
-              <option
-                label="Washington"
-                value="WA"
-              >
-                Washington
-              </option>
-              <option
-                label="West Virginia"
-                value="WV"
-              >
-                West Virginia
-              </option>
-              <option
-                label="Wisconsin"
-                value="WI"
-              >
-                Wisconsin
-              </option>
-              <option
-                label="Wyoming"
-                value="WY"
-              >
-                Wyoming
-              </option>
-            </select>
-            <span
-              class="bp3-icon bp3-icon-double-caret-vertical"
-              icon="double-caret-vertical"
-            >
-              <svg
-                data-icon="double-caret-vertical"
-                height="16"
-                viewBox="0 0 16 16"
-                width="16"
-              >
-                <desc>
-                  double-caret-vertical
-                </desc>
-                <path
-                  d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-            </span>
-          </div>
-        </label>
-      </div>
     </div>
     <div
       class="sc-htpNat gtULUV"
@@ -2508,355 +3058,6 @@ exports[`Setup renders Participants stage with processing next stage 1`] = `
       >
         Participants
       </h2>
-      <div
-        class="sc-htoDjs dVdNvH"
-      >
-        <label
-          for="state"
-        >
-          Choose your state from the options below
-          <br />
-          <div
-            class="bp3-html-select sc-gZMcBi kTUmIo"
-          >
-            <select
-              data-testid="state-field"
-              field="[object Object]"
-              form="[object Object]"
-              id="state"
-            >
-              <option
-                value=""
-              />
-              <option
-                label="Alabama"
-                value="AL"
-              >
-                Alabama
-              </option>
-              <option
-                label="Alaska"
-                value="AK"
-              >
-                Alaska
-              </option>
-              <option
-                label="Arizona"
-                value="AZ"
-              >
-                Arizona
-              </option>
-              <option
-                label="Arkansas"
-                value="AR"
-              >
-                Arkansas
-              </option>
-              <option
-                label="California"
-                value="CA"
-              >
-                California
-              </option>
-              <option
-                label="Colorado"
-                value="CO"
-              >
-                Colorado
-              </option>
-              <option
-                label="Connecticut"
-                value="CT"
-              >
-                Connecticut
-              </option>
-              <option
-                label="Delaware"
-                value="DE"
-              >
-                Delaware
-              </option>
-              <option
-                label="District Of Columbia"
-                value="DC"
-              >
-                District Of Columbia
-              </option>
-              <option
-                label="Florida"
-                value="FL"
-              >
-                Florida
-              </option>
-              <option
-                label="Georgia"
-                value="GA"
-              >
-                Georgia
-              </option>
-              <option
-                label="Hawaii"
-                value="HI"
-              >
-                Hawaii
-              </option>
-              <option
-                label="Idaho"
-                value="ID"
-              >
-                Idaho
-              </option>
-              <option
-                label="Illinois"
-                value="IL"
-              >
-                Illinois
-              </option>
-              <option
-                label="Indiana"
-                value="IN"
-              >
-                Indiana
-              </option>
-              <option
-                label="Iowa"
-                value="IA"
-              >
-                Iowa
-              </option>
-              <option
-                label="Kansas"
-                value="KS"
-              >
-                Kansas
-              </option>
-              <option
-                label="Kentucky"
-                value="KY"
-              >
-                Kentucky
-              </option>
-              <option
-                label="Louisiana"
-                value="LA"
-              >
-                Louisiana
-              </option>
-              <option
-                label="Maine"
-                value="ME"
-              >
-                Maine
-              </option>
-              <option
-                label="Maryland"
-                value="MD"
-              >
-                Maryland
-              </option>
-              <option
-                label="Massachusetts"
-                value="MA"
-              >
-                Massachusetts
-              </option>
-              <option
-                label="Michigan"
-                value="MI"
-              >
-                Michigan
-              </option>
-              <option
-                label="Minnesota"
-                value="MN"
-              >
-                Minnesota
-              </option>
-              <option
-                label="Mississippi"
-                value="MS"
-              >
-                Mississippi
-              </option>
-              <option
-                label="Missouri"
-                value="MO"
-              >
-                Missouri
-              </option>
-              <option
-                label="Montana"
-                value="MT"
-              >
-                Montana
-              </option>
-              <option
-                label="Nebraska"
-                value="NE"
-              >
-                Nebraska
-              </option>
-              <option
-                label="Nevada"
-                value="NV"
-              >
-                Nevada
-              </option>
-              <option
-                label="New Hampshire"
-                value="NH"
-              >
-                New Hampshire
-              </option>
-              <option
-                label="New Jersey"
-                value="NJ"
-              >
-                New Jersey
-              </option>
-              <option
-                label="New Mexico"
-                value="NM"
-              >
-                New Mexico
-              </option>
-              <option
-                label="New York"
-                value="NY"
-              >
-                New York
-              </option>
-              <option
-                label="North Carolina"
-                value="NC"
-              >
-                North Carolina
-              </option>
-              <option
-                label="North Dakota"
-                value="ND"
-              >
-                North Dakota
-              </option>
-              <option
-                label="Ohio"
-                value="OH"
-              >
-                Ohio
-              </option>
-              <option
-                label="Oklahoma"
-                value="OK"
-              >
-                Oklahoma
-              </option>
-              <option
-                label="Oregon"
-                value="OR"
-              >
-                Oregon
-              </option>
-              <option
-                label="Pennsylvania"
-                value="PA"
-              >
-                Pennsylvania
-              </option>
-              <option
-                label="Rhode Island"
-                value="RI"
-              >
-                Rhode Island
-              </option>
-              <option
-                label="South Carolina"
-                value="SC"
-              >
-                South Carolina
-              </option>
-              <option
-                label="South Dakota"
-                value="SD"
-              >
-                South Dakota
-              </option>
-              <option
-                label="Tennessee"
-                value="TN"
-              >
-                Tennessee
-              </option>
-              <option
-                label="Texas"
-                value="TX"
-              >
-                Texas
-              </option>
-              <option
-                label="Utah"
-                value="UT"
-              >
-                Utah
-              </option>
-              <option
-                label="Vermont"
-                value="VT"
-              >
-                Vermont
-              </option>
-              <option
-                label="Virginia"
-                value="VA"
-              >
-                Virginia
-              </option>
-              <option
-                label="Washington"
-                value="WA"
-              >
-                Washington
-              </option>
-              <option
-                label="West Virginia"
-                value="WV"
-              >
-                West Virginia
-              </option>
-              <option
-                label="Wisconsin"
-                value="WI"
-              >
-                Wisconsin
-              </option>
-              <option
-                label="Wyoming"
-                value="WY"
-              >
-                Wyoming
-              </option>
-            </select>
-            <span
-              class="bp3-icon bp3-icon-double-caret-vertical"
-              icon="double-caret-vertical"
-            >
-              <svg
-                data-icon="double-caret-vertical"
-                height="16"
-                viewBox="0 0 16 16"
-                width="16"
-              >
-                <desc>
-                  double-caret-vertical
-                </desc>
-                <path
-                  d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-            </span>
-          </div>
-        </label>
-      </div>
     </div>
     <div
       class="bp3-spinner"
@@ -2927,10 +3128,10 @@ exports[`Setup renders Review & Launch stage 1`] = `
       Audit Settings
     </h4>
     <div
-      class="bp3-card bp3-elevation-2 sc-ckVGcZ kiOdNq"
+      class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
     >
       <table
-        class="sc-kEYyzF knqkQg"
+        class="sc-hMqMXs kgAdZo"
       >
         <tbody>
           <tr>
@@ -2955,6 +3156,7 @@ exports[`Setup renders Review & Launch stage 1`] = `
             </td>
             <td>
               10
+              %
             </td>
           </tr>
           <tr>
@@ -2988,7 +3190,7 @@ exports[`Setup renders Review & Launch stage 1`] = `
         </tbody>
       </table>
       <table
-        class="sc-hMqMXs fRxVKz"
+        class="sc-eNQAEJ jcIdqs"
       >
         <thead>
           <tr>
@@ -3003,7 +3205,7 @@ exports[`Setup renders Review & Launch stage 1`] = `
         <tbody />
       </table>
       <table
-        class="sc-hMqMXs fRxVKz"
+        class="sc-eNQAEJ jcIdqs"
       >
         <thead>
           <tr>
@@ -3111,10 +3313,10 @@ exports[`Setup renders Review & Launch stage with locked next stage 1`] = `
       Audit Settings
     </h4>
     <div
-      class="bp3-card bp3-elevation-2 sc-ckVGcZ kiOdNq"
+      class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
     >
       <table
-        class="sc-kEYyzF knqkQg"
+        class="sc-hMqMXs kgAdZo"
       >
         <tbody>
           <tr>
@@ -3139,6 +3341,7 @@ exports[`Setup renders Review & Launch stage with locked next stage 1`] = `
             </td>
             <td>
               10
+              %
             </td>
           </tr>
           <tr>
@@ -3172,7 +3375,7 @@ exports[`Setup renders Review & Launch stage with locked next stage 1`] = `
         </tbody>
       </table>
       <table
-        class="sc-hMqMXs fRxVKz"
+        class="sc-eNQAEJ jcIdqs"
       >
         <thead>
           <tr>
@@ -3187,7 +3390,7 @@ exports[`Setup renders Review & Launch stage with locked next stage 1`] = `
         <tbody />
       </table>
       <table
-        class="sc-hMqMXs fRxVKz"
+        class="sc-eNQAEJ jcIdqs"
       >
         <thead>
           <tr>
@@ -3295,10 +3498,10 @@ exports[`Setup renders Review & Launch stage with processing next stage 1`] = `
       Audit Settings
     </h4>
     <div
-      class="bp3-card bp3-elevation-2 sc-ckVGcZ kiOdNq"
+      class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
     >
       <table
-        class="sc-kEYyzF knqkQg"
+        class="sc-hMqMXs kgAdZo"
       >
         <tbody>
           <tr>
@@ -3323,6 +3526,7 @@ exports[`Setup renders Review & Launch stage with processing next stage 1`] = `
             </td>
             <td>
               10
+              %
             </td>
           </tr>
           <tr>
@@ -3356,7 +3560,7 @@ exports[`Setup renders Review & Launch stage with processing next stage 1`] = `
         </tbody>
       </table>
       <table
-        class="sc-hMqMXs fRxVKz"
+        class="sc-eNQAEJ jcIdqs"
       >
         <thead>
           <tr>
@@ -3371,7 +3575,7 @@ exports[`Setup renders Review & Launch stage with processing next stage 1`] = `
         <tbody />
       </table>
       <table
-        class="sc-hMqMXs fRxVKz"
+        class="sc-eNQAEJ jcIdqs"
       >
         <thead>
           <tr>
@@ -3454,16 +3658,16 @@ exports[`Setup renders Target Contests stage 1`] = `
         Target Contests
       </h2>
       <div
-        class="bp3-card bp3-elevation-2 sc-ckVGcZ kiOdNq"
+        class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
       >
         <div
-          class="sc-htoDjs dVdNvH"
+          class="sc-htoDjs jcQPAQ"
         >
-          <h3
-            class="bp3-heading sc-iwsKbI khhkcw"
+          <h5
+            class="bp3-heading"
           >
             Contest  Info
-          </h3>
+          </h5>
           <div
             class="sc-dnqmqq kGMqKN"
           >
@@ -3478,10 +3682,10 @@ exports[`Setup renders Target Contests stage 1`] = `
              
             Name
             <div
-              class="sc-gqjmRU egaEhI"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group sc-VigVT hfLuvB"
+                class="bp3-input-group sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -3503,10 +3707,10 @@ exports[`Setup renders Target Contests stage 1`] = `
           >
             Winners
             <div
-              class="sc-gqjmRU egaEhI"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group sc-VigVT hfLuvB"
+                class="bp3-input-group sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -3528,10 +3732,10 @@ exports[`Setup renders Target Contests stage 1`] = `
           >
             Votes Allowed
             <div
-              class="sc-gqjmRU egaEhI"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group sc-VigVT hfLuvB"
+                class="bp3-input-group sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -3545,34 +3749,34 @@ exports[`Setup renders Target Contests stage 1`] = `
           </label>
         </div>
         <div
-          class="sc-htoDjs dVdNvH"
+          class="sc-htoDjs jcQPAQ"
         >
-          <h3
-            class="bp3-heading sc-iwsKbI khhkcw"
+          <h5
+            class="bp3-heading"
           >
             Candidates/Choices & Vote Totals
-          </h3>
+          </h5>
           <div
             class="sc-dnqmqq kGMqKN"
           >
             Enter the name of each candidate choice that appears on the ballot for this contest.
           </div>
           <div
-            class="sc-kAzzGY uRaXj"
+            class="sc-cSHVUG cNFbaH"
           >
             <div
-              class="sc-chPdSV dgIYMX"
+              class="sc-kAzzGY gvpNKy"
             >
               <label
-                class="bp3-label sc-kGXeez dYUnwd"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Name of Candidate/Choice 
                 1
                 <div
-                  class="sc-kgoBCf gMmAfd sc-gqjmRU egaEhI"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group sc-VigVT hfLuvB"
+                    class="bp3-input-group sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -3584,15 +3788,15 @@ exports[`Setup renders Target Contests stage 1`] = `
                 </div>
               </label>
               <label
-                class="bp3-label sc-kGXeez dYUnwd"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Votes for Candidate/Choice 
                 1
                 <div
-                  class="sc-kgoBCf gMmAfd sc-gqjmRU egaEhI"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group sc-VigVT hfLuvB"
+                    class="bp3-input-group sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -3605,18 +3809,18 @@ exports[`Setup renders Target Contests stage 1`] = `
               </label>
             </div>
             <div
-              class="sc-chPdSV dgIYMX"
+              class="sc-kAzzGY gvpNKy"
             >
               <label
-                class="bp3-label sc-kGXeez dYUnwd"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Name of Candidate/Choice 
                 2
                 <div
-                  class="sc-kgoBCf gMmAfd sc-gqjmRU egaEhI"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group sc-VigVT hfLuvB"
+                    class="bp3-input-group sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -3628,15 +3832,15 @@ exports[`Setup renders Target Contests stage 1`] = `
                 </div>
               </label>
               <label
-                class="bp3-label sc-kGXeez dYUnwd"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Votes for Candidate/Choice 
                 2
                 <div
-                  class="sc-kgoBCf gMmAfd sc-gqjmRU egaEhI"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group sc-VigVT hfLuvB"
+                    class="bp3-input-group sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -3649,20 +3853,20 @@ exports[`Setup renders Target Contests stage 1`] = `
               </label>
             </div>
             <p
-              class="sc-kpOJdX cSaVTX"
+              class="sc-kGXeez hibFwE"
             >
               Add a new candidate/choice
             </p>
           </div>
         </div>
         <div
-          class="sc-htoDjs dVdNvH"
+          class="sc-htoDjs jcQPAQ"
         >
-          <h3
-            class="bp3-heading sc-iwsKbI khhkcw"
+          <h5
+            class="bp3-heading"
           >
             Total Ballots Cast
-          </h3>
+          </h5>
           <div
             class="sc-dnqmqq kGMqKN"
           >
@@ -3675,10 +3879,10 @@ exports[`Setup renders Target Contests stage 1`] = `
              
             
             <div
-              class="sc-gqjmRU egaEhI"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group sc-VigVT hfLuvB"
+                class="bp3-input-group sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -3692,13 +3896,13 @@ exports[`Setup renders Target Contests stage 1`] = `
           </label>
         </div>
         <div
-          class="sc-htoDjs dVdNvH"
+          class="sc-htoDjs jcQPAQ"
         >
-          <h3
-            class="bp3-heading sc-iwsKbI khhkcw"
+          <h5
+            class="bp3-heading"
           >
             Contest Universe
-          </h3>
+          </h5>
           <div
             class="sc-dnqmqq kGMqKN"
           >
@@ -3784,16 +3988,16 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
         Target Contests
       </h2>
       <div
-        class="bp3-card bp3-elevation-2 sc-ckVGcZ kiOdNq"
+        class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
       >
         <div
-          class="sc-htoDjs dVdNvH"
+          class="sc-htoDjs jcQPAQ"
         >
-          <h3
-            class="bp3-heading sc-iwsKbI khhkcw"
+          <h5
+            class="bp3-heading"
           >
             Contest  Info
-          </h3>
+          </h5>
           <div
             class="sc-dnqmqq kGMqKN"
           >
@@ -3808,10 +4012,10 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
              
             Name
             <div
-              class="sc-gqjmRU egaEhI"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group bp3-disabled sc-VigVT hfLuvB"
+                class="bp3-input-group bp3-disabled sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -3834,10 +4038,10 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
           >
             Winners
             <div
-              class="sc-gqjmRU egaEhI"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group bp3-disabled sc-VigVT hfLuvB"
+                class="bp3-input-group bp3-disabled sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -3860,10 +4064,10 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
           >
             Votes Allowed
             <div
-              class="sc-gqjmRU egaEhI"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group bp3-disabled sc-VigVT hfLuvB"
+                class="bp3-input-group bp3-disabled sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -3878,34 +4082,34 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
           </label>
         </div>
         <div
-          class="sc-htoDjs dVdNvH"
+          class="sc-htoDjs jcQPAQ"
         >
-          <h3
-            class="bp3-heading sc-iwsKbI khhkcw"
+          <h5
+            class="bp3-heading"
           >
             Candidates/Choices & Vote Totals
-          </h3>
+          </h5>
           <div
             class="sc-dnqmqq kGMqKN"
           >
             Enter the name of each candidate choice that appears on the ballot for this contest.
           </div>
           <div
-            class="sc-kAzzGY uRaXj"
+            class="sc-cSHVUG cNFbaH"
           >
             <div
-              class="sc-chPdSV dgIYMX"
+              class="sc-kAzzGY gvpNKy"
             >
               <label
-                class="bp3-label sc-kGXeez dYUnwd"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Name of Candidate/Choice 
                 1
                 <div
-                  class="sc-kgoBCf gMmAfd sc-gqjmRU egaEhI"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group bp3-disabled sc-VigVT hfLuvB"
+                    class="bp3-input-group bp3-disabled sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -3918,15 +4122,15 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
                 </div>
               </label>
               <label
-                class="bp3-label sc-kGXeez dYUnwd"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Votes for Candidate/Choice 
                 1
                 <div
-                  class="sc-kgoBCf gMmAfd sc-gqjmRU egaEhI"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group bp3-disabled sc-VigVT hfLuvB"
+                    class="bp3-input-group bp3-disabled sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -3940,18 +4144,18 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
               </label>
             </div>
             <div
-              class="sc-chPdSV dgIYMX"
+              class="sc-kAzzGY gvpNKy"
             >
               <label
-                class="bp3-label sc-kGXeez dYUnwd"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Name of Candidate/Choice 
                 2
                 <div
-                  class="sc-kgoBCf gMmAfd sc-gqjmRU egaEhI"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group bp3-disabled sc-VigVT hfLuvB"
+                    class="bp3-input-group bp3-disabled sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -3964,15 +4168,15 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
                 </div>
               </label>
               <label
-                class="bp3-label sc-kGXeez dYUnwd"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Votes for Candidate/Choice 
                 2
                 <div
-                  class="sc-kgoBCf gMmAfd sc-gqjmRU egaEhI"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group bp3-disabled sc-VigVT hfLuvB"
+                    class="bp3-input-group bp3-disabled sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -3988,13 +4192,13 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
           </div>
         </div>
         <div
-          class="sc-htoDjs dVdNvH"
+          class="sc-htoDjs jcQPAQ"
         >
-          <h3
-            class="bp3-heading sc-iwsKbI khhkcw"
+          <h5
+            class="bp3-heading"
           >
             Total Ballots Cast
-          </h3>
+          </h5>
           <div
             class="sc-dnqmqq kGMqKN"
           >
@@ -4007,10 +4211,10 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
              
             
             <div
-              class="sc-gqjmRU egaEhI"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group bp3-disabled sc-VigVT hfLuvB"
+                class="bp3-input-group bp3-disabled sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -4025,13 +4229,13 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
           </label>
         </div>
         <div
-          class="sc-htoDjs dVdNvH"
+          class="sc-htoDjs jcQPAQ"
         >
-          <h3
-            class="bp3-heading sc-iwsKbI khhkcw"
+          <h5
+            class="bp3-heading"
           >
             Contest Universe
-          </h3>
+          </h5>
           <div
             class="sc-dnqmqq kGMqKN"
           >
@@ -4119,16 +4323,16 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
         Target Contests
       </h2>
       <div
-        class="bp3-card bp3-elevation-2 sc-ckVGcZ kiOdNq"
+        class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
       >
         <div
-          class="sc-htoDjs dVdNvH"
+          class="sc-htoDjs jcQPAQ"
         >
-          <h3
-            class="bp3-heading sc-iwsKbI khhkcw"
+          <h5
+            class="bp3-heading"
           >
             Contest  Info
-          </h3>
+          </h5>
           <div
             class="sc-dnqmqq kGMqKN"
           >
@@ -4143,10 +4347,10 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
              
             Name
             <div
-              class="sc-gqjmRU egaEhI"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group sc-VigVT hfLuvB"
+                class="bp3-input-group sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -4168,10 +4372,10 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
           >
             Winners
             <div
-              class="sc-gqjmRU egaEhI"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group sc-VigVT hfLuvB"
+                class="bp3-input-group sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -4193,10 +4397,10 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
           >
             Votes Allowed
             <div
-              class="sc-gqjmRU egaEhI"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group sc-VigVT hfLuvB"
+                class="bp3-input-group sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -4210,34 +4414,34 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
           </label>
         </div>
         <div
-          class="sc-htoDjs dVdNvH"
+          class="sc-htoDjs jcQPAQ"
         >
-          <h3
-            class="bp3-heading sc-iwsKbI khhkcw"
+          <h5
+            class="bp3-heading"
           >
             Candidates/Choices & Vote Totals
-          </h3>
+          </h5>
           <div
             class="sc-dnqmqq kGMqKN"
           >
             Enter the name of each candidate choice that appears on the ballot for this contest.
           </div>
           <div
-            class="sc-kAzzGY uRaXj"
+            class="sc-cSHVUG cNFbaH"
           >
             <div
-              class="sc-chPdSV dgIYMX"
+              class="sc-kAzzGY gvpNKy"
             >
               <label
-                class="bp3-label sc-kGXeez dYUnwd"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Name of Candidate/Choice 
                 1
                 <div
-                  class="sc-kgoBCf gMmAfd sc-gqjmRU egaEhI"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group sc-VigVT hfLuvB"
+                    class="bp3-input-group sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -4249,15 +4453,15 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
                 </div>
               </label>
               <label
-                class="bp3-label sc-kGXeez dYUnwd"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Votes for Candidate/Choice 
                 1
                 <div
-                  class="sc-kgoBCf gMmAfd sc-gqjmRU egaEhI"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group sc-VigVT hfLuvB"
+                    class="bp3-input-group sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -4270,18 +4474,18 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
               </label>
             </div>
             <div
-              class="sc-chPdSV dgIYMX"
+              class="sc-kAzzGY gvpNKy"
             >
               <label
-                class="bp3-label sc-kGXeez dYUnwd"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Name of Candidate/Choice 
                 2
                 <div
-                  class="sc-kgoBCf gMmAfd sc-gqjmRU egaEhI"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group sc-VigVT hfLuvB"
+                    class="bp3-input-group sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -4293,15 +4497,15 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
                 </div>
               </label>
               <label
-                class="bp3-label sc-kGXeez dYUnwd"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Votes for Candidate/Choice 
                 2
                 <div
-                  class="sc-kgoBCf gMmAfd sc-gqjmRU egaEhI"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group sc-VigVT hfLuvB"
+                    class="bp3-input-group sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -4314,20 +4518,20 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
               </label>
             </div>
             <p
-              class="sc-kpOJdX cSaVTX"
+              class="sc-kGXeez hibFwE"
             >
               Add a new candidate/choice
             </p>
           </div>
         </div>
         <div
-          class="sc-htoDjs dVdNvH"
+          class="sc-htoDjs jcQPAQ"
         >
-          <h3
-            class="bp3-heading sc-iwsKbI khhkcw"
+          <h5
+            class="bp3-heading"
           >
             Total Ballots Cast
-          </h3>
+          </h5>
           <div
             class="sc-dnqmqq kGMqKN"
           >
@@ -4340,10 +4544,10 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
              
             
             <div
-              class="sc-gqjmRU egaEhI"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group sc-VigVT hfLuvB"
+                class="bp3-input-group sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -4357,13 +4561,13 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
           </label>
         </div>
         <div
-          class="sc-htoDjs dVdNvH"
+          class="sc-htoDjs jcQPAQ"
         >
-          <h3
-            class="bp3-heading sc-iwsKbI khhkcw"
+          <h5
+            class="bp3-heading"
           >
             Contest Universe
-          </h3>
+          </h5>
           <div
             class="sc-dnqmqq kGMqKN"
           >

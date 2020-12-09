@@ -1,6 +1,6 @@
 import { readFileSync } from 'fs'
 import { join } from 'path'
-import { IAuditSettings, IContest } from '../../../../types'
+import { IContest } from '../../../../types'
 import {
   IJurisdiction,
   FileProcessingStatus,
@@ -10,6 +10,7 @@ import {
 } from '../../useJurisdictions' // uses IFileInfo instead of IBallotManifest and allows `file: null`
 import { IAuditBoard } from '../../useAuditBoards'
 import { IRound } from '../../useRoundsAuditAdmin'
+import { IAuditSettings } from '../../useAuditSettings'
 
 export const manifestFile = new File(
   [readFileSync(join(__dirname, './test_manifest.csv'), 'utf8')],
@@ -23,14 +24,7 @@ export const talliesFile = new File(
 )
 
 export const auditSettings: {
-  [key in
-    | 'blank'
-    | 'blankBatch'
-    | 'onlyState'
-    | 'otherSettings'
-    | 'all'
-    | 'offlineAll'
-    | 'batchComparisonAll']: IAuditSettings
+  [key: string]: IAuditSettings
 } = {
   blank: {
     state: null,
@@ -49,7 +43,7 @@ export const auditSettings: {
     randomSeed: null,
     riskLimit: null,
     auditType: 'BATCH_COMPARISON',
-    auditMathType: 'BRAVO',
+    auditMathType: 'MACRO',
     auditName: 'Test Audit',
   },
   onlyState: {
@@ -99,7 +93,17 @@ export const auditSettings: {
     randomSeed: '12345',
     riskLimit: 10,
     auditType: 'BATCH_COMPARISON',
-    auditMathType: 'BRAVO',
+    auditMathType: 'MACRO',
+    auditName: 'Test Audit',
+  },
+  ballotComparisonAll: {
+    state: 'AL',
+    electionName: 'Election Name',
+    online: false,
+    randomSeed: '12345',
+    riskLimit: 10,
+    auditType: 'BALLOT_COMPARISON',
+    auditMathType: 'SUPERSIMPLE',
     auditName: 'Test Audit',
   },
 }

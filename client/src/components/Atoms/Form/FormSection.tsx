@@ -1,23 +1,14 @@
 import React, { ReactNode } from 'react'
-import { H3 } from '@blueprintjs/core'
+import { H5 } from '@blueprintjs/core'
 import styled from 'styled-components'
 
 export const Section = styled.div`
-  margin: 20px 0 20px 0;
+  margin: 20px 0 30px 0;
 `
 
 export const FormSectionDescription = styled.div`
   margin: 10px 0;
 `
-
-/* stylelint-disable declaration-no-important */
-export const FormSectionLabel = styled(H3)`
-  font-size: 18px !important;
-  & + & {
-    margin-top: 10px;
-  }
-`
-/* stylelint-enable */
 
 interface IProps {
   label?: string
@@ -32,7 +23,7 @@ const FormSection: React.FC<IProps> = ({
 }: IProps) => {
   return (
     <Section>
-      {label ? <FormSectionLabel>{label}</FormSectionLabel> : undefined}
+      {label ? <H5>{label}</H5> : undefined}
       {description ? (
         <FormSectionDescription>{description}</FormSectionDescription>
       ) : (

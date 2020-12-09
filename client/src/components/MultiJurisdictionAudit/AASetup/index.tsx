@@ -1,11 +1,12 @@
 /* eslint-disable react/prop-types */
 import React from 'react'
-import { ElementType, IAuditSettings } from '../../../types'
+import { ElementType } from '../../../types'
 import Participants from './Participants'
 import Contests from './Contests'
 import Settings from './Settings'
 import Review from './Review'
 import { ISidebarMenuItem } from '../../Atoms/Sidebar'
+import { IAuditSettings } from '../useAuditSettings'
 
 export const setupStages = [
   'participants',

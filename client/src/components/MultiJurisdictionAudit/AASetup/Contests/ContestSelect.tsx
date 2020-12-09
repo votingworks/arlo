@@ -13,8 +13,8 @@ import useStandardizedContests, {
   IStandardizedContestOption,
 } from '../../useStandardizedContests'
 import useJurisdictions from '../../useJurisdictions'
-import { IAuditSettings } from '../../../../types'
 import { Table, FilterInput } from '../../../Atoms/Table'
+import { IAuditSettings } from '../../useAuditSettings'
 
 interface IProps {
   isTargeted: boolean
