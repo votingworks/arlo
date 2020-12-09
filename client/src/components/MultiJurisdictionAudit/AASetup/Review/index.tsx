@@ -21,7 +21,11 @@ import ConfirmLaunch from './ConfirmLaunch'
 import FormField from '../../../Atoms/Form/FormField'
 import ElevatedCard from '../../../Atoms/SpacedCard'
 import useSampleSizes, { IStringSampleSizeOption } from './useSampleSizes'
-import { useJurisdictionsFile, isFileProcessed } from '../../useCSV'
+import {
+  useJurisdictionsFile,
+  isFileProcessed,
+  useStandardizedContestsFile,
+} from '../../useCSV'
 
 const percentFormatter = new Intl.NumberFormat(undefined, {
   style: 'percent',
@@ -42,6 +46,10 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
   const [auditSettings] = useAuditSettings(electionId)
   const jurisdictions = useJurisdictions(electionId)
   const [jurisdictionsFile] = useJurisdictionsFile(electionId)
+  const [standardizedContestsFile] = useStandardizedContestsFile(
+    electionId,
+    auditSettings
+  )
   const [contests] = useContests(electionId)
   const history = useHistory()
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
@@ -160,7 +168,7 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
             </tr>
             <tr>
               <td>Risk Limit:</td>
-              <td>{riskLimit}%</td>
+              <td>{riskLimit && `${riskLimit}%`}</td>
             </tr>
             <tr>
               <td>Random Seed:</td>
@@ -180,6 +188,22 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
                 </a>
               </td>
             </tr>
+            {auditType === 'BALLOT_COMPARISON' && (
+              <tr>
+                <td>Standardized Contests:</td>
+                <td>
+                  <a
+                    href={`/api/election/${electionId}/standardized-contests/file/csv`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {standardizedContestsFile && standardizedContestsFile.file
+                      ? standardizedContestsFile.file.name
+                      : ''}
+                  </a>
+                </td>
+              </tr>
+            )}
             <tr>
               <td>Audit Board Data Entry:</td>
               <td>{online ? 'Online' : 'Offline'}</td>

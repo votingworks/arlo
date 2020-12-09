@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import { api, poll } from '../utilities'
+import { IAuditSettings } from './useAuditSettings'
 
 export enum FileProcessingStatus {
   READY_TO_PROCESS = 'READY_TO_PROCESS',
@@ -25,8 +26,11 @@ export interface IFileInfo {
 export const isFileProcessed = (file: IFileInfo): boolean =>
   !!file.processing && file.processing.status === FileProcessingStatus.PROCESSED
 
-const loadCSVFile = async (url: string): Promise<IFileInfo | null> =>
-  api<IFileInfo>(url)
+const loadCSVFile = async (
+  url: string,
+  shouldFetch: boolean
+): Promise<IFileInfo | null> =>
+  shouldFetch ? api<IFileInfo>(url) : { file: null, processing: null }
 
 const putCSVFile = async (
   url: string,
@@ -49,7 +53,8 @@ const deleteCSVFile = async (url: string): Promise<boolean> => {
 
 const useCSV = (
   url: string,
-  formKey: string
+  formKey: string,
+  shouldFetch: boolean = true
 ): [
   IFileInfo | null,
   (csv: File) => Promise<boolean>,
@@ -59,21 +64,23 @@ const useCSV = (
 
   useEffect(() => {
     ;(async () => {
-      setCSV(await loadCSVFile(url))
+      setCSV(await loadCSVFile(url, shouldFetch))
     })()
-  }, [url])
+  }, [url, shouldFetch])
 
   const uploadCSV = async (csvFile: File): Promise<boolean> => {
+    if (!shouldFetch) return false
     if (await putCSVFile(url, csvFile, formKey)) {
-      setCSV(await loadCSVFile(url))
+      setCSV(await loadCSVFile(url, shouldFetch))
       return true
     }
     return false
   }
 
   const deleteCSV = async (): Promise<boolean> => {
+    if (!shouldFetch) return false
     if (await deleteCSVFile(url)) {
-      setCSV(await loadCSVFile(url))
+      setCSV(await loadCSVFile(url, shouldFetch))
       return true
     }
     return false
@@ -86,14 +93,14 @@ const useCSV = (
     if (!(csv && csv.file) || isFinishedProcessing(csv)) return
 
     const isComplete = async () => {
-      const fileInfo = await loadCSVFile(url)
+      const fileInfo = await loadCSVFile(url, shouldFetch)
       return !!fileInfo && isFinishedProcessing(fileInfo)
     }
     const onComplete = async () => {
-      setCSV(await loadCSVFile(url))
+      setCSV(await loadCSVFile(url, shouldFetch))
     }
     poll(isComplete, onComplete, err => toast.error(err.message))
-  }, [url, csv])
+  }, [url, csv, shouldFetch])
 
   return [csv, uploadCSV, deleteCSV]
 }
@@ -110,11 +117,13 @@ export const useJurisdictionsFile = (
 }
 
 export const useStandardizedContestsFile = (
-  electionId: string
+  electionId: string,
+  auditSettings: IAuditSettings | null
 ): [IFileInfo | null, (csv: File) => Promise<boolean>] => {
   const [csv, uploadCSV] = useCSV(
     `/election/${electionId}/standardized-contests/file`,
-    'standardized-contests'
+    'standardized-contests',
+    !!auditSettings && auditSettings.auditType === 'BALLOT_COMPARISON'
   )
   // Delete not supported
   return [csv, uploadCSV]

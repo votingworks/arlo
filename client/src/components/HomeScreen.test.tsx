@@ -124,7 +124,6 @@ describe('Home screen', () => {
       ...setupScreenCalls,
       aaApiCalls.getSettings(auditSettings.blank),
       aaApiCalls.getJurisdictionFile,
-      aaApiCalls.getStandardizedContestsFile,
       aaApiCalls.getJurisdictionFile,
       aaApiCalls.getRounds([]),
       ...setupScreenCalls,
@@ -137,7 +136,6 @@ describe('Home screen', () => {
       aaApiCalls.getRounds([]),
       aaApiCalls.getSettings(auditSettings.blank),
       aaApiCalls.getJurisdictionFile,
-      aaApiCalls.getStandardizedContestsFile,
       ...setupScreenCalls,
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -204,7 +202,6 @@ describe('Home screen', () => {
       ...setupScreenCalls,
       aaApiCalls.getSettings(auditSettings.blank),
       aaApiCalls.getJurisdictionFile,
-      aaApiCalls.getStandardizedContestsFile,
       aaApiCalls.getJurisdictionFile,
       aaApiCalls.getRounds([]),
       ...setupScreenCalls,

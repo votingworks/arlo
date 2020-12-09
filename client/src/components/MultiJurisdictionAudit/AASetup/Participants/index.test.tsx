@@ -99,7 +99,6 @@ describe('Audit Setup > Participants', () => {
     const expectedCalls = [
       aaApiCalls.getSettings(auditSettings.blank),
       apiCalls.getJurisdictionsFile(fileMocks.empty),
-      apiCalls.getStandardizedContestsFile(fileMocks.empty),
       apiCalls.putJurisdictionsFile(jurisdictionFile),
       apiCalls.getJurisdictionsFile(fileMocks.processed),
       apiCalls.putJurisdictionsFile(anotherFile),

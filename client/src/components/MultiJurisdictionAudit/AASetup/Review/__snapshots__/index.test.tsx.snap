@@ -66,8 +66,7 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
               Risk Limit:
             </td>
             <td>
-              10
-              %
+              10%
             </td>
           </tr>
           <tr>
@@ -87,7 +86,9 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
                 href="/api/election/1/jurisdiction/file/csv"
                 rel="noopener noreferrer"
                 target="_blank"
-              />
+              >
+                jurisdictions.csv
+              </a>
             </td>
           </tr>
           <tr>
@@ -255,8 +256,7 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
               Risk Limit:
             </td>
             <td>
-              10
-              %
+              10%
             </td>
           </tr>
           <tr>
@@ -276,7 +276,9 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
                 href="/api/election/1/jurisdiction/file/csv"
                 rel="noopener noreferrer"
                 target="_blank"
-              />
+              >
+                jurisdictions.csv
+              </a>
             </td>
           </tr>
           <tr>
@@ -444,8 +446,7 @@ exports[`Audit Setup > Review & Launch renders empty state 1`] = `
               Risk Limit:
             </td>
             <td>
-              10
-              %
+              10%
             </td>
           </tr>
           <tr>
@@ -465,7 +466,9 @@ exports[`Audit Setup > Review & Launch renders empty state 1`] = `
                 href="/api/election/1/jurisdiction/file/csv"
                 rel="noopener noreferrer"
                 target="_blank"
-              />
+              >
+                jurisdictions.csv
+              </a>
             </td>
           </tr>
           <tr>
@@ -720,8 +723,7 @@ exports[`Audit Setup > Review & Launch renders full state 1`] = `
               Risk Limit:
             </td>
             <td>
-              10
-              %
+              10%
             </td>
           </tr>
           <tr>
@@ -741,7 +743,9 @@ exports[`Audit Setup > Review & Launch renders full state 1`] = `
                 href="/api/election/1/jurisdiction/file/csv"
                 rel="noopener noreferrer"
                 target="_blank"
-              />
+              >
+                jurisdictions.csv
+              </a>
             </td>
           </tr>
           <tr>
@@ -996,8 +1000,7 @@ exports[`Audit Setup > Review & Launch renders full state with batch comparison 
               Risk Limit:
             </td>
             <td>
-              10
-              %
+              10%
             </td>
           </tr>
           <tr>
@@ -1017,7 +1020,9 @@ exports[`Audit Setup > Review & Launch renders full state with batch comparison 
                 href="/api/election/1/jurisdiction/file/csv"
                 rel="noopener noreferrer"
                 target="_blank"
-              />
+              >
+                jurisdictions.csv
+              </a>
             </td>
           </tr>
           <tr>
@@ -1272,8 +1277,7 @@ exports[`Audit Setup > Review & Launch renders full state with batch comparison 
               Risk Limit:
             </td>
             <td>
-              10
-              %
+              10%
             </td>
           </tr>
           <tr>
@@ -1293,7 +1297,9 @@ exports[`Audit Setup > Review & Launch renders full state with batch comparison 
                 href="/api/election/1/jurisdiction/file/csv"
                 rel="noopener noreferrer"
                 target="_blank"
-              />
+              >
+                jurisdictions.csv
+              </a>
             </td>
           </tr>
           <tr>
@@ -1461,8 +1467,7 @@ exports[`Audit Setup > Review & Launch renders full state with jurisdictions wit
               Risk Limit:
             </td>
             <td>
-              10
-              %
+              10%
             </td>
           </tr>
           <tr>
@@ -1482,7 +1487,9 @@ exports[`Audit Setup > Review & Launch renders full state with jurisdictions wit
                 href="/api/election/1/jurisdiction/file/csv"
                 rel="noopener noreferrer"
                 target="_blank"
-              />
+              >
+                jurisdictions.csv
+              </a>
             </td>
           </tr>
           <tr>
@@ -1746,8 +1753,7 @@ exports[`Audit Setup > Review & Launch renders full state with offline setting 1
               Risk Limit:
             </td>
             <td>
-              10
-              %
+              10%
             </td>
           </tr>
           <tr>
@@ -1767,7 +1773,9 @@ exports[`Audit Setup > Review & Launch renders full state with offline setting 1
                 href="/api/election/1/jurisdiction/file/csv"
                 rel="noopener noreferrer"
                 target="_blank"
-              />
+              >
+                jurisdictions.csv
+              </a>
             </td>
           </tr>
           <tr>

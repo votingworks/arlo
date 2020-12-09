@@ -8,7 +8,11 @@ import Review from './index'
 import * as utilities from '../../../utilities'
 import { settingsMock, sampleSizeMock } from './_mocks'
 import { contestMocks } from '../Contests/_mocks'
-import { jurisdictionMocks } from '../../useSetupMenuItems/_mocks'
+import {
+  jurisdictionMocks,
+  fileProcessingMocks,
+  auditSettings,
+} from '../../useSetupMenuItems/_mocks'
 import { withMockFetch, renderWithRouter } from '../../../testUtilities'
 import { ISampleSizes } from './useSampleSizes'
 import { IJurisdiction } from '../../useJurisdictions'
@@ -44,7 +48,17 @@ const apiCalls = {
   }),
   getJurisdictionFile: {
     url: '/api/election/1/jurisdiction/file',
-    response: { file: null, processing: { status: 'PROCESSED' } },
+    response: {
+      file: { name: 'jurisdictions.csv' },
+      processing: fileProcessingMocks.processed,
+    },
+  },
+  getStandardizedContestsFile: {
+    url: '/api/election/1/standardized-contests/file',
+    response: {
+      file: { name: 'standardized-contests.csv' },
+      processing: fileProcessingMocks.processed,
+    },
   },
   getContests: (response: { contests: IContest[] }) => ({
     url: '/api/election/1/contest',
@@ -329,6 +343,35 @@ describe('Audit Setup > Review & Launch', () => {
       const confirmLaunchButton = screen.getAllByText('Launch Audit')[1]
       userEvent.click(confirmLaunchButton)
       await waitFor(() => expect(refreshMock).toHaveBeenCalled())
+    })
+  })
+
+  it('has links to download jurisdictions and standardized contests file', async () => {
+    const expectedCalls = [
+      apiCalls.getSettings(auditSettings.ballotComparisonAll),
+      apiCalls.getJurisdictions({
+        jurisdictions: jurisdictionMocks.allManifests,
+      }),
+      apiCalls.getJurisdictionFile,
+      apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
+      apiCalls.getStandardizedContestsFile,
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderView()
+      const jurisdictionsFileLink = await screen.findByRole('link', {
+        name: 'jurisdictions.csv',
+      })
+      expect(jurisdictionsFileLink).toHaveAttribute(
+        'href',
+        '/api/election/1/jurisdiction/file/csv'
+      )
+      const standardizedContestsFileLink = await screen.findByRole('link', {
+        name: 'standardized-contests.csv',
+      })
+      expect(standardizedContestsFileLink).toHaveAttribute(
+        'href',
+        '/api/election/1/standardized-contests/file/csv'
+      )
     })
   })
 })

@@ -10,16 +10,17 @@ from ...bgcompute import bgcompute_update_standardized_contests_file
 def test_upload_standardized_contests(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
 ):
+    standardized_contests_file = (
+        "Contest Name,Jurisdictions\n"
+        "Contest 1,all\n"
+        'Contest 2,"J1, J3"\n'
+        "Contest 3,J2 \n"
+    )
     rv = client.put(
         f"/api/election/{election_id}/standardized-contests/file",
         data={
             "standardized-contests": (
-                io.BytesIO(
-                    b"Contest Name,Jurisdictions\n"
-                    b"Contest 1,all\n"
-                    b'Contest 2,"J1, J3"\n'
-                    b"Contest 3,J2 \n"
-                ),
+                io.BytesIO(standardized_contests_file.encode()),
                 "standardized-contests.csv",
             )
         },
@@ -71,6 +72,13 @@ def test_upload_standardized_contests(
         },
         {"name": "Contest 3", "jurisdictionIds": [jurisdiction_ids[1]]},
     ]
+
+    rv = client.get(f"/api/election/{election_id}/standardized-contests/file/csv")
+    assert (
+        rv.headers["Content-Disposition"]
+        == 'attachment; filename="standardized-contests.csv"'
+    )
+    assert rv.data.decode("utf-8") == standardized_contests_file
 
 
 def test_standardized_contests_replace(
@@ -292,41 +300,7 @@ def test_standardized_contests_newlines(
     )
     assert_ok(rv)
 
-    rv = client.get(f"/api/election/{election_id}/standardized-contests/file")
-    compare_json(
-        json.loads(rv.data),
-        {
-            "file": {
-                "name": "standardized-contests.csv",
-                "uploadedAt": assert_is_date,
-            },
-            "processing": {
-                "status": ProcessingStatus.READY_TO_PROCESS,
-                "startedAt": None,
-                "completedAt": None,
-                "error": None,
-            },
-        },
-    )
-
     bgcompute_update_standardized_contests_file(election_id)
-
-    rv = client.get(f"/api/election/{election_id}/standardized-contests/file")
-    compare_json(
-        json.loads(rv.data),
-        {
-            "file": {
-                "name": "standardized-contests.csv",
-                "uploadedAt": assert_is_date,
-            },
-            "processing": {
-                "status": ProcessingStatus.PROCESSED,
-                "startedAt": assert_is_date,
-                "completedAt": assert_is_date,
-                "error": None,
-            },
-        },
-    )
 
     rv = client.get(f"/api/election/{election_id}/standardized-contests")
     assert json.loads(rv.data) == [
@@ -358,41 +332,7 @@ def test_standardized_contests_dominion_vote_for(
     )
     assert_ok(rv)
 
-    rv = client.get(f"/api/election/{election_id}/standardized-contests/file")
-    compare_json(
-        json.loads(rv.data),
-        {
-            "file": {
-                "name": "standardized-contests.csv",
-                "uploadedAt": assert_is_date,
-            },
-            "processing": {
-                "status": ProcessingStatus.READY_TO_PROCESS,
-                "startedAt": None,
-                "completedAt": None,
-                "error": None,
-            },
-        },
-    )
-
     bgcompute_update_standardized_contests_file(election_id)
-
-    rv = client.get(f"/api/election/{election_id}/standardized-contests/file")
-    compare_json(
-        json.loads(rv.data),
-        {
-            "file": {
-                "name": "standardized-contests.csv",
-                "uploadedAt": assert_is_date,
-            },
-            "processing": {
-                "status": ProcessingStatus.PROCESSED,
-                "startedAt": assert_is_date,
-                "completedAt": assert_is_date,
-                "error": None,
-            },
-        },
-    )
 
     rv = client.get(f"/api/election/{election_id}/standardized-contests")
     assert json.loads(rv.data) == [
