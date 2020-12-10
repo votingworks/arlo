@@ -16,7 +16,10 @@ const PaddedInner = styled(Inner)`
   padding-top: 30px;
 `
 
-const loadAuditBoard = async (): Promise<IAuditBoard | null> => api(`/me`)
+const loadAuditBoard = async (): Promise<IAuditBoard | null> => {
+  const response = await api<{ user: IAuditBoard }>(`/me`)
+  return response && response.user
+}
 
 const loadContests = async (
   electionId: string,

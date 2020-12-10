@@ -20,13 +20,13 @@ jest.unmock('react-toastify')
 const apiMocks = {
   failedAuth: {
     url: '/api/me',
-    response: null,
+    response: { user: null, superadminUser: null },
   },
   abAuth: {
     url: '/api/me',
     response: {
-      type: 'audit_board',
-      ...dummyBoards()[1],
+      user: { type: 'audit_board', ...dummyBoards()[1] },
+      superadminUser: null,
     },
   },
 }

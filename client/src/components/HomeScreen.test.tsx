@@ -9,7 +9,7 @@ import { auditSettings } from './MultiJurisdictionAudit/useSetupMenuItems/_mocks
 const apiCalls = {
   unauthenticatedUser: {
     url: '/api/me',
-    response: null,
+    response: { user: null, superadminUser: null },
   },
   postNewAudit: (body: {}) => ({
     url: '/api/election',
@@ -26,45 +26,51 @@ const apiCalls = {
     ...aaApiCalls.getUser,
     response: {
       ...aaApiCalls.getUser.response,
-      organizations: [
-        {
-          id: 'org-id',
-          name: 'State of California',
-          elections: [
-            {
-              id: '1',
-              auditName: 'November Presidential Election 2020',
-              electionName: '',
-              state: 'CA',
-            },
-          ],
-        },
-      ],
+      user: {
+        ...aaApiCalls.getUser.response.user,
+        organizations: [
+          {
+            id: 'org-id',
+            name: 'State of California',
+            elections: [
+              {
+                id: '1',
+                auditName: 'November Presidential Election 2020',
+                electionName: '',
+                state: 'CA',
+              },
+            ],
+          },
+        ],
+      },
     },
   },
   getUserMultipleOrgs: {
     ...aaApiCalls.getUser,
     response: {
       ...aaApiCalls.getUser.response,
-      organizations: [
-        {
-          id: 'org-id',
-          name: 'State of California',
-          elections: [
-            {
-              id: '1',
-              auditName: 'November Presidential Election 2020',
-              electionName: '',
-              state: 'CA',
-            },
-          ],
-        },
-        {
-          id: 'org-id-2',
-          name: 'State of Georgia',
-          elections: [],
-        },
-      ],
+      user: {
+        ...aaApiCalls.getUser.response.user,
+        organizations: [
+          {
+            id: 'org-id',
+            name: 'State of California',
+            elections: [
+              {
+                id: '1',
+                auditName: 'November Presidential Election 2020',
+                electionName: '',
+                state: 'CA',
+              },
+            ],
+          },
+          {
+            id: 'org-id-2',
+            name: 'State of Georgia',
+            elections: [],
+          },
+        ],
+      },
     },
   },
 }

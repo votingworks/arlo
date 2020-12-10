@@ -11,7 +11,7 @@ import { IAuditBoard } from '../useAuditBoards'
 import { jaApiCalls } from '../_mocks'
 import { dummyBallots } from '../../DataEntry/_mocks'
 
-const mockJurisdiction = jaApiCalls.getUser.response.jurisdictions[0]
+const mockJurisdiction = jaApiCalls.getUser.response.user.jurisdictions[0]
 
 const mockSavePDF = jest.fn()
 jest.mock('jspdf', () => {

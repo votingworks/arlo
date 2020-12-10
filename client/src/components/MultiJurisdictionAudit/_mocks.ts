@@ -18,42 +18,45 @@ export const jaApiCalls = {
   getUser: {
     url: '/api/me',
     response: {
-      type: 'jurisdiction_admin',
-      name: 'Joe',
-      email: 'test@email.org',
-      jurisdictions: [
-        {
-          id: 'jurisdiction-id-1',
-          name: 'Jurisdiction One',
-          election: {
-            id: '1',
-            auditName: 'audit one',
-            electionName: 'election one',
-            state: 'AL',
+      user: {
+        type: 'jurisdiction_admin',
+        name: 'Joe',
+        email: 'test@email.org',
+        jurisdictions: [
+          {
+            id: 'jurisdiction-id-1',
+            name: 'Jurisdiction One',
+            election: {
+              id: '1',
+              auditName: 'audit one',
+              electionName: 'election one',
+              state: 'AL',
+            },
           },
-        },
-        {
-          id: 'jurisdiction-id-2',
-          name: 'Jurisdiction Two',
-          election: {
-            id: '2',
-            auditName: 'audit two',
-            electionName: 'election two',
-            state: 'AL',
+          {
+            id: 'jurisdiction-id-2',
+            name: 'Jurisdiction Two',
+            election: {
+              id: '2',
+              auditName: 'audit two',
+              electionName: 'election two',
+              state: 'AL',
+            },
           },
-        },
-        {
-          id: 'jurisdiction-id-3',
-          name: 'Jurisdiction Three',
-          election: {
-            id: '1',
-            auditName: 'audit one',
-            electionName: 'election one',
-            state: 'AL',
+          {
+            id: 'jurisdiction-id-3',
+            name: 'Jurisdiction Three',
+            election: {
+              id: '1',
+              auditName: 'audit one',
+              electionName: 'election one',
+              state: 'AL',
+            },
           },
-        },
-      ],
-      organizations: [],
+        ],
+        organizations: [],
+      },
+      superadminUser: null,
     },
   },
   getRounds: {
@@ -115,17 +118,20 @@ export const aaApiCalls = {
   getUser: {
     url: '/api/me',
     response: {
-      type: 'audit_admin',
-      name: 'Joe',
-      email: 'test@email.org',
-      jurisdictions: [],
-      organizations: [
-        {
-          id: 'org-id',
-          name: 'State of California',
-          elections: [],
-        },
-      ],
+      user: {
+        type: 'audit_admin',
+        name: 'Joe',
+        email: 'test@email.org',
+        jurisdictions: [],
+        organizations: [
+          {
+            id: 'org-id',
+            name: 'State of California',
+            elections: [],
+          },
+        ],
+      },
+      superadminUser: null,
     },
   },
   getRounds: (rounds: IRound[]) => ({

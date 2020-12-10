@@ -24,7 +24,7 @@ afterEach(() => {
 
 describe('Header', () => {
   it('renders correctly', async () => {
-    apiMock.mockResolvedValue(null)
+    apiMock.mockResolvedValue({ user: null, superadminUser: null })
     const { container } = renderHeader('/election/1')
     await screen.findAllByAltText('Arlo, by VotingWorks')
     expect(container).toMatchSnapshot()
@@ -32,11 +32,14 @@ describe('Header', () => {
 
   it('shows the logout button when authenticated', async () => {
     apiMock.mockResolvedValue({
-      type: 'audit_admin',
-      name: 'Joe',
-      email: 'test@email.org',
-      jurisdictions: [],
-      organizations: [],
+      user: {
+        type: 'audit_admin',
+        name: 'Joe',
+        email: 'test@email.org',
+        jurisdictions: [],
+        organizations: [],
+      },
+      superadminUser: null,
     })
     renderHeader('/election/1')
 
@@ -46,7 +49,7 @@ describe('Header', () => {
   })
 
   it('does not show logout button if not authenticated', async () => {
-    apiMock.mockResolvedValue(null)
+    apiMock.mockResolvedValue({ user: null, superadminUser: null })
     renderHeader('/election/1')
 
     const loginButton = screen.queryByText('Log out')
@@ -71,11 +74,14 @@ describe('Header', () => {
 
   it('shows the nav bar when authenticated and there is an electionId', async () => {
     apiMock.mockResolvedValue({
-      type: 'audit_admin',
-      name: 'Joe',
-      email: 'test@email.org',
-      jurisdictions: [],
-      organizations: [],
+      user: {
+        type: 'audit_admin',
+        name: 'Joe',
+        email: 'test@email.org',
+        jurisdictions: [],
+        organizations: [],
+      },
+      superadminUser: null,
     })
     const { container } = renderHeader('/election/1')
     await waitFor(() => {
@@ -89,20 +95,23 @@ describe('Header', () => {
 
   it('shows the active jurisdiction name when authenticated as ja', async () => {
     apiMock.mockResolvedValue({
-      type: 'jurisdiction_admin',
-      name: 'Joe',
-      email: 'test@email.org',
-      jurisdictions: [
-        {
-          id: 'jurisdiction-id-1',
-          name: 'Jurisdiction One',
-        },
-        {
-          id: 'jurisdiction-id-2',
-          name: 'Jurisdiction Two',
-        },
-      ],
-      organizations: [],
+      user: {
+        type: 'jurisdiction_admin',
+        name: 'Joe',
+        email: 'test@email.org',
+        jurisdictions: [
+          {
+            id: 'jurisdiction-id-1',
+            name: 'Jurisdiction One',
+          },
+          {
+            id: 'jurisdiction-id-2',
+            name: 'Jurisdiction Two',
+          },
+        ],
+        organizations: [],
+      },
+      superadminUser: null,
     })
     renderHeader('/election/1/jurisdiction/jurisdiction-id-1')
 
