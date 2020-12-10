@@ -1,5 +1,5 @@
 import { api } from '../../utilities'
-import { IRound } from '../../../types'
+import { IRound } from '../useRoundsAuditAdmin'
 
 const getRoundStatus = async (electionId: string): Promise<boolean> => {
   const response = await api<{ rounds: IRound[] }>(

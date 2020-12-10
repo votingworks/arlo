@@ -8,20 +8,6 @@ export interface IErrorResponse {
   }[]
 }
 
-export interface ICreateAuditParams {
-  electionId: string
-}
-
-export interface IAuditFlowParams extends ICreateAuditParams {
-  auditBoardId: string
-  roundId?: string
-  ballotId?: string
-}
-
-export interface IProcessingStatus {
-  status: 'ERRORED' | 'PROCESSING' | 'PROCESSED' | 'READY_TO_PROCESS'
-}
-
 export interface ICandidate {
   id: string
   name: string
@@ -75,69 +61,10 @@ export interface IAuditBoard {
   passphrase?: string
 }
 
-export interface IBallotManifest {
-  filename: string | null
-  numBallots: number | '' | null
-  numBatches: number | '' | null
-  uploadedAt: string | null
-  processing: IProcessingStatus | null
-}
-
-export interface IBatch {
-  id: string
-  name: string
-  numBallots: number
-  tabulator: null | string
-}
-
-export interface IJurisdiction {
-  id: string
-  name: string
-  contests: string[]
-  auditBoards: Pick<IAuditBoard, 'id' | 'name' | 'members' | 'passphrase'>[]
-  ballotManifest?: IBallotManifest
-  batches?: IBatch[] // optional until I'm ready to update everything
-}
-
 export interface ISampleSizeOption {
   size: number | string
   prob: number | null
   key: string
-}
-
-export interface IUnkeyedSampleSizeOption {
-  type: string | null
-  size: number | string
-  prob: number | null
-}
-
-export interface IRoundContest {
-  id: string
-  results: {
-    [key: string]: number
-  }
-  sampleSizeOptions: IUnkeyedSampleSizeOption[] | null
-  sampleSize: number | null
-  endMeasurements: {
-    isComplete: null | boolean
-    pvalue: null | number
-  }
-}
-
-export interface IRound {
-  id: string
-  name?: string
-  randomSeed?: string
-  riskLimit?: number
-  contests: IRoundContest[]
-  startedAt: string
-  endedAt: string | null
-  isAuditComplete: boolean
-  jurisdictions?: {
-    [key: string]: {
-      numBallots: number
-    }
-  }
 }
 
 export interface IElectionMeta {
