@@ -496,7 +496,7 @@ def test_audit_boards_set_members_valid(
 
         rv = client.get("/api/me")
         audit_board = json.loads(rv.data)
-        assert audit_board["members"] == member_request
+        assert audit_board["user"]["members"] == member_request
 
 
 def test_audit_boards_set_members_invalid(

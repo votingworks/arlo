@@ -8,8 +8,9 @@ from .lib import (
     get_loggedin_user,
     set_loggedin_user,
     clear_loggedin_user,
-    set_superadmin,
-    clear_superadmin,
+    set_superadmin_user,
+    clear_superadmin_user,
+    get_superadmin_user,
     UserType,
 )
 from ..api.audit_boards import serialize_members
@@ -79,18 +80,19 @@ def serialize_election(election):
 @auth.route("/api/me")
 def auth_me():
     user_type, user_key = get_loggedin_user(session)
+    user = None
     if user_type in [UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN]:
-        user = User.query.filter_by(email=user_key).one()
-        return jsonify(
+        db_user = User.query.filter_by(email=user_key).one()
+        user = dict(
             type=user_type,
-            email=user.email,
+            email=db_user.email,
             organizations=[
                 {
                     "id": org.id,
                     "name": org.name,
                     "elections": [serialize_election(e) for e in org.elections],
                 }
-                for org in user.organizations
+                for org in db_user.organizations
             ],
             jurisdictions=[
                 {
@@ -99,12 +101,12 @@ def auth_me():
                     "election": serialize_election(j.election),
                     "numBallots": j.manifest_num_ballots,
                 }
-                for j in user.jurisdictions
+                for j in db_user.jurisdictions
             ],
         )
     elif user_type == UserType.AUDIT_BOARD:
         audit_board = AuditBoard.query.get(user_key)
-        return jsonify(
+        user = dict(
             type=user_type,
             id=audit_board.id,
             jurisdictionId=audit_board.jurisdiction_id,
@@ -114,16 +116,16 @@ def auth_me():
             members=serialize_members(audit_board),
             signedOffAt=isoformat(audit_board.signed_off_at),
         )
-    else:
-        # sticking to JSON when not logged in, because same data type,
-        # sending a null object because there is no user logged in.
-        # Considered an empty object, but that seemed inconsistent.
-        return jsonify(None)
+
+    superadmin_email = get_superadmin_user(session)
+    return jsonify(
+        user=user, superadminUser=superadmin_email and {"email": superadmin_email}
+    )
 
 
 @auth.route("/auth/logout")
 def logout():
-    clear_superadmin(session)
+    clear_superadmin_user(session)
 
     user_type, _user_email = get_loggedin_user(session)
     if not user_type:
@@ -154,7 +156,7 @@ def superadmin_login_callback():
         and userinfo["email"]
         and userinfo["email"].split("@")[-1] == SUPERADMIN_EMAIL_DOMAIN
     ):
-        set_superadmin(session)
+        set_superadmin_user(session, userinfo["email"])
         return redirect("/superadmin/")
     else:
         return redirect("/")
