@@ -4,9 +4,10 @@ import { H1 } from '@blueprintjs/core'
 import { Link } from 'react-router-dom'
 import { Column } from 'react-table'
 import { Table } from '../Atoms/Table'
-import { IAuditBoard, BallotStatus } from '../../types'
+import { BallotStatus } from '../../types'
 import LinkButton from '../Atoms/LinkButton'
 import { IBallot } from '../MultiJurisdictionAudit/RoundManagement/useBallots'
+import { IAuditBoard } from '../UserContext'
 
 const RightWrapper = styled.div`
   display: flex;

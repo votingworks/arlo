@@ -2,9 +2,9 @@ import React from 'react'
 import { H1, RadioGroup, Radio } from '@blueprintjs/core'
 import { Formik, FormikProps, getIn } from 'formik'
 import FormSection from '../Atoms/Form/FormSection'
-import { IAuditBoardMember } from '../../types'
 import FormButton from '../Atoms/Form/FormButton'
 import { LabelText, NameField } from './Atoms'
+import { IAuditBoardMember } from '../UserContext'
 
 interface IProps {
   boardName: string

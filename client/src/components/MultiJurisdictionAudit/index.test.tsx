@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import { waitFor, fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {
@@ -25,7 +25,7 @@ import {
   withMockFetch,
   renderWithRouter,
 } from '../testUtilities'
-import AuthDataProvider, { AuthDataContext } from '../UserContext'
+import AuthDataProvider, { useAuthDataContext } from '../UserContext'
 import getJurisdictionFileStatus from './useSetupMenuItems/getJurisdictionFileStatus'
 import getRoundStatus from './useSetupMenuItems/getRoundStatus'
 import { jaApiCalls, aaApiCalls } from './_mocks'
@@ -60,8 +60,8 @@ describe('AA setup flow', () => {
   // AuditAdminView will only be rendered once the user is logged in, so
   // we simulate that.
   const AuditAdminViewWithAuth: React.FC = () => {
-    const { isAuthenticated } = useContext(AuthDataContext)
-    return isAuthenticated ? <AuditAdminView /> : null
+    const auth = useAuthDataContext()
+    return auth ? <AuditAdminView /> : null
   }
 
   const loadEach = [
@@ -245,8 +245,8 @@ describe('JA setup', () => {
   // JurisdictionAdminView will only be rendered once the user is logged in, so
   // we simulate that.
   const JurisdictionAdminViewWithAuth: React.FC = () => {
-    const { isAuthenticated } = useContext(AuthDataContext)
-    return isAuthenticated ? <JurisdictionAdminView /> : null
+    const auth = useAuthDataContext()
+    return auth ? <JurisdictionAdminView /> : null
   }
 
   const renderView = () =>

@@ -5,35 +5,80 @@ import React, {
   useMemo,
   useContext,
 } from 'react'
-import { IAuthData, IUserMeta } from '../types'
 import { api } from './utilities'
 
-const initialAuthData: IAuthData = { isAuthenticated: null }
-export const AuthDataContext = createContext<IAuthData>(initialAuthData)
+export interface IElection {
+  id: string
+  auditName: string
+  electionName: string
+  state: string
+}
+
+export interface IOrganization {
+  id: string
+  name: string
+  elections: IElection[]
+}
+
+export interface IJurisdiction {
+  id: string
+  name: string
+  election: IElection
+  numBallots: number | null
+}
+
+export interface IAuditBoardMember {
+  name: string
+  affiliation: string | null
+}
+
+export interface IAuditBoard {
+  type: 'audit_board'
+  id: string
+  name: string
+  jurisdictionId: string
+  jurisdictionName: string
+  roundId: string
+  members: IAuditBoardMember[]
+  signedOffAt: string | null
+}
+
+export interface IAuditAdmin {
+  type: 'audit_admin'
+  name: string
+  email: string
+  organizations: IOrganization[]
+  jurisdictions: []
+}
+
+export interface IJurisdictionAdmin {
+  type: 'jurisdiction_admin'
+  name: string
+  email: string
+  organizations: []
+  jurisdictions: IJurisdiction[]
+}
+
+export type IUser = IAuditAdmin | IJurisdictionAdmin | IAuditBoard
+
+export interface IAuthData {
+  user: IUser | null
+}
+
+const AuthDataContext = createContext<IAuthData | null>(null)
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const AuthDataProvider = (props: any) => {
-  const [authData, setAuthData] = useState<IAuthData>(initialAuthData)
+  const [authData, setAuthData] = useState<IAuthData | null>(null)
 
   useEffect(() => {
     ;(async () => {
-      const meta = await api<IUserMeta>('/me')
-      if (!meta) {
-        setAuthData({ isAuthenticated: false })
-        return
-      }
-      setAuthData({
-        isAuthenticated: true,
-        meta,
-      })
+      const user = await api<IUser | null>('/me')
+      setAuthData({ user })
     })()
   }, [])
 
-  // const onLogout = () => setAuthData(initialAuthData)
-
-  // const onLogin = (newAuthData: IAuthData) => setAuthData(newAuthData)
-
-  const authDataValue = useMemo(() => ({ ...authData }), [authData])
+  const authDataValue = useMemo(() => authData && { ...authData }, [authData])
 
   return <AuthDataContext.Provider value={authDataValue} {...props} />
 }

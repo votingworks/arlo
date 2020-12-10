@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import { Route, RouteProps, Switch, Redirect } from 'react-router-dom'
 import './App.css'
 import styled from 'styled-components'
@@ -12,8 +12,10 @@ import {
 import DataEntry from './components/DataEntry'
 import HomeScreen from './components/HomeScreen'
 import 'react-toastify/dist/ReactToastify.css'
-import AuthDataProvider, { AuthDataContext } from './components/UserContext'
-import { IUserMeta } from './types'
+import AuthDataProvider, {
+  IUser,
+  useAuthDataContext,
+} from './components/UserContext'
 
 const Main = styled.div`
   display: flex;
@@ -23,19 +25,19 @@ const Main = styled.div`
 `
 
 interface PrivateRouteProps extends RouteProps {
-  userType: IUserMeta['type']
+  userType: IUser['type']
 }
 
 const PrivateRoute: React.FC<PrivateRouteProps> = ({
   userType,
   ...props
 }: PrivateRouteProps) => {
-  const { isAuthenticated, meta } = useContext(AuthDataContext)
-  if (isAuthenticated === null) {
+  const auth = useAuthDataContext()
+  if (auth === null) {
     // Still loading /api/me, don't show anything
     return <></>
   }
-  if (isAuthenticated && userType === meta!.type) {
+  if (auth.user && userType === auth.user.type) {
     return <Route {...props} />
   }
   return (

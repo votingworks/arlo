@@ -2,13 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { H1 } from '@blueprintjs/core'
 import { Route, Switch, useParams, useHistory } from 'react-router-dom'
 import styled from 'styled-components'
-import {
-  IAuditBoard,
-  IBallotInterpretation,
-  IAuditBoardMember,
-  IContest,
-  BallotStatus,
-} from '../../types'
+import { IBallotInterpretation, IContest, BallotStatus } from '../../types'
 import { api } from '../utilities'
 import BoardTable from './BoardTable'
 import MemberForm from './MemberForm'
@@ -16,14 +10,13 @@ import Ballot from './Ballot'
 import SignOff from './SignOff'
 import { Wrapper, Inner } from '../Atoms/Wrapper'
 import { IBallot } from '../MultiJurisdictionAudit/RoundManagement/useBallots'
+import { IAuditBoard, IAuditBoardMember } from '../UserContext'
 
 const PaddedInner = styled(Inner)`
   padding-top: 30px;
 `
 
-const loadAuditBoard = async (): Promise<IAuditBoard | null> => {
-  return api(`/me`)
-}
+const loadAuditBoard = async (): Promise<IAuditBoard | null> => api(`/me`)
 
 const loadContests = async (
   electionId: string,

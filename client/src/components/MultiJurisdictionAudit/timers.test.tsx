@@ -2,13 +2,13 @@
  * These tests are segregated from index.test.tsx because they were creating unreliable interference
  */
 
-import React, { ReactElement, useContext } from 'react'
+import React, { ReactElement } from 'react'
 import { screen, act } from '@testing-library/react'
 import { Route } from 'react-router-dom'
 import FakeTimers from '@sinonjs/fake-timers'
 import { AuditAdminView } from './index'
 import { renderWithRouter, withMockFetch } from '../testUtilities'
-import AuthDataProvider, { AuthDataContext } from '../UserContext'
+import AuthDataProvider, { useAuthDataContext } from '../UserContext'
 import getJurisdictionFileStatus from './useSetupMenuItems/getJurisdictionFileStatus'
 import getRoundStatus from './useSetupMenuItems/getRoundStatus'
 import { aaApiCalls } from './_mocks'
@@ -25,8 +25,8 @@ getRoundStatusMock.mockReturnValue(false)
 // AuditAdminView will only be rendered once the user is logged in, so
 // we simulate that.
 const AuditAdminViewWithAuth: React.FC = () => {
-  const { isAuthenticated } = useContext(AuthDataContext)
-  return isAuthenticated ? <AuditAdminView /> : null
+  const auth = useAuthDataContext()
+  return auth ? <AuditAdminView /> : null
 }
 
 const renderWithRoute = (route: string, component: ReactElement) =>

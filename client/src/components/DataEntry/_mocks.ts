@@ -1,11 +1,13 @@
-import { IAuditBoard, BallotStatus, Interpretation } from '../../types'
+import { BallotStatus, Interpretation } from '../../types'
 import { contestMocks } from '../MultiJurisdictionAudit/AASetup/Contests/_mocks'
 import { IBallot } from '../MultiJurisdictionAudit/RoundManagement/useBallots'
+import { IAuditBoard } from '../UserContext'
 
 export const contest = contestMocks.filledTargeted.contests[0]
 
 export const dummyBoards = (): IAuditBoard[] => [
   {
+    type: 'audit_board',
     id: 'audit-board-1',
     name: 'Audit Board #1',
     jurisdictionId: 'jurisdiction-1',
@@ -24,6 +26,7 @@ export const dummyBoards = (): IAuditBoard[] => [
     signedOffAt: null,
   },
   {
+    type: 'audit_board',
     id: 'audit-board-2',
     name: 'Audit Board #2',
     jurisdictionId: 'jurisdiction-1',

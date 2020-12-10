@@ -50,14 +50,16 @@ const Header: React.FC<{}> = () => {
     | null = useRouteMatch(
     '/election/:electionId/jurisdiction/:jurisdictionId?'
   )
-  const { isAuthenticated, meta } = useAuthDataContext()
+  const auth = useAuthDataContext()
   const electionId = electionMatch ? electionMatch.params.electionId : undefined
   const jurisdiction =
-    jurisdictionMatch && meta
-      ? meta.jurisdictions.find(
-          j => j.id === jurisdictionMatch.params.jurisdictionId
-        )
-      : undefined
+    jurisdictionMatch &&
+    auth &&
+    auth.user &&
+    auth.user.type === 'jurisdiction_admin' &&
+    auth.user.jurisdictions.find(
+      j => j.id === jurisdictionMatch.params.jurisdictionId
+    )
   return (
     <Nav>
       <InnerBar>
@@ -67,14 +69,12 @@ const Header: React.FC<{}> = () => {
               <img src="/arlo.png" alt="Arlo, by VotingWorks" />
             </Link>
           </NavbarHeading>
-          {isAuthenticated && meta!.type === 'jurisdiction_admin' && (
-            <NavbarHeading>
-              {jurisdiction && `Jurisdiction: ${jurisdiction.name}`}
-            </NavbarHeading>
+          {jurisdiction && (
+            <NavbarHeading>Jurisdiction: {jurisdiction.name}</NavbarHeading>
           )}
         </NavbarGroup>
         <NavbarGroup align={Alignment.RIGHT}>
-          {isAuthenticated && electionId && meta!.type === 'audit_admin' && (
+          {electionId && auth && auth.user && auth.user.type === 'audit_admin' && (
             <>
               <NavbarHeading>
                 <Link to={`/election/${electionId}/setup`}>Audit Setup</Link>
@@ -97,7 +97,7 @@ const Header: React.FC<{}> = () => {
           )}
           <ButtonBar id="reset-button-wrapper" />
           {/* istanbul ignore next */
-          isAuthenticated && (
+          auth && auth.user && (
             <FormButton
               size="sm"
               onClick={

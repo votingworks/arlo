@@ -24,7 +24,10 @@ const apiMocks = {
   },
   abAuth: {
     url: '/api/me',
-    response: { type: 'audit_board', ...dummyBoards()[1] },
+    response: {
+      type: 'audit_board',
+      ...dummyBoards()[1],
+    },
   },
 }
 
@@ -36,7 +39,7 @@ describe('App', () => {
       const expectedCalls = [apiMocks.failedAuth]
       await withMockFetch(expectedCalls, async () => {
         const { container } = renderView('/')
-        await screen.findByAltText('Arlo, by VotingWorks')
+        await screen.findByRole('button', { name: 'Log in to your audit' })
         expect(container).toMatchSnapshot()
       })
     })
@@ -75,7 +78,7 @@ describe('App', () => {
         const { container } = renderView(
           '/election/1/audit-board/audit-board-1'
         )
-        await screen.findByAltText('Arlo, by VotingWorks')
+        await screen.findByRole('button', { name: 'Log in to your audit' })
         expect(container).toMatchSnapshot()
       })
     })
@@ -126,7 +129,7 @@ describe('App', () => {
         const { container } = renderView(
           '/election/1/jurisdiction/jurisdiction-id-1'
         )
-        await screen.findByAltText('Arlo, by VotingWorks')
+        await screen.findByRole('button', { name: 'Log in to your audit' })
         expect(container).toMatchSnapshot()
       })
     })

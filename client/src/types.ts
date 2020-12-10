@@ -45,57 +45,8 @@ export enum BallotStatus {
   NOT_FOUND = 'NOT_FOUND',
 }
 
-export interface IAuditBoardMember {
-  name: string
-  affiliation: string | null
-}
-
-export interface IAuditBoard {
-  id: string
-  name: string
-  jurisdictionId: string
-  jurisdictionName: string
-  roundId: string
-  members: IAuditBoardMember[]
-  signedOffAt: string | null
-  passphrase?: string
-}
-
 export interface ISampleSizeOption {
   size: number | string
   prob: number | null
   key: string
-}
-
-export interface IElectionMeta {
-  id: string
-  auditName: string
-  electionName: string
-  state: string
-}
-
-export interface IOrganizationMeta {
-  id: string
-  name: string
-  elections: IElectionMeta[]
-}
-
-export interface IJurisdictionMeta {
-  id: string
-  name: string
-  election: IElectionMeta
-  numBallots: number | null
-}
-
-export interface IUserMeta {
-  name: string
-  email: string
-  type: 'audit_admin' | 'jurisdiction_admin' | 'audit_board'
-  organizations: IOrganizationMeta[]
-  jurisdictions: IJurisdictionMeta[]
-}
-
-export interface IAuthData {
-  isAuthenticated: boolean | null
-  meta?: IUserMeta
 }
