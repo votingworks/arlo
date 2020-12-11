@@ -656,7 +656,7 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders ab logged i
     class="Toastify"
   />
   <div
-    class="sc-cmTdod ftrAGQ"
+    class="sc-feJyhm geOhHf"
   >
     <div
       class="bp3-navbar sc-EHOje gMcVig"
@@ -704,7 +704,7 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders ab logged i
       class="sc-htpNat cBZqYS"
     >
       <div
-        class="sc-bxivhb sc-tilXH daimQC"
+        class="sc-bxivhb sc-jnlKLf kdaFIg"
       >
         <div>
           <h1
@@ -722,27 +722,27 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders ab logged i
           </p>
           <form>
             <div
-              class="sc-jTzLTM hPHXqn"
+              class="sc-jTzLTM jwDWLL"
             >
-              <h3
-                class="bp3-heading sc-jzJRlG uBwws"
+              <h5
+                class="bp3-heading"
               >
                 Audit Board Member
-              </h3>
+              </h5>
               <label
-                class="sc-jbKcbu dvaTrG"
+                class="sc-kvZOFW hWJors"
                 for="[0]name"
               >
                 Full Name
               </label>
               <input
-                class="sc-dNLxif bUssQM"
+                class="sc-hqyNC cPxwcd"
                 id="[0]name"
                 name="[0]name"
                 value=""
               />
               <label
-                class="sc-jbKcbu dvaTrG"
+                class="sc-kvZOFW hWJors"
                 for="[0]affiliation"
               >
                 Party Affiliation 
@@ -833,27 +833,27 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders ab logged i
               </div>
             </div>
             <div
-              class="sc-jTzLTM hPHXqn"
+              class="sc-jTzLTM jwDWLL"
             >
-              <h3
-                class="bp3-heading sc-jzJRlG uBwws"
+              <h5
+                class="bp3-heading"
               >
                 Audit Board Member
-              </h3>
+              </h5>
               <label
-                class="sc-jbKcbu dvaTrG"
+                class="sc-kvZOFW hWJors"
                 for="[1]name"
               >
                 Full Name
               </label>
               <input
-                class="sc-dNLxif bUssQM"
+                class="sc-hqyNC cPxwcd"
                 id="[1]name"
                 name="[1]name"
                 value=""
               />
               <label
-                class="sc-jbKcbu dvaTrG"
+                class="sc-kvZOFW hWJors"
                 for="[1]affiliation"
               >
                 Party Affiliation 
