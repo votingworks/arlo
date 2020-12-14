@@ -108,6 +108,7 @@ def auth_me():
             type=user_type,
             id=audit_board.id,
             jurisdictionId=audit_board.jurisdiction_id,
+            jurisdictionName=audit_board.jurisdiction.name,
             roundId=audit_board.round_id,
             name=audit_board.name,
             members=serialize_members(audit_board),
