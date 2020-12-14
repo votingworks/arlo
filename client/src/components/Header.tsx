@@ -157,12 +157,7 @@ const Header: React.FC<{}> = () => {
                   <Popover
                     content={
                       <Menu>
-                        <MenuItem
-                          text="Log out"
-                          onClick={() =>
-                            window.location.replace('/auth/logout')
-                          }
-                        />
+                        <MenuItem text="Log out" href="/auth/logout" />
                       </Menu>
                     }
                     usePortal={false}
