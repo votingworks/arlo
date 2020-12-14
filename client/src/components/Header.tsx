@@ -6,26 +6,39 @@ import {
   NavbarHeading,
   Alignment,
   NavbarDivider,
-  Tag,
   Button,
   Menu,
   MenuItem,
   Popover,
   Position,
   Colors,
+  Icon,
 } from '@blueprintjs/core'
 import { Link, useRouteMatch, RouteComponentProps } from 'react-router-dom'
 import { useAuthDataContext } from './UserContext'
-import FormButton from './Atoms/Form/FormButton'
 import { Inner } from './Atoms/Wrapper'
 import LinkButton from './Atoms/LinkButton'
 
 const SupportBar = styled(Navbar)`
-  background-color: ${Colors.ORANGE5};
-  height: 30px;
+  background-color: ${Colors.ROSE3};
+  height: 35px;
   padding: 0;
+  color: ${Colors.WHITE};
+
   .bp3-navbar-group {
-    height: 30px;
+    height: 35px;
+  }
+
+  a {
+    text-decoration: none;
+    color: ${Colors.WHITE};
+    span {
+      margin-left: 8px;
+    }
+  }
+
+  .bp3-navbar-divider {
+    border-color: rgba(255, 255, 255, 0.7);
   }
 `
 
@@ -41,6 +54,7 @@ const Nav = styled(Navbar)`
 
 const UserMenu = styled.div`
   .bp3-button {
+    border: 1px solid ${Colors.GRAY4};
     width: 200px;
   }
   .bp3-button-text {
@@ -86,10 +100,15 @@ const Header: React.FC<{}> = () => {
         <SupportBar>
           <InnerBar>
             <NavbarGroup align={Alignment.LEFT}>
-              <NavbarHeading>Support Tools</NavbarHeading>
+              <a href="/superadmin/">
+                <Icon icon="eye-open" />
+                <span>Support Tools</span>
+              </a>
             </NavbarGroup>
             <NavbarGroup align={Alignment.RIGHT}>
-              <NavbarHeading>{auth.superadminUser.email}</NavbarHeading>
+              <span>{auth.superadminUser.email}</span>
+              <NavbarDivider />
+              <a href="/auth/logout">Log out</a>
             </NavbarGroup>
           </InnerBar>
         </SupportBar>
