@@ -1,6 +1,6 @@
 import { contestMocks } from './AASetup/Contests/_mocks'
 import { IFileInfo } from './useCSV'
-import { manifestFile, talliesFile } from './useSetupMenuItems/_mocks'
+import { manifestFile, talliesFile, cvrsFile } from './useSetupMenuItems/_mocks'
 import { FileProcessingStatus } from './useSetupMenuItems/getJurisdictionFileStatus'
 import { IBallot } from './RoundManagement/useBallots'
 import { IAuditBoard } from './useAuditBoards'
@@ -11,6 +11,8 @@ const manifestFormData: FormData = new FormData()
 manifestFormData.append('manifest', manifestFile, manifestFile.name)
 const talliesFormData: FormData = new FormData()
 talliesFormData.append('batchTallies', talliesFile, talliesFile.name)
+const cvrsFormData: FormData = new FormData()
+cvrsFormData.append('cvrs', cvrsFile, cvrsFile.name)
 
 export const jaApiCalls = {
   getUser: {
@@ -87,6 +89,14 @@ export const jaApiCalls = {
     options: {
       method: 'PUT',
       body: talliesFormData,
+    },
+    response: { status: 'ok' },
+  },
+  putCVRs: {
+    url: '/api/election/1/jurisdiction/jurisdiction-id-1/cvrs',
+    options: {
+      method: 'PUT',
+      body: cvrsFormData,
     },
     response: { status: 'ok' },
   },

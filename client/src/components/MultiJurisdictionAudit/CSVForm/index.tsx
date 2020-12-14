@@ -54,6 +54,7 @@ const CSVFileForm = ({
     <Formik
       initialValues={{ csv: isProcessing ? new File([], file!.name) : null }}
       validationSchema={schema}
+      validateOnBlur={false}
       onSubmit={async (values: IValues) => {
         if (values.csv) {
           await uploadCSVFile(values.csv)
