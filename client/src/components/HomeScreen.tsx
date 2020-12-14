@@ -10,9 +10,12 @@ import {
 import { useHistory, useLocation } from 'react-router-dom'
 import styled from 'styled-components'
 import { Formik, FormikProps, Field } from 'formik'
-import { useAuthDataContext } from './UserContext'
+import {
+  useAuthDataContext,
+  IAuditAdmin,
+  IJurisdictionAdmin,
+} from './UserContext'
 import { api } from './utilities'
-import { IUserMeta } from '../types'
 import LinkButton from './Atoms/LinkButton'
 import FormSection from './Atoms/Form/FormSection'
 import FormButton from './Atoms/Form/FormButton'
@@ -22,13 +25,14 @@ import { groupBy, sortBy } from '../utils/array'
 import { IAuditSettings } from './MultiJurisdictionAudit/useAuditSettings'
 
 const HomeScreen: React.FC = () => {
-  const { isAuthenticated, meta } = useAuthDataContext()
+  const auth = useAuthDataContext()
 
-  if (isAuthenticated === null) return null // Still loading
+  if (auth === null) return null // Still loading
 
-  if (!isAuthenticated) return <LoginScreen />
+  const { user } = auth
+  if (!user) return <LoginScreen />
 
-  switch (meta!.type) {
+  switch (user.type) {
     case 'audit_admin':
       return (
         <Wrapper>
@@ -37,7 +41,7 @@ const HomeScreen: React.FC = () => {
               <ListAuditsAuditAdmin />
             </div>
             <div style={{ width: '50%' }}>
-              <CreateAudit />
+              <CreateAudit user={user} />
             </div>
           </Inner>
         </Wrapper>
@@ -47,7 +51,7 @@ const HomeScreen: React.FC = () => {
         <Wrapper>
           <Inner>
             <div style={{ width: '50%' }}>
-              <ListAuditsJurisdictionAdmin />
+              <ListAuditsJurisdictionAdmin user={user} />
             </div>
           </Inner>
         </Wrapper>
@@ -124,24 +128,24 @@ const ListAuditsAuditAdmin: React.FC = () => {
   // time this component renders. It's a bit hacky and inefficient, but this is
   // the only screen that should have this issue. A better solution might be to
   // decouple loading the list of audits from loading the user data.
-  const [meta, setMeta] = useState<IUserMeta | null>(null)
+  const [user, setUser] = useState<IAuditAdmin | null>(null)
 
   useEffect(() => {
     ;(async () => {
       try {
-        const userMeta: IUserMeta | null = await api('/me')
-        setMeta(userMeta)
+        const response = await api<IAuditAdmin | null>('/me')
+        setUser(response)
       } catch (err) /* istanbul ignore next */ {
-        setMeta(null)
+        setUser(null)
       }
     })()
   }, [])
 
-  if (!meta) return null // Still loading
+  if (!user) return null // Still loading
 
   return (
     <ListAuditsWrapper>
-      {sortBy(meta.organizations, o => o.name).map(organization => (
+      {sortBy(user.organizations, o => o.name).map(organization => (
         <div key={organization.id}>
           <h2>Audits - {organization.name}</h2>
           {organization.elections.length === 0 ? (
@@ -167,9 +171,12 @@ const ListAuditsAuditAdmin: React.FC = () => {
   )
 }
 
-const ListAuditsJurisdictionAdmin: React.FC = () => {
-  const { meta } = useAuthDataContext()
-  const jurisdictionsByAudit = groupBy(meta!.jurisdictions, j => j.election.id)
+const ListAuditsJurisdictionAdmin = ({
+  user,
+}: {
+  user: IJurisdictionAdmin
+}) => {
+  const jurisdictionsByAudit = groupBy(user.jurisdictions, j => j.election.id)
   return (
     <ListAuditsWrapper>
       {sortBy(
@@ -220,8 +227,7 @@ const WideField = styled(FormField)`
   width: 100%;
 `
 
-const CreateAudit: React.FC = () => {
-  const { meta } = useAuthDataContext()
+const CreateAudit = ({ user }: { user: IAuditAdmin }) => {
   const history = useHistory()
   const [submitting, setSubmitting] = useState(false)
 
@@ -255,7 +261,7 @@ const CreateAudit: React.FC = () => {
     <Formik
       onSubmit={onSubmit}
       initialValues={{
-        organizationId: meta!.organizations[0].id,
+        organizationId: user.organizations[0].id,
         auditName: '',
         auditType: 'BALLOT_POLLING',
         auditMathType: 'BRAVO',
@@ -271,7 +277,7 @@ const CreateAudit: React.FC = () => {
           <h2>New Audit</h2>
           <FormSection>
             {/* eslint-disable jsx-a11y/label-has-associated-control */}
-            {meta!.organizations.length > 1 && (
+            {user.organizations.length > 1 && (
               <label htmlFor="organizationId">
                 <p>Organization</p>
                 <HTMLSelect
@@ -281,7 +287,7 @@ const CreateAudit: React.FC = () => {
                     setFieldValue('organizationId', e.currentTarget.value)
                   }
                   value={values.organizationId}
-                  options={meta!.organizations.map(({ id, name }) => ({
+                  options={user.organizations.map(({ id, name }) => ({
                     label: name,
                     value: id,
                   }))}

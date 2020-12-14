@@ -4,7 +4,7 @@ import { H1 } from '@blueprintjs/core'
 import FormSection from '../Atoms/Form/FormSection'
 import { LabelText, NameField } from './Atoms'
 import FormButton from '../Atoms/Form/FormButton'
-import { IAuditBoard } from '../../types'
+import { IAuditBoard } from '../UserContext'
 
 export interface IProps {
   auditBoard: IAuditBoard

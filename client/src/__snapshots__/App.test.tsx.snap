@@ -253,9 +253,6 @@ exports[`App / renders ja logged in properly 1`] = `
               />
             </a>
           </div>
-          <div
-            class="bp3-navbar-heading"
-          />
         </div>
         <div
           class="bp3-navbar-group bp3-align-right"
@@ -992,9 +989,6 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders ja logged i
               />
             </a>
           </div>
-          <div
-            class="bp3-navbar-heading"
-          />
         </div>
         <div
           class="bp3-navbar-group bp3-align-right"
@@ -1421,7 +1415,8 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders ja logge
           <div
             class="bp3-navbar-heading"
           >
-            Jurisdiction: Jurisdiction One
+            Jurisdiction: 
+            Jurisdiction One
           </div>
         </div>
         <div
