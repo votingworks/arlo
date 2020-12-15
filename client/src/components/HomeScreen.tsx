@@ -133,8 +133,8 @@ const ListAuditsAuditAdmin: React.FC = () => {
   useEffect(() => {
     ;(async () => {
       try {
-        const response = await api<IAuditAdmin | null>('/me')
-        setUser(response)
+        const response = await api<{ user: IAuditAdmin }>('/me')
+        setUser(response && response.user)
       } catch (err) /* istanbul ignore next */ {
         setUser(null)
       }

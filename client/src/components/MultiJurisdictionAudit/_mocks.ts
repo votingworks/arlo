@@ -14,46 +14,66 @@ talliesFormData.append('batchTallies', talliesFile, talliesFile.name)
 const cvrsFormData: FormData = new FormData()
 cvrsFormData.append('cvrs', cvrsFile, cvrsFile.name)
 
+export const apiCalls = {
+  serverError: (
+    url: string,
+    error = { status: 500, statusText: 'Server Error' }
+  ) => ({
+    url,
+    response: {
+      errors: [{ errorType: 'Server Error', message: error.statusText }],
+    },
+    error,
+  }),
+  unauthenticatedUser: {
+    url: '/api/me',
+    response: { user: null, superadminUser: null },
+  },
+}
+
 export const jaApiCalls = {
   getUser: {
     url: '/api/me',
     response: {
-      type: 'jurisdiction_admin',
-      name: 'Joe',
-      email: 'test@email.org',
-      jurisdictions: [
-        {
-          id: 'jurisdiction-id-1',
-          name: 'Jurisdiction One',
-          election: {
-            id: '1',
-            auditName: 'audit one',
-            electionName: 'election one',
-            state: 'AL',
+      user: {
+        type: 'jurisdiction_admin',
+        name: 'Joe',
+        email: 'jurisdictionadmin@email.org',
+        jurisdictions: [
+          {
+            id: 'jurisdiction-id-1',
+            name: 'Jurisdiction One',
+            election: {
+              id: '1',
+              auditName: 'audit one',
+              electionName: 'election one',
+              state: 'AL',
+            },
           },
-        },
-        {
-          id: 'jurisdiction-id-2',
-          name: 'Jurisdiction Two',
-          election: {
-            id: '2',
-            auditName: 'audit two',
-            electionName: 'election two',
-            state: 'AL',
+          {
+            id: 'jurisdiction-id-2',
+            name: 'Jurisdiction Two',
+            election: {
+              id: '2',
+              auditName: 'audit two',
+              electionName: 'election two',
+              state: 'AL',
+            },
           },
-        },
-        {
-          id: 'jurisdiction-id-3',
-          name: 'Jurisdiction Three',
-          election: {
-            id: '1',
-            auditName: 'audit one',
-            electionName: 'election one',
-            state: 'AL',
+          {
+            id: 'jurisdiction-id-3',
+            name: 'Jurisdiction Three',
+            election: {
+              id: '1',
+              auditName: 'audit one',
+              electionName: 'election one',
+              state: 'AL',
+            },
           },
-        },
-      ],
-      organizations: [],
+        ],
+        organizations: [],
+      },
+      superadminUser: null,
     },
   },
   getRounds: {
@@ -111,23 +131,90 @@ export const jaApiCalls = {
   }),
 }
 
+const aaUser = {
+  type: 'audit_admin',
+  name: 'Joe',
+  email: 'auditadmin@email.org',
+  jurisdictions: [],
+  organizations: [
+    {
+      id: 'org-id',
+      name: 'State of California',
+      elections: [],
+    },
+  ],
+}
+
 export const aaApiCalls = {
   getUser: {
     url: '/api/me',
     response: {
-      type: 'audit_admin',
-      name: 'Joe',
-      email: 'test@email.org',
-      jurisdictions: [],
-      organizations: [
-        {
-          id: 'org-id',
-          name: 'State of California',
-          elections: [],
-        },
-      ],
+      user: aaUser,
+      superadminUser: null,
     },
   },
+  getUserWithAudit: {
+    url: '/api/me',
+    response: {
+      user: {
+        ...aaUser,
+        organizations: [
+          {
+            id: 'org-id',
+            name: 'State of California',
+            elections: [
+              {
+                id: '1',
+                auditName: 'November Presidential Election 2020',
+                electionName: '',
+                state: 'CA',
+              },
+            ],
+          },
+        ],
+      },
+      superadminUser: null,
+    },
+  },
+  getUserMultipleOrgs: {
+    url: '/api/me',
+    response: {
+      user: {
+        ...aaUser,
+        organizations: [
+          {
+            id: 'org-id',
+            name: 'State of California',
+            elections: [
+              {
+                id: '1',
+                auditName: 'November Presidential Election 2020',
+                electionName: '',
+                state: 'CA',
+              },
+            ],
+          },
+          {
+            id: 'org-id-2',
+            name: 'State of Georgia',
+            elections: [],
+          },
+        ],
+      },
+      superadminUser: null,
+    },
+  },
+  postNewAudit: (body: {}) => ({
+    url: '/api/election',
+    options: {
+      method: 'POST',
+      body: JSON.stringify(body),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    },
+    response: { electionId: '1' },
+  }),
   getRounds: (rounds: IRound[]) => ({
     url: '/api/election/1/round',
     response: { rounds },
@@ -211,5 +298,29 @@ export const aaApiCalls = {
   getSampleSizes: {
     url: '/api/election/1/sample-sizes',
     response: { sampleSizes: null },
+  },
+}
+
+export const superadminApiCalls = {
+  getUser: {
+    url: '/api/me',
+    response: {
+      user: null,
+      superadminUser: { email: 'superadmin@example.com' },
+    },
+  },
+  getUserImpersonatingAA: {
+    url: '/api/me',
+    response: {
+      user: aaUser,
+      superadminUser: { email: 'superadmin@example.com' },
+    },
+  },
+  getUserImpersonatingJA: {
+    url: '/api/me',
+    response: {
+      user: jaApiCalls.getUser.response.user,
+      superadminUser: { email: 'superadmin@example.com' },
+    },
   },
 }

@@ -61,8 +61,13 @@ export interface IJurisdictionAdmin {
 
 export type IUser = IAuditAdmin | IJurisdictionAdmin | IAuditBoard
 
+export interface ISuperadminUser {
+  email: string
+}
+
 export interface IAuthData {
   user: IUser | null
+  superadminUser: ISuperadminUser | null
 }
 
 const AuthDataContext = createContext<IAuthData | null>(null)
@@ -73,8 +78,8 @@ const AuthDataProvider = (props: any) => {
 
   useEffect(() => {
     ;(async () => {
-      const user = await api<IUser | null>('/me')
-      setAuthData({ user })
+      const response = await api<IAuthData>('/me')
+      setAuthData(response)
     })()
   }, [])
 

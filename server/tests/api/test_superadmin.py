@@ -6,6 +6,8 @@ from ...auth import UserType
 from ...models import *  # pylint: disable=wildcard-import
 from ..helpers import *  # pylint: disable=wildcard-import
 
+SA_EMAIL = "superadmin@example.com"
+
 
 @pytest.fixture()
 def organization_id() -> str:
@@ -21,11 +23,11 @@ def election_id(client: FlaskClient, organization_id) -> str:
 
 
 def assert_superadmin_access(client: FlaskClient, url):
-    clear_superadmin(client)
+    clear_superadmin_user(client)
     rv = client.get(url)
     assert rv.status_code == 403
 
-    set_superadmin(client)
+    set_superadmin_user(client, SA_EMAIL)
     rv = client.get(url)
     assert rv.status_code == 200
 
@@ -44,8 +46,9 @@ def test_superadmin_organizations(client: FlaskClient, organization_id):
 
     rv = client.get("/api/me")
     auth_data = json.loads(rv.data)
-    assert auth_data["email"] == DEFAULT_AA_EMAIL
-    assert auth_data["type"] == UserType.AUDIT_ADMIN
+    assert auth_data["user"]["email"] == DEFAULT_AA_EMAIL
+    assert auth_data["user"]["type"] == UserType.AUDIT_ADMIN
+    assert auth_data["superadminUser"] == {"email": SA_EMAIL}
 
 
 def test_superadmin_jurisdictions(client: FlaskClient, election_id):
@@ -68,8 +71,9 @@ def test_superadmin_jurisdictions(client: FlaskClient, election_id):
 
     rv = client.get("/api/me")
     auth_data = json.loads(rv.data)
-    assert auth_data["email"] == default_ja_email(election_id)
-    assert auth_data["type"] == UserType.JURISDICTION_ADMIN
+    assert auth_data["user"]["email"] == default_ja_email(election_id)
+    assert auth_data["user"]["type"] == UserType.JURISDICTION_ADMIN
+    assert auth_data["superadminUser"] == {"email": SA_EMAIL}
 
 
 def test_superadmin_delete_election(
@@ -82,7 +86,7 @@ def test_superadmin_delete_election(
         client, audit_name="Audit 2", organization_id=organization_id
     )
 
-    set_superadmin(client)
+    set_superadmin_user(client, SA_EMAIL)
     rv = client.post(f"/superadmin/delete-election/{election_id}")
     assert rv.status_code == 302
     assert urlparse(rv.headers["location"]).path == "/superadmin/"

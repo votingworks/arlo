@@ -120,7 +120,7 @@ def test_superadmin_callback(
             assert urlparse(rv.location).path == "/superadmin/"
 
             with client.session_transaction() as session:  # type: ignore
-                assert session["_superadmin"] is True
+                assert session["_superadmin"] == SA_EMAIL
                 assert_is_date(session["_created_at"])
                 assert datetime.now(timezone.utc) - datetime.fromisoformat(
                     session["_created_at"]
@@ -251,7 +251,7 @@ def test_audit_board_log_in(
 
 def test_logout(client: FlaskClient, aa_email: str):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, aa_email)
-    set_superadmin(client)
+    set_superadmin_user(client, SA_EMAIL)
 
     with client.session_transaction() as session:  # type: ignore
         previous_session = session.copy()
@@ -297,23 +297,26 @@ def test_auth_me_audit_admin(
 
     rv = client.get("/api/me")
     assert json.loads(rv.data) == {
-        "type": "audit_admin",
-        "email": aa_email,
-        "organizations": [
-            {
-                "name": "Test Org test_auth_me_audit_admin",
-                "id": org_id,
-                "elections": [
-                    {
-                        "id": election_id,
-                        "auditName": election.audit_name,
-                        "electionName": None,
-                        "state": None,
-                    }
-                ],
-            }
-        ],
-        "jurisdictions": [],
+        "user": {
+            "type": "audit_admin",
+            "email": aa_email,
+            "organizations": [
+                {
+                    "name": "Test Org test_auth_me_audit_admin",
+                    "id": org_id,
+                    "elections": [
+                        {
+                            "id": election_id,
+                            "auditName": election.audit_name,
+                            "electionName": None,
+                            "state": None,
+                        }
+                    ],
+                }
+            ],
+            "jurisdictions": [],
+        },
+        "superadminUser": None,
     }
 
 
@@ -325,22 +328,25 @@ def test_auth_me_jurisdiction_admin(
 
     rv = client.get("/api/me")
     assert json.loads(rv.data) == {
-        "type": UserType.JURISDICTION_ADMIN,
-        "email": ja_email,
-        "organizations": [],
-        "jurisdictions": [
-            {
-                "id": jurisdiction_id,
-                "name": "Test Jurisdiction",
-                "election": {
-                    "id": election_id,
-                    "auditName": election.audit_name,
-                    "electionName": None,
-                    "state": None,
-                },
-                "numBallots": None,
-            }
-        ],
+        "user": {
+            "type": UserType.JURISDICTION_ADMIN,
+            "email": ja_email,
+            "organizations": [],
+            "jurisdictions": [
+                {
+                    "id": jurisdiction_id,
+                    "name": "Test Jurisdiction",
+                    "election": {
+                        "id": election_id,
+                        "auditName": election.audit_name,
+                        "electionName": None,
+                        "state": None,
+                    },
+                    "numBallots": None,
+                }
+            ],
+        },
+        "superadminUser": None,
     }
 
 
@@ -352,14 +358,17 @@ def test_auth_me_audit_board(
     audit_board = AuditBoard.query.get(audit_board_id)
     assert rv.status_code == 200
     assert json.loads(rv.data) == {
-        "type": UserType.AUDIT_BOARD,
-        "id": audit_board.id,
-        "jurisdictionId": audit_board.jurisdiction_id,
-        "jurisdictionName": audit_board.jurisdiction.name,
-        "roundId": audit_board.round_id,
-        "name": audit_board.name,
-        "members": [],
-        "signedOffAt": None,
+        "user": {
+            "type": UserType.AUDIT_BOARD,
+            "id": audit_board.id,
+            "jurisdictionId": audit_board.jurisdiction_id,
+            "jurisdictionName": audit_board.jurisdiction.name,
+            "roundId": audit_board.round_id,
+            "name": audit_board.name,
+            "members": [],
+            "signedOffAt": None,
+        },
+        "superadminUser": None,
     }
 
 
@@ -367,7 +376,7 @@ def test_auth_me_not_logged_in(client: FlaskClient):
     clear_logged_in_user(client)
     rv = client.get("/api/me")
     assert rv.status_code == 200
-    assert json.loads(rv.data) is None
+    assert json.loads(rv.data) == {"user": None, "superadminUser": None}
 
 
 # Tests for session expiration
@@ -379,12 +388,12 @@ def test_session_expires_on_inactivity(client: FlaskClient, aa_email: str):
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, aa_email)
     rv = client.get("/api/me")
-    assert json.loads(rv.data) is not None
+    assert json.loads(rv.data)["user"] is not None
 
     time.sleep(0.5)
 
     rv = client.get("/api/me")
-    assert json.loads(rv.data) is None
+    assert json.loads(rv.data)["user"] is None
 
     config.SESSION_INACTIVITY_TIMEOUT = original_inactivity_timeout
 
@@ -395,12 +404,12 @@ def test_session_expires_after_lifetime(client: FlaskClient, aa_email: str):
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, aa_email)
     rv = client.get("/api/me")
-    assert json.loads(rv.data) is not None
+    assert json.loads(rv.data)["user"] is not None
 
     time.sleep(0.5)
 
     rv = client.get("/api/me")
-    assert json.loads(rv.data) is None
+    assert json.loads(rv.data)["user"] is None
 
     config.SESSION_LIFETIME = original_lifetime
 
@@ -409,13 +418,14 @@ def test_superadmin_session_expires_on_inactivity(client: FlaskClient, aa_email:
     original_inactivity_timeout = config.SESSION_INACTIVITY_TIMEOUT
     config.SESSION_INACTIVITY_TIMEOUT = timedelta(milliseconds=100)
 
-    set_superadmin(client)
+    set_superadmin_user(client, SA_EMAIL)
     rv = client.get("/superadmin/")
     assert rv.status_code == 200
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, aa_email, from_superadmin=True)
     rv = client.get("/api/me")
-    assert json.loads(rv.data) is not None
+    assert json.loads(rv.data)["user"] is not None
+    assert json.loads(rv.data)["superadminUser"] is not None
 
     time.sleep(0.5)
 
@@ -423,7 +433,8 @@ def test_superadmin_session_expires_on_inactivity(client: FlaskClient, aa_email:
     assert rv.status_code == 403
 
     rv = client.get("/api/me")
-    assert json.loads(rv.data) is None
+    assert json.loads(rv.data)["user"] is None
+    assert json.loads(rv.data)["superadminUser"] is None
 
     config.SESSION_INACTIVITY_TIMEOUT = original_inactivity_timeout
 
@@ -432,13 +443,14 @@ def test_superadmin_session_expires_after_lifetime(client: FlaskClient, aa_email
     original_lifetime = config.SESSION_LIFETIME
     config.SESSION_LIFETIME = timedelta(milliseconds=500)
 
-    set_superadmin(client)
+    set_superadmin_user(client, SA_EMAIL)
     rv = client.get("/superadmin/")
     assert rv.status_code == 200
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, aa_email, from_superadmin=True)
     rv = client.get("/api/me")
-    assert json.loads(rv.data) is not None
+    assert json.loads(rv.data)["user"] is not None
+    assert json.loads(rv.data)["superadminUser"] is not None
 
     time.sleep(0.5)
 
@@ -446,7 +458,8 @@ def test_superadmin_session_expires_after_lifetime(client: FlaskClient, aa_email
     assert rv.status_code == 403
 
     rv = client.get("/api/me")
-    assert json.loads(rv.data) is None
+    assert json.loads(rv.data)["user"] is None
+    assert json.loads(rv.data)["superadminUser"] is None
 
     config.SESSION_LIFETIME = original_lifetime
 
@@ -914,10 +927,10 @@ def test_restrict_access_audit_board_audit_board_not_found(
 
 
 def test_superadmin(client: FlaskClient):
-    set_superadmin(client)
+    set_superadmin_user(client, SA_EMAIL)
     rv = client.get("/superadmin/")
     assert rv.status_code == 200
 
-    clear_superadmin(client)
+    clear_superadmin_user(client)
     rv = client.get("/superadmin/")
     assert rv.status_code == 403

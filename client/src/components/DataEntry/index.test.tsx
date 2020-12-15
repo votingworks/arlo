@@ -35,7 +35,10 @@ const renderBallot = () =>
 const apiCalls = {
   getAuditBoard: {
     url: '/api/me',
-    response: { type: 'AUDIT_BOARD', ...dummyBoards()[0] },
+    response: {
+      user: { type: 'AUDIT_BOARD', ...dummyBoards()[0] },
+      superadminUser: null,
+    },
   },
   putAuditBoardMembers: {
     url:
@@ -92,7 +95,7 @@ describe('DataEntry', () => {
       const expectedCalls = [
         {
           ...apiCalls.getAuditBoard,
-          response: { type: 'AUDIT_BOARD', ...dummyBoards()[1] }, // No members set
+          response: { user: { type: 'AUDIT_BOARD', ...dummyBoards()[1] } }, // No members set
         },
         apiCalls.putAuditBoardMembers,
         apiCalls.getAuditBoard,

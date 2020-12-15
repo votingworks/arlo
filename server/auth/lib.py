@@ -1,7 +1,7 @@
 import functools
 import enum
 from datetime import datetime, timezone
-from typing import Callable, Tuple, Union, List
+from typing import Callable, Tuple, Union, List, Optional
 from flask import session
 from werkzeug.exceptions import Forbidden, Unauthorized
 from sqlalchemy.orm import Query
@@ -67,7 +67,7 @@ def check_session_expiration(session):
             + config.SESSION_INACTIVITY_TIMEOUT
         )
     ):
-        clear_superadmin(session)
+        clear_superadmin_user(session)
         clear_loggedin_user(session)
     else:
         session[_LAST_REQUEST_AT] = datetime.now(timezone.utc).isoformat()
@@ -81,20 +81,21 @@ def check_session_expiration(session):
 ## field so that impersonation can be as close as possible to the same user session
 ## and so that a superadmin can become any other user at any other time without having
 ## to re-login
-def set_superadmin(session):
-    session[_SUPERADMIN] = True
+def set_superadmin_user(session, email: str):
+    session[_SUPERADMIN] = email
     session[_CREATED_AT] = datetime.now(timezone.utc).isoformat()
     session[_LAST_REQUEST_AT] = datetime.now(timezone.utc).isoformat()
 
 
-def clear_superadmin(session):
+def clear_superadmin_user(session):
     if _SUPERADMIN in session:
         del session[_SUPERADMIN]
 
 
-def is_superadmin(session):
+def get_superadmin_user(session) -> Optional[str]:
     check_session_expiration(session)
-    return session.get(_SUPERADMIN, False)
+    superadmin_email: Optional[str] = session.get(_SUPERADMIN)
+    return superadmin_email
 
 
 def find_or_404(query: Query):
@@ -218,7 +219,7 @@ def restrict_access_superadmin(route: Callable):
 
     @functools.wraps(route)
     def wrapper(*args, **kwargs):
-        if not is_superadmin(session):
+        if not get_superadmin_user(session):
             raise Forbidden(description="requires superadmin privileges")
 
         return route(*args, **kwargs)
