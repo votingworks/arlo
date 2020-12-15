@@ -341,7 +341,7 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
                           >
                             <option></option>
                             <option>Absentee By Mail</option>
-                            <option>Advance</option>
+                            {/* <option>Advance</option> */}
                             <option>Election Day</option>
                             <option>Provisional</option>
                             <option>Other</option>
