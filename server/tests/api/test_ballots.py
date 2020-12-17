@@ -970,7 +970,11 @@ def test_ja_ballot_retrieval_list_bad_round_id(
 
 
 def test_ja_ballot_retrieval_list_before_audit_boards_set_up(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    round_1_id: str,
+    snapshot,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -982,10 +986,7 @@ def test_ja_ballot_retrieval_list_before_audit_boards_set_up(
     assert "attachment; filename=" in rv.headers["Content-Disposition"]
 
     retrieval_list = rv.data.decode("utf-8").replace("\r\n", "\n")
-    assert (
-        retrieval_list
-        == "Batch Name,Ballot Number,Ticket Numbers,Already Audited,Audit Board\n"
-    )
+    snapshot.assert_match(retrieval_list)
 
 
 def test_ja_ballot_retrieval_list_round_1(

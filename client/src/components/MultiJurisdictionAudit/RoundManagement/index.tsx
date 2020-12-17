@@ -89,6 +89,17 @@ const RoundManagement = ({
   if (auditBoards.length === 0) {
     return (
       <PaddedWrapper>
+        <JAFileDownloadButtons
+          electionId={electionId}
+          jurisdictionId={jurisdictionId}
+          jurisdictionName={jurisdiction.name}
+          round={round}
+          auditSettings={auditSettings}
+          ballots={ballots}
+          auditBoards={auditBoards}
+        />
+        <br />
+        <br />
         <H3>Round {roundNum} Audit Board Setup</H3>
         {ballotsToAudit}
         <CreateAuditBoards createAuditBoards={createAuditBoards} />
@@ -170,53 +181,57 @@ export const JAFileDownloadButtons = ({
       {auditSettings.auditType === 'BATCH_COMPARISON' ? 'Batch' : 'Ballot'}{' '}
       Retrieval List
     </Button>
-    <Button
-      icon="document"
-      onClick={
-        /* istanbul ignore next */ // tested in generateSheets.test.tsx
-        () =>
-          downloadPlaceholders(
-            round.roundNum,
-            ballots,
-            jurisdictionName,
-            auditSettings.auditName
-          )
-      }
-    >
-      Download Placeholder Sheets
-    </Button>
-    <Button
-      icon="label"
-      onClick={
-        /* istanbul ignore next */ // tested in generateSheets.test.tsx
-        () =>
-          downloadLabels(
-            round.roundNum,
-            ballots,
-            jurisdictionName,
-            auditSettings.auditName
-          )
-      }
-    >
-      Download Ballot Labels
-    </Button>
-    {auditSettings.online && (
+    {auditBoards && auditBoards.length > 0 && (
       <>
         <Button
-          icon="key"
+          icon="document"
           onClick={
             /* istanbul ignore next */ // tested in generateSheets.test.tsx
             () =>
-              downloadAuditBoardCredentials(
-                auditBoards,
+              downloadPlaceholders(
+                round.roundNum,
+                ballots,
                 jurisdictionName,
                 auditSettings.auditName
               )
           }
         >
-          Download Audit Board Credentials
+          Download Placeholder Sheets
         </Button>
-        <QRs passphrases={auditBoards.map(b => b.passphrase)} />
+        <Button
+          icon="label"
+          onClick={
+            /* istanbul ignore next */ // tested in generateSheets.test.tsx
+            () =>
+              downloadLabels(
+                round.roundNum,
+                ballots,
+                jurisdictionName,
+                auditSettings.auditName
+              )
+          }
+        >
+          Download Ballot Labels
+        </Button>
+        {auditSettings.online && (
+          <>
+            <Button
+              icon="key"
+              onClick={
+                /* istanbul ignore next */ // tested in generateSheets.test.tsx
+                () =>
+                  downloadAuditBoardCredentials(
+                    auditBoards,
+                    jurisdictionName,
+                    auditSettings.auditName
+                  )
+              }
+            >
+              Download Audit Board Credentials
+            </Button>
+            <QRs passphrases={auditBoards.map(b => b.passphrase)} />
+          </>
+        )}
       </>
     )}
   </ButtonGroup>

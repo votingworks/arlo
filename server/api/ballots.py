@@ -37,7 +37,7 @@ def ballot_retrieval_list(jurisdiction: Jurisdiction, round: Round) -> str:
                 CvrBallot.ballot_position == SampledBallot.ballot_position,
             ),
         )
-        .join(SampledBallot.audit_board)
+        .outerjoin(SampledBallot.audit_board)
         .group_by(AuditBoard.id, SampledBallot.id, Batch.id, CvrBallot.imprinted_id)
         .order_by(
             AuditBoard.name,
