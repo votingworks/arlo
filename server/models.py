@@ -304,7 +304,7 @@ class Batch(BaseModel):
     # For batch comparison audits, we sample the batch itself, and assign it to
     # an audit board to be audited.
     audit_board_id = Column(
-        String(200), ForeignKey("audit_board.id", ondelete="cascade"),
+        String(200), ForeignKey("audit_board.id", ondelete="set null"),
     )
     audit_board = relationship("AuditBoard")
     draws = relationship(
@@ -485,7 +485,7 @@ class SampledBallot(BaseModel):
     )
 
     audit_board_id = Column(
-        String(200), ForeignKey("audit_board.id", ondelete="cascade"),
+        String(200), ForeignKey("audit_board.id", ondelete="set null")
     )
     audit_board = relationship("AuditBoard", back_populates="sampled_ballots")
 
