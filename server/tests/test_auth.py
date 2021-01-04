@@ -286,6 +286,19 @@ def test_auth0_error(client: FlaskClient):
     )
 
 
+def test_audit_board_not_found(client: FlaskClient,):
+    rv = client.get("/auditboard/not-a-real-passphrase")
+    assert rv.status_code == 302
+    location = urlparse(rv.location)
+    assert location.path == "/"
+    assert (
+        location.query == "error=audit_board_not_found&message=Audit+board+not+found."
+    )
+
+    with client.session_transaction() as session:  # type: ignore
+        assert session.get("_user") is None
+
+
 # Tests for /api/me
 
 
