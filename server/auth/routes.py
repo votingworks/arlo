@@ -203,11 +203,18 @@ def jurisdictionadmin_login_callback():
 
 
 @auth.route("/auditboard/<passphrase>", methods=["GET"])
-def auditboard_passphrase(passphrase):
-    auditboard = AuditBoard.query.filter_by(passphrase=passphrase).one()
-    set_loggedin_user(session, UserType.AUDIT_BOARD, auditboard.id)
+def auditboard_passphrase(passphrase: str):
+    audit_board = AuditBoard.query.filter_by(passphrase=passphrase).one_or_none()
+    if not audit_board:
+        return redirect(
+            "/?"
+            + urlencode(
+                {"error": "audit_board_not_found", "message": "Audit board not found."}
+            )
+        )
+    set_loggedin_user(session, UserType.AUDIT_BOARD, audit_board.id)
     return redirect(
-        f"/election/{auditboard.jurisdiction.election.id}/audit-board/{auditboard.id}"
+        f"/election/{audit_board.jurisdiction.election.id}/audit-board/{audit_board.id}"
     )
 
 
