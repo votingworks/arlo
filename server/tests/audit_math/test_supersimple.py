@@ -39,6 +39,13 @@ def cvrs():
         if i < 10000:
             cvr[i]["Contest E"] = {"winner": 1, "loser": 0}
 
+        if i < 300:
+            cvr[i]["Two-winner Contest"] = {"winner1": 0, "winner2": 1, "loser": 0}
+        elif 300 < i < 900:
+            cvr[i]["Two-winner Contest"] = {"winner1": 1, "winner2": 0, "loser": 0}
+        elif i < 1000:
+            cvr[i]["Two-winner Contest"] = {"winner1": 0, "winner2": 0, "loser": 1}
+
     yield cvr
 
 
@@ -74,6 +81,7 @@ def test_find_no_discrepancies(contests, cvrs):
                 "Contest C": {"winner": 1, "loser": 0},
                 "Contest D": {"winner": 1, "loser": 0},
                 "Contest E": {"winner": 1, "loser": 0},
+                "Two-winner Contest": {"winner1": 0, "winner2": 1, "loser": 0},
             },
         }
     }
@@ -97,6 +105,7 @@ def test_find_one_discrepancy(contests, cvrs):
                 "Contest C": {"winner": 1, "loser": 0},
                 "Contest D": {"winner": 1, "loser": 0},
                 "Contest E": {"winner": 1, "loser": 0},
+                "Two-winner Contest": {"winner1": 0, "winner2": 1, "loser": 0},
             },
         }
     }
@@ -205,6 +214,7 @@ def test_compute_risk(contests, cvrs):
                     "Contest C": {"winner": 1, "loser": 0},
                     "Contest D": {"winner": 1, "loser": 0},
                     "Contest E": {"winner": 1, "loser": 0},
+                    "Two-winner Contest": {"winner1": 0, "winner2": 1, "loser": 0},
                 },
             }
 
@@ -246,6 +256,7 @@ def test_compute_risk(contests, cvrs):
                 "Contest C": {"winner": 0, "loser": 0},
                 "Contest D": {"winner": 0, "loser": 0},
                 "Contest E": {"winner": 0, "loser": 0},
+                "Two-winner Contest": {"winner1": 0, "winner2": 0, "loser": 0},
             },
         }
 
@@ -292,6 +303,7 @@ def test_compute_risk(contests, cvrs):
                 "Contest C": {"winner": 0, "loser": 1},
                 "Contest D": {"winner": 0, "loser": 1},
                 "Contest E": {"winner": 0, "loser": 1},
+                "Two-winner Contest": {"winner1": 0, "winner2": 0, "loser": 1},
             },
         }
 
@@ -496,7 +508,9 @@ true_dms = {
     "Contest C": 0.15,
     "Contest D": 2 / 15,
     "Contest E": 1,
+    "Two-winner Contest": 0.2,
 }
+
 
 true_sample_sizes = {
     "Contest A": 27,
@@ -505,6 +519,7 @@ true_sample_sizes = {
     "Contest D": 40,
     "Contest E": 6,
     "Contest F": 14,
+    "Two-winner Contest": 27,
 }
 
 no_next_sample = {
@@ -514,6 +529,7 @@ no_next_sample = {
     "Contest D": 36,
     "Contest E": 5,
     "Contest F": 12,
+    "Two-winner Contest": 24,
 }
 
 o1_next_sample = {
@@ -523,6 +539,7 @@ o1_next_sample = {
     "Contest D": 57,
     "Contest E": 7,
     "Contest F": 16,
+    "Two-winner Contest": 38,
 }
 
 o2_next_sample = {
@@ -532,6 +549,7 @@ o2_next_sample = {
     "Contest D": 15000,
     "Contest E": 6,
     "Contest F": 15,
+    "Two-winner Contest": 1000,
 }
 
 ss_contests = {
@@ -577,6 +595,14 @@ ss_contests = {
         "numWinners": 1,
         "votesAllowed": 1,
     },
+    "Two-winner Contest": {
+        "winner1": 600,
+        "winner2": 300,
+        "loser": 100,
+        "ballots": 1000,
+        "numWinners": 2,
+        "votesAllowed": 1,
+    },
 }
 
 expected_p_values = {
@@ -587,6 +613,7 @@ expected_p_values = {
         "Contest D": 0.07048,
         "Contest E": 0.01950,
         "Contest F": 0.05013,
+        "Two-winner Contest": 0.06508,
     },
     "one_vote_over": {
         "Contest A": 0.12534,
@@ -595,6 +622,7 @@ expected_p_values = {
         "Contest D": 0.13585,
         "Contest E": 0.03758,
         "Contest F": 0.05013,
+        "Two-winner Contest": 0.12534,
     },
     "two_vote_over": {
         "Contest A": 1.73150,
@@ -603,5 +631,6 @@ expected_p_values = {
         "Contest D": 1.87524,
         "Contest E": 0.51877,
         "Contest F": 0.05013,
+        "Two-winner Contest": 1.73150,
     },
 }
