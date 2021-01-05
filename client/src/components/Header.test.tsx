@@ -1,8 +1,7 @@
 import React from 'react'
-import { waitFor, screen, within } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import Header from './Header'
-import * as utilities from './utilities'
 import AuthDataProvider from './UserContext'
 import { renderWithRouter, withMockFetch } from './testUtilities'
 import {
@@ -10,6 +9,7 @@ import {
   apiCalls,
   jaApiCalls,
   superadminApiCalls,
+  auditBoardApiCalls,
 } from './MultiJurisdictionAudit/_mocks'
 
 const renderHeader = (route: string) =>
@@ -46,7 +46,7 @@ describe('Header', () => {
       renderHeader('/')
 
       // Arlo logo
-      const arloLogo = await screen.findByRole('link', {
+      await screen.findByRole('link', {
         name: 'Arlo, by VotingWorks',
       })
 
@@ -87,7 +87,7 @@ describe('Header', () => {
       renderHeader('/election/1')
 
       // Arlo logo
-      const arloLogo = await screen.findByRole('link', {
+      await screen.findByRole('link', {
         name: 'Arlo, by VotingWorks',
       })
 
@@ -115,7 +115,7 @@ describe('Header', () => {
       renderHeader('/election/1/jurisdiction/jurisdiction-id-1')
 
       // Arlo logo
-      const arloLogo = await screen.findByRole('link', {
+      await screen.findByRole('link', {
         name: 'Arlo, by VotingWorks',
       })
 
@@ -125,6 +125,31 @@ describe('Header', () => {
       // User's email
       const userButton = screen.getByRole('button', {
         name: /jurisdictionadmin@email.org/,
+      })
+      userEvent.click(userButton)
+
+      // Dropdown menu should show with log out option
+      const logOutButton = screen.getByRole('link', { name: 'Log out' })
+      expect(logOutButton).toHaveAttribute('href', '/auth/logout')
+
+      // No other buttons
+      expect(screen.getAllByRole('button')).toHaveLength(1)
+    })
+  })
+
+  it('shows the active audit board name when authenticated as an audit board', async () => {
+    const expectedCalls = [auditBoardApiCalls.getUser]
+    await withMockFetch(expectedCalls, async () => {
+      renderHeader('/election/1/audit-board/audit-board-1')
+
+      // Arlo logo
+      await screen.findByRole('link', {
+        name: 'Arlo, by VotingWorks',
+      })
+
+      // Audit board name
+      const userButton = screen.getByRole('button', {
+        name: /Audit Board #1/,
       })
       userEvent.click(userButton)
 
@@ -189,7 +214,7 @@ describe('Header', () => {
       // Audit admin navbar
 
       // Arlo logo
-      const arloLogo = screen.getByRole('link', {
+      screen.getByRole('link', {
         name: 'Arlo, by VotingWorks',
       })
 
@@ -230,7 +255,7 @@ describe('Header', () => {
       // Jurisdiction admin navbar
 
       // Arlo logo
-      const arloLogo = screen.getByRole('link', {
+      screen.getByRole('link', {
         name: 'Arlo, by VotingWorks',
       })
 
