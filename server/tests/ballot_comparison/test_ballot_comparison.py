@@ -202,7 +202,7 @@ def test_ballot_comparison_two_rounds(
         ("J1", "TABULATOR2", "BATCH2", 1): "1,0,1,0,1",
         ("J1", "TABULATOR2", "BATCH2", 2): "1,1,1,1,1",
         ("J1", "TABULATOR2", "BATCH2", 3): "blank",  # CVR: 1,0,1,0,1
-        ("J2", "TABULATOR1", "BATCH1", 1): "0,1,1,1,0",
+        ("J2", "TABULATOR1", "BATCH1", 1): "1,0,1,0,0",  # CVR: 0,1,1,1,0
         ("J2", "TABULATOR1", "BATCH1", 2): "1,0,1,0,1",
         ("J2", "TABULATOR1", "BATCH1", 3): "0,1,1,1,0",
         ("J2", "TABULATOR1", "BATCH2", 1): "1,0,1,0,1",

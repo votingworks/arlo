@@ -138,9 +138,7 @@ def compute_discrepancies(
         # two-vote overstatement
         if ballot_sample_cvr is None:
             e_int = 2
-            e_weighted = Decimal(e_int) / Decimal(
-                contest.diluted_margin * contest.ballots
-            )
+            e_r = Decimal(e_int) / Decimal(contest.diluted_margin * contest.ballots)
             found = True
 
         else:
@@ -165,7 +163,7 @@ def compute_discrepancies(
 
                     e = (v_w - a_w) - (v_l - a_l)
 
-                    if e:
+                    if e != 0:
                         # we found a discrepancy!
                         found = True
 
@@ -182,7 +180,7 @@ def compute_discrepancies(
         if found:
             discrepancies[ballot] = Discrepancy(
                 counted_as=e_int,
-                weighted_error=e_weighted,
+                weighted_error=e_r,
                 discrepancy_cvr={
                     "reported_as": ballot_cvr,
                     "audited_as": ballot_sample_cvr,
