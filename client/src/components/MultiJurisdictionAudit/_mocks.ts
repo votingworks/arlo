@@ -1,6 +1,11 @@
 import { contestMocks } from './AASetup/Contests/_mocks'
 import { IFileInfo } from './useCSV'
-import { manifestFile, talliesFile, cvrsFile } from './useSetupMenuItems/_mocks'
+import {
+  manifestFile,
+  talliesFile,
+  cvrsFile,
+  auditBoardMocks,
+} from './useSetupMenuItems/_mocks'
 import { FileProcessingStatus } from './useSetupMenuItems/getJurisdictionFileStatus'
 import { IBallot } from './RoundManagement/useBallots'
 import { IAuditBoard } from './useAuditBoards'
@@ -321,6 +326,34 @@ export const superadminApiCalls = {
     response: {
       user: jaApiCalls.getUser.response.user,
       superadminUser: { email: 'superadmin@example.com' },
+    },
+  },
+}
+
+export const auditBoardApiCalls = {
+  getUser: {
+    url: '/api/me',
+    response: {
+      user: {
+        type: 'audit_board',
+        id: 'audit-board-1',
+        name: 'Audit Board #1',
+        jurisdictionId: 'jurisdiction-1',
+        jurisdictionName: 'Jurisdiction 1',
+        roundId: 'round-1',
+        members: [
+          {
+            name: 'John Doe',
+            affiliation: '',
+          },
+          {
+            name: 'Jane Doe',
+            affiliation: 'LIB',
+          },
+        ],
+        signedOffAt: null,
+      },
+      superadminUser: null,
     },
   },
 }

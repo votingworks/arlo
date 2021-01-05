@@ -152,25 +152,25 @@ const Header: React.FC<{}> = () => {
                   <NavbarDivider />
                 </>
               )}
-              {auth.user.type !== 'audit_board' && (
-                <UserMenu>
-                  <Popover
-                    content={
-                      <Menu>
-                        <MenuItem text="Log out" href="/auth/logout" />
-                      </Menu>
-                    }
-                    usePortal={false}
-                    position={Position.BOTTOM}
-                    minimal
-                    fill
-                  >
-                    <Button icon="user" minimal>
-                      {auth.user.email}
-                    </Button>
-                  </Popover>
-                </UserMenu>
-              )}
+              <UserMenu>
+                <Popover
+                  content={
+                    <Menu>
+                      <MenuItem text="Log out" href="/auth/logout" />
+                    </Menu>
+                  }
+                  usePortal={false}
+                  position={Position.BOTTOM}
+                  minimal
+                  fill
+                >
+                  <Button icon="user" minimal>
+                    {auth.user.type === 'audit_board'
+                      ? auth.user.name
+                      : auth.user.email}
+                  </Button>
+                </Popover>
+              </UserMenu>
             </NavbarGroup>
           )}
         </InnerBar>
