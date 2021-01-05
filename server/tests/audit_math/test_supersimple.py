@@ -167,7 +167,7 @@ def test_two_vote_overstatement_discrepancies(contests, cvrs):
                 "Contest A": {
                     "winner": 0,
                     "loser": 1,
-                },  # One of the reported loser ballots was actually a winner ballot
+                },  # One of the reported winner ballots was actually a loser ballot
             },
         }
     }
