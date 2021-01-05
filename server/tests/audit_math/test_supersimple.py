@@ -105,7 +105,7 @@ def test_find_one_discrepancy(contests, cvrs):
                 "Contest C": {"winner": 1, "loser": 0},
                 "Contest D": {"winner": 1, "loser": 0},
                 "Contest E": {"winner": 1, "loser": 0},
-                "Two-winner Contest": {"winner1": 0, "winner2": 1, "loser": 0},
+                "Two-winner Contest": {"winner1": 0, "winner2": 0, "loser": 0},
             },
         }
     }
@@ -121,8 +121,68 @@ def test_find_one_discrepancy(contests, cvrs):
                 discrepancies[0]["discrepancy_cvr"]["reported_as"][contest]
                 != discrepancies[0]["discrepancy_cvr"]["audited_as"][contest]
             )
+        elif contest == "Two-winner Contest":
+            assert discrepancies[0]["counted_as"] == 1
+            assert discrepancies[0]["weighted_error"] == Decimal(1) / Decimal(200)
+            assert (
+                discrepancies[0]["discrepancy_cvr"]["reported_as"][contest]
+                != discrepancies[0]["discrepancy_cvr"]["audited_as"][contest]
+            )
+
         else:
             assert not discrepancies
+
+
+def test_negative_discrepancies_are_0(contests, cvrs):
+    sample_cvr = {
+        60000: {
+            "times_sampled": 1,
+            "cvr": {
+                "Contest A": {
+                    "winner": 1,
+                    "loser": 0,
+                },  # One of the reported loser ballots was actually a winner ballot
+            },
+        }
+    }
+
+    discrepancies = supersimple.compute_discrepancies(
+        contests["Contest A"], cvrs, sample_cvr
+    )
+
+    assert discrepancies
+    assert discrepancies[60000]["counted_as"] == 0
+    assert discrepancies[60000]["weighted_error"] == Decimal(0.0)
+    assert (
+        discrepancies[60000]["discrepancy_cvr"]["reported_as"]["Contest A"]
+        != discrepancies[60000]["discrepancy_cvr"]["audited_as"]["Contest A"]
+    )
+
+
+def test_two_vote_overstatement_discrepancies(contests, cvrs):
+    sample_cvr = {
+        0: {
+            "times_sampled": 1,
+            "cvr": {
+                "Contest A": {
+                    "winner": 0,
+                    "loser": 1,
+                },  # One of the reported loser ballots was actually a winner ballot
+            },
+        }
+    }
+
+    discrepancies = supersimple.compute_discrepancies(
+        contests["Contest A"], cvrs, sample_cvr
+    )
+
+    assert discrepancies
+    assert discrepancies[0]["counted_as"] == 2
+    assert discrepancies[0]["weighted_error"] == Decimal(2) / Decimal(20000)
+    assert (
+        discrepancies[0]["discrepancy_cvr"]["reported_as"]["Contest A"]
+        != discrepancies[0]["discrepancy_cvr"]["audited_as"]["Contest A"]
+    )
 
 
 def test_race_not_in_cvr_discrepancy(contests, cvrs):
