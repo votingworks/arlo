@@ -29,7 +29,7 @@ const apiCalls = {
     url: '/api/election/1/standardized-contests',
     response: [
       {
-        name: 'Contest 1',
+        name: 'Contest 1.\'"', // Make sure dots and quotes in the name work
         jurisdictionIds: ['jurisdiction-id-1', 'jurisdiction-id-2'],
       },
       {
@@ -65,7 +65,7 @@ jest.mock('uuidv4', () => {
 describe('Audit Setup > Contests (Ballot Comparison)', () => {
   const expectedNewContestsRequest = [
     {
-      name: 'Contest 1',
+      name: 'Contest 1.\'"',
       id: '1',
       isTargeted: true,
       numWinners: 2,
@@ -109,7 +109,7 @@ describe('Audit Setup > Contests (Ballot Comparison)', () => {
       expect(rows).toHaveLength(3 + 1) // Includes headers
       expect(within(rows[1]).getByRole('checkbox')).not.toBeChecked()
       expect(within(rows[1]).getAllByRole('cell')[1]).toHaveTextContent(
-        'Contest 1'
+        'Contest 1.\'"'
       )
       expect(within(rows[1]).getAllByRole('cell')[2]).toHaveTextContent('All')
       expect(within(rows[1]).getByRole('spinbutton')).toBeDisabled()
@@ -203,7 +203,7 @@ describe('Audit Setup > Contests (Ballot Comparison)', () => {
       expect(within(rows[1]).getByRole('checkbox')).toBeChecked()
       expect(within(rows[1]).getByRole('checkbox')).toBeDisabled()
       expect(within(rows[1]).getAllByRole('cell')[1]).toHaveTextContent(
-        'Contest 1'
+        'Contest 1.\'"'
       )
       expect(within(rows[1]).getByRole('spinbutton')).toBeDisabled()
 
@@ -250,7 +250,7 @@ describe('Audit Setup > Contests (Ballot Comparison)', () => {
       let rows = screen.getAllByRole('row')
       within(rows[1]).getByText('Contest 3')
       within(rows[2]).getByText('Contest 2')
-      within(rows[3]).getByText('Contest 1')
+      within(rows[3]).getByText('Contest 1.\'"')
 
       // Select Contest 1
       userEvent.click(within(rows[3]).getByRole('checkbox'))
@@ -258,7 +258,7 @@ describe('Audit Setup > Contests (Ballot Comparison)', () => {
       // Now reset sorting and confirmed it's still checked
       userEvent.click(contestNameHeader)
       rows = screen.getAllByRole('row')
-      within(rows[1]).getByText('Contest 1')
+      within(rows[1]).getByText('Contest 1.\'"')
       expect(within(rows[1]).getByRole('checkbox')).toBeChecked()
       expect(within(rows[2]).getByRole('checkbox')).not.toBeChecked()
       expect(within(rows[3]).getByRole('checkbox')).not.toBeChecked()
@@ -284,7 +284,7 @@ describe('Audit Setup > Contests (Ballot Comparison)', () => {
       userEvent.type(screen.getByRole('textbox'), 'one')
       rows = screen.getAllByRole('row')
       expect(rows).toHaveLength(2 + 1) // Includes headers
-      within(rows[1]).getByText('Contest 1')
+      within(rows[1]).getByText('Contest 1.\'"')
       within(rows[2]).getByText('Contest 2')
 
       // Deselect Contest 1
