@@ -1,8 +1,8 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { Formik, FormikProps, Field } from 'formik'
-import { Checkbox, Spinner } from '@blueprintjs/core'
+import { Formik, FormikProps } from 'formik'
+import { Checkbox, Spinner, NumericInput } from '@blueprintjs/core'
 import { Cell } from 'react-table'
 import uuidv4 from 'uuidv4'
 import FormWrapper from '../../../Atoms/Form/FormWrapper'
@@ -16,7 +16,6 @@ import { IAuditSettings } from '../../useAuditSettings'
 import useContestsBallotComparison, {
   INewContest,
 } from '../../useContestsBallotComparison'
-import FormField from '../../../Atoms/Form/FormField'
 
 interface IProps {
   isTargeted: boolean
@@ -100,7 +99,7 @@ const ContestSelect: React.FC<IProps> = ({
 
   return (
     <Formik initialValues={initialValues} onSubmit={submit}>
-      {({ values, handleSubmit, setFieldValue }: FormikProps<IFormValues>) => (
+      {({ values, handleSubmit, setValues }: FormikProps<IFormValues>) => (
         <form>
           <FormWrapper
             title={isTargeted ? 'Target Contests' : 'Opportunistic Contests'}
@@ -129,10 +128,16 @@ const ContestSelect: React.FC<IProps> = ({
                       inline
                       checked={values[contestName].checked}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        setFieldValue(
-                          `${contestName}.checked`,
-                          e.currentTarget.checked
-                        )
+                        // We have to use setValues because the contest name
+                        // might have a dot or apostrophe in it, so
+                        // setFieldValue won't work.
+                        setValues({
+                          ...values,
+                          [contestName]: {
+                            ...values[contestName],
+                            checked: e.currentTarget.checked,
+                          },
+                        })
                       }
                       disabled={values[contestName].isTargeted !== isTargeted}
                     />
@@ -165,15 +170,28 @@ const ContestSelect: React.FC<IProps> = ({
                   disableSortBy: true,
                   // eslint-disable-next-line react/display-name
                   Cell: ({ value: contestName }: Cell) => (
-                    <Field
+                    <NumericInput
                       type="number"
-                      name={`${contestName}.numWinners`}
+                      value={values[contestName].numWinners}
+                      onValueChange={(value: number) =>
+                        // We have to use setValues because the contest name
+                        // might have a dot or apostrophe in it, so
+                        // setFieldValue won't work.
+                        setValues({
+                          ...values,
+                          [contestName]: {
+                            ...values[contestName],
+                            numWinners: value,
+                          },
+                        })
+                      }
                       disabled={
                         !values[contestName].checked ||
                         values[contestName].isTargeted !== isTargeted
                       }
                       min={1}
-                      component={FormField}
+                      minorStepSize={null} // Only allow integers
+                      style={{ width: '60px' }}
                     />
                   ),
                 },
