@@ -154,7 +154,7 @@ def test_superadmin_callback_rejected(
                 assert urlparse(rv.location).path == "/"
 
                 with client.session_transaction() as session:  # type: ignore
-                    assert "_superadmin" not in session
+                    assert session.get("_superadmin") is None
 
                 assert auth0_sa.authorize_access_token.called
                 assert auth0_sa.get.called
@@ -250,27 +250,98 @@ def test_audit_board_log_in(
 
 
 def test_logout(client: FlaskClient, aa_email: str):
+    # Logging out when not logged in should not cause an error
+    rv = client.get("/auth/logout")
+    assert rv.status_code == 302
+    assert urlparse(rv.location).path == "/"
+
+    # Logging out without superadmin should redirect to home
     set_logged_in_user(client, UserType.AUDIT_ADMIN, aa_email)
-    set_superadmin_user(client, SA_EMAIL)
 
     with client.session_transaction() as session:  # type: ignore
         previous_session = session.copy()
 
     rv = client.get("/auth/logout")
     assert rv.status_code == 302
+    assert urlparse(rv.location).path == "/"
 
     with client.session_transaction() as session:  # type: ignore
         assert session["_user"] is None
-        assert "_superadmin" not in session.keys()
+        assert session.get("_superadmin") is None
         assert session["_created_at"] == previous_session["_created_at"]
         assert (
             datetime.fromisoformat(session["_last_request_at"])
             - datetime.fromisoformat(previous_session["_last_request_at"])
         ) < timedelta(seconds=1)
 
-    # logging out a second time should not cause an error
+    # Logging out of audit admin while logged in as superadmin should redirect
+    # to /support
+    set_superadmin_user(client, SA_EMAIL)
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, aa_email)
+
+    with client.session_transaction() as session:  # type: ignore
+        previous_session = session.copy()
+
     rv = client.get("/auth/logout")
     assert rv.status_code == 302
+    assert urlparse(rv.location).path == "/support"
+
+    with client.session_transaction() as session:  # type: ignore
+        assert session["_user"] is None
+        # superadmin shouldn't get logged out
+        assert session["_superadmin"] == SA_EMAIL
+        assert session["_created_at"] == previous_session["_created_at"]
+        assert (
+            datetime.fromisoformat(session["_last_request_at"])
+            - datetime.fromisoformat(previous_session["_last_request_at"])
+        ) < timedelta(seconds=1)
+
+
+def test_superadmin_logout(client: FlaskClient, aa_email: str):
+    # Logging out when not logged in should not cause an error
+    rv = client.get("/auth/superadmin/logout")
+    assert rv.status_code == 302
+    assert urlparse(rv.location).path == "/"
+
+    # Logging out from superadmin only
+    set_superadmin_user(client, SA_EMAIL)
+
+    with client.session_transaction() as session:  # type: ignore
+        previous_session = session.copy()
+
+    rv = client.get("/auth/superadmin/logout")
+    assert rv.status_code == 302
+    assert urlparse(rv.location).path == "/"
+
+    with client.session_transaction() as session:  # type: ignore
+        assert session["_user"] is None
+        assert session["_superadmin"] is None
+        assert session["_created_at"] == previous_session["_created_at"]
+        assert (
+            datetime.fromisoformat(session["_last_request_at"])
+            - datetime.fromisoformat(previous_session["_last_request_at"])
+        ) < timedelta(seconds=1)
+
+    # Logging out from superadmin when logged in as an audit admin
+    set_superadmin_user(client, SA_EMAIL)
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, aa_email)
+
+    with client.session_transaction() as session:  # type: ignore
+        previous_session = session.copy()
+
+    rv = client.get("/auth/superadmin/logout")
+    assert rv.status_code == 302
+    assert urlparse(rv.location).path == "/"
+
+    with client.session_transaction() as session:  # type: ignore
+        # Audit admin logged out as well
+        assert session["_user"] is None
+        assert session["_superadmin"] is None
+        assert session["_created_at"] == previous_session["_created_at"]
+        assert (
+            datetime.fromisoformat(session["_last_request_at"])
+            - datetime.fromisoformat(previous_session["_last_request_at"])
+        ) < timedelta(seconds=1)
 
 
 def test_auth0_error(client: FlaskClient):

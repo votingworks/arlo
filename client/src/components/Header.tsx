@@ -108,7 +108,7 @@ const Header: React.FC<{}> = () => {
             <NavbarGroup align={Alignment.RIGHT}>
               <span>{auth.superadminUser.email}</span>
               <NavbarDivider />
-              <a href="/auth/logout">Log out</a>
+              <a href="/auth/superadmin/logout">Log out</a>
             </NavbarGroup>
           </InnerBar>
         </SupportBar>

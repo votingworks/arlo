@@ -88,8 +88,7 @@ def set_superadmin_user(session, email: str):
 
 
 def clear_superadmin_user(session):
-    if _SUPERADMIN in session:
-        del session[_SUPERADMIN]
+    session[_SUPERADMIN] = None
 
 
 def get_superadmin_user(session) -> Optional[str]:

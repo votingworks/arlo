@@ -178,7 +178,7 @@ describe('Header', () => {
 
       // Log out button
       const logOutButton = screen.getByRole('link', { name: 'Log out' })
-      expect(logOutButton).toHaveAttribute('href', '/auth/logout')
+      expect(logOutButton).toHaveAttribute('href', '/auth/superadmin/logout')
 
       // No regular navbar
       // TODO once we actually move the Support Tools interface to the React App
@@ -209,7 +209,7 @@ describe('Header', () => {
 
       // Log out button
       const logOutButton = screen.getByRole('link', { name: 'Log out' })
-      expect(logOutButton).toHaveAttribute('href', '/auth/logout')
+      expect(logOutButton).toHaveAttribute('href', '/auth/superadmin/logout')
 
       // Audit admin navbar
 
@@ -250,7 +250,7 @@ describe('Header', () => {
 
       // Log out button
       const logOutButton = screen.getByRole('link', { name: 'Log out' })
-      expect(logOutButton).toHaveAttribute('href', '/auth/logout')
+      expect(logOutButton).toHaveAttribute('href', '/auth/superadmin/logout')
 
       // Jurisdiction admin navbar
 
