@@ -49,6 +49,22 @@ export const useOrganizations = () =>
     fetchApi('/api/support/organizations')
   )
 
+export const useCreateOrganization = () => {
+  const postOrganization = async ({ name }: { name: string }) =>
+    fetchApi(`/api/support/organizations`, {
+      method: 'POST',
+      body: JSON.stringify({ name }),
+      headers: { 'Content-Type': 'application/json' },
+    })
+
+  const queryClient = useQueryClient()
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return useMutation<any, Error, any>(postOrganization, {
+    onSuccess: () => queryClient.invalidateQueries('organizations'),
+  })
+}
+
 export const useOrganization = (organizationId: string) =>
   useQuery<IOrganization, Error>(['organization', organizationId], () =>
     fetchApi(`/api/support/organizations/${organizationId}`)

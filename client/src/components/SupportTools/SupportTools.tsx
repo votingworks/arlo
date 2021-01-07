@@ -29,6 +29,7 @@ import {
   useElection,
   IAuditAdmin,
   IElection,
+  useCreateOrganization,
 } from './support-api'
 
 const queryClient = new QueryClient(
@@ -98,16 +99,52 @@ const ButtonList = styled(ButtonGroup).attrs({
 
 const Organizations = () => {
   const organizations = useOrganizations()
+  const createOrganization = useCreateOrganization()
+
+  const { register, handleSubmit, reset, formState } = useForm<{
+    name: string
+  }>()
+
   if (organizations.isLoading || organizations.isIdle) return null
   if (organizations.isError) {
     toast.error(organizations.error.message)
     return null
   }
 
+  const onSubmitCreateOrganization = async ({ name }: { name: string }) => {
+    try {
+      await createOrganization.mutateAsync({ name })
+      reset()
+    } catch (error) {
+      toast.error(error.message)
+    }
+  }
+
   return (
     <Column>
       <H2>Organizations</H2>
-      <ButtonList style={{ border: `1px solid ${Colors.LIGHT_GRAY3}` }}>
+      <form
+        style={{ display: 'flex' }}
+        onSubmit={handleSubmit(onSubmitCreateOrganization)}
+      >
+        <input
+          type="text"
+          name="name"
+          className={Classes.INPUT}
+          placeholder="New organization name"
+          ref={register}
+          style={{ flexGrow: 1 }}
+        />
+        <Button
+          type="submit"
+          icon="insert"
+          style={{ marginLeft: '20px' }}
+          loading={formState.isSubmitting}
+        >
+          Create Organization
+        </Button>
+      </form>
+      <ButtonList>
         {organizations.data.map(organization => (
           <LinkButton
             key={organization.id}

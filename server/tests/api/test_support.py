@@ -23,6 +23,24 @@ def test_support_list_organizations(client: FlaskClient, org_id: str):
     assert org == {"id": org_id, "name": "Test Org test_support_list_organizations"}
 
 
+def test_support_create_organization(client: FlaskClient):
+    set_superadmin_user(client, SUPPORT_EMAIL)
+    rv = post_json(client, "/api/support/organizations", {"name": "New Organization"})
+    assert_ok(rv)
+
+    rv = client.get("/api/support/organizations")
+    orgs = json.loads(rv.data)
+    org = next(org for org in orgs if org["name"] == "New Organization")
+    assert_is_id(org["id"])
+
+    # Can't create another org with the same name
+    rv = post_json(client, "/api/support/organizations", {"name": "New Organization"})
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [{"errorType": "Conflict", "message": "Organization already exists"}]
+    }
+
+
 def test_support_get_organization(client: FlaskClient, org_id: str, election_id: str):
     set_superadmin_user(client, SUPPORT_EMAIL)
     rv = client.get(f"/api/support/organizations/{org_id}")

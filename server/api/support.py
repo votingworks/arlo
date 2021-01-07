@@ -73,6 +73,29 @@ def list_organizations():
     )
 
 
+ORGANIZATION_SCHEMA = {
+    "type": "object",
+    "properties": {"name": {"type": "string"}},
+    "additionalProperties": False,
+    "required": ["name"],
+}
+
+
+@api.route("/support/organizations", methods=["POST"])
+@restrict_access_superadmin
+def create_organization():
+    organization = request.get_json()
+    validate(organization, ORGANIZATION_SCHEMA)
+
+    if Organization.query.filter_by(name=organization["name"]).one_or_none():
+        raise Conflict("Organization already exists")
+
+    db_session.add(Organization(id=str(uuid.uuid4()), name=organization["name"]))
+    db_session.commit()
+
+    return jsonify(status="ok")
+
+
 @api.route("/support/organizations/<organization_id>", methods=["GET"])
 @restrict_access_superadmin
 def get_organization(organization_id: str):
