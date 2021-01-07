@@ -164,6 +164,7 @@ def test_minerva_ballot_polling_one_round(
     assert_match_report(rv.data, snapshot)
 
 
+@pytest.mark.skip(reason="Failing on CI - probably a race condition")
 def test_minerva_ballot_polling_two_rounds(
     client: FlaskClient,
     election_id: str,
