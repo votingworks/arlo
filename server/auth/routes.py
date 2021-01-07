@@ -125,16 +125,16 @@ def auth_me():
 
 @auth.route("/auth/logout")
 def logout():
-    clear_superadmin_user(session)
-
-    user_type, _user_email = get_loggedin_user(session)
-    if not user_type:
-        return redirect("/")
-
+    # Because we have max_age on the oauth requests, we don't need to log out
+    # of Auth0.
     clear_loggedin_user(session)
+    return redirect("/support" if get_superadmin_user(session) else "/")
 
-    # because we have max_age on the oauth requests,
-    # we don't need to log out of Auth0.
+
+@auth.route("/auth/superadmin/logout")
+def superadmin_logout():
+    clear_superadmin_user(session)
+    clear_loggedin_user(session)
     return redirect("/")
 
 
