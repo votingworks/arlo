@@ -11,7 +11,11 @@ JSONSchema = JSONDict
 def validate(instance: Any, schema: JSONSchema):
     jsonschema.validators.validator_for(schema).check_schema(schema)
     validate_schema(schema)
-    jsonschema.validate(instance=instance, schema=schema)
+    jsonschema.validate(
+        instance=instance,
+        schema=schema,
+        format_checker=jsonschema.draft7_format_checker,
+    )
 
 
 def validate_schema(schema: JSONSchema):

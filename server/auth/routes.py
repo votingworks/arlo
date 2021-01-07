@@ -157,7 +157,7 @@ def superadmin_login_callback():
         and userinfo["email"].split("@")[-1] == SUPERADMIN_EMAIL_DOMAIN
     ):
         set_superadmin_user(session, userinfo["email"])
-        return redirect("/superadmin/")
+        return redirect("/support")
     else:
         return redirect("/")
 

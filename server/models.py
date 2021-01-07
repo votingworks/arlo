@@ -58,7 +58,10 @@ class Organization(BaseModel):
     name = Column(String(200), nullable=False)
 
     elections = relationship(
-        "Election", back_populates="organization", passive_deletes=True
+        "Election",
+        back_populates="organization",
+        passive_deletes=True,
+        order_by="Election.audit_name",
     )
 
 
