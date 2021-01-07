@@ -47,7 +47,7 @@ interface IProps {
     ballotId: string,
     status: BallotStatus,
     interpretations: IBallotInterpretation[]
-  ) => void
+  ) => Promise<boolean>
 }
 
 const emptyInterpretation = (contest: IContest) => {

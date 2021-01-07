@@ -62,7 +62,7 @@ interface IProps {
   goAudit: () => void
   interpretations: IBallotInterpretation[]
   nextBallot: () => void
-  submitBallot: (interpretations: IBallotInterpretation[]) => void
+  submitBallot: (interpretations: IBallotInterpretation[]) => Promise<boolean>
 }
 
 const BallotReview: React.FC<IProps> = ({
@@ -73,9 +73,11 @@ const BallotReview: React.FC<IProps> = ({
   submitBallot,
 }: IProps) => {
   const handleSubmit = async () => {
-    await submitBallot(interpretations)
-    goAudit()
-    nextBallot()
+    const result = await submitBallot(interpretations)
+    if (result) {
+      goAudit()
+      nextBallot()
+    }
   }
 
   return (

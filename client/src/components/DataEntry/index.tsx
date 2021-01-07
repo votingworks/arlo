@@ -125,6 +125,7 @@ const DataEntry: React.FC = () => {
   const [auditBoard, setAuditBoard] = useState<IAuditBoard | null>(null)
   const [contests, setContests] = useState<IContest[] | null>(null)
   const [ballots, setBallots] = useState<IBallot[] | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
     ;(async () => {
@@ -210,7 +211,9 @@ const DataEntry: React.FC = () => {
     ballotId: string,
     status: BallotStatus,
     interpretations: IBallotInterpretation[]
-  ) => {
+  ): Promise<boolean> => {
+    if (isSubmitting) return false
+    setIsSubmitting(true)
     const { jurisdictionId, roundId } = auditBoard
     const response1 = await putBallotAudit(
       electionId,
@@ -221,15 +224,23 @@ const DataEntry: React.FC = () => {
       status,
       interpretations
     )
-    if (!response1) return
+    if (!response1) {
+      setIsSubmitting(false)
+      return false
+    }
     const response2 = await loadBallots(
       electionId,
       jurisdictionId,
       roundId,
       auditBoardId
     )
-    if (!response2) return
+    if (!response2) {
+      setIsSubmitting(false)
+      return false
+    }
     setBallots(response2)
+    setIsSubmitting(false)
+    return true
   }
 
   const submitSignoff = async (memberNames: string[]) => {
