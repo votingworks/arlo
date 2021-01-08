@@ -45,10 +45,10 @@ def set_logged_in_user(
     client: FlaskClient,
     user_type: UserType,
     user_key=DEFAULT_AA_EMAIL,
-    from_superadmin=False,
+    from_support_user=False,
 ):
     with client.session_transaction() as session:  # type: ignore
-        auth_lib.set_loggedin_user(session, user_type, user_key, from_superadmin)
+        auth_lib.set_loggedin_user(session, user_type, user_key, from_support_user)
 
 
 def clear_logged_in_user(client: FlaskClient):
@@ -56,14 +56,14 @@ def clear_logged_in_user(client: FlaskClient):
         auth_lib.clear_loggedin_user(session)
 
 
-def set_superadmin_user(client: FlaskClient, email: str):
+def set_support_user(client: FlaskClient, email: str):
     with client.session_transaction() as session:  # type: ignore
-        auth_lib.set_superadmin_user(session, email)
+        auth_lib.set_support_user(session, email)
 
 
-def clear_superadmin_user(client: FlaskClient):
+def clear_support_user(client: FlaskClient):
     with client.session_transaction() as session:  # type: ignore
-        auth_lib.clear_superadmin_user(session)
+        auth_lib.clear_support_user(session)
 
 
 def create_user(email=DEFAULT_AA_EMAIL) -> User:

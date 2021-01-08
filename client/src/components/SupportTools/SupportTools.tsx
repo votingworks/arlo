@@ -44,7 +44,7 @@ const queryClient = new QueryClient(
 const SupportTools = () => {
   const auth = useAuthDataContext()
   if (!auth) return null // Still loading
-  if (!auth.superadminUser) return <Redirect to="/" />
+  if (!auth.supportUser) return <Redirect to="/" />
 
   return (
     <QueryClientProvider client={queryClient}>

@@ -98,7 +98,7 @@ const Header: React.FC<{}> = () => {
     )
   return (
     <>
-      {auth && auth.superadminUser && (
+      {auth && auth.supportUser && (
         <SupportBar>
           <InnerBar>
             <NavbarGroup align={Alignment.LEFT}>
@@ -108,9 +108,9 @@ const Header: React.FC<{}> = () => {
               </a>
             </NavbarGroup>
             <NavbarGroup align={Alignment.RIGHT}>
-              <span>{auth.superadminUser.email}</span>
+              <span>{auth.supportUser.email}</span>
               <NavbarDivider />
-              <a href="/auth/superadmin/logout">Log out</a>
+              <a href="/auth/support/logout">Log out</a>
             </NavbarGroup>
           </InnerBar>
         </SupportBar>

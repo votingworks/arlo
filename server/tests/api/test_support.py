@@ -14,7 +14,7 @@ SUPPORT_EMAIL = "support@example.org"
 
 
 def test_support_list_organizations(client: FlaskClient, org_id: str):
-    set_superadmin_user(client, SUPPORT_EMAIL)
+    set_support_user(client, SUPPORT_EMAIL)
     rv = client.get("/api/support/organizations")
     orgs = json.loads(rv.data)
     # This will load orgs from all tests, so we can't check its exact length/value
@@ -24,7 +24,7 @@ def test_support_list_organizations(client: FlaskClient, org_id: str):
 
 
 def test_support_create_organization(client: FlaskClient):
-    set_superadmin_user(client, SUPPORT_EMAIL)
+    set_support_user(client, SUPPORT_EMAIL)
     rv = post_json(client, "/api/support/organizations", {"name": "New Organization"})
     assert_ok(rv)
 
@@ -42,7 +42,7 @@ def test_support_create_organization(client: FlaskClient):
 
 
 def test_support_get_organization(client: FlaskClient, org_id: str, election_id: str):
-    set_superadmin_user(client, SUPPORT_EMAIL)
+    set_support_user(client, SUPPORT_EMAIL)
     rv = client.get(f"/api/support/organizations/{org_id}")
     compare_json(
         json.loads(rv.data),
@@ -64,7 +64,7 @@ def test_support_get_organization(client: FlaskClient, org_id: str, election_id:
 def test_support_get_election(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
 ):
-    set_superadmin_user(client, SUPPORT_EMAIL)
+    set_support_user(client, SUPPORT_EMAIL)
     rv = client.get(f"/api/support/elections/{election_id}")
     compare_json(
         json.loads(rv.data),
@@ -110,7 +110,7 @@ def test_support_create_audit_admin(  # pylint: disable=invalid-name
 
     new_admin_email = f"new-audit-admin-{org_id}@example.com"
 
-    set_superadmin_user(client, SUPPORT_EMAIL)
+    set_support_user(client, SUPPORT_EMAIL)
     rv = post_json(
         client,
         f"/api/support/organizations/{org_id}/audit-admins",
@@ -162,7 +162,7 @@ def test_support_create_audit_admin_already_in_auth0(  # pylint: disable=invalid
 
     new_admin_email = f"new-audit-admin-{org_id}@example.com"
 
-    set_superadmin_user(client, SUPPORT_EMAIL)
+    set_support_user(client, SUPPORT_EMAIL)
     rv = post_json(
         client,
         f"/api/support/organizations/{org_id}/audit-admins",
@@ -193,7 +193,7 @@ def test_support_create_audit_admin_already_exists(  # pylint: disable=invalid-n
     # Start with an existing user that isn't already an audit admin for this org
     user = create_user(email="already-exists@example.org")
 
-    set_superadmin_user(client, SUPPORT_EMAIL)
+    set_support_user(client, SUPPORT_EMAIL)
     rv = client.get(f"/api/support/organizations/{org_id}")
     assert json.loads(rv.data)["auditAdmins"] == [
         {"email": DEFAULT_AA_EMAIL},
@@ -218,7 +218,7 @@ def test_support_create_audit_admin_already_exists(  # pylint: disable=invalid-n
 def test_support_create_audit_admin_already_admin(  # pylint: disable=invalid-name,unused-argument
     MockAuth0, MockGetToken, client: FlaskClient, org_id: str,
 ):
-    set_superadmin_user(client, SUPPORT_EMAIL)
+    set_support_user(client, SUPPORT_EMAIL)
     rv = post_json(
         client,
         f"/api/support/organizations/{org_id}/audit-admins",
@@ -233,7 +233,7 @@ def test_support_create_audit_admin_already_admin(  # pylint: disable=invalid-na
 def test_support_log_in_as_audit_admin(
     client: FlaskClient, election_id: str,  # pylint: disable=unused-argument
 ):
-    set_superadmin_user(client, SUPPORT_EMAIL)
+    set_support_user(client, SUPPORT_EMAIL)
 
     with client.session_transaction() as session:  # type: ignore
         original_created_at = session["_created_at"]
@@ -253,7 +253,7 @@ def test_support_log_in_as_audit_admin(
 def test_support_log_in_as_jurisdiction_admin(
     client: FlaskClient, election_id: str,
 ):
-    set_superadmin_user(client, SUPPORT_EMAIL)
+    set_support_user(client, SUPPORT_EMAIL)
 
     with client.session_transaction() as session:  # type: ignore
         original_created_at = session["_created_at"]

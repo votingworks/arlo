@@ -102,12 +102,12 @@ def check_redirect_contains_redirect_uri(response, expected_url):
     assert expected_url in redirect_uri
 
 
-def test_superadmin_start(client: FlaskClient):
-    rv = client.get("/auth/superadmin/start")
-    check_redirect_contains_redirect_uri(rv, "/auth/superadmin/callback")
+def test_support_start(client: FlaskClient):
+    rv = client.get("/auth/support/start")
+    check_redirect_contains_redirect_uri(rv, "/auth/support/callback")
 
 
-def test_superadmin_callback(
+def test_support_callback(
     client: FlaskClient, org_id: str,  # pylint: disable=unused-argument
 ):
     with patch.object(auth0_sa, "authorize_access_token", return_value=None):
@@ -115,12 +115,12 @@ def test_superadmin_callback(
         mock_response.json = MagicMock(return_value={"email": SA_EMAIL})
         with patch.object(auth0_sa, "get", return_value=mock_response):
 
-            rv = client.get("/auth/superadmin/callback?code=foobar")
+            rv = client.get("/auth/support/callback?code=foobar")
             assert rv.status_code == 302
             assert urlparse(rv.location).path == "/support"
 
             with client.session_transaction() as session:  # type: ignore
-                assert session["_superadmin"] == SA_EMAIL
+                assert session["_support_user"] == SA_EMAIL
                 assert_is_date(session["_created_at"])
                 assert datetime.now(timezone.utc) - datetime.fromisoformat(
                     session["_created_at"]
@@ -132,14 +132,14 @@ def test_superadmin_callback(
                 assert list(session.keys()) == [
                     "_created_at",
                     "_last_request_at",
-                    "_superadmin",
+                    "_support_user",
                 ]
 
             assert auth0_sa.authorize_access_token.called
             assert auth0_sa.get.called
 
 
-def test_superadmin_callback_rejected(
+def test_support_callback_rejected(
     client: FlaskClient, org_id: str,  # pylint: disable=unused-argument
 ):
     bad_user_infos: List[Optional[JSONDict]] = [None, {}, {"email": AA_EMAIL}]
@@ -149,12 +149,12 @@ def test_superadmin_callback_rejected(
             mock_response.json = MagicMock(return_value=bad_user_info)
             with patch.object(auth0_sa, "get", return_value=mock_response):
 
-                rv = client.get("/auth/superadmin/callback?code=foobar")
+                rv = client.get("/auth/support/callback?code=foobar")
                 assert rv.status_code == 302
                 assert urlparse(rv.location).path == "/"
 
                 with client.session_transaction() as session:  # type: ignore
-                    assert session.get("_superadmin") is None
+                    assert session.get("_support_user") is None
 
                 assert auth0_sa.authorize_access_token.called
                 assert auth0_sa.get.called
@@ -255,7 +255,7 @@ def test_logout(client: FlaskClient, aa_email: str):
     assert rv.status_code == 302
     assert urlparse(rv.location).path == "/"
 
-    # Logging out without superadmin should redirect to home
+    # Logging out without support user should redirect to home
     set_logged_in_user(client, UserType.AUDIT_ADMIN, aa_email)
 
     with client.session_transaction() as session:  # type: ignore
@@ -267,16 +267,16 @@ def test_logout(client: FlaskClient, aa_email: str):
 
     with client.session_transaction() as session:  # type: ignore
         assert session["_user"] is None
-        assert session.get("_superadmin") is None
+        assert session.get("_support_user") is None
         assert session["_created_at"] == previous_session["_created_at"]
         assert (
             datetime.fromisoformat(session["_last_request_at"])
             - datetime.fromisoformat(previous_session["_last_request_at"])
         ) < timedelta(seconds=1)
 
-    # Logging out of audit admin while logged in as superadmin should redirect
-    # to /support
-    set_superadmin_user(client, SA_EMAIL)
+    # Logging out of audit admin while logged in as support user should
+    # redirect to /support
+    set_support_user(client, SA_EMAIL)
     set_logged_in_user(client, UserType.AUDIT_ADMIN, aa_email)
 
     with client.session_transaction() as session:  # type: ignore
@@ -288,8 +288,8 @@ def test_logout(client: FlaskClient, aa_email: str):
 
     with client.session_transaction() as session:  # type: ignore
         assert session["_user"] is None
-        # superadmin shouldn't get logged out
-        assert session["_superadmin"] == SA_EMAIL
+        # support user shouldn't get logged out
+        assert session["_support_user"] == SA_EMAIL
         assert session["_created_at"] == previous_session["_created_at"]
         assert (
             datetime.fromisoformat(session["_last_request_at"])
@@ -297,46 +297,46 @@ def test_logout(client: FlaskClient, aa_email: str):
         ) < timedelta(seconds=1)
 
 
-def test_superadmin_logout(client: FlaskClient, aa_email: str):
+def test_support_logout(client: FlaskClient, aa_email: str):
     # Logging out when not logged in should not cause an error
-    rv = client.get("/auth/superadmin/logout")
+    rv = client.get("/auth/support/logout")
     assert rv.status_code == 302
     assert urlparse(rv.location).path == "/"
 
-    # Logging out from superadmin only
-    set_superadmin_user(client, SA_EMAIL)
+    # Logging out from support user only
+    set_support_user(client, SA_EMAIL)
 
     with client.session_transaction() as session:  # type: ignore
         previous_session = session.copy()
 
-    rv = client.get("/auth/superadmin/logout")
+    rv = client.get("/auth/support/logout")
     assert rv.status_code == 302
     assert urlparse(rv.location).path == "/"
 
     with client.session_transaction() as session:  # type: ignore
         assert session["_user"] is None
-        assert session["_superadmin"] is None
+        assert session["_support_user"] is None
         assert session["_created_at"] == previous_session["_created_at"]
         assert (
             datetime.fromisoformat(session["_last_request_at"])
             - datetime.fromisoformat(previous_session["_last_request_at"])
         ) < timedelta(seconds=1)
 
-    # Logging out from superadmin when logged in as an audit admin
-    set_superadmin_user(client, SA_EMAIL)
+    # Logging out from support user when logged in as an audit admin
+    set_support_user(client, SA_EMAIL)
     set_logged_in_user(client, UserType.AUDIT_ADMIN, aa_email)
 
     with client.session_transaction() as session:  # type: ignore
         previous_session = session.copy()
 
-    rv = client.get("/auth/superadmin/logout")
+    rv = client.get("/auth/support/logout")
     assert rv.status_code == 302
     assert urlparse(rv.location).path == "/"
 
     with client.session_transaction() as session:  # type: ignore
         # Audit admin logged out as well
         assert session["_user"] is None
-        assert session["_superadmin"] is None
+        assert session["_support_user"] is None
         assert session["_created_at"] == previous_session["_created_at"]
         assert (
             datetime.fromisoformat(session["_last_request_at"])
@@ -400,7 +400,7 @@ def test_auth_me_audit_admin(
             ],
             "jurisdictions": [],
         },
-        "superadminUser": None,
+        "supportUser": None,
     }
 
 
@@ -430,7 +430,7 @@ def test_auth_me_jurisdiction_admin(
                 }
             ],
         },
-        "superadminUser": None,
+        "supportUser": None,
     }
 
 
@@ -452,7 +452,7 @@ def test_auth_me_audit_board(
             "members": [],
             "signedOffAt": None,
         },
-        "superadminUser": None,
+        "supportUser": None,
     }
 
 
@@ -460,7 +460,7 @@ def test_auth_me_not_logged_in(client: FlaskClient):
     clear_logged_in_user(client)
     rv = client.get("/api/me")
     assert rv.status_code == 200
-    assert json.loads(rv.data) == {"user": None, "superadminUser": None}
+    assert json.loads(rv.data) == {"user": None, "supportUser": None}
 
 
 # Tests for session expiration
@@ -498,52 +498,52 @@ def test_session_expires_after_lifetime(client: FlaskClient, aa_email: str):
     config.SESSION_LIFETIME = original_lifetime
 
 
-def test_superadmin_session_expires_on_inactivity(client: FlaskClient, aa_email: str):
+def test_support_session_expires_on_inactivity(client: FlaskClient, aa_email: str):
     original_inactivity_timeout = config.SESSION_INACTIVITY_TIMEOUT
     config.SESSION_INACTIVITY_TIMEOUT = timedelta(milliseconds=100)
 
-    set_superadmin_user(client, SA_EMAIL)
-    rv = client.get("/superadmin/")
+    set_support_user(client, SA_EMAIL)
+    rv = client.get("/api/support/organizations")
     assert rv.status_code == 200
 
-    set_logged_in_user(client, UserType.AUDIT_ADMIN, aa_email, from_superadmin=True)
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, aa_email, from_support_user=True)
     rv = client.get("/api/me")
     assert json.loads(rv.data)["user"] is not None
-    assert json.loads(rv.data)["superadminUser"] is not None
+    assert json.loads(rv.data)["supportUser"] is not None
 
     time.sleep(0.5)
 
-    rv = client.get("/superadmin/")
+    rv = client.get("/api/support/organizations")
     assert rv.status_code == 403
 
     rv = client.get("/api/me")
     assert json.loads(rv.data)["user"] is None
-    assert json.loads(rv.data)["superadminUser"] is None
+    assert json.loads(rv.data)["supportUser"] is None
 
     config.SESSION_INACTIVITY_TIMEOUT = original_inactivity_timeout
 
 
-def test_superadmin_session_expires_after_lifetime(client: FlaskClient, aa_email: str):
+def test_support_session_expires_after_lifetime(client: FlaskClient, aa_email: str):
     original_lifetime = config.SESSION_LIFETIME
     config.SESSION_LIFETIME = timedelta(milliseconds=500)
 
-    set_superadmin_user(client, SA_EMAIL)
-    rv = client.get("/superadmin/")
+    set_support_user(client, SA_EMAIL)
+    rv = client.get("/api/support/organizations")
     assert rv.status_code == 200
 
-    set_logged_in_user(client, UserType.AUDIT_ADMIN, aa_email, from_superadmin=True)
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, aa_email, from_support_user=True)
     rv = client.get("/api/me")
     assert json.loads(rv.data)["user"] is not None
-    assert json.loads(rv.data)["superadminUser"] is not None
+    assert json.loads(rv.data)["supportUser"] is not None
 
     time.sleep(0.5)
 
-    rv = client.get("/superadmin/")
+    rv = client.get("/api/support/organizations")
     assert rv.status_code == 403
 
     rv = client.get("/api/me")
     assert json.loads(rv.data)["user"] is None
-    assert json.loads(rv.data)["superadminUser"] is None
+    assert json.loads(rv.data)["supportUser"] is None
 
     config.SESSION_LIFETIME = original_lifetime
 
@@ -1010,11 +1010,11 @@ def test_restrict_access_audit_board_audit_board_not_found(
     assert rv.status_code == 404
 
 
-def test_superadmin(client: FlaskClient):
-    set_superadmin_user(client, SA_EMAIL)
-    rv = client.get("/superadmin/")
+def test_support(client: FlaskClient):
+    set_support_user(client, SA_EMAIL)
+    rv = client.get("/api/support/organizations")
     assert rv.status_code == 200
 
-    clear_superadmin_user(client)
-    rv = client.get("/superadmin/")
+    clear_support_user(client)
+    rv = client.get("/api/support/organizations")
     assert rv.status_code == 403

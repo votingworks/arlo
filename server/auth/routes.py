@@ -8,18 +8,18 @@ from .lib import (
     get_loggedin_user,
     set_loggedin_user,
     clear_loggedin_user,
-    set_superadmin_user,
-    clear_superadmin_user,
-    get_superadmin_user,
+    set_support_user,
+    clear_support_user,
+    get_support_user,
     UserType,
 )
 from ..api.audit_boards import serialize_members
 from ..util.isoformat import isoformat
 from ..config import (
-    SUPERADMIN_AUTH0_BASE_URL,
-    SUPERADMIN_AUTH0_CLIENT_ID,
-    SUPERADMIN_AUTH0_CLIENT_SECRET,
-    SUPERADMIN_EMAIL_DOMAIN,
+    SUPPORT_AUTH0_BASE_URL,
+    SUPPORT_AUTH0_CLIENT_ID,
+    SUPPORT_AUTH0_CLIENT_SECRET,
+    SUPPORT_EMAIL_DOMAIN,
     AUDITADMIN_AUTH0_BASE_URL,
     AUDITADMIN_AUTH0_CLIENT_ID,
     AUDITADMIN_AUTH0_CLIENT_SECRET,
@@ -28,7 +28,7 @@ from ..config import (
     JURISDICTIONADMIN_AUTH0_CLIENT_SECRET,
 )
 
-SUPERADMIN_OAUTH_CALLBACK_URL = "/auth/superadmin/callback"
+SUPPORT_OAUTH_CALLBACK_URL = "/auth/support/callback"
 AUDITADMIN_OAUTH_CALLBACK_URL = "/auth/auditadmin/callback"
 JURISDICTIONADMIN_OAUTH_CALLBACK_URL = "/auth/jurisdictionadmin/callback"
 
@@ -36,11 +36,11 @@ oauth = OAuth()
 
 auth0_sa = oauth.register(
     "auth0_sa",
-    client_id=SUPERADMIN_AUTH0_CLIENT_ID,
-    client_secret=SUPERADMIN_AUTH0_CLIENT_SECRET,
-    api_base_url=SUPERADMIN_AUTH0_BASE_URL,
-    access_token_url=f"{SUPERADMIN_AUTH0_BASE_URL}/oauth/token",
-    authorize_url=f"{SUPERADMIN_AUTH0_BASE_URL}/authorize",
+    client_id=SUPPORT_AUTH0_CLIENT_ID,
+    client_secret=SUPPORT_AUTH0_CLIENT_SECRET,
+    api_base_url=SUPPORT_AUTH0_BASE_URL,
+    access_token_url=f"{SUPPORT_AUTH0_BASE_URL}/oauth/token",
+    authorize_url=f"{SUPPORT_AUTH0_BASE_URL}/authorize",
     authorize_params={"max_age": "0"},
     client_kwargs={"scope": "openid profile email"},
 )
@@ -117,9 +117,9 @@ def auth_me():
             signedOffAt=isoformat(audit_board.signed_off_at),
         )
 
-    superadmin_email = get_superadmin_user(session)
+    support_user_email = get_support_user(session)
     return jsonify(
-        user=user, superadminUser=superadmin_email and {"email": superadmin_email}
+        user=user, supportUser=support_user_email and {"email": support_user_email}
     )
 
 
@@ -128,24 +128,24 @@ def logout():
     # Because we have max_age on the oauth requests, we don't need to log out
     # of Auth0.
     clear_loggedin_user(session)
-    return redirect("/support" if get_superadmin_user(session) else "/")
+    return redirect("/support" if get_support_user(session) else "/")
 
 
-@auth.route("/auth/superadmin/logout")
-def superadmin_logout():
-    clear_superadmin_user(session)
+@auth.route("/auth/support/logout")
+def support_logout():
+    clear_support_user(session)
     clear_loggedin_user(session)
     return redirect("/")
 
 
-@auth.route("/auth/superadmin/start")
-def superadmin_login():
-    redirect_uri = urljoin(request.host_url, SUPERADMIN_OAUTH_CALLBACK_URL)
+@auth.route("/auth/support/start")
+def support_login():
+    redirect_uri = urljoin(request.host_url, SUPPORT_OAUTH_CALLBACK_URL)
     return auth0_sa.authorize_redirect(redirect_uri=redirect_uri)
 
 
-@auth.route(SUPERADMIN_OAUTH_CALLBACK_URL)
-def superadmin_login_callback():
+@auth.route(SUPPORT_OAUTH_CALLBACK_URL)
+def support_login_callback():
     auth0_sa.authorize_access_token()
     resp = auth0_sa.get("userinfo")
     userinfo = resp.json()
@@ -154,9 +154,9 @@ def superadmin_login_callback():
     if (
         userinfo
         and userinfo["email"]
-        and userinfo["email"].split("@")[-1] == SUPERADMIN_EMAIL_DOMAIN
+        and userinfo["email"].split("@")[-1] == SUPPORT_EMAIL_DOMAIN
     ):
-        set_superadmin_user(session, userinfo["email"])
+        set_support_user(session, userinfo["email"])
         return redirect("/support")
     else:
         return redirect("/")
