@@ -445,67 +445,6 @@ describe('Audit Setup > Contests', () => {
     })
   })
 
-  // TEST TODO
-  it.skip('handles api request error on initial load', async () => {
-    apiMock.mockImplementation(
-      generateApiMock(new Error('Network error'), { jurisdictions: [] })
-    )
-    const { container } = render(
-      <Contests
-        auditType="BALLOT_POLLING"
-        locked={false}
-        isTargeted
-        {...relativeStages('target-contests')}
-      />
-    )
-    await waitFor(() => {
-      expect(apiMock).toBeCalledTimes(2)
-      expect(toastSpy).toBeCalledTimes(1)
-      expect(toastSpy).toHaveBeenCalledWith('Network error')
-      expect(container).toMatchSnapshot()
-    })
-  })
-
-  // TEST TODO
-  it.skip('handles api request error on submission', async () => {
-    apiMock
-      .mockImplementationOnce(
-        generateApiMock(contestMocks.emptyTargeted, { jurisdictions: [] })
-      )
-      .mockImplementationOnce(
-        generateApiMock(contestMocks.emptyTargeted, { jurisdictions: [] })
-      )
-      .mockImplementation(
-        generateApiMock(new Error('Network error'), { jurisdictions: [] })
-      )
-    const { getByLabelText, getByText, container } = render(
-      <Contests
-        auditType="BALLOT_POLLING"
-        locked={false}
-        isTargeted
-        nextStage={nextStage}
-        prevStage={prevStage}
-      />
-    )
-
-    contestsInputMocks.inputs.forEach(inputData => {
-      const input = getByLabelText(new RegExp(regexpEscape(inputData.key)), {
-        selector: 'input',
-      }) as HTMLInputElement
-      typeInto(input, inputData.value)
-      expect(input.value).toBe(inputData.value)
-    })
-
-    fireEvent.click(getByText('Save & Next'), { bubbles: true })
-    await waitFor(() => {
-      expect(apiMock).toHaveBeenCalledTimes(3)
-      expect(toastSpy).toHaveBeenCalledTimes(1)
-      expect(toastSpy).toHaveBeenCalledWith('Network error')
-      expect(container).toMatchSnapshot()
-      expect(nextStage.activate).toHaveBeenCalledTimes(0)
-    })
-  })
-
   it('handles submission when there is a pre-existing contest', async () => {
     apiMock
       .mockImplementationOnce(
