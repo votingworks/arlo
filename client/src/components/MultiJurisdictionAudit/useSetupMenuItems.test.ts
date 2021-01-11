@@ -54,7 +54,7 @@ describe('useSetupMenuItems', () => {
     expect(menuItems).toBeTruthy()
   })
 
-  it.only('calls the getters', async () => {
+  it('calls the getters', async () => {
     const {
       result: {
         current: [, refresh],

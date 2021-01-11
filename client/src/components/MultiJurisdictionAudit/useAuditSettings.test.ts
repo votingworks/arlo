@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, act } from '@testing-library/react-hooks'
 import { waitFor } from '@testing-library/react'
 import * as utilities from '../utilities'
 import useAuditSettings from './useAuditSettings'
@@ -28,21 +28,24 @@ describe('useAuditSettings', () => {
     expect(settings).toStrictEqual(null)
   })
 
-  it.skip('should update values', async () => {
+  it('should POST to update values', async () => {
+    // do not test that the values themselves change since this
+    // hook does not update its values after POSTing
     apiMock
       .mockResolvedValueOnce(auditSettings.blank)
       .mockResolvedValueOnce(auditSettings.blank)
       .mockResolvedValueOnce({ status: 'ok' })
     const {
       result: {
-        current: [settings, updateSettings],
+        current: [, updateSettings],
       },
     } = renderHook(() => useAuditSettings('1'))
-    updateSettings(auditSettings.all)
+    await act(async () => {
+      expect(updateSettings(auditSettings.all)).toBeTruthy()
+    })
 
     await waitFor(() => {
       expect(apiMock).toHaveBeenCalledTimes(3)
-      expect(settings).toStrictEqual(auditSettings.all)
     })
   })
 
