@@ -269,7 +269,7 @@ export const aaApiCalls = {
     response: {
       file: {
         name: 'file name',
-        uploadedAt: 'a long time ago in a galaxy far far away',
+        uploadedAt: '2020-12-04T02:31:15.419+00:00',
       },
       processing: {
         status: FileProcessingStatus.Processed,

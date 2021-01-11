@@ -54,21 +54,17 @@ describe('useSetupMenuItems', () => {
     expect(menuItems).toBeTruthy()
   })
 
-  it.skip('calls the getters', async () => {
-    // TEST TODO
+  it('calls the getters', async () => {
     const {
       result: {
         current: [, refresh],
       },
-      waitForNextUpdate,
     } = renderHook(() =>
       useSetupMenuItems('participants', jest.fn(), '1', false, jest.fn())
     )
     act(() => refresh())
-    await waitForNextUpdate()
     expect(apiMock).toHaveBeenCalledTimes(2)
     act(() => refresh())
-    await waitForNextUpdate()
     expect(apiMock).toHaveBeenCalledTimes(4)
   })
 

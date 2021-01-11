@@ -104,57 +104,6 @@ describe('AA setup flow', () => {
     })
   })
 
-  it.skip('next and back buttons change stages', async () => {
-    // TEST TODO
-    const expectedCalls = [
-      aaApiCalls.getUser,
-      ...loadEach,
-      ...loadEach,
-      aaApiCalls.getSettings(auditSettings.all),
-      aaApiCalls.getJurisdictionFile,
-      aaApiCalls.getSettings(auditSettings.all),
-      ...loadEach,
-      aaApiCalls.getSettings(auditSettings.all),
-      aaApiCalls.putSettings(auditSettings.all),
-      ...loadEach,
-      aaApiCalls.getSettings(auditSettings.all),
-      aaApiCalls.getJurisdictions,
-      aaApiCalls.getJurisdictionFile,
-      aaApiCalls.getContests,
-      aaApiCalls.getSampleSizes,
-      aaApiCalls.getSettings(auditSettings.all),
-      ...loadEach,
-    ]
-    await withMockFetch(expectedCalls, async () => {
-      const { queryAllByText, getByText } = render(
-        <AuthDataProvider>
-          <Router>
-            <AuditAdminViewWithAuth />
-          </Router>
-        </AuthDataProvider>
-      )
-
-      await waitFor(() => {
-        expect(queryAllByText('Participants').length).toBe(2)
-      })
-
-      fireEvent.click(getByText('Audit Settings'), { bubbles: true })
-
-      await waitFor(() => {
-        expect(queryAllByText('Audit Settings').length).toBe(2)
-      })
-
-      fireEvent.click(getByText('Save & Next'))
-      await waitFor(() => {
-        expect(queryAllByText('Review & Launch').length).toBe(2)
-      })
-      fireEvent.click(getByText('Back'))
-      await waitFor(() => {
-        expect(queryAllByText('Audit Settings').length).toBe(2)
-      })
-    })
-  })
-
   it('renders sidebar when authenticated on /setup', async () => {
     const expectedCalls = [
       aaApiCalls.getUser,
