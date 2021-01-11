@@ -223,6 +223,39 @@ describe('Ballot', () => {
     })
   })
 
+  it('submits review with double click without screwing up', async () => {
+    const submitMock = jest.fn()
+    const nextBallotMock = jest.fn()
+    const { getByText, findByText } = render(
+      <Router history={history}>
+        <Ballot
+          home="/election/1/audit-board/1"
+          ballots={dummyBallots.ballots}
+          boardName="audit board #1"
+          contests={[contest]}
+          previousBallot={jest.fn()}
+          nextBallot={nextBallotMock}
+          submitBallot={submitMock}
+          batchId="batch-id-1"
+          ballotPosition={2112}
+        />
+      </Router>
+    )
+
+    fireEvent.click(getByText('Choice One'), { bubbles: true })
+
+    const reviewButton = getByText('Review')
+    fireEvent.click(reviewButton, { bubbles: true })
+    const nextButton = await findByText('Submit & Next Ballot')
+    fireEvent.click(nextButton, { bubbles: true }) // the doubleClick event doesn't submit it at all
+    fireEvent.click(nextButton, { bubbles: true }) // but this successfully fails without the Formik double submission protection
+
+    await waitFor(() => {
+      expect(submitMock).toHaveBeenCalledTimes(1)
+      expect(nextBallotMock).toBeCalled()
+    })
+  })
+
   it('navigates to previous ballot', async () => {
     const previousBallotMock = jest.fn()
     const { getByText } = render(

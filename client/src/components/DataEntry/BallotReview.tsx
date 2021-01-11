@@ -72,59 +72,57 @@ const BallotReview: React.FC<IProps> = ({
   interpretations,
   nextBallot,
   submitBallot,
-}: IProps) => {
-  return (
-    <Formik
-      initialValues={interpretations}
-      onSubmit={async () => {
-        await submitBallot(interpretations)
-        goAudit()
-        nextBallot()
-      }}
-    >
-      {({ isSubmitting, handleSubmit }) => (
-        <BallotRow>
-          <div className="ballot-side"></div>
-          <div className="ballot-main">
-            {contests.map(
-              (contest, i) =>
-                contest.isOnBallot && (
-                  <ContestCard key={contest.name}>
-                    <H3>{contest.name}</H3>
-                    <FlushDivider />
-                    <Wrapper>
-                      {/* <ButtonGroup fill large vertical> */}
-                      {renderInterpretation(interpretations[i], contest)}
-                      <Button icon="edit" minimal onClick={goAudit}>
-                        Edit
-                      </Button>
-                      {/* </ButtonGroup> */}
-                    </Wrapper>
-                    <p>
-                      {interpretations[i].comment &&
-                        `COMMENT: ${interpretations[i].comment}`}
-                    </p>
-                  </ContestCard>
-                )
-            )}
-            <ProgressActions>
-              <FormButton
-                loading={isSubmitting}
-                type="submit"
-                onClick={handleSubmit}
-                intent="success"
-              >
-                Submit &amp; Next Ballot
-              </FormButton>
-              <Button onClick={goAudit} minimal>
-                Back
-              </Button>
-            </ProgressActions>
-          </div>
-        </BallotRow>
-      )}
-    </Formik>
-  )
-}
+}: IProps) => (
+  <Formik
+    initialValues={interpretations}
+    onSubmit={async () => {
+      await submitBallot(interpretations)
+      goAudit()
+      nextBallot()
+    }}
+  >
+    {({ isSubmitting, handleSubmit }) => (
+      <BallotRow>
+        <div className="ballot-side"></div>
+        <div className="ballot-main">
+          {contests.map(
+            (contest, i) =>
+              contest.isOnBallot && (
+                <ContestCard key={contest.name}>
+                  <H3>{contest.name}</H3>
+                  <FlushDivider />
+                  <Wrapper>
+                    {/* <ButtonGroup fill large vertical> */}
+                    {renderInterpretation(interpretations[i], contest)}
+                    <Button icon="edit" minimal onClick={goAudit}>
+                      Edit
+                    </Button>
+                    {/* </ButtonGroup> */}
+                  </Wrapper>
+                  <p>
+                    {interpretations[i].comment &&
+                      `COMMENT: ${interpretations[i].comment}`}
+                  </p>
+                </ContestCard>
+              )
+          )}
+          <ProgressActions>
+            <FormButton
+              loading={isSubmitting}
+              type="submit"
+              onClick={handleSubmit}
+              intent="success"
+            >
+              Submit &amp; Next Ballot
+            </FormButton>
+            <Button onClick={goAudit} minimal>
+              Back
+            </Button>
+          </ProgressActions>
+        </div>
+      </BallotRow>
+    )}
+  </Formik>
+)
 
 export default BallotReview
