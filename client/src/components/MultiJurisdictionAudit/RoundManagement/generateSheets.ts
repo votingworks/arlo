@@ -79,14 +79,13 @@ export const downloadPlaceholders = (
     ballots.forEach(ballot => {
       if (pageCount > 0) placeholders.addPage('letter')
 
-      const imprintedId = ballot.imprintedId ? [ballot.imprintedId] : []
       const lines = [
         ballot.auditBoard!.name,
         ballot.batch.container && `Container: ${ballot.batch.container}`,
         ballot.batch.tabulator && `Tabulator: ${ballot.batch.tabulator}`,
         `Batch: ${ballot.batch.name}`,
         `Ballot Number: ${ballot.position}`,
-        ...imprintedId,
+        ballot.imprintedId && ballot.imprintedId,
       ]
         .filter(line => line)
         .map(line => placeholders.splitTextToSize(line!, PLACEHOLDERS_WIDTH)[0])
