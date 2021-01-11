@@ -74,6 +74,25 @@ describe('generateSheets', () => {
       )
     })
 
+    it('generates placeholder sheets for ballot comparison audits', async () => {
+      const dummyBallotComparisonBallots = dummyBallots.ballots.map(b => ({
+        ...b,
+        imprintedId: `${b.batch.name}-${b.position}`,
+        contestsOnBallot: ['contest-id-2'],
+      }))
+      const pdf = downloadPlaceholders(
+        1,
+        // Test times out with too many ballots cuz the placeholder image is so large
+        dummyBallotComparisonBallots.slice(0, 5),
+        mockJurisdiction.name,
+        mockJurisdiction.election.auditName
+      )
+      await expect(Buffer.from(pdf)).toMatchPdfSnapshot()
+      expect(mockSavePDF).toHaveBeenCalledWith(
+        'Round 1 Placeholders - Jurisdiction One - audit one.pdf'
+      )
+    })
+
     it('does nothing with no ballots', () => {
       const pdf = downloadPlaceholders(
         1,
