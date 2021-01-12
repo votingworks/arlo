@@ -15,6 +15,8 @@ if __name__ == "__main__":
         print("Jurisdiction not found")
         sys.exit(1)
 
+    print(f"Org: {jurisdiction.election.organization.name}")
+    print(f"Audit: {jurisdiction.election.audit_name}")
     print(f"Jurisdiction: {jurisdiction.name}")
 
     print(f"Audit boards: {len(jurisdiction.audit_boards)}")
