@@ -34,21 +34,23 @@ def auth0_get_token() -> str:
     return str(response["access_token"])
 
 
-def auth0_create_audit_admin(email: str):
+def auth0_create_audit_admin(email: str) -> str:
     token = auth0_get_token()
     auth0 = Auth0(AUTH0_DOMAIN, token)
     try:
-        auth0.users.create(
+        user = auth0.users.create(
             dict(
                 email=email,
                 password=secrets.token_urlsafe(),
                 connection="Username-Password-Authentication",
             )
         )
+        return str(user["user_id"])
     except Auth0Error as error:
         # If user already exists in Auth0, no problem!
         if error.status_code == 409:
-            return
+            users = auth0.users_by_email.search_users_by_email(email.lower())
+            return str(users[0]["user_id"])
         raise error
 
 
@@ -146,7 +148,8 @@ def create_audit_admin(organization_id: str):
     admin = AuditAdministration(user_id=user.id, organization_id=organization_id)
     db_session.add(admin)
 
-    auth0_create_audit_admin(audit_admin["email"])
+    auth0_user_id = auth0_create_audit_admin(audit_admin["email"])
+    user.external_id = auth0_user_id
 
     db_session.commit()
 

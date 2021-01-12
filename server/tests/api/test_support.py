@@ -7,6 +7,7 @@ from ...api.support import (
     AUTH0_DOMAIN,
     AUDITADMIN_AUTH0_CLIENT_ID,
     AUDITADMIN_AUTH0_CLIENT_SECRET,
+    Auth0Error,
 )
 
 SUPPORT_EMAIL = "support@example.org"
@@ -17,7 +18,7 @@ def test_support_list_organizations(client: FlaskClient, org_id: str):
     rv = client.get("/api/support/organizations")
     orgs = json.loads(rv.data)
     # This will load orgs from all tests, so we can't check its exact length/value
-    assert len(orgs) > 1
+    assert len(orgs) >= 1
     org = next(org for org in orgs if org["id"] == org_id)
     assert org == {"id": org_id, "name": "Test Org test_support_list_organizations"}
 
@@ -85,21 +86,28 @@ def test_support_create_audit_admin(  # pylint: disable=invalid-name
     )
     MockAuth0.return_value = Mock()
     MockAuth0.return_value.users = Mock()
-    MockAuth0.return_value.users.create = Mock()
+    MockAuth0.return_value.users.create = Mock(
+        return_value={"user_id": "test auth0 user id"}
+    )
+
+    new_admin_email = f"new-audit-admin-{org_id}@example.com"
 
     set_superadmin_user(client, SUPPORT_EMAIL)
     rv = post_json(
         client,
         f"/api/support/organizations/{org_id}/audit-admins",
-        {"email": f"new-audit-admin-{org_id}@example.com"},
+        {"email": new_admin_email},
     )
     assert_ok(rv)
 
     rv = client.get(f"/api/support/organizations/{org_id}")
     assert json.loads(rv.data)["auditAdmins"] == [
         {"email": DEFAULT_AA_EMAIL},
-        {"email": f"new-audit-admin-{org_id}@example.com"},
+        {"email": new_admin_email},
     ]
+
+    user = User.query.filter_by(email=new_admin_email).one()
+    assert user.external_id == "test auth0 user id"
 
     MockGetToken.assert_called_with(AUTH0_DOMAIN)
     MockGetToken.return_value.client_credentials.assert_called_with(
@@ -113,6 +121,91 @@ def test_support_create_audit_admin(  # pylint: disable=invalid-name
     assert create_spec["email"] == f"new-audit-admin-{org_id}@example.com"
     assert create_spec["password"]
     assert create_spec["connection"] == "Username-Password-Authentication"
+
+
+@patch("server.api.support.GetToken")
+@patch("server.api.support.Auth0")
+def test_support_create_audit_admin_already_in_auth0(  # pylint: disable=invalid-name
+    MockAuth0, MockGetToken, client: FlaskClient, org_id: str,
+):
+    MockGetToken.return_value = Mock()
+    MockGetToken.return_value.client_credentials = Mock(
+        return_value={"access_token": "test token"}
+    )
+    MockAuth0.return_value = Mock()
+    MockAuth0.return_value.users = Mock()
+    MockAuth0.return_value.users.create = Mock(
+        side_effect=Auth0Error(409, 1, "already exists")
+    )
+    MockAuth0.return_value.users_by_email = Mock()
+    MockAuth0.return_value.users_by_email.search_users_by_email = Mock(
+        return_value=[{"user_id": "test auth0 existing user id"}]
+    )
+
+    new_admin_email = f"new-audit-admin-{org_id}@example.com"
+
+    set_superadmin_user(client, SUPPORT_EMAIL)
+    rv = post_json(
+        client,
+        f"/api/support/organizations/{org_id}/audit-admins",
+        {"email": new_admin_email},
+    )
+    assert_ok(rv)
+
+    rv = client.get(f"/api/support/organizations/{org_id}")
+    assert json.loads(rv.data)["auditAdmins"] == [
+        {"email": DEFAULT_AA_EMAIL},
+        {"email": new_admin_email},
+    ]
+
+    user = User.query.filter_by(email=new_admin_email).one()
+    assert user.external_id == "test auth0 existing user id"
+
+    MockAuth0.return_value.users.create.assert_called()
+    MockAuth0.return_value.users_by_email.search_users_by_email.assert_called_with(
+        new_admin_email
+    )
+
+
+def test_support_create_audit_admin_already_exists(  # pylint: disable=invalid-name
+    client: FlaskClient, org_id: str
+):
+    # Start with an existing user that isn't already an audit admin for this org
+    user = create_user(email="already-exists@example.org")
+
+    set_superadmin_user(client, SUPPORT_EMAIL)
+    rv = client.get(f"/api/support/organizations/{org_id}")
+    assert json.loads(rv.data)["auditAdmins"] == [
+        {"email": DEFAULT_AA_EMAIL},
+    ]
+
+    rv = post_json(
+        client,
+        f"/api/support/organizations/{org_id}/audit-admins",
+        {"email": user.email},
+    )
+    assert_ok(rv)
+
+    rv = client.get(f"/api/support/organizations/{org_id}")
+    assert json.loads(rv.data)["auditAdmins"] == [
+        {"email": DEFAULT_AA_EMAIL},
+        {"email": user.email},
+    ]
+
+
+def test_support_create_audit_admin_already_admin(  # pylint: disable=invalid-name
+    client: FlaskClient, org_id: str
+):
+    set_superadmin_user(client, SUPPORT_EMAIL)
+    rv = post_json(
+        client,
+        f"/api/support/organizations/{org_id}/audit-admins",
+        {"email": DEFAULT_AA_EMAIL},
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [{"errorType": "Conflict", "message": "Audit admin already exists"}]
+    }
 
 
 def test_support_log_in_as_audit_admin(
