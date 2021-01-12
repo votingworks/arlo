@@ -32,13 +32,13 @@ from ..bgcompute import (
 def reset_test_db(tmp_path_factory, worker_id):
     # If we're not executing with multiple workers (from pytest-xdist), simply
     # reset the db.
-    if not worker_id:
+    if worker_id == "master":
         reset_db()
+        return
 
     # Otherwise, use a file lock in a temp directory shared by all workers to
     # ensure only one worker can reset the db.
     root_tmp_dir = tmp_path_factory.getbasetemp().parent
-
     temp_file = root_tmp_dir / "reset_db"
     with FileLock(str(temp_file) + ".lock"):
         if not temp_file.is_file():
