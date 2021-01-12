@@ -1,5 +1,6 @@
 import uuid
 import secrets
+from typing import Optional
 from urllib.parse import urlparse
 from flask import jsonify, request, session, redirect
 from auth0.v3.authentication import GetToken
@@ -19,6 +20,7 @@ from ..config import (
     AUDITADMIN_AUTH0_BASE_URL,
     AUDITADMIN_AUTH0_CLIENT_ID,
     AUDITADMIN_AUTH0_CLIENT_SECRET,
+    FLASK_ENV,
 )
 from ..util.jsonschema import validate
 
@@ -34,7 +36,12 @@ def auth0_get_token() -> str:
     return str(response["access_token"])
 
 
-def auth0_create_audit_admin(email: str) -> str:
+def auth0_create_audit_admin(email: str) -> Optional[str]:
+    # In dev/staging environments, if we're pointing to a fake OAuth server
+    # instead of Auth0, we shouldn't try to use the Auth0 API
+    if FLASK_ENV in ["development", "staging"] and "auth0.com" not in str(AUTH0_DOMAIN):
+        return None  # pragma: no cover
+
     token = auth0_get_token()
     auth0 = Auth0(AUTH0_DOMAIN, token)
     try:
