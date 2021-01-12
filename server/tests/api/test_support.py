@@ -167,8 +167,10 @@ def test_support_create_audit_admin_already_in_auth0(  # pylint: disable=invalid
     )
 
 
-def test_support_create_audit_admin_already_exists(  # pylint: disable=invalid-name
-    client: FlaskClient, org_id: str
+@patch("server.api.support.GetToken")
+@patch("server.api.support.Auth0")
+def test_support_create_audit_admin_already_exists(  # pylint: disable=invalid-name,unused-argument
+    MockAuth0, MockGetToken, client: FlaskClient, org_id: str,
 ):
     # Start with an existing user that isn't already an audit admin for this org
     user = create_user(email="already-exists@example.org")
@@ -193,8 +195,10 @@ def test_support_create_audit_admin_already_exists(  # pylint: disable=invalid-n
     ]
 
 
-def test_support_create_audit_admin_already_admin(  # pylint: disable=invalid-name
-    client: FlaskClient, org_id: str
+@patch("server.api.support.GetToken")
+@patch("server.api.support.Auth0")
+def test_support_create_audit_admin_already_admin(  # pylint: disable=invalid-name,unused-argument
+    MockAuth0, MockGetToken, client: FlaskClient, org_id: str,
 ):
     set_superadmin_user(client, SUPPORT_EMAIL)
     rv = post_json(
