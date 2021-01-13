@@ -78,9 +78,11 @@ def create_user(email=DEFAULT_AA_EMAIL) -> User:
 
 
 def create_org_and_admin(
-    org_name: str = "Test Org", user_email: str = DEFAULT_AA_EMAIL
+    org_name: str = None, user_email: str = DEFAULT_AA_EMAIL
 ) -> Tuple[str, str]:
-    org = Organization(id=str(uuid.uuid4()), name=org_name)
+    org = Organization(
+        id=str(uuid.uuid4()), name=org_name or f"Test Org {datetime.now(timezone.utc)}"
+    )
     db_session.add(org)
     audit_admin = create_user(user_email)
     db_session.add(audit_admin)

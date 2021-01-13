@@ -654,7 +654,7 @@ def test_restrict_access_jurisdiction_admin_jurisdiction_admin(
 def test_restrict_access_jurisdiction_admin_wrong_org(
     client: FlaskClient, election_id: str, jurisdiction_id: str
 ):
-    org_id_2, _ = create_org_and_admin("Org 2", "aa2@example.com")
+    org_id_2, _ = create_org_and_admin("Organization 2", "aa2@example.com")
     set_logged_in_user(client, UserType.AUDIT_ADMIN, "aa2@example.com")
     election_id_2 = create_election(client, organization_id=org_id_2)
     create_jurisdiction_and_admin(election_id_2, "Test Jurisdiction", "ja2@example.com")
