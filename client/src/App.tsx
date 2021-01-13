@@ -17,6 +17,7 @@ import AuthDataProvider, {
   useAuthDataContext,
 } from './components/UserContext'
 import SupportTools from './components/SupportTools'
+import { ConfirmProvider } from './components/Atoms/Confirm'
 
 const Main = styled.div`
   display: flex;
@@ -59,35 +60,37 @@ const App: React.FC = () => {
   return (
     <>
       <ToastContainer />
-      <AuthDataProvider>
-        <Main>
-          <Route path="/" component={Header} />
-          <Switch>
-            <Route exact path="/" component={HomeScreen} />
-            <PrivateRoute
-              userType="audit_board"
-              path="/election/:electionId/audit-board/:auditBoardId"
-              component={DataEntry}
-            />
-            <PrivateRoute
-              userType="jurisdiction_admin"
-              path="/election/:electionId/jurisdiction/:jurisdictionId"
-              component={JurisdictionAdminView}
-            />
-            <PrivateRoute
-              userType="audit_admin"
-              path="/election/:electionId/:view?"
-              component={AuditAdminView}
-            />
-            <Route path="/support">
-              <SupportTools />
-            </Route>
-            <Route>
-              <Wrapper>404 Not Found</Wrapper>
-            </Route>
-          </Switch>
-        </Main>
-      </AuthDataProvider>
+      <ConfirmProvider>
+        <AuthDataProvider>
+          <Main>
+            <Route path="/" component={Header} />
+            <Switch>
+              <Route exact path="/" component={HomeScreen} />
+              <PrivateRoute
+                userType="audit_board"
+                path="/election/:electionId/audit-board/:auditBoardId"
+                component={DataEntry}
+              />
+              <PrivateRoute
+                userType="jurisdiction_admin"
+                path="/election/:electionId/jurisdiction/:jurisdictionId"
+                component={JurisdictionAdminView}
+              />
+              <PrivateRoute
+                userType="audit_admin"
+                path="/election/:electionId/:view?"
+                component={AuditAdminView}
+              />
+              <Route path="/support">
+                <SupportTools />
+              </Route>
+              <Route>
+                <Wrapper>404 Not Found</Wrapper>
+              </Route>
+            </Switch>
+          </Main>
+        </AuthDataProvider>
+      </ConfirmProvider>
     </>
   )
 }
