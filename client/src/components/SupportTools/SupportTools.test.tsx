@@ -1,6 +1,7 @@
 import React from 'react'
 import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { ToastContainer } from 'react-toastify'
 import { withMockFetch, renderWithRouter } from '../testUtilities'
 import SupportTools from './SupportTools'
 import AuthDataProvider from '../UserContext'
@@ -73,10 +74,19 @@ const apiCalls = {
   },
 }
 
+const serverError = (apiCall: { url: string; options?: object }) => ({
+  ...apiCall,
+  response: {
+    errors: [{ errorType: 'Server Error', message: 'something went wrong' }],
+  },
+  error: { status: 500, statusText: 'Server Error' },
+})
+
 const renderRoute = (route: string) =>
   renderWithRouter(
     <AuthDataProvider>
       <SupportTools />
+      <ToastContainer />
     </AuthDataProvider>,
     { route }
   )
@@ -196,6 +206,67 @@ describe('Support Tools', () => {
         'href',
         '/api/support/jurisdiction-admins/jurisdiction-admin-1@example.org/login'
       )
+    })
+  })
+
+  it('home screen handles error', async () => {
+    const expectedCalls = [
+      superadminApiCalls.getUser,
+      serverError(apiCalls.getOrganizations),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderRoute('/support')
+      const toast = await screen.findByRole('alert')
+      expect(toast).toHaveTextContent('something went wrong')
+    })
+  })
+
+  it('org screen handles error', async () => {
+    const expectedCalls = [
+      superadminApiCalls.getUser,
+      serverError(apiCalls.getOrganization),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderRoute('/support/orgs/organization-id-1')
+      const toast = await screen.findByRole('alert')
+      expect(toast).toHaveTextContent('something went wrong')
+    })
+  })
+
+  it('org screen handles error on create admin', async () => {
+    const expectedCalls = [
+      superadminApiCalls.getUser,
+      apiCalls.getOrganization,
+      serverError(apiCalls.postAuditAdmin),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderRoute('/support/orgs/organization-id-1')
+
+      await screen.findByRole('heading', { name: 'Organization 1' })
+
+      // Create a new admin
+      userEvent.type(
+        screen.getByPlaceholderText('New admin email'),
+        'audit-admin-3@example.org'
+      )
+      userEvent.click(
+        screen.getByRole('button', { name: /Create Audit Admin/ })
+      )
+
+      const toast = await screen.findByRole('alert')
+      expect(toast).toHaveTextContent('something went wrong')
+    })
+  })
+
+  it('audit screen handles error', async () => {
+    const expectedCalls = [
+      superadminApiCalls.getUser,
+      serverError(apiCalls.getElection),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderRoute('/support/audits/election-id-1')
+      const toast = await screen.findByRole('alert')
+      expect(toast).toHaveTextContent('something went wrong')
     })
   })
 })

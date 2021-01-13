@@ -13,6 +13,10 @@ import {
   AnchorButton,
   Tag,
   H4,
+  ButtonGroup,
+  Alignment,
+  Colors,
+  Intent,
 } from '@blueprintjs/core'
 import { useForm } from 'react-hook-form'
 import { useAuthDataContext } from '../UserContext'
@@ -27,7 +31,14 @@ import {
   IElection,
 } from './support-api'
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient(
+  // Turn off query retries in test so we can mock effectively
+  process.env.NODE_ENV === 'test'
+    ? {
+        defaultOptions: { queries: { retry: false } },
+      }
+    : {}
+)
 
 const SupportTools = () => {
   const auth = useAuthDataContext()
@@ -55,18 +66,32 @@ const SupportTools = () => {
           </div>
         </Inner>
       </Wrapper>
-      <ReactQueryDevtools initialIsOpen={false} />
+      {process.env.NODE_ENV !== 'test' && (
+        // Dev tools are automatically excluded from production, but we also
+        // don't want them clogging up the DOM output in test
+        <ReactQueryDevtools initialIsOpen={false} />
+      )}
     </QueryClientProvider>
   )
 }
 
-const UL = styled.ul`
-  padding: 0;
-  list-style-type: none;
-  li {
-    padding: 5px 0;
-    > .bp3-button:first-child {
-      margin-left: -10px;
+const Column = styled.div`
+  width: 50%;
+  padding-right: 30px;
+`
+
+const ButtonList = styled(ButtonGroup).attrs({
+  vertical: true,
+  minimal: true,
+  large: true,
+  alignText: Alignment.LEFT,
+})`
+  border: 1px solid ${Colors.LIGHT_GRAY3};
+  width: 100%;
+  .bp3-button {
+    border-radius: 0;
+    &:not(:first-child) {
+      border-top: 1px solid ${Colors.LIGHT_GRAY3};
     }
   }
 `
@@ -80,29 +105,33 @@ const Organizations = () => {
   }
 
   return (
-    <div>
+    <Column>
       <H2>Organizations</H2>
-      <UL>
+      <ButtonList style={{ border: `1px solid ${Colors.LIGHT_GRAY3}` }}>
         {organizations.data.map(organization => (
-          <li key={organization.id}>
-            <LinkButton to={`/support/orgs/${organization.id}`} minimal>
-              {organization.name}
-            </LinkButton>
-          </li>
+          <LinkButton
+            key={organization.id}
+            to={`/support/orgs/${organization.id}`}
+            intent={Intent.PRIMARY}
+          >
+            {organization.name}
+          </LinkButton>
         ))}
-      </UL>
-    </div>
+      </ButtonList>
+    </Column>
   )
 }
 
 const Table = styled(HTMLTable)`
   margin-top: 10px;
-  width: 380px;
+  width: 100%;
   table-layout: fixed;
   td:first-child {
-    width: 230px;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+  td:last-child {
+    width: 150px;
   }
   tr td {
     vertical-align: baseline;
@@ -136,27 +165,33 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
     <div style={{ width: '100%' }}>
       <H2>{name}</H2>
       <div style={{ display: 'flex', width: '100%' }}>
-        <div style={{ width: '50%' }}>
+        <Column>
           <H3>Audits</H3>
-          <UL>
+          <ButtonList>
             {elections.map(election => (
-              <li key={election.id}>
-                <LinkButton to={`/support/audits/${election.id}`} minimal>
-                  {election.auditName}
-                </LinkButton>
-              </li>
+              <LinkButton
+                key={election.id}
+                to={`/support/audits/${election.id}`}
+                intent={Intent.PRIMARY}
+              >
+                {election.auditName}
+              </LinkButton>
             ))}
-          </UL>
-        </div>
-        <div style={{ width: '50%' }}>
+          </ButtonList>
+        </Column>
+        <Column>
           <H3>Audit Admins</H3>
-          <form onSubmit={handleSubmit(onSubmitCreateAuditAdmin)}>
+          <form
+            style={{ display: 'flex' }}
+            onSubmit={handleSubmit(onSubmitCreateAuditAdmin)}
+          >
             <input
               type="text"
               name="email"
               className={Classes.INPUT}
               placeholder="New admin email"
               ref={register}
+              style={{ flexGrow: 1 }}
             />
             <Button
               type="submit"
@@ -185,7 +220,7 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
               ))}
             </tbody>
           </Table>
-        </div>
+        </Column>
       </div>
     </div>
   )
@@ -210,7 +245,7 @@ const Audit = ({ electionId }: { electionId: string }) => {
   const { auditName, auditType, jurisdictions } = election.data
 
   return (
-    <div>
+    <Column>
       <H2>{auditName}</H2>
       <Tag large style={{ marginBottom: '15px' }}>
         {prettyAuditType(auditType)}
@@ -239,7 +274,7 @@ const Audit = ({ electionId }: { electionId: string }) => {
           </Table>
         </div>
       ))}
-    </div>
+    </Column>
   )
 }
 
