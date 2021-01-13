@@ -5,7 +5,7 @@ import { ToastContainer } from 'react-toastify'
 import { withMockFetch, renderWithRouter } from '../testUtilities'
 import SupportTools from './SupportTools'
 import AuthDataProvider from '../UserContext'
-import { superadminApiCalls } from '../MultiJurisdictionAudit/_mocks'
+import { supportApiCalls } from '../MultiJurisdictionAudit/_mocks'
 
 const apiCalls = {
   getOrganizations: {
@@ -105,7 +105,7 @@ const renderRoute = (route: string) =>
 describe('Support Tools', () => {
   it('home screen shows a list of orgs', async () => {
     const expectedCalls = [
-      superadminApiCalls.getUser,
+      supportApiCalls.getUser,
       apiCalls.getOrganizations,
       apiCalls.getOrganization,
     ]
@@ -126,7 +126,7 @@ describe('Support Tools', () => {
 
   it('home screen shows a form to create a new org', async () => {
     const expectedCalls = [
-      superadminApiCalls.getUser,
+      supportApiCalls.getUser,
       apiCalls.getOrganizations,
       apiCalls.postOrganization,
       {
@@ -156,7 +156,7 @@ describe('Support Tools', () => {
 
   it('org screen shows a list of audits', async () => {
     const expectedCalls = [
-      superadminApiCalls.getUser,
+      supportApiCalls.getUser,
       apiCalls.getOrganization,
       apiCalls.getElection,
     ]
@@ -175,7 +175,7 @@ describe('Support Tools', () => {
 
   it('org screen shows a list of audit admins and a form to create a new audit admin', async () => {
     const expectedCalls = [
-      superadminApiCalls.getUser,
+      supportApiCalls.getUser,
       apiCalls.getOrganization,
       apiCalls.postAuditAdmin,
       {
@@ -221,7 +221,7 @@ describe('Support Tools', () => {
   })
 
   it('audit screen shows a list of jurisdiction admins', async () => {
-    const expectedCalls = [superadminApiCalls.getUser, apiCalls.getElection]
+    const expectedCalls = [supportApiCalls.getUser, apiCalls.getElection]
     await withMockFetch(expectedCalls, async () => {
       renderRoute('/support/audits/election-id-1')
 
@@ -252,7 +252,7 @@ describe('Support Tools', () => {
 
   it('home screen handles error', async () => {
     const expectedCalls = [
-      superadminApiCalls.getUser,
+      supportApiCalls.getUser,
       serverError(apiCalls.getOrganizations),
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -264,7 +264,7 @@ describe('Support Tools', () => {
 
   it('home screen handles error on create org', async () => {
     const expectedCalls = [
-      superadminApiCalls.getUser,
+      supportApiCalls.getUser,
       apiCalls.getOrganizations,
       serverError(apiCalls.postOrganization),
     ]
@@ -288,7 +288,7 @@ describe('Support Tools', () => {
 
   it('org screen handles error', async () => {
     const expectedCalls = [
-      superadminApiCalls.getUser,
+      supportApiCalls.getUser,
       serverError(apiCalls.getOrganization),
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -300,7 +300,7 @@ describe('Support Tools', () => {
 
   it('org screen handles error on create admin', async () => {
     const expectedCalls = [
-      superadminApiCalls.getUser,
+      supportApiCalls.getUser,
       apiCalls.getOrganization,
       serverError(apiCalls.postAuditAdmin),
     ]
@@ -325,7 +325,7 @@ describe('Support Tools', () => {
 
   it('audit screen handles error', async () => {
     const expectedCalls = [
-      superadminApiCalls.getUser,
+      supportApiCalls.getUser,
       serverError(apiCalls.getElection),
     ]
     await withMockFetch(expectedCalls, async () => {

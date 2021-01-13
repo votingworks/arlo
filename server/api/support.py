@@ -12,7 +12,7 @@ from . import api
 from ..models import *  # pylint: disable=wildcard-import
 from ..database import db_session
 from ..auth import (
-    restrict_access_superadmin,
+    restrict_access_support,
     set_loggedin_user,
     UserType,
 )
@@ -62,7 +62,7 @@ def auth0_create_audit_admin(email: str) -> Optional[str]:
 
 
 @api.route("/support/organizations", methods=["GET"])
-@restrict_access_superadmin
+@restrict_access_support
 def list_organizations():
     organizations = Organization.query.order_by(Organization.name).all()
     return jsonify(
@@ -82,7 +82,7 @@ ORGANIZATION_SCHEMA = {
 
 
 @api.route("/support/organizations", methods=["POST"])
-@restrict_access_superadmin
+@restrict_access_support
 def create_organization():
     organization = request.get_json()
     validate(organization, ORGANIZATION_SCHEMA)
@@ -97,7 +97,7 @@ def create_organization():
 
 
 @api.route("/support/organizations/<organization_id>", methods=["GET"])
-@restrict_access_superadmin
+@restrict_access_support
 def get_organization(organization_id: str):
     organization = get_or_404(Organization, organization_id)
     return jsonify(
@@ -122,7 +122,7 @@ def get_organization(organization_id: str):
 
 
 @api.route("/support/elections/<election_id>", methods=["GET"])
-@restrict_access_superadmin
+@restrict_access_support
 def get_election(election_id: str):
     election = get_or_404(Election, election_id)
     return jsonify(
@@ -155,7 +155,7 @@ AUDIT_ADMIN_SCHEMA = {
 
 
 @api.route("/support/organizations/<organization_id>/audit-admins", methods=["POST"])
-@restrict_access_superadmin
+@restrict_access_support
 def create_audit_admin(organization_id: str):
     get_or_404(Organization, organization_id)
     audit_admin = request.get_json()
@@ -189,16 +189,18 @@ def create_audit_admin(organization_id: str):
 @api.route(
     "/support/audit-admins/<email>/login", methods=["GET"],
 )
-@restrict_access_superadmin
+@restrict_access_support
 def log_in_as_audit_admin(email: str):
-    set_loggedin_user(session, UserType.AUDIT_ADMIN, email, from_superadmin=True)
+    set_loggedin_user(session, UserType.AUDIT_ADMIN, email, from_support_user=True)
     return redirect("/")
 
 
 @api.route(
     "/support/jurisdiction-admins/<email>/login", methods=["GET"],
 )
-@restrict_access_superadmin
+@restrict_access_support
 def log_in_as_jurisdiction_admin(email: str):
-    set_loggedin_user(session, UserType.JURISDICTION_ADMIN, email, from_superadmin=True)
+    set_loggedin_user(
+        session, UserType.JURISDICTION_ADMIN, email, from_support_user=True
+    )
     return redirect("/")

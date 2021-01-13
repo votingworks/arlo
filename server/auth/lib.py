@@ -26,19 +26,19 @@ class UserType(str, enum.Enum):
     AUDIT_BOARD = "audit_board"
 
 
-_SUPERADMIN = "_superadmin"
+_SUPPORT_USER = "_support_user"
 _USER = "_user"
 _CREATED_AT = "_created_at"
 _LAST_REQUEST_AT = "_last_request_at"
 
 
 def set_loggedin_user(
-    session, user_type: UserType, user_key: str, from_superadmin: bool = False
+    session, user_type: UserType, user_key: str, from_support_user: bool = False
 ):
     session[_USER] = {"type": user_type, "key": user_key}
-    # We don't want to set the created time when a superadmin logs in as
-    # another user, since it was already set when the superadmin logged in.
-    if not from_superadmin:
+    # We don't want to set the created time when a support user logs in as
+    # another user, since it was already set when the support user logged in.
+    if not from_support_user:
         session[_CREATED_AT] = datetime.now(timezone.utc).isoformat()
     session[_LAST_REQUEST_AT] = datetime.now(timezone.utc).isoformat()
 
@@ -67,34 +67,33 @@ def check_session_expiration(session):
             + config.SESSION_INACTIVITY_TIMEOUT
         )
     ):
-        clear_superadmin_user(session)
+        clear_support_user(session)
         clear_loggedin_user(session)
     else:
         session[_LAST_REQUEST_AT] = datetime.now(timezone.utc).isoformat()
 
 
-## The super admin bit lets a user impersonate any other user
-## Having the bit only grants access to the superadmin functionality
-## that enables becoming any other user, and then taking action as them.
-##
-## This state of superadmin'ness is kept separate from the normal user session
-## field so that impersonation can be as close as possible to the same user session
-## and so that a superadmin can become any other user at any other time without having
-## to re-login
-def set_superadmin_user(session, email: str):
-    session[_SUPERADMIN] = email
+# The support user role grants access to the support tools API, which includes
+# logging in as an AA or JA.
+#
+# The support user's session state is kept separate from the normal user
+# session field so that logging in as another user can be as close as possible
+# to the same user session and so that a support user can become any other user
+# at any other time without having to re-login.
+def set_support_user(session, email: str):
+    session[_SUPPORT_USER] = email
     session[_CREATED_AT] = datetime.now(timezone.utc).isoformat()
     session[_LAST_REQUEST_AT] = datetime.now(timezone.utc).isoformat()
 
 
-def clear_superadmin_user(session):
-    session[_SUPERADMIN] = None
+def clear_support_user(session):
+    session[_SUPPORT_USER] = None
 
 
-def get_superadmin_user(session) -> Optional[str]:
+def get_support_user(session) -> Optional[str]:
     check_session_expiration(session)
-    superadmin_email: Optional[str] = session.get(_SUPERADMIN)
-    return superadmin_email
+    support_user_email: Optional[str] = session.get(_SUPPORT_USER)
+    return support_user_email
 
 
 def find_or_404(query: Query):
@@ -211,15 +210,15 @@ def restrict_access(user_types: List[UserType]):
     return restrict_access_decorator
 
 
-def restrict_access_superadmin(route: Callable):
+def restrict_access_support(route: Callable):
     """
-    Flask route decorator that restricts access to a route to a superadmin.
+    Flask route decorator that restricts access to a route to a support user.
     """
 
     @functools.wraps(route)
     def wrapper(*args, **kwargs):
-        if not get_superadmin_user(session):
-            raise Forbidden(description="requires superadmin privileges")
+        if not get_support_user(session):
+            raise Forbidden(description="requires support privileges")
 
         return route(*args, **kwargs)
 

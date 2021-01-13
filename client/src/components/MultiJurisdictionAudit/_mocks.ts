@@ -32,7 +32,7 @@ export const apiCalls = {
   }),
   unauthenticatedUser: {
     url: '/api/me',
-    response: { user: null, superadminUser: null },
+    response: { user: null, supportUser: null },
   },
 }
 
@@ -78,7 +78,7 @@ export const jaApiCalls = {
         ],
         organizations: [],
       },
-      superadminUser: null,
+      supportUser: null,
     },
   },
   getRounds: {
@@ -155,7 +155,7 @@ export const aaApiCalls = {
     url: '/api/me',
     response: {
       user: aaUser,
-      superadminUser: null,
+      supportUser: null,
     },
   },
   getUserWithAudit: {
@@ -178,7 +178,7 @@ export const aaApiCalls = {
           },
         ],
       },
-      superadminUser: null,
+      supportUser: null,
     },
   },
   getUserMultipleOrgs: {
@@ -206,7 +206,7 @@ export const aaApiCalls = {
           },
         ],
       },
-      superadminUser: null,
+      supportUser: null,
     },
   },
   postNewAudit: (body: {}) => ({
@@ -306,26 +306,26 @@ export const aaApiCalls = {
   },
 }
 
-export const superadminApiCalls = {
+export const supportApiCalls = {
   getUser: {
     url: '/api/me',
     response: {
       user: null,
-      superadminUser: { email: 'superadmin@example.com' },
+      supportUser: { email: 'support@example.com' },
     },
   },
   getUserImpersonatingAA: {
     url: '/api/me',
     response: {
       user: aaUser,
-      superadminUser: { email: 'superadmin@example.com' },
+      supportUser: { email: 'support@example.com' },
     },
   },
   getUserImpersonatingJA: {
     url: '/api/me',
     response: {
       user: jaApiCalls.getUser.response.user,
-      superadminUser: { email: 'superadmin@example.com' },
+      supportUser: { email: 'support@example.com' },
     },
   },
 }
@@ -353,7 +353,7 @@ export const auditBoardApiCalls = {
         ],
         signedOffAt: null,
       },
-      superadminUser: null,
+      supportUser: null,
     },
   },
 }

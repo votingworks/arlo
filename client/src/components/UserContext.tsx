@@ -61,13 +61,13 @@ export interface IJurisdictionAdmin {
 
 export type IUser = IAuditAdmin | IJurisdictionAdmin | IAuditBoard
 
-export interface ISuperadminUser {
+export interface ISupportUser {
   email: string
 }
 
 export interface IAuthData {
   user: IUser | null
-  superadminUser: ISuperadminUser | null
+  supportUser: ISupportUser | null
 }
 
 const AuthDataContext = createContext<IAuthData | null>(null)

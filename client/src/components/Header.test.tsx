@@ -8,7 +8,7 @@ import {
   aaApiCalls,
   apiCalls,
   jaApiCalls,
-  superadminApiCalls,
+  supportApiCalls,
   auditBoardApiCalls,
 } from './MultiJurisdictionAudit/_mocks'
 
@@ -162,8 +162,8 @@ describe('Header', () => {
     })
   })
 
-  it('shows Support Tools navbar when authenticated as a superadmin', async () => {
-    const expectedCalls = [superadminApiCalls.getUser]
+  it('shows Support Tools navbar when authenticated as a support user', async () => {
+    const expectedCalls = [supportApiCalls.getUser]
     await withMockFetch(expectedCalls, async () => {
       renderHeader('/support')
 
@@ -173,12 +173,12 @@ describe('Header', () => {
       })
       expect(supportToolsLink).toHaveAttribute('href', '/support')
 
-      // Superadmin user email
-      screen.getByText('superadmin@example.com')
+      // Support user email
+      screen.getByText('support@example.com')
 
       // Log out button
       const logOutButton = screen.getByRole('link', { name: 'Log out' })
-      expect(logOutButton).toHaveAttribute('href', '/auth/superadmin/logout')
+      expect(logOutButton).toHaveAttribute('href', '/auth/support/logout')
 
       // No regular navbar
       expect(
@@ -189,8 +189,8 @@ describe('Header', () => {
     })
   })
 
-  it('shows both navbars when a superadmin impersonates an audit admin', async () => {
-    const expectedCalls = [superadminApiCalls.getUserImpersonatingAA]
+  it('shows both navbars when a support user impersonates an audit admin', async () => {
+    const expectedCalls = [supportApiCalls.getUserImpersonatingAA]
     await withMockFetch(expectedCalls, async () => {
       renderHeader('/')
 
@@ -202,12 +202,12 @@ describe('Header', () => {
       })
       expect(supportToolsLink).toHaveAttribute('href', '/support')
 
-      // Superadmin user email
-      screen.getByText('superadmin@example.com')
+      // Support user email
+      screen.getByText('support@example.com')
 
       // Log out button
       const logOutButton = screen.getByRole('link', { name: 'Log out' })
-      expect(logOutButton).toHaveAttribute('href', '/auth/superadmin/logout')
+      expect(logOutButton).toHaveAttribute('href', '/auth/support/logout')
 
       // Audit admin navbar
 
@@ -230,8 +230,8 @@ describe('Header', () => {
     })
   })
 
-  it('shows both navbars when a superadmin impersonates a jurisdiction admin', async () => {
-    const expectedCalls = [superadminApiCalls.getUserImpersonatingJA]
+  it('shows both navbars when a support user impersonates a jurisdiction admin', async () => {
+    const expectedCalls = [supportApiCalls.getUserImpersonatingJA]
     await withMockFetch(expectedCalls, async () => {
       renderHeader('/')
 
@@ -243,12 +243,12 @@ describe('Header', () => {
       })
       expect(supportToolsLink).toHaveAttribute('href', '/support')
 
-      // Superadmin user email
-      screen.getByText('superadmin@example.com')
+      // Support user email
+      screen.getByText('support@example.com')
 
       // Log out button
       const logOutButton = screen.getByRole('link', { name: 'Log out' })
-      expect(logOutButton).toHaveAttribute('href', '/auth/superadmin/logout')
+      expect(logOutButton).toHaveAttribute('href', '/auth/support/logout')
 
       // Jurisdiction admin navbar
 

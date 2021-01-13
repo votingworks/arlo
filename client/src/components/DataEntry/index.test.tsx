@@ -37,7 +37,7 @@ const apiCalls = {
     url: '/api/me',
     response: {
       user: { type: 'AUDIT_BOARD', ...dummyBoards()[0] },
-      superadminUser: null,
+      supportUser: null,
     },
   },
   putAuditBoardMembers: {
