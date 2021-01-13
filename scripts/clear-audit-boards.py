@@ -24,16 +24,30 @@ if __name__ == "__main__":
         print("Jurisdiction has no audit boards")
         sys.exit()
 
-    num_audited_ballots = (
+    audited_ballots = (
         SampledBallot.query.filter(SampledBallot.status != BallotStatus.NOT_AUDITED)
         .join(Batch)
         .filter_by(jurisdiction_id=jurisdiction_id)
-        .count()
+        .all()
     )
-    print(f"Jurisdiction has audited {num_audited_ballots} ballots so far")
-    if num_audited_ballots > 0:
-        print("Can't clear audit boards after ballots have been audited")
-        sys.exit(1)
+    print(f"Jurisdiction has audited {len(audited_ballots)} ballots so far")
+    if len(audited_ballots) > 0:
+        if (
+            input("Do you want to clear the audit results for these ballots? [y/n]")
+            != "y"
+        ):
+            sys.exit()
+        if (
+            input(
+                "Are you sure want to clear the audit results for these ballots? [y/n]"
+            )
+            != "y"
+        ):
+            sys.exit()
+        for ballot in audited_ballots:
+            ballot.status = BallotStatus.NOT_AUDITED
+            ballot.interpretations = []
+        db_session.commit()
 
     if input("Are you sure you want to clear these audit boards? [y/n]") != "y":
         sys.exit()
