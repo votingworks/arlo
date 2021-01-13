@@ -124,7 +124,7 @@ const Organizations = () => {
     <Column>
       <H2>Organizations</H2>
       <form
-        style={{ display: 'flex' }}
+        style={{ display: 'flex', marginBottom: '10px' }}
         onSubmit={handleSubmit(onSubmitCreateOrganization)}
       >
         <input

@@ -262,6 +262,30 @@ describe('Support Tools', () => {
     })
   })
 
+  it('home screen handles error on create org', async () => {
+    const expectedCalls = [
+      superadminApiCalls.getUser,
+      apiCalls.getOrganizations,
+      serverError(apiCalls.postOrganization),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderRoute('/support')
+
+      await screen.findByRole('heading', { name: 'Organizations' })
+
+      userEvent.type(
+        screen.getByPlaceholderText('New organization name'),
+        'New Organization'
+      )
+      userEvent.click(
+        screen.getByRole('button', { name: /Create Organization/ })
+      )
+
+      const toast = await screen.findByRole('alert')
+      expect(toast).toHaveTextContent('something went wrong')
+    })
+  })
+
   it('org screen handles error', async () => {
     const expectedCalls = [
       superadminApiCalls.getUser,
