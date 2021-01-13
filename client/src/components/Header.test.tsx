@@ -165,13 +165,13 @@ describe('Header', () => {
   it('shows Support Tools navbar when authenticated as a superadmin', async () => {
     const expectedCalls = [superadminApiCalls.getUser]
     await withMockFetch(expectedCalls, async () => {
-      renderHeader('/superadmin/')
+      renderHeader('/support')
 
       // Support tools link
       const supportToolsLink = await screen.findByRole('link', {
         name: /Support Tools/,
       })
-      expect(supportToolsLink).toHaveAttribute('href', '/superadmin/')
+      expect(supportToolsLink).toHaveAttribute('href', '/support')
 
       // Superadmin user email
       screen.getByText('superadmin@example.com')
@@ -181,13 +181,11 @@ describe('Header', () => {
       expect(logOutButton).toHaveAttribute('href', '/auth/superadmin/logout')
 
       // No regular navbar
-      // TODO once we actually move the Support Tools interface to the React App
-      // - currently we don't actually render the navbar on /superadmin/
-      // expect(
-      //   screen.queryByRole('link', {
-      //     name: 'Arlo, by VotingWorks',
-      //   })
-      // ).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('link', {
+          name: 'Arlo, by VotingWorks',
+        })
+      ).not.toBeInTheDocument()
     })
   })
 
@@ -202,7 +200,7 @@ describe('Header', () => {
       const supportToolsLink = await screen.findByRole('link', {
         name: /Support Tools/,
       })
-      expect(supportToolsLink).toHaveAttribute('href', '/superadmin/')
+      expect(supportToolsLink).toHaveAttribute('href', '/support')
 
       // Superadmin user email
       screen.getByText('superadmin@example.com')
@@ -243,7 +241,7 @@ describe('Header', () => {
       const supportToolsLink = await screen.findByRole('link', {
         name: /Support Tools/,
       })
-      expect(supportToolsLink).toHaveAttribute('href', '/superadmin/')
+      expect(supportToolsLink).toHaveAttribute('href', '/support')
 
       // Superadmin user email
       screen.getByText('superadmin@example.com')

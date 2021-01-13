@@ -16,6 +16,7 @@ import AuthDataProvider, {
   IUser,
   useAuthDataContext,
 } from './components/UserContext'
+import SupportTools from './components/SupportTools'
 
 const Main = styled.div`
   display: flex;
@@ -78,6 +79,9 @@ const App: React.FC = () => {
               path="/election/:electionId/:view?"
               component={AuditAdminView}
             />
+            <Route path="/support">
+              <SupportTools />
+            </Route>
             <Route>
               <Wrapper>404 Not Found</Wrapper>
             </Route>

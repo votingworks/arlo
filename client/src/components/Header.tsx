@@ -24,6 +24,7 @@ const SupportBar = styled(Navbar)`
   height: 35px;
   padding: 0;
   color: ${Colors.WHITE};
+  font-weight: 500;
 
   .bp3-navbar-group {
     height: 35px;
@@ -32,8 +33,8 @@ const SupportBar = styled(Navbar)`
   a {
     text-decoration: none;
     color: ${Colors.WHITE};
-    span {
-      margin-left: 8px;
+    .bp3-icon {
+      margin-right: 8px;
     }
   }
 
@@ -84,6 +85,7 @@ const Header: React.FC<{}> = () => {
     | null = useRouteMatch(
     '/election/:electionId/jurisdiction/:jurisdictionId?'
   )
+  const supportMatch = useRouteMatch('/support')
   const auth = useAuthDataContext()
   const electionId = electionMatch ? electionMatch.params.electionId : undefined
   const jurisdiction =
@@ -100,9 +102,9 @@ const Header: React.FC<{}> = () => {
         <SupportBar>
           <InnerBar>
             <NavbarGroup align={Alignment.LEFT}>
-              <a href="/superadmin/">
+              <a href="/support">
                 <Icon icon="eye-open" />
-                <span>Support Tools</span>
+                <span>Arlo Support Tools</span>
               </a>
             </NavbarGroup>
             <NavbarGroup align={Alignment.RIGHT}>
@@ -113,68 +115,70 @@ const Header: React.FC<{}> = () => {
           </InnerBar>
         </SupportBar>
       )}
-      <Nav>
-        <InnerBar>
-          <NavbarGroup align={Alignment.LEFT}>
-            <NavbarHeading>
-              <Link to="/">
-                <img src="/arlo.png" alt="Arlo, by VotingWorks" />
-              </Link>
-            </NavbarHeading>
-            {jurisdiction && (
-              <NavbarHeading>Jurisdiction: {jurisdiction.name}</NavbarHeading>
-            )}
-          </NavbarGroup>
-          {auth && auth.user && (
-            <NavbarGroup align={Alignment.RIGHT}>
-              {electionId && auth.user.type === 'audit_admin' && (
-                <>
-                  <LinkButton
-                    to={`/election/${electionId}/setup`}
-                    minimal
-                    icon="wrench"
-                  >
-                    Audit Setup
-                  </LinkButton>
-                  <LinkButton
-                    to={`/election/${electionId}/progress`}
-                    minimal
-                    icon="horizontal-bar-chart"
-                  >
-                    Audit Progress
-                  </LinkButton>
-                  <LinkButton to="/" minimal icon="projects">
-                    View Audits
-                  </LinkButton>
-                  <LinkButton to="/" minimal icon="insert">
-                    New Audit
-                  </LinkButton>
-                  <NavbarDivider />
-                </>
+      {!supportMatch && (
+        <Nav>
+          <InnerBar>
+            <NavbarGroup align={Alignment.LEFT}>
+              <NavbarHeading>
+                <Link to="/">
+                  <img src="/arlo.png" alt="Arlo, by VotingWorks" />
+                </Link>
+              </NavbarHeading>
+              {jurisdiction && (
+                <NavbarHeading>Jurisdiction: {jurisdiction.name}</NavbarHeading>
               )}
-              <UserMenu>
-                <Popover
-                  content={
-                    <Menu>
-                      <MenuItem text="Log out" href="/auth/logout" />
-                    </Menu>
-                  }
-                  usePortal={false}
-                  position={Position.BOTTOM}
-                  minimal
-                  fill
-                >
-                  <Button icon="user" minimal>
-                    {auth.user.type === 'audit_board'
-                      ? auth.user.name
-                      : auth.user.email}
-                  </Button>
-                </Popover>
-              </UserMenu>
             </NavbarGroup>
-          )}
-        </InnerBar>
-      </Nav>
+            {auth && auth.user && (
+              <NavbarGroup align={Alignment.RIGHT}>
+                {electionId && auth.user.type === 'audit_admin' && (
+                  <>
+                    <LinkButton
+                      to={`/election/${electionId}/setup`}
+                      minimal
+                      icon="wrench"
+                    >
+                      Audit Setup
+                    </LinkButton>
+                    <LinkButton
+                      to={`/election/${electionId}/progress`}
+                      minimal
+                      icon="horizontal-bar-chart"
+                    >
+                      Audit Progress
+                    </LinkButton>
+                    <LinkButton to="/" minimal icon="projects">
+                      View Audits
+                    </LinkButton>
+                    <LinkButton to="/" minimal icon="insert">
+                      New Audit
+                    </LinkButton>
+                    <NavbarDivider />
+                  </>
+                )}
+                <UserMenu>
+                  <Popover
+                    content={
+                      <Menu>
+                        <MenuItem text="Log out" href="/auth/logout" />
+                      </Menu>
+                    }
+                    usePortal={false}
+                    position={Position.BOTTOM}
+                    minimal
+                    fill
+                  >
+                    <Button icon="user" minimal>
+                      {auth.user.type === 'audit_board'
+                        ? auth.user.name
+                        : auth.user.email}
+                    </Button>
+                  </Popover>
+                </UserMenu>
+              </NavbarGroup>
+            )}
+          </InnerBar>
+        </Nav>
+      )}
     </>
   )
 }

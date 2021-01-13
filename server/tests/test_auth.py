@@ -117,7 +117,7 @@ def test_superadmin_callback(
 
             rv = client.get("/auth/superadmin/callback?code=foobar")
             assert rv.status_code == 302
-            assert urlparse(rv.location).path == "/superadmin/"
+            assert urlparse(rv.location).path == "/support"
 
             with client.session_transaction() as session:  # type: ignore
                 assert session["_superadmin"] == SA_EMAIL
