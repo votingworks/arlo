@@ -83,6 +83,11 @@ const apiCalls = {
     },
     response: { status: 'ok' },
   },
+  deleteAuditBoards: {
+    url: '/api/support/jurisdictions/jurisdiction-id-1/audit-boards',
+    options: { method: 'DELETE' },
+    response: { status: 'ok' },
+  },
 }
 
 const serverError = (apiCall: { url: string; options?: object }) => ({
@@ -250,6 +255,43 @@ describe('Support Tools', () => {
     })
   })
 
+  it('audit screen shows a button to clear jurisdiction audit boards', async () => {
+    const expectedCalls = [
+      supportApiCalls.getUser,
+      apiCalls.getElection,
+      apiCalls.deleteAuditBoards,
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderRoute('/support/audits/election-id-1')
+
+      await screen.findByRole('heading', { name: 'Audit 1' })
+
+      // Click clear audit boards button
+      const jurisdiction1Container = screen
+        .getByRole('heading', { name: 'Jurisdiction 1' })
+        .closest('div')!
+      userEvent.click(
+        within(jurisdiction1Container).getByRole('button', {
+          name: /Clear audit boards/,
+        })
+      )
+
+      // Confirm dialog should open
+      const dialog = screen
+        .getByRole('heading', { name: /Confirm/ })
+        .closest('.bp3-dialog')! as HTMLElement
+      within(dialog).getByText(
+        'Are you sure you want to clear the audit boards for Jurisdiction 1?'
+      )
+      userEvent.click(
+        within(dialog).getByRole('button', { name: /Clear audit boards/ })
+      )
+
+      const toast = await screen.findByRole('alert')
+      expect(toast).toHaveTextContent('Cleared audit boards for Jurisdiction 1')
+    })
+  })
+
   it('home screen handles error', async () => {
     const expectedCalls = [
       supportApiCalls.getUser,
@@ -330,6 +372,40 @@ describe('Support Tools', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       renderRoute('/support/audits/election-id-1')
+      const toast = await screen.findByRole('alert')
+      expect(toast).toHaveTextContent('something went wrong')
+    })
+  })
+
+  it('audit screen handles error on clear audit boards', async () => {
+    const expectedCalls = [
+      supportApiCalls.getUser,
+      apiCalls.getElection,
+      serverError(apiCalls.deleteAuditBoards),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderRoute('/support/audits/election-id-1')
+
+      await screen.findByRole('heading', { name: 'Audit 1' })
+
+      // Click clear audit boards button
+      const jurisdiction1Container = screen
+        .getByRole('heading', { name: 'Jurisdiction 1' })
+        .closest('div')!
+      userEvent.click(
+        within(jurisdiction1Container).getByRole('button', {
+          name: /Clear audit boards/,
+        })
+      )
+
+      // Confirm dialog should open
+      const dialog = screen
+        .getByRole('heading', { name: /Confirm/ })
+        .closest('.bp3-dialog')! as HTMLElement
+      userEvent.click(
+        within(dialog).getByRole('button', { name: /Clear audit boards/ })
+      )
+
       const toast = await screen.findByRole('alert')
       expect(toast).toHaveTextContent('something went wrong')
     })

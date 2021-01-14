@@ -29,8 +29,8 @@ export const useConfirm = () => {
 
   const confirmProps = {
     isOpen: !!options,
-    title: options ? options.title : undefined,
-    description: options ? options.description : undefined,
+    title: options ? options.title : '',
+    description: options ? options.description : '',
     yesButtonLabel: options ? options.yesButtonLabel : undefined,
     noButtonLabel: options ? options.noButtonLabel : undefined,
     onYesClick,
