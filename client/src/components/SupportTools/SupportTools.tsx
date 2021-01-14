@@ -33,7 +33,7 @@ import {
   useClearJurisdictionAuditBoards,
   IJurisdiction,
 } from './support-api'
-import { useConfirm } from '../Atoms/Confirm'
+import { useConfirm, Confirm } from '../Atoms/Confirm'
 
 const queryClient = new QueryClient(
   // Turn off query retries in test so we can mock effectively
@@ -276,7 +276,7 @@ const prettyAuditType = (auditType: IElection['auditType']) =>
 const Audit = ({ electionId }: { electionId: string }) => {
   const election = useElection(electionId)
   const clearAuditBoards = useClearJurisdictionAuditBoards()
-  const confirm = useConfirm()
+  const { confirm, confirmProps } = useConfirm()
 
   if (election.isLoading || election.isIdle) return null
   if (election.isError) {
@@ -294,6 +294,7 @@ const Audit = ({ electionId }: { electionId: string }) => {
       onYesClick: async () => {
         try {
           await clearAuditBoards.mutateAsync(jurisdiction.id)
+          toast.success(`Cleared audit boards for ${jurisdiction.name}`)
         } catch (error) {
           toast.error(error.message)
           throw error
@@ -335,6 +336,7 @@ const Audit = ({ electionId }: { electionId: string }) => {
           </Table>
         </div>
       ))}
+      <Confirm {...confirmProps} />
     </Column>
   )
 }
