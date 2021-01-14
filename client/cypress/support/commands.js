@@ -39,3 +39,17 @@ Cypress.Commands.add('loginAuditAdmin', email => {
     }
   )
 })
+
+Cypress.Commands.add('loginJurisdictionAdmin', email => {
+  cy.request({
+    url: '/auth/jurisdictionadmin/start',
+    followRedirect: false,
+  }).then(response => {
+    const { state } = qs.parse(url.parse(response.headers.location).query)
+    const callbackParams = qs.stringify({
+      code: email,
+      state,
+    })
+    cy.visit(`/auth/jurisdictionadmin/callback?${callbackParams}`)
+  })
+})
