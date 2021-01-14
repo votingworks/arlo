@@ -96,3 +96,13 @@ export const useElection = (electionId: string) =>
   useQuery<IElection, Error>(['election', electionId], () =>
     fetchApi(`/api/support/elections/${electionId}`)
   )
+
+export const useClearJurisdictionAuditBoards = () => {
+  const deleteAuditBoards = async (jurisdictionId: string) =>
+    fetchApi(`/api/support/jurisdictions/${jurisdictionId}/audit-boards`, {
+      method: 'DELETE',
+    })
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return useMutation<any, Error, any>(deleteAuditBoards)
+}

@@ -270,3 +270,42 @@ def test_support_log_in_as_jurisdiction_admin(
         assert session["_user"]["key"] == default_ja_email(election_id)
         assert session["_created_at"] == original_created_at
         assert session["_last_request_at"] != original_last_request_at
+
+
+def test_support_clear_audit_boards(
+    client: FlaskClient,
+    contest_ids: List[str],
+    jurisdiction_ids: List[str],
+    audit_board_round_1_ids: List[str],
+):
+    set_support_user(client, SUPPORT_EMAIL)
+
+    # Can't clear if no audit boards
+    rv = client.delete(f"/api/support/jurisdictions/{jurisdiction_ids[1]}/audit-boards")
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {"errorType": "Conflict", "message": "Jurisdiction has no audit boards"}
+        ]
+    }
+
+    # Can't clear if ballots audited
+    ballot = AuditBoard.query.get(audit_board_round_1_ids[0]).sampled_ballots[0]
+    audit_ballot(ballot, contest_ids[0], Interpretation.BLANK)
+    rv = client.delete(f"/api/support/jurisdictions/{jurisdiction_ids[0]}/audit-boards")
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Can't clear audit boards after ballots have been audited",
+            }
+        ]
+    }
+    db_session.delete(ballot)
+
+    # Happy path
+    rv = client.delete(f"/api/support/jurisdictions/{jurisdiction_ids[0]}/audit-boards")
+    assert_ok(rv)
+
+    assert Jurisdiction.query.get(jurisdiction_ids[0]).audit_boards == []

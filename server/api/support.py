@@ -186,6 +186,29 @@ def create_audit_admin(organization_id: str):
     return jsonify(status="ok")
 
 
+@api.route("/support/jurisdictions/<jurisdiction_id>/audit-boards", methods=["DELETE"])
+@restrict_access_support
+def clear_jurisdiction_audit_boards(jurisdiction_id: str):
+    jurisdiction = get_or_404(Jurisdiction, jurisdiction_id)
+
+    if len(jurisdiction.audit_boards) == 0:
+        raise Conflict("Jurisdiction has no audit boards")
+
+    num_audited_ballots = (
+        SampledBallot.query.filter(SampledBallot.status != BallotStatus.NOT_AUDITED)
+        .join(Batch)
+        .filter_by(jurisdiction_id=jurisdiction_id)
+        .count()
+    )
+    if num_audited_ballots > 0:
+        raise Conflict("Can't clear audit boards after ballots have been audited")
+
+    AuditBoard.query.filter_by(jurisdiction_id=jurisdiction_id).delete()
+    db_session.commit()
+
+    return jsonify(status="ok")
+
+
 @api.route(
     "/support/audit-admins/<email>/login", methods=["GET"],
 )

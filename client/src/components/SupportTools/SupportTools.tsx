@@ -30,7 +30,10 @@ import {
   IAuditAdmin,
   IElection,
   useCreateOrganization,
+  useClearJurisdictionAuditBoards,
+  IJurisdiction,
 } from './support-api'
+import { useConfirm, Confirm } from '../Atoms/Confirm'
 
 const queryClient = new QueryClient(
   // Turn off query retries in test so we can mock effectively
@@ -272,6 +275,8 @@ const prettyAuditType = (auditType: IElection['auditType']) =>
 
 const Audit = ({ electionId }: { electionId: string }) => {
   const election = useElection(electionId)
+  const clearAuditBoards = useClearJurisdictionAuditBoards()
+  const { confirm, confirmProps } = useConfirm()
 
   if (election.isLoading || election.isIdle) return null
   if (election.isError) {
@@ -280,6 +285,23 @@ const Audit = ({ electionId }: { electionId: string }) => {
   }
 
   const { auditName, auditType, jurisdictions } = election.data
+
+  const onClickClearAuditBoards = (jurisdiction: IJurisdiction) => {
+    confirm({
+      title: 'Confirm',
+      description: `Are you sure you want to clear the audit boards for ${jurisdiction.name}?`,
+      yesButtonLabel: 'Clear audit boards',
+      onYesClick: async () => {
+        try {
+          await clearAuditBoards.mutateAsync(jurisdiction.id)
+          toast.success(`Cleared audit boards for ${jurisdiction.name}`)
+        } catch (error) {
+          toast.error(error.message)
+          throw error
+        }
+      },
+    })
+  }
 
   return (
     <Column>
@@ -291,6 +313,9 @@ const Audit = ({ electionId }: { electionId: string }) => {
       {jurisdictions.map(jurisdiction => (
         <div key={jurisdiction.id} style={{ marginTop: '15px' }}>
           <H4>{jurisdiction.name}</H4>
+          <Button onClick={() => onClickClearAuditBoards(jurisdiction)}>
+            Clear audit boards
+          </Button>
           <Table striped>
             <tbody>
               {jurisdiction.jurisdictionAdmins.map(jurisdictionAdmin => (
@@ -311,6 +336,7 @@ const Audit = ({ electionId }: { electionId: string }) => {
           </Table>
         </div>
       ))}
+      <Confirm {...confirmProps} />
     </Column>
   )
 }
