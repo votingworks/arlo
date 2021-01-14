@@ -104,6 +104,8 @@ Arlo is configured mostly through environment variables:
 - `ARLO_HTTP_ORIGIN`: the proper HTTP/HTTPS origin where this Arlo server is running, e.g. https://arlo.example.com:8443 (as any web origin, no trailing slash)
 - `ARLO_AUDITADMIN_AUTH0_BASE_URL`, `ARLO_AUDITADMIN_AUTH0_CLIENT_ID`, `ARLO_AUDITADMIN_AUTH0_CLIENT_SECRET`: base url, client id, and client secret for the auth0 app used for audit admins.
 - `ARLO_JURISDICTIONADMIN_AUTH0_BASE_URL`, `ARLO_JURISDICTIONADMIN_AUTH0_CLIENT_ID`, `ARLO_JURISDICTIONADMIN_AUTH0_CLIENT_SECRET`: base url, client id, and client secret for the auth0 app used for jurisdiction admins.
+- `ARLO_SUPPORT_AUTH0_BASE_URL`, `ARLO_SUPPORT_AUTH0_CLIENT_ID`, `ARLO_SUPPORT_AUTH0_CLIENT_SECRET`: base url, client id, and client secret for the auth0 app used for support users.
+- `ARLO_SUPPORT_EMAIL_DOMAIN`: required email address domain for support users
 
 Rather than manually config the environment, you can also run the setup script discussed below.
 
@@ -155,7 +157,7 @@ We recommend Ubuntu 18.0.4.
 
 #### Automatic configuration and setup
 
-If you would just like to run Arlo and do not wish to setup a custom configuration, you can run `pipenv run python -m scripts.setup-dev`, which provides interactive configuration. The script optionally installs VotingWorks' [nOAuth](https://github.com/votingworks/nOAuth) locally, runs it, and configures Arlo to use it. It creates the necessary audit administrator and jurisdiction administrator credentials discussed above, and launches a dev instance of Arlo. Once you have navigated to `localhost:3000` in your broswer, you should be able to log in as an audit admin using the credentials you configured earlier in the script. 
+If you would just like to run Arlo and do not wish to setup a custom configuration, you can run `pipenv run python -m scripts.setup-dev`, which provides interactive configuration. The script optionally installs VotingWorks' [nOAuth](https://github.com/votingworks/nOAuth) locally, runs it, and configures Arlo to use it. It creates the necessary audit administrator and jurisdiction administrator credentials discussed above, and launches a dev instance of Arlo. Once you have navigated to `localhost:3000` in your broswer, you should be able to log in as an audit admin using the credentials you configured earlier in the script.
 
 #### Troubleshooting
 
