@@ -99,7 +99,12 @@ const ContestSelect: React.FC<IProps> = ({
 
   return (
     <Formik initialValues={initialValues} onSubmit={submit}>
-      {({ values, handleSubmit, setValues }: FormikProps<IFormValues>) => (
+      {({
+        values,
+        handleSubmit,
+        setValues,
+        isSubmitting,
+      }: FormikProps<IFormValues>) => (
         <form>
           <FormWrapper
             title={isTargeted ? 'Target Contests' : 'Opportunistic Contests'}
@@ -206,6 +211,7 @@ const ContestSelect: React.FC<IProps> = ({
               <FormButton
                 type="submit"
                 intent="primary"
+                loading={isSubmitting}
                 disabled={nextStage.state === 'locked'}
                 onClick={handleSubmit}
               >

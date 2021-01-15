@@ -117,6 +117,7 @@ const ContestForm: React.FC<IProps> = ({
         touched,
         handleSubmit,
         setFieldValue,
+        isSubmitting,
       }: FormikProps<{ contests: IContest[] }>) => (
         <form data-testid="form-one">
           <FormWrapper
@@ -306,6 +307,7 @@ const ContestForm: React.FC<IProps> = ({
               <FormButton
                 type="submit"
                 intent="primary"
+                loading={isSubmitting}
                 disabled={nextStage.state === 'locked'}
                 onClick={e => {
                   e.preventDefault()

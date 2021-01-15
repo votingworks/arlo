@@ -55,7 +55,7 @@ const BatchRoundDataEntry = ({ round }: IProps) => {
 
   return (
     <Formik initialValues={{ results }} enableReinitialize onSubmit={submit}>
-      {({ handleSubmit }: FormikProps<IValues>) => (
+      {({ handleSubmit, isSubmitting }: FormikProps<IValues>) => (
         <form>
           <p>
             When you have examined all the ballots assigned to you, enter the
@@ -89,6 +89,7 @@ const BatchRoundDataEntry = ({ round }: IProps) => {
           <BottomButton
             type="submit"
             intent="primary"
+            loading={isSubmitting}
             disabled={alreadySubmittedResults}
             onClick={handleSubmit}
           >

@@ -50,6 +50,7 @@ const MemberForm: React.FC<IProps> = ({
           setFieldValue,
           values,
           handleSubmit,
+          isSubmitting,
         }: FormikProps<[IAuditBoardMember, IAuditBoardMember]>) => (
           <form>
             {[0, 1].map(i => (
@@ -79,6 +80,7 @@ const MemberForm: React.FC<IProps> = ({
             <FormButton
               intent="primary"
               type="button"
+              loading={isSubmitting}
               disabled={!(values[0].name || (values[0].name && values[1].name))}
               onClick={handleSubmit}
             >

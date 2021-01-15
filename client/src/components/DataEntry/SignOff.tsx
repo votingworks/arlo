@@ -29,7 +29,7 @@ const SignOff = ({ auditBoard, submitSignoff }: IProps) => {
         initialValues={auditBoard.members.map(() => '')}
         onSubmit={submitSignoff}
       >
-        {({ values, handleSubmit }) => (
+        {({ values, handleSubmit, isSubmitting }) => (
           <form>
             {auditBoard.members.map((member, i) => (
               <FormSection
@@ -44,6 +44,7 @@ const SignOff = ({ auditBoard, submitSignoff }: IProps) => {
               intent="primary"
               type="button"
               onClick={handleSubmit}
+              loading={isSubmitting}
               disabled={auditBoard.members.some((_, i) => !values[i])}
             >
               Sign Off
