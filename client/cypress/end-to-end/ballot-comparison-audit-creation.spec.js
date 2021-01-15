@@ -43,7 +43,6 @@ describe('Audit creation, filling in standard ballot comparison values', () => {
     cy.findAllByText('Upload File').spread((firstButton, secondButton) => {
       firstButton.click()
     })
-    cy.wait(1000)
     cy.get('.Toastify').find('div').find('div').contains('Missing required CSV field "Jurisdiction"').invoke('text')
       .then((text)=>{
         const toastText = text;
@@ -62,7 +61,6 @@ describe('Audit creation, filling in standard ballot comparison values', () => {
     cy.findAllByText('Upload File').spread((firstButton, secondButton) => {
       firstButton.click()
     })
-    cy.wait(1000)
     cy.get('.Toastify').find('div').find('div').contains('Missing required CSV field "Admin Email"').invoke('text')
       .then((text)=>{
         const toastText = text;
@@ -81,7 +79,6 @@ describe('Audit creation, filling in standard ballot comparison values', () => {
     cy.findAllByText('Upload File').spread((firstButton, secondButton) => {
       firstButton.click()
     })
-    cy.wait(1000)
     cy.contains("Expected an email address in column Admin Email")   
   })
 
@@ -96,7 +93,6 @@ describe('Audit creation, filling in standard ballot comparison values', () => {
     cy.findAllByText('Upload File').spread((firstButton, secondButton) => {
       firstButton.click()
     })
-    cy.wait(1000)
     cy.contains("Upload successfully completed")   
   })
 
@@ -111,7 +107,6 @@ describe('Audit creation, filling in standard ballot comparison values', () => {
     cy.findAllByText('Upload File').spread((firstButton, secondButton) => {
       firstButton.click()
     })
-    cy.wait(1000)
     cy.contains("Upload successfully completed")   
 
     cy.fixture('CSVs/contest/sample_standardized_contests_contest_name_col_error.csv').then(fileContent => {
@@ -122,7 +117,6 @@ describe('Audit creation, filling in standard ballot comparison values', () => {
       })
     })
     cy.findAllByText('Upload File').click()
-    cy.wait(1000)
     cy.contains("Missing required column: Contest Name.")      
   })
 
@@ -137,7 +131,6 @@ describe('Audit creation, filling in standard ballot comparison values', () => {
     cy.findAllByText('Upload File').spread((firstButton, secondButton) => {
       firstButton.click()
     })
-    cy.wait(1000)
     cy.contains("Upload successfully completed")   
 
     cy.fixture('CSVs/contest/sample_standardized_contests_jurisdiction_col_error.csv').then(fileContent => {
@@ -148,7 +141,6 @@ describe('Audit creation, filling in standard ballot comparison values', () => {
       })
     })
     cy.findAllByText('Upload File').click()
-    cy.wait(1000)
     cy.contains("Missing required column: Jurisdictions.")
   })
 
@@ -163,7 +155,6 @@ describe('Audit creation, filling in standard ballot comparison values', () => {
     cy.findAllByText('Upload File').spread((firstButton, secondButton) => {
       firstButton.click()
     })
-    cy.wait(1000)
     cy.contains("Upload successfully completed")   
 
     cy.fixture('CSVs/contest/sample_standardized_contests_non_participating_jurisdiction_error.csv').then(fileContent => {
@@ -174,7 +165,6 @@ describe('Audit creation, filling in standard ballot comparison values', () => {
       })
     })
     cy.findAllByText('Upload File').click()
-    cy.wait(1000)
     cy.contains("Invalid jurisdictions for contest") 
   })
 
@@ -189,7 +179,6 @@ describe('Audit creation, filling in standard ballot comparison values', () => {
     cy.findAllByText('Upload File').spread((firstButton, secondButton) => {
       firstButton.click()
     })
-    cy.wait(1000)
     cy.contains("Upload successfully completed")   
 
     cy.fixture('CSVs/contest/sample_standardized_contests.csv').then(fileContent => {
@@ -200,7 +189,6 @@ describe('Audit creation, filling in standard ballot comparison values', () => {
       })
     })
     cy.findAllByText('Upload File').click()
-    cy.wait(1000)
     cy.contains("Upload successfully completed")    
   })
 
@@ -215,7 +203,6 @@ describe('Audit creation, filling in standard ballot comparison values', () => {
     cy.findAllByText('Upload File').spread((firstButton, secondButton) => {
       firstButton.click()
     })
-    cy.wait(1000)
     cy.contains("Upload successfully completed")   
 
     cy.fixture('CSVs/contest/sample_standardized_contests.csv').then(fileContent => {
@@ -226,16 +213,11 @@ describe('Audit creation, filling in standard ballot comparison values', () => {
       })
     })
     cy.findAllByText('Upload File').click()
-    cy.wait(1000)
     cy.contains("Upload successfully completed")
-    cy.wait(3000)
     cy.findByText('Next').click()
-    cy.wait(1000)
-    cy.get('input[type="checkbox"]').first().check({ force: true })
+    cy.get('input[type="checkbox"]').first().check({ force: true }) // not finding
     cy.findByText('Save & Next').click()
-    cy.wait(3000)
     cy.findByText('Save & Next').click()
-    cy.wait(3000)
     cy.get('#state').select('AL')
     cy.get('input[name=electionName]').type(`Test Election`)
     cy.get('#risk-limit').select('10')
