@@ -31,4 +31,216 @@ describe('Audit creation, filling in standard ballot comparison values', () => {
     cy.findByText('Back').click()
     cy.findAllByText('Audit Settings').should('have.length', 2)
   })
+
+  it('participating jurisdictions invalid CSV - Jurisdiction column error', () => {
+    cy.fixture('CSVs/jurisdiction/sample_jurisdiction_filesheet_jurisdiction_col_error.csv').then(fileContent => {
+      cy.get('input[type="file"]').first().attachFile({
+        fileContent: fileContent.toString(),
+        fileName: 'sample_jurisdiction_filesheet_jurisdiction_col_error.csv',
+        mimeType: 'csv'
+      })
+    })
+    cy.findAllByText('Upload File').spread((firstButton, secondButton) => {
+      firstButton.click()
+    })
+    cy.wait(1000)
+    cy.get('.Toastify').find('div').find('div').contains('Missing required CSV field "Jurisdiction"').invoke('text')
+      .then((text)=>{
+        const toastText = text;
+        expect(toastText).to.equal('Missing required CSV field "Jurisdiction"');
+    })   
+  })
+
+  it('participating jurisdictions invalid CSV - Admin Email column error', () => {
+    cy.fixture('CSVs/jurisdiction/sample_jurisdiction_filesheet_admin_email_col_error.csv').then(fileContent => {
+      cy.get('input[type="file"]').first().attachFile({
+        fileContent: fileContent.toString(),
+        fileName: 'sample_jurisdiction_filesheet_admin_email_col_error.csv',
+        mimeType: 'csv'
+      })
+    })
+    cy.findAllByText('Upload File').spread((firstButton, secondButton) => {
+      firstButton.click()
+    })
+    cy.wait(1000)
+    cy.get('.Toastify').find('div').find('div').contains('Missing required CSV field "Admin Email"').invoke('text')
+      .then((text)=>{
+        const toastText = text;
+        expect(toastText).to.equal('Missing required CSV field "Admin Email"');
+    })   
+  })
+
+  it('participating jurisdictions invalid CSV - Invalid Email error', () => {
+    cy.fixture('CSVs/jurisdiction/sample_jurisdiction_filesheet_email_ID_error.csv').then(fileContent => {
+      cy.get('input[type="file"]').first().attachFile({
+        fileContent: fileContent.toString(),
+        fileName: 'sample_jurisdiction_filesheet_email_ID_error.csv',
+        mimeType: 'csv'
+      })
+    })
+    cy.findAllByText('Upload File').spread((firstButton, secondButton) => {
+      firstButton.click()
+    })
+    cy.wait(1000)
+    cy.contains("Expected an email address in column Admin Email")   
+  })
+
+  it('participating jurisdictions proper CSV', () => {
+    cy.fixture('CSVs/jurisdiction/sample_jurisdiction_filesheet.csv').then(fileContent => {
+      cy.get('input[type="file"]').first().attachFile({
+        fileContent: fileContent.toString(),
+        fileName: 'sample_jurisdiction_filesheet.csv',
+        mimeType: 'csv'
+      })
+    })
+    cy.findAllByText('Upload File').spread((firstButton, secondButton) => {
+      firstButton.click()
+    })
+    cy.wait(1000)
+    cy.contains("Upload successfully completed")   
+  })
+
+  it('Standardized Contests invalid CSV - Contest name column error', () => {
+    cy.fixture('CSVs/jurisdiction/sample_jurisdiction_filesheet.csv').then(fileContent => {
+      cy.get('input[type="file"]').first().attachFile({
+        fileContent: fileContent.toString(),
+        fileName: 'sample_jurisdiction_filesheet.csv',
+        mimeType: 'csv'
+      })
+    })
+    cy.findAllByText('Upload File').spread((firstButton, secondButton) => {
+      firstButton.click()
+    })
+    cy.wait(1000)
+    cy.contains("Upload successfully completed")   
+
+    cy.fixture('CSVs/contest/sample_standardized_contests_contest_name_col_error.csv').then(fileContent => {
+      cy.get('input[type="file"]').last().attachFile({
+        fileContent: fileContent.toString(),
+        fileName: 'sample_standardized_contests_contest_name_col_error.csv',
+        mimeType: 'csv'
+      })
+    })
+    cy.findAllByText('Upload File').click()
+    cy.wait(1000)
+    cy.contains("Missing required column: Contest Name.")      
+  })
+
+  it('Standardized Contests invalid CSV - Jurisdiction column error', () => {
+    cy.fixture('CSVs/jurisdiction/sample_jurisdiction_filesheet.csv').then(fileContent => {
+      cy.get('input[type="file"]').first().attachFile({
+        fileContent: fileContent.toString(),
+        fileName: 'sample_jurisdiction_filesheet.csv',
+        mimeType: 'csv'
+      })
+    })
+    cy.findAllByText('Upload File').spread((firstButton, secondButton) => {
+      firstButton.click()
+    })
+    cy.wait(1000)
+    cy.contains("Upload successfully completed")   
+
+    cy.fixture('CSVs/contest/sample_standardized_contests_jurisdiction_col_error.csv').then(fileContent => {
+      cy.get('input[type="file"]').last().attachFile({
+        fileContent: fileContent.toString(),
+        fileName: 'sample_standardized_contests_jurisdiction_col_error.csv',
+        mimeType: 'csv'
+      })
+    })
+    cy.findAllByText('Upload File').click()
+    cy.wait(1000)
+    cy.contains("Missing required column: Jurisdictions.")
+  })
+
+  it('Standardized Contests invalid CSV - Non-participating Jurisdiction error', () => {
+    cy.fixture('CSVs/jurisdiction/sample_jurisdiction_filesheet.csv').then(fileContent => {
+      cy.get('input[type="file"]').first().attachFile({
+        fileContent: fileContent.toString(),
+        fileName: 'sample_jurisdiction_filesheet.csv',
+        mimeType: 'csv'
+      })
+    })
+    cy.findAllByText('Upload File').spread((firstButton, secondButton) => {
+      firstButton.click()
+    })
+    cy.wait(1000)
+    cy.contains("Upload successfully completed")   
+
+    cy.fixture('CSVs/contest/sample_standardized_contests_non_participating_jurisdiction_error.csv').then(fileContent => {
+      cy.get('input[type="file"]').last().attachFile({
+        fileContent: fileContent.toString(),
+        fileName: 'sample_standardized_contests_non_participating_jurisdiction_error.csv',
+        mimeType: 'csv'
+      })
+    })
+    cy.findAllByText('Upload File').click()
+    cy.wait(1000)
+    cy.contains("Invalid jurisdictions for contest") 
+  })
+
+  it('Standardized Contests proper CSV', () => {
+    cy.fixture('CSVs/jurisdiction/sample_jurisdiction_filesheet.csv').then(fileContent => {
+      cy.get('input[type="file"]').first().attachFile({
+        fileContent: fileContent.toString(),
+        fileName: 'sample_jurisdiction_filesheet.csv',
+        mimeType: 'csv'
+      })
+    })
+    cy.findAllByText('Upload File').spread((firstButton, secondButton) => {
+      firstButton.click()
+    })
+    cy.wait(1000)
+    cy.contains("Upload successfully completed")   
+
+    cy.fixture('CSVs/contest/sample_standardized_contests.csv').then(fileContent => {
+      cy.get('input[type="file"]').last().attachFile({
+        fileContent: fileContent.toString(),
+        fileName: 'sample_standardized_contests.csv',
+        mimeType: 'csv'
+      })
+    })
+    cy.findAllByText('Upload File').click()
+    cy.wait(1000)
+    cy.contains("Upload successfully completed")    
+  })
+
+  it.skip('Creating an Audit', () => {
+    cy.fixture('CSVs/jurisdiction/sample_jurisdiction_filesheet.csv').then(fileContent => {
+      cy.get('input[type="file"]').first().attachFile({
+        fileContent: fileContent.toString(),
+        fileName: 'sample_jurisdiction_filesheet.csv',
+        mimeType: 'csv'
+      })
+    })
+    cy.findAllByText('Upload File').spread((firstButton, secondButton) => {
+      firstButton.click()
+    })
+    cy.wait(1000)
+    cy.contains("Upload successfully completed")   
+
+    cy.fixture('CSVs/contest/sample_standardized_contests.csv').then(fileContent => {
+      cy.get('input[type="file"]').last().attachFile({
+        fileContent: fileContent.toString(),
+        fileName: 'sample_standardized_contests.csv',
+        mimeType: 'csv'
+      })
+    })
+    cy.findAllByText('Upload File').click()
+    cy.wait(1000)
+    cy.contains("Upload successfully completed")
+    cy.wait(3000)
+    cy.findByText('Next').click()
+    cy.wait(1000)
+    cy.get('input[type="checkbox"]').first().check({ force: true })
+    cy.findByText('Save & Next').click()
+    cy.wait(3000)
+    cy.findByText('Save & Next').click()
+    cy.wait(3000)
+    cy.get('#state').select('AL')
+    cy.get('input[name=electionName]').type(`Test Election`)
+    cy.get('#risk-limit').select('10')
+    cy.get('input[name=randomSeed]').type("543210")
+    cy.findByText('Save & Next').click()
+    cy.findAllByText('Review & Launch').should('have.length', 2)
+  })
 })

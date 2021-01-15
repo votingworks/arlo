@@ -26,6 +26,7 @@
 
 import url from 'url'
 import qs from 'querystring'
+import 'cypress-file-upload'
 
 Cypress.Commands.add('loginAuditAdmin', email => {
   cy.request({ url: '/auth/auditadmin/start', followRedirect: false }).then(
