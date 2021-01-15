@@ -36,7 +36,7 @@ const apiCalls = {
   getAuditBoard: {
     url: '/api/me',
     response: {
-      user: { type: 'AUDIT_BOARD', ...dummyBoards()[0] },
+      user: { ...dummyBoards()[0], type: 'AUDIT_BOARD' },
       supportUser: null,
     },
   },
@@ -95,7 +95,7 @@ describe('DataEntry', () => {
       const expectedCalls = [
         {
           ...apiCalls.getAuditBoard,
-          response: { user: { type: 'AUDIT_BOARD', ...dummyBoards()[1] } }, // No members set
+          response: { user: { ...dummyBoards()[1], type: 'AUDIT_BOARD' } }, // No members set
         },
         apiCalls.putAuditBoardMembers,
         apiCalls.getAuditBoard,

@@ -85,6 +85,7 @@ export const downloadPlaceholders = (
         ballot.batch.tabulator && `Tabulator: ${ballot.batch.tabulator}`,
         `Batch: ${ballot.batch.name}`,
         `Ballot Number: ${ballot.position}`,
+        ballot.imprintedId && `Imprinted ID: ${ballot.imprintedId}`,
       ]
         .filter(line => line)
         .map(line => placeholders.splitTextToSize(line!, PLACEHOLDERS_WIDTH)[0])
