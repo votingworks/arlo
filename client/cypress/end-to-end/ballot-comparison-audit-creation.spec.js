@@ -189,7 +189,7 @@ describe('Audit creation, filling in standard ballot comparison values', () => {
       })
     })
     cy.findAllByText('Upload File').click()
-    cy.contains("Upload successfully completed")    
+    cy.findAllByText(/Upload successfully completed/).should('have.length', 2)
   })
 
   it.skip('Creating an Audit', () => {
@@ -213,7 +213,7 @@ describe('Audit creation, filling in standard ballot comparison values', () => {
       })
     })
     cy.findAllByText('Upload File').click()
-    cy.contains("Upload successfully completed")
+    cy.findAllByText(/Upload successfully completed/).should('have.length', 2)
     cy.findByText('Next').click()
     cy.get('input[type="checkbox"]').first().check({ force: true }) // not finding
     cy.findByText('Save & Next').click()
