@@ -192,7 +192,7 @@ describe('Audit creation, filling in standard ballot comparison values', () => {
     cy.findAllByText(/Upload successfully completed/).should('have.length', 2)
   })
 
-  it.skip('Creating an Audit', () => {
+  it('Creating an Audit', () => { // gets stuck in an infinite loop
     cy.fixture('CSVs/jurisdiction/sample_jurisdiction_filesheet.csv').then(fileContent => {
       cy.get('input[type="file"]').first().attachFile({
         fileContent: fileContent.toString(),
@@ -217,6 +217,7 @@ describe('Audit creation, filling in standard ballot comparison values', () => {
     cy.findByText('Next').click()
     cy.get('input[type="checkbox"]').first().check({ force: true }) // not finding
     cy.findByText('Save & Next').click()
+    cy.findAllByText('Opportunistic Contests').should('have.length', 2)
     cy.findByText('Save & Next').click()
     cy.get('#state').select('AL')
     cy.get('input[name=electionName]').type(`Test Election`)
