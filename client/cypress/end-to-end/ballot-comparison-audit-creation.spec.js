@@ -214,7 +214,7 @@ describe('Audit creation, filling in standard ballot comparison values', () => {
     })
     cy.findAllByText('Upload File').click()
     cy.findAllByText(/Upload successfully completed/).should('have.length', 2)
-    cy.wait(100) // gets stuck in an infinite loop without a 100ms wait here
+    cy.wait(1000) // gets stuck in an infinite loop without a 100ms wait here
     cy.findByText('Next').click()
     cy.get('input[type="checkbox"]').first().check({ force: true })
     cy.findByText('Save & Next').click()
