@@ -8,8 +8,6 @@ from ...bgcompute import bgcompute_update_cvr_file
 from ...util.process_file import ProcessingStatus
 from .conftest import TEST_CVRS
 
-# TODO test a bunch of CVR parse errors
-
 
 def test_cvr_upload(
     client: FlaskClient,
@@ -459,3 +457,53 @@ def test_cvrs_newlines(
     snapshot.assert_match(
         Jurisdiction.query.get(jurisdiction_ids[0]).cvr_contests_metadata
     )
+
+
+def test_invalid_cvrs(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    manifests,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    #             """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
+    # ,,,,,,,,"Contest 1 (Vote For=1)","Contest 1 (Vote For=1)"
+    # ,,,,,,,,Choice 1-1,Choice 1-2
+    # CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM
+    # 1,TABULATOR1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,0,1
+    # """
+    invalid_cvrs = [("", "CVR file cannot be empty.",)]
+
+    for invalid_cvr, expected_error in invalid_cvrs:
+        rv = client.put(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
+            data={"cvrs": (io.BytesIO(invalid_cvr.encode()), "cvrs.csv",)},
+        )
+        assert_ok(rv)
+
+        bgcompute_update_cvr_file(election_id)
+
+        rv = client.get(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
+        )
+        compare_json(
+            json.loads(rv.data),
+            {
+                "file": {"name": "cvrs.csv", "uploadedAt": assert_is_date,},
+                "processing": {
+                    "status": ProcessingStatus.ERRORED,
+                    "startedAt": assert_is_date,
+                    "completedAt": assert_is_date,
+                    "error": expected_error,
+                },
+            },
+        )
+        cvr_ballots = (
+            CvrBallot.query.join(Batch)
+            .filter_by(jurisdiction_id=jurisdiction_ids[0])
+            .all()
+        )
+        assert len(cvr_ballots) == 0
+        assert Jurisdiction.query.get(jurisdiction_ids[0]).cvr_contests_metadata is None

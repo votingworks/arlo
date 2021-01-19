@@ -18,6 +18,7 @@ from ..util.process_file import (
     process_file,
     serialize_file,
     serialize_file_processing,
+    UserError,
 )
 from ..util.csv_download import csv_response
 from ..util.csv_parse import decode_csv_file
@@ -63,6 +64,9 @@ def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
     assert jurisdiction.cvr_file_id == file.id
 
     def process():
+        if jurisdiction.cvr_file.contents == "":
+            raise UserError("CVR file cannot be empty.")
+
         cvrs = csv.reader(
             io.StringIO(jurisdiction.cvr_file.contents, newline=None), delimiter=","
         )
@@ -206,6 +210,8 @@ def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
         try:
             process()
         except Exception as exc:
+            if isinstance(exc, UserError):
+                raise exc
             raise Exception("Could not parse CVR file") from exc
 
     process_file(session, file, process_catch_exceptions)
