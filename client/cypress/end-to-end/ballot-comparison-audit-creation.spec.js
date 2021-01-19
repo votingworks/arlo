@@ -192,7 +192,7 @@ describe('Audit creation, filling in standard ballot comparison values', () => {
     cy.findAllByText(/Upload successfully completed/).should('have.length', 2)
   })
 
-  it.skip('Creating an Audit', () => { // gets stuck in an infinite loop
+  it('Creating an Audit', () => {
     cy.fixture('CSVs/jurisdiction/sample_jurisdiction_filesheet.csv').then(fileContent => {
       cy.get('input[type="file"]').first().attachFile({
         fileContent: fileContent.toString(),
@@ -214,8 +214,9 @@ describe('Audit creation, filling in standard ballot comparison values', () => {
     })
     cy.findAllByText('Upload File').click()
     cy.findAllByText(/Upload successfully completed/).should('have.length', 2)
+    cy.wait(100) // gets stuck in an infinite loop without a 100ms wait here
     cy.findByText('Next').click()
-    cy.get('input[type="checkbox"]').first().check({ force: true }) // not finding
+    cy.get('input[type="checkbox"]').first().check({ force: true })
     cy.findByText('Save & Next').click()
     cy.findAllByText('Opportunistic Contests').should('have.length', 2)
     cy.findByText('Save & Next').click()
