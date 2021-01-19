@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { H4 } from '@blueprintjs/core'
 import { Formik, Field } from 'formik'
 import styled from 'styled-components'
@@ -24,8 +24,6 @@ interface IProps {
 }
 
 const CreateAuditBoards = ({ createAuditBoards }: IProps) => {
-  const [submitting, setSubmitting] = useState(false)
-
   const submit = async ({ numAuditBoards }: IValues) => {
     const maxAuditBoardsIndexLength = numAuditBoards.toString().length
     const boards = [...Array(numAuditBoards).keys()].map(i => ({
@@ -34,7 +32,6 @@ const CreateAuditBoards = ({ createAuditBoards }: IProps) => {
         .padStart(maxAuditBoardsIndexLength, '0')}`,
     }))
     await createAuditBoards(boards)
-    setSubmitting(false)
   }
 
   return (
@@ -48,7 +45,7 @@ const CreateAuditBoards = ({ createAuditBoards }: IProps) => {
         round is required.
       </p>
       <Formik initialValues={{ numAuditBoards: 1 }} onSubmit={submit}>
-        {({ handleSubmit, setFieldValue }) => (
+        {({ handleSubmit, setFieldValue, isSubmitting }) => (
           <>
             <FormSection>
               <AuditBoardsInput
@@ -59,7 +56,7 @@ const CreateAuditBoards = ({ createAuditBoards }: IProps) => {
                 onChange={(e: React.FormEvent<HTMLSelectElement>) =>
                   setFieldValue('numAuditBoards', Number(e.currentTarget.value))
                 }
-                disabled={submitting}
+                disabled={isSubmitting}
               >
                 {generateOptions(200)}
               </AuditBoardsInput>
@@ -67,7 +64,7 @@ const CreateAuditBoards = ({ createAuditBoards }: IProps) => {
             <FormButton
               intent="primary"
               onClick={handleSubmit}
-              loading={submitting}
+              loading={isSubmitting}
             >
               Save &amp; Next
             </FormButton>

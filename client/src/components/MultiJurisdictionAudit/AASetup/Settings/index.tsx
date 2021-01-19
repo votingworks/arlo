@@ -74,7 +74,12 @@ const Settings: React.FC<IProps> = ({
       onSubmit={submit}
       enableReinitialize
     >
-      {({ handleSubmit, setFieldValue, values }: FormikProps<IValues>) => (
+      {({
+        handleSubmit,
+        setFieldValue,
+        values,
+        isSubmitting,
+      }: FormikProps<IValues>) => (
         <form data-testid="form-one">
           <FormWrapper title="Audit Settings">
             <FormSection label="State">
@@ -182,6 +187,7 @@ const Settings: React.FC<IProps> = ({
               <FormButton onClick={prevStage.activate}>Back</FormButton>
               <FormButton
                 intent="primary"
+                loading={isSubmitting}
                 disabled={nextStage.state === 'locked'}
                 onClick={handleSubmit}
               >
