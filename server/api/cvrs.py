@@ -5,6 +5,8 @@ import csv
 import typing
 from collections import defaultdict
 import re
+import difflib
+import ast
 from datetime import datetime
 from sqlalchemy.orm.session import Session
 from flask import request, jsonify, Request
@@ -87,6 +89,11 @@ def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
         contest_votes_allowed = []
         for contest_header in contest_headers:
             match = re.match(r"^(.+) \(Vote For=(\d+)\)$", contest_header)
+            if not match:
+                raise UserError(
+                    f"Invalid contest name: {contest_header}."
+                    + " Contest names should have this format: Contest Name (Vote For=1)."
+                )
             contest_names.append(match[1])
             contest_votes_allowed.append(int(match[2]))
 
@@ -121,7 +128,7 @@ def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
 
             for row in cvrs:
                 [
-                    _cvr_number,
+                    cvr_number,
                     tabulator_number,
                     batch_id,
                     record_id,
@@ -129,7 +136,37 @@ def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
                     *_,  # CountingGroup (maybe), PrecintPortion, BallotType
                 ] = row[:first_contest_column]
                 interpretations = row[first_contest_column:]
-                db_batch_id = batch_key_to_id[(tabulator_number, batch_id)]
+
+                db_batch_id = batch_key_to_id.get((tabulator_number, batch_id))
+                if not db_batch_id:
+                    close_matches = difflib.get_close_matches(
+                        str((tabulator_number, batch_id)),
+                        (str(batch_key) for batch_key in batch_key_to_id),
+                        n=1,
+                    )
+                    closest_match = (
+                        ast.literal_eval(close_matches[0]) if close_matches else None
+                    )
+
+                    raise UserError(
+                        "Invalid TabulatorNum/BatchId for row with"
+                        f" CvrNumber {cvr_number}: {tabulator_number}, {batch_id}."
+                        " The TabulatorNum and BatchId fields in the CVR file"
+                        " must match the Tabulator and Batch Name fields in the"
+                        " ballot manifest."
+                        + (
+                            (
+                                " The closest match we found in the ballot manifest was:"
+                                f" {closest_match[0]}, {closest_match[1]}."
+                            )
+                            if closest_match
+                            else ""
+                        )
+                        + " Please check your CVR file and ballot manifest thoroughly"
+                        " to make sure these values match - there may be a similar"
+                        " inconsistency in other rows in the CVR file."
+                    )
+
                 ballots_csv.writerow(
                     [
                         db_batch_id,

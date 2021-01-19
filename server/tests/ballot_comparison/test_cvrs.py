@@ -474,7 +474,48 @@ def test_invalid_cvrs(
     # CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM
     # 1,TABULATOR1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,0,1
     # """
-    invalid_cvrs = [("", "CVR file cannot be empty.",)]
+    invalid_cvrs = [
+        ("", "CVR file cannot be empty.",),
+        (
+            """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
+,,,,,,,,"Contest 1 (Vote For=1)","Contest 1 (123)"
+,,,,,,,,Choice 1-1,Choice 1-2
+CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM
+1,TABULATOR1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,0,1
+""",
+            "Invalid contest name: Contest 1 (123). Contest names should have this format: Contest Name (Vote For=1).",
+        ),
+        (
+            """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
+,,,,,,,,"Contest 1 (Vote For=1)","Contest 1 (Vote For=1)"
+,,,,,,,,Choice 1-1,Choice 1-2
+CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM
+1,TABULATOR1,BATCH001,1,1-1-1,Election Day,12345,COUNTY,0,1
+""",
+            (
+                "Invalid TabulatorNum/BatchId for row with CvrNumber 1: TABULATOR1, BATCH001."
+                " The TabulatorNum and BatchId fields in the CVR file must match the Tabulator and Batch Name"
+                " fields in the ballot manifest. The closest match we found in the ballot manifest was:"
+                " TABULATOR1, BATCH1. Please check your CVR file and ballot manifest thoroughly to make"
+                " sure these values match - there may be a similar inconsistency in other rows in the CVR file."
+            ),
+        ),
+        (
+            """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
+,,,,,,,,"Contest 1 (Vote For=1)","Contest 1 (Vote For=1)"
+,,,,,,,,Choice 1-1,Choice 1-2
+CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM
+1,abc,123,1,1-1-1,Election Day,12345,COUNTY,0,1
+""",
+            (
+                "Invalid TabulatorNum/BatchId for row with CvrNumber 1: abc, 123."
+                " The TabulatorNum and BatchId fields in the CVR file must match the Tabulator and Batch Name"
+                " fields in the ballot manifest."
+                " Please check your CVR file and ballot manifest thoroughly to make"
+                " sure these values match - there may be a similar inconsistency in other rows in the CVR file."
+            ),
+        ),
+    ]
 
     for invalid_cvr, expected_error in invalid_cvrs:
         rv = client.put(
