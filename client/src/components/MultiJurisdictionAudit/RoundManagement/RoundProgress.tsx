@@ -45,8 +45,8 @@ const RoundProgress = ({ auditBoards }: { auditBoards: IAuditBoard[] }) => {
         </p>
         <ProgressBar
           value={auditedBallots / sampledBallots}
-          animate={false}
           intent={progressIntent}
+          stripes={false}
         />
       </MainBarWrapper>
       {auditBoards.map(
@@ -73,8 +73,8 @@ const RoundProgress = ({ auditBoards }: { auditBoards: IAuditBoard[] }) => {
                   </div>
                   <ProgressBar
                     value={numAuditedBallots / numSampledBallots}
-                    animate={false}
                     intent={intent}
+                    stripes={false}
                   />
                 </>
               ) : (
