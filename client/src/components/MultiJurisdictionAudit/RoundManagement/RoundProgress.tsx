@@ -14,7 +14,7 @@ const MainBarWrapper = styled.div`
 
 const SmallBarWrapper = styled.div`
   margin-bottom: 30px;
-  width: 400px;
+  width: 500px;
   > div:first-child {
     display: flex;
     justify-content: space-between;
