@@ -130,17 +130,7 @@ def get_election(election_id: str):
         auditName=election.audit_name,
         auditType=election.audit_type,
         jurisdictions=[
-            dict(
-                id=jurisdiction.id,
-                name=jurisdiction.name,
-                jurisdictionAdmins=sorted(
-                    [
-                        dict(email=admin.user.email)
-                        for admin in jurisdiction.jurisdiction_administrations
-                    ],
-                    key=lambda admin: str(admin["email"]),
-                ),
-            )
+            dict(id=jurisdiction.id, name=jurisdiction.name,)
             for jurisdiction in election.jurisdictions
         ],
     )
@@ -184,6 +174,31 @@ def create_audit_admin(organization_id: str):
     db_session.commit()
 
     return jsonify(status="ok")
+
+
+@api.route("/support/jurisdictions/<jurisdiction_id>", methods=["GET"])
+@restrict_access_support
+def get_jurisdiction(jurisdiction_id: str):
+    jurisdiction = get_or_404(Jurisdiction, jurisdiction_id)
+    return jsonify(
+        id=jurisdiction.id,
+        name=jurisdiction.name,
+        jurisdictionAdmins=sorted(
+            [
+                dict(email=admin.user.email)
+                for admin in jurisdiction.jurisdiction_administrations
+            ],
+            key=lambda admin: str(admin["email"]),
+        ),
+        auditBoards=[
+            dict(
+                id=audit_board.id,
+                name=audit_board.name,
+                signedOffAt=audit_board.signed_off_at,
+            )
+            for audit_board in jurisdiction.audit_boards
+        ],
+    )
 
 
 @api.route("/support/jurisdictions/<jurisdiction_id>/audit-boards", methods=["DELETE"])

@@ -73,21 +73,9 @@ def test_support_get_election(
             "auditName": "Test Audit test_support_get_election",
             "auditType": "BALLOT_POLLING",
             "jurisdictions": [
-                {
-                    "id": jurisdiction_ids[0],
-                    "name": "J1",
-                    "jurisdictionAdmins": [{"email": default_ja_email(election_id)}],
-                },
-                {
-                    "id": jurisdiction_ids[1],
-                    "name": "J2",
-                    "jurisdictionAdmins": [{"email": default_ja_email(election_id)}],
-                },
-                {
-                    "id": jurisdiction_ids[2],
-                    "name": "J3",
-                    "jurisdictionAdmins": [{"email": f"j3-{election_id}@example.com"}],
-                },
+                {"id": jurisdiction_ids[0], "name": "J1",},
+                {"id": jurisdiction_ids[1], "name": "J2",},
+                {"id": jurisdiction_ids[2], "name": "J3",},
             ],
         },
     )
@@ -228,6 +216,28 @@ def test_support_create_audit_admin_already_admin(  # pylint: disable=invalid-na
     assert json.loads(rv.data) == {
         "errors": [{"errorType": "Conflict", "message": "Audit admin already exists"}]
     }
+
+
+def test_support_get_jurisdiction(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    audit_board_round_1_ids: List[str],
+):
+    set_support_user(client, SUPPORT_EMAIL)
+    rv = client.get(f"/api/support/jurisdictions/{jurisdiction_ids[0]}")
+    compare_json(
+        json.loads(rv.data),
+        {
+            "id": jurisdiction_ids[0],
+            "name": "J1",
+            "jurisdictionAdmins": [{"email": default_ja_email(election_id)}],
+            "auditBoards": [
+                {"id": id, "name": f"Audit Board #{i+1}", "signedOffAt": None}
+                for i, id in enumerate(audit_board_round_1_ids)
+            ],
+        },
+    )
 
 
 def test_support_log_in_as_audit_admin(
