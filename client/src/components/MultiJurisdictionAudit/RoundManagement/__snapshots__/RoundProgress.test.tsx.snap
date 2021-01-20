@@ -1,24 +1,24 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`RoundProgress renders complete round 1`] = `
+exports[`RoundProgress renders an audit board with auditing complete that has not signed off 1`] = `
 <div>
   <div
-    class="sc-bdVaJa dXfzyv"
+    class="sc-bdVaJa fHQGtV"
   >
     <h4
       class="bp3-heading"
     >
       Audit Board Progress
     </h4>
-    <span>
+    <p>
       30
        of 
       30
        ballots audited
        
-    </span>
+    </p>
     <div
-      class="bp3-progress-bar bp3-intent-primary bp3-no-animation"
+      class="bp3-progress-bar bp3-intent-success bp3-no-stripes"
     >
       <div
         class="bp3-progress-meter"
@@ -27,13 +27,79 @@ exports[`RoundProgress renders complete round 1`] = `
     </div>
   </div>
   <div
-    class="sc-bwzfXH jGjlAC"
+    class="sc-bwzfXH eCcuoP"
   >
-    <span>
-      Audit Board #01: 30 of 30 ballots audited 
-    </span>
+    <div>
+      <span>
+        Audit Board #01: 30 of 30 ballots audited 
+      </span>
+      <span
+        class="bp3-tag bp3-intent-warning"
+      >
+        <span
+          class="bp3-text-overflow-ellipsis bp3-fill"
+        >
+          Not signed off
+        </span>
+      </span>
+    </div>
     <div
-      class="bp3-progress-bar bp3-intent-primary bp3-no-animation"
+      class="bp3-progress-bar bp3-intent-warning bp3-no-stripes"
+    >
+      <div
+        class="bp3-progress-meter"
+        style="width: 100%;"
+      />
+    </div>
+  </div>
+</div>
+`;
+
+exports[`RoundProgress renders complete round 1`] = `
+<div>
+  <div
+    class="sc-bdVaJa fHQGtV"
+  >
+    <h4
+      class="bp3-heading"
+    >
+      Audit Board Progress
+    </h4>
+    <p>
+      30
+       of 
+      30
+       ballots audited
+       
+    </p>
+    <div
+      class="bp3-progress-bar bp3-intent-success bp3-no-stripes"
+    >
+      <div
+        class="bp3-progress-meter"
+        style="width: 100%;"
+      />
+    </div>
+  </div>
+  <div
+    class="sc-bwzfXH eCcuoP"
+  >
+    <div>
+      <span>
+        Audit Board #01: 30 of 30 ballots audited 
+      </span>
+      <span
+        class="bp3-tag bp3-intent-success"
+      >
+        <span
+          class="bp3-text-overflow-ellipsis bp3-fill"
+        >
+          Signed off
+        </span>
+      </span>
+    </div>
+    <div
+      class="bp3-progress-bar bp3-intent-success bp3-no-stripes"
     >
       <div
         class="bp3-progress-meter"
@@ -47,22 +113,22 @@ exports[`RoundProgress renders complete round 1`] = `
 exports[`RoundProgress renders incomplete round with an audit board 1`] = `
 <div>
   <div
-    class="sc-bdVaJa dXfzyv"
+    class="sc-bdVaJa fHQGtV"
   >
     <h4
       class="bp3-heading"
     >
       Audit Board Progress
     </h4>
-    <span>
+    <p>
       0
        of 
       30
        ballots audited
        
-    </span>
+    </p>
     <div
-      class="bp3-progress-bar bp3-intent-primary"
+      class="bp3-progress-bar bp3-no-stripes"
     >
       <div
         class="bp3-progress-meter"
@@ -71,13 +137,24 @@ exports[`RoundProgress renders incomplete round with an audit board 1`] = `
     </div>
   </div>
   <div
-    class="sc-bwzfXH jGjlAC"
+    class="sc-bwzfXH eCcuoP"
   >
-    <span>
-      Audit Board #01: 0 of 30 ballots audited 
-    </span>
+    <div>
+      <span>
+        Audit Board #01: 0 of 30 ballots audited 
+      </span>
+      <span
+        class="bp3-tag"
+      >
+        <span
+          class="bp3-text-overflow-ellipsis bp3-fill"
+        >
+          Not started
+        </span>
+      </span>
+    </div>
     <div
-      class="bp3-progress-bar bp3-intent-primary"
+      class="bp3-progress-bar bp3-no-stripes"
     >
       <div
         class="bp3-progress-meter"
@@ -91,22 +168,22 @@ exports[`RoundProgress renders incomplete round with an audit board 1`] = `
 exports[`RoundProgress renders incomplete round with an audit board with no ballots sampled 1`] = `
 <div>
   <div
-    class="sc-bdVaJa dXfzyv"
+    class="sc-bdVaJa fHQGtV"
   >
     <h4
       class="bp3-heading"
     >
       Audit Board Progress
     </h4>
-    <span>
+    <p>
       0
        of 
       30
        ballots audited
        
-    </span>
+    </p>
     <div
-      class="bp3-progress-bar bp3-intent-primary"
+      class="bp3-progress-bar bp3-no-stripes"
     >
       <div
         class="bp3-progress-meter"
@@ -115,21 +192,30 @@ exports[`RoundProgress renders incomplete round with an audit board with no ball
     </div>
   </div>
   <div
-    class="sc-bwzfXH jGjlAC"
+    class="sc-bwzfXH eCcuoP"
   >
-    <span>
-      Audit Board #01
-      : no ballots to audit
-    </span>
+    Audit Board #01
+    : no ballots to audit
   </div>
   <div
-    class="sc-bwzfXH jGjlAC"
+    class="sc-bwzfXH eCcuoP"
   >
-    <span>
-      Audit Board #02: 0 of 30 ballots audited 
-    </span>
+    <div>
+      <span>
+        Audit Board #02: 0 of 30 ballots audited 
+      </span>
+      <span
+        class="bp3-tag"
+      >
+        <span
+          class="bp3-text-overflow-ellipsis bp3-fill"
+        >
+          Not started
+        </span>
+      </span>
+    </div>
     <div
-      class="bp3-progress-bar bp3-intent-primary"
+      class="bp3-progress-bar bp3-no-stripes"
     >
       <div
         class="bp3-progress-meter"
@@ -143,22 +229,22 @@ exports[`RoundProgress renders incomplete round with an audit board with no ball
 exports[`RoundProgress renders incomplete round with auditing in progress 1`] = `
 <div>
   <div
-    class="sc-bdVaJa dXfzyv"
+    class="sc-bdVaJa fHQGtV"
   >
     <h4
       class="bp3-heading"
     >
       Audit Board Progress
     </h4>
-    <span>
+    <p>
       15
        of 
       30
        ballots audited
        
-    </span>
+    </p>
     <div
-      class="bp3-progress-bar bp3-intent-primary"
+      class="bp3-progress-bar bp3-intent-primary bp3-no-stripes"
     >
       <div
         class="bp3-progress-meter"
@@ -167,13 +253,24 @@ exports[`RoundProgress renders incomplete round with auditing in progress 1`] = 
     </div>
   </div>
   <div
-    class="sc-bwzfXH jGjlAC"
+    class="sc-bwzfXH eCcuoP"
   >
-    <span>
-      Audit Board #01: 15 of 30 ballots audited 
-    </span>
+    <div>
+      <span>
+        Audit Board #01: 15 of 30 ballots audited 
+      </span>
+      <span
+        class="bp3-tag bp3-intent-primary"
+      >
+        <span
+          class="bp3-text-overflow-ellipsis bp3-fill"
+        >
+          In progress
+        </span>
+      </span>
+    </div>
     <div
-      class="bp3-progress-bar bp3-intent-primary"
+      class="bp3-progress-bar bp3-intent-primary bp3-no-stripes"
     >
       <div
         class="bp3-progress-meter"
@@ -184,27 +281,25 @@ exports[`RoundProgress renders incomplete round with auditing in progress 1`] = 
 </div>
 `;
 
-exports[`RoundProgress renders incomplete round with no audit boards 1`] = `<div />`;
-
 exports[`RoundProgress renders incomplete round with two audit boards 1`] = `
 <div>
   <div
-    class="sc-bdVaJa dXfzyv"
+    class="sc-bdVaJa fHQGtV"
   >
     <h4
       class="bp3-heading"
     >
       Audit Board Progress
     </h4>
-    <span>
+    <p>
       0
        of 
       60
        ballots audited
        
-    </span>
+    </p>
     <div
-      class="bp3-progress-bar bp3-intent-primary"
+      class="bp3-progress-bar bp3-no-stripes"
     >
       <div
         class="bp3-progress-meter"
@@ -213,13 +308,24 @@ exports[`RoundProgress renders incomplete round with two audit boards 1`] = `
     </div>
   </div>
   <div
-    class="sc-bwzfXH jGjlAC"
+    class="sc-bwzfXH eCcuoP"
   >
-    <span>
-      Audit Board #01: 0 of 30 ballots audited 
-    </span>
+    <div>
+      <span>
+        Audit Board #01: 0 of 30 ballots audited 
+      </span>
+      <span
+        class="bp3-tag"
+      >
+        <span
+          class="bp3-text-overflow-ellipsis bp3-fill"
+        >
+          Not started
+        </span>
+      </span>
+    </div>
     <div
-      class="bp3-progress-bar bp3-intent-primary"
+      class="bp3-progress-bar bp3-no-stripes"
     >
       <div
         class="bp3-progress-meter"
@@ -228,13 +334,24 @@ exports[`RoundProgress renders incomplete round with two audit boards 1`] = `
     </div>
   </div>
   <div
-    class="sc-bwzfXH jGjlAC"
+    class="sc-bwzfXH eCcuoP"
   >
-    <span>
-      Audit Board #02: 0 of 30 ballots audited 
-    </span>
+    <div>
+      <span>
+        Audit Board #02: 0 of 30 ballots audited 
+      </span>
+      <span
+        class="bp3-tag"
+      >
+        <span
+          class="bp3-text-overflow-ellipsis bp3-fill"
+        >
+          Not started
+        </span>
+      </span>
+    </div>
     <div
-      class="bp3-progress-bar bp3-intent-primary"
+      class="bp3-progress-bar bp3-no-stripes"
     >
       <div
         class="bp3-progress-meter"
@@ -244,3 +361,5 @@ exports[`RoundProgress renders incomplete round with two audit boards 1`] = `
   </div>
 </div>
 `;
+
+exports[`RoundProgress renders nothing with no audit boards 1`] = `<div />`;

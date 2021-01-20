@@ -2094,22 +2094,22 @@ exports[`RoundManagement renders links & progress with online ballot audit 1`] =
       class="sc-hMqMXs kBeHNE"
     >
       <div
-        class="sc-gZMcBi hUnsTv"
+        class="sc-gZMcBi cPjbpf"
       >
         <h4
           class="bp3-heading"
         >
           Audit Board Progress
         </h4>
-        <span>
+        <p>
           0
            of 
           30
            ballots audited
            
-        </span>
+        </p>
         <div
-          class="bp3-progress-bar bp3-intent-primary"
+          class="bp3-progress-bar bp3-no-stripes"
         >
           <div
             class="bp3-progress-meter"
@@ -2118,13 +2118,24 @@ exports[`RoundManagement renders links & progress with online ballot audit 1`] =
         </div>
       </div>
       <div
-        class="sc-gqjmRU fWgawt"
+        class="sc-gqjmRU cknesl"
       >
-        <span>
-          Audit Board #01: 0 of 30 ballots audited 
-        </span>
+        <div>
+          <span>
+            Audit Board #01: 0 of 30 ballots audited 
+          </span>
+          <span
+            class="bp3-tag"
+          >
+            <span
+              class="bp3-text-overflow-ellipsis bp3-fill"
+            >
+              Not started
+            </span>
+          </span>
+        </div>
         <div
-          class="bp3-progress-bar bp3-intent-primary"
+          class="bp3-progress-bar bp3-no-stripes"
         >
           <div
             class="bp3-progress-meter"
