@@ -7,6 +7,9 @@ const MainBarWrapper = styled.div`
   margin-bottom: 30px;
   width: 500px;
   font-size: 16px;
+  .bp3-progress-bar {
+    height: 12px;
+  }
 `
 
 const SmallBarWrapper = styled.div`

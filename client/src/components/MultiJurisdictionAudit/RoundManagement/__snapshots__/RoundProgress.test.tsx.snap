@@ -3,7 +3,7 @@
 exports[`RoundProgress renders an audit board with auditing complete that has not signed off 1`] = `
 <div>
   <div
-    class="sc-bdVaJa cpJoSX"
+    class="sc-bdVaJa fHQGtV"
   >
     <h4
       class="bp3-heading"
@@ -18,7 +18,7 @@ exports[`RoundProgress renders an audit board with auditing complete that has no
        
     </p>
     <div
-      class="bp3-progress-bar bp3-intent-success bp3-no-animation"
+      class="bp3-progress-bar bp3-intent-success bp3-no-stripes"
     >
       <div
         class="bp3-progress-meter"
@@ -44,7 +44,7 @@ exports[`RoundProgress renders an audit board with auditing complete that has no
       </span>
     </div>
     <div
-      class="bp3-progress-bar bp3-intent-warning bp3-no-animation"
+      class="bp3-progress-bar bp3-intent-warning bp3-no-stripes"
     >
       <div
         class="bp3-progress-meter"
@@ -58,7 +58,7 @@ exports[`RoundProgress renders an audit board with auditing complete that has no
 exports[`RoundProgress renders complete round 1`] = `
 <div>
   <div
-    class="sc-bdVaJa cpJoSX"
+    class="sc-bdVaJa fHQGtV"
   >
     <h4
       class="bp3-heading"
@@ -73,7 +73,7 @@ exports[`RoundProgress renders complete round 1`] = `
        
     </p>
     <div
-      class="bp3-progress-bar bp3-intent-success bp3-no-animation"
+      class="bp3-progress-bar bp3-intent-success bp3-no-stripes"
     >
       <div
         class="bp3-progress-meter"
@@ -99,7 +99,7 @@ exports[`RoundProgress renders complete round 1`] = `
       </span>
     </div>
     <div
-      class="bp3-progress-bar bp3-intent-success bp3-no-animation"
+      class="bp3-progress-bar bp3-intent-success bp3-no-stripes"
     >
       <div
         class="bp3-progress-meter"
@@ -113,7 +113,7 @@ exports[`RoundProgress renders complete round 1`] = `
 exports[`RoundProgress renders incomplete round with an audit board 1`] = `
 <div>
   <div
-    class="sc-bdVaJa cpJoSX"
+    class="sc-bdVaJa fHQGtV"
   >
     <h4
       class="bp3-heading"
@@ -128,7 +128,7 @@ exports[`RoundProgress renders incomplete round with an audit board 1`] = `
        
     </p>
     <div
-      class="bp3-progress-bar bp3-no-animation"
+      class="bp3-progress-bar bp3-no-stripes"
     >
       <div
         class="bp3-progress-meter"
@@ -154,7 +154,7 @@ exports[`RoundProgress renders incomplete round with an audit board 1`] = `
       </span>
     </div>
     <div
-      class="bp3-progress-bar bp3-no-animation"
+      class="bp3-progress-bar bp3-no-stripes"
     >
       <div
         class="bp3-progress-meter"
@@ -168,7 +168,7 @@ exports[`RoundProgress renders incomplete round with an audit board 1`] = `
 exports[`RoundProgress renders incomplete round with an audit board with no ballots sampled 1`] = `
 <div>
   <div
-    class="sc-bdVaJa cpJoSX"
+    class="sc-bdVaJa fHQGtV"
   >
     <h4
       class="bp3-heading"
@@ -183,7 +183,7 @@ exports[`RoundProgress renders incomplete round with an audit board with no ball
        
     </p>
     <div
-      class="bp3-progress-bar bp3-no-animation"
+      class="bp3-progress-bar bp3-no-stripes"
     >
       <div
         class="bp3-progress-meter"
@@ -215,7 +215,7 @@ exports[`RoundProgress renders incomplete round with an audit board with no ball
       </span>
     </div>
     <div
-      class="bp3-progress-bar bp3-no-animation"
+      class="bp3-progress-bar bp3-no-stripes"
     >
       <div
         class="bp3-progress-meter"
@@ -229,7 +229,7 @@ exports[`RoundProgress renders incomplete round with an audit board with no ball
 exports[`RoundProgress renders incomplete round with auditing in progress 1`] = `
 <div>
   <div
-    class="sc-bdVaJa cpJoSX"
+    class="sc-bdVaJa fHQGtV"
   >
     <h4
       class="bp3-heading"
@@ -244,7 +244,7 @@ exports[`RoundProgress renders incomplete round with auditing in progress 1`] = 
        
     </p>
     <div
-      class="bp3-progress-bar bp3-intent-primary bp3-no-animation"
+      class="bp3-progress-bar bp3-intent-primary bp3-no-stripes"
     >
       <div
         class="bp3-progress-meter"
@@ -270,7 +270,7 @@ exports[`RoundProgress renders incomplete round with auditing in progress 1`] = 
       </span>
     </div>
     <div
-      class="bp3-progress-bar bp3-intent-primary bp3-no-animation"
+      class="bp3-progress-bar bp3-intent-primary bp3-no-stripes"
     >
       <div
         class="bp3-progress-meter"
@@ -284,7 +284,7 @@ exports[`RoundProgress renders incomplete round with auditing in progress 1`] = 
 exports[`RoundProgress renders incomplete round with two audit boards 1`] = `
 <div>
   <div
-    class="sc-bdVaJa cpJoSX"
+    class="sc-bdVaJa fHQGtV"
   >
     <h4
       class="bp3-heading"
@@ -299,7 +299,7 @@ exports[`RoundProgress renders incomplete round with two audit boards 1`] = `
        
     </p>
     <div
-      class="bp3-progress-bar bp3-no-animation"
+      class="bp3-progress-bar bp3-no-stripes"
     >
       <div
         class="bp3-progress-meter"
@@ -325,7 +325,7 @@ exports[`RoundProgress renders incomplete round with two audit boards 1`] = `
       </span>
     </div>
     <div
-      class="bp3-progress-bar bp3-no-animation"
+      class="bp3-progress-bar bp3-no-stripes"
     >
       <div
         class="bp3-progress-meter"
@@ -351,7 +351,7 @@ exports[`RoundProgress renders incomplete round with two audit boards 1`] = `
       </span>
     </div>
     <div
-      class="bp3-progress-bar bp3-no-animation"
+      class="bp3-progress-bar bp3-no-stripes"
     >
       <div
         class="bp3-progress-meter"
