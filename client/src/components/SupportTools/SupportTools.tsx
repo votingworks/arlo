@@ -12,7 +12,6 @@ import {
   H2,
   AnchorButton,
   Tag,
-  H4,
   ButtonGroup,
   Alignment,
   Colors,
@@ -30,8 +29,10 @@ import {
   IAuditAdmin,
   IElection,
   useCreateOrganization,
-  useClearJurisdictionAuditBoards,
-  IJurisdiction,
+  useJurisdiction,
+  IAuditBoard,
+  useClearAuditBoards,
+  useReopenAuditBoard,
 } from './support-api'
 import { useConfirm, Confirm } from '../Atoms/Confirm'
 
@@ -65,6 +66,11 @@ const SupportTools = () => {
               </Route>
               <Route path="/support/audits/:electionId">
                 {({ match }) => <Audit electionId={match!.params.electionId} />}
+              </Route>
+              <Route path="/support/jurisdictions/:jurisdictionId">
+                {({ match }) => (
+                  <Jurisdiction jurisdictionId={match!.params.jurisdictionId} />
+                )}
               </Route>
             </Switch>
           </div>
@@ -171,7 +177,8 @@ const Table = styled(HTMLTable)`
     text-overflow: ellipsis;
   }
   td:last-child {
-    width: 150px;
+    padding-right: 15px;
+    text-align: right;
   }
   tr td {
     vertical-align: baseline;
@@ -250,7 +257,6 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
                   <td>
                     <AnchorButton
                       icon="log-in"
-                      style={{ marginLeft: '20px' }}
                       href={`/api/support/audit-admins/${auditAdmin.email}/login`}
                     >
                       Log in as
@@ -275,8 +281,6 @@ const prettyAuditType = (auditType: IElection['auditType']) =>
 
 const Audit = ({ electionId }: { electionId: string }) => {
   const election = useElection(electionId)
-  const clearAuditBoards = useClearJurisdictionAuditBoards()
-  const { confirm, confirmProps } = useConfirm()
 
   if (election.isLoading || election.isIdle) return null
   if (election.isError) {
@@ -286,15 +290,72 @@ const Audit = ({ electionId }: { electionId: string }) => {
 
   const { auditName, auditType, jurisdictions } = election.data
 
-  const onClickClearAuditBoards = (jurisdiction: IJurisdiction) => {
+  return (
+    <Column>
+      <H2>{auditName}</H2>
+      <Tag large style={{ marginBottom: '15px' }}>
+        {prettyAuditType(auditType)}
+      </Tag>
+      <H3>Jurisdictions</H3>
+      <ButtonList>
+        {jurisdictions.map(jurisdiction => (
+          <LinkButton
+            key={jurisdiction.id}
+            to={`/support/jurisdictions/${jurisdiction.id}`}
+            intent={Intent.PRIMARY}
+          >
+            {jurisdiction.name}
+          </LinkButton>
+        ))}
+      </ButtonList>
+      {/* {jurisdictions.map(jurisdiction => (
+        <div key={jurisdiction.id} style={{ marginTop: '15px' }}>
+        </div>
+      ))} */}
+    </Column>
+  )
+}
+
+const Jurisdiction = ({ jurisdictionId }: { jurisdictionId: string }) => {
+  const jurisdiction = useJurisdiction(jurisdictionId)
+  const clearAuditBoards = useClearAuditBoards()
+  const reopenAuditBoard = useReopenAuditBoard()
+  const { confirm, confirmProps } = useConfirm()
+
+  if (jurisdiction.isLoading || jurisdiction.isIdle) return null
+  if (jurisdiction.isError) {
+    toast.error(jurisdiction.error.message)
+    return null
+  }
+
+  const { name, jurisdictionAdmins, auditBoards } = jurisdiction.data
+
+  const onClickClearAuditBoards = () => {
     confirm({
       title: 'Confirm',
-      description: `Are you sure you want to clear the audit boards for ${jurisdiction.name}?`,
+      description: `Are you sure you want to clear the audit boards for ${name}?`,
       yesButtonLabel: 'Clear audit boards',
       onYesClick: async () => {
         try {
-          await clearAuditBoards.mutateAsync(jurisdiction.id)
-          toast.success(`Cleared audit boards for ${jurisdiction.name}`)
+          await clearAuditBoards.mutateAsync(jurisdictionId)
+          toast.success(`Cleared audit boards for ${name}`)
+        } catch (error) {
+          toast.error(error.message)
+          throw error
+        }
+      },
+    })
+  }
+
+  const onClickReopenAuditBoard = (auditBoard: IAuditBoard) => {
+    confirm({
+      title: 'Confirm',
+      description: `Are you sure you want to reopen ${auditBoard.name}?`,
+      yesButtonLabel: 'Reopen',
+      onYesClick: async () => {
+        try {
+          await reopenAuditBoard.mutateAsync(auditBoard.id)
+          toast.success(`Reopened ${auditBoard.name}`)
         } catch (error) {
           toast.error(error.message)
           throw error
@@ -304,27 +365,49 @@ const Audit = ({ electionId }: { electionId: string }) => {
   }
 
   return (
-    <Column>
-      <H2>{auditName}</H2>
-      <Tag large style={{ marginBottom: '15px' }}>
-        {prettyAuditType(auditType)}
-      </Tag>
-      <H3>Jurisdictions</H3>
-      {jurisdictions.map(jurisdiction => (
-        <div key={jurisdiction.id} style={{ marginTop: '15px' }}>
-          <H4>{jurisdiction.name}</H4>
-          <Button onClick={() => onClickClearAuditBoards(jurisdiction)}>
-            Clear audit boards
-          </Button>
+    <div style={{ width: '100%' }}>
+      <H2>{name}</H2>
+      <div style={{ display: 'flex', width: '100%' }}>
+        <Column>
+          <H3>Current Round Audit Boards</H3>
+          {auditBoards.length === 0 ? (
+            "The jurisdiction hasn't created audit boards yet."
+          ) : (
+            <>
+              <Button intent="danger" onClick={onClickClearAuditBoards}>
+                Clear audit boards
+              </Button>
+              <Table striped>
+                <tbody>
+                  {auditBoards.map(auditBoard => (
+                    <tr key={auditBoard.id}>
+                      <td>{auditBoard.name}</td>
+                      <td>
+                        <Button
+                          onClick={() => onClickReopenAuditBoard(auditBoard)}
+                          disabled={!auditBoard.signedOffAt}
+                        >
+                          Reopen
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+              <Confirm {...confirmProps} />
+            </>
+          )}
+        </Column>
+        <Column>
+          <H3>Jurisdiction Admins</H3>
           <Table striped>
             <tbody>
-              {jurisdiction.jurisdictionAdmins.map(jurisdictionAdmin => (
+              {jurisdictionAdmins.map(jurisdictionAdmin => (
                 <tr key={jurisdictionAdmin.email}>
                   <td>{jurisdictionAdmin.email}</td>
                   <td>
                     <AnchorButton
                       icon="log-in"
-                      style={{ marginLeft: '20px' }}
                       href={`/api/support/jurisdiction-admins/${jurisdictionAdmin.email}/login`}
                     >
                       Log in as
@@ -334,10 +417,9 @@ const Audit = ({ electionId }: { electionId: string }) => {
               ))}
             </tbody>
           </Table>
-        </div>
-      ))}
-      <Confirm {...confirmProps} />
-    </Column>
+        </Column>
+      </div>
+    </div>
   )
 }
 

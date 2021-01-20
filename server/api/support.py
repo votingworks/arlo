@@ -23,6 +23,7 @@ from ..config import (
     FLASK_ENV,
 )
 from ..util.jsonschema import validate
+from .rounds import get_current_round
 
 AUTH0_DOMAIN = urlparse(AUDITADMIN_AUTH0_BASE_URL).hostname
 
@@ -180,6 +181,11 @@ def create_audit_admin(organization_id: str):
 @restrict_access_support
 def get_jurisdiction(jurisdiction_id: str):
     jurisdiction = get_or_404(Jurisdiction, jurisdiction_id)
+    round = get_current_round(jurisdiction.election)
+    audit_boards = AuditBoard.query.filter_by(
+        jurisdiction_id=jurisdiction.id, round_id=round.id
+    )
+
     return jsonify(
         id=jurisdiction.id,
         name=jurisdiction.name,
@@ -196,7 +202,7 @@ def get_jurisdiction(jurisdiction_id: str):
                 name=audit_board.name,
                 signedOffAt=audit_board.signed_off_at,
             )
-            for audit_board in jurisdiction.audit_boards
+            for audit_board in audit_boards
         ],
     )
 
@@ -205,20 +211,43 @@ def get_jurisdiction(jurisdiction_id: str):
 @restrict_access_support
 def clear_jurisdiction_audit_boards(jurisdiction_id: str):
     jurisdiction = get_or_404(Jurisdiction, jurisdiction_id)
+    round = get_current_round(jurisdiction.election)
+    audit_boards = AuditBoard.query.filter_by(
+        jurisdiction_id=jurisdiction.id, round_id=round.id
+    )
 
-    if len(jurisdiction.audit_boards) == 0:
+    if len(audit_boards) == 0:
         raise Conflict("Jurisdiction has no audit boards")
 
     num_audited_ballots = (
-        SampledBallot.query.filter(SampledBallot.status != BallotStatus.NOT_AUDITED)
-        .join(Batch)
-        .filter_by(jurisdiction_id=jurisdiction_id)
+        SampledBallot.query.join(AuditBoard)
+        .filter(AuditBoard.id.in_([audit_board.id for audit_board in audit_boards]))
+        .filter(SampledBallot.status != BallotStatus.NOT_AUDITED)
         .count()
     )
     if num_audited_ballots > 0:
         raise Conflict("Can't clear audit boards after ballots have been audited")
 
-    AuditBoard.query.filter_by(jurisdiction_id=jurisdiction_id).delete()
+    AuditBoard.query.filter(
+        AuditBoard.id.in_([audit_board.id for audit_board in audit_boards])
+    ).delete()
+    db_session.commit()
+
+    return jsonify(status="ok")
+
+
+@api.route("/support/audit-boards/<audit_board_id>/sign-off", methods=["DELETE"])
+@restrict_access_support
+def reopen_audit_board(audit_board_id: str):
+    audit_board = get_or_404(AuditBoard, audit_board_id)
+    round = get_current_round(audit_board.jurisdiction.election)
+
+    if audit_board.round_id != round.id:
+        raise Conflict("Audit board is not part of the current round.")
+    if audit_board.signed_off_at is None:
+        raise Conflict("Audit board has not signed off.")
+
+    audit_board.signed_off_at = None
     db_session.commit()
 
     return jsonify(status="ok")

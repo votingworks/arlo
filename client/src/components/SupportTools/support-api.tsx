@@ -34,14 +34,24 @@ export interface IElection extends IElectionBase {
   jurisdictions: IJurisdiction[]
 }
 
-export interface IJurisdiction {
+export interface IJurisdictionBase {
   id: string
   name: string
+}
+
+export interface IJurisdiction extends IJurisdictionBase {
   jurisdictionAdmins: IJurisdictionAdmin[]
+  auditBoards: IAuditBoard[]
 }
 
 export interface IJurisdictionAdmin {
   email: string
+}
+
+export interface IAuditBoard {
+  id: string
+  name: string
+  signedOffAt: string
 }
 
 export const useOrganizations = () =>
@@ -66,7 +76,7 @@ export const useCreateOrganization = () => {
 }
 
 export const useOrganization = (organizationId: string) =>
-  useQuery<IOrganization, Error>(['organization', organizationId], () =>
+  useQuery<IOrganization, Error>(['organizations', organizationId], () =>
     fetchApi(`/api/support/organizations/${organizationId}`)
   )
 
@@ -88,21 +98,56 @@ export const useCreateAuditAdmin = () => {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return useMutation<any, Error, any>(postAuditAdmin, {
-    onSuccess: () => queryClient.invalidateQueries('organization'),
+    onSuccess: (_data, variables) =>
+      queryClient.invalidateQueries([
+        'organizations',
+        variables.organizationId,
+      ]),
   })
 }
 
 export const useElection = (electionId: string) =>
-  useQuery<IElection, Error>(['election', electionId], () =>
+  useQuery<IElection, Error>(['elections', electionId], () =>
     fetchApi(`/api/support/elections/${electionId}`)
   )
 
-export const useClearJurisdictionAuditBoards = () => {
+export const useJurisdiction = (jurisdictionId: string) =>
+  useQuery<IJurisdiction, Error>(['jurisdictions', jurisdictionId], () =>
+    fetchApi(`/api/support/jurisdictions/${jurisdictionId}`)
+  )
+
+export const useClearAuditBoards = () => {
   const deleteAuditBoards = async (jurisdictionId: string) =>
     fetchApi(`/api/support/jurisdictions/${jurisdictionId}/audit-boards`, {
       method: 'DELETE',
     })
 
+  const queryClient = useQueryClient()
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return useMutation<any, Error, any>(deleteAuditBoards)
+  return useMutation<any, Error, any>(deleteAuditBoards, {
+    onSuccess: (_data, variables) =>
+      queryClient.invalidateQueries([
+        'jurisdictions',
+        variables.jurisdictionId,
+      ]),
+  })
+}
+
+export const useReopenAuditBoard = () => {
+  const reopenAuditBoard = async (auditBoardId: string) =>
+    fetchApi(`/api/support/audit-boards/${auditBoardId}/sign-off`, {
+      method: 'DELETE',
+    })
+
+  const queryClient = useQueryClient()
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return useMutation<any, Error, any>(reopenAuditBoard, {
+    onSuccess: (_data, variables) =>
+      queryClient.invalidateQueries([
+        'jurisdictions',
+        variables.jurisdictionId,
+      ]),
+  })
 }
