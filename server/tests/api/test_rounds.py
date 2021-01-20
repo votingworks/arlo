@@ -52,6 +52,12 @@ def test_rounds_create_one(
                 "endedAt": None,
                 "isAuditComplete": None,
                 "sampledAllBallots": False,
+                "drawSampleTask": {
+                    "status": "PROCESSED",
+                    "startedAt": assert_is_date,
+                    "completedAt": assert_is_date,
+                    "error": None,
+                },
             }
         ]
     }
@@ -110,6 +116,12 @@ def test_rounds_create_two(
                 "endedAt": assert_is_date,
                 "isAuditComplete": False,
                 "sampledAllBallots": False,
+                "drawSampleTask": {
+                    "status": "PROCESSED",
+                    "startedAt": assert_is_date,
+                    "completedAt": assert_is_date,
+                    "error": None,
+                },
             },
             {
                 "id": assert_is_id,
@@ -118,6 +130,12 @@ def test_rounds_create_two(
                 "endedAt": None,
                 "isAuditComplete": None,
                 "sampledAllBallots": False,
+                "drawSampleTask": {
+                    "status": "PROCESSED",
+                    "startedAt": assert_is_date,
+                    "completedAt": assert_is_date,
+                    "error": None,
+                },
             },
         ]
     }
@@ -160,6 +178,12 @@ def test_rounds_complete_audit(
                 "endedAt": assert_is_date,
                 "isAuditComplete": True,
                 "sampledAllBallots": False,
+                "drawSampleTask": {
+                    "status": "PROCESSED",
+                    "startedAt": assert_is_date,
+                    "completedAt": assert_is_date,
+                    "error": None,
+                },
             }
         ]
     }

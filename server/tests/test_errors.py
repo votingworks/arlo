@@ -5,8 +5,8 @@ from typing import Optional
 from flask.testing import FlaskClient
 
 from ..app import app
-from .. import bgcompute
-from ..bgcompute import (
+from ..worker import bgcompute
+from ..worker.bgcompute import (
     bgcompute_update_election_jurisdictions_file,
     bgcompute_update_ballot_manifest_file,
     bgcompute_update_batch_tallies_file,

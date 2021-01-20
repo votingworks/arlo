@@ -15,7 +15,7 @@ from ..database import reset_db
 from ..models import *  # pylint: disable=wildcard-import
 from ..auth import UserType, restrict_access
 from .helpers import *  # pylint: disable=wildcard-import
-from ..bgcompute import (
+from ..worker.bgcompute import (
     bgcompute_update_election_jurisdictions_file,
     bgcompute_update_ballot_manifest_file,
 )
