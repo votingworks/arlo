@@ -302,12 +302,32 @@ describe('StatusBox', () => {
       screen.getByText('0 of 1 audit boards complete.')
     })
 
-    it('renders 1st round finished, incomplete audit state', () => {
+    it('renders 1st round auditing complete, audit board not signed off, incomplete audit state', () => {
       render(
         <Router>
           <JurisdictionAdminStatusBox
             rounds={roundMocks.singleIncomplete}
             auditBoards={auditBoardMocks.finished}
+            ballotManifest={{
+              file: null,
+              processing: fileProcessingMocks.processed,
+            }}
+            batchTallies={{ file: null, processing: null }}
+            cvrs={{ file: null, processing: null }}
+            auditType="BALLOT_POLLING"
+          />
+        </Router>
+      )
+      screen.getByText('Round 1 of the audit is in progress.')
+      screen.getByText('0 of 1 audit boards complete.')
+    })
+
+    it('renders 1st round finished, incomplete audit state', () => {
+      render(
+        <Router>
+          <JurisdictionAdminStatusBox
+            rounds={roundMocks.singleIncomplete}
+            auditBoards={auditBoardMocks.signedOff}
             ballotManifest={{
               file: null,
               processing: fileProcessingMocks.processed,

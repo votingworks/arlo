@@ -1,10 +1,10 @@
 import React from 'react'
-import { render } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import RoundProgress from './RoundProgress'
 import { auditBoardMocks } from '../useSetupMenuItems/_mocks'
 
 describe('RoundProgress', () => {
-  it('renders incomplete round with no audit boards', () => {
+  it('renders nothing with no audit boards', () => {
     const { container } = render(
       <RoundProgress auditBoards={auditBoardMocks.empty} />
     )
@@ -35,6 +35,13 @@ describe('RoundProgress', () => {
   it('renders incomplete round with an audit board with no ballots sampled', () => {
     const { container } = render(
       <RoundProgress auditBoards={auditBoardMocks.noBallots} />
+    )
+    expect(container).toMatchSnapshot()
+  })
+
+  it('renders an audit board with auditing complete that has not signed off', () => {
+    const { container } = render(
+      <RoundProgress auditBoards={auditBoardMocks.finished} />
     )
     expect(container).toMatchSnapshot()
   })

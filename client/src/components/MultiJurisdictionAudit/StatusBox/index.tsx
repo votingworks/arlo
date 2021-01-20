@@ -309,9 +309,8 @@ export const JurisdictionAdminStatusBox = ({
       )
 
     const numCompleted = auditBoards.filter(
-      ({ currentRoundStatus }) =>
-        currentRoundStatus.numAuditedBallots ===
-        currentRoundStatus.numSampledBallots
+      ({ currentRoundStatus, signedOffAt }) =>
+        currentRoundStatus.numSampledBallots === 0 || signedOffAt
     ).length
     const details = [
       `${numCompleted} of ${auditBoards.length} audit boards complete.`,
