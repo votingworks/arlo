@@ -183,7 +183,7 @@ def get_jurisdiction(jurisdiction_id: str):
     jurisdiction = get_or_404(Jurisdiction, jurisdiction_id)
     round = get_current_round(jurisdiction.election)
     audit_boards = AuditBoard.query.filter_by(
-        jurisdiction_id=jurisdiction.id, round_id=round.id
+        jurisdiction_id=jurisdiction.id, round_id=round and round.id
     )
 
     return jsonify(
@@ -213,8 +213,8 @@ def clear_jurisdiction_audit_boards(jurisdiction_id: str):
     jurisdiction = get_or_404(Jurisdiction, jurisdiction_id)
     round = get_current_round(jurisdiction.election)
     audit_boards = AuditBoard.query.filter_by(
-        jurisdiction_id=jurisdiction.id, round_id=round.id
-    )
+        jurisdiction_id=jurisdiction.id, round_id=round and round.id
+    ).all()
 
     if len(audit_boards) == 0:
         raise Conflict("Jurisdiction has no audit boards")
@@ -230,7 +230,7 @@ def clear_jurisdiction_audit_boards(jurisdiction_id: str):
 
     AuditBoard.query.filter(
         AuditBoard.id.in_([audit_board.id for audit_board in audit_boards])
-    ).delete()
+    ).delete(synchronize_session=False)
     db_session.commit()
 
     return jsonify(status="ok")
@@ -242,8 +242,10 @@ def reopen_audit_board(audit_board_id: str):
     audit_board = get_or_404(AuditBoard, audit_board_id)
     round = get_current_round(audit_board.jurisdiction.election)
 
-    if audit_board.round_id != round.id:
+    if not round or audit_board.round_id != round.id:
         raise Conflict("Audit board is not part of the current round.")
+    if round.ended_at:
+        raise Conflict("Can't reopen audit board after round ends.")
     if audit_board.signed_off_at is None:
         raise Conflict("Audit board has not signed off.")
 

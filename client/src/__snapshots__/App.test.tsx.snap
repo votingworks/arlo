@@ -34,7 +34,7 @@ exports[`App / renders aa logged in properly 1`] = `
           class="bp3-navbar-group bp3-align-right"
         >
           <div
-            class="sc-ifAKCX jAFEAy"
+            class="sc-ifAKCX fWzXiF"
           >
             <div
               class="bp3-popover-wrapper bp3-fill"
@@ -285,7 +285,7 @@ exports[`App / renders ja logged in properly 1`] = `
           class="bp3-navbar-group bp3-align-right"
         >
           <div
-            class="sc-ifAKCX jAFEAy"
+            class="sc-ifAKCX fWzXiF"
           >
             <div
               class="bp3-popover-wrapper bp3-fill"
@@ -503,7 +503,7 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders aa logged i
           class="bp3-navbar-group bp3-align-right"
         >
           <div
-            class="sc-ifAKCX jAFEAy"
+            class="sc-ifAKCX fWzXiF"
           >
             <div
               class="bp3-popover-wrapper bp3-fill"
@@ -754,7 +754,7 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders ab logged i
           class="bp3-navbar-group bp3-align-right"
         >
           <div
-            class="sc-ifAKCX jAFEAy"
+            class="sc-ifAKCX fWzXiF"
           >
             <div
               class="bp3-popover-wrapper bp3-fill"
@@ -1094,7 +1094,7 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders ja logged i
           class="bp3-navbar-group bp3-align-right"
         >
           <div
-            class="sc-ifAKCX jAFEAy"
+            class="sc-ifAKCX fWzXiF"
           >
             <div
               class="bp3-popover-wrapper bp3-fill"
@@ -1312,7 +1312,7 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders aa logge
           class="bp3-navbar-group bp3-align-right"
         >
           <div
-            class="sc-ifAKCX jAFEAy"
+            class="sc-ifAKCX fWzXiF"
           >
             <div
               class="bp3-popover-wrapper bp3-fill"
@@ -1569,7 +1569,7 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders ja logge
           class="bp3-navbar-group bp3-align-right"
         >
           <div
-            class="sc-ifAKCX jAFEAy"
+            class="sc-ifAKCX fWzXiF"
           >
             <div
               class="bp3-popover-wrapper bp3-fill"
