@@ -272,6 +272,24 @@ describe('Support Tools', () => {
       supportApiCalls.getUser,
       apiCalls.getJurisdiction,
       apiCalls.reopenAuditBoard,
+      {
+        ...apiCalls.getJurisdiction,
+        response: {
+          ...apiCalls.getJurisdiction.response,
+          auditBoards: [
+            {
+              id: 'audit-board-id-1',
+              name: 'Audit Board #1',
+              signedOffAt: null,
+            },
+            {
+              id: 'audit-board-id-2',
+              name: 'Audit Board #2',
+              signedOffAt: null,
+            },
+          ],
+        },
+      },
     ]
     await withMockFetch(expectedCalls, async () => {
       renderRoute('/support/jurisdictions/jurisdiction-id-1')
@@ -338,6 +356,13 @@ describe('Support Tools', () => {
       supportApiCalls.getUser,
       apiCalls.getJurisdiction,
       apiCalls.deleteAuditBoards,
+      {
+        ...apiCalls.getJurisdiction,
+        response: {
+          ...apiCalls.getJurisdiction.response,
+          auditBoards: [],
+        },
+      },
     ]
     await withMockFetch(expectedCalls, async () => {
       renderRoute('/support/jurisdictions/jurisdiction-id-1')
@@ -364,6 +389,8 @@ describe('Support Tools', () => {
 
       const toast = await screen.findByRole('alert')
       expect(toast).toHaveTextContent('Cleared audit boards for Jurisdiction 1')
+
+      screen.getByText("The jurisdiction hasn't created audit boards yet.")
     })
   })
 
@@ -464,7 +491,7 @@ describe('Support Tools', () => {
     })
   })
 
-  it('jurisdictino screen handles error on clear audit boards', async () => {
+  it('jurisdiction screen handles error on clear audit boards', async () => {
     const expectedCalls = [
       supportApiCalls.getUser,
       apiCalls.getJurisdiction,

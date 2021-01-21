@@ -308,10 +308,6 @@ const Audit = ({ electionId }: { electionId: string }) => {
           </LinkButton>
         ))}
       </ButtonList>
-      {/* {jurisdictions.map(jurisdiction => (
-        <div key={jurisdiction.id} style={{ marginTop: '15px' }}>
-        </div>
-      ))} */}
     </Column>
   )
 }
