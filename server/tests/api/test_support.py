@@ -73,21 +73,9 @@ def test_support_get_election(
             "auditName": "Test Audit test_support_get_election",
             "auditType": "BALLOT_POLLING",
             "jurisdictions": [
-                {
-                    "id": jurisdiction_ids[0],
-                    "name": "J1",
-                    "jurisdictionAdmins": [{"email": default_ja_email(election_id)}],
-                },
-                {
-                    "id": jurisdiction_ids[1],
-                    "name": "J2",
-                    "jurisdictionAdmins": [{"email": default_ja_email(election_id)}],
-                },
-                {
-                    "id": jurisdiction_ids[2],
-                    "name": "J3",
-                    "jurisdictionAdmins": [{"email": f"j3-{election_id}@example.com"}],
-                },
+                {"id": jurisdiction_ids[0], "name": "J1",},
+                {"id": jurisdiction_ids[1], "name": "J2",},
+                {"id": jurisdiction_ids[2], "name": "J3",},
             ],
         },
     )
@@ -230,6 +218,28 @@ def test_support_create_audit_admin_already_admin(  # pylint: disable=invalid-na
     }
 
 
+def test_support_get_jurisdiction(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    audit_board_round_1_ids: List[str],
+):
+    set_support_user(client, SUPPORT_EMAIL)
+    rv = client.get(f"/api/support/jurisdictions/{jurisdiction_ids[0]}")
+    compare_json(
+        json.loads(rv.data),
+        {
+            "id": jurisdiction_ids[0],
+            "name": "J1",
+            "jurisdictionAdmins": [{"email": default_ja_email(election_id)}],
+            "auditBoards": [
+                {"id": id, "name": f"Audit Board #{i+1}", "signedOffAt": None}
+                for i, id in enumerate(audit_board_round_1_ids)
+            ],
+        },
+    )
+
+
 def test_support_log_in_as_audit_admin(
     client: FlaskClient, election_id: str,  # pylint: disable=unused-argument
 ):
@@ -309,3 +319,101 @@ def test_support_clear_audit_boards(
     assert_ok(rv)
 
     assert Jurisdiction.query.get(jurisdiction_ids[0]).audit_boards == []
+
+
+def test_support_reopen_audit_board(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    contest_ids: List[str],
+    round_1_id: str,
+    audit_board_round_1_ids: List[str],
+):
+    set_support_user(client, SUPPORT_EMAIL)
+
+    # Can't reopen if audit board hasn't signed off
+    rv = client.delete(
+        f"/api/support/audit-boards/{audit_board_round_1_ids[0]}/sign-off"
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {"errorType": "Conflict", "message": "Audit board has not signed off."}
+        ]
+    }
+
+    run_audit_round(round_1_id, contest_ids[0], contest_ids, 0.55)
+
+    # Can't reopen after round ends before starting next round
+    rv = client.delete(
+        f"/api/support/audit-boards/{audit_board_round_1_ids[0]}/sign-off"
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Can't reopen audit board after round ends.",
+            }
+        ]
+    }
+
+    # Start round 2
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = post_json(client, f"/api/election/{election_id}/round", {"roundNum": 2},)
+    assert_ok(rv)
+
+    rv = client.get(f"/api/election/{election_id}/round",)
+    rounds = json.loads(rv.data)["rounds"]
+    round_2_id = str(rounds[1]["id"])
+
+    # Can't reopen audit boards from previous rounds
+    set_support_user(client, SUPPORT_EMAIL)
+    rv = client.delete(
+        f"/api/support/audit-boards/{audit_board_round_1_ids[0]}/sign-off"
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Audit board is not part of the current round.",
+            }
+        ]
+    }
+
+    # Create audit boards
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/audit-board",
+        [{"name": "Audit Board #1"}, {"name": "Audit Board #2"},],
+    )
+    assert_ok(rv)
+
+    # Audit ballots
+    audit_board = AuditBoard.query.filter_by(
+        jurisdiction_id=jurisdiction_ids[0], round_id=round_2_id
+    ).first()
+    audit_board.member_1 = "A"
+    audit_board.member_2 = "B"
+    for ballot in audit_board.sampled_ballots:
+        audit_ballot(ballot, contest_ids[0], Interpretation.BLANK)
+    db_session.commit()
+
+    set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board.id)
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/audit-board/{audit_board.id}/sign-off",
+        {"memberName1": audit_board.member_1, "memberName2": audit_board.member_2},
+    )
+    assert_ok(rv)
+
+    # Happy path
+    set_support_user(client, SUPPORT_EMAIL)
+    rv = client.delete(f"/api/support/audit-boards/{audit_board.id}/sign-off")
+    assert_ok(rv)
+
+    assert AuditBoard.query.get(audit_board.id).signed_off_at is None

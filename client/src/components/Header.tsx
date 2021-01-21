@@ -61,6 +61,7 @@ const UserMenu = styled.div`
   .bp3-button-text {
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
   }
   .bp3-menu {
     width: 200px;
