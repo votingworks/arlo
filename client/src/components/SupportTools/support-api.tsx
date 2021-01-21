@@ -117,7 +117,11 @@ export const useJurisdiction = (jurisdictionId: string) =>
   )
 
 export const useClearAuditBoards = () => {
-  const deleteAuditBoards = async (jurisdictionId: string) =>
+  const deleteAuditBoards = async ({
+    jurisdictionId,
+  }: {
+    jurisdictionId: string
+  }) =>
     fetchApi(`/api/support/jurisdictions/${jurisdictionId}/audit-boards`, {
       method: 'DELETE',
     })
@@ -135,7 +139,12 @@ export const useClearAuditBoards = () => {
 }
 
 export const useReopenAuditBoard = () => {
-  const reopenAuditBoard = async (auditBoardId: string) =>
+  const reopenAuditBoard = async ({
+    auditBoardId,
+  }: {
+    jurisdictionId: string
+    auditBoardId: string
+  }) =>
     fetchApi(`/api/support/audit-boards/${auditBoardId}/sign-off`, {
       method: 'DELETE',
     })

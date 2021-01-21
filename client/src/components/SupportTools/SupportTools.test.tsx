@@ -303,6 +303,13 @@ describe('Support Tools', () => {
 
       const toast = await screen.findByRole('alert')
       expect(toast).toHaveTextContent('Reopened Audit Board #1')
+
+      expect(
+        within(screen.getByText('Audit Board #1').closest('tr')!).getByRole(
+          'button',
+          { name: 'Reopen' }
+        )
+      ).toBeDisabled()
     })
   })
 

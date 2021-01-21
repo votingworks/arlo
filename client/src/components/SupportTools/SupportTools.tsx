@@ -337,7 +337,7 @@ const Jurisdiction = ({ jurisdictionId }: { jurisdictionId: string }) => {
       yesButtonLabel: 'Clear audit boards',
       onYesClick: async () => {
         try {
-          await clearAuditBoards.mutateAsync(jurisdictionId)
+          await clearAuditBoards.mutateAsync({ jurisdictionId })
           toast.success(`Cleared audit boards for ${name}`)
         } catch (error) {
           toast.error(error.message)
@@ -354,7 +354,10 @@ const Jurisdiction = ({ jurisdictionId }: { jurisdictionId: string }) => {
       yesButtonLabel: 'Reopen',
       onYesClick: async () => {
         try {
-          await reopenAuditBoard.mutateAsync(auditBoard.id)
+          await reopenAuditBoard.mutateAsync({
+            jurisdictionId,
+            auditBoardId: auditBoard.id,
+          })
           toast.success(`Reopened ${auditBoard.name}`)
         } catch (error) {
           toast.error(error.message)
