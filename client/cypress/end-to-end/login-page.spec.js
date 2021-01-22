@@ -1,6 +1,6 @@
 before(() => cy.exec('./cypress/seed-test-db.sh'))
 
-describe.skip('Audit creation, filling in standard ballot comparison values', () => {
+describe('Audit creation, filling in standard ballot comparison values', () => {
   beforeEach(() => {
     cy.visit('/')
   })

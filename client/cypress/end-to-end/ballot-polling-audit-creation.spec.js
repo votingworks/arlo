@@ -1,6 +1,6 @@
 before(() => cy.exec('./cypress/seed-test-db.sh'))
 
-describe('Audit creation, filling in standard ballot polling values', () => {
+describe('Ballot Polling Audit Creation', () => {
   beforeEach(() => {
     const uuid = () => Cypress._.random(0, 1e6)
     const id = uuid()

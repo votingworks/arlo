@@ -1,6 +1,6 @@
 before(() => cy.exec('./cypress/seed-test-db.sh'))
 
-describe('Audit creation, filling in standard ballot comparison values', () => {
+describe('Audit Boards', () => {
   const uuid = () => Cypress._.random(0, 1e6)
   const id = 0
 
@@ -84,6 +84,7 @@ describe('Audit creation, filling in standard ballot comparison values', () => {
     cy.findAllByText('Launch Audit').spread((firstButton, secondButton) => {
       secondButton.click()
     })
+    cy.wait(1000)
     cy.logout()
     cy.wait(2000)
     cy.contains('Participating in an audit in your local jurisdiction?')
