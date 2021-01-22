@@ -227,7 +227,8 @@ describe('Audit creation, filling in standard ballot comparison values', () => {
      }) 
   })
 
-  it.skip('Participating Jurisdictions - File not uploaded error', () => {
+  it('Participating Jurisdictions - File not uploaded error', () => {
+    cy.wait(1000) // without this Cypress fails because the element becomes detached from DOM
     cy.findAllByText('Upload File').spread((firstButton, secondButton) => {
       firstButton.click()
     })
@@ -291,7 +292,7 @@ describe('Audit creation, filling in standard ballot comparison values', () => {
       cy.contains("Audits - Cypress Test Org")
   })
 
-  it.only('Creating an Audit', () => {
+  it('Creating an Audit', () => {
     cy.fixture('CSVs/jurisdiction/sample_jurisdiction_filesheet.csv').then(fileContent => {
       cy.get('input[type="file"]').first().attachFile({
         fileContent: fileContent.toString(),
@@ -304,10 +305,10 @@ describe('Audit creation, filling in standard ballot comparison values', () => {
     })
     cy.contains("Upload successfully completed")   
 
-    cy.fixture('CSVs/contest/sample_standardized_contests.csv').then(fileContent => {
+    cy.fixture('CSVs/contest/ballot_comparison_contests.csv').then(fileContent => {
       cy.get('input[type="file"]').last().attachFile({
         fileContent: fileContent.toString(),
-        fileName: 'sample_standardized_contests.csv',
+        fileName: 'ballot_comparison_contests.csv',
         mimeType: 'csv'
       })
     })
@@ -321,9 +322,9 @@ describe('Audit creation, filling in standard ballot comparison values', () => {
     cy.findAllByText('Opportunistic Contests').should('have.length', 2)
     cy.findByText('Save & Next').click()
     cy.get('#state').select('AL')
-    cy.get('input[name=electionName]').type(`Test Election`)
+    cy.get('input[name=electionName]').type('Test Election')
     cy.get('#risk-limit').select('10')
-    cy.get('input[name=randomSeed]').type("543210")
+    cy.get('input[name=randomSeed]').type('543210')
     cy.findByText('Save & Next').click()
     cy.findAllByText('Review & Launch').should('have.length', 2)
     cy.wait(100)
@@ -363,7 +364,9 @@ describe('Audit creation, filling in standard ballot comparison values', () => {
     cy.findAllByText('Review & Launch').should('have.length', 2)
     cy.findByText('Launch Audit').click()
     cy.wait(1000)
-    cy.get('.bp3-dialog').findByText('Launch Audit').click()
-    // cy.get('tbody').children('tr').its('length').should('be.gt', 0)
+    cy.findAllByText('Launch Audit').spread((firstButton, secondButton) => {
+      secondButton.click()
+    })
+    cy.get('tbody').children('tr').its('length').should('be.gt', 0)
   })
 })
