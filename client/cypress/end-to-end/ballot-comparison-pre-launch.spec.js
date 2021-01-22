@@ -41,15 +41,7 @@ describe('Pre-launch file uploads', () => {
       cy.get('input[type="checkbox"]').first().check({ force: true })
       cy.findByText('Save & Next').click()
       cy.findAllByText('Opportunistic Contests').should('have.length', 2)
-      // cy.findByText('Save & Next').click()
-      // cy.get('#state').select('AL')
-      // cy.get('input[name=electionName]').type(`Test Election`)
-      // cy.get('#risk-limit').select('10')
-      // cy.get('input[name=randomSeed]').type("543210")
-      // cy.findByText('Save & Next').click()
-      // cy.wait(1000)
       cy.logout()
-      // cy.wait(2000)
       cy.contains('Participating in an audit in your local jurisdiction?')
       cy.loginJurisdictionAdmin('wtarkin@empire.gov')
       cy.findByText(`Jurisdictions - TestAudit${id}`).siblings('button').click()
@@ -151,7 +143,7 @@ describe('Pre-launch file uploads', () => {
         mimeType: 'csv'
       })
     })
-    cy.findAllByText('Upload File').click()
+    cy.findAllByText('Upload File').last().click()
     cy.contains('Could not parse CVR file')
   })
 
@@ -175,7 +167,7 @@ describe('Pre-launch file uploads', () => {
         mimeType: 'csv'
       })
     })
-    cy.findAllByText('Upload File').click()
+    cy.findAllByText('Upload File').last().click()
     cy.contains('Could not parse CVR file')
   })
 

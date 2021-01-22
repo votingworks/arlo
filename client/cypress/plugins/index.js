@@ -15,7 +15,32 @@
 /**
  * @type {Cypress.PluginConfig}
  */
-module.exports = (on, config) => {
+const fs = require('fs')
+const path = require('path')
+const pdf = require('pdf-parse');
+
+const repoRoot = path.join(__dirname, '..', '..') // assumes pdf at project root
+
+const parsePdf = async (pdfName) => {
+  const pdfPathname = path.join(repoRoot, pdfName)
+  let dataBuffer = fs.readFileSync(pdfPathname);
+  return await pdf(dataBuffer)  // use async/await since pdf returns a promise 
+}
+
+ module.exports = (on, config) => {
+  on('task', {
+    getPdfContent (pdfName) {
+      return parsePdf(pdfName)
+    }
+  })
+  on("before:browser:launch", (browser = {}, launchOptions) => {
+    const downloadDirectory = path.join(__dirname, '..', 'fixtures/PDFs')
+
+    if (browser.family === 'chromium') {
+      launchOptions.preferences['download'] = { default_directory: downloadDirectory }
+    }
+    return launchOptions;
+  })
   // `on` is used to hook into various events Cypress emits
   // `config` is the resolved Cypress config
 }
