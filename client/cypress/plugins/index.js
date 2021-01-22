@@ -37,7 +37,6 @@ const parsePdf = async (pdfName) => {
     const downloadDirectory = path.join(__dirname, '..', 'fixtures/PDFs')
 
     if (browser.family === 'chromium' && browser.name !== 'electron') {
-      console.log(launchOptions.preferences.default)
       launchOptions.preferences.default['download'] = {
         default_directory: downloadDirectory,
         prompt_for_download: false,
