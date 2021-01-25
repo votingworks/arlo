@@ -3,16 +3,16 @@
 exports[`DataEntry ballot interaction renders ballot route 1`] = `
 <div>
   <div
-    class="sc-ckVGcZ FQwY"
+    class="sc-jKJlTe cdRmtQ"
   >
     <div
-      class="sc-jKJlTe sc-eNQAEJ hHsOrt"
+      class="sc-eNQAEJ sc-hMqMXs iVQcXK"
     >
       <div
-        class="sc-kpOJdX dGWCjw"
+        class="sc-dxgOiQ cnAnsE"
       >
         <h1
-          class="bp3-heading sc-kGXeez dPLzLx"
+          class="bp3-heading sc-kpOJdX dYIVuZ"
         >
           Audit Board #1
           : Ballot Card Data Entry
@@ -23,7 +23,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
           Enter Ballot Information
         </h3>
         <div
-          class="bp3-callout sc-dxgOiQ imJcEu"
+          class="bp3-callout sc-ckVGcZ fWvioO"
         >
           Auditing ballot 
           2
@@ -31,7 +31,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
           27
         </div>
         <div
-          class="sc-gzVnrw iQbkBU"
+          class="sc-htoDjs djrRRx"
         >
           <div
             class="ballot-side"
@@ -55,7 +55,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
             </div>
           </div>
           <div
-            class="bp3-divider sc-bZQynM fCIzYl"
+            class="bp3-divider sc-gzVnrw fleORm"
           />
           <div
             class="ballot-main"
@@ -93,7 +93,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
           </div>
         </div>
         <div
-          class="sc-gzVnrw iQbkBU"
+          class="sc-htoDjs djrRRx"
         >
           <div
             class="ballot-side"
@@ -121,7 +121,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
             </p>
             <form>
               <div
-                class="sc-htoDjs gdMSDV"
+                class="sc-dnqmqq fUlqUV"
               >
                 <h3
                   class="bp3-heading"
@@ -129,10 +129,10 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                   Contest 1
                 </h3>
                 <div
-                  class="bp3-divider sc-bZQynM fCIzYl"
+                  class="bp3-divider sc-gzVnrw fleORm"
                 />
                 <label
-                  class="bp3-control bp3-checkbox sc-kAzzGY cVcuEP"
+                  class="bp3-control bp3-checkbox sc-chPdSV eLfnnR"
                 >
                   <input
                     type="checkbox"
@@ -148,7 +148,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                   </span>
                 </label>
                 <label
-                  class="bp3-control bp3-checkbox sc-kAzzGY cVcuEP"
+                  class="bp3-control bp3-checkbox sc-chPdSV eLfnnR"
                 >
                   <input
                     type="checkbox"
@@ -164,7 +164,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                   </span>
                 </label>
                 <label
-                  class="bp3-control bp3-checkbox sc-kAzzGY cVcuEP"
+                  class="bp3-control bp3-checkbox sc-chPdSV eLfnnR"
                 >
                   <input
                     type="checkbox"
@@ -180,7 +180,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                   </span>
                 </label>
                 <label
-                  class="bp3-control bp3-checkbox sc-kAzzGY cVcuEP"
+                  class="bp3-control bp3-checkbox sc-chPdSV eLfnnR"
                 >
                   <input
                     type="checkbox"
@@ -226,7 +226,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                 </button>
               </div>
               <div
-                class="sc-htoDjs gdMSDV"
+                class="sc-dnqmqq fUlqUV"
               >
                 <h3
                   class="bp3-heading"
@@ -234,10 +234,10 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                   Contest 2
                 </h3>
                 <div
-                  class="bp3-divider sc-bZQynM fCIzYl"
+                  class="bp3-divider sc-gzVnrw fleORm"
                 />
                 <label
-                  class="bp3-control bp3-checkbox sc-kAzzGY cVcuEP"
+                  class="bp3-control bp3-checkbox sc-chPdSV eLfnnR"
                 >
                   <input
                     type="checkbox"
@@ -253,7 +253,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                   </span>
                 </label>
                 <label
-                  class="bp3-control bp3-checkbox sc-kAzzGY cVcuEP"
+                  class="bp3-control bp3-checkbox sc-chPdSV eLfnnR"
                 >
                   <input
                     type="checkbox"
@@ -269,7 +269,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                   </span>
                 </label>
                 <label
-                  class="bp3-control bp3-checkbox sc-kAzzGY cVcuEP"
+                  class="bp3-control bp3-checkbox sc-chPdSV eLfnnR"
                 >
                   <input
                     type="checkbox"
@@ -285,7 +285,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                   </span>
                 </label>
                 <label
-                  class="bp3-control bp3-checkbox sc-kAzzGY cVcuEP"
+                  class="bp3-control bp3-checkbox sc-chPdSV eLfnnR"
                 >
                   <input
                     type="checkbox"
@@ -331,10 +331,10 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                 </button>
               </div>
               <div
-                class="sc-iwsKbI iYiMCG"
+                class="sc-gZMcBi eEnNvu"
               >
                 <button
-                  class="bp3-button bp3-intent-success sc-EHOje gmpgQN"
+                  class="bp3-button bp3-intent-success sc-bZQynM iFVUEu"
                   type="submit"
                 >
                   <span
@@ -366,10 +366,10 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
 exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
 <div>
   <div
-    class="sc-ckVGcZ FQwY"
+    class="sc-jKJlTe cdRmtQ"
   >
     <div
-      class="sc-jKJlTe sc-eNQAEJ hHsOrt"
+      class="sc-eNQAEJ sc-hMqMXs iVQcXK"
     >
       <div
         class="board-table-container"
@@ -599,7 +599,7 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                   Audited
                 </span>
                 <a
-                  class="bp3-button bp3-small"
+                  class="bp3-button bp3-small sc-htpNat gPKckf"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/313"
                 >
                   Re-audit
@@ -655,7 +655,7 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                   Audited
                 </span>
                 <a
-                  class="bp3-button bp3-small"
+                  class="bp3-button bp3-small sc-htpNat gPKckf"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/1789"
                 >
                   Re-audit
@@ -687,7 +687,7 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                   Audited
                 </span>
                 <a
-                  class="bp3-button bp3-small"
+                  class="bp3-button bp3-small sc-htpNat gPKckf"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-2/ballot/313"
                 >
                   Re-audit
@@ -743,7 +743,7 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                   Audited
                 </span>
                 <a
-                  class="bp3-button bp3-small"
+                  class="bp3-button bp3-small sc-htpNat gPKckf"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-2/ballot/1789"
                 >
                   Re-audit
@@ -775,7 +775,7 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                   Audited
                 </span>
                 <a
-                  class="bp3-button bp3-small"
+                  class="bp3-button bp3-small sc-htpNat gPKckf"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-3/ballot/313"
                 >
                   Re-audit
@@ -831,7 +831,7 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                   Audited
                 </span>
                 <a
-                  class="bp3-button bp3-small"
+                  class="bp3-button bp3-small sc-htpNat gPKckf"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-3/ballot/1789"
                 >
                   Re-audit
@@ -863,7 +863,7 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                   Audited
                 </span>
                 <a
-                  class="bp3-button bp3-small"
+                  class="bp3-button bp3-small sc-htpNat gPKckf"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-4/ballot/313"
                 >
                   Re-audit
@@ -919,7 +919,7 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                   Audited
                 </span>
                 <a
-                  class="bp3-button bp3-small"
+                  class="bp3-button bp3-small sc-htpNat gPKckf"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-4/ballot/1789"
                 >
                   Re-audit
@@ -951,7 +951,7 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                   Audited
                 </span>
                 <a
-                  class="bp3-button bp3-small"
+                  class="bp3-button bp3-small sc-htpNat gPKckf"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-5/ballot/313"
                 >
                   Re-audit
@@ -1007,7 +1007,7 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                   Audited
                 </span>
                 <a
-                  class="bp3-button bp3-small"
+                  class="bp3-button bp3-small sc-htpNat gPKckf"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-5/ballot/1789"
                 >
                   Re-audit
@@ -1039,7 +1039,7 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                   Audited
                 </span>
                 <a
-                  class="bp3-button bp3-small"
+                  class="bp3-button bp3-small sc-htpNat gPKckf"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-6/ballot/313"
                 >
                   Re-audit
@@ -1095,7 +1095,7 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                   Audited
                 </span>
                 <a
-                  class="bp3-button bp3-small"
+                  class="bp3-button bp3-small sc-htpNat gPKckf"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-6/ballot/1789"
                 >
                   Re-audit
@@ -1127,7 +1127,7 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                   Audited
                 </span>
                 <a
-                  class="bp3-button bp3-small"
+                  class="bp3-button bp3-small sc-htpNat gPKckf"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-7/ballot/313"
                 >
                   Re-audit
@@ -1183,7 +1183,7 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                   Audited
                 </span>
                 <a
-                  class="bp3-button bp3-small"
+                  class="bp3-button bp3-small sc-htpNat gPKckf"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-7/ballot/1789"
                 >
                   Re-audit
@@ -1215,7 +1215,7 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                   Audited
                 </span>
                 <a
-                  class="bp3-button bp3-small"
+                  class="bp3-button bp3-small sc-htpNat gPKckf"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-8/ballot/313"
                 >
                   Re-audit
@@ -1271,7 +1271,7 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                   Audited
                 </span>
                 <a
-                  class="bp3-button bp3-small"
+                  class="bp3-button bp3-small sc-htpNat gPKckf"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-8/ballot/1789"
                 >
                   Re-audit
@@ -1303,7 +1303,7 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                   Audited
                 </span>
                 <a
-                  class="bp3-button bp3-small"
+                  class="bp3-button bp3-small sc-htpNat gPKckf"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-9/ballot/313"
                 >
                   Re-audit
@@ -1359,7 +1359,7 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                   Audited
                 </span>
                 <a
-                  class="bp3-button bp3-small"
+                  class="bp3-button bp3-small sc-htpNat gPKckf"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-9/ballot/1789"
                 >
                   Re-audit
@@ -1377,10 +1377,10 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
 exports[`DataEntry ballot interaction renders board table with no ballots 1`] = `
 <div>
   <div
-    class="sc-ckVGcZ FQwY"
+    class="sc-jKJlTe cdRmtQ"
   >
     <div
-      class="sc-jKJlTe sc-eNQAEJ hHsOrt"
+      class="sc-eNQAEJ sc-hMqMXs iVQcXK"
     >
       <div
         class="board-table-container"
@@ -1558,10 +1558,10 @@ exports[`DataEntry ballot interaction renders board table with no ballots 1`] = 
 exports[`DataEntry member form submits and goes to ballot table 1`] = `
 <div>
   <div
-    class="sc-ckVGcZ FQwY"
+    class="sc-jKJlTe cdRmtQ"
   >
     <div
-      class="sc-jKJlTe sc-eNQAEJ hHsOrt"
+      class="sc-eNQAEJ sc-hMqMXs iVQcXK"
     >
       <div
         class="board-table-container"
@@ -1791,7 +1791,7 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                   Audited
                 </span>
                 <a
-                  class="bp3-button bp3-small"
+                  class="bp3-button bp3-small sc-htpNat gPKckf"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/313"
                 >
                   Re-audit
@@ -1847,7 +1847,7 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                   Audited
                 </span>
                 <a
-                  class="bp3-button bp3-small"
+                  class="bp3-button bp3-small sc-htpNat gPKckf"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/1789"
                 >
                   Re-audit
@@ -1879,7 +1879,7 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                   Audited
                 </span>
                 <a
-                  class="bp3-button bp3-small"
+                  class="bp3-button bp3-small sc-htpNat gPKckf"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-2/ballot/313"
                 >
                   Re-audit
@@ -1935,7 +1935,7 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                   Audited
                 </span>
                 <a
-                  class="bp3-button bp3-small"
+                  class="bp3-button bp3-small sc-htpNat gPKckf"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-2/ballot/1789"
                 >
                   Re-audit
@@ -1967,7 +1967,7 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                   Audited
                 </span>
                 <a
-                  class="bp3-button bp3-small"
+                  class="bp3-button bp3-small sc-htpNat gPKckf"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-3/ballot/313"
                 >
                   Re-audit
@@ -2023,7 +2023,7 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                   Audited
                 </span>
                 <a
-                  class="bp3-button bp3-small"
+                  class="bp3-button bp3-small sc-htpNat gPKckf"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-3/ballot/1789"
                 >
                   Re-audit
@@ -2055,7 +2055,7 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                   Audited
                 </span>
                 <a
-                  class="bp3-button bp3-small"
+                  class="bp3-button bp3-small sc-htpNat gPKckf"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-4/ballot/313"
                 >
                   Re-audit
@@ -2111,7 +2111,7 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                   Audited
                 </span>
                 <a
-                  class="bp3-button bp3-small"
+                  class="bp3-button bp3-small sc-htpNat gPKckf"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-4/ballot/1789"
                 >
                   Re-audit
@@ -2143,7 +2143,7 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                   Audited
                 </span>
                 <a
-                  class="bp3-button bp3-small"
+                  class="bp3-button bp3-small sc-htpNat gPKckf"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-5/ballot/313"
                 >
                   Re-audit
@@ -2199,7 +2199,7 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                   Audited
                 </span>
                 <a
-                  class="bp3-button bp3-small"
+                  class="bp3-button bp3-small sc-htpNat gPKckf"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-5/ballot/1789"
                 >
                   Re-audit
@@ -2231,7 +2231,7 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                   Audited
                 </span>
                 <a
-                  class="bp3-button bp3-small"
+                  class="bp3-button bp3-small sc-htpNat gPKckf"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-6/ballot/313"
                 >
                   Re-audit
@@ -2287,7 +2287,7 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                   Audited
                 </span>
                 <a
-                  class="bp3-button bp3-small"
+                  class="bp3-button bp3-small sc-htpNat gPKckf"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-6/ballot/1789"
                 >
                   Re-audit
@@ -2319,7 +2319,7 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                   Audited
                 </span>
                 <a
-                  class="bp3-button bp3-small"
+                  class="bp3-button bp3-small sc-htpNat gPKckf"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-7/ballot/313"
                 >
                   Re-audit
@@ -2375,7 +2375,7 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                   Audited
                 </span>
                 <a
-                  class="bp3-button bp3-small"
+                  class="bp3-button bp3-small sc-htpNat gPKckf"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-7/ballot/1789"
                 >
                   Re-audit
@@ -2407,7 +2407,7 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                   Audited
                 </span>
                 <a
-                  class="bp3-button bp3-small"
+                  class="bp3-button bp3-small sc-htpNat gPKckf"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-8/ballot/313"
                 >
                   Re-audit
@@ -2463,7 +2463,7 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                   Audited
                 </span>
                 <a
-                  class="bp3-button bp3-small"
+                  class="bp3-button bp3-small sc-htpNat gPKckf"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-8/ballot/1789"
                 >
                   Re-audit
@@ -2495,7 +2495,7 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                   Audited
                 </span>
                 <a
-                  class="bp3-button bp3-small"
+                  class="bp3-button bp3-small sc-htpNat gPKckf"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-9/ballot/313"
                 >
                   Re-audit
@@ -2551,7 +2551,7 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                   Audited
                 </span>
                 <a
-                  class="bp3-button bp3-small"
+                  class="bp3-button bp3-small sc-htpNat gPKckf"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-9/ballot/1789"
                 >
                   Re-audit

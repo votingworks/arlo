@@ -230,7 +230,7 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
               Audited
             </span>
             <a
-              class="bp3-button bp3-small"
+              class="bp3-button bp3-small sc-htpNat gPKckf"
               href="/home/batch/batch-id-1/ballot/313"
             >
               Re-audit
@@ -262,7 +262,7 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
               Audited
             </span>
             <a
-              class="bp3-button bp3-small"
+              class="bp3-button bp3-small sc-htpNat gPKckf"
               href="/home/batch/batch-id-1/ballot/2112"
             >
               Re-audit
@@ -294,7 +294,7 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
               Audited
             </span>
             <a
-              class="bp3-button bp3-small"
+              class="bp3-button bp3-small sc-htpNat gPKckf"
               href="/home/batch/batch-id-1/ballot/1789"
             >
               Re-audit
@@ -326,7 +326,7 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
               Not Found
             </span>
             <a
-              class="bp3-button bp3-small"
+              class="bp3-button bp3-small sc-htpNat gPKckf"
               href="/home/batch/batch-id-1/ballot/1965"
             >
               Re-audit
@@ -569,7 +569,7 @@ exports[`BoardTable renders container and no tabulator columns 1`] = `
               Audited
             </span>
             <a
-              class="bp3-button bp3-small"
+              class="bp3-button bp3-small sc-htpNat gPKckf"
               href="/home/batch/batch-id-1/ballot/313"
             >
               Re-audit
@@ -854,7 +854,7 @@ exports[`BoardTable renders container and tabulator columns 1`] = `
               Audited
             </span>
             <a
-              class="bp3-button bp3-small"
+              class="bp3-button bp3-small sc-htpNat gPKckf"
               href="/home/batch/batch-id-1/ballot/313"
             >
               Re-audit
@@ -1055,7 +1055,7 @@ exports[`BoardTable renders no container and no tabulator columns 1`] = `
               Audited
             </span>
             <a
-              class="bp3-button bp3-small"
+              class="bp3-button bp3-small sc-htpNat gPKckf"
               href="/home/batch/batch-id-1/ballot/313"
             >
               Re-audit
@@ -1298,7 +1298,7 @@ exports[`BoardTable renders tabulator and no container columns 1`] = `
               Audited
             </span>
             <a
-              class="bp3-button bp3-small"
+              class="bp3-button bp3-small sc-htpNat gPKckf"
               href="/home/batch/batch-id-1/ballot/313"
             >
               Re-audit
