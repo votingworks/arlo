@@ -1,3 +1,5 @@
+import 'cypress-file-upload'
+
 before(() => cy.exec('./cypress/seed-test-db.sh'))
 
 describe('Audit Boards', () => {
