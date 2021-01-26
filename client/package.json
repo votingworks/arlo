@@ -140,6 +140,7 @@
     "jest-styled-components": "^6.3.1",
     "jsdom": "^16.2.2",
     "lint-staged": "^10.0.8",
+    "pdf-parse": "^1.1.1",
     "pdf-visual-diff": "^0.5.0",
     "prettier": "^1.17.1",
     "react-test-renderer": "^16.13.1",

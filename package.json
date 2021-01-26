@@ -22,9 +22,6 @@
       "sort-package-json"
     ]
   },
-  "dependencies": {
-    "pdf-parse": "^1.1.1"
-  },
   "devDependencies": {
     "husky": "^4.2.3",
     "lint-staged": "^10.2.2",
