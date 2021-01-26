@@ -13,7 +13,6 @@ describe('Audit Boards', () => {
     cy.get('input[name=auditName]').type(`TestAudit${id}`)
     cy.get('input[value="BALLOT_COMPARISON"]').check({ force: true })
     cy.findByText("Create Audit").click()
-    cy.wait(1000)
     cy.contains("Audit Setup")
     cy.fixture('CSVs/jurisdiction/sample_jurisdiction_filesheet.csv').then(fileContent => {
       cy.get('input[type="file"]').first().attachFile({
@@ -50,11 +49,9 @@ describe('Audit Boards', () => {
     cy.findByText('Save & Next').click()
     cy.wait(1000)
     cy.logout()
-    cy.wait(2000)
     cy.contains('Participating in an audit in your local jurisdiction?')
     cy.loginJurisdictionAdmin('wtarkin@empire.gov')
     cy.findByText(`Jurisdictions - TestAudit${id}`).siblings('button').click()
-    cy.wait(1000)
     cy.fixture('CSVs/manifest/ballot_comparison_manifest.csv').then(fileContent => {
       cy.get('input[type="file"]').first().attachFile({
         fileContent: fileContent.toString(),
@@ -78,7 +75,6 @@ describe('Audit Boards', () => {
     cy.findAllByText(/Upload successfully completed/).should('have.length', 2)
     cy.wait(1000)
     cy.logout()
-    cy.wait(2000)
     cy.loginAuditAdmin('audit-admin-cypress@example.com')
     cy.findByText(`TestAudit${id}`).click()
     cy.findByText('Review & Launch').click()
@@ -86,9 +82,7 @@ describe('Audit Boards', () => {
     cy.findAllByText('Launch Audit').spread((firstButton, secondButton) => {
       secondButton.click()
     })
-    cy.wait(1000)
     cy.logout()
-    cy.wait(2000)
     cy.contains('Participating in an audit in your local jurisdiction?')
 
   })
@@ -97,15 +91,14 @@ describe('Audit Boards', () => {
   it('Audit Board - Setup', () => {
     cy.loginJurisdictionAdmin('wtarkin@empire.gov')
     cy.findByText(`Jurisdictions - TestAudit${id}`).siblings('button').click()
-    cy.wait(1000)
     cy.contains('Number of Audit Boards')
     cy.findByText('Save & Next').click()
     cy.findByText('Download Audit Board Credentials').click()
     cy.logout()
-    cy.wait(2000)
   })
 
   it('Audit Board - Login with Credentials', () => {
+    cy.wait(1000)
     cy.task('getPdfContent', `cypress/fixtures/PDFs/Audit Board Credentials\ -\ Death Star\ -\ TestAudit${id}.pdf`).then((content) => {
       function urlify(text) {
         var urlRegex = /(((https?:\/\/)|(www\.))[^\s]+)/g;

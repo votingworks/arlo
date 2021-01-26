@@ -6,49 +6,46 @@ describe('Pre-launch file uploads', () => {
   const uuid = () => Cypress._.random(0, 1e6)
   const id = 0
 
-    beforeEach(() => {
-      id = uuid()
-      cy.visit('/')
-      cy.loginAuditAdmin('audit-admin-cypress@example.com')
-      cy.get('input[name=auditName]').type(`TestAudit${id}`)
-      cy.get('input[value="BALLOT_COMPARISON"]').check({ force: true })
-      cy.findByText("Create Audit").click()
-      cy.wait(1000)
-      cy.contains("Audit Setup")
-      cy.fixture('CSVs/jurisdiction/sample_jurisdiction_filesheet.csv').then(fileContent => {
-        cy.get('input[type="file"]').first().attachFile({
-          fileContent: fileContent.toString(),
-          fileName: 'sample_jurisdiction_filesheet.csv',
-          mimeType: 'csv'
-        })
+  beforeEach(() => {
+    id = uuid()
+    cy.visit('/')
+    cy.loginAuditAdmin('audit-admin-cypress@example.com')
+    cy.get('input[name=auditName]').type(`TestAudit${id}`)
+    cy.get('input[value="BALLOT_COMPARISON"]').check({ force: true })
+    cy.findByText("Create Audit").click()
+    cy.contains("Audit Setup")
+    cy.fixture('CSVs/jurisdiction/sample_jurisdiction_filesheet.csv').then(fileContent => {
+      cy.get('input[type="file"]').first().attachFile({
+        fileContent: fileContent.toString(),
+        fileName: 'sample_jurisdiction_filesheet.csv',
+        mimeType: 'csv'
       })
-      cy.findAllByText('Upload File').spread((firstButton, secondButton) => {
-        firstButton.click()
-      })
-      cy.wait(1000)
-      cy.contains("Upload successfully completed")   
-
-      cy.fixture('CSVs/contest/ballot_comparison_contests.csv').then(fileContent => {
-        cy.get('input[type="file"]').last().attachFile({
-          fileContent: fileContent.toString(),
-          fileName: 'ballot_comparison_contests.csv',
-          mimeType: 'csv'
-        })
-      })
-      cy.findAllByText('Upload File').click()
-      cy.findAllByText(/Upload successfully completed/).should('have.length', 2)
-      cy.wait(2000)
-      cy.findByText('Next').click()
-      cy.findAllByText('Target Contests').should('have.length', 2)
-      cy.get('input[type="checkbox"]').first().check({ force: true })
-      cy.findByText('Save & Next').click()
-      cy.findAllByText('Opportunistic Contests').should('have.length', 2)
-      cy.logout()
-      cy.contains('Participating in an audit in your local jurisdiction?')
-      cy.loginJurisdictionAdmin('wtarkin@empire.gov')
-      cy.findByText(`Jurisdictions - TestAudit${id}`).siblings('button').click()
-      cy.wait(1000)
     })
+    cy.findAllByText('Upload File').spread((firstButton, secondButton) => {
+      firstButton.click()
+    })
+    cy.contains("Upload successfully completed")   
+
+    cy.fixture('CSVs/contest/ballot_comparison_contests.csv').then(fileContent => {
+      cy.get('input[type="file"]').last().attachFile({
+        fileContent: fileContent.toString(),
+        fileName: 'ballot_comparison_contests.csv',
+        mimeType: 'csv'
+      })
+    })
+    cy.findAllByText('Upload File').click()
+    cy.findAllByText(/Upload successfully completed/).should('have.length', 2)
+    cy.wait(1000) // gets stuck in an infinite loop without a wait here
+    cy.findByText('Next').click()
+    cy.findAllByText('Target Contests').should('have.length', 2)
+    cy.get('input[type="checkbox"]').first().check({ force: true })
+    cy.findByText('Save & Next').click()
+    cy.findAllByText('Opportunistic Contests').should('have.length', 2)
+    cy.logout()
+    cy.contains('Participating in an audit in your local jurisdiction?')
+    cy.loginJurisdictionAdmin('wtarkin@empire.gov')
+    cy.findByText(`Jurisdictions - TestAudit${id}`).siblings('button').click()
+  })
 
   it('Ballot Manifest - Column Error', () => {
     cy.fixture('CSVs/manifest/ballot_comparison_manifest_col_error.csv').then(fileContent => {

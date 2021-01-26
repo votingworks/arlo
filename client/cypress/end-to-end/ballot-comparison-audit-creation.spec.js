@@ -218,7 +218,7 @@ describe('Ballot Comparison Audit Creation', () => {
     })
     cy.findAllByText('Upload File').click()
     cy.findAllByText(/Upload successfully completed/).should('have.length', 2)
-    cy.wait(1000) // gets stuck in an infinite loop without a 100ms wait here
+    cy.wait(1000) // gets stuck in an infinite loop without a wait here
     cy.findByText('Next').click()
     cy.findAllByText('Target Contests').should('have.length', 2)
     cy.findByText('Save & Next').click()
@@ -277,7 +277,7 @@ describe('Ballot Comparison Audit Creation', () => {
       })
       cy.findAllByText('Upload File').click()
       cy.findAllByText(/Upload successfully completed/).should('have.length', 2)
-      cy.wait(1000)
+      cy.wait(1000) // gets stuck in an infinite loop without a wait here
       cy.findByText('Next').click()
       cy.findByText("Audit Progress").click()
       cy.get('tbody').children('tr').its('length').should('be.gt', 0)
@@ -316,7 +316,7 @@ describe('Ballot Comparison Audit Creation', () => {
     })
     cy.findAllByText('Upload File').click()
     cy.findAllByText(/Upload successfully completed/).should('have.length', 2)
-    cy.wait(2000) // gets stuck in an infinite loop without a 100ms wait here
+    cy.wait(1000) // gets stuck in an infinite loop without a wait here
     cy.findByText('Next').click()
     cy.findAllByText('Target Contests').should('have.length', 2)
     cy.get('input[type="checkbox"]').first().check({ force: true })
@@ -331,11 +331,9 @@ describe('Ballot Comparison Audit Creation', () => {
     cy.findAllByText('Review & Launch').should('have.length', 2)
     cy.wait(100)
     cy.logout()
-    cy.wait(2000)
     cy.contains('Participating in an audit in your local jurisdiction?')
     cy.loginJurisdictionAdmin('wtarkin@empire.gov')
     cy.findByText(`Jurisdictions - TestAudit${id}`).siblings('button').click()
-    cy.wait(1000)
     cy.fixture('CSVs/manifest/ballot_comparison_manifest.csv').then(fileContent => {
         cy.get('input[type="file"]').first().attachFile({
             fileContent: fileContent.toString(),
@@ -357,15 +355,13 @@ describe('Ballot Comparison Audit Creation', () => {
     })
     cy.findAllByText('Upload File').click()
     cy.findAllByText(/Upload successfully completed/).should('have.length', 2)
-    cy.wait(1000)
+    cy.wait(1000) // gets stuck in an infinite loop without a wait here
     cy.logout()
-    cy.wait(2000)
     cy.loginAuditAdmin('audit-admin-cypress@example.com')
     cy.findByText(`TestAudit${id}`).click()
     cy.findByText('Review & Launch').click()
     cy.findAllByText('Review & Launch').should('have.length', 2)
     cy.findByText('Launch Audit').click()
-    cy.wait(1000)
     cy.findAllByText('Launch Audit').spread((firstButton, secondButton) => {
       secondButton.click()
     })
