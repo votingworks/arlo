@@ -23,6 +23,10 @@ const RightWrapper = styled.div`
   }
 `
 
+const ReAuditBtn = styled(Link)`
+  margin-left: 10px;
+`
+
 interface IProps {
   boardName: IAuditBoard['name']
   ballots: IBallot[]
@@ -50,12 +54,12 @@ const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
             ) : (
               <span>Not Found</span>
             )}
-            <Link
+            <ReAuditBtn
               to={`${url}/batch/${ballot.batch.id}/ballot/${ballot.position}`}
               className="bp3-button bp3-small"
             >
               Re-audit
-            </Link>
+            </ReAuditBtn>
           </>
         ) : (
           'Not Audited'
