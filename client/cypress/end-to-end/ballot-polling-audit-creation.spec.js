@@ -3,9 +3,11 @@ import 'cypress-file-upload'
 before(() => cy.exec('./cypress/seed-test-db.sh'))
 
 describe('Ballot Polling Audit Creation', () => {
+  const uuid = () => Cypress._.random(0, 1e6)
+  const id = 0
+
   beforeEach(() => {
-    const uuid = () => Cypress._.random(0, 1e6)
-    const id = uuid()
+    id = uuid()
     cy.visit('/')
     cy.loginAuditAdmin('audit-admin-cypress@example.com')
     cy.get('input[name=auditName]').type(`TestAudit${id}`)
@@ -37,7 +39,7 @@ describe('Ballot Polling Audit Creation', () => {
   })
 
   describe('Creating an offline audit', () => {
-    it('AA sets up audit', () => {
+    it('AA and JA launch audit', () => {
       cy.fixture('CSVs/jurisdiction/sample_jurisdiction_filesheet.csv').then(fileContent => {
         cy.get('input[type="file"]').first().attachFile({
           fileContent: fileContent.toString(),
@@ -69,11 +71,35 @@ describe('Ballot Polling Audit Creation', () => {
       cy.get('input[name=randomSeed]').type("543210")
       cy.findByText('Save & Next').click()
       cy.findAllByText('Review & Launch').should('have.length', 2)
+      cy.wait(100)
+      cy.logout()
+      cy.contains('Participating in an audit in your local jurisdiction?')
+      cy.loginJurisdictionAdmin('wtarkin@empire.gov')
+      cy.findByText(`Jurisdictions - TestAudit${id}`).siblings('button').click()
+      cy.fixture('CSVs/manifest/ballot_polling_manifest.csv').then(fileContent => {
+          cy.get('input[type="file"]').first().attachFile({
+              fileContent: fileContent.toString(),
+              fileName: 'ballot_polling_manifest.csv',
+              mimeType: 'csv'
+          })
+      })
+      cy.findByText('Upload File').click()
+      cy.contains("Upload successfully completed")
+      cy.logout()
+      cy.loginAuditAdmin('audit-admin-cypress@example.com')
+      cy.findByText(`TestAudit${id}`).click()
+      cy.findByText('Review & Launch').click()
+      cy.findAllByText('Review & Launch').should('have.length', 2)
+      cy.findByText('Launch Audit').click()
+      cy.findAllByText('Launch Audit').spread((firstButton, secondButton) => {
+        secondButton.click()
+      })
+      cy.get('tbody').children('tr').its('length').should('be.gt', 0)
     })
   })
 
   describe('Creating an online audit', () => {
-    it('AA sets up audit', () => {
+    it('AA and JA launch audit', () => {
       cy.fixture('CSVs/jurisdiction/sample_jurisdiction_filesheet.csv').then(fileContent => {
         cy.get('input[type="file"]').first().attachFile({
           fileContent: fileContent.toString(),
@@ -106,6 +132,30 @@ describe('Ballot Polling Audit Creation', () => {
       cy.get('input[name=randomSeed]').type("543210")
       cy.findByText('Save & Next').click()
       cy.findAllByText('Review & Launch').should('have.length', 2)
+      cy.wait(100)
+      cy.logout()
+      cy.contains('Participating in an audit in your local jurisdiction?')
+      cy.loginJurisdictionAdmin('wtarkin@empire.gov')
+      cy.findByText(`Jurisdictions - TestAudit${id}`).siblings('button').click()
+      cy.fixture('CSVs/manifest/ballot_polling_manifest.csv').then(fileContent => {
+          cy.get('input[type="file"]').first().attachFile({
+              fileContent: fileContent.toString(),
+              fileName: 'ballot_polling_manifest.csv',
+              mimeType: 'csv'
+          })
+      })
+      cy.findByText('Upload File').click()
+      cy.contains("Upload successfully completed")
+      cy.logout()
+      cy.loginAuditAdmin('audit-admin-cypress@example.com')
+      cy.findByText(`TestAudit${id}`).click()
+      cy.findByText('Review & Launch').click()
+      cy.findAllByText('Review & Launch').should('have.length', 2)
+      cy.findByText('Launch Audit').click()
+      cy.findAllByText('Launch Audit').spread((firstButton, secondButton) => {
+        secondButton.click()
+      })
+      cy.get('tbody').children('tr').its('length').should('be.gt', 0)
     })
   })
 })

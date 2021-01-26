@@ -2,7 +2,7 @@ import 'cypress-file-upload'
 
 before(() => cy.exec('./cypress/seed-test-db.sh'))
 
-describe('Pre-launch file uploads', () => {
+describe.skip('Pre-launch file uploads', () => {
   const uuid = () => Cypress._.random(0, 1e6)
   const id = 0
 
@@ -252,5 +252,5 @@ describe('Pre-launch file uploads', () => {
 
   afterEach(() => {
     cy.logout()
-    })
+  })
 })
