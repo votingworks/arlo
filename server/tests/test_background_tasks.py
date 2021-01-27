@@ -1,5 +1,6 @@
-import pytest
+import time
 import sqlalchemy
+import pytest
 
 from .. import config
 from ..models import *  # pylint: disable=wildcard-import
@@ -7,10 +8,10 @@ from .helpers import *  # pylint: disable=wildcard-import
 from ..worker.tasks import (
     create_background_task,
     background_task,
-    run_new_tasks,
     serialize_background_task,
     UserError,
 )
+from ..worker import tasks
 
 
 @pytest.fixture(autouse=True)
@@ -18,6 +19,18 @@ def setup():
     config.RUN_BACKGROUND_TASKS_IMMEDIATELY = False
     yield
     config.RUN_BACKGROUND_TASKS_IMMEDIATELY = True
+
+
+# Experiment to prevent race conditions with other tests
+def run_new_tasks():
+    while (
+        BackgroundTask.query.filter_by(
+            task_name="draw_sample", completed_at=None
+        ).count()
+        != 0
+    ):
+        time.sleep(1)
+    tasks.run_new_tasks()
 
 
 # Note: the tests in this file cannot be run in parallel, since the worker
