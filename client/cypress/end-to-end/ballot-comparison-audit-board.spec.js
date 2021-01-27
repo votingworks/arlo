@@ -83,6 +83,7 @@ describe('Audit Boards', () => {
       secondButton.click()
     })
     cy.logout()
+    cy.wait(1000)
     cy.contains('Participating in an audit in your local jurisdiction?')
 
   })
