@@ -3,7 +3,6 @@ from .. import config
 
 from ..models import *  # pylint: disable=wildcard-import
 from .helpers import *  # pylint: disable=wildcard-import
-from ..worker import tasks
 from ..worker.tasks import (
     create_background_task,
     background_task,
@@ -22,12 +21,12 @@ def setup():
 def test_task_happy_path():
     task_ran = False
     task_id = None
-    test_payload = dict(b=2, a=1)  # Order shouldn't matter
+    test_payload = dict(arg2=2, arg1=1)  # Order shouldn't matter
 
     @background_task
-    def do_the_thing(a, b):
-        assert a == 1
-        assert b == 2
+    def do_the_thing(arg1, arg2):
+        assert arg1 == 1
+        assert arg2 == 2
 
         task = BackgroundTask.query.get(task_id)
         compare_json(
