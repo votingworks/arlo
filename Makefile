@@ -42,10 +42,10 @@ test-client:
 	yarn --cwd client test
 
 test-server:
-	pipenv run pytest -n auto
+	pipenv run pytest -n auto --dist loadfile
 
 test-server-coverage:
-	pipenv run pytest -n auto --cov=.
+	pipenv run pytest -n auto --dist loadfile --cov=.
 
 run-dev:
 	./run-dev.sh

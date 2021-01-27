@@ -12,6 +12,10 @@ from ..worker.tasks import (
     UserError,
 )
 
+# Note: the tests in this file cannot be run in parallel, since the worker
+# logic assumes only one worker is running at a time. We accomplish this by
+# running pytest with the --dist loadfile option.
+
 
 @pytest.fixture(autouse=True)
 def setup():
