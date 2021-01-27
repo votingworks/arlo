@@ -1,6 +1,7 @@
 import uuid, json, re
 from datetime import datetime
-from typing import Any, List, Union, Tuple
+from typing import Any, List, Union, Tuple, Optional
+import logging
 from flask.testing import FlaskClient
 from werkzeug.wrappers import Response
 from sqlalchemy.exc import IntegrityError
@@ -309,3 +310,14 @@ def compare_json(actual_json, expected_json):
             ), f"Actual: {actual_json}\nExpected: {expected_json}\nKeypath: {serialize_keypath(current_keypath)}"
 
     inner_compare_json(actual_json, expected_json, [])
+
+
+def find_log(caplog, level: int, message: str) -> Optional[logging.LogRecord]:
+    return next(
+        (
+            record
+            for record in caplog.records
+            if record.levelno == level and message in record.message
+        ),
+        None,
+    )

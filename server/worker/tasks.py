@@ -1,6 +1,5 @@
 import uuid
 import traceback
-import json
 import logging
 from datetime import datetime
 from typing import Optional, Callable, Dict
@@ -45,8 +44,8 @@ class UserError(Exception):
     pass
 
 
-def task_log_data(task: BackgroundTask) -> str:
-    return json.dumps(dict(id=task.id, task_name=task.task_name, payload=task.payload))
+def task_log_data(task: BackgroundTask) -> JSONDict:
+    return dict(id=task.id, task_name=task.task_name, payload=task.payload)
 
 
 # Currently, we assume that only one worker is consuming tasks at a time. There
@@ -75,28 +74,37 @@ def run_task(task: BackgroundTask) -> bool:
 
         return True
     except Exception as error:
+        db_session.rollback()
+
         task.completed_at = datetime.now(timezone.utc)
 
-        # Some errors stringify nicely, some don't (e.g. StopIteration) so we
-        # have to format them.
-        task.error = str(error) or str(
-            traceback.format_exception(error.__class__, error, error.__traceback__)
-        )
+        # Some exceptions stringify nicely, some don't (e.g. StopIteration) so
+        # we just print the exception class name.
+        task.error = str(error) or str(error.__class__.__name__)
 
         db_session.commit()
 
-        logger.info(f"TASK_ERROR {task_log_data(task)}")
+        log_data = {
+            **task_log_data(task),
+            "error": task.error,
+        }
 
-        if not isinstance(error, UserError):
-            raise error
-        return True
+        if isinstance(error, UserError):
+            logger.info(f"TASK_USER_ERROR {log_data}")
+            return True
+
+        log_data["traceback"] = str(traceback.format_tb(error.__traceback__))
+        logger.error(f"TASK_ERROR {log_data}")
+        raise error
 
 
 def run_new_tasks():
     # Cleanup any tasks that failed to finish processing last time the worker was run
-    stuck_tasks = BackgroundTask.query.filter(
-        BackgroundTask.started_at is not None and BackgroundTask.completed_at is None
-    ).all()
+    stuck_tasks = (
+        BackgroundTask.query.filter(BackgroundTask.started_at.isnot(None))
+        .filter(BackgroundTask.completed_at.is_(None))
+        .all()
+    )
     for task in stuck_tasks:
         task.started_at = None
         logger.info(f"TASK_RESET {task_log_data(task)}")
