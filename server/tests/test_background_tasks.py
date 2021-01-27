@@ -192,8 +192,6 @@ def task_python_error(caplog):
         ),
     )
 
-    # Python error that doesn't stringify normally
-
 
 def task_python_error_format(caplog):
     @background_task
