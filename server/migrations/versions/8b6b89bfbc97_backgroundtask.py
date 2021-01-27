@@ -23,7 +23,7 @@ def upgrade():
         sa.Column("created_at", sa.DateTime(), nullable=False),
         sa.Column("updated_at", sa.DateTime(), nullable=False),
         sa.Column("id", sa.String(length=200), nullable=False),
-        sa.Column("task_name", sa.Enum("DRAW_SAMPLE", name="taskname"), nullable=False),
+        sa.Column("task_name", sa.String(length=200), nullable=False),
         sa.Column("payload", sa.JSON(), nullable=False),
         sa.Column("started_at", sa.DateTime(), nullable=True),
         sa.Column("completed_at", sa.DateTime(), nullable=True),

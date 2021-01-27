@@ -751,7 +751,6 @@ class File(BaseModel):
 class BackgroundTask(BaseModel):
     id = Column(String(200), primary_key=True)
     task_name = Column(String(200), nullable=False)
-    # All tasks must have election_id in the payload
     payload = Column(JSON, nullable=False)
 
     started_at = Column(UTCDateTime)

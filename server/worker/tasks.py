@@ -17,12 +17,15 @@ logger = logging.getLogger("arlo.worker")
 task_dispatch: Dict[str, Callable] = {}
 
 
-# Decorator to register background task handlers. We use the handler's function name as the key.
+# Decorator to register background task handlers. We use the handler's function
+# name as the key.
 def background_task(task_handler: Callable):
     task_dispatch[task_handler.__name__] = task_handler
     return task_handler
 
 
+# All tasks should have election_id in the payload in order to easily identify
+# their logs.
 def create_background_task(task_handler: Callable, payload: JSONDict) -> BackgroundTask:
     assert task_handler.__name__ in task_dispatch, (
         f"No task handler registered for {task_handler.__name__}."
