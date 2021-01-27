@@ -122,7 +122,7 @@ describe('Pre-launch file uploads', () => {
     cy.contains("Upload successfully completed")
   })
 
-  it('Cast Vote Records - Column Error', () => {
+  it.skip('Cast Vote Records - Column Error', () => {
     cy.fixture('CSVs/manifest/ballot_comparison_manifest.csv').then(fileContent => {
       cy.get('input[type="file"]').first().attachFile({
         fileContent: fileContent.toString(),
@@ -146,7 +146,7 @@ describe('Pre-launch file uploads', () => {
     cy.contains('Could not parse CVR file')
   })
 
-  it('Cast Vote Records - Value Error', () => {
+  it.skip('Cast Vote Records - Value Error', () => {
     cy.fixture('CSVs/manifest/ballot_comparison_manifest.csv').then(fileContent => {
       cy.get('input[type="file"]').first().attachFile({
         fileContent: fileContent.toString(),
