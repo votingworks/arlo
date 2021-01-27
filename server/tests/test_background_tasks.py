@@ -12,10 +12,6 @@ from ..worker.tasks import (
     UserError,
 )
 
-# Note: the tests in this file cannot be run in parallel, since the worker
-# logic assumes only one worker is running at a time. We accomplish this by
-# running pytest with the --dist loadfile option.
-
 
 @pytest.fixture(autouse=True)
 def setup():
@@ -24,13 +20,27 @@ def setup():
     config.RUN_BACKGROUND_TASKS_IMMEDIATELY = True
 
 
-def test_task_happy_path(caplog):
+# Note: the tests in this file cannot be run in parallel, since the worker
+# logic assumes only one worker is running at a time. We accomplish this by
+# running them all as part of one test case, instead of registering them
+# individually with pytest.
+def test_background_task(caplog):
+    task_happy_path(caplog)
+    task_user_error(caplog)
+    task_python_error(caplog)
+    task_python_error_format(caplog)
+    task_db_error(caplog)
+    task_multiple_run_in_order()
+    task_interrupted(caplog)
+
+
+def task_happy_path(caplog):
     task_ran = False
     task_id = None
     test_payload = dict(arg2=2, arg1=1)  # Order shouldn't matter
 
     @background_task
-    def do_the_thing(arg1, arg2):
+    def happy_path(arg1, arg2):
         assert arg1 == 1
         assert arg2 == 2
 
@@ -50,7 +60,7 @@ def test_task_happy_path(caplog):
 
     assert task_ran is False
 
-    task = create_background_task(do_the_thing, test_payload)
+    task = create_background_task(happy_path, test_payload)
     task_id = task.id
 
     compare_json(
@@ -85,7 +95,7 @@ def test_task_happy_path(caplog):
         logging.INFO,
         (
             f"TASK_START {{'id': '{task_id}', "
-            "'task_name': 'do_the_thing',"
+            "'task_name': 'happy_path',"
             f" 'payload': {{'arg2': 2, 'arg1': 1}}}}"
         ),
     )
@@ -94,18 +104,18 @@ def test_task_happy_path(caplog):
         logging.INFO,
         (
             f"TASK_COMPLETE {{'id': '{task_id}', "
-            "'task_name': 'do_the_thing',"
+            "'task_name': 'happy_path',"
             f" 'payload': {{'arg2': 2, 'arg1': 1}}}}"
         ),
     )
 
 
-def test_task_user_error(caplog):
+def task_user_error(caplog):
     @background_task
-    def do_the_thing():
+    def user_error():
         raise UserError("something went wrong")
 
-    task = create_background_task(do_the_thing, {})
+    task = create_background_task(user_error, {})
 
     run_new_tasks()
 
@@ -125,7 +135,7 @@ def test_task_user_error(caplog):
         logging.INFO,
         (
             f"TASK_START {{'id': '{task.id}', "
-            "'task_name': 'do_the_thing',"
+            "'task_name': 'user_error',"
             f" 'payload': {{}}}}"
         ),
     )
@@ -134,19 +144,19 @@ def test_task_user_error(caplog):
         logging.INFO,
         (
             f"TASK_USER_ERROR {{'id': '{task.id}', "
-            "'task_name': 'do_the_thing',"
+            "'task_name': 'user_error',"
             f" 'payload': {{}},"
             " 'error': 'something went wrong'}"
         ),
     )
 
 
-def test_task_python_error(caplog):
+def task_python_error(caplog):
     @background_task
-    def do_the_thing():
+    def python_error():
         return [][1]
 
-    task = create_background_task(do_the_thing, {})
+    task = create_background_task(python_error, {})
 
     with pytest.raises(IndexError):
         run_new_tasks()
@@ -167,7 +177,7 @@ def test_task_python_error(caplog):
         logging.INFO,
         (
             f"TASK_START {{'id': '{task.id}', "
-            "'task_name': 'do_the_thing',"
+            "'task_name': 'python_error',"
             f" 'payload': {{}}}}"
         ),
     )
@@ -176,19 +186,21 @@ def test_task_python_error(caplog):
         logging.ERROR,
         (
             f"TASK_ERROR {{'id': '{task.id}', "
-            "'task_name': 'do_the_thing',"
+            "'task_name': 'python_error',"
             f" 'payload': {{}},"
             " 'error': 'list index out of range', 'traceback':"
         ),
     )
 
+    # Python error that doesn't stringify normally
 
-def test_task_python_error_format(caplog):
+
+def task_python_error_format(caplog):
     @background_task
-    def do_the_thing():
+    def error_format():
         return next(iter([]))
 
-    task = create_background_task(do_the_thing, {})
+    task = create_background_task(error_format, {})
 
     with pytest.raises(StopIteration):
         run_new_tasks()
@@ -209,7 +221,7 @@ def test_task_python_error_format(caplog):
         logging.INFO,
         (
             f"TASK_START {{'id': '{task.id}', "
-            "'task_name': 'do_the_thing',"
+            "'task_name': 'error_format',"
             f" 'payload': {{}}}}"
         ),
     )
@@ -218,19 +230,19 @@ def test_task_python_error_format(caplog):
         logging.ERROR,
         (
             f"TASK_ERROR {{'id': '{task.id}', "
-            "'task_name': 'do_the_thing',"
+            "'task_name': 'error_format',"
             f" 'payload': {{}},"
             " 'error': 'StopIteration', 'traceback':"
         ),
     )
 
 
-def test_task_db_error(caplog):
+def task_db_error(caplog):
     @background_task
-    def do_the_thing():
+    def db_error():
         db_session.add(Election(id=1))
 
-    task = create_background_task(do_the_thing, {})
+    task = create_background_task(db_error, {})
 
     with pytest.raises(sqlalchemy.exc.IntegrityError):
         run_new_tasks()
@@ -253,7 +265,7 @@ def test_task_db_error(caplog):
         logging.INFO,
         (
             f"TASK_START {{'id': '{task.id}', "
-            "'task_name': 'do_the_thing',"
+            "'task_name': 'db_error',"
             f" 'payload': {{}}}}"
         ),
     )
@@ -262,40 +274,40 @@ def test_task_db_error(caplog):
         logging.ERROR,
         (
             f"TASK_ERROR {{'id': '{task.id}', "
-            "'task_name': 'do_the_thing',"
+            "'task_name': 'db_error',"
             f" 'payload': {{}},"
             " 'error': '(psycopg2.errors.NotNullViolation) null value in column \"audit_name\" violates not-null constraint"
         ),
     )
 
 
-def test_task_multiple_tasks_run_in_order():
+def task_multiple_run_in_order():
     results = []
 
     @background_task
-    def do_the_thing(num):
+    def multiple(num):
         nonlocal results
         results.append(num)
 
-    create_background_task(do_the_thing, dict(num=1))
-    create_background_task(do_the_thing, dict(num=2))
-    create_background_task(do_the_thing, dict(num=3))
+    create_background_task(multiple, dict(num=1))
+    create_background_task(multiple, dict(num=2))
+    create_background_task(multiple, dict(num=3))
 
     run_new_tasks()
 
     assert results == [1, 2, 3]
 
 
-def test_task_interrupted(caplog):
+def task_interrupted(caplog):
     results = []
 
     @background_task
-    def do_the_thing(num):
+    def interrupted(num):
         nonlocal results
         results.append(num)
 
-    task1 = create_background_task(do_the_thing, dict(num=1))
-    create_background_task(do_the_thing, dict(num=2))
+    task1 = create_background_task(interrupted, dict(num=1))
+    create_background_task(interrupted, dict(num=2))
 
     # Simulate that the worker got interrupted mid-task
     task1.started_at = datetime.now(timezone.utc)
@@ -310,7 +322,7 @@ def test_task_interrupted(caplog):
         logging.INFO,
         (
             f"TASK_RESET {{'id': '{task1.id}', "
-            "'task_name': 'do_the_thing',"
+            "'task_name': 'interrupted',"
             f" 'payload': {{'num': 1}}}}"
         ),
     )
@@ -319,7 +331,7 @@ def test_task_interrupted(caplog):
         logging.INFO,
         (
             f"TASK_START {{'id': '{task1.id}', "
-            "'task_name': 'do_the_thing',"
+            "'task_name': 'interrupted',"
             f" 'payload': {{'num': 1}}}}"
         ),
     )
@@ -328,7 +340,7 @@ def test_task_interrupted(caplog):
         logging.INFO,
         (
             f"TASK_COMPLETE {{'id': '{task1.id}', "
-            "'task_name': 'do_the_thing',"
+            "'task_name': 'interrupted',"
             f" 'payload': {{'num': 1}}}}"
         ),
     )
