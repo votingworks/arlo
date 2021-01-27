@@ -9,33 +9,35 @@ from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
 from ..util.isoformat import isoformat
 from ..util.jsonschema import JSONDict
-from ..config import FLASK_ENV
+from .. import config
 
 
 logger = logging.getLogger("arlo.worker")
 
 
-task_dispatch: Dict[TaskName, Callable] = {}
+task_dispatch: Dict[str, Callable] = {}
 
 
-# Decorator to register background task handlers.
-def background_task(task_name: TaskName):
-    def decorator(task_handler: Callable):
-        task_dispatch[task_name] = task_handler
-        return task_handler
-
-    return decorator
+# Decorator to register background task handlers. We use the handler's function name as the key.
+def background_task(task_handler: Callable):
+    task_dispatch[task_handler.__name__] = task_handler
+    return task_handler
 
 
-def create_background_task(task_name: TaskName, payload: JSONDict) -> BackgroundTask:
-    task = BackgroundTask(id=str(uuid.uuid4()), task_name=task_name, payload=payload)
+def create_background_task(task_handler: Callable, payload: JSONDict) -> BackgroundTask:
+    assert task_handler.__name__ in task_dispatch, (
+        f"No task handler registered for {task_handler.__name__}."
+        " Did you forget to use the @background_task decorator?"
+    )
+
+    task = BackgroundTask(
+        id=str(uuid.uuid4()), task_name=task_handler.__name__, payload=payload
+    )
     db_session.add(task)
-    # In testing, we run the task immediately, since we'll only be doing small
-    # tasks and we want to make sure they run in a thread-safe way (i.e. we
-    # don't want tests to interfere with each other's background tasks when
-    # running concurrently).
-    if FLASK_ENV == "test":
+
+    if config.RUN_BACKGROUND_TASKS_IMMEDIATELY:
         run_task(task)
+
     return task
 
 
@@ -43,33 +45,33 @@ class UserError(Exception):
     pass
 
 
+def task_log_data(task: BackgroundTask) -> str:
+    return json.dumps(dict(id=task.id, task_name=task.task_name, payload=task.payload))
+
+
 # Currently, we assume that only one worker is consuming tasks at a time. There
 # are no guards to prevent parallel workers from running the same task.
 def run_task(task: BackgroundTask) -> bool:
-    task_metadata = json.dumps(
-        dict(id=task.id, task_name=task.task_name, payload=task.payload)
+    task_handler = task_dispatch.get(task.task_name)
+    assert task_handler, (
+        f"No task handler registered for {task.task_name}."
+        " Did you forget to use the @background_task decorator?"
     )
 
-    logger.info(f"TASK_START {task_metadata}")
+    logger.info(f"TASK_START {task_log_data(task)}")
 
     task.started_at = datetime.now(timezone.utc)
 
-    # TODO what happens if the worker gets shut down right here?
+    db_session.commit()
+
     try:
-        with db_session.begin_nested():
-            task_handler = task_dispatch[TaskName(task.task_name)]
-            assert task_handler, (
-                f"No task handler registered for {task.task_name}."
-                " Did you forget to use the @background_task decorator?"
-            )
+        task_handler(**dict(task.payload))
 
-            task_handler(**dict(task.payload))
-
-            task.completed_at = datetime.now(timezone.utc)
+        task.completed_at = datetime.now(timezone.utc)
 
         db_session.commit()
 
-        logger.info(f"TASK_COMPLETE {task_metadata}")
+        logger.info(f"TASK_COMPLETE {task_log_data(task)}")
 
         return True
     except Exception as error:
@@ -83,7 +85,7 @@ def run_task(task: BackgroundTask) -> bool:
 
         db_session.commit()
 
-        logger.info(f"TASK_ERROR {task_metadata}")
+        logger.info(f"TASK_ERROR {task_log_data(task)}")
 
         if not isinstance(error, UserError):
             raise error
@@ -91,6 +93,17 @@ def run_task(task: BackgroundTask) -> bool:
 
 
 def run_new_tasks():
+    # Cleanup any tasks that failed to finish processing last time the worker was run
+    stuck_tasks = BackgroundTask.query.filter(
+        BackgroundTask.started_at is not None and BackgroundTask.completed_at is None
+    ).all()
+    for task in stuck_tasks:
+        task.started_at = None
+        logger.info(f"TASK_RESET {task_log_data(task)}")
+
+    db_session.commit()
+
+    # Find and run new tasks
     for task in (
         BackgroundTask.query.filter_by(started_at=None)
         .order_by(BackgroundTask.created_at)

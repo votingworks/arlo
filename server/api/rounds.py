@@ -485,7 +485,7 @@ class BallotDraw(NamedTuple):
     ticket_number: str
 
 
-@background_task(TaskName.DRAW_SAMPLE)
+@background_task
 def draw_sample(round_id: str, election_id: str):
     round = Round.query.filter_by(id=round_id, election_id=election_id).one()
     election = round.election
@@ -798,8 +798,7 @@ def create_round(election: Election):
 
     # Create a new task to draw the sample in the background.
     round.draw_sample_task = create_background_task(
-        task_name=TaskName.DRAW_SAMPLE,
-        payload=dict(election_id=election.id, round_id=round.id),
+        draw_sample, dict(election_id=election.id, round_id=round.id),
     )
 
     db_session.commit()

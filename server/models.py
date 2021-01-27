@@ -748,13 +748,9 @@ class File(BaseModel):
     processing_error = Column(Text)
 
 
-class TaskName(str, enum.Enum):
-    DRAW_SAMPLE = "DRAW_SAMPLE"
-
-
 class BackgroundTask(BaseModel):
     id = Column(String(200), primary_key=True)
-    task_name = Column(Enum(TaskName), nullable=False)
+    task_name = Column(String(200), nullable=False)
     # All tasks must have election_id in the payload
     payload = Column(JSON, nullable=False)
 
