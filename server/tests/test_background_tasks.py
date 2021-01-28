@@ -1,17 +1,46 @@
-import time
+from datetime import datetime
+import logging
 import sqlalchemy
+from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy_utils import create_database, drop_database
 import pytest
 
 from .. import config
 from ..models import *  # pylint: disable=wildcard-import
-from .helpers import *  # pylint: disable=wildcard-import
+from ..database import init_db
+from .helpers import (
+    compare_json,
+    assert_is_date,
+    asserts_startswith,
+    find_log,
+)
 from ..worker.tasks import (
     create_background_task,
     background_task,
     serialize_background_task,
     UserError,
+    run_new_tasks,
 )
-from ..worker import tasks
+
+
+# Since the worker code assumes that only one worker is running at a time, we
+# give each test case with its own database to work with so there is no
+# interference with tests running concurrently (both among tests in this file
+# and with the other tests).
+@pytest.fixture
+def db_session(request):
+    url = f"{config.DATABASE_URL}-{request.node.name}"
+    create_database(url)
+    engine = sqlalchemy.create_engine(url)
+    db_session = scoped_session(
+        sessionmaker(autocommit=False, autoflush=True, bind=engine)
+    )
+    init_db(engine)
+
+    yield db_session
+
+    db_session.close()
+    drop_database(url)
 
 
 @pytest.fixture(autouse=True)
@@ -21,33 +50,7 @@ def setup():
     config.RUN_BACKGROUND_TASKS_IMMEDIATELY = True
 
 
-# Experiment to prevent race conditions with other tests
-def run_new_tasks():
-    while (
-        BackgroundTask.query.filter_by(
-            task_name="draw_sample", completed_at=None
-        ).count()
-        != 0
-    ):
-        time.sleep(1)
-    tasks.run_new_tasks()
-
-
-# Note: the tests in this file cannot be run in parallel, since the worker
-# logic assumes only one worker is running at a time. We accomplish this by
-# running them all as part of one test case, instead of registering them
-# individually with pytest.
-def test_background_task(caplog):
-    task_happy_path(caplog)
-    task_user_error(caplog)
-    task_python_error(caplog)
-    task_python_error_format(caplog)
-    task_db_error(caplog)
-    task_multiple_run_in_order()
-    task_interrupted(caplog)
-
-
-def task_happy_path(caplog):
+def test_task_happy_path(caplog, db_session):
     task_ran = False
     task_id = None
     test_payload = dict(arg2=2, arg1=1)  # Order shouldn't matter
@@ -57,7 +60,7 @@ def task_happy_path(caplog):
         assert arg1 == 1
         assert arg2 == 2
 
-        task = BackgroundTask.query.get(task_id)
+        task = db_session.query(BackgroundTask).get(task_id)
         compare_json(
             serialize_background_task(task),
             {
@@ -73,7 +76,7 @@ def task_happy_path(caplog):
 
     assert task_ran is False
 
-    task = create_background_task(happy_path, test_payload)
+    task = create_background_task(happy_path, test_payload, db_session)
     task_id = task.id
 
     compare_json(
@@ -88,9 +91,9 @@ def task_happy_path(caplog):
 
     assert task_ran is False
 
-    run_new_tasks()
+    run_new_tasks(db_session)
 
-    task = BackgroundTask.query.get(task_id)
+    task = db_session.query(BackgroundTask).get(task_id)
     compare_json(
         serialize_background_task(task),
         {
@@ -123,16 +126,16 @@ def task_happy_path(caplog):
     )
 
 
-def task_user_error(caplog):
+def test_task_user_error(caplog, db_session):
     @background_task
     def user_error():
         raise UserError("something went wrong")
 
-    task = create_background_task(user_error, {})
+    task = create_background_task(user_error, {}, db_session)
 
-    run_new_tasks()
+    run_new_tasks(db_session)
 
-    task = BackgroundTask.query.get(task.id)
+    task = db_session.query(BackgroundTask).get(task.id)
     compare_json(
         serialize_background_task(task),
         {
@@ -164,17 +167,17 @@ def task_user_error(caplog):
     )
 
 
-def task_python_error(caplog):
+def test_task_python_error(caplog, db_session):
     @background_task
     def python_error():
         return [][1]
 
-    task = create_background_task(python_error, {})
+    task = create_background_task(python_error, {}, db_session)
 
     with pytest.raises(IndexError):
-        run_new_tasks()
+        run_new_tasks(db_session)
 
-    task = BackgroundTask.query.get(task.id)
+    task = db_session.query(BackgroundTask).get(task.id)
     compare_json(
         serialize_background_task(task),
         {
@@ -206,17 +209,17 @@ def task_python_error(caplog):
     )
 
 
-def task_python_error_format(caplog):
+def test_task_python_error_format(caplog, db_session):
     @background_task
     def error_format():
         return next(iter([]))
 
-    task = create_background_task(error_format, {})
+    task = create_background_task(error_format, {}, db_session)
 
     with pytest.raises(StopIteration):
-        run_new_tasks()
+        run_new_tasks(db_session)
 
-    task = BackgroundTask.query.get(task.id)
+    task = db_session.query(BackgroundTask).get(task.id)
     compare_json(
         serialize_background_task(task),
         {
@@ -248,17 +251,17 @@ def task_python_error_format(caplog):
     )
 
 
-def task_db_error(caplog):
+def test_task_db_error(caplog, db_session):
     @background_task
     def db_error():
         db_session.add(Election(id=1))
 
-    task = create_background_task(db_error, {})
+    task = create_background_task(db_error, {}, db_session)
 
     with pytest.raises(sqlalchemy.exc.IntegrityError):
-        run_new_tasks()
+        run_new_tasks(db_session)
 
-    task = BackgroundTask.query.get(task.id)
+    task = db_session.query(BackgroundTask).get(task.id)
     compare_json(
         serialize_background_task(task),
         {
@@ -292,7 +295,7 @@ def task_db_error(caplog):
     )
 
 
-def task_multiple_run_in_order():
+def test_task_multiple_run_in_order(db_session):
     results = []
 
     @background_task
@@ -300,16 +303,16 @@ def task_multiple_run_in_order():
         nonlocal results
         results.append(num)
 
-    create_background_task(multiple, dict(num=1))
-    create_background_task(multiple, dict(num=2))
-    create_background_task(multiple, dict(num=3))
+    create_background_task(multiple, dict(num=1), db_session)
+    create_background_task(multiple, dict(num=2), db_session)
+    create_background_task(multiple, dict(num=3), db_session)
 
-    run_new_tasks()
+    run_new_tasks(db_session)
 
     assert results == [1, 2, 3]
 
 
-def task_interrupted(caplog):
+def test_task_interrupted(caplog, db_session):
     results = []
 
     @background_task
@@ -317,14 +320,14 @@ def task_interrupted(caplog):
         nonlocal results
         results.append(num)
 
-    task1 = create_background_task(interrupted, dict(num=1))
-    create_background_task(interrupted, dict(num=2))
+    task1 = create_background_task(interrupted, dict(num=1), db_session)
+    create_background_task(interrupted, dict(num=2), db_session)
 
     # Simulate that the worker got interrupted mid-task
     task1.started_at = datetime.now(timezone.utc)
     db_session.commit()
 
-    run_new_tasks()
+    run_new_tasks(db_session)
 
     assert results == [1, 2]
 

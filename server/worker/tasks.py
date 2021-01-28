@@ -24,9 +24,10 @@ def background_task(task_handler: Callable):
     return task_handler
 
 
-# All tasks should have election_id in the payload in order to easily identify
-# their logs.
-def create_background_task(task_handler: Callable, payload: JSONDict) -> BackgroundTask:
+# All tasks should have election_id in the payload in order to easily identify their logs.
+def create_background_task(
+    task_handler: Callable, payload: JSONDict, db_session=db_session
+) -> BackgroundTask:
     assert task_handler.__name__ in task_dispatch, (
         f"No task handler registered for {task_handler.__name__}."
         " Did you forget to use the @background_task decorator?"
@@ -37,6 +38,7 @@ def create_background_task(task_handler: Callable, payload: JSONDict) -> Backgro
     )
     db_session.add(task)
 
+    # For testing, we often prefer tasks to run immediately, instead of asynchronously.
     if config.RUN_BACKGROUND_TASKS_IMMEDIATELY:
         run_task(task)
 
@@ -53,7 +55,11 @@ def task_log_data(task: BackgroundTask) -> JSONDict:
 
 # Currently, we assume that only one worker is consuming tasks at a time. There
 # are no guards to prevent parallel workers from running the same task.
-def run_task(task: BackgroundTask) -> bool:
+#
+# Due to this constraint, functions in this file take an optional db_session
+# argument in order for the tests to call them using isolated databases. In
+# non-test environments, using the default global db_session is fine.
+def run_task(task: BackgroundTask, db_session=db_session) -> bool:
     task_handler = task_dispatch.get(task.task_name)
     assert task_handler, (
         f"No task handler registered for {task.task_name}."
@@ -101,10 +107,11 @@ def run_task(task: BackgroundTask) -> bool:
         raise error
 
 
-def run_new_tasks():
+def run_new_tasks(db_session=db_session):
     # Cleanup any tasks that failed to finish processing last time the worker was run
     stuck_tasks = (
-        BackgroundTask.query.filter(BackgroundTask.started_at.isnot(None))
+        db_session.query(BackgroundTask)
+        .filter(BackgroundTask.started_at.isnot(None))
         .filter(BackgroundTask.completed_at.is_(None))
         .all()
     )
@@ -116,11 +123,12 @@ def run_new_tasks():
 
     # Find and run new tasks
     for task in (
-        BackgroundTask.query.filter_by(started_at=None)
+        db_session.query(BackgroundTask)
+        .filter_by(started_at=None)
         .order_by(BackgroundTask.created_at)
         .all()
     ):
-        run_task(task)
+        run_task(task, db_session)
 
 
 def serialize_background_task(task: Optional[BackgroundTask]) -> Optional[JSONDict]:

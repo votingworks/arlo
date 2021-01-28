@@ -31,7 +31,7 @@ class Base:
         return re.sub(r"(?<!^)(?=[A-Z])", "_", cls.__name__).lower()
 
 
-def init_db():
+def init_db(engine=engine):
     # pylint: disable=wildcard-import,import-outside-toplevel,unused-import
     import server.models
 
