@@ -26,7 +26,7 @@ import { IContest, ICandidate } from '../../../../types'
 import DropdownCheckboxList from './DropdownCheckboxList'
 import Card from '../../../Atoms/SpacedCard'
 import { testNumber } from '../../../utilities'
-import isObjectEmpty from '../../../../utils/objects'
+import { isObjectEmpty } from '../../../../utils/objects'
 import { IAuditSettings } from '../../useAuditSettings'
 
 interface IProps {

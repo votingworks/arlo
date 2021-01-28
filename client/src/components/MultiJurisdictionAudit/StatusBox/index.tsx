@@ -2,9 +2,10 @@ import React, { ReactElement } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { Callout, H4, Button } from '@blueprintjs/core'
+import { Formik } from 'formik'
 import { IJurisdiction, JurisdictionRoundStatus } from '../useJurisdictions'
 import { FileProcessingStatus, IFileInfo } from '../useCSV'
-import { api, apiDownload } from '../../utilities'
+import { apiDownload } from '../../utilities'
 import { Inner } from '../../Atoms/Wrapper'
 import { IContest } from '../../../types'
 import { IAuditBoard } from '../useAuditBoards'
@@ -48,27 +49,24 @@ const StatusBox: React.FC<IStatusBoxProps> = ({
           {children}
         </div>
         {buttonLabel && onButtonClick && (
-          <div>
-            <Button intent="success" onClick={onButtonClick}>
-              {buttonLabel}
-            </Button>
-          </div>
+          <Formik initialValues={{}} onSubmit={onButtonClick}>
+            {({ handleSubmit, isSubmitting }) => (
+              <div>
+                <Button
+                  intent="success"
+                  loading={isSubmitting}
+                  type="submit"
+                  onClick={handleSubmit as React.FormEventHandler}
+                >
+                  {buttonLabel}
+                </Button>
+              </div>
+            )}
+          </Formik>
         )}
       </Inner>
     </Wrapper>
   )
-}
-
-const createRound = async (electionId: string, roundNum: number) => {
-  await api(`/election/${electionId}/round`, {
-    method: 'POST',
-    body: JSON.stringify({
-      roundNum,
-    }),
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  })
 }
 
 const downloadAuditAdminReport = (electionId: string) => {
@@ -127,6 +125,7 @@ export const isSetupComplete = (
 
 interface IAuditAdminProps {
   rounds: IRound[]
+  startNextRound: () => Promise<boolean>
   jurisdictions: IJurisdiction[]
   contests: IContest[]
   auditSettings: IAuditSettings
@@ -135,6 +134,7 @@ interface IAuditAdminProps {
 
 export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
   rounds,
+  startNextRound,
   jurisdictions,
   contests,
   auditSettings,
@@ -201,7 +201,7 @@ export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
         headline={`Round ${roundNum} of the audit is complete - another round is needed`}
         details={[`When you are ready, start Round ${roundNum + 1}`]}
         buttonLabel={`Start Round ${roundNum + 1}`}
-        onButtonClick={() => createRound(electionId, roundNum + 1)}
+        onButtonClick={startNextRound}
       >
         {children}
       </StatusBox>

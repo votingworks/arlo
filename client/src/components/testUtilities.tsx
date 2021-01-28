@@ -128,9 +128,10 @@ export const withMockFetch = async (
     }
 
     if (expectedRequest) {
+      const requestIndex = requests.length - requestsLeft.length - 1
       // eslint-disable-next-line no-console
       console.error(
-        'Expected fetch request:\n',
+        `Expected fetch request (${requestIndex}):\n`,
         expectedRequest,
         '\nActual fetch request:\n',
         { url, options }

@@ -14,7 +14,6 @@ import {
   auditSettings,
 } from '../../useSetupMenuItems/_mocks'
 import { withMockFetch, renderWithRouter } from '../../../testUtilities'
-import { ISampleSizes } from './useSampleSizes'
 import { IJurisdiction } from '../../useJurisdictions'
 import { IContest } from '../../../../types'
 import { IAuditSettings } from '../../useAuditSettings'
@@ -28,7 +27,7 @@ const apiCalls = {
     url: '/api/election/1/sample-sizes',
     response: sampleSizeMock,
   },
-  postRound: (sampleSizes: ISampleSizes) => ({
+  postRound: (sampleSizes: { [contestId: string]: number }) => ({
     url: '/api/election/1/round',
     response: { status: 'ok' },
     options: {
