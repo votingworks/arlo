@@ -6,6 +6,7 @@ Revises: c2b90f147183
 Create Date: 2021-01-26 18:51:57.731262+00:00
 
 """
+import uuid
 from alembic import op
 import sqlalchemy as sa
 
@@ -41,6 +42,43 @@ def upgrade():
         ["id"],
         ondelete="cascade",
     )
+
+    # Backfill a background task for all previous rounds
+    connection = op.get_bind()
+    rounds = connection.execute("SELECT id, election_id, created_at FROM round")
+    for (round_id, election_id, created_at) in rounds.fetchall():
+        (new_task_id,) = connection.execute(
+            f"""
+            INSERT INTO background_task (
+                id,
+                task_name,
+                payload,
+                created_at,
+                updated_at,
+                started_at,
+                completed_at,
+                error
+            )
+            VALUES (
+                '{str(uuid.uuid4())}',
+                'draw_sample',
+                '{{"round_id": "{round_id}", "election_id": "{election_id}"}}',
+                '{created_at}',
+                '{created_at}',
+                '{created_at}',
+                '{created_at}',
+                null
+            )
+            RETURNING id
+            """
+        ).fetchone()
+        connection.execute(
+            f"""
+            UPDATE round
+            SET draw_sample_task_id = '{new_task_id}'
+            WHERE id = '{round_id}'
+            """
+        )
 
 
 def downgrade():  # pragma: no cover
