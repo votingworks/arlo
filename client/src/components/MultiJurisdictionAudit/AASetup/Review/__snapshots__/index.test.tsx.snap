@@ -151,7 +151,7 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
       data-testid="sample-size-form"
     >
       <p>
-        All jurisdiction files must be uploaded to calculate the sample size.
+        All jurisdiction files must be uploaded and all audit settings must be configured in order to calculate the sample size.
          
         <a
           href="/election/1/progress"
@@ -341,7 +341,7 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
       data-testid="sample-size-form"
     >
       <p>
-        All jurisdiction files must be uploaded to calculate the sample size.
+        All jurisdiction files must be uploaded and all audit settings must be configured in order to calculate the sample size.
          
         <a
           href="/election/1/progress"
@@ -1362,7 +1362,7 @@ exports[`Audit Setup > Review & Launch renders full state with batch comparison 
       data-testid="sample-size-form"
     >
       <p>
-        All jurisdiction files must be uploaded to calculate the sample size.
+        All jurisdiction files must be uploaded and all audit settings must be configured in order to calculate the sample size.
          
         <a
           href="/election/1/progress"

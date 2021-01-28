@@ -58,7 +58,6 @@ describe('timers', () => {
       ...loadEach,
       ...loadEach,
       ...loadEach,
-      ...loadEach,
     ]
     await withMockFetch(expectedCalls, async () => {
       renderWithRoute('/election/1/progress', <AuditAdminViewWithAuth />)

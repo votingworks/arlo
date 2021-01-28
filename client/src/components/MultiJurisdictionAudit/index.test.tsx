@@ -79,7 +79,6 @@ describe('AA setup flow', () => {
       ...loadEach,
       aaApiCalls.getSettings(auditSettings.all),
       aaApiCalls.getJurisdictionFile,
-      ...loadEach,
       aaApiCalls.getSettings(auditSettings.all),
       ...loadEach,
     ]
@@ -111,7 +110,6 @@ describe('AA setup flow', () => {
       ...loadEach,
       aaApiCalls.getSettings(auditSettings.all),
       aaApiCalls.getJurisdictionFile,
-      ...loadEach,
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container, queryAllByText } = render(
@@ -134,12 +132,7 @@ describe('AA setup flow', () => {
       electionId: '1',
       view: 'progress',
     })
-    const expectedCalls = [
-      aaApiCalls.getUser,
-      ...loadEach,
-      ...loadEach,
-      ...loadEach,
-    ]
+    const expectedCalls = [aaApiCalls.getUser, ...loadEach, ...loadEach]
     await withMockFetch(expectedCalls, async () => {
       const { container, queryAllByText } = render(
         <AuthDataProvider>
@@ -165,7 +158,6 @@ describe('AA setup flow', () => {
     ]
     const expectedCalls = [
       aaApiCalls.getUser,
-      ...loadAfterLaunch,
       ...loadAfterLaunch,
       ...loadAfterLaunch,
     ]

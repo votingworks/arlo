@@ -3383,7 +3383,7 @@ exports[`Setup renders Review & Launch stage 1`] = `
       data-testid="sample-size-form"
     >
       <p>
-        All jurisdiction files must be uploaded to calculate the sample size.
+        All jurisdiction files must be uploaded and all audit settings must be configured in order to calculate the sample size.
          
         <a
           href="/election/1/progress"
@@ -3567,7 +3567,7 @@ exports[`Setup renders Review & Launch stage with locked next stage 1`] = `
       data-testid="sample-size-form"
     >
       <p>
-        All jurisdiction files must be uploaded to calculate the sample size.
+        All jurisdiction files must be uploaded and all audit settings must be configured in order to calculate the sample size.
          
         <a
           href="/election/1/progress"
@@ -3751,7 +3751,7 @@ exports[`Setup renders Review & Launch stage with processing next stage 1`] = `
       data-testid="sample-size-form"
     >
       <p>
-        All jurisdiction files must be uploaded to calculate the sample size.
+        All jurisdiction files must be uploaded and all audit settings must be configured in order to calculate the sample size.
          
         <a
           href="/election/1/progress"

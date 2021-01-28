@@ -315,7 +315,7 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
                             }
                           )}
                         </RadioGroup>
-                        {currentOption.key === 'custom' && (
+                        {currentOption && currentOption.key === 'custom' && (
                           <Field
                             component={FormField}
                             name={`sampleSizes[${contest.id}].size`}
