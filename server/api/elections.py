@@ -1,13 +1,12 @@
 import uuid
 from flask import jsonify, request
-from werkzeug.exceptions import Conflict, BadRequest
+from werkzeug.exceptions import Conflict
 
 from . import api
 from ..models import *  # pylint: disable=wildcard-import
 from ..database import db_session
 from ..auth import check_access, UserType
 from ..util.jsonschema import JSONDict, validate
-from ..config import FLASK_ENV
 
 ELECTION_SCHEMA = {
     "type": "object",
@@ -51,10 +50,6 @@ def validate_new_election(election: JSONDict):
         raise Conflict(
             f"Audit math type '{election['auditMathType']}' cannot be used with audit type '{election['auditType']}'"
         )
-
-    # For now, disable Minerva audit math in production
-    if FLASK_ENV == "production" and election["auditMathType"] == AuditMathType.MINERVA:
-        raise BadRequest("Invalid audit math type")
 
 
 @api.route("/election", methods=["POST"])
