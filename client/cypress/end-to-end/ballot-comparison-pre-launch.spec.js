@@ -35,7 +35,7 @@ describe('Pre-launch file uploads', () => {
     })
     cy.findAllByText('Upload File').click()
     cy.findAllByText(/Upload successfully completed/).should('have.length', 2)
-    cy.wait(1000) // gets stuck in an infinite loop without a wait here
+    cy.wait(3000) // gets stuck in an infinite loop without a wait here
     cy.findByText('Next').click()
     cy.findAllByText('Target Contests').should('have.length', 2)
     cy.get('input[type="checkbox"]').first().check({ force: true })
@@ -122,7 +122,7 @@ describe('Pre-launch file uploads', () => {
     cy.contains("Upload successfully completed")
   })
 
-  it.skip('Cast Vote Records - Column Error', () => {
+  it('Cast Vote Records - Column Error', () => {
     cy.fixture('CSVs/manifest/ballot_comparison_manifest.csv').then(fileContent => {
       cy.get('input[type="file"]').first().attachFile({
         fileContent: fileContent.toString(),
@@ -143,10 +143,10 @@ describe('Pre-launch file uploads', () => {
       })
     })
     cy.findAllByText('Upload File').last().click()
-    cy.contains('Could not parse CVR file')
+    cy.contains(/Invalid contest name/)
   })
 
-  it.skip('Cast Vote Records - Value Error', () => {
+  it('Cast Vote Records - Value Error', () => {
     cy.fixture('CSVs/manifest/ballot_comparison_manifest.csv').then(fileContent => {
       cy.get('input[type="file"]').first().attachFile({
         fileContent: fileContent.toString(),
@@ -167,7 +167,7 @@ describe('Pre-launch file uploads', () => {
       })
     })
     cy.findAllByText('Upload File').last().click()
-    cy.contains('Could not parse CVR file')
+    cy.contains(/Invalid contest name/)
   })
 
   it('Cast Vote Records - Replace File', () => {
