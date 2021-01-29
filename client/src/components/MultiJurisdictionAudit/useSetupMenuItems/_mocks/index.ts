@@ -123,12 +123,7 @@ export const auditSettings: {
 }
 
 export const roundMocks: {
-  [key in
-    | 'empty'
-    | 'singleIncomplete'
-    | 'twoIncomplete'
-    | 'singleComplete'
-    | 'needAnother']: IRound[]
+  [key: string]: IRound[]
 } = {
   empty: [],
   singleIncomplete: [
@@ -205,6 +200,22 @@ export const roundMocks: {
         status: FileProcessingStatus.PROCESSED,
         startedAt: '2020-09-14T17:35:19.482Z',
         completedAt: '2020-09-14T17:36:19.482Z',
+        error: null,
+      },
+    },
+  ],
+  drawSampleInProgress: [
+    {
+      endedAt: null,
+      roundNum: 1,
+      isAuditComplete: false,
+      startedAt: '2019-07-18T16:34:07.000+00:00',
+      id: 'round-1',
+      sampledAllBallots: false,
+      drawSampleTask: {
+        status: FileProcessingStatus.PROCESSING,
+        startedAt: '2020-09-14T17:35:19.482Z',
+        completedAt: null,
         error: null,
       },
     },

@@ -94,7 +94,7 @@ export const AuditAdminView: React.FC = () => {
             <div style={{ marginBottom: '20px' }}>
               <Spinner size={Spinner.SIZE_LARGE} intent={Intent.PRIMARY} />
             </div>
-            <H3>Drawing random sample of ballots...</H3>
+            <H3>Drawing a random sample of ballots...</H3>
             <p>For large elections, this can take a couple of minutes.</p>
           </div>
         </Inner>

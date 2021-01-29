@@ -73,7 +73,7 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
     return null // Still loading
 
   const submit = async ({ sampleSizes }: { sampleSizes: IFormOptions }) => {
-    const roundSampleSizes = mapValues(sampleSizes, ({ size }) => Number(size))
+    const roundSampleSizes = mapValues(sampleSizes, ({ size }) => size!)
     if (await startNextRound(roundSampleSizes)) {
       refresh()
       history.push(`/election/${electionId}/progress`)
