@@ -56,5 +56,6 @@ Cypress.Commands.add('loginJurisdictionAdmin', email => {
 })
 
 Cypress.Commands.add('logout', () => {
-  cy.visit(`/auth/logout`)
+  cy.get('.bp3-popover-target button').click()
+  cy.findByText('Log out').click()
 })
