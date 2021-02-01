@@ -77,7 +77,12 @@ const useRoundsAuditAdmin = (
           rounds === null || rounds.length === 0 || isDrawSampleComplete(rounds)
         )
       }
-      poll(isComplete, () => null, err => toast.error(err.message))
+      poll(
+        isComplete,
+        () => null,
+        err => toast.error(err.message),
+        10 * 60 * 1000 // Time out sampling after 10 minutes
+      )
     })()
   }, [electionId, refreshId])
 
