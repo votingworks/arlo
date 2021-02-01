@@ -89,7 +89,7 @@ describe('Audit Boards', () => {
   })
   const board_credentials_url = ''
 
-  it.skip('Audit Board Completion', () => {
+  it('Audit Board Completion', () => {
     cy.loginJurisdictionAdmin('wtarkin@empire.gov')
     cy.findByText(`Jurisdictions - TestAudit${id}`).siblings('button').click()
     cy.contains('Number of Audit Boards')
@@ -154,7 +154,7 @@ describe('Audit Boards', () => {
     })
   })
 
-  it.skip('Audit Board - Submit empty Ballot Error', () => {
+  it('Audit Board - Submit empty Ballot Error', () => {
     cy.loginJurisdictionAdmin('wtarkin@empire.gov')
     cy.findByText(`Jurisdictions - TestAudit${id}`).siblings('button').click()
     cy.contains('Number of Audit Boards')
