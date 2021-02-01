@@ -35,7 +35,7 @@ describe('Audit Boards', () => {
     })
     cy.findAllByText('Upload File').click()
     cy.findAllByText(/Upload successfully completed/).should('have.length', 2)
-    cy.wait(3000)
+    cy.wait(2000)
     cy.findByText('Next').click()
     cy.findAllByText('Target Contests').should('have.length', 2)
     cy.get('input[type="checkbox"]').first().check({ force: true })
@@ -183,6 +183,105 @@ describe('Audit Boards', () => {
           const toastText = text
           expect(toastText).to.equal('Must include an interpretation for each contest.')
       }) 
+    })
+  })
+
+  it('Audit Board - Comment submission', () => {
+    cy.loginJurisdictionAdmin('wtarkin@empire.gov')
+    cy.findByText(`Jurisdictions - TestAudit${id}`).siblings('button').click()
+    cy.contains('Number of Audit Boards')
+    cy.findByText('Save & Next').click()
+    cy.findByText('Download Audit Board Credentials').click()
+    cy.logout()
+    cy.wait(2000)
+    cy.task('getPdfContent', `cypress/fixtures/PDFs/Audit Board Credentials\ -\ Death Star\ -\ TestAudit${id}.pdf`).then((content) => {
+      function urlify(text) {
+        var urlRegex = /(((https?:\/\/)|(www\.))[^\s]+)/g;
+        return text.match(urlRegex, function(url) {
+          return url
+        }) 
+      }
+      board_credentials_url = urlify(content.text);
+      cy.visit(board_credentials_url[0])
+      cy.findAllByText('Audit Board Member').eq(0).siblings('input').type('Board Member 1')
+      cy.findAllByText('Audit Board Member').eq(1).siblings('input').type('Board Member 2')
+      cy.findByText('Next').click()
+      cy.contains(/Ballot Cards to Audit/)
+      cy.findByText('Start Auditing').click()
+      cy.get('input[type="checkbox"]').first().click({force: true})
+      cy.findByText('Add comment').click()
+      cy.get('textarea').type('Test Comment')
+      cy.findByText('Review').click() 
+      cy.contains('Test Comment')
+      cy.findByText('Submit & Next Ballot').click()
+      cy.contains(/Auditing ballot 2 of/)
+    })
+  })
+
+  it('Audit Board - Move to next ballot', () => {
+    cy.loginJurisdictionAdmin('wtarkin@empire.gov')
+    cy.findByText(`Jurisdictions - TestAudit${id}`).siblings('button').click()
+    cy.contains('Number of Audit Boards')
+    cy.findByText('Save & Next').click()
+    cy.findByText('Download Audit Board Credentials').click()
+    cy.logout()
+    cy.wait(1000)
+    cy.task('getPdfContent', `cypress/fixtures/PDFs/Audit Board Credentials\ -\ Death Star\ -\ TestAudit${id}.pdf`).then((content) => {
+      function urlify(text) {
+        var urlRegex = /(((https?:\/\/)|(www\.))[^\s]+)/g;
+        return text.match(urlRegex, function(url) {
+          return url
+        }) 
+      }
+      board_credentials_url = urlify(content.text);
+      cy.visit(board_credentials_url[0])
+      cy.findAllByText('Audit Board Member').eq(0).siblings('input').type('Board Member 1')
+      cy.findAllByText('Audit Board Member').eq(1).siblings('input').type('Board Member 2')
+      cy.findByText('Next').click()
+      cy.contains(/Ballot Cards to Audit/)
+      cy.findByText('Start Auditing').click()
+      cy.get('button').contains(/move to next ballot/).click()
+      cy.contains(/Auditing ballot 2 of/)
+      cy.get('input[type="checkbox"]').first().click({force: true})
+      cy.findByText('Review').click() 
+      cy.findByText('Submit & Next Ballot').click()
+      cy.contains(/Auditing ballot 3 of/)
+    })
+  })
+
+
+  it('Audit Board - Re-audit', () => {
+    cy.loginJurisdictionAdmin('wtarkin@empire.gov')
+    cy.findByText(`Jurisdictions - TestAudit${id}`).siblings('button').click()
+    cy.contains('Number of Audit Boards')
+    cy.findByText('Save & Next').click()
+    cy.findByText('Download Audit Board Credentials').click()
+    cy.logout()
+    cy.wait(1000)
+    cy.task('getPdfContent', `cypress/fixtures/PDFs/Audit Board Credentials\ -\ Death Star\ -\ TestAudit${id}.pdf`).then((content) => {
+      function urlify(text) {
+        var urlRegex = /(((https?:\/\/)|(www\.))[^\s]+)/g;
+        return text.match(urlRegex, function(url) {
+          return url
+        }) 
+      }
+      board_credentials_url = urlify(content.text);
+      cy.visit(board_credentials_url[0])
+      cy.findAllByText('Audit Board Member').eq(0).siblings('input').type('Board Member 1')
+      cy.findAllByText('Audit Board Member').eq(1).siblings('input').type('Board Member 2')
+      cy.findByText('Next').click()
+      cy.contains(/Ballot Cards to Audit/)
+      cy.findByText('Start Auditing').click()
+      cy.get('input[type="checkbox"]').first().click({force: true})
+      cy.findByText('Review').click() 
+      cy.findByText('Submit & Next Ballot').click()
+      cy.contains(/Auditing ballot 2 of/)
+      cy.findByText('Return to audit overview').click({timeout: 6000})
+      cy.findByText('Re-audit').first().click()
+      cy.get('input[type="checkbox"]').eq(2).click({force: true})
+      cy.findByText('Review').click() 
+      cy.findByText('Submit & Next Ballot').click()
+      cy.contains(/Auditing ballot 2 of/)
     })
   })
 })
