@@ -123,7 +123,13 @@ export const auditSettings: {
 }
 
 export const roundMocks: {
-  [key: string]: IRound[]
+  [key in
+    | 'empty'
+    | 'singleIncomplete'
+    | 'twoIncomplete'
+    | 'singleComplete'
+    | 'needAnother'
+    | 'drawSampleInProgress']: IRound[]
 } = {
   empty: [],
   singleIncomplete: [
