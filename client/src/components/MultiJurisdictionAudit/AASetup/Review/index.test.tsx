@@ -14,7 +14,6 @@ import {
   auditSettings,
 } from '../../useSetupMenuItems/_mocks'
 import { withMockFetch, renderWithRouter } from '../../../testUtilities'
-import { ISampleSizes } from './useSampleSizes'
 import { IJurisdiction } from '../../useJurisdictions'
 import { IContest } from '../../../../types'
 import { IAuditSettings } from '../../useAuditSettings'
@@ -28,13 +27,17 @@ const apiCalls = {
     url: '/api/election/1/sample-sizes',
     response: sampleSizeMock,
   },
-  postRound: (sampleSizes: ISampleSizes) => ({
+  getRounds: {
+    url: '/api/election/1/round',
+    response: { rounds: [] },
+  },
+  postRound: (sampleSizes: { [contestId: string]: number }) => ({
     url: '/api/election/1/round',
     response: { status: 'ok' },
     options: {
       body: JSON.stringify({
-        sampleSizes,
         roundNum: 1,
+        sampleSizes,
       }),
       headers: {
         'Content-Type': 'application/json',
@@ -111,6 +114,7 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
+      apiCalls.getRounds,
       apiCalls.getSampleSizeOptions,
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -128,6 +132,7 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
+      apiCalls.getRounds,
       apiCalls.getSampleSizeOptions,
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -145,6 +150,7 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
+      apiCalls.getRounds,
       apiCalls.getSampleSizeOptions,
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -162,6 +168,7 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
+      apiCalls.getRounds,
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderView()
@@ -178,6 +185,7 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
+      apiCalls.getRounds,
       apiCalls.getSampleSizeOptions,
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -197,6 +205,7 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedAndOpportunistic),
+      apiCalls.getRounds,
       apiCalls.getSampleSizeOptions,
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -212,6 +221,7 @@ describe('Audit Setup > Review & Launch', () => {
       apiCalls.getJurisdictions({ jurisdictions: [] }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
+      apiCalls.getRounds,
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderView()
@@ -226,6 +236,7 @@ describe('Audit Setup > Review & Launch', () => {
       apiCalls.getJurisdictions({ jurisdictions: [] }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledOpportunisticWithJurisdictionId),
+      apiCalls.getRounds,
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderView()
@@ -242,8 +253,10 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
+      apiCalls.getRounds,
       apiCalls.getSampleSizeOptions,
       apiCalls.postRound({ 'contest-id': 46 }),
+      apiCalls.getRounds,
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
@@ -265,6 +278,7 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
+      apiCalls.getRounds,
       apiCalls.getSampleSizeOptions,
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -287,8 +301,10 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
+      apiCalls.getRounds,
       apiCalls.getSampleSizeOptions,
       apiCalls.postRound({ 'contest-id': 67 }),
+      apiCalls.getRounds,
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
@@ -313,8 +329,10 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
+      apiCalls.getRounds,
       apiCalls.getSampleSizeOptions,
       apiCalls.postRound({ 'contest-id': 5 }),
+      apiCalls.getRounds,
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
@@ -322,7 +340,7 @@ describe('Audit Setup > Review & Launch', () => {
         'Enter your own sample size (not recommended)'
       )
       userEvent.click(newSampleSize)
-      const customSampleSizeInput = await screen.findByRole('textbox')
+      const customSampleSizeInput = await screen.findByRole('spinbutton')
       fireEvent.change(customSampleSizeInput, { target: { value: '40' } }) // userEvent has a problem with this field due to the lack of an explicit value field: https://github.com/testing-library/user-event/issues/356
       fireEvent.blur(customSampleSizeInput)
       await screen.findByText(
@@ -354,6 +372,7 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
+      apiCalls.getRounds,
       apiCalls.getStandardizedContestsFile,
     ]
     await withMockFetch(expectedCalls, async () => {

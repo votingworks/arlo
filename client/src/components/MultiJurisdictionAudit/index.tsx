@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Redirect, useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import uuidv4 from 'uuidv4'
-import { Tag } from '@blueprintjs/core'
+import { Tag, Spinner, H3, Intent } from '@blueprintjs/core'
 import { ElementType } from '../../types'
 import { Wrapper, Inner } from '../Atoms/Wrapper'
 import Sidebar from '../Atoms/Sidebar'
@@ -22,7 +22,9 @@ import useAuditBoards from './useAuditBoards'
 import useAuditSettings from './useAuditSettings'
 import useJurisdictions from './useJurisdictions'
 import useContests from './useContests'
-import useRoundsAuditAdmin from './useRoundsAuditAdmin'
+import useRoundsAuditAdmin, {
+  isDrawSampleComplete,
+} from './useRoundsAuditAdmin'
 import useAuditSettingsJurisdictionAdmin from './RoundManagement/useAuditSettingsJurisdictionAdmin'
 import H2Title from '../Atoms/H2Title'
 import CSVFile from './CSVForm'
@@ -41,13 +43,15 @@ export const AuditAdminView: React.FC = () => {
   const { electionId, view } = useParams<IParams>()
   const [refreshId, setRefreshId] = useState(uuidv4())
 
-  const rounds = useRoundsAuditAdmin(electionId, refreshId)
+  const [rounds, startNextRound] = useRoundsAuditAdmin(electionId, refreshId)
   const jurisdictions = useJurisdictions(electionId, refreshId)
   const [contests] = useContests(electionId, refreshId)
   const [auditSettings] = useAuditSettings(electionId, refreshId)
 
   const isBallotComparison =
-    auditSettings && auditSettings.auditType === 'BALLOT_COMPARISON'
+    auditSettings !== null && auditSettings.auditType === 'BALLOT_COMPARISON'
+  const isDrawingSample =
+    rounds !== null && rounds.length > 0 && !isDrawSampleComplete(rounds)
   const [stage, setStage] = useState<ElementType<typeof setupStages>>(
     'participants'
   )
@@ -59,7 +63,7 @@ export const AuditAdminView: React.FC = () => {
     setRefreshId
   )
 
-  useEffect(refresh, [refresh, isBallotComparison])
+  useEffect(refresh, [refresh, isBallotComparison, isDrawingSample])
 
   if (!jurisdictions || !contests || !rounds || !auditSettings) return null // Still loading
 
@@ -74,12 +78,37 @@ export const AuditAdminView: React.FC = () => {
     }
   })
 
+  if (isDrawingSample) {
+    return (
+      <Wrapper>
+        <Inner>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              width: '100%',
+              marginTop: '100px',
+            }}
+          >
+            <div style={{ marginBottom: '20px' }}>
+              <Spinner size={Spinner.SIZE_LARGE} intent={Intent.PRIMARY} />
+            </div>
+            <H3>Drawing a random sample of ballots...</H3>
+            <p>For large elections, this can take a couple of minutes.</p>
+          </div>
+        </Inner>
+      </Wrapper>
+    )
+  }
+
   switch (view) {
     case 'setup':
       return (
         <Wrapper>
           <AuditAdminStatusBox
             rounds={rounds}
+            startNextRound={startNextRound}
             jurisdictions={jurisdictions}
             contests={contests}
             auditSettings={auditSettings}
@@ -102,6 +131,7 @@ export const AuditAdminView: React.FC = () => {
         <Wrapper>
           <AuditAdminStatusBox
             rounds={rounds}
+            startNextRound={startNextRound}
             jurisdictions={jurisdictions}
             contests={contests}
             auditSettings={auditSettings}

@@ -1,6 +1,6 @@
 import React from 'react'
 import { BrowserRouter as Router, useParams } from 'react-router-dom'
-import { render, fireEvent, screen } from '@testing-library/react'
+import { render, fireEvent, screen, waitFor } from '@testing-library/react'
 import { AuditAdminStatusBox, JurisdictionAdminStatusBox } from '.'
 import {
   auditSettings,
@@ -40,6 +40,7 @@ describe('StatusBox', () => {
         <Router>
           <AuditAdminStatusBox
             rounds={[]}
+            startNextRound={jest.fn()}
             jurisdictions={[]}
             contests={[]}
             auditSettings={auditSettings.blank!}
@@ -55,6 +56,7 @@ describe('StatusBox', () => {
         <Router>
           <AuditAdminStatusBox
             rounds={[]}
+            startNextRound={jest.fn()}
             jurisdictions={jurisdictionMocks.oneManifest}
             contests={[]}
             auditSettings={auditSettings.blank!}
@@ -71,6 +73,7 @@ describe('StatusBox', () => {
         <Router>
           <AuditAdminStatusBox
             rounds={[]}
+            startNextRound={jest.fn()}
             jurisdictions={jurisdictionMocks.allManifests}
             contests={[]}
             auditSettings={auditSettings.blank!}
@@ -87,6 +90,7 @@ describe('StatusBox', () => {
         <Router>
           <AuditAdminStatusBox
             rounds={[]}
+            startNextRound={jest.fn()}
             jurisdictions={jurisdictionMocks.allManifests}
             contests={contestMocks.filledTargeted.contests}
             auditSettings={auditSettings.all}
@@ -103,6 +107,7 @@ describe('StatusBox', () => {
         <Router>
           <AuditAdminStatusBox
             rounds={roundMocks.singleIncomplete}
+            startNextRound={jest.fn()}
             jurisdictions={jurisdictionMocks.oneComplete}
             contests={contestMocks.filledTargeted.contests}
             auditSettings={auditSettings.all}
@@ -118,6 +123,7 @@ describe('StatusBox', () => {
         <Router>
           <AuditAdminStatusBox
             rounds={roundMocks.needAnother}
+            startNextRound={jest.fn()}
             jurisdictions={jurisdictionMocks.allComplete}
             contests={contestMocks.filledTargeted.contests}
             auditSettings={auditSettings.all}
@@ -131,12 +137,13 @@ describe('StatusBox', () => {
       screen.getByText('Start Round 2')
     })
 
-    it('creates the next round', () => {
-      apiMock.mockResolvedValue({ status: 'ok' })
+    it('creates the next round', async () => {
+      const startNextRoundMock = jest.fn()
       render(
         <Router>
           <AuditAdminStatusBox
             rounds={roundMocks.needAnother}
+            startNextRound={startNextRoundMock}
             jurisdictions={jurisdictionMocks.allComplete}
             contests={contestMocks.filledTargeted.contests}
             auditSettings={auditSettings.all}
@@ -146,43 +153,11 @@ describe('StatusBox', () => {
       fireEvent.click(screen.getByRole('button', { name: 'Start Round 2' }), {
         bubbles: true,
       })
-      expect(apiMock).toHaveBeenCalledTimes(1)
-      expect(apiMock).toHaveBeenCalledWith('/election/1/round', {
-        method: 'POST',
-        body: JSON.stringify({
-          roundNum: 2,
-        }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-    })
 
-    it('handles an error when trying to create next round', () => {
-      apiMock.mockResolvedValueOnce(null)
-      render(
-        <Router>
-          <AuditAdminStatusBox
-            rounds={roundMocks.needAnother}
-            jurisdictions={jurisdictionMocks.allComplete}
-            contests={contestMocks.filledTargeted.contests}
-            auditSettings={auditSettings.all}
-          />
-        </Router>
-      )
-      fireEvent.click(screen.getByRole('button', { name: 'Start Round 2' }), {
-        bubbles: true,
-      })
-      expect(apiMock).toHaveBeenCalledTimes(1)
-      expect(apiMock).toHaveBeenCalledWith('/election/1/round', {
-        method: 'POST',
-        body: JSON.stringify({
-          roundNum: 2,
-        }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
+      expect(
+        screen.getByRole('button', { name: 'Start Round 2' })
+      ).toBeDisabled()
+      await waitFor(() => expect(startNextRoundMock).toHaveBeenCalledTimes(1))
     })
 
     it('renders audit completion state', () => {
@@ -190,6 +165,7 @@ describe('StatusBox', () => {
         <Router>
           <AuditAdminStatusBox
             rounds={roundMocks.singleComplete}
+            startNextRound={jest.fn()}
             jurisdictions={jurisdictionMocks.allComplete}
             contests={contestMocks.filledTargeted.contests}
             auditSettings={auditSettings.all}
@@ -200,12 +176,13 @@ describe('StatusBox', () => {
       screen.getByText('Download Audit Report')
     })
 
-    it('downloads audit report', () => {
+    it('downloads audit report', async () => {
       window.open = jest.fn()
       render(
         <Router>
           <AuditAdminStatusBox
             rounds={roundMocks.singleComplete}
+            startNextRound={jest.fn()}
             jurisdictions={jurisdictionMocks.allComplete}
             contests={contestMocks.filledTargeted.contests}
             auditSettings={auditSettings.all}
@@ -218,8 +195,10 @@ describe('StatusBox', () => {
           bubbles: true,
         }
       )
-      expect(window.open).toHaveBeenCalledTimes(1)
-      expect(window.open).toBeCalledWith(`/api/election/1/report`)
+      await waitFor(() => {
+        expect(window.open).toHaveBeenCalledTimes(1)
+        expect(window.open).toBeCalledWith(`/api/election/1/report`)
+      })
     })
   })
 
@@ -364,7 +343,7 @@ describe('StatusBox', () => {
       screen.getByText('Download Audit Report')
     })
 
-    it('downloads audit report', () => {
+    it('downloads audit report', async () => {
       window.open = jest.fn()
       render(
         <Router>
@@ -387,10 +366,12 @@ describe('StatusBox', () => {
           bubbles: true,
         }
       )
-      expect(window.open).toHaveBeenCalledTimes(1)
-      expect(window.open).toHaveBeenCalledWith(
-        '/api/election/1/jurisdiction/1/report'
-      )
+      await waitFor(() => {
+        expect(window.open).toHaveBeenCalledTimes(1)
+        expect(window.open).toHaveBeenCalledWith(
+          '/api/election/1/jurisdiction/1/report'
+        )
+      })
     })
   })
 

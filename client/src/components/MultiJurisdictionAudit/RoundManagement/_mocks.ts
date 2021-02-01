@@ -1,5 +1,6 @@
 import { IBatch } from './useBatchResults'
 import { IRound } from '../useRoundsAuditAdmin'
+import { FileProcessingStatus } from '../useCSV'
 
 export interface INullResultValues {
   [contestId: string]: {
@@ -17,6 +18,12 @@ export const roundMocks: {
     endedAt: null,
     isAuditComplete: false,
     sampledAllBallots: false,
+    drawSampleTask: {
+      status: FileProcessingStatus.PROCESSED,
+      startedAt: '2020-09-14T17:35:19.482Z',
+      completedAt: '2020-09-14T17:36:19.482Z',
+      error: null,
+    },
   },
   complete: {
     id: 'round-1',
@@ -25,6 +32,12 @@ export const roundMocks: {
     endedAt: '2020-09-14T17:35:19.482Z',
     isAuditComplete: true,
     sampledAllBallots: false,
+    drawSampleTask: {
+      status: FileProcessingStatus.PROCESSED,
+      startedAt: '2020-09-14T17:35:19.482Z',
+      completedAt: '2020-09-14T17:36:19.482Z',
+      error: null,
+    },
   },
 }
 

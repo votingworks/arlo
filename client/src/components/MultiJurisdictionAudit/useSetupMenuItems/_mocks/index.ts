@@ -128,7 +128,8 @@ export const roundMocks: {
     | 'singleIncomplete'
     | 'twoIncomplete'
     | 'singleComplete'
-    | 'needAnother']: IRound[]
+    | 'needAnother'
+    | 'drawSampleInProgress']: IRound[]
 } = {
   empty: [],
   singleIncomplete: [
@@ -139,6 +140,12 @@ export const roundMocks: {
       startedAt: '2019-07-18T16:34:07.000+00:00',
       id: 'round-1',
       sampledAllBallots: false,
+      drawSampleTask: {
+        status: FileProcessingStatus.PROCESSED,
+        startedAt: '2020-09-14T17:35:19.482Z',
+        completedAt: '2020-09-14T17:36:19.482Z',
+        error: null,
+      },
     },
   ],
   twoIncomplete: [
@@ -149,6 +156,12 @@ export const roundMocks: {
       startedAt: '2019-07-18T16:34:07.000+00:00',
       id: 'round-1',
       sampledAllBallots: false,
+      drawSampleTask: {
+        status: FileProcessingStatus.PROCESSED,
+        startedAt: '2019-07-18T16:34:07.000+00:00',
+        completedAt: '2019-07-18T16:35:07.000+00:00',
+        error: null,
+      },
     },
     {
       endedAt: null,
@@ -157,6 +170,12 @@ export const roundMocks: {
       startedAt: '2019-07-18T16:34:07.000+00:00',
       id: 'round-2',
       sampledAllBallots: false,
+      drawSampleTask: {
+        status: FileProcessingStatus.PROCESSED,
+        startedAt: '2019-07-18T16:34:07.000+00:00',
+        completedAt: '2019-07-18T16:35:07.000+00:00',
+        error: null,
+      },
     },
   ],
   singleComplete: [
@@ -167,6 +186,12 @@ export const roundMocks: {
       startedAt: '2019-07-18T16:34:07.000+00:00',
       id: 'round-1',
       sampledAllBallots: false,
+      drawSampleTask: {
+        status: FileProcessingStatus.PROCESSED,
+        startedAt: '2019-07-18T16:34:07.000+00:00',
+        completedAt: '2019-07-18T16:35:07.000+00:00',
+        error: null,
+      },
     },
   ],
   needAnother: [
@@ -177,6 +202,28 @@ export const roundMocks: {
       startedAt: '2019-07-18T16:34:07.000+00:00',
       id: 'round-1',
       sampledAllBallots: false,
+      drawSampleTask: {
+        status: FileProcessingStatus.PROCESSED,
+        startedAt: '2020-09-14T17:35:19.482Z',
+        completedAt: '2020-09-14T17:36:19.482Z',
+        error: null,
+      },
+    },
+  ],
+  drawSampleInProgress: [
+    {
+      endedAt: null,
+      roundNum: 1,
+      isAuditComplete: false,
+      startedAt: '2019-07-18T16:34:07.000+00:00',
+      id: 'round-1',
+      sampledAllBallots: false,
+      drawSampleTask: {
+        status: FileProcessingStatus.PROCESSING,
+        startedAt: '2020-09-14T17:35:19.482Z',
+        completedAt: null,
+        error: null,
+      },
     },
   ],
 }
