@@ -65,19 +65,13 @@ describe('Home screen', () => {
       ...setupScreenCalls,
       aaApiCalls.getSettings(auditSettings.blank),
       aaApiCalls.getJurisdictionFile,
-      aaApiCalls.getJurisdictionFile,
-      aaApiCalls.getRounds([]),
-      ...setupScreenCalls,
       aaApiCalls.getUserWithAudit,
       ...setupScreenCalls,
       aaApiCalls.getJurisdictionFile,
       aaApiCalls.getRounds([]),
       ...setupScreenCalls,
-      aaApiCalls.getJurisdictionFile,
-      aaApiCalls.getRounds([]),
       aaApiCalls.getSettings(auditSettings.blank),
       aaApiCalls.getJurisdictionFile,
-      ...setupScreenCalls,
     ]
     await withMockFetch(expectedCalls, async () => {
       const { history } = renderView('/')
@@ -143,9 +137,6 @@ describe('Home screen', () => {
       ...setupScreenCalls,
       aaApiCalls.getSettings(auditSettings.blank),
       aaApiCalls.getJurisdictionFile,
-      aaApiCalls.getJurisdictionFile,
-      aaApiCalls.getRounds([]),
-      ...setupScreenCalls,
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView('/')

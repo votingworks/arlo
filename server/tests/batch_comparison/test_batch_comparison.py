@@ -5,7 +5,7 @@ from flask.testing import FlaskClient
 from ...models import *  # pylint: disable=wildcard-import
 from ..helpers import *  # pylint: disable=wildcard-import
 from ...util.group_by import group_by
-from ...bgcompute import bgcompute_update_batch_tallies_file
+from ...worker.bgcompute import bgcompute_update_batch_tallies_file
 
 
 def test_batch_comparison_only_one_contest_allowed(
@@ -188,6 +188,12 @@ def test_batch_comparison_round_1(
                 "endedAt": None,
                 "isAuditComplete": None,
                 "sampledAllBallots": False,
+                "drawSampleTask": {
+                    "status": "PROCESSED",
+                    "startedAt": assert_is_date,
+                    "completedAt": assert_is_date,
+                    "error": None,
+                },
             }
         ],
     )
@@ -342,27 +348,6 @@ def test_batch_comparison_round_2(
 
     rv = client.get(f"/api/election/{election_id}/round")
     rounds = json.loads(rv.data)["rounds"]
-    compare_json(
-        rounds,
-        [
-            {
-                "id": assert_is_id,
-                "roundNum": 1,
-                "startedAt": assert_is_date,
-                "endedAt": assert_is_date,
-                "isAuditComplete": False,
-                "sampledAllBallots": False,
-            },
-            {
-                "id": assert_is_id,
-                "roundNum": 2,
-                "startedAt": assert_is_date,
-                "endedAt": None,
-                "isAuditComplete": None,
-                "sampledAllBallots": False,
-            },
-        ],
-    )
 
     # Check jurisdiction status after starting the new round
     rv = client.get(f"/api/election/{election_id}/jurisdiction")

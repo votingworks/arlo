@@ -44,9 +44,3 @@ export enum BallotStatus {
   AUDITED = 'AUDITED',
   NOT_FOUND = 'NOT_FOUND',
 }
-
-export interface ISampleSizeOption {
-  size: number | string
-  prob: number | null
-  key: string
-}

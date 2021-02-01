@@ -8,6 +8,7 @@ from server.api.standardized_contests import process_standardized_contests_file
 from server.api.ballot_manifest import process_ballot_manifest_file
 from server.api.batch_tallies import process_batch_tallies_file
 from server.api.cvrs import process_cvr_file
+from server.worker.tasks import run_new_tasks
 
 
 def bgcompute():
@@ -183,6 +184,7 @@ def bgcompute_update_cvr_file(election_id: str = None):
 def bgcompute_forever():
     while True:
         bgcompute()
+        run_new_tasks()
         time.sleep(2)
 
 

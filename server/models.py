@@ -446,6 +446,11 @@ class Round(BaseModel):
     round_num = Column(Integer, nullable=False)
     ended_at = Column(UTCDateTime)
 
+    draw_sample_task_id = Column(
+        String(200), ForeignKey("background_task.id", ondelete="cascade")
+    )
+    draw_sample_task = relationship("BackgroundTask")
+
     __table_args__ = (UniqueConstraint("election_id", "round_num"),)
 
     round_contests = relationship(
@@ -741,6 +746,16 @@ class File(BaseModel):
     processing_started_at = Column(UTCDateTime)
     processing_completed_at = Column(UTCDateTime)
     processing_error = Column(Text)
+
+
+class BackgroundTask(BaseModel):
+    id = Column(String(200), primary_key=True)
+    task_name = Column(String(200), nullable=False)
+    payload = Column(JSON, nullable=False)
+
+    started_at = Column(UTCDateTime)
+    completed_at = Column(UTCDateTime)
+    error = Column(Text)
 
 
 class ProcessingStatus(str, enum.Enum):

@@ -1,12 +1,11 @@
 import io
 import json
 import logging
-from typing import Optional
 from flask.testing import FlaskClient
 
 from ..app import app
-from .. import bgcompute
-from ..bgcompute import (
+from ..worker import bgcompute
+from ..worker.bgcompute import (
     bgcompute_update_election_jurisdictions_file,
     bgcompute_update_ballot_manifest_file,
     bgcompute_update_batch_tallies_file,
@@ -36,17 +35,6 @@ def test_internal_error_500(client: FlaskClient):
     assert (
         rv.data
         == b'<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">\n<title>500 Internal Server Error</title>\n<h1>Internal Server Error</h1>\n<p>The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.</p>\n'
-    )
-
-
-def find_log(caplog, level: int, message: str) -> Optional[logging.LogRecord]:
-    return next(
-        (
-            record
-            for record in caplog.records
-            if record.levelno == level and record.message == message
-        ),
-        None,
     )
 
 

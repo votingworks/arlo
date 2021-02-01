@@ -160,6 +160,10 @@ MINERVA_MULTIPLE = setup_minerva()
 
 SENTRY_DSN = os.environ.get("SENTRY_DSN")
 
+RUN_BACKGROUND_TASKS_IMMEDIATELY = bool(
+    os.environ.get("RUN_BACKGROUND_TASKS_IMMEDIATELY")
+)
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("arlo.config")

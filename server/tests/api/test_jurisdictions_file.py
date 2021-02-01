@@ -3,7 +3,7 @@ import json, io
 from flask.testing import FlaskClient
 
 from ...models import *  # pylint: disable=wildcard-import
-from ...bgcompute import bgcompute_update_election_jurisdictions_file
+from ...worker.bgcompute import bgcompute_update_election_jurisdictions_file
 from ..helpers import assert_ok
 
 

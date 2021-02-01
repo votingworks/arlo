@@ -103,22 +103,9 @@ def test_two_rounds(
     run_audit_round(round_1.id, contest_ids[0], contest_ids, 0.7)
 
     rv = client.get(f"/api/election/{election_id}/round")
-    rounds = json.loads(rv.data)
-    compare_json(
-        rounds,
-        {
-            "rounds": [
-                {
-                    "id": round_1.id,
-                    "roundNum": 1,
-                    "startedAt": assert_is_date,
-                    "endedAt": assert_is_date,
-                    "isAuditComplete": False,
-                    "sampledAllBallots": False,
-                }
-            ]
-        },
-    )
+    rounds = json.loads(rv.data)["rounds"]
+    assert rounds[0]["endedAt"] is not None
+    assert rounds[0]["isAuditComplete"] is False
 
     # Check that the right number of ballots were sampled for each contest
     contest_1_ballots = SampledBallotDraw.query.filter_by(
@@ -142,9 +129,7 @@ def test_two_rounds(
 
     round_contests = {
         round_contest.contest_id: round_contest
-        for round_contest in RoundContest.query.filter_by(
-            round_id=rounds["rounds"][0]["id"]
-        )
+        for round_contest in RoundContest.query.filter_by(round_id=rounds[0]["id"])
         .order_by(RoundContest.created_at)
         .all()
     }
@@ -163,73 +148,27 @@ def test_two_rounds(
     assert_ok(rv)
 
     rv = client.get(f"/api/election/{election_id}/round")
-    rounds = json.loads(rv.data)
-    compare_json(
-        rounds,
-        {
-            "rounds": [
-                {
-                    "id": round_1.id,
-                    "roundNum": 1,
-                    "startedAt": assert_is_date,
-                    "endedAt": assert_is_date,
-                    "isAuditComplete": False,
-                    "sampledAllBallots": False,
-                },
-                {
-                    "id": assert_is_id,
-                    "roundNum": 2,
-                    "startedAt": assert_is_date,
-                    "endedAt": None,
-                    "isAuditComplete": None,
-                    "sampledAllBallots": False,
-                },
-            ]
-        },
-    )
+    rounds = json.loads(rv.data)["rounds"]
 
     # Check that we used the correct sample size (90% prob for Contest 2)
     # Should only have samples for Contest 2
     contest_2_ballots = SampledBallotDraw.query.filter_by(
-        round_id=rounds["rounds"][1]["id"], contest_id=contest_ids[1]
+        round_id=rounds[1]["id"], contest_id=contest_ids[1]
     ).count()
     snapshot.assert_match(contest_2_ballots)
 
     # Run the second round, auditing all the ballots for the second contest to complete the audit
-    run_audit_round(rounds["rounds"][1]["id"], contest_ids[1], contest_ids[1:], 0.7)
+    run_audit_round(rounds[1]["id"], contest_ids[1], contest_ids[1:], 0.7)
 
     rv = client.get(f"/api/election/{election_id}/round")
-    rounds = json.loads(rv.data)
-    compare_json(
-        rounds,
-        {
-            "rounds": [
-                {
-                    "id": round_1.id,
-                    "roundNum": 1,
-                    "startedAt": assert_is_date,
-                    "endedAt": assert_is_date,
-                    "isAuditComplete": False,
-                    "sampledAllBallots": False,
-                },
-                {
-                    "id": assert_is_id,
-                    "roundNum": 2,
-                    "startedAt": assert_is_date,
-                    "endedAt": assert_is_date,
-                    "isAuditComplete": True,
-                    "sampledAllBallots": False,
-                },
-            ]
-        },
-    )
+    rounds = json.loads(rv.data)["rounds"]
+    assert rounds[1]["endedAt"] is not None
+    assert rounds[1]["isAuditComplete"] is True
 
     # Make sure the votes got counted correctly
     round_contests = {
         round_contest.contest_id: round_contest
-        for round_contest in RoundContest.query.filter_by(
-            round_id=rounds["rounds"][1]["id"]
-        )
+        for round_contest in RoundContest.query.filter_by(round_id=rounds[1]["id"])
         .order_by(RoundContest.created_at)
         .all()
     }

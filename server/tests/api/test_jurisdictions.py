@@ -7,7 +7,7 @@ from ..helpers import *  # pylint: disable=wildcard-import
 from ...auth import UserType
 from ...database import db_session
 from ...models import *  # pylint: disable=wildcard-import
-from ...bgcompute import bgcompute_update_ballot_manifest_file
+from ...worker.bgcompute import bgcompute_update_ballot_manifest_file
 
 AB1_SAMPLES = 23  # Arbitrary num of ballots to assign to audit board 1
 

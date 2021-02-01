@@ -7,7 +7,7 @@ from flask.testing import FlaskClient
 
 from .helpers import *  # pylint: disable=wildcard-import
 from ..models import *  # pylint: disable=wildcard-import
-from ..bgcompute import bgcompute_update_ballot_manifest_file
+from ..worker.bgcompute import bgcompute_update_ballot_manifest_file
 from ..api.rounds import is_round_complete, end_round
 
 
@@ -133,6 +133,12 @@ def test_all_ballots_audit(
             "endedAt": None,
             "isAuditComplete": None,
             "sampledAllBallots": True,
+            "drawSampleTask": {
+                "status": "PROCESSED",
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": None,
+            },
         },
     )
 

@@ -4,7 +4,7 @@ from flask.testing import FlaskClient
 
 from ...models import *  # pylint: disable=wildcard-import
 from ..helpers import *  # pylint: disable=wildcard-import
-from ...bgcompute import bgcompute_update_ballot_manifest_file
+from ...worker.bgcompute import bgcompute_update_ballot_manifest_file
 from ...util.process_file import ProcessingStatus
 
 

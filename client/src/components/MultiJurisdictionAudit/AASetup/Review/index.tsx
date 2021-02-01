@@ -8,7 +8,7 @@ import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
 import H2Title from '../../../Atoms/H2Title'
 import useAuditSettings from '../../useAuditSettings'
 import useContests from '../../useContests'
-import { IContest, ISampleSizeOption } from '../../../../types'
+import { IContest } from '../../../../types'
 import useJurisdictions from '../../useJurisdictions'
 import { testNumber } from '../../../utilities'
 import FormSection, {
@@ -20,19 +20,21 @@ import { isSetupComplete } from '../../StatusBox'
 import ConfirmLaunch from './ConfirmLaunch'
 import FormField from '../../../Atoms/Form/FormField'
 import ElevatedCard from '../../../Atoms/SpacedCard'
-import useSampleSizes, { IStringSampleSizeOption } from './useSampleSizes'
+import useSampleSizes, { ISampleSizeOption } from './useSampleSizes'
 import {
   useJurisdictionsFile,
   isFileProcessed,
   useStandardizedContestsFile,
 } from '../../useCSV'
+import useRoundsAuditAdmin from '../../useRoundsAuditAdmin'
+import { mapValues } from '../../../../utils/objects'
 
 const percentFormatter = new Intl.NumberFormat(undefined, {
   style: 'percent',
 })
 
 interface IFormOptions {
-  [contestId: string]: IStringSampleSizeOption
+  [contestId: string]: ISampleSizeOption
 }
 
 interface IProps {
@@ -59,10 +61,8 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
     !!contests &&
     !!auditSettings &&
     isSetupComplete(jurisdictions, contests, auditSettings)
-  const [sampleSizeOptions, uploadSampleSizes] = useSampleSizes(
-    electionId,
-    shouldShowSampleSizes
-  )
+  let sampleSizeOptions = useSampleSizes(electionId, shouldShowSampleSizes)
+  const [, startNextRound] = useRoundsAuditAdmin(electionId)
 
   if (
     !jurisdictions ||
@@ -73,13 +73,8 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
     return null // Still loading
 
   const submit = async ({ sampleSizes }: { sampleSizes: IFormOptions }) => {
-    if (
-      await uploadSampleSizes(
-        Object.keys(sampleSizes).reduce((a, contestId) => {
-          return { ...a, [contestId]: sampleSizes[contestId].size }
-        }, {})
-      )
-    ) {
+    const roundSampleSizes = mapValues(sampleSizes, ({ size }) => size!)
+    if (await startNextRound(roundSampleSizes)) {
       refresh()
       history.push(`/election/${electionId}/progress`)
     } else {
@@ -116,15 +111,17 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
       ),
     }))
 
+  // Add custom option to sample size options from backend
+  sampleSizeOptions =
+    sampleSizeOptions &&
+    mapValues(sampleSizeOptions, options => [
+      ...options,
+      { key: 'custom', size: null, prob: null },
+    ])
+
   const initialValues: IFormOptions =
     sampleSizeOptions && !locked
-      ? Object.keys(sampleSizeOptions).reduce(
-          (a, contestId) => ({
-            ...a,
-            [contestId]: sampleSizeOptions[contestId][0],
-          }),
-          {}
-        )
+      ? mapValues(sampleSizeOptions, options => options[0])
       : {}
 
   const participatingJurisdictions = contests
@@ -268,10 +265,7 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
                   to use for Round 1 of the audit from the options below.
                 </FormSectionDescription>
                 {targetedContests.map(contest => {
-                  const currentOption = getIn(
-                    values,
-                    `sampleSizes[${contest.id}]`
-                  )
+                  const currentOption = values.sampleSizes[contest.id]
                   return (
                     <ElevatedCard key={contest.id}>
                       <FormSectionDescription>
@@ -279,7 +273,7 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
                         <RadioGroup
                           name={`sampleSizes[${contest.id}]`}
                           onChange={e => {
-                            const selectedOption = sampleSizeOptions[
+                            const selectedOption = sampleSizeOptions![
                               contest.id
                             ].find(c => c.key === e.currentTarget.value)
                             setFieldValue(
@@ -293,7 +287,7 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
                           )}
                           disabled={locked}
                         >
-                          {sampleSizeOptions[contest.id].map(
+                          {sampleSizeOptions![contest.id].map(
                             (option: ISampleSizeOption) => {
                               return option.key === 'custom' ? (
                                 <Radio value="custom" key={option.key}>
@@ -324,8 +318,19 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
                         {currentOption && currentOption.key === 'custom' && (
                           <Field
                             component={FormField}
-                            name={`sampleSizes[${contest.id}][size]`}
-                            type="text"
+                            name={`sampleSizes[${contest.id}].size`}
+                            value={
+                              currentOption.size === null
+                                ? undefined
+                                : currentOption.size
+                            }
+                            onValueChange={(value: number) =>
+                              setFieldValue(
+                                `sampleSizes[${contest.id}].size`,
+                                value
+                              )
+                            }
+                            type="number"
                             validate={
                               auditType === 'BATCH_COMPARISON'
                                 ? testNumber()
@@ -343,8 +348,8 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
               </FormSection>
             ) : (
               <p>
-                All jurisdiction files must be uploaded to calculate the sample
-                size.{' '}
+                All jurisdiction files must be uploaded and all audit settings
+                must be configured in order to calculate the sample size.{' '}
                 <Link to={`/election/${electionId}/progress`}>
                   View jurisdiction upload progress.
                 </Link>

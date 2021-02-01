@@ -4,7 +4,7 @@ from flask.testing import FlaskClient
 
 from ...models import *  # pylint: disable=wildcard-import
 from ..helpers import *  # pylint: disable=wildcard-import
-from ...bgcompute import bgcompute_update_standardized_contests_file
+from ...worker.bgcompute import bgcompute_update_standardized_contests_file
 from ...api.sample_sizes import set_contest_metadata_from_cvrs
 
 

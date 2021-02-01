@@ -8,6 +8,11 @@ from filelock import FileLock
 # Before we set up the Flask app, set the env. That way it will use the test
 # config and we can still run tests without setting the env var manually.
 os.environ["FLASK_ENV"] = "test"
+# In testing, we run background tasks immediately, since we'll only be doing
+# small tasks and we want to make sure they run in a thread-safe way (i.e. we
+# don't want tests to interfere with each other's background tasks when running
+# concurrently).
+os.environ["RUN_BACKGROUND_TASKS_IMMEDIATELY"] = "True"
 # pylint: disable=wrong-import-position
 
 from ..app import app
@@ -15,7 +20,7 @@ from ..database import reset_db
 from ..models import *  # pylint: disable=wildcard-import
 from ..auth import UserType, restrict_access
 from .helpers import *  # pylint: disable=wildcard-import
-from ..bgcompute import (
+from ..worker.bgcompute import (
     bgcompute_update_election_jurisdictions_file,
     bgcompute_update_ballot_manifest_file,
 )

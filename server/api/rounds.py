@@ -18,6 +18,11 @@ from ..util.group_by import group_by
 from ..util.jsonschema import JSONDict
 from ..audit_math import sampler, ballot_polling, macro, supersimple, sampler_contest
 from .cvrs import set_contest_metadata_from_cvrs
+from ..worker.tasks import (
+    background_task,
+    create_background_task,
+    serialize_background_task,
+)
 
 
 def get_current_round(election: Election) -> Optional[Round]:
@@ -480,42 +485,20 @@ class BallotDraw(NamedTuple):
     ticket_number: str
 
 
-def draw_sample(election: Election, round: Round, sample_sizes: Dict[str, int]):
-    # Figure out which contests still need auditing
-    previous_round = get_previous_round(election, round)
-    contests_that_havent_met_risk_limit = (
-        [
-            round_contest.contest
-            for round_contest in previous_round.round_contests
-            if not round_contest.is_complete
-        ]
-        if previous_round
-        else election.contests
-    )
-
-    # Create RoundContest objects to include the contests in this round
-    round.round_contests = [
-        RoundContest(
-            round=round,
-            contest=contest,
-            # Store the sample size we use for each contest so we can report on
-            # it later. Opportunistic contests don't have a sample size, so we
-            # store None.
-            sample_size=sample_sizes.get(contest.id, None),
-        )
-        for contest in contests_that_havent_met_risk_limit
-    ]
-
-    contests_to_sample = [
-        contest
-        for contest in contests_that_havent_met_risk_limit
-        if contest.is_targeted
+@background_task
+def draw_sample(round_id: str, election_id: str):
+    round = Round.query.filter_by(id=round_id, election_id=election_id).one()
+    election = round.election
+    contest_sample_sizes = [
+        (round_contest.contest, round_contest.sample_size)
+        for round_contest in round.round_contests
+        if round_contest.sample_size  # Only targeted contests will have a sample size
     ]
 
     # Special case: if we are sampling all ballots, we don't need to actually
     # draw a sample. Instead, we force an offline audit.
     if sampled_all_ballots(round, election):
-        if len(contests_to_sample) > 1:
+        if len(contest_sample_sizes) > 1:
             raise Conflict(
                 "Cannot sample all ballots when there are multiple targeted contests."
             )
@@ -523,19 +506,18 @@ def draw_sample(election: Election, round: Round, sample_sizes: Dict[str, int]):
         return None
 
     if election.audit_type == AuditType.BATCH_COMPARISON:
-        return sample_batches(election, round, contests_to_sample, sample_sizes)
+        return sample_batches(election, round, contest_sample_sizes)
     else:
-        return sample_ballots(election, round, contests_to_sample, sample_sizes)
+        return sample_ballots(election, round, contest_sample_sizes)
 
 
 def sample_ballots(
-    election: Election,
-    round: Round,
-    contests: List[Contest],
-    sample_sizes: Dict[str, int],
+    election: Election, round: Round, contest_sample_sizes: List[Tuple[Contest, int]],
 ):
     participating_jurisdictions = {
-        jurisdiction for contest in contests for jurisdiction in contest.jurisdictions
+        jurisdiction
+        for (contest, _) in contest_sample_sizes
+        for jurisdiction in contest.jurisdictions
     }
 
     # Audits must be deterministic and repeatable for the same real world
@@ -625,8 +607,8 @@ def sample_ballots(
 
     # Draw a sample for each contest
     samples = [
-        draw_sample_for_contest(contest, sample_sizes[contest.id])
-        for contest in contests
+        draw_sample_for_contest(contest, sample_size)
+        for contest, sample_size in contest_sample_sizes
     ]
 
     # Group all sample draws by ballot
@@ -669,14 +651,11 @@ def sample_ballots(
 
 
 def sample_batches(
-    election: Election,
-    round: Round,
-    contests: List[Contest],
-    sample_sizes: Dict[str, int],
+    election: Election, round: Round, contest_sample_sizes: List[Tuple[Contest, int]],
 ):
     # We only support one contest for batch audits
-    assert len(contests) == 1
-    contest = contests[0]
+    assert len(contest_sample_sizes) == 1
+    contest, sample_size = contest_sample_sizes[0]
 
     num_previously_sampled = (
         SampledBatchDraw.query.join(Batch)
@@ -699,7 +678,7 @@ def sample_batches(
     sample = sampler.draw_ppeb_sample(
         str(election.random_seed),
         sampler_contest.from_db_contest(contest),
-        sample_sizes[contest.id],
+        sample_size,
         num_previously_sampled,
         batch_tallies(election),
     )
@@ -731,6 +710,9 @@ def validate_round(round: dict, election: Election):
     validate(round, CREATE_ROUND_REQUEST_SCHEMA)
 
     current_round = get_current_round(election)
+    if current_round and not current_round.draw_sample_task.completed_at:
+        raise Conflict("Arlo is already currently drawing the sample for this round.")
+
     next_round_num = current_round.round_num + 1 if current_round else 1
     if round["roundNum"] != next_round_num:
         raise BadRequest(f"The next round should be round number {next_round_num}")
@@ -789,7 +771,35 @@ def create_round(election: Election):
         for contest in election.contests:
             set_contest_metadata_from_cvrs(contest)
 
-    draw_sample(election, round, sample_sizes)
+    # Figure out which contests still need auditing
+    previous_round = get_previous_round(election, round)
+    contests_that_havent_met_risk_limit = (
+        [
+            round_contest.contest
+            for round_contest in previous_round.round_contests
+            if not round_contest.is_complete
+        ]
+        if previous_round
+        else election.contests
+    )
+
+    # Create RoundContest objects to include the contests in this round
+    round.round_contests = [
+        RoundContest(
+            round=round,
+            contest=contest,
+            # Store the sample size we use for each contest so we can report on
+            # it later. Opportunistic contests don't have a sample size, so we
+            # store None.
+            sample_size=sample_sizes.get(contest.id, None),
+        )
+        for contest in contests_that_havent_met_risk_limit
+    ]
+
+    # Create a new task to draw the sample in the background.
+    round.draw_sample_task = create_background_task(
+        draw_sample, dict(election_id=election.id, round_id=round.id),
+    )
 
     db_session.commit()
 
@@ -804,6 +814,7 @@ def serialize_round(round: Round) -> dict:
         "endedAt": isoformat(round.ended_at),
         "isAuditComplete": is_audit_complete(round),
         "sampledAllBallots": sampled_all_ballots(round, round.election),
+        "drawSampleTask": serialize_background_task(round.draw_sample_task),
     }
 
 
