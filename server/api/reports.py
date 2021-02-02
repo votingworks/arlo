@@ -518,18 +518,18 @@ def audit_admin_audit_report(election: Election):
     ]
     row_sets = [row_set for row_set in row_sets if row_set]
 
-    csv_io = io.StringIO()
-    report = csv.writer(csv_io)
+    with io.StringIO() as csv_io:
+        report = csv.writer(csv_io)
 
-    for row_set in row_sets[:-1]:
-        report.writerows(row_set)
-        report.writerow([])
-    report.writerows(row_sets[-1])
+        for row_set in row_sets[:-1]:
+            report.writerows(row_set)
+            report.writerow([])
+        report.writerows(row_sets[-1])
 
-    return csv_response(
-        csv_io.getvalue(),
-        filename=f"audit-report-{election_timestamp_name(election)}.csv",
-    )
+        return csv_response(
+            csv_io.getvalue(),
+            filename=f"audit-report-{election_timestamp_name(election)}.csv",
+        )
 
 
 @api.route(
@@ -537,16 +537,16 @@ def audit_admin_audit_report(election: Election):
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def jursdiction_admin_audit_report(election: Election, jurisdiction: Jurisdiction):
-    csv_io = io.StringIO()
-    report = csv.writer(csv_io)
+    with io.StringIO() as csv_io:
+        report = csv.writer(csv_io)
 
-    report.writerows(
-        sampled_batch_rows(election, jurisdiction)
-        if election.audit_type == AuditType.BATCH_COMPARISON
-        else sampled_ballot_rows(election, jurisdiction),
-    )
+        report.writerows(
+            sampled_batch_rows(election, jurisdiction)
+            if election.audit_type == AuditType.BATCH_COMPARISON
+            else sampled_ballot_rows(election, jurisdiction),
+        )
 
-    return csv_response(
-        csv_io.getvalue(),
-        filename=f"audit-report-{jurisdiction_timestamp_name(election, jurisdiction)}.csv",
-    )
+        return csv_response(
+            csv_io.getvalue(),
+            filename=f"audit-report-{jurisdiction_timestamp_name(election, jurisdiction)}.csv",
+        )
