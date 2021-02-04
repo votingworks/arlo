@@ -1,7 +1,6 @@
 import io, csv
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 from collections import defaultdict
-from sqlalchemy.orm import joinedload, contains_eager
 
 from . import api
 from ..models import *  # pylint: disable=wildcard-import
@@ -55,19 +54,27 @@ def pretty_pvalue(value: float) -> str:
         return ret
 
 
+# (round_num, contest_id, ticket_number)
+TicketNumberTuple = Tuple[str, str, str]
+
+
 def pretty_ballot_ticket_numbers(
-    ballot: SampledBallot,
-    round_id_to_num: Dict[str, int],
-    targeted_contests: List[Contest],
+    ticket_number_tuples: List[TicketNumberTuple], targeted_contests: List[Contest],
 ) -> List[str]:
     columns = []
     for contest in targeted_contests:
-        contest_draws = [draw for draw in ballot.draws if draw.contest_id == contest.id]
+        contest_tuples = [
+            ticket_number_tuple
+            for ticket_number_tuple in ticket_number_tuples
+            if ticket_number_tuple[1] == contest.id
+        ]
         ticket_numbers = []
-        for round_num, draws in group_by(
-            contest_draws, key=lambda d: round_id_to_num[d.round_id]
+        for round_num, round_tuples in group_by(
+            contest_tuples, key=lambda tuple: tuple[0]  # round_num
         ).items():
-            ticket_numbers_str = ", ".join(sorted(d.ticket_number for d in draws))
+            ticket_numbers_str = ", ".join(
+                sorted(set(ticket_number for _, _, ticket_number in round_tuples))
+            )
             ticket_numbers.append(f"Round {round_num}: {ticket_numbers_str}")
         columns.append(", ".join(ticket_numbers))
     return columns
@@ -83,24 +90,34 @@ def pretty_batch_ticket_numbers(batch: Batch, round_id_to_num: Dict[str, int]) -
     return ", ".join(ticket_numbers)
 
 
+# (contest_id, interpretation, selected_choice_names, comment, is_overvote)
+InterpretationTuple = Tuple[str, str, List[str], str, bool]
+
+
 def pretty_ballot_interpretation(
-    interpretations: List[BallotInterpretation], contest: Contest,
+    interpretations: List[InterpretationTuple], contest: Contest,
 ) -> str:
-    interpretation = next(
-        (i for i in interpretations if i.contest_id == contest.id), None,
-    )
+    interpretation = next((i for i in interpretations if i[0] == contest.id), None,)
     # Legacy case: we used to not require an interpretation for every contest
     # before we had Interpretation.CONTEST_NOT_ON_BALLOT
     if not interpretation:
         return ""
 
+    (
+        _contest_id,
+        interpretation_str,
+        selected_choice_names,
+        comment,
+        is_overvote,
+    ) = interpretation
+
     choices = (
-        ", ".join(choice.name for choice in interpretation.selected_choices)
-        if interpretation.interpretation == Interpretation.VOTE
-        else interpretation.interpretation
+        ", ".join(selected_choice_names)
+        if interpretation_str == Interpretation.VOTE
+        else interpretation_str
     )
-    overvote = "OVERVOTE; " if interpretation.is_overvote else ""
-    comment = f"; COMMENT: {interpretation.comment}" if interpretation.comment else ""
+    overvote = "OVERVOTE; " if is_overvote else ""
+    comment = f"; COMMENT: {comment}" if comment else ""
     return overvote + choices + comment
 
 
@@ -345,19 +362,12 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
 
     rows = [heading("SAMPLED BALLOTS")]
 
-    ballots_query = (
+    ballots = (
         SampledBallot.query.join(SampledBallotDraw)
         .join(Round)
         .join(Batch)
         .join(Jurisdiction)
         .filter_by(election_id=election.id)
-        .outerjoin(
-            CvrBallot,
-            and_(
-                CvrBallot.batch_id == SampledBallot.batch_id,
-                CvrBallot.ballot_position == SampledBallot.ballot_position,
-            ),
-        )
         .order_by(
             Round.round_num,
             Jurisdiction.name,
@@ -368,32 +378,63 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
         )
     )
     if jurisdiction:
-        ballots_query = ballots_query.filter(Jurisdiction.id == jurisdiction.id)
-    ballots = list(
-        ballots_query.with_entities(SampledBallot, CvrBallot.imprinted_id)
-        .options(
-            contains_eager(SampledBallot.batch)
-            .contains_eager(Batch.jurisdiction)
-            .load_only(Jurisdiction.name),
-            contains_eager(SampledBallot.draws).load_only(
-                SampledBallotDraw.ticket_number
-            ),
-            joinedload(SampledBallot.interpretations)
-            .joinedload(BallotInterpretation.selected_choices)
-            .load_only(ContestChoice.name),
-        )
-        .all()
-    )
+        ballots = ballots.filter(Jurisdiction.id == jurisdiction.id)
 
-    round_id_to_num = {round.id: round.round_num for round in election.rounds}
+    # In order to avoid loading all of the ballots into memory at once (there
+    # may be 10-100k), we use yield_per(n), which streams n ballots at a
+    # time from the database. There's a bunch of related data we want for each ballot
+    # (e.g. imprinted id, ticket numbers, ballot interpretations), but we don't
+    # want to make separate queries for each individual ballot's relationships.
+    # Usually, you can use sqlalchemy's eager loading features to load this
+    # data as part of the original query, but they don't work with yield_per.
+    # So instead, we join in the data we need and return it in arrays.
+    ballots = (
+        ballots.outerjoin(
+            CvrBallot,
+            and_(
+                CvrBallot.batch_id == SampledBallot.batch_id,
+                CvrBallot.ballot_position == SampledBallot.ballot_position,
+            ),
+        )
+        .outerjoin(SampledBallot.interpretations)
+        .outerjoin(BallotInterpretation.selected_choices)
+        .group_by(
+            SampledBallot.id,
+            Batch.id,
+            Jurisdiction.id,
+            CvrBallot.imprinted_id,
+            SampledBallotDraw.ballot_id,
+            Round.id,
+        )
+        .with_entities(
+            SampledBallot,
+            Batch,
+            Jurisdiction.name,
+            CvrBallot.imprinted_id,
+            func.array_agg(
+                func.json_build_array(
+                    Round.round_num,
+                    SampledBallotDraw.contest_id,
+                    SampledBallotDraw.ticket_number,
+                )
+            ),
+            func.array_agg(
+                func.json_build_array(
+                    BallotInterpretation.contest_id,
+                    func.text(BallotInterpretation.interpretation),
+                    func.json_build_array(ContestChoice.name),
+                    BallotInterpretation.comment,
+                    BallotInterpretation.is_overvote,
+                ),
+            ),
+        )
+        .yield_per(100)  # Experimentally, 100 seems to be faster than 10 or 1000
+    )
 
     targeted_contests = [
         contest for contest in election.contests if contest.is_targeted
     ]
 
-    show_tabulator = len(ballots) > 0 and ballots[0][0].batch.tabulator is not None
-    show_container = len(ballots) > 0 and ballots[0][0].batch.container is not None
-    show_imprinted_id = len(ballots) > 0 and ballots[0][1] is not None
     show_cvrs = election.audit_type == AuditType.BALLOT_COMPARISON
 
     result_columns = []
@@ -405,11 +446,8 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
                 result_columns.append(f"Discrepancy: {contest.name}")
 
     rows.append(
-        ["Jurisdiction Name"]
-        + (["Container"] if show_container else [])
-        + (["Tabulator"] if show_tabulator else [])
-        + ["Batch Name", "Ballot Position"]
-        + (["Imprinted ID"] if show_imprinted_id else [])
+        ["Jurisdiction Name", "Container", "Tabulator", "Batch Name", "Ballot Position"]
+        + (["Imprinted ID"] if show_cvrs else [])
         + [f"Ticket Numbers: {contest.name}" for contest in targeted_contests]
         + (["Audited?"] if election.online else [])
         + result_columns
@@ -428,12 +466,21 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
             for contest in election.contests
         }
 
-    for ballot, imprinted_id in ballots:
+    for ballot in ballots:
+        (
+            ballot,
+            batch,
+            jurisdiction_name,
+            imprinted_id,
+            ticket_numbers,
+            interpretations,
+        ) = ballot
+
         result_values = []
         if election.online:
             for contest in election.contests:
                 result_values.append(
-                    pretty_ballot_interpretation(list(ballot.interpretations), contest)
+                    pretty_ballot_interpretation(interpretations, contest)
                 )
                 if show_cvrs:
                     cvr_interpretation = pretty_cvr_interpretation(
@@ -445,12 +492,15 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
                     )
 
         rows.append(
-            [ballot.batch.jurisdiction.name]
-            + ([ballot.batch.container] if show_container else [])
-            + ([ballot.batch.tabulator] if show_tabulator else [])
-            + [ballot.batch.name, ballot.ballot_position]
-            + ([imprinted_id] if show_imprinted_id else [])
-            + pretty_ballot_ticket_numbers(ballot, round_id_to_num, targeted_contests)
+            [
+                jurisdiction_name,
+                batch.container,
+                batch.tabulator,
+                batch.name,
+                ballot.ballot_position,
+            ]
+            + ([imprinted_id] if show_cvrs else [])
+            + pretty_ballot_ticket_numbers(ticket_numbers, targeted_contests)
             + ([ballot.status] if election.online else [])
             + result_values
         )
