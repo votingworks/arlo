@@ -103,11 +103,11 @@ describe('Ballot Polling', () => {
     cy.findByText('Save & Next').click()
     cy.findAllByText('Opportunistic Contests').should('have.length', 2)
     cy.findByText('Save & Next').click()
-    cy.get('#state').select('AL')
-    cy.get('input[name=electionName]').type(`Test Election`)
     cy.get("input[value=online]").click({ force: true })
-    cy.get('#risk-limit').select('10')
-    cy.get('input[name=randomSeed]').type("543210")
+    cy.findByRole('combobox', {name: /Choose your state from the options below/}).select('AL')
+    cy.findByLabelText('Enter the name of the election you are auditing.').type('Test Election')
+    cy.findByRole('combobox', {name: /Set the risk limit for the audit/}).select('10')
+    cy.findByLabelText('Enter the random characters to seed the pseudo-random number generator.').type('543210')
     cy.findByText('Save & Next').click()
     cy.findAllByText('Review & Launch').should('have.length', 2)
     cy.wait(100)
@@ -159,12 +159,13 @@ describe('Ballot Polling', () => {
       cy.findByText('Next').click()
       cy.contains(/Ballot Cards to Audit/)
       cy.get('table tbody tr').each(($el, index, list) => {
-          if(index == 0) {
-              cy.findByText('Start Auditing').click()
-          }
-          cy.get('input[type="checkbox"]').first().click({force: true})
-          cy.findByText('Review').click() 
-          cy.findByText('Submit & Next Ballot').click() 
+        // iterate through exactly the number of ballots available to avoid conditions
+        if(index == 0) {
+          cy.findByText('Start Auditing').click()
+        }
+        cy.get('input[type="checkbox"]').first().click({force: true})
+        cy.findByText('Review').click() 
+        cy.findByText('Submit & Next Ballot').click() 
       })
       cy.wait(100)
       cy.findByText('Auditing Complete - Submit Results').click()
