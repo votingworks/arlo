@@ -6,7 +6,6 @@ from flask import jsonify, request
 from xkcdpass import xkcd_password as xp
 from werkzeug.exceptions import Conflict, BadRequest
 from sqlalchemy import func
-from sqlalchemy.orm import contains_eager
 
 from . import api
 from ..database import db_session
@@ -15,7 +14,6 @@ from ..auth import restrict_access, UserType
 from .rounds import get_current_round, is_round_complete, end_round
 from ..util.jsonschema import validate, JSONDict
 from ..util.binpacking import BalancedBucketList, Bucket
-from ..util.group_by import group_by
 from ..util.isoformat import isoformat
 
 WORDS = xp.generate_wordlist(wordfile=xp.locate_wordfile())
@@ -52,42 +50,77 @@ def validate_audit_boards(
 def assign_sampled_ballots(
     jurisdiction: Jurisdiction, round: Round, audit_boards: List[AuditBoard],
 ):
-    # Collect the physical ballots for each batch that were sampled for this
-    # jurisdiction for this round
-    sampled_ballots = (
+    # If containers were provided, we want all ballots from the same container
+    # assigned to the same audit board. So we key batches by container.
+    # Otherwise, key batches normally by tabulator+name.
+    use_container = (
         SampledBallot.query.join(Batch)
         .filter_by(jurisdiction_id=jurisdiction.id)
         .join(SampledBallot.draws)
         .filter_by(round_id=round.id)
-        .order_by(Batch.tabulator, Batch.name)
-        .options(contains_eager(SampledBallot.batch))
-        .all()
+        .value(Batch.container)
+        is not None
     )
 
-    # If containers were provided, bucket by container, otherwise bucket by
-    # batch (identified by tabulator+name)
-    def get_batch_key(batch: Batch):
-        return batch.container if batch.container else (batch.tabulator, batch.name)
-
-    ballots_by_batch = group_by(sampled_ballots, key=lambda sb: get_batch_key(sb.batch))
+    # Count sampled ballots for each batch, grouping batches by key.
+    ballot_counts_by_batch = (
+        SampledBallot.query.join(Batch)
+        .filter_by(jurisdiction_id=jurisdiction.id)
+        .join(SampledBallot.draws)
+        .filter_by(round_id=round.id)
+    )
+    if use_container:
+        ballot_counts_by_batch = ballot_counts_by_batch.group_by(
+            Batch.container
+        ).values(Batch.container, func.count(SampledBallot.id.distinct()))
+    else:
+        ballot_counts_by_batch = (
+            ((tabulator, batch_name), num_ballots)
+            for tabulator, batch_name, num_ballots in ballot_counts_by_batch.group_by(
+                Batch.tabulator, Batch.name
+            ).values(
+                Batch.tabulator, Batch.name, func.count(SampledBallot.id.distinct())
+            )
+        )
 
     # Divvy up batches of ballots between the audit boards.
     # Note: BalancedBucketList doesn't care which buckets have which batches to
     # start, so we add all the batches to the first bucket before balancing.
     buckets = [Bucket(audit_board.id) for audit_board in audit_boards]
-    for batch_key, sampled_ballots in ballots_by_batch.items():
-        buckets[0].add_batch(batch_key, len(sampled_ballots))
+    for batch_key, num_ballots in ballot_counts_by_batch:
+        buckets[0].add_batch(batch_key, num_ballots)
     balanced_buckets = BalancedBucketList(buckets)
 
+    # Set the audit board in the database for each bucket of ballots.
     for bucket in balanced_buckets.buckets:
-        ballots_in_bucket = [
-            ballot
-            for batch_key in bucket.batches
-            for ballot in ballots_by_batch[batch_key]
-        ]
-        for ballot in ballots_in_bucket:
-            ballot.audit_board_id = bucket.name
-            db_session.add(ballot)
+        for batch_key in bucket.batches:
+
+            if use_container:
+                batch_filter = dict(container=batch_key)
+            else:
+                tabulator, batch_name = batch_key
+                batch_filter = dict(tabulator=tabulator, name=batch_name)
+
+            db_session.execute(
+                SampledBallot.__table__.update()  # pylint: disable=no-member
+                .values(audit_board_id=bucket.name)
+                .where(
+                    SampledBallot.batch_id.in_(
+                        Batch.query.filter_by(
+                            jurisdiction_id=jurisdiction.id, **batch_filter,
+                        )
+                        .with_entities(Batch.id)
+                        .subquery()
+                    )
+                )
+                .where(
+                    SampledBallot.id.in_(
+                        SampledBallotDraw.query.filter_by(round_id=round.id)
+                        .with_entities(SampledBallotDraw.ballot_id)
+                        .subquery()
+                    )
+                )
+            )
 
 
 def assign_sampled_batches(
