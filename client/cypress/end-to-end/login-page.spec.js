@@ -1,11 +1,11 @@
 before(() => cy.exec('./cypress/seed-test-db.sh'))
 
-describe('Audit creation, filling in standard ballot comparison values', () => {
+describe('Login page', () => {
   beforeEach(() => {
     cy.visit('/')
   })
 
-  it('arlo login page opens', () => {
+  it('opens', () => {
     cy.title('Arlo (by VotingWorks)')
     cy.contains('Participating in an audit in your local jurisdiction?')
     cy.contains('Log in to your audit')
