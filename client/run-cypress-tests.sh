@@ -6,4 +6,4 @@ export ARLO_JURISDICTIONADMIN_AUTH0_BASE_URL=https://votingworks-noauth.herokuap
 trap 'kill 0' SIGINT SIGHUP EXIT
 cd "$(dirname "${BASH_SOURCE[0]}")"
 FLASK_ENV=test ../run-dev.sh &
-yarn run cypress run
+yarn run cypress run --browser chrome

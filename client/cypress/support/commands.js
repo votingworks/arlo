@@ -26,6 +26,7 @@
 
 import url from 'url'
 import qs from 'querystring'
+// import 'cypress-file-upload'
 
 Cypress.Commands.add('loginAuditAdmin', email => {
   cy.request({ url: '/auth/auditadmin/start', followRedirect: false }).then(
@@ -38,4 +39,23 @@ Cypress.Commands.add('loginAuditAdmin', email => {
       cy.visit(`/auth/auditadmin/callback?${callbackParams}`)
     }
   )
+})
+
+Cypress.Commands.add('loginJurisdictionAdmin', email => {
+  cy.request({
+    url: '/auth/jurisdictionadmin/start',
+    followRedirect: false,
+  }).then(response => {
+    const { state } = qs.parse(url.parse(response.headers.location).query)
+    const callbackParams = qs.stringify({
+      code: email,
+      state,
+    })
+    cy.visit(`/auth/jurisdictionadmin/callback?${callbackParams}`)
+  })
+})
+
+Cypress.Commands.add('logout', () => {
+  cy.get('.bp3-popover-target button').click()
+  cy.findByText('Log out').click()
 })
