@@ -19,6 +19,18 @@ export interface IBallot {
   contestsOnBallot?: string[]
 }
 
+// TODO add pagination to this endpoint and yield a continuous stream of ballots
+export const getBallots = async (
+  electionId: string,
+  jurisdictionId: string,
+  roundId: string
+) => {
+  const response = await api<{ ballots: IBallot[] }>(
+    `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/ballots`
+  )
+  return response && response.ballots
+}
+
 const getBallotCount = async (
   electionId: string,
   jurisdictionId: string,

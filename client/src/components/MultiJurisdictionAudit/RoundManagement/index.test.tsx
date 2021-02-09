@@ -37,10 +37,7 @@ const renderView = (props: IRoundManagementProps) =>
   )
 
 const apiCalls = {
-  getBallots: {
-    url: '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/ballots',
-    response: dummyBallots,
-  },
+  getBallotCount: jaApiCalls.getBallotCount(dummyBallots.ballots),
   getSettings: (response: IAuditSettings) => ({
     url: '/api/election/1/jurisdiction/jurisdiction-id-1/settings',
     response,
@@ -67,7 +64,7 @@ const apiCalls = {
 describe('RoundManagement', () => {
   it('renders audit setup with batch audit', async () => {
     const expectedCalls = [
-      apiCalls.getBallots,
+      apiCalls.getBallotCount,
       apiCalls.getSettings(auditSettings.batchComparisonAll),
       jaApiCalls.getUser,
     ]
@@ -84,7 +81,7 @@ describe('RoundManagement', () => {
 
   it('renders audit setup with ballot audit', async () => {
     const expectedCalls = [
-      apiCalls.getBallots,
+      apiCalls.getBallotCount,
       apiCalls.getSettings(auditSettings.all),
       jaApiCalls.getUser,
     ]
@@ -101,7 +98,7 @@ describe('RoundManagement', () => {
 
   it('renders complete view', async () => {
     const expectedCalls = [
-      apiCalls.getBallots,
+      apiCalls.getBallotCount,
       apiCalls.getSettings(auditSettings.all),
       jaApiCalls.getUser,
     ]
@@ -120,7 +117,7 @@ describe('RoundManagement', () => {
 
   it('renders links & progress with online ballot audit', async () => {
     const expectedCalls = [
-      apiCalls.getBallots,
+      apiCalls.getBallotCount,
       apiCalls.getSettings(auditSettings.all),
       jaApiCalls.getUser,
     ]
@@ -137,7 +134,7 @@ describe('RoundManagement', () => {
 
   it('renders links & data entry with offline ballot audit', async () => {
     const expectedCalls = [
-      apiCalls.getBallots,
+      apiCalls.getBallotCount,
       apiCalls.getSettings(auditSettings.offlineAll),
       jaApiCalls.getUser,
       apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
@@ -156,7 +153,7 @@ describe('RoundManagement', () => {
 
   it('renders links & data entry with batch audit', async () => {
     const expectedCalls = [
-      apiCalls.getBallots,
+      apiCalls.getBallotCount,
       apiCalls.getSettings(auditSettings.batchComparisonAll),
       jaApiCalls.getUser,
       apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
