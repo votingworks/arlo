@@ -730,42 +730,29 @@ def validate_round(round: dict, election: Election):
         if set(round["sampleSizes"].keys()) != {c.id for c in targeted_contests}:
             raise BadRequest("Sample sizes provided do not match targeted contest ids")
 
-    if election.audit_type == AuditType.BATCH_COMPARISON:
-        for single_contest in targeted_contests:
-            total_batches = sum(
-                jurisdiction.manifest_num_batches or 0
-                for jurisdiction in single_contest.jurisdictions
-            )
-            if round["sampleSizes"][single_contest.id] > total_batches:
-                raise Conflict(
-                    f"Sample size must be less than or equal to: {total_batches} (the total number of batches in the targeted contest)"
+        if election.audit_type == AuditType.BATCH_COMPARISON:
+            for single_contest in targeted_contests:
+                total_batches = sum(
+                    jurisdiction.manifest_num_batches or 0
+                    for jurisdiction in single_contest.jurisdictions
                 )
+                if round["sampleSizes"][single_contest.id] > total_batches:
+                    raise Conflict(
+                        f"Sample size must be less than or equal to: {total_batches} (the total number of batches in the targeted contest)"
+                    )
 
-    count = 0
-    if (
-        election.audit_type == AuditType.BALLOT_POLLING
-        or election.audit_type == AuditType.BALLOT_COMPARISON
-    ):
-        for single_contest in targeted_contests:
-            contest_sample_size_arr = list(round["sampleSizes"].values())
-            contest_sample_size = contest_sample_size_arr[count]
-            if contest_sample_size > single_contest.total_ballots_cast:
-                raise Conflict(
-                    f"Sample size must be less than or equal to: {single_contest.total_ballots_cast} (the total number of ballots in the targeted contest)"
-                )
-            count += 1
-
-    # if election.audit_type == AuditType.BALLOT_COMPARISON:
-    #     contest_sample_size_arr = list(round["sampleSizes"].values())
-    #     sample_size_count = len(contest_sample_size_arr) - 2
-    #     for single_contest in targeted_contest_ids:
-    #         contest_sample_size = contest_sample_size_arr[sample_size_count - 1]
-    #         total_ballots = sum(jurisdiction.manifest_num_batches or 0 for jurisdiction in single_contest.jurisdictions)
-    #         if contest_sample_size > total_ballots:
-    #             raise Conflict(
-    #                 f"Sample size must be less than or equal to: {total_ballots} (the total number of ballots in the targeted contest)"
-    #             )
-    #         sample_size_count -= 1
+        if (
+            election.audit_type == AuditType.BALLOT_POLLING
+            or election.audit_type == AuditType.BALLOT_COMPARISON
+        ):
+            for single_contest in targeted_contests:
+                if (
+                    round["sampleSizes"][single_contest.id]
+                    > single_contest.total_ballots_cast
+                ):
+                    raise Conflict(
+                        f"Sample size must be less than or equal to: {single_contest.total_ballots_cast} (the total number of ballots in the targeted contest)"
+                    )
 
 
 @api.route("/election/<election_id>/round", methods=["POST"])
