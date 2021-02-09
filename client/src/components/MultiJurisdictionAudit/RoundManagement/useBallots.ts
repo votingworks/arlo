@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { api } from '../../utilities'
 import { IAuditBoard } from '../useAuditBoards'
-import { hashBy } from '../../../utils/array'
 import { BallotStatus, IBallotInterpretation } from '../../../types'
 
 export interface IBallot {
@@ -20,40 +19,31 @@ export interface IBallot {
   contestsOnBallot?: string[]
 }
 
-const getBallots = async (
+const getBallotCount = async (
   electionId: string,
   jurisdictionId: string,
   roundId: string
-): Promise<IBallot[] | null> => {
-  const response = await api<{ ballots: IBallot[] }>(
-    `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/ballots`
+) => {
+  const response = await api<{ count: number }>(
+    `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/ballots?count=true`
   )
-  return response && response.ballots
+  return response && response.count
 }
 
-const useBallots = (
+const useBallotCount = (
   electionId: string,
   jurisdictionId: string,
-  roundId: string,
-  auditBoards: IAuditBoard[] | null
-): IBallot[] | null => {
-  const [ballots, setBallots] = useState<IBallot[] | null>(null)
+  roundId: string
+): number | null => {
+  const [numBallots, setNumBallots] = useState<number | null>(null)
 
-  const auditBoardsHash = hashBy(auditBoards, ab => ab.id)
   useEffect(() => {
     ;(async () => {
-      setBallots(await getBallots(electionId, jurisdictionId, roundId))
+      setNumBallots(await getBallotCount(electionId, jurisdictionId, roundId))
     })()
-  }, [
-    electionId,
-    jurisdictionId,
-    roundId,
-    // We need to reload the ballots after we create the audit boards in order
-    // to populate ballot.auditBoard
-    auditBoardsHash,
-  ])
+  }, [electionId, jurisdictionId, roundId])
 
-  return ballots
+  return numBallots
 }
 
-export default useBallots
+export default useBallotCount

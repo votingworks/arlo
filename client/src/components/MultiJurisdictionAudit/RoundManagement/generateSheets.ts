@@ -12,11 +12,13 @@ const LABEL_PADDING_Y = 7
 const LABEL_PADDING_X = 7
 
 export const downloadLabels = (
+  electionId: string,
+  jurisdictionId: string,
   roundNum: number,
-  ballots: IBallot[],
   jurisdictionName: string,
   auditName: string
 ): string => {
+  const ballots: IBallot[] = [] // TODO create a streaming API wrapper for ballots
   if (ballots.length) {
     const labels = new jsPDF({ format: 'letter', unit: 'pt' })
     labels.setFontSize(10)
@@ -67,11 +69,13 @@ const PLACEHOLDERS_START_X = 20
 const PLACEHOLDERS_START_Y = 20
 
 export const downloadPlaceholders = (
+  electionId: string,
+  jurisdictionId: string,
   roundNum: number,
-  ballots: IBallot[],
   jurisdictionName: string,
   auditName: string
 ): string => {
+  const ballots: IBallot[] = [] // TODO create a streaming API wrapper for ballots
   if (ballots.length) {
     const placeholders = new jsPDF({ format: 'letter' })
     placeholders.setFontSize(20)

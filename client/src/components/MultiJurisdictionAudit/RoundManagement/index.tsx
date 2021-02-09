@@ -17,7 +17,7 @@ import RoundDataEntry from './RoundDataEntry'
 import useAuditSettingsJurisdictionAdmin from './useAuditSettingsJurisdictionAdmin'
 import BatchRoundDataEntry from './BatchRoundDataEntry'
 import { useAuthDataContext, IJurisdictionAdmin } from '../../UserContext'
-import useBallots, { IBallot } from './useBallots'
+import useBallotCount from './useBallots'
 import { IRound } from '../useRoundsAuditAdmin'
 import OfflineBatchRoundDataEntry from './OfflineBatchRoundDataEntry'
 import { IAuditSettings } from '../useAuditSettings'
@@ -54,13 +54,13 @@ const RoundManagement = ({
     jurisdictionId: string
   }>()
   const auth = useAuthDataContext()
-  const ballots = useBallots(electionId, jurisdictionId, round.id, auditBoards)
+  const numBallots = useBallotCount(electionId, jurisdictionId, round.id)
   const auditSettings = useAuditSettingsJurisdictionAdmin(
     electionId,
     jurisdictionId
   )
 
-  if (!auth || !auth.user || !ballots || !auditSettings) return null // Still loading
+  if (!auth || !auth.user || numBallots === null || !auditSettings) return null // Still loading
 
   const jurisdiction = (auth.user as IJurisdictionAdmin).jurisdictions.find(
     j => j.id === jurisdictionId
@@ -82,7 +82,7 @@ const RoundManagement = ({
     </StrongP>
   ) : (
     <StrongP>
-      {ballots.length} ballots to audit in Round {roundNum}
+      {numBallots.toLocaleString()} ballots to audit in Round {roundNum}
     </StrongP>
   )
 
@@ -110,7 +110,6 @@ const RoundManagement = ({
             jurisdictionName={jurisdiction.name}
             round={round}
             auditSettings={auditSettings}
-            ballots={ballots}
             auditBoards={auditBoards}
           />
         </SpacedDiv>
@@ -136,7 +135,6 @@ export interface IJAFileDownloadButtonsProps {
   jurisdictionName: string
   round: IRound
   auditSettings: IAuditSettings
-  ballots: IBallot[]
   auditBoards: IAuditBoard[]
 }
 
@@ -146,7 +144,6 @@ export const JAFileDownloadButtons = ({
   jurisdictionName,
   round,
   auditSettings,
-  ballots,
   auditBoards,
 }: IJAFileDownloadButtonsProps) => (
   <ButtonGroup vertical alignText="left">
@@ -176,8 +173,9 @@ export const JAFileDownloadButtons = ({
         /* istanbul ignore next */ // tested in generateSheets.test.tsx
         () =>
           downloadPlaceholders(
+            electionId,
+            jurisdictionId,
             round.roundNum,
-            ballots,
             jurisdictionName,
             auditSettings.auditName
           )
@@ -191,8 +189,9 @@ export const JAFileDownloadButtons = ({
         /* istanbul ignore next */ // tested in generateSheets.test.tsx
         () =>
           downloadLabels(
+            electionId,
+            jurisdictionId,
             round.roundNum,
-            ballots,
             jurisdictionName,
             auditSettings.auditName
           )
