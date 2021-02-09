@@ -363,14 +363,89 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
 
     rows = [heading("SAMPLED BALLOTS")]
 
-    min_round_num = (
-        SampledBallotDraw.query.join(Round)
-        .group_by(SampledBallotDraw.ballot_id)
+    # In order to avoid loading all of the ballots into memory at once (there
+    # may be 10-100k), we use yield_per(n), which streams n ballots at a
+    # time from the database. There's a bunch of related data we want for each ballot
+    # (e.g. imprinted id, ticket numbers, ballot interpretations), but we don't
+    # want to make separate queries for each individual ballot's relationships.
+    # Usually, you can use sqlalchemy's eager loading features to load this
+    # data as part of the original query, but they don't work with yield_per.
+    # So instead, we join in the data we need and return it in arrays.
+
+    ballot_interpretation_selected_choices = (
+        BallotInterpretation.query.join(BallotInterpretation.selected_choices)
+        .group_by(BallotInterpretation.ballot_id, BallotInterpretation.contest_id)
         .with_entities(
-            SampledBallotDraw.ballot_id, func.min(Round.round_num).label("round_num")
+            BallotInterpretation.ballot_id,
+            BallotInterpretation.contest_id,
+            func.array_agg(
+                aggregate_order_by(ContestChoice.name, ContestChoice.created_at)
+            ).label("selected_choice_names"),
         )
         .subquery()
     )
+    ballot_interpretations = (
+        BallotInterpretation.query.outerjoin(
+            ballot_interpretation_selected_choices,
+            and_(
+                BallotInterpretation.ballot_id
+                == ballot_interpretation_selected_choices.c.ballot_id,
+                BallotInterpretation.contest_id
+                == ballot_interpretation_selected_choices.c.contest_id,
+            ),
+        )
+        .group_by(BallotInterpretation.ballot_id,)
+        .with_entities(
+            BallotInterpretation.ballot_id,
+            func.array_agg(
+                func.json_build_array(
+                    BallotInterpretation.contest_id,
+                    BallotInterpretation.interpretation,
+                    ballot_interpretation_selected_choices.c.selected_choice_names,
+                    BallotInterpretation.comment,
+                    BallotInterpretation.is_overvote,
+                )
+            ).label("interpretations"),
+        )
+        .subquery()
+    )
+
+    ticket_numbers = (
+        SampledBallotDraw.query.join(Round)
+        .group_by(SampledBallotDraw.ballot_id)
+        .with_entities(
+            SampledBallotDraw.ballot_id,
+            func.array_agg(
+                func.json_build_array(
+                    Round.round_num,
+                    SampledBallotDraw.contest_id,
+                    SampledBallotDraw.ticket_number,
+                )
+            ).label("ticket_numbers"),
+        )
+        .subquery()
+    )
+
+    imprinted_ids = (
+        SampledBallot.query.join(
+            CvrBallot,
+            and_(
+                CvrBallot.batch_id == SampledBallot.batch_id,
+                CvrBallot.ballot_position == SampledBallot.ballot_position,
+            ),
+        )
+        .with_entities(SampledBallot.id, CvrBallot.imprinted_id)
+        .subquery()
+    )
+
+    min_round_num = (
+        SampledBallotDraw.query.join(Round)
+        .order_by(SampledBallotDraw.ballot_id, Round.round_num)
+        .distinct(SampledBallotDraw.ballot_id)
+        .with_entities(SampledBallotDraw.ballot_id, Round.round_num)
+        .subquery()
+    )
+
     ballots = (
         SampledBallot.query.join(Batch)
         .join(Jurisdiction)
@@ -387,89 +462,20 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
     )
     if jurisdiction:
         ballots = ballots.filter(Jurisdiction.id == jurisdiction.id)
-
-    # In order to avoid loading all of the ballots into memory at once (there
-    # may be 10-100k), we use yield_per(n), which streams n ballots at a
-    # time from the database. There's a bunch of related data we want for each ballot
-    # (e.g. imprinted id, ticket numbers, ballot interpretations), but we don't
-    # want to make separate queries for each individual ballot's relationships.
-    # Usually, you can use sqlalchemy's eager loading features to load this
-    # data as part of the original query, but they don't work with yield_per.
-    # So instead, we join in the data we need and return it in arrays.
-
-    ballot_interpretations = (
-        BallotInterpretation.query.outerjoin(BallotInterpretation.selected_choices)
-        .group_by(
-            BallotInterpretation.ballot_id,
-            BallotInterpretation.contest_id,
-            BallotInterpretation.interpretation,
-            BallotInterpretation.comment,
-            BallotInterpretation.is_overvote,
-        )
-        .with_entities(
-            BallotInterpretation.ballot_id,
-            BallotInterpretation.contest_id,
-            BallotInterpretation.interpretation,
-            func.array_agg(
-                aggregate_order_by(ContestChoice.name, ContestChoice.created_at)
-            ).label("selected_choice_names"),
-            BallotInterpretation.comment,
-            BallotInterpretation.is_overvote,
-        )
-        .subquery()
-    )
-
-    ticket_numbers = (
-        SampledBallotDraw.query.join(Round)
-        .with_entities(
-            SampledBallotDraw.ballot_id,
-            Round.round_num,
-            SampledBallotDraw.contest_id,
-            SampledBallotDraw.ticket_number,
-        )
-        .subquery()
-    )
-
     ballots = (
-        ballots.outerjoin(
-            CvrBallot,
-            and_(
-                CvrBallot.batch_id == SampledBallot.batch_id,
-                CvrBallot.ballot_position == SampledBallot.ballot_position,
-            ),
-        )
-        .join(ticket_numbers)
-        .outerjoin(ballot_interpretations)
-        .group_by(
-            SampledBallot.id,
-            Batch.id,
-            Jurisdiction.id,
-            CvrBallot.imprinted_id,
-            ticket_numbers.c.ballot_id,
-            ballot_interpretations.c.ballot_id,
-            min_round_num.c.round_num,
+        ballots.join(ticket_numbers)
+        .outerjoin(imprinted_ids, SampledBallot.id == imprinted_ids.c.id)
+        .outerjoin(
+            ballot_interpretations,
+            SampledBallot.id == ballot_interpretations.c.ballot_id,
         )
         .with_entities(
             SampledBallot,
             Batch,
             Jurisdiction.name,
-            CvrBallot.imprinted_id,
-            func.array_agg(
-                func.json_build_array(
-                    ticket_numbers.c.round_num,
-                    ticket_numbers.c.contest_id,
-                    ticket_numbers.c.ticket_number,
-                )
-            ),
-            func.array_agg(
-                func.json_build_array(
-                    ballot_interpretations.c.contest_id,
-                    ballot_interpretations.c.interpretation,
-                    ballot_interpretations.c.selected_choice_names,
-                    ballot_interpretations.c.comment,
-                    ballot_interpretations.c.is_overvote,
-                )
-            ),
+            imprinted_ids.c.imprinted_id,
+            ticket_numbers.c.ticket_numbers,
+            func.coalesce(ballot_interpretations.c.interpretations, []),
         )
         .yield_per(100)  # Experimentally, 100 seems to be faster than 10 or 1000
     )
@@ -478,6 +484,11 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
         contest for contest in election.contests if contest.is_targeted
     ]
 
+    one_batch = (
+        Batch.query.join(Jurisdiction).filter_by(election_id=election.id).first()
+    )
+    show_container = one_batch and one_batch.container is not None
+    show_tabulator = one_batch and one_batch.tabulator is not None
     show_cvrs = election.audit_type == AuditType.BALLOT_COMPARISON
 
     result_columns = []
@@ -489,7 +500,10 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
                 result_columns.append(f"Discrepancy: {contest.name}")
 
     rows.append(
-        ["Jurisdiction Name", "Container", "Tabulator", "Batch Name", "Ballot Position"]
+        ["Jurisdiction Name"]
+        + (["Container"] if show_container else [])
+        + (["Tabulator"] if show_tabulator else [])
+        + ["Batch Name", "Ballot Position"]
         + (["Imprinted ID"] if show_cvrs else [])
         + [f"Ticket Numbers: {contest.name}" for contest in targeted_contests]
         + (["Audited?"] if election.online else [])
@@ -535,13 +549,10 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
                     )
 
         rows.append(
-            [
-                jurisdiction_name,
-                batch.container,
-                batch.tabulator,
-                batch.name,
-                ballot.ballot_position,
-            ]
+            [jurisdiction_name]
+            + ([batch.container] if show_container else [])
+            + ([batch.tabulator] if show_tabulator else [])
+            + [batch.name, ballot.ballot_position,]
             + ([imprinted_id] if show_cvrs else [])
             + pretty_ballot_ticket_numbers(ticket_numbers, targeted_contests)
             + ([ballot.status] if election.online else [])
