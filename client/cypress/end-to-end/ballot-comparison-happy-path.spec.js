@@ -93,6 +93,7 @@ describe('Ballot Comparison', () => {
     cy.contains('Number of Audit Boards')
     cy.findByText('Save & Next').click()
     cy.findByText('Download Audit Board Credentials').click()
+    cy.wait(1000)
     cy.logout()
     cy.wait(1000)
     cy.task('getPdfContent', `cypress/fixtures/PDFs/Audit Board Credentials\ -\ Death Star\ -\ TestAudit${id}.pdf`).then((content) => {
