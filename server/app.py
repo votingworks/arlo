@@ -13,7 +13,7 @@ from .config import (
     HTTP_ORIGIN,
     SENTRY_DSN,
 )
-from .database import init_db, db_session
+from .database import init_db, db_session, engine
 from .api import api
 from .auth import auth
 from .auth.routes import oauth
@@ -65,3 +65,11 @@ sentry_sdk.init(
     integrations=[FlaskIntegration()],
     traces_sample_rate=0.2,
 )
+
+# Dispose the database engine after we're finished with app setup. (A new
+# connection will be created when requests start coming in.) This ensures that
+# when we run the server in multiple processes (e.g. with gunicorn), we can
+# fork those processes after loading the app (e.g. with gunicorn --preload)
+# without having two copies of the same database connection, which causes
+# errors. See https://stackoverflow.com/questions/22752521/uwsgi-flask-sqlalchemy-and-postgres-ssl-error-decryption-failed-or-bad-reco.
+engine.dispose()
