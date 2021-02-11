@@ -1,6 +1,7 @@
 import jsPDF from 'jspdf'
 import { IAuditBoard } from '../useAuditBoards'
-import { IBallot } from './useBallots'
+import { getBallots } from './useBallots'
+import { IRound } from '../useRoundsAuditAdmin'
 
 // Label constants in points
 const LABEL_HEIGHT = 72
@@ -11,13 +12,15 @@ const LABEL_MARGIN_X = 9
 const LABEL_PADDING_Y = 7
 const LABEL_PADDING_X = 7
 
-export const downloadLabels = (
-  roundNum: number,
-  ballots: IBallot[],
+export const downloadLabels = async (
+  electionId: string,
+  jurisdictionId: string,
+  round: IRound,
   jurisdictionName: string,
   auditName: string
-): string => {
-  if (ballots.length) {
+): Promise<string> => {
+  const ballots = await getBallots(electionId, jurisdictionId, round.id)
+  if (ballots && ballots.length) {
     const labels = new jsPDF({ format: 'letter', unit: 'pt' })
     labels.setFontSize(10)
     let labelCount = 0
@@ -53,8 +56,9 @@ export const downloadLabels = (
       })
     })
     labels.autoPrint()
-    labels.save(
-      `Round ${roundNum} Labels - ${jurisdictionName} - ${auditName}.pdf`
+    await labels.save(
+      `Round ${round.roundNum} Labels - ${jurisdictionName} - ${auditName}.pdf`,
+      { returnPromise: true }
     )
     return labels.output() // returned for test snapshots
   }
@@ -66,13 +70,15 @@ const PLACEHOLDERS_WIDTH = 180
 const PLACEHOLDERS_START_X = 20
 const PLACEHOLDERS_START_Y = 20
 
-export const downloadPlaceholders = (
-  roundNum: number,
-  ballots: IBallot[],
+export const downloadPlaceholders = async (
+  electionId: string,
+  jurisdictionId: string,
+  round: IRound,
   jurisdictionName: string,
   auditName: string
-): string => {
-  if (ballots.length) {
+): Promise<string> => {
+  const ballots = await getBallots(electionId, jurisdictionId, round.id)
+  if (ballots && ballots.length) {
     const placeholders = new jsPDF({ format: 'letter' })
     placeholders.setFontSize(20)
     let pageCount = 0
@@ -97,19 +103,20 @@ export const downloadPlaceholders = (
       pageCount += 1
     })
     placeholders.autoPrint()
-    placeholders.save(
-      `Round ${roundNum} Placeholders - ${jurisdictionName} - ${auditName}.pdf`
+    await placeholders.save(
+      `Round ${round.roundNum} Placeholders - ${jurisdictionName} - ${auditName}.pdf`,
+      { returnPromise: true }
     )
     return placeholders.output() // returned for test snapshots
   }
   return ''
 }
 
-export const downloadAuditBoardCredentials = (
+export const downloadAuditBoardCredentials = async (
   auditBoards: IAuditBoard[],
   jurisdictionName: string,
   auditName: string
-): string => {
+): Promise<string> => {
   const auditBoardsWithoutBallots: string[] = []
   const auditBoardCreds = new jsPDF({ format: 'letter' })
   auditBoards.forEach((board, i) => {
@@ -163,8 +170,9 @@ export const downloadAuditBoardCredentials = (
     })
   }
   auditBoardCreds.autoPrint()
-  auditBoardCreds.save(
-    `Audit Board Credentials - ${jurisdictionName} - ${auditName}.pdf`
+  await auditBoardCreds.save(
+    `Audit Board Credentials - ${jurisdictionName} - ${auditName}.pdf`,
+    { returnPromise: true }
   )
   return auditBoardCreds.output() // returned for test snapshots
 }

@@ -1,11 +1,6 @@
 import { contestMocks } from './AASetup/Contests/_mocks'
 import { IFileInfo } from './useCSV'
-import {
-  manifestFile,
-  talliesFile,
-  cvrsFile,
-  auditBoardMocks,
-} from './useSetupMenuItems/_mocks'
+import { manifestFile, talliesFile, cvrsFile } from './useSetupMenuItems/_mocks'
 import { FileProcessingStatus } from './useSetupMenuItems/getJurisdictionFileStatus'
 import { IBallot } from './RoundManagement/useBallots'
 import { IAuditBoard } from './useAuditBoards'
@@ -133,6 +128,11 @@ export const jaApiCalls = {
   getBallots: (ballots: IBallot[]) => ({
     url: '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/ballots',
     response: { ballots },
+  }),
+  getBallotCount: (ballots: IBallot[]) => ({
+    url:
+      '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/ballots?count=true',
+    response: { count: ballots.length },
   }),
 }
 

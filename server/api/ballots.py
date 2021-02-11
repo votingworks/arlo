@@ -199,6 +199,17 @@ def list_ballots_for_jurisdiction(
     jurisdiction: Jurisdiction,
     round: Round,
 ):
+    if request.args.get("count"):
+        count = (
+            SampledBallot.query.join(Batch)
+            .filter_by(jurisdiction_id=jurisdiction.id)
+            .join(SampledBallotDraw)
+            .filter_by(round_id=round.id)
+            .distinct(SampledBallot.id)
+            .count()
+        )
+        return jsonify({"count": count})
+
     ballots = (
         SampledBallot.query.join(Batch)
         .filter_by(jurisdiction_id=jurisdiction.id)

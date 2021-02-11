@@ -15,10 +15,10 @@ import { FileProcessingStatus, IFileInfo } from '../useCSV'
 import { JAFileDownloadButtons } from '../RoundManagement'
 import { IRound } from '../useRoundsAuditAdmin'
 import useAuditBoards from '../useAuditBoards'
-import useBallots from '../RoundManagement/useBallots'
 import StatusTag from '../../Atoms/StatusTag'
 import { api } from '../../utilities'
 import { IAuditSettings } from '../useAuditSettings'
+import useBallotCount from '../RoundManagement/useBallots'
 
 const FileStatusTag = ({
   processing,
@@ -154,8 +154,8 @@ const RoundStatusSection = ({
   auditSettings: IAuditSettings
 }) => {
   const [auditBoards] = useAuditBoards(electionId, jurisdiction.id, [round])
-  const ballots = useBallots(electionId, jurisdiction.id, round.id, auditBoards)
-  if (!auditBoards || !ballots) return null
+  const numBallots = useBallotCount(electionId, jurisdiction.id, round.id)
+  if (!auditBoards || numBallots === null) return null
 
   const status = (() => {
     const jurisdictionStatus =
@@ -197,7 +197,7 @@ const RoundStatusSection = ({
       )
     }
 
-    if (ballots.length === 0) return <p>No ballots sampled</p>
+    if (numBallots === 0) return <p>No ballots sampled</p>
     if (jurisdictionStatus === JurisdictionRoundStatus.COMPLETE)
       return <p>Data entry complete</p>
     if (auditBoards.length === 0)
@@ -209,7 +209,6 @@ const RoundStatusSection = ({
         jurisdictionName={jurisdiction.name}
         round={round}
         auditSettings={auditSettings}
-        ballots={ballots}
         auditBoards={auditBoards}
       />
     )

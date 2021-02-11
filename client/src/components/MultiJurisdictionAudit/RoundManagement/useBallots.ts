@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { api } from '../../utilities'
 import { IAuditBoard } from '../useAuditBoards'
-import { hashBy } from '../../../utils/array'
 import { BallotStatus, IBallotInterpretation } from '../../../types'
 
 export interface IBallot {
@@ -20,40 +19,43 @@ export interface IBallot {
   contestsOnBallot?: string[]
 }
 
-const getBallots = async (
+// TODO add pagination to this endpoint and yield a continuous stream of ballots
+export const getBallots = async (
   electionId: string,
   jurisdictionId: string,
   roundId: string
-): Promise<IBallot[] | null> => {
+) => {
   const response = await api<{ ballots: IBallot[] }>(
     `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/ballots`
   )
   return response && response.ballots
 }
 
-const useBallots = (
+const getBallotCount = async (
   electionId: string,
   jurisdictionId: string,
-  roundId: string,
-  auditBoards: IAuditBoard[] | null
-): IBallot[] | null => {
-  const [ballots, setBallots] = useState<IBallot[] | null>(null)
-
-  const auditBoardsHash = hashBy(auditBoards, ab => ab.id)
-  useEffect(() => {
-    ;(async () => {
-      setBallots(await getBallots(electionId, jurisdictionId, roundId))
-    })()
-  }, [
-    electionId,
-    jurisdictionId,
-    roundId,
-    // We need to reload the ballots after we create the audit boards in order
-    // to populate ballot.auditBoard
-    auditBoardsHash,
-  ])
-
-  return ballots
+  roundId: string
+) => {
+  const response = await api<{ count: number }>(
+    `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/ballots?count=true`
+  )
+  return response && response.count
 }
 
-export default useBallots
+const useBallotCount = (
+  electionId: string,
+  jurisdictionId: string,
+  roundId: string
+): number | null => {
+  const [numBallots, setNumBallots] = useState<number | null>(null)
+
+  useEffect(() => {
+    ;(async () => {
+      setNumBallots(await getBallotCount(electionId, jurisdictionId, roundId))
+    })()
+  }, [electionId, jurisdictionId, roundId])
+
+  return numBallots
+}
+
+export default useBallotCount

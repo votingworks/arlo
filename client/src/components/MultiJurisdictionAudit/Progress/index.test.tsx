@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen, within } from '@testing-library/react'
+import { render, screen, within, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import Progress from '.'
 import {
@@ -303,6 +303,7 @@ describe('Progress screen', () => {
   it('shows the detail modal with JA file download buttons after the audit starts', async () => {
     const expectedCalls = [
       jaApiCalls.getAuditBoards(auditBoardMocks.unfinished),
+      jaApiCalls.getBallotCount(dummyBallots.ballots),
       jaApiCalls.getBallots(dummyBallots.ballots),
       jaApiCalls.getBallots(dummyBallots.ballots),
     ]
@@ -338,24 +339,35 @@ describe('Progress screen', () => {
           name: /Download Placeholder Sheets/,
         })
       )
-      expect(mockSavePDF).toHaveBeenCalledWith(
-        'Round 1 Placeholders - Jurisdiction 1 - Test Audit.pdf'
+      await waitFor(() =>
+        expect(mockSavePDF).toHaveBeenCalledWith(
+          'Round 1 Placeholders - Jurisdiction 1 - Test Audit.pdf',
+          { returnPromise: true }
+        )
       )
+      mockSavePDF.mockClear()
       userEvent.click(
         within(modal).getByRole('button', {
           name: /Download Ballot Labels/,
         })
       )
-      expect(mockSavePDF).toHaveBeenCalledWith(
-        'Round 1 Labels - Jurisdiction 1 - Test Audit.pdf'
+      await waitFor(() =>
+        expect(mockSavePDF).toHaveBeenCalledWith(
+          'Round 1 Labels - Jurisdiction 1 - Test Audit.pdf',
+          { returnPromise: true }
+        )
       )
+      mockSavePDF.mockClear()
       userEvent.click(
         within(modal).getByRole('button', {
           name: /Download Audit Board Credentials/,
         })
       )
-      expect(mockSavePDF).toHaveBeenCalledWith(
-        'Audit Board Credentials - Jurisdiction 1 - Test Audit.pdf'
+      await waitFor(() =>
+        expect(mockSavePDF).toHaveBeenCalledWith(
+          'Audit Board Credentials - Jurisdiction 1 - Test Audit.pdf',
+          { returnPromise: true }
+        )
       )
     })
   })
@@ -363,8 +375,7 @@ describe('Progress screen', () => {
   it('shows a message in the detail modal when no ballots sampled', async () => {
     const expectedCalls = [
       jaApiCalls.getAuditBoards(auditBoardMocks.unfinished),
-      jaApiCalls.getBallots([]),
-      jaApiCalls.getBallots([]),
+      jaApiCalls.getBallotCount([]),
     ]
     await withMockFetch(expectedCalls, async () => {
       render(
@@ -386,8 +397,7 @@ describe('Progress screen', () => {
   it('shows a message in the detail modal when no audit boards set up', async () => {
     const expectedCalls = [
       jaApiCalls.getAuditBoards([]),
-      jaApiCalls.getBallots(dummyBallots.ballots),
-      jaApiCalls.getBallots(dummyBallots.ballots),
+      jaApiCalls.getBallotCount(dummyBallots.ballots),
     ]
     await withMockFetch(expectedCalls, async () => {
       render(

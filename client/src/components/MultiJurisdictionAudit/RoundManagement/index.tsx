@@ -17,10 +17,11 @@ import RoundDataEntry from './RoundDataEntry'
 import useAuditSettingsJurisdictionAdmin from './useAuditSettingsJurisdictionAdmin'
 import BatchRoundDataEntry from './BatchRoundDataEntry'
 import { useAuthDataContext, IJurisdictionAdmin } from '../../UserContext'
-import useBallots, { IBallot } from './useBallots'
+import useBallotCount from './useBallots'
 import { IRound } from '../useRoundsAuditAdmin'
 import OfflineBatchRoundDataEntry from './OfflineBatchRoundDataEntry'
 import { IAuditSettings } from '../useAuditSettings'
+import AsyncButton from '../../Atoms/AsyncButton'
 
 const PaddedWrapper = styled(Wrapper)`
   flex-direction: column;
@@ -54,13 +55,13 @@ const RoundManagement = ({
     jurisdictionId: string
   }>()
   const auth = useAuthDataContext()
-  const ballots = useBallots(electionId, jurisdictionId, round.id, auditBoards)
+  const numBallots = useBallotCount(electionId, jurisdictionId, round.id)
   const auditSettings = useAuditSettingsJurisdictionAdmin(
     electionId,
     jurisdictionId
   )
 
-  if (!auth || !auth.user || !ballots || !auditSettings) return null // Still loading
+  if (!auth || !auth.user || numBallots === null || !auditSettings) return null // Still loading
 
   const jurisdiction = (auth.user as IJurisdictionAdmin).jurisdictions.find(
     j => j.id === jurisdictionId
@@ -82,7 +83,7 @@ const RoundManagement = ({
     </StrongP>
   ) : (
     <StrongP>
-      {ballots.length} ballots to audit in Round {roundNum}
+      {numBallots.toLocaleString()} ballots to audit in Round {roundNum}
     </StrongP>
   )
 
@@ -110,7 +111,6 @@ const RoundManagement = ({
             jurisdictionName={jurisdiction.name}
             round={round}
             auditSettings={auditSettings}
-            ballots={ballots}
             auditBoards={auditBoards}
           />
         </SpacedDiv>
@@ -136,7 +136,6 @@ export interface IJAFileDownloadButtonsProps {
   jurisdictionName: string
   round: IRound
   auditSettings: IAuditSettings
-  ballots: IBallot[]
   auditBoards: IAuditBoard[]
 }
 
@@ -146,7 +145,6 @@ export const JAFileDownloadButtons = ({
   jurisdictionName,
   round,
   auditSettings,
-  ballots,
   auditBoards,
 }: IJAFileDownloadButtonsProps) => (
   <ButtonGroup vertical alignText="left">
@@ -170,52 +168,48 @@ export const JAFileDownloadButtons = ({
       {auditSettings.auditType === 'BATCH_COMPARISON' ? 'Batch' : 'Ballot'}{' '}
       Retrieval List
     </Button>
-    <Button
+    <AsyncButton
       icon="document"
-      onClick={
-        /* istanbul ignore next */ // tested in generateSheets.test.tsx
-        () =>
-          downloadPlaceholders(
-            round.roundNum,
-            ballots,
-            jurisdictionName,
-            auditSettings.auditName
-          )
+      onClick={() =>
+        downloadPlaceholders(
+          electionId,
+          jurisdictionId,
+          round,
+          jurisdictionName,
+          auditSettings.auditName
+        )
       }
     >
       Download Placeholder Sheets
-    </Button>
-    <Button
+    </AsyncButton>
+    <AsyncButton
       icon="label"
-      onClick={
-        /* istanbul ignore next */ // tested in generateSheets.test.tsx
-        () =>
-          downloadLabels(
-            round.roundNum,
-            ballots,
-            jurisdictionName,
-            auditSettings.auditName
-          )
+      onClick={() =>
+        downloadLabels(
+          electionId,
+          jurisdictionId,
+          round,
+          jurisdictionName,
+          auditSettings.auditName
+        )
       }
     >
       Download Ballot Labels
-    </Button>
+    </AsyncButton>
     {auditSettings.online && (
       <>
-        <Button
+        <AsyncButton
           icon="key"
-          onClick={
-            /* istanbul ignore next */ // tested in generateSheets.test.tsx
-            () =>
-              downloadAuditBoardCredentials(
-                auditBoards,
-                jurisdictionName,
-                auditSettings.auditName
-              )
+          onClick={() =>
+            downloadAuditBoardCredentials(
+              auditBoards,
+              jurisdictionName,
+              auditSettings.auditName
+            )
           }
         >
           Download Audit Board Credentials
-        </Button>
+        </AsyncButton>
         <QRs passphrases={auditBoards.map(b => b.passphrase)} />
       </>
     )}

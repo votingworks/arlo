@@ -1042,3 +1042,20 @@ def test_ja_ballot_retrieval_list_round_2(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/ballots"
     )
     assert len(json.loads(rv.data)["ballots"]) == len(retrieval_list.splitlines()) - 1
+
+
+def test_ja_ballots_count(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    round_1_id: str,
+    snapshot,
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/ballots?count=true"
+    )
+    response = json.loads(rv.data)
+    snapshot.assert_match(response)
