@@ -3,6 +3,8 @@ import 'cypress-file-upload'
 before(() => cy.exec('./cypress/seed-test-db.sh'))
 
 describe('Ballot Polling', () => {
+  const auditAdmin = 'audit-admin-cypress@example.com'
+  const jurisdictionAdmin = 'wtarkin@empire.gov'
   const uuid = () => Cypress._.random(0, 1e6)
   let id = 0
   let board_credentials_url = ''
@@ -10,7 +12,7 @@ describe('Ballot Polling', () => {
   beforeEach(() => {
     id = uuid()
     cy.visit('/')
-    cy.loginAuditAdmin('audit-admin-cypress@example.com')
+    cy.loginAuditAdmin(auditAdmin)
     cy.get('input[name=auditName]').type(`TestAudit${id}`)
     cy.get('input[value="BALLOT_POLLING"]').check({ force: true })
     cy.get('input[value="BRAVO"]').check({ force: true })
@@ -51,10 +53,8 @@ describe('Ballot Polling', () => {
     cy.get('input[name=randomSeed]').type("543210")
     cy.findByText('Save & Next').click()
     cy.findAllByText('Review & Launch').should('have.length', 2)
-    cy.wait(100)
-    cy.logout()
-    cy.contains('Participating in an audit in your local jurisdiction?')
-    cy.loginJurisdictionAdmin('wtarkin@empire.gov')
+    cy.logout(auditAdmin)
+    cy.loginJurisdictionAdmin(jurisdictionAdmin)
     cy.findByText(`Jurisdictions - TestAudit${id}`).siblings('button').click()
     cy.fixture('CSVs/manifest/ballot_polling_manifest.csv').then(fileContent => {
         cy.get('input[type="file"]').first().attachFile({
@@ -65,8 +65,8 @@ describe('Ballot Polling', () => {
     })
     cy.findByText('Upload File').click()
     cy.contains("Upload successfully completed")
-    cy.logout()
-    cy.loginAuditAdmin('audit-admin-cypress@example.com')
+    cy.logout(jurisdictionAdmin)
+    cy.loginAuditAdmin(auditAdmin)
     cy.findByText(`TestAudit${id}`).click()
     cy.findByText('Review & Launch').click()
     cy.findAllByText('Review & Launch').should('have.length', 2)
@@ -74,12 +74,10 @@ describe('Ballot Polling', () => {
     cy.findAllByText('Launch Audit').spread((firstButton, secondButton) => {
       secondButton.click()
     })
-    cy.get('tbody').children('tr').its('length').should('be.gt', 0)
-    cy.wait(100)
-    cy.logout()
-    cy.wait(100)
-    cy.contains('Participating in an audit in your local jurisdiction?')
-    cy.loginJurisdictionAdmin('wtarkin@empire.gov')
+    cy.contains('Drawing a random sample of ballots...')
+    cy.contains('Audit Progress')
+    cy.logout(auditAdmin)
+    cy.loginJurisdictionAdmin(jurisdictionAdmin)
     cy.findByText(`Jurisdictions - TestAudit${id}`).siblings('button').click()
     cy.contains('Number of Audit Boards')
     cy.findByText('Save & Next').click()
@@ -88,8 +86,8 @@ describe('Ballot Polling', () => {
     cy.get('.bp3-card').eq('0').findByLabelText('Votes for B:').type('5')
     cy.findByText('Submit Data for Round 1').click()
     cy.contains('Already Submitted Data for Round 1')
-    cy.logout()
-    cy.loginAuditAdmin('audit-admin-cypress@example.com')
+    cy.logout(jurisdictionAdmin)
+    cy.loginAuditAdmin(auditAdmin)
     cy.findByText(`TestAudit${id}`).click()
     cy.contains('Congratulations - the audit is complete!')
   })
@@ -127,11 +125,8 @@ describe('Ballot Polling', () => {
     cy.findByLabelText('Enter the random characters to seed the pseudo-random number generator.').type('543210')
     cy.findByText('Save & Next').click()
     cy.findAllByText('Review & Launch').should('have.length', 2)
-    cy.wait(1000)
-    cy.logout()
-    cy.wait(1000)
-    cy.contains('Participating in an audit in your local jurisdiction?')
-    cy.loginJurisdictionAdmin('wtarkin@empire.gov')
+    cy.logout(auditAdmin)
+    cy.loginJurisdictionAdmin(jurisdictionAdmin)
     cy.findByText(`Jurisdictions - TestAudit${id}`).siblings('button').click()
     cy.fixture('CSVs/manifest/ballot_polling_manifest.csv').then(fileContent => {
         cy.get('input[type="file"]').first().attachFile({
@@ -142,8 +137,8 @@ describe('Ballot Polling', () => {
     })
     cy.findByText('Upload File').click()
     cy.contains("Upload successfully completed")
-    cy.logout()
-    cy.loginAuditAdmin('audit-admin-cypress@example.com')
+    cy.logout(jurisdictionAdmin)
+    cy.loginAuditAdmin(auditAdmin)
     cy.findByText(`TestAudit${id}`).click()
     cy.findByText('Review & Launch').click()
     cy.findAllByText('Review & Launch').should('have.length', 2)
@@ -151,20 +146,16 @@ describe('Ballot Polling', () => {
     cy.findAllByText('Launch Audit').spread((firstButton, secondButton) => {
       secondButton.click()
     })
-    cy.get('tbody').children('tr').its('length').should('be.gt', 0)
-    cy.wait(1000)
-    cy.logout()
-    cy.wait(1000)
-    cy.contains('Participating in an audit in your local jurisdiction?')
-    cy.loginJurisdictionAdmin('wtarkin@empire.gov')
+    cy.contains('Drawing a random sample of ballots...')
+    cy.contains('Audit Progress')
+    cy.logout(auditAdmin)
+    cy.loginJurisdictionAdmin(jurisdictionAdmin)
     cy.findByText(`Jurisdictions - TestAudit${id}`).siblings('button').click()
     cy.contains('Number of Audit Boards')
     cy.findByText('Save & Next').click()
     cy.findByText('Download Audit Board Credentials').click()
-    cy.wait(1000)
-    cy.logout()
-    cy.wait(1000)
-    cy.task('getPdfContent', `cypress/fixtures/PDFs/Audit Board Credentials\ -\ Death Star\ -\ TestAudit${id}.pdf`).then((content) => {
+    cy.logout(jurisdictionAdmin)
+    cy.task('getPdfContent', `cypress/downloads/Audit Board Credentials\ -\ Death Star\ -\ TestAudit${id}.pdf`).then((content) => {
       function urlify(text) {
         var urlRegex = /(((https?:\/\/)|(www\.))[^\s]+)/g;
         return text.match(urlRegex, function(url) {

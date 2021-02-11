@@ -55,7 +55,10 @@ Cypress.Commands.add('loginJurisdictionAdmin', email => {
   })
 })
 
-Cypress.Commands.add('logout', () => {
-  cy.get('.bp3-popover-target button').click()
+Cypress.Commands.add('logout', email => {
+  cy.intercept('/auth/logout').as('logout')
+  cy.findByText(email).click()
   cy.findByText('Log out').click()
+  cy.wait(['@logout'])
+  cy.contains('Participating in an audit in your local jurisdiction?')
 })
