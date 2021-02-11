@@ -185,6 +185,10 @@ def bgcompute_forever():
     while True:
         bgcompute()
         run_new_tasks()
+        # Before sleeping, we need to commit the curren transaction, otherwise
+        # we will have "idle in transaction" queries that will lock the
+        # database, which gets in the way of migrations.
+        db_session.commit()
         time.sleep(2)
 
 
