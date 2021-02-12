@@ -1,13 +1,11 @@
-from typing import List, Dict, Optional
+from typing import List
 from flask import request, jsonify
 from werkzeug.exceptions import BadRequest, Conflict
-from sqlalchemy import func
 
 from . import api
 from ..auth import restrict_access, UserType
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
-from .rounds import get_current_round
 from ..util.jsonschema import validate, JSONDict
 
 
@@ -73,9 +71,7 @@ def serialize_contest_choice(contest_choice: ContestChoice) -> JSONDict:
     }
 
 
-def serialize_contest(
-    contest: Contest, round_status: Optional[JSONDict] = None
-) -> JSONDict:
+def serialize_contest(contest: Contest) -> JSONDict:
     return {
         "id": contest.id,
         "name": contest.name,
@@ -85,7 +81,6 @@ def serialize_contest(
         "numWinners": contest.num_winners,
         "votesAllowed": contest.votes_allowed,
         "jurisdictionIds": [j.id for j in contest.jurisdictions],
-        "currentRoundStatus": round_status,
     }
 
 
@@ -155,40 +150,6 @@ def validate_contests(contests: List[JSONDict], election: Election):
                 )
 
 
-def round_status_by_contest(
-    round: Optional[Round], contests: List[Contest]
-) -> Dict[str, Optional[JSONDict]]:
-    if not round:
-        return {c.id: None for c in contests}
-
-    sampled_ballot_count_by_contest = dict(
-        SampledBallotDraw.query.filter_by(round_id=round.id)
-        .join(SampledBallot)
-        .join(Batch)
-        .join(Jurisdiction)
-        .join(Jurisdiction.contests)
-        .group_by(Contest.id)
-        .values(Contest.id, func.count())
-    )
-    round_is_complete_by_contest = dict(
-        RoundContest.query.filter_by(round_id=round.id).values(
-            RoundContest.contest_id, RoundContest.is_complete
-        )
-    )
-
-    # isRiskLimitMet will be None until we have computed the risk measurement
-    # for that contest, which happens once we're done auditing its sampled
-    # ballots. Once the risk measurement is calculated, isRiskLimitMet will be
-    # a boolean.
-    return {
-        c.id: {
-            "isRiskLimitMet": round_is_complete_by_contest[c.id],
-            "numBallotsSampled": sampled_ballot_count_by_contest.get(c.id, 0),
-        }
-        for c in contests
-    }
-
-
 @api.route("/election/<election_id>/contest", methods=["PUT"])
 @restrict_access([UserType.AUDIT_ADMIN])
 def create_or_update_all_contests(election: Election):
@@ -209,12 +170,7 @@ def create_or_update_all_contests(election: Election):
 @api.route("/election/<election_id>/contest", methods=["GET"])
 @restrict_access([UserType.AUDIT_ADMIN])
 def list_contests(election: Election):
-    current_round = get_current_round(election)
-    round_status = round_status_by_contest(current_round, list(election.contests))
-
-    json_contests = [
-        serialize_contest(c, round_status[c.id]) for c in election.contests
-    ]
+    json_contests = [serialize_contest(c) for c in election.contests]
     return jsonify({"contests": json_contests})
 
 

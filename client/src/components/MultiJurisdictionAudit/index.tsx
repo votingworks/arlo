@@ -139,17 +139,6 @@ export const AuditAdminView: React.FC = () => {
             <RefreshTag refresh={refresh} />
           </AuditAdminStatusBox>
           <Inner>
-            <Sidebar
-              title="Audit Progress"
-              menuItems={[
-                {
-                  id: 'jurisdictions',
-                  title: 'Jurisdictions',
-                  active: true,
-                  state: 'live',
-                },
-              ]}
-            />
             <Progress
               jurisdictions={jurisdictions}
               auditSettings={auditSettings}

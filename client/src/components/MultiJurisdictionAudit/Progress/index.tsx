@@ -207,7 +207,7 @@ const Progress: React.FC<IProps> = ({
 
   return (
     <Wrapper>
-      <H2Title>Audit Progress by Jurisdiction</H2Title>
+      <H2Title>Audit Progress</H2Title>
       <p>
         Click on a column name to sort by that column&apos;s data. To reverse
         sort, click on the column name again.
