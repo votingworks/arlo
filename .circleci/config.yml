@@ -189,4 +189,4 @@ workflows:
       - preflight
       - build-and-test-server
       - build-and-test-client
-      # - cypress
+      - cypress
