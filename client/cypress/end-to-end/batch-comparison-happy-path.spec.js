@@ -29,8 +29,7 @@ describe('Batch Comparison', () => {
     })
     cy.contains("Upload successfully completed")   
 
-    cy.wait(2000) // infinite loop without wait here
-    cy.findByText('Next').click()
+    cy.get('button[type="submit"]').should('not.have.class', 'bp3-disabled').click()
     cy.findAllByText('Target Contests').should('have.length', 2)
     cy.get('input[name="contests[0].name"]').type('Contest')
     cy.findByLabelText('Name of Candidate/Choice 1').type('Vader')
