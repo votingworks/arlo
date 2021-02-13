@@ -63,7 +63,7 @@ describe('Ballot Comparison', () => {
     cy.findAllByText('Upload File').spread((firstButton, secondButton) => {
       firstButton.click()
     })
-    cy.contains("Upload successfully completed")   
+    cy.contains("Upload successfully completed", { timeout: 5000 })   
   
     cy.fixture('CSVs/cvr/ballot_comparison_cvr.csv').then(fileContent => {
       cy.get('input[type="file"]').last().attachFile({
@@ -82,8 +82,9 @@ describe('Ballot Comparison', () => {
     cy.findAllByText('Launch Audit').spread((firstButton, secondButton) => {
       secondButton.click()
     })
-    cy.contains('Drawing a random sample of ballots...')
     cy.contains('Audit Progress')
+    cy.contains('Drawing a random sample of ballots...')
+    cy.get('tbody').children('tr').its('length').should('be.gt', 0) // ensures ballot drawing is done
     cy.logout(auditAdmin)
     cy.loginJurisdictionAdmin(jurisdictionAdmin)
     cy.findByText(`Jurisdictions - TestAudit${id}`).siblings('button').click()
