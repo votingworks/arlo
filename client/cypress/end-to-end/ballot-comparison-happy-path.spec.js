@@ -82,7 +82,7 @@ describe('Ballot Comparison', () => {
     cy.findAllByText('Launch Audit').spread((firstButton, secondButton) => {
       secondButton.click()
     })
-    cy.contains('Audit Progress')
+    // cy.contains('Audit Progress')
     cy.contains('Drawing a random sample of ballots...')
     cy.get('tbody').children('tr').its('length').should('be.gt', 0) // ensures ballot drawing is done
     cy.logout(auditAdmin)
