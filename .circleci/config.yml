@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  cypress: cypress-io/cypress@1
+  cypress: cypress-io/cypress@1.26.0
 
 executors:
   arlo:
@@ -189,4 +189,4 @@ workflows:
       - preflight
       - build-and-test-server
       - build-and-test-client
-      # - cypress
+      - cypress
