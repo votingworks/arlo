@@ -309,3 +309,21 @@ def test_rounds_bad_sample_sizes(
                 }
             ]
         }
+
+
+def test_custom_sample_size_validation(
+    client: FlaskClient, election_id: str, contest_ids: List[str]
+):
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {"roundNum": 1, "sampleSizes": {contest_ids[0]: 3000}},
+    )
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "message": "Sample size must be less than or equal to: 1000 (the total number of ballots in the targeted contest)",
+                "errorType": "Conflict",
+            }
+        ]
+    }

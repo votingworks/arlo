@@ -363,3 +363,30 @@ def test_minerva_ballot_polling_two_rounds(
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/report")
     assert_match_report(rv.data, snapshot)
+
+
+def test_custom_sample_size_validation(
+    client: FlaskClient,
+    election_id: str,
+    contest_ids: List[str],  # pylint: disable=unused-argument
+    election_settings,  # pylint: disable=unused-argument
+    manifests,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/contest")
+    contests = json.loads(rv.data)["contests"]
+
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {"roundNum": 1, "sampleSizes": {contests[0]["id"]: 5000}},
+    )
+
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "message": "Sample size must be less than or equal to: 1000 (the total number of ballots in the targeted contest)",
+                "errorType": "Conflict",
+            }
+        ]
+    }

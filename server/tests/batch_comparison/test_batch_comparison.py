@@ -167,7 +167,7 @@ def test_batch_comparison_round_1(
     assert jurisdictions[1]["currentRoundStatus"] is None
 
     # Use an artificially large sample size in order to have enough samples to work with
-    sample_size = 20
+    sample_size = 10
     rv = post_json(
         client,
         f"/api/election/{election_id}/round",
@@ -397,3 +397,34 @@ def test_batch_comparison_round_2(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/report"
     )
     assert_match_report(rv.data, snapshot)
+
+
+def test_custom_sample_size_validation(
+    client: FlaskClient,
+    election_id: str,
+    contest_id: str,
+    election_settings,  # pylint: disable=unused-argument
+    manifests,  # pylint: disable=unused-argument
+    batch_tallies,  # pylint: disable=unused-argument
+):
+    # Check jurisdiction status before starting the round
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    assert jurisdictions[0]["currentRoundStatus"] is None
+    assert jurisdictions[1]["currentRoundStatus"] is None
+
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {"roundNum": 1, "sampleSizes": {contest_id: 25}},
+    )
+
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "message": "Sample size must be less than or equal to: 15 (the total number of batches in the targeted contest)",
+                "errorType": "Conflict",
+            }
+        ]
+    }
