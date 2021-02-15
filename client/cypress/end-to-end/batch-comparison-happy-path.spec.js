@@ -2,7 +2,7 @@ import 'cypress-file-upload'
 
 before(() => cy.exec('./cypress/seed-test-db.sh'))
 
-describe('Batch Comparison', () => {
+describe.skip('Batch Comparison', () => {
   const auditAdmin = 'audit-admin-cypress@example.com'
   const jurisdictionAdmin = 'wtarkin@empire.gov'
   const uuid = () => Cypress._.random(0, 1e6)

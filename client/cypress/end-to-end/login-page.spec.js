@@ -1,6 +1,6 @@
 before(() => cy.exec('./cypress/seed-test-db.sh'))
 
-describe('Login page', () => {
+describe.skip('Login page', () => {
   beforeEach(() => {
     cy.visit('/')
   })
