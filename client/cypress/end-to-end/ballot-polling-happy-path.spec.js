@@ -74,7 +74,6 @@ describe('Ballot Polling', () => {
     cy.findAllByText('Launch Audit').spread((firstButton, secondButton) => {
       secondButton.click()
     })
-    cy.contains('Drawing a random sample of ballots...')
     cy.get('tbody').children('tr').its('length').should('be.gt', 0) // ensures ballot drawing is done
     cy.logout(auditAdmin)
     cy.loginJurisdictionAdmin(jurisdictionAdmin)
@@ -145,7 +144,6 @@ describe('Ballot Polling', () => {
     cy.findAllByText('Launch Audit').spread((firstButton, secondButton) => {
       secondButton.click()
     })
-    cy.contains('Drawing a random sample of ballots...')
     cy.get('tbody').children('tr').its('length').should('be.gt', 0) // ensures ballot drawing is done
     cy.logout(auditAdmin)
     cy.loginJurisdictionAdmin(jurisdictionAdmin)
