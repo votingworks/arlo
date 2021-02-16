@@ -43,7 +43,7 @@ describe('Progress screen', () => {
         round={null}
       />
     )
-    screen.getByText('Audit Progress by Jurisdiction')
+    screen.getByText('Audit Progress')
     screen.getByRole('columnheader', { name: 'Jurisdiction' })
     screen.getByRole('columnheader', { name: 'Status' })
     screen.getByRole('columnheader', { name: 'Ballots in Manifest' })
@@ -75,7 +75,7 @@ describe('Progress screen', () => {
       />
     )
 
-    screen.getByText('Audit Progress by Jurisdiction')
+    screen.getByText('Audit Progress')
     screen.getByRole('columnheader', { name: 'Jurisdiction' })
     screen.getByRole('columnheader', { name: 'Status' })
     screen.getByRole('columnheader', { name: 'Ballots in Manifest' })

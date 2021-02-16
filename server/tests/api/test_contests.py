@@ -69,8 +69,7 @@ def test_contests_create_get_update_one(client, election_id, json_contests):
 
     rv = client.get(f"/api/election/{election_id}/contest")
     contests = json.loads(rv.data)
-    expected_contest = {**contest, "currentRoundStatus": None}
-    assert contests == {"contests": [expected_contest]}
+    assert contests == {"contests": [contest]}
 
     contest["totalBallotsCast"] = contest["totalBallotsCast"] + 21
     contest["numWinners"] = 2
@@ -83,8 +82,7 @@ def test_contests_create_get_update_one(client, election_id, json_contests):
 
     rv = client.get(f"/api/election/{election_id}/contest")
     contests = json.loads(rv.data)
-    expected_contest = {**contest, "currentRoundStatus": None}
-    assert contests == {"contests": [expected_contest]}
+    assert contests == {"contests": [contest]}
 
 
 def test_contests_create_get_update_multiple(
@@ -98,10 +96,7 @@ def test_contests_create_get_update_multiple(
 
     rv = client.get(f"/api/election/{election_id}/contest")
     contests = json.loads(rv.data)
-    expected_contests = [
-        {**contest, "currentRoundStatus": None} for contest in json_contests
-    ]
-    assert contests == {"contests": expected_contests}
+    assert contests == {"contests": json_contests}
 
     json_contests[0]["name"] = "Changed name"
     json_contests[1]["totalBallotsCast"] = 600
@@ -112,10 +107,7 @@ def test_contests_create_get_update_multiple(
 
     rv = client.get(f"/api/election/{election_id}/contest")
     contests = json.loads(rv.data)
-    expected_contests = [
-        {**contest, "currentRoundStatus": None} for contest in json_contests
-    ]
-    assert contests == {"contests": expected_contests}
+    assert contests == {"contests": json_contests}
 
 
 def test_contests_order(
@@ -136,68 +128,6 @@ def test_contests_order(
     assert contests[1]["name"] == json_contests[1]["name"]
     assert contests[0]["choices"][0]["name"] == json_contests[0]["choices"][0]["name"]
     assert contests[0]["choices"][1]["name"] == json_contests[0]["choices"][1]["name"]
-
-
-def test_contests_round_status(
-    client: FlaskClient,
-    election_id: str,
-    json_contests: List[JSONDict],
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-    snapshot,
-):
-    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = put_json(client, f"/api/election/{election_id}/contest", json_contests)
-    assert_ok(rv)
-
-    rv = client.get(f"/api/election/{election_id}/contest")
-    contests = json.loads(rv.data)["contests"]
-    for contest in contests:
-        assert contest["currentRoundStatus"] is None
-
-    rv = client.get(f"/api/election/{election_id}/sample-sizes")
-    sample_size_options = json.loads(rv.data)["sampleSizes"]
-    sample_size = sample_size_options[contests[0]["id"]][0]["size"]
-    rv = post_json(
-        client,
-        f"/api/election/{election_id}/round",
-        {"roundNum": 1, "sampleSizes": {contests[0]["id"]: sample_size},},
-    )
-    assert_ok(rv)
-
-    rv = client.get(f"/api/election/{election_id}/contest")
-    contests = json.loads(rv.data)["contests"]
-    snapshot.assert_match(
-        [
-            {
-                "name": contest["name"],
-                "currentRoundStatus": contest["currentRoundStatus"],
-            }
-            for contest in contests
-        ]
-    )
-    assert contests[0]["currentRoundStatus"]["isRiskLimitMet"] is None
-    assert contests[1]["currentRoundStatus"]["isRiskLimitMet"] is None
-    assert contests[2]["currentRoundStatus"]["isRiskLimitMet"] is None
-
-    # Fake that one opportunistic contest met its risk limit, but the targeted
-    # contest did not
-    opportunistic_round_contest = RoundContest.query.filter_by(
-        contest_id=contests[1]["id"]
-    ).one()
-    opportunistic_round_contest.is_complete = True
-    targeted_round_contest = RoundContest.query.filter_by(
-        contest_id=contests[0]["id"]
-    ).one()
-    targeted_round_contest.is_complete = False
-    db_session.commit()
-
-    rv = client.get(f"/api/election/{election_id}/contest")
-    contests = json.loads(rv.data)["contests"]
-
-    assert contests[0]["currentRoundStatus"]["isRiskLimitMet"] is False
-    assert contests[1]["currentRoundStatus"]["isRiskLimitMet"] is True
-    assert contests[2]["currentRoundStatus"]["isRiskLimitMet"] is None
 
 
 def test_update_contests_after_audit_starts(
@@ -359,10 +289,7 @@ def test_jurisdictions_contests_list(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/contest"
     )
     contests = json.loads(rv.data)
-    expected_contests = [
-        {**contest, "currentRoundStatus": None} for contest in json_contests[:1]
-    ]
-    assert contests == {"contests": expected_contests}
+    assert contests == {"contests": json_contests[:1]}
 
 
 def test_audit_board_contests_list_empty(
@@ -404,9 +331,6 @@ def test_audit_board_contests_list(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/contest"
     )
     contests = json.loads(rv.data)
-    expected_contests = [
-        {**contest, "currentRoundStatus": None} for contest in expected_contests
-    ]
     assert contests == {"contests": expected_contests}
 
 

@@ -127,28 +127,6 @@ describe('AA setup flow', () => {
     })
   })
 
-  it('renders sidebar when authenticated on /progress', async () => {
-    paramsMock.mockReturnValue({
-      electionId: '1',
-      view: 'progress',
-    })
-    const expectedCalls = [aaApiCalls.getUser, ...loadEach, ...loadEach]
-    await withMockFetch(expectedCalls, async () => {
-      const { container, queryAllByText } = render(
-        <AuthDataProvider>
-          <Router>
-            <AuditAdminViewWithAuth />
-          </Router>
-        </AuthDataProvider>
-      )
-
-      await waitFor(() => {
-        expect(queryAllByText('Jurisdictions').length).toBe(1)
-        expect(container).toMatchSnapshot()
-      })
-    })
-  })
-
   it('redirects to /progress after audit is launched', async () => {
     const loadAfterLaunch = [
       aaApiCalls.getRounds(roundMocks.singleIncomplete),
