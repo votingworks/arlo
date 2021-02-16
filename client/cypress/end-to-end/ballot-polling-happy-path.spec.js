@@ -74,7 +74,7 @@ describe('Ballot Polling', () => {
     cy.findAllByText('Launch Audit').spread((firstButton, secondButton) => {
       secondButton.click()
     })
-    cy.contains('Audit Progress')
+    cy.findByRole('heading', {name: "Audit Progress"})
     cy.logout(auditAdmin)
     cy.loginJurisdictionAdmin(jurisdictionAdmin)
     cy.findByText(`Jurisdictions - TestAudit${id}`).siblings('button').click()
@@ -144,7 +144,7 @@ describe('Ballot Polling', () => {
     cy.findAllByText('Launch Audit').spread((firstButton, secondButton) => {
       secondButton.click()
     })
-    cy.contains('Audit Progress')
+    cy.findByRole('heading', {name: "Audit Progress"})
     cy.logout(auditAdmin)
     cy.loginJurisdictionAdmin(jurisdictionAdmin)
     cy.findByText(`Jurisdictions - TestAudit${id}`).siblings('button').click()
