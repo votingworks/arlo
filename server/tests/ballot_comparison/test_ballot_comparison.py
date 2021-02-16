@@ -1,6 +1,5 @@
 import io
 import json
-import pytest
 from flask.testing import FlaskClient
 
 from ...models import *  # pylint: disable=wildcard-import
@@ -92,7 +91,6 @@ def test_require_cvr_uploads(
     }
 
 
-@pytest.mark.skip(reason="Failing with TypeError for total_ballots_cast value")
 def test_ballot_comparison_two_rounds(
     client: FlaskClient,
     election_id: str,
@@ -162,6 +160,13 @@ def test_ballot_comparison_two_rounds(
     assert len(sample_size_options) == 1
     sample_size = sample_size_options[target_contest_id][0]
     snapshot.assert_match(sample_size)
+
+    contest = Contest.query.get(target_contest_id)
+    assert contest.total_ballots_cast is None
+    assert contest.votes_allowed is None
+    assert contest.choices == []
+
+    set_contest_metadata_from_cvrs(contest)
 
     rv = post_json(
         client,
@@ -380,7 +385,6 @@ def test_ballot_comparison_two_rounds(
 #     print({ballot_key(ballot): cvr.interpretations for ballot, cvr in ballots_and_cvrs})
 
 
-@pytest.mark.skip(reason="Failing with TypeError for total_ballots_cast value")
 def test_ballot_comparison_cvr_metadata(
     client: FlaskClient,
     election_id: str,
@@ -419,6 +423,13 @@ def test_ballot_comparison_cvr_metadata(
     rv = client.get(f"/api/election/{election_id}/contest")
     contests = json.loads(rv.data)["contests"]
     target_contest_id = contests[0]["id"]
+
+    contest = Contest.query.get(target_contest_id)
+    assert contest.total_ballots_cast is None
+    assert contest.votes_allowed is None
+    assert contest.choices == []
+
+    set_contest_metadata_from_cvrs(contest)
 
     rv = post_json(
         client,
