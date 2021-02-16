@@ -26,7 +26,7 @@ import {
   isFileProcessed,
   useStandardizedContestsFile,
 } from '../../useCSV'
-import useRoundsAuditAdmin from '../../useRoundsAuditAdmin'
+import { ISampleSizes } from '../../useRoundsAuditAdmin'
 import { mapValues } from '../../../../utils/objects'
 
 const percentFormatter = new Intl.NumberFormat(undefined, {
@@ -41,9 +41,15 @@ interface IProps {
   locked: boolean
   prevStage: ISidebarMenuItem
   refresh: () => void
+  startNextRound: (sampleSizes: ISampleSizes) => Promise<boolean>
 }
 
-const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
+const Review: React.FC<IProps> = ({
+  prevStage,
+  locked,
+  refresh,
+  startNextRound,
+}: IProps) => {
   const { electionId } = useParams<{ electionId: string }>()
   const [auditSettings] = useAuditSettings(electionId)
   const jurisdictions = useJurisdictions(electionId)
@@ -62,7 +68,6 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
     !!auditSettings &&
     isSetupComplete(jurisdictions, contests, auditSettings)
   let sampleSizeOptions = useSampleSizes(electionId, shouldShowSampleSizes)
-  const [, startNextRound] = useRoundsAuditAdmin(electionId)
 
   if (
     !jurisdictions ||
