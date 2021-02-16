@@ -88,10 +88,16 @@ routeMock.mockReturnValue({
 const { prevStage } = relativeStages('review')
 
 const refreshMock = jest.fn()
+const startNextRoundMock = jest.fn().mockResolvedValue(true)
 
 const renderView = () =>
   renderWithRouter(
-    <Review locked={false} prevStage={prevStage} refresh={refreshMock} />,
+    <Review
+      locked={false}
+      prevStage={prevStage}
+      refresh={refreshMock}
+      startNextRound={startNextRoundMock}
+    />,
     {
       route: '/election/1/setup',
     }
@@ -99,6 +105,7 @@ const renderView = () =>
 
 beforeEach(() => {
   refreshMock.mockClear()
+  startNextRoundMock.mockClear()
   toastSpy.mockClear()
   checkAndToastMock.mockClear()
   routeMock.mockClear()
@@ -114,7 +121,6 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
-      apiCalls.getRounds,
       apiCalls.getSampleSizeOptions,
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -132,7 +138,6 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
-      apiCalls.getRounds,
       apiCalls.getSampleSizeOptions,
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -150,7 +155,6 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
-      apiCalls.getRounds,
       apiCalls.getSampleSizeOptions,
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -168,7 +172,6 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
-      apiCalls.getRounds,
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderView()
@@ -185,7 +188,6 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
-      apiCalls.getRounds,
       apiCalls.getSampleSizeOptions,
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -205,7 +207,6 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedAndOpportunistic),
-      apiCalls.getRounds,
       apiCalls.getSampleSizeOptions,
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -221,7 +222,6 @@ describe('Audit Setup > Review & Launch', () => {
       apiCalls.getJurisdictions({ jurisdictions: [] }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
-      apiCalls.getRounds,
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderView()
@@ -236,7 +236,6 @@ describe('Audit Setup > Review & Launch', () => {
       apiCalls.getJurisdictions({ jurisdictions: [] }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledOpportunisticWithJurisdictionId),
-      apiCalls.getRounds,
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderView()
@@ -253,10 +252,7 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
-      apiCalls.getRounds,
       apiCalls.getSampleSizeOptions,
-      apiCalls.postRound({ 'contest-id': 46 }),
-      apiCalls.getRounds,
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
@@ -266,7 +262,10 @@ describe('Audit Setup > Review & Launch', () => {
       await screen.findByText('Are you sure you want to launch the audit?')
       const confirmLaunchButton = screen.getAllByText('Launch Audit')[1]
       userEvent.click(confirmLaunchButton)
-      await waitFor(() => expect(refreshMock).toHaveBeenCalled())
+      await waitFor(() => {
+        expect(startNextRoundMock).toHaveBeenCalledWith({ 'contest-id': 46 })
+        expect(refreshMock).toHaveBeenCalled()
+      })
     })
   })
 
@@ -278,7 +277,6 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
-      apiCalls.getRounds,
       apiCalls.getSampleSizeOptions,
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -289,7 +287,11 @@ describe('Audit Setup > Review & Launch', () => {
       await screen.findByText('Are you sure you want to launch the audit?')
       const cancelLaunchButton = screen.getByText('Cancel')
       userEvent.click(cancelLaunchButton)
-      await waitFor(() => expect(refreshMock).not.toHaveBeenCalled())
+      await waitFor(() =>
+        expect(
+          screen.queryByText('Are you sure you want to launch the audit?')
+        ).not.toBeInTheDocument()
+      )
     })
   })
 
@@ -301,10 +303,7 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
-      apiCalls.getRounds,
       apiCalls.getSampleSizeOptions,
-      apiCalls.postRound({ 'contest-id': 67 }),
-      apiCalls.getRounds,
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
@@ -317,7 +316,10 @@ describe('Audit Setup > Review & Launch', () => {
       await screen.findByText('Are you sure you want to launch the audit?')
       const confirmLaunchButton = screen.getAllByText('Launch Audit')[1]
       userEvent.click(confirmLaunchButton)
-      await waitFor(() => expect(refreshMock).toHaveBeenCalled())
+      await waitFor(() => {
+        expect(startNextRoundMock).toHaveBeenCalledWith({ 'contest-id': 67 })
+        expect(refreshMock).toHaveBeenCalled()
+      })
     })
   })
 
@@ -329,10 +331,7 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
-      apiCalls.getRounds,
       apiCalls.getSampleSizeOptions,
-      apiCalls.postRound({ 'contest-id': 5 }),
-      apiCalls.getRounds,
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
@@ -360,7 +359,10 @@ describe('Audit Setup > Review & Launch', () => {
       await screen.findByText('Are you sure you want to launch the audit?')
       const confirmLaunchButton = screen.getAllByText('Launch Audit')[1]
       userEvent.click(confirmLaunchButton)
-      await waitFor(() => expect(refreshMock).toHaveBeenCalled())
+      await waitFor(() => {
+        expect(startNextRoundMock).toHaveBeenCalledWith({ 'contest-id': 5 })
+        expect(refreshMock).toHaveBeenCalled()
+      })
     })
   })
 
@@ -372,7 +374,6 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
-      apiCalls.getRounds,
       apiCalls.getStandardizedContestsFile,
     ]
     await withMockFetch(expectedCalls, async () => {

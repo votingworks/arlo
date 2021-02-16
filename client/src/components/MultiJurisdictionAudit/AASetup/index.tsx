@@ -7,6 +7,7 @@ import Settings from './Settings'
 import Review from './Review'
 import { ISidebarMenuItem } from '../../Atoms/Sidebar'
 import { IAuditSettings } from '../useAuditSettings'
+import { ISampleSizes } from '../useRoundsAuditAdmin'
 
 export const setupStages = [
   'participants',
@@ -29,6 +30,7 @@ interface IProps {
   menuItems: ISidebarMenuItem[]
   refresh: () => void
   auditType: IAuditSettings['auditType']
+  startNextRound: (sampleSizes: ISampleSizes) => Promise<boolean>
 }
 
 const AASetup: React.FC<IProps> = ({
@@ -36,6 +38,7 @@ const AASetup: React.FC<IProps> = ({
   menuItems,
   refresh,
   auditType,
+  startNextRound,
 }) => {
   const activeStage = menuItems.find(m => m.id === stage)
   const nextStage: ISidebarMenuItem | undefined =
@@ -89,6 +92,7 @@ const AASetup: React.FC<IProps> = ({
           prevStage={prevStage!}
           locked={activeStage!.state === 'locked'}
           refresh={refresh}
+          startNextRound={startNextRound}
         />
       )
     /* istanbul ignore next */

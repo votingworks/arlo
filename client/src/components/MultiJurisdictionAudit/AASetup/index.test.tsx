@@ -67,6 +67,7 @@ describe('Setup', () => {
           refresh={jest.fn()}
           stage="participants"
           menuItems={relativeStages('participants').menuItems}
+          startNextRound={jest.fn()}
         />
       </MemoryRouter>
     )
@@ -84,6 +85,7 @@ describe('Setup', () => {
           refresh={jest.fn()}
           stage="participants"
           menuItems={relativeStages('participants', 'locked').menuItems}
+          startNextRound={jest.fn()}
         />
       </MemoryRouter>
     )
@@ -101,6 +103,7 @@ describe('Setup', () => {
           refresh={jest.fn()}
           stage="participants"
           menuItems={relativeStages('participants', 'processing').menuItems}
+          startNextRound={jest.fn()}
         />
       </MemoryRouter>
     )
@@ -117,6 +120,7 @@ describe('Setup', () => {
           refresh={jest.fn()}
           stage="target-contests"
           menuItems={relativeStages('target-contests').menuItems}
+          startNextRound={jest.fn()}
         />
       </MemoryRouter>
     )
@@ -132,6 +136,7 @@ describe('Setup', () => {
           refresh={jest.fn()}
           stage="target-contests"
           menuItems={relativeStages('target-contests', 'locked').menuItems}
+          startNextRound={jest.fn()}
         />
       </MemoryRouter>
     )
@@ -147,6 +152,7 @@ describe('Setup', () => {
           refresh={jest.fn()}
           stage="target-contests"
           menuItems={relativeStages('target-contests', 'processing').menuItems}
+          startNextRound={jest.fn()}
         />
       </MemoryRouter>
     )
@@ -166,6 +172,7 @@ describe('Setup', () => {
           refresh={jest.fn()}
           stage="opportunistic-contests"
           menuItems={relativeStages('opportunistic-contests').menuItems}
+          startNextRound={jest.fn()}
         />
       </MemoryRouter>
     )
@@ -187,6 +194,7 @@ describe('Setup', () => {
           menuItems={
             relativeStages('opportunistic-contests', 'locked').menuItems
           }
+          startNextRound={jest.fn()}
         />
       </MemoryRouter>
     )
@@ -208,6 +216,7 @@ describe('Setup', () => {
           menuItems={
             relativeStages('opportunistic-contests', 'processing').menuItems
           }
+          startNextRound={jest.fn()}
         />
       </MemoryRouter>
     )
@@ -223,6 +232,7 @@ describe('Setup', () => {
           refresh={jest.fn()}
           stage="settings"
           menuItems={relativeStages('settings').menuItems}
+          startNextRound={jest.fn()}
         />
       </MemoryRouter>
     )
@@ -237,6 +247,7 @@ describe('Setup', () => {
           refresh={jest.fn()}
           stage="settings"
           menuItems={relativeStages('settings', 'locked').menuItems}
+          startNextRound={jest.fn()}
         />
       </MemoryRouter>
     )
@@ -251,6 +262,7 @@ describe('Setup', () => {
           refresh={jest.fn()}
           stage="settings"
           menuItems={relativeStages('settings', 'processing').menuItems}
+          startNextRound={jest.fn()}
         />
       </MemoryRouter>
     )
@@ -265,6 +277,7 @@ describe('Setup', () => {
           refresh={jest.fn()}
           stage="review"
           menuItems={relativeStages('review').menuItems}
+          startNextRound={jest.fn()}
         />
       </MemoryRouter>
     )
@@ -281,6 +294,7 @@ describe('Setup', () => {
           refresh={jest.fn()}
           stage="review"
           menuItems={relativeStages('review', 'locked').menuItems}
+          startNextRound={jest.fn()}
         />
       </MemoryRouter>
     )
@@ -297,6 +311,7 @@ describe('Setup', () => {
           refresh={jest.fn()}
           stage="review"
           menuItems={relativeStages('review', 'processing').menuItems}
+          startNextRound={jest.fn()}
         />
       </MemoryRouter>
     )

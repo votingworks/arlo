@@ -122,6 +122,7 @@ export const AuditAdminView: React.FC = () => {
               refresh={refresh}
               menuItems={menuItems}
               auditType={auditSettings.auditType}
+              startNextRound={startNextRound}
             />
           </Inner>
         </Wrapper>
