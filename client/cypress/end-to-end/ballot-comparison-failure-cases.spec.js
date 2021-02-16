@@ -1,3 +1,5 @@
+import 'cypress-file-upload'
+
 before(() => cy.exec('./cypress/seed-test-db.sh'))
 
 describe('Ballot Comparison Failure Cases', () => {
@@ -16,10 +18,10 @@ describe('Ballot Comparison Failure Cases', () => {
     cy.findByText("Create Audit").click()
     cy.contains("Audit Setup")
     // attempt uploading a jurisdiction filesheet without selecting one
-    // cy.findAllByText('Upload File').spread((firstButton, secondButton) => {
-    //   firstButton.click()
-    // })
-    // cy.contains("You must upload a file")
+    cy.findAllByText('Upload File').spread((firstButton, secondButton) => {
+      firstButton.click()
+    })
+    cy.contains("You must upload a file")
 
     // upload invalid jurisdiction filesheet
     cy.fixture('CSVs/jurisdiction/sample_jurisdiction_filesheet_jurisdiction_col_error.csv').then(fileContent => {
@@ -39,6 +41,8 @@ describe('Ballot Comparison Failure Cases', () => {
     })
 
     // upload valid jurisdiction filesheet
+    cy.findByText('Replace File').click()
+    cy.findAllByText('Upload File').should('have.length',2)
     cy.fixture('CSVs/jurisdiction/sample_jurisdiction_filesheet.csv').then(fileContent => {
       cy.get('input[type="file"]').first().attachFile({
         fileContent: fileContent.toString(),
@@ -67,6 +71,8 @@ describe('Ballot Comparison Failure Cases', () => {
     cy.contains("Missing required column: Contest Name.")
 
     // upload valid standardized contests file
+    cy.findByText('Replace File').click()
+    cy.findAllByText('Upload File').should('have.length',2)
     cy.fixture('CSVs/contest/ballot_comparison_contests.csv').then(fileContent => {
       cy.get('input[type="file"]').last().attachFile({
         fileContent: fileContent.toString(),
