@@ -74,6 +74,7 @@ describe('Ballot Polling', () => {
     cy.findAllByText('Launch Audit').spread((firstButton, secondButton) => {
       secondButton.click()
     })
+    cy.get('table').should('be.visible')
     cy.get('tbody').children('tr').its('length').should('be.gt', 0) // ensures ballot drawing is done
     cy.logout(auditAdmin)
     cy.loginJurisdictionAdmin(jurisdictionAdmin)
@@ -144,6 +145,7 @@ describe('Ballot Polling', () => {
     cy.findAllByText('Launch Audit').spread((firstButton, secondButton) => {
       secondButton.click()
     })
+    cy.get('table').should('be.visible')
     cy.get('tbody').children('tr').its('length').should('be.gt', 0) // ensures ballot drawing is done
     cy.logout(auditAdmin)
     cy.loginJurisdictionAdmin(jurisdictionAdmin)

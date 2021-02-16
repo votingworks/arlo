@@ -7,7 +7,6 @@ describe('Batch Comparison', () => {
   const jurisdictionAdmin = 'wtarkin@empire.gov'
   const uuid = () => Cypress._.random(0, 1e6)
   let id = 0
-  let board_credentials_url = ''
 
   it('Creates, launches, and audits', () => {
     id = uuid()
@@ -79,6 +78,7 @@ describe('Batch Comparison', () => {
     cy.findAllByText('Launch Audit').spread((firstButton, secondButton) => {
       secondButton.click()
     })
+    cy.get('table').should('be.visible')
     cy.get('tbody').children('tr').its('length').should('be.gt', 0) // ensures ballot drawing is done
     cy.logout(auditAdmin)
     cy.loginJurisdictionAdmin(jurisdictionAdmin)
