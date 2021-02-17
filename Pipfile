@@ -22,7 +22,7 @@ filelock = "*"
 alembic = "*"
 authlib = "*"
 chardet = "*"
-consistent_sampler = "*"
+consistent-sampler = {subdirectory = "pkg", editable = true, git = "https://github.com/votingworks/consistent_sampler.git"}
 cryptorandom = "*"
 flask = "*"
 flask-httpauth = "*"
