@@ -399,7 +399,7 @@ def test_batch_comparison_round_2(
     assert_match_report(rv.data, snapshot)
 
 
-def test_custom_sample_size_validation(
+def test_batch_comparison_custom_sample_size_validation(
     client: FlaskClient,
     election_id: str,
     contest_id: str,

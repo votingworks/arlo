@@ -365,7 +365,7 @@ def test_minerva_ballot_polling_two_rounds(
     assert_match_report(rv.data, snapshot)
 
 
-def test_custom_sample_size_validation(
+def test_ballot_polling_custom_sample_size_validation(
     client: FlaskClient,
     election_id: str,
     contest_ids: List[str],  # pylint: disable=unused-argument

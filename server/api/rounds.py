@@ -730,6 +730,14 @@ def validate_round(round: dict, election: Election):
         if set(round["sampleSizes"].keys()) != {c.id for c in targeted_contests}:
             raise BadRequest("Sample sizes provided do not match targeted contest ids")
 
+
+def validate_custom_sample_size(round: dict, election: Election):
+    validate(round, CREATE_ROUND_REQUEST_SCHEMA)
+    if round["roundNum"] == 1:
+        targeted_contests = [
+            contest for contest in election.contests if contest.is_targeted
+        ]
+
         if election.audit_type == AuditType.BATCH_COMPARISON:
             for single_contest in targeted_contests:
                 total_batches = sum(
@@ -796,6 +804,9 @@ def create_round(election: Election):
     ):
         for contest in election.contests:
             set_contest_metadata_from_cvrs(contest)
+
+    # Validate custom sample size to not be greater than the total ballots/batches
+    validate_custom_sample_size(json_round, election)
 
     # Figure out which contests still need auditing
     previous_round = get_previous_round(election, round)

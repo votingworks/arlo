@@ -311,7 +311,7 @@ def test_rounds_bad_sample_sizes(
         }
 
 
-def test_custom_sample_size_validation(
+def test_rounds_custom_sample_size_validation(
     client: FlaskClient, election_id: str, contest_ids: List[str]
 ):
     rv = post_json(

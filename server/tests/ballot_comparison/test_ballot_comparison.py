@@ -485,7 +485,7 @@ def test_ballot_comparison_cvr_metadata(
     assert ballot_missing_contest["contestsOnBallot"] == [contests[0]["id"]]
 
 
-def test_custom_sample_size_validation(
+def test_ballot_comparison_custom_sample_size_validation(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],  # pylint: disable=unused-argument
