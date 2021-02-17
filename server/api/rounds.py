@@ -741,7 +741,7 @@ def validate_custom_sample_size(round: dict, election: Election):
             )
             if round["sampleSizes"][single_contest.id] > total_batches:
                 raise Conflict(
-                    f"Sample size must be less than or equal to: {total_batches} (the total number of batches in the targeted contest)"
+                    f"Sample size must be less than or equal to: {total_batches} (the total number of batches in the targeted contest '{single_contest.name}')"
                 )
 
     if (
