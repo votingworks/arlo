@@ -69,6 +69,7 @@ class AuditType(str, enum.Enum):
     BALLOT_POLLING = "BALLOT_POLLING"
     BATCH_COMPARISON = "BATCH_COMPARISON"
     BALLOT_COMPARISON = "BALLOT_COMPARISON"
+    HYBRID = "HYBRID"
 
 
 class AuditMathType(str, enum.Enum):
@@ -76,6 +77,7 @@ class AuditMathType(str, enum.Enum):
     MINERVA = "MINERVA"
     SUPERSIMPLE = "SUPERSIMPLE"
     MACRO = "MACRO"
+    SUITE = "SUITE"
 
 
 # Election is a slight misnomer - this model represents an audit.

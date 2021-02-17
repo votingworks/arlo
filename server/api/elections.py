@@ -41,6 +41,7 @@ def validate_new_election(election: JSONDict):
         AuditType.BALLOT_POLLING: [AuditMathType.BRAVO, AuditMathType.MINERVA],
         AuditType.BALLOT_COMPARISON: [AuditMathType.SUPERSIMPLE],
         AuditType.BATCH_COMPARISON: [AuditMathType.MACRO],
+        AuditType.HYBRID: [AuditMathType.SUITE],
     }
 
     if (
@@ -62,6 +63,7 @@ def create_election():
         AuditType.BALLOT_POLLING: False,
         AuditType.BATCH_COMPARISON: False,
         AuditType.BALLOT_COMPARISON: True,
+        AuditType.HYBRID: True,
     }[election["auditType"]]
 
     election = Election(

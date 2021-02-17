@@ -108,6 +108,24 @@ def test_create_election_new_ballot_comparison_audit(client: FlaskClient, org_id
     assert Election.query.get(election_id).online is True
 
 
+def test_create_election_new_hybrid_audit(client: FlaskClient, org_id: str):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+
+    rv = post_json(
+        client,
+        "/api/election",
+        {
+            "auditName": "Test Audit Hybrid",
+            "organizationId": org_id,
+            "auditType": "HYBRID",
+            "auditMathType": AuditMathType.SUITE,
+        },
+    )
+    assert rv.status_code == 200
+    election_id = json.loads(rv.data)["electionId"]
+    assert Election.query.get(election_id).online is True
+
+
 def test_create_election_in_org_with_logged_in_admin_without_access(
     client: FlaskClient, org_id: str
 ):
@@ -181,7 +199,7 @@ def test_create_election_bad_audit_type(client: FlaskClient, org_id: str):
     assert json.loads(rv.data) == {
         "errors": [
             {
-                "message": "'NOT A REAL TYPE' is not one of ['BALLOT_POLLING', 'BATCH_COMPARISON', 'BALLOT_COMPARISON']",
+                "message": "'NOT A REAL TYPE' is not one of ['BALLOT_POLLING', 'BATCH_COMPARISON', 'BALLOT_COMPARISON', 'HYBRID']",
                 "errorType": "Bad Request",
             }
         ]
@@ -204,7 +222,7 @@ def test_create_election_bad_bp_type(client: FlaskClient, org_id: str):
     assert json.loads(rv.data) == {
         "errors": [
             {
-                "message": "'NOT A REAL TYPE' is not one of ['BRAVO', 'MINERVA', 'SUPERSIMPLE', 'MACRO']",
+                "message": "'NOT A REAL TYPE' is not one of ['BRAVO', 'MINERVA', 'SUPERSIMPLE', 'MACRO', 'SUITE']",
                 "errorType": "Bad Request",
             }
         ]
