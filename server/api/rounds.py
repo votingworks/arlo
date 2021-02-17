@@ -759,7 +759,7 @@ def validate_custom_sample_size(round: dict, election: Election):
                     > single_contest.total_ballots_cast
                 ):
                     raise Conflict(
-                        f"Sample size must be less than or equal to: {single_contest.total_ballots_cast} (the total number of ballots in the targeted contest)"
+                        f"Sample size must be less than or equal to: {single_contest.total_ballots_cast} (the total number of ballots in the targeted contest '{single_contest.name}')"
                     )
 
 
