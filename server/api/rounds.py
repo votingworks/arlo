@@ -720,47 +720,42 @@ def validate_round(round: dict, election: Election):
     if current_round and not current_round.ended_at:
         raise Conflict("The current round is not complete")
 
-    if round["roundNum"] == 1:
-        if "sampleSizes" not in round:
-            raise BadRequest("Sample sizes are required for round 1")
-
-        targeted_contests = [
-            contest for contest in election.contests if contest.is_targeted
-        ]
-        if set(round["sampleSizes"].keys()) != {c.id for c in targeted_contests}:
-            raise BadRequest("Sample sizes provided do not match targeted contest ids")
-
 
 def validate_custom_sample_size(round: dict, election: Election):
     validate(round, CREATE_ROUND_REQUEST_SCHEMA)
-    if round["roundNum"] == 1:
-        targeted_contests = [
-            contest for contest in election.contests if contest.is_targeted
-        ]
+    targeted_contests = [
+        contest for contest in election.contests if contest.is_targeted
+    ]
 
-        if election.audit_type == AuditType.BATCH_COMPARISON:
-            for single_contest in targeted_contests:
-                total_batches = sum(
-                    jurisdiction.manifest_num_batches or 0
-                    for jurisdiction in single_contest.jurisdictions
+    if "sampleSizes" not in round:
+        raise BadRequest("Sample sizes are required for round 1")
+
+    if set(round["sampleSizes"].keys()) != {c.id for c in targeted_contests}:
+        raise BadRequest("Sample sizes provided do not match targeted contest ids")
+
+    if election.audit_type == AuditType.BATCH_COMPARISON:
+        for single_contest in targeted_contests:
+            total_batches = sum(
+                jurisdiction.manifest_num_batches or 0
+                for jurisdiction in single_contest.jurisdictions
+            )
+            if round["sampleSizes"][single_contest.id] > total_batches:
+                raise Conflict(
+                    f"Sample size must be less than or equal to: {total_batches} (the total number of batches in the targeted contest)"
                 )
-                if round["sampleSizes"][single_contest.id] > total_batches:
-                    raise Conflict(
-                        f"Sample size must be less than or equal to: {total_batches} (the total number of batches in the targeted contest)"
-                    )
 
-        if (
-            election.audit_type == AuditType.BALLOT_POLLING
-            or election.audit_type == AuditType.BALLOT_COMPARISON
-        ):
-            for single_contest in targeted_contests:
-                if (
-                    round["sampleSizes"][single_contest.id]
-                    > single_contest.total_ballots_cast
-                ):
-                    raise Conflict(
-                        f"Sample size must be less than or equal to: {single_contest.total_ballots_cast} (the total number of ballots in the targeted contest '{single_contest.name}')"
-                    )
+    if (
+        election.audit_type == AuditType.BALLOT_POLLING
+        or election.audit_type == AuditType.BALLOT_COMPARISON
+    ):
+        for single_contest in targeted_contests:
+            if (
+                round["sampleSizes"][single_contest.id]
+                > single_contest.total_ballots_cast
+            ):
+                raise Conflict(
+                    f"Sample size must be less than or equal to: {single_contest.total_ballots_cast} (the total number of ballots in the targeted contest '{single_contest.name}')"
+                )
 
 
 @api.route("/election/<election_id>/round", methods=["POST"])
@@ -776,6 +771,9 @@ def create_round(election: Election):
 
     # For round 1, use the given sample size for each contest.
     if json_round["roundNum"] == 1:
+        # Validate custom sample sizes
+        validate_custom_sample_size(json_round, election)
+
         sample_sizes = json_round["sampleSizes"]
     # In later rounds, select a sample size automatically.
     else:
@@ -804,9 +802,6 @@ def create_round(election: Election):
     ):
         for contest in election.contests:
             set_contest_metadata_from_cvrs(contest)
-
-    # Validate custom sample size to not be greater than the total ballots/batches
-    validate_custom_sample_size(json_round, election)
 
     # Figure out which contests still need auditing
     previous_round = get_previous_round(election, round)
