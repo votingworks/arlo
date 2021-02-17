@@ -385,7 +385,7 @@ def test_ballot_polling_custom_sample_size_validation(
     assert json.loads(rv.data) == {
         "errors": [
             {
-                "message": "Sample size must be less than or equal to: 1000 (the total number of ballots in the targeted contest)",
+                "message": "Sample size must be less than or equal to: 1000 (the total number of ballots in the targeted contest 'Contest 1')",
                 "errorType": "Conflict",
             }
         ]

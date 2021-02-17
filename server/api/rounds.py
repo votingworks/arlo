@@ -771,6 +771,12 @@ def create_round(election: Election):
 
     # For round 1, use the given sample size for each contest.
     if json_round["roundNum"] == 1:
+        # For ballot comparison audits, we need to lock in the contest metadata we
+        # parse from the CVRs when we launch the audit.
+        if election.audit_type == AuditType.BALLOT_COMPARISON:
+            for contest in election.contests:
+                set_contest_metadata_from_cvrs(contest)
+
         # Validate custom sample sizes
         validate_custom_sample_size(json_round, election)
 
@@ -793,15 +799,6 @@ def create_round(election: Election):
             contest_id: select_sample_size(options)["size"]
             for contest_id, options in sample_size_options.items()
         }
-
-    # For ballot comparison audits, we need to lock in the contest metadata we
-    # parse from the CVRs when we launch the audit.
-    if (
-        election.audit_type == AuditType.BALLOT_COMPARISON
-        and json_round["roundNum"] == 1
-    ):
-        for contest in election.contests:
-            set_contest_metadata_from_cvrs(contest)
 
     # Figure out which contests still need auditing
     previous_round = get_previous_round(election, round)

@@ -503,7 +503,7 @@ def test_ballot_comparison_custom_sample_size_validation(
     assert json.loads(rv.data) == {
         "errors": [
             {
-                "message": "Sample size must be less than or equal to: 30 (the total number of ballots in the targeted contest)",
+                "message": "Sample size must be less than or equal to: 30 (the total number of ballots in the targeted contest 'Contest 2')",
                 "errorType": "Conflict",
             }
         ]
