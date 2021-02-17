@@ -161,13 +161,6 @@ def test_ballot_comparison_two_rounds(
     sample_size = sample_size_options[target_contest_id][0]
     snapshot.assert_match(sample_size)
 
-    contest = Contest.query.get(target_contest_id)
-    assert contest.total_ballots_cast is None
-    assert contest.votes_allowed is None
-    assert contest.choices == []
-
-    set_contest_metadata_from_cvrs(contest)
-
     rv = post_json(
         client,
         f"/api/election/{election_id}/round",
@@ -424,13 +417,6 @@ def test_ballot_comparison_cvr_metadata(
     contests = json.loads(rv.data)["contests"]
     target_contest_id = contests[0]["id"]
 
-    contest = Contest.query.get(target_contest_id)
-    assert contest.total_ballots_cast is None
-    assert contest.votes_allowed is None
-    assert contest.choices == []
-
-    set_contest_metadata_from_cvrs(contest)
-
     rv = post_json(
         client,
         f"/api/election/{election_id}/round",
@@ -508,13 +494,6 @@ def test_ballot_comparison_custom_sample_size_validation(
         ],
     )
     assert_ok(rv)
-
-    contest = Contest.query.get(contest_id)
-    assert contest.total_ballots_cast is None
-    assert contest.votes_allowed is None
-    assert contest.choices == []
-
-    set_contest_metadata_from_cvrs(contest)
 
     rv = post_json(
         client,
