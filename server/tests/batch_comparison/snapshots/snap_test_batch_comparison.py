@@ -8,18 +8,15 @@ from snapshottest import Snapshot
 snapshots = Snapshot()
 
 snapshots["test_batch_comparison_round_1 1"] = {
-    # "numSamples": 14,
-    "numSamples": 6,
+    "numSamples": 14,
     "numSamplesAudited": 0,
-    # "numUnique": 5,
-    "numUnique": 4,
+    "numUnique": 5,
     "numUniqueAudited": 0,
     "status": "NOT_STARTED",
 }
 
 snapshots["test_batch_comparison_round_1 2"] = {
-    # "numSamples": 6,
-    "numSamples": 4,
+    "numSamples": 6,
     "numSamplesAudited": 0,
     "numUnique": 3,
     "numUniqueAudited": 0,

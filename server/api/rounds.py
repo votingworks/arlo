@@ -721,8 +721,7 @@ def validate_round(round: dict, election: Election):
         raise Conflict("The current round is not complete")
 
 
-def validate_custom_sample_size(round: dict, election: Election):
-    validate(round, CREATE_ROUND_REQUEST_SCHEMA)
+def validate_sample_size(round: dict, election: Election):
     targeted_contests = [
         contest for contest in election.contests if contest.is_targeted
     ]
@@ -777,8 +776,8 @@ def create_round(election: Election):
             for contest in election.contests:
                 set_contest_metadata_from_cvrs(contest)
 
-        # Validate custom sample sizes
-        validate_custom_sample_size(json_round, election)
+        # Validate sample sizes
+        validate_sample_size(json_round, election)
 
         sample_sizes = json_round["sampleSizes"]
     # In later rounds, select a sample size automatically.
