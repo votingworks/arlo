@@ -2,8 +2,10 @@
 A Module containing the Contest class, which encapsulates useful info for RLA
 computations.
 """
-from typing import Dict
+from typing import Dict, Any, Union
 import operator
+
+from supersimple import CVRS,  SAMPLE_CVRS
 
 
 def from_db_contest(db_contest):
@@ -166,3 +168,39 @@ class Contest:
             self.ballots,
             self.candidates,
         )
+
+
+class Stratum:
+    """
+    A class encapsulating a stratum of ballots in an election. Each stratum is its
+    own contest object, with its own margin. Strata, along with the overall
+    contest object, are passed to the SUITE module when perfoming mixed-strata
+    audits.
+    """
+    RESULTS = Union[
+      Dict[Any, Dict[str, Dict[str, int]]], # batch comparison
+      CVRS, # ballot comparison
+      None # ballot polling
+    ]
+
+    SAMPLE_RESULTS = Union[
+      Dict[Any, Dict[str, Dict[str, int]]], # batch comparison
+      SAMPLE_CVRS, # ballot comparison
+      Optional[Dict[str, Dict[str, int]]],# ballot polling
+    ]
+
+    stratum_contest: Contest
+    stratum_math_type: AuditMathType
+    stratum_results: RESULTS
+    stratum_sample: SAMPLE_RESULTS
+
+    def __init__(self,
+            contest: Contest,
+            math_type: AuditMathType,
+            results: RESULTS,
+            sample_results: SAMPLE_RESULTS,
+    ):
+        self.stratum_contest = contest
+        self.stratum_math_type = math_type
+        self.stratum_results = results
+        self.stratum_sample = sample_results
