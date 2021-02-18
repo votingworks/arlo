@@ -6,6 +6,7 @@ from ...models import *  # pylint: disable=wildcard-import
 from ..helpers import *  # pylint: disable=wildcard-import
 from ...util.group_by import group_by
 from ...worker.bgcompute import bgcompute_update_batch_tallies_file
+from ...worker.bgcompute import bgcompute_update_ballot_manifest_file
 
 
 def test_batch_comparison_only_one_contest_allowed(
@@ -17,11 +18,11 @@ def test_batch_comparison_only_one_contest_allowed(
             "name": "Contest 1",
             "isTargeted": True,
             "choices": [
-                {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 5000},
-                {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 2500},
-                {"id": str(uuid.uuid4()), "name": "candidate 3", "numVotes": 2500},
+                {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 6000},
+                {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 3500},
+                {"id": str(uuid.uuid4()), "name": "candidate 3", "numVotes": 3500},
             ],
-            "totalBallotsCast": 5000,
+            "totalBallotsCast": 7350,
             "numWinners": 1,
             "votesAllowed": 2,
             "jurisdictionIds": jurisdiction_ids[:2],
@@ -31,11 +32,11 @@ def test_batch_comparison_only_one_contest_allowed(
             "name": "Contest 2",
             "isTargeted": False,
             "choices": [
-                {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 5000},
-                {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 2500},
-                {"id": str(uuid.uuid4()), "name": "candidate 3", "numVotes": 2500},
+                {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 6000},
+                {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 3500},
+                {"id": str(uuid.uuid4()), "name": "candidate 3", "numVotes": 3500},
             ],
-            "totalBallotsCast": 5000,
+            "totalBallotsCast": 7350,
             "numWinners": 1,
             "votesAllowed": 2,
             "jurisdictionIds": jurisdiction_ids[:2],
@@ -155,7 +156,6 @@ def test_batch_comparison_round_1(
     jurisdiction_ids: List[str],
     contest_id: str,
     election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
     batch_tallies,  # pylint: disable=unused-argument
     snapshot,
 ):
@@ -165,6 +165,59 @@ def test_batch_comparison_round_1(
     jurisdictions = json.loads(rv.data)["jurisdictions"]
     assert jurisdictions[0]["currentRoundStatus"] is None
     assert jurisdictions[1]["currentRoundStatus"] is None
+
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
+        data={
+            "manifest": (
+                io.BytesIO(
+                    b"Batch Name,Number of Ballots\n"
+                    b"Batch 1,500\n"
+                    b"Batch 2,500\n"
+                    b"Batch 3,500\n"
+                    b"Batch 4,500\n"
+                    b"Batch 5,100\n"
+                    b"Batch 6,100\n"
+                    b"Batch 7,100\n"
+                    b"Batch 8,100\n"
+                    b"Batch 9,100\n"
+                    b"Batch 10,100\n"
+                    b"Batch 11,500\n"
+                    b"Batch 12,500\n"
+                ),
+                "manifest.csv",
+            )
+        },
+    )
+    assert_ok(rv)
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/ballot-manifest",
+        data={
+            "manifest": (
+                io.BytesIO(
+                    b"Batch Name,Number of Ballots\n"
+                    b"Batch 1,500\n"
+                    b"Batch 2,500\n"
+                    b"Batch 3,500\n"
+                    b"Batch 4,500\n"
+                    b"Batch 5,250\n"
+                    b"Batch 6,250\n"
+                    b"Batch 7,250\n"
+                    b"Batch 8,250\n"
+                    b"Batch 9,250\n"
+                    b"Batch 10,500\n"
+                ),
+                "manifest.csv",
+            )
+        },
+    )
+    assert_ok(rv)
+    bgcompute_update_ballot_manifest_file(election_id)
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
 
     # Use an artificially large sample size in order to have enough samples to work with
     sample_size = 20
@@ -397,3 +450,34 @@ def test_batch_comparison_round_2(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/report"
     )
     assert_match_report(rv.data, snapshot)
+
+
+def test_batch_comparison_custom_sample_size_validation(
+    client: FlaskClient,
+    election_id: str,
+    contest_id: str,
+    election_settings,  # pylint: disable=unused-argument
+    manifests,  # pylint: disable=unused-argument
+    batch_tallies,  # pylint: disable=unused-argument
+):
+    # Check jurisdiction status before starting the round
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    assert jurisdictions[0]["currentRoundStatus"] is None
+    assert jurisdictions[1]["currentRoundStatus"] is None
+
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {"roundNum": 1, "sampleSizes": {contest_id: 25}},
+    )
+
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "message": "Sample size must be less than or equal to: 15 (the total number of batches in the targeted contest 'Contest 1')",
+                "errorType": "Conflict",
+            }
+        ]
+    }
