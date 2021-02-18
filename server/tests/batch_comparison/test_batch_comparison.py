@@ -338,7 +338,6 @@ def test_batch_comparison_round_2(
     assert rv.status_code == 200
     batches = json.loads(rv.data)["batches"]
 
-    print(batches)
     # Record some batch results
     choice_ids = [choice["id"] for choice in contests[0]["choices"]]
     batch_results = {
