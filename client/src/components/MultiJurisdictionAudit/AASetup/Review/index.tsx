@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useParams, useHistory, Link } from 'react-router-dom'
-import { H4, Callout, RadioGroup, Radio } from '@blueprintjs/core'
+import { H4, Callout, RadioGroup, Radio, Spinner } from '@blueprintjs/core'
 import { Formik, FormikProps, getIn, Field } from 'formik'
 import FormButtonBar from '../../../Atoms/Form/FormButtonBar'
 import FormButton from '../../../Atoms/Form/FormButton'
@@ -67,19 +67,16 @@ const Review: React.FC<IProps> = ({
     !!contests &&
     !!auditSettings &&
     isSetupComplete(jurisdictions, contests, auditSettings)
-  let sampleSizeOptions = useSampleSizes(electionId, shouldShowSampleSizes)
+  // eslint-disable-next-line prefer-const
+  let [sampleSizeOptions, selectedSampleSizes] = useSampleSizes(
+    electionId,
+    shouldShowSampleSizes
+  ) || [null, null]
 
-  if (
-    !jurisdictions ||
-    !contests ||
-    !auditSettings ||
-    (shouldShowSampleSizes && !sampleSizeOptions)
-  )
-    return null // Still loading
+  if (!jurisdictions || !contests || !auditSettings) return null // Still loading
 
   const submit = async ({ sampleSizes }: { sampleSizes: IFormOptions }) => {
-    const roundSampleSizes = mapValues(sampleSizes, ({ size }) => size!)
-    if (await startNextRound(roundSampleSizes)) {
+    if (await startNextRound(sampleSizes)) {
       refresh()
       history.push(`/election/${electionId}/progress`)
     } else {
@@ -124,9 +121,13 @@ const Review: React.FC<IProps> = ({
       { key: 'custom', size: null, prob: null },
     ])
 
+  // If locked, meaning the audit already was launched, show which sample size got selected.
+  // Otherwise default select the first option.
   const initialValues: IFormOptions =
-    sampleSizeOptions && !locked
-      ? mapValues(sampleSizeOptions, options => options[0])
+    sampleSizeOptions && selectedSampleSizes
+      ? locked
+        ? selectedSampleSizes
+        : mapValues(sampleSizeOptions, options => options[0])
       : {}
 
   const participatingJurisdictions = contests
@@ -313,92 +314,102 @@ const Review: React.FC<IProps> = ({
         }: FormikProps<{
           sampleSizes: IFormOptions
         }>) => (
-          <form data-testid="sample-size-form">
-            {sampleSizeOptions ? (
-              <FormSection>
-                <FormSectionDescription>
-                  Choose the initial sample size for each contest you would like
-                  to use for Round 1 of the audit from the options below.
-                </FormSectionDescription>
-                {targetedContests.map(contest => {
-                  const currentOption = values.sampleSizes[contest.id]
-                  return (
-                    <ElevatedCard key={contest.id}>
-                      <FormSectionDescription>
-                        <H4>{contest.name}</H4>
-                        <RadioGroup
-                          name={`sampleSizes[${contest.id}]`}
-                          onChange={e => {
-                            const selectedOption = sampleSizeOptions![
-                              contest.id
-                            ].find(c => c.key === e.currentTarget.value)
-                            setFieldValue(
-                              `sampleSizes[${contest.id}]`,
-                              selectedOption
-                            )
-                          }}
-                          selectedValue={getIn(
-                            values,
-                            `sampleSizes[${contest.id}][key]`
-                          )}
-                          disabled={locked}
-                        >
-                          {sampleSizeOptions![contest.id].map(
-                            (option: ISampleSizeOption) => {
-                              return option.key === 'custom' ? (
-                                <Radio value="custom" key={option.key}>
-                                  Enter your own sample size (not recommended)
-                                </Radio>
-                              ) : (
-                                <Radio value={option.key} key={option.key}>
-                                  {option.key === 'all-ballots' &&
-                                    'All ballots: '}
-                                  {option.key === 'asn'
-                                    ? 'BRAVO Average Sample Number: '
-                                    : ''}
-                                  {`${Number(
-                                    option.size
-                                  ).toLocaleString()} samples`}
-                                  {option.prob
-                                    ? ` (${percentFormatter.format(
-                                        option.prob
-                                      )} chance of reaching risk limit and completing the audit in one round)`
-                                    : ''}
-                                  {option.key === 'all-ballots' &&
-                                    ' (recommended for this contest due to the small margin of victory)'}
-                                </Radio>
-                              )
-                            }
-                          )}
-                        </RadioGroup>
-                        {currentOption && currentOption.key === 'custom' && (
-                          <Field
-                            component={FormField}
-                            name={`sampleSizes[${contest.id}].size`}
-                            value={
-                              currentOption.size === null
-                                ? undefined
-                                : currentOption.size
-                            }
-                            onValueChange={(value: number) =>
+          <form>
+            {shouldShowSampleSizes ? (
+              sampleSizeOptions === null ? (
+                <div style={{ display: 'flex' }}>
+                  <Spinner size={Spinner.SIZE_SMALL} />
+                  <span style={{ marginLeft: '10px' }}>
+                    Loading sample size options...
+                  </span>
+                </div>
+              ) : (
+                <FormSection>
+                  <FormSectionDescription>
+                    Choose the initial sample size for each contest you would
+                    like to use for Round 1 of the audit from the options below.
+                  </FormSectionDescription>
+                  {targetedContests.map(contest => {
+                    const currentOption = values.sampleSizes[contest.id]
+                    return (
+                      <ElevatedCard key={contest.id}>
+                        <FormSectionDescription>
+                          <H4>{contest.name}</H4>
+                          <RadioGroup
+                            name={`sampleSizes[${contest.id}]`}
+                            onChange={e => {
+                              const selectedOption = sampleSizeOptions![
+                                contest.id
+                              ].find(c => c.key === e.currentTarget.value)
                               setFieldValue(
-                                `sampleSizes[${contest.id}].size`,
-                                value
+                                `sampleSizes[${contest.id}]`,
+                                selectedOption
                               )
-                            }
-                            type="number"
-                            validate={validateCustomSampleSize(
-                              contest.totalBallotsCast,
-                              contest.jurisdictionIds,
-                              contest.name
+                            }}
+                            selectedValue={getIn(
+                              values,
+                              `sampleSizes[${contest.id}][key]`
                             )}
-                          />
-                        )}
-                      </FormSectionDescription>
-                    </ElevatedCard>
-                  )
-                })}
-              </FormSection>
+                            disabled={locked}
+                          >
+                            {sampleSizeOptions![contest.id].map(
+                              (option: ISampleSizeOption) => {
+                                return option.key === 'custom' ? (
+                                  <Radio value="custom" key={option.key}>
+                                    Enter your own sample size (not recommended)
+                                  </Radio>
+                                ) : (
+                                  <Radio value={option.key} key={option.key}>
+                                    {option.key === 'all-ballots' &&
+                                      'All ballots: '}
+                                    {option.key === 'asn'
+                                      ? 'BRAVO Average Sample Number: '
+                                      : ''}
+                                    {`${Number(
+                                      option.size
+                                    ).toLocaleString()} samples`}
+                                    {option.prob
+                                      ? ` (${percentFormatter.format(
+                                          option.prob
+                                        )} chance of reaching risk limit and completing the audit in one round)`
+                                      : ''}
+                                    {option.key === 'all-ballots' &&
+                                      ' (recommended for this contest due to the small margin of victory)'}
+                                  </Radio>
+                                )
+                              }
+                            )}
+                          </RadioGroup>
+                          {currentOption && currentOption.key === 'custom' && (
+                            <Field
+                              component={FormField}
+                              name={`sampleSizes[${contest.id}].size`}
+                              value={
+                                currentOption.size === null
+                                  ? undefined
+                                  : currentOption.size
+                              }
+                              onValueChange={(value: number) =>
+                                setFieldValue(
+                                  `sampleSizes[${contest.id}].size`,
+                                  value
+                                )
+                              }
+                              type="number"
+                              validate={validateCustomSampleSize(
+                                contest.totalBallotsCast,
+                                contest.jurisdictionIds,
+                                contest.name
+                              )}
+                              disabled={locked}
+                            />
+                          )}
+                        </FormSectionDescription>
+                      </ElevatedCard>
+                    )
+                  })}
+                </FormSection>
+              )
             ) : (
               <p>
                 All jurisdiction files must be uploaded and all audit settings

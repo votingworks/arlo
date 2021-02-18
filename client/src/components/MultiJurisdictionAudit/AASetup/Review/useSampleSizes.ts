@@ -11,23 +11,27 @@ export interface ISampleSizeOptions {
   [contestId: string]: ISampleSizeOption[]
 }
 
+interface ISelectedSampleSizes {
+  [contestId: string]: ISampleSizeOption
+}
+
 const loadSampleSizes = async (
   electionId: string
-): Promise<ISampleSizeOptions | null> => {
-  const response = await api<{ sampleSizes: ISampleSizeOptions }>(
-    `/election/${electionId}/sample-sizes`
-  )
-  return response && response.sampleSizes
+): Promise<[ISampleSizeOptions, ISelectedSampleSizes] | null> => {
+  const response = await api<{
+    sampleSizes: ISampleSizeOptions
+    selected: ISelectedSampleSizes
+  }>(`/election/${electionId}/sample-sizes`)
+  return response && [response.sampleSizes, response.selected]
 }
 
 const useSampleSizes = (
   electionId: string,
   shouldFetch: boolean
-): ISampleSizeOptions | null => {
-  const [
-    sampleSizeOptions,
-    setSampleSizeOptions,
-  ] = useState<ISampleSizeOptions | null>(null)
+): [ISampleSizeOptions, ISelectedSampleSizes] | null => {
+  const [sampleSizeOptions, setSampleSizeOptions] = useState<
+    [ISampleSizeOptions, ISelectedSampleSizes] | null
+  >(null)
 
   useEffect(() => {
     ;(async () => {

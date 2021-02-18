@@ -1,6 +1,14 @@
 import uuid
 from collections import defaultdict
-from typing import Optional, NamedTuple, List, Tuple, Dict, cast as typing_cast
+from typing import (
+    Optional,
+    NamedTuple,
+    List,
+    Tuple,
+    Dict,
+    cast as typing_cast,
+    TypedDict,
+)
 from datetime import datetime
 from flask import jsonify, request
 from jsonschema import validate
@@ -460,7 +468,8 @@ def is_round_complete(election: Election, round: Round) -> bool:
 
 def sampled_all_ballots(round: Round, election: Election):
     return election.audit_type == AuditType.BALLOT_POLLING and any(
-        round_contest.sample_size >= round_contest.contest.total_ballots_cast
+        typing_cast(JSONDict, round_contest.sample_size)["size"]
+        >= round_contest.contest.total_ballots_cast
         for round_contest in round.round_contests
         if round_contest.sample_size is not None
         # total_ballots_cast can't be None here, but typechecker needs this
@@ -476,6 +485,12 @@ def is_contest_on_cvr_ballot(
         interpretations[choice["column"]] != ""
         for choice in cvr_contests_metadata[contest.name]["choices"].values()
     )
+
+
+class SampleSize(TypedDict):
+    size: int
+    key: str
+    prob: Optional[float]
 
 
 class BallotDraw(NamedTuple):
@@ -512,7 +527,9 @@ def draw_sample(round_id: str, election_id: str):
 
 
 def sample_ballots(
-    election: Election, round: Round, contest_sample_sizes: List[Tuple[Contest, int]],
+    election: Election,
+    round: Round,
+    contest_sample_sizes: List[Tuple[Contest, SampleSize]],
 ):
     participating_jurisdictions = {
         jurisdiction
@@ -551,7 +568,9 @@ def sample_ballots(
             .all()
         )
 
-    def draw_sample_for_contest(contest: Contest, sample_size: int) -> List[BallotDraw]:
+    def draw_sample_for_contest(
+        contest: Contest, sample_size: SampleSize
+    ) -> List[BallotDraw]:
         # Compute the total number of ballot samples in all rounds leading up to
         # this one. Note that this corresponds to the number of SampledBallotDraws,
         # not SampledBallots.
@@ -593,7 +612,7 @@ def sample_ballots(
         sample = sampler.draw_sample(
             str(election.random_seed),
             dict(manifest),
-            sample_size,
+            sample_size["size"],
             num_previously_sampled,
         )
         return [
@@ -651,7 +670,9 @@ def sample_ballots(
 
 
 def sample_batches(
-    election: Election, round: Round, contest_sample_sizes: List[Tuple[Contest, int]],
+    election: Election,
+    round: Round,
+    contest_sample_sizes: List[Tuple[Contest, SampleSize]],
 ):
     # We only support one contest for batch audits
     assert len(contest_sample_sizes) == 1
@@ -678,7 +699,7 @@ def sample_batches(
     sample = sampler.draw_ppeb_sample(
         str(election.random_seed),
         sampler_contest.from_db_contest(contest),
-        sample_size,
+        sample_size["size"],
         num_previously_sampled,
         batch_tallies(election),
     )
@@ -698,7 +719,18 @@ CREATE_ROUND_REQUEST_SCHEMA = {
         "roundNum": {"type": "integer", "minimum": 1,},
         "sampleSizes": {
             "type": "object",
-            "patternProperties": {"^.*$": {"type": "integer"}},
+            "patternProperties": {
+                "^.*$": {
+                    "type": "object",
+                    "properties": {
+                        "size": {"type": "integer"},
+                        "key": {"type": "string"},
+                        "prob": {"anyOf": [{"type": "number"}, {"type": "null"}]},
+                    },
+                    "additionalProperties": False,
+                    "required": ["size", "key", "prob"],
+                }
+            },
         },
     },
     "additionalProperties": False,
@@ -732,29 +764,38 @@ def validate_sample_size(round: dict, election: Election):
     if set(round["sampleSizes"].keys()) != {c.id for c in targeted_contests}:
         raise BadRequest("Sample sizes provided do not match targeted contest ids")
 
-    if election.audit_type == AuditType.BATCH_COMPARISON:
-        for single_contest in targeted_contests:
-            total_batches = sum(
-                jurisdiction.manifest_num_batches or 0
-                for jurisdiction in single_contest.jurisdictions
-            )
-            if round["sampleSizes"][single_contest.id] > total_batches:
-                raise Conflict(
-                    f"Sample size must be less than or equal to: {total_batches} (the total number of batches in the targeted contest '{single_contest.name}')"
-                )
+    for contest in targeted_contests:
+        sample_size = round["sampleSizes"][contest.id]
+        total_batches = sum(
+            jurisdiction.manifest_num_batches or 0
+            for jurisdiction in contest.jurisdictions
+        )
+        valid_keys, max_sample_size = {
+            AuditType.BALLOT_POLLING: (
+                ["asn", "0.9", "0.8", "0.7", "custom", "all-ballots"],
+                contest.total_ballots_cast,
+            ),
+            AuditType.BALLOT_COMPARISON: (
+                ["supersimple", "custom"],
+                contest.total_ballots_cast,
+            ),
+            AuditType.BATCH_COMPARISON: (["macro", "custom"], total_batches),
+        }[AuditType(election.audit_type)]
 
-    if (
-        election.audit_type == AuditType.BALLOT_POLLING
-        or election.audit_type == AuditType.BALLOT_COMPARISON
-    ):
-        for single_contest in targeted_contests:
-            if (
-                round["sampleSizes"][single_contest.id]
-                > single_contest.total_ballots_cast
-            ):
-                raise Conflict(
-                    f"Sample size must be less than or equal to: {single_contest.total_ballots_cast} (the total number of ballots in the targeted contest '{single_contest.name}')"
-                )
+        if sample_size["key"] not in valid_keys:
+            raise BadRequest(
+                f"Invalid sample size key for contest {contest.name}: {sample_size['key']}"
+            )
+        if sample_size["size"] > max_sample_size:
+            ballots_or_batches = (
+                "batches"
+                if election.audit_type == AuditType.BATCH_COMPARISON
+                else "ballots"
+            )
+            raise BadRequest(
+                f"Sample size for contest {contest.name} must be less than or equal to:"
+                f" {max_sample_size} (the total number of {ballots_or_batches} in the contest)"
+            )
 
 
 @api.route("/election/<election_id>/round", methods=["POST"])
@@ -776,7 +817,6 @@ def create_round(election: Election):
             for contest in election.contests:
                 set_contest_metadata_from_cvrs(contest)
 
-        # Validate sample sizes
         validate_sample_size(json_round, election)
 
         sample_sizes = json_round["sampleSizes"]
@@ -795,7 +835,7 @@ def create_round(election: Election):
                 return options["supersimple"]
 
         sample_sizes = {
-            contest_id: select_sample_size(options)["size"]
+            contest_id: select_sample_size(options)
             for contest_id, options in sample_size_options.items()
         }
 

@@ -87,7 +87,7 @@ def test_two_rounds(
     rv = client.get(f"/api/election/{election_id}/sample-sizes")
     sample_sizes = json.loads(rv.data)["sampleSizes"]
     selected_sample_sizes = {
-        contest_id: sizes[0]["size"] for contest_id, sizes in sample_sizes.items()
+        contest_id: sizes[0] for contest_id, sizes in sample_sizes.items()
     }
 
     rv = post_json(
@@ -114,8 +114,8 @@ def test_two_rounds(
     contest_2_ballots = SampledBallotDraw.query.filter_by(
         contest_id=contest_ids[1]
     ).count()
-    assert contest_1_ballots == selected_sample_sizes[contest_ids[0]]
-    assert contest_2_ballots == selected_sample_sizes[contest_ids[1]]
+    assert contest_1_ballots == selected_sample_sizes[contest_ids[0]]["size"]
+    assert contest_2_ballots == selected_sample_sizes[contest_ids[1]]["size"]
 
     # Check that we're sampling ballots from the two jurisdictions that uploaded manifests
     sampled_jurisdictions = (

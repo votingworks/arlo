@@ -118,4 +118,11 @@ def get_sample_sizes(election: Election):
         contest_id: list(options.values())
         for contest_id, options in sample_size_options(election, round_one=True).items()
     }
-    return jsonify({"sampleSizes": sample_sizes})
+    # If we've already started the first round, return which sample size was
+    # selected for each contest so we can show the user
+    selected_sample_sizes = dict(
+        RoundContest.query.join(Round)
+        .filter_by(election_id=election.id, round_num=1)
+        .values(RoundContest.contest_id, RoundContest.sample_size)
+    )
+    return jsonify({"sampleSizes": sample_sizes, "selected": selected_sample_sizes})

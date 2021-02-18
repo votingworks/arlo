@@ -161,7 +161,7 @@ def test_ballot_comparison_container_manifest(
     rv = post_json(
         client,
         f"/api/election/{election_id}/round",
-        {"roundNum": 1, "sampleSizes": {target_contest_id: sample_size["size"]}},
+        {"roundNum": 1, "sampleSizes": {target_contest_id: sample_size}},
     )
     assert_ok(rv)
 

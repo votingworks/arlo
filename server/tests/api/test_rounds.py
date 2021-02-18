@@ -35,7 +35,7 @@ def test_rounds_create_one(
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/sample-sizes")
     sample_size_options = json.loads(rv.data)["sampleSizes"]
-    sample_size = sample_size_options[contest_ids[0]][0]["size"]
+    sample_size = sample_size_options[contest_ids[0]][0]
     rv = post_json(
         client,
         f"/api/election/{election_id}/round",
@@ -86,7 +86,7 @@ def test_rounds_create_one(
     ballot_draws = SampledBallotDraw.query.filter_by(
         round_id=rounds["rounds"][0]["id"]
     ).all()
-    assert len(ballot_draws) == sample_size
+    assert len(ballot_draws) == sample_size["size"]
     # Check that we're sampling ballots from the two jurisdictions that uploaded manifests
     sampled_jurisdictions = {
         draw.sampled_ballot.batch.jurisdiction_id for draw in ballot_draws
@@ -202,7 +202,12 @@ def test_rounds_create_before_previous_round_complete(
     rv = post_json(
         client,
         f"/api/election/{election_id}/round",
-        {"roundNum": 1, "sampleSizes": {contest_ids[0]: 10}},
+        {
+            "roundNum": 1,
+            "sampleSizes": {
+                contest_ids[0]: {"key": "custom", "size": 10, "prob": None}
+            },
+        },
     )
     assert_ok(rv)
 
@@ -234,14 +239,24 @@ def test_rounds_wrong_number_too_small(
     rv = post_json(
         client,
         f"/api/election/{election_id}/round",
-        {"roundNum": 1, "sampleSizes": {contest_ids[0]: 10}},
+        {
+            "roundNum": 1,
+            "sampleSizes": {
+                contest_ids[0]: {"key": "custom", "size": 10, "prob": None}
+            },
+        },
     )
     assert_ok(rv)
 
     rv = post_json(
         client,
         f"/api/election/{election_id}/round",
-        {"roundNum": 1, "sampleSizes": {contest_ids[0]: 10}},
+        {
+            "roundNum": 1,
+            "sampleSizes": {
+                contest_ids[0]: {"key": "custom", "size": 10, "prob": None}
+            },
+        },
     )
     assert rv.status_code == 400
     assert json.loads(rv.data) == {
@@ -273,7 +288,7 @@ def test_rounds_missing_round_num(
     rv = post_json(
         client,
         f"/api/election/{election_id}/round",
-        {"sampleSizes": {contest_ids[0]: 10}},
+        {"sampleSizes": {contest_ids[0]: {"key": "custom", "size": 10, "prob": None}},},
     )
     assert rv.status_code == 400
     assert json.loads(rv.data) == {
@@ -290,11 +305,28 @@ def test_rounds_bad_sample_sizes(
     client: FlaskClient, election_id: str, contest_ids: List[str]
 ):
     bad_sample_sizes = [
-        {},
-        {"not_a_real_id": 1},
-        {contest_ids[0]: 10, contest_ids[1]: 20},
+        ({}, "Sample sizes provided do not match targeted contest ids"),
+        (
+            {"not_a_real_id": {"key": "custom", "size": 10, "prob": None}},
+            "Sample sizes provided do not match targeted contest ids",
+        ),
+        (
+            {
+                contest_ids[0]: {"key": "custom", "size": 10, "prob": None},
+                contest_ids[1]: {"key": "custom", "size": 10, "prob": None},
+            },
+            "Sample sizes provided do not match targeted contest ids",
+        ),
+        (
+            {contest_ids[0]: {"key": "bad_key", "size": 10, "prob": None}},
+            "Invalid sample size key for contest Contest 1: bad_key",
+        ),
+        (
+            {contest_ids[0]: {"key": "custom", "size": 3000, "prob": None}},
+            "Sample size for contest Contest 1 must be less than or equal to: 1000 (the total number of ballots in the contest)",
+        ),
     ]
-    for bad_sample_size in bad_sample_sizes:
+    for bad_sample_size, expected_error in bad_sample_sizes:
         rv = post_json(
             client,
             f"/api/election/{election_id}/round",
@@ -302,28 +334,5 @@ def test_rounds_bad_sample_sizes(
         )
         assert rv.status_code == 400
         assert json.loads(rv.data) == {
-            "errors": [
-                {
-                    "message": "Sample sizes provided do not match targeted contest ids",
-                    "errorType": "Bad Request",
-                }
-            ]
+            "errors": [{"message": expected_error, "errorType": "Bad Request",}]
         }
-
-
-def test_rounds_custom_sample_size_validation(
-    client: FlaskClient, election_id: str, contest_ids: List[str]
-):
-    rv = post_json(
-        client,
-        f"/api/election/{election_id}/round",
-        {"roundNum": 1, "sampleSizes": {contest_ids[0]: 3000}},
-    )
-    assert json.loads(rv.data) == {
-        "errors": [
-            {
-                "message": "Sample size must be less than or equal to: 1000 (the total number of ballots in the targeted contest 'Contest 1')",
-                "errorType": "Conflict",
-            }
-        ]
-    }

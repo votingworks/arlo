@@ -90,13 +90,14 @@ const { prevStage } = relativeStages('review')
 const refreshMock = jest.fn()
 const startNextRoundMock = jest.fn().mockResolvedValue(true)
 
-const renderView = () =>
+const renderView = (props = {}) =>
   renderWithRouter(
     <Review
       locked={false}
       prevStage={prevStage}
       refresh={refreshMock}
       startNextRound={startNextRoundMock}
+      {...props}
     />,
     {
       route: '/election/1/setup',
@@ -263,7 +264,9 @@ describe('Audit Setup > Review & Launch', () => {
       const confirmLaunchButton = screen.getAllByText('Launch Audit')[1]
       userEvent.click(confirmLaunchButton)
       await waitFor(() => {
-        expect(startNextRoundMock).toHaveBeenCalledWith({ 'contest-id': 46 })
+        expect(startNextRoundMock).toHaveBeenCalledWith({
+          'contest-id': { key: 'asn', size: 46, prob: 0.54 },
+        })
         expect(refreshMock).toHaveBeenCalled()
       })
     })
@@ -317,7 +320,9 @@ describe('Audit Setup > Review & Launch', () => {
       const confirmLaunchButton = screen.getAllByText('Launch Audit')[1]
       userEvent.click(confirmLaunchButton)
       await waitFor(() => {
-        expect(startNextRoundMock).toHaveBeenCalledWith({ 'contest-id': 67 })
+        expect(startNextRoundMock).toHaveBeenCalledWith({
+          'contest-id': { key: '0.7', size: 67, prob: 0.7 },
+        })
         expect(refreshMock).toHaveBeenCalled()
       })
     })
@@ -360,7 +365,9 @@ describe('Audit Setup > Review & Launch', () => {
       const confirmLaunchButton = screen.getAllByText('Launch Audit')[1]
       userEvent.click(confirmLaunchButton)
       await waitFor(() => {
-        expect(startNextRoundMock).toHaveBeenCalledWith({ 'contest-id': 5 })
+        expect(startNextRoundMock).toHaveBeenCalledWith({
+          'contest-id': { key: 'custom', size: 5, prob: null },
+        })
         expect(refreshMock).toHaveBeenCalled()
       })
     })
@@ -451,6 +458,52 @@ describe('Audit Setup > Review & Launch', () => {
       await screen.findByText(
         "Must be less than or equal to: 4234 (the total number of ballots in the targeted contest: 'Contest Name')"
       )
+    })
+  })
+
+  it('shows the selected sample size after launch', async () => {
+    const expectedCalls = [
+      apiCalls.getSettings(auditSettings.all),
+      apiCalls.getJurisdictions({
+        jurisdictions: jurisdictionMocks.allManifests,
+      }),
+      apiCalls.getJurisdictionFile,
+      apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
+      {
+        ...apiCalls.getSampleSizeOptions,
+        response: {
+          ...apiCalls.getSampleSizeOptions.response,
+          selected: { 'contest-id': { key: 'custom', size: 100, prob: null } },
+        },
+      },
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderView({ locked: true })
+      await screen.findByText(/Choose the initial sample size/)
+      // All the options should still be showing
+      const options = screen.getAllByRole('radio')
+      expect(options).toHaveLength(5)
+      options.forEach(option => expect(option).toBeDisabled())
+      expect(options[0].closest('label')).toHaveTextContent(
+        'BRAVO Average Sample Number: 46 samples (54% chance of reaching risk limit and completing the audit in one round)'
+      )
+      expect(options[1].closest('label')).toHaveTextContent(
+        '67 samples (70% chance of reaching risk limit and completing the audit in one round)'
+      )
+      expect(options[2].closest('label')).toHaveTextContent(
+        '88 samples (50% chance of reaching risk limit and completing the audit in one round)'
+      )
+      expect(options[3].closest('label')).toHaveTextContent(
+        '125 samples (90% chance of reaching risk limit and completing the audit in one round)'
+      )
+      expect(options[4].closest('label')).toHaveTextContent(
+        'Enter your own sample size (not recommended)'
+      )
+      // Custom option should be checked and show value
+      expect(options[4]).toBeChecked()
+      const customSampleSizeInput = screen.getByRole('spinbutton')
+      expect(customSampleSizeInput).toHaveValue(100)
+      expect(customSampleSizeInput).toBeDisabled()
     })
   })
 })

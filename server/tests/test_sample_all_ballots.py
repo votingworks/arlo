@@ -111,7 +111,7 @@ def test_all_ballots_audit(
 
     rv = client.get(f"/api/election/{election_id}/sample-sizes")
     sample_sizes = json.loads(rv.data)["sampleSizes"]
-    selected_sample_sizes = {contest_id: sample_sizes[contest_id][0]["size"]}
+    selected_sample_sizes = {contest_id: sample_sizes[contest_id][0]}
 
     rv = post_json(
         client,
@@ -221,7 +221,7 @@ def test_all_ballots_audit(
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
-    jurisdiction_sample_size = int(selected_sample_sizes[contest_id] / 2)
+    jurisdiction_sample_size = int(selected_sample_sizes[contest_id]["size"] / 2)
     assert jurisdictions[0]["currentRoundStatus"] == {
         "numSamples": jurisdiction_sample_size,
         "numSamplesAudited": int(jurisdiction_sample_size / 4),
@@ -346,7 +346,7 @@ def test_all_ballots_audit(
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
-    jurisdiction_sample_size = int(selected_sample_sizes[contest_id] / 2)
+    jurisdiction_sample_size = int(selected_sample_sizes[contest_id]["size"] / 2)
     assert jurisdictions[0]["currentRoundStatus"] == {
         "numSamples": jurisdiction_sample_size,
         "numSamplesAudited": jurisdiction_sample_size,

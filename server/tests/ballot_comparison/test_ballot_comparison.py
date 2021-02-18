@@ -164,7 +164,7 @@ def test_ballot_comparison_two_rounds(
     rv = post_json(
         client,
         f"/api/election/{election_id}/round",
-        {"roundNum": 1, "sampleSizes": {target_contest_id: sample_size["size"]}},
+        {"roundNum": 1, "sampleSizes": {target_contest_id: sample_size}},
     )
     assert_ok(rv)
 
@@ -420,7 +420,12 @@ def test_ballot_comparison_cvr_metadata(
     rv = post_json(
         client,
         f"/api/election/{election_id}/round",
-        {"roundNum": 1, "sampleSizes": {target_contest_id: 20}},
+        {
+            "roundNum": 1,
+            "sampleSizes": {
+                target_contest_id: {"key": "custom", "size": 20, "prob": None}
+            },
+        },
     )
     assert_ok(rv)
 
@@ -471,7 +476,7 @@ def test_ballot_comparison_cvr_metadata(
     assert ballot_missing_contest["contestsOnBallot"] == [contests[0]["id"]]
 
 
-def test_ballot_comparison_custom_sample_size_validation(
+def test_ballot_comparison_sample_size_validation(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],  # pylint: disable=unused-argument
@@ -495,16 +500,23 @@ def test_ballot_comparison_custom_sample_size_validation(
     )
     assert_ok(rv)
 
-    rv = post_json(
-        client,
-        f"/api/election/{election_id}/round",
-        {"roundNum": 1, "sampleSizes": {contest_id: 3000}},
-    )
-    assert json.loads(rv.data) == {
-        "errors": [
-            {
-                "message": "Sample size must be less than or equal to: 30 (the total number of ballots in the targeted contest 'Contest 2')",
-                "errorType": "Conflict",
-            }
-        ]
-    }
+    bad_sample_sizes = [
+        (
+            {contest_id: {"key": "bad_key", "size": 10, "prob": None}},
+            "Invalid sample size key for contest Contest 2: bad_key",
+        ),
+        (
+            {contest_id: {"key": "custom", "size": 3000, "prob": None}},
+            "Sample size for contest Contest 2 must be less than or equal to: 30 (the total number of ballots in the contest)",
+        ),
+    ]
+    for bad_sample_size, expected_error in bad_sample_sizes:
+        rv = post_json(
+            client,
+            f"/api/election/{election_id}/round",
+            {"roundNum": 1, "sampleSizes": bad_sample_size},
+        )
+        assert rv.status_code == 400
+        assert json.loads(rv.data) == {
+            "errors": [{"message": expected_error, "errorType": "Bad Request",}]
+        }

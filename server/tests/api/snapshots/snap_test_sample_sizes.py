@@ -24,3 +24,8 @@ snapshots["test_sample_sizes_round_2 1"] = {
         {"key": "0.9", "prob": 0.9, "size": 351},
     ]
 }
+
+snapshots["test_sample_sizes_round_2 2"] = {
+    "Contest 1": {"key": "asn", "prob": 0.52, "size": 119},
+    "Contest 2": None,
+}

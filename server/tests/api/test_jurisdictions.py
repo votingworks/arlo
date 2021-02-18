@@ -319,9 +319,7 @@ def test_jurisdictions_round_status_offline(
         f"/api/election/{election_id}/round",
         {
             "roundNum": 1,
-            "sampleSizes": {
-                contest_ids[0]: sample_size_options[contest_ids[0]][0]["size"]
-            },
+            "sampleSizes": {contest_ids[0]: sample_size_options[contest_ids[0]][0]},
         },
     )
     assert_ok(rv)

@@ -54,6 +54,7 @@ export const sampleSizeMock = {
       { prob: 0.9, size: 125, key: '0.9' },
     ],
   },
+  selected: {},
 }
 
 export default settingsMock

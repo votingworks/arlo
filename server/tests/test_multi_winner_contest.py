@@ -102,7 +102,7 @@ def test_multi_winner_two_rounds(
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/sample-sizes")
     sample_sizes = json.loads(rv.data)["sampleSizes"]
-    selected_sample_sizes = {contest_id: sample_sizes[contest_id][0]["size"]}
+    selected_sample_sizes = {contest_id: sample_sizes[contest_id][0]}
 
     rv = post_json(
         client,
