@@ -300,8 +300,8 @@ class Batch(BaseModel):
     name = Column(String(200), nullable=False)
     num_ballots = Column(Integer, nullable=False)
 
-    # For ballot polling audits, a batch is associated with a group of ballots
-    # sampled from this batch
+    # For ballot polling and ballot comparison audits, a batch is associated
+    # with a group of ballots sampled from this batch
     ballots = relationship(
         "SampledBallot", back_populates="batch", uselist=True, passive_deletes=True
     )
@@ -312,6 +312,12 @@ class Batch(BaseModel):
         String(200), ForeignKey("audit_board.id", ondelete="set null"),
     )
     audit_board = relationship("AuditBoard")
+
+    # For hybrid audits, the ballot manifest tells us which batches have CVRs
+    # (and should use ballot comparison math) and which don't (and should use
+    # ballot polling math).
+    has_cvrs = Column(Boolean)
+
     draws = relationship(
         "SampledBatchDraw",
         uselist=True,
