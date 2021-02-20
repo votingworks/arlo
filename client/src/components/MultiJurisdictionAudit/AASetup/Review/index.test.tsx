@@ -343,14 +343,14 @@ describe('Audit Setup > Review & Launch', () => {
       fireEvent.change(customSampleSizeInput, { target: { value: '40' } }) // userEvent has a problem with this field due to the lack of an explicit value field: https://github.com/testing-library/user-event/issues/356
       fireEvent.blur(customSampleSizeInput)
       await screen.findByText(
-        'Must be less than or equal to: 30 (the total number of ballots in this targeted contest)'
+        "Must be less than or equal to: 30 (the total number of ballots in the targeted contest: 'Contest Name')"
       )
       userEvent.clear(customSampleSizeInput)
       fireEvent.change(customSampleSizeInput, { target: { value: '5' } })
       await waitFor(() =>
         expect(
           screen.queryByText(
-            'Must be less than or equal to: 30 (the total number of ballots in this targeted contest)'
+            "Must be less than or equal to: 30 (the total number of ballots in the targeted contest: 'Contest Name')"
           )
         ).toBeNull()
       )
@@ -391,6 +391,65 @@ describe('Audit Setup > Review & Launch', () => {
       expect(standardizedContestsFileLink).toHaveAttribute(
         'href',
         '/api/election/1/standardized-contests/file/csv'
+      )
+    })
+  })
+
+  it('custom sample size validation - batch comparison', async () => {
+    const expectedCalls = [
+      apiCalls.getSettings(settingsMock.batch),
+      apiCalls.getJurisdictions({
+        jurisdictions: jurisdictionMocks.allManifestsAllTallies,
+      }),
+      apiCalls.getJurisdictionFile,
+      apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
+      apiCalls.getSampleSizeOptions,
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      const { container } = renderView()
+      await screen.findByText(
+        'Choose the initial sample size for each contest you would like to use for Round 1 of the audit from the options below.'
+      )
+      expect(container).toMatchSnapshot()
+      const newSampleSize = await screen.findByText(
+        'Enter your own sample size (not recommended)'
+      )
+      userEvent.click(newSampleSize)
+      const customSampleSizeInput = await screen.findByRole('spinbutton')
+      fireEvent.change(customSampleSizeInput, { target: { value: '40' } }) // userEvent has a problem with this field due to the lack of an explicit value field: https://github.com/testing-library/user-event/issues/356
+      fireEvent.blur(customSampleSizeInput)
+      await screen.findByText(
+        "Must be less than or equal to: 20 (the total number of batches in the targeted contest: 'Contest Name')"
+      )
+    })
+  })
+
+  it('custom sample size validation - ballot comparison', async () => {
+    const expectedCalls = [
+      apiCalls.getSettings(auditSettings.ballotComparisonAll),
+      apiCalls.getJurisdictions({
+        jurisdictions: jurisdictionMocks.allManifestsWithCVRs,
+      }),
+      apiCalls.getJurisdictionFile,
+      apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
+      apiCalls.getStandardizedContestsFile,
+      apiCalls.getSampleSizeOptions,
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      const { container } = renderView()
+      await screen.findByText(
+        'Choose the initial sample size for each contest you would like to use for Round 1 of the audit from the options below.'
+      )
+      expect(container).toMatchSnapshot()
+      const newSampleSize = await screen.findByText(
+        'Enter your own sample size (not recommended)'
+      )
+      userEvent.click(newSampleSize)
+      const customSampleSizeInput = await screen.findByRole('spinbutton')
+      fireEvent.change(customSampleSizeInput, { target: { value: '5000' } }) // userEvent has a problem with this field due to the lack of an explicit value field: https://github.com/testing-library/user-event/issues/356
+      fireEvent.blur(customSampleSizeInput)
+      await screen.findByText(
+        "Must be less than or equal to: 4234 (the total number of ballots in the targeted contest: 'Contest Name')"
       )
     })
   })
