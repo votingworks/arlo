@@ -45,6 +45,7 @@ const SupportBar = styled(Navbar)`
 
 const Nav = styled(Navbar)`
   width: 100%;
+  height: auto;
   padding: 0;
 
   .bp3-navbar-heading img {
