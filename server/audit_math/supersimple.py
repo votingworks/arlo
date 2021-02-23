@@ -3,7 +3,7 @@ import math
 from decimal import Decimal, ROUND_CEILING
 from typing import Dict, Tuple, TypedDict, Optional
 
-from .sampler_contest import Contest
+from .sampler_contest import Contest, CVR, CVRS, SAMPLE_CVRS, SampleCVR
 
 l: Decimal = Decimal(0.5)
 gamma: Decimal = Decimal(1.03905)  # This gamma is used in Stark's tool, AGI, and CORLA
@@ -17,18 +17,6 @@ o2: Decimal = Decimal(0.0001)
 u2: Decimal = Decimal(0.0001)
 
 
-# CVR: { contest_id: { choice_id: 0 | 1 }}
-# CVRS: { ballot_id: CVR }
-CVR = Dict[str, Dict[str, int]]
-CVRS = Dict[str, Optional[CVR]]
-
-
-class SampleCVR(TypedDict):
-    times_sampled: int
-    cvr: Optional[CVR]
-
-
-SAMPLE_CVRS = Dict[str, SampleCVR]
 
 
 class Discrepancy(TypedDict):

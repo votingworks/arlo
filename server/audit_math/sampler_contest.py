@@ -2,10 +2,10 @@
 A Module containing the Contest class, which encapsulates useful info for RLA
 computations.
 """
-from typing import Dict, Any, Union
+from typing import Dict, Any, Union, Optional, TypedDict
+from ..models import AuditMathType
 import operator
 
-from supersimple import CVRS,  SAMPLE_CVRS
 
 
 def from_db_contest(db_contest):
@@ -169,6 +169,19 @@ class Contest:
             self.candidates,
         )
 
+
+# CVR: { contest_id: { choice_id: 0 | 1 }}
+# CVRS: { ballot_id: CVR }
+CVR = Dict[str, Dict[str, int]]
+CVRS = Dict[str, Optional[CVR]]
+
+
+class SampleCVR(TypedDict):
+    times_sampled: int
+    cvr: Optional[CVR]
+
+
+SAMPLE_CVRS = Dict[str, SampleCVR]
 
 class Stratum:
     """

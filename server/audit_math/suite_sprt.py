@@ -8,7 +8,8 @@ import scipy.optimize
 
 from typing import Dict, Tuple
 from decimal import Decimal
-import bravo
+from .bravo import *
+from .sampler_contest import Contest, Stratum
 
 
 def ballot_polling_sprt(alpha: Decimal,
@@ -51,7 +52,7 @@ def ballot_polling_sprt(alpha: Decimal,
     for winner,loser in null_margins:
         # Set up likelihood for null and alternative hypotheses
         n = stratum.sample_size
-        sample = bravo.compute_cumulative_sample(stratum.sample)
+        sample = compute_cumulative_sample(stratum.sample)
         n_w = sample[winner]
         n_l = sample[loser]
         n_u = n - n_w - n_l
@@ -68,9 +69,9 @@ def ballot_polling_sprt(alpha: Decimal,
                     np.sum(np.log(v_l - np.arange(n_l))) + \
                     np.sum(np.log(v_u - np.arange(n_u)))
 
-        null_logLR = lambda n_w: (n_w > 0)*np.sum(np.log(n_w - np.arange(n_w))) + \
-                    (n_l > 0)*np.sum(np.log(n_w - null_margin - np.arange(n_l))) + \
-                    (n_u > 0)*np.sum(np.log(popsize - 2*n_w + null_margin - np.arange(n_u)))
+        null_logLR = lambda Nw: (n_w > 0)*np.sum(np.log(n_w - np.arange(n_w))) + \
+                    (n_l > 0)*np.sum(np.log(Nw - null_margin - np.arange(n_l))) + \
+                    (n_u > 0)*np.sum(np.log(popsize - 2*Nw + null_margin - np.arange(n_u)))
 
         upper_n_w_limit = (popsize - n_u + null_margin)/2
         lower_n_w_limit = np.max([n_w, n_l+null_margin])
@@ -85,9 +86,9 @@ def ballot_polling_sprt(alpha: Decimal,
         if lower_n_w_limit > upper_n_w_limit:
             lower_n_w_limit, upper_n_w_limit = upper_n_w_limit, lower_n_w_limit
 
-        LR_derivative = lambda n_w: np.sum([1/(n_w - i) for i in range(n_w)]) + \
-                    np.sum([1/(n_w - null_margin - i) for i in range(n_l)]) - \
-                    2*np.sum([1/(popsize - 2*n_w + null_margin - i) for i in range(n_u)])
+        LR_derivative = lambda Nw: np.sum([1/(n_w - i) for i in range(n_w)]) + \
+                    np.sum([1/(Nw - null_margin - i) for i in range(n_l)]) - \
+                    2*np.sum([1/(popsize - 2*Nw + null_margin - i) for i in range(n_u)])
 
         # Sometimes the upper_n_w_limit is too extreme, causing illegal 0s.
         # Check and change the limit when that occurs.
@@ -104,6 +105,7 @@ def ballot_polling_sprt(alpha: Decimal,
         logLR = alt_logLR - null_logLR(nuisance_param)
         LR = np.exp(logLR)
 
-        p_values[(winner,loser)] = 1/LR
+        p_values[(winner,loser)] = 1.0/LR
+        print(LR, upper_n_w_limit, lower_n_w_limit)
 
     return p_values
