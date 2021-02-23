@@ -1,5 +1,573 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Audit Setup > Review & Launch custom sample size validation - ballot comparison 1`] = `
+<div>
+  <div>
+    <h2
+      class="bp3-heading sc-ifAKCX cmZyyF"
+    >
+      Review & Launch
+    </h2>
+    <div
+      class="bp3-callout bp3-intent-warning bp3-callout-icon"
+    >
+      <span
+        class="bp3-icon bp3-icon-warning-sign"
+        icon="warning-sign"
+      >
+        <svg
+          data-icon="warning-sign"
+          height="20"
+          viewBox="0 0 20 20"
+          width="20"
+        >
+          <desc>
+            warning-sign
+          </desc>
+          <path
+            d="M19.86 17.52l.01-.01-9-16-.01.01C10.69 1.21 10.37 1 10 1s-.69.21-.86.52l-.01-.01-9 16 .01.01c-.08.14-.14.3-.14.48 0 .55.45 1 1 1h18c.55 0 1-.45 1-1 0-.18-.06-.34-.14-.48zM11 17H9v-2h2v2zm0-3H9V6h2v8z"
+            fill-rule="evenodd"
+          />
+        </svg>
+      </span>
+      Once the audit is started, the audit definition will no longer be editable. Please make sure this data is correct before launching the audit.
+    </div>
+    <br />
+    <h4
+      class="bp3-heading"
+    >
+      Audit Settings
+    </h4>
+    <div
+      class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
+    >
+      <table
+        class="sc-hMqMXs kgAdZo"
+      >
+        <tbody>
+          <tr>
+            <td>
+              Election Name:
+            </td>
+            <td>
+              Election Name
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Audit Type:
+            </td>
+            <td>
+              Ballot Comparison
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Risk Limit:
+            </td>
+            <td>
+              10%
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Random Seed:
+            </td>
+            <td>
+              12345
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Participating Jurisdictions:
+            </td>
+            <td>
+              <a
+                href="/api/election/1/jurisdiction/file/csv"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                jurisdictions.csv
+              </a>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Standardized Contests:
+            </td>
+            <td>
+              <a
+                href="/api/election/1/standardized-contests/file/csv"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                standardized-contests.csv
+              </a>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Audit Board Data Entry:
+            </td>
+            <td>
+              Offline
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <table
+        class="sc-eNQAEJ jcIdqs"
+      >
+        <thead>
+          <tr>
+            <th>
+              Target Contests
+            </th>
+            <th>
+              Jurisdictions
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              Contest Name
+            </td>
+            <td>
+              Jurisdiction 1, Jurisdiction 2
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <table
+        class="sc-eNQAEJ jcIdqs"
+      >
+        <thead>
+          <tr>
+            <th>
+              Opportunistic Contests
+            </th>
+            <th>
+              Jurisdictions
+            </th>
+          </tr>
+        </thead>
+        <tbody />
+      </table>
+    </div>
+    <br />
+    <h4
+      class="bp3-heading"
+    >
+      Sample Size
+    </h4>
+    <form
+      data-testid="sample-size-form"
+    >
+      <div
+        class="sc-htoDjs jcQPAQ"
+      >
+        <div
+          class="sc-dnqmqq kGMqKN"
+        >
+          Choose the initial sample size for each contest you would like to use for Round 1 of the audit from the options below.
+        </div>
+        <div
+          class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
+        >
+          <div
+            class="sc-dnqmqq kGMqKN"
+          >
+            <h4
+              class="bp3-heading"
+            >
+              Contest Name
+            </h4>
+            <div>
+              <label
+                class="bp3-control bp3-radio"
+              >
+                <input
+                  checked=""
+                  name="sampleSizes[contest-id]"
+                  type="radio"
+                  value="asn"
+                />
+                <span
+                  class="bp3-control-indicator"
+                />
+                BRAVO Average Sample Number: 
+                46 samples
+                 (54% chance of reaching risk limit and completing the audit in one round)
+              </label>
+              <label
+                class="bp3-control bp3-radio"
+              >
+                <input
+                  name="sampleSizes[contest-id]"
+                  type="radio"
+                  value="0.7"
+                />
+                <span
+                  class="bp3-control-indicator"
+                />
+                
+                67 samples
+                 (70% chance of reaching risk limit and completing the audit in one round)
+              </label>
+              <label
+                class="bp3-control bp3-radio"
+              >
+                <input
+                  name="sampleSizes[contest-id]"
+                  type="radio"
+                  value="0.5"
+                />
+                <span
+                  class="bp3-control-indicator"
+                />
+                
+                88 samples
+                 (50% chance of reaching risk limit and completing the audit in one round)
+              </label>
+              <label
+                class="bp3-control bp3-radio"
+              >
+                <input
+                  name="sampleSizes[contest-id]"
+                  type="radio"
+                  value="0.9"
+                />
+                <span
+                  class="bp3-control-indicator"
+                />
+                
+                125 samples
+                 (90% chance of reaching risk limit and completing the audit in one round)
+              </label>
+              <label
+                class="bp3-control bp3-radio"
+              >
+                <input
+                  name="sampleSizes[contest-id]"
+                  type="radio"
+                  value="custom"
+                />
+                <span
+                  class="bp3-control-indicator"
+                />
+                Enter your own sample size (not recommended)
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="sc-bdVaJa kcYonD"
+      >
+        <button
+          class="bp3-button sc-bxivhb WkpPV"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Back
+          </span>
+        </button>
+        <button
+          class="bp3-button bp3-intent-primary sc-bxivhb WkpPV"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Launch Audit
+          </span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+`;
+
+exports[`Audit Setup > Review & Launch custom sample size validation - batch comparison 1`] = `
+<div>
+  <div>
+    <h2
+      class="bp3-heading sc-ifAKCX cmZyyF"
+    >
+      Review & Launch
+    </h2>
+    <div
+      class="bp3-callout bp3-intent-warning bp3-callout-icon"
+    >
+      <span
+        class="bp3-icon bp3-icon-warning-sign"
+        icon="warning-sign"
+      >
+        <svg
+          data-icon="warning-sign"
+          height="20"
+          viewBox="0 0 20 20"
+          width="20"
+        >
+          <desc>
+            warning-sign
+          </desc>
+          <path
+            d="M19.86 17.52l.01-.01-9-16-.01.01C10.69 1.21 10.37 1 10 1s-.69.21-.86.52l-.01-.01-9 16 .01.01c-.08.14-.14.3-.14.48 0 .55.45 1 1 1h18c.55 0 1-.45 1-1 0-.18-.06-.34-.14-.48zM11 17H9v-2h2v2zm0-3H9V6h2v8z"
+            fill-rule="evenodd"
+          />
+        </svg>
+      </span>
+      Once the audit is started, the audit definition will no longer be editable. Please make sure this data is correct before launching the audit.
+    </div>
+    <br />
+    <h4
+      class="bp3-heading"
+    >
+      Audit Settings
+    </h4>
+    <div
+      class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
+    >
+      <table
+        class="sc-hMqMXs kgAdZo"
+      >
+        <tbody>
+          <tr>
+            <td>
+              Election Name:
+            </td>
+            <td>
+              Election Name
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Audit Type:
+            </td>
+            <td>
+              Batch Comparison
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Risk Limit:
+            </td>
+            <td>
+              10%
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Random Seed:
+            </td>
+            <td>
+              12345
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Participating Jurisdictions:
+            </td>
+            <td>
+              <a
+                href="/api/election/1/jurisdiction/file/csv"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                jurisdictions.csv
+              </a>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Audit Board Data Entry:
+            </td>
+            <td>
+              Offline
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <table
+        class="sc-eNQAEJ jcIdqs"
+      >
+        <thead>
+          <tr>
+            <th>
+              Target Contests
+            </th>
+            <th>
+              Jurisdictions
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              Contest Name
+            </td>
+            <td>
+              Jurisdiction 1, Jurisdiction 2
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <table
+        class="sc-eNQAEJ jcIdqs"
+      >
+        <thead>
+          <tr>
+            <th>
+              Opportunistic Contests
+            </th>
+            <th>
+              Jurisdictions
+            </th>
+          </tr>
+        </thead>
+        <tbody />
+      </table>
+    </div>
+    <br />
+    <h4
+      class="bp3-heading"
+    >
+      Sample Size
+    </h4>
+    <form
+      data-testid="sample-size-form"
+    >
+      <div
+        class="sc-htoDjs jcQPAQ"
+      >
+        <div
+          class="sc-dnqmqq kGMqKN"
+        >
+          Choose the initial sample size for each contest you would like to use for Round 1 of the audit from the options below.
+        </div>
+        <div
+          class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
+        >
+          <div
+            class="sc-dnqmqq kGMqKN"
+          >
+            <h4
+              class="bp3-heading"
+            >
+              Contest Name
+            </h4>
+            <div>
+              <label
+                class="bp3-control bp3-radio"
+              >
+                <input
+                  checked=""
+                  name="sampleSizes[contest-id]"
+                  type="radio"
+                  value="asn"
+                />
+                <span
+                  class="bp3-control-indicator"
+                />
+                BRAVO Average Sample Number: 
+                46 samples
+                 (54% chance of reaching risk limit and completing the audit in one round)
+              </label>
+              <label
+                class="bp3-control bp3-radio"
+              >
+                <input
+                  name="sampleSizes[contest-id]"
+                  type="radio"
+                  value="0.7"
+                />
+                <span
+                  class="bp3-control-indicator"
+                />
+                
+                67 samples
+                 (70% chance of reaching risk limit and completing the audit in one round)
+              </label>
+              <label
+                class="bp3-control bp3-radio"
+              >
+                <input
+                  name="sampleSizes[contest-id]"
+                  type="radio"
+                  value="0.5"
+                />
+                <span
+                  class="bp3-control-indicator"
+                />
+                
+                88 samples
+                 (50% chance of reaching risk limit and completing the audit in one round)
+              </label>
+              <label
+                class="bp3-control bp3-radio"
+              >
+                <input
+                  name="sampleSizes[contest-id]"
+                  type="radio"
+                  value="0.9"
+                />
+                <span
+                  class="bp3-control-indicator"
+                />
+                
+                125 samples
+                 (90% chance of reaching risk limit and completing the audit in one round)
+              </label>
+              <label
+                class="bp3-control bp3-radio"
+              >
+                <input
+                  name="sampleSizes[contest-id]"
+                  type="radio"
+                  value="custom"
+                />
+                <span
+                  class="bp3-control-indicator"
+                />
+                Enter your own sample size (not recommended)
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="sc-bdVaJa kcYonD"
+      >
+        <button
+          class="bp3-button sc-bxivhb WkpPV"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Back
+          </span>
+        </button>
+        <button
+          class="bp3-button bp3-intent-primary sc-bxivhb WkpPV"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Launch Audit
+          </span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+`;
+
 exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on opportunistic contest 1`] = `
 <div>
   <div>

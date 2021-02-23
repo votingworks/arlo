@@ -139,6 +139,55 @@ const Review: React.FC<IProps> = ({
     isFileProcessed(j.ballotManifest)
   ).length
 
+  const getBatchTotal = () =>
+    participatingJurisdictions.reduce(
+      (a, { ballotManifest: { numBatches } }) =>
+        numBatches !== null ? a + numBatches : a,
+      0
+    )
+
+  const getBallotTotal = (jurisdictionIds: string[]) =>
+    jurisdictions
+      .filter(jurisdiction =>
+        jurisdictionIds.find(p => p === jurisdiction.name)
+      )
+      .reduce(
+        (a, { ballotManifest: { numBallots } }) =>
+          numBallots !== null ? a + numBallots : a,
+        0
+      )
+
+  const validateCustomSampleSize = (
+    totalBallotsCast: string,
+    jurisdictionIds: string[],
+    contestName: string
+  ) => {
+    if (auditType === 'BALLOT_POLLING') {
+      return testNumber(
+        Number(totalBallotsCast),
+        `Must be less than or equal to: ${totalBallotsCast} (the total number of ballots in the targeted contest: '${contestName}')`
+      )
+    }
+    if (auditType === 'BATCH_COMPARISON') {
+      return testNumber(
+        Number(getBatchTotal()),
+        `Must be less than or equal to: ${Number(
+          getBatchTotal()
+        )} (the total number of batches in the targeted contest: '${contestName}')`
+      )
+    }
+    if (auditType === 'BALLOT_COMPARISON') {
+      return testNumber(
+        Number(getBallotTotal(jurisdictionIds)),
+        `Must be less than or equal to: ${Number(
+          getBallotTotal(jurisdictionIds)
+        )} (the total number of ballots in the targeted contest: '${contestName}')`
+      )
+    }
+    /* istanbul ignore next */
+    return Promise.resolve(undefined)
+  }
+
   return (
     <div>
       <H2Title>Review &amp; Launch</H2Title>
@@ -338,14 +387,11 @@ const Review: React.FC<IProps> = ({
                               )
                             }
                             type="number"
-                            validate={
-                              auditType === 'BATCH_COMPARISON'
-                                ? testNumber()
-                                : testNumber(
-                                    Number(contest.totalBallotsCast),
-                                    `Must be less than or equal to: ${contest.totalBallotsCast} (the total number of ballots in this targeted contest)`
-                                  )
-                            }
+                            validate={validateCustomSampleSize(
+                              contest.totalBallotsCast,
+                              contest.jurisdictionIds,
+                              contest.name
+                            )}
                           />
                         )}
                       </FormSectionDescription>
