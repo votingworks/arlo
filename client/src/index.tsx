@@ -9,8 +9,8 @@ import App from './App'
 import * as serviceWorker from './serviceWorker'
 
 Sentry.init({
-  dsn: process.env.REACT_APP_SENTRY_DSN,
-  environment: process.env.REACT_APP_ENV || 'development',
+  dsn: (window as any)._arlo_sentry_dsn, // eslint-disable-line @typescript-eslint/no-explicit-any
+  environment: (window as any)._arlo_flask_env, // eslint-disable-line @typescript-eslint/no-explicit-any
   integrations: [new Integrations.BrowserTracing()],
   tracesSampleRate: 0.2,
 })

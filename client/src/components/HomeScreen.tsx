@@ -328,7 +328,8 @@ const CreateAudit = ({ user }: { user: IAuditAdmin }) => {
               >
                 <Radio value="BALLOT_POLLING">Ballot Polling</Radio>
                 {/* For now, disable switching audit math type in production */}
-                {process.env.REACT_APP_ENV !== 'production' &&
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                {(window as any)._arlo_flask_env !== 'production' &&
                 values.auditType === 'BALLOT_POLLING' ? (
                   <BallotPollingWrapper>
                     <label htmlFor="auditMathType">

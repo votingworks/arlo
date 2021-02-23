@@ -20,6 +20,19 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>Arlo (by VotingWorks)</title>
+    <script type="text/javascript">
+      // Inject environment variables from the Flask backend by rendering this
+      // HTML page as a template. Note that when running with `yarn start` or
+      // `yarn test`, this file will be served by a dev server, not through
+      // Flask, so these variables can't get populated.
+      window._arlo_flask_env = "development"
+      window._arlo_sentry_dsn = ''
+      // NODE_ENV is 'production' only when running `yarn build`
+      if ("%NODE_ENV%" === 'production') {
+        window._arlo_flask_env = '{{ flask_env }}'
+        window._arlo_sentry_dsn = '{{ sentry_dsn }}'
+      }
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
