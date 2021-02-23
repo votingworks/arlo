@@ -304,7 +304,7 @@ def round_rows(election: Election):
                 round.round_num,
                 contest.name,
                 pretty_targeted(contest.is_targeted),
-                round_contest.sample_size,
+                round_contest.sample_size and round_contest.sample_size["size"],
                 pretty_boolean(bool(round_contest.is_complete)),
                 pretty_pvalue(round_contest.end_p_value),
                 isoformat(round.created_at),

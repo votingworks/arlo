@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { toast } from 'react-toastify'
 import { api, poll } from '../utilities'
 import { FileProcessingStatus } from './useCSV'
+import { ISampleSizeOption } from './AASetup/Review/useSampleSizes'
 
 export interface IRound {
   id: string
@@ -19,7 +20,7 @@ export interface IRound {
 }
 
 export interface ISampleSizes {
-  [contestId: string]: number
+  [contestId: string]: ISampleSizeOption
 }
 
 const getRounds = async (electionId: string): Promise<IRound[] | null> => {

@@ -614,7 +614,7 @@ class RoundContest(BaseModel):
 
     end_p_value = Column(Float)
     is_complete = Column(Boolean)
-    sample_size = Column(Integer)
+    sample_size = Column(JSON)
 
 
 class RoundContestResult(BaseModel):

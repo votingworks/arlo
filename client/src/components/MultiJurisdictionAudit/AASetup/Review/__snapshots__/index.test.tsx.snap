@@ -161,9 +161,7 @@ exports[`Audit Setup > Review & Launch custom sample size validation - ballot co
     >
       Sample Size
     </h4>
-    <form
-      data-testid="sample-size-form"
-    >
+    <form>
       <div
         class="sc-htoDjs jcQPAQ"
       >
@@ -188,7 +186,6 @@ exports[`Audit Setup > Review & Launch custom sample size validation - ballot co
                 class="bp3-control bp3-radio"
               >
                 <input
-                  checked=""
                   name="sampleSizes[contest-id]"
                   type="radio"
                   value="asn"
@@ -438,9 +435,7 @@ exports[`Audit Setup > Review & Launch custom sample size validation - batch com
     >
       Sample Size
     </h4>
-    <form
-      data-testid="sample-size-form"
-    >
+    <form>
       <div
         class="sc-htoDjs jcQPAQ"
       >
@@ -465,7 +460,6 @@ exports[`Audit Setup > Review & Launch custom sample size validation - batch com
                 class="bp3-control bp3-radio"
               >
                 <input
-                  checked=""
                   name="sampleSizes[contest-id]"
                   type="radio"
                   value="asn"
@@ -715,9 +709,7 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
     >
       Sample Size
     </h4>
-    <form
-      data-testid="sample-size-form"
-    >
+    <form>
       <p>
         All jurisdiction files must be uploaded and all audit settings must be configured in order to calculate the sample size.
          
@@ -905,9 +897,7 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
     >
       Sample Size
     </h4>
-    <form
-      data-testid="sample-size-form"
-    >
+    <form>
       <p>
         All jurisdiction files must be uploaded and all audit settings must be configured in order to calculate the sample size.
          
@@ -1095,9 +1085,7 @@ exports[`Audit Setup > Review & Launch renders empty state 1`] = `
     >
       Sample Size
     </h4>
-    <form
-      data-testid="sample-size-form"
-    >
+    <form>
       <div
         class="sc-htoDjs jcQPAQ"
       >
@@ -1122,7 +1110,6 @@ exports[`Audit Setup > Review & Launch renders empty state 1`] = `
                 class="bp3-control bp3-radio"
               >
                 <input
-                  checked=""
                   name="sampleSizes[contest-id]"
                   type="radio"
                   value="asn"
@@ -1372,9 +1359,7 @@ exports[`Audit Setup > Review & Launch renders full state 1`] = `
     >
       Sample Size
     </h4>
-    <form
-      data-testid="sample-size-form"
-    >
+    <form>
       <div
         class="sc-htoDjs jcQPAQ"
       >
@@ -1399,7 +1384,6 @@ exports[`Audit Setup > Review & Launch renders full state 1`] = `
                 class="bp3-control bp3-radio"
               >
                 <input
-                  checked=""
                   name="sampleSizes[contest-id]"
                   type="radio"
                   value="asn"
@@ -1649,9 +1633,7 @@ exports[`Audit Setup > Review & Launch renders full state with batch comparison 
     >
       Sample Size
     </h4>
-    <form
-      data-testid="sample-size-form"
-    >
+    <form>
       <div
         class="sc-htoDjs jcQPAQ"
       >
@@ -1676,7 +1658,6 @@ exports[`Audit Setup > Review & Launch renders full state with batch comparison 
                 class="bp3-control bp3-radio"
               >
                 <input
-                  checked=""
                   name="sampleSizes[contest-id]"
                   type="radio"
                   value="asn"
@@ -1926,9 +1907,7 @@ exports[`Audit Setup > Review & Launch renders full state with batch comparison 
     >
       Sample Size
     </h4>
-    <form
-      data-testid="sample-size-form"
-    >
+    <form>
       <p>
         All jurisdiction files must be uploaded and all audit settings must be configured in order to calculate the sample size.
          
@@ -2125,9 +2104,7 @@ exports[`Audit Setup > Review & Launch renders full state with jurisdictions wit
     >
       Sample Size
     </h4>
-    <form
-      data-testid="sample-size-form"
-    >
+    <form>
       <div
         class="sc-htoDjs jcQPAQ"
       >
@@ -2152,7 +2129,6 @@ exports[`Audit Setup > Review & Launch renders full state with jurisdictions wit
                 class="bp3-control bp3-radio"
               >
                 <input
-                  checked=""
                   name="sampleSizes[contest-id]"
                   type="radio"
                   value="asn"
@@ -2402,9 +2378,7 @@ exports[`Audit Setup > Review & Launch renders full state with offline setting 1
     >
       Sample Size
     </h4>
-    <form
-      data-testid="sample-size-form"
-    >
+    <form>
       <div
         class="sc-htoDjs jcQPAQ"
       >
@@ -2429,7 +2403,6 @@ exports[`Audit Setup > Review & Launch renders full state with offline setting 1
                 class="bp3-control bp3-radio"
               >
                 <input
-                  checked=""
                   name="sampleSizes[contest-id]"
                   type="radio"
                   value="asn"

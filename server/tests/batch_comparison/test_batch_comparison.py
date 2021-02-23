@@ -95,7 +95,10 @@ def test_batch_comparison_without_all_batch_tallies(
     rv = post_json(
         client,
         f"/api/election/{election_id}/round",
-        {"roundNum": 1, "sampleSizes": {contest_id: 1}},
+        {
+            "roundNum": 1,
+            "sampleSizes": {contest_id: {"key": "custom", "size": 1, "prob": None}},
+        },
     )
     assert rv.status_code == 409
     assert json.loads(rv.data) == {
@@ -137,7 +140,10 @@ def test_batch_comparison_too_many_votes(
     rv = post_json(
         client,
         f"/api/election/{election_id}/round",
-        {"roundNum": 1, "sampleSizes": {contest_id: 1}},
+        {
+            "roundNum": 1,
+            "sampleSizes": {contest_id: {"key": "custom", "size": 1, "prob": None}},
+        },
     )
     assert rv.status_code == 409
     assert json.loads(rv.data) == {
@@ -224,7 +230,12 @@ def test_batch_comparison_round_1(
     rv = post_json(
         client,
         f"/api/election/{election_id}/round",
-        {"roundNum": 1, "sampleSizes": {contest_id: sample_size}},
+        {
+            "roundNum": 1,
+            "sampleSizes": {
+                contest_id: {"key": "custom", "size": sample_size, "prob": None}
+            },
+        },
     )
     assert_ok(rv)
 
@@ -460,24 +471,24 @@ def test_batch_comparison_custom_sample_size_validation(
     manifests,  # pylint: disable=unused-argument
     batch_tallies,  # pylint: disable=unused-argument
 ):
-    # Check jurisdiction status before starting the round
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.get(f"/api/election/{election_id}/jurisdiction")
-    jurisdictions = json.loads(rv.data)["jurisdictions"]
-    assert jurisdictions[0]["currentRoundStatus"] is None
-    assert jurisdictions[1]["currentRoundStatus"] is None
-
-    rv = post_json(
-        client,
-        f"/api/election/{election_id}/round",
-        {"roundNum": 1, "sampleSizes": {contest_id: 25}},
-    )
-
-    assert json.loads(rv.data) == {
-        "errors": [
-            {
-                "message": "Sample size must be less than or equal to: 15 (the total number of batches in the targeted contest 'Contest 1')",
-                "errorType": "Conflict",
-            }
-        ]
-    }
+    bad_sample_sizes = [
+        (
+            {contest_id: {"key": "bad_key", "size": 10, "prob": None}},
+            "Invalid sample size key for contest Contest 1: bad_key",
+        ),
+        (
+            {contest_id: {"key": "custom", "size": 25, "prob": None}},
+            "Sample size for contest Contest 1 must be less than or equal to: 15 (the total number of batches in the contest)",
+        ),
+    ]
+    for bad_sample_size, expected_error in bad_sample_sizes:
+        rv = post_json(
+            client,
+            f"/api/election/{election_id}/round",
+            {"roundNum": 1, "sampleSizes": bad_sample_size},
+        )
+        assert rv.status_code == 400
+        assert json.loads(rv.data) == {
+            "errors": [{"message": expected_error, "errorType": "Bad Request",}]
+        }

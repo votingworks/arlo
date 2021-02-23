@@ -43,23 +43,28 @@ def test_sample_sizes_round_1(
     snapshot,
 ):
     rv = client.get(f"/api/election/{election_id}/sample-sizes")
-    sample_sizes = json.loads(rv.data)["sampleSizes"]
+    response = json.loads(rv.data)
     contest_id_to_name = dict(Contest.query.values(Contest.id, Contest.name))
     snapshot.assert_match(
-        {contest_id_to_name[id]: sizes for id, sizes in sample_sizes.items()}
+        {contest_id_to_name[id]: sizes for id, sizes in response["sampleSizes"].items()}
     )
+    assert response["selected"] == {}
 
 
 def test_sample_sizes_round_2(
     client: FlaskClient,
     election_id: str,
-    round_2_id: str,  # pylint: disable=unused-argument
+    round_1_id: str,  # pylint: disable=unused-argument
     snapshot,
 ):
     rv = client.get(f"/api/election/{election_id}/sample-sizes")
-    sample_sizes = json.loads(rv.data)["sampleSizes"]
+    response = json.loads(rv.data)
     contest_id_to_name = dict(Contest.query.values(Contest.id, Contest.name))
     # Should still return round 1 sample sizes
     snapshot.assert_match(
-        {contest_id_to_name[id]: sizes for id, sizes in sample_sizes.items()}
+        {contest_id_to_name[id]: sizes for id, sizes in response["sampleSizes"].items()}
+    )
+    # Should show which sample size got selected
+    snapshot.assert_match(
+        {contest_id_to_name[id]: size for id, size in response["selected"].items()}
     )

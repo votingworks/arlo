@@ -156,7 +156,7 @@ def round_1_id(
     rv = client.get(f"/api/election/{election_id}/sample-sizes")
     assert rv.status_code == 200
     sample_size_options = json.loads(rv.data)["sampleSizes"]
-    sample_size = sample_size_options[contest_id][0]["size"]
+    sample_size = sample_size_options[contest_id][0]
 
     rv = post_json(
         client,

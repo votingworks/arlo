@@ -54,7 +54,12 @@ def test_run_offline_audit(
     rv = post_json(
         client,
         f"/api/election/{election_id}/round",
-        {"roundNum": 1, "sampleSizes": {contests[0]["id"]: 100}},
+        {
+            "roundNum": 1,
+            "sampleSizes": {
+                contests[0]["id"]: {"key": "custom", "size": 100, "prob": None}
+            },
+        },
     )
     assert_ok(rv)
 
