@@ -17,6 +17,7 @@ class CSVValueType(str, Enum):
     TEXT = "text"
     NUMBER = "number"
     EMAIL = "email"
+    YES_NO = "yes_no"
 
 
 class CSVColumnType(NamedTuple):
@@ -201,6 +202,13 @@ def validate_and_parse_values(
                 raise CSVParseError(
                     f"Expected an email address in {where}. Got: {value}."
                 )
+
+        if column.value_type is CSVValueType.YES_NO:
+            if value.lower() in ["y", "yes"]:
+                return True
+            if value.lower() in ["n", "no"]:
+                return False
+            raise CSVParseError(f"Expected Y or N in {where}. Got: {value}.")
 
         return value
 

@@ -20,6 +20,7 @@ CONTAINER = "Container"
 TABULATOR = "Tabulator"
 BATCH_NAME = "Batch Name"
 NUMBER_OF_BALLOTS = "Number of Ballots"
+CVR = "CVR"
 
 
 def process_ballot_manifest_file(
@@ -28,10 +29,17 @@ def process_ballot_manifest_file(
     assert jurisdiction.manifest_file_id == file.id
 
     def process():
-        # In ballot comparison audits, each batch is uniquely identified by
-        # (tabulator, batch name). For other types of audits, the batch name is
-        # unique.
-        use_tabulator = jurisdiction.election.audit_type == AuditType.BALLOT_COMPARISON
+        # In ballot comparison and hybrid audits, each batch is uniquely
+        # identified by (tabulator, batch name). For other types of audits, the
+        # batch name is unique.
+        use_tabulator = jurisdiction.election.audit_type in [
+            AuditType.BALLOT_COMPARISON,
+            AuditType.HYBRID,
+        ]
+        # Hybrid audits need a CVR column to tell us which batches have CVRS
+        # (for which we use ballot comparison math) and which don't (for which
+        # we use ballot polling math).
+        use_cvr = jurisdiction.election.audit_type == AuditType.HYBRID
         columns = [
             CSVColumnType(CONTAINER, CSVValueType.TEXT, required=False),
             CSVColumnType(
@@ -42,6 +50,7 @@ def process_ballot_manifest_file(
             ),
             CSVColumnType(BATCH_NAME, CSVValueType.TEXT, unique=True),
             CSVColumnType(NUMBER_OF_BALLOTS, CSVValueType.NUMBER),
+            CSVColumnType(CVR, CSVValueType.YES_NO, required=use_cvr),
         ]
 
         manifest_csv = parse_csv(jurisdiction.manifest_file.contents, columns)
@@ -56,6 +65,7 @@ def process_ballot_manifest_file(
                 num_ballots=row[NUMBER_OF_BALLOTS],
                 container=row.get(CONTAINER, None),
                 tabulator=row.get(TABULATOR, None),
+                has_cvrs=row.get(CVR, None),
             )
             session.add(batch)
             num_batches += 1

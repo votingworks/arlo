@@ -14,6 +14,7 @@ BALLOT_MANIFEST_COLUMNS = [
     CSVColumnType("Batch Name", CSVValueType.TEXT, unique=True),
     CSVColumnType("Number of Ballots", CSVValueType.NUMBER),
     CSVColumnType("Tabulator", CSVValueType.TEXT, required=False),
+    CSVColumnType("CVR", CSVValueType.YES_NO, required=False),
 ]
 
 BALLOT_MANIFEST_COLUMNS_COMPOSITE_KEY = [
@@ -45,17 +46,39 @@ def test_parse_csv_happy_path():
 
 
 def test_parse_csv_optional_columns():
-    parsed = parse_csv(
-        (
-            "Batch Name,Number of Ballots,Tabulator\n"
-            "Batch A,20,1\n"
-            "B,4,2\n"
-            "c1111111,100,1\n"
-            "box 2,100000,2"
-        ),
-        BALLOT_MANIFEST_COLUMNS,
+    parsed = list(
+        parse_csv(
+            (
+                "Batch Name,Number of Ballots,Tabulator,CVR\n"
+                "Batch A,20,1,Y\n"
+                "B,4,2,N\n"
+                "c1111111,100,1,yes\n"
+                "box 2,100000,2,no"
+            ),
+            BALLOT_MANIFEST_COLUMNS,
+        )
     )
-    assert len(list(parsed)) == 4
+    assert parsed == [
+        {
+            "Batch Name": "Batch A",
+            "Number of Ballots": 20,
+            "Tabulator": "1",
+            "CVR": True,
+        },
+        {"Batch Name": "B", "Number of Ballots": 4, "Tabulator": "2", "CVR": False},
+        {
+            "Batch Name": "c1111111",
+            "Number of Ballots": 100,
+            "Tabulator": "1",
+            "CVR": True,
+        },
+        {
+            "Batch Name": "box 2",
+            "Number of Ballots": 100000,
+            "Tabulator": "2",
+            "CVR": False,
+        },
+    ]
 
 
 def test_parse_csv_composite_unique_key():
@@ -149,6 +172,22 @@ def test_parse_csv_bad_email():
         )
 
 
+def test_parse_csv_bad_yes_no():
+    bad_yes_nos = ["yess", "na", "1"]
+    for bad_yes_no in bad_yes_nos:
+        with pytest.raises(CSVParseError) as error:
+            list(
+                parse_csv(
+                    ("Batch Name,Number of Ballots,CVR\n" f"A,1,{bad_yes_no}"),
+                    BALLOT_MANIFEST_COLUMNS,
+                )
+            )
+        assert (
+            str(error.value)
+            == f"Expected Y or N in column CVR, row 2. Got: {bad_yes_no}."
+        )
+
+
 def test_parse_csv_empty_cell_in_column():
     with pytest.raises(CSVParseError) as error:
         list(
@@ -216,7 +255,7 @@ def test_parse_csv_extra_column():
         )
     assert (
         str(error.value)
-        == "Found unexpected columns. Allowed columns: Batch Name, Number of Ballots, Tabulator."
+        == "Found unexpected columns. Allowed columns: Batch Name, CVR, Number of Ballots, Tabulator."
     )
 
     with pytest.raises(CSVParseError) as error:
@@ -228,7 +267,7 @@ def test_parse_csv_extra_column():
         )
     assert (
         str(error.value)
-        == "Found unexpected columns. Allowed columns: Batch Name, Number of Ballots, Tabulator."
+        == "Found unexpected columns. Allowed columns: Batch Name, CVR, Number of Ballots, Tabulator."
     )
 
 
@@ -468,7 +507,7 @@ Bliss Twp,,,199
 Carp Lake Twp,,,214
 Center Twp,,,180
 """,
-        "Found unexpected columns. Allowed columns: Batch Name, Number of Ballots, Tabulator.",
+        "Found unexpected columns. Allowed columns: Batch Name, CVR, Number of Ballots, Tabulator.",
         BALLOT_MANIFEST_COLUMNS,
     ),
     (
