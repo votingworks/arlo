@@ -189,18 +189,21 @@ class Stratum:
       Optional[Dict[str, Dict[str, int]]],# ballot polling
     ]
 
-    stratum_contest: Contest
-    stratum_math_type: AuditMathType
-    stratum_results: RESULTS
-    stratum_sample: SAMPLE_RESULTS
+    contest: Contest
+    math_type: AuditMathType
+    results: RESULTS
+    sample: SAMPLE_RESULTS
+    sample_size: int
 
     def __init__(self,
             contest: Contest,
             math_type: AuditMathType,
             results: RESULTS,
             sample_results: SAMPLE_RESULTS,
+            sample_size: int,
     ):
-        self.stratum_contest = contest
-        self.stratum_math_type = math_type
-        self.stratum_results = results
-        self.stratum_sample = sample_results
+        self.contest = contest
+        self.math_type = math_type
+        self.results = results
+        self.sample = sample_results
+        self.sample_size = sample_size
