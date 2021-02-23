@@ -321,6 +321,7 @@ const CreateAudit = ({ user }: { user: IAuditAdmin }) => {
                     BALLOT_POLLING: 'BRAVO',
                     BALLOT_COMPARISON: 'SUPERSIMPLE',
                     BATCH_COMPARISON: 'MACRO',
+                    HYBRID: 'SUITE',
                   }[auditType] as IValues['auditMathType']
                   setValues({ ...values, auditType, auditMathType })
                 }}
@@ -346,6 +347,12 @@ const CreateAudit = ({ user }: { user: IAuditAdmin }) => {
                 )}
                 <Radio value="BATCH_COMPARISON">Batch Comparison</Radio>
                 <Radio value="BALLOT_COMPARISON">Ballot Comparison</Radio>
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                {(window as any)._arlo_flask_env !== 'production' && (
+                  <Radio value="HYBRID">
+                    Hybrid (SUITE - Ballot Comparison &amp; Ballot Polling)
+                  </Radio>
+                )}
               </RadioGroup>
             </label>
           </FormSection>

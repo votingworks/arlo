@@ -230,6 +230,19 @@ exports[`App / renders aa logged in properly 1`] = `
                     />
                     Ballot Comparison
                   </label>
+                  <label
+                    class="bp3-control bp3-radio"
+                  >
+                    <input
+                      name="auditType"
+                      type="radio"
+                      value="HYBRID"
+                    />
+                    <span
+                      class="bp3-control-indicator"
+                    />
+                    Hybrid (SUITE - Ballot Comparison & Ballot Polling)
+                  </label>
                 </div>
               </label>
             </div>
@@ -698,6 +711,19 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders aa logged i
                       class="bp3-control-indicator"
                     />
                     Ballot Comparison
+                  </label>
+                  <label
+                    class="bp3-control bp3-radio"
+                  >
+                    <input
+                      name="auditType"
+                      type="radio"
+                      value="HYBRID"
+                    />
+                    <span
+                      class="bp3-control-indicator"
+                    />
+                    Hybrid (SUITE - Ballot Comparison & Ballot Polling)
                   </label>
                 </div>
               </label>
@@ -1507,6 +1533,19 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders aa logge
                       class="bp3-control-indicator"
                     />
                     Ballot Comparison
+                  </label>
+                  <label
+                    class="bp3-control bp3-radio"
+                  >
+                    <input
+                      name="auditType"
+                      type="radio"
+                      value="HYBRID"
+                    />
+                    <span
+                      class="bp3-control-indicator"
+                    />
+                    Hybrid (SUITE - Ballot Comparison & Ballot Polling)
                   </label>
                 </div>
               </label>

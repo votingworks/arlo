@@ -164,6 +164,8 @@ const Review: React.FC<IProps> = ({
                     BALLOT_POLLING: 'Ballot Polling',
                     BATCH_COMPARISON: 'Batch Comparison',
                     BALLOT_COMPARISON: 'Ballot Comparison',
+                    HYBRID:
+                      'Hybrid (SUITE - Ballot Comparison & Ballot Polling)',
                   }[auditType]
                 }
               </td>
