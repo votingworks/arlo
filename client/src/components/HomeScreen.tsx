@@ -327,10 +327,7 @@ const CreateAudit = ({ user }: { user: IAuditAdmin }) => {
                 selectedValue={values.auditType}
               >
                 <Radio value="BALLOT_POLLING">Ballot Polling</Radio>
-                {/* For now, disable switching audit math type in production */}
-                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                {(window as any)._arlo_flask_env !== 'production' &&
-                values.auditType === 'BALLOT_POLLING' ? (
+                {values.auditType === 'BALLOT_POLLING' && (
                   <BallotPollingWrapper>
                     <label htmlFor="auditMathType">
                       <p>Ballot polling type</p>
@@ -346,7 +343,7 @@ const CreateAudit = ({ user }: { user: IAuditAdmin }) => {
                       </RadioGroup>
                     </label>
                   </BallotPollingWrapper>
-                ) : null}
+                )}
                 <Radio value="BATCH_COMPARISON">Batch Comparison</Radio>
                 <Radio value="BALLOT_COMPARISON">Ballot Comparison</Radio>
               </RadioGroup>
