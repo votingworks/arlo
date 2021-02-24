@@ -45,7 +45,7 @@ def ballot_polling_sprt(alpha: Decimal,
 
     # Set parameters
     upper = 1/alpha
-    popsize = contest.ballots
+    popsize = stratum.contest.ballots
 
     p_values = {}
 
@@ -59,7 +59,7 @@ def ballot_polling_sprt(alpha: Decimal,
 
         v_w = stratum.contest.winners[winner]
         v_l = stratum.contest.losers[loser]
-        v_u = stratum.contest.ballots - v_w - v_l
+        v_u = popsize - v_w - v_l
 
         null_margin = null_margins[(winner,loser)]
 
@@ -69,7 +69,7 @@ def ballot_polling_sprt(alpha: Decimal,
                     np.sum(np.log(v_l - np.arange(n_l))) + \
                     np.sum(np.log(v_u - np.arange(n_u)))
 
-        null_logLR = lambda Nw: (n_w > 0)*np.sum(np.log(n_w - np.arange(n_w))) + \
+        null_logLR = lambda Nw: (n_w > 0)*np.sum(np.log(Nw - np.arange(n_w))) + \
                     (n_l > 0)*np.sum(np.log(Nw - null_margin - np.arange(n_l))) + \
                     (n_u > 0)*np.sum(np.log(popsize - 2*Nw + null_margin - np.arange(n_u)))
 
@@ -86,7 +86,7 @@ def ballot_polling_sprt(alpha: Decimal,
         if lower_n_w_limit > upper_n_w_limit:
             lower_n_w_limit, upper_n_w_limit = upper_n_w_limit, lower_n_w_limit
 
-        LR_derivative = lambda Nw: np.sum([1/(n_w - i) for i in range(n_w)]) + \
+        LR_derivative = lambda Nw: np.sum([1/(Nw - i) for i in range(n_w)]) + \
                     np.sum([1/(Nw - null_margin - i) for i in range(n_l)]) - \
                     2*np.sum([1/(popsize - 2*Nw + null_margin - i) for i in range(n_u)])
 
@@ -105,7 +105,7 @@ def ballot_polling_sprt(alpha: Decimal,
         logLR = alt_logLR - null_logLR(nuisance_param)
         LR = np.exp(logLR)
 
-        p_values[(winner,loser)] = 1.0/LR
+        p_values[(winner,loser)] = 1.0/LR if 1.0/LR < 1 else 1
         print(LR, upper_n_w_limit, lower_n_w_limit)
 
     return p_values

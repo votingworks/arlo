@@ -167,8 +167,8 @@ sprt_strata = {
 }
 
 expected_sprt_pvalues = {
-    'contest1': {('winner','loser'): 0},
-    'contest2': {('winner','loser'): 0},
-    'contest3': {('winner','loser'): 0},
+    'contest1': {('winner','loser'): 1},
+    'contest2': {('winner','loser'): 0.10693399},
+    'contest3': {('winner','loser'): 1},
     'contest4': {('winner','loser'): 1},
 }
