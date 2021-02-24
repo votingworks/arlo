@@ -17,14 +17,7 @@ describe('Ballot Comparison Failure Cases', () => {
     cy.get('input[value="BALLOT_COMPARISON"]').check({ force: true })
     cy.findByText("Create Audit").click()
     cy.contains("Audit Setup")
-    cy.viewport(1000,1000)
-    // attempt uploading a jurisdiction filesheet without selecting one
-    
-    cy.wait(1000) // without this the 'Upload File' button becomes detached from the DOM before it can be clicked
-    cy.findAllByText('Upload File').spread((firstButton, secondButton) => {
-      firstButton.click()
-    })
-    cy.contains("You must upload a file")
+    cy.viewport(1000,2000)
 
     // upload invalid jurisdiction filesheet
     cy.fixture('CSVs/jurisdiction/sample_jurisdiction_filesheet_jurisdiction_col_error.csv').then(fileContent => {
@@ -56,10 +49,6 @@ describe('Ballot Comparison Failure Cases', () => {
       firstButton.click()
     })
     cy.contains("Upload successfully completed")
-
-    // attempt uploading a standardized contests file without selecting one
-    cy.findAllByText('Upload File').click()
-    cy.contains("You must upload a file")
 
     // upload invalid standardized contests file
     cy.fixture('CSVs/contest/sample_standardized_contests_contest_name_col_error.csv').then(fileContent => {
