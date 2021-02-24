@@ -26,8 +26,6 @@ from suite_sprt import ballot_polling_sprt
 from models import AuditMathType
 from sampler_contest import Contest, Stratum
 
-
-
 def maximize_fisher_combined_pvalue(
 	contest: Contest,
 	strata: List[Stratum],
@@ -57,47 +55,50 @@ def maximize_fisher_combined_pvalue(
     assert len(strata)==2
 
     # find range of possible lambda
-	# TODO
-    feasible_lambda_range = calculate_lambda_range(N_w1, N_l1, N1, N_w2, N_l2, N2)
-    (lambda_lower, lambda_upper) = feasible_lambda_range
+    # TODO: fix variables
+    V = N_w1 + N_w2 - N_ell1 - N_ell2
+    lambda_lower = np.amax([N_w1 - N_ell1 - N_1, V - (N_w2 - N_ell2 + N_2)] )/V
+    lambda_upper =np.amin([ N_w1 - N_ell1 + N_1, V - (N_w2 - N_ell2 - N_2)] )/V
 
-    test_lambdas = np.arange(lambda_lower, lambda_upper+stepsize, stepsize)
-    if len(test_lambdas) < 5:
-        stepsize = (lambda_upper + 1 - lambda_lower)/5
+
+    # TODO: fix variables
+    T2 = lambda delta: 2*n1*np.log(1 + contest.margin*delta/(2*N1*gamma))
+    modulus = lambda delta: 2*Wn*np.log(1 + V_wl*delta) + 2*Ln*np.log(1 + V_wl*delta) + \
+            2*Un*np.log(1 + 2*V_wl*delta) + T2(delta)
+
+    while True:
         test_lambdas = np.arange(lambda_lower, lambda_upper+stepsize, stepsize)
+        if len(test_lambdas) < 5:
+            stepsize = (lambda_upper + 1 - lambda_lower)/5
+            test_lambdas = np.arange(lambda_lower, lambda_upper+stepsize, stepsize)
 
-    fisher_pvalues = np.empty_like(test_lambdas)
-    for i in range(len(test_lambdas)):
-        pvalue1 = np.min([1, strata[0].compute_p_value(alpha, test_lambdas[i])])
-        pvalue2 = np.min([1, strata[1].compute_p_value(alpha, 1-test_lambdas[i])])
-        fisher_pvalues[i] = fisher_combined_pvalue([pvalue1, pvalue2])
+        fisher_pvalues = np.empty_like(test_lambdas)
+        for i in range(len(test_lambdas)):
+            pvalue1 = np.min([1, strata[0].compute_p_value(alpha, test_lambdas[i])])
+            pvalue2 = np.min([1, strata[1].compute_p_value(alpha, 1-test_lambdas[i])])
+            fisher_pvalues[i] = fisher_combined_pvalue([pvalue1, pvalue2])
 
-    pvalue = np.max(fisher_pvalues)
-    alloc_lambda = test_lambdas[np.argmax(fisher_pvalues)]
+        pvalue = np.max(fisher_pvalues)
+        alloc_lambda = test_lambdas[np.argmax(fisher_pvalues)]
 
-    # If p-value is over the risk limit, then there's no need to refine the
-    # maximization. We have a lower bound on the maximum.
-    if pvalue > alpha or modulus is None:
-        return pvalue
+        # If p-value is over the risk limit, then there's no need to refine the
+        # maximization. We have a lower bound on the maximum.
+        if pvalue > alpha or modulus is None:
+            return pvalue
 
-    # Use modulus of continuity for the Fisher combination function to check
-    # how close this is to the true max
-    fisher_fun_obs = scipy.stats.chi2.ppf(1-pvalue, df=4)
-    fisher_fun_alpha = scipy.stats.chi2.ppf(1-alpha, df=4)
-    dist = np.abs(fisher_fun_obs - fisher_fun_alpha)
-    mod = modulus(stepsize)
+        # Use modulus of continuity for the Fisher combination function to check
+        # how close this is to the true max
+        fisher_fun_obs = scipy.stats.chi2.ppf(1-pvalue, df=4)
+        fisher_fun_alpha = scipy.stats.chi2.ppf(1-alpha, df=4)
+        dist = np.abs(fisher_fun_obs - fisher_fun_alpha)
+        mod = modulus(stepsize)
 
-    if mod <= dist:
-        return pvalue
-    else:
-        lambda_lower = alloc_lambda - 2*stepsize
-        lambda_upper = alloc_lambda + 2*stepsize
-        # TODO recursion AAAAAHHHHH
-        refined = maximize_fisher_combined_pvalue(N_w1, N_l1, N1, N_w2, N_l2, N2,
-            pvalue_funs, stepsize=stepsize/10, modulus=modulus, alpha=alpha,
-            feasible_lambda_range=(lambda_lower, lambda_upper))
-        refined['refined'] = True
-        return refined
+        if mod <= dist:
+            return pvalue
+        else:
+            # We haven't found a good enough max yet, keep looking
+            lambda_lower = alloc_lambda - 2*stepsize
+            lambda_upper = alloc_lambda + 2*stepsize
 
 def try_n(n):
 
