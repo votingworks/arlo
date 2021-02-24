@@ -17,11 +17,14 @@ describe('Ballot Comparison Failure Cases', () => {
     cy.get('input[value="BALLOT_COMPARISON"]').check({ force: true })
     cy.findByText("Create Audit").click()
     cy.contains("Audit Setup")
+    cy.viewport(1000,1000)
     // attempt uploading a jurisdiction filesheet without selecting one
-    // cy.findAllByText('Upload File').spread((firstButton, secondButton) => {
-    //   firstButton.click()
-    // })
-    // cy.contains("You must upload a file")
+    
+    cy.wait(1000) // without this the 'Upload File' button becomes detached from the DOM before it can be clicked
+    cy.findAllByText('Upload File').spread((firstButton, secondButton) => {
+      firstButton.click()
+    })
+    cy.contains("You must upload a file")
 
     // upload invalid jurisdiction filesheet
     cy.fixture('CSVs/jurisdiction/sample_jurisdiction_filesheet_jurisdiction_col_error.csv').then(fileContent => {
@@ -88,10 +91,7 @@ describe('Ballot Comparison Failure Cases', () => {
     // neglect to select a targeted contest
     cy.findByText('Save & Next').click()
     cy.get('.Toastify').find('div').find('div').contains('Must have at least one targeted contest').invoke('text')
-    .then(text => {
-      const toastText = text;
-      expect(toastText).to.equal('Must have at least one targeted contest');
-    })
+      .then(text => expect(text).to.equal('Must have at least one targeted contest'))
     cy.get('.Toastify').find('div').should('not.have.class', 'Toastify__bounce-exit--top-right').get('.Toastify__close-button').click()
 
     cy.findByText('Back').click()
