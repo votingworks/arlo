@@ -2,9 +2,9 @@ import uuid
 import itertools
 from datetime import datetime
 from typing import List, Dict
-from flask import jsonify, request
+from flask import jsonify, request, current_app
 from xkcdpass import xkcd_password as xp
-from werkzeug.exceptions import Conflict, BadRequest
+from werkzeug.exceptions import Conflict, BadRequest, InternalServerError
 from sqlalchemy import func
 
 from . import api
@@ -121,6 +121,34 @@ def assign_sampled_ballots(
                     )
                 )
             )
+
+    # We saw a bug where not all ballots got assigned to an audit board. Since
+    # we couldn't reproduce it, we check to make sure that didn't happen. If it
+    # did, we rollback the transaction and fail the request.
+    ballots_query = (
+        SampledBallot.query.join(Batch)
+        .filter_by(jurisdiction_id=jurisdiction.id)
+        .join(SampledBallot.draws)
+        .filter_by(round_id=round.id)
+    )
+    num_sampled_ballots = ballots_query.count()
+    num_assigned_ballots = ballots_query.filter(
+        SampledBallot.audit_board_id.isnot(None)
+    ).count()
+    if num_sampled_ballots != num_assigned_ballots:  # pragma: no cover
+        current_app.logger.error(
+            "ERROR_BALLOTS_NOT_ASSIGNED "
+            + str(
+                dict(
+                    jurisdiction_id=jurisdiction.id,
+                    round_id=round.id,
+                    num_sampled_ballots=num_sampled_ballots,
+                    num_assigned_ballots=num_assigned_ballots,
+                    buckets=balanced_buckets,
+                )
+            )
+        )
+        raise InternalServerError("Error assigning ballots to audit boards")
 
 
 def assign_sampled_batches(
