@@ -12,11 +12,11 @@ from .bravo import *
 from .sampler_contest import Contest, Stratum
 
 
-def ballot_polling_sprt(alpha: Decimal,
+def ballot_polling_sprt(
                         contest: Contest,
                         stratum: Stratum,
                         null_margins: Dict[Tuple[str,str], Decimal],
-                    ) -> Dict: # TODO revisit return typing
+                    ) -> float:
     """
     Code adapted from the SUITE repo.
 
@@ -31,7 +31,6 @@ def ballot_polling_sprt(alpha: Decimal,
     the reciprocal of the likelihood ratio is a conservative p-value.
 
     Inputs:
-        alpha           - the risk limit
         contest         - the contest being audited
         stratum         - data about the set of ballots being audited
         null margins    - a dictionary of margins under the null hypotehsis for every
@@ -39,12 +38,11 @@ def ballot_polling_sprt(alpha: Decimal,
                           Fisher's combined p-value.
 
     Outputs:
-        p_values        - a mapping of winner-loser pairs to SPRT p-values.
+        pvalue          - the largest observed p-value
 
     """
 
     # Set parameters
-    upper = 1/alpha
     popsize = stratum.contest.ballots
 
     p_values = {}
@@ -105,6 +103,5 @@ def ballot_polling_sprt(alpha: Decimal,
         LR = np.exp(logLR)
 
         p_values[(winner,loser)] = 1.0/LR if 1.0/LR < 1 else 1
-        print(LR, n_u, nuisance_param, upper_n_w_limit, lower_n_w_limit)
 
-    return p_values
+    return max(p_values.values())

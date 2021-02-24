@@ -242,7 +242,7 @@ def get_sample_sizes(
 
 
 def compute_risk(
-    risk_limit: int, contest: Contest, cvrs: CVRS, sample_cvr: SAMPLE_CVRS,
+        risk_limit: int, contest: Contest, cvrs: CVRS, sample_cvr: SAMPLE_CVRS, null_lambda: float=1
 ) -> Tuple[float, bool]:
     """
     Computes the risk-value of <sample_results> based on results in <contest>.
@@ -271,6 +271,7 @@ def compute_risk(
                         }
                     ...
                 }
+        null_lambda: a margin-allocation variable for use in stratified audits.
 
     Outputs:
         measurements    - the p-value of the hypotheses that the election

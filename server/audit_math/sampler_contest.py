@@ -6,6 +6,8 @@ from typing import Dict, Any, Union, Optional, TypedDict
 from ..models import AuditMathType
 import operator
 
+import suite_sprt, supersimple
+
 
 
 def from_db_contest(db_contest):
@@ -208,6 +210,7 @@ class Stratum:
     sample: SAMPLE_RESULTS
     sample_size: int
 
+
     def __init__(self,
             contest: Contest,
             math_type: AuditMathType,
@@ -220,3 +223,15 @@ class Stratum:
         self.results = results
         self.sample = sample_results
         self.sample_size = sample_size
+
+    def compute_pvalue(self, alpha, null_margins) -> float:
+        """
+        Compute a p-value for this strata based on its math type.
+        """
+        if self.math_type == AuditMathType.BRAVO:
+            return ballot_polling_sprt(self.contest, self, null_margins)
+        elif self.math_type == AuditMathType.SuperSimple:
+            return supersimple.compute_risk(alpha, self.contest, self.results, self.sample, null_margins)
+        # TODO null_margins = null_lambda?
+        else: raise Exception('SUITE with batch comparison is not yet implemented')
+
