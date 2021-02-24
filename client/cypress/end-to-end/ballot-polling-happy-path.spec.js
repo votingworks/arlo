@@ -17,6 +17,7 @@ describe('Ballot Polling', () => {
     cy.get('input[value="BALLOT_POLLING"]').check({ force: true })
     cy.get('input[value="BRAVO"]').check({ force: true })
     cy.findByText('Create Audit').click()
+    cy.viewport(1000,1000)
     cy.contains('Audit Setup')
   })
 
@@ -70,7 +71,7 @@ describe('Ballot Polling', () => {
     cy.findByText(`TestAudit${id}`).click()
     cy.findByText('Review & Launch').click()
     cy.findAllByText('Review & Launch').should('have.length', 2)
-    cy.findByText('Launch Audit').click()
+    cy.findByText('Launch Audit').should('not.have.class', 'bp3-disabled').click()
     cy.findAllByText('Launch Audit').spread((firstButton, secondButton) => {
       secondButton.click()
     })
@@ -140,7 +141,7 @@ describe('Ballot Polling', () => {
     cy.findByText(`TestAudit${id}`).click()
     cy.findByText('Review & Launch').click()
     cy.findAllByText('Review & Launch').should('have.length', 2)
-    cy.findByText('Launch Audit').click()
+    cy.findByText('Launch Audit').should('not.have.class', 'bp3-disabled').click()
     cy.findAllByText('Launch Audit').spread((firstButton, secondButton) => {
       secondButton.click()
     })

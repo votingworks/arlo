@@ -424,6 +424,7 @@ const Review: React.FC<IProps> = ({
               <FormButton
                 intent="primary"
                 disabled={
+                  sampleSizeOptions === null ||
                   locked ||
                   !isSetupComplete(jurisdictions, contests, auditSettings)
                 }
