@@ -353,7 +353,7 @@ def test_cvrs_wrong_audit_type(
             "errors": [
                 {
                     "errorType": "Conflict",
-                    "message": "Can only upload CVR file for ballot comparison audits.",
+                    "message": "Can't upload CVR file for this audit type.",
                 }
             ]
         }
