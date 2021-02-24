@@ -15,7 +15,7 @@ describe('Batch Comparison', () => {
     cy.get('input[name=auditName]').type(`TestAudit${id}`)
     cy.get('input[value="BATCH_COMPARISON"]').check({ force: true })
     cy.findByText("Create Audit").click()
-    cy.viewport(1000,1000)
+    cy.viewport(1000,2000)
     cy.contains("Audit Setup")
     cy.fixture('CSVs/jurisdiction/sample_jurisdiction_filesheet.csv').then(fileContent => {
       cy.get('input[type="file"]').first().attachFile({
