@@ -79,8 +79,7 @@ def ballot_polling_sprt(alpha: Decimal,
         # For extremely small or large null_margins, the limits do not
         # make sense with the sample values.
         if upper_n_w_limit < n_w or (upper_n_w_limit - null_margin) < n_l:
-            p_values[(winner,loser)] = 0
-            continue
+            raise Exception('Null is impossible, given the sample')
 
 
         if lower_n_w_limit > upper_n_w_limit:
@@ -106,6 +105,6 @@ def ballot_polling_sprt(alpha: Decimal,
         LR = np.exp(logLR)
 
         p_values[(winner,loser)] = 1.0/LR if 1.0/LR < 1 else 1
-        print(LR, upper_n_w_limit, lower_n_w_limit)
+        print(LR, n_u, nuisance_param, upper_n_w_limit, lower_n_w_limit)
 
     return p_values

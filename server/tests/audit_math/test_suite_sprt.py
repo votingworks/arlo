@@ -48,51 +48,55 @@ def test_sprt_functionality(contests, strata):
         delta = Decimal(0.00005)
         assert abs(pvalue - expected_pvalue) < delta, contest
 
-'''
-def test_sprt_analytic_example():
-    sample = [0, 0, 1, 1]
-    population = [0]*5 + [1]*5
-    popsize = len(population)
-    res = ballot_polling_sprt(sample, popsize, alpha=0.05, Vw=5, Vl=4, number_invalid=0)
-    np.testing.assert_almost_equal(res['LR'], 0.6)
-    np.testing.assert_almost_equal(res['Nu_used'], 0)
-    res2 = ballot_polling_sprt(sample, popsize, alpha=0.05, Vw=5, Vl=4)
-    np.testing.assert_almost_equal(res2['LR'], 0.6, decimal=2)
-    np.testing.assert_almost_equal(res2['Nu_used'], 0)
 
-    sample = [0, 1, 1, 1]
-    res = ballot_polling_sprt(sample, popsize, alpha=0.05, Vw=6, Vl=4, number_invalid=0)
-    np.testing.assert_almost_equal(res['LR'], 1.6)
-    res2 = ballot_polling_sprt(sample, popsize, alpha=0.05, Vw=6, Vl=4)
-    np.testing.assert_almost_equal(res2['LR'], 1.6, decimal=2)
-    np.testing.assert_almost_equal(res2['Nu_used'], 0, decimal=2)
+@pytest.fixture
+def analytic_contests():
+    contests = {}
 
-    sample = [0, 1, 1]
-    res = ballot_polling_sprt(sample, popsize, alpha=0.05, Vw=6, Vl=4, number_invalid=0)
-    np.testing.assert_almost_equal(res['LR'], 1.2)
-    res2 = ballot_polling_sprt(sample, popsize, alpha=0.05, Vw=6, Vl=4)
-    np.testing.assert_almost_equal(res2['LR'], 1.2, decimal=2)
-    np.testing.assert_almost_equal(res2['Nu_used'], 0, decimal=2)
+    for contest in analytic_sprt_contests:
+        contests[contest]  = Contest(contest, analytic_sprt_contests[contest])
+
+    return contests
+
+@pytest.fixture
+def analytic_strata(analytic_contests):
+    strata = {}
+
+    for stratum in analytic_sprt_strata:
+        strata[stratum] = Stratum(
+                            analytic_contests[stratum], # this only works because there's one stratum
+                            AuditMathType.BRAVO,
+                            None,
+                            analytic_sprt_strata[stratum]["sample"],
+                            analytic_sprt_strata[stratum]["sample_size"]
+                        )
+
+    return strata
+
+def test_sprt_analytic_example(analytic_contests, analytic_strata):
+    for contest in analytic_contests:
+        pvalue = suite_sprt.ballot_polling_sprt(
+                    ALPHA,
+                    analytic_contests[contest],
+                    analytic_strata[contest],
+                    {('winner','loser'): 0}
+                )[('winner', 'loser')]
+        expected_pvalue = expected_analytic_sprt_pvalues[contest][('winner', 'loser')]
+        delta = Decimal(0.00005)
+        assert abs(pvalue - expected_pvalue) < delta, contest
 
 
-def test_edge_cases():
-    sample = [0, 0, 1, 1]
-    population = [0]*5 + [1]*5
-    popsize = len(population)
+def test_edge_cases(analytic_contests, analytic_strata):
+    with pytest.raises(Exception, match=r"Null is impossible, given the sample"):
+        pvalue = suite_sprt.ballot_polling_sprt(
+                    ALPHA,
+                    analytic_contests['contest1'],
+                    analytic_strata['contest1'],
+                    {('winner','loser'): 7}
+                )[('winner', 'loser')]
+        delta = Decimal(0.00005)
+        assert abs(pvalue - 1) < delta, 'contest1'
 
-    # if nuisance_param < 0 or nuisance_param > popsize
-    res = ballot_polling_sprt(sample, popsize, alpha=0.05, Vw=6, Vl=4, number_invalid=12)
-    np.testing.assert_almost_equal(res['decision'], 'Number invalid is incompatible with the null and the data')
-
-    # if nuisance_param < Wn or (nuisance_param - null_margin) < Ln \
-    #    or number_invalid < Un:
-    res = ballot_polling_sprt(sample, popsize, alpha=0.05, Vw=6, Vl=4, number_invalid=7)
-    np.testing.assert_almost_equal(res['decision'], 'Number invalid is incompatible with the null and the data')
-
-    # if upper_Nw_limit < Wn or (upper_Nw_limit - null_margin) < Ln:
-    res = ballot_polling_sprt(sample, popsize, alpha=0.05, Vw=6, Vl=4, null_margin=7)
-    np.testing.assert_almost_equal(res['decision'], 'Null is impossible, given the sample')
-'''
 
 
 
@@ -122,6 +126,31 @@ sprt_contests = {
         "winner": 500,
         "loser": 450,
         "ballots": 1000,
+        "numWinners": 1,
+        "votesAllowed": 1
+    },
+}
+
+
+analytic_sprt_contests = {
+    'contest1': {
+        "winner": 5,
+        "loser": 4,
+        "ballots": 10,
+        "numWinners": 1,
+        "votesAllowed": 1
+    },
+    'contest2': {
+        "winner": 6,
+        "loser": 4,
+        "ballots": 10,
+        "numWinners": 1,
+        "votesAllowed": 1
+    },
+    'contest3': {
+        "winner": 6,
+        "loser": 4,
+        "ballots": 10,
         "numWinners": 1,
         "votesAllowed": 1
     },
@@ -166,9 +195,45 @@ sprt_strata = {
     },
 }
 
+
+analytic_sprt_strata = {
+    "contest1": {
+        "sample_size": 4,
+        "sample": {
+            "round1": {
+                "winner": 2,
+                "loser": 2
+            }
+        }
+    },
+    "contest2": {
+        "sample_size": 4,
+        "sample": {
+            "round1": {
+                "winner": 3,
+                "loser": 1
+            }
+        }
+    },
+    "contest3": {
+        "sample_size": 3,
+        "sample": {
+            "round1": {
+                "winner": 2,
+                "loser": 1
+            }
+        }
+    },
+}
+
 expected_sprt_pvalues = {
     'contest1': {('winner','loser'): 1},
     'contest2': {('winner','loser'): 0.10693399},
     'contest3': {('winner','loser'): 1},
     'contest4': {('winner','loser'): 1},
+}
+expected_analytic_sprt_pvalues = {
+    'contest1': {('winner','loser'): 1},
+    'contest2': {('winner','loser'): 0.625},
+    'contest3': {('winner','loser'): 0.83333333},
 }
