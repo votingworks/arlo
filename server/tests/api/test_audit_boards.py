@@ -557,11 +557,11 @@ def set_up_audit_board(
     only_one_member=False,
 ) -> Tuple[str, str]:
     silly_names = [
-        "Joe Schmo",
+        " Joe Schmo",
         "Jane Plain",
         "Derk Clerk",
         "Bubbikin Republican",
-        "Clem O'Hat Democrat",
+        " Clem O'Hat Democrat ",
     ]
     rand = random.Random(12345)
     member_1 = rand.choice(silly_names)
@@ -1051,3 +1051,28 @@ def test_audit_board_only_one_member_sign_off_wrong_name(
             }
         ]
     }
+
+
+def test_audit_boards_sign_off_whitespace(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    contest_ids: List[str],
+    round_1_id: str,
+    audit_board_round_1_ids: List[str],
+):
+    member_1, member_2 = set_up_audit_board(
+        client,
+        election_id,
+        jurisdiction_ids[0],
+        round_1_id,
+        contest_ids[0],
+        audit_board_round_1_ids[0],
+    )
+    set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_1_ids[0])
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/sign-off",
+        {"memberName1": f" {member_1}", "memberName2": f"  {member_2}  "},
+    )
+    assert_ok(rv)

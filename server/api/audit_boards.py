@@ -299,10 +299,10 @@ def set_audit_board_members(
     members = request.get_json()
     validate_members(members)
 
-    audit_board.member_1 = members[0]["name"]
+    audit_board.member_1 = members[0]["name"].strip()
     audit_board.member_1_affiliation = members[0]["affiliation"]
     if len(members) > 1:
-        audit_board.member_2 = members[1]["name"]
+        audit_board.member_2 = members[1]["name"].strip()
         audit_board.member_2_affiliation = members[1]["affiliation"]
 
     db_session.commit()
@@ -324,12 +324,15 @@ SIGN_OFF_AUDIT_BOARD_REQUEST_SCHEMA = {
 def validate_sign_off(sign_off_request: JSONDict, audit_board: AuditBoard):
     validate(sign_off_request, SIGN_OFF_AUDIT_BOARD_REQUEST_SCHEMA)
 
-    if sign_off_request["memberName1"] != audit_board.member_1:
+    if sign_off_request["memberName1"].strip() != audit_board.member_1:
         raise BadRequest(
             f"Audit board member name did not match: {sign_off_request['memberName1']}"
         )
 
-    if audit_board.member_2 and sign_off_request["memberName2"] != audit_board.member_2:
+    if (
+        audit_board.member_2
+        and sign_off_request["memberName2"].strip() != audit_board.member_2
+    ):
         raise BadRequest(
             f"Audit board member name did not match: {sign_off_request['memberName2']}"
         )
