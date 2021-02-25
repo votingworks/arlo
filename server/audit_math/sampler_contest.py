@@ -6,7 +6,7 @@ from typing import Dict, Any, Union, Optional, TypedDict
 from ..models import AuditMathType
 import operator
 
-import suite_sprt, supersimple
+import suite_sprt, suite_kaplan_markov, supersimple
 
 
 
@@ -224,14 +224,29 @@ class Stratum:
         self.sample = sample_results
         self.sample_size = sample_size
 
-    def compute_pvalue(self, alpha, null_margins) -> float:
+    def compute_pvalue(self, alpha, winner, loser, null_margin) -> float:
         """
-        Compute a p-value for this strata based on its math type.
+        Compute a p-value for a winner-loser pair for this strata based on its math type.
         """
         if self.math_type == AuditMathType.BRAVO:
-            return ballot_polling_sprt(self.contest, self, null_margins)
+            return ballot_polling_sprt(self.contest, self, winner, loser, null_margin)
         elif self.math_type == AuditMathType.SuperSimple:
-            return supersimple.compute_risk(alpha, self.contest, self.results, self.sample, null_margins)
+            reported_margin = self.contest.candidates[winner] - self.contest.candidates[loser]
+            discrepancies = suite_kaplan_markov.compute_discrepancies(contest, self.results, self.sample)
+            o1,o2,u1,u2 = 0
+
+            for ballot in discrepancies:
+                e = discrepancies[ballot]["counted_as"]
+                if e == -2:
+                    u2 += 1
+                elif e == -1:
+                    u1 += 1
+                elif e == 1:
+                    o1 += 1
+                elif e == 2:
+                    o2 += 1
+
+            return suite_kaplan_markov.pvalue(self.sample_size, o1, u1, o2, u2, reported_margin, self.contest.ballots, null_margin)
         # TODO null_margins = null_lambda?
         else: raise Exception('SUITE with batch comparison is not yet implemented')
 
