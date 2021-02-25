@@ -157,7 +157,9 @@ describe('Ballot Comparison Failure Cases', () => {
     cy.loginAuditAdmin(auditAdmin)
     cy.findByText(`TestAudit${id}`).click()
     cy.findByText('Review & Launch').click()
-    cy.findByText('Launch Audit').click()
+    cy.findByRole('button', { name: 'Launch Audit' })
+      .should('be.enabled')
+      .click()
     cy.findAllByText('Launch Audit').spread((firstButton, secondButton) => {
       secondButton.click()
     })

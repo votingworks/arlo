@@ -63,9 +63,9 @@ describe('Batch Comparison', () => {
     cy.contains("Upload successfully completed")   
     cy.fixture('CSVs/candidate-total-batch/sample_candidate_totals_by_batch.csv').then(fileContent => {
       cy.get('input[type="file"]').last().attachFile({
-          fileContent: fileContent.toString(),
-          fileName: 'sample_candidate_totals_by_batch.csv',
-          mimeType: 'csv'
+        fileContent: fileContent.toString(),
+        fileName: 'sample_candidate_totals_by_batch.csv',
+        mimeType: 'csv'
       })
     })
     cy.findAllByText('Upload File').click()
@@ -75,7 +75,9 @@ describe('Batch Comparison', () => {
     cy.findByText(`TestAudit${id}`).click()
     cy.findByText('Review & Launch').click()
     cy.findAllByText('Review & Launch').should('have.length', 2)
-    cy.findByText('Launch Audit').should('not.have.class', 'bp3-disabled').click()
+    cy.findByRole('button', { name: 'Launch Audit' })
+      .should('be.enabled')
+      .click()
     cy.findAllByText('Launch Audit').spread((firstButton, secondButton) => {
       secondButton.click()
     })

@@ -71,7 +71,9 @@ describe('Ballot Polling', () => {
     cy.findByText(`TestAudit${id}`).click()
     cy.findByText('Review & Launch').click()
     cy.findAllByText('Review & Launch').should('have.length', 2)
-    cy.findByText('Launch Audit').should('not.have.class', 'bp3-disabled').click()
+    cy.findByRole('button', { name: 'Launch Audit' })
+      .should('be.enabled')
+      .click()
     cy.findAllByText('Launch Audit').spread((firstButton, secondButton) => {
       secondButton.click()
     })
@@ -141,7 +143,9 @@ describe('Ballot Polling', () => {
     cy.findByText(`TestAudit${id}`).click()
     cy.findByText('Review & Launch').click()
     cy.findAllByText('Review & Launch').should('have.length', 2)
-    cy.findByText('Launch Audit').should('not.have.class', 'bp3-disabled').click()
+    cy.findByRole('button', { name: 'Launch Audit' })
+      .should('be.enabled')
+      .click()
     cy.findAllByText('Launch Audit').spread((firstButton, secondButton) => {
       secondButton.click()
     })
