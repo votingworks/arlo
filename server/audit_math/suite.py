@@ -65,7 +65,7 @@ class Stratum:
         self.sample = sample_results
         self.sample_size = sample_size
 
-    def compute_pvalue(self, alpha, winner, loser, null_margin) -> float:
+    def compute_pvalue(self, alpha, winner, loser, null_lambda) -> float:
         """
         Compute a p-value for a winner-loser pair for this strata based on its math type.
         """
@@ -92,15 +92,15 @@ class Stratum:
                         np.sum(np.log(v_u - np.arange(n_u)))
 
             null_logLR = lambda Nw: (n_w > 0)*np.sum(np.log(Nw - np.arange(n_w))) + \
-                        (n_l > 0)*np.sum(np.log(Nw - null_margin - np.arange(n_l))) + \
-                        (n_u > 0)*np.sum(np.log(popsize - 2*Nw + null_margin - np.arange(n_u)))
+                        (n_l > 0)*np.sum(np.log(Nw - null_lambda - np.arange(n_l))) + \
+                        (n_u > 0)*np.sum(np.log(popsize - 2*Nw + null_lambda - np.arange(n_u)))
 
-            upper_n_w_limit = (popsize - n_u + null_margin)/2
-            lower_n_w_limit = np.max([n_w, n_l+null_margin])
+            upper_n_w_limit = (popsize - n_u + null_lambda)/2
+            lower_n_w_limit = np.max([n_w, n_l+null_lambda])
 
-            # For extremely small or large null_margins, the limits do not
+            # For extremely small or large null_lambdas, the limits do not
             # make sense with the sample values.
-            if upper_n_w_limit < n_w or (upper_n_w_limit - null_margin) < n_l:
+            if upper_n_w_limit < n_w or (upper_n_w_limit - null_lambda) < n_l:
                 raise Exception('Null is impossible, given the sample')
 
 
@@ -108,8 +108,8 @@ class Stratum:
                 lower_n_w_limit, upper_n_w_limit = upper_n_w_limit, lower_n_w_limit
 
             LR_derivative = lambda Nw: np.sum([1/(Nw - i) for i in range(n_w)]) + \
-                        np.sum([1/(Nw - null_margin - i) for i in range(n_l)]) - \
-                        2*np.sum([1/(popsize - 2*Nw + null_margin - i) for i in range(n_u)])
+                        np.sum([1/(Nw - null_lambda - i) for i in range(n_l)]) - \
+                        2*np.sum([1/(popsize - 2*Nw + null_lambda - i) for i in range(n_u)])
 
             # Sometimes the upper_n_w_limit is too extreme, causing illegal 0s.
             # Check and change the limit when that occurs.
@@ -122,15 +122,15 @@ class Stratum:
             # Otherwise, find the (unique) root of the derivative of the log likelihood ratio
             else:
                 nuisance_param = sp.optimize.brentq(LR_derivative, lower_n_w_limit, upper_n_w_limit)
-            number_invalid = popsize - nuisance_param*2 + null_margin
+            number_invalid = popsize - nuisance_param*2 + null_lambda
             logLR = alt_logLR - null_logLR(nuisance_param)
             LR = np.exp(logLR)
 
             return 1.0/LR if 1.0/LR < 1 else 1.0
-        elif self.math_type == AuditMathType.SuperSimple:
+        elif self.math_type == AuditMathType.SUPERSIMPLE:
             reported_margin = self.contest.candidates[winner] - self.contest.candidates[loser]
-            discrepancies = compute_discrepancies(contest, self.results, self.sample)
-            o1,o2,u1,u2 = 0
+            discrepancies = compute_discrepancies(self.contest, winner, loser, self.results, self.sample)
+            o1,o2,u1,u2 = 0,0,0,0
 
             for ballot in discrepancies:
                 e = discrepancies[ballot]["counted_as"]
@@ -143,9 +143,9 @@ class Stratum:
                 elif e == 2:
                     o2 += 1
 
-            gamma = Decimal(1.03905)  # This gamma is used in Stark's tool, AGI, and CORLA
-            U_s = 2*N/reported_margin
-            log_pvalue = n*np.log(1 - null_lambda/(gamma*U_s)) - \
+            gamma = 1.03905  # This gamma is used in Stark's tool, AGI, and CORLA
+            U_s = 2*self.contest.ballots/reported_margin
+            log_pvalue = self.sample_size*np.log(1 - null_lambda/(gamma*U_s)) - \
                             o1*np.log(1 - 1/(2*gamma)) - \
                             o2*np.log(1 - 1/gamma) - \
                             u1*np.log(1 + 1/(2*gamma)) - \
