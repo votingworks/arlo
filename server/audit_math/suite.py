@@ -15,16 +15,146 @@ from collections import OrderedDict
 from itertools import product
 import math
 import numpy as np
-import json
-import csv
-import matplotlib.pyplot as plt
+import scipy as sp
+from typing import Union, Optional, Tuple, Dict, List, Any
 
-from ballot_comparison import ballot_comparison_pvalue
-from fishers_combination import  maximize_fisher_combined_pvalue, create_modulus
-from suite_sprt import ballot_polling_sprt
 
-from models import AuditMathType
-from sampler_contest import Contest, Stratum
+from decimal import Decimal
+from ..models import AuditMathType
+from .sampler_contest import Contest, CVR, CVRS, SAMPLE_CVRS, SampleCVR
+from .supersimple import Discrepancy
+from . import bravo
+
+
+class Stratum:
+    """
+    A class encapsulating a stratum of ballots in an election. Each stratum is its
+    own contest object, with its own margin. Strata, along with the overall
+    contest object, are passed to the SUITE module when perfoming mixed-strata
+    audits.
+    """
+    RESULTS = Union[
+      Dict[Any, Dict[str, Dict[str, int]]], # batch comparison
+      CVRS, # ballot comparison
+      None # ballot polling
+    ]
+
+    SAMPLE_RESULTS = Union[
+      Dict[Any, Dict[str, Dict[str, int]]], # batch comparison
+      SAMPLE_CVRS, # ballot comparison
+      Optional[Dict[str, Dict[str, int]]],# ballot polling
+    ]
+
+    contest: Contest
+    math_type: AuditMathType
+    results: RESULTS
+    sample: SAMPLE_RESULTS
+    sample_size: int
+
+
+    def __init__(self,
+            contest: Contest,
+            math_type: AuditMathType,
+            results: RESULTS,
+            sample_results: SAMPLE_RESULTS,
+            sample_size: int,
+    ):
+        self.contest = contest
+        self.math_type = math_type
+        self.results = results
+        self.sample = sample_results
+        self.sample_size = sample_size
+
+    def compute_pvalue(self, alpha, winner, loser, null_margin) -> float:
+        """
+        Compute a p-value for a winner-loser pair for this strata based on its math type.
+        """
+        if self.math_type == AuditMathType.BRAVO:
+            # Set parameters
+            popsize = self.contest.ballots
+
+            # Set up likelihood for null and alternative hypotheses
+            n = self.sample_size
+            sample = bravo.compute_cumulative_sample(self.sample)
+            n_w = sample[winner]
+            n_l = sample[loser]
+            n_u = n - n_w - n_l
+
+            v_w = self.contest.winners[winner]
+            v_l = self.contest.losers[loser]
+            v_u = popsize - v_w - v_l
+
+
+            assert v_w >= n_w and v_l >= n_l and v_u >= n_u, "Alternative hypothesis isn't consistent with the sample"
+
+            alt_logLR = np.sum(np.log(v_w - np.arange(n_w))) + \
+                        np.sum(np.log(v_l - np.arange(n_l))) + \
+                        np.sum(np.log(v_u - np.arange(n_u)))
+
+            null_logLR = lambda Nw: (n_w > 0)*np.sum(np.log(Nw - np.arange(n_w))) + \
+                        (n_l > 0)*np.sum(np.log(Nw - null_margin - np.arange(n_l))) + \
+                        (n_u > 0)*np.sum(np.log(popsize - 2*Nw + null_margin - np.arange(n_u)))
+
+            upper_n_w_limit = (popsize - n_u + null_margin)/2
+            lower_n_w_limit = np.max([n_w, n_l+null_margin])
+
+            # For extremely small or large null_margins, the limits do not
+            # make sense with the sample values.
+            if upper_n_w_limit < n_w or (upper_n_w_limit - null_margin) < n_l:
+                raise Exception('Null is impossible, given the sample')
+
+
+            if lower_n_w_limit > upper_n_w_limit:
+                lower_n_w_limit, upper_n_w_limit = upper_n_w_limit, lower_n_w_limit
+
+            LR_derivative = lambda Nw: np.sum([1/(Nw - i) for i in range(n_w)]) + \
+                        np.sum([1/(Nw - null_margin - i) for i in range(n_l)]) - \
+                        2*np.sum([1/(popsize - 2*Nw + null_margin - i) for i in range(n_u)])
+
+            # Sometimes the upper_n_w_limit is too extreme, causing illegal 0s.
+            # Check and change the limit when that occurs.
+            if np.isinf(null_logLR(upper_n_w_limit)) or np.isinf(LR_derivative(upper_n_w_limit)):
+                upper_n_w_limit -= 1
+
+            # Check if the maximum occurs at an endpoint: deriv has no sign change
+            if LR_derivative(upper_n_w_limit)*LR_derivative(lower_n_w_limit) > 0:
+                nuisance_param = upper_n_w_limit if null_logLR(upper_n_w_limit)>=null_logLR(lower_n_w_limit) else lower_n_w_limit
+            # Otherwise, find the (unique) root of the derivative of the log likelihood ratio
+            else:
+                nuisance_param = sp.optimize.brentq(LR_derivative, lower_n_w_limit, upper_n_w_limit)
+            number_invalid = popsize - nuisance_param*2 + null_margin
+            logLR = alt_logLR - null_logLR(nuisance_param)
+            LR = np.exp(logLR)
+
+            return 1.0/LR if 1.0/LR < 1 else 1.0
+        elif self.math_type == AuditMathType.SuperSimple:
+            reported_margin = self.contest.candidates[winner] - self.contest.candidates[loser]
+            discrepancies = compute_discrepancies(contest, self.results, self.sample)
+            o1,o2,u1,u2 = 0
+
+            for ballot in discrepancies:
+                e = discrepancies[ballot]["counted_as"]
+                if e == -2:
+                    u2 += 1
+                elif e == -1:
+                    u1 += 1
+                elif e == 1:
+                    o1 += 1
+                elif e == 2:
+                    o2 += 1
+
+            gamma = Decimal(1.03905)  # This gamma is used in Stark's tool, AGI, and CORLA
+            U_s = 2*N/reported_margin
+            log_pvalue = n*np.log(1 - null_lambda/(gamma*U_s)) - \
+                            o1*np.log(1 - 1/(2*gamma)) - \
+                            o2*np.log(1 - 1/gamma) - \
+                            u1*np.log(1 + 1/(2*gamma)) - \
+                            u2*np.log(1 + 1/gamma)
+            pvalue = np.exp(log_pvalue)
+            return np.min([pvalue, 1])
+        # TODO null_margins = null_lambda?
+        else: raise Exception('SUITE with batch comparison is not yet implemented')
+
 
 def maximize_fisher_combined_pvalue(
         alpha: Decimal,
@@ -259,3 +389,134 @@ def compute_risk(risk_limit: int, contest: Contest, strata: List[Stratum]) -> Tu
     max_p = max(pvalues.values())
 
     return max_p, max_p <= alpha
+
+
+
+
+def compute_discrepancies(
+    contest: Contest, winner, loser, cvrs: CVRS, sample_cvr: SAMPLE_CVRS
+) -> Dict[str, Discrepancy]:
+    """
+    Iterates through a given sample and returns the discrepancies found.
+
+    Inputs:
+        contests       - the contests and results being audited
+        winner,loser   - the winner-loser pair to compute discrepancies for
+        cvrs           - mapping of ballot_id to votes:
+                {
+                    'ballot_id': {
+                        'contest': {
+                            'candidate1': 1,
+                            'candidate2': 0,
+                            ...
+                        }
+                    ...
+                }
+
+        sample_cvr - the CVR of the audited ballots
+                {
+                    'ballot_id': {
+                        'times_sampled': 1,
+                        'cvr': {
+                            'contest': {
+                                'candidate1': 1,
+                                'candidate2': 0,
+                                ...
+                            }
+                    }
+                    ...
+                }
+
+    Outputs:
+        discrepancies   - A mapping of ballot ids to their discrepancies. This
+                          includes entries for ballots in the sample that have discrepancies
+                          only.
+                    {
+                        'ballot_id': {
+                            'counted_as': -1, # The maximum value for a discrepancy
+                            'weighted_error': -0.0033 # Weighted error used for p-value calculation
+                            'discrepancy_cvr': { # a per-contest mapping of discrepancies
+                                'recorded_as': {
+                                    'contest': {
+                                        'candidate1': 1,
+                                        'candidate0': 0,
+                                }},
+                                'audited_as': {
+                                    'contest': {
+                                        'candidate1': 0,
+                                        'candidate2': 0,
+                                    }
+                                }
+                            }
+                        }
+                    }
+    """
+
+    discrepancies: Dict[str, Discrepancy] = {}
+    for ballot in sample_cvr:
+        # Typechecker needs us to pull these out into variables
+        ballot_sample_cvr = sample_cvr[ballot]["cvr"]
+        ballot_cvr = cvrs[ballot]
+        assert ballot_cvr is not None
+
+        # We want to be conservative, so we will ignore the case where there are
+        # negative errors (i.e. errors that favor the winner. We can do that
+        # by setting these to zero and evaluating whether an error is greater
+        # than zero (i.e. positive).
+        e_r = Decimal(0.0)
+        e_int = 0
+
+        found = False
+
+        # Special case: if ballot can't be found by audit board, count it as a
+        # two-vote overstatement
+        if ballot_sample_cvr is None:
+            e_int = 2
+            e_r = Decimal(e_int) / Decimal(contest.diluted_margin * contest.ballots)
+            found = True
+
+        else:
+            if contest.name in ballot_cvr:
+                v_w = ballot_cvr[contest.name][winner]
+                v_l = ballot_cvr[contest.name][loser]
+            else:
+                v_w = 0
+                v_l = 0
+
+            if contest.name in ballot_sample_cvr:
+                a_w = ballot_sample_cvr[contest.name][winner]
+                a_l = ballot_sample_cvr[contest.name][loser]
+            else:
+                a_w = 0
+                a_l = 0
+
+            V_wl = contest.candidates[winner] - contest.candidates[loser]
+
+            e = (v_w - a_w) - (v_l - a_l)
+
+            if e != 0:
+                # we found a discrepancy!
+                found = True
+
+            if V_wl == 0:
+                # In this case the error is undefined
+                e_weighted = Decimal("inf")
+            else:
+                e_weighted = Decimal(e) / Decimal(V_wl)
+
+            if e_weighted > e_r:
+                e_r = e_weighted
+                e_int = e
+
+        if found:
+            discrepancies[ballot] = Discrepancy(
+                counted_as=e_int,
+                weighted_error=e_r,
+                discrepancy_cvr={
+                    "reported_as": ballot_cvr,
+                    "audited_as": ballot_sample_cvr,
+                },
+            )
+
+    return discrepancies
+

@@ -6,10 +6,6 @@ from typing import Dict, Any, Union, Optional, TypedDict
 from ..models import AuditMathType
 import operator
 
-import suite_sprt, suite_kaplan_markov, supersimple
-
-
-
 def from_db_contest(db_contest):
     """
     Builds sampler_contest object from the database
@@ -184,69 +180,3 @@ class SampleCVR(TypedDict):
 
 
 SAMPLE_CVRS = Dict[str, SampleCVR]
-
-class Stratum:
-    """
-    A class encapsulating a stratum of ballots in an election. Each stratum is its
-    own contest object, with its own margin. Strata, along with the overall
-    contest object, are passed to the SUITE module when perfoming mixed-strata
-    audits.
-    """
-    RESULTS = Union[
-      Dict[Any, Dict[str, Dict[str, int]]], # batch comparison
-      CVRS, # ballot comparison
-      None # ballot polling
-    ]
-
-    SAMPLE_RESULTS = Union[
-      Dict[Any, Dict[str, Dict[str, int]]], # batch comparison
-      SAMPLE_CVRS, # ballot comparison
-      Optional[Dict[str, Dict[str, int]]],# ballot polling
-    ]
-
-    contest: Contest
-    math_type: AuditMathType
-    results: RESULTS
-    sample: SAMPLE_RESULTS
-    sample_size: int
-
-
-    def __init__(self,
-            contest: Contest,
-            math_type: AuditMathType,
-            results: RESULTS,
-            sample_results: SAMPLE_RESULTS,
-            sample_size: int,
-    ):
-        self.contest = contest
-        self.math_type = math_type
-        self.results = results
-        self.sample = sample_results
-        self.sample_size = sample_size
-
-    def compute_pvalue(self, alpha, winner, loser, null_margin) -> float:
-        """
-        Compute a p-value for a winner-loser pair for this strata based on its math type.
-        """
-        if self.math_type == AuditMathType.BRAVO:
-            return ballot_polling_sprt(self.contest, self, winner, loser, null_margin)
-        elif self.math_type == AuditMathType.SuperSimple:
-            reported_margin = self.contest.candidates[winner] - self.contest.candidates[loser]
-            discrepancies = suite_kaplan_markov.compute_discrepancies(contest, self.results, self.sample)
-            o1,o2,u1,u2 = 0
-
-            for ballot in discrepancies:
-                e = discrepancies[ballot]["counted_as"]
-                if e == -2:
-                    u2 += 1
-                elif e == -1:
-                    u1 += 1
-                elif e == 1:
-                    o1 += 1
-                elif e == 2:
-                    o2 += 1
-
-            return suite_kaplan_markov.pvalue(self.sample_size, o1, u1, o2, u2, reported_margin, self.contest.ballots, null_margin)
-        # TODO null_margins = null_lambda?
-        else: raise Exception('SUITE with batch comparison is not yet implemented')
-

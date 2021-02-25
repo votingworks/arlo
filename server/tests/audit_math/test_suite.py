@@ -3,9 +3,9 @@ from decimal import Decimal
 import math
 import pytest
 
-from ...audit_math import suite_sprt
-from ...audit_math.sampler_contest import Contest, Stratum
 from ...models import AuditMathType
+from ...audit_math.sampler_contest import Contest
+from ...audit_math.suite import Stratum
 
 SEED = "12345678901234567890abcdefghijklmnopqrstuvwxyz😊"
 RISK_LIMIT = 10
@@ -38,13 +38,13 @@ def strata(contests):
 def test_sprt_functionality(contests, strata):
 
     for contest in contests:
-        pvalue = suite_sprt.ballot_polling_sprt(
+        pvalue = strata[contest].compute_pvalue(
                     ALPHA,
-                    contests[contest],
-                    strata[contest],
-                    {('winner','loser'): 0}
-                )[('winner', 'loser')]
-        expected_pvalue = expected_sprt_pvalues[contest][('winner', 'loser')]
+                    'winner',
+                    'loser',
+                    0
+                )
+        expected_pvalue = expected_sprt_pvalues[contest]
         delta = Decimal(0.00005)
         assert abs(pvalue - expected_pvalue) < delta, contest
 
@@ -75,25 +75,25 @@ def analytic_strata(analytic_contests):
 
 def test_sprt_analytic_example(analytic_contests, analytic_strata):
     for contest in analytic_contests:
-        pvalue = suite_sprt.ballot_polling_sprt(
+        pvalue = analytic_strata[contest].compute_pvalue(
                     ALPHA,
-                    analytic_contests[contest],
-                    analytic_strata[contest],
-                    {('winner','loser'): 0}
-                )[('winner', 'loser')]
-        expected_pvalue = expected_analytic_sprt_pvalues[contest][('winner', 'loser')]
+                    'winner',
+                    'loser',
+                    0
+                )
+        expected_pvalue = expected_analytic_sprt_pvalues[contest]
         delta = Decimal(0.00005)
         assert abs(pvalue - expected_pvalue) < delta, contest
 
 
 def test_edge_cases(analytic_contests, analytic_strata):
     with pytest.raises(Exception, match=r"Null is impossible, given the sample"):
-        pvalue = suite_sprt.ballot_polling_sprt(
+        pvalue = analytic_strata['contest1'].compute_pvalue(
                     ALPHA,
-                    analytic_contests['contest1'],
-                    analytic_strata['contest1'],
-                    {('winner','loser'): 7}
-                )[('winner', 'loser')]
+                    'winner',
+                    'loser',
+                    7
+                )
         delta = Decimal(0.00005)
         assert abs(pvalue - 1) < delta, 'contest1'
 
@@ -227,13 +227,13 @@ analytic_sprt_strata = {
 }
 
 expected_sprt_pvalues = {
-    'contest1': {('winner','loser'): 1},
-    'contest2': {('winner','loser'): 0.10693399},
-    'contest3': {('winner','loser'): 1},
-    'contest4': {('winner','loser'): 1},
+    'contest1':  1,
+    'contest2':  0.10693399,
+    'contest3':  1,
+    'contest4':  1,
 }
 expected_analytic_sprt_pvalues = {
-    'contest1': {('winner','loser'): 1},
-    'contest2': {('winner','loser'): 0.625},
-    'contest3': {('winner','loser'): 0.83333333},
+    'contest1': 1,
+    'contest2': 0.625,
+    'contest3': 0.83333333,
 }
