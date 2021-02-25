@@ -89,7 +89,12 @@ def hybrid_contest_choice_vote_counts(
 
         contest_metadata = cvr_contests_metadata[contest.name]
         for choice_name, choice_metadata in contest_metadata["choices"].items():
-            choice = next(c for c in contest.choices if c.name == choice_name)
+            choice = next((c for c in contest.choices if c.name == choice_name), None)
+            if not choice:
+                return None
+                # raise Conflict(
+                #     f"Choice {choice_name} from contest {contest.name} was not found in the CVR for jurisdiction {jurisdiction.name}"
+                # )
             cvr_choice_votes[choice.id] += choice_metadata["num_votes"]
 
     return {

@@ -306,7 +306,12 @@ const Review: React.FC<IProps> = ({
                   height: '100%',
                 }}
               >
-                <thead>
+                <thead
+                  style={{
+                    display: 'block',
+                    borderBottom: '1px solid rgb(16 22 26 / 15%)',
+                  }}
+                >
                   <tr>
                     <th>
                       Contest universe: {contest.jurisdictionIds.length}/
@@ -365,7 +370,7 @@ const Review: React.FC<IProps> = ({
                       return (
                         <Card key={contest.id}>
                           <FormSectionDescription>
-                            <H4>{contest.name}</H4>
+                            <H5>{contest.name}</H5>
                             <RadioGroup
                               name={`sampleSizes[${contest.id}]`}
                               onChange={e => {
