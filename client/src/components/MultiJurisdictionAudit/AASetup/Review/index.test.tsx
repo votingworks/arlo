@@ -1,6 +1,6 @@
 import React from 'react'
 import userEvent from '@testing-library/user-event'
-import { screen, fireEvent, waitFor } from '@testing-library/react'
+import { screen, fireEvent, waitFor, within } from '@testing-library/react'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import relativeStages from '../_mocks'
@@ -217,31 +217,98 @@ describe('Audit Setup > Review & Launch', () => {
     })
   })
 
-  it('renders despite missing jurisdictions on targeted contest', async () => {
+  it('shows the contest settings', async () => {
     const expectedCalls = [
       apiCalls.getSettings(settingsMock.full),
-      apiCalls.getJurisdictions({ jurisdictions: [] }),
+      apiCalls.getJurisdictions({
+        jurisdictions: jurisdictionMocks.allManifests,
+      }),
       apiCalls.getJurisdictionFile,
-      apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
+      apiCalls.getContests(contestMocks.filledTargetedAndOpportunistic),
+      apiCalls.getSampleSizeOptions,
     ]
     await withMockFetch(expectedCalls, async () => {
-      const { container } = renderView()
+      renderView()
       await screen.findByText('Review & Launch')
-      expect(container).toMatchSnapshot()
+
+      screen.getByRole('heading', { name: 'Contests' })
+
+      const contest1 = screen
+        .getAllByRole('heading', { name: 'Contest 1' })[0]
+        .closest('div.bp3-card') as HTMLElement
+
+      // Contest settings
+      within(contest1).getByText('Target Contest')
+      within(contest1).getByText(
+        '1 winner - 1 vote allowed - 30 total ballots cast'
+      )
+
+      // Choice vote counts table
+      const choices = within(contest1)
+        .getByRole('columnheader', {
+          name: 'Choice',
+        })
+        .closest('table')!
+      within(choices).getByRole('columnheader', { name: 'Votes' })
+      const choiceRows = within(choices).getAllByRole('row')
+      within(choiceRows[1]).getByRole('cell', { name: 'Choice One' })
+      within(choiceRows[1]).getByRole('cell', { name: '10' })
+      within(choiceRows[2]).getByRole('cell', { name: 'Choice Two' })
+      within(choiceRows[2]).getByRole('cell', { name: '20' })
+
+      // Contest universe
+      const universe = within(contest1)
+        .getByRole('columnheader', {
+          name: 'Contest universe: 2/3 jurisdictions',
+        })
+        .closest('table')!
+      const universeRows = within(universe).getAllByRole('row')
+      expect(universeRows.length).toEqual(2 + 1) // Includes headers
+      within(universeRows[1]).getByRole('cell', { name: 'Jurisdiction 1' })
+      within(universeRows[2]).getByRole('cell', { name: 'Jurisdiction 2' })
+
+      const contest2 = screen
+        .getAllByRole('heading', { name: 'Contest 2' })[0]
+        .closest('div.bp3-card') as HTMLElement
+
+      // Contest settings
+      within(contest2).getByText('Opportunistic Contest')
+      within(contest2).getByText(
+        '2 winners - 2 votes allowed - 300,000 total ballots cast'
+      )
     })
   })
 
-  it('renders despite missing jurisdictions on opportunistic contest', async () => {
+  it('when CVRs arent all uploaded for ballot comparison audits, hides contest settings and sample sizes', async () => {
     const expectedCalls = [
-      apiCalls.getSettings(settingsMock.full),
-      apiCalls.getJurisdictions({ jurisdictions: [] }),
+      apiCalls.getSettings(auditSettings.ballotComparisonAll),
+      apiCalls.getJurisdictions({
+        jurisdictions: jurisdictionMocks.allManifestsSomeCVRs,
+      }),
       apiCalls.getJurisdictionFile,
-      apiCalls.getContests(contestMocks.filledOpportunisticWithJurisdictionId),
+      apiCalls.getContests(contestMocks.filledTargetedAndOpportunistic),
+      apiCalls.getStandardizedContestsFile,
     ]
     await withMockFetch(expectedCalls, async () => {
-      const { container } = renderView()
+      renderView()
       await screen.findByText('Review & Launch')
-      expect(container).toMatchSnapshot()
+
+      screen.getByRole('heading', { name: 'Contests' })
+      const contest1 = screen
+        .getAllByRole('heading', { name: 'Contest 1' })[0]
+        .closest('div.bp3-card') as HTMLElement
+      within(contest1).getByText(
+        'Waiting for all jurisdictions to upload CVRs to compute contest settings.'
+      )
+
+      screen.getByRole('heading', { name: 'Sample Size' })
+      screen.getByText(
+        'All jurisdiction files must be uploaded and all audit settings' +
+          ' must be configured in order to calculate the sample size.'
+      )
+      expect(
+        screen.getByRole('link', { name: 'View jurisdiction upload progress.' })
+      ).toHaveAttribute('href', '/election/1/progress')
     })
   })
 

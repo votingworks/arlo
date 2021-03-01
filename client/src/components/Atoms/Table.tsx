@@ -1,7 +1,7 @@
 import React from 'react'
 import { useTable, useSortBy, Column, Row } from 'react-table'
 import styled from 'styled-components'
-import { Icon } from '@blueprintjs/core'
+import { Icon, HTMLTable } from '@blueprintjs/core'
 
 const StyledTable = styled.table`
   width: 100%;
@@ -134,5 +134,57 @@ export const sortByRank = <T extends object>(rank: (data: T) => number) =>
     (rowA: Row<T>, rowB: Row<T>) => rank(rowA.original) - rank(rowB.original),
     [rank]
   )
+
+// FlexTable uses flexbox styling to compute thead/tbody height.
+// This allows us to create a scrollable table body when there's overflow.
+// Columns will all have the same width by default.
+// Based on https://stackoverflow.com/a/29512692/1472662
+// eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
+export const FlexTable = styled(({ scrollable, ...props }) => (
+  <HTMLTable {...props} />
+))`
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0 0 1px rgb(16 22 26 / 15%); /* Copied from Blueprint */
+  width: 100%;
+
+  thead {
+    flex: 0 0 auto;
+    box-shadow: inset 0 -1px 0 0 rgb(16 22 26 / 15%); /* Copied from Blueprint */
+    width: 100%;
+  }
+
+  tbody {
+    display: block;
+    flex: 1 1 auto;
+    overflow-y: ${props => (props.scrollable ? 'scroll' : 'none')};
+  }
+
+  /* Add a hidden scrollbar so headers line up with columns */
+  thead tr::after {
+    visibility: hidden;
+    overflow-y: ${props => (props.scrollable ? 'scroll' : 'none')};
+    content: '';
+  }
+
+  tr {
+    display: flex;
+  }
+
+  th,
+  td {
+    flex: 1 0 0;
+  }
+
+  td {
+    overflow-x: hidden;
+    overflow-wrap: break-word;
+  }
+
+  /* Remove Blueprint border from first row */
+  tbody tr:first-child td {
+    box-shadow: none !important; /* stylelint-disable-line declaration-no-important */
+  }
+`
 
 export default Table

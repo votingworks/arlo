@@ -534,6 +534,30 @@ export const jurisdictionMocks: { [key: string]: IJurisdiction[] } = {
       },
     },
   ],
+  // Ballot comparison
+  allManifestsSomeCVRs: [
+    {
+      id: 'jurisdiction-id-1',
+      name: 'Jurisdiction 1',
+      ballotManifest: manifestMocks.processed,
+      cvrs: cvrsMocks.empty,
+      currentRoundStatus: null,
+    },
+    {
+      id: 'jurisdiction-id-2',
+      name: 'Jurisdiction 2',
+      ballotManifest: manifestMocks.processed,
+      cvrs: cvrsMocks.processed,
+      currentRoundStatus: null,
+    },
+    {
+      id: 'jurisdiction-id-3',
+      name: 'Jurisdiction 3',
+      ballotManifest: manifestMocks.processed,
+      cvrs: cvrsMocks.empty,
+      currentRoundStatus: null,
+    },
+  ],
   allManifestsWithCVRs: [
     {
       id: 'jurisdiction-id-1',
