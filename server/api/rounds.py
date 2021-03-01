@@ -25,7 +25,6 @@ from ..util.isoformat import isoformat
 from ..util.group_by import group_by
 from ..util.jsonschema import JSONDict
 from ..audit_math import sampler, ballot_polling, macro, supersimple, sampler_contest
-from .cvrs import set_contest_metadata_from_cvrs
 from ..worker.tasks import (
     background_task,
     create_background_task,
@@ -811,14 +810,7 @@ def create_round(election: Election):
 
     # For round 1, use the given sample size for each contest.
     if json_round["roundNum"] == 1:
-        # For ballot comparison audits, we need to lock in the contest metadata we
-        # parse from the CVRs when we launch the audit.
-        if election.audit_type == AuditType.BALLOT_COMPARISON:
-            for contest in election.contests:
-                set_contest_metadata_from_cvrs(contest)
-
         validate_sample_size(json_round, election)
-
         sample_sizes = json_round["sampleSizes"]
     # In later rounds, select a sample size automatically.
     else:
