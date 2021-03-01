@@ -327,10 +327,10 @@ def test_fishers_combined():
     # Now get the combined pvalue
     strata = [no_cvr_strata, cvr_strata]
     pvalue,res = compute_risk(0.05, contest, strata)
-    expected_pvalue = 0.010793531242678012
+    expected_pvalue = 0.07049896663377597
     diff = abs(expected_pvalue - pvalue)
-    assert diff < 0.000001
-    assert res
+    assert diff < 0.000001, "Got {}".format(pvalue)
+    assert not res
 
 
 

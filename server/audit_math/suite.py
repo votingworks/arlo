@@ -244,7 +244,6 @@ def maximize_fisher_combined_pvalue(
                     fisher_pvalues[i] = 1-sp.stats.chi2.cdf(obs, df=2*len(pvalues))
 
             pvalue = np.max(fisher_pvalues)
-            print('Fisher\'s p-value:  {}'.format(pvalue))
             alloc_lambda = test_lambdas[np.argmax(fisher_pvalues)]
 
             # If p-value is over the risk limit, then there's no need to refine the
