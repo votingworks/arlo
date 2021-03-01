@@ -65,10 +65,13 @@ class Stratum:
         self.sample = sample_results
         self.sample_size = sample_size
 
-    def compute_pvalue(self, alpha, winner, loser, null_lambda) -> float:
+    def compute_pvalue(self, contest, alpha, winner, loser, null_lambda) -> float:
         """
         Compute a p-value for a winner-loser pair for this strata based on its math type.
         """
+
+
+        reported_margin = contest.candidates[winner] - contest.candidates[loser]
         if self.math_type == AuditMathType.BRAVO:
             # Set parameters
             popsize = self.contest.ballots
@@ -84,6 +87,7 @@ class Stratum:
             v_l = self.contest.losers[loser]
             v_u = popsize - v_w - v_l
 
+            null_margin = (v_w - v_l) - null_lambda*reported_margin
 
             assert v_w >= n_w and v_l >= n_l and v_u >= n_u, "Alternative hypothesis isn't consistent with the sample"
 
@@ -92,15 +96,15 @@ class Stratum:
                         np.sum(np.log(v_u - np.arange(n_u)))
 
             null_logLR = lambda Nw: (n_w > 0)*np.sum(np.log(Nw - np.arange(n_w))) + \
-                        (n_l > 0)*np.sum(np.log(Nw - null_lambda - np.arange(n_l))) + \
-                        (n_u > 0)*np.sum(np.log(popsize - 2*Nw + null_lambda - np.arange(n_u)))
+                        (n_l > 0)*np.sum(np.log(Nw - null_margin - np.arange(n_l))) + \
+                        (n_u > 0)*np.sum(np.log(popsize - 2*Nw + null_margin - np.arange(n_u)))
 
-            upper_n_w_limit = (popsize - n_u + null_lambda)/2
-            lower_n_w_limit = np.max([n_w, n_l+null_lambda])
+            upper_n_w_limit = (popsize - n_u + null_margin)/2
+            lower_n_w_limit = np.max([n_w, n_l+null_margin])
 
-            # For extremely small or large null_lambdas, the limits do not
+            # For extremely small or large null_margins, the limits do not
             # make sense with the sample values.
-            if upper_n_w_limit < n_w or (upper_n_w_limit - null_lambda) < n_l:
+            if upper_n_w_limit < n_w or (upper_n_w_limit - null_margin) < n_l:
                 raise Exception('Null is impossible, given the sample')
 
 
@@ -108,8 +112,8 @@ class Stratum:
                 lower_n_w_limit, upper_n_w_limit = upper_n_w_limit, lower_n_w_limit
 
             LR_derivative = lambda Nw: np.sum([1/(Nw - i) for i in range(n_w)]) + \
-                        np.sum([1/(Nw - null_lambda - i) for i in range(n_l)]) - \
-                        2*np.sum([1/(popsize - 2*Nw + null_lambda - i) for i in range(n_u)])
+                        np.sum([1/(Nw - null_margin - i) for i in range(n_l)]) - \
+                        2*np.sum([1/(popsize - 2*Nw + null_margin - i) for i in range(n_u)])
 
             # Sometimes the upper_n_w_limit is too extreme, causing illegal 0s.
             # Check and change the limit when that occurs.
@@ -122,13 +126,12 @@ class Stratum:
             # Otherwise, find the (unique) root of the derivative of the log likelihood ratio
             else:
                 nuisance_param = sp.optimize.brentq(LR_derivative, lower_n_w_limit, upper_n_w_limit)
-            number_invalid = popsize - nuisance_param*2 + null_lambda
+            number_invalid = popsize - nuisance_param*2 + null_margin
             logLR = alt_logLR - null_logLR(nuisance_param)
             LR = np.exp(logLR)
 
             return 1.0/LR if 1.0/LR < 1 else 1.0
         elif self.math_type == AuditMathType.SUPERSIMPLE:
-            reported_margin = self.contest.candidates[winner] - self.contest.candidates[loser]
             discrepancies = compute_discrepancies(self.contest, winner, loser, self.results, self.sample)
             o1,o2,u1,u2 = 0,0,0,0
 
@@ -179,10 +182,10 @@ def maximize_fisher_combined_pvalue(
     """
     assert len(strata)==2
     stepsize=0.05
-    pvalues = {}
+    maximized_pvalues = {}
 
-    for winner,loser in product(contest.winner, contest.losers):
-        pvalues[(winner,loser)] = 0.0
+    for winner,loser in product(contest.winners, contest.losers):
+        maximized_pvalues[(winner,loser)] = 0.0
         # find range of possible lambda
         N_w1 = strata[0].contest.candidates[winner]
         N_w2 = strata[1].contest.candidates[winner]
@@ -202,8 +205,8 @@ def maximize_fisher_combined_pvalue(
         n1 = strata[0].sample_size
         n2 = strata[1].sample_size
 
-        n_w1 = strata[0].sample[winner]
-        n_l1 = strata[0].sample[loser]
+        n_w1 = strata[0].sample[contest.name][winner]
+        n_l1 = strata[0].sample[contest.name][loser]
 
         V_wl = contest.candidates[winner] - contest.candidates[loser]
 
@@ -224,35 +227,48 @@ def maximize_fisher_combined_pvalue(
 
             fisher_pvalues = np.empty_like(test_lambdas)
             for i in range(len(test_lambdas)):
-                pvalue1 = np.min([1, strata[0].compute_p_value(alpha, winner, loser, test_lambdas[i])])
-                pvalue2 = np.min([1, strata[1].compute_p_value(alpha, winner, loser, 1-test_lambdas[i])])
-                fisher_pvalues[i] = fisher_combined_pvalue([pvalue1, pvalue2])
+                try:
+                    pvalue1 = np.min([1, strata[0].compute_pvalue(contest, alpha, winner, loser, 1-test_lambdas[i])])
+                except:
+                    # If the sprt throws an error, set its pvalue to 0.
+                    # This is per the Stark code
+                    pvalue1 = 0
+
+                pvalue2 = np.min([1, strata[1].compute_pvalue(contest, alpha, winner, loser, test_lambdas[i])])
+
+                pvalues = [pvalue1, pvalue2]
+                if np.any(np.array(pvalues)==0):
+                    fisher_pvalues[i] = 0
+                else:
+                    obs = -2*np.sum(np.log(pvalues))
+                    fisher_pvalues[i] = 1-sp.stats.chi2.cdf(obs, df=2*len(pvalues))
 
             pvalue = np.max(fisher_pvalues)
+            print('Fisher\'s p-value:  {}'.format(pvalue))
             alloc_lambda = test_lambdas[np.argmax(fisher_pvalues)]
 
             # If p-value is over the risk limit, then there's no need to refine the
             # maximization. We have a lower bound on the maximum.
             if pvalue > alpha or modulus is None:
-                pvalues[(winner,loser)] = pvalue
+                maximized_pvalues[(winner,loser)] = pvalue
                 break
 
             # Use modulus of continuity for the Fisher combination function to check
             # how close this is to the true max
-            fisher_fun_obs = scipy.stats.chi2.ppf(1-pvalue, df=4)
-            fisher_fun_alpha = scipy.stats.chi2.ppf(1-alpha, df=4)
+            fisher_fun_obs = sp.stats.chi2.ppf(1-pvalue, df=4)
+            fisher_fun_alpha = sp.stats.chi2.ppf(1-alpha, df=4)
             dist = np.abs(fisher_fun_obs - fisher_fun_alpha)
             mod = modulus(stepsize)
 
             if mod <= dist:
-                pvalues[(winner,loser)] = pvalue
+                maximized_pvalues[(winner,loser)] = pvalue
                 break
             else:
                 # We haven't found a good enough max yet, keep looking
                 lambda_lower = alloc_lambda - 2*stepsize
                 lambda_upper = alloc_lambda + 2*stepsize
 
-    return pvalues
+    return maximized_pvalues
 
 def try_n(n):
 

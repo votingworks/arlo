@@ -5,7 +5,7 @@ import pytest
 
 from ...models import AuditMathType
 from ...audit_math.sampler_contest import Contest
-from ...audit_math.suite import Stratum
+from ...audit_math.suite import Stratum, compute_risk
 from ...audit_math import supersimple
 
 SEED = "12345678901234567890abcdefghijklmnopqrstuvwxyz😊"
@@ -40,10 +40,11 @@ def test_sprt_functionality(contests, strata):
 
     for contest in contests:
         pvalue = strata[contest].compute_pvalue(
+                    contests[contest],
                     ALPHA,
                     'winner',
                     'loser',
-                    0
+                    1
                 )
         expected_pvalue = expected_sprt_pvalues[contest]
         delta = Decimal(0.00005)
@@ -77,10 +78,11 @@ def analytic_strata(analytic_contests):
 def test_sprt_analytic_example(analytic_contests, analytic_strata):
     for contest in analytic_contests:
         pvalue = analytic_strata[contest].compute_pvalue(
+                    analytic_contests[contest],
                     ALPHA,
                     'winner',
                     'loser',
-                    0
+                    1
                 )
         expected_pvalue = expected_analytic_sprt_pvalues[contest]
         delta = Decimal(0.00005)
@@ -90,10 +92,11 @@ def test_sprt_analytic_example(analytic_contests, analytic_strata):
 def test_edge_cases(analytic_contests, analytic_strata):
     with pytest.raises(Exception, match=r"Null is impossible, given the sample"):
         pvalue = analytic_strata['contest1'].compute_pvalue(
+                    analytic_contests['contest1'],
                     ALPHA,
                     'winner',
                     'loser',
-                    7
+                    8
                 )
         delta = Decimal(0.00005)
         assert abs(pvalue - 1) < delta, 'contest1'
@@ -177,7 +180,7 @@ def test_cvr_compute_risk(cvr_strata, cvr_contests):
         stratum = cvr_strata[contest]
         stratum.sample = sample_cvr
         stratum.sample_size = sample_size
-        p_value = stratum.compute_pvalue(ALPHA, "winner", "loser", 1)
+        p_value = stratum.compute_pvalue(cvr_contests[contest], ALPHA, "winner", "loser", 1)
         expected_p = expected_p_values["no_discrepancies"][contest]
         diff = abs(p_value - expected_p)
 
@@ -187,23 +190,6 @@ def test_cvr_compute_risk(cvr_strata, cvr_contests):
             expected_p, p_value, contest
         )
         assert p_value <= ALPHA, "Audit should have finished but didn't"
-
-        '''
-        to_sample = {
-            "sample_size": sample_size,
-            "1-under": 0,
-            "1-over": 0,
-            "2-under": 0,
-            "2-over": 0,
-        }
-
-        next_sample_size = supersimple.get_sample_sizes(
-            RISK_LIMIT, contests[contest], to_sample
-        )
-        assert (
-            next_sample_size == no_next_sample[contest]
-        ), "Number of ballots left to sample is not correct!"
-        '''
 
         # Test one-vote overstatement
         sample_cvr[0] = {
@@ -219,7 +205,7 @@ def test_cvr_compute_risk(cvr_strata, cvr_contests):
 
         stratum.sample = sample_cvr
         stratum.sample_size = sample_size
-        p_value = stratum.compute_pvalue(ALPHA, "winner", "loser", 1)
+        p_value = stratum.compute_pvalue(cvr_contests[contest], ALPHA, "winner", "loser", 1)
         expected_p = expected_p_values["one_vote_over"][contest]
         diff = abs(p_value - expected_p)
         finished = p_value <= ALPHA
@@ -234,24 +220,6 @@ def test_cvr_compute_risk(cvr_strata, cvr_contests):
         else:
             assert not finished, "Audit shouldn't have finished but did!"
 
-        '''
-        to_sample = {
-            "sample_size": sample_size,
-            "1-under": 0,
-            "1-over": 1,
-            "2-under": 0,
-            "2-over": 0,
-        }
-
-        next_sample_size = supersimple.get_sample_sizes(
-            RISK_LIMIT, contests[contest], to_sample
-        )
-        assert (
-            next_sample_size == o1_next_sample[contest]
-        ), "Number of ballots left to sample is not correct in contest {}!".format(
-            contest
-        )
-        '''
         # Test two-vote overstatement
         sample_cvr[0] = {
             "times_sampled": 1,
@@ -266,7 +234,7 @@ def test_cvr_compute_risk(cvr_strata, cvr_contests):
 
         stratum.sample = sample_cvr
         stratum.sample_size = sample_size
-        p_value = stratum.compute_pvalue(ALPHA, "winner", "loser", 1)
+        p_value = stratum.compute_pvalue(cvr_contests[contest], ALPHA, "winner", "loser", 1)
         expected_p = expected_p_values["two_vote_over"][contest]
         diff = abs(p_value - expected_p)
         finished = p_value <= ALPHA
@@ -282,24 +250,89 @@ def test_cvr_compute_risk(cvr_strata, cvr_contests):
         else:
             assert not finished, "Audit shouldn't have finished but did!"
 
-        '''
-        to_sample = {
-            "sample_size": sample_size,
-            "1-under": 0,
-            "1-over": 0,
-            "2-under": 0,
-            "2-over": 1,
+def test_fishers_combined():
+    '''
+    This test was derived from the fisher's combination notebook in the CORLA repo, found
+    here: https://github.com/pbstark/CORLA18/blob/master/code/fisher_combined_pvalue.ipynb
+    '''
+    contest_dict = {
+        "winner": 5300,
+        "loser": 5100,
+        "ballots": 11000,
+        "numWinners": 1,
+        "votesAllowed": 1,
+    }
+
+    contest = Contest('ex1', contest_dict)
+
+    cvr_strata_contest_dict = {
+        "winner": 4550,
+        "loser": 4950,
+        "ballots": 10000,
+        "numWinners": 1,
+        "votesAllowed": 1,
+    }
+
+    cvr_contest = Contest('ex1_cvr', cvr_strata_contest_dict)
+
+    cvrs = {}
+    for i in range(4550):
+        cvrs[i] = {'ex1': {'winner': 1, 'loser': 0}}
+    for i in range(4550, 9500):
+        cvrs[i] = {'ex1': {'winner': 0, 'loser': 1}}
+    for i in range(9500, 10000):
+        cvrs[i] = {'ex1': {'winner': 0, 'loser': 0}}
+
+    # We sample 500 ballots from the cvr strata, and find no discrepancies
+    sample_cvrs = {}
+    for i in range(500):
+        sample_cvrs[i] = {
+                'times_sampled':1,
+                'cvr': {'ex1': {'winner': 1, 'loser': 0}},
         }
 
-        next_sample_size = supersimple.get_sample_sizes(
-            RISK_LIMIT, contests[contest], to_sample
-        )
-        assert (
-            next_sample_size == o2_next_sample[contest]
-        ), "Number of ballots left to sample is not correct in contest {}!".format(
-            contest
-        )
-        '''
+    # Create our CVR strata
+    cvr_strata = Stratum(cvr_contest, AuditMathType.SUPERSIMPLE, cvrs, sample_cvrs, sample_size=500)
+
+    # Compute its p-value and check, with a lambda of 0.3
+    expected_pvalue = 0.23557770396261943
+    pvalue = cvr_strata.compute_pvalue(contest, 0.05, 'winner', 'loser', 0.3)
+    diff = abs(expected_pvalue - pvalue)
+    assert diff < 0.00001, "Incorrect pvalue!"
+
+    no_cvr_strata_contest_dict = {
+        "winner": 750,
+        "loser": 150,
+        "ballots": 1000,
+        "numWinners": 1,
+        "votesAllowed": 1,
+    }
+
+    no_cvr_contest = Contest('nocvr', no_cvr_strata_contest_dict)
+
+    # In the no-cvr strata, we sample 250 ballots and find 187 votes for the winner
+    # and 37 for the loser
+    no_cvr_sample = {'ex1': {'winner': 187, 'loser':37}}
+
+    # create our ballot polling strata
+    no_cvr_strata = Stratum(no_cvr_contest, AuditMathType.BRAVO, None, no_cvr_sample, sample_size=250)
+
+    # Compute its p-value and check, with a lambda of 0.7
+    expected_pvalue = 0.006068185147942991
+    pvalue = no_cvr_strata.compute_pvalue(contest, 0.05, 'winner', 'loser', 0.7)
+    diff = abs(expected_pvalue - pvalue)
+    assert diff < 0.00001, "Incorrect pvalue: {}!".format(pvalue)
+
+
+    # Now get the combined pvalue
+    strata = [no_cvr_strata, cvr_strata]
+    pvalue,res = compute_risk(0.05, contest, strata)
+    expected_pvalue = 0.010793531242678012
+    diff = abs(expected_pvalue - pvalue)
+    assert diff < 0.000001
+    assert res
+
+
 
 
 expected_p_values = {
