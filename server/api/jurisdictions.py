@@ -39,7 +39,7 @@ def serialize_jurisdiction(
             "file": serialize_file(jurisdiction.batch_tallies_file),
             "processing": serialize_file_processing(jurisdiction.batch_tallies_file),
         }
-    if election.audit_type == AuditType.BALLOT_COMPARISON:
+    if election.audit_type in [AuditType.BALLOT_COMPARISON, AuditType.HYBRID]:
         json_jurisdiction["cvrs"] = {
             "file": serialize_file(jurisdiction.cvr_file),
             "processing": serialize_file_processing(jurisdiction.cvr_file),
