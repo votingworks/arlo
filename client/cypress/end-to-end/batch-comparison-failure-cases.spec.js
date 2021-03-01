@@ -19,7 +19,6 @@ describe('Batch Comparison', () => {
     cy.contains("Audit Setup")
 
     // upload invalid jurisdiction filesheet
-    cy.wait(1000)
     cy.fixture('CSVs/jurisdiction/sample_jurisdiction_filesheet_jurisdiction_col_error.csv').then(fileContent => {
       cy.get('input[type="file"]').first().attachFile({
         fileContent: fileContent.toString(),
@@ -27,7 +26,7 @@ describe('Batch Comparison', () => {
         mimeType: 'csv'
       })
     })
-    cy.findByText('Upload File').click()
+    cy.findByText('Upload File').click({ force: true })
     cy.get('.Toastify').find('div').find('div').contains('Missing required CSV field "Jurisdiction"').invoke('text')
       .then(text => {
         const toastText = text
