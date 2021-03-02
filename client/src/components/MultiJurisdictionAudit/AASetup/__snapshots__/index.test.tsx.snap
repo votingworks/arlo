@@ -2008,35 +2008,37 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
           >
             Contest  Info
           </h5>
-          <div
-            class="sc-dnqmqq kGMqKN"
-          >
-            Enter the name of the contest that will drive the audit.
-          </div>
           <br />
-          <label
-            for="contests[0].name"
-          >
-            Contest 
-            
-             
-            Name
+          <div>
             <div
-              class="sc-gZMcBi ggdJUe"
+              class="sc-dnqmqq kGMqKN"
             >
-              <div
-                class="bp3-input-group sc-gqjmRU kmAUGh"
-              >
-                <input
-                  class="bp3-input"
-                  id="contests[0].name"
-                  name="contests[0].name"
-                  style="padding-right: 10px;"
-                  value=""
-                />
-              </div>
+              Enter the name of the contest that will drive the audit.
             </div>
-          </label>
+            <label
+              for="contests[0].name"
+            >
+              Contest
+               
+              
+               Name
+              <div
+                class="sc-gZMcBi ggdJUe"
+              >
+                <div
+                  class="bp3-input-group sc-gqjmRU kmAUGh"
+                >
+                  <input
+                    class="bp3-input"
+                    id="contests[0].name"
+                    name="contests[0].name"
+                    style="padding-right: 10px;"
+                    value=""
+                  />
+                </div>
+              </div>
+            </label>
+          </div>
           <div
             class="sc-dnqmqq kGMqKN"
           >
@@ -2338,36 +2340,38 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
           >
             Contest  Info
           </h5>
-          <div
-            class="sc-dnqmqq kGMqKN"
-          >
-            Enter the name of the contest that will drive the audit.
-          </div>
           <br />
-          <label
-            for="contests[0].name"
-          >
-            Contest 
-            
-             
-            Name
+          <div>
             <div
-              class="sc-gZMcBi ggdJUe"
+              class="sc-dnqmqq kGMqKN"
             >
-              <div
-                class="bp3-input-group bp3-disabled sc-gqjmRU kmAUGh"
-              >
-                <input
-                  class="bp3-input"
-                  disabled=""
-                  id="contests[0].name"
-                  name="contests[0].name"
-                  style="padding-right: 10px;"
-                  value=""
-                />
-              </div>
+              Enter the name of the contest that will drive the audit.
             </div>
-          </label>
+            <label
+              for="contests[0].name"
+            >
+              Contest
+               
+              
+               Name
+              <div
+                class="sc-gZMcBi ggdJUe"
+              >
+                <div
+                  class="bp3-input-group bp3-disabled sc-gqjmRU kmAUGh"
+                >
+                  <input
+                    class="bp3-input"
+                    disabled=""
+                    id="contests[0].name"
+                    name="contests[0].name"
+                    style="padding-right: 10px;"
+                    value=""
+                  />
+                </div>
+              </div>
+            </label>
+          </div>
           <div
             class="sc-dnqmqq kGMqKN"
           >
@@ -2673,35 +2677,37 @@ exports[`Setup renders Opportunistic Contests stage with processing next stage 1
           >
             Contest  Info
           </h5>
-          <div
-            class="sc-dnqmqq kGMqKN"
-          >
-            Enter the name of the contest that will drive the audit.
-          </div>
           <br />
-          <label
-            for="contests[0].name"
-          >
-            Contest 
-            
-             
-            Name
+          <div>
             <div
-              class="sc-gZMcBi ggdJUe"
+              class="sc-dnqmqq kGMqKN"
             >
-              <div
-                class="bp3-input-group sc-gqjmRU kmAUGh"
-              >
-                <input
-                  class="bp3-input"
-                  id="contests[0].name"
-                  name="contests[0].name"
-                  style="padding-right: 10px;"
-                  value=""
-                />
-              </div>
+              Enter the name of the contest that will drive the audit.
             </div>
-          </label>
+            <label
+              for="contests[0].name"
+            >
+              Contest
+               
+              
+               Name
+              <div
+                class="sc-gZMcBi ggdJUe"
+              >
+                <div
+                  class="bp3-input-group sc-gqjmRU kmAUGh"
+                >
+                  <input
+                    class="bp3-input"
+                    id="contests[0].name"
+                    name="contests[0].name"
+                    style="padding-right: 10px;"
+                    value=""
+                  />
+                </div>
+              </div>
+            </label>
+          </div>
           <div
             class="sc-dnqmqq kGMqKN"
           >
@@ -3280,7 +3286,7 @@ exports[`Setup renders Review & Launch stage 1`] = `
       class="bp3-card bp3-elevation-0"
     >
       <table
-        class="sc-hMqMXs kgAdZo"
+        class="sc-kEYyzF knqkQg"
       >
         <tbody>
           <tr>
@@ -3520,7 +3526,7 @@ exports[`Setup renders Review & Launch stage with locked next stage 1`] = `
       class="bp3-card bp3-elevation-0"
     >
       <table
-        class="sc-hMqMXs kgAdZo"
+        class="sc-kEYyzF knqkQg"
       >
         <tbody>
           <tr>
@@ -3760,7 +3766,7 @@ exports[`Setup renders Review & Launch stage with processing next stage 1`] = `
       class="bp3-card bp3-elevation-0"
     >
       <table
-        class="sc-hMqMXs kgAdZo"
+        class="sc-kEYyzF knqkQg"
       >
         <tbody>
           <tr>
@@ -3982,24 +3988,22 @@ exports[`Setup renders Target Contests stage 1`] = `
           >
             Contest  Info
           </h5>
-          <div
-            class="sc-dnqmqq kGMqKN"
-          >
-            Enter the name of the contest that will drive the audit.
-          </div>
           <br />
-          <label
-            for="contests[0].name"
-          >
-            Contest 
-            
-             
-            Name
+          <div>
             <div
-              class="sc-gZMcBi ggdJUe"
+              class="sc-dnqmqq kGMqKN"
             >
+              Enter the name of the contest that will drive the audit.
+            </div>
+            <label
+              for="contests[0].name"
+            >
+              Contest
+               
+              
+               Name
               <div
-                class="bp3-input-group sc-gqjmRU kmAUGh"
+                class="sc-gZMcBi ggdJUe"
               >
                 <input
                   class="bp3-input"
@@ -4009,8 +4013,8 @@ exports[`Setup renders Target Contests stage 1`] = `
                   value="Contest Name"
                 />
               </div>
-            </div>
-          </label>
+            </label>
+          </div>
           <div
             class="sc-dnqmqq kGMqKN"
           >
@@ -4312,24 +4316,22 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
           >
             Contest  Info
           </h5>
-          <div
-            class="sc-dnqmqq kGMqKN"
-          >
-            Enter the name of the contest that will drive the audit.
-          </div>
           <br />
-          <label
-            for="contests[0].name"
-          >
-            Contest 
-            
-             
-            Name
+          <div>
             <div
-              class="sc-gZMcBi ggdJUe"
+              class="sc-dnqmqq kGMqKN"
             >
+              Enter the name of the contest that will drive the audit.
+            </div>
+            <label
+              for="contests[0].name"
+            >
+              Contest
+               
+              
+               Name
               <div
-                class="bp3-input-group bp3-disabled sc-gqjmRU kmAUGh"
+                class="sc-gZMcBi ggdJUe"
               >
                 <input
                   class="bp3-input"
@@ -4340,8 +4342,8 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
                   value="Contest Name"
                 />
               </div>
-            </div>
-          </label>
+            </label>
+          </div>
           <div
             class="sc-dnqmqq kGMqKN"
           >
@@ -4647,24 +4649,22 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
           >
             Contest  Info
           </h5>
-          <div
-            class="sc-dnqmqq kGMqKN"
-          >
-            Enter the name of the contest that will drive the audit.
-          </div>
           <br />
-          <label
-            for="contests[0].name"
-          >
-            Contest 
-            
-             
-            Name
+          <div>
             <div
-              class="sc-gZMcBi ggdJUe"
+              class="sc-dnqmqq kGMqKN"
             >
+              Enter the name of the contest that will drive the audit.
+            </div>
+            <label
+              for="contests[0].name"
+            >
+              Contest
+               
+              
+               Name
               <div
-                class="bp3-input-group sc-gqjmRU kmAUGh"
+                class="sc-gZMcBi ggdJUe"
               >
                 <input
                   class="bp3-input"
@@ -4674,8 +4674,8 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
                   value="Contest Name"
                 />
               </div>
-            </div>
-          </label>
+            </label>
+          </div>
           <div
             class="sc-dnqmqq kGMqKN"
           >

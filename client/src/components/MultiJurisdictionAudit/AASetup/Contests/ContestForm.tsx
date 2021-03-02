@@ -189,7 +189,8 @@ const ContestForm: React.FC<IProps> = ({
                           ) : (
                             <div>
                               <FormSectionDescription>
-                                Enter the number of winners for the contest.
+                                Enter the name of the contest that will drive
+                                the audit.
                               </FormSectionDescription>
                               <label htmlFor={`contests[${i}].name`}>
                                 Contest{' '}
@@ -308,7 +309,7 @@ const ContestForm: React.FC<IProps> = ({
                             />
                           </label>
                         </FormSection>
-                        {!isHybrid ? (
+                        {!isHybrid && (
                           <FormSection
                             label="Contest Universe"
                             description="Select the jurisdictions where this contest appeared on the ballot."
@@ -320,8 +321,6 @@ const ContestForm: React.FC<IProps> = ({
                               contestIndex={i}
                             />
                           </FormSection>
-                        ) : (
-                          ''
                         )}
                         {values.contests.length > 1 && (
                           <FormButtonBar right>

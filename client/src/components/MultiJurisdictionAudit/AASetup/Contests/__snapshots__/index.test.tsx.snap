@@ -24,35 +24,37 @@ exports[`Audit Setup > Contests renders empty opportunistic state correctly 1`] 
           >
             Contest  Info
           </h5>
-          <div
-            class="sc-bxivhb fbVQhV"
-          >
-            Enter the name of the contest that will drive the audit.
-          </div>
           <br />
-          <label
-            for="contests[0].name"
-          >
-            Contest 
-            
-             
-            Name
+          <div>
             <div
-              class="sc-ifAKCX eNyQfb"
+              class="sc-bxivhb fbVQhV"
             >
-              <div
-                class="bp3-input-group sc-EHOje bzcNaj"
-              >
-                <input
-                  class="bp3-input"
-                  id="contests[0].name"
-                  name="contests[0].name"
-                  style="padding-right: 10px;"
-                  value=""
-                />
-              </div>
+              Enter the name of the contest that will drive the audit.
             </div>
-          </label>
+            <label
+              for="contests[0].name"
+            >
+              Contest
+               
+              
+               Name
+              <div
+                class="sc-ifAKCX eNyQfb"
+              >
+                <div
+                  class="bp3-input-group sc-EHOje bzcNaj"
+                >
+                  <input
+                    class="bp3-input"
+                    id="contests[0].name"
+                    name="contests[0].name"
+                    style="padding-right: 10px;"
+                    value=""
+                  />
+                </div>
+              </div>
+            </label>
+          </div>
           <div
             class="sc-bxivhb fbVQhV"
           >
@@ -354,35 +356,37 @@ exports[`Audit Setup > Contests renders empty targeted state correctly 1`] = `
           >
             Contest  Info
           </h5>
-          <div
-            class="sc-bxivhb fbVQhV"
-          >
-            Enter the name of the contest that will drive the audit.
-          </div>
           <br />
-          <label
-            for="contests[0].name"
-          >
-            Contest 
-            
-             
-            Name
+          <div>
             <div
-              class="sc-ifAKCX eNyQfb"
+              class="sc-bxivhb fbVQhV"
             >
-              <div
-                class="bp3-input-group sc-EHOje bzcNaj"
-              >
-                <input
-                  class="bp3-input"
-                  id="contests[0].name"
-                  name="contests[0].name"
-                  style="padding-right: 10px;"
-                  value=""
-                />
-              </div>
+              Enter the name of the contest that will drive the audit.
             </div>
-          </label>
+            <label
+              for="contests[0].name"
+            >
+              Contest
+               
+              
+               Name
+              <div
+                class="sc-ifAKCX eNyQfb"
+              >
+                <div
+                  class="bp3-input-group sc-EHOje bzcNaj"
+                >
+                  <input
+                    class="bp3-input"
+                    id="contests[0].name"
+                    name="contests[0].name"
+                    style="padding-right: 10px;"
+                    value=""
+                  />
+                </div>
+              </div>
+            </label>
+          </div>
           <div
             class="sc-bxivhb fbVQhV"
           >
@@ -684,35 +688,37 @@ exports[`Audit Setup > Contests renders filled opportunistic state correctly 1`]
           >
             Contest  Info
           </h5>
-          <div
-            class="sc-bxivhb fbVQhV"
-          >
-            Enter the name of the contest that will drive the audit.
-          </div>
           <br />
-          <label
-            for="contests[0].name"
-          >
-            Contest 
-            
-             
-            Name
+          <div>
             <div
-              class="sc-ifAKCX eNyQfb"
+              class="sc-bxivhb fbVQhV"
             >
-              <div
-                class="bp3-input-group sc-EHOje bzcNaj"
-              >
-                <input
-                  class="bp3-input"
-                  id="contests[0].name"
-                  name="contests[0].name"
-                  style="padding-right: 10px;"
-                  value="Contest Name"
-                />
-              </div>
+              Enter the name of the contest that will drive the audit.
             </div>
-          </label>
+            <label
+              for="contests[0].name"
+            >
+              Contest
+               
+              
+               Name
+              <div
+                class="sc-ifAKCX eNyQfb"
+              >
+                <div
+                  class="bp3-input-group sc-EHOje bzcNaj"
+                >
+                  <input
+                    class="bp3-input"
+                    id="contests[0].name"
+                    name="contests[0].name"
+                    style="padding-right: 10px;"
+                    value="Contest Name"
+                  />
+                </div>
+              </div>
+            </label>
+          </div>
           <div
             class="sc-bxivhb fbVQhV"
           >
@@ -1014,35 +1020,37 @@ exports[`Audit Setup > Contests renders filled targeted state correctly 1`] = `
           >
             Contest  Info
           </h5>
-          <div
-            class="sc-bxivhb fbVQhV"
-          >
-            Enter the name of the contest that will drive the audit.
-          </div>
           <br />
-          <label
-            for="contests[0].name"
-          >
-            Contest 
-            
-             
-            Name
+          <div>
             <div
-              class="sc-ifAKCX eNyQfb"
+              class="sc-bxivhb fbVQhV"
             >
-              <div
-                class="bp3-input-group sc-EHOje bzcNaj"
-              >
-                <input
-                  class="bp3-input"
-                  id="contests[0].name"
-                  name="contests[0].name"
-                  style="padding-right: 10px;"
-                  value="Contest Name"
-                />
-              </div>
+              Enter the name of the contest that will drive the audit.
             </div>
-          </label>
+            <label
+              for="contests[0].name"
+            >
+              Contest
+               
+              
+               Name
+              <div
+                class="sc-ifAKCX eNyQfb"
+              >
+                <div
+                  class="bp3-input-group sc-EHOje bzcNaj"
+                >
+                  <input
+                    class="bp3-input"
+                    id="contests[0].name"
+                    name="contests[0].name"
+                    style="padding-right: 10px;"
+                    value="Contest Name"
+                  />
+                </div>
+              </div>
+            </label>
+          </div>
           <div
             class="sc-bxivhb fbVQhV"
           >
