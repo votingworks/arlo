@@ -116,6 +116,27 @@ def test_set_contest_metadata_on_cvr_upload(
         )
     )
 
+    # Contest metadata changes on new CVR upload
+    new_cvr = "\n".join(TEST_CVRS.splitlines()[:7])
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
+        data={"cvrs": (io.BytesIO(new_cvr.encode()), "cvrs.csv",)},
+    )
+    assert_ok(rv)
+    bgcompute_update_cvr_file(election_id)
+
+    contest = Contest.query.get(contest_id)
+    snapshot.assert_match(
+        dict(
+            total_ballots_cast=contest.total_ballots_cast,
+            votes_allowed=contest.votes_allowed,
+            choices=[
+                dict(name=choice.name, num_votes=choice.num_votes)
+                for choice in contest.choices
+            ],
+        )
+    )
+
 
 def test_require_cvr_uploads(
     client: FlaskClient,

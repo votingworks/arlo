@@ -157,3 +157,13 @@ snapshots["test_set_contest_metadata_on_cvr_upload 1"] = {
     "total_ballots_cast": 30,
     "votes_allowed": 2,
 }
+
+snapshots["test_set_contest_metadata_on_cvr_upload 2"] = {
+    "choices": [
+        {"name": "Choice 2-1", "num_votes": 17},
+        {"name": "Choice 2-2", "num_votes": 8},
+        {"name": "Choice 2-3", "num_votes": 9},
+    ],
+    "total_ballots_cast": 18,
+    "votes_allowed": 2,
+}

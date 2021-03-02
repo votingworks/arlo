@@ -41,13 +41,14 @@ def set_contest_metadata_from_cvrs(contest: Contest):
         return
 
     contest.total_ballots_cast = 0
+    contest.choices = []
 
     for jurisdiction in contest.jurisdictions:
         contest_metadata = typing.cast(JSONDict, jurisdiction.cvr_contests_metadata)[
             contest.name
         ]
 
-        if not contest.choices:
+        if len(contest.choices) == 0:
             contest.choices = [
                 ContestChoice(
                     id=str(uuid.uuid4()),
