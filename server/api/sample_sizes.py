@@ -1,14 +1,14 @@
 from typing import Dict
 from collections import Counter
 from flask import jsonify
-from werkzeug.exceptions import BadRequest
+from werkzeug.exceptions import BadRequest, Conflict
 
 from . import api
 from ..models import *  # pylint: disable=wildcard-import
 from ..auth import restrict_access, UserType
 from ..audit_math import ballot_polling, macro, supersimple, sampler_contest
 from . import rounds  # pylint: disable=cyclic-import
-from .cvrs import set_contest_metadata_from_cvrs
+from .cvrs import all_cvrs_uploaded
 
 
 # Because the /sample-sizes endpoint is only used for the audit setup flow,
@@ -63,7 +63,9 @@ def sample_size_options(
         else:
             assert election.audit_type == AuditType.BALLOT_COMPARISON
 
-            set_contest_metadata_from_cvrs(contest)
+            if not all_cvrs_uploaded(contest):
+                raise Conflict("Some jurisdictions haven't uploaded their CVRs yet.")
+
             contest_for_sampler = sampler_contest.from_db_contest(contest)
 
             if round_one:

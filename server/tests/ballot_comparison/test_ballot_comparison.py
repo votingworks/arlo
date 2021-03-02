@@ -4,11 +4,14 @@ from flask.testing import FlaskClient
 
 from ...models import *  # pylint: disable=wildcard-import
 from ..helpers import *  # pylint: disable=wildcard-import
-from ...worker.bgcompute import bgcompute_update_standardized_contests_file
-from ...api.sample_sizes import set_contest_metadata_from_cvrs
+from ...worker.bgcompute import (
+    bgcompute_update_standardized_contests_file,
+    bgcompute_update_cvr_file,
+)
+from .conftest import TEST_CVRS
 
 
-def test_set_contest_metadata_from_cvrs(
+def test_set_contest_metadata_on_contest_creation(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],  # pylint: disable=unused-argument
@@ -33,19 +36,81 @@ def test_set_contest_metadata_from_cvrs(
     )
     assert_ok(rv)
 
+    # Contest metadata is set on contest creation when all CVRs uploaded
     contest = Contest.query.get(contest_id)
-    assert contest.total_ballots_cast is None
-    assert contest.votes_allowed is None
-    assert contest.choices == []
-
-    set_contest_metadata_from_cvrs(contest)
-
     snapshot.assert_match(
         dict(
             total_ballots_cast=contest.total_ballots_cast,
             votes_allowed=contest.votes_allowed,
             choices=[
-                dict(name=choice.name, num_votes=choice.num_votes,)
+                dict(name=choice.name, num_votes=choice.num_votes)
+                for choice in contest.choices
+            ],
+        )
+    )
+
+
+def test_set_contest_metadata_on_cvr_upload(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    manifests,  # pylint: disable=unused-argument
+    snapshot,
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    contest_id = str(uuid.uuid4())
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/contest",
+        [
+            {
+                "id": contest_id,
+                "name": "Contest 2",
+                "numWinners": 1,
+                "jurisdictionIds": jurisdiction_ids[:2],
+                "isTargeted": True,
+            }
+        ],
+    )
+    assert_ok(rv)
+
+    # Contest metadata isn't set when creating contest if no CVRs
+    contest = Contest.query.get(contest_id)
+    assert contest.total_ballots_cast is None
+    assert contest.votes_allowed is None
+    assert contest.choices == []
+
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
+        data={"cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",)},
+    )
+    assert_ok(rv)
+    bgcompute_update_cvr_file(election_id)
+
+    # Contest metadata isn't set when only some CVRs uploaded
+    contest = Contest.query.get(contest_id)
+    assert contest.total_ballots_cast is None
+    assert contest.votes_allowed is None
+    assert contest.choices == []
+
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/cvrs",
+        data={"cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",)},
+    )
+    assert_ok(rv)
+    bgcompute_update_cvr_file(election_id)
+
+    # Contest metadata is set when all CVRs uploaded
+    contest = Contest.query.get(contest_id)
+    snapshot.assert_match(
+        dict(
+            total_ballots_cast=contest.total_ballots_cast,
+            votes_allowed=contest.votes_allowed,
+            choices=[
+                dict(name=choice.name, num_votes=choice.num_votes)
                 for choice in contest.choices
             ],
         )

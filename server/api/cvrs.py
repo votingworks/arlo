@@ -28,21 +28,24 @@ from ..util.jsonschema import JSONDict
 from ..util.group_by import group_by
 
 
+def all_cvrs_uploaded(contest: Contest):
+    return all(
+        jurisdiction.cvr_contests_metadata
+        and contest.name in jurisdiction.cvr_contests_metadata
+        for jurisdiction in contest.jurisdictions
+    )
+
+
 def set_contest_metadata_from_cvrs(contest: Contest):
-    # Only set the contest metadata if it hasn't been set already
-    if contest.total_ballots_cast is not None:
+    if not all_cvrs_uploaded(contest):
         return
 
     contest.total_ballots_cast = 0
 
     for jurisdiction in contest.jurisdictions:
-        cvr_contests_metadata = typing.cast(
-            JSONDict, jurisdiction.cvr_contests_metadata
-        )
-        if not cvr_contests_metadata or contest.name not in cvr_contests_metadata:
-            raise Conflict("Some jurisdictions haven't uploaded their CVRs yet.")
-
-        contest_metadata = cvr_contests_metadata[contest.name]
+        contest_metadata = typing.cast(JSONDict, jurisdiction.cvr_contests_metadata)[
+            contest.name
+        ]
 
         if not contest.choices:
             contest.choices = [
@@ -240,6 +243,9 @@ def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
                 raise exc
             finally:
                 connection.close()
+
+        for contest in jurisdiction.election.contests:
+            set_contest_metadata_from_cvrs(contest)
 
     # Until we add validation/error handling to our CVR parsing, we'll just
     # catch all errors and wrap them with a generic message.

@@ -7,6 +7,7 @@ from ..auth import restrict_access, UserType
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
 from ..util.jsonschema import validate, JSONDict
+from .cvrs import set_contest_metadata_from_cvrs
 
 
 CONTEST_CHOICE_SCHEMA = {
@@ -158,9 +159,14 @@ def create_or_update_all_contests(election: Election):
 
     Contest.query.filter_by(election_id=election.id).delete()
 
-    for json_contest in json_contests:
-        contest = deserialize_contest(json_contest, election.id)
-        db_session.add(contest)
+    contests = [
+        deserialize_contest(json_contest, election.id) for json_contest in json_contests
+    ]
+    db_session.add_all(contests)
+
+    if election.audit_type == AuditType.BALLOT_COMPARISON:
+        for contest in contests:
+            set_contest_metadata_from_cvrs(contest)
 
     db_session.commit()
 

@@ -138,7 +138,17 @@ J2,TABULATOR2,BATCH1,2,2-1-2,"Round 2: 0.677864268646804078, 0.85289683599690853
 J2,TABULATOR2,BATCH1,3,2-1-3,"Round 2: 0.803716379074313244, 0.853400178985340640",AUDITED,Choice 1-1,Choice 1-1,,"Choice 2-1, Choice 2-2","Choice 2-1, Choice 2-2",\r
 """
 
-snapshots["test_set_contest_metadata_from_cvrs 1"] = {
+snapshots["test_set_contest_metadata_on_contest_creation 1"] = {
+    "choices": [
+        {"name": "Choice 2-1", "num_votes": 28},
+        {"name": "Choice 2-2", "num_votes": 12},
+        {"name": "Choice 2-3", "num_votes": 16},
+    ],
+    "total_ballots_cast": 30,
+    "votes_allowed": 2,
+}
+
+snapshots["test_set_contest_metadata_on_cvr_upload 1"] = {
     "choices": [
         {"name": "Choice 2-1", "num_votes": 28},
         {"name": "Choice 2-2", "num_votes": 12},
