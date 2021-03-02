@@ -16,6 +16,7 @@ function useSetupMenuItems(
   setStage: (s: ElementType<typeof setupStages>) => void,
   electionId: string,
   isBallotComparison: boolean,
+  isHybrid: boolean,
   setRefreshId: (arg0: string) => void
 ): [ISidebarMenuItem[], () => void] {
   const [participants, setParticipants] = useState<ISidebarMenuItem['state']>(
@@ -47,7 +48,7 @@ function useSetupMenuItems(
       ? jurisdictionProcessing.status
       : FileProcessingStatus.Blank
     let contestFileStatus: FileProcessingStatus = FileProcessingStatus.Processed // pretend it's processed by default
-    if (isBallotComparison) {
+    if (isBallotComparison || isHybrid) {
       const contestFileProcessing = await getContestFileStatus(electionId)
       contestFileStatus = contestFileProcessing
         ? contestFileProcessing.status
@@ -71,7 +72,7 @@ function useSetupMenuItems(
         const jProcessing = await getJurisdictionFileStatus(electionId)
         const { status: jStatus } = jProcessing!
         let cStatus = FileProcessingStatus.Processed
-        if (isBallotComparison) {
+        if (isBallotComparison || isHybrid) {
           const cProcessing = await getContestFileStatus(electionId)
           cStatus = cProcessing!.status
         }
@@ -99,7 +100,14 @@ function useSetupMenuItems(
         console.error(err.message)
       })
     }
-  }, [electionId, setContests, setStage, isBallotComparison, setRefreshId])
+  }, [
+    electionId,
+    setContests,
+    setStage,
+    isBallotComparison,
+    isHybrid,
+    setRefreshId,
+  ])
 
   const lockAllIfRounds = useCallback(async () => {
     const roundsExist = await getRoundStatus(electionId)
@@ -158,7 +166,7 @@ function useSetupMenuItems(
         return {
           id: s,
           title:
-            isBallotComparison && s === 'participants'
+            (isBallotComparison || isHybrid) && s === 'participants'
               ? 'Participants & Contests'
               : stageTitles[s],
           active: s === stage,
@@ -186,6 +194,7 @@ function useSetupMenuItems(
       opportunisticContests,
       auditSettings,
       isBallotComparison,
+      isHybrid,
       reviewLaunch,
       refresh,
     ]

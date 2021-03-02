@@ -76,9 +76,12 @@ def process_standardized_contests_file(
 
 
 def validate_standardized_contests_upload(request: Request, election: Election):
-    if election.audit_type != AuditType.BALLOT_COMPARISON:
+    if (
+        election.audit_type != AuditType.BALLOT_COMPARISON
+        and election.audit_type != AuditType.HYBRID
+    ):
         raise Conflict(
-            "Can only upload standardized contests file for ballot comparison audits."
+            "Can only upload standardized contests file for ballot comparison and hybrid audits."
         )
 
     if len(list(election.jurisdictions)) == 0:

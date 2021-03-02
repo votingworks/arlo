@@ -123,7 +123,9 @@ export const useStandardizedContestsFile = (
   const [csv, uploadCSV] = useCSV(
     `/election/${electionId}/standardized-contests/file`,
     'standardized-contests',
-    !!auditSettings && auditSettings.auditType === 'BALLOT_COMPARISON'
+    !!auditSettings &&
+      (auditSettings.auditType === 'BALLOT_COMPARISON' ||
+        auditSettings.auditType === 'HYBRID')
   )
   // Delete not supported
   return [csv, uploadCSV]
