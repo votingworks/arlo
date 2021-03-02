@@ -42,6 +42,7 @@ const parsePdf = async (pdfName) => {
         prompt_for_download: false,
         directory_upgrade: false,
       }
+      launchOptions.preferences.default['height'] = 1000
     }
     return launchOptions
   })
