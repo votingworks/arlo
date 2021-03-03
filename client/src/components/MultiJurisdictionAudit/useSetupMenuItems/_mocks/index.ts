@@ -120,6 +120,16 @@ export const auditSettings: {
     auditMathType: 'SUPERSIMPLE',
     auditName: 'Test Audit',
   },
+  hybridAll: {
+    state: 'AL',
+    electionName: 'Election Name',
+    online: false,
+    randomSeed: '12345',
+    riskLimit: 10,
+    auditType: 'HYBRID',
+    auditMathType: 'SUITE',
+    auditName: 'Test Audit',
+  },
 }
 
 export const roundMocks: {

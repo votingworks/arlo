@@ -259,7 +259,7 @@ describe('Audit Setup > Review & Launch', () => {
       // Contest universe
       const universe = within(contest1)
         .getByRole('columnheader', {
-          name: 'Contest universe: 2/3 jurisdictions',
+          name: 'Contest universe: 2/3\xa0jurisdictions',
         })
         .closest('table')!
       const universeRows = within(universe).getAllByRole('row')
@@ -276,6 +276,44 @@ describe('Audit Setup > Review & Launch', () => {
       within(contest2).getByText(
         '2 winners - 2 votes allowed - 300,000 total ballots cast'
       )
+    })
+  })
+
+  it('for hybrid audits, shows the CVR/non-CVR vote totals', async () => {
+    const expectedCalls = [
+      apiCalls.getSettings(auditSettings.hybridAll),
+      apiCalls.getJurisdictions({
+        jurisdictions: jurisdictionMocks.allManifestsWithCVRs,
+      }),
+      apiCalls.getJurisdictionFile,
+      apiCalls.getContests(contestMocks.filledTargetedAndOpportunistic),
+      apiCalls.getSampleSizeOptions,
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderView()
+      await screen.findByText('Review & Launch')
+
+      const contest1 = screen
+        .getAllByRole('heading', { name: 'Contest 1' })[0]
+        .closest('div.bp3-card') as HTMLElement
+
+      const choices = within(contest1)
+        .getByRole('columnheader', {
+          name: 'Choice',
+        })
+        .closest('table')!
+      within(choices).getByRole('columnheader', { name: 'Votes' })
+      within(choices).getByRole('columnheader', { name: 'CVR' })
+      within(choices).getByRole('columnheader', { name: 'Non-CVR' })
+      const choiceRows = within(choices).getAllByRole('row')
+      within(choiceRows[1]).getByRole('cell', { name: 'Choice One' })
+      within(choiceRows[1]).getByRole('cell', { name: '10' })
+      within(choiceRows[1]).getByRole('cell', { name: '6' })
+      within(choiceRows[1]).getByRole('cell', { name: '4' })
+      within(choiceRows[2]).getByRole('cell', { name: 'Choice Two' })
+      within(choiceRows[2]).getByRole('cell', { name: '20' })
+      within(choiceRows[2]).getByRole('cell', { name: '12' })
+      within(choiceRows[2]).getByRole('cell', { name: '8' })
     })
   })
 

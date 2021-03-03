@@ -322,7 +322,7 @@ const Review: React.FC<IProps> = ({
                   <tr>
                     <th>
                       Contest universe: {contest.jurisdictionIds.length}/
-                      {jurisdictions.length} jurisdictions
+                      {jurisdictions.length}&nbsp;jurisdictions
                     </th>
                   </tr>
                 </thead>
