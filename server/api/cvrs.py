@@ -67,6 +67,16 @@ def set_contest_metadata_from_cvrs(contest: Contest):
             choice.num_votes += choice_metadata["num_votes"]
 
 
+def all_cvr_choice_names_match(contest):
+    choice_names = {choice.name for choice in contest.choices}
+    return all(
+        choice_names.issubset(
+            jurisdiction.cvr_contests_metadata[contest.name]["choices"].keys()
+        )
+        for jurisdiction in contest.jurisdictions
+    )
+
+
 class HybridNumVotes(typing.NamedTuple):
     num_votes_cvr: int
     num_votes_non_cvr: int
@@ -78,23 +88,21 @@ class HybridNumVotes(typing.NamedTuple):
 def hybrid_contest_choice_vote_counts(
     contest: Contest,
 ) -> Optional[Dict[str, HybridNumVotes]]:
+    if not all_cvrs_uploaded(contest):
+        return None
+
+    # TODO raise an error in /sample-sizes
+    if not all_cvr_choice_names_match(contest):
+        return None
+
     cvr_choice_votes = {choice.id: 0 for choice in contest.choices}
     for jurisdiction in contest.jurisdictions:
         cvr_contests_metadata = typing.cast(
             JSONDict, jurisdiction.cvr_contests_metadata
         )
-        # If all jursidictions haven't uploaded CVRs yet, we can't compute this yet
-        if not cvr_contests_metadata or contest.name not in cvr_contests_metadata:
-            return None
-
         contest_metadata = cvr_contests_metadata[contest.name]
         for choice_name, choice_metadata in contest_metadata["choices"].items():
-            choice = next((c for c in contest.choices if c.name == choice_name), None)
-            if not choice:
-                return None
-                # raise Conflict(
-                #     f"Choice {choice_name} from contest {contest.name} was not found in the CVR for jurisdiction {jurisdiction.name}"
-                # )
+            choice = next(c for c in contest.choices if c.name == choice_name)
             cvr_choice_votes[choice.id] += choice_metadata["num_votes"]
 
     return {
