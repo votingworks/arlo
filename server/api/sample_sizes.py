@@ -1,14 +1,21 @@
 from typing import Dict
 from collections import Counter
 from flask import jsonify
-from werkzeug.exceptions import BadRequest, Conflict
+from werkzeug.exceptions import BadRequest
 
 from . import api
 from ..models import *  # pylint: disable=wildcard-import
 from ..auth import restrict_access, UserType
-from ..audit_math import ballot_polling, macro, supersimple, sampler_contest
+from ..audit_math import (
+    ballot_polling,
+    macro,
+    supersimple,
+    sampler_contest,
+    suite_stub as suite,
+)
 from . import rounds  # pylint: disable=cyclic-import
-from .cvrs import all_cvrs_uploaded
+from .cvrs import validate_uploaded_cvrs, hybrid_contest_choice_vote_counts
+from .ballot_manifest import validate_uploaded_manifests, hybrid_contest_total_ballots
 
 
 # Because the /sample-sizes endpoint is only used for the audit setup flow,
@@ -61,8 +68,8 @@ def sample_size_options(
             return {"macro": {"key": "macro", "size": sample_size, "prob": None}}
 
         elif election.audit_type == AuditType.BALLOT_COMPARISON:
-            if not all_cvrs_uploaded(contest):
-                raise Conflict("Some jurisdictions haven't uploaded their CVRs yet.")
+            validate_uploaded_manifests(contest)
+            validate_uploaded_cvrs(contest)
 
             contest_for_sampler = sampler_contest.from_db_contest(contest)
 
@@ -97,7 +104,92 @@ def sample_size_options(
 
         else:
             assert election.audit_type == AuditType.HYBRID
-            return {}
+
+            validate_uploaded_manifests(contest)
+            validate_uploaded_cvrs(contest)
+
+            total_ballots = hybrid_contest_total_ballots(contest)
+            vote_counts = hybrid_contest_choice_vote_counts(contest)
+            assert vote_counts
+
+            num_previous_samples_dict = dict(
+                SampledBallotDraw.query.join(Round)
+                .filter_by(election_id=election.id)
+                .join(SampledBallot)
+                .join(Batch)
+                .group_by(Batch.has_cvrs)
+                .values(Batch.has_cvrs, func.count(SampledBallotDraw.ticket_number))
+            )
+            non_cvr_previous_samples = num_previous_samples_dict[False]
+            cvr_previous_samples = num_previous_samples_dict[True]
+
+            # Create a stratum for non-CVR ballots
+            non_cvr_contest = sampler_contest.Contest(
+                contest.name,
+                {
+                    "ballots": total_ballots.non_cvr,
+                    "numWinners": typing_cast(int, contest.num_winners),
+                    "votesAllowed": typing_cast(int, contest.votes_allowed),
+                    **{
+                        choice_id: vote_count.non_cvr
+                        for choice_id, vote_count in vote_counts.items()
+                    },
+                },
+            )
+            # In hybrid audits, we only store round contest results for non-CVR
+            # ballots
+            non_cvr_sample_results = (
+                None if round_one else rounds.contest_results_by_round(contest)
+            )
+            non_cvr_stratum = suite.BallotPollingStratum(
+                non_cvr_contest, non_cvr_sample_results, non_cvr_previous_samples
+            )
+
+            # Create a stratum for CVR ballots
+            cvr_contest = sampler_contest.Contest(
+                contest.name,
+                {
+                    "ballots": total_ballots.cvr,
+                    "numWinners": typing_cast(int, contest.num_winners),
+                    "votesAllowed": typing_cast(int, contest.votes_allowed),
+                    **{
+                        choice_id: vote_count.cvr
+                        for choice_id, vote_count in vote_counts.items()
+                    },
+                },
+            )
+            cvr_reported_results = rounds.cvrs_for_contest(contest)
+            # The CVR sample results are filtered to only CVR ballots
+            cvr_sample_results = rounds.sampled_ballot_interpretations_to_cvrs(contest)
+            # TODO how to use get_misstatements to create the stratum?
+            cvr_misstatements = suite.get_misstatements(
+                cvr_contest, cvr_reported_results, cvr_sample_results, "???", "???"
+            )
+            cvr_stratum = suite.BallotComparisonStratum(
+                cvr_contest,
+                cvr_reported_results,
+                cvr_misstatements,
+                cvr_previous_samples,
+            )
+
+            options = suite.get_sample_size(
+                election.risk_limit,
+                # TODO is this the right contest?
+                sampler_contest.from_db_contest(contest),
+                non_cvr_stratum,
+                cvr_stratum,
+            )
+
+            return {
+                key: {
+                    "key": key,
+                    "sizeCvr": option["size"].cvr,
+                    "sizeNonCvr": option["size"].non_cvr,
+                    "size": option["size"].cvr + option["size"].non_cvr,
+                    "prob": option["prob"],
+                }
+                for key, option in options.items()
+            }
 
     targeted_contests = Contest.query.filter_by(
         election_id=election.id, is_targeted=True

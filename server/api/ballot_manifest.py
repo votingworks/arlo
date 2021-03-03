@@ -15,6 +15,7 @@ from ..util.process_file import (
 )
 from ..util.csv_download import csv_response
 from ..util.csv_parse import decode_csv_file, parse_csv, CSVValueType, CSVColumnType
+from ..audit_math.suite_stub import HybridPair
 
 CONTAINER = "Container"
 TABULATOR = "Tabulator"
@@ -48,6 +49,17 @@ def set_total_ballots_from_manifests(contest: Contest):
     contest.total_ballots_cast = sum(
         jurisdiction.manifest_num_ballots for jurisdiction in contest.jurisdictions
     )
+
+
+def hybrid_contest_total_ballots(contest: Contest) -> HybridPair:
+    total_ballots = dict(
+        Contest.query.filter_by(id=contest.id)
+        .join(Contest.jurisdictions)
+        .join(Batch)
+        .group_by(Batch.has_cvrs)
+        .values(Batch.has_cvrs, func.sum(Batch.num_ballots))
+    )
+    return HybridPair(cvr=total_ballots[True], non_cvr=total_ballots[False],)
 
 
 def process_ballot_manifest_file(

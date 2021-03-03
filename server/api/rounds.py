@@ -71,7 +71,11 @@ def count_audited_votes(election: Election, round: Round):
                 .values(BatchResult.contest_choice_id, func.sum(BatchResult.result),)
             )
 
-        # For ballot polling audits...
+        # Otherwise, handle ballot polling, ballot comparison, and hybrid
+        # audits. Note that we will only actually use these vote counts in the
+        # p-value calculation for ballot polling audits and hybrid audits (just
+        # counting the non-CVR ballot segment). In ballot comparison, we just
+        # show these totals for the audit report.
         else:
             # For online audits, count the votes from each BallotInterpretation
             if election.online:
@@ -87,6 +91,13 @@ def count_audited_votes(election: Election, round: Round):
                     .join(BallotInterpretation.selected_choices)
                     .group_by(ContestChoice.id)
                 )
+
+                # For hybrid audits, only count the non-CVR ballots
+                if election.audit_type == AuditType.HYBRID:
+                    interpretations_query = interpretations_query.join(Batch).filter_by(
+                        has_cvrs=False
+                    )
+
                 # For a targeted contest, count the ballot draws sampled for the contest
                 if contest.is_targeted:
                     vote_counts = dict(
@@ -106,6 +117,7 @@ def count_audited_votes(election: Election, round: Round):
 
             # For offline audits, sum the JurisdictionResults
             else:
+                assert election.audit_type == AuditType.BALLOT_POLLING
                 vote_counts = dict(
                     JurisdictionResult.query.filter_by(
                         round_id=round.id, contest_id=contest.id,
@@ -276,6 +288,11 @@ def sampled_ballot_interpretations_to_cvrs(
         .join(Jurisdiction)
         .filter(Jurisdiction.contests.contains(contest))
     )
+
+    # In hybrid audits, only count CVR ballots
+    if contest.election.audit_type == AuditType.HYBRID:
+        ballots_query = ballots_query.filter(Batch.has_cvrs is True)
+
     # For targeted contests, count the number of times the ballot was sampled
     if contest.is_targeted:
         ballots_query = (
