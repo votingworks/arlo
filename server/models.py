@@ -350,6 +350,7 @@ class Contest(BaseModel):
         "ContestChoice",
         back_populates="contest",
         uselist=True,
+        cascade="all, delete-orphan",
         passive_deletes=True,
         order_by="ContestChoice.created_at",
     )
