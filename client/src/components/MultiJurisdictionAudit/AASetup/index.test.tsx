@@ -27,7 +27,7 @@ useJurisdictionsMock.mockImplementation(() => jurisdictionMocks.noManifests)
 const useContestsMock = useContests as jest.Mock
 jest.mock('../useContests')
 useContestsMock.mockImplementation(() => [
-  contestMocks.emptyTargeted.contests,
+  contestMocks.filledTargetedWithJurisdictionId.contests,
   jest.fn(),
 ])
 

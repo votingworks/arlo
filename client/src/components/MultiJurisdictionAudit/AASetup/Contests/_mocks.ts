@@ -177,12 +177,12 @@ export const contestMocks: {
         ],
       },
       {
-        id: 'contest-id',
+        id: 'contest-id-2',
         name: 'Contest 2',
         isTargeted: false,
-        totalBallotsCast: '30',
-        numWinners: '1',
-        votesAllowed: '1',
+        totalBallotsCast: '300000',
+        numWinners: '2',
+        votesAllowed: '2',
         jurisdictionIds: ['jurisdiction-id-1', 'jurisdiction-id-2'],
         choices: [
           {

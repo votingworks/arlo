@@ -29,7 +29,7 @@ exports[`Setup renders Audit Settings stage 1`] = `
           </p>
           <div>
             <div
-              class="bp3-html-select sc-jKJlTe WCGaW"
+              class="bp3-html-select sc-eNQAEJ izJEOO"
             >
               <select
                 field="[object Object]"
@@ -463,7 +463,7 @@ exports[`Setup renders Audit Settings stage 1`] = `
           </p>
           <div>
             <div
-              class="bp3-html-select sc-jKJlTe WCGaW"
+              class="bp3-html-select sc-eNQAEJ izJEOO"
             >
               <select
                 data-testid="risk-limit"
@@ -687,7 +687,7 @@ exports[`Setup renders Audit Settings stage with locked next stage 1`] = `
           </p>
           <div>
             <div
-              class="bp3-html-select bp3-disabled sc-jKJlTe WCGaW"
+              class="bp3-html-select bp3-disabled sc-eNQAEJ izJEOO"
             >
               <select
                 disabled=""
@@ -1125,7 +1125,7 @@ exports[`Setup renders Audit Settings stage with locked next stage 1`] = `
           </p>
           <div>
             <div
-              class="bp3-html-select bp3-disabled sc-jKJlTe WCGaW"
+              class="bp3-html-select bp3-disabled sc-eNQAEJ izJEOO"
             >
               <select
                 data-testid="risk-limit"
@@ -1353,7 +1353,7 @@ exports[`Setup renders Audit Settings stage with processing next stage 1`] = `
           </p>
           <div>
             <div
-              class="bp3-html-select sc-jKJlTe WCGaW"
+              class="bp3-html-select sc-eNQAEJ izJEOO"
             >
               <select
                 field="[object Object]"
@@ -1787,7 +1787,7 @@ exports[`Setup renders Audit Settings stage with processing next stage 1`] = `
           </p>
           <div>
             <div
-              class="bp3-html-select sc-jKJlTe WCGaW"
+              class="bp3-html-select sc-eNQAEJ izJEOO"
             >
               <select
                 data-testid="risk-limit"
@@ -3277,7 +3277,7 @@ exports[`Setup renders Review & Launch stage 1`] = `
       Audit Settings
     </h4>
     <div
-      class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
+      class="bp3-card bp3-elevation-0"
     >
       <table
         class="sc-hMqMXs kgAdZo"
@@ -3337,41 +3337,99 @@ exports[`Setup renders Review & Launch stage 1`] = `
           </tr>
         </tbody>
       </table>
-      <table
-        class="sc-eNQAEJ jcIdqs"
+    </div>
+    <br />
+    <h4
+      class="bp3-heading"
+    >
+      Contests
+    </h4>
+    <div
+      class="bp3-card bp3-elevation-0"
+    >
+      <div
+        style="display: flex; justify-content: space-between; align-items: baseline;"
       >
-        <thead>
-          <tr>
-            <th>
-              Target Contests
-            </th>
-            <th>
-              Jurisdictions
-            </th>
-          </tr>
-        </thead>
-        <tbody />
-      </table>
-      <table
-        class="sc-eNQAEJ jcIdqs"
+        <h5
+          class="bp3-heading"
+        />
+        <span
+          class="bp3-tag bp3-intent-primary"
+          style="margin-left: 10px; flex-shrink: 0;"
+        >
+          <span
+            class="bp3-text-overflow-ellipsis bp3-fill"
+          >
+            Opportunistic Contest
+          </span>
+        </span>
+      </div>
+      <p>
+        1
+         
+        winner
+         -
+         
+        1
+         
+        vote
+         allowed -
+         
+        0
+         total ballots cast
+      </p>
+      <div
+        style="display: flex;"
       >
-        <thead>
-          <tr>
-            <th>
-              Opportunistic Contests
-            </th>
-            <th>
-              Jurisdictions
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td />
-            <td />
-          </tr>
-        </tbody>
-      </table>
+        <div>
+          <table
+            class="bp3-html-table bp3-html-table-condensed bp3-html-table-striped sc-jKJlTe hDGQko"
+            style="width: 280px; margin-right: 20px;"
+          >
+            <thead>
+              <tr>
+                <th>
+                  Choice
+                </th>
+                <th>
+                  Votes
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td />
+                <td />
+              </tr>
+              <tr>
+                <td />
+                <td />
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div
+          style="width: 100%; position: relative; min-height: 140px;"
+        >
+          <table
+            class="bp3-html-table bp3-html-table-condensed bp3-html-table-striped sc-jKJlTe uqzjr"
+            style="position: absolute; height: 100%;"
+          >
+            <thead>
+              <tr>
+                <th>
+                  Contest universe: 
+                  0
+                  /
+                  3
+                   jurisdictions
+                </th>
+              </tr>
+            </thead>
+            <tbody />
+          </table>
+        </div>
+      </div>
     </div>
     <br />
     <h4
@@ -3459,7 +3517,7 @@ exports[`Setup renders Review & Launch stage with locked next stage 1`] = `
       Audit Settings
     </h4>
     <div
-      class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
+      class="bp3-card bp3-elevation-0"
     >
       <table
         class="sc-hMqMXs kgAdZo"
@@ -3519,41 +3577,99 @@ exports[`Setup renders Review & Launch stage with locked next stage 1`] = `
           </tr>
         </tbody>
       </table>
-      <table
-        class="sc-eNQAEJ jcIdqs"
+    </div>
+    <br />
+    <h4
+      class="bp3-heading"
+    >
+      Contests
+    </h4>
+    <div
+      class="bp3-card bp3-elevation-0"
+    >
+      <div
+        style="display: flex; justify-content: space-between; align-items: baseline;"
       >
-        <thead>
-          <tr>
-            <th>
-              Target Contests
-            </th>
-            <th>
-              Jurisdictions
-            </th>
-          </tr>
-        </thead>
-        <tbody />
-      </table>
-      <table
-        class="sc-eNQAEJ jcIdqs"
+        <h5
+          class="bp3-heading"
+        />
+        <span
+          class="bp3-tag bp3-intent-primary"
+          style="margin-left: 10px; flex-shrink: 0;"
+        >
+          <span
+            class="bp3-text-overflow-ellipsis bp3-fill"
+          >
+            Opportunistic Contest
+          </span>
+        </span>
+      </div>
+      <p>
+        1
+         
+        winner
+         -
+         
+        1
+         
+        vote
+         allowed -
+         
+        0
+         total ballots cast
+      </p>
+      <div
+        style="display: flex;"
       >
-        <thead>
-          <tr>
-            <th>
-              Opportunistic Contests
-            </th>
-            <th>
-              Jurisdictions
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td />
-            <td />
-          </tr>
-        </tbody>
-      </table>
+        <div>
+          <table
+            class="bp3-html-table bp3-html-table-condensed bp3-html-table-striped sc-jKJlTe hDGQko"
+            style="width: 280px; margin-right: 20px;"
+          >
+            <thead>
+              <tr>
+                <th>
+                  Choice
+                </th>
+                <th>
+                  Votes
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td />
+                <td />
+              </tr>
+              <tr>
+                <td />
+                <td />
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div
+          style="width: 100%; position: relative; min-height: 140px;"
+        >
+          <table
+            class="bp3-html-table bp3-html-table-condensed bp3-html-table-striped sc-jKJlTe uqzjr"
+            style="position: absolute; height: 100%;"
+          >
+            <thead>
+              <tr>
+                <th>
+                  Contest universe: 
+                  0
+                  /
+                  3
+                   jurisdictions
+                </th>
+              </tr>
+            </thead>
+            <tbody />
+          </table>
+        </div>
+      </div>
     </div>
     <br />
     <h4
@@ -3641,7 +3757,7 @@ exports[`Setup renders Review & Launch stage with processing next stage 1`] = `
       Audit Settings
     </h4>
     <div
-      class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
+      class="bp3-card bp3-elevation-0"
     >
       <table
         class="sc-hMqMXs kgAdZo"
@@ -3701,41 +3817,99 @@ exports[`Setup renders Review & Launch stage with processing next stage 1`] = `
           </tr>
         </tbody>
       </table>
-      <table
-        class="sc-eNQAEJ jcIdqs"
+    </div>
+    <br />
+    <h4
+      class="bp3-heading"
+    >
+      Contests
+    </h4>
+    <div
+      class="bp3-card bp3-elevation-0"
+    >
+      <div
+        style="display: flex; justify-content: space-between; align-items: baseline;"
       >
-        <thead>
-          <tr>
-            <th>
-              Target Contests
-            </th>
-            <th>
-              Jurisdictions
-            </th>
-          </tr>
-        </thead>
-        <tbody />
-      </table>
-      <table
-        class="sc-eNQAEJ jcIdqs"
+        <h5
+          class="bp3-heading"
+        />
+        <span
+          class="bp3-tag bp3-intent-primary"
+          style="margin-left: 10px; flex-shrink: 0;"
+        >
+          <span
+            class="bp3-text-overflow-ellipsis bp3-fill"
+          >
+            Opportunistic Contest
+          </span>
+        </span>
+      </div>
+      <p>
+        1
+         
+        winner
+         -
+         
+        1
+         
+        vote
+         allowed -
+         
+        0
+         total ballots cast
+      </p>
+      <div
+        style="display: flex;"
       >
-        <thead>
-          <tr>
-            <th>
-              Opportunistic Contests
-            </th>
-            <th>
-              Jurisdictions
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td />
-            <td />
-          </tr>
-        </tbody>
-      </table>
+        <div>
+          <table
+            class="bp3-html-table bp3-html-table-condensed bp3-html-table-striped sc-jKJlTe hDGQko"
+            style="width: 280px; margin-right: 20px;"
+          >
+            <thead>
+              <tr>
+                <th>
+                  Choice
+                </th>
+                <th>
+                  Votes
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td />
+                <td />
+              </tr>
+              <tr>
+                <td />
+                <td />
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div
+          style="width: 100%; position: relative; min-height: 140px;"
+        >
+          <table
+            class="bp3-html-table bp3-html-table-condensed bp3-html-table-striped sc-jKJlTe uqzjr"
+            style="position: absolute; height: 100%;"
+          >
+            <thead>
+              <tr>
+                <th>
+                  Contest universe: 
+                  0
+                  /
+                  3
+                   jurisdictions
+                </th>
+              </tr>
+            </thead>
+            <tbody />
+          </table>
+        </div>
+      </div>
     </div>
     <br />
     <h4
@@ -3832,7 +4006,7 @@ exports[`Setup renders Target Contests stage 1`] = `
                   id="contests[0].name"
                   name="contests[0].name"
                   style="padding-right: 10px;"
-                  value=""
+                  value="Contest Name"
                 />
               </div>
             </div>
@@ -3922,7 +4096,7 @@ exports[`Setup renders Target Contests stage 1`] = `
                       class="bp3-input"
                       name="contests[0].choices[0].name"
                       style="padding-right: 10px;"
-                      value=""
+                      value="Choice One"
                     />
                   </div>
                 </div>
@@ -3942,7 +4116,7 @@ exports[`Setup renders Target Contests stage 1`] = `
                       class="bp3-input"
                       name="contests[0].choices[0].numVotes"
                       style="padding-right: 10px;"
-                      value=""
+                      value="10"
                     />
                   </div>
                 </div>
@@ -3966,7 +4140,7 @@ exports[`Setup renders Target Contests stage 1`] = `
                       class="bp3-input"
                       name="contests[0].choices[1].name"
                       style="padding-right: 10px;"
-                      value=""
+                      value="Choice Two"
                     />
                   </div>
                 </div>
@@ -3986,7 +4160,7 @@ exports[`Setup renders Target Contests stage 1`] = `
                       class="bp3-input"
                       name="contests[0].choices[1].numVotes"
                       style="padding-right: 10px;"
-                      value=""
+                      value="20"
                     />
                   </div>
                 </div>
@@ -4029,7 +4203,7 @@ exports[`Setup renders Target Contests stage 1`] = `
                   id="contests[0].totalBallotsCast"
                   name="contests[0].totalBallotsCast"
                   style="padding-right: 10px;"
-                  value=""
+                  value="30"
                 />
               </div>
             </div>
@@ -4163,7 +4337,7 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
                   id="contests[0].name"
                   name="contests[0].name"
                   style="padding-right: 10px;"
-                  value=""
+                  value="Contest Name"
                 />
               </div>
             </div>
@@ -4256,7 +4430,7 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
                       disabled=""
                       name="contests[0].choices[0].name"
                       style="padding-right: 10px;"
-                      value=""
+                      value="Choice One"
                     />
                   </div>
                 </div>
@@ -4277,7 +4451,7 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
                       disabled=""
                       name="contests[0].choices[0].numVotes"
                       style="padding-right: 10px;"
-                      value=""
+                      value="10"
                     />
                   </div>
                 </div>
@@ -4302,7 +4476,7 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
                       disabled=""
                       name="contests[0].choices[1].name"
                       style="padding-right: 10px;"
-                      value=""
+                      value="Choice Two"
                     />
                   </div>
                 </div>
@@ -4323,7 +4497,7 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
                       disabled=""
                       name="contests[0].choices[1].numVotes"
                       style="padding-right: 10px;"
-                      value=""
+                      value="20"
                     />
                   </div>
                 </div>
@@ -4362,7 +4536,7 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
                   id="contests[0].totalBallotsCast"
                   name="contests[0].totalBallotsCast"
                   style="padding-right: 10px;"
-                  value=""
+                  value="30"
                 />
               </div>
             </div>
@@ -4497,7 +4671,7 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
                   id="contests[0].name"
                   name="contests[0].name"
                   style="padding-right: 10px;"
-                  value=""
+                  value="Contest Name"
                 />
               </div>
             </div>
@@ -4587,7 +4761,7 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
                       class="bp3-input"
                       name="contests[0].choices[0].name"
                       style="padding-right: 10px;"
-                      value=""
+                      value="Choice One"
                     />
                   </div>
                 </div>
@@ -4607,7 +4781,7 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
                       class="bp3-input"
                       name="contests[0].choices[0].numVotes"
                       style="padding-right: 10px;"
-                      value=""
+                      value="10"
                     />
                   </div>
                 </div>
@@ -4631,7 +4805,7 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
                       class="bp3-input"
                       name="contests[0].choices[1].name"
                       style="padding-right: 10px;"
-                      value=""
+                      value="Choice Two"
                     />
                   </div>
                 </div>
@@ -4651,7 +4825,7 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
                       class="bp3-input"
                       name="contests[0].choices[1].numVotes"
                       style="padding-right: 10px;"
-                      value=""
+                      value="20"
                     />
                   </div>
                 </div>
@@ -4694,7 +4868,7 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
                   id="contests[0].totalBallotsCast"
                   name="contests[0].totalBallotsCast"
                   style="padding-right: 10px;"
-                  value=""
+                  value="30"
                 />
               </div>
             </div>
