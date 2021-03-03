@@ -72,8 +72,6 @@ def test_contest_vote_counts(
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/contest")
     contests = json.loads(rv.data)["contests"]
-    rv = client.get(f"/api/election/{election_id}/contest")
-    contests = json.loads(rv.data)["contests"]
     compare_json(
         contests[0]["choices"],
         [

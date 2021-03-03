@@ -285,8 +285,9 @@ def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
             finally:
                 connection.close()
 
-        for contest in jurisdiction.election.contests:
-            set_contest_metadata_from_cvrs(contest)
+        if jurisdiction.election.audit_type == AuditType.BALLOT_COMPARISON:
+            for contest in jurisdiction.election.contests:
+                set_contest_metadata_from_cvrs(contest)
 
     # Until we add validation/error handling to our CVR parsing, we'll just
     # catch all errors and wrap them with a generic message.
