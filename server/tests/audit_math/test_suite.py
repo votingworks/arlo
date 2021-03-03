@@ -333,8 +333,6 @@ def test_fishers_combined():
     assert not res
 
 
-
-
 expected_p_values = {
     "no_discrepancies": {
         "Contest A": 0.06507,
