@@ -348,14 +348,14 @@ describe('Audit Setup > Review & Launch', () => {
       fireEvent.change(customSampleSizeInput, { target: { value: '40' } }) // userEvent has a problem with this field due to the lack of an explicit value field: https://github.com/testing-library/user-event/issues/356
       fireEvent.blur(customSampleSizeInput)
       await screen.findByText(
-        "Must be less than or equal to: 30 (the total number of ballots in the targeted contest: 'Contest Name')"
+        'Must be less than or equal to: 30 (the total number of ballots in the contest)'
       )
       userEvent.clear(customSampleSizeInput)
       fireEvent.change(customSampleSizeInput, { target: { value: '5' } })
       await waitFor(() =>
         expect(
           screen.queryByText(
-            "Must be less than or equal to: 30 (the total number of ballots in the targeted contest: 'Contest Name')"
+            'Must be less than or equal to: 30 (the total number of ballots in the contest)'
           )
         ).toBeNull()
       )
@@ -426,7 +426,7 @@ describe('Audit Setup > Review & Launch', () => {
       fireEvent.change(customSampleSizeInput, { target: { value: '40' } }) // userEvent has a problem with this field due to the lack of an explicit value field: https://github.com/testing-library/user-event/issues/356
       fireEvent.blur(customSampleSizeInput)
       await screen.findByText(
-        "Must be less than or equal to: 20 (the total number of batches in the targeted contest: 'Contest Name')"
+        'Must be less than or equal to: 20 (the total number of batches in the contest)'
       )
     })
   })
@@ -453,10 +453,10 @@ describe('Audit Setup > Review & Launch', () => {
       )
       userEvent.click(newSampleSize)
       const customSampleSizeInput = await screen.findByRole('spinbutton')
-      fireEvent.change(customSampleSizeInput, { target: { value: '5000' } }) // userEvent has a problem with this field due to the lack of an explicit value field: https://github.com/testing-library/user-event/issues/356
+      fireEvent.change(customSampleSizeInput, { target: { value: '50' } }) // userEvent has a problem with this field due to the lack of an explicit value field: https://github.com/testing-library/user-event/issues/356
       fireEvent.blur(customSampleSizeInput)
       await screen.findByText(
-        "Must be less than or equal to: 4234 (the total number of ballots in the targeted contest: 'Contest Name')"
+        'Must be less than or equal to: 30 (the total number of ballots in the contest)'
       )
     })
   })
