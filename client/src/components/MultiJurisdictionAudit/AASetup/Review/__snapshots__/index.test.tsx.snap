@@ -163,7 +163,7 @@ exports[`Audit Setup > Review & Launch custom sample size validation - ballot co
       >
         <div>
           <table
-            class="bp3-html-table bp3-html-table-condensed bp3-html-table-striped sc-jKJlTe hDGQko"
+            class="bp3-html-table bp3-html-table-condensed bp3-html-table-striped sc-eNQAEJ gdQBFi"
             style="width: 280px; margin-right: 20px;"
           >
             <thead>
@@ -200,7 +200,7 @@ exports[`Audit Setup > Review & Launch custom sample size validation - ballot co
           style="width: 100%; position: relative; min-height: 140px;"
         >
           <table
-            class="bp3-html-table bp3-html-table-condensed bp3-html-table-striped sc-jKJlTe uqzjr"
+            class="bp3-html-table bp3-html-table-condensed bp3-html-table-striped sc-eNQAEJ cPYOSb"
             style="position: absolute; height: 100%;"
           >
             <thead>
@@ -512,7 +512,7 @@ exports[`Audit Setup > Review & Launch custom sample size validation - batch com
       >
         <div>
           <table
-            class="bp3-html-table bp3-html-table-condensed bp3-html-table-striped sc-jKJlTe hDGQko"
+            class="bp3-html-table bp3-html-table-condensed bp3-html-table-striped sc-eNQAEJ gdQBFi"
             style="width: 280px; margin-right: 20px;"
           >
             <thead>
@@ -549,7 +549,7 @@ exports[`Audit Setup > Review & Launch custom sample size validation - batch com
           style="width: 100%; position: relative; min-height: 140px;"
         >
           <table
-            class="bp3-html-table bp3-html-table-condensed bp3-html-table-striped sc-jKJlTe uqzjr"
+            class="bp3-html-table bp3-html-table-condensed bp3-html-table-striped sc-eNQAEJ cPYOSb"
             style="position: absolute; height: 100%;"
           >
             <thead>
@@ -861,7 +861,7 @@ exports[`Audit Setup > Review & Launch renders empty state 1`] = `
       >
         <div>
           <table
-            class="bp3-html-table bp3-html-table-condensed bp3-html-table-striped sc-jKJlTe hDGQko"
+            class="bp3-html-table bp3-html-table-condensed bp3-html-table-striped sc-eNQAEJ gdQBFi"
             style="width: 280px; margin-right: 20px;"
           >
             <thead>
@@ -898,7 +898,7 @@ exports[`Audit Setup > Review & Launch renders empty state 1`] = `
           style="width: 100%; position: relative; min-height: 140px;"
         >
           <table
-            class="bp3-html-table bp3-html-table-condensed bp3-html-table-striped sc-jKJlTe uqzjr"
+            class="bp3-html-table bp3-html-table-condensed bp3-html-table-striped sc-eNQAEJ cPYOSb"
             style="position: absolute; height: 100%;"
           >
             <thead>
@@ -1210,7 +1210,7 @@ exports[`Audit Setup > Review & Launch renders full state 1`] = `
       >
         <div>
           <table
-            class="bp3-html-table bp3-html-table-condensed bp3-html-table-striped sc-jKJlTe hDGQko"
+            class="bp3-html-table bp3-html-table-condensed bp3-html-table-striped sc-eNQAEJ gdQBFi"
             style="width: 280px; margin-right: 20px;"
           >
             <thead>
@@ -1247,7 +1247,7 @@ exports[`Audit Setup > Review & Launch renders full state 1`] = `
           style="width: 100%; position: relative; min-height: 140px;"
         >
           <table
-            class="bp3-html-table bp3-html-table-condensed bp3-html-table-striped sc-jKJlTe uqzjr"
+            class="bp3-html-table bp3-html-table-condensed bp3-html-table-striped sc-eNQAEJ cPYOSb"
             style="position: absolute; height: 100%;"
           >
             <thead>
@@ -1559,7 +1559,7 @@ exports[`Audit Setup > Review & Launch renders full state with batch comparison 
       >
         <div>
           <table
-            class="bp3-html-table bp3-html-table-condensed bp3-html-table-striped sc-jKJlTe hDGQko"
+            class="bp3-html-table bp3-html-table-condensed bp3-html-table-striped sc-eNQAEJ gdQBFi"
             style="width: 280px; margin-right: 20px;"
           >
             <thead>
@@ -1596,7 +1596,7 @@ exports[`Audit Setup > Review & Launch renders full state with batch comparison 
           style="width: 100%; position: relative; min-height: 140px;"
         >
           <table
-            class="bp3-html-table bp3-html-table-condensed bp3-html-table-striped sc-jKJlTe uqzjr"
+            class="bp3-html-table bp3-html-table-condensed bp3-html-table-striped sc-eNQAEJ cPYOSb"
             style="position: absolute; height: 100%;"
           >
             <thead>
@@ -1908,7 +1908,7 @@ exports[`Audit Setup > Review & Launch renders full state with batch comparison 
       >
         <div>
           <table
-            class="bp3-html-table bp3-html-table-condensed bp3-html-table-striped sc-jKJlTe hDGQko"
+            class="bp3-html-table bp3-html-table-condensed bp3-html-table-striped sc-eNQAEJ gdQBFi"
             style="width: 280px; margin-right: 20px;"
           >
             <thead>
@@ -1945,7 +1945,7 @@ exports[`Audit Setup > Review & Launch renders full state with batch comparison 
           style="width: 100%; position: relative; min-height: 140px;"
         >
           <table
-            class="bp3-html-table bp3-html-table-condensed bp3-html-table-striped sc-jKJlTe uqzjr"
+            class="bp3-html-table bp3-html-table-condensed bp3-html-table-striped sc-eNQAEJ cPYOSb"
             style="position: absolute; height: 100%;"
           >
             <thead>
@@ -2171,7 +2171,7 @@ exports[`Audit Setup > Review & Launch renders full state with jurisdictions wit
       >
         <div>
           <table
-            class="bp3-html-table bp3-html-table-condensed bp3-html-table-striped sc-jKJlTe hDGQko"
+            class="bp3-html-table bp3-html-table-condensed bp3-html-table-striped sc-eNQAEJ gdQBFi"
             style="width: 280px; margin-right: 20px;"
           >
             <thead>
@@ -2208,7 +2208,7 @@ exports[`Audit Setup > Review & Launch renders full state with jurisdictions wit
           style="width: 100%; position: relative; min-height: 140px;"
         >
           <table
-            class="bp3-html-table bp3-html-table-condensed bp3-html-table-striped sc-jKJlTe uqzjr"
+            class="bp3-html-table bp3-html-table-condensed bp3-html-table-striped sc-eNQAEJ cPYOSb"
             style="position: absolute; height: 100%;"
           >
             <thead>
@@ -2279,7 +2279,7 @@ exports[`Audit Setup > Review & Launch renders full state with jurisdictions wit
       >
         <div>
           <table
-            class="bp3-html-table bp3-html-table-condensed bp3-html-table-striped sc-jKJlTe hDGQko"
+            class="bp3-html-table bp3-html-table-condensed bp3-html-table-striped sc-eNQAEJ gdQBFi"
             style="width: 280px; margin-right: 20px;"
           >
             <thead>
@@ -2316,7 +2316,7 @@ exports[`Audit Setup > Review & Launch renders full state with jurisdictions wit
           style="width: 100%; position: relative; min-height: 140px;"
         >
           <table
-            class="bp3-html-table bp3-html-table-condensed bp3-html-table-striped sc-jKJlTe uqzjr"
+            class="bp3-html-table bp3-html-table-condensed bp3-html-table-striped sc-eNQAEJ cPYOSb"
             style="position: absolute; height: 100%;"
           >
             <thead>
@@ -2628,7 +2628,7 @@ exports[`Audit Setup > Review & Launch renders full state with offline setting 1
       >
         <div>
           <table
-            class="bp3-html-table bp3-html-table-condensed bp3-html-table-striped sc-jKJlTe hDGQko"
+            class="bp3-html-table bp3-html-table-condensed bp3-html-table-striped sc-eNQAEJ gdQBFi"
             style="width: 280px; margin-right: 20px;"
           >
             <thead>
@@ -2665,7 +2665,7 @@ exports[`Audit Setup > Review & Launch renders full state with offline setting 1
           style="width: 100%; position: relative; min-height: 140px;"
         >
           <table
-            class="bp3-html-table bp3-html-table-condensed bp3-html-table-striped sc-jKJlTe uqzjr"
+            class="bp3-html-table bp3-html-table-condensed bp3-html-table-striped sc-eNQAEJ cPYOSb"
             style="position: absolute; height: 100%;"
           >
             <thead>
