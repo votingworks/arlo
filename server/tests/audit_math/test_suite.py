@@ -5,7 +5,7 @@ import pytest
 
 from ...models import AuditMathType
 from ...audit_math.sampler_contest import Contest
-from ...audit_math.suite import Stratum, compute_risk
+from ...audit_math.suite import Stratum, compute_risk, get_sample_size
 from ...audit_math import supersimple
 
 SEED = "12345678901234567890abcdefghijklmnopqrstuvwxyz😊"
@@ -331,6 +331,66 @@ def test_fishers_combined():
     diff = abs(expected_pvalue - pvalue)
     assert diff < 0.000001, "Got {}".format(pvalue)
     assert not res
+
+def test_get_sample_size():
+
+    contest_dict = {
+        "winner": 5300,
+        "loser": 5100,
+        "ballots": 11000,
+        "numWinners": 1,
+        "votesAllowed": 1,
+    }
+
+    contest = Contest('ex1', contest_dict)
+
+    cvr_strata_contest_dict = {
+        "winner": 4550,
+        "loser": 4950,
+        "ballots": 10000,
+        "numWinners": 1,
+        "votesAllowed": 1,
+    }
+
+    cvr_contest = Contest('ex1_cvr', cvr_strata_contest_dict)
+
+    cvrs = {}
+    for i in range(4550):
+        cvrs[i] = {'ex1': {'winner': 1, 'loser': 0}}
+    for i in range(4550, 9500):
+        cvrs[i] = {'ex1': {'winner': 0, 'loser': 1}}
+    for i in range(9500, 10000):
+        cvrs[i] = {'ex1': {'winner': 0, 'loser': 0}}
+
+    # We sample 500 ballots from the cvr strata, and find no discrepancies
+    sample_cvrs = {}
+
+    # Create our CVR strata
+    cvr_strata = Stratum(cvr_contest, AuditMathType.SUPERSIMPLE, cvrs, sample_cvrs, sample_size=0)
+
+    no_cvr_strata_contest_dict = {
+        "winner": 750,
+        "loser": 150,
+        "ballots": 1000,
+        "numWinners": 1,
+        "votesAllowed": 1,
+    }
+
+    no_cvr_contest = Contest('nocvr', no_cvr_strata_contest_dict)
+
+    # In the no-cvr strata, we sample 250 ballots and find 187 votes for the winner
+    # and 37 for the loser
+    no_cvr_sample = {'ex1': {'winner': 0, 'loser': 0}}
+
+    # create our ballot polling strata
+    no_cvr_strata = Stratum(no_cvr_contest, AuditMathType.BRAVO, None, no_cvr_sample, sample_size=0)
+
+    expected_sample_size = (150, 1510)
+
+    sample_sizes = get_sample_size(0.05, contest, [no_cvr_strata, cvr_strata])
+
+
+
 
 
 expected_p_values = {
