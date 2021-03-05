@@ -177,6 +177,7 @@ def serialize_ballot_comparison_ballot(
     return {
         **serialize_ballot(ballot),
         "imprintedId": cvr_ballot.imprinted_id,
+        # TODO remove
         "contestsOnBallot": [
             contest.id
             for contest in jurisdiction.contests

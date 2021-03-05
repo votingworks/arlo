@@ -9,6 +9,8 @@ from ...worker.bgcompute import (
     bgcompute_update_cvr_file,
 )
 
+# Note that we intentionally leave out one row from the CVR to simulate what
+# happens when a row is missing. This would be the ballot: TABULATOR2,BATCH2,3,2-2-3
 TEST_CVRS = """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
 ,,,,,,,Contest 1 (Vote For=1),Contest 1 (Vote For=1),Contest 2 (Vote For=2),Contest 2 (Vote For=2),Contest 2 (Vote For=2)
 ,,,,,,,Choice 1-1,Choice 1-2,Choice 2-1,Choice 2-2,Choice 2-3
@@ -24,10 +26,9 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,PrecinctPortion,BallotType,R
 9,TABULATOR2,BATCH1,3,2-1-3,12345,COUNTY,1,0,1,1,0
 10,TABULATOR2,BATCH2,1,2-2-1,12345,COUNTY,1,0,1,0,1
 11,TABULATOR2,BATCH2,2,2-2-2,12345,COUNTY,1,1,1,1,1
-12,TABULATOR2,BATCH2,3,2-2-3,12345,COUNTY,1,0,1,0,1
-13,TABULATOR2,BATCH2,4,2-2-4,12345,CITY,,,1,0,1
-14,TABULATOR2,BATCH2,5,2-2-5,12345,CITY,,,1,1,0
-15,TABULATOR2,BATCH2,6,2-2-6,12345,CITY,,,1,0,1
+12,TABULATOR2,BATCH2,4,2-2-4,12345,CITY,,,1,0,1
+13,TABULATOR2,BATCH2,5,2-2-5,12345,CITY,,,1,1,0
+14,TABULATOR2,BATCH2,6,2-2-6,12345,CITY,,,1,0,1
 """
 
 

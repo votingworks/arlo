@@ -125,12 +125,10 @@ def pretty_ballot_interpretation(
 def pretty_cvr_interpretation(
     ballot: SampledBallot, contest: Contest, contest_cvrs: supersimple.CVRS
 ) -> str:
-    ballot_cvr = contest_cvrs[ballot.id]
-    assert ballot_cvr is not None
-
-    cvrs_by_choice = ballot_cvr.get(contest.id)
-    # If CVR was empty for this contest for this ballot, skip it
-    if not cvrs_by_choice:
+    ballot_cvr = contest_cvrs.get(ballot.id)
+    cvrs_by_choice = ballot_cvr and ballot_cvr.get(contest.id)
+    # If CVR was missing/empty for this contest for this ballot, skip it
+    if ballot_cvr is None or cvrs_by_choice is None:
         return ""
 
     choice_id_to_name = {choice.id: choice.name for choice in contest.choices}
