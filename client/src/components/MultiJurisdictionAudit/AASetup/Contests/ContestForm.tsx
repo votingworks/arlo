@@ -3,7 +3,7 @@ import React from 'react'
 import { useParams } from 'react-router-dom'
 import equal from 'fast-deep-equal'
 import styled from 'styled-components'
-import { Formik, FormikProps, Field, FieldArray } from 'formik'
+import { Formik, FormikProps, Field, FieldArray, ErrorMessage } from 'formik'
 import { Spinner, HTMLSelect } from '@blueprintjs/core'
 import FormWrapper from '../../../Atoms/Form/FormWrapper'
 import FormSection, {
@@ -30,6 +30,7 @@ import { testNumber } from '../../../utilities'
 import { isObjectEmpty } from '../../../../utils/objects'
 import { IAuditSettings } from '../../useAuditSettings'
 import useStandardizedContests from '../../useStandardizedContests'
+import { ErrorLabel } from '../../../Atoms/Form/_helpers'
 
 const Select = styled(HTMLSelect)`
   margin-top: 5px;
@@ -183,6 +184,10 @@ const ContestForm: React.FC<IProps> = ({
                                       value: name,
                                     })),
                                   ]}
+                                />
+                                <ErrorMessage
+                                  name={`contests[${i}].name`}
+                                  component={ErrorLabel}
                                 />
                               </label>
                             </div>

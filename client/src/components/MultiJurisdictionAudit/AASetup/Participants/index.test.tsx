@@ -195,9 +195,89 @@ describe('Audit Setup > Participants', () => {
     })
   })
 
+  it('submits participants and standardized contests file for hybrid audits', async () => {
+    const contestsFile = new File([], 'contests file')
+    const expectedCalls = [
+      aaApiCalls.getSettings(auditSettings.blankHybrid),
+      apiCalls.getJurisdictionsFile(fileMocks.empty),
+      apiCalls.getStandardizedContestsFile(fileMocks.empty),
+      apiCalls.putJurisdictionsFile(jurisdictionFile),
+      apiCalls.getJurisdictionsFile(fileMocks.processed),
+      apiCalls.putStandardizedContestsFile(contestsFile),
+      apiCalls.getStandardizedContestsFile(fileMocks.processed),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderParticipants()
+
+      await screen.findByRole('heading', {
+        name: 'Participating Jurisdictions',
+      })
+      await screen.findByRole('heading', {
+        name: 'Standardized Contests',
+      })
+      let [
+        // eslint-disable-next-line prefer-const
+        jurisdictionsFileInput,
+        standardizedContestsFileInput,
+      ] = screen.getAllByLabelText('Select a CSV...')
+      let [
+        // eslint-disable-next-line prefer-const
+        jurisdictionsFileUploadButton,
+        standardizedContestsFileUploadButton,
+      ] = screen.getAllByRole('button', { name: 'Upload File' })
+
+      expect(standardizedContestsFileInput).toBeDisabled()
+      expect(standardizedContestsFileUploadButton).toBeDisabled()
+
+      // Upload jurisdictions file
+      userEvent.upload(jurisdictionsFileInput, jurisdictionFile)
+      userEvent.click(jurisdictionsFileUploadButton)
+
+      await screen.findByText('Current file:')
+      screen.getByText('file name')
+
+      standardizedContestsFileInput = screen.getByLabelText('Select a CSV...')
+      standardizedContestsFileUploadButton = screen.getByRole('button', {
+        name: 'Upload File',
+      })
+      expect(standardizedContestsFileInput).toBeEnabled()
+      expect(standardizedContestsFileUploadButton).toBeEnabled()
+
+      // Upload standardized contests file
+      userEvent.upload(standardizedContestsFileInput, contestsFile)
+      userEvent.click(standardizedContestsFileUploadButton)
+
+      await screen.findByText('contests file')
+    })
+  })
+
   it('displays errors', async () => {
     const expectedCalls = [
       aaApiCalls.getSettings(auditSettings.blankBallotComparison),
+      apiCalls.getJurisdictionsFile(fileMocks.errored),
+      apiCalls.getStandardizedContestsFile(fileMocks.empty),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderParticipants()
+
+      await screen.findByText('Current file:')
+      screen.getByText('file name')
+      screen.getByText('something went wrong')
+
+      const standardizedContestsFileInput = screen.getByLabelText(
+        'Select a CSV...'
+      )
+      const standardizedContestsFileUploadButton = screen.getByRole('button', {
+        name: 'Upload File',
+      })
+      expect(standardizedContestsFileInput).toBeDisabled()
+      expect(standardizedContestsFileUploadButton).toBeDisabled()
+    })
+  })
+
+  it('displays errors - hybrid', async () => {
+    const expectedCalls = [
+      aaApiCalls.getSettings(auditSettings.blankHybrid),
       apiCalls.getJurisdictionsFile(fileMocks.errored),
       apiCalls.getStandardizedContestsFile(fileMocks.empty),
     ]
