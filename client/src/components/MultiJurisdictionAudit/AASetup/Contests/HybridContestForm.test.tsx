@@ -11,7 +11,81 @@ import relativeStages from '../_mocks'
 import Contests from '.'
 import { aaApiCalls } from '../../_mocks'
 import { IContest, INewContest } from '../../useContestsBallotComparison'
-import { hybridContestsInputMocks } from './_mocks'
+
+const hybridContestsInputMocks = {
+  inputs: [
+    { key: 'Name of Candidate/Choice 1', value: 'Choice One' },
+    { key: 'Name of Candidate/Choice 2', value: 'Choice Two' },
+    { key: 'Votes for Candidate/Choice 1', value: '10' },
+    { key: 'Votes for Candidate/Choice 2', value: '20' },
+    { key: 'Total Ballots for Contest', value: '30' },
+  ],
+  errorInputs: [
+    {
+      key: 'Total Ballots for Contest',
+      value: '',
+      error:
+        'Must be greater than or equal to the sum of votes for each candidate/choice',
+    },
+    {
+      key: 'Total Ballots for Contest',
+      value: 'test',
+      error: 'Must be a number',
+    },
+    {
+      key: 'Total Ballots for Contest',
+      value: '-1',
+      error: 'Must be a positive number',
+    },
+    {
+      key: 'Total Ballots for Contest',
+      value: '0.5',
+      error: 'Must be an integer',
+    },
+    { key: 'Name of Candidate/Choice 1', value: '', error: 'Required' },
+    { key: 'Name of Candidate/Choice 2', value: '', error: 'Required' },
+    {
+      key: 'Votes for Candidate/Choice 1',
+      value: '',
+      error: 'Required',
+    },
+    {
+      key: 'Votes for Candidate/Choice 1',
+      value: 'test',
+      error: 'Must be a number',
+    },
+    {
+      key: 'Votes for Candidate/Choice 1',
+      value: '-1',
+      error: 'Must be a positive number',
+    },
+    {
+      key: 'Votes for Candidate/Choice 1',
+      value: '0.5',
+      error: 'Must be an integer',
+    },
+    {
+      key: 'Votes for Candidate/Choice 2',
+      value: '',
+      error: 'Required',
+    },
+    {
+      key: 'Votes for Candidate/Choice 2',
+      value: 'test',
+      error: 'Must be a number',
+    },
+    {
+      key: 'Votes for Candidate/Choice 2',
+      value: '-1',
+      error: 'Must be a positive number',
+    },
+    {
+      key: 'Votes for Candidate/Choice 2',
+      value: '0.5',
+      error: 'Must be an integer',
+    },
+  ],
+}
 
 const { nextStage, prevStage } = relativeStages('target-contests')
 
@@ -92,7 +166,7 @@ describe('Audit Setup > Contests (Hybrid)', () => {
       totalBallotsCast: 30,
       numWinners: 1,
       votesAllowed: 1,
-      jurisdictionIds: [],
+      jurisdictionIds: ['jurisdiction-id-1', 'jurisdiction-id-2'], // adding these makes the test fail, hence the functionality needs to be changed?
       choices: [
         {
           id: '2',
