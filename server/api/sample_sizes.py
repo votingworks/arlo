@@ -60,9 +60,7 @@ def sample_size_options(
             )
             return {"macro": {"key": "macro", "size": sample_size, "prob": None}}
 
-        else:
-            assert election.audit_type == AuditType.BALLOT_COMPARISON
-
+        elif election.audit_type == AuditType.BALLOT_COMPARISON:
             if not all_cvrs_uploaded(contest):
                 raise Conflict("Some jurisdictions haven't uploaded their CVRs yet.")
 
@@ -98,6 +96,10 @@ def sample_size_options(
             return {
                 "supersimple": {"key": "supersimple", "size": sample_size, "prob": None}
             }
+
+        else:
+            assert election.audit_type == AuditType.HYBRID
+            return {}
 
     targeted_contests = Contest.query.filter_by(
         election_id=election.id, is_targeted=True

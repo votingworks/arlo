@@ -127,7 +127,7 @@ const Review: React.FC<IProps> = ({
   )
 
   const cvrsUploaded =
-    auditSettings.auditType !== 'BALLOT_COMPARISON' ||
+    !['BALLOT_COMPARISON', 'HYBRID'].includes(auditSettings.auditType) ||
     allCvrsUploaded(participatingJurisdictions)
 
   const numManifestUploadsComplete = participatingJurisdictions.filter(j =>
@@ -269,7 +269,7 @@ const Review: React.FC<IProps> = ({
                   condensed
                   striped
                   style={{
-                    width: '280px',
+                    width: auditType === 'HYBRID' ? '420px' : '280px',
                     marginRight: '20px',
                   }}
                 >
@@ -277,6 +277,12 @@ const Review: React.FC<IProps> = ({
                     <tr>
                       <th>Choice</th>
                       <th>Votes</th>
+                      {auditType === 'HYBRID' && (
+                        <>
+                          <th>CVR</th>
+                          <th>Non-CVR</th>
+                        </>
+                      )}
                     </tr>
                   </thead>
                   <tbody>
@@ -284,6 +290,12 @@ const Review: React.FC<IProps> = ({
                       <tr key={choice.id}>
                         <td>{choice.name}</td>
                         <td>{choice.numVotes.toLocaleString()}</td>
+                        {auditType === 'HYBRID' && (
+                          <>
+                            <td>{choice.numVotesCvr!.toLocaleString()}</td>
+                            <td>{choice.numVotesNonCvr!.toLocaleString()}</td>
+                          </>
+                        )}
                       </tr>
                     ))}
                   </tbody>
@@ -310,7 +322,7 @@ const Review: React.FC<IProps> = ({
                   <tr>
                     <th>
                       Contest universe: {contest.jurisdictionIds.length}/
-                      {jurisdictions.length} jurisdictions
+                      {jurisdictions.length}&nbsp;jurisdictions
                     </th>
                   </tr>
                 </thead>
@@ -365,7 +377,7 @@ const Review: React.FC<IProps> = ({
                       return (
                         <Card key={contest.id}>
                           <FormSectionDescription>
-                            <H4>{contest.name}</H4>
+                            <H5>{contest.name}</H5>
                             <RadioGroup
                               name={`sampleSizes[${contest.id}]`}
                               onChange={e => {

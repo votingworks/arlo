@@ -250,7 +250,9 @@ export const JurisdictionAdminView: React.FC = () => {
               sampleFileLink="/sample_candidate_totals_by_batch.csv"
             />
           )}
-          {auditSettings.auditType === 'BALLOT_COMPARISON' && (
+          {['BALLOT_COMPARISON', 'HYBRID'].includes(
+            auditSettings.auditType
+          ) && (
             <CSVFile
               csvFile={cvrs}
               enabled={

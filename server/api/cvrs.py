@@ -3,6 +3,7 @@ import io
 import tempfile
 import csv
 import typing
+from typing import Dict, Optional
 from collections import defaultdict
 import re
 import difflib
@@ -64,6 +65,53 @@ def set_contest_metadata_from_cvrs(contest: Contest):
         for choice_name, choice_metadata in contest_metadata["choices"].items():
             choice = next(c for c in contest.choices if c.name == choice_name)
             choice.num_votes += choice_metadata["num_votes"]
+
+
+def all_cvr_choice_names_match(contest):
+    choice_names = {choice.name for choice in contest.choices}
+    return all(
+        choice_names.issubset(
+            jurisdiction.cvr_contests_metadata[contest.name]["choices"].keys()
+        )
+        for jurisdiction in contest.jurisdictions
+    )
+
+
+class HybridNumVotes(typing.NamedTuple):
+    num_votes_cvr: int
+    num_votes_non_cvr: int
+
+
+# For Hybrid audits, we need to compute the vote counts for the CVRs
+# specifically so we can subtract them from the total vote count and get the
+# vote count for the non-CVR ballots.
+def hybrid_contest_choice_vote_counts(
+    contest: Contest,
+) -> Optional[Dict[str, HybridNumVotes]]:
+    if not all_cvrs_uploaded(contest):
+        return None
+
+    # TODO raise an error in /sample-sizes
+    if not all_cvr_choice_names_match(contest):
+        return None
+
+    cvr_choice_votes = {choice.id: 0 for choice in contest.choices}
+    for jurisdiction in contest.jurisdictions:
+        cvr_contests_metadata = typing.cast(
+            JSONDict, jurisdiction.cvr_contests_metadata
+        )
+        contest_metadata = cvr_contests_metadata[contest.name]
+        for choice_name, choice_metadata in contest_metadata["choices"].items():
+            choice = next(c for c in contest.choices if c.name == choice_name)
+            cvr_choice_votes[choice.id] += choice_metadata["num_votes"]
+
+    return {
+        choice.id: HybridNumVotes(
+            num_votes_cvr=cvr_choice_votes[choice.id],
+            num_votes_non_cvr=choice.num_votes - cvr_choice_votes[choice.id],
+        )
+        for choice in contest.choices
+    }
 
 
 def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
@@ -245,8 +293,9 @@ def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
             finally:
                 connection.close()
 
-        for contest in jurisdiction.election.contests:
-            set_contest_metadata_from_cvrs(contest)
+        if jurisdiction.election.audit_type == AuditType.BALLOT_COMPARISON:
+            for contest in jurisdiction.election.contests:
+                set_contest_metadata_from_cvrs(contest)
 
     # Until we add validation/error handling to our CVR parsing, we'll just
     # catch all errors and wrap them with a generic message.
@@ -265,8 +314,8 @@ def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
 def validate_cvr_upload(
     request: Request, election: Election, jurisdiction: Jurisdiction
 ):
-    if election.audit_type != AuditType.BALLOT_COMPARISON:
-        raise Conflict("Can only upload CVR file for ballot comparison audits.")
+    if election.audit_type not in [AuditType.BALLOT_COMPARISON, AuditType.HYBRID]:
+        raise Conflict("Can't upload CVR file for this audit type.")
 
     if not jurisdiction.manifest_file_id:
         raise Conflict("Must upload ballot manifest before uploading CVR file.")

@@ -7,7 +7,7 @@ from ..auth import restrict_access, UserType
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
 from ..util.jsonschema import validate, JSONDict
-from .cvrs import set_contest_metadata_from_cvrs
+from .cvrs import hybrid_contest_choice_vote_counts, set_contest_metadata_from_cvrs
 
 
 CONTEST_CHOICE_SCHEMA = {
@@ -64,20 +64,26 @@ BALLOT_COMPARISON_CONTEST_SCHEMA = {
 }
 
 
-def serialize_contest_choice(contest_choice: ContestChoice) -> JSONDict:
-    return {
-        "id": contest_choice.id,
-        "name": contest_choice.name,
-        "numVotes": contest_choice.num_votes,
-    }
-
-
 def serialize_contest(contest: Contest) -> JSONDict:
+    choices = [
+        {"id": choice.id, "name": choice.name, "numVotes": choice.num_votes,}
+        for choice in contest.choices
+    ]
+    if contest.election.audit_type == AuditType.HYBRID:
+        vote_counts = hybrid_contest_choice_vote_counts(contest)
+        for choice in choices:
+            choice["numVotesCvr"] = (
+                vote_counts and vote_counts[str(choice["id"])].num_votes_cvr
+            )
+            choice["numVotesNonCvr"] = (
+                vote_counts and vote_counts[str(choice["id"])].num_votes_non_cvr
+            )
+
     return {
         "id": contest.id,
         "name": contest.name,
         "isTargeted": contest.is_targeted,
-        "choices": [serialize_contest_choice(c) for c in contest.choices],
+        "choices": choices,
         "totalBallotsCast": contest.total_ballots_cast,
         "numWinners": contest.num_winners,
         "votesAllowed": contest.votes_allowed,
@@ -140,6 +146,7 @@ def validate_contests(contests: List[JSONDict], election: Election):
     if election.audit_type == AuditType.BATCH_COMPARISON and len(contests) > 1:
         raise BadRequest("Batch comparison audits may only have one contest.")
 
+    # TODO some validation for Hybrid?
     if election.audit_type != AuditType.BALLOT_COMPARISON:
         for contest in contests:
             total_votes = sum(c["numVotes"] for c in contest["choices"])

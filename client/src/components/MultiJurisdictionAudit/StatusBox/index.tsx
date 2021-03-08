@@ -116,8 +116,8 @@ export const isSetupComplete = (
       return false
   }
 
-  // In ballot comparison audits, all jurisdictions must upload CVRs
-  if (auditSettings.auditType === 'BALLOT_COMPARISON') {
+  // In ballot comparison/hybrid audits, all jurisdictions must upload CVRs
+  if (['BALLOT_COMPARISON', 'HYBRID'].includes(auditSettings.auditType)) {
     if (!allCvrsUploaded(participatingJurisdictions)) return false
   }
 
