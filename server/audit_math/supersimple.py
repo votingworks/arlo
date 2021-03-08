@@ -133,7 +133,7 @@ def compute_discrepancies(
 
         found = False
 
-        # Special cases: if ballot wasn't in CVR  ballot can't be found by
+        # Special cases: if ballot wasn't in CVR or ballot can't be found by
         # audit board, count it as a two-vote overstatement
         if ballot_sample_cvr is None or ballot_cvr is None:
             e_int = 2

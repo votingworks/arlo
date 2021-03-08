@@ -576,10 +576,6 @@ def test_ballot_comparison_cvr_metadata(
     assert ballots[0]["batch"]["tabulator"] == "TABULATOR1"
     assert ballots[0]["position"] == 1
     assert ballots[0]["imprintedId"] == "1-1-1"
-    assert ballots[0]["contestsOnBallot"] == [contests[0]["id"], contests[1]["id"]]
-
-    ballot_missing_contest = next(b for b in ballots if b.get("imprintedId") == "2-2-4")
-    assert ballot_missing_contest["contestsOnBallot"] == [contests[0]["id"]]
 
 
 def test_ballot_comparison_sample_size_validation(

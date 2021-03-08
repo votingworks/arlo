@@ -62,7 +62,7 @@ def test_cvr_upload(
     cvr_ballots = (
         CvrBallot.query.join(Batch).filter_by(jurisdiction_id=jurisdiction_ids[0]).all()
     )
-    assert len(cvr_ballots) == 15
+    assert len(cvr_ballots) == len(TEST_CVRS.splitlines()) - 4
     snapshot.assert_match(
         [
             dict(
@@ -223,7 +223,7 @@ def test_cvrs_replace(
     cvr_ballots = (
         CvrBallot.query.join(Batch).filter_by(jurisdiction_id=jurisdiction_ids[0]).all()
     )
-    assert len(cvr_ballots) == 15 - 2
+    assert len(cvr_ballots) == len(TEST_CVRS.splitlines()) - 4 - 2
 
 
 def test_cvrs_clear(

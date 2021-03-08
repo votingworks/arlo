@@ -1,4 +1,3 @@
-from typing import cast as typing_cast
 import io, csv
 from sqlalchemy import func, literal_column
 from sqlalchemy.orm import contains_eager, joinedload
@@ -10,7 +9,6 @@ from . import api
 from ..auth import restrict_access, UserType
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
-from .rounds import is_contest_on_cvr_ballot
 from ..util.csv_download import csv_response, jurisdiction_timestamp_name
 from ..util.jsonschema import JSONDict, validate
 
@@ -172,21 +170,11 @@ def serialize_ballot(ballot: SampledBallot) -> JSONDict:
 
 
 def serialize_ballot_comparison_ballot(
-    ballot: SampledBallot, cvr_ballot: CvrBallot, jurisdiction: Jurisdiction
+    ballot: SampledBallot, cvr_ballot: CvrBallot
 ) -> JSONDict:
     return {
         **serialize_ballot(ballot),
         "imprintedId": cvr_ballot.imprinted_id,
-        # TODO remove
-        "contestsOnBallot": [
-            contest.id
-            for contest in jurisdiction.contests
-            if is_contest_on_cvr_ballot(
-                contest,
-                cvr_ballot,
-                typing_cast(JSONDict, jurisdiction.cvr_contests_metadata),
-            )
-        ],
     }
 
 
@@ -272,7 +260,7 @@ def list_ballots_for_audit_board(
     )
     json_ballots = [
         (
-            serialize_ballot_comparison_ballot(ballot, cvr_ballot, jurisdiction)
+            serialize_ballot_comparison_ballot(ballot, cvr_ballot)
             if cvr_ballot
             else serialize_ballot(ballot)
         )

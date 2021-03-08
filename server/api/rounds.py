@@ -476,16 +476,6 @@ def sampled_all_ballots(round: Round, election: Election):
     )
 
 
-def is_contest_on_cvr_ballot(
-    contest: Contest, cvr_ballot: CvrBallot, cvr_contests_metadata: JSONDict
-) -> bool:
-    interpretations = cvr_ballot.interpretations.split(",")
-    return any(
-        interpretations[choice["column"]] != ""
-        for choice in cvr_contests_metadata[contest.name]["choices"].values()
-    )
-
-
 class SampleSize(TypedDict):
     size: int
     key: str
