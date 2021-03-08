@@ -1,5 +1,5 @@
 deps:
-	sudo apt install python3.8 python3-pip nodejs libpython3.8-dev libpq-dev graphicsmagick
+	sudo apt install python3.8 python3-pip nodejs libpython3.8-dev libpq-dev graphicsmagick npm
 	python3.8 -m pip install pipenv
 	sudo npm install -g yarn
 	sudo apt install postgresql
