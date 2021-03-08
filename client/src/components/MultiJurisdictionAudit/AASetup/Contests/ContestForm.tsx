@@ -110,7 +110,15 @@ const ContestForm: React.FC<IProps> = ({
   }
 
   const submit = async (values: { contests: IContest[] }) => {
-    const response = await updateContests(values.contests)
+    const finalContests = isHybrid
+      ? values.contests.map(contest => ({
+          ...contest,
+          jurisdictionIds: standardizedContests!.find(
+            c => c.name === contest.name
+          )!.jurisdictionIds,
+        }))
+      : values.contests
+    const response = await updateContests(finalContests)
     // TEST TODO
     /* istanbul ignore next */
     if (!response) return
