@@ -166,7 +166,7 @@ describe('Audit Setup > Contests (Hybrid)', () => {
       totalBallotsCast: 30,
       numWinners: 1,
       votesAllowed: 1,
-      jurisdictionIds: ['jurisdiction-id-1', 'jurisdiction-id-2'], // adding these makes the test fail, hence the functionality needs to be changed?
+      jurisdictionIds: ['jurisdiction-id-1', 'jurisdiction-id-2'],
       choices: [
         {
           id: '2',
