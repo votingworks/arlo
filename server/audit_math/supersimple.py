@@ -3,7 +3,7 @@ import math
 from decimal import Decimal, ROUND_CEILING
 from typing import Dict, Tuple, TypedDict, Optional
 
-from .sampler_contest import Contest, CVR, CVRS, SAMPLE_CVRS, SampleCVR
+from .sampler_contest import Contest, CVRS, SAMPLE_CVRS
 
 l: Decimal = Decimal(0.5)
 gamma: Decimal = Decimal(1.03905)  # This gamma is used in Stark's tool, AGI, and CORLA
@@ -15,8 +15,6 @@ u1: Decimal = Decimal(0.001)
 # This sets the expected two-vote misstatements at 1 in 10000
 o2: Decimal = Decimal(0.0001)
 u2: Decimal = Decimal(0.0001)
-
-
 
 
 class Discrepancy(TypedDict):
@@ -242,7 +240,7 @@ def get_sample_sizes(
 
 
 def compute_risk(
-        risk_limit: int, contest: Contest, cvrs: CVRS, sample_cvr: SAMPLE_CVRS, null_lambda: float=1
+    risk_limit: int, contest: Contest, cvrs: CVRS, sample_cvr: SAMPLE_CVRS
 ) -> Tuple[float, bool]:
     """
     Computes the risk-value of <sample_results> based on results in <contest>.
