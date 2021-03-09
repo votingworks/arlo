@@ -115,7 +115,6 @@ describe('generateSheets', () => {
               .map(b => ({
                 ...b,
                 imprintedId: `${b.batch.name}-${b.position}`,
-                contestsOnBallot: ['contest-id-2'],
               }))
               .slice(0, 5),
           },

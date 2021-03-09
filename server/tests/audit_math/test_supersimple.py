@@ -246,6 +246,36 @@ def test_ballot_not_found_discrepancy(contests, cvrs):
     assert discrepancies[0]["discrepancy_cvr"]["audited_as"] is None
 
 
+def test_ballot_not_in_cvr(contests):
+    cvrs = {}
+    sample_cvr = {
+        0: {"times_sampled": 1, "cvr": {"Contest D": {"winner": 1, "loser": 0}}}
+    }
+
+    discrepancies = supersimple.compute_discrepancies(
+        contests["Contest D"], cvrs, sample_cvr
+    )
+
+    assert discrepancies
+    assert discrepancies[0]["counted_as"] == 2
+    assert discrepancies[0]["weighted_error"] == Decimal(2) / Decimal(2000)
+    assert discrepancies[0]["discrepancy_cvr"]["reported_as"] is None
+
+
+def test_ballot_not_in_cvr_and_not_found(contests):
+    cvrs = {}
+    sample_cvr = {0: {"times_sampled": 1, "cvr": None}}
+
+    discrepancies = supersimple.compute_discrepancies(
+        contests["Contest D"], cvrs, sample_cvr
+    )
+
+    assert discrepancies
+    assert discrepancies[0]["counted_as"] == 2
+    assert discrepancies[0]["weighted_error"] == Decimal(2) / Decimal(2000)
+    assert discrepancies[0]["discrepancy_cvr"]["reported_as"] is None
+
+
 def test_get_sample_sizes(contests):
     for contest in contests:
         computed = supersimple.get_sample_sizes(RISK_LIMIT, contests[contest], None)

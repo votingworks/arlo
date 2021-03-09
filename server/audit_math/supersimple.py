@@ -122,8 +122,7 @@ def compute_discrepancies(
     for ballot in sample_cvr:
         # Typechecker needs us to pull these out into variables
         ballot_sample_cvr = sample_cvr[ballot]["cvr"]
-        ballot_cvr = cvrs[ballot]
-        assert ballot_cvr is not None
+        ballot_cvr = cvrs.get(ballot)
 
         # We want to be conservative, so we will ignore the case where there are
         # negative errors (i.e. errors that favor the winner. We can do that
@@ -134,9 +133,9 @@ def compute_discrepancies(
 
         found = False
 
-        # Special case: if ballot can't be found by audit board, count it as a
-        # two-vote overstatement
-        if ballot_sample_cvr is None:
+        # Special cases: if ballot wasn't in CVR or ballot can't be found by
+        # audit board, count it as a two-vote overstatement
+        if ballot_sample_cvr is None or ballot_cvr is None:
             e_int = 2
             e_r = Decimal(e_int) / Decimal(contest.diluted_margin * contest.ballots)
             found = True

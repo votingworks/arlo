@@ -1,5 +1,6 @@
 import io
 import json
+import csv
 from flask.testing import FlaskClient
 
 from ...models import *  # pylint: disable=wildcard-import
@@ -281,22 +282,28 @@ def test_ballot_comparison_two_rounds(
     # second round. For convenience, using the same format as the CVR to
     # specify our audit results.
     # Tabulator, Batch, Ballot, Choice 1-1, Choice 1-2, Choice 2-1, Choice 2-2, Choice 2-3
+    # We also specify the expected discrepancies.
     audit_results = {
-        ("J1", "TABULATOR1", "BATCH1", 1): "0,1,1,1,0",
-        ("J1", "TABULATOR1", "BATCH2", 2): "0,1,1,1,0",
-        ("J1", "TABULATOR1", "BATCH2", 3): "1,1,0,1,1",  # CVR: 1,0,1,0,1
-        ("J1", "TABULATOR2", "BATCH2", 1): "1,0,1,0,1",
-        ("J1", "TABULATOR2", "BATCH2", 2): "1,1,1,1,1",
-        ("J1", "TABULATOR2", "BATCH2", 3): "blank",  # CVR: 1,0,1,0,1
-        ("J2", "TABULATOR1", "BATCH1", 1): "1,0,1,0,0",  # CVR: 0,1,1,1,0
-        ("J2", "TABULATOR1", "BATCH1", 2): "1,0,1,0,1",
-        ("J2", "TABULATOR1", "BATCH1", 3): "0,1,1,1,0",
-        ("J2", "TABULATOR1", "BATCH2", 1): "1,0,1,0,1",
-        ("J2", "TABULATOR1", "BATCH2", 3): "not found",  # CVR: 1,0,1,0,1
-        ("J2", "TABULATOR2", "BATCH1", 1): "0,1,1,1,0",
-        ("J2", "TABULATOR2", "BATCH2", 1): ",,,,",  # CVR:1,0,1,0,1
-        ("J2", "TABULATOR2", "BATCH2", 2): "1,1,1,1,1",
-        ("J2", "TABULATOR2", "BATCH2", 3): "1,0,1,0,1",
+        ("J1", "TABULATOR1", "BATCH1", 1): ("0,1,1,1,0", (None, None)),
+        ("J1", "TABULATOR1", "BATCH2", 2): ("0,1,1,1,0", (None, None)),
+        ("J1", "TABULATOR1", "BATCH2", 3): ("1,1,0,1,1", (1, 2)),  # CVR: 1,0,1,0,1
+        ("J1", "TABULATOR2", "BATCH2", 2): ("1,1,1,1,1", (None, None)),
+        ("J1", "TABULATOR2", "BATCH2", 3): ("not found", (2, 2)),  # not in CVR
+        ("J1", "TABULATOR2", "BATCH2", 4): ("blank", (None, 1)),  # CVR: ,,1,0,1
+        ("J1", "TABULATOR2", "BATCH2", 5): (",,1,1,0", (None, None)),
+        ("J1", "TABULATOR2", "BATCH2", 6): (",,1,0,1", (None, None)),
+        ("J2", "TABULATOR1", "BATCH1", 1): ("1,0,1,0,0", (0, 0)),  # CVR: 0,1,1,1,0
+        ("J2", "TABULATOR1", "BATCH1", 2): ("1,0,1,0,1", (None, None)),
+        ("J2", "TABULATOR1", "BATCH1", 3): ("0,1,1,1,0", (None, None)),
+        ("J2", "TABULATOR1", "BATCH2", 1): ("not found", (2, 2)),  # CVR: 1,0,1,0,1
+        ("J2", "TABULATOR1", "BATCH2", 3): ("1,0,1,0,1", (None, None)),
+        ("J2", "TABULATOR2", "BATCH1", 1): ("0,1,1,1,0", (None, None)),
+        ("J2", "TABULATOR2", "BATCH2", 1): (",,,,", (1, 1)),  # CVR :1,0,1,0,1
+        ("J2", "TABULATOR2", "BATCH2", 2): ("1,1,1,1,1", (None, None)),
+        ("J2", "TABULATOR2", "BATCH2", 3): ("1,0,1,0,1", (2, 2)),  # not in cvr
+        ("J2", "TABULATOR2", "BATCH2", 4): (",,1,0,1", (None, None)),
+        ("J2", "TABULATOR2", "BATCH2", 5): (",,1,1,0", (None, None)),
+        ("J2", "TABULATOR2", "BATCH2", 6): (",,1,0,1", (None, None)),
     }
 
     def ballot_key(ballot: SampledBallot):
@@ -324,22 +331,10 @@ def test_ballot_comparison_two_rounds(
         )
         sampled_ballot_keys = [ballot_key(ballot) for ballot in sampled_ballots]
 
-        # Ballots that don't have a result recorded for the targeted contest shouldn't be sampled
-        ballots_without_targeted_contest = [
-            ("J1", "TABULATOR2", "BATCH2", 4),
-            ("J1", "TABULATOR2", "BATCH2", 5),
-            ("J1", "TABULATOR2", "BATCH2", 6),
-            ("J2", "TABULATOR2", "BATCH2", 4),
-            ("J2", "TABULATOR2", "BATCH2", 5),
-            ("J2", "TABULATOR2", "BATCH2", 6),
-        ]
-        for bad_ballot_key in ballots_without_targeted_contest:
-            assert bad_ballot_key not in sampled_ballot_keys
-
         assert sorted(sampled_ballot_keys) == sorted(list(audit_results.keys()))
 
         for ballot in sampled_ballots:
-            interpretation_str = audit_results[ballot_key(ballot)]
+            interpretation_str, _ = audit_results[ballot_key(ballot)]
 
             if interpretation_str == "not found":
                 ballot.status = BallotStatus.NOT_FOUND
@@ -400,6 +395,32 @@ def test_ballot_comparison_two_rounds(
     rv = client.get(f"/api/election/{election_id}/report")
     assert_match_report(rv.data, snapshot)
 
+    # Check expected discrepancies against audit report
+    def check_discrepancies(report_data, audit_results):
+        report = report_data.decode("utf-8")
+        report_ballots = list(
+            csv.DictReader(
+                io.StringIO(report.split("######## SAMPLED BALLOTS ########\r\n")[1])
+            )
+        )
+        for ballot, (_, expected_discrepancies) in audit_results.items():
+            jurisdiction, tabulator, batch, position = ballot
+            row = next(
+                row
+                for row in report_ballots
+                if row["Jurisdiction Name"] == jurisdiction
+                and row["Tabulator"] == tabulator
+                and row["Batch Name"] == batch
+                and row["Ballot Position"] == str(position)
+            )
+            parse_discrepancy = lambda d: int(d) if d != "" else None
+            assert expected_discrepancies == (
+                parse_discrepancy(row["Discrepancy: Contest 1"]),
+                parse_discrepancy(row["Discrepancy: Contest 2"]),
+            )
+
+    check_discrepancies(rv.data, audit_results)
+
     # Start a second round
     rv = post_json(client, f"/api/election/{election_id}/round", {"roundNum": 2},)
     assert_ok(rv)
@@ -415,18 +436,17 @@ def test_ballot_comparison_two_rounds(
 
     # For round 2, audit results should match the CVR exactly.
     audit_results = {
-        ("J1", "TABULATOR1", "BATCH1", 2): "1,0,1,0,1",
-        ("J1", "TABULATOR1", "BATCH2", 1): "1,0,1,0,1",
-        ("J1", "TABULATOR2", "BATCH1", 2): "1,0,1,0,1",
-        ("J2", "TABULATOR1", "BATCH2", 2): "0,1,1,1,0",
-        ("J2", "TABULATOR2", "BATCH1", 2): "1,0,1,0,1",
-        ("J2", "TABULATOR2", "BATCH1", 3): "1,0,1,1,0",
+        ("J1", "TABULATOR1", "BATCH1", 2): ("1,0,1,0,1", (None, None)),
+        ("J1", "TABULATOR2", "BATCH1", 2): ("1,0,1,0,1", (None, None)),
+        ("J1", "TABULATOR2", "BATCH2", 1): ("1,0,1,0,1", (None, None)),
+        ("J2", "TABULATOR2", "BATCH1", 2): ("1,0,1,0,1", (None, None)),
     }
 
     audit_all_ballots(round_2_id, audit_results)
 
     rv = client.get(f"/api/election/{election_id}/report")
     assert_match_report(rv.data, snapshot)
+    check_discrepancies(rv.data, audit_results)
 
 
 # This function can be used to generate the correct audit results in case you
@@ -556,10 +576,6 @@ def test_ballot_comparison_cvr_metadata(
     assert ballots[0]["batch"]["tabulator"] == "TABULATOR1"
     assert ballots[0]["position"] == 1
     assert ballots[0]["imprintedId"] == "1-1-1"
-    assert ballots[0]["contestsOnBallot"] == [contests[0]["id"], contests[1]["id"]]
-
-    ballot_missing_contest = next(b for b in ballots if b["imprintedId"] == "2-2-4")
-    assert ballot_missing_contest["contestsOnBallot"] == [contests[0]["id"]]
 
 
 def test_ballot_comparison_sample_size_validation(
@@ -593,7 +609,7 @@ def test_ballot_comparison_sample_size_validation(
         ),
         (
             {contest_id: {"key": "custom", "size": 3000, "prob": None}},
-            "Sample size for contest Contest 2 must be less than or equal to: 30 (the total number of ballots in the contest)",
+            "Sample size for contest Contest 2 must be less than or equal to: 28 (the total number of ballots in the contest)",
         ),
     ]
     for bad_sample_size, expected_error in bad_sample_sizes:

@@ -14,7 +14,7 @@ from flask import jsonify, request
 from jsonschema import validate
 from werkzeug.exceptions import BadRequest, Conflict
 from sqlalchemy import and_
-from sqlalchemy.orm import load_only, joinedload
+from sqlalchemy.orm import joinedload
 
 from . import api
 from ..database import db_session
@@ -476,16 +476,6 @@ def sampled_all_ballots(round: Round, election: Election):
     )
 
 
-def is_contest_on_cvr_ballot(
-    contest: Contest, cvr_ballot: CvrBallot, cvr_contests_metadata: JSONDict
-) -> bool:
-    interpretations = cvr_ballot.interpretations.split(",")
-    return any(
-        interpretations[choice["column"]] != ""
-        for choice in cvr_contests_metadata[contest.name]["choices"].values()
-    )
-
-
 class SampleSize(TypedDict):
     size: int
     key: str
@@ -550,23 +540,6 @@ def sample_ballots(
         batch_key: batch_id for batch_id, batch_key in batch_id_to_key.items()
     }
 
-    if election.audit_type == AuditType.BALLOT_COMPARISON:
-        cvr_ballots = list(
-            CvrBallot.query.join(Batch)
-            .filter(
-                Batch.jurisdiction_id.in_([j.id for j in participating_jurisdictions])
-            )
-            .with_entities(CvrBallot, Batch.jurisdiction_id)
-            .options(
-                load_only(
-                    CvrBallot.batch_id,
-                    CvrBallot.interpretations,
-                    CvrBallot.ballot_position,
-                )
-            )
-            .all()
-        )
-
     def draw_sample_for_contest(
         contest: Contest, sample_size: SampleSize
     ) -> List[BallotDraw]:
@@ -579,33 +552,11 @@ def sample_ballots(
 
         # Create the pool of ballots to sample (aka manifest) by combining the
         # manifests from every jurisdiction in the contest's universe.
-        if election.audit_type == AuditType.BALLOT_POLLING:
-            # In ballot polling audits, we can include all the ballot positions
-            # from each batch
-            manifest = {
-                batch_id_to_key[batch.id]: list(range(1, batch.num_ballots + 1))
-                for jurisdiction in contest.jurisdictions
-                for batch in jurisdiction.batches
-            }
-        else:
-            assert election.audit_type == AuditType.BALLOT_COMPARISON
-
-            # In ballot comparison audits, we only include ballots that had a
-            # result recorded for this contest in the CVR
-            manifest = defaultdict(list)
-
-            for jurisdiction in contest.jurisdictions:
-                for cvr_ballot, jurisdiction_id in cvr_ballots:
-                    if jurisdiction_id != jurisdiction.id:
-                        continue
-                    if is_contest_on_cvr_ballot(
-                        contest,
-                        cvr_ballot,
-                        typing_cast(JSONDict, jurisdiction.cvr_contests_metadata),
-                    ):
-                        manifest[batch_id_to_key[cvr_ballot.batch_id]].append(
-                            cvr_ballot.ballot_position
-                        )
+        manifest = {
+            batch_id_to_key[batch.id]: list(range(1, batch.num_ballots + 1))
+            for jurisdiction in contest.jurisdictions
+            for batch in jurisdiction.batches
+        }
 
         # Do the math! i.e. compute the actual sample
         sample = sampler.draw_sample(
@@ -785,7 +736,7 @@ def validate_sample_size(round: dict, election: Election):
             raise BadRequest(
                 f"Invalid sample size key for contest {contest.name}: {sample_size['key']}"
             )
-        if sample_size["size"] > max_sample_size:
+        if sample_size["key"] == "custom" and sample_size["size"] > max_sample_size:
             ballots_or_batches = (
                 "batches"
                 if election.audit_type == AuditType.BATCH_COMPARISON
