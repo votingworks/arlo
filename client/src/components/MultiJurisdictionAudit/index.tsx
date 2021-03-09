@@ -239,11 +239,16 @@ export const JurisdictionAdminView: React.FC = () => {
                 how many ballot cards (individual pieces of paper) are stored
                 in each container.`
             }
-            sampleFileLink={
-              ['BALLOT_COMPARISON', 'HYBRID'].includes(auditSettings.auditType)
-                ? '/sample_manifest_BC.csv'
-                : '/sample_ballot_manifest.csv'
-            }
+            sampleFileLink={(type => {
+              switch (type) {
+                case 'BALLOT_COMPARISON':
+                  return '/sample_manifest_BC.csv'
+                case 'HYBRID':
+                  return '/sample_manifest_hybrid.csv'
+                default:
+                  return '/sample_ballot_manifest.csv'
+              }
+            })(auditSettings.auditType)}
             enabled
           />
           {auditSettings.auditType === 'BATCH_COMPARISON' && (

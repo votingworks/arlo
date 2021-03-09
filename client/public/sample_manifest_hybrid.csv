@@ -1,0 +1,13 @@
+﻿Container,Tabulator,Batch Name,Number of Ballots,CVR
+Box 1,1,1,3,Y
+Box 1,2,1,2,N
+Box 1,2,2,5,Y
+Box 1,3,1,5,N
+Box 1,3,2,5,Y
+Box 1,4,1,5,N
+Box 1,4,2,5,Y
+Box 2,5,1,103,N
+Box 3,6,1,188,Y
+Box 4,7,1,119,N
+Box 5,8,1,337,Y
+Box 6,9,1,224,N
