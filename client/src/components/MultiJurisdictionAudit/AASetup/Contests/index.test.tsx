@@ -2,7 +2,12 @@ import React from 'react'
 import { fireEvent, waitFor, render, screen } from '@testing-library/react'
 import { toast } from 'react-toastify'
 import { useParams } from 'react-router-dom'
-import { regexpEscape } from '../../../testUtilities'
+import userEvent from '@testing-library/user-event'
+import {
+  regexpEscape,
+  withMockFetch,
+  renderWithRouter,
+} from '../../../testUtilities'
 import * as utilities from '../../../utilities'
 import Contests from './index'
 import relativeStages from '../_mocks'
@@ -11,6 +16,7 @@ import { numberifyContest, IContestNumbered } from '../../useContests'
 import { IJurisdiction } from '../../useJurisdictions'
 import { IContest } from '../../../../types'
 import { jurisdictionMocks } from '../../useSetupMenuItems/_mocks'
+import { aaApiCalls } from '../../_mocks'
 
 const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
 const apiMock: jest.SpyInstance<
@@ -541,6 +547,68 @@ describe('Audit Setup > Contests', () => {
       expect(submittedBody[0].jurisdictionIds).toMatchObject([
         'jurisdiction-id-2',
       ])
+    })
+  })
+})
+
+describe('Contests (no apiMock)', () => {
+  beforeAll(() => {
+    apiMock.mockRestore()
+  })
+
+  it('does not show or submit total ballots cast for hybrid audits', async () => {
+    const expectedCalls = [
+      aaApiCalls.getContests,
+      aaApiCalls.getJurisdictions,
+      {
+        url: '/api/election/1/contest',
+        options: {
+          method: 'PUT',
+          body: JSON.stringify([
+            {
+              id: 'contest-id',
+              name: 'Contest Name',
+              isTargeted: true,
+              numWinners: 1,
+              votesAllowed: 1,
+              jurisdictionIds: [],
+              choices: [
+                {
+                  id: 'choice-id-1',
+                  name: 'Choice One',
+                  numVotes: 10,
+                },
+                {
+                  id: 'choice-id-2',
+                  name: 'Choice Two',
+                  numVotes: 20,
+                },
+              ],
+            },
+          ]),
+          headers: { 'Content-Type': 'application/json' },
+        },
+        response: { status: 'ok' },
+      },
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderWithRouter(
+        <Contests
+          auditType="HYBRID"
+          locked={false}
+          isTargeted
+          nextStage={nextStage}
+          prevStage={prevStage}
+        />,
+        { route: '/election/1/setup' }
+      )
+
+      await screen.findByRole('heading', { name: 'Target Contests' })
+
+      expect(screen.queryByText('Total Ballots Cast')).not.toBeInTheDocument()
+
+      userEvent.click(screen.getByRole('button', { name: 'Save & Next' }))
+      await waitFor(() => expect(nextStage.activate).toHaveBeenCalled())
     })
   })
 })

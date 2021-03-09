@@ -1,3 +1,4 @@
+import typing
 from typing import List
 from flask import request, jsonify
 from werkzeug.exceptions import BadRequest, Conflict
@@ -29,7 +30,6 @@ CONTEST_SCHEMA = {
         "name": {"type": "string"},
         "isTargeted": {"type": "boolean"},
         "choices": {"type": "array", "items": CONTEST_CHOICE_SCHEMA},
-        "totalBallotsCast": {"type": "integer", "minimum": 0},
         "numWinners": {"type": "integer", "minimum": 1},
         "votesAllowed": {"type": "integer", "minimum": 1},
         "jurisdictionIds": {"type": "array", "items": {"type": "string"}},
@@ -40,11 +40,22 @@ CONTEST_SCHEMA = {
         "name",
         "isTargeted",
         "choices",
-        "totalBallotsCast",
         "numWinners",
         "votesAllowed",
         "jurisdictionIds",
     ],
+}
+
+# In ballot polling audits, the AA also enters the total ballots cast.
+# In all other audit types, we compute this value from the manifests.
+BALLOT_POLLING_CONTEST_SCHEMA = {
+    "type": "object",
+    "properties": {
+        **typing.cast(dict, CONTEST_SCHEMA["properties"]),
+        "totalBallotsCast": {"type": "integer", "minimum": 0},
+    },
+    "additionalProperties": False,
+    "required": typing.cast(list, CONTEST_SCHEMA["required"]) + ["totalBallotsCast"],
 }
 
 # In ballot comparison audits, the AA selects contests from the standardized
@@ -135,9 +146,12 @@ def validate_contests(contests: List[JSONDict], election: Election):
         contests,
         {
             "type": "array",
-            "items": BALLOT_COMPARISON_CONTEST_SCHEMA
-            if election.audit_type == AuditType.BALLOT_COMPARISON
-            else CONTEST_SCHEMA,
+            "items": {
+                AuditType.BALLOT_POLLING: BALLOT_POLLING_CONTEST_SCHEMA,
+                AuditType.BATCH_COMPARISON: CONTEST_SCHEMA,
+                AuditType.BALLOT_COMPARISON: BALLOT_COMPARISON_CONTEST_SCHEMA,
+                AuditType.HYBRID: CONTEST_SCHEMA,
+            }[AuditType(election.audit_type)],
         },
     )
 
@@ -148,7 +162,7 @@ def validate_contests(contests: List[JSONDict], election: Election):
         raise BadRequest("Batch comparison audits may only have one contest.")
 
     # TODO some validation for Hybrid?
-    if election.audit_type != AuditType.BALLOT_COMPARISON:
+    if election.audit_type == AuditType.BALLOT_POLLING:
         for contest in contests:
             total_votes = sum(c["numVotes"] for c in contest["choices"])
             total_allowed_votes = contest["totalBallotsCast"] * contest["votesAllowed"]
