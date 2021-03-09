@@ -1700,7 +1700,12 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders ja logge
               <div
                 class="sc-jzJRlG lkbpuy"
               >
-                Click "Browse" to choose the appropriate Ballot Manifest file from your computer. This file should be a comma-separated list of all the ballot boxes/containers used to store ballots for this particular election, plus a count of how many ballot cards (individual pieces of paper) are stored in each container.
+                Click "Browse" to choose the appropriate Ballot
+                Manifest file from your computer. This file should be a
+                comma-separated list of all the ballot boxes/containers used
+                to store ballots for this particular election, plus a count of
+                how many ballot cards (individual pieces of paper) are stored
+                in each container.
                 <br />
                 <br />
                 <a
