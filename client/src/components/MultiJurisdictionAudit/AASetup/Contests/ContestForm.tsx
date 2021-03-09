@@ -127,7 +127,7 @@ const ContestForm: React.FC<IProps> = ({
   return (
     <Formik
       initialValues={initialValues}
-      validationSchema={schema}
+      validationSchema={schema(auditType)}
       enableReinitialize
       onSubmit={submit}
     >
