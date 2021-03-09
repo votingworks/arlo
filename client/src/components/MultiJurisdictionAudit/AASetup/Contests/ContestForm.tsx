@@ -2,8 +2,9 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
 import equal from 'fast-deep-equal'
-import { Formik, FormikProps, Field, FieldArray } from 'formik'
-import { Spinner } from '@blueprintjs/core'
+import styled from 'styled-components'
+import { Formik, FormikProps, Field, FieldArray, ErrorMessage } from 'formik'
+import { Spinner, HTMLSelect } from '@blueprintjs/core'
 import FormWrapper from '../../../Atoms/Form/FormWrapper'
 import FormSection, {
   FormSectionDescription,
@@ -28,6 +29,12 @@ import Card from '../../../Atoms/SpacedCard'
 import { testNumber } from '../../../utilities'
 import { isObjectEmpty } from '../../../../utils/objects'
 import { IAuditSettings } from '../../useAuditSettings'
+import useStandardizedContests from '../../useStandardizedContests'
+import { ErrorLabel } from '../../../Atoms/Form/_helpers'
+
+const Select = styled(HTMLSelect)`
+  margin-top: 5px;
+`
 
 interface IProps {
   isTargeted: boolean
@@ -67,15 +74,19 @@ const ContestForm: React.FC<IProps> = ({
       ],
     },
   ]
+
+  const isBatch = auditType === 'BATCH_COMPARISON'
+  const isHybrid = auditType === 'HYBRID'
+  // const isBallotComparison = auditType === 'BALLOT_COMPARISON'
+
   const { electionId } = useParams<{ electionId: string }>()
   const [contests, updateContests] = useContests(electionId)
   const jurisdictions = useJurisdictions(electionId)
+  const standardizedContests = useStandardizedContests(electionId)
 
-  if (!jurisdictions || !contests) return null // Still loading
+  if ((isHybrid && !standardizedContests) || !jurisdictions || !contests)
+    return null // Still loading
   const filteredContests = contests.filter(c => c.isTargeted === isTargeted)
-
-  const isBatch = auditType === 'BATCH_COMPARISON'
-  // const isBallotComparison = auditType === 'BALLOT_COMPARISON'
 
   /* istanbul ignore next */
   if (isBatch && !isTargeted && nextStage.activate) nextStage.activate() // skip to next stage if on opportunistic contests screen and during a batch audit (until batch audits support multiple contests)
@@ -99,7 +110,15 @@ const ContestForm: React.FC<IProps> = ({
   }
 
   const submit = async (values: { contests: IContest[] }) => {
-    const response = await updateContests(values.contests)
+    const finalContests = isHybrid
+      ? values.contests.map(contest => ({
+          ...contest,
+          jurisdictionIds: standardizedContests!.find(
+            c => c.name === contest.name
+          )!.jurisdictionIds,
+        }))
+      : values.contests
+    const response = await updateContests(finalContests)
     // TEST TODO
     /* istanbul ignore next */
     if (!response) return
@@ -140,19 +159,64 @@ const ContestForm: React.FC<IProps> = ({
                           label={`Contest ${
                             values.contests.length > 1 ? i + 1 : ''
                           } Info`}
-                          description="Enter the name of the contest that will drive the audit."
                         >
                           <br />
-                          <label htmlFor={`contests[${i}].name`}>
-                            Contest {values.contests.length > 1 ? i + 1 : ''}{' '}
-                            Name
-                            <Field
-                              id={`contests[${i}].name`}
-                              name={`contests[${i}].name`}
-                              disabled={locked}
-                              component={FormField}
-                            />
-                          </label>
+                          {isHybrid && standardizedContests ? (
+                            <div>
+                              <FormSectionDescription>
+                                Select the name of the contest that will drive
+                                the audit.
+                              </FormSectionDescription>
+                              <label htmlFor={`contests[${i}].name`}>
+                                Contest{' '}
+                                {values.contests.length > 1 ? i + 1 : ''} Name
+                                <br />
+                                <Field
+                                  component={Select}
+                                  id={`contests[${i}].name`}
+                                  name={`contests[${i}].name`}
+                                  onChange={(
+                                    e: React.FormEvent<HTMLSelectElement>
+                                  ) =>
+                                    setFieldValue(
+                                      `contests[${i}].name`,
+                                      e.currentTarget.value
+                                    )
+                                  }
+                                  disabled={locked}
+                                  value={values.contests[i].name}
+                                  options={[
+                                    { value: '' },
+                                    ...standardizedContests.map(({ name }) => ({
+                                      label: name,
+                                      value: name,
+                                    })),
+                                  ]}
+                                />
+                                <ErrorMessage
+                                  name={`contests[${i}].name`}
+                                  component={ErrorLabel}
+                                />
+                              </label>
+                            </div>
+                          ) : (
+                            <div>
+                              <FormSectionDescription>
+                                Enter the name of the contest that will drive
+                                the audit.
+                              </FormSectionDescription>
+                              <label htmlFor={`contests[${i}].name`}>
+                                Contest{' '}
+                                {values.contests.length > 1 ? i + 1 : ''} Name
+                                <Field
+                                  id={`contests[${i}].name`}
+                                  name={`contests[${i}].name`}
+                                  disabled={locked}
+                                  component={FormField}
+                                />
+                              </label>
+                            </div>
+                          )}
                           <FormSectionDescription>
                             Enter the number of winners for the contest.
                           </FormSectionDescription>
@@ -258,17 +322,19 @@ const ContestForm: React.FC<IProps> = ({
                             />
                           </label>
                         </FormSection>
-                        <FormSection
-                          label="Contest Universe"
-                          description="Select the jurisdictions where this contest appeared on the ballot."
-                        >
-                          <DropdownCheckboxList
-                            text="Select Jurisdictions"
-                            optionList={jurisdictionOptions}
-                            formikBag={{ values, setFieldValue }}
-                            contestIndex={i}
-                          />
-                        </FormSection>
+                        {!isHybrid && (
+                          <FormSection
+                            label="Contest Universe"
+                            description="Select the jurisdictions where this contest appeared on the ballot."
+                          >
+                            <DropdownCheckboxList
+                              text="Select Jurisdictions"
+                              optionList={jurisdictionOptions}
+                              formikBag={{ values, setFieldValue }}
+                              contestIndex={i}
+                            />
+                          </FormSection>
+                        )}
                         {values.contests.length > 1 && (
                           <FormButtonBar right>
                             <FormButton

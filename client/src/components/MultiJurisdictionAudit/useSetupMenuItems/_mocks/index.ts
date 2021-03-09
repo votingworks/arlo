@@ -60,6 +60,16 @@ export const auditSettings: {
     auditMathType: 'SUPERSIMPLE',
     auditName: 'Test Audit',
   },
+  blankHybrid: {
+    state: null,
+    electionName: null,
+    online: null,
+    randomSeed: null,
+    riskLimit: null,
+    auditType: 'HYBRID',
+    auditMathType: 'SUITE',
+    auditName: 'Test Audit',
+  },
   onlyState: {
     state: 'AL',
     electionName: null,

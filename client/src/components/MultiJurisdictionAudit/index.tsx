@@ -50,6 +50,8 @@ export const AuditAdminView: React.FC = () => {
 
   const isBallotComparison =
     auditSettings !== null && auditSettings.auditType === 'BALLOT_COMPARISON'
+  const isHybrid =
+    auditSettings !== null && auditSettings.auditType === 'HYBRID'
   const isDrawingSample =
     rounds !== null && rounds.length > 0 && !isDrawSampleComplete(rounds)
   const [stage, setStage] = useState<ElementType<typeof setupStages>>(
@@ -60,10 +62,11 @@ export const AuditAdminView: React.FC = () => {
     setStage,
     electionId,
     !!isBallotComparison,
+    !!isHybrid,
     setRefreshId
   )
 
-  useEffect(refresh, [refresh, isBallotComparison, isDrawingSample])
+  useEffect(refresh, [refresh, isBallotComparison, isHybrid, isDrawingSample])
 
   if (!jurisdictions || !contests || !rounds || !auditSettings) return null // Still loading
 

@@ -287,6 +287,7 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedAndOpportunistic),
+      apiCalls.getStandardizedContestsFile,
       apiCalls.getSampleSizeOptions,
     ]
     await withMockFetch(expectedCalls, async () => {

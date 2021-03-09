@@ -205,7 +205,7 @@ const Review: React.FC<IProps> = ({
                 </a>
               </td>
             </tr>
-            {auditType === 'BALLOT_COMPARISON' && (
+            {(auditType === 'BALLOT_COMPARISON' || auditType === 'HYBRID') && (
               <tr>
                 <td>Standardized Contests:</td>
                 <td>

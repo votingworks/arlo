@@ -39,6 +39,8 @@ const Participants: React.FC<IProps> = ({ nextStage, refresh }: IProps) => {
       isFileProcessed(jurisdictionsFile) &&
       (auditSettings.auditType !== 'BALLOT_COMPARISON' ||
         isFileProcessed(standardizedContestsFile)) &&
+      (auditSettings.auditType !== 'HYBRID' ||
+        isFileProcessed(standardizedContestsFile)) &&
       nextStage.state === 'locked'
     )
       refresh()
@@ -48,20 +50,29 @@ const Participants: React.FC<IProps> = ({ nextStage, refresh }: IProps) => {
     return null // Still loading
 
   const isBallotComparison = auditSettings.auditType === 'BALLOT_COMPARISON'
+  const isHybrid = auditSettings.auditType === 'HYBRID'
 
   return (
     <FormWrapper
-      title={isBallotComparison ? 'Participants & Contests' : 'Participants'}
+      title={
+        isBallotComparison || isHybrid
+          ? 'Participants & Contests'
+          : 'Participants'
+      }
     >
       <CSVFile
         csvFile={jurisdictionsFile}
         uploadCSVFile={uploadJurisdictionsFile}
-        title={isBallotComparison ? 'Participating Jurisdictions' : undefined}
+        title={
+          isBallotComparison || isHybrid
+            ? 'Participating Jurisdictions'
+            : undefined
+        }
         description='Click "Browse" to choose the appropriate file from your computer. This file should be a comma-separated list of all the jurisdictions participating in the audit, plus email addresses for audit administrators in each participating jurisdiction.'
         sampleFileLink="/sample_jurisdiction_filesheet.csv"
         enabled
       />
-      {isBallotComparison && (
+      {(isBallotComparison || isHybrid) && (
         <CSVFile
           csvFile={standardizedContestsFile}
           uploadCSVFile={uploadStandardizedContestsFile}

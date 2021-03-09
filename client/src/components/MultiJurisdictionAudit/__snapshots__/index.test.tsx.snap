@@ -6,7 +6,7 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
     class="sc-bdVaJa bKocXA"
   >
     <div
-      class="bp3-callout sc-hSdWYo gMDgEE"
+      class="bp3-callout sc-eHgmQL gudjM"
     >
       <div
         class="sc-bwzfXH jiphYj"
@@ -26,7 +26,7 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
             0 of 2 jurisdictions have completed file uploads.
           </p>
           <span
-            class="bp3-tag sc-caSCKo lhZHST"
+            class="bp3-tag sc-gisBJw cMOlJh"
           >
             <span
               class="bp3-text-overflow-ellipsis bp3-fill"
@@ -284,7 +284,7 @@ exports[`JA setup renders initial state 1`] = `
     class="sc-bdVaJa bKocXA"
   >
     <div
-      class="bp3-callout sc-hSdWYo gMDgEE"
+      class="bp3-callout sc-eHgmQL gudjM"
     >
       <div
         class="sc-bwzfXH jiphYj"
@@ -304,7 +304,7 @@ exports[`JA setup renders initial state 1`] = `
       </div>
     </div>
     <div
-      class="sc-bwzfXH sc-fAjcbJ fopIRB"
+      class="sc-bwzfXH sc-caSCKo kUEbdR"
     >
       <h2
         class="bp3-heading sc-htpNat fysvnw"

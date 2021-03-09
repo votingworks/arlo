@@ -76,10 +76,8 @@ def process_standardized_contests_file(
 
 
 def validate_standardized_contests_upload(request: Request, election: Election):
-    if election.audit_type != AuditType.BALLOT_COMPARISON:
-        raise Conflict(
-            "Can only upload standardized contests file for ballot comparison audits."
-        )
+    if election.audit_type not in [AuditType.BALLOT_COMPARISON, AuditType.HYBRID]:
+        raise Conflict("Can't upload CVR file for this audit type.")
 
     if len(list(election.jurisdictions)) == 0:
         raise Conflict(
