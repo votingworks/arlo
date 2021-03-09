@@ -219,15 +219,28 @@ export const JurisdictionAdminView: React.FC = () => {
             csvFile={ballotManifest}
             uploadCSVFile={uploadBallotManifest}
             deleteCSVFile={deleteBallotManifest}
-            title="Ballot Manifest"
-            description='Click "Browse" to choose the appropriate Ballot
+            title={
+              auditSettings.auditType === 'HYBRID'
+                ? 'Ballot Manifest (All ballots)'
+                : 'Ballot Manifest'
+            }
+            description={
+              auditSettings.auditType === 'HYBRID'
+                ? `Click "Browse" to choose the appropriate Ballot
                   Manifest file from your computer. This file should be a
-                  comma-separated list of all the ballot boxes/containers used
+                  comma-separated list of all the ballot batches/containers used
                   to store ballots for this particular election, plus a count of
                   how many ballot cards (individual pieces of paper) are stored
-                  in each container.'
+                  in each container, and whether each batch has cast vote records.`
+                : `Click "Browse" to choose the appropriate Ballot
+                Manifest file from your computer. This file should be a
+                comma-separated list of all the ballot boxes/containers used
+                to store ballots for this particular election, plus a count of
+                how many ballot cards (individual pieces of paper) are stored
+                in each container.`
+            }
             sampleFileLink={
-              auditSettings.auditType === 'BALLOT_COMPARISON'
+              ['BALLOT_COMPARISON', 'HYBRID'].includes(auditSettings.auditType)
                 ? '/sample_manifest_BC.csv'
                 : '/sample_ballot_manifest.csv'
             }
@@ -265,11 +278,22 @@ export const JurisdictionAdminView: React.FC = () => {
               }
               uploadCSVFile={uploadCVRS}
               deleteCSVFile={deleteCVRS}
-              title="Cast Vote Records"
-              description='Click "Browse" to choose the appropriate Cast Vote
+              title={
+                auditSettings.auditType === 'HYBRID'
+                  ? 'Cast Vote Records (CVR ballots only)'
+                  : 'Cast Vote Records'
+              }
+              description={
+                auditSettings.auditType === 'HYBRID'
+                  ? `Click "Browse" to choose the appropriate Cast Vote
                   Records (CVR) file from your computer. This file should be a
-                  comma-separated list of all the ballots counted by your
-                  tabulator, in order.'
+                  comma-separated list (.csv) of all the ballots centrally counted by your
+                  tabulator(s), but should not include precinct-count ballots.`
+                  : `Click "Browse" to choose the appropriate Cast Vote
+                  Records (CVR) file from your computer. This file should be a
+                  comma-separated list (.csv) of all the ballots counted by your
+                  tabulator(s), in order.`
+              }
               sampleFileLink=""
             />
           )}
