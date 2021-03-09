@@ -19,7 +19,6 @@ def test_create_election_missing_fields(client: FlaskClient, org_id: str):
         del new_election[field]
 
         rv = post_json(client, "/api/election", new_election)
-        print(rv.data)
         assert rv.status_code == 400
         assert json.loads(rv.data) == {
             "errors": [
