@@ -36,7 +36,6 @@ describe('Batch Comparison', () => {
     cy.findByLabelText('Votes for Candidate/Choice 1').type('2700')
     cy.findByLabelText('Name of Candidate/Choice 2').type('Palpatine')
     cy.findByLabelText('Votes for Candidate/Choice 2').type('2620')
-    cy.findByLabelText('Total Ballots for Contest').type('5320')
     cy.findByText('Select Jurisdictions').click()
     cy.findByLabelText('Death Star').check({ force: true })
     cy.findByText('Save & Next').click()
