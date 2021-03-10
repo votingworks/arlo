@@ -34,7 +34,6 @@ def contest_ids(client: FlaskClient, election_id: str, jurisdiction_ids: List[st
                 {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 2500},
                 {"id": str(uuid.uuid4()), "name": "candidate 3", "numVotes": 2500},
             ],
-            "totalBallotsCast": 5000,
             "numWinners": 1,
             "votesAllowed": 2,
             "jurisdictionIds": jurisdiction_ids[:2],

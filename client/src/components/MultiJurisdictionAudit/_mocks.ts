@@ -6,6 +6,7 @@ import { IBallot } from './RoundManagement/useBallots'
 import { IAuditBoard } from './useAuditBoards'
 import { IRound } from './useRoundsAuditAdmin'
 import { IAuditSettings } from './useAuditSettings'
+import { IContest } from '../../types'
 
 const manifestFormData: FormData = new FormData()
 manifestFormData.append('manifest', manifestFile, manifestFile.name)

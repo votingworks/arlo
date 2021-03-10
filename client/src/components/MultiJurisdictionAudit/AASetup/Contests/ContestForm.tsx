@@ -77,10 +77,10 @@ const ContestForm: React.FC<IProps> = ({
 
   const isBatch = auditType === 'BATCH_COMPARISON'
   const isHybrid = auditType === 'HYBRID'
-  // const isBallotComparison = auditType === 'BALLOT_COMPARISON'
+  const isBallotPolling = auditType === 'BALLOT_POLLING'
 
   const { electionId } = useParams<{ electionId: string }>()
-  const [contests, updateContests] = useContests(electionId)
+  const [contests, updateContests] = useContests(electionId, auditType)
   const jurisdictions = useJurisdictions(electionId)
   const standardizedContests = useStandardizedContests(electionId)
 
@@ -127,7 +127,7 @@ const ContestForm: React.FC<IProps> = ({
   return (
     <Formik
       initialValues={initialValues}
-      validationSchema={schema}
+      validationSchema={schema(auditType)}
       enableReinitialize
       onSubmit={submit}
     >
@@ -305,23 +305,25 @@ const ContestForm: React.FC<IProps> = ({
                             </FormSection>
                           )}
                         />
-                        <FormSection
-                          label="Total Ballots Cast"
-                          description="Enter the overall number of ballot cards cast in jurisdictions containing this contest."
-                        >
-                          <label htmlFor={`contests[${i}].totalBallotsCast`}>
-                            Total Ballots for Contest{' '}
-                            {/* istanbul ignore next */
-                            values.contests.length > 1 ? i + 1 : ''}
-                            <Field
-                              id={`contests[${i}].totalBallotsCast`}
-                              name={`contests[${i}].totalBallotsCast`}
-                              validate={testNumber()}
-                              disabled={locked}
-                              component={FormField}
-                            />
-                          </label>
-                        </FormSection>
+                        {isBallotPolling && (
+                          <FormSection
+                            label="Total Ballots Cast"
+                            description="Enter the overall number of ballot cards cast in jurisdictions containing this contest."
+                          >
+                            <label htmlFor={`contests[${i}].totalBallotsCast`}>
+                              Total Ballots for Contest{' '}
+                              {/* istanbul ignore next */
+                              values.contests.length > 1 ? i + 1 : ''}
+                              <Field
+                                id={`contests[${i}].totalBallotsCast`}
+                                name={`contests[${i}].totalBallotsCast`}
+                                validate={testNumber()}
+                                disabled={locked}
+                                component={FormField}
+                              />
+                            </label>
+                          </FormSection>
+                        )}
                         {!isHybrid && (
                           <FormSection
                             label="Contest Universe"

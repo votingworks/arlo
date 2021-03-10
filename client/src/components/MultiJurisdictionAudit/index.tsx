@@ -45,7 +45,7 @@ export const AuditAdminView: React.FC = () => {
 
   const [rounds, startNextRound] = useRoundsAuditAdmin(electionId, refreshId)
   const jurisdictions = useJurisdictions(electionId, refreshId)
-  const [contests] = useContests(electionId, refreshId)
+  const [contests] = useContests(electionId, undefined, refreshId)
   const [auditSettings] = useAuditSettings(electionId, refreshId)
 
   const isBallotComparison =

@@ -18,30 +18,8 @@ const hybridContestsInputMocks = {
     { key: 'Name of Candidate/Choice 2', value: 'Choice Two' },
     { key: 'Votes for Candidate/Choice 1', value: '10' },
     { key: 'Votes for Candidate/Choice 2', value: '20' },
-    { key: 'Total Ballots for Contest', value: '30' },
   ],
   errorInputs: [
-    {
-      key: 'Total Ballots for Contest',
-      value: '',
-      error:
-        'Must be greater than or equal to the sum of votes for each candidate/choice',
-    },
-    {
-      key: 'Total Ballots for Contest',
-      value: 'test',
-      error: 'Must be a number',
-    },
-    {
-      key: 'Total Ballots for Contest',
-      value: '-1',
-      error: 'Must be a positive number',
-    },
-    {
-      key: 'Total Ballots for Contest',
-      value: '0.5',
-      error: 'Must be an integer',
-    },
     { key: 'Name of Candidate/Choice 1', value: '', error: 'Required' },
     { key: 'Name of Candidate/Choice 2', value: '', error: 'Required' },
     {
@@ -163,7 +141,6 @@ describe('Audit Setup > Contests (Hybrid)', () => {
       id: '1',
       name: 'Contest 1.\'"',
       isTargeted: true,
-      totalBallotsCast: 30,
       numWinners: 1,
       votesAllowed: 1,
       jurisdictionIds: ['jurisdiction-id-1', 'jurisdiction-id-2'],
@@ -216,55 +193,9 @@ describe('Audit Setup > Contests (Hybrid)', () => {
         typeInto(input, inputData.value)
         expect(input.value).toBe(inputData.value)
       })
+      expect(screen.queryByText('Total Ballots Cast')).not.toBeInTheDocument()
       userEvent.click(screen.getByRole('button', { name: 'Save & Next' }))
       await waitFor(() => expect(nextStage.activate).toHaveBeenCalled())
-    })
-  })
-
-  it('displays no error when the total votes are greater than the ballot count, but less than the total allowed votes for a contest', async () => {
-    const expectedCalls = [
-      apiCalls.getContests([]),
-      aaApiCalls.getJurisdictions,
-      apiCalls.getStandardizedContests,
-    ]
-    await withMockFetch(expectedCalls, async () => {
-      const { findByLabelText, getByLabelText, queryByTestId } = render()
-      await screen.findByRole('heading', { name: 'Target Contests' })
-      userEvent.selectOptions(
-        screen.getByLabelText(/Contest Name/),
-        'Contest 1.\'"'
-      )
-      typeInto(
-        await findByLabelText('Votes Allowed', {
-          selector: 'input',
-        }),
-        '2'
-      )
-
-      typeInto(
-        getByLabelText('Votes for Candidate/Choice 1', {
-          selector: 'input',
-        }),
-        '20'
-      )
-
-      typeInto(
-        getByLabelText('Votes for Candidate/Choice 2', {
-          selector: 'input',
-        }),
-        '40'
-      )
-
-      const totalBallotInput = getByLabelText('Total Ballots for Contest', {
-        selector: 'input',
-      }) as HTMLInputElement
-      typeInto(totalBallotInput, '30')
-
-      await waitFor(() => {
-        // 30 ballots * 2 allowed votes / ballot = 60 allowed votes
-        // 20 actual votes in choice #1 + 40 actual votes in choice #2 = 60 actual votes
-        expect(queryByTestId(`${totalBallotInput.name}-error`)).toBeNull()
-      })
     })
   })
 })

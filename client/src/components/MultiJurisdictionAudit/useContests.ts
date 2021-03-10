@@ -3,6 +3,7 @@ import uuidv4 from 'uuidv4'
 import { api } from '../utilities'
 import { IContest } from '../../types'
 import { parse as parseNumber } from '../../utils/number-schema'
+import { IAuditSettings } from './useAuditSettings'
 
 export interface IContestNumbered {
   id: string
@@ -46,6 +47,7 @@ const getContests = async (electionId: string): Promise<IContest[] | null> => {
 
 const useContests = (
   electionId: string,
+  auditType?: IAuditSettings['auditType'],
   refreshId?: string
 ): [IContest[] | null, (arg0: IContest[]) => Promise<boolean>] => {
   const [contests, setContests] = useState<IContest[] | null>(null)
@@ -71,7 +73,14 @@ const useContests = (
     const response = await api(`/election/${electionId}/contest`, {
       method: 'PUT',
       // stringify and numberify the contests (all number values are handled as strings clientside, but are required as numbers serverside)
-      body: JSON.stringify(mergedContests.map(c => numberifyContest(c))),
+      body: JSON.stringify(
+        mergedContests
+          .map(c => numberifyContest(c))
+          // Remove totalBallotsCast unless this is a ballot polling audit
+          .map(({ totalBallotsCast, ...c }) =>
+            auditType === 'BALLOT_POLLING' ? { totalBallotsCast, ...c } : c
+          )
+      ),
       headers: {
         'Content-Type': 'application/json',
       },
