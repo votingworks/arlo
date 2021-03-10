@@ -5,8 +5,8 @@ import csv
 from xml.etree import ElementTree
 from collections import defaultdict
 
-# Annoyingly, ElementTree requires that you put the namespace in all your
-# tag names
+# Annoyingly, ElementTree requires that you specify the namespace in all tag
+# searches, so we make some wrapper functions
 ns = "http://tempuri.org/CVRDesign.xsd"
 
 
@@ -28,17 +28,12 @@ def parse_cvr_file(file_path):
         "BatchSequence": find(xml, "BatchSequence").text,
         "SheetNumber": find(xml, "SheetNumber").text,
         "PrecinctSplit": find(find(xml, "PrecinctSplit"), "Name").text,
-        # { contest: { choice: 0 | 1 | None }}
+        # { contest: { choice: vote }}
         "Contests": defaultdict(dict),
     }
 
     for contest in findall(find(xml, "Contests"), "Contest"):
         contest_name = find(contest, "Name").text
-        # # Undervotes should be recorded as all 0s, which is handled below
-        # if find(contest, "Undervotes"):
-        #     cvr["Contests"][contest_name] = {}
-        #     continue
-
         choices = findall(find(contest, "Options"), "Option")
         for choice in choices:
             if find(choice, "WriteInData"):
@@ -46,9 +41,7 @@ def parse_cvr_file(file_path):
             else:
                 choice_name = find(choice, "Name").text
             vote = find(choice, "Value").text
-
             cvr["Contests"][contest_name][choice_name] = vote
-            contest_choices[contest_name].add(choice_name)
 
     return cvr
 
@@ -74,41 +67,56 @@ if __name__ == "__main__":
 
         try:
             cvr = parse_cvr_file(entry.path)
-            cvrs.append(cvr)
         except Exception as exc:
             print(f"Error parsing file: {entry.path}")
             raise exc
+
+        cvrs.append(cvr)
+        # Keep track of all contest choices we've seen
+        for contest_name, choices in cvr["Contests"].items():
+            for choice_name in choices:
+                contest_choices[contest_name].add(choice_name)
 
         if len(cvrs) % 1000 == 0:
             print(f"Parsed {len(cvrs)} files")
 
     print("Writing CSV...")
 
-    # Flatten contest choice votes into field names
-    # Fill in missing contest choices with 0s
-    flat_cvrs = []
-    for cvr in cvrs:
-        flat_cvr = {
-            "CvrGuid": cvr["CvrGuid"],
-            "BatchNumber": cvr["BatchNumber"],
-            "BatchSequence": cvr["BatchSequence"],
-            "SheetNumber": cvr["SheetNumber"],
-            "PrecinctSplit": cvr["PrecinctSplit"],
-        }
-
-        for contest_name, choices in contest_choices.items():
-            for choice_name in choices:
-                if contest_name not in cvr["Contests"]:
-                    vote = None
-                elif choice_name not in cvr["Contests"][contest_name]:
-                    vote = 0
-                else:
-                    vote = cvr["Contests"][contest_name][choice_name]
-                flat_cvr[f"{contest_name};{choice_name}"] = vote
-
-        flat_cvrs.append(flat_cvr)
-
     with open(output_csv_path, "w") as output_file:
-        writer = csv.DictWriter(output_file, fieldnames=list(flat_cvrs[0].keys()))
+        headers = [
+            "CvrGuid",
+            "BatchNumber",
+            "BatchSequence",
+            "SheetNumber",
+            "PrecinctSplit",
+        ] + [
+            f"{contest_name};{choice_name}"
+            for contest_name, choices in contest_choices.items()
+            for choice_name in choices
+        ]
+
+        writer = csv.DictWriter(output_file, fieldnames=headers)
         writer.writeheader()
-        writer.writerows(flat_cvrs)
+
+        # Flatten contest choice votes into field names
+        # Fill in missing contest choices with 0s
+        for cvr in cvrs:
+            flat_cvr = {
+                "CvrGuid": cvr["CvrGuid"],
+                "BatchNumber": cvr["BatchNumber"],
+                "BatchSequence": cvr["BatchSequence"],
+                "SheetNumber": cvr["SheetNumber"],
+                "PrecinctSplit": cvr["PrecinctSplit"],
+            }
+
+            for contest_name, choices in contest_choices.items():
+                for choice_name in choices:
+                    if contest_name not in cvr["Contests"]:
+                        vote = None
+                    elif choice_name not in cvr["Contests"][contest_name]:
+                        vote = 0
+                    else:
+                        vote = cvr["Contests"][contest_name][choice_name]
+                    flat_cvr[f"{contest_name};{choice_name}"] = vote
+
+            writer.writerow(flat_cvr)
