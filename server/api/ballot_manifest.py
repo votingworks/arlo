@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime
 from sqlalchemy.orm.session import Session
 from flask import request, jsonify, Request
-from werkzeug.exceptions import BadRequest, NotFound
+from werkzeug.exceptions import BadRequest, NotFound, Conflict
 
 from . import api
 from ..database import db_session
@@ -21,6 +21,33 @@ TABULATOR = "Tabulator"
 BATCH_NAME = "Batch Name"
 NUMBER_OF_BALLOTS = "Number of Ballots"
 CVR = "CVR"
+
+
+def validate_uploaded_manifests(contest: Contest):
+    for jurisdiction in contest.jurisdictions:
+        if jurisdiction.manifest_num_ballots is None:
+            raise Conflict("Some jurisdictions haven't uploaded their manifests yet")
+
+        # TODO for ballot polling audits, validate total ballots across
+        # manifests is greater than or equal to contest.total_ballots_cast
+        # entered by the AA
+
+
+def are_uploaded_manifests_valid(contest: Contest):
+    try:
+        validate_uploaded_manifests(contest)
+        return True
+    except Conflict:
+        return False
+
+
+def set_total_ballots_from_manifests(contest: Contest):
+    if not are_uploaded_manifests_valid(contest):
+        return
+
+    contest.total_ballots_cast = sum(
+        jurisdiction.manifest_num_ballots for jurisdiction in contest.jurisdictions
+    )
 
 
 def process_ballot_manifest_file(
@@ -73,6 +100,10 @@ def process_ballot_manifest_file(
 
         jurisdiction.manifest_num_ballots = num_ballots
         jurisdiction.manifest_num_batches = num_batches
+
+        if jurisdiction.election.audit_type != AuditType.BALLOT_POLLING:
+            for contest in jurisdiction.contests:
+                set_total_ballots_from_manifests(contest)
 
     process_file(session, file, process)
 

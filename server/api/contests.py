@@ -8,6 +8,7 @@ from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
 from ..util.jsonschema import validate, JSONDict
 from .cvrs import hybrid_contest_choice_vote_counts, set_contest_metadata_from_cvrs
+from .ballot_manifest import set_total_ballots_from_manifests
 
 
 CONTEST_CHOICE_SCHEMA = {
@@ -170,6 +171,10 @@ def create_or_update_all_contests(election: Election):
         deserialize_contest(json_contest, election.id) for json_contest in json_contests
     ]
     db_session.add_all(contests)
+
+    if election.audit_type != AuditType.BALLOT_POLLING:
+        for contest in contests:
+            set_total_ballots_from_manifests(contest)
 
     if election.audit_type == AuditType.BALLOT_COMPARISON:
         for contest in contests:

@@ -41,7 +41,6 @@ def set_contest_metadata_from_cvrs(contest: Contest):
     if not all_cvrs_uploaded(contest):
         return
 
-    contest.total_ballots_cast = 0
     contest.choices = []
 
     for jurisdiction in contest.jurisdictions:
@@ -60,7 +59,6 @@ def set_contest_metadata_from_cvrs(contest: Contest):
                 for choice_name in contest_metadata["choices"]
             ]
 
-        contest.total_ballots_cast += contest_metadata["total_ballots_cast"]
         contest.votes_allowed = contest_metadata["votes_allowed"]
         for choice_name, choice_metadata in contest_metadata["choices"].items():
             choice = next(c for c in contest.choices if c.name == choice_name)
