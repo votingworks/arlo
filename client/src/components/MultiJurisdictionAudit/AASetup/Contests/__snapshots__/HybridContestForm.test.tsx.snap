@@ -253,42 +253,6 @@ exports[`Audit Setup > Contests (Hybrid) Audit Setup > Contests 1`] = `
             </p>
           </div>
         </div>
-        <div
-          class="sc-htoDjs jcQPAQ"
-        >
-          <h5
-            class="bp3-heading"
-          >
-            Total Ballots Cast
-          </h5>
-          <div
-            class="sc-dnqmqq kGMqKN"
-          >
-            Enter the overall number of ballot cards cast in jurisdictions containing this contest.
-          </div>
-          <label
-            for="contests[0].totalBallotsCast"
-          >
-            Total Ballots for Contest
-             
-            
-            <div
-              class="sc-gZMcBi ggdJUe"
-            >
-              <div
-                class="bp3-input-group sc-gqjmRU kmAUGh"
-              >
-                <input
-                  class="bp3-input"
-                  id="contests[0].totalBallotsCast"
-                  name="contests[0].totalBallotsCast"
-                  style="padding-right: 10px;"
-                  value=""
-                />
-              </div>
-            </div>
-          </label>
-        </div>
       </div>
       <div
         class="sc-bdVaJa kcYonD"
