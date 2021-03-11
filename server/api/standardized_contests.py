@@ -27,50 +27,54 @@ STANDARDIZED_CONTEST_COLUMNS = [
 ]
 
 
+def set_standardized_contests(election: Election, file: File):
+    standardized_contests_csv = parse_csv(file.contents, STANDARDIZED_CONTEST_COLUMNS)
+
+    standardized_contests = []
+    for row in standardized_contests_csv:
+        if row[JURISDICTIONS].strip() == "all":
+            jurisdictions = election.jurisdictions
+        else:
+            jurisdiction_names = {
+                name.strip() for name in row[JURISDICTIONS].split(",")
+            }
+            jurisdictions = list(
+                Jurisdiction.query.filter_by(election_id=election.id)
+                .filter(Jurisdiction.name.in_(jurisdiction_names))
+                .order_by(Jurisdiction.name)
+                .all()
+            )
+
+            if len(jurisdictions) < len(jurisdiction_names):
+                invalid_jurisdictions = jurisdiction_names - {
+                    jurisdiction.name for jurisdiction in jurisdictions
+                }
+                raise UserError(
+                    f"Invalid jurisdictions for contest {row[CONTEST_NAME]}: {', '.join(sorted(invalid_jurisdictions))}"
+                )
+
+        contest_name = " ".join(row[CONTEST_NAME].splitlines())
+        # Strip off Dominion's vote-for designation"
+        if "Vote For=" in contest_name:
+            match = re.match(r"^(.+) \(Vote For=(\d+)\)$", contest_name)
+            if match:
+                contest_name = match[1]
+
+        standardized_contests.append(
+            dict(
+                name=contest_name,
+                jurisdictionIds=[jurisdiction.id for jurisdiction in jurisdictions],
+            )
+        )
+
+    election.standardized_contests = standardized_contests
+
+
 def process_standardized_contests_file(
     session: Session, election: Election, file: File
 ):
     def process():
-        standardized_contests_csv = parse_csv(
-            file.contents, STANDARDIZED_CONTEST_COLUMNS
-        )
-
-        standardized_contests = []
-        for row in standardized_contests_csv:
-            if row[JURISDICTIONS].strip() == "all":
-                jurisdictions = election.jurisdictions
-            else:
-                jurisdiction_names = {
-                    name.strip() for name in row[JURISDICTIONS].split(",")
-                }
-                jurisdictions = (
-                    Jurisdiction.query.filter_by(election_id=election.id)
-                    .filter(Jurisdiction.name.in_(jurisdiction_names))
-                    .order_by(Jurisdiction.name)
-                    .all()
-                )
-
-                if len(jurisdictions) < len(jurisdiction_names):
-                    invalid_jurisdictions = jurisdiction_names - {
-                        jurisdiction.name for jurisdiction in jurisdictions
-                    }
-                    raise UserError(
-                        f"Invalid jurisdictions for contest {row[CONTEST_NAME]}: {', '.join(sorted(invalid_jurisdictions))}"
-                    )
-
-            contest_name = " ".join(row[CONTEST_NAME].splitlines())
-            # Strip off Dominion's vote-for designation"
-            if "Vote For=" in contest_name:
-                contest_name = re.match(r"^(.+) \(Vote For=(\d+)\)$", contest_name)[1]
-
-            standardized_contests.append(
-                dict(
-                    name=contest_name,
-                    jurisdictionIds=[jurisdiction.id for jurisdiction in jurisdictions],
-                )
-            )
-
-        election.standardized_contests = standardized_contests
+        set_standardized_contests(election, file)
 
     process_file(session, file, process)
 
