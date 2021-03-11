@@ -636,12 +636,19 @@ def test_ballot_comparison_cvr_metadata(
     )
     retrieval_list = rv.data.decode("utf-8").replace("\r\n", "\n")
     snapshot.assert_match(retrieval_list)
+
+    # Check that the CVR metadata is included with each ballot for JAs/audit boards
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/ballots"
     )
-    assert len(json.loads(rv.data)["ballots"]) == len(retrieval_list.splitlines()) - 1
+    ballots = json.loads(rv.data)["ballots"]
+    assert len(ballots) == len(retrieval_list.splitlines()) - 1
 
-    # Check that the CVR metadata is included with each ballot for audit boards
+    assert ballots[0]["batch"]["name"] == "BATCH1"
+    assert ballots[0]["batch"]["tabulator"] == "TABULATOR1"
+    assert ballots[0]["position"] == 1
+    assert ballots[0]["imprintedId"] == "1-1-1"
+
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board"
     )
