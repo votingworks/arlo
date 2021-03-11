@@ -30,7 +30,7 @@ STANDARDIZED_CONTEST_COLUMNS = [
 def process_standardized_contests_file(
     session: Session, election: Election, file: File
 ):
-    def process():
+    def process() -> None:
         standardized_contests_csv = parse_csv(
             file.contents, STANDARDIZED_CONTEST_COLUMNS
         )
