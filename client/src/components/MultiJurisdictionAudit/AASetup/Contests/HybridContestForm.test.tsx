@@ -2,7 +2,6 @@ import React from 'react'
 import { Route } from 'react-router-dom'
 import { fireEvent, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import uuidv4 from 'uuidv4'
 import {
   renderWithRouter,
   withMockFetch,
