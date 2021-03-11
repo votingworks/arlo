@@ -428,5 +428,20 @@ def test_standardized_contests_change_jurisdictions_file(
     rv = client.get(f"/api/election/{election_id}/standardized-contests")
     assert json.loads(rv.data) is None
 
+    # Error should be recorded
     rv = client.get(f"/api/election/{election_id}/standardized-contests/file")
-    assert json.loads(rv.data) == {"file": None, "processing": None}
+    compare_json(
+        json.loads(rv.data),
+        {
+            "file": {
+                "name": "standardized-contests.csv",
+                "uploadedAt": assert_is_date,
+            },
+            "processing": {
+                "status": ProcessingStatus.ERRORED,
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": "Invalid jurisdictions for contest Contest 2: J3",
+            },
+        },
+    )

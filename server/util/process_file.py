@@ -31,6 +31,7 @@ def process_file(session: Session, file: File, callback: Callable[[], None]) -> 
 
     # If we got this far, `file` is ours to process.
     try:
+        session.begin_nested()
         callback()
         file.processing_started_at = processing_started_at
         file.processing_completed_at = datetime.datetime.now(timezone.utc)
@@ -46,8 +47,6 @@ def process_file(session: Session, file: File, callback: Callable[[], None]) -> 
         file.processing_error = str(error) or str(
             traceback.format_exception(error.__class__, error, error.__traceback__)
         )
-        session.add(file)
-        session.commit()
         if not isinstance(error, UserError):
             raise error
         return True

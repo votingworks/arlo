@@ -53,6 +53,8 @@ def bgcompute_update_election_jurisdictions_file(election_id: str = None):
                 f"ERROR updating jurisdictions file. election_id: {election_id}"
             )
 
+        db_session.commit()
+
 
 def bgcompute_update_standardized_contests_file(election_id: str = None):
     files = File.query.join(
@@ -85,6 +87,8 @@ def bgcompute_update_standardized_contests_file(election_id: str = None):
                 f"ERROR updating standardized contests file. election_id: {election_id}"
             )
 
+        db_session.commit()
+
 
 def bgcompute_update_ballot_manifest_file(election_id: str = None):
     files = File.query.join(
@@ -115,6 +119,8 @@ def bgcompute_update_ballot_manifest_file(election_id: str = None):
             app.logger.exception(
                 f"ERROR updating ballot manifest file. election_id: {election_id}, jurisdiction_id: {jurisdiction_id}"
             )
+
+        db_session.commit()
 
 
 def bgcompute_update_batch_tallies_file(election_id: str = None):
@@ -149,6 +155,8 @@ def bgcompute_update_batch_tallies_file(election_id: str = None):
                 f"ERROR updating batch tallies file. election_id: {election_id}, jurisdiction_id: {jurisdiction_id}"
             )
 
+        db_session.commit()
+
 
 def bgcompute_update_cvr_file(election_id: str = None):
     files = File.query.join(Jurisdiction, File.id == Jurisdiction.cvr_file_id).filter(
@@ -179,6 +187,8 @@ def bgcompute_update_cvr_file(election_id: str = None):
             app.logger.exception(
                 f"ERROR updating CVR file. election_id: {election_id}, jurisdiction_id: {jurisdiction_id}"
             )
+
+        db_session.commit()
 
 
 def bgcompute_forever():
