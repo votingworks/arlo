@@ -25,6 +25,7 @@ from . import bravo
 
 
 GAMMA = 1.03905  # This GAMMA is used in Stark's tool, AGI, and CORLA
+MIN_N = 5  # The smallest sample size we want to take
 
 
 class BallotPollingStratum:
@@ -44,6 +45,20 @@ class BallotPollingStratum:
     def __init__(
         self, contest: Contest, sample_results: SAMPLE_RESULTS, sample_size: int,
     ):
+
+        """
+            contest: contest information for this stratum, including candidate
+                     vote totals and stratum size
+            sample_results : the vote totals for this stratum in the sample so far. E.g.,
+                    {
+                        "winner1": 10,
+                        "winner2": 7,
+                        "loser1": 5,
+                        "loser2": 2,
+                        ...
+                    }
+            sample_size: the number of ballots sampled so far
+        """
         self.contest = contest
         self.sample = sample_results
         self.sample_size = sample_size
@@ -59,6 +74,10 @@ class BallotPollingStratum:
 
         # Set up likelihood for null and alternative hypotheses
         n = self.sample_size
+
+        if n == 0:
+            return 1
+
         sample = bravo.compute_cumulative_sample(self.sample)
         n_w = sample[winner]
         n_l = sample[loser]
@@ -147,9 +166,26 @@ class BallotComparisonStratum:
         self,
         contest: Contest,
         results: RESULTS,
-        misstatements: Dict[str, int],
+        misstatements: Dict[str, Dict[str, int]],
         sample_size: int,
     ):
+        """
+        Initializes the ballot comparison stratum.
+
+        Inputs:
+            contest: contest information for this stratum, including candidate
+                     vote totals and stratum size
+            results: The CVRs for this stratum.
+            misstatements: All of the misstatements observed so far, by winner-loser pair. E.g.,
+                    {
+                        (winner1, loser1): {"o1": 0, "o2": 0, "u1": 0, "u2": 0},
+                        (winner1, loser2): ...,
+                        ...,
+                        (winner2, loser1): ...
+                    }
+            sample_size: the number of ballots sampled so far
+        """
+
         self.contest = contest
         self.results = results
         self.misstatements = misstatements
@@ -160,6 +196,9 @@ class BallotComparisonStratum:
         """
         Compute a p-value for a winner-loser pair for this strata based on its math type.
         """
+
+        if self.sample_size == 0:
+            return 1
 
         reported_margin = contest.candidates[winner] - contest.candidates[loser]
         o1, o2, u1, u2 = (
@@ -345,6 +384,8 @@ def try_n(n, risk_limit, contest, winner, loser, bp_stratum, cvr_stratum, n_rati
     n1 = math.ceil(n_ratio * n)
     n2 = int(n - n1)
 
+    print(n_ratio, n, n1, n2, n1_original, n2_original)
+
     if (n1 < n1_original) or (n2 < n2_original):
         return 1
 
@@ -355,13 +396,13 @@ def try_n(n, risk_limit, contest, winner, loser, bp_stratum, cvr_stratum, n_rati
 
     # Because this is a hypothetical sample, we create a
     # corresponding hypothetical stratum
-    hyp_sample_size = cvr_stratum.sample_size + n1
+    hyp_sample_size = n1_original + n1
 
     hyp_misstatements = {
-        "o1": o1 * (1 + n1),
-        "o2": o2 * (1 + n1),
-        "u1": u1 * (1 + n1),
-        "u2": u2 * (1 + n1),
+        "o1": o1,
+        "o2": o2,
+        "u1": u1,
+        "u2": u2,
     }
 
     hyp_cvr_stratum = BallotComparisonStratum(
@@ -370,27 +411,33 @@ def try_n(n, risk_limit, contest, winner, loser, bp_stratum, cvr_stratum, n_rati
 
     # Set up the no-CVR stratum, assuming the sample looks like the
     # prior round
-    hyp_sample_size = bp_stratum.sample_size
+    prev_sample_size = bp_stratum.sample_size
     hyp_sample = bp_stratum.sample
 
     cumulative_sample = bravo.compute_cumulative_sample(hyp_sample)
 
     # Add fake ballots to the hypothetical sample:
-    if hyp_sample_size == 0:
+    if prev_sample_size == 0:
         # If no ballots have been sampled, assume the sample is roughly
         # the margin
         hyp_sample["hyp_round"] = {
             winner: min(
-                math.ceil(
-                    (n2 * bp_stratum.contest.candidates[winner])
-                    / bp_stratum.contest.ballots
+                int(
+                    n2
+                    * (
+                        bp_stratum.contest.candidates[winner]
+                        / bp_stratum.contest.ballots
+                    )
                 ),
                 bp_stratum.contest.candidates[winner],
             ),
             loser: min(
                 math.ceil(
-                    (n2 * bp_stratum.contest.candidates[loser])
-                    / bp_stratum.contest.ballots
+                    n2
+                    * (
+                        bp_stratum.contest.candidates[loser]
+                        / bp_stratum.contest.ballots
+                    )
                 ),
                 bp_stratum.contest.candidates[loser],
             ),
@@ -399,16 +446,23 @@ def try_n(n, risk_limit, contest, winner, loser, bp_stratum, cvr_stratum, n_rati
         # Otherwise use the sample we've seen so far
         hyp_sample["hyp_round"] = {
             winner: min(
-                math.ceil((n2 * cumulative_sample[winner]) / hyp_sample_size),
+                math.ceil(
+                    ((n2 - hyp_sample_size) * cumulative_sample[winner])
+                    / hyp_sample_size
+                ),
                 bp_stratum.contest.candidates[winner],
             ),
             loser: min(
-                math.ceil((n2 * cumulative_sample[loser]) / hyp_sample_size),
+                math.ceil(
+                    ((n2 - prev_sample_size) * cumulative_sample[loser])
+                    / hyp_sample_size
+                ),
                 bp_stratum.contest.candidates[loser],
             ),
         }
-    hyp_sample_size += n2
+    hyp_sample_size = prev_sample_size + n2
     hyp_sample_size = min(bp_stratum.contest.ballots, hyp_sample_size)
+    print(hyp_sample, hyp_sample_size)
 
     hyp_no_cvr_stratum = BallotPollingStratum(
         bp_stratum.contest, hyp_sample, hyp_sample_size
@@ -438,6 +492,8 @@ def get_sample_size(
                           sample size.
     """
 
+    alpha = float(risk_limit) / 100
+
     N1 = bp_stratum.contest.ballots
     N2 = cvr_stratum.contest.ballots
 
@@ -448,14 +504,14 @@ def get_sample_size(
         n1 = bp_stratum.sample_size
         n2 = cvr_stratum.sample_size
 
-        n_ratio = N1 / (N1 + N2)
+        n_ratio = N2 / (N1 + N2)
         n = n1 + n2
 
-        n = max(n, 1)  # make sure n is never zero
+        n = max(n, MIN_N)  # make sure n is never zero
         expected_pvalue = 1
 
         # step 1: linear search, increasing n by a factor of 1.1 each time
-        while (expected_pvalue > risk_limit) or (expected_pvalue is np.nan):
+        while (expected_pvalue > alpha) or (expected_pvalue is np.nan):
             n = np.ceil(1.1 * n)
             if n > N1 + N2:
                 n1 = math.ceil(n_ratio * (N1 + N2))
@@ -467,7 +523,7 @@ def get_sample_size(
                 if N_w2 < int(n2 * N_w2 / N2) or N_l2 < int(n2 * N_l2 / N2):
                     return (N1, N2)
             expected_pvalue = try_n(
-                n, risk_limit, contest, winner, loser, bp_stratum, cvr_stratum, n_ratio
+                n, alpha, contest, winner, loser, bp_stratum, cvr_stratum, n_ratio
             )
 
         # step 2: bisection between n/1.1 and n
@@ -476,23 +532,16 @@ def get_sample_size(
         mid_pvalue = 1
         # TODO: do we need this tolerance?
         # risk_limit_tol = 0.8
-        while (mid_pvalue > risk_limit) or (expected_pvalue is np.nan):
-            # while  (mid_pvalue > risk_limit) or (mid_pvalue < risk_limit_tol*risk_limit) or \
+        while (mid_pvalue > alpha) or (expected_pvalue is np.nan):
+            # while  (mid_pvalue > alpha) or (mid_pvalue < risk_limit_tol*alpha) or \
             #    (expected_pvalue is np.nan):
             mid_n = np.floor((low_n + high_n) / 2)
             if mid_n in [low_n, high_n]:
                 break
             mid_pvalue = try_n(
-                mid_n,
-                risk_limit,
-                contest,
-                winner,
-                loser,
-                bp_stratum,
-                cvr_stratum,
-                n_ratio,
+                mid_n, alpha, contest, winner, loser, bp_stratum, cvr_stratum, n_ratio,
             )
-            if mid_pvalue <= risk_limit:
+            if mid_pvalue <= alpha:
                 high_n = mid_n
             else:
                 low_n = mid_n
