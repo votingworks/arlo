@@ -61,6 +61,34 @@ describe('generateSheets', () => {
       })
     })
 
+    it('generates label sheets for ballot comparison audits', async () => {
+      const expectedCalls = [
+        {
+          ...apiCalls.getBallots,
+          response: {
+            ballots: dummyBallots.ballots.map(b => ({
+              ...b,
+              imprintedId: `${b.batch.name}-${b.position}`,
+            })),
+          },
+        },
+      ]
+      await withMockFetch(expectedCalls, async () => {
+        const pdf = await downloadLabels(
+          mockJurisdiction.election.id,
+          mockJurisdiction.id,
+          mockRound,
+          mockJurisdiction.name,
+          mockJurisdiction.election.auditName
+        )
+        await expect(Buffer.from(pdf)).toMatchPdfSnapshot()
+        expect(mockSavePDF).toHaveBeenCalledWith(
+          'Round 1 Labels - Jurisdiction One - audit one.pdf',
+          { returnPromise: true }
+        )
+      })
+    })
+
     it('does nothing with no ballots', async () => {
       const expectedCalls = [
         { ...apiCalls.getBallots, response: { ballots: [] } },

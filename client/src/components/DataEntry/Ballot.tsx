@@ -116,7 +116,9 @@ const Ballot: React.FC<IProps> = ({
           )}
           <div>Batch: {ballot.batch.name}</div>
           <div>Record/Position: {ballot.position}</div>
-          {ballot.imprintedId && <div>Imprinted ID: {ballot.imprintedId}</div>}
+          {ballot.imprintedId !== undefined && (
+            <div>Imprinted ID: {ballot.imprintedId}</div>
+          )}
         </div>
         <FlushDivider />
         <div className="ballot-main">
