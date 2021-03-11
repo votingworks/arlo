@@ -45,6 +45,7 @@ def process_jurisdictions_file(session, election: Election, file: File) -> None:
         election.standardized_contests_file.processing_started_at = None
         election.standardized_contests_file.processing_completed_at = None
         election.standardized_contests_file.processing_error = None
+        session.flush()  # Make sure process_file can read the changes we just made
         process_standardized_contests_file(
             session, election, election.standardized_contests_file
         )
