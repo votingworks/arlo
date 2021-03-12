@@ -69,11 +69,9 @@ def sample_size_options(
             if round_one:
                 discrepancy_counts = None
             else:
-                num_previous_samples = (
-                    SampledBallotDraw.query.join(Round)
-                    .filter_by(election_id=election.id)
-                    .count()
-                )
+                num_previous_samples = SampledBallotDraw.query.filter_by(
+                    contest_id=contest.id
+                ).count()
                 discrepancies = supersimple.compute_discrepancies(
                     contest_for_sampler,
                     rounds.cvrs_for_contest(contest),
