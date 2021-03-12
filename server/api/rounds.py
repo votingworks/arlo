@@ -213,10 +213,10 @@ def cumulative_batch_results(election: Election) -> BatchTallies:
     }
 
 
-def round_sizes(election: Election) -> Dict[int, int]:
+def round_sizes(contest: Contest) -> Dict[int, int]:
     return dict(
-        Round.query.filter_by(election_id=election.id)
-        .join(SampledBallotDraw)
+        Round.query.join(SampledBallotDraw)
+        .filter_by(contest_id=contest.id)
         .group_by(Round.id)
         .values(Round.round_num, func.count(SampledBallotDraw.ticket_number))
     )
@@ -336,7 +336,7 @@ def calculate_risk_measurements(election: Election, round: Round):
                 sampler_contest.from_db_contest(contest),
                 contest_results_by_round(contest),
                 AuditMathType(election.audit_math_type),
-                round_sizes(election),
+                round_sizes(contest),
             )
             p_value = max(p_values.values())
         elif election.audit_type == AuditType.BATCH_COMPARISON:
