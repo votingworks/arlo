@@ -136,28 +136,37 @@ function typeInto(input: Element, value: string): void {
 }
 
 describe('Audit Setup > Contests (Hybrid)', () => {
-  const newContest = [
-    {
-      id: '1',
-      name: 'Contest 1.\'"',
-      isTargeted: true,
-      numWinners: 1,
-      votesAllowed: 1,
-      jurisdictionIds: ['jurisdiction-id-1', 'jurisdiction-id-2'],
-      choices: [
-        {
-          id: '2',
-          name: 'Choice One',
-          numVotes: 10,
-        },
-        {
-          id: '3',
-          name: 'Choice Two',
-          numVotes: 20,
-        },
-      ],
-    },
-  ]
+  let id = 0
+  const getID = () => {
+    id += 1
+    return id.toString()
+  }
+
+  // created function to generate new IDs
+  const newContest = () => {
+    return [
+      {
+        id: getID(),
+        name: 'Contest 1.\'"',
+        isTargeted: true,
+        numWinners: 1,
+        votesAllowed: 1,
+        jurisdictionIds: ['jurisdiction-id-1', 'jurisdiction-id-2'],
+        choices: [
+          {
+            id: getID(),
+            name: 'Choice One',
+            numVotes: 10,
+          },
+          {
+            id: getID(),
+            name: 'Choice Two',
+            numVotes: 20,
+          },
+        ],
+      },
+    ]
+  }
 
   it('Audit Setup > Contests', async () => {
     const expectedCalls = [
@@ -177,7 +186,7 @@ describe('Audit Setup > Contests (Hybrid)', () => {
       apiCalls.getContests([]),
       aaApiCalls.getJurisdictions,
       apiCalls.getStandardizedContests,
-      apiCalls.submitContests(newContest),
+      apiCalls.submitContests(newContest()),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { getByLabelText } = render()
@@ -196,6 +205,90 @@ describe('Audit Setup > Contests (Hybrid)', () => {
       expect(screen.queryByText('Total Ballots Cast')).not.toBeInTheDocument()
       userEvent.click(screen.getByRole('button', { name: 'Save & Next' }))
       await waitFor(() => expect(nextStage.activate).toHaveBeenCalled())
+    })
+  })
+
+  it('Check Jurisdiction selection is hidden for hybrid', async () => {
+    const expectedCalls = [
+      apiCalls.getContests([]),
+      aaApiCalls.getJurisdictions,
+      apiCalls.getStandardizedContests,
+      apiCalls.submitContests(newContest()),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      const { getByLabelText } = render()
+      await screen.findByRole('heading', { name: 'Target Contests' })
+      userEvent.selectOptions(
+        screen.getByLabelText(/Contest Name/),
+        'Contest 1.\'"'
+      )
+      hybridContestsInputMocks.inputs.forEach(inputData => {
+        const input = getByLabelText(new RegExp(regexpEscape(inputData.key)), {
+          selector: 'input',
+        }) as HTMLInputElement
+        typeInto(input, inputData.value)
+        expect(input.value).toBe(inputData.value)
+      })
+      expect(screen.queryByText('Contest Universe')).not.toBeInTheDocument()
+      userEvent.click(screen.getByRole('button', { name: 'Save & Next' }))
+      await waitFor(() => expect(nextStage.activate).toHaveBeenCalled())
+    })
+  })
+
+  it('it should not skip to next stage when targeted contest form is clean and not touched', async () => {
+    const expectedCalls = [
+      apiCalls.getContests([]),
+      aaApiCalls.getJurisdictions,
+      apiCalls.getStandardizedContests,
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      render()
+      await screen.findByRole('heading', { name: 'Target Contests' })
+      userEvent.click(screen.getByRole('button', { name: 'Save & Next' }))
+      await waitFor(() => {
+        expect(screen.queryAllByText('Required').length).toBe(5)
+      })
+    })
+  })
+
+  it('it should skip to next stage when opportunistic contest form is clean and not touched', async () => {
+    const expectedCalls = [
+      apiCalls.getContests([]),
+      aaApiCalls.getJurisdictions,
+      apiCalls.getStandardizedContests,
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      render(false)
+
+      await screen.findByRole('heading', { name: 'Opportunistic Contests' })
+      userEvent.click(screen.getByRole('button', { name: 'Save & Next' }))
+      await waitFor(() => expect(nextStage.activate).toHaveBeenCalled())
+    })
+  })
+
+  it('it should not skip to next stage when opportunistic contest form is touched', async () => {
+    const expectedCalls = [
+      apiCalls.getContests([]),
+      aaApiCalls.getJurisdictions,
+      apiCalls.getStandardizedContests,
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      const { getByLabelText } = render(false)
+
+      await screen.findByRole('heading', { name: 'Opportunistic Contests' })
+
+      typeInto(
+        getByLabelText('Votes Allowed', {
+          selector: 'input',
+        }),
+        '2'
+      )
+
+      userEvent.click(screen.getByRole('button', { name: 'Save & Next' }))
+
+      await waitFor(() => {
+        expect(screen.queryAllByText('Required').length).toBe(5)
+      })
     })
   })
 })
