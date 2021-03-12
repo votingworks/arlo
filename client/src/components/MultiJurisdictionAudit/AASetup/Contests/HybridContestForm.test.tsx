@@ -208,6 +208,33 @@ describe('Audit Setup > Contests (Hybrid)', () => {
     })
   })
 
+  it('Check Jurisdiction selection is hidden for hybrid', async () => {
+    const expectedCalls = [
+      apiCalls.getContests([]),
+      aaApiCalls.getJurisdictions,
+      apiCalls.getStandardizedContests,
+      apiCalls.submitContests(newContest()),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      const { getByLabelText } = render()
+      await screen.findByRole('heading', { name: 'Target Contests' })
+      userEvent.selectOptions(
+        screen.getByLabelText(/Contest Name/),
+        'Contest 1.\'"'
+      )
+      hybridContestsInputMocks.inputs.forEach(inputData => {
+        const input = getByLabelText(new RegExp(regexpEscape(inputData.key)), {
+          selector: 'input',
+        }) as HTMLInputElement
+        typeInto(input, inputData.value)
+        expect(input.value).toBe(inputData.value)
+      })
+      expect(screen.queryByText('Contest Universe')).not.toBeInTheDocument()
+      userEvent.click(screen.getByRole('button', { name: 'Save & Next' }))
+      await waitFor(() => expect(nextStage.activate).toHaveBeenCalled())
+    })
+  })
+
   it('it should not skip to next stage when targeted contest form is clean and not touched', async () => {
     const expectedCalls = [
       apiCalls.getContests([]),
