@@ -1,9 +1,12 @@
 import uuid
+import logging
 from typing import Tuple, List
 from ..models import *  # pylint: disable=wildcard-import
 from ..util.process_file import process_file
 from ..util.csv_parse import parse_csv, CSVValueType, CSVColumnType
+from ..api.standardized_contests import process_standardized_contests_file
 
+logger = logging.getLogger("arlo")
 
 JURISDICTION_NAME = "Jurisdiction"
 ADMIN_EMAIL = "Admin Email"
@@ -29,6 +32,26 @@ def process_jurisdictions_file(session, election: Election, file: File) -> None:
         )
 
     process_file(session, file, process)
+
+    # If standardized contests file already uploaded, try reprocessing the
+    # standardized contests file as well, since it depends on jurisdiction names.
+    if election.standardized_contests_file:
+        logger.info(
+            f"START_REPROCESSING_STANDARDIZED_CONTESTS {dict(election_id=election.id)}"
+        )
+        # First, clear out the previously processed data.
+        election.standardized_contests = None
+        election.contests = []
+        election.standardized_contests_file.processing_started_at = None
+        election.standardized_contests_file.processing_completed_at = None
+        election.standardized_contests_file.processing_error = None
+        session.flush()  # Make sure process_file can read the changes we just made
+        process_standardized_contests_file(
+            session, election, election.standardized_contests_file
+        )
+        logger.info(
+            f"DONE_REPROCESSING_STANDARDIZED_CONTESTS {dict(election_id=election.id)}"
+        )
 
 
 def bulk_update_jurisdictions(

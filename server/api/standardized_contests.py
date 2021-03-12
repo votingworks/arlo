@@ -30,7 +30,7 @@ STANDARDIZED_CONTEST_COLUMNS = [
 def process_standardized_contests_file(
     session: Session, election: Election, file: File
 ):
-    def process():
+    def process() -> None:
         standardized_contests_csv = parse_csv(
             file.contents, STANDARDIZED_CONTEST_COLUMNS
         )
@@ -43,7 +43,7 @@ def process_standardized_contests_file(
                 jurisdiction_names = {
                     name.strip() for name in row[JURISDICTIONS].split(",")
                 }
-                jurisdictions = (
+                jurisdictions = list(
                     Jurisdiction.query.filter_by(election_id=election.id)
                     .filter(Jurisdiction.name.in_(jurisdiction_names))
                     .order_by(Jurisdiction.name)
@@ -61,7 +61,9 @@ def process_standardized_contests_file(
             contest_name = " ".join(row[CONTEST_NAME].splitlines())
             # Strip off Dominion's vote-for designation"
             if "Vote For=" in contest_name:
-                contest_name = re.match(r"^(.+) \(Vote For=(\d+)\)$", contest_name)[1]
+                match = re.match(r"^(.+) \(Vote For=(\d+)\)$", contest_name)
+                if match:
+                    contest_name = match[1]
 
             standardized_contests.append(
                 dict(

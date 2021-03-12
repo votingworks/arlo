@@ -4,7 +4,10 @@ from flask.testing import FlaskClient
 
 from ...models import *  # pylint: disable=wildcard-import
 from ..helpers import *  # pylint: disable=wildcard-import
-from ...worker.bgcompute import bgcompute_update_standardized_contests_file
+from ...worker.bgcompute import (
+    bgcompute_update_standardized_contests_file,
+    bgcompute_update_election_jurisdictions_file,
+)
 
 
 def test_upload_standardized_contests(
@@ -343,3 +346,102 @@ def test_standardized_contests_dominion_vote_for(
         },
         {"name": "Contest 3", "jurisdictionIds": [jurisdiction_ids[1]]},
     ]
+
+
+def test_standardized_contests_change_jurisdictions_file(
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+):
+    standardized_contests_file = (
+        "Contest Name,Jurisdictions\n"
+        "Contest 1,all\n"
+        'Contest 2,"J1, J3"\n'
+        "Contest 3,all \n"
+    )
+    rv = client.put(
+        f"/api/election/{election_id}/standardized-contests/file",
+        data={
+            "standardized-contests": (
+                io.BytesIO(standardized_contests_file.encode()),
+                "standardized-contests.csv",
+            )
+        },
+    )
+    assert_ok(rv)
+
+    bgcompute_update_standardized_contests_file(election_id)
+
+    # Remove a jurisdiction that isn't referenced directly in standardized contests
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/file",
+        data={
+            "jurisdictions": (
+                io.BytesIO(
+                    (
+                        "Jurisdiction,Admin Email\n"
+                        f"J3,j3-{election_id}@example.com\n"
+                        f"J1,{default_ja_email(election_id)}\n"
+                    ).encode()
+                ),
+                "jurisdictions.csv",
+            )
+        },
+    )
+    assert_ok(rv)
+    bgcompute_update_election_jurisdictions_file(election_id)
+
+    # Standardized contests should be automatically updated
+    rv = client.get(f"/api/election/{election_id}/standardized-contests")
+    assert json.loads(rv.data) == [
+        {
+            "name": "Contest 1",
+            "jurisdictionIds": [jurisdiction_ids[0], jurisdiction_ids[2]],
+        },
+        {
+            "name": "Contest 2",
+            "jurisdictionIds": [jurisdiction_ids[0], jurisdiction_ids[2]],
+        },
+        {
+            "name": "Contest 3",
+            "jurisdictionIds": [jurisdiction_ids[0], jurisdiction_ids[2]],
+        },
+    ]
+
+    # Now remove a jurisdiction that is referenced directly in standardized contests
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/file",
+        data={
+            "jurisdictions": (
+                io.BytesIO(
+                    (
+                        "Jurisdiction,Admin Email\n"
+                        f"J1,{default_ja_email(election_id)}\n"
+                    ).encode()
+                ),
+                "jurisdictions.csv",
+            )
+        },
+    )
+    assert_ok(rv)
+    bgcompute_update_election_jurisdictions_file(election_id)
+
+    # Standardized contests should be cleared
+    rv = client.get(f"/api/election/{election_id}/standardized-contests")
+    assert json.loads(rv.data) is None
+
+    # Error should be recorded
+    rv = client.get(f"/api/election/{election_id}/standardized-contests/file")
+    compare_json(
+        json.loads(rv.data),
+        {
+            "file": {
+                "name": "standardized-contests.csv",
+                "uploadedAt": assert_is_date,
+            },
+            "processing": {
+                "status": ProcessingStatus.ERRORED,
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": "Invalid jurisdictions for contest Contest 2: J3",
+            },
+        },
+    )
