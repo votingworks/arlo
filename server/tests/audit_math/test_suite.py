@@ -15,6 +15,8 @@ SEED = "12345678901234567890abcdefghijklmnopqrstuvwxyz😊"
 RISK_LIMIT = 10
 ALPHA = Decimal(0.1)
 
+
+
 @pytest.fixture
 def strata():
     strata = {}
@@ -29,6 +31,7 @@ def strata():
 
     return strata
 
+
 def test_sprt_functionality(strata):
 
     for contest in strata:
@@ -37,6 +40,8 @@ def test_sprt_functionality(strata):
         expected_pvalue = expected_sprt_pvalues[contest]
         delta = Decimal(0.00005)
         assert abs(pvalue - expected_pvalue) < delta, contest
+
+
 
 @pytest.fixture
 def analytic_strata():
@@ -268,7 +273,7 @@ def test_fishers_combined():
     assert diff < 0.00001, "Incorrect pvalue: {}!".format(pvalue)
 
     # Now get the combined pvalue
-    pvalue, res = compute_risk(0.05, contest, no_cvr_strata, cvr_strata)
+    pvalue, res = compute_risk(5, contest, no_cvr_strata, cvr_strata)
     expected_pvalue = 0.07049896663377597
     diff = abs(expected_pvalue - pvalue)
     assert diff < 0.000001, "Got {}".format(pvalue)
@@ -278,31 +283,29 @@ def test_fishers_combined():
 def test_get_sample_size():
 
     contest_dict = {
-        "winner": 5300,
-        "loser": 5100,
-        "ballots": 11000,
+        "winner":1011000,
+        "loser":989000,
+        "ballots": 2000000,
         "numWinners": 1,
         "votesAllowed": 1,
     }
 
     contest = Contest("ex1", contest_dict)
 
-    cvr_stratum_vote_totals= {
-        "winner": 4550,
-        "loser": 4950,
+    cvr_stratum_vote_totals = {
+        "winner": 960000,
+        "loser": 940000,
     }
-    cvr_stratum_ballots = 10000
+    cvr_stratum_num_ballots = 1900000
 
 
     cvrs = {}
-    for i in range(4550):
+    for i in range(960000):
         cvrs[i] = {"ex1": {"winner": 1, "loser": 0}}
-    for i in range(4550, 9500):
+    for i in range(960000, 1900000):
         cvrs[i] = {"ex1": {"winner": 0, "loser": 1}}
-    for i in range(9500, 10000):
-        cvrs[i] = {"ex1": {"winner": 0, "loser": 0}}
 
-    # We sample 500 ballots from the cvr strata, and find no discrepancies
+    # We sample 500 ballots from the cvr stratum, and find no discrepancies
     misstatements = {
         "o1": 0,
         "o2": 0,
@@ -310,30 +313,30 @@ def test_get_sample_size():
         "u2": 0,
     }
 
-    # Create our CVR strata
-    cvr_strata = BallotComparisonStratum(
-        cvr_stratum_ballots, cvr_stratum_vote_totals, cvrs, misstatements, sample_size=0
+    # Create our CVR stratum
+    cvr_stratum = BallotComparisonStratum(
+        cvr_stratum_num_ballots, cvr_stratum_vote_totals, cvrs, misstatements, sample_size=0
     )
 
     no_cvr_stratum_vote_totals = {
-        "winner": 750,
-        "loser": 150,
+        "winner": 51000,
+        "loser": 49000,
     }
+    no_cvr_stratum_num_ballots = 100000
 
-    no_cvr_stratum_ballots = 1000
 
-
-    # In the no-cvr strata, we sample 250 ballots and find 187 votes for the winner
+    # In the no-cvr stratum, we sample 250 ballots and find 187 votes for the winner
     # and 37 for the loser
     no_cvr_sample = {"ex1": {"winner": 0, "loser": 0}}
 
-    # create our ballot polling strata
-    no_cvr_strata = BallotPollingStratum(no_cvr_stratum_ballots, no_cvr_stratum_vote_totals, no_cvr_sample, sample_size=0)
+    # create our ballot polling stratum
+    no_cvr_stratum = BallotPollingStratum(no_cvr_stratum_num_ballots, no_cvr_stratum_vote_totals
+            , no_cvr_sample, sample_size=0)
 
-    expected_sample_size = (1310, 130)
+    expected_sample_size = (3800,200)
 
     assert expected_sample_size == get_sample_size(
-        0.05, contest, no_cvr_strata, cvr_strata
+        5, contest, no_cvr_stratum, cvr_stratum
     )
 
 
