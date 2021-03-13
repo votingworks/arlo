@@ -83,7 +83,7 @@ class BallotPollingStratum:
             null_lambda: the null hypothesis lambda value from which we derive a null margin
 
         Outputs:
-            pvalue: the pvalue from testing the hypothesis that null margin is not the acual margin
+            pvalu5e: the pvalue from testing the hypothesis that null margin is not the acual margin
             TODO: make this description beter
 
         """
@@ -330,7 +330,7 @@ def maximize_fisher_combined_pvalue(
     )
 
     # TODO: make this more formally chosen?
-    max_depth = 100
+    max_depth = 2000
     j = 0
     while j < max_depth:
         j += 1
@@ -487,6 +487,8 @@ def try_n(n, risk_limit, contest, winner, loser, bp_stratum, cvr_stratum, n_rati
                 bp_stratum.vote_totals[loser],
             ),
         }
+
+    print(hyp_sample["hyp_round"][winner] + hyp_sample["hyp_round"][loser], n2)
     hyp_sample_size = prev_sample_size + n2
     hyp_sample_size = min(bp_stratum.num_ballots, hyp_sample_size)
 
@@ -532,7 +534,8 @@ def get_sample_size(
 
         # step 1: linear search, increasing n by a factor of 1.1 each time
         while (expected_pvalue > alpha) or (expected_pvalue is np.nan):
-            ballots_to_sample = np.ceil(1.1 * ballots_to_sample)
+            # TODO: figure out if we should use 2 or 1.1
+            ballots_to_sample = int(2 * ballots_to_sample)
             if ballots_to_sample > contest.ballots:
                 cvr_ballots_to_sample = math.ceil(n_ratio * contest.ballots)
                 bp_ballots_to_sample = int(contest.ballots - cvr_ballots_to_sample)
@@ -546,9 +549,10 @@ def get_sample_size(
                 ballots_to_sample, alpha, contest, winner, loser, bp_stratum, cvr_stratum, n_ratio
             )
             print(expected_pvalue)
+            print(ballots_to_sample)
 
         # step 2: bisection between n/1.1 and n
-        low_n = ballots_to_sample / 1.1
+        low_n = ballots_to_sample / 2 # 1.1
         high_n = ballots_to_sample
         mid_pvalue = 1
         # TODO: do we need this tolerance?
@@ -567,6 +571,7 @@ def get_sample_size(
             else:
                 low_n = mid_n
             print(mid_pvalue)
+            print(mid_n)
 
         cvr_ballots_to_sample= math.ceil(n_ratio * high_n)
         bp_ballots_to_sample = math.ceil(high_n - cvr_ballots_to_sample)
