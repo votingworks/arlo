@@ -16,7 +16,6 @@ RISK_LIMIT = 10
 ALPHA = Decimal(0.1)
 
 
-
 @pytest.fixture
 def strata():
     strata = {}
@@ -35,12 +34,13 @@ def strata():
 def test_sprt_functionality(strata):
 
     for contest in strata:
-        margin = strata[contest].vote_totals["winner"] - strata[contest].vote_totals["loser"]
+        margin = (
+            strata[contest].vote_totals["winner"] - strata[contest].vote_totals["loser"]
+        )
         pvalue = strata[contest].compute_pvalue(margin, "winner", "loser", 1)
         expected_pvalue = expected_sprt_pvalues[contest]
         delta = Decimal(0.00005)
         assert abs(pvalue - expected_pvalue) < delta, contest
-
 
 
 @pytest.fixture
@@ -60,10 +60,11 @@ def analytic_strata():
 
 def test_sprt_analytic_example(analytic_strata):
     for contest in analytic_strata:
-        margin = analytic_strata[contest].vote_totals["winner"] - analytic_strata[contest].vote_totals["loser"]
-        pvalue = analytic_strata[contest].compute_pvalue(
-            margin, "winner", "loser", 1
+        margin = (
+            analytic_strata[contest].vote_totals["winner"]
+            - analytic_strata[contest].vote_totals["loser"]
         )
+        pvalue = analytic_strata[contest].compute_pvalue(margin, "winner", "loser", 1)
         expected_pvalue = expected_analytic_sprt_pvalues[contest]
         delta = Decimal(0.00005)
         assert abs(pvalue - expected_pvalue) < delta, contest
@@ -71,7 +72,10 @@ def test_sprt_analytic_example(analytic_strata):
 
 def test_edge_cases(analytic_strata):
     with pytest.raises(Exception, match=r"Null is impossible, given the sample"):
-        margin = analytic_strata["contest1"].vote_totals["winner"] - analytic_strata["contest1"].vote_totals["loser"]
+        margin = (
+            analytic_strata["contest1"].vote_totals["winner"]
+            - analytic_strata["contest1"].vote_totals["loser"]
+        )
         pvalue = analytic_strata["contest1"].compute_pvalue(
             margin, "winner", "loser", 8
         )
@@ -218,12 +222,12 @@ def test_fishers_combined():
     contest = Contest("ex1", contest_dict)
     reported_margin = contest_dict["winner"] - contest_dict["loser"]
 
-    cvr_stratum_vote_totals= {
+    cvr_stratum_vote_totals = {
         "winner": 4550,
         "loser": 4950,
     }
 
-    cvr_stratum_ballots =  10000
+    cvr_stratum_ballots = 10000
 
     cvrs = {}
     for i in range(4550):
@@ -243,7 +247,11 @@ def test_fishers_combined():
 
     # Create our CVR strata
     cvr_strata = BallotComparisonStratum(
-        cvr_stratum_ballots, cvr_stratum_vote_totals, cvrs, misstatements, sample_size=500
+        cvr_stratum_ballots,
+        cvr_stratum_vote_totals,
+        cvrs,
+        misstatements,
+        sample_size=500,
     )
 
     # Compute its p-value and check, with a lambda of 0.3
@@ -252,19 +260,23 @@ def test_fishers_combined():
     diff = abs(expected_pvalue - pvalue)
     assert diff < 0.00001, "Incorrect pvalue!"
 
-    no_cvr_stratum_vote_totals= {
+    no_cvr_stratum_vote_totals = {
         "winner": 750,
         "loser": 150,
     }
     no_cvr_stratum_ballots = 1000
-
 
     # In the no-cvr strata, we sample 250 ballots and find 187 votes for the winner
     # and 37 for the loser
     no_cvr_sample = {"ex1": {"winner": 187, "loser": 37}}
 
     # create our ballot polling strata
-    no_cvr_strata = BallotPollingStratum(no_cvr_stratum_ballots, no_cvr_stratum_vote_totals, no_cvr_sample, sample_size=250)
+    no_cvr_strata = BallotPollingStratum(
+        no_cvr_stratum_ballots,
+        no_cvr_stratum_vote_totals,
+        no_cvr_sample,
+        sample_size=250,
+    )
 
     # Compute its p-value and check, with a lambda of 0.7
     expected_pvalue = 0.006068185147942991
@@ -283,8 +295,8 @@ def test_fishers_combined():
 def test_get_sample_size():
 
     contest_dict = {
-        "winner":1011000,
-        "loser":989000,
+        "winner": 1011000,
+        "loser": 989000,
         "ballots": 2000000,
         "numWinners": 1,
         "votesAllowed": 1,
@@ -297,7 +309,6 @@ def test_get_sample_size():
         "loser": 940000,
     }
     cvr_stratum_num_ballots = 1900000
-
 
     cvrs = {}
     for i in range(960000):
@@ -315,7 +326,11 @@ def test_get_sample_size():
 
     # Create our CVR stratum
     cvr_stratum = BallotComparisonStratum(
-        cvr_stratum_num_ballots, cvr_stratum_vote_totals, cvrs, misstatements, sample_size=0
+        cvr_stratum_num_ballots,
+        cvr_stratum_vote_totals,
+        cvrs,
+        misstatements,
+        sample_size=0,
     )
 
     no_cvr_stratum_vote_totals = {
@@ -324,16 +339,19 @@ def test_get_sample_size():
     }
     no_cvr_stratum_num_ballots = 100000
 
-
     # In the no-cvr stratum, we sample 250 ballots and find 187 votes for the winner
     # and 37 for the loser
     no_cvr_sample = {"ex1": {"winner": 0, "loser": 0}}
 
     # create our ballot polling stratum
-    no_cvr_stratum = BallotPollingStratum(no_cvr_stratum_num_ballots, no_cvr_stratum_vote_totals
-            , no_cvr_sample, sample_size=0)
+    no_cvr_stratum = BallotPollingStratum(
+        no_cvr_stratum_num_ballots,
+        no_cvr_stratum_vote_totals,
+        no_cvr_sample,
+        sample_size=0,
+    )
 
-    expected_sample_size = (3800,200)
+    expected_sample_size = (4422, 232)
 
     assert expected_sample_size == get_sample_size(
         5, contest, no_cvr_stratum, cvr_stratum
@@ -366,40 +384,19 @@ expected_p_values = {
 
 
 sprt_contests = {
-    "contest1": {
-        "winner": 500,
-        "loser": 450,
-    },
-    "contest2": {
-        "winner": 600,
-        "loser": 400,
-    },
-    "contest3": {
-        "winner": 500,
-        "loser": 450,
-    },
-    "contest4": {
-        "winner": 500,
-        "loser": 450,
-    },
+    "contest1": {"winner": 500, "loser": 450,},
+    "contest2": {"winner": 600, "loser": 400,},
+    "contest3": {"winner": 500, "loser": 450,},
+    "contest4": {"winner": 500, "loser": 450,},
 }
 
 sprt_ballots = 1000
 
 
 analytic_sprt_contests = {
-    "contest1": {
-        "winner": 5,
-        "loser": 4,
-    },
-    "contest2": {
-        "winner": 6,
-        "loser": 4,
-    },
-    "contest3": {
-        "winner": 6,
-        "loser": 4,
-    },
+    "contest1": {"winner": 5, "loser": 4,},
+    "contest2": {"winner": 6, "loser": 4,},
+    "contest3": {"winner": 6, "loser": 4,},
 }
 analytic_sprt_ballots = 10
 
@@ -438,30 +435,14 @@ ss_ballots = {
     "Contest C": 36000,
     "Contest D": 15000,
     "Contest E": 10000,
-
 }
 
 ss_contests = {
-    "Contest A": {
-        "winner": 60000,
-        "loser": 40000,
-    },
-    "Contest B": {
-        "winner": 30000,
-        "loser": 24000,
-    },
-    "Contest C": {
-        "winner": 18000,
-        "loser": 12600,
-    },
-    "Contest D": {
-        "winner": 8000,
-        "loser": 6000,
-    },
-    "Contest E": {
-        "winner": 10000,
-        "loser": 0,
-    },
+    "Contest A": {"winner": 60000, "loser": 40000,},
+    "Contest B": {"winner": 30000, "loser": 24000,},
+    "Contest C": {"winner": 18000, "loser": 12600,},
+    "Contest D": {"winner": 8000, "loser": 6000,},
+    "Contest E": {"winner": 10000, "loser": 0,},
 }
 
 true_sample_sizes = {

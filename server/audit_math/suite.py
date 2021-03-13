@@ -329,10 +329,7 @@ def maximize_fisher_combined_pvalue(
         + T2(delta)
     )
 
-    # TODO: make this more formally chosen?
-    max_depth = 2000
-    j = 0
-    while j < max_depth:
+    while True:
         j += 1
 
         test_lambdas = np.arange(lambda_lower, lambda_upper + stepsize, stepsize)
@@ -390,10 +387,12 @@ def maximize_fisher_combined_pvalue(
             break
 
         # We haven't found a good enough max yet, keep looking
+        # TODO memoize the p-values we've already looked at
+        # to make it faster.
         lambda_lower = alloc_lambda - 2 * stepsize
         lambda_upper = alloc_lambda + 2 * stepsize
+        stepsize /= 10
 
-    print(f"Iterated {j} times")
     return maximized_pvalue
 
 
@@ -552,14 +551,14 @@ def get_sample_size(
             print(ballots_to_sample)
 
         # step 2: bisection between n/1.1 and n
-        low_n = ballots_to_sample / 2 # 1.1
+        low_n = ballots_to_sample / 1.1
         high_n = ballots_to_sample
         mid_pvalue = 1
         # TODO: do we need this tolerance?
-        # risk_limit_tol = 0.8
-        while (mid_pvalue > alpha) or (expected_pvalue is np.nan):
-            # while  (mid_pvalue > alpha) or (mid_pvalue < risk_limit_tol*alpha) or \
-            #    (expected_pvalue is np.nan):
+        risk_limit_tol = 0.8
+        #while (mid_pvalue > alpha) or (expected_pvalue is np.nan):
+        while  (mid_pvalue > alpha) or (mid_pvalue < risk_limit_tol*alpha) or \
+                (expected_pvalue is np.nan):
             mid_n = np.floor((low_n + high_n) / 2)
             if mid_n in [low_n, high_n]:
                 break
