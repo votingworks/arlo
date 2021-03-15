@@ -370,6 +370,21 @@ def test_standardized_contests_change_jurisdictions_file(
 
     bgcompute_update_standardized_contests_file(election_id)
 
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/contest",
+        [
+            {
+                "id": str(uuid.uuid4()),
+                "name": "Contest 1",
+                "numWinners": 1,
+                "jurisdictionIds": jurisdiction_ids,
+                "isTargeted": True,
+            }
+        ],
+    )
+    assert_ok(rv)
+
     # Remove a jurisdiction that isn't referenced directly in standardized contests
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/file",

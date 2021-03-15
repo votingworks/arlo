@@ -710,3 +710,91 @@ def test_ballot_comparison_sample_size_validation(
         assert json.loads(rv.data) == {
             "errors": [{"message": expected_error, "errorType": "Bad Request",}]
         }
+
+
+def test_ballot_comparison_multiple_targeted_contests_sample_size(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    election_settings,  # pylint: disable=unused-argument
+    manifests,  # pylint: disable=unused-argument
+    cvrs,  # pylint: disable=unused-argument
+    snapshot,
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+
+    contest_1_id = str(uuid.uuid4())
+    contest_2_id = str(uuid.uuid4())
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/contest",
+        [
+            {
+                "id": contest_1_id,
+                "name": "Contest 1",
+                "numWinners": 1,
+                "jurisdictionIds": jurisdiction_ids[:2],
+                "isTargeted": True,
+            },
+            {
+                "id": contest_2_id,
+                "name": "Contest 2",
+                "numWinners": 1,
+                "jurisdictionIds": jurisdiction_ids[:2],
+                "isTargeted": True,
+            },
+        ],
+    )
+    assert_ok(rv)
+
+    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    sample_size_options = json.loads(rv.data)["sampleSizes"]
+
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {
+            "roundNum": 1,
+            "sampleSizes": {
+                contest_id: options[0]
+                for contest_id, options in sample_size_options.items()
+            },
+        },
+    )
+    assert_ok(rv)
+
+    rv = client.get(f"/api/election/{election_id}/round",)
+    round_1_id = json.loads(rv.data)["rounds"][0]["id"]
+
+    sampled_ballots = (
+        SampledBallot.query.filter_by(status=BallotStatus.NOT_AUDITED)
+        .join(SampledBallotDraw)
+        .filter_by(round_id=round_1_id)
+        .join(Batch)
+        .order_by(Batch.tabulator, Batch.name, SampledBallot.ballot_position)
+        .all()
+    )
+
+    contest_1 = Contest.query.get(contest_1_id)
+    contest_2 = Contest.query.get(contest_2_id)
+
+    for ballot in sampled_ballots:
+        audit_ballot(ballot, contest_1_id, Interpretation.VOTE, [contest_1.choices[0]])
+        audit_ballot(ballot, contest_2_id, Interpretation.VOTE, [contest_2.choices[0]])
+
+    round = Round.query.get(round_1_id)
+    end_round(round.election, round)
+    db_session.commit()
+
+    rv = post_json(client, f"/api/election/{election_id}/round", {"roundNum": 2})
+    assert_ok(rv)
+
+    rv = client.get(f"/api/election/{election_id}/round",)
+    round_2_id = json.loads(rv.data)["rounds"][1]["id"]
+
+    round_2_sample_sizes = list(
+        RoundContest.query.filter_by(round_id=round_2_id).values(
+            RoundContest.sample_size
+        )
+    )
+    snapshot.assert_match(round_2_sample_sizes)
