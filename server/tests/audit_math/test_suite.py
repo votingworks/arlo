@@ -132,18 +132,13 @@ def test_cvr_compute_risk(cvr_strata):
         sample_size = true_sample_sizes[contest]
 
         # No discrepancies
-        misstatements = {
-            "o1": 0,
-            "o2": 0,
-            "u1": 0,
-            "u2": 0,
-        }
+        misstatements = {("winner", "loser"): {"o1": 0, "o2": 0, "u1": 0, "u2": 0,}}
 
         stratum = cvr_strata[contest]
         stratum.misstatements = misstatements
         stratum.sample_size = sample_size
         reported_margin = ss_contests[contest]["winner"] - ss_contests[contest]["loser"]
-        p_value = stratum.compute_pvalue(reported_margin, 1)
+        p_value = stratum.compute_pvalue(reported_margin, "winner", "loser", 1)
         expected_p = expected_p_values["no_discrepancies"][contest]
         diff = abs(p_value - expected_p)
 
@@ -155,17 +150,12 @@ def test_cvr_compute_risk(cvr_strata):
         assert p_value <= ALPHA, "Audit should have finished but didn't"
 
         # Test one-vote overstatement
-        misstatements = {
-            "o1": 1,
-            "o2": 0,
-            "u1": 0,
-            "u2": 0,
-        }
+        misstatements = {("winner", "loser"): {"o1": 1, "o2": 0, "u1": 0, "u2": 0,}}
 
         stratum = cvr_strata[contest]
         stratum.misstatements = misstatements
         stratum.sample_size = sample_size
-        p_value = stratum.compute_pvalue(reported_margin, 1)
+        p_value = stratum.compute_pvalue(reported_margin, "winner", "loser", 1)
         expected_p = expected_p_values["one_vote_over"][contest]
         diff = abs(p_value - expected_p)
         finished = p_value <= ALPHA
@@ -181,17 +171,12 @@ def test_cvr_compute_risk(cvr_strata):
             assert not finished, "Audit shouldn't have finished but did!"
 
         # Test two-vote overstatement
-        misstatements = {
-            "o1": 0,
-            "o2": 1,
-            "u1": 0,
-            "u2": 0,
-        }
+        misstatements = {("winner", "loser"): {"o1": 0, "o2": 1, "u1": 0, "u2": 0,}}
 
         stratum = cvr_strata[contest]
         stratum.misstatements = misstatements
         stratum.sample_size = sample_size
-        p_value = stratum.compute_pvalue(reported_margin, 1)
+        p_value = stratum.compute_pvalue(reported_margin, "winner", "loser", 1)
         expected_p = expected_p_values["two_vote_over"][contest]
         diff = abs(p_value - expected_p)
         finished = p_value <= ALPHA
@@ -237,12 +222,7 @@ def test_fishers_combined():
         cvrs[i] = {"ex1": {"winner": 0, "loser": 0}}
 
     # We sample 500 ballots from the cvr strata, and find no discrepancies
-    misstatements = {
-        "o1": 0,
-        "o2": 0,
-        "u1": 0,
-        "u2": 0,
-    }
+    misstatements = {("winner", "loser"): {"o1": 0, "o2": 0, "u1": 0, "u2": 0,}}
 
     # Create our CVR strata
     cvr_strata = BallotComparisonStratum(
@@ -255,7 +235,7 @@ def test_fishers_combined():
 
     # Compute its p-value and check, with a lambda of 0.3
     expected_pvalue = 0.23557770396261943
-    pvalue = cvr_strata.compute_pvalue(reported_margin, 0.3)
+    pvalue = cvr_strata.compute_pvalue(reported_margin, "winner", "loser", 0.3)
     diff = abs(expected_pvalue - pvalue)
     assert diff < 0.00001, "Incorrect pvalue!"
 
@@ -316,12 +296,7 @@ def test_get_sample_size():
         cvrs[i] = {"ex1": {"winner": 0, "loser": 1}}
 
     # We sample 500 ballots from the cvr stratum, and find no discrepancies
-    misstatements = {
-        "o1": 0,
-        "o2": 0,
-        "u1": 0,
-        "u2": 0,
-    }
+    misstatements = {("winner", "loser"): {"o1": 0, "o2": 0, "u1": 0, "u2": 0,}}
 
     # Create our CVR stratum
     cvr_stratum = BallotComparisonStratum(
