@@ -86,18 +86,13 @@ class BallotPollingStratum:
         Inputs:
             reported_margin: the total margin, in votes, between the winner and loser across all strata
             winner: the name of the winner
-            loser: the name of the lsoer
+            loser: the name of the loser
             null_lambda: the null hypothesis lambda value from which we derive a null margin
 
         Outputs:
-            pvalu5e: the pvalue from testing the hypothesis that null margin is not the acual margin
-            TODO: make this description beter
-
+            pvalue: the pvalue from testing the hypothesis that null margin is not the acual margin
         """
 
-        # Set parameters
-
-        # Set up likelihood for null and alternative hypotheses
         n = self.sample_size
 
         if n == 0:
@@ -226,6 +221,14 @@ class BallotComparisonStratum:
 
         """
         Compute a p-value for a winner-loser pair for this strata based on its math type.
+
+        Inputs:
+            reported_margin: the alternative hypothesis margin, in ballots
+            winner, loser: the winner-loser pair to evaluate the hypothesis on
+            null_lambda: the Fisher's combining lambda for the null hypothesis.
+
+        Outputs:
+            pvalue - the pvalue for the hypothesis given the null_lambda
         """
 
         if self.sample_size == 0:
@@ -288,17 +291,19 @@ def maximize_fisher_combined_pvalue(
     Grid search to find the maximum P-value.
     Find the smallest Fisher's combined statistic for P-values obtained
     by testing two null hypotheses at level alpha using data X=(X1, X2).
-    Parameters
-    ----------
-    stepsize : float
-        size of the grid for searching over lambda. Default is 0.05
-    strata  - a list of Stratum object. Note: assume ballot polling strata is first.
-    alpha : float
-        Risk limit. Default is 0.05.
 
-    Returns
-    -------
-    max_pvalue: float
+    This was largely taken from CORLA18.
+
+    Inputs:
+        alpha: the risk limit as a fraction
+        contest: the contest being audited
+        bp_stratum: a stratum object containing the ballot polling stratum
+        cvr_stratum: a stratum object containing the ballot comparison stratum
+        winner, loser: the winner-loser pair to maximuze the p-value over
+
+    Outputs:
+        a maximum p-value for the Fisher's combining function given the two
+        strata.
     """
     stepsize = 0.05
 
@@ -434,6 +439,21 @@ def try_n(
     cvr_stratum: BallotComparisonStratum,
     n_ratio: float,
 ) -> float:
+    """
+    A function that evaluates whether a certain sample size can meet the risk limit.
+
+    Inputs:
+        n - the sample size to test
+        alpha - the risk limit as a fraction
+        contest - the contest being audited
+        winner, loser - the winner-loser pair to evaluate the risk measurement over
+        bp_stratum: a stratum object containing the ballot polling stratum
+        cvr_stratum: a stratum object containing the ballot comparison stratum
+        n_ratio: the ratio of the size of the CVR stratum to both strata.
+    Outputs:
+        A Fisher's combined maximized p-value for the given sample size, contest,
+        winner-loser pair, and strata.
+    """
 
     n1_original = cvr_stratum.sample_size
     n2_original = bp_stratum.sample_size
@@ -547,10 +567,10 @@ def get_sample_size(
     Estimate the initial sample sizes for the audit.
 
     Inputs:
-        risk_limit      - the risk limit for this audit
+        risk_limit      - the risk limit (as an integer percentage) for this audit
         contest         - the overall contest information
-        strata          - A list of strata over which to perform the audit.
-                          Note: we assume the ballot polling strata is first
+        bp_stratum: a stratum object containing the ballot polling stratum
+        cvr_stratum: a stratum object containing the ballot comparison stratum
     Outputs:
         sample_sizes    - A Tuple of (cvr_strata_size, no_cvr_strata_size).
     """
@@ -642,6 +662,17 @@ def compute_risk(
     function to combine pvalue measurements from a ballot polling and ballot
     comparison stratum. Returns the highest measured p-value for all winner-loser
     pairs.
+
+    Inputs:
+        risk_limit      - the risk limit (as an integer percentage) for this audit
+        contest         - the overall contest information
+        bp_stratum: a stratum object containing the ballot polling stratum
+        cvr_stratum: a stratum object containing the ballot comparison stratum
+
+    Outputs:
+        a maximized Fisher's combined p-value over all winner-loser pairs, and
+        whether the p-value meets the risk limit.
+
     """
     #    alpha = Decimal(risk_limit) / 100
     alpha = float(risk_limit) / 100
