@@ -20,6 +20,11 @@ TABULATOR2,BATCH2,5,2-2-5,0.442956417641278897,N,Audit Board #1
 TABULATOR2,BATCH2,6,2-2-6,0.300053574780458718,N,Audit Board #1
 """
 
+snapshots["test_ballot_comparison_multiple_targeted_contests_sample_size 1"] = [
+    ({"key": "supersimple", "prob": None, "size": 30},),
+    ({"key": "supersimple", "prob": None, "size": 30},),
+]
+
 snapshots["test_ballot_comparison_two_rounds 1"] = {
     "key": "supersimple",
     "prob": None,
