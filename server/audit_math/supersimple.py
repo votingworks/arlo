@@ -269,7 +269,6 @@ def compute_risk(
                         }
                     ...
                 }
-        null_lambda: a margin-allocation variable for use in stratified audits.
 
     Outputs:
         measurements    - the p-value of the hypotheses that the election
