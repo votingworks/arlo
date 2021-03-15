@@ -3,7 +3,7 @@ import math
 from decimal import Decimal, ROUND_CEILING
 from typing import Dict, Tuple, TypedDict, Optional
 
-from .sampler_contest import Contest, CVRS, SAMPLE_CVRS
+from .sampler_contest import Contest, CVRS, SAMPLECVRS
 
 l: Decimal = Decimal(0.5)
 gamma: Decimal = Decimal(1.03905)  # This gamma is used in Stark's tool, AGI, and CORLA
@@ -47,7 +47,7 @@ def nMin(
 
 
 def compute_discrepancies(
-    contest: Contest, cvrs: CVRS, sample_cvr: SAMPLE_CVRS
+    contest: Contest, cvrs: CVRS, sample_cvr: SAMPLECVRS
 ) -> Dict[str, Discrepancy]:
     """
     Iterates through a given sample and returns the discrepancies found.
@@ -240,7 +240,7 @@ def get_sample_sizes(
 
 
 def compute_risk(
-    risk_limit: int, contest: Contest, cvrs: CVRS, sample_cvr: SAMPLE_CVRS
+    risk_limit: int, contest: Contest, cvrs: CVRS, sample_cvr: SAMPLECVRS
 ) -> Tuple[float, bool]:
     """
     Computes the risk-value of <sample_results> based on results in <contest>.

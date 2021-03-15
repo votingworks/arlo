@@ -2,9 +2,9 @@
 A Module containing the Contest class, which encapsulates useful info for RLA
 computations.
 """
-from typing import Dict, Any, Union, Optional, TypedDict
-from ..models import AuditMathType
 import operator
+from typing import Dict, Optional, TypedDict
+
 
 def from_db_contest(db_contest):
     """
@@ -179,4 +179,4 @@ class SampleCVR(TypedDict):
     cvr: Optional[CVR]
 
 
-SAMPLE_CVRS = Dict[str, SampleCVR]
+SAMPLECVRS = Dict[str, SampleCVR]
