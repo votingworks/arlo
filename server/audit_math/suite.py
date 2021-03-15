@@ -61,12 +61,16 @@ class BallotPollingStratum:
                         cand2: 200,
                         ...
                     }
-            sample_results : the vote totals for this stratum in the sample so far. E.g.,
+            sample_results : the vote totals for this stratum in the sample so far, by round. E.g.,
                     {
-                        "winner1": 10,
-                        "winner2": 7,
-                        "loser1": 5,
-                        "loser2": 2,
+                        "round1" : {
+                            "winner1": 10,
+                            "winner2": 7,
+                            "loser1": 5,
+                            "loser2": 2,
+                            ...
+                        },
+                        "round2": {...},
                         ...
                     }
             sample_size: the number of ballots sampled so far
@@ -251,32 +255,6 @@ class BallotComparisonStratum:
         )
         pvalue = np.exp(log_pvalue)
         return float(np.min([pvalue, 1.0]))  # cast for the typechecker
-
-
-def get_misstatements(contest, reported_cvr, sample, winner, loser):
-    o1, o2, u1, u2 = 0, 0, 0, 0
-    for ballot in reported_cvr:
-        if ballot not in sample:
-            continue
-
-        v_w = reported_cvr[ballot][contest.name][winner]
-        v_l = reported_cvr[ballot][contest.name][loser]
-
-        a_w = sample[ballot]["cvr"][contest.name][winner]
-        a_l = sample[ballot]["cvr"][contest.name][loser]
-
-        e = (v_w - a_w) - (v_l - a_l)
-
-        if e == -2:
-            u2 += 1
-        elif e == -1:
-            u1 += 1
-        elif e == 1:
-            o1 += 1
-        elif e == 2:
-            o2 += 1
-
-    return u2, u2, o1, o2
 
 
 def maximize_fisher_combined_pvalue(
