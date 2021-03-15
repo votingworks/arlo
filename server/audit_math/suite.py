@@ -12,7 +12,7 @@ https://github.com/pbstark/CORLA18
 """
 from itertools import product
 import math
-from typing import Optional, Tuple, Dict
+from typing import Tuple, Dict
 
 # from decimal import Decimal
 import numpy as np
@@ -35,7 +35,7 @@ class BallotPollingStratum:
     audits.
     """
 
-    SAMPLE_RESULTS = Optional[Dict[str, Dict[str, int]]]  # ballot polling
+    SAMPLE_RESULTS = Dict[str, Dict[str, int]]  # ballot polling
 
     num_ballots: int
     vote_totals: Dict[str, int]
@@ -171,7 +171,8 @@ class BallotPollingStratum:
                 LR_derivative, lower_n_w_limit, upper_n_w_limit
             )
         logLR = alt_logLR - null_logLR(nuisance_param)
-        LR = np.exp(logLR)
+        LR = float(np.exp(logLR))  # This value is always a float, but np.exp
+        # can return a vector. casting for the typechecker.
 
         return 1.0 / LR if 1.0 / LR < 1 else 1.0
 
@@ -184,19 +185,18 @@ class BallotComparisonStratum:
     audits.
     """
 
-    RESULTS = CVRS
-
     num_ballots: int
     vote_totals: Dict[str, int]
-    results: RESULTS
+    misstatements: Dict[Tuple[str, str], Dict[str, int]]
+    results: CVRS
     sample_size: int
 
     def __init__(
         self,
         num_ballots: int,
         vote_totals: Dict[str, int],
-        results: RESULTS,
-        misstatements: Dict[str, Dict[str, int]],
+        results: CVRS,
+        misstatements: Dict[Tuple[str, str], Dict[str, int]],
         sample_size: int,
     ):
         """
@@ -222,7 +222,7 @@ class BallotComparisonStratum:
         self.misstatements = misstatements
         self.sample_size = sample_size
 
-    def compute_pvalue(self, reported_margin, null_lambda) -> float:
+    def compute_pvalue(self, reported_margin, winner, loser, null_lambda) -> float:
 
         """
         Compute a p-value for a winner-loser pair for this strata based on its math type.
@@ -232,10 +232,10 @@ class BallotComparisonStratum:
             return 1
 
         o1, o2, u1, u2 = (
-            self.misstatements["o1"],
-            self.misstatements["o2"],
-            self.misstatements["u1"],
-            self.misstatements["u2"],
+            self.misstatements[(winner, loser)]["o1"],
+            self.misstatements[(winner, loser)]["o2"],
+            self.misstatements[(winner, loser)]["u1"],
+            self.misstatements[(winner, loser)]["u2"],
         )
 
         U_s = 2 * self.num_ballots / reported_margin
@@ -247,7 +247,7 @@ class BallotComparisonStratum:
             - u2 * np.log(1 + 1 / GAMMA)
         )
         pvalue = np.exp(log_pvalue)
-        return np.min([pvalue, 1])
+        return float(np.min([pvalue, 1.0]))  # cast for the typechecker
 
 
 def get_misstatements(contest, reported_cvr, sample, winner, loser):
@@ -365,7 +365,12 @@ def maximize_fisher_combined_pvalue(
         fisher_pvalues = np.empty_like(test_lambdas)
         for i, test_lambda in enumerate(test_lambdas):
             pvalue1 = np.min(
-                [1, cvr_stratum.compute_pvalue(reported_margin, test_lambda)]
+                [
+                    1,
+                    cvr_stratum.compute_pvalue(
+                        reported_margin, winner, loser, test_lambda
+                    ),
+                ]
             )
 
             try:
@@ -419,18 +424,27 @@ def maximize_fisher_combined_pvalue(
     return maximized_pvalue
 
 
-def try_n(n, risk_limit, contest, winner, loser, bp_stratum, cvr_stratum, n_ratio):
+def try_n(
+    n: int,
+    alpha: float,
+    contest: Contest,
+    winner: str,
+    loser: str,
+    bp_stratum: BallotPollingStratum,
+    cvr_stratum: BallotComparisonStratum,
+    n_ratio: float,
+) -> float:
 
     n1_original = cvr_stratum.sample_size
     n2_original = bp_stratum.sample_size
 
-    o1_rate, o2_rate, u1_rate, u2_rate = 0, 0, 0, 0
+    o1_rate, o2_rate, u1_rate, u2_rate = 0.0, 0.0, 0.0, 0.0
     # Assume o1, o2, u1, u2 rates will be the same as what we observed in sample
     if n1_original != 0:
-        o1_rate = cvr_stratum.misstatements["o1"] / n1_original
-        o2_rate = cvr_stratum.misstatements["o2"] / n1_original
-        u1_rate = cvr_stratum.misstatements["u1"] / n1_original
-        u2_rate = cvr_stratum.misstatements["u2"] / n1_original
+        o1_rate = cvr_stratum.misstatements[(winner, loser)]["o1"] / n1_original
+        o2_rate = cvr_stratum.misstatements[(winner, loser)]["o2"] / n1_original
+        u1_rate = cvr_stratum.misstatements[(winner, loser)]["u1"] / n1_original
+        u2_rate = cvr_stratum.misstatements[(winner, loser)]["u2"] / n1_original
 
     n1 = math.ceil(n_ratio * n)
     n2 = int(n - n1)
@@ -438,21 +452,28 @@ def try_n(n, risk_limit, contest, winner, loser, bp_stratum, cvr_stratum, n_rati
     if (n1 < n1_original) or (n2 < n2_original):
         return 1
 
-    o1 = math.ceil(o1_rate * (n - n1_original)) + cvr_stratum.misstatements["o1"]
-    o2 = math.ceil(o2_rate * (n - n1_original)) + cvr_stratum.misstatements["o2"]
-    u1 = math.floor(u1_rate * (n - n1_original)) + cvr_stratum.misstatements["u1"]
-    u2 = math.floor(u2_rate * (n - n1_original)) + cvr_stratum.misstatements["u2"]
+    o1 = (
+        math.ceil(o1_rate * (n - n1_original))
+        + cvr_stratum.misstatements[(winner, loser)]["o1"]
+    )
+    o2 = (
+        math.ceil(o2_rate * (n - n1_original))
+        + cvr_stratum.misstatements[(winner, loser)]["o2"]
+    )
+    u1 = (
+        math.floor(u1_rate * (n - n1_original))
+        + cvr_stratum.misstatements[(winner, loser)]["u1"]
+    )
+    u2 = (
+        math.floor(u2_rate * (n - n1_original))
+        + cvr_stratum.misstatements[(winner, loser)]["u2"]
+    )
 
     # Because this is a hypothetical sample, we create a
     # corresponding hypothetical stratum
     hyp_sample_size = n1_original + n1
 
-    hyp_misstatements = {
-        "o1": o1,
-        "o2": o2,
-        "u1": u1,
-        "u2": u2,
-    }
+    hyp_misstatements = {(winner, loser): {"o1": o1, "o2": o2, "u1": u1, "u2": u2,}}
 
     hyp_cvr_stratum = BallotComparisonStratum(
         cvr_stratum.num_ballots,
@@ -513,7 +534,7 @@ def try_n(n, risk_limit, contest, winner, loser, bp_stratum, cvr_stratum, n_rati
     )
 
     return maximize_fisher_combined_pvalue(
-        risk_limit, contest, hyp_no_cvr_stratum, hyp_cvr_stratum, winner, loser
+        alpha, contest, hyp_no_cvr_stratum, hyp_cvr_stratum, winner, loser
     )
 
 
@@ -550,7 +571,7 @@ def get_sample_size(
 
         ballots_to_sample = num_sampled
 
-        expected_pvalue = 1
+        expected_pvalue = 1.0
 
         # step 1: linear search, increasing n by a factor of 1.1 each time
         while (expected_pvalue > alpha) or (expected_pvalue is np.nan):
@@ -585,7 +606,7 @@ def get_sample_size(
         # step 2: bisection between n/1.1 and n
         low_n = ballots_to_sample / 1.1
         high_n = ballots_to_sample
-        mid_pvalue = 1
+        mid_pvalue = 1.0
         # TODO: do we need this tolerance?
         risk_limit_tol = 0.8
         # while (mid_pvalue > alpha) or (expected_pvalue is np.nan):
@@ -594,7 +615,7 @@ def get_sample_size(
             or (mid_pvalue < risk_limit_tol * alpha)
             or (expected_pvalue is np.nan)
         ):
-            mid_n = np.floor((low_n + high_n) / 2)
+            mid_n = int(np.floor((low_n + high_n) / 2))  # cast for typechecker
             if mid_n in [low_n, high_n]:
                 break
             mid_pvalue = try_n(
