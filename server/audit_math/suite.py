@@ -525,7 +525,6 @@ def try_n(
             ),
         }
 
-    print(hyp_sample["hyp_round"][winner] + hyp_sample["hyp_round"][loser], n2)
     hyp_sample_size = prev_sample_size + n2
     hyp_sample_size = min(bp_stratum.num_ballots, hyp_sample_size)
 
@@ -573,10 +572,15 @@ def get_sample_size(
 
         expected_pvalue = 1.0
 
+        # this allows us to exactly match CORLA18's estimate_n and estimate_escalation_n
+        coefficient = 1.1
+        if bp_stratum.sample_size == 0 and cvr_stratum.sample_size == 0:
+            coefficient = 2.0
+
         # step 1: linear search, increasing n by a factor of 1.1 each time
         while (expected_pvalue > alpha) or (expected_pvalue is np.nan):
             # TODO: figure out if we should use 2 or 1.1
-            ballots_to_sample = int(2 * ballots_to_sample)
+            ballots_to_sample = int(coefficient * ballots_to_sample)
             if ballots_to_sample > contest.ballots:
                 cvr_ballots_to_sample = math.ceil(n_ratio * contest.ballots)
                 bp_ballots_to_sample = int(contest.ballots - cvr_ballots_to_sample)
@@ -600,11 +604,9 @@ def get_sample_size(
                 cvr_stratum,
                 n_ratio,
             )
-            print(expected_pvalue)
-            print(ballots_to_sample)
 
         # step 2: bisection between n/1.1 and n
-        low_n = ballots_to_sample / 1.1
+        low_n = ballots_to_sample / coefficient
         high_n = ballots_to_sample
         mid_pvalue = 1.0
         # TODO: do we need this tolerance?
@@ -625,8 +627,6 @@ def get_sample_size(
                 high_n = mid_n
             else:
                 low_n = mid_n
-            print(mid_pvalue)
-            print(mid_n)
 
         cvr_ballots_to_sample = math.ceil(n_ratio * high_n)
         bp_ballots_to_sample = math.ceil(high_n - cvr_ballots_to_sample)

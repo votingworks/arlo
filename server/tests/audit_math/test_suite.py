@@ -325,7 +325,7 @@ def test_get_sample_size():
         sample_size=0,
     )
 
-    expected_sample_size = (4422, 232)
+    expected_sample_size = (3800, 200)
 
     assert expected_sample_size == get_sample_size(
         5, contest, no_cvr_stratum, cvr_stratum
