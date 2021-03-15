@@ -115,6 +115,7 @@ class Election(BaseModel):
         "Contest",
         back_populates="election",
         uselist=True,
+        cascade="all, delete-orphan",
         passive_deletes=True,
         order_by="Contest.created_at",
     )
