@@ -208,7 +208,6 @@ def sample_size_options(
             cvr_stratum = suite.BallotComparisonStratum(
                 total_ballots.cvr,
                 cvr_vote_counts,
-                cvr_reported_results,
                 cvr_misstatements,
                 cvr_previous_samples,
             )
