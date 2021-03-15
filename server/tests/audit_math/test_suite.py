@@ -8,6 +8,7 @@ from ...audit_math.suite import (
     BallotComparisonStratum,
     compute_risk,
     get_sample_size,
+    HybridPair,
 )
 
 SEED = "12345678901234567890abcdefghijklmnopqrstuvwxyz😊"
@@ -271,7 +272,7 @@ def test_get_sample_size():
         sample_size=0,
     )
 
-    expected_sample_size = (3800, 200)
+    expected_sample_size = HybridPair(cvr=3800, non_cvr=200)
 
     assert expected_sample_size == get_sample_size(
         5, contest, no_cvr_stratum, cvr_stratum

@@ -59,7 +59,9 @@ def hybrid_contest_total_ballots(contest: Contest) -> HybridPair:
         .group_by(Batch.has_cvrs)
         .values(Batch.has_cvrs, func.sum(Batch.num_ballots))
     )
-    return HybridPair(cvr=total_ballots[True], non_cvr=total_ballots[False],)
+    return HybridPair(
+        cvr=total_ballots.get(True, 0), non_cvr=total_ballots.get(False, 0)
+    )
 
 
 def process_ballot_manifest_file(
