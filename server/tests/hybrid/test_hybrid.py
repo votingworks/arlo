@@ -258,3 +258,54 @@ def test_contest_choices_dont_match_cvrs(
             }
         ]
     }
+
+
+def test_one_round(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    contest_ids: List[str],  # pylint: disable=unused-argument
+    election_settings,  # pylint: disable=unused-argument
+    manifests,  # pylint: disable=unused-argument
+    cvrs,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    sample_sizes = json.loads(rv.data)["sampleSizes"]
+
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {
+            "roundNum": 1,
+            "sampleSizes": {
+                contest_id: sample_sizes[0]
+                for contest_id, sample_sizes in sample_sizes.items()
+            },
+        },
+    )
+    assert_ok(rv)
+
+    # Two separate samples (cvr/non-cvr) should have been drawn
+    ballot_draws = list(
+        SampledBallotDraw.query.join(SampledBallot)
+        .join(Batch)
+        .join(Jurisdiction)
+        .filter_by(election_id=election_id)
+        .all()
+    )
+    sample_size = list(sample_sizes.values())[0][0]
+    assert (
+        len([draw for draw in ballot_draws if draw.sampled_ballot.batch.has_cvrs])
+        == sample_size["sizeCvr"]
+    )
+    assert (
+        len([draw for draw in ballot_draws if not draw.sampled_ballot.batch.has_cvrs])
+        == sample_size["sizeNonCvr"]
+    )
+
+    # Check that we're sampling ballots from the two jurisdictions that uploaded manifests
+    sampled_jurisdictions = {
+        draw.sampled_ballot.batch.jurisdiction_id for draw in ballot_draws
+    }
+    assert sorted(sampled_jurisdictions) == sorted(jurisdiction_ids[:2])

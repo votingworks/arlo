@@ -499,6 +499,8 @@ class SampleSize(TypedDict):
     size: int
     key: str
     prob: Optional[float]
+    sizeCvr: int  # Only in hybrid audits
+    sizeNonCvr: int  # Only in hybrid audits
 
 
 class BallotDraw(NamedTuple):
@@ -526,18 +528,23 @@ def draw_sample(round_id: str, election_id: str):
                 "Cannot sample all ballots when there are multiple targeted contests."
             )
         election.online = False
-        return None
+        return
 
     if election.audit_type == AuditType.BATCH_COMPARISON:
-        return sample_batches(election, round, contest_sample_sizes)
+        sample_batches(election, round, contest_sample_sizes)
+    elif election.audit_type in [AuditType.BALLOT_POLLING, AuditType.BALLOT_COMPARISON]:
+        sample_ballots(election, round, contest_sample_sizes)
     else:
-        return sample_ballots(election, round, contest_sample_sizes)
+        assert election.audit_type == AuditType.HYBRID
+        sample_ballots(election, round, contest_sample_sizes, filter_has_cvrs=True)
+        sample_ballots(election, round, contest_sample_sizes, filter_has_cvrs=False)
 
 
 def sample_ballots(
     election: Election,
     round: Round,
     contest_sample_sizes: List[Tuple[Contest, SampleSize]],
+    filter_has_cvrs: bool = None,
 ):
     participating_jurisdictions = {
         jurisdiction
@@ -565,9 +572,13 @@ def sample_ballots(
         # Compute the total number of ballot samples in all rounds leading up to
         # this one. Note that this corresponds to the number of SampledBallotDraws,
         # not SampledBallots.
-        num_previously_sampled = SampledBallotDraw.query.filter_by(
-            contest_id=contest.id
-        ).count()
+        num_previously_sampled = (
+            SampledBallotDraw.query.filter_by(contest_id=contest.id)
+            .join(SampledBallot)
+            .join(Batch)
+            .filter_by(has_cvrs=filter_has_cvrs)
+            .count()
+        )
 
         # Create the pool of ballots to sample (aka manifest) by combining the
         # manifests from every jurisdiction in the contest's universe.
@@ -575,13 +586,21 @@ def sample_ballots(
             batch_id_to_key[batch.id]: list(range(1, batch.num_ballots + 1))
             for jurisdiction in contest.jurisdictions
             for batch in jurisdiction.batches
+            if batch.has_cvrs == filter_has_cvrs
         }
+
+        if filter_has_cvrs is None:
+            sample_size_num = sample_size["size"]
+        elif filter_has_cvrs:
+            sample_size_num = sample_size["sizeCvr"]
+        else:
+            sample_size_num = sample_size["sizeNonCvr"]
 
         # Do the math! i.e. compute the actual sample
         sample = sampler.draw_sample(
             str(election.random_seed),
             dict(manifest),
-            sample_size["size"],
+            sample_size_num,
             num_previously_sampled,
         )
         return [
@@ -695,6 +714,8 @@ CREATE_ROUND_REQUEST_SCHEMA = {
                         "size": {"type": "integer"},
                         "key": {"type": "string"},
                         "prob": {"anyOf": [{"type": "number"}, {"type": "null"}]},
+                        "sizeCvr": {"type": "integer"},  # Only in hybrid audits
+                        "sizeNonCvr": {"type": "integer"},  # Only in hybrid audits
                     },
                     "additionalProperties": False,
                     "required": ["size", "key", "prob"],
@@ -749,6 +770,7 @@ def validate_sample_size(round: dict, election: Election):
                 contest.total_ballots_cast,
             ),
             AuditType.BATCH_COMPARISON: (["macro", "custom"], total_batches),
+            AuditType.HYBRID: (["suite"], contest.total_ballots_cast),
         }[AuditType(election.audit_type)]
 
         if sample_size["key"] not in valid_keys:
