@@ -20,14 +20,14 @@ def test_contest_vote_counts_before_cvrs(
             {
                 "id": assert_is_id,
                 "name": "Choice 1-1",
-                "numVotes": 14 + 16,  # CVR + non-CVR
+                "numVotes": 12 + 18,  # CVR + non-CVR
                 "numVotesCvr": None,
                 "numVotesNonCvr": None,
             },
             {
                 "id": assert_is_id,
                 "name": "Choice 1-2",
-                "numVotes": 8 + 4,
+                "numVotes": 8 + 2,
                 "numVotesCvr": None,
                 "numVotesNonCvr": None,
             },
@@ -39,7 +39,7 @@ def test_contest_vote_counts_before_cvrs(
             {
                 "id": assert_is_id,
                 "name": "Choice 2-1",
-                "numVotes": 14 + 6,
+                "numVotes": 13 + 7,
                 "numVotesCvr": None,
                 "numVotesNonCvr": None,
             },
@@ -53,7 +53,7 @@ def test_contest_vote_counts_before_cvrs(
             {
                 "id": assert_is_id,
                 "name": "Choice 2-3",
-                "numVotes": 8 + 2,
+                "numVotes": 7 + 3,
                 "numVotesCvr": None,
                 "numVotesNonCvr": None,
             },
@@ -85,9 +85,9 @@ def test_contest_vote_counts(
             {
                 "id": assert_is_id,
                 "name": "Choice 1-2",
-                "numVotes": 8 + 4,
+                "numVotes": 8 + 2,
                 "numVotesCvr": 8,
-                "numVotesNonCvr": 4,
+                "numVotesNonCvr": 2,
             },
         ],
     )

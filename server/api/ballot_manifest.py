@@ -15,7 +15,7 @@ from ..util.process_file import (
 )
 from ..util.csv_download import csv_response
 from ..util.csv_parse import decode_csv_file, parse_csv, CSVValueType, CSVColumnType
-from ..audit_math.suite_stub import HybridPair
+from ..audit_math.suite import HybridPair
 
 CONTAINER = "Container"
 TABULATOR = "Tabulator"

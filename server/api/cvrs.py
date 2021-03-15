@@ -27,7 +27,7 @@ from ..util.csv_download import csv_response
 from ..util.csv_parse import decode_csv_file
 from ..util.jsonschema import JSONDict
 from ..util.group_by import group_by
-from ..audit_math.suite_stub import HybridPair
+from ..audit_math.suite import HybridPair
 
 
 def validate_uploaded_cvrs(contest: Contest):
