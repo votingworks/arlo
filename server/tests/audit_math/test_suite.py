@@ -83,44 +83,12 @@ def test_edge_cases(analytic_strata):
 
 
 @pytest.fixture
-def cvrs():
-    cvr = {}
-    for i in range(100000):
-        if i < 60000:
-            contest_a_res = {"winner": 1, "loser": 0}
-        else:
-            contest_a_res = {"winner": 0, "loser": 1}
-
-        cvr[i] = {"Contest A": contest_a_res}
-
-        if i < 30000:
-            cvr[i]["Contest B"] = {"winner": 1, "loser": 0}
-        elif 30000 < i < 60000:
-            cvr[i]["Contest B"] = {"winner": 0, "loser": 1}
-
-        if i < 18000:
-            cvr[i]["Contest C"] = {"winner": 1, "loser": 0}
-        elif 18000 < i < 36000:
-            cvr[i]["Contest C"] = {"winner": 0, "loser": 1}
-
-        if i < 8000:
-            cvr[i]["Contest D"] = {"winner": 1, "loser": 0}
-        elif 8000 < i < 14000:
-            cvr[i]["Contest D"] = {"winner": 0, "loser": 1}
-
-        if i < 10000:
-            cvr[i]["Contest E"] = {"winner": 1, "loser": 0}
-
-    yield cvr
-
-
-@pytest.fixture
-def cvr_strata(cvrs):
+def cvr_strata():
     strata = {}
     for contest in ss_contests:
         num_ballots = ss_ballots[contest]
         vote_totals = ss_contests[contest]
-        stratum = BallotComparisonStratum(num_ballots, vote_totals, cvrs, {}, 0)
+        stratum = BallotComparisonStratum(num_ballots, vote_totals, {}, 0)
         strata[contest] = stratum
 
     return strata
@@ -213,24 +181,12 @@ def test_fishers_combined():
 
     cvr_stratum_ballots = 10000
 
-    cvrs = {}
-    for i in range(4550):
-        cvrs[i] = {"ex1": {"winner": 1, "loser": 0}}
-    for i in range(4550, 9500):
-        cvrs[i] = {"ex1": {"winner": 0, "loser": 1}}
-    for i in range(9500, 10000):
-        cvrs[i] = {"ex1": {"winner": 0, "loser": 0}}
-
     # We sample 500 ballots from the cvr strata, and find no discrepancies
     misstatements = {("winner", "loser"): {"o1": 0, "o2": 0, "u1": 0, "u2": 0,}}
 
     # Create our CVR strata
     cvr_strata = BallotComparisonStratum(
-        cvr_stratum_ballots,
-        cvr_stratum_vote_totals,
-        cvrs,
-        misstatements,
-        sample_size=500,
+        cvr_stratum_ballots, cvr_stratum_vote_totals, misstatements, sample_size=500,
     )
 
     # Compute its p-value and check, with a lambda of 0.3
@@ -289,22 +245,12 @@ def test_get_sample_size():
     }
     cvr_stratum_num_ballots = 1900000
 
-    cvrs = {}
-    for i in range(960000):
-        cvrs[i] = {"ex1": {"winner": 1, "loser": 0}}
-    for i in range(960000, 1900000):
-        cvrs[i] = {"ex1": {"winner": 0, "loser": 1}}
-
     # We sample 500 ballots from the cvr stratum, and find no discrepancies
     misstatements = {("winner", "loser"): {"o1": 0, "o2": 0, "u1": 0, "u2": 0,}}
 
     # Create our CVR stratum
     cvr_stratum = BallotComparisonStratum(
-        cvr_stratum_num_ballots,
-        cvr_stratum_vote_totals,
-        cvrs,
-        misstatements,
-        sample_size=0,
+        cvr_stratum_num_ballots, cvr_stratum_vote_totals, misstatements, sample_size=0,
     )
 
     no_cvr_stratum_vote_totals = {

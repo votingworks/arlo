@@ -7,8 +7,6 @@ https://arxiv.org/abs/1809.04235
 
 This code borrows heavily from code already written by Stark and Ottoboni here:
 https://github.com/pbstark/CORLA18
-
-
 """
 from itertools import product
 import math
@@ -19,7 +17,7 @@ import numpy as np
 import scipy as sp
 
 
-from .sampler_contest import Contest, CVRS
+from .sampler_contest import Contest
 from . import bravo
 
 
@@ -187,14 +185,12 @@ class BallotComparisonStratum:
     num_ballots: int
     vote_totals: Dict[str, int]
     misstatements: Dict[Tuple[str, str], Dict[str, int]]
-    results: CVRS
     sample_size: int
 
     def __init__(
         self,
         num_ballots: int,
         vote_totals: Dict[str, int],
-        results: CVRS,
         misstatements: Dict[Tuple[str, str], Dict[str, int]],
         sample_size: int,
     ):
@@ -217,7 +213,6 @@ class BallotComparisonStratum:
 
         self.num_ballots = num_ballots
         self.vote_totals = vote_totals
-        self.results = results
         self.misstatements = misstatements
         self.sample_size = sample_size
 
@@ -476,7 +471,6 @@ def try_n(
     hyp_cvr_stratum = BallotComparisonStratum(
         cvr_stratum.num_ballots,
         cvr_stratum.vote_totals,
-        cvr_stratum.results,
         hyp_misstatements,
         hyp_sample_size,
     )
