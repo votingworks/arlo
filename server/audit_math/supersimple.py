@@ -1,10 +1,11 @@
 # pylint: disable=invalid-name
 import math
-from decimal import Decimal, ROUND_CEILING
+from decimal import Decimal, ROUND_CEILING, getcontext
 from typing import Dict, Tuple, TypedDict, Optional
 
 from .sampler_contest import Contest
 
+getcontext().prec = 32
 l: Decimal = Decimal(0.5)
 gamma: Decimal = Decimal(1.03905)  # This gamma is used in Stark's tool, AGI, and CORLA
 
