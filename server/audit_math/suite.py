@@ -170,6 +170,7 @@ class BallotPollingStratum:
         logLR = alt_logLR - null_logLR(nuisance_param)
         LR = float(np.exp(logLR))  # This value is always a float, but np.exp
         # can return a vector. casting for the typechecker.
+        # TODO: investigate what happens when this overflows.
 
         return 1.0 / LR if 1.0 / LR < 1 else 1.0
 
@@ -383,7 +384,6 @@ def maximize_fisher_combined_pvalue(
                 fisher_pvalues[i] = 1 - sp.stats.chi2.cdf(obs, df=2 * len(pvalues))
 
         pvalue = np.max(fisher_pvalues)
-        print(pvalue)
         alloc_lambda = test_lambdas[np.argmax(fisher_pvalues)]
 
         # If p-value is over the risk limit, then there's no need to refine the
@@ -401,7 +401,6 @@ def maximize_fisher_combined_pvalue(
 
         if mod <= dist:
             maximized_pvalue = pvalue
-            print("breaking!")
             break
 
         # We haven't found a good enough max yet, keep looking
