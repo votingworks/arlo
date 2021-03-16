@@ -135,6 +135,13 @@ export const jaApiCalls = {
       '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/ballots?count=true',
     response: { count: ballots.length },
   }),
+  deleteManifest: {
+    url: '/api/election/1/jurisdiction/jurisdiction-id-1/ballot-manifest',
+    options: {
+      method: 'DELETE',
+    },
+    response: { status: 'ok' },
+  },
 }
 
 const aaUser = {

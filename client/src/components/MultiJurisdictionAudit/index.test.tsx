@@ -281,6 +281,53 @@ describe('JA setup', () => {
     })
   })
 
+  it('deletes ballot manifest', async () => {
+    const expectedCalls = [
+      jaApiCalls.getUser,
+      jaApiCalls.getSettings(auditSettings.batchComparisonAll),
+      jaApiCalls.getRounds,
+      jaApiCalls.getBallotManifestFile(manifestMocks.empty),
+      jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
+      jaApiCalls.getCVRSfile(cvrsMocks.empty),
+      jaApiCalls.putManifest,
+      jaApiCalls.getBallotManifestFile(manifestMocks.processed),
+      jaApiCalls.deleteManifest,
+      jaApiCalls.getBallotManifestFile(manifestMocks.empty),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderView()
+      await screen.findByText('Audit Source Data')
+      const [manifestInput, talliesInput] = screen.getAllByLabelText(
+        'Select a CSV...'
+      )
+      const [manifestButton, talliesButton] = screen.getAllByRole('button', {
+        name: 'Upload File',
+      })
+
+      expect(talliesInput).toBeDisabled()
+      expect(talliesButton).toBeDisabled()
+
+      userEvent.click(manifestButton)
+      await screen.findByText('You must upload a file')
+
+      userEvent.upload(manifestInput, manifestFile)
+      await waitFor(() =>
+        expect(
+          screen.queryByText('You must upload a file')
+        ).not.toBeInTheDocument()
+      )
+
+      userEvent.click(manifestButton)
+      await screen.findByText(
+        'Upload successfully completed at 6/8/2020, 9:39:14 PM.'
+      )
+
+      const deleteButton = await screen.findByText('Delete File')
+      userEvent.click(deleteButton)
+      await screen.findByText('Select a CSV...')
+    })
+  })
+
   it('submits batch tallies', async () => {
     const expectedCalls = [
       jaApiCalls.getUser,
