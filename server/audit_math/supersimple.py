@@ -5,7 +5,7 @@ from typing import Dict, Tuple, TypedDict, Optional
 
 from .sampler_contest import Contest
 
-getcontext().prec = 32
+getcontext().prec = 64
 l: Decimal = Decimal(0.5)
 gamma: Decimal = Decimal(1.03905)  # This gamma is used in Stark's tool, AGI, and CORLA
 
