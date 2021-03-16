@@ -12,6 +12,8 @@ import {
   prettifyRefreshStatus,
 } from './index'
 import {
+  jurisdictionFileMocks,
+  standardizedContestsFileMocks,
   manifestMocks,
   talliesMocks,
   cvrsMocks,
@@ -30,6 +32,10 @@ import AuthDataProvider, { useAuthDataContext } from '../UserContext'
 import getJurisdictionFileStatus from './useSetupMenuItems/getJurisdictionFileStatus'
 import getRoundStatus from './useSetupMenuItems/getRoundStatus'
 import { jaApiCalls, aaApiCalls } from './_mocks'
+import jurisdictionFile, {
+  jurisdictionErrorFile,
+  standardizedContestsFile,
+} from './AASetup/Participants/_mocks'
 
 const getJurisdictionFileStatusMock = getJurisdictionFileStatus as jest.Mock
 const getRoundStatusMock = getRoundStatus as jest.Mock
@@ -124,6 +130,185 @@ describe('AA setup flow', () => {
         expect(queryAllByText('Participants').length).toBe(2)
       })
       expect(container).toMatchSnapshot()
+    })
+  })
+
+  it('get empty jurisdiction file intiially', async () => {
+    const expectedCalls = [
+      aaApiCalls.getUser,
+      ...loadEach,
+      ...loadEach,
+      aaApiCalls.getSettings(auditSettings.blank),
+      aaApiCalls.getJurisdictionFileWithResponse(jurisdictionFileMocks.empty),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      const { container, queryByText, queryAllByText } = render(
+        <AuthDataProvider>
+          <Router>
+            <AuditAdminViewWithAuth />
+          </Router>
+        </AuthDataProvider>
+      )
+
+      await waitFor(() => {
+        expect(queryAllByText('Participants').length).toBe(2)
+        screen.getByLabelText('Select a CSV...')
+      })
+    })
+  })
+
+  it('get jurisdisction file get if exists', async () => {
+    const expectedCalls = [
+      aaApiCalls.getUser,
+      ...loadEach,
+      ...loadEach,
+      aaApiCalls.getSettings(auditSettings.all),
+      aaApiCalls.getJurisdictionFile,
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      const { container, queryByText, queryAllByText } = render(
+        <AuthDataProvider>
+          <Router>
+            <AuditAdminViewWithAuth />
+          </Router>
+        </AuthDataProvider>
+      )
+
+      await waitFor(() => {
+        expect(queryAllByText('Participants').length).toBe(2)
+        expect(queryByText(/Current file/))
+      })
+    })
+  })
+
+  it('jurisdisction file upload success', async () => {
+    const expectedCalls = [
+      aaApiCalls.getUser,
+      ...loadEach,
+      ...loadEach,
+      aaApiCalls.getSettings(auditSettings.blank),
+      aaApiCalls.getJurisdictionFileWithResponse(jurisdictionFileMocks.empty),
+      aaApiCalls.putJurisdictionFile,
+      aaApiCalls.getJurisdictionFileWithResponse(
+        jurisdictionFileMocks.processed
+      ),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      const { container, queryAllByText } = render(
+        <AuthDataProvider>
+          <Router>
+            <AuditAdminViewWithAuth />
+          </Router>
+        </AuthDataProvider>
+      )
+
+      await waitFor(() => {
+        expect(queryAllByText('Participants').length).toBe(2)
+      })
+      const jurisdisctionInput = screen.getByLabelText('Select a CSV...')
+      const jurisdictionButton = screen.getByRole('button', {
+        name: 'Upload File',
+      })
+      userEvent.click(jurisdictionButton)
+      await screen.findByText('You must upload a file')
+
+      userEvent.upload(jurisdisctionInput, jurisdictionFile)
+      await waitFor(() =>
+        expect(
+          screen.queryByText('You must upload a file')
+        ).not.toBeInTheDocument()
+      )
+
+      userEvent.click(jurisdictionButton)
+      await screen.findByText(/Upload successfully completed/)
+    })
+  })
+
+  it('jurisdisction file upload with error', async () => {
+    const expectedCalls = [
+      aaApiCalls.getUser,
+      ...loadEach,
+      ...loadEach,
+      aaApiCalls.getSettings(auditSettings.blank),
+      aaApiCalls.getJurisdictionFileWithResponse(jurisdictionFileMocks.empty),
+      aaApiCalls.putJurisdictionErrorFile,
+      aaApiCalls.getJurisdictionFileWithResponse(jurisdictionFileMocks.errored),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      const { container, queryAllByText } = render(
+        <AuthDataProvider>
+          <Router>
+            <AuditAdminViewWithAuth />
+          </Router>
+        </AuthDataProvider>
+      )
+
+      await waitFor(() => {
+        expect(queryAllByText('Participants').length).toBe(2)
+      })
+      const jurisdisctionInput = screen.getByLabelText('Select a CSV...')
+      const jurisdictionButton = screen.getByRole('button', {
+        name: 'Upload File',
+      })
+      userEvent.click(jurisdictionButton)
+      await screen.findByText('You must upload a file')
+
+      userEvent.upload(jurisdisctionInput, jurisdictionErrorFile)
+      await waitFor(() =>
+        expect(
+          screen.queryByText('You must upload a file')
+        ).not.toBeInTheDocument()
+      )
+
+      userEvent.click(jurisdictionButton)
+      await screen.findByText('Invalid CSV')
+    })
+  })
+
+  it('standardized contests file upload success', async () => {
+    const expectedCalls = [
+      aaApiCalls.getUser,
+      ...loadEach,
+      ...loadEach,
+      aaApiCalls.getSettings(auditSettings.blankBallotComparison),
+      aaApiCalls.getJurisdictionFile,
+      aaApiCalls.getStandardizedContestsFileWithResponse(
+        standardizedContestsFileMocks.empty
+      ),
+      aaApiCalls.putStandardizedContestsFile,
+      aaApiCalls.getStandardizedContestsFileWithResponse(
+        standardizedContestsFileMocks.processed
+      ),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      const { container, queryByText, queryAllByText } = render(
+        <AuthDataProvider>
+          <Router>
+            <AuditAdminViewWithAuth />
+          </Router>
+        </AuthDataProvider>
+      )
+
+      // check file upload of jurisdiction
+      await waitFor(() => {
+        expect(queryAllByText(/Upload successfully completed/).length).toBe(1)
+      })
+      const standardizedContestInput = screen.getByLabelText('Select a CSV...')
+      const standardizedContestButton = screen.getByRole('button', {
+        name: 'Upload File',
+      })
+      userEvent.click(standardizedContestButton)
+      await screen.findByText('You must upload a file')
+
+      userEvent.upload(standardizedContestInput, standardizedContestsFile)
+      await waitFor(() =>
+        expect(
+          screen.queryByText('You must upload a file')
+        ).not.toBeInTheDocument()
+      )
+
+      userEvent.click(standardizedContestButton)
+      await screen.findByText(/Upload successfully completed/)
     })
   })
 
