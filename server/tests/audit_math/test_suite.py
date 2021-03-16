@@ -278,6 +278,66 @@ def test_get_sample_size():
     )
 
 
+def test_winner_loses_no_cvr():
+
+    contest_dict = {
+        "winner": 5300,
+        "loser": 5100,
+        "ballots": 11000,
+        "numWinners": 1,
+        "votesAllowed": 1,
+    }
+
+    contest = Contest("ex1", contest_dict)
+    reported_margin = contest_dict["winner"] - contest_dict["loser"]
+
+    no_cvr_stratum_vote_totals = {
+        "winner": 4550,
+        "loser": 4950,
+    }
+
+    no_cvr_sample = {"ex1": {"winner": 227, "loser": 247}}
+    no_cvr_stratum_ballots = 10000
+    # create our ballot polling strata
+    no_cvr_strata = BallotPollingStratum(
+        no_cvr_stratum_ballots,
+        no_cvr_stratum_vote_totals,
+        no_cvr_sample,
+        sample_size=500,
+    )
+    # Compute its p-value and check, with a lambda of 0.7
+    expected_pvalue = 0.9670403493064489
+    pvalue = no_cvr_strata.compute_pvalue(reported_margin, "winner", "loser", 0.7)
+    diff = abs(expected_pvalue - pvalue)
+    assert diff < 0.00001, "Incorrect pvalue: {}!".format(pvalue)
+
+    # Create our CVR strata
+    cvr_stratum_vote_totals = {
+        "winner": 750,
+        "loser": 150,
+    }
+    cvr_stratum_ballots = 1000
+
+    # We sample 250 ballots from the cvr strata, and find no discrepancies
+    misstatements = {("winner", "loser"): {"o1": 0, "o2": 0, "u1": 0, "u2": 0,}}
+    cvr_strata = BallotComparisonStratum(
+        cvr_stratum_ballots, cvr_stratum_vote_totals, misstatements, sample_size=250,
+    )
+
+    # Compute its p-value and check, with a lambda of 0.3
+    expected_pvalue = 0.0006592649872177509
+    pvalue = cvr_strata.compute_pvalue(reported_margin, "winner", "loser", 0.3)
+    diff = abs(expected_pvalue - pvalue)
+    assert diff < 0.00001, "Incorrect pvalue!"
+
+    # Now get the combined pvalue
+    pvalue, res = compute_risk(5, contest, no_cvr_strata, cvr_strata)
+    expected_pvalue = 0.9961600910311891
+    diff = abs(expected_pvalue - pvalue)
+    assert diff < 0.000001, "Got {}".format(pvalue)
+    assert not res
+
+
 expected_p_values = {
     "no_discrepancies": {
         "Contest A": 0.06507,

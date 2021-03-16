@@ -12,7 +12,7 @@ from itertools import product
 import math
 from typing import Tuple, Dict
 
-# from decimal import Decimal
+from decimal import Decimal
 import numpy as np
 import scipy as sp
 
@@ -240,16 +240,23 @@ class BallotComparisonStratum:
             self.misstatements[(winner, loser)]["u2"],
         )
 
-        U_s = 2 * self.num_ballots / reported_margin
+        U_s = Decimal(2 * self.num_ballots / reported_margin)
+        gamma = Decimal(GAMMA)
+        multiplier = 1 - Decimal(null_lambda) / (gamma * U_s)
+
+        # This represents an invalid alternative, because lambda is too big.
+        if multiplier <= 0:
+            raise ValueError("Alternative hypothesis is invalid!")
+
         log_pvalue = (
-            self.sample_size * np.log(1 - null_lambda / (GAMMA * U_s))
-            - o1 * np.log(1 - 1 / (2 * GAMMA))
-            - o2 * np.log(1 - 1 / GAMMA)
-            - u1 * np.log(1 + 1 / (2 * GAMMA))
-            - u2 * np.log(1 + 1 / GAMMA)
+            self.sample_size * multiplier.ln()
+            - o1 * (1 - 1 / (2 * gamma)).ln()
+            - o2 * (1 - 1 / gamma).ln()
+            - u1 * (1 + 1 / (2 * gamma)).ln()
+            - u2 * (1 + 1 / gamma).ln()
         )
-        pvalue = np.exp(log_pvalue)
-        return float(np.min([pvalue, 1.0]))  # cast for the typechecker
+        pvalue = (log_pvalue).exp()
+        return float(np.min([float(pvalue), 1.0]))  # cast for the typechecker
 
 
 def maximize_fisher_combined_pvalue(
@@ -342,14 +349,17 @@ def maximize_fisher_combined_pvalue(
 
         fisher_pvalues = np.empty_like(test_lambdas)
         for i, test_lambda in enumerate(test_lambdas):
-            pvalue1 = np.min(
-                [
-                    1,
-                    cvr_stratum.compute_pvalue(
-                        reported_margin, winner, loser, test_lambda
-                    ),
-                ]
-            )
+            try:
+                pvalue1 = np.min(
+                    [
+                        1,
+                        cvr_stratum.compute_pvalue(
+                            reported_margin, winner, loser, test_lambda
+                        ),
+                    ]
+                )
+            except ValueError:
+                pvalue1 = 0
 
             try:
                 pvalue2 = np.min(
@@ -373,6 +383,7 @@ def maximize_fisher_combined_pvalue(
                 fisher_pvalues[i] = 1 - sp.stats.chi2.cdf(obs, df=2 * len(pvalues))
 
         pvalue = np.max(fisher_pvalues)
+        print(pvalue)
         alloc_lambda = test_lambdas[np.argmax(fisher_pvalues)]
 
         # If p-value is over the risk limit, then there's no need to refine the
@@ -390,6 +401,7 @@ def maximize_fisher_combined_pvalue(
 
         if mod <= dist:
             maximized_pvalue = pvalue
+            print("breaking!")
             break
 
         # We haven't found a good enough max yet, keep looking
