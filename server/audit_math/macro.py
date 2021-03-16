@@ -287,4 +287,4 @@ def compute_risk(
         if p <= alpha:
             return float(p), True
 
-    return float(p), p <= alpha
+    return min(float(p), 1.0), p <= alpha

@@ -399,7 +399,7 @@ def maximize_fisher_combined_pvalue(
         lambda_upper = alloc_lambda + 2 * stepsize
         stepsize /= 10
 
-    return maximized_pvalue
+    return min(maximized_pvalue, 1.0)
 
 
 def try_n(

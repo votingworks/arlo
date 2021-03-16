@@ -317,4 +317,4 @@ def compute_risk(
         # We've done a full hand recount
         return 0, True
 
-    return float(p), result
+    return min(float(p), 1.0), result

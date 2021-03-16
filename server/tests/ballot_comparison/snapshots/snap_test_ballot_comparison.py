@@ -69,8 +69,8 @@ J2,Audit Board #1,,,,\r
 \r
 ######## ROUNDS ########\r
 Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes\r
-1,Contest 1,Targeted,40,No,179125340.4921900034,DATETIME,DATETIME,Choice 1-1: 17; Choice 1-2: 12\r
-1,Contest 2,Opportunistic,,No,1842.4616004052,DATETIME,DATETIME,Choice 2-1: 19; Choice 2-2: 9; Choice 2-3: 13\r
+1,Contest 1,Targeted,40,No,1.0,DATETIME,DATETIME,Choice 1-1: 17; Choice 1-2: 12\r
+1,Contest 2,Opportunistic,,No,1.0,DATETIME,DATETIME,Choice 2-1: 19; Choice 2-2: 9; Choice 2-3: 13\r
 \r
 ######## SAMPLED BALLOTS ########\r
 Jurisdiction Name,Tabulator,Batch Name,Ballot Position,Imprinted ID,Ticket Numbers: Contest 1,Audited?,Audit Result: Contest 1,CVR Result: Contest 1,Discrepancy: Contest 1,Audit Result: Contest 2,CVR Result: Contest 2,Discrepancy: Contest 2\r
@@ -122,10 +122,10 @@ J2,Audit Board #1,,,,\r
 \r
 ######## ROUNDS ########\r
 Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes\r
-1,Contest 1,Targeted,40,No,179125340.4921900034,DATETIME,DATETIME,Choice 1-1: 17; Choice 1-2: 12\r
-1,Contest 2,Opportunistic,,No,1842.4616004052,DATETIME,DATETIME,Choice 2-1: 19; Choice 2-2: 9; Choice 2-3: 13\r
-2,Contest 1,Targeted,30,No,2422250319.638420105,DATETIME,DATETIME,Choice 1-1: 17; Choice 1-2: 16\r
-2,Contest 2,Opportunistic,,No,783.4369043583,DATETIME,DATETIME,Choice 2-1: 16; Choice 2-2: 12; Choice 2-3: 7\r
+1,Contest 1,Targeted,40,No,1.0,DATETIME,DATETIME,Choice 1-1: 17; Choice 1-2: 12\r
+1,Contest 2,Opportunistic,,No,1.0,DATETIME,DATETIME,Choice 2-1: 19; Choice 2-2: 9; Choice 2-3: 13\r
+2,Contest 1,Targeted,30,No,1.0,DATETIME,DATETIME,Choice 1-1: 17; Choice 1-2: 16\r
+2,Contest 2,Opportunistic,,No,1.0,DATETIME,DATETIME,Choice 2-1: 16; Choice 2-2: 12; Choice 2-3: 7\r
 \r
 ######## SAMPLED BALLOTS ########\r
 Jurisdiction Name,Tabulator,Batch Name,Ballot Position,Imprinted ID,Ticket Numbers: Contest 1,Audited?,Audit Result: Contest 1,CVR Result: Contest 1,Discrepancy: Contest 1,Audit Result: Contest 2,CVR Result: Contest 2,Discrepancy: Contest 2\r

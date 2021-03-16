@@ -246,7 +246,7 @@ def test_compute_risk(contests):
     # Test computing sample
     expected_Ts = {
         "test1": {("cand1", "cand2"): 0.07},
-        "test2": {("cand1", "cand2"): 10.38, ("cand1", "cand3"): 0,},
+        "test2": {("cand1", "cand2"): 1.0, ("cand1", "cand3"): 0,},
         "test3": {("cand1", ""): 1},
         "test4": {("cand1", ""): 0},
         "test5": {("cand1", "cand2"): 0},
