@@ -544,6 +544,11 @@ def sample_ballots(
     election: Election,
     round: Round,
     contest_sample_sizes: List[Tuple[Contest, SampleSize]],
+    # For hybrid audits only, Batch.has_cvrs will be true/false if the batch
+    # contains ballots with CVRs or not (based on the manifest).
+    # filter_has_cvrs will constrain the ballots to sample based on
+    # Batch.has_cvrs. Since Batch.has_cvrs is None for all other audit types,
+    # the default filter is None.
     filter_has_cvrs: bool = None,
 ):
     participating_jurisdictions = {
