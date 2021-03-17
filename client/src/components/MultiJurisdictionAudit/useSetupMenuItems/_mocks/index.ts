@@ -248,6 +248,68 @@ export const roundMocks: {
   ],
 }
 
+export const jurisdictionFileMocks: { [key: string]: IFileInfo } = {
+  empty: {
+    file: null,
+    processing: null,
+  },
+  processed: {
+    file: {
+      name: 'jurisdictions.csv',
+      uploadedAt: '2020-07-08T21:39:05.765+00:00',
+    },
+    processing: {
+      status: FileProcessingStatus.PROCESSED,
+      startedAt: '2020-07-08T21:39:05.765+00:00',
+      completedAt: '2020-07-08T21:39:14.574+00:00',
+      error: null,
+    },
+  },
+  errored: {
+    file: {
+      name: 'jursidisctions.csv',
+      uploadedAt: '2020-05-05T17:25:25.663592+00:00',
+    },
+    processing: {
+      completedAt: '2020-05-05T17:25:26.09915+00:00',
+      error: 'Invalid CSV',
+      startedAt: '2020-05-05T17:25:26.09743+00:00',
+      status: FileProcessingStatus.ERRORED,
+    },
+  },
+}
+
+export const standardizedContestsFileMocks: { [key: string]: IFileInfo } = {
+  empty: {
+    file: null,
+    processing: null,
+  },
+  processed: {
+    file: {
+      name: 'standardized-contests.csv',
+      uploadedAt: '2020-07-08T21:39:05.765+00:00',
+    },
+    processing: {
+      status: FileProcessingStatus.PROCESSED,
+      startedAt: '2020-07-08T21:39:05.765+00:00',
+      completedAt: '2020-07-08T21:39:14.574+00:00',
+      error: null,
+    },
+  },
+  errored: {
+    file: {
+      name: 'standardized-contests.csv',
+      uploadedAt: '2020-05-05T17:25:25.663592+00:00',
+    },
+    processing: {
+      completedAt: '2020-05-05T17:25:26.09915+00:00',
+      error: 'Invalid CSV',
+      startedAt: '2020-05-05T17:25:26.09743+00:00',
+      status: FileProcessingStatus.ERRORED,
+    },
+  },
+}
+
 export const manifestMocks: { [key: string]: IBallotManifestInfo } = {
   empty: {
     file: null,
