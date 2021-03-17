@@ -117,23 +117,15 @@ def test_find_one_discrepancy(contests, cvrs):
         if contest == "Contest A":
             assert discrepancies[0]["counted_as"] == 1
             assert discrepancies[0]["weighted_error"] == Decimal(1) / Decimal(20000)
-            assert (
-                discrepancies[0]["discrepancy_cvr"]["reported_as"][contest]
-                != discrepancies[0]["discrepancy_cvr"]["audited_as"][contest]
-            )
         elif contest == "Two-winner Contest":
             assert discrepancies[0]["counted_as"] == 1
             assert discrepancies[0]["weighted_error"] == Decimal(1) / Decimal(200)
-            assert (
-                discrepancies[0]["discrepancy_cvr"]["reported_as"][contest]
-                != discrepancies[0]["discrepancy_cvr"]["audited_as"][contest]
-            )
 
         else:
             assert not discrepancies
 
 
-def test_negative_discrepancies_are_0(contests, cvrs):
+def test_negative_discrepancies(contests, cvrs):
     sample_cvr = {
         60000: {
             "times_sampled": 1,
@@ -151,12 +143,8 @@ def test_negative_discrepancies_are_0(contests, cvrs):
     )
 
     assert discrepancies
-    assert discrepancies[60000]["counted_as"] == 0
-    assert discrepancies[60000]["weighted_error"] == Decimal(0.0)
-    assert (
-        discrepancies[60000]["discrepancy_cvr"]["reported_as"]["Contest A"]
-        != discrepancies[60000]["discrepancy_cvr"]["audited_as"]["Contest A"]
-    )
+    assert discrepancies[60000]["counted_as"] == -2
+    assert discrepancies[60000]["weighted_error"] == Decimal(-2) / Decimal(20000)
 
 
 def test_two_vote_overstatement_discrepancies(contests, cvrs):
@@ -179,10 +167,6 @@ def test_two_vote_overstatement_discrepancies(contests, cvrs):
     assert discrepancies
     assert discrepancies[0]["counted_as"] == 2
     assert discrepancies[0]["weighted_error"] == Decimal(2) / Decimal(20000)
-    assert (
-        discrepancies[0]["discrepancy_cvr"]["reported_as"]["Contest A"]
-        != discrepancies[0]["discrepancy_cvr"]["audited_as"]["Contest A"]
-    )
 
 
 def test_race_not_in_cvr_discrepancy(contests, cvrs):
@@ -206,7 +190,6 @@ def test_race_not_in_cvr_discrepancy(contests, cvrs):
     assert discrepancies
     assert discrepancies[0]["counted_as"] == 1
     assert discrepancies[0]["weighted_error"] == Decimal(1) / Decimal(6)
-    assert "Contest F" not in discrepancies[0]["discrepancy_cvr"]["reported_as"]
 
 
 def test_race_not_in_sample_discrepancy(contests, cvrs):
@@ -230,7 +213,6 @@ def test_race_not_in_sample_discrepancy(contests, cvrs):
     assert discrepancies
     assert discrepancies[0]["counted_as"] == 1
     assert discrepancies[0]["weighted_error"] == Decimal(1) / Decimal(2000)
-    assert "Contest D" not in discrepancies[0]["discrepancy_cvr"]["audited_as"]
 
 
 def test_ballot_not_found_discrepancy(contests, cvrs):
@@ -243,7 +225,6 @@ def test_ballot_not_found_discrepancy(contests, cvrs):
     assert discrepancies
     assert discrepancies[0]["counted_as"] == 2
     assert discrepancies[0]["weighted_error"] == Decimal(2) / Decimal(2000)
-    assert discrepancies[0]["discrepancy_cvr"]["audited_as"] is None
 
 
 def test_ballot_not_in_cvr(contests):
@@ -259,7 +240,6 @@ def test_ballot_not_in_cvr(contests):
     assert discrepancies
     assert discrepancies[0]["counted_as"] == 2
     assert discrepancies[0]["weighted_error"] == Decimal(2) / Decimal(2000)
-    assert discrepancies[0]["discrepancy_cvr"]["reported_as"] is None
 
 
 def test_ballot_not_in_cvr_and_not_found(contests):
@@ -273,7 +253,6 @@ def test_ballot_not_in_cvr_and_not_found(contests):
     assert discrepancies
     assert discrepancies[0]["counted_as"] == 2
     assert discrepancies[0]["weighted_error"] == Decimal(2) / Decimal(2000)
-    assert discrepancies[0]["discrepancy_cvr"]["reported_as"] is None
 
 
 def test_get_sample_sizes(contests):

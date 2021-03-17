@@ -1,9 +1,10 @@
 # pylint: disable=invalid-name
 import math
+from itertools import product
 from decimal import Decimal, ROUND_CEILING
 from typing import Dict, Tuple, TypedDict, Optional
 
-from .sampler_contest import Contest, CVRS, SAMPLECVRS
+from .sampler_contest import Contest, CVRS, SAMPLECVRS, CVR
 
 l: Decimal = Decimal(0.5)
 gamma: Decimal = Decimal(1.03905)  # This gamma is used in Stark's tool, AGI, and CORLA
@@ -20,7 +21,6 @@ u2: Decimal = Decimal(0.0001)
 class Discrepancy(TypedDict):
     counted_as: int
     weighted_error: Decimal
-    discrepancy_cvr: CVRS
 
 
 def nMin(
@@ -87,92 +87,61 @@ def compute_discrepancies(
                         'ballot_id': {
                             'counted_as': -1, # The maximum value for a discrepancy
                             'weighted_error': -0.0033 # Weighted error used for p-value calculation
-                            'discrepancy_cvr': { # a per-contest mapping of discrepancies
-                                'recorded_as': {
-                                    'contest': {
-                                        'candidate1': 1,
-                                        'candidate0': 0,
-                                }},
-                                'audited_as': {
-                                    'contest': {
-                                        'candidate1': 0,
-                                        'candidate2': 0,
-                                    }
-                                }
-                            }
                         }
                     }
     """
 
     discrepancies: Dict[str, Discrepancy] = {}
-    for ballot in sample_cvr:
-        # Typechecker needs us to pull these out into variables
-        ballot_sample_cvr = sample_cvr[ballot]["cvr"]
-        ballot_cvr = cvrs.get(ballot)
+    for ballot, ballot_sample_cvr in sample_cvr.items():
+        ballot_discrepancies = []
+        for winner, loser in product(contest.winners, contest.losers):
+            ballot_discrepancy = discrepancy(
+                contest, winner, loser, cvrs.get(ballot), ballot_sample_cvr["cvr"],
+            )
+            if ballot_discrepancy is not None:
+                ballot_discrepancies.append(ballot_discrepancy)
 
-        # We want to be conservative, so we will ignore the case where there are
-        # negative errors (i.e. errors that favor the winner. We can do that
-        # by setting these to zero and evaluating whether an error is greater
-        # than zero (i.e. positive).
-        e_r = Decimal(0.0)
-        e_int = 0
-
-        found = False
-
-        # Special cases: if ballot wasn't in CVR or ballot can't be found by
-        # audit board, count it as a two-vote overstatement
-        if ballot_sample_cvr is None or ballot_cvr is None:
-            e_int = 2
-            e_r = Decimal(e_int) / Decimal(contest.diluted_margin * contest.ballots)
-            found = True
-
-        else:
-            for winner in contest.winners:
-                for loser in contest.losers:
-
-                    if contest.name in ballot_cvr:
-                        v_w = ballot_cvr[contest.name][winner]
-                        v_l = ballot_cvr[contest.name][loser]
-                    else:
-                        v_w = 0
-                        v_l = 0
-
-                    if contest.name in ballot_sample_cvr:
-                        a_w = ballot_sample_cvr[contest.name][winner]
-                        a_l = ballot_sample_cvr[contest.name][loser]
-                    else:
-                        a_w = 0
-                        a_l = 0
-
-                    V_wl = contest.candidates[winner] - contest.candidates[loser]
-
-                    e = (v_w - a_w) - (v_l - a_l)
-
-                    if e != 0:
-                        # we found a discrepancy!
-                        found = True
-
-                    if V_wl == 0:
-                        # In this case the error is undefined
-                        e_weighted = Decimal("inf")
-                    else:
-                        e_weighted = Decimal(e) / Decimal(V_wl)
-
-                    if e_weighted > e_r:
-                        e_r = e_weighted
-                        e_int = e
-
-        if found:
-            discrepancies[ballot] = Discrepancy(
-                counted_as=e_int,
-                weighted_error=e_r,
-                discrepancy_cvr={
-                    "reported_as": ballot_cvr,
-                    "audited_as": ballot_sample_cvr,
-                },
+        if len(ballot_discrepancies) > 0:
+            discrepancies[ballot] = max(
+                ballot_discrepancies, key=lambda d: d["counted_as"]
             )
 
     return discrepancies
+
+
+def discrepancy(
+    contest: Contest,
+    winner: str,
+    loser: str,
+    reported: Optional[CVR],
+    audited: Optional[CVR],
+) -> Optional[Discrepancy]:
+    # Special cases: if ballot wasn't in CVR or ballot can't be found by
+    # audit board, count it as a two-vote overstatement
+    if reported is None or audited is None:
+        error = 2
+    else:
+        v_w, v_l = (
+            (reported[contest.name][winner], reported[contest.name][loser])
+            if contest.name in reported
+            # If contest wasn't on the ballot according to the CVR
+            else (0, 0)
+        )
+        a_w, a_l = (
+            (audited[contest.name][winner], audited[contest.name][loser])
+            if contest.name in audited
+            # If contest wasn't on the ballot according to the audit board
+            else (0, 0)
+        )
+        error = (v_w - a_w) - (v_l - a_l)
+
+    if error == 0:
+        return None
+
+    V_wl = contest.candidates[winner] - contest.candidates[loser]
+    weighted_error = Decimal(error) / Decimal(V_wl) if V_wl > 0 else Decimal("inf")
+
+    return Discrepancy(counted_as=error, weighted_error=weighted_error)
 
 
 def get_sample_sizes(
@@ -203,9 +172,11 @@ def get_sample_sizes(
 
     sample_results = sample_results or {}
     obs_o1 = Decimal(sample_results.get("1-over", 0))
-    obs_u1 = Decimal(sample_results.get("1-under", 0))
     obs_o2 = Decimal(sample_results.get("2-over", 0))
-    obs_u2 = Decimal(sample_results.get("2-under", 0))
+    # We want to be conservative, so we will ignore understatements (i.e. errors
+    # that favor the winner) which are negative.
+    obs_u1 = 0
+    obs_u2 = 0
     num_sampled = Decimal(sample_results.get("sample_size", 0))
 
     if num_sampled:
@@ -294,7 +265,9 @@ def compute_risk(
 
     for ballot in sample_cvr:
         if ballot in discrepancies:
-            e_r = discrepancies[ballot]["weighted_error"]
+            # We want to be conservative, so we will ignore understatements (i.e. errors
+            # that favor the winner) which are negative.
+            e_r = max(discrepancies[ballot]["weighted_error"], Decimal(0))
         else:
             e_r = Decimal(0)
 
