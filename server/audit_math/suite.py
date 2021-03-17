@@ -111,9 +111,8 @@ class BallotPollingStratum:
 
         null_margin = (v_w - v_l) - null_lambda * reported_margin
 
-        assert (
-            v_w >= n_w and v_l >= n_l and v_u >= n_u
-        ), "Alternative hypothesis isn't consistent with the sample"
+        if not (v_w >= n_w and v_l >= n_l and v_u >= n_u):
+            raise ValueError("Alternative hypothesis isn't consistent with the sample")
 
         alt_logLR = (
             np.sum(np.log(v_w - np.arange(n_w)))
@@ -371,10 +370,13 @@ def maximize_fisher_combined_pvalue(
                         ),
                     ]
                 )
-            except ValueError:
+            except ValueError as e:
                 # If the sprt throws an error, set its pvalue to 0.
                 # This is per the Stark code
-                pvalue2 = 0
+                if "Alternative" in str(e):
+                    pvalue2 = 1.0
+                else:
+                    pvalue2 = 0
 
             pvalues = [pvalue1, pvalue2]
             if np.any(np.array(pvalues) == 0):
