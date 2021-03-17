@@ -487,7 +487,7 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
     )
     show_container = one_batch and one_batch.container is not None
     show_tabulator = one_batch and one_batch.tabulator is not None
-    show_cvrs = election.audit_type == AuditType.BALLOT_COMPARISON
+    show_cvrs = election.audit_type in [AuditType.BALLOT_COMPARISON, AuditType.HYBRID]
 
     result_columns = []
     if election.online:
