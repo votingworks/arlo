@@ -445,7 +445,7 @@ def test_wide_margin():
     # Now try getting a sample size
     # TODO: investigate why this doesn't quite line up with the notebooks. I'm
     # guessing it has to do with rounding and/or precision error.
-    expected_sample_size = (9, 0)
+    expected_sample_size = HybridPair(cvr=9, non_cvr=0)
 
     assert expected_sample_size == get_sample_size(
         5, contest, no_cvr_stratum, cvr_stratum
