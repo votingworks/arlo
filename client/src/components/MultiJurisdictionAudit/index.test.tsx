@@ -142,7 +142,7 @@ describe('AA setup flow', () => {
       aaApiCalls.getJurisdictionFileWithResponse(jurisdictionFileMocks.empty),
     ]
     await withMockFetch(expectedCalls, async () => {
-      const { container, queryByText, queryAllByText } = render(
+      const { queryAllByText } = render(
         <AuthDataProvider>
           <Router>
             <AuditAdminViewWithAuth />
@@ -166,7 +166,7 @@ describe('AA setup flow', () => {
       aaApiCalls.getJurisdictionFile,
     ]
     await withMockFetch(expectedCalls, async () => {
-      const { container, queryByText, queryAllByText } = render(
+      const { queryByText, queryAllByText } = render(
         <AuthDataProvider>
           <Router>
             <AuditAdminViewWithAuth />
@@ -194,7 +194,7 @@ describe('AA setup flow', () => {
       ),
     ]
     await withMockFetch(expectedCalls, async () => {
-      const { container, queryAllByText } = render(
+      const { queryAllByText } = render(
         <AuthDataProvider>
           <Router>
             <AuditAdminViewWithAuth />
@@ -235,7 +235,7 @@ describe('AA setup flow', () => {
       aaApiCalls.getJurisdictionFileWithResponse(jurisdictionFileMocks.errored),
     ]
     await withMockFetch(expectedCalls, async () => {
-      const { container, queryAllByText } = render(
+      const { queryAllByText } = render(
         <AuthDataProvider>
           <Router>
             <AuditAdminViewWithAuth />
@@ -281,7 +281,7 @@ describe('AA setup flow', () => {
       ),
     ]
     await withMockFetch(expectedCalls, async () => {
-      const { container, queryByText, queryAllByText } = render(
+      render(
         <AuthDataProvider>
           <Router>
             <AuditAdminViewWithAuth />
@@ -290,9 +290,7 @@ describe('AA setup flow', () => {
       )
 
       // check file upload of jurisdiction
-      await waitFor(() => {
-        expect(queryAllByText(/Upload successfully completed/).length).toBe(1)
-      })
+      await screen.findByText(/Upload successfully completed/)
       const standardizedContestInput = screen.getByLabelText('Select a CSV...')
       const standardizedContestButton = screen.getByRole('button', {
         name: 'Upload File',
