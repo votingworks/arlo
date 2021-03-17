@@ -104,7 +104,7 @@ class BallotPollingStratum:
         n = self.sample_size
 
         if n == 0:
-            return 1
+            return 1.0
 
         sample = bravo.compute_cumulative_sample(self.sample)
         n_w = sample[winner]
@@ -133,7 +133,7 @@ class BallotPollingStratum:
             * np.sum(np.log(self.num_ballots - 2 * Nw + null_margin - np.arange(n_u)))
         )
 
-        upper_n_w_limit = int((self.num_ballots - n_u + null_margin) / 2)
+        upper_n_w_limit = (self.num_ballots - n_u + null_margin) / 2.0
         lower_n_w_limit = np.max([n_w, n_l + null_margin])
 
         # For extremely small or large null_margins, the limits do not
@@ -172,6 +172,7 @@ class BallotPollingStratum:
             nuisance_param = sp.optimize.brentq(
                 LR_derivative, lower_n_w_limit, upper_n_w_limit
             )
+        # print(nuisance_param)
         logLR = alt_logLR - null_logLR(nuisance_param)
         LR = float(np.exp(logLR))  # This value is always a float, but np.exp
         # can return a vector. casting for the typechecker.
@@ -248,7 +249,8 @@ class BallotComparisonStratum:
         """
 
         if self.sample_size == 0:
-            return 1
+            print("No sample size?")
+            return 1.0
 
         o1, o2, u1, u2 = (
             self.misstatements[(winner, loser)]["o1"],
@@ -342,9 +344,9 @@ def maximize_fisher_combined_pvalue(
     Wn = bp_sample_winner_votes
     Ln = bp_sample_loser_votes
     Un = bp_stratum.sample_size - bp_sample_winner_votes - bp_sample_loser_votes
-    assert Wn >= 0
-    assert Ln >= 0
-    assert Un >= 0
+    assert Wn >= 0, f"{Wn, Ln, Un}"
+    assert Ln >= 0, f"{Wn, Ln, Un}"
+    assert Un >= 0, f"{Wn, Ln, Un}"
 
     T2 = (
         lambda delta: 2
@@ -494,7 +496,7 @@ def try_n(
 
     # Because this is a hypothetical sample, we create a
     # corresponding hypothetical stratum
-    hyp_sample_size = n1_original + n1
+    hyp_sample_size = n1
 
     hyp_misstatements: MISSTATEMENTS = {
         (winner, loser): {"o1": o1, "o2": o2, "u1": u1, "u2": u2,}
@@ -510,9 +512,9 @@ def try_n(
     # Set up the no-CVR stratum, assuming the sample looks like the
     # prior round
     prev_sample_size = bp_stratum.sample_size
-    hyp_sample = bp_stratum.sample
+    hyp_sample: BallotPollingStratum.SAMPLE_RESULTS = {"hyp_round": {}}
 
-    cumulative_sample = bravo.compute_cumulative_sample(hyp_sample)
+    cumulative_sample = bravo.compute_cumulative_sample(bp_stratum.sample)
 
     # Add fake ballots to the hypothetical sample:
     if prev_sample_size == 0:
@@ -534,23 +536,26 @@ def try_n(
         # Otherwise use the sample we've seen so far
         hyp_sample["hyp_round"] = {
             winner: min(
-                math.ceil(
-                    ((n2 - hyp_sample_size) * cumulative_sample[winner])
-                    / hyp_sample_size
+                int(
+                    (n2 - prev_sample_size)
+                    * (cumulative_sample[winner] / prev_sample_size)
                 ),
                 bp_stratum.vote_totals[winner],
             ),
             loser: min(
                 math.ceil(
-                    ((n2 - prev_sample_size) * cumulative_sample[loser])
-                    / hyp_sample_size
+                    (n2 - prev_sample_size)
+                    * (cumulative_sample[loser] / prev_sample_size)
                 ),
                 bp_stratum.vote_totals[loser],
             ),
         }
 
-    hyp_sample_size = prev_sample_size + n2
+    hyp_sample_size = n2
     hyp_sample_size = min(bp_stratum.num_ballots, hyp_sample_size)
+
+    for rnd in bp_stratum.sample:
+        hyp_sample[rnd] = bp_stratum.sample[rnd]
 
     hyp_no_cvr_stratum = BallotPollingStratum(
         bp_stratum.num_ballots, bp_stratum.vote_totals, hyp_sample, hyp_sample_size
