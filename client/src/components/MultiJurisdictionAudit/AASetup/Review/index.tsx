@@ -104,10 +104,10 @@ const Review: React.FC<IProps> = ({
   // Add custom option to sample size options from backend
   sampleSizeOptions =
     sampleSizeOptions &&
-    mapValues(sampleSizeOptions, options => [
-      ...options,
-      { key: 'custom', size: null, prob: null },
-    ])
+    mapValues(sampleSizeOptions, options => {
+      if (auditType === 'HYBRID') return options
+      return [...options, { key: 'custom', size: null, prob: null }]
+    })
 
   // If locked, meaning the audit already was launched, show which sample size got selected.
   // Otherwise default select the first option.
@@ -419,6 +419,8 @@ const Review: React.FC<IProps> = ({
                                         : ''}
                                       {option.key === 'all-ballots' &&
                                         ' (recommended for this contest due to the small margin of victory)'}
+                                      {option.key === 'suite' &&
+                                        ` (${option.sizeCvr!.toLocaleString()} CVR ballots and ${option.sizeNonCvr!.toLocaleString()} non-CVR ballots)`}
                                     </Radio>
                                   )
                                 }

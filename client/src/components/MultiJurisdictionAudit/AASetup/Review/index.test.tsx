@@ -17,16 +17,20 @@ import { withMockFetch, renderWithRouter } from '../../../testUtilities'
 import { IJurisdiction } from '../../useJurisdictions'
 import { IContest } from '../../../../types'
 import { IAuditSettings } from '../../useAuditSettings'
+import { ISampleSizeOptions, ISampleSizeOption } from './useSampleSizes'
 
 const apiCalls = {
   getSettings: (response: IAuditSettings) => ({
     url: '/api/election/1/settings',
     response,
   }),
-  getSampleSizeOptions: {
+  getSampleSizeOptions: (response: {
+    sampleSizes: ISampleSizeOptions
+    selected: { [contestId: string]: ISampleSizeOption }
+  }) => ({
     url: '/api/election/1/sample-sizes',
-    response: sampleSizeMock,
-  },
+    response,
+  }),
   getRounds: {
     url: '/api/election/1/round',
     response: { rounds: [] },
@@ -122,7 +126,7 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
-      apiCalls.getSampleSizeOptions,
+      apiCalls.getSampleSizeOptions(sampleSizeMock),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderView()
@@ -139,7 +143,7 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
-      apiCalls.getSampleSizeOptions,
+      apiCalls.getSampleSizeOptions(sampleSizeMock),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderView()
@@ -156,7 +160,7 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
-      apiCalls.getSampleSizeOptions,
+      apiCalls.getSampleSizeOptions(sampleSizeMock),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderView()
@@ -189,7 +193,7 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
-      apiCalls.getSampleSizeOptions,
+      apiCalls.getSampleSizeOptions(sampleSizeMock),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderView()
@@ -208,7 +212,7 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedAndOpportunistic),
-      apiCalls.getSampleSizeOptions,
+      apiCalls.getSampleSizeOptions(sampleSizeMock),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderView()
@@ -225,7 +229,7 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedAndOpportunistic),
-      apiCalls.getSampleSizeOptions,
+      apiCalls.getSampleSizeOptions(sampleSizeMock),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
@@ -279,7 +283,7 @@ describe('Audit Setup > Review & Launch', () => {
     })
   })
 
-  it('for hybrid audits, shows the CVR/non-CVR vote totals', async () => {
+  it('for hybrid audits, shows the CVR/non-CVR vote totals and sample sizes', async () => {
     const expectedCalls = [
       apiCalls.getSettings(auditSettings.hybridAll),
       apiCalls.getJurisdictions({
@@ -288,12 +292,20 @@ describe('Audit Setup > Review & Launch', () => {
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedAndOpportunistic),
       apiCalls.getStandardizedContestsFile,
-      apiCalls.getSampleSizeOptions,
+      apiCalls.getSampleSizeOptions({
+        sampleSizes: {
+          'contest-id': [
+            { key: 'suite', size: 10, sizeCvr: 3, sizeNonCvr: 7, prob: null },
+          ],
+        },
+        selected: {},
+      }),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
       await screen.findByText('Review & Launch')
 
+      // Vote totals in contest section
       const contest1 = screen
         .getAllByRole('heading', { name: 'Contest 1' })[0]
         .closest('div.bp3-card') as HTMLElement
@@ -315,6 +327,13 @@ describe('Audit Setup > Review & Launch', () => {
       within(choiceRows[2]).getByRole('cell', { name: '20' })
       within(choiceRows[2]).getByRole('cell', { name: '12' })
       within(choiceRows[2]).getByRole('cell', { name: '8' })
+
+      // Sample sizes
+      const options = screen.getAllByRole('radio')
+      expect(options).toHaveLength(1)
+      expect(options[0].closest('label')).toHaveTextContent(
+        '10 samples (3 CVR ballots and 7 non-CVR ballots)'
+      )
     })
   })
 
@@ -359,7 +378,7 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
-      apiCalls.getSampleSizeOptions,
+      apiCalls.getSampleSizeOptions(sampleSizeMock),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
@@ -386,7 +405,7 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
-      apiCalls.getSampleSizeOptions,
+      apiCalls.getSampleSizeOptions(sampleSizeMock),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
@@ -412,7 +431,7 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
-      apiCalls.getSampleSizeOptions,
+      apiCalls.getSampleSizeOptions(sampleSizeMock),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
@@ -442,7 +461,7 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
-      apiCalls.getSampleSizeOptions,
+      apiCalls.getSampleSizeOptions(sampleSizeMock),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
@@ -516,7 +535,7 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
-      apiCalls.getSampleSizeOptions,
+      apiCalls.getSampleSizeOptions(sampleSizeMock),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderView()
@@ -546,7 +565,7 @@ describe('Audit Setup > Review & Launch', () => {
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
       apiCalls.getStandardizedContestsFile,
-      apiCalls.getSampleSizeOptions,
+      apiCalls.getSampleSizeOptions(sampleSizeMock),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderView()
@@ -575,13 +594,10 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
-      {
-        ...apiCalls.getSampleSizeOptions,
-        response: {
-          ...apiCalls.getSampleSizeOptions.response,
-          selected: { 'contest-id': { key: 'custom', size: 100, prob: null } },
-        },
-      },
+      apiCalls.getSampleSizeOptions({
+        sampleSizes: sampleSizeMock.sampleSizes,
+        selected: { 'contest-id': { key: 'custom', size: 100, prob: null } },
+      }),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView({ locked: true })
