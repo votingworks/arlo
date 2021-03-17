@@ -78,16 +78,30 @@ const StatusBox: React.FC<IStatusBoxProps> = ({
   )
 }
 
-const downloadAuditAdminReport = (electionId: string) => {
-  apiDownload(`/election/${electionId}/report`)
-}
+const downloadAuditAdminReport = (electionId: string) =>
+  new Promise((resolve, reject) => {
+    apiDownload(`/election/${electionId}/report`)
+      .then(() => {
+        resolve('done')
+      })
+      .catch(err => {
+        reject(err)
+      })
+  })
 
 const downloadJurisdictionAdminReport = (
   electionId: string,
   jurisdictionId: string
-) => {
-  apiDownload(`/election/${electionId}/jurisdiction/${jurisdictionId}/report`)
-}
+) =>
+  new Promise((resolve, reject) => {
+    apiDownload(`/election/${electionId}/jurisdiction/${jurisdictionId}/report`)
+      .then(() => {
+        resolve('done')
+      })
+      .catch(err => {
+        reject(err)
+      })
+  })
 
 export const allCvrsUploaded = (jurisdictions: IJurisdiction[]): boolean =>
   jurisdictions.every(
@@ -245,7 +259,12 @@ export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
       headline="Congratulations - the audit is complete!"
       details={[]}
       buttonLabel="Download Audit Report"
-      onButtonClick={() => downloadAuditAdminReport(electionId)}
+      onButtonClick={async () => {
+        await downloadAuditAdminReport(electionId).catch(err => {
+          // eslint-disable-next-line no-console
+          console.error(err)
+        })
+      }}
       auditName={auditSettings.auditName}
     >
       {children}
@@ -378,7 +397,12 @@ export const JurisdictionAdminStatusBox = ({
       details={['Download the audit report.']}
       buttonLabel="Download Audit Report"
       onButtonClick={() =>
-        downloadJurisdictionAdminReport(electionId, jurisdictionId)
+        downloadJurisdictionAdminReport(electionId, jurisdictionId).catch(
+          err => {
+            // eslint-disable-next-line no-console
+            console.error(err)
+          }
+        )
       }
       auditName={auditName}
     >

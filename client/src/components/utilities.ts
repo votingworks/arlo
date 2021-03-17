@@ -44,7 +44,17 @@ export const api = async <T>(
   }
 }
 
-export const apiDownload = (endpoint: string) => window.open(`/api${endpoint}`)
+export const apiDownload = (endpoint: string) =>
+  new Promise((resolve, reject) => {
+    let endpointWindow: Window | null = null
+    try {
+      endpointWindow = window.open(`/api${endpoint}`)
+      if (endpointWindow != null) resolve('done')
+      else reject()
+    } catch (err) {
+      reject(err)
+    }
+  })
 
 export const poll = (
   condition: () => Promise<boolean>,
