@@ -366,7 +366,8 @@ def hybrid_contest_strata(
         choice_id: vote_count.cvr for choice_id, vote_count in vote_counts.items()
     }
 
-    # For targeted contests, count the number of audited ballot draws so far
+    # For targeted contests, count the number of samples drawn for this
+    # contest so far
     if contest.is_targeted:
         num_previous_samples_dict = dict(
             SampledBallotDraw.query.filter_by(contest_id=contest.id)
@@ -375,7 +376,8 @@ def hybrid_contest_strata(
             .group_by(Batch.has_cvrs)
             .values(Batch.has_cvrs, func.count(SampledBallotDraw.ticket_number))
         )
-    # For opportunistic contests, count the number of audited ballots so far
+    # For opportunistic contests, count the number of ballots in jurisdictions
+    # in this contest's universe that were sampled (for some targeted contest)
     else:
         num_previous_samples_dict = dict(
             SampledBallot.query.join(Batch)
