@@ -11,14 +11,15 @@ https://github.com/pbstark/CORLA18
 from itertools import product
 import math
 from typing import Tuple, Dict, TypedDict, NamedTuple
+from collections import Counter
 
 from decimal import Decimal
 import numpy as np
 import scipy as sp
 
 
-from .sampler_contest import Contest
-from . import bravo
+from .sampler_contest import Contest, CVRS, SAMPLECVRS
+from . import bravo, supersimple
 
 
 class HybridPair(NamedTuple):
@@ -696,3 +697,36 @@ def compute_risk(
     max_p = max(pvalues)
 
     return max_p, max_p <= alpha
+
+
+def misstatements(
+    contest: Contest, reported_results: CVRS, audited_results: SAMPLECVRS,
+) -> MISSTATEMENTS:
+    misstatements: MISSTATEMENTS = {}
+    for winner, loser in product(contest.winners, contest.losers):
+        discrepancies = [
+            supersimple.discrepancy(
+                contest,
+                winner,
+                loser,
+                reported_results.get(ballot),
+                audited_result["cvr"],
+            )
+            for ballot, audited_result in audited_results.items()
+        ]
+        discrepancy_nums = [
+            discrepancy["counted_as"]
+            for discrepancy in discrepancies
+            if discrepancy is not None
+        ]
+        misstatement_counts = Counter(discrepancy_nums)
+        # We want to be conservative, so we will ignore understatements (i.e. errors
+        # that favor the winner) which are negative.
+        misstatements[(winner, loser)] = {
+            "o1": misstatement_counts[1],
+            "o2": misstatement_counts[2],
+            "u1": 0,
+            "u2": 0,
+        }
+
+    return misstatements

@@ -1,6 +1,5 @@
-from typing import Dict, Optional
+from typing import Dict
 from collections import Counter
-from itertools import product
 from flask import jsonify
 from werkzeug.exceptions import BadRequest
 
@@ -17,56 +16,6 @@ from ..audit_math import (
 from . import rounds  # pylint: disable=cyclic-import
 from .cvrs import validate_uploaded_cvrs, hybrid_contest_choice_vote_counts
 from .ballot_manifest import validate_uploaded_manifests, hybrid_contest_total_ballots
-
-
-def suite_misstatements(
-    contest: sampler_contest.Contest,
-    reported_results: sampler_contest.CVRS,
-    audited_results: sampler_contest.SAMPLECVRS,
-) -> suite.MISSTATEMENTS:
-    def misstatement(
-        winner: str,
-        loser: str,
-        reported: Optional[sampler_contest.CVR],
-        audited: Optional[sampler_contest.CVR],
-    ) -> int:
-        # Special cases: if ballot wasn't in CVR or ballot can't be found by
-        # audit board, count it as a two-vote overstatement
-        if reported is None or audited is None:
-            return 2
-
-        v_w, v_l = (
-            (reported[contest.name][winner], reported[contest.name][loser])
-            if contest.name in reported
-            # If contest wasn't on the ballot according to the CVR
-            else (0, 0)
-        )
-
-        a_w, a_l = (
-            (audited[contest.name][winner], audited[contest.name][loser])
-            if contest.name in audited
-            # If contest wasn't on the ballot according to the audit board
-            else (0, 0)
-        )
-
-        return (v_w - a_w) - (v_l - a_l)
-
-    misstatements: suite.MISSTATEMENTS = {}
-    for winner, loser in product(contest.winners, contest.losers):
-        misstatement_counts = Counter(
-            misstatement(
-                winner, loser, audited_result["cvr"], reported_results.get(ballot)
-            )
-            for ballot, audited_result in audited_results.items()
-        )
-        misstatements[(winner, loser)] = {
-            "o1": misstatement_counts[1],
-            "o2": misstatement_counts[2],
-            "u1": misstatement_counts[-1],
-            "u2": misstatement_counts[-2],
-        }
-
-    return misstatements
 
 
 # Because the /sample-sizes endpoint is only used for the audit setup flow,
@@ -201,7 +150,7 @@ def sample_size_options(
             cvr_reported_results = rounds.cvrs_for_contest(contest)
             # The CVR sample results are filtered to only CVR ballots
             cvr_sample_results = rounds.sampled_ballot_interpretations_to_cvrs(contest)
-            cvr_misstatements = suite_misstatements(
+            cvr_misstatements = suite.misstatements(
                 suite_contest, cvr_reported_results, cvr_sample_results
             )
             # Create a stratum for CVR ballots
