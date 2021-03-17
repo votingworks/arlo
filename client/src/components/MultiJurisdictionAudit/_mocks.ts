@@ -7,6 +7,29 @@ import { IAuditBoard } from './useAuditBoards'
 import { IRound } from './useRoundsAuditAdmin'
 import { IAuditSettings } from './useAuditSettings'
 import { IContest } from '../../types'
+import jurisdictionFile, {
+  jurisdictionErrorFile,
+  standardizedContestsFile,
+} from './AASetup/Participants/_mocks'
+
+const jurisdictionFormData: FormData = new FormData()
+jurisdictionFormData.append(
+  'jurisdictions',
+  jurisdictionFile,
+  jurisdictionFile.name
+)
+const jurisdictionErrorFormData: FormData = new FormData()
+jurisdictionErrorFormData.append(
+  'jurisdictions',
+  jurisdictionErrorFile,
+  jurisdictionErrorFile.name
+)
+const standardizedContestsFormData: FormData = new FormData()
+standardizedContestsFormData.append(
+  'standardized-contests',
+  standardizedContestsFile,
+  standardizedContestsFile.name
+)
 
 const manifestFormData: FormData = new FormData()
 manifestFormData.append('manifest', manifestFile, manifestFile.name)
@@ -135,6 +158,13 @@ export const jaApiCalls = {
       '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/ballots?count=true',
     response: { count: ballots.length },
   }),
+  deleteManifest: {
+    url: '/api/election/1/jurisdiction/jurisdiction-id-1/ballot-manifest',
+    options: {
+      method: 'DELETE',
+    },
+    response: { status: 'ok' },
+  },
 }
 
 const aaUser = {
@@ -305,6 +335,38 @@ export const aaApiCalls = {
     url: '/api/election/1/sample-sizes',
     response: { sampleSizes: null },
   },
+  putJurisdictionFile: {
+    url: '/api/election/1/jurisdiction/file',
+    options: {
+      method: 'PUT',
+      body: jurisdictionFormData,
+    },
+    response: { status: 'ok' },
+  },
+  putJurisdictionErrorFile: {
+    url: '/api/election/1/jurisdiction/file',
+    options: {
+      method: 'PUT',
+      body: jurisdictionErrorFormData,
+    },
+    response: { status: 'ok' },
+  },
+  getJurisdictionFileWithResponse: (response: IFileInfo) => ({
+    url: '/api/election/1/jurisdiction/file',
+    response,
+  }),
+  putStandardizedContestsFile: {
+    url: '/api/election/1/standardized-contests/file',
+    options: {
+      method: 'PUT',
+      body: standardizedContestsFormData,
+    },
+    response: { status: 'ok' },
+  },
+  getStandardizedContestsFileWithResponse: (response: IFileInfo) => ({
+    url: '/api/election/1/standardized-contests/file',
+    response,
+  }),
 }
 
 export const supportApiCalls = {
