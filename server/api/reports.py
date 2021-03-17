@@ -19,6 +19,8 @@ from ..api.rounds import (
     sampled_ballot_interpretations_to_cvrs,
     sampled_all_ballots,
 )
+from ..api.ballot_manifest import hybrid_contest_total_ballots
+from ..api.cvrs import hybrid_contest_choice_vote_counts
 
 
 def pretty_affiliation(affiliation: Optional[str]) -> str:
@@ -185,23 +187,54 @@ def contest_rows(election: Election):
             "Votes Allowed",
             "Total Ballots Cast",
             "Tabulated Votes",
-        ],
+        ]
+        + (
+            [
+                "Total Ballots Cast: CVR",
+                "Total Ballots Cast: Non-CVR",
+                "Tabulated Votes: CVR",
+                "Tabulated Votes: Non-CVR",
+            ]
+            if election.audit_type == AuditType.HYBRID
+            else []
+        ),
     ]
 
     for contest in election.contests:
-        choices = "; ".join(
-            [f"{choice.name}: {choice.num_votes}" for choice in contest.choices]
-        )
-        rows.append(
-            [
-                contest.name,
-                pretty_targeted(contest.is_targeted),
-                contest.num_winners,
-                contest.votes_allowed,
-                contest.total_ballots_cast,
-                choices,
-            ]
-        )
+        row = [
+            contest.name,
+            pretty_targeted(contest.is_targeted),
+            contest.num_winners,
+            contest.votes_allowed,
+            contest.total_ballots_cast,
+            pretty_choice_votes(
+                {choice.name: choice.num_votes for choice in contest.choices}
+            ),
+        ]
+        if election.audit_type == AuditType.HYBRID:
+            total_ballots = hybrid_contest_total_ballots(contest)
+            vote_counts = hybrid_contest_choice_vote_counts(contest)
+            if total_ballots and vote_counts:
+                choice_id_to_name = {
+                    choice.id: choice.name for choice in contest.choices
+                }
+                row = row + [
+                    total_ballots.cvr,
+                    total_ballots.non_cvr,
+                    pretty_choice_votes(
+                        {
+                            choice_id_to_name[choice_id]: count.cvr
+                            for choice_id, count in vote_counts.items()
+                        }
+                    ),
+                    pretty_choice_votes(
+                        {
+                            choice_id_to_name[choice_id]: count.non_cvr
+                            for choice_id, count in vote_counts.items()
+                        }
+                    ),
+                ]
+        rows.append(row)
     return rows
 
 
@@ -256,19 +289,8 @@ def audit_board_rows(election: Election):
     return rows
 
 
-def pretty_audited_votes(contest: Contest, round_contest: RoundContest):
-    choice_votes = []
-    for choice in contest.choices:
-        choice_result = next(
-            (
-                result.result
-                for result in round_contest.results
-                if result.contest_choice_id == choice.id
-            ),
-            0,
-        )
-        choice_votes.append(f"{choice.name}: {choice_result}")
-    return "; ".join(choice_votes)
+def pretty_choice_votes(choice_votes: Dict[str, int]) -> str:
+    return "; ".join([f"{name}: {votes}" for name, votes in choice_votes.items()])
 
 
 def round_rows(election: Election):
@@ -297,6 +319,19 @@ def round_rows(election: Election):
     for round_contest in round_contests:
         round = round_contest.round
         contest = round_contest.contest
+        audited_votes = pretty_choice_votes(
+            {
+                choice.name: next(
+                    (
+                        result.result
+                        for result in round_contest.results
+                        if result.contest_choice_id == choice.id
+                    ),
+                    0,
+                )
+                for choice in contest.choices
+            }
+        )
         rows.append(
             [
                 round.round_num,
@@ -307,7 +342,7 @@ def round_rows(election: Election):
                 pretty_pvalue(round_contest.end_p_value),
                 isoformat(round.created_at),
                 isoformat(round.ended_at),
-                pretty_audited_votes(contest, round_contest),
+                audited_votes,
             ]
         )
     return rows
