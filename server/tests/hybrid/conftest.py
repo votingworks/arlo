@@ -36,9 +36,9 @@ def contest_ids(
                 {
                     "id": str(uuid.uuid4()),
                     "name": "Choice 1-1",
-                    "numVotes": 14 + 16,  # CVR + non-CVR
+                    "numVotes": 12 + 18,  # CVR + non-CVR
                 },
-                {"id": str(uuid.uuid4()), "name": "Choice 1-2", "numVotes": 8 + 4},
+                {"id": str(uuid.uuid4()), "name": "Choice 1-2", "numVotes": 8 + 2},
             ],
             "numWinners": 1,
             "votesAllowed": 1,
@@ -49,9 +49,9 @@ def contest_ids(
             "name": "Contest 2",
             "isTargeted": False,
             "choices": [
-                {"id": str(uuid.uuid4()), "name": "Choice 2-1", "numVotes": 14 + 6},
+                {"id": str(uuid.uuid4()), "name": "Choice 2-1", "numVotes": 13 + 7},
                 {"id": str(uuid.uuid4()), "name": "Choice 2-2", "numVotes": 6 + 2},
-                {"id": str(uuid.uuid4()), "name": "Choice 2-3", "numVotes": 8 + 2},
+                {"id": str(uuid.uuid4()), "name": "Choice 2-3", "numVotes": 7 + 3},
             ],
             "numWinners": 2,
             "votesAllowed": 2,

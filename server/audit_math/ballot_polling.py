@@ -15,10 +15,16 @@ class SampleSizeOption(TypedDict):
     prob: Optional[float]
 
 
+# { round_id: { choice_id: num_votes }}
+BALLOT_POLLING_SAMPLE_RESULTS = Optional[  # pylint: disable=invalid-name
+    Dict[str, Dict[str, int]]
+]
+
+
 def get_sample_size(
     risk_limit: int,
     contest: Contest,
-    sample_results: Optional[Dict[str, Dict[str, int]]],
+    sample_results: BALLOT_POLLING_SAMPLE_RESULTS,
     math_type: AuditMathType,
     round_sizes: Dict[int, int],
 ) -> Dict[str, SampleSizeOption]:

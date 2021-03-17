@@ -84,11 +84,9 @@ def serialize_contest(contest: Contest) -> JSONDict:
     if contest.election.audit_type == AuditType.HYBRID:
         vote_counts = hybrid_contest_choice_vote_counts(contest)
         for choice in choices:
-            choice["numVotesCvr"] = (
-                vote_counts and vote_counts[str(choice["id"])].num_votes_cvr
-            )
+            choice["numVotesCvr"] = vote_counts and vote_counts[str(choice["id"])].cvr
             choice["numVotesNonCvr"] = (
-                vote_counts and vote_counts[str(choice["id"])].num_votes_non_cvr
+                vote_counts and vote_counts[str(choice["id"])].non_cvr
             )
 
     return {

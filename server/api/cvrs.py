@@ -27,18 +27,41 @@ from ..util.csv_download import csv_response
 from ..util.csv_parse import decode_csv_file
 from ..util.jsonschema import JSONDict
 from ..util.group_by import group_by
+from ..audit_math.suite import HybridPair
 
 
-def all_cvrs_uploaded(contest: Contest):
-    return all(
-        jurisdiction.cvr_contests_metadata
-        and contest.name in jurisdiction.cvr_contests_metadata
-        for jurisdiction in contest.jurisdictions
-    )
+def validate_uploaded_cvrs(contest: Contest):
+    choice_names = {choice.name for choice in contest.choices}
+
+    for jurisdiction in contest.jurisdictions:
+        contests_metadata = typing.cast(JSONDict, jurisdiction.cvr_contests_metadata)
+        if contests_metadata is None:
+            raise Conflict("Some jurisdictions haven't uploaded their CVRs yet.")
+
+        if contest.name not in contests_metadata:
+            raise Conflict(
+                f"Couldn't find contest {contest.name} in the CVR for jurisdiction {jurisdiction.name}"
+            )
+
+        cvr_choice_names = contests_metadata[contest.name]["choices"].keys()
+        missing_choice_names = choice_names - cvr_choice_names
+        if len(missing_choice_names) > 0:
+            raise Conflict(
+                f"Couldn't find some contest choices ({', '.join(sorted(missing_choice_names))})"
+                f" in the CVR for jurisdiction {jurisdiction.name}"
+            )
+
+
+def are_uploaded_cvrs_valid(contest: Contest):
+    try:
+        validate_uploaded_cvrs(contest)
+        return True
+    except Conflict:
+        return False
 
 
 def set_contest_metadata_from_cvrs(contest: Contest):
-    if not all_cvrs_uploaded(contest):
+    if not are_uploaded_cvrs_valid(contest):
         return
 
     contest.choices = []
@@ -65,32 +88,13 @@ def set_contest_metadata_from_cvrs(contest: Contest):
             choice.num_votes += choice_metadata["num_votes"]
 
 
-def all_cvr_choice_names_match(contest):
-    choice_names = {choice.name for choice in contest.choices}
-    return all(
-        choice_names.issubset(
-            jurisdiction.cvr_contests_metadata[contest.name]["choices"].keys()
-        )
-        for jurisdiction in contest.jurisdictions
-    )
-
-
-class HybridNumVotes(typing.NamedTuple):
-    num_votes_cvr: int
-    num_votes_non_cvr: int
-
-
 # For Hybrid audits, we need to compute the vote counts for the CVRs
 # specifically so we can subtract them from the total vote count and get the
 # vote count for the non-CVR ballots.
 def hybrid_contest_choice_vote_counts(
     contest: Contest,
-) -> Optional[Dict[str, HybridNumVotes]]:
-    if not all_cvrs_uploaded(contest):
-        return None
-
-    # TODO raise an error in /sample-sizes
-    if not all_cvr_choice_names_match(contest):
+) -> Optional[Dict[str, HybridPair]]:
+    if not are_uploaded_cvrs_valid(contest):
         return None
 
     cvr_choice_votes = {choice.id: 0 for choice in contest.choices}
@@ -104,9 +108,9 @@ def hybrid_contest_choice_vote_counts(
             cvr_choice_votes[choice.id] += choice_metadata["num_votes"]
 
     return {
-        choice.id: HybridNumVotes(
-            num_votes_cvr=cvr_choice_votes[choice.id],
-            num_votes_non_cvr=choice.num_votes - cvr_choice_votes[choice.id],
+        choice.id: HybridPair(
+            cvr=cvr_choice_votes[choice.id],
+            non_cvr=choice.num_votes - cvr_choice_votes[choice.id],
         )
         for choice in contest.choices
     }

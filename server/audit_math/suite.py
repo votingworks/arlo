@@ -10,7 +10,7 @@ https://github.com/pbstark/CORLA18
 """
 from itertools import product
 import math
-from typing import Tuple, Dict
+from typing import Tuple, Dict, TypedDict, NamedTuple
 
 from decimal import Decimal
 import numpy as np
@@ -19,6 +19,11 @@ import scipy as sp
 
 from .sampler_contest import Contest
 from . import bravo
+
+
+class HybridPair(NamedTuple):
+    non_cvr: int
+    cvr: int
 
 
 GAMMA = 1.03905  # This GAMMA is used in Stark's tool, AGI, and CORLA
@@ -174,6 +179,17 @@ class BallotPollingStratum:
         return 1.0 / LR if 1.0 / LR < 1 else 1.0
 
 
+class MisstatementCounts(TypedDict):
+    o1: int
+    o2: int
+    u1: int
+    u2: int
+
+
+# { (winner, loser): MistatementCounts }
+MISSTATEMENTS = Dict[Tuple[str, str], MisstatementCounts]
+
+
 class BallotComparisonStratum:
     """
     A class encapsulating a stratum of ballots in an election. Each stratum is its
@@ -184,14 +200,14 @@ class BallotComparisonStratum:
 
     num_ballots: int
     vote_totals: Dict[str, int]
-    misstatements: Dict[Tuple[str, str], Dict[str, int]]
+    misstatements: MISSTATEMENTS
     sample_size: int
 
     def __init__(
         self,
         num_ballots: int,
         vote_totals: Dict[str, int],
-        misstatements: Dict[Tuple[str, str], Dict[str, int]],
+        misstatements: MISSTATEMENTS,
         sample_size: int,
     ):
         """
@@ -479,7 +495,9 @@ def try_n(
     # corresponding hypothetical stratum
     hyp_sample_size = n1_original + n1
 
-    hyp_misstatements = {(winner, loser): {"o1": o1, "o2": o2, "u1": u1, "u2": u2,}}
+    hyp_misstatements: MISSTATEMENTS = {
+        (winner, loser): {"o1": o1, "o2": o2, "u1": u1, "u2": u2,}
+    }
 
     hyp_cvr_stratum = BallotComparisonStratum(
         cvr_stratum.num_ballots,
@@ -547,7 +565,7 @@ def get_sample_size(
     contest: Contest,
     bp_stratum: BallotPollingStratum,
     cvr_stratum: BallotComparisonStratum,
-) -> Tuple[int, int]:
+) -> HybridPair:
     """
     Estimate the initial sample sizes for the audit.
 
@@ -589,7 +607,9 @@ def get_sample_size(
             if ballots_to_sample > contest.ballots:
                 cvr_ballots_to_sample = math.ceil(n_ratio * contest.ballots)
                 bp_ballots_to_sample = int(contest.ballots - cvr_ballots_to_sample)
-                return (cvr_ballots_to_sample, bp_ballots_to_sample)
+                return HybridPair(
+                    cvr=cvr_ballots_to_sample, non_cvr=bp_ballots_to_sample
+                )
             if bp_stratum.num_ballots > 0:
                 cvr_ballots_to_sample = math.ceil(n_ratio * ballots_to_sample)
                 bp_ballots_to_sample = int(ballots_to_sample - cvr_ballots_to_sample)
@@ -598,7 +618,9 @@ def get_sample_size(
                 ) or loser_votes_in_bp < int(
                     bp_ballots_to_sample * loser_votes_in_bp / bp_stratum.num_ballots
                 ):
-                    return (cvr_stratum.num_ballots, bp_stratum.num_ballots)
+                    return HybridPair(
+                        cvr=cvr_stratum.num_ballots, non_cvr=bp_stratum.num_ballots
+                    )
             expected_pvalue = try_n(
                 ballots_to_sample,
                 alpha,
@@ -636,7 +658,7 @@ def get_sample_size(
         cvr_ballots_to_sample = math.ceil(n_ratio * high_n)
         bp_ballots_to_sample = math.ceil(high_n - cvr_ballots_to_sample)
 
-    return (cvr_ballots_to_sample, bp_ballots_to_sample)
+    return HybridPair(cvr=cvr_ballots_to_sample, non_cvr=bp_ballots_to_sample)
 
 
 def compute_risk(
