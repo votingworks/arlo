@@ -1,6 +1,11 @@
 import json
 from ...models import *  # pylint: disable=wildcard-import
 from ..helpers import *  # pylint: disable=wildcard-import
+from ..ballot_comparison.test_ballot_comparison import (
+    audit_all_ballots,
+    check_discrepancies,
+    generate_audit_results,
+)
 
 
 def test_contest_vote_counts_before_cvrs(
@@ -260,7 +265,7 @@ def test_contest_choices_dont_match_cvrs(
     }
 
 
-def test_one_round(
+def test_hybrid_two_rounds(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],  # pylint: disable=unused-argument
@@ -268,7 +273,9 @@ def test_one_round(
     election_settings,  # pylint: disable=unused-argument
     manifests,  # pylint: disable=unused-argument
     cvrs,  # pylint: disable=unused-argument
+    snapshot,
 ):
+    # AA selects a sample size and launches the audit
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/sample-sizes")
     sample_sizes = json.loads(rv.data)["sampleSizes"]
@@ -285,6 +292,9 @@ def test_one_round(
         },
     )
     assert_ok(rv)
+
+    rv = client.get(f"/api/election/{election_id}/round",)
+    round_1_id = json.loads(rv.data)["rounds"][0]["id"]
 
     # Two separate samples (cvr/non-cvr) should have been drawn
     ballot_draws = list(
@@ -309,3 +319,90 @@ def test_one_round(
         draw.sampled_ballot.batch.jurisdiction_id for draw in ballot_draws
     }
     assert sorted(sampled_jurisdictions) == sorted(jurisdiction_ids[:2])
+
+    # JAs create audit boards
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    for jurisdiction_id in jurisdiction_ids[:2]:
+        rv = post_json(
+            client,
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_1_id}/audit-board",
+            [{"name": "Audit Board #1"}],
+        )
+        assert_ok(rv)
+
+    # Audit boards audit all the ballots.
+    # Our goal is to mostly make the audit board interpretations match the CVRs
+    # for the target contest, messing up just a couple in order to trigger a
+    # second round. For convenience, using the same format as the CVR to
+    # specify our audit results.
+    # Tabulator, Batch, Ballot, Choice 1-1, Choice 1-2, Choice 2-1, Choice 2-2, Choice 2-3
+    # We also specify the expected discrepancies.
+    audit_results = {
+        # CVR ballots
+        # We create fake audit results for them based on the CVR
+        ("J1", "TABULATOR1", "BATCH2", 2): ("1,1,0,1,0", (-1, 1)),  # CVR: 0,1,1,1,0
+        ("J1", "TABULATOR1", "BATCH2", 3): ("1,0,1,0,1", (None, None)),
+        ("J1", "TABULATOR2", "BATCH2", 2): ("1,1,1,1,1", (None, None)),
+        ("J1", "TABULATOR2", "BATCH2", 4): (",,1,0,1", (None, None)),
+        ("J2", "TABULATOR2", "BATCH1", 1): ("not found", (2, None)),  # CVR: 0,1,1,1,0
+        ("J2", "TABULATOR2", "BATCH2", 1): ("1,0,1,0,1", (None, None)),
+        ("J2", "TABULATOR2", "BATCH2", 3): ("not found", (2, None)),  # CVR: missing
+        # Non-CVR ballots
+        # We create fake audit results for them based on the reported margin,
+        # like in ballot polling
+        ("J1", "TABULATOR3", "BATCH1", 1): ("1,0,1,0,0", (None, None)),
+        ("J1", "TABULATOR3", "BATCH1", 2): ("1,0,1,0,0", (None, None)),
+        ("J1", "TABULATOR3", "BATCH1", 3): ("1,0,1,0,0", (None, None)),
+        ("J1", "TABULATOR3", "BATCH1", 5): ("1,0,1,0,0", (None, None)),
+        ("J1", "TABULATOR3", "BATCH1", 8): ("1,0,1,0,0", (None, None)),
+        ("J1", "TABULATOR3", "BATCH1", 9): ("1,0,0,1,0", (None, None)),
+        ("J1", "TABULATOR3", "BATCH1", 10): ("1,0,0,0,1", (None, None)),
+        ("J2", "TABULATOR3", "BATCH1", 1): ("1,0,,,", (None, None)),
+        ("J2", "TABULATOR3", "BATCH1", 2): ("1,0,,,", (None, None)),
+        ("J2", "TABULATOR3", "BATCH1", 3): ("1,0,,,", (None, None)),
+        ("J2", "TABULATOR3", "BATCH1", 5): ("0,1,,,", (None, None)),
+        ("J2", "TABULATOR3", "BATCH1", 10): ("0,1,,,", (None, None)),
+    }
+
+    target_contest_id, opportunistic_contest_id = contest_ids
+
+    audit_all_ballots(
+        round_1_id, audit_results, target_contest_id, opportunistic_contest_id
+    )
+
+    # Check the audit report
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/report")
+    assert_match_report(rv.data, snapshot)
+    check_discrepancies(rv.data, audit_results)
+
+    # TODO test a second round once escalation works
+    # pylint: disable=unreachable
+    return
+
+    # Start a second round
+    rv = post_json(client, f"/api/election/{election_id}/round", {"roundNum": 2})
+    assert_ok(rv)
+
+    rv = client.get(f"/api/election/{election_id}/round",)
+    round_2_id = json.loads(rv.data)["rounds"][1]["id"]
+
+    # Sample sizes endpoint should still return round 1 sample size
+    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    sample_size_options = json.loads(rv.data)["sampleSizes"]
+    assert len(sample_size_options) == 1
+    assert sample_size_options[target_contest_id][0] == sample_size
+
+    # For round 2, audit results should match the CVR exactly.
+    generate_audit_results(round_2_id)
+    audit_results = {}
+
+    audit_all_ballots(
+        round_2_id, audit_results, target_contest_id, opportunistic_contest_id
+    )
+
+    rv = client.get(f"/api/election/{election_id}/report")
+    assert_match_report(rv.data, snapshot)
+    check_discrepancies(rv.data, audit_results)

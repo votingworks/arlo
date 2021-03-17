@@ -14,8 +14,8 @@ from ..audit_math import (
     suite,
 )
 from . import rounds  # pylint: disable=cyclic-import
-from .cvrs import validate_uploaded_cvrs, hybrid_contest_choice_vote_counts
-from .ballot_manifest import validate_uploaded_manifests, hybrid_contest_total_ballots
+from .cvrs import validate_uploaded_cvrs
+from .ballot_manifest import validate_uploaded_manifests
 
 
 # Because the /sample-sizes endpoint is only used for the audit setup flow,
@@ -110,59 +110,14 @@ def sample_size_options(
             # TODO validate that contest choice vote counts provided by AA
             # match with total ballots based on manifest
 
-            suite_contest = sampler_contest.from_db_contest(contest)
-
-            total_ballots = hybrid_contest_total_ballots(contest)
-            vote_counts = hybrid_contest_choice_vote_counts(contest)
-            assert vote_counts
-            non_cvr_vote_counts = {
-                choice_id: vote_count.non_cvr
-                for choice_id, vote_count in vote_counts.items()
-            }
-            cvr_vote_counts = {
-                choice_id: vote_count.cvr
-                for choice_id, vote_count in vote_counts.items()
-            }
-
-            num_previous_samples_dict = dict(
-                SampledBallotDraw.query.join(Round)
-                .filter_by(election_id=election.id)
-                .join(SampledBallot)
-                .join(Batch)
-                .group_by(Batch.has_cvrs)
-                .values(Batch.has_cvrs, func.count(SampledBallotDraw.ticket_number))
+            non_cvr_stratum, cvr_stratum = rounds.hybrid_contest_strata(
+                contest, round_one=round_one
             )
-            non_cvr_previous_samples = num_previous_samples_dict.get(False, 0)
-            cvr_previous_samples = num_previous_samples_dict.get(True, 0)
-
-            # In hybrid audits, we only store round contest results for non-CVR
-            # ballots
-            non_cvr_sample_results = (
-                {} if round_one else rounds.contest_results_by_round(contest)
-            )
-            non_cvr_stratum = suite.BallotPollingStratum(
-                total_ballots.non_cvr,
-                non_cvr_vote_counts,
-                non_cvr_sample_results,
-                non_cvr_previous_samples,
-            )
-
-            cvr_reported_results = rounds.cvrs_for_contest(contest)
-            # The CVR sample results are filtered to only CVR ballots
-            cvr_sample_results = rounds.sampled_ballot_interpretations_to_cvrs(contest)
-            cvr_misstatements = suite.misstatements(
-                suite_contest, cvr_reported_results, cvr_sample_results
-            )
-            # Create a stratum for CVR ballots
-            cvr_stratum = suite.BallotComparisonStratum(
-                total_ballots.cvr,
-                cvr_vote_counts,
-                cvr_misstatements,
-                cvr_previous_samples,
-            )
-
             size_cvr, size_non_cvr = suite.get_sample_size(
-                election.risk_limit, suite_contest, non_cvr_stratum, cvr_stratum,
+                election.risk_limit,
+                sampler_contest.from_db_contest(contest),
+                non_cvr_stratum,
+                cvr_stratum,
             )
 
             return {

@@ -24,7 +24,16 @@ from . import sample_sizes as sample_sizes_module
 from ..util.isoformat import isoformat
 from ..util.group_by import group_by
 from ..util.jsonschema import JSONDict
-from ..audit_math import sampler, ballot_polling, macro, supersimple, sampler_contest
+from ..audit_math import (
+    sampler,
+    ballot_polling,
+    macro,
+    supersimple,
+    sampler_contest,
+    suite,
+)
+from .cvrs import hybrid_contest_choice_vote_counts
+from .ballot_manifest import hybrid_contest_total_ballots
 from ..worker.tasks import (
     background_task,
     create_background_task,
@@ -291,7 +300,9 @@ def sampled_ballot_interpretations_to_cvrs(
 
     # In hybrid audits, only count CVR ballots
     if contest.election.audit_type == AuditType.HYBRID:
-        ballots_query = ballots_query.filter(Batch.has_cvrs is True)
+        ballots_query = ballots_query.filter(
+            Batch.has_cvrs == True  # pylint: disable=singleton-comparison
+        )
 
     # For targeted contests, count the number of times the ballot was sampled
     if contest.is_targeted:
@@ -342,6 +353,70 @@ def sampled_ballot_interpretations_to_cvrs(
     return cvrs
 
 
+def hybrid_contest_strata(
+    contest: Contest, round_one: bool = False
+) -> Tuple[suite.BallotPollingStratum, suite.BallotComparisonStratum]:
+    total_ballots = hybrid_contest_total_ballots(contest)
+    vote_counts = hybrid_contest_choice_vote_counts(contest)
+    assert vote_counts
+    non_cvr_vote_counts = {
+        choice_id: vote_count.non_cvr for choice_id, vote_count in vote_counts.items()
+    }
+    cvr_vote_counts = {
+        choice_id: vote_count.cvr for choice_id, vote_count in vote_counts.items()
+    }
+
+    # For targeted contests, count the number of samples drawn for this
+    # contest so far
+    if contest.is_targeted:
+        num_previous_samples_dict = dict(
+            SampledBallotDraw.query.filter_by(contest_id=contest.id)
+            .join(SampledBallot)
+            .join(Batch)
+            .group_by(Batch.has_cvrs)
+            .values(Batch.has_cvrs, func.count(SampledBallotDraw.ticket_number))
+        )
+    # For opportunistic contests, count the number of ballots in jurisdictions
+    # in this contest's universe that were sampled (for some targeted contest)
+    else:
+        num_previous_samples_dict = dict(
+            SampledBallot.query.join(Batch)
+            .join(Jurisdiction)
+            .join(Jurisdiction.contests)
+            .filter_by(id=contest.id)
+            .group_by(Batch.has_cvrs)
+            .values(Batch.has_cvrs, func.count(SampledBallot.id))
+        )
+
+    non_cvr_previous_samples = num_previous_samples_dict.get(False, 0)
+    cvr_previous_samples = num_previous_samples_dict.get(True, 0)
+
+    # In hybrid audits, we only store round contest results for non-CVR
+    # ballots
+    non_cvr_sample_results = {} if round_one else contest_results_by_round(contest)
+    non_cvr_stratum = suite.BallotPollingStratum(
+        total_ballots.non_cvr,
+        non_cvr_vote_counts,
+        non_cvr_sample_results,
+        non_cvr_previous_samples,
+    )
+
+    cvr_reported_results = cvrs_for_contest(contest)
+    # The CVR sample results are filtered to only CVR ballots
+    cvr_sample_results = sampled_ballot_interpretations_to_cvrs(contest)
+    cvr_misstatements = suite.misstatements(
+        sampler_contest.from_db_contest(contest),
+        cvr_reported_results,
+        cvr_sample_results,
+    )
+    # Create a stratum for CVR ballots
+    cvr_stratum = suite.BallotComparisonStratum(
+        total_ballots.cvr, cvr_vote_counts, cvr_misstatements, cvr_previous_samples,
+    )
+
+    return non_cvr_stratum, cvr_stratum
+
+
 def calculate_risk_measurements(election: Election, round: Round):
     assert election.risk_limit is not None
 
@@ -365,13 +440,21 @@ def calculate_risk_measurements(election: Election, round: Round):
                 batch_tallies(election),
                 cumulative_batch_results(election),
             )
-        else:
-            assert election.audit_type == AuditType.BALLOT_COMPARISON
+        elif election.audit_type == AuditType.BALLOT_COMPARISON:
             p_value, is_complete = supersimple.compute_risk(
                 election.risk_limit,
                 sampler_contest.from_db_contest(contest),
                 cvrs_for_contest(contest),
                 sampled_ballot_interpretations_to_cvrs(contest),
+            )
+        else:
+            assert election.audit_type == AuditType.HYBRID
+            non_cvr_stratum, cvr_stratum = hybrid_contest_strata(contest)
+            p_value, is_complete = suite.compute_risk(
+                election.risk_limit,
+                sampler_contest.from_db_contest(contest),
+                non_cvr_stratum,
+                cvr_stratum,
             )
 
         round_contest.end_p_value = p_value
