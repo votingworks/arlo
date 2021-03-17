@@ -332,6 +332,41 @@ def test_hybrid_two_rounds(
         )
         assert_ok(rv)
 
+    # Check that the imprinted ID is included in the ballot retrieval list for CVR ballots
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/ballots/retrieval-list"
+    )
+    retrieval_list = rv.data.decode("utf-8").replace("\r\n", "\n")
+    snapshot.assert_match(retrieval_list)
+
+    # Check that the imprinted ID is included with each CVR ballot for JAs/audit boards
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/ballots"
+    )
+    ballots = json.loads(rv.data)["ballots"]
+    assert len(ballots) == len(retrieval_list.splitlines()) - 1
+
+    assert ballots[0]["batch"]["name"] == "BATCH2"
+    assert ballots[0]["batch"]["tabulator"] == "TABULATOR1"
+    assert ballots[0]["position"] == 2
+    assert ballots[0]["imprintedId"] == "1-2-2"
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board"
+    )
+    audit_board = json.loads(rv.data)["auditBoards"][0]
+
+    set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board["id"])
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board['id']}/ballots"
+    )
+    ballots = json.loads(rv.data)["ballots"]
+
+    assert ballots[0]["batch"]["name"] == "BATCH2"
+    assert ballots[0]["batch"]["tabulator"] == "TABULATOR1"
+    assert ballots[0]["position"] == 2
+    assert ballots[0]["imprintedId"] == "1-2-2"
+
     # Audit boards audit all the ballots.
     # Our goal is to mostly make the audit board interpretations match the CVRs
     # for the target contest, messing up just a couple in order to trigger a

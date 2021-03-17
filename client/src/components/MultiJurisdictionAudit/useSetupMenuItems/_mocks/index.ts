@@ -720,7 +720,7 @@ export const contestMocks: {
 }
 
 export const fileProcessingMocks: {
-  [key in 'null' | 'processed']: IFileInfo['processing']
+  [key in 'null' | 'processed' | 'errored']: IFileInfo['processing']
 } = {
   null: null,
   processed: {
@@ -728,6 +728,12 @@ export const fileProcessingMocks: {
     startedAt: '2019-07-18T16:34:07.000+00:00',
     completedAt: '2019-07-18T16:35:07.000+00:00',
     error: null,
+  },
+  errored: {
+    status: FileProcessingStatus.ERRORED,
+    startedAt: '2019-07-18T16:34:07.000+00:00',
+    completedAt: '2019-07-18T16:35:07.000+00:00',
+    error: 'something went wrong',
   },
 }
 
