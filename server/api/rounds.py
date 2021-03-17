@@ -902,9 +902,11 @@ def create_round(election: Election):
                 return options.get("0.9", options.get("asn"))
             elif audit_type == AuditType.BATCH_COMPARISON:
                 return options["macro"]
-            else:
-                assert audit_type == AuditType.BALLOT_COMPARISON
+            elif audit_type == AuditType.BALLOT_COMPARISON:
                 return options["supersimple"]
+            else:
+                assert audit_type == AuditType.HYBRID
+                return options["suite"]
 
         sample_sizes = {
             contest_id: select_sample_size(options)

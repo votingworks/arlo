@@ -23,7 +23,11 @@ export interface IOrganization extends IOrganizationBase {
 export interface IElectionBase {
   id: string
   auditName: string
-  auditType: 'BALLOT_POLLING' | 'BALLOT_COMPARISON' | 'BATCH_COMPARISON'
+  auditType:
+    | 'BALLOT_POLLING'
+    | 'BALLOT_COMPARISON'
+    | 'BATCH_COMPARISON'
+    | 'HYBRID'
 }
 
 export interface IAuditAdmin {

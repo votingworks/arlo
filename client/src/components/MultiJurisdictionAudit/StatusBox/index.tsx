@@ -250,7 +250,8 @@ export const JurisdictionAdminStatusBox = ({
   if (rounds.length === 0) {
     const files: IFileInfo['processing'][] = [ballotManifest.processing]
     if (auditType === 'BATCH_COMPARISON') files.push(batchTallies.processing)
-    if (auditType === 'BALLOT_COMPARISON') files.push(cvrs.processing)
+    if (auditType === 'BALLOT_COMPARISON' || auditType === 'HYBRID')
+      files.push(cvrs.processing)
 
     const numComplete = files.filter(
       f => f && f.status === FileProcessingStatus.PROCESSED
