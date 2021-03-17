@@ -222,10 +222,10 @@ def round_sizes(contest: Contest) -> Dict[int, int]:
     )
 
 
-def cvrs_for_contest(contest: Contest) -> supersimple.CVRS:
+def cvrs_for_contest(contest: Contest) -> sampler_contest.CVRS:
     choice_name_to_id = {choice.name: choice.id for choice in contest.choices}
 
-    cvrs: supersimple.CVRS = {}
+    cvrs: sampler_contest.CVRS = {}
 
     for jurisdiction in contest.jurisdictions:
         cvr_contests_metadata = typing_cast(
@@ -247,7 +247,7 @@ def cvrs_for_contest(contest: Contest) -> supersimple.CVRS:
         )
 
         for ballot_key, interpretations_str in interpretations_by_ballot:
-            ballot_cvr: supersimple.CVR = {contest.id: {}}
+            ballot_cvr: sampler_contest.CVR = {contest.id: {}}
             # interpretations is the raw CVR string: 1,0,0,1,0,1,0. We need to
             # pick out the interpretation for each contest choice. We saved the
             # column index for each choice when we parsed the CVR.
@@ -268,7 +268,9 @@ def cvrs_for_contest(contest: Contest) -> supersimple.CVRS:
     return cvrs
 
 
-def sampled_ballot_interpretations_to_cvrs(contest: Contest) -> supersimple.SAMPLE_CVRS:
+def sampled_ballot_interpretations_to_cvrs(
+    contest: Contest,
+) -> sampler_contest.SAMPLECVRS:
     ballots_query = (
         SampledBallot.query.join(Batch)
         .join(Jurisdiction)
@@ -296,7 +298,7 @@ def sampled_ballot_interpretations_to_cvrs(contest: Contest) -> supersimple.SAMP
     # and a 0 otherwise. There are a couple special cases:
     # - Contest wasn't on the ballot - CVR should be an empty object
     # - Audit board couldn't find the ballot - CVR should be None
-    cvrs: supersimple.SAMPLE_CVRS = {}
+    cvrs: sampler_contest.SAMPLECVRS = {}
     for ballot, times_sampled in ballots:
         if ballot.status == BallotStatus.NOT_FOUND:
             cvrs[ballot.id] = {"times_sampled": times_sampled, "cvr": None}

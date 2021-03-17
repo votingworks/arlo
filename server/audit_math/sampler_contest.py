@@ -2,8 +2,8 @@
 A Module containing the Contest class, which encapsulates useful info for RLA
 computations.
 """
-from typing import Dict
 import operator
+from typing import Dict, Optional, TypedDict
 
 
 def from_db_contest(db_contest):
@@ -166,3 +166,17 @@ class Contest:
             self.ballots,
             self.candidates,
         )
+
+
+# CVR: { contest_id: { choice_id: 0 | 1 }}
+# CVRS: { ballot_id: CVR }
+CVR = Dict[str, Dict[str, int]]
+CVRS = Dict[str, Optional[CVR]]
+
+
+class SampleCVR(TypedDict):
+    times_sampled: int
+    cvr: Optional[CVR]
+
+
+SAMPLECVRS = Dict[str, SampleCVR]

@@ -213,7 +213,9 @@ def collect_risks(
     # since other audits only return a single p_value,
     # and rounds.py throws it out right away p_value = max(p_values.values())
 
-    risks = {("winner", "loser"): audit.status[audit.active_contest].risks[-1]}
+    risks = {
+        ("winner", "loser"): min(audit.status[audit.active_contest].risks[-1], 1.0)
+    }
     logging.debug(f"minerva  collect_risks return: {risks=}")
 
     return risks

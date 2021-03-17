@@ -715,12 +715,12 @@ expected_p_values = {
         "Two-winner Contest": 0.12534,
     },
     "two_vote_over": {
-        "Contest A": 1.73150,
-        "Contest B": 1.85538,
-        "Contest C": 1.79346,
-        "Contest D": 1.87524,
+        "Contest A": 1.0,
+        "Contest B": 1.0,
+        "Contest C": 1.0,
+        "Contest D": 1.0,
         "Contest E": 0.51877,
         "Contest F": 0.05013,
-        "Two-winner Contest": 1.73150,
+        "Two-winner Contest": 1.0,
     },
 }

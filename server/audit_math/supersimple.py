@@ -3,7 +3,7 @@ import math
 from decimal import Decimal, ROUND_CEILING
 from typing import Dict, Tuple, TypedDict, Optional
 
-from .sampler_contest import Contest
+from .sampler_contest import Contest, CVRS, SAMPLECVRS
 
 l: Decimal = Decimal(0.5)
 gamma: Decimal = Decimal(1.03905)  # This gamma is used in Stark's tool, AGI, and CORLA
@@ -15,20 +15,6 @@ u1: Decimal = Decimal(0.001)
 # This sets the expected two-vote misstatements at 1 in 10000
 o2: Decimal = Decimal(0.0001)
 u2: Decimal = Decimal(0.0001)
-
-
-# CVR: { contest_id: { choice_id: 0 | 1 }}
-# CVRS: { ballot_id: CVR }
-CVR = Dict[str, Dict[str, int]]
-CVRS = Dict[str, Optional[CVR]]
-
-
-class SampleCVR(TypedDict):
-    times_sampled: int
-    cvr: Optional[CVR]
-
-
-SAMPLE_CVRS = Dict[str, SampleCVR]
 
 
 class Discrepancy(TypedDict):
@@ -61,7 +47,7 @@ def nMin(
 
 
 def compute_discrepancies(
-    contest: Contest, cvrs: CVRS, sample_cvr: SAMPLE_CVRS
+    contest: Contest, cvrs: CVRS, sample_cvr: SAMPLECVRS
 ) -> Dict[str, Discrepancy]:
     """
     Iterates through a given sample and returns the discrepancies found.
@@ -254,7 +240,7 @@ def get_sample_sizes(
 
 
 def compute_risk(
-    risk_limit: int, contest: Contest, cvrs: CVRS, sample_cvr: SAMPLE_CVRS,
+    risk_limit: int, contest: Contest, cvrs: CVRS, sample_cvr: SAMPLECVRS
 ) -> Tuple[float, bool]:
     """
     Computes the risk-value of <sample_results> based on results in <contest>.
@@ -331,4 +317,4 @@ def compute_risk(
         # We've done a full hand recount
         return 0, True
 
-    return float(p), result
+    return min(float(p), 1.0), result
