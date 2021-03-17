@@ -14,9 +14,9 @@ Organization,Election Name,State\r
 Test Org test_hybrid_two_rounds,Test Election,CA\r
 \r
 ######## CONTESTS ########\r
-Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes\r
-Contest 1,Targeted,1,1,50,Choice 1-1: 30; Choice 1-2: 10\r
-Contest 2,Opportunistic,2,2,25,Choice 2-1: 20; Choice 2-2: 8; Choice 2-3: 10\r
+Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes,Total Ballots Cast: CVR,Total Ballots Cast: Non-CVR,Tabulated Votes: CVR,Tabulated Votes: Non-CVR\r
+Contest 1,Targeted,1,1,50,Choice 1-1: 30; Choice 1-2: 10,30,20,Choice 1-1: 12; Choice 1-2: 8,Choice 1-1: 18; Choice 1-2: 2\r
+Contest 2,Opportunistic,2,2,25,Choice 2-1: 20; Choice 2-2: 8; Choice 2-3: 10,15,10,Choice 2-1: 13; Choice 2-2: 6; Choice 2-3: 7,Choice 2-1: 7; Choice 2-2: 2; Choice 2-3: 3\r
 \r
 ######## AUDIT SETTINGS ########\r
 Audit Name,Audit Type,Audit Math Type,Risk Limit,Random Seed,Online Data Entry?\r
