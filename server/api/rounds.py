@@ -366,30 +366,34 @@ def hybrid_contest_strata(
         choice_id: vote_count.cvr for choice_id, vote_count in vote_counts.items()
     }
 
-    # For targeted contests, count the number of samples drawn for this
-    # contest so far
-    if contest.is_targeted:
-        num_previous_samples_dict = dict(
-            SampledBallotDraw.query.filter_by(contest_id=contest.id)
-            .join(SampledBallot)
-            .join(Batch)
-            .group_by(Batch.has_cvrs)
-            .values(Batch.has_cvrs, func.count(SampledBallotDraw.ticket_number))
-        )
-    # For opportunistic contests, count the number of ballots in jurisdictions
-    # in this contest's universe that were sampled (for some targeted contest)
+    if round_one:
+        non_cvr_previous_samples = 0
+        cvr_previous_samples = 0
     else:
-        num_previous_samples_dict = dict(
-            SampledBallot.query.join(Batch)
-            .join(Jurisdiction)
-            .join(Jurisdiction.contests)
-            .filter_by(id=contest.id)
-            .group_by(Batch.has_cvrs)
-            .values(Batch.has_cvrs, func.count(SampledBallot.id))
-        )
+        # For targeted contests, count the number of samples drawn for this
+        # contest so far
+        if contest.is_targeted:
+            num_previous_samples_dict = dict(
+                SampledBallotDraw.query.filter_by(contest_id=contest.id)
+                .join(SampledBallot)
+                .join(Batch)
+                .group_by(Batch.has_cvrs)
+                .values(Batch.has_cvrs, func.count(SampledBallotDraw.ticket_number))
+            )
+        # For opportunistic contests, count the number of ballots in jurisdictions
+        # in this contest's universe that were sampled (for some targeted contest)
+        else:
+            num_previous_samples_dict = dict(
+                SampledBallot.query.join(Batch)
+                .join(Jurisdiction)
+                .join(Jurisdiction.contests)
+                .filter_by(id=contest.id)
+                .group_by(Batch.has_cvrs)
+                .values(Batch.has_cvrs, func.count(SampledBallot.id))
+            )
 
-    non_cvr_previous_samples = num_previous_samples_dict.get(False, 0)
-    cvr_previous_samples = num_previous_samples_dict.get(True, 0)
+        non_cvr_previous_samples = num_previous_samples_dict.get(False, 0)
+        cvr_previous_samples = num_previous_samples_dict.get(True, 0)
 
     # In hybrid audits, we only store round contest results for non-CVR
     # ballots
@@ -403,11 +407,12 @@ def hybrid_contest_strata(
 
     cvr_reported_results = cvrs_for_contest(contest)
     # The CVR sample results are filtered to only CVR ballots
-    cvr_sample_results = sampled_ballot_interpretations_to_cvrs(contest)
+    suite_contest = sampler_contest.from_db_contest(contest)
+    cvr_sample_results = (
+        {} if round_one else sampled_ballot_interpretations_to_cvrs(contest)
+    )
     cvr_misstatements = suite.misstatements(
-        sampler_contest.from_db_contest(contest),
-        cvr_reported_results,
-        cvr_sample_results,
+        suite_contest, cvr_reported_results, cvr_sample_results,
     )
     # Create a stratum for CVR ballots
     cvr_stratum = suite.BallotComparisonStratum(
