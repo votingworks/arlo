@@ -5,6 +5,9 @@ export interface ISampleSizeOption {
   size: number | null
   prob: number | null
   key: string
+  // In hybrid audits only
+  sizeCvr?: number
+  sizeNonCvr?: number
 }
 
 export interface ISampleSizeOptions {
