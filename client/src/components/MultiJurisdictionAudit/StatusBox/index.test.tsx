@@ -91,42 +91,83 @@ describe('StatusBox', () => {
       screen.getByText('3 of 3 jurisdictions have completed file uploads.')
     })
 
-    // TODO
-    // cvrAuditTypes.forEach(auditType => {
-    //   it(`renders ${auditType} audit, partial upload state`, () => {
-    //     render(
-    //       <Router>
-    //         <AuditAdminStatusBox
-    //           rounds={[]}
-    //           startNextRound={jest.fn()}
-    //           jurisdictions={jurisdictionMocks.oneManifest}
-    //           contests={[]}
-    //           auditSettings={auditSettings.blank!}
-    //         />
-    //       </Router>
-    //     )
-    //     screen.getByText('Audit setup is not complete.')
-    //     screen.getByText('The audit has not started.')
-    //     screen.getByText('1 of 3 jurisdictions have completed file uploads.')
-    //   })
+    cvrAuditTypes.forEach(auditType => {
+      it(`renders ${auditType} audit, partial upload state`, () => {
+        render(
+          <Router>
+            <AuditAdminStatusBox
+              rounds={[]}
+              startNextRound={jest.fn()}
+              jurisdictions={jurisdictionMocks.allManifestsSomeCVRs}
+              contests={[]}
+              auditSettings={
+                auditType === 'BALLOT_COMPARISON'
+                  ? auditSettings.blankBallotComparison
+                  : auditSettings.blankHybrid
+              }
+            />
+          </Router>
+        )
+        screen.getByText('Audit setup is not complete.')
+        screen.getByText('The audit has not started.')
+        screen.getByText('1 of 3 jurisdictions have completed file uploads.')
+      })
 
-    //   it(`renders ${auditType} audit, full uploads state`, () => {
-    //     render(
-    //       <Router>
-    //         <AuditAdminStatusBox
-    //           rounds={[]}
-    //           startNextRound={jest.fn()}
-    //           jurisdictions={jurisdictionMocks.allManifests}
-    //           contests={[]}
-    //           auditSettings={auditSettings.blank!}
-    //         />
-    //       </Router>
-    //     )
-    //     screen.getByText('Audit setup is not complete.')
-    //     screen.getByText('The audit has not started.')
-    //     screen.getByText('3 of 3 jurisdictions have completed file uploads.')
-    //   })
-    // })
+      it(`renders ${auditType} audit, full uploads state`, () => {
+        render(
+          <Router>
+            <AuditAdminStatusBox
+              rounds={[]}
+              startNextRound={jest.fn()}
+              jurisdictions={jurisdictionMocks.allManifestsWithCVRs}
+              contests={[]}
+              auditSettings={
+                auditType === 'BALLOT_COMPARISON'
+                  ? auditSettings.blankBallotComparison
+                  : auditSettings.blankHybrid
+              }
+            />
+          </Router>
+        )
+        screen.getByText('Audit setup is not complete.')
+        screen.getByText('The audit has not started.')
+        screen.getByText('3 of 3 jurisdictions have completed file uploads.')
+      })
+    })
+
+    it(`renders BATCH_COMPARISON audit, partial upload state`, () => {
+      render(
+        <Router>
+          <AuditAdminStatusBox
+            rounds={[]}
+            startNextRound={jest.fn()}
+            jurisdictions={jurisdictionMocks.twoManifestsOneTallies}
+            contests={[]}
+            auditSettings={auditSettings.blankBatch}
+          />
+        </Router>
+      )
+      screen.getByText('Audit setup is not complete.')
+      screen.getByText('The audit has not started.')
+      screen.getByText('1 of 3 jurisdictions have completed file uploads.')
+    })
+
+    it(`renders BATCH_COMPARISON audit, full uploads state`, () => {
+      render(
+        <Router>
+          <AuditAdminStatusBox
+            rounds={[]}
+            startNextRound={jest.fn()}
+            jurisdictions={jurisdictionMocks.allManifestsAllTallies}
+            contests={[]}
+            auditSettings={auditSettings.blankBatch}
+          />
+        </Router>
+      )
+      screen.getByText('Audit setup is not complete.')
+      screen.getByText('The audit has not started.')
+      screen.getByText('3 of 3 jurisdictions have completed file uploads.')
+    })
 
     it('renders finished setup state', () => {
       render(
@@ -486,6 +527,70 @@ describe('StatusBox', () => {
       })
     })
   })
+  it(`renders BATCH_COMPARISON audit, tallies not uploaded`, () => {
+    render(
+      <Router>
+        <JurisdictionAdminStatusBox
+          rounds={[]}
+          auditBoards={[]}
+          ballotManifest={{
+            file: null,
+            processing: fileProcessingMocks.processed,
+          }}
+          batchTallies={{ file: null, processing: null }}
+          cvrs={{ file: null, processing: null }}
+          auditType="BATCH_COMPARISON"
+        />
+      </Router>
+    )
+    screen.getByText('The audit has not started.')
+    screen.getByText('1/2 files successfully uploaded.')
+  })
 
-  // TODO test BATCH_COMPARISON audits
+  it(`renders BATCH_COMPARISON audit, tallies uploaded`, () => {
+    render(
+      <Router>
+        <JurisdictionAdminStatusBox
+          rounds={[]}
+          auditBoards={[]}
+          ballotManifest={{
+            file: null,
+            processing: fileProcessingMocks.processed,
+          }}
+          batchTallies={{
+            file: null,
+            processing: fileProcessingMocks.processed,
+          }}
+          cvrs={{ file: null, processing: null }}
+          auditType="BATCH_COMPARISON"
+        />
+      </Router>
+    )
+    screen.getByText('The audit has not started.')
+    screen.getByText('2/2 files successfully uploaded.')
+    screen.getByText('Waiting for Audit Administrator to launch audit.')
+  })
+
+  it(`renders BATCH_COMPARISON audit, tallies errored`, () => {
+    render(
+      <Router>
+        <JurisdictionAdminStatusBox
+          rounds={[]}
+          auditBoards={[]}
+          ballotManifest={{
+            file: null,
+            processing: fileProcessingMocks.processed,
+          }}
+          batchTallies={{
+            file: null,
+            processing: fileProcessingMocks.errored,
+          }}
+          cvrs={{ file: null, processing: null }}
+          auditType="BATCH_COMPARISON"
+        />
+      </Router>
+    )
+    screen.getByText('The audit has not started.')
+    screen.getByText('1/2 files successfully uploaded.')
+  })
 })
