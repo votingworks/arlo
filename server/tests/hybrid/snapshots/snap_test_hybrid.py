@@ -9,6 +9,22 @@ snapshots = Snapshot()
 
 snapshots[
     "test_hybrid_two_rounds 1"
+] = """Tabulator,Batch Name,Ballot Number,Imprinted ID,Ticket Numbers,Already Audited,Audit Board
+TABULATOR1,BATCH2,2,1-2-2,0.125871889047705889,N,Audit Board #1
+TABULATOR1,BATCH2,3,1-2-3,0.126622033568908859,N,Audit Board #1
+TABULATOR2,BATCH2,2,2-2-2,0.053992217600758631,N,Audit Board #1
+TABULATOR2,BATCH2,4,2-2-4,"0.064984443990590400,0.069414660569975443",N,Audit Board #1
+TABULATOR3,BATCH1,1,,0.029052899542529576,N,Audit Board #1
+TABULATOR3,BATCH1,2,,0.078395302081543460,N,Audit Board #1
+TABULATOR3,BATCH1,3,,"0.041030221525069793,0.148887681968717599",N,Audit Board #1
+TABULATOR3,BATCH1,5,,0.072664791498577026,N,Audit Board #1
+TABULATOR3,BATCH1,8,,0.411888695581009748,N,Audit Board #1
+TABULATOR3,BATCH1,9,,"0.293674693309260219,0.358326520606368201",N,Audit Board #1
+TABULATOR3,BATCH1,10,,0.199742518299743122,N,Audit Board #1
+"""
+
+snapshots[
+    "test_hybrid_two_rounds 2"
 ] = """######## ELECTION INFO ########\r
 Organization,Election Name,State\r
 Test Org test_hybrid_two_rounds,Test Election,CA\r

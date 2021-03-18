@@ -277,6 +277,7 @@ const prettyAuditType = (auditType: IElection['auditType']) =>
     BALLOT_POLLING: 'Ballot Polling',
     BALLOT_COMPARISON: 'Ballot Comparison',
     BATCH_COMPARISON: 'Batch Comparison',
+    HYBRID: 'Hybrid',
   }[auditType])
 
 const Audit = ({ electionId }: { electionId: string }) => {

@@ -61,7 +61,10 @@ def ballot_retrieval_list(jurisdiction: Jurisdiction, round: Round) -> str:
         )
     )
 
-    show_imprinted_id = jurisdiction.election.audit_type == AuditType.BALLOT_COMPARISON
+    show_imprinted_id = jurisdiction.election.audit_type in [
+        AuditType.BALLOT_COMPARISON,
+        AuditType.HYBRID,
+    ]
     show_container = len(ballots) > 0 and ballots[0][0] is not None
     show_tabulator = len(ballots) > 0 and ballots[0][1] is not None
 
