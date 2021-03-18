@@ -37,7 +37,7 @@ def process_standardized_contests_file(
 
         standardized_contests = []
         for row in standardized_contests_csv:
-            if row[JURISDICTIONS].strip() == "all":
+            if row[JURISDICTIONS].strip().lower() == "all":
                 jurisdictions = election.jurisdictions
             else:
                 jurisdiction_names = {
