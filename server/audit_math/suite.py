@@ -102,9 +102,11 @@ class BallotPollingStratum:
         """
 
         n = self.sample_size
-
-        if n == 0:
+        if n == 0 or reported_margin == 0:
             return 1.0
+
+        if self.sample_size == self.num_ballots:
+            return 0.0
 
         sample = bravo.compute_cumulative_sample(self.sample)
         n_w = sample[winner]
@@ -248,9 +250,11 @@ class BallotComparisonStratum:
             pvalue - the pvalue for the hypothesis given the null_lambda
         """
 
-        if self.sample_size == 0:
-            print("No sample size?")
+        if self.sample_size == 0 or reported_margin == 0:
             return 1.0
+
+        if self.sample_size == self.num_ballots:
+            return 0.0
 
         o1, o2, u1, u2 = (
             self.misstatements[(winner, loser)]["o1"],
@@ -316,6 +320,10 @@ def maximize_fisher_combined_pvalue(
 
     V = cvr_winner_votes - cvr_loser_votes + bp_winner_votes - bp_loser_votes
 
+    # The election is tied
+    if V == 0:
+        return 1.0
+
     lambda_lower = (
         np.amax(
             [
@@ -344,6 +352,7 @@ def maximize_fisher_combined_pvalue(
     Wn = bp_sample_winner_votes
     Ln = bp_sample_loser_votes
     Un = bp_stratum.sample_size - bp_sample_winner_votes - bp_sample_loser_votes
+    print(Wn, Ln, Un)
     assert Wn >= 0, f"{Wn, Ln, Un}"
     assert Ln >= 0, f"{Wn, Ln, Un}"
     assert Un >= 0, f"{Wn, Ln, Un}"
@@ -459,7 +468,6 @@ def try_n(
         A Fisher's combined maximized p-value for the given sample size, contest,
         winner-loser pair, and strata.
     """
-
     n1_original = cvr_stratum.sample_size
     n2_original = bp_stratum.sample_size
 
