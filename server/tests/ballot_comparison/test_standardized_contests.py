@@ -460,3 +460,29 @@ def test_standardized_contests_change_jurisdictions_file(
             },
         },
     )
+
+
+def test_standardized_contests_parse_all(
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+):
+    standardized_contests_file = (
+        "Contest Name,Jurisdictions\n" + "Contest 1,All\n" + "Contest 2,  aLL \n"
+    )
+    rv = client.put(
+        f"/api/election/{election_id}/standardized-contests/file",
+        data={
+            "standardized-contests": (
+                io.BytesIO(standardized_contests_file.encode()),
+                "standardized-contests.csv",
+            )
+        },
+    )
+    assert_ok(rv)
+
+    bgcompute_update_standardized_contests_file(election_id)
+
+    rv = client.get(f"/api/election/{election_id}/standardized-contests")
+    assert json.loads(rv.data) == [
+        {"name": "Contest 1", "jurisdictionIds": jurisdiction_ids},
+        {"name": "Contest 2", "jurisdictionIds": jurisdiction_ids,},
+    ]
