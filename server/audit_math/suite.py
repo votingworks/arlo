@@ -340,6 +340,7 @@ def maximize_fisher_combined_pvalue(
     Wn = bp_sample_winner_votes
     Ln = bp_sample_loser_votes
     Un = bp_stratum.sample_size - bp_sample_winner_votes - bp_sample_loser_votes
+    print(Wn, Ln, Un)
     assert Wn >= 0, f"{Wn, Ln, Un}"
     assert Ln >= 0, f"{Wn, Ln, Un}"
     assert Un >= 0, f"{Wn, Ln, Un}"
