@@ -140,6 +140,23 @@ def test_sample_size(
     assert len(sample_sizes) == 1
     snapshot.assert_match(sample_sizes[contest_ids[0]])
 
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {
+            "roundNum": 1,
+            "sampleSizes": {
+                contest_id: sample_sizes[0]
+                for contest_id, sample_sizes in sample_sizes.items()
+            },
+        },
+    )
+    assert_ok(rv)
+
+    # Sample sizes endpoint shoudl still return round 1 options after audit launch
+    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    assert json.loads(rv.data)["sampleSizes"] == sample_sizes
+
 
 def test_sample_size_before_manifest(
     client: FlaskClient,
