@@ -398,16 +398,22 @@ def get_sample_size(
             p_l = Decimal(margin["losers"][loser]["p_l"])
             best_loser = loser
 
+    # If we're in a single-candidate race, set sample to 0
+    if not margin["losers"]:
+        samples["asn"] = {"type": "ASN", "size": -1, "prob": -1.0}
+        for quant in quants:
+            samples[str(quant)] = {"type": None, "size": -1.0, "prob": quant}
+
+        return samples
+
     num_ballots = contest.ballots
 
-    # If tied, do a recount
-    if p_w == p_l:
-        return {
-            "all-ballots": {
-                "type": "all-ballots",
-                "size": contest.ballots,
-                "prob": None,
-            }
+    # Handle landslides
+    if p_w == 1.0:
+        samples["asn"] = {
+            "type": "ASN",
+            "size": 1,
+            "prob": 1.0,
         }
 
     sample_w = cumulative_sample[worse_winner]
@@ -431,6 +437,7 @@ def get_sample_size(
     if (
         num_ballots > large_election_threshold
         and samples["0.9"]["size"] >= all_ballots_threshold
+        or p_w == p_l
     ):
         return {
             "all-ballots": {
