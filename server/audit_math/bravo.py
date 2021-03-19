@@ -46,7 +46,8 @@ def get_expected_sample_sizes(
         if margin["winners"][winner]["p_w"] < p_w:
             p_w = Decimal(margin["winners"][winner]["p_w"])
 
-    if margin["losers"] == 0:
+    # If there aren't any losers,
+    if not margin["losers"]:
         return -1
 
     for loser in margin["losers"]:
@@ -299,6 +300,7 @@ def get_sample_size(
     risk_limit: int,
     contest: Contest,
     sample_results: Optional[Dict[str, Dict[str, int]]],
+    round_sizes: Optional[Dict[int, int]],
 ) -> Dict[str, "SampleSizeOption"]:  # type: ignore
     """
     Computes initial sample size parameterized by likelihood that the
@@ -342,6 +344,12 @@ def get_sample_size(
 
     samples: Dict = {}
 
+    if round_sizes:
+        num_sampled = sum([round_sizes.get(rnd, 0) for rnd in round_sizes])
+        # If we've already sampled all the ballots, we should never be here
+        if num_sampled >= contest.ballots:
+            return {"all-ballots": {"type": "all-ballots", "size": -1, "prob": None,}}
+
     # Get cumulative sample results
     cumulative_sample = {}
     if sample_results:
@@ -374,7 +382,7 @@ def get_sample_size(
             best_loser = loser
 
     # If we're in a single-candidate race, set sample to 0
-    if margin["losers"] == 0:
+    if not margin["losers"]:
         samples["asn"] = {"type": "ASN", "size": -1, "prob": -1.0}
         for quant in quants:
             samples[str(quant)] = {"type": None, "size": -1.0, "prob": quant}
@@ -382,19 +390,6 @@ def get_sample_size(
         return samples
 
     num_ballots = contest.ballots
-
-    # Handles ties
-    if p_w == p_l:
-        samples["asn"] = {
-            "type": "ASN",
-            "size": num_ballots,
-            "prob": 1.0,
-        }
-
-        for quant in quants:
-            samples[str(quant)] = {"type": None, "size": num_ballots, "prob": quant}
-
-        return samples
 
     # Handle landslides
     if p_w == 1.0:
@@ -406,23 +401,19 @@ def get_sample_size(
 
         return samples
 
-    # If we haven't seen anything yet, initialize sample_w and sample_l
-    if not cumulative_sample:
-        sample_w = 0
-        sample_l = 0
-    else:
+    if p_w != p_l:
         sample_w = cumulative_sample[worse_winner]
         sample_l = cumulative_sample[best_loser]
 
-    samples["asn"] = {
-        "type": "ASN",
-        "size": asn,
-        "prob": expected_prob(alpha, p_w, p_l, sample_w, sample_l, asn),
-    }
+        samples["asn"] = {
+            "type": "ASN",
+            "size": asn,
+            "prob": expected_prob(alpha, p_w, p_l, sample_w, sample_l, asn),
+        }
 
-    for quant in quants:
-        size = bravo_sample_sizes(alpha, p_w, p_l, sample_w, sample_l, quant)
-        samples[str(quant)] = {"type": None, "size": size, "prob": quant}
+        for quant in quants:
+            size = bravo_sample_sizes(alpha, p_w, p_l, sample_w, sample_l, quant)
+            samples[str(quant)] = {"type": None, "size": size, "prob": quant}
 
     # If the computed sample size is a good chunk of the ballots, recommend
     # auditing all ballots, since this is actually less work than auditing a
@@ -432,6 +423,7 @@ def get_sample_size(
     if (
         num_ballots > large_election_threshold
         and samples["0.9"]["size"] >= all_ballots_threshold
+        or p_w == p_l
     ):
         return {
             "all-ballots": {
