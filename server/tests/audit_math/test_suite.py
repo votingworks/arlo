@@ -11,6 +11,8 @@ from ...audit_math.suite import (
     get_sample_size,
     HybridPair,
     maximize_fisher_combined_pvalue,
+    try_n,
+    misstatements,
 )
 
 SEED = "12345678901234567890abcdefghijklmnopqrstuvwxyz😊"
@@ -858,6 +860,109 @@ def test_tiny_election():
     expected_pvalue = 0.16154617764286328
     diff = abs(expected_pvalue - pvalue)
     assert diff < 0.00001, "Incorrect pvalue: {}!".format(pvalue)
+
+
+def test_invalid_try_n():
+    contest_dict = {
+        "winner": 10,
+        "loser": 0,
+        "ballots": 10,
+        "numWinners": 1,
+        "votesAllowed": 1,
+    }
+
+    contest = Contest("ex1", contest_dict)
+
+    no_cvr_stratum_vote_totals = {
+        "winner": 6,
+        "loser": 0,
+    }
+    no_cvr_stratum_ballots = 7
+    no_cvr_sample = {"round1": {"winner": 0, "loser": 0}}
+
+    # create our ballot polling strata
+    no_cvr_stratum = BallotPollingStratum(
+        no_cvr_stratum_ballots,
+        no_cvr_stratum_vote_totals,
+        no_cvr_sample,
+        sample_size=0,
+    )
+
+    cvr_stratum_vote_totals = {
+        "winner": 4,
+        "loser": 0,
+    }
+
+    cvr_stratum_ballots = 4
+
+    # We sample 500 ballots from the cvr stratum, and find no discrepancies
+    misstatements = {("winner", "loser"): {"o1": 0, "o2": 0, "u1": 0, "u2": 0,}}
+
+    # Create our CVR stratum
+    cvr_stratum = BallotComparisonStratum(
+        cvr_stratum_ballots, cvr_stratum_vote_totals, misstatements, sample_size=0,
+    )
+
+    no_cvr_stratum.sample = {"round1": {"winner": 2, "loser": 0}}
+    no_cvr_stratum.sample_size = 2
+    cvr_stratum.sample_size = 3
+
+    # This tests if we ask for a sample size that is smaller
+    # than the sample we've already taken.
+    ret = try_n(
+        2, 0.05, contest, "winner", "loser", no_cvr_stratum, cvr_stratum, 4 / 11
+    )
+
+    assert ret == 1.0, f"{ret}"
+
+
+def test_misstatements():
+    contest_data = {
+        "winner": 16,
+        "loser": 10,
+        "ballots": 26,
+        "numWinners": 1,
+        "votesAllowed": 1,
+    }
+
+    contest = Contest("Jonah Test", contest_data)
+
+    cvr = {}
+
+    for i in range(contest_data["ballots"]):
+        if i < contest_data["winner"]:
+            cvr[i] = {"Jonah Test": {"winner": 1, "loser": 0}}
+        else:
+            cvr[i] = {"Jonah Test": {"winner": 0, "loser": 1}}
+
+    sample_cvr = {}
+    for ballot in range(18):
+        sample_cvr[ballot] = {
+            "times_sampled": 1,
+            "cvr": {
+                "Jonah Test": {
+                    "winner": cvr[ballot]["Jonah Test"]["winner"],
+                    "loser": cvr[ballot]["Jonah Test"]["loser"],
+                }
+            },
+        }
+    # Two of our winning ballots were actually blank
+    sample_cvr[0]["cvr"]["Jonah Test"] = {"winner": 0, "loser": 0}
+    sample_cvr[1]["cvr"]["Jonah Test"] = {"winner": 0, "loser": 0}
+
+    expected = {("winner", "loser"): {"o1": 2, "o2": 0, "u1": 0, "u2": 0}}
+    assert misstatements(contest, cvr, sample_cvr) == expected
+
+    # Create a two-vote understatement.
+    sample_cvr[0]["cvr"]["Jonah Test"] = {"winner": 0, "loser": 1}
+    expected = {("winner", "loser"): {"o1": 1, "o2": 1, "u1": 0, "u2": 0}}
+    assert misstatements(contest, cvr, sample_cvr) == expected
+
+    # create one- and two-vote understatements. These should be ignored.
+    sample_cvr[16]["cvr"]["Jonah Test"] = {"winner": 0, "loser": 0}
+    sample_cvr[17]["cvr"]["Jonah Test"] = {"winner": 1, "loser": 0}
+    expected = {("winner", "loser"): {"o1": 1, "o2": 1, "u1": 0, "u2": 0}}
+    assert misstatements(contest, cvr, sample_cvr) == expected
 
 
 expected_p_values = {

@@ -471,7 +471,7 @@ def try_n(
     n2 = int(n - n1)
 
     if (n1 < n1_original) or (n2 < n2_original):
-        return 1
+        return 1.0
 
     o1 = (
         math.ceil(o1_rate * (n - n1_original))
@@ -583,9 +583,6 @@ def get_sample_size(
     alpha = float(risk_limit) / 100
 
     for winner, loser in product(contest.winners, contest.losers):
-        winner_votes_in_bp = bp_stratum.vote_totals[winner]
-        loser_votes_in_bp = bp_stratum.vote_totals[loser]
-
         n_ratio = cvr_stratum.num_ballots / (
             cvr_stratum.num_ballots + bp_stratum.num_ballots
         )
@@ -604,7 +601,6 @@ def get_sample_size(
 
         # step 1: linear search, increasing n by a factor of 1.1 each time
         while (expected_pvalue > alpha) or (expected_pvalue is np.nan):
-            # TODO: figure out if we should use 2 or 1.1
             ballots_to_sample = int(coefficient * ballots_to_sample)
             if ballots_to_sample > contest.ballots:
                 cvr_ballots_to_sample = math.ceil(n_ratio * contest.ballots)
@@ -612,17 +608,7 @@ def get_sample_size(
                 return HybridPair(
                     cvr=cvr_ballots_to_sample, non_cvr=bp_ballots_to_sample
                 )
-            if bp_stratum.num_ballots > 0:
-                cvr_ballots_to_sample = math.ceil(n_ratio * ballots_to_sample)
-                bp_ballots_to_sample = int(ballots_to_sample - cvr_ballots_to_sample)
-                if winner_votes_in_bp < int(
-                    bp_ballots_to_sample * winner_votes_in_bp / bp_stratum.num_ballots
-                ) or loser_votes_in_bp < int(
-                    bp_ballots_to_sample * loser_votes_in_bp / bp_stratum.num_ballots
-                ):
-                    return HybridPair(
-                        cvr=cvr_stratum.num_ballots, non_cvr=bp_stratum.num_ballots
-                    )
+
             expected_pvalue = try_n(
                 ballots_to_sample,
                 alpha,
@@ -715,6 +701,7 @@ def misstatements(
             )
             for ballot, audited_result in audited_results.items()
         ]
+
         discrepancy_nums = [
             discrepancy["counted_as"]
             for discrepancy in discrepancies
