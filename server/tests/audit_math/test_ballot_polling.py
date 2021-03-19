@@ -40,23 +40,39 @@ def test_get_sample_sizes(contests):
 
 
 def test_compute_risk(contests):
+    print("testing!")
     for contest in contests:
+        print(contest)
         sample = round1_sample_results[contest]
 
         bravo_test_stat, bravo_decision = bravo.compute_risk(
             RISK_LIMIT, contests[contest], sample
         )
 
-        assert bravo_test_stat, bravo_decision == ballot_polling.compute_risk(
+        computed_stat, computed_decision = ballot_polling.compute_risk(
             RISK_LIMIT, contests[contest], sample, AuditMathType.BRAVO, {1: 119}
         )
+
+        assert (bravo_test_stat, bravo_decision) == (computed_stat, computed_decision)
+
+        # Test the default case
+        computed_stat, computed_decision = ballot_polling.compute_risk(
+            RISK_LIMIT, contests[contest], sample, AuditMathType.SUPERSIMPLE, {1: 119}
+        )
+
+        assert (bravo_test_stat, bravo_decision) == (computed_stat, computed_decision)
 
         minerva_test_stat, minerva_decision = minerva.compute_risk(
             RISK_LIMIT, contests[contest], sample, {1: 119}
         )
 
-        assert minerva_test_stat, minerva_decision == ballot_polling.compute_risk(
+        computed_stat, computed_decision = ballot_polling.compute_risk(
             RISK_LIMIT, contests[contest], sample, AuditMathType.MINERVA, {1: 119}
+        )
+
+        assert (minerva_test_stat, minerva_decision) == (
+            computed_stat,
+            computed_decision,
         )
 
 
