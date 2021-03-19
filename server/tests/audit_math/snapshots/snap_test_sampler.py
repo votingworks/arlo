@@ -7,6 +7,19 @@ from snapshottest import Snapshot
 
 snapshots = Snapshot()
 
+snapshots["test_draw_macro_multiple_contests 1"] = [
+    ("0.000617786", "pct 2", 1),
+    ("0.000643783", "pct 0", 1),
+    ("0.001336893", "pct 1", 1),
+    ("0.002991631", "pct 3", 1),
+    ("0.003821286", "pct 7", 1),
+    ("0.004006309", "pct 9", 1),
+    ("0.004122879", "pct 6", 1),
+    ("0.006792362", "pct 0", 1),
+    ("0.006987107", "pct 7", 1),
+    ("0.007060432", "pct 2", 1),
+]
+
 snapshots["test_draw_macro_sample 1"] = [
     ("0.092252362", "pct 7", 1),
     ("0.097291018", "pct 5", 1),
@@ -19,6 +32,8 @@ snapshots["test_draw_macro_sample 1"] = [
     ("0.210407685", "pct 13", 1),
     ("0.230651143", "pct 7", 2),
 ]
+
+snapshots["test_draw_macro_sample_wrong_contest 1"] = []
 
 snapshots["test_draw_more_macro_sample 1"] = [
     ("0.092252362", "pct 7", 1),

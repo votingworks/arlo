@@ -134,6 +134,31 @@ def test_macro_recount_sample(close_macro_batches, close_macro_contest, snapshot
     snapshot.assert_match(sample)
 
 
+def test_draw_macro_multiple_contests(macro_batches, snapshot):
+    name = "test2"
+
+    info_dict = {
+        "cand1": 400,
+        "cand2": 100,
+        "ballots": 500,
+        "numWinners": 1,
+        "votesAllowed": 1,
+    }
+
+    other_contest = Contest(name, info_dict)
+
+    for batch in macro_batches:
+        pct = int(batch.split(" ")[-1])
+        if pct < 10:
+            macro_batches[batch]["test2"] = {"cand1": 40, "cand2": 10, "ballots": 50}
+
+    # This should give us zeros for error
+    sample = sampler.draw_ppeb_sample(
+        SEED, other_contest, 10, 0, batch_results=macro_batches
+    )
+    snapshot.assert_match(sample)
+
+
 def random_manifest():
     rand = random.Random(12345)
     return {
