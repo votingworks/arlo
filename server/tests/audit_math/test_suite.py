@@ -10,6 +10,7 @@ from ...audit_math.suite import (
     compute_risk,
     get_sample_size,
     HybridPair,
+    maximize_fisher_combined_pvalue,
 )
 
 SEED = "12345678901234567890abcdefghijklmnopqrstuvwxyz😊"
@@ -797,6 +798,66 @@ def test_tie():
     diff = abs(expected_pvalue - pvalue)
     assert diff < 0.000001, "Got {}".format(pvalue)
     assert not res
+
+
+def test_tiny_election():
+    contest_dict = {
+        "winner": 10,
+        "loser": 0,
+        "ballots": 10,
+        "numWinners": 1,
+        "votesAllowed": 1,
+    }
+
+    contest = Contest("ex1", contest_dict)
+
+    no_cvr_stratum_vote_totals = {
+        "winner": 6,
+        "loser": 0,
+    }
+    no_cvr_stratum_ballots = 7
+    no_cvr_sample = {"round1": {"winner": 0, "loser": 0}}
+
+    # create our ballot polling strata
+    no_cvr_stratum = BallotPollingStratum(
+        no_cvr_stratum_ballots,
+        no_cvr_stratum_vote_totals,
+        no_cvr_sample,
+        sample_size=0,
+    )
+
+    cvr_stratum_vote_totals = {
+        "winner": 4,
+        "loser": 0,
+    }
+
+    cvr_stratum_ballots = 4
+
+    # We sample 500 ballots from the cvr stratum, and find no discrepancies
+    misstatements = {("winner", "loser"): {"o1": 0, "o2": 0, "u1": 0, "u2": 0,}}
+
+    # Create our CVR stratum
+    cvr_stratum = BallotComparisonStratum(
+        cvr_stratum_ballots, cvr_stratum_vote_totals, misstatements, sample_size=0,
+    )
+
+    expected_sample_size = HybridPair(cvr=3, non_cvr=4)
+
+    assert expected_sample_size == get_sample_size(
+        5, contest, no_cvr_stratum, cvr_stratum
+    )
+
+    no_cvr_stratum.sample = {"round1": {"winner": 2, "loser": 0}}
+    no_cvr_stratum.sample_size = 2
+
+    cvr_stratum.sample_size = 3
+    pvalue = maximize_fisher_combined_pvalue(
+        0.05, contest, no_cvr_stratum, cvr_stratum, "winner", "loser", 1.0
+    )
+    # Compute its p-value and check, with a lambda of 0.7
+    expected_pvalue = 0.16154617764286328
+    diff = abs(expected_pvalue - pvalue)
+    assert diff < 0.00001, "Incorrect pvalue: {}!".format(pvalue)
 
 
 expected_p_values = {

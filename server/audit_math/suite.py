@@ -143,9 +143,6 @@ class BallotPollingStratum:
         if upper_n_w_limit < n_w or (upper_n_w_limit - null_margin) < n_l:
             raise ValueError("Null is impossible, given the sample")
 
-        if lower_n_w_limit > upper_n_w_limit:
-            lower_n_w_limit, upper_n_w_limit = upper_n_w_limit, lower_n_w_limit
-
         LR_derivative = (
             lambda Nw: np.sum([1 / (Nw - i) for i in range(n_w)])
             + np.sum([1 / (Nw - null_margin - i) for i in range(n_l)])
@@ -154,13 +151,6 @@ class BallotPollingStratum:
                 [1 / (self.num_ballots - 2 * Nw + null_margin - i) for i in range(n_u)]
             )
         )
-
-        # Sometimes the upper_n_w_limit is too extreme, causing illegal 0s.
-        # Check and change the limit when that occurs.
-        if np.isinf(null_logLR(upper_n_w_limit)) or np.isinf(
-            LR_derivative(upper_n_w_limit)
-        ):
-            upper_n_w_limit -= 1
 
         # Check if the maximum occurs at an endpoint: deriv has no sign change
         if LR_derivative(upper_n_w_limit) * LR_derivative(lower_n_w_limit) > 0:
@@ -289,6 +279,7 @@ def maximize_fisher_combined_pvalue(
     cvr_stratum: BallotComparisonStratum,
     winner: str,
     loser: str,
+    stepsize: float = 0.05,
 ) -> float:
     """
     Grid search to find the maximum P-value.
@@ -308,8 +299,6 @@ def maximize_fisher_combined_pvalue(
         a maximum p-value for the Fisher's combining function given the two
         strata.
     """
-    stepsize = 0.05
-
     maximized_pvalue = 0.0
     # find range of possible lambda
     cvr_winner_votes = cvr_stratum.vote_totals[winner]
@@ -352,7 +341,6 @@ def maximize_fisher_combined_pvalue(
     Wn = bp_sample_winner_votes
     Ln = bp_sample_loser_votes
     Un = bp_stratum.sample_size - bp_sample_winner_votes - bp_sample_loser_votes
-    print(Wn, Ln, Un)
     assert Wn >= 0, f"{Wn, Ln, Un}"
     assert Ln >= 0, f"{Wn, Ln, Un}"
     assert Un >= 0, f"{Wn, Ln, Un}"
