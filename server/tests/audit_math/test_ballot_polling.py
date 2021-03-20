@@ -40,7 +40,6 @@ def test_get_sample_sizes(contests):
 
 
 def test_compute_risk(contests):
-    print("testing!")
     for contest in contests:
         print(contest)
         sample = round1_sample_results[contest]
