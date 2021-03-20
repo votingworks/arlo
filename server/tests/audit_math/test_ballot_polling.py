@@ -41,7 +41,6 @@ def test_get_sample_sizes(contests):
 
 def test_compute_risk(contests):
     for contest in contests:
-        print(contest)
         sample = round1_sample_results[contest]
 
         bravo_test_stat, bravo_decision = bravo.compute_risk(
