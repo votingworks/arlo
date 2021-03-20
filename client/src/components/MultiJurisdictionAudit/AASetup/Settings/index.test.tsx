@@ -111,4 +111,17 @@ describe('Setup > Settings', () => {
       ).not.toBeInTheDocument()
     })
   })
+
+  it('hides online/offline toggle for hybrid audits', async () => {
+    const expectedCalls = [aaApiCalls.getSettings(auditSettings.hybridAll)]
+    await withMockFetch(expectedCalls, async () => {
+      renderSettings()
+
+      await screen.findByRole('heading', { name: 'Audit Settings' })
+
+      expect(
+        screen.queryByRole('heading', { name: 'Audit Board Data Entry' })
+      ).not.toBeInTheDocument()
+    })
+  })
 })

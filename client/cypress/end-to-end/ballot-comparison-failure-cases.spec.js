@@ -217,6 +217,13 @@ describe('Ballot Comparison Failure Cases', () => {
     cy.loginAuditAdmin(auditAdmin)
     cy.findByText(`TestAudit${id}`).click()
     cy.findByText('Review & Launch').click()
+  
+    // custom size validation test
+    cy.findByText('Enter your own sample size (not recommended)').click()
+    cy.findByRole('spinbutton').type('30').blur()
+    cy.findByText('Must be less than or equal to: 15 (the total number of ballots in the contest)')
+
+    cy.get('input[type="radio"]').first().click({force: true})
     cy.findByRole('button', { name: 'Launch Audit' })
       .should('be.enabled')
       .click()
