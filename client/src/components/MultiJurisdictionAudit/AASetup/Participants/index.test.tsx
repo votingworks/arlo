@@ -1,5 +1,5 @@
 import React from 'react'
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { Route } from 'react-router-dom'
 import userEvent from '@testing-library/user-event'
 import relativeStages from '../_mocks'
@@ -92,6 +92,21 @@ describe('Audit Setup > Participants', () => {
   beforeEach(() => {
     ;(nextStage.activate as jest.Mock).mockClear()
     refreshMock.mockClear()
+  })
+
+  it('heading should be participants & contests for ballot comparison', async () => {
+    const expectedCalls = [
+      aaApiCalls.getSettings(auditSettings.blankBallotComparison),
+      apiCalls.getJurisdictionsFile(fileMocks.empty),
+      apiCalls.getStandardizedContestsFile(fileMocks.empty),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      nextStage.state = 'locked'
+
+      renderParticipants()
+
+      await screen.findByRole('heading', { name: 'Participants & Contests' })
+    })
   })
 
   it('submits participants file', async () => {
@@ -296,6 +311,26 @@ describe('Audit Setup > Participants', () => {
       })
       expect(standardizedContestsFileInput).toBeDisabled()
       expect(standardizedContestsFileUploadButton).toBeDisabled()
+    })
+  })
+
+  it('do not show standardized contests for ballot polling', async () => {
+    const expectedCalls = [
+      aaApiCalls.getSettings(auditSettings.blank),
+      apiCalls.getJurisdictionsFile(fileMocks.empty),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderParticipants()
+
+      await screen.findByRole('heading', {
+        name: 'Participants',
+      })
+
+      await waitFor(() =>
+        expect(
+          screen.queryByRole('heading', { name: 'Standardized Contests' })
+        ).not.toBeInTheDocument()
+      )
     })
   })
 })
