@@ -100,8 +100,9 @@ class BallotPollingStratum:
         Outputs:
             pvalue: the pvalue from testing the hypothesis that null margin is not the acual margin
         """
-        n = self.sample_size
-        if n == 0 or reported_margin == 0:
+
+
+        if self.sample_size == 0 or reported_margin == 0:
             return 1.0
 
         if self.sample_size == self.num_ballots:
@@ -110,11 +111,11 @@ class BallotPollingStratum:
         sample = bravo.compute_cumulative_sample(self.sample)
         n_w = sample[winner]
         n_l = sample[loser]
-        n_u = n - n_w - n_l
+        n_u = self.sample_size - n_w - n_l
 
         v_w = self.vote_totals[winner]
         v_l = self.vote_totals[loser]
-        v_u = self.num_ballots - v_w - v_l
+        v_u = self.sample_size - v_w - v_l
 
         null_margin = (v_w - v_l) - null_lambda * reported_margin
 
@@ -166,7 +167,7 @@ class BallotPollingStratum:
         logLR = alt_logLR - null_logLR(nuisance_param)
         LR = float(np.exp(logLR))  # This value is always a float, but np.exp
         # can return a vector. casting for the typechecker.
-        # TODO: investigate what happens when this overflows.
+        # Note if this value overflows, the p-value becomes 0.
 
         return 1.0 / LR if 1.0 / LR < 1 else 1.0
 
