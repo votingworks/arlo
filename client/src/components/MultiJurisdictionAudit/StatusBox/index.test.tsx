@@ -286,6 +286,25 @@ describe('StatusBox', () => {
     })
   })
 
+  it('shows audit name', () => {
+    render(
+      <Router>
+        <AuditAdminStatusBox
+          rounds={[]}
+          startNextRound={jest.fn()}
+          jurisdictions={[]}
+          contests={[]}
+          auditSettings={auditSettings.blank!}
+        />
+      </Router>
+    )
+    screen.getByRole('heading', {
+      name: 'Test Audit',
+    })
+    screen.getByText('Audit setup is not complete.')
+    screen.getByText('The audit has not started.')
+  })
+
   describe('JurisdictionAdminStatusBox', () => {
     it('renders unuploaded ballot manifest initial state', () => {
       render(
@@ -297,6 +316,7 @@ describe('StatusBox', () => {
             batchTallies={{ file: null, processing: null }}
             cvrs={{ file: null, processing: null }}
             auditType="BALLOT_POLLING"
+            auditName="Test Audit"
           />
         </Router>
       )
@@ -317,6 +337,7 @@ describe('StatusBox', () => {
             batchTallies={{ file: null, processing: null }}
             cvrs={{ file: null, processing: null }}
             auditType="BALLOT_POLLING"
+            auditName="Test Audit"
           />
         </Router>
       )
@@ -338,6 +359,7 @@ describe('StatusBox', () => {
             batchTallies={{ file: null, processing: null }}
             cvrs={{ file: null, processing: null }}
             auditType="BALLOT_POLLING"
+            auditName="Test Audit"
           />
         </Router>
       )
@@ -358,6 +380,7 @@ describe('StatusBox', () => {
             batchTallies={{ file: null, processing: null }}
             cvrs={{ file: null, processing: null }}
             auditType="BALLOT_POLLING"
+            auditName="Test Audit"
           />
         </Router>
       )
@@ -378,6 +401,7 @@ describe('StatusBox', () => {
             batchTallies={{ file: null, processing: null }}
             cvrs={{ file: null, processing: null }}
             auditType="BALLOT_POLLING"
+            auditName="Test Audit"
           />
         </Router>
       )
@@ -398,6 +422,7 @@ describe('StatusBox', () => {
             batchTallies={{ file: null, processing: null }}
             cvrs={{ file: null, processing: null }}
             auditType="BALLOT_POLLING"
+            auditName="Test Audit"
           />
         </Router>
       )
@@ -419,6 +444,7 @@ describe('StatusBox', () => {
             batchTallies={{ file: null, processing: null }}
             cvrs={{ file: null, processing: null }}
             auditType="BALLOT_POLLING"
+            auditName="Test Audit"
           />
         </Router>
       )
@@ -441,6 +467,7 @@ describe('StatusBox', () => {
             batchTallies={{ file: null, processing: null }}
             cvrs={{ file: null, processing: null }}
             auditType="BALLOT_POLLING"
+            auditName="Test Audit"
           />
         </Router>
       )
@@ -472,6 +499,7 @@ describe('StatusBox', () => {
               batchTallies={{ file: null, processing: null }}
               cvrs={{ file: null, processing: null }}
               auditType={auditType}
+              auditName="Test Audit"
             />
           </Router>
         )
@@ -495,6 +523,7 @@ describe('StatusBox', () => {
                 processing: fileProcessingMocks.processed,
               }}
               auditType={auditType}
+              auditName="Test Audit"
             />
           </Router>
         )
@@ -519,6 +548,7 @@ describe('StatusBox', () => {
                 processing: fileProcessingMocks.errored,
               }}
               auditType={auditType}
+              auditName="Test Audit"
             />
           </Router>
         )
@@ -540,6 +570,7 @@ describe('StatusBox', () => {
           batchTallies={{ file: null, processing: null }}
           cvrs={{ file: null, processing: null }}
           auditType="BATCH_COMPARISON"
+          auditName="Test Audit"
         />
       </Router>
     )
@@ -563,6 +594,7 @@ describe('StatusBox', () => {
           }}
           cvrs={{ file: null, processing: null }}
           auditType="BATCH_COMPARISON"
+          auditName="Test Audit"
         />
       </Router>
     )
@@ -587,10 +619,31 @@ describe('StatusBox', () => {
           }}
           cvrs={{ file: null, processing: null }}
           auditType="BATCH_COMPARISON"
+          auditName="Test Audit"
         />
       </Router>
     )
     screen.getByText('The audit has not started.')
     screen.getByText('1/2 files successfully uploaded.')
+  })
+  it('shows audit name', () => {
+    render(
+      <Router>
+        <JurisdictionAdminStatusBox
+          rounds={[]}
+          auditBoards={[]}
+          ballotManifest={{ file: null, processing: null }}
+          batchTallies={{ file: null, processing: null }}
+          cvrs={{ file: null, processing: null }}
+          auditType="BALLOT_POLLING"
+          auditName="Test Audit"
+        />
+      </Router>
+    )
+    screen.getByRole('heading', {
+      name: 'Test Audit',
+    })
+    screen.getByText('The audit has not started.')
+    screen.getByText('Ballot manifest not uploaded.')
   })
 })
