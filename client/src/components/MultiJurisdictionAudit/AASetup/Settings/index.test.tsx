@@ -124,4 +124,19 @@ describe('Setup > Settings', () => {
       ).not.toBeInTheDocument()
     })
   })
+
+  it('displays error when no selection done', async () => {
+    const expectedCalls = [aaApiCalls.getSettings(auditSettings.blank)]
+    await withMockFetch(expectedCalls, async () => {
+      renderSettings()
+
+      await screen.findByRole('heading', { name: 'Audit Settings' })
+    })
+
+    userEvent.click(screen.getByRole('button', { name: 'Save & Next' }))
+
+    await waitFor(() => {
+      expect(screen.queryAllByText('Required').length).toBe(3)
+    })
+  })
 })
