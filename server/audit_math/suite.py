@@ -168,7 +168,7 @@ class BallotPollingStratum:
         logLR = alt_logLR - null_logLR(nuisance_param)
         LR = float(np.exp(logLR))  # This value is always a float, but np.exp
         # can return a vector. casting for the typechecker.
-        # TODO: investigate what happens when this overflows.
+        # Note if this value overflows, the p-value becomes 0.
 
         return 1.0 / LR if 1.0 / LR < 1 else 1.0
 
