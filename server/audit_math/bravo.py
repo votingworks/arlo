@@ -369,6 +369,16 @@ def get_sample_size(
     if contest.num_winners != 1:
         return {"asn": {"type": "ASN", "size": asn, "prob": None}}
 
+    # If tied, do a recount
+    if p_w == p_l:
+        return {
+            "all-ballots": {
+                "type": "all-ballots",
+                "size": contest.ballots,
+                "prob": None,
+            }
+        }
+
     margin = contest.margins
     # Get smallest p_w - p_l
     for winner in margin["winners"]:
@@ -420,7 +430,7 @@ def get_sample_size(
     # large proportion (for large elections).
     large_election_threshold = 100000
     all_ballots_threshold = num_ballots * 0.25
-    if p_w == p_l or (
+    if (
         num_ballots > large_election_threshold
         and samples["0.9"]["size"] >= all_ballots_threshold
     ):
