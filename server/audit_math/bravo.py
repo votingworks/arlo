@@ -348,7 +348,7 @@ def get_sample_size(
         num_sampled = sum([round_sizes.get(rnd, 0) for rnd in round_sizes])
         # If we've already sampled all the ballots, we should never be here
         if num_sampled >= contest.ballots:
-            return {"all-ballots": {"type": "all-ballots", "size": -1, "prob": None,}}
+            raise ValueError("All ballots have already been audited!")
 
     # Get cumulative sample results
     cumulative_sample = {}

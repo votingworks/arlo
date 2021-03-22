@@ -232,6 +232,13 @@ def test_bravo_sample_sizes_round1_incomplete():
 
 def test_get_sample_size(contests):
     for contest in contests:
+        print(contest)
+        if contest in ["test4", "test5", "test_ga_presidential"]:
+            assert pytest.raises(
+                ValueError, match=r"All ballots have already been audited!"
+            )
+            continue
+
         computed = bravo.get_sample_size(
             RISK_LIMIT, contests[contest], round0_sample_results[contest], {"0": 0}
         )
