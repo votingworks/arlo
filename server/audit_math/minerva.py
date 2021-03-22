@@ -52,13 +52,6 @@ def make_sample_results(
     return sample_results
 
 
-def minerva_round_size(first_round_size, round_num):
-    """Return size of ith round based on first round size and round number
-    """
-
-    return int(first_round_size * MINERVA_MULTIPLE ** round_num)
-
-
 def make_athena_audit(arlo_contest, alpha):
     """Make an Athena audit object, with associated contest and election, from an Arlo contest
 
@@ -132,7 +125,10 @@ def get_sample_size(
 
         first_round_size = round_sizes[1]
         prev_round_count = len(round_sizes)
-        next_round_size = minerva_round_size(first_round_size, prev_round_count)
+        round_num = prev_round_count + 1
+
+        # Get the ith round by multiplying the first round size
+        next_round_size = int(first_round_size * MINERVA_MULTIPLE ** round_num)
         logging.debug(f"{round_sizes=}, {next_round_size=}")
         return {"0.9": {"type": None, "size": next_round_size, "prob": 0.9}}
 
