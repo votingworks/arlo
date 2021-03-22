@@ -135,7 +135,7 @@ class BucketList:
     def __repr__(self) -> str:
         return str(self.buckets)
 
-    def pretty_print(self):
+    def pretty_print(self):  # pragma: no cover
         for bucket in self.buckets:
             print(bucket.name, bucket.size)
             for batch in bucket.batches:
@@ -224,7 +224,7 @@ class BalancedBucketList:
     def __repr__(self) -> str:
         return str(self.buckets)
 
-    def pretty_print(self):
+    def pretty_print(self):  # pragma: no cover
         for bucket in self.buckets:
             print(bucket.name, bucket.size)
             for batch in bucket.batches:
