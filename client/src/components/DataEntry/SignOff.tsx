@@ -37,7 +37,7 @@ const SignOff = ({ auditBoard, submitSignoff }: IProps) => {
                 label={`Audit Board Member: ${member.name}`}
               >
                 <LabelText htmlFor={`[${i}]`}>Full Name</LabelText>
-                <NameField name={`[${i}]`} />
+                <NameField name={`[${i}]`} id={`[${i}]`} />
               </FormSection>
             ))}
             <FormButton
