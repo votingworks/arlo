@@ -541,6 +541,85 @@ describe('JA setup', () => {
       )
     })
   })
+
+  it('shows error with incorrect file', async () => {
+    const expectedCalls = [
+      jaApiCalls.getUser,
+      jaApiCalls.getSettings(auditSettings.batchComparisonAll),
+      jaApiCalls.getRounds,
+      jaApiCalls.getBallotManifestFile(manifestMocks.empty),
+      jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
+      jaApiCalls.getCVRSfile(cvrsMocks.empty),
+      jaApiCalls.putManifest,
+      jaApiCalls.getBallotManifestFile(manifestMocks.errored),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderView()
+      await screen.findByText('Audit Source Data')
+      const [manifestInput, talliesInput] = screen.getAllByLabelText(
+        'Select a CSV...'
+      )
+      const [manifestButton, talliesButton] = screen.getAllByRole('button', {
+        name: 'Upload File',
+      })
+
+      expect(talliesInput).toBeDisabled()
+      expect(talliesButton).toBeDisabled()
+
+      userEvent.click(manifestButton)
+      await screen.findByText('You must upload a file')
+
+      userEvent.upload(manifestInput, manifestFile)
+      await waitFor(() =>
+        expect(
+          screen.queryByText('You must upload a file')
+        ).not.toBeInTheDocument()
+      )
+
+      userEvent.click(manifestButton)
+      await screen.findByText('Invalid CSV')
+    })
+  })
+
+  it('replaces manifest file', async () => {
+    const expectedCalls = [
+      jaApiCalls.getUser,
+      jaApiCalls.getSettings(auditSettings.batchComparisonAll),
+      jaApiCalls.getRounds,
+      jaApiCalls.getBallotManifestFile(manifestMocks.processed),
+      jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
+      jaApiCalls.getCVRSfile(cvrsMocks.empty),
+      jaApiCalls.putManifest,
+      jaApiCalls.getBallotManifestFile(manifestMocks.processed),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderView()
+      await screen.findByText('Audit Source Data')
+
+      const replaceButton = await screen.findByText('Replace File')
+      userEvent.click(replaceButton)
+      const inputFiles = await screen.findAllByText('Select a CSV...')
+      expect(inputFiles).toHaveLength(2)
+
+      const [manifestInput] = screen.getAllByLabelText('Select a CSV...')
+      const [manifestButton] = screen.getAllByRole('button', {
+        name: 'Upload File',
+      })
+
+      userEvent.click(manifestButton)
+      await screen.findByText('You must upload a file')
+
+      userEvent.upload(manifestInput, manifestFile)
+      await waitFor(() =>
+        expect(
+          screen.queryByText('You must upload a file')
+        ).not.toBeInTheDocument()
+      )
+
+      userEvent.click(manifestButton)
+      await screen.findByText('Current file:')
+    })
+  })
 })
 
 describe('prettifyRefreshStatus', () => {
