@@ -7,12 +7,16 @@ import { screen, act } from '@testing-library/react'
 import { Route } from 'react-router-dom'
 import FakeTimers from '@sinonjs/fake-timers'
 import { AuditAdminView } from './index'
-import { renderWithRouter, withMockFetch } from '../testUtilities'
+import {
+  renderWithRouter,
+  withMockFetch,
+  routerTestProps,
+} from '../testUtilities'
 import AuthDataProvider, { useAuthDataContext } from '../UserContext'
 import getJurisdictionFileStatus from './useSetupMenuItems/getJurisdictionFileStatus'
 import getRoundStatus from './useSetupMenuItems/getRoundStatus'
 import { aaApiCalls } from './_mocks'
-import { auditSettings } from './useSetupMenuItems/_mocks'
+import { auditSettings, roundMocks } from './useSetupMenuItems/_mocks'
 
 const getJurisdictionFileStatusMock = getJurisdictionFileStatus as jest.Mock
 const getRoundStatusMock = getRoundStatus as jest.Mock
@@ -74,6 +78,33 @@ describe('timers', () => {
         await clock.tickAsync(1000 * (60 * 5 - 10))
       })
       screen.getByText('Will refresh in 5 minutes')
+    })
+  })
+
+  it('shows a spinner while sample is being drawn', async () => {
+    const loadAfterLaunch = [
+      aaApiCalls.getRounds(roundMocks.drawSampleInProgress),
+      aaApiCalls.getJurisdictions,
+      aaApiCalls.getContests,
+      aaApiCalls.getSettings(auditSettings.all),
+    ]
+    const expectedCalls = [
+      aaApiCalls.getUser,
+      ...loadAfterLaunch,
+      ...loadAfterLaunch,
+      ...loadAfterLaunch,
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderWithRoute('/election/1/progress', <AuditAdminViewWithAuth />)
+      await act(async () => {
+        await clock.nextAsync()
+      })
+      await screen.findByRole('heading', {
+        name: 'Drawing a random sample of ballots...',
+      })
+      screen.getByText(
+        'For large elections, this can take a couple of minutes.'
+      )
     })
   })
 })
