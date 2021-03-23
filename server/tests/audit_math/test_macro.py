@@ -138,6 +138,48 @@ def test_max_error(contests, batches):
             )
 
 
+def test_get_sizes_extra_contests(contests, batches):
+    name = "test2"
+
+    info_dict = {
+        "cand1": 400,
+        "cand2": 100,
+        "ballots": 500,
+        "numWinners": 1,
+        "votesAllowed": 1,
+    }
+
+    other_contest = Contest(name, info_dict)
+    contests[name] = other_contest
+
+    for batch in batches:
+        if "AV" in batch:
+            continue
+        pct = int(batch.split(" ")[-1])
+        if pct < 10:
+            batches[batch]["test2"] = {"cand1": 40, "cand2": 10, "ballots": 50}
+
+    expected_first_round = {
+        "Contest A": 29,
+        "Contest B": 15,
+        "Contest C": 10,
+        name: 3,
+    }
+
+    # This should give us zeros for error
+    sample = {}
+    for contest in contests:
+        computed = macro.get_sample_sizes(
+            RISK_LIMIT, contests[contest], batches, sample
+        )
+
+        assert (
+            expected_first_round[contest] == computed
+        ), "First round sample expected {}, got {}".format(
+            expected_first_round[contest], computed
+        )
+
+
 def test_get_sample_sizes(contests, batches):
     expected_first_round = {
         "Contest A": 29,
@@ -206,6 +248,74 @@ def test_get_sample_sizes(contests, batches):
         ), "Third round sample expected {}, got {}".format(
             expected_third_round[contest], computed
         )
+
+
+def test_full_recount(contests, batches):
+    # Do a full recount:
+    sample = batches
+    for contest in contests:
+
+        with pytest.raises(ValueError, match=r"All ballots have already been counted!"):
+            macro.get_sample_sizes(RISK_LIMIT, contests[contest], batches, sample)
+
+        computed_p, result = macro.compute_risk(
+            RISK_LIMIT, contests[contest], batches, sample
+        )
+
+        assert computed_p == 0.0, "Incorrect p-value: Got {}, expected {}".format(
+            computed_p, 0.0
+        )
+
+        assert result, "Audit did not terminate but should have"
+
+
+def test_almost_done():
+    info_dict = {
+        "winner": 600,
+        "loser": 400,
+        "ballots": 1000,
+        "numWinners": 1,
+        "votesAllowed": 1,
+    }
+
+    contest = Contest("test1", info_dict)
+
+    # One batch
+    batches = {"Batch 1": {"test1": {"winner": 600, "loser": 400}}}
+
+    sample = {"Batch 1": {"test1": {"winner": 500, "loser": 500}}}
+
+    with pytest.raises(ValueError, match=r"All ballots have already been counted!"):
+        macro.get_sample_sizes(RISK_LIMIT, contest, batches, sample)
+
+
+def test_worst_case():
+    info_dict = {
+        "winner": 1000,
+        "loser": 0,
+        "ballots": 1000,
+        "numWinners": 1,
+        "votesAllowed": 1,
+    }
+
+    contest = Contest("test1", info_dict)
+
+    # One batch
+    batches = {
+        "Batch 1": {
+            "test1": {"winner": 500, "loser": 0, "ballots": 500, "numWinner": 1}
+        },
+        "Batch 2": {
+            "test1": {"winner": 500, "loser": 0, "ballots": 500, "numWinner": 1}
+        },
+    }
+
+    sample = {"Batch 1": {"test1": {"winner": 0, "loser": 500}}}
+
+    assert macro.compute_risk(RISK_LIMIT, contest, batches, sample) == (
+        Decimal(1.0),
+        False,
+    )
 
 
 def test_compute_risk(contests, batches):
