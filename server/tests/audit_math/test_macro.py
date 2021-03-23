@@ -259,15 +259,17 @@ def test_full_recount(contests, batches):
         "Contest C": 1,
     }
     for contest in contests:
-        computed = macro.get_sample_sizes(
-            RISK_LIMIT, contests[contest], batches, sample
-        )
 
-        assert (
-            expected_recount_size[contest] == computed
-        ), "Third round sample expected {}, got {}".format(
-            expected_recount_size[contest], computed
-        )
+        with pytest.raises(ValueError, match=r"All ballots have already been counted!"):
+            computed = macro.get_sample_sizes(
+                RISK_LIMIT, contests[contest], batches, sample
+            )
+
+            assert (
+                expected_recount_size[contest] == computed
+            ), "Third round sample expected {}, got {}".format(
+                expected_recount_size[contest], computed
+            )
         computed_p, result = macro.compute_risk(
             RISK_LIMIT, contests[contest], batches, sample
         )
@@ -295,7 +297,8 @@ def test_almost_done():
 
     sample = {"Batch 1": {"test1": {"winner": 500, "loser": 500}}}
 
-    assert macro.get_sample_sizes(RISK_LIMIT, contest, batches, sample) == 1
+    with pytest.raises(ValueError, match=r"All ballots have already been counted!"):
+        macro.get_sample_sizes(RISK_LIMIT, contest, batches, sample)
 
 
 def test_worst_case():
