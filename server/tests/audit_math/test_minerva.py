@@ -113,6 +113,22 @@ def test_get_sample_size_bigger_approx():
     }
 
 
+def test_get_sample_size_second_round():
+    c = minerva.make_arlo_contest({"a": 502000, "b": 498000})
+    res = minerva.get_sample_size(10, c, None, [])
+    assert res == {
+        "0.7": {"type": None, "size": 250047, "prob": 0.7},
+        "0.8": {"type": None, "size": 315475, "prob": 0.8},
+        "0.9": {"type": None, "size": 429778, "prob": 0.9},
+    }
+
+    sample = {"r1": {"a": 10, "b": 10}}
+
+    assert minerva.get_sample_size(20, c, sample, {1: 20}) == {
+        "0.9": {"type": None, "size": 45, "prob": 0.9}
+    }
+
+
 def test_compute_risk_2r():
     c = minerva.make_arlo_contest({"a": 600, "b": 400, "c": 100, "_undervote_": 100})
     res = minerva.compute_risk(

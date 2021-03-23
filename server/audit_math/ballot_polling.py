@@ -45,7 +45,7 @@ def get_sample_size(
         return minerva.get_sample_size(risk_limit, contest, sample_results, round_sizes)
     else:
         # Default to BRAVO math
-        return bravo.get_sample_size(risk_limit, contest, sample_results)
+        return bravo.get_sample_size(risk_limit, contest, sample_results, round_sizes)
 
 
 def compute_risk(

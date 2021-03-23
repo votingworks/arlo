@@ -1,4 +1,5 @@
 import json
+import io
 from ...models import *  # pylint: disable=wildcard-import
 from ..helpers import *  # pylint: disable=wildcard-import
 from ..ballot_comparison.test_ballot_comparison import (
@@ -6,6 +7,11 @@ from ..ballot_comparison.test_ballot_comparison import (
     check_discrepancies,
     generate_audit_results,
 )
+from ...worker.bgcompute import (
+    bgcompute_update_ballot_manifest_file,
+    bgcompute_update_cvr_file,
+)
+from .conftest import TEST_CVRS
 
 
 def test_contest_vote_counts_before_cvrs(
@@ -331,6 +337,15 @@ def test_hybrid_two_rounds(
         == sample_size["sizeNonCvr"]
     )
 
+    # The non-CVR ballots should be sampled without replacement
+    assert len(
+        {
+            draw.ballot_id
+            for draw in ballot_draws
+            if not draw.sampled_ballot.batch.has_cvrs
+        }
+    ) == len([draw for draw in ballot_draws if not draw.sampled_ballot.batch.has_cvrs])
+
     # Check that we're sampling ballots from the two jurisdictions that uploaded manifests
     sampled_jurisdictions = {
         draw.sampled_ballot.batch.jurisdiction_id for draw in ballot_draws
@@ -414,7 +429,9 @@ def test_hybrid_two_rounds(
         ("J2", "TABULATOR3", "BATCH1", 1): ("1,0,,,", (None, None)),
         ("J2", "TABULATOR3", "BATCH1", 2): ("1,0,,,", (None, None)),
         ("J2", "TABULATOR3", "BATCH1", 3): ("1,0,,,", (None, None)),
-        ("J2", "TABULATOR3", "BATCH1", 5): ("0,1,,,", (None, None)),
+        ("J2", "TABULATOR3", "BATCH1", 5): ("1,0,,,", (None, None)),
+        ("J2", "TABULATOR3", "BATCH1", 6): ("0,1,,,", (None, None)),
+        ("J2", "TABULATOR3", "BATCH1", 8): ("0,1,,,", (None, None)),
         ("J2", "TABULATOR3", "BATCH1", 10): ("0,1,,,", (None, None)),
     }
 
@@ -458,3 +475,174 @@ def test_hybrid_two_rounds(
     rv = client.get(f"/api/election/{election_id}/report")
     assert_match_report(rv.data, snapshot)
     check_discrepancies(rv.data, audit_results)
+
+
+def test_hybrid_manifest_validation(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    election_settings,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    for jurisdiction_id in jurisdiction_ids[:2]:
+        rv = client.put(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/ballot-manifest",
+            data={
+                "manifest": (
+                    io.BytesIO(
+                        b"Tabulator,Batch Name,Number of Ballots,CVR\n"
+                        b"TABULATOR1,BATCH1,3,Y\n"
+                        b"TABULATOR1,BATCH2,3,Y\n"
+                        b"TABULATOR2,BATCH1,3,Y\n"
+                        b"TABULATOR2,BATCH2,6,Y\n"
+                        b"TABULATOR3,BATCH1,10,N"
+                    ),
+                    "manifest.csv",
+                )
+            },
+        )
+        assert_ok(rv)
+        bgcompute_update_ballot_manifest_file(election_id)
+
+        rv = client.put(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/cvrs",
+            data={"cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",)},
+        )
+        assert_ok(rv)
+        bgcompute_update_cvr_file(election_id)
+
+    # First test with vote counts that are too large for the total ballots in the manifests
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    contests = [
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Contest 1",
+            "isTargeted": True,
+            "choices": [
+                {"id": str(uuid.uuid4()), "name": "Choice 1-1", "numVotes": 60},
+                {"id": str(uuid.uuid4()), "name": "Choice 1-2", "numVotes": 70},
+            ],
+            "numWinners": 1,
+            "votesAllowed": 2,
+            "jurisdictionIds": jurisdiction_ids[:2],
+        },
+    ]
+    rv = put_json(client, f"/api/election/{election_id}/contest", contests)
+    assert_ok(rv)
+
+    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Contest Contest 1 vote counts add up to 130, which is more than the total number of ballots across all jurisdiction manifests (50) times the number of votes allowed (2)",
+            }
+        ]
+    }
+
+    # Correct that error
+    contests = [
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Contest 1",
+            "isTargeted": True,
+            "choices": [
+                {"id": str(uuid.uuid4()), "name": "Choice 1-1", "numVotes": 60},
+                {"id": str(uuid.uuid4()), "name": "Choice 1-2", "numVotes": 40},
+            ],
+            "numWinners": 1,
+            "votesAllowed": 2,
+            "jurisdictionIds": jurisdiction_ids[:2],
+        },
+    ]
+    rv = put_json(client, f"/api/election/{election_id}/contest", contests)
+    assert_ok(rv)
+
+    # Next, try too few CVR ballots in the manifest
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    for jurisdiction_id in jurisdiction_ids[:2]:
+        rv = client.put(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/ballot-manifest",
+            data={
+                "manifest": (
+                    io.BytesIO(
+                        b"Tabulator,Batch Name,Number of Ballots,CVR\n"
+                        b"TABULATOR1,BATCH1,3,Y\n"
+                        b"TABULATOR1,BATCH2,3,Y\n"
+                        b"TABULATOR2,BATCH1,3,Y\n"
+                        b"TABULATOR2,BATCH2,6,N\n"
+                        b"TABULATOR3,BATCH1,10,N"
+                    ),
+                    "manifest.csv",
+                )
+            },
+        )
+        assert_ok(rv)
+        bgcompute_update_ballot_manifest_file(election_id)
+
+        rv = client.put(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/cvrs",
+            data={"cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",)},
+        )
+        assert_ok(rv)
+        bgcompute_update_cvr_file(election_id)
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "For contest Contest 1, found 28 ballots in the CVRs, which is more than the total number of CVR ballots across all jurisdiction manifests (18) for jurisdictions in this contest's universe",
+            }
+        ]
+    }
+
+    # Next, try too few non-CVR ballots in the manifest
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    for jurisdiction_id in jurisdiction_ids[:2]:
+        rv = client.put(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/ballot-manifest",
+            data={
+                "manifest": (
+                    io.BytesIO(
+                        b"Tabulator,Batch Name,Number of Ballots,CVR\n"
+                        b"TABULATOR1,BATCH1,3,N\n"
+                        b"TABULATOR1,BATCH2,3,Y\n"
+                        b"TABULATOR2,BATCH1,3,Y\n"
+                        b"TABULATOR2,BATCH2,6,Y\n"
+                        b"TABULATOR3,BATCH1,10,Y"
+                    ),
+                    "manifest.csv",
+                )
+            },
+        )
+        assert_ok(rv)
+        bgcompute_update_ballot_manifest_file(election_id)
+
+        rv = client.put(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/cvrs",
+            data={"cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",)},
+        )
+        assert_ok(rv)
+        bgcompute_update_cvr_file(election_id)
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "For contest Contest 1, choice votes for non-CVR ballots add up to 20, which is more than the total number of non-CVR ballots across all jurisdiction manifests (6) for jurisdictions in this contest's universe times the number of votes allowed (2)",
+            }
+        ]
+    }

@@ -1,7 +1,7 @@
 from typing import Dict
 from collections import Counter
 from flask import jsonify
-from werkzeug.exceptions import BadRequest
+from werkzeug.exceptions import BadRequest, Conflict
 
 from . import api
 from ..models import *  # pylint: disable=wildcard-import
@@ -14,8 +14,51 @@ from ..audit_math import (
     suite,
 )
 from . import rounds  # pylint: disable=cyclic-import
-from .cvrs import validate_uploaded_cvrs
-from .ballot_manifest import validate_uploaded_manifests
+from .cvrs import validate_uploaded_cvrs, hybrid_contest_choice_vote_counts
+from .ballot_manifest import (
+    validate_all_manifests_uploaded,
+    hybrid_contest_total_ballots,
+)
+
+
+def validate_hybrid_manifests_and_cvrs(contest: Contest):
+    total_manifest_ballots = sum(
+        jurisdiction.manifest_num_ballots or 0 for jurisdiction in contest.jurisdictions
+    )
+    total_votes = sum(choice.num_votes for choice in contest.choices)
+    assert contest.votes_allowed is not None
+    if total_votes > total_manifest_ballots * contest.votes_allowed:
+        raise Conflict(
+            f"Contest {contest.name} vote counts add up to {total_votes},"
+            f" which is more than the total number of ballots across all jurisdiction manifests ({total_manifest_ballots})"
+            f" times the number of votes allowed ({contest.votes_allowed})"
+        )
+
+    manifest_ballots = hybrid_contest_total_ballots(contest)
+    cvr_ballots = (
+        CvrBallot.query.join(Batch)
+        .join(Jurisdiction)
+        .join(Jurisdiction.contests)
+        .filter_by(id=contest.id)
+        .count()
+    )
+    if manifest_ballots.cvr < cvr_ballots:
+        raise Conflict(
+            f"For contest {contest.name}, found {cvr_ballots} ballots in the CVRs,"
+            f" which is more than the total number of CVR ballots across all jurisdiction manifests ({manifest_ballots.cvr})"
+            " for jurisdictions in this contest's universe"
+        )
+
+    vote_counts = hybrid_contest_choice_vote_counts(contest)
+    assert vote_counts is not None
+    non_cvr_votes = sum(count.cvr for count in vote_counts.values())
+    if manifest_ballots.non_cvr * contest.votes_allowed < non_cvr_votes:
+        raise Conflict(
+            f"For contest {contest.name}, choice votes for non-CVR ballots add up to {non_cvr_votes},"
+            f" which is more than the total number of non-CVR ballots across all jurisdiction manifests ({manifest_ballots.non_cvr})"
+            " for jurisdictions in this contest's universe"
+            f" times the number of votes allowed ({contest.votes_allowed})"
+        )
 
 
 # Because the /sample-sizes endpoint is only used for the audit setup flow,
@@ -68,7 +111,7 @@ def sample_size_options(
             return {"macro": {"key": "macro", "size": sample_size, "prob": None}}
 
         elif election.audit_type == AuditType.BALLOT_COMPARISON:
-            validate_uploaded_manifests(contest)
+            validate_all_manifests_uploaded(contest)
             validate_uploaded_cvrs(contest)
 
             contest_for_sampler = sampler_contest.from_db_contest(contest)
@@ -105,10 +148,9 @@ def sample_size_options(
         else:
             assert election.audit_type == AuditType.HYBRID
 
-            validate_uploaded_manifests(contest)
+            validate_all_manifests_uploaded(contest)
             validate_uploaded_cvrs(contest)
-            # TODO validate that contest choice vote counts provided by AA
-            # match with total ballots based on manifest
+            validate_hybrid_manifests_and_cvrs(contest)
 
             non_cvr_stratum, cvr_stratum = rounds.hybrid_contest_strata(
                 contest, round_one=round_one

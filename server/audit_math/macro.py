@@ -200,6 +200,9 @@ def get_sample_sizes(
     alpha = Decimal(risk_limit) / 100
     assert alpha < 1, "The risk-limit must be less than one!"
 
+    if len(reported_results) == len(sample_results):
+        raise ValueError("All ballots have already been counted!")
+
     # Computing U with the max error for already sampled batches knocked out
     # to try to provide a sense of "how close" the audit is to finishing.
     U = compute_U(reported_results, sample_results, contest)
