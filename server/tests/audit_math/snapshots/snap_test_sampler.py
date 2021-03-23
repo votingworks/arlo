@@ -33,8 +33,6 @@ snapshots["test_draw_macro_sample 1"] = [
     ("0.230651143", "pct 7", 2),
 ]
 
-snapshots["test_draw_macro_sample_wrong_contest 1"] = []
-
 snapshots["test_draw_more_macro_sample 1"] = [
     ("0.092252362", "pct 7", 1),
     ("0.097291018", "pct 5", 1),
