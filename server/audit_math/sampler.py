@@ -9,7 +9,11 @@ from .sampler_contest import Contest
 
 
 def draw_sample(
-    seed: str, manifest: Dict[Any, List[int]], sample_size: int, num_sampled=0
+    seed: str,
+    manifest: Dict[Any, List[int]],
+    sample_size: int,
+    num_sampled: int = 0,
+    with_replacement: bool = True,
 ) -> List[Tuple[str, Tuple[Any, int], int]]:
     """
     Draws uniform random sample with replacement of size <sample_size> from the
@@ -55,7 +59,7 @@ def draw_sample(
                 ballots,
                 seed=seed,
                 take=sample_size + num_sampled,
-                with_replacement=True,
+                with_replacement=with_replacement,
                 output="tuple",
                 digits=18,
             )
