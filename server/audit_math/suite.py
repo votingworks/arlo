@@ -163,7 +163,6 @@ class BallotPollingStratum:
             nuisance_param = sp.optimize.brentq(
                 LR_derivative, lower_n_w_limit, upper_n_w_limit
             )
-        # print(nuisance_param)
         logLR = alt_logLR - null_logLR(nuisance_param)
         LR = float(np.exp(logLR))  # This value is always a float, but np.exp
         # can return a vector. casting for the typechecker.

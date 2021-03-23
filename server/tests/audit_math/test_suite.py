@@ -964,6 +964,7 @@ def test_misstatements():
     expected = {("winner", "loser"): {"o1": 1, "o2": 1, "u1": 0, "u2": 0}}
     assert misstatements(contest, cvr, sample_cvr) == expected
 
+
 expected_p_values = {
     "no_discrepancies": {
         "Contest A": 0.06507,
