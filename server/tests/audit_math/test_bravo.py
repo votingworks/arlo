@@ -232,12 +232,6 @@ def test_bravo_sample_sizes_round1_incomplete():
 
 def test_get_sample_size(contests):
     for contest in contests:
-        print(contest)
-        if contest in ["test4", "test5", "test_ga_presidential"]:
-            assert pytest.raises(
-                ValueError, match=r"All ballots have already been audited!"
-            )
-            continue
 
         computed = bravo.get_sample_size(
             RISK_LIMIT, contests[contest], round0_sample_results[contest], {"0": 0}
@@ -245,15 +239,27 @@ def test_get_sample_size(contests):
         expected = true_sample_sizes[contest]
         assert computed == expected, f"{contest} failed"
 
-        # Test round 2
-        computed = bravo.get_sample_size(
-            RISK_LIMIT,
-            contests[contest],
-            round1_sample_results[contest],
-            round1_sizes[contest],
-        )
-        expected = round2_sample_sizes[contest]
-        assert computed == expected, f"{contest} failed"
+        if contest in ["test4", "test5", "test_ga_presidential"]:
+            verr = pytest.raises(
+                ValueError,
+                bravo.get_sample_size,
+                RISK_LIMIT,
+                contests[contest],
+                round1_sample_results[contest],
+                round1_sizes[contest],
+            )
+            assert verr.match("All ballots have already been audited!")
+
+        else:
+            # Test round 2
+            computed = bravo.get_sample_size(
+                RISK_LIMIT,
+                contests[contest],
+                round1_sample_results[contest],
+                round1_sizes[contest],
+            )
+            expected = round2_sample_sizes[contest]
+            assert computed == expected, f"{contest} failed"
 
 
 def test_bravo_expected_prob():
