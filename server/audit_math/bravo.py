@@ -355,6 +355,16 @@ def get_sample_size(
     if not margin["losers"]:
         raise ValueError("Contest must have candidates who did not win!")
 
+    # Handle landslides
+    if any([margin["winners"][winner]["p_w"] == 1.0 for winner in contest.winners]):
+        samples["asn"] = {
+            "type": "ASN",
+            "size": 1,
+            "prob": 1.0,
+        }
+
+        return samples
+
     # Get cumulative sample results
     cumulative_sample = {}
     if sample_results:
@@ -364,6 +374,9 @@ def get_sample_size(
             cumulative_sample[candidate] = 0
 
     asn = get_expected_sample_sizes(alpha, contest, cumulative_sample)
+
+    if asn <= 0:
+        raise ValueError("Sample indicates the audit is over!")
 
     p_w = Decimal("inf")
     p_l = Decimal(0)
@@ -396,16 +409,6 @@ def get_sample_size(
                 "prob": None,
             }
         }
-
-    # Handle landslides
-    if p_w == 1.0:
-        samples["asn"] = {
-            "type": "ASN",
-            "size": 1,
-            "prob": 1.0,
-        }
-
-        return samples
 
     sample_w = cumulative_sample[worse_winner]
     sample_l = cumulative_sample[best_loser]
