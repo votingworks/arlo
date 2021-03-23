@@ -152,7 +152,8 @@ def test_draw_macro_multiple_contests(macro_batches, snapshot):
         if pct < 10:
             macro_batches[batch]["test2"] = {"cand1": 40, "cand2": 10, "ballots": 50}
 
-    # This should give us zeros for error
+    # By including a contest that isn't contained in every batch, those batches
+    # will get a maximum possible error (U) of zero for that contest.
     sample = sampler.draw_ppeb_sample(
         SEED, other_contest, 10, 0, batch_results=macro_batches
     )
