@@ -337,6 +337,15 @@ def test_hybrid_two_rounds(
         == sample_size["sizeNonCvr"]
     )
 
+    # The non-CVR ballots should be sampled without replacement
+    assert len(
+        {
+            draw.ballot_id
+            for draw in ballot_draws
+            if not draw.sampled_ballot.batch.has_cvrs
+        }
+    ) == len([draw for draw in ballot_draws if not draw.sampled_ballot.batch.has_cvrs])
+
     # Check that we're sampling ballots from the two jurisdictions that uploaded manifests
     sampled_jurisdictions = {
         draw.sampled_ballot.batch.jurisdiction_id for draw in ballot_draws
@@ -420,7 +429,9 @@ def test_hybrid_two_rounds(
         ("J2", "TABULATOR3", "BATCH1", 1): ("1,0,,,", (None, None)),
         ("J2", "TABULATOR3", "BATCH1", 2): ("1,0,,,", (None, None)),
         ("J2", "TABULATOR3", "BATCH1", 3): ("1,0,,,", (None, None)),
-        ("J2", "TABULATOR3", "BATCH1", 5): ("0,1,,,", (None, None)),
+        ("J2", "TABULATOR3", "BATCH1", 5): ("1,0,,,", (None, None)),
+        ("J2", "TABULATOR3", "BATCH1", 6): ("0,1,,,", (None, None)),
+        ("J2", "TABULATOR3", "BATCH1", 8): ("0,1,,,", (None, None)),
         ("J2", "TABULATOR3", "BATCH1", 10): ("0,1,,,", (None, None)),
     }
 
