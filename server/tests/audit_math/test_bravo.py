@@ -163,6 +163,28 @@ def test_bravo_sample_sizes():
     )
 
 
+def test_bravo_sample_sizes_small_prob():
+    expected_size1 = 409
+    r0_sample_win = 0
+    r0_sample_rup = 0
+
+    computed_size1 = math.ceil(
+        bravo.bravo_sample_sizes(
+            alpha=ALPHA,
+            p_w=Decimal(0.4),
+            p_r=Decimal(0.32),
+            sample_w=r0_sample_win,
+            sample_r=r0_sample_rup,
+            p_completion=0.4,
+        )
+    )
+    delta = expected_size1 - computed_size1
+
+    assert delta == 0, "bravo_sample_sizes failed: got {}, expected {}".format(
+        computed_size1, expected_size1
+    )
+
+
 def test_bravo_sample_sizes_round1_finish():
     # Guarantee that the audit should have finished
     r0_sample_win = 10000
@@ -210,11 +232,75 @@ def test_bravo_sample_sizes_round1_incomplete():
 
 def test_get_sample_size(contests):
     for contest in contests:
-        computed = bravo.get_sample_size(
-            RISK_LIMIT, contests[contest], round0_sample_results[contest]
-        )
-        expected = true_sample_sizes[contest]
-        assert computed == expected
+        if contest in ["test3", "test4", "test9"]:
+            verr = pytest.raises(
+                ValueError,
+                bravo.get_sample_size,
+                RISK_LIMIT,
+                contests[contest],
+                round0_sample_results[contest],
+                0,
+            )
+            assert verr.match("Contest must have candidates who did not win!")
+
+        else:
+            print(contest)
+            computed = bravo.get_sample_size(
+                RISK_LIMIT, contests[contest], round0_sample_results[contest], {"0": 0}
+            )
+            expected = true_sample_sizes[contest]
+            assert computed == expected, f"{contest} failed"
+
+        if contest in ["test4", "test5", "test_ga_presidential"]:
+            verr = pytest.raises(
+                ValueError,
+                bravo.get_sample_size,
+                RISK_LIMIT,
+                contests[contest],
+                round1_sample_results[contest],
+                round1_sizes[contest],
+            )
+            assert verr.match("All ballots have already been audited!")
+
+        else:
+            if contest in ["test3", "test9"]:
+                verr = pytest.raises(
+                    ValueError,
+                    bravo.get_sample_size,
+                    RISK_LIMIT,
+                    contests[contest],
+                    round1_sample_results[contest],
+                    round1_sizes[contest],
+                )
+                assert verr.match("Contest must have candidates who did not win!")
+
+            elif contest in [
+                "test1",
+                "test6",
+                "test7",
+                "test10",
+                "test12",
+                "test_small_third_candidate",
+            ]:
+                verr = pytest.raises(
+                    ValueError,
+                    bravo.get_sample_size,
+                    RISK_LIMIT,
+                    contests[contest],
+                    round1_sample_results[contest],
+                    round1_sizes[contest],
+                )
+                assert verr.match("Sample indicates the audit is over!")
+            else:
+                # Test round 2
+                computed = bravo.get_sample_size(
+                    RISK_LIMIT,
+                    contests[contest],
+                    round1_sample_results[contest],
+                    round1_sizes[contest],
+                )
+                expected = round2_sample_sizes[contest]
+                assert computed == expected, f"{contest} failed"
 
 
 def test_bravo_expected_prob():
@@ -238,6 +324,23 @@ def test_bravo_expected_prob():
     delta = expected_prob1 - computed_prob1
 
     assert delta == 0, "bravo_simulator failed: got {}, expected {}".format(
+        computed_prob1, expected_prob1
+    )
+
+    # Test corner case
+    computed_prob1 = round(
+        bravo.expected_prob(
+            Decimal(1.0),
+            p_w=Decimal(0.6),
+            p_r=Decimal(0.4),
+            sample_w=0,
+            sample_r=0,
+            asn=119,
+        ),
+        2,
+    )
+
+    assert computed_prob1 == 0, "bravo_simulator failed: got {}, expected {}".format(
         computed_prob1, expected_prob1
     )
 
@@ -382,13 +485,16 @@ def test_tied_contest():
 
     sample_results = {}
 
-    sample_options = bravo.get_sample_size(RISK_LIMIT, contest, sample_results)
+    sample_options = bravo.get_sample_size(
+        RISK_LIMIT, contest, sample_results, {"0": 0}
+    )
 
+    assert "all-ballots" in sample_options
     assert 0.7 not in sample_options
     assert 0.8 not in sample_options
     assert 0.9 not in sample_options
-    assert sample_options["asn"]["size"] == contest.ballots
-    assert sample_options["asn"]["prob"] == 1.0
+    assert sample_options["all-ballots"]["size"] == contest.ballots
+    assert sample_options["all-ballots"]["prob"] is None
 
     computed_p, res = bravo.compute_risk(RISK_LIMIT, contest, sample_results)
 
@@ -550,6 +656,23 @@ round1_sample_results = {
     },
 }
 
+round1_sizes = {
+    "test1": {"round1": 119},
+    "test2": {"round1": 48},
+    "test3": {"round1": 0},
+    "test4": {"round1": 100},
+    "test5": {"round1": 1000},
+    "test6": {"round1": 200},
+    "test7": {"round1": 70},
+    "test8": {"round1": 100},
+    "test9": {"round1": 2},
+    "test10": {"round1": 100},
+    "test11": {"round1": 0},
+    "test12": {"round1": 150},
+    "test_small_third_candidate": {"round1": 1300},
+    "test_ga_presidential": {"round1": 4992420},
+}
+
 true_sample_sizes = {
     "test1": {
         "asn": {"type": "ASN", "size": 119, "prob": 0.52},
@@ -563,14 +686,9 @@ true_sample_sizes = {
         "0.8": {"type": None, "size": 41, "prob": 0.8},
         "0.9": {"type": None, "size": 57, "prob": 0.9},
     },
-    "test3": {"asn": {"type": "ASN", "size": 1, "prob": 1.0},},
-    "test4": {"asn": {"type": "ASN", "size": 1, "prob": 1.0},},
-    "test5": {
-        "asn": {"type": "ASN", "size": 1000, "prob": 1},
-        "0.7": {"type": None, "size": 1000, "prob": 0.7},
-        "0.8": {"type": None, "size": 1000, "prob": 0.8},
-        "0.9": {"type": None, "size": 1000, "prob": 0.9},
-    },
+    "test3": {},
+    "test4": {},
+    "test5": {"all-ballots": {"type": "all-ballots", "size": 1000, "prob": None},},
     "test6": {
         "asn": {"type": "ASN", "size": 238, "prob": 0.52},
         "0.7": {"type": None, "size": 368, "prob": 0.7},
@@ -579,7 +697,7 @@ true_sample_sizes = {
     },
     "test7": {"asn": {"type": "ASN", "size": 101, "prob": None,},},
     "test8": {"asn": {"type": "ASN", "size": 34, "prob": None,},},
-    "test9": {"asn": {"type": "ASN", "size": -1, "prob": None,},},
+    "test9": {},
     "test10": {"asn": {"type": "ASN", "size": 48, "prob": None,},},
     "test11": {"asn": {"type": "ASN", "size": 1, "prob": 1.0,},},
     "test12": {
@@ -597,4 +715,27 @@ true_sample_sizes = {
     "test_ga_presidential": {
         "all-ballots": {"type": "all-ballots", "size": 4992420, "prob": None},
     },
+}
+
+
+round2_sample_sizes = {
+    "test1": {},
+    "test2": {
+        "asn": {"type": "ASN", "size": 42, "prob": 0.53},
+        "0.7": {"type": None, "size": 57, "prob": 0.7},
+        "0.8": {"type": None, "size": 66, "prob": 0.8},
+        "0.9": {"type": None, "size": 87, "prob": 0.9},
+    },
+    "test3": {},
+    "test4": {},
+    "test5": {},
+    "test6": {},
+    "test7": {},
+    "test8": {"asn": {"type": "ASN", "size": 14, "prob": None,},},
+    "test9": {},
+    "test10": {},
+    "test11": {"asn": {"type": "ASN", "size": 1, "prob": 1.0,},},
+    "test12": {},
+    "test_small_third_candidate": {},
+    "test_ga_presidential": {},
 }
