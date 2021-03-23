@@ -232,12 +232,23 @@ def test_bravo_sample_sizes_round1_incomplete():
 
 def test_get_sample_size(contests):
     for contest in contests:
+        if contest in ["test3", "test4", "test9"]:
+            verr = pytest.raises(
+                ValueError,
+                bravo.get_sample_size,
+                RISK_LIMIT,
+                contests[contest],
+                round0_sample_results[contest],
+                0,
+            )
+            assert verr.match("Contest must have candidates who did not win!")
 
-        computed = bravo.get_sample_size(
-            RISK_LIMIT, contests[contest], round0_sample_results[contest], {"0": 0}
-        )
-        expected = true_sample_sizes[contest]
-        assert computed == expected, f"{contest} failed"
+        else:
+            computed = bravo.get_sample_size(
+                RISK_LIMIT, contests[contest], round0_sample_results[contest], {"0": 0}
+            )
+            expected = true_sample_sizes[contest]
+            assert computed == expected, f"{contest} failed"
 
         if contest in ["test4", "test5", "test_ga_presidential"]:
             verr = pytest.raises(
@@ -251,15 +262,27 @@ def test_get_sample_size(contests):
             assert verr.match("All ballots have already been audited!")
 
         else:
-            # Test round 2
-            computed = bravo.get_sample_size(
-                RISK_LIMIT,
-                contests[contest],
-                round1_sample_results[contest],
-                round1_sizes[contest],
-            )
-            expected = round2_sample_sizes[contest]
-            assert computed == expected, f"{contest} failed"
+            if contest in ["test3", "test9"]:
+                verr = pytest.raises(
+                    ValueError,
+                    bravo.get_sample_size,
+                    RISK_LIMIT,
+                    contests[contest],
+                    round1_sample_results[contest],
+                    round1_sizes[contest],
+                )
+                assert verr.match("Contest must have candidates who did not win!")
+
+            else:
+                # Test round 2
+                computed = bravo.get_sample_size(
+                    RISK_LIMIT,
+                    contests[contest],
+                    round1_sample_results[contest],
+                    round1_sizes[contest],
+                )
+                expected = round2_sample_sizes[contest]
+                assert computed == expected, f"{contest} failed"
 
 
 def test_bravo_expected_prob():
