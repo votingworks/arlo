@@ -345,11 +345,26 @@ def get_sample_size(
     samples: Dict = {}
 
     if round_sizes:
-        num_sampled = sum([round_sizes.get(rnd, 0) for rnd in round_sizes])
+        num_sampled = sum(round_sizes.values())
         # If we've already sampled all the ballots, we should never be here
         if num_sampled >= contest.ballots:
-            return {"all-ballots": {"type": "all-ballots", "size": -1, "prob": None,}}
+            raise ValueError("All ballots have already been audited!")
 
+    margin = contest.margins
+    # If we're in a race without a loser, throw an error
+    if not margin["losers"]:
+        raise ValueError("Contest must have candidates who did not win!")
+
+    # Handle landslides
+    if any([margin["winners"][winner]["p_w"] == 1.0 for winner in contest.winners]):
+        samples["asn"] = {
+            "type": "ASN",
+            "size": 1,
+            "prob": 1.0,
+        }
+
+        return samples
+      
     # Get cumulative sample results
     cumulative_sample = {}
     if sample_results:
@@ -360,6 +375,9 @@ def get_sample_size(
 
     asn = get_expected_sample_sizes(alpha, contest, cumulative_sample)
 
+    if asn <= 0:
+        raise ValueError("Sample indicates the audit is over!")
+
     p_w = Decimal("inf")
     p_l = Decimal(0)
     best_loser = ""
@@ -369,7 +387,6 @@ def get_sample_size(
     if contest.num_winners != 1:
         return {"asn": {"type": "ASN", "size": asn, "prob": None}}
 
-    margin = contest.margins
     # Get smallest p_w - p_l
     for winner in margin["winners"]:
         if margin["winners"][winner]["p_w"] < p_w:
@@ -380,30 +397,21 @@ def get_sample_size(
         if margin["losers"][loser]["p_l"] > p_l:
             p_l = Decimal(margin["losers"][loser]["p_l"])
             best_loser = loser
-
-    # If we're in a single-candidate race, set sample to 0
-    if not margin["losers"]:
-        samples["asn"] = {"type": "ASN", "size": -1, "prob": -1.0}
-        for quant in quants:
-            samples[str(quant)] = {"type": None, "size": -1.0, "prob": quant}
-
-        return samples
-
+    
     num_ballots = contest.ballots
 
-    # Handle landslides
-    if p_w == 1.0:
-        samples["asn"] = {
-            "type": "ASN",
-            "size": 1,
-            "prob": 1.0,
+    # If tied, do a recount
+    if p_w == p_l:
+        return {
+            "all-ballots": {
+                "type": "all-ballots",
+                "size": contest.ballots,
+                "prob": None,
+            }
         }
 
-        return samples
-
-    if p_w != p_l:
-        sample_w = cumulative_sample[worse_winner]
-        sample_l = cumulative_sample[best_loser]
+    sample_w = cumulative_sample[worse_winner]
+    sample_l = cumulative_sample[best_loser]
 
         samples["asn"] = {
             "type": "ASN",

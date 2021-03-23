@@ -24,26 +24,20 @@ NUMBER_OF_BALLOTS = "Number of Ballots"
 CVR = "CVR"
 
 
-def validate_uploaded_manifests(contest: Contest):
-    for jurisdiction in contest.jurisdictions:
-        if jurisdiction.manifest_num_ballots is None:
-            raise Conflict("Some jurisdictions haven't uploaded their manifests yet")
-
-        # TODO for ballot polling audits, validate total ballots across
-        # manifests is greater than or equal to contest.total_ballots_cast
-        # entered by the AA
+def all_manifests_uploaded(contest: Contest):
+    return all(
+        jurisdiction.manifest_num_ballots is not None
+        for jurisdiction in contest.jurisdictions
+    )
 
 
-def are_uploaded_manifests_valid(contest: Contest):
-    try:
-        validate_uploaded_manifests(contest)
-        return True
-    except Conflict:
-        return False
+def validate_all_manifests_uploaded(contest: Contest):
+    if not all_manifests_uploaded(contest):
+        raise Conflict("Some jurisdictions haven't uploaded their manifests yet")
 
 
 def set_total_ballots_from_manifests(contest: Contest):
-    if not are_uploaded_manifests_valid(contest):
+    if not all_manifests_uploaded(contest):
         return
 
     contest.total_ballots_cast = sum(

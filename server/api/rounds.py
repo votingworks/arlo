@@ -695,6 +695,10 @@ def sample_ballots(
             dict(manifest),
             sample_size_num,
             num_previously_sampled,
+            # In hybrid audits, sample without replacement for the non-CVR
+            # ballots, and with replacement for the CVR ballots.
+            # All other audit types sample with replacement.
+            with_replacement=(True if filter_has_cvrs is None else filter_has_cvrs),
         )
         return [
             BallotDraw(

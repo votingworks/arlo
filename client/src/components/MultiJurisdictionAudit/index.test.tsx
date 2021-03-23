@@ -342,43 +342,6 @@ describe('AA setup flow', () => {
       })
     })
   })
-
-  it('shows a spinner while sample is being drawn', async () => {
-    const loadAfterLaunch = [
-      aaApiCalls.getRounds(roundMocks.drawSampleInProgress),
-      aaApiCalls.getJurisdictions,
-      aaApiCalls.getContests,
-      aaApiCalls.getSettings(auditSettings.all),
-    ]
-    const expectedCalls = [
-      aaApiCalls.getUser,
-      ...loadAfterLaunch,
-      ...loadAfterLaunch,
-      ...loadAfterLaunch,
-    ]
-    const routeProps = routerTestProps('/election/1/progress', {
-      electionId: '1',
-    })
-    await withMockFetch(expectedCalls, async () => {
-      paramsMock.mockReturnValue({
-        electionId: '1',
-        view: 'progress',
-      })
-      render(
-        <AuthDataProvider>
-          <RegularRouter {...routeProps}>
-            <AuditAdminViewWithAuth />
-          </RegularRouter>
-        </AuthDataProvider>
-      )
-      await screen.findByRole('heading', {
-        name: 'Drawing a random sample of ballots...',
-      })
-      screen.getByText(
-        'For large elections, this can take a couple of minutes.'
-      )
-    })
-  })
 })
 
 describe('JA setup', () => {
