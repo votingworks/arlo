@@ -100,6 +100,7 @@ class BallotPollingStratum:
         Outputs:
             pvalue: the pvalue from testing the hypothesis that null margin is not the acual margin
         """
+        
         if self.sample_size == 0 or reported_margin == 0:
             return 1.0
 
