@@ -4,7 +4,10 @@ from flask.testing import FlaskClient
 
 from ...models import *  # pylint: disable=wildcard-import
 from ..helpers import *  # pylint: disable=wildcard-import
-from ...worker.bgcompute import bgcompute_update_cvr_file
+from ...worker.bgcompute import (
+    bgcompute_update_cvr_file,
+    bgcompute_update_ballot_manifest_file,
+)
 from ...util.process_file import ProcessingStatus
 from .conftest import TEST_CVRS
 
@@ -468,12 +471,6 @@ def test_invalid_cvrs(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    #             """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
-    # ,,,,,,,,"Contest 1 (Vote For=1)","Contest 1 (Vote For=1)"
-    # ,,,,,,,,Choice 1-1,Choice 1-2
-    # CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM
-    # 1,TABULATOR1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,0,1
-    # """
     invalid_cvrs = [
         ("", "CVR file cannot be empty.",),
         (
@@ -563,3 +560,103 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortio
         )
         assert len(cvr_ballots) == 0
         assert Jurisdiction.query.get(jurisdiction_ids[0]).cvr_contests_metadata is None
+
+
+def test_cvr_reprocess_after_manifest_reupload(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    manifests,  # pylint: disable=unused-argument
+    cvrs,  # pylint: disable=unused-argument
+):
+    # Reupload a manifest but remove a batch
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
+        data={
+            "manifest": (
+                io.BytesIO(
+                    b"Tabulator,Batch Name,Number of Ballots\n"
+                    b"TABULATOR1,BATCH1,3\n"
+                    b"TABULATOR1,BATCH2,3\n"
+                    b"TABULATOR2,BATCH2,6"
+                ),
+                "manifest.csv",
+            )
+        },
+    )
+    assert_ok(rv)
+
+    bgcompute_update_ballot_manifest_file(election_id)
+
+    # Error should be recorded for CVRs
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
+    )
+    compare_json(
+        json.loads(rv.data),
+        {
+            "file": {"name": "cvrs.csv", "uploadedAt": assert_is_date,},
+            "processing": {
+                "status": ProcessingStatus.ERRORED,
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": "Invalid TabulatorNum/BatchId for row with CvrNumber 7: TABULATOR2, BATCH1. The TabulatorNum and BatchId fields in the CVR file must match the Tabulator and Batch Name fields in the ballot manifest. The closest match we found in the ballot manifest was: TABULATOR2, BATCH2. Please check your CVR file and ballot manifest thoroughly to make sure these values match - there may be a similar inconsistency in other rows in the CVR file.",
+            },
+        },
+    )
+
+    assert (
+        CvrBallot.query.join(Batch)
+        .filter_by(jurisdiction_id=jurisdiction_ids[0])
+        .count()
+        == 0
+    )
+    assert Jurisdiction.query.get(jurisdiction_ids[0]).cvr_contests_metadata is None
+
+    # Fix the manifest
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
+        data={
+            "manifest": (
+                io.BytesIO(
+                    b"Tabulator,Batch Name,Number of Ballots\n"
+                    b"TABULATOR1,BATCH1,3\n"
+                    b"TABULATOR1,BATCH2,3\n"
+                    b"TABULATOR2,BATCH1,3\n"
+                    b"TABULATOR2,BATCH2,6"
+                ),
+                "manifest.csv",
+            )
+        },
+    )
+    assert_ok(rv)
+
+    bgcompute_update_ballot_manifest_file(election_id)
+
+    # CVRs should be fixed
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
+    )
+    compare_json(
+        json.loads(rv.data),
+        {
+            "file": {"name": "cvrs.csv", "uploadedAt": assert_is_date,},
+            "processing": {
+                "status": ProcessingStatus.PROCESSED,
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": None,
+            },
+        },
+    )
+
+    assert (
+        CvrBallot.query.join(Batch)
+        .filter_by(jurisdiction_id=jurisdiction_ids[0])
+        .count()
+        == len(TEST_CVRS.splitlines()) - 4
+    )
+    assert Jurisdiction.query.get(jurisdiction_ids[0]).cvr_contests_metadata is not None

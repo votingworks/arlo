@@ -1,4 +1,5 @@
 import uuid
+import logging
 from datetime import datetime
 from sqlalchemy.orm.session import Session
 from flask import request, jsonify, Request
@@ -16,6 +17,9 @@ from ..util.process_file import (
 from ..util.csv_download import csv_response
 from ..util.csv_parse import decode_csv_file, parse_csv, CSVValueType, CSVColumnType
 from ..audit_math.suite import HybridPair
+from .cvrs import process_cvr_file
+
+logger = logging.getLogger("arlo")
 
 CONTAINER = "Container"
 TABULATOR = "Tabulator"
@@ -114,6 +118,36 @@ def process_ballot_manifest_file(
                 set_total_ballots_from_manifests(contest)
 
     process_file(session, file, process)
+
+    # If CVR file already uploaded, try reprocessing it, since it depends on
+    # batch names from the manifest
+    if jurisdiction.cvr_file:
+        logger.info(
+            f"START_REPROCESSING_CVRS {dict(election_id=jurisdiction.election.id, jurisdiction_id=jurisdiction.id)}"
+        )
+        # First, clear out the previously processed data.
+        CvrBallot.query.filter(
+            CvrBallot.batch_id.in_(
+                Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
+                .with_entities(Batch.id)
+                .subquery()
+            )
+        ).delete(synchronize_session=False)
+        jurisdiction.cvr_contests_metadata = None
+        jurisdiction.cvr_file.processing_started_at = None
+        jurisdiction.cvr_file.processing_completed_at = None
+        jurisdiction.cvr_file.processing_error = None
+        # Because process_cvr_file uses a COPY command outside of the session
+        # to load the CvrBallots, we need the batches from the manifest to be
+        # committed to the database. Unfortunately, this means we can't process
+        # both files in one transaction, but the worst case if the transaction
+        # is interrupted is that the CVR file will be set to its unprocessed
+        # state and picked up again by bgcompute.
+        session.commit()
+        process_cvr_file(session, jurisdiction, jurisdiction.cvr_file)
+        logger.info(
+            f"DONE_REPROCESSING_CVRS {dict(election_id=jurisdiction.election.id, jurisdiction_id=jurisdiction.id)}"
+        )
 
 
 # Raises if invalid
