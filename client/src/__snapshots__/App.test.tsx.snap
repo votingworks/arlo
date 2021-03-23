@@ -1674,6 +1674,7 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders ja logge
             >
               Test Audit
             </h3>
+            <hr />
             <h4
               class="bp3-heading"
             >

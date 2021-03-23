@@ -19,6 +19,7 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
           >
             Test Audit
           </h3>
+          <hr />
           <h4
             class="bp3-heading"
           >
@@ -302,6 +303,7 @@ exports[`JA setup renders initial state 1`] = `
           >
             Test Audit
           </h3>
+          <hr />
           <h4
             class="bp3-heading"
           >

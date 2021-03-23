@@ -45,6 +45,7 @@ const StatusBox: React.FC<IStatusBoxProps> = ({
       <Inner>
         <div className="text">
           <H3>{auditName}</H3>
+          <hr />
           <H4>{headline}</H4>
           {details.map(detail => (
             <p key={detail}>{detail}</p>
