@@ -253,23 +253,11 @@ def test_get_sample_sizes(contests, batches):
 def test_full_recount(contests, batches):
     # Do a full recount:
     sample = batches
-    expected_recount_size = {
-        "Contest A": 1,
-        "Contest B": 1,
-        "Contest C": 1,
-    }
     for contest in contests:
 
         with pytest.raises(ValueError, match=r"All ballots have already been counted!"):
-            computed = macro.get_sample_sizes(
-                RISK_LIMIT, contests[contest], batches, sample
-            )
+            macro.get_sample_sizes(RISK_LIMIT, contests[contest], batches, sample)
 
-            assert (
-                expected_recount_size[contest] == computed
-            ), "Third round sample expected {}, got {}".format(
-                expected_recount_size[contest], computed
-            )
         computed_p, result = macro.compute_risk(
             RISK_LIMIT, contests[contest], batches, sample
         )
