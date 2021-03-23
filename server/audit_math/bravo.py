@@ -431,7 +431,6 @@ def get_sample_size(
     if (
         num_ballots > large_election_threshold
         and samples["0.9"]["size"] >= all_ballots_threshold
-        or p_w == p_l
     ):
         return {
             "all-ballots": {
