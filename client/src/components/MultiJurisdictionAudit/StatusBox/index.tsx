@@ -12,6 +12,10 @@ import { IAuditBoard } from '../useAuditBoards'
 import { IRound } from '../useRoundsAuditAdmin'
 import { IAuditSettings } from '../useAuditSettings'
 
+const NarrowHR = styled.hr`
+  margin: 7px 0;
+`
+
 const Wrapper = styled(Callout)`
   display: flex;
   padding: 30px 0;
@@ -45,7 +49,7 @@ const StatusBox: React.FC<IStatusBoxProps> = ({
       <Inner>
         <div className="text">
           <H3>{auditName}</H3>
-          <hr />
+          <NarrowHR />
           <H4>{headline}</H4>
           {details.map(detail => (
             <p key={detail}>{detail}</p>
