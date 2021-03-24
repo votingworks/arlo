@@ -632,3 +632,7 @@ def test_batches_human_sort_order(
     assert unique_batches == [
         batch for batch in human_ordered_batches if batch in unique_batches
     ]
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/report")
+    assert_match_report(rv.data, snapshot)

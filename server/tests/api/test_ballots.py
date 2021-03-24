@@ -1163,3 +1163,7 @@ def test_ballots_human_sort_order(
         unique_preserve_order(ballot["batch"]["name"] for ballot in ballots)
         == human_ordered_batches
     )
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/report")
+    assert_match_report(rv.data, snapshot)
