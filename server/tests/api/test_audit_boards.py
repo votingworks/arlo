@@ -1076,3 +1076,26 @@ def test_audit_boards_sign_off_whitespace(
         {"memberName1": f" {member_1}", "memberName2": f"  {member_2}  "},
     )
     assert_ok(rv)
+
+
+def test_audit_board_human_order(
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str
+):
+    # Create audit boards
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
+        [{"name": f"Audit Board #{i}"} for i in range(1, 11)],
+    )
+    assert_ok(rv)
+
+    # Check that we return them in human order
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
+    )
+    assert [
+        audit_board["name"] for audit_board in json.loads(rv.data)["auditBoards"]
+    ] == [f"Audit Board #{i}" for i in range(1, 11)]

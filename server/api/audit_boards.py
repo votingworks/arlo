@@ -264,7 +264,7 @@ def list_audit_boards(
 ):
     audit_boards = (
         AuditBoard.query.filter_by(jurisdiction_id=jurisdiction.id, round_id=round.id)
-        .order_by(AuditBoard.name)
+        .order_by(func.human_sort(AuditBoard.name))
         .all()
     )
     round_status = round_status_by_audit_board(jurisdiction.id, round.id)
