@@ -89,30 +89,8 @@ def balancedbucketlist():
 
 
 @pytest.fixture
-def balancedskewedbucketlist():
-    buckets = []
-
-    bucket = Bucket("1")
-    bucket.add_batch("1", 100)
-    bucket.add_batch("2", 50)
-    buckets.append(bucket)
-
-    bucket = Bucket("2")
-    bucket.add_batch("3", 100)
-    bucket.add_batch("4", 150)
-    buckets.append(bucket)
-
-    bucket = Bucket("3")
-    bucket.add_batch("5", 50)
-    bucket.add_batch("6", 50)
-    buckets.append(bucket)
-
-    bucket = Bucket("4")
-    bucket.add_batch("7", 100)
-    bucket.add_batch("8", 4000)
-    buckets.append(bucket)
-
-    return BalancedBucketList(buckets)
+def balancedskewedbucketlist(skewedbucketlist):
+    return skewedbucketlist.balance()
 
 
 class TestBucket:
@@ -433,8 +411,8 @@ class TestBalancedBucketList:
             bbl.deviation, new_bl.deviation
         )
 
-        num_batches = sum([len(bucket.batches) for bucket in bucketlist.buckets])
-        balanced_num_batches = sum([len(bucket.batches) for bucket in bbl.buckets])
+        num_batches = sum(len(bucket.batches) for bucket in bucketlist.buckets)
+        balanced_num_batches = sum(len(bucket.batches) for bucket in bbl.buckets)
 
         assert (
             num_batches == balanced_num_batches
@@ -442,12 +420,8 @@ class TestBalancedBucketList:
             balanced_num_batches, num_batches
         )
 
-        batches = set()
-        for batch in [bucket.batches for bucket in bucketlist.buckets]:
-            batches.union(set(batch.keys()))
-        new_batches = set()
-        for batch in [bucket.batches for bucket in new_bl.buckets]:
-            new_batches.union(set(batch.keys()))
+        batches = {batch for bucket in bbl.buckets for batch in bucket.batches}
+        new_batches = {batch for bucket in new_bl.buckets for batch in bucket.batches}
 
         assert (
             batches == new_batches
