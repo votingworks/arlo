@@ -307,8 +307,8 @@ class TestBucketList:
             new_bl.deviation(), bucketlist.deviation()
         )
 
-        num_batches = sum([len(bucket.batches) for bucket in bucketlist.buckets])
-        balanced_num_batches = sum([len(bucket.batches) for bucket in new_bl.buckets])
+        num_batches = sum(len(bucket.batches) for bucket in bucketlist.buckets)
+        balanced_num_batches = sum(len(bucket.batches) for bucket in new_bl.buckets)
 
         assert (
             num_batches == balanced_num_batches
@@ -332,8 +332,8 @@ class TestBucketList:
             new_bl.deviation(), skewedbucketlist.deviation()
         )
 
-        num_batches = sum([len(bucket.batches) for bucket in skewedbucketlist.buckets])
-        balanced_num_batches = sum([len(bucket.batches) for bucket in new_bl.buckets])
+        num_batches = sum(len(bucket.batches) for bucket in skewedbucketlist.buckets)
+        balanced_num_batches = sum(len(bucket.batches) for bucket in new_bl.buckets)
 
         assert (
             num_batches == balanced_num_batches
@@ -437,8 +437,8 @@ class TestBalancedBucketList:
             bbl.deviation, new_bl.deviation
         )
 
-        num_batches = sum([len(bucket.batches) for bucket in skewedbucketlist.buckets])
-        balanced_num_batches = sum([len(bucket.batches) for bucket in bbl.buckets])
+        num_batches = sum(len(bucket.batches) for bucket in skewedbucketlist.buckets)
+        balanced_num_batches = sum(len(bucket.batches) for bucket in bbl.buckets)
 
         assert (
             num_batches == balanced_num_batches
