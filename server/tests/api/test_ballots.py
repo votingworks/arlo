@@ -1164,6 +1164,10 @@ def test_ballots_human_sort_order(
         == human_ordered_batches
     )
 
-    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.get(f"/api/election/{election_id}/report")
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/report"
+    )
     assert_match_report(rv.data, snapshot)

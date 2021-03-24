@@ -75,29 +75,7 @@ Batch 10,10,0.793336114269859763,N,Audit Board #1
 
 snapshots[
     "test_ballots_human_sort_order 2"
-] = """######## ELECTION INFO ########\r
-Organization,Election Name,State\r
-Test Org test_ballots_human_sort_order,Test Election,CA\r
-\r
-######## CONTESTS ########\r
-Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes\r
-Contest 1,Targeted,1,1,1000,candidate 1: 600; candidate 2: 400\r
-Contest 2,Opportunistic,2,2,600,candidate 1: 200; candidate 2: 300; candidate 3: 100\r
-\r
-######## AUDIT SETTINGS ########\r
-Audit Name,Audit Type,Audit Math Type,Risk Limit,Random Seed,Online Data Entry?\r
-Test Audit test_ballots_human_sort_order,BALLOT_POLLING,BRAVO,10%,1234567890,Yes\r
-\r
-######## AUDIT BOARDS ########\r
-Jurisdiction Name,Audit Board Name,Member 1 Name,Member 1 Affiliation,Member 2 Name,Member 2 Affiliation\r
-J1,Audit Board #1,,,,\r
-\r
-######## ROUNDS ########\r
-Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes\r
-1,Contest 1,Targeted,119,No,,DATETIME,,candidate 1: 0; candidate 2: 0\r
-1,Contest 2,Opportunistic,,No,,DATETIME,,candidate 1: 0; candidate 2: 0; candidate 3: 0\r
-\r
-######## SAMPLED BALLOTS ########\r
+] = """######## SAMPLED BALLOTS ########\r
 Jurisdiction Name,Batch Name,Ballot Position,Ticket Numbers: Contest 1,Audited?,Audit Result: Contest 1,Audit Result: Contest 2\r
 J1,Batch 1,1,"Round 1: 0.396619499740898467, 0.542505720202081664, 0.733443383954946518, 0.804979788038736603",NOT_AUDITED,,\r
 J1,Batch 1,2,"Round 1: 0.184157045260287747, 0.357762213754095914, 0.668156376865081762, 0.825158130760683213",NOT_AUDITED,,\r
