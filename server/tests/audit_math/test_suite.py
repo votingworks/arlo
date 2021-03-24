@@ -75,16 +75,12 @@ def test_sprt_analytic_example(analytic_strata):
 
 
 def test_edge_cases(analytic_strata):
-    with pytest.raises(ValueError, match=r"Null is impossible, given the sample"):
-        margin = (
-            analytic_strata["contest1"].vote_totals["winner"]
-            - analytic_strata["contest1"].vote_totals["loser"]
-        )
-        pvalue = analytic_strata["contest1"].compute_pvalue(
-            margin, "winner", "loser", 8
-        )
-        delta = Decimal(0.00005)
-        assert abs(pvalue - 1) < delta, "contest1"
+    margin = (
+        analytic_strata["contest1"].vote_totals["winner"]
+        - analytic_strata["contest1"].vote_totals["loser"]
+    )
+    pvalue = analytic_strata["contest1"].compute_pvalue(margin, "winner", "loser", 8)
+    assert pvalue == 0
 
 
 @pytest.fixture
@@ -449,7 +445,7 @@ def test_wide_margin():
     # Now try getting a sample size
     # TODO: investigate why this doesn't quite line up with the notebooks. I'm
     # guessing it has to do with rounding and/or precision error.
-    expected_sample_size = HybridPair(cvr=9, non_cvr=0)
+    expected_sample_size = HybridPair(cvr=11, non_cvr=0)
 
     assert expected_sample_size == get_sample_size(
         5, contest, no_cvr_stratum, cvr_stratum
