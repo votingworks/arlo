@@ -614,3 +614,104 @@ def test_batch_tallies_before_manifests(
             }
         ]
     }
+
+
+def test_batch_tallies_reprocess_after_manifest_reupload(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    contest_ids: List[str],  # pylint: disable=unused-argument
+    manifests,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+
+    # Upload tallies
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
+        data={
+            "batchTallies": (
+                io.BytesIO(
+                    b"Batch Name,candidate 1,candidate 2,candidate 3\n"
+                    b"Batch 1,1,10,100\n"
+                    b"Batch 2,2,20,200\n"
+                    b"Batch 3,3,30,300\n"
+                ),
+                "batchTallies.csv",
+            )
+        },
+    )
+    assert_ok(rv)
+    bgcompute_update_batch_tallies_file(election_id)
+
+    # Reupload a manifest but remove a batch
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
+        data={
+            "manifest": (
+                io.BytesIO(
+                    b"Batch Name,Number of Ballots\n" b"Batch 1,200\n" b"Batch 2,300\n"
+                ),
+                "manifest.csv",
+            )
+        },
+    )
+    assert_ok(rv)
+    bgcompute_update_ballot_manifest_file(election_id)
+
+    # Error should be recorded for tallies
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies"
+    )
+    compare_json(
+        json.loads(rv.data),
+        {
+            "file": {"name": "batchTallies.csv", "uploadedAt": assert_is_date,},
+            "processing": {
+                "status": ProcessingStatus.ERRORED,
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": "Batch names must match the ballot manifest file.\nFound extra batch names: Batch 3",
+            },
+        },
+    )
+
+    assert Jurisdiction.query.get(jurisdiction_ids[0]).batch_tallies is None
+
+    # Fix the manifest
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
+        data={
+            "manifest": (
+                io.BytesIO(
+                    b"Batch Name,Number of Ballots\n"
+                    b"Batch 1,200\n"
+                    b"Batch 2,300\n"
+                    b"Batch 3,400\n"
+                ),
+                "manifest.csv",
+            )
+        },
+    )
+    assert_ok(rv)
+    bgcompute_update_ballot_manifest_file(election_id)
+
+    # Tallies should be fixed
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies"
+    )
+    compare_json(
+        json.loads(rv.data),
+        {
+            "file": {"name": "batchTallies.csv", "uploadedAt": assert_is_date,},
+            "processing": {
+                "status": ProcessingStatus.PROCESSED,
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": None,
+            },
+        },
+    )
+
+    assert Jurisdiction.query.get(jurisdiction_ids[0]).batch_tallies is not None

@@ -18,6 +18,7 @@ from ..util.csv_download import csv_response
 from ..util.csv_parse import decode_csv_file, parse_csv, CSVValueType, CSVColumnType
 from ..audit_math.suite import HybridPair
 from .cvrs import process_cvr_file
+from .batch_tallies import process_batch_tallies_file
 
 logger = logging.getLogger("arlo")
 
@@ -147,6 +148,25 @@ def process_ballot_manifest_file(
         process_cvr_file(session, jurisdiction, jurisdiction.cvr_file)
         logger.info(
             f"DONE_REPROCESSING_CVRS {dict(election_id=jurisdiction.election.id, jurisdiction_id=jurisdiction.id)}"
+        )
+
+    # If batch tallies file already uploaded, try reprocessing it, since it depends on
+    # batch names from the manifest
+    if jurisdiction.batch_tallies_file:
+        logger.info(
+            f"START_REPROCESSING_BATCH_TALLIES {dict(election_id=jurisdiction.election.id, jurisdiction_id=jurisdiction.id)}"
+        )
+        # First, clear out the previously processed data.
+        jurisdiction.batch_tallies = None
+        jurisdiction.batch_tallies_file.processing_started_at = None
+        jurisdiction.batch_tallies_file.processing_completed_at = None
+        jurisdiction.batch_tallies_file.processing_error = None
+        session.flush()  # Make sure process_file can read the changes we just made
+        process_batch_tallies_file(
+            session, jurisdiction, jurisdiction.batch_tallies_file
+        )
+        logger.info(
+            f"DONE_REPROCESSING_BATCH_TALLIES {dict(election_id=jurisdiction.election.id, jurisdiction_id=jurisdiction.id)}"
         )
 
 
