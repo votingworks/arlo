@@ -316,12 +316,8 @@ class TestBucketList:
             balanced_num_batches, num_batches
         )
 
-        batches = set()
-        for batch in [bucket.batches for bucket in bucketlist.buckets]:
-            batches.union(set(batch.keys()))
-        new_batches = set()
-        for batch in [bucket.batches for bucket in new_bl.buckets]:
-            new_batches.union(set(batch.keys()))
+        batches = {batch for bucket in bucketlist.buckets for batch in bucket.batches}
+        new_batches = {batch for bucket in new_bl.buckets for batch in bucket.batches}
 
         assert (
             batches == new_batches
@@ -345,12 +341,10 @@ class TestBucketList:
             balanced_num_batches, num_batches
         )
 
-        batches = set()
-        for batch in [bucket.batches for bucket in skewedbucketlist.buckets]:
-            batches.union(set(batch.keys()))
-        new_batches = set()
-        for batch in [bucket.batches for bucket in new_bl.buckets]:
-            new_batches.union(set(batch.keys()))
+        batches = {
+            batch for bucket in skewedbucketlist.buckets for batch in bucket.batches
+        }
+        new_batches = {batch for bucket in new_bl.buckets for batch in bucket.batches}
 
         assert (
             batches == new_batches
@@ -452,12 +446,8 @@ class TestBalancedBucketList:
             balanced_num_batches, num_batches
         )
 
-        batches = set()
-        for batch in [bucket.batches for bucket in skewedbucketlist.buckets]:
-            batches.union(set(batch.keys()))
-        new_batches = set()
-        for batch in [bucket.batches for bucket in new_bl.buckets]:
-            new_batches.union(set(batch.keys()))
+        batches = {batch for bucket in bbl.buckets for batch in bucket.batches}
+        new_batches = {batch for bucket in new_bl.buckets for batch in bucket.batches}
 
         assert (
             batches == new_batches
