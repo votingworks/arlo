@@ -178,6 +178,11 @@ export const jaApiCalls = {
     },
     response: { status: 'ok' },
   },
+  getRetrievalList: {
+    url:
+      '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/ballots/retrieval-list',
+    response: { status: 'ok' },
+  },
 }
 
 const aaUser = {

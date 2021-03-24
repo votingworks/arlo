@@ -305,6 +305,7 @@ describe('Progress screen', () => {
       jaApiCalls.getAuditBoards(auditBoardMocks.unfinished),
       jaApiCalls.getBallotCount(dummyBallots.ballots),
       jaApiCalls.getBallots(dummyBallots.ballots),
+      jaApiCalls.getRetrievalList,
       jaApiCalls.getBallots(dummyBallots.ballots),
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -330,9 +331,15 @@ describe('Progress screen', () => {
           name: /Download Aggregated Ballot Retrieval List/,
         })
       )
-      expect(window.open).toHaveBeenCalledWith(
-        '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/ballots/retrieval-list'
-      )
+
+      expect(
+        screen.getByRole('button', {
+          name: /Download Aggregated Ballot Retrieval List/,
+        })
+      ).toBeDisabled()
+      // expect(window.open).toHaveBeenCalledWith(
+      //   '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/ballots/retrieval-list'
+      // )
 
       userEvent.click(
         within(modal).getByRole('button', {
