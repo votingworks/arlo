@@ -14,6 +14,7 @@ import { IAuditSettings } from '../useAuditSettings'
 
 const NarrowHR = styled.hr`
   margin: 7px 0;
+  width: 25%;
 `
 
 const Wrapper = styled(Callout)`
