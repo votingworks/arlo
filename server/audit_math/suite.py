@@ -567,6 +567,9 @@ def get_sample_size(
 
     alpha = float(risk_limit) / 100
 
+    max_bp_sample_size = 0
+    max_cvr_sample_size = 0
+
     for winner, loser in product(contest.winners, contest.losers):
         n_ratio = cvr_stratum.num_ballots / (
             cvr_stratum.num_ballots + bp_stratum.num_ballots
@@ -631,7 +634,10 @@ def get_sample_size(
         cvr_ballots_to_sample = math.ceil(n_ratio * high_n)
         bp_ballots_to_sample = math.ceil(high_n - cvr_ballots_to_sample)
 
-    return HybridPair(cvr=cvr_ballots_to_sample, non_cvr=bp_ballots_to_sample)
+        max_bp_sample_size = max(max_bp_sample_size, bp_ballots_to_sample)
+        max_cvr_sample_size = max(max_cvr_sample_size, cvr_ballots_to_sample)
+
+    return HybridPair(cvr=max_cvr_sample_size, non_cvr=max_bp_sample_size)
 
 
 def compute_risk(
@@ -654,7 +660,6 @@ def compute_risk(
         whether the p-value meets the risk limit.
 
     """
-    #    alpha = Decimal(risk_limit) / 100
     alpha = float(risk_limit) / 100
     assert alpha < 1
 

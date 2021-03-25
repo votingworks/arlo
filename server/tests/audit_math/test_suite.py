@@ -789,10 +789,10 @@ def test_multi_candidate():
 
     # Now get the combined pvalue
     pvalue, res = compute_risk(5, contest, no_cvr_stratum, cvr_stratum)
-    expected_pvalue = 0.13911112660946456
+    expected_pvalue = 0.015691091068564367
     diff = abs(expected_pvalue - pvalue)
-    assert diff < 0.000001, "Got {}".format(pvalue)
-    assert not res
+    assert diff < 0.0001, "Got {}".format(pvalue)
+    assert res
 
 
 def test_tie():
