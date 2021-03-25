@@ -24,6 +24,7 @@ def election_id(client: FlaskClient, org_id: str, request):
 
 @pytest.fixture
 def contest_ids(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     contests = [
         {
             "id": str(uuid.uuid4()),

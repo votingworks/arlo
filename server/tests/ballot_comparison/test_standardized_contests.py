@@ -486,3 +486,85 @@ def test_standardized_contests_parse_all(
         {"name": "Contest 1", "jurisdictionIds": jurisdiction_ids},
         {"name": "Contest 2", "jurisdictionIds": jurisdiction_ids,},
     ]
+
+
+def test_reupload_standardized_contests_after_contests_selected(
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str],
+):
+    # Upload standardized contests
+    standardized_contests_file = (
+        "Contest Name,Jurisdictions\n"
+        "Contest 1,all\n"
+        'Contest 2,"J1, J3"\n'
+        "Contest 3,J2 \n"
+    )
+    rv = client.put(
+        f"/api/election/{election_id}/standardized-contests/file",
+        data={
+            "standardized-contests": (
+                io.BytesIO(standardized_contests_file.encode()),
+                "standardized-contests.csv",
+            )
+        },
+    )
+    assert_ok(rv)
+    bgcompute_update_standardized_contests_file(election_id)
+
+    # Select some contests
+    rv = client.get(f"/api/election/{election_id}/standardized-contests")
+    standardized_contests = json.loads(rv.data)
+
+    contest_1_id = str(uuid.uuid4())
+    contest_2_id = str(uuid.uuid4())
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/contest",
+        [
+            {
+                "id": contest_1_id,
+                **standardized_contests[0],
+                "isTargeted": True,
+                "numWinners": 1,
+            },
+            {
+                "id": contest_2_id,
+                **standardized_contests[1],
+                "isTargeted": False,
+                "numWinners": 1,
+            },
+        ],
+    )
+    assert_ok(rv)
+
+    # Change standardized contests
+    standardized_contests_file = (
+        "Contest Name,Jurisdictions\n" + "Contest 1,J1\n" + "Contest 3,J2 \n"
+    )
+    rv = client.put(
+        f"/api/election/{election_id}/standardized-contests/file",
+        data={
+            "standardized-contests": (
+                io.BytesIO(standardized_contests_file.encode()),
+                "standardized-contests.csv",
+            )
+        },
+    )
+    assert_ok(rv)
+    bgcompute_update_standardized_contests_file(election_id)
+
+    # Contests should be updated (Contest 2 deleted, Contest 1 universe changed)
+    rv = client.get(f"/api/election/{election_id}/contest")
+    assert json.loads(rv.data) == {
+        "contests": [
+            {
+                "id": contest_1_id,
+                "name": "Contest 1",
+                "isTargeted": True,
+                "numWinners": 1,
+                "totalBallotsCast": None,
+                "votesAllowed": None,
+                "choices": [],
+                "jurisdictionIds": jurisdiction_ids[:1],
+            }
+        ]
+    }

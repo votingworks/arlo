@@ -74,6 +74,24 @@ def process_standardized_contests_file(
 
         election.standardized_contests = standardized_contests
 
+        # If any contests were already created based on an older version of the
+        # standardized contests file, update them based on this new file.
+        for contest in election.contests:
+            standardized_contest = next(
+                (
+                    standardized_contest
+                    for standardized_contest in standardized_contests
+                    if standardized_contest["name"] == contest.name
+                ),
+                None,
+            )
+            if standardized_contest is None:
+                session.delete(contest)
+            else:
+                contest.jurisdictions = Jurisdiction.query.filter(
+                    Jurisdiction.id.in_(standardized_contest["jurisdictionIds"])
+                ).all()
+
     process_file(session, file, process)
 
 
