@@ -46,31 +46,16 @@ export const api = async <T>(
 
 export const apiDownload = (endpoint: string) =>
   new Promise((resolve, reject) => {
-    fetch(`/api${endpoint}`)
-      .then(async response => {
-        if (!response) {
-          throw new Error('bad response')
+    try {
+      const windowObj = window.open(`/api${endpoint}`)
+      if (windowObj != null) {
+        windowObj.onbeforeunload = () => {
+          resolve('done')
         }
-        const respHeaders: string | null = response.headers.get(
-          'content-disposition'
-        )
-        const [, filename]: string[] = respHeaders
-          ? respHeaders.split('"')
-          : ['']
-        const blobRes = await response.blob()
-        return { filename, blobRes }
-      })
-      .then(({ filename, blobRes }) => {
-        const url: string = window.URL.createObjectURL(new Blob([blobRes]))
-        const link: HTMLAnchorElement = document.createElement('a')
-        link.href = url
-        link.setAttribute('download', filename) // or any other extension
-        document.body.appendChild(link)
-        link.click()
-        link.parentNode!.removeChild(link)
-        resolve({ status: 'ok' })
-      })
-      .catch(err => reject(err))
+      }
+    } catch (err) {
+      reject(err)
+    }
   })
 
 export const poll = (

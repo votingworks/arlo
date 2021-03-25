@@ -304,7 +304,6 @@ describe('Progress screen', () => {
     const expectedCalls = [
       jaApiCalls.getAuditBoards(auditBoardMocks.unfinished),
       jaApiCalls.getBallotCount(dummyBallots.ballots),
-      jaApiCalls.getRetrievalList,
       jaApiCalls.getBallots(dummyBallots.ballots),
       jaApiCalls.getBallots(dummyBallots.ballots),
     ]
@@ -332,14 +331,9 @@ describe('Progress screen', () => {
         })
       )
 
-      expect(
-        within(modal).getByRole('button', {
-          name: /Download Aggregated Ballot Retrieval List/,
-        })
-      ).toBeDisabled()
-      // expect(window.open).toHaveBeenCalledWith(
-      //   '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/ballots/retrieval-list'
-      // )
+      expect(window.open).toHaveBeenCalledWith(
+        '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/ballots/retrieval-list'
+      )
 
       userEvent.click(
         within(modal).getByRole('button', {
