@@ -5,7 +5,7 @@ from werkzeug.exceptions import Conflict
 from . import api
 from ..models import *  # pylint: disable=wildcard-import
 from ..database import db_session
-from ..auth import check_access, UserType
+from ..auth import check_access, UserType, restrict_access
 from ..util.jsonschema import JSONDict, validate
 
 ELECTION_SCHEMA = {
@@ -82,3 +82,11 @@ def create_election():
     db_session.commit()
 
     return jsonify(electionId=election.id)
+
+
+@api.route("/election/<election_id>", methods=["DELETE"])
+@restrict_access([UserType.AUDIT_ADMIN])
+def delete_election(election: Election):
+    election.is_deleted = True
+    db_session.commit()
+    return jsonify(status="ok")

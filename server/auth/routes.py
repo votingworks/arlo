@@ -90,32 +90,38 @@ def auth_me():
                 {
                     "id": org.id,
                     "name": org.name,
-                    "elections": [serialize_election(e) for e in org.elections],
+                    "elections": [
+                        serialize_election(election)
+                        for election in org.elections
+                        if not election.is_deleted
+                    ],
                 }
                 for org in db_user.organizations
             ],
             jurisdictions=[
                 {
-                    "id": j.id,
-                    "name": j.name,
-                    "election": serialize_election(j.election),
-                    "numBallots": j.manifest_num_ballots,
+                    "id": jurisdiction.id,
+                    "name": jurisdiction.name,
+                    "election": serialize_election(jurisdiction.election),
+                    "numBallots": jurisdiction.manifest_num_ballots,
                 }
-                for j in db_user.jurisdictions
+                for jurisdiction in db_user.jurisdictions
+                if not jurisdiction.election.is_deleted
             ],
         )
     elif user_type == UserType.AUDIT_BOARD:
         audit_board = AuditBoard.query.get(user_key)
-        user = dict(
-            type=user_type,
-            id=audit_board.id,
-            jurisdictionId=audit_board.jurisdiction_id,
-            jurisdictionName=audit_board.jurisdiction.name,
-            roundId=audit_board.round_id,
-            name=audit_board.name,
-            members=serialize_members(audit_board),
-            signedOffAt=isoformat(audit_board.signed_off_at),
-        )
+        if not audit_board.jurisdiction.election.is_deleted:
+            user = dict(
+                type=user_type,
+                id=audit_board.id,
+                jurisdictionId=audit_board.jurisdiction_id,
+                jurisdictionName=audit_board.jurisdiction.name,
+                roundId=audit_board.round_id,
+                name=audit_board.name,
+                members=serialize_members(audit_board),
+                signedOffAt=isoformat(audit_board.signed_off_at),
+            )
 
     support_user_email = get_support_user(session)
     return jsonify(

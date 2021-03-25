@@ -297,3 +297,58 @@ def test_create_election_two_orgs_same_name(client: FlaskClient):
     )
     assert rv.status_code == 200
     assert json.loads(rv.data)["electionId"]
+
+
+def test_delete_election(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    round_1_id: str,
+    audit_board_round_1_ids: List[str],
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.delete(f"/api/election/{election_id}")
+    assert_ok(rv)
+
+    # Should not show up in /me
+    rv = client.get("/api/me")
+    resp = json.loads(rv.data)
+    assert all(
+        election["id"] != election_id
+        for organization in resp["user"]["organizations"]
+        for election in organization["elections"]
+    )
+
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.get("/api/me")
+    resp = json.loads(rv.data)
+    assert all(
+        jurisdiction["election"]["id"] != election_id
+        for jurisdiction in resp["user"]["jurisdictions"]
+    )
+
+    set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_1_ids[0])
+    rv = client.get("/api/me")
+    resp = json.loads(rv.data)
+    assert resp["user"] is None
+
+    # All endpoints should 404
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    assert rv.status_code == 404
+
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/contest"
+    )
+    assert rv.status_code == 404
+
+    set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_1_ids[0])
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots"
+    )
+    assert rv.status_code == 404

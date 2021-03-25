@@ -169,7 +169,10 @@ def restrict_access(user_types: List[UserType]):
 
             # Substitute route params for their corresponding resources
             if "election_id" in kwargs:
-                election = get_or_404(Election, kwargs.pop("election_id"))
+                election_id = kwargs.pop("election_id")
+                election = get_or_404(Election, election_id)
+                if election.is_deleted:
+                    raise NotFound(f"Election {election_id} not found")
                 kwargs["election"] = election
 
             jurisdiction = None
