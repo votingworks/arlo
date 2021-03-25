@@ -380,7 +380,6 @@ def maximize_fisher_combined_pvalue(
             )
 
             pvalues = [pvalue1, pvalue2]
-            print(pvalues)
             if np.any(np.array(pvalues) == 0):
                 fisher_pvalues[i] = 0
             else:
@@ -404,7 +403,6 @@ def maximize_fisher_combined_pvalue(
         mod = modulus(stepsize)
 
         if mod <= dist:
-            print("here")
             maximized_pvalue = pvalue
             break
 
@@ -456,8 +454,6 @@ def try_n(
 
     n1 = math.ceil(n_ratio * n)
     n2 = int(n - n1)
-
-    print(n_ratio, n, n1, n2, n1_original, n2_original)
 
     if (n1 < n1_original) or (n2 < n2_original):
         return 1.0
@@ -608,7 +604,6 @@ def get_sample_size(
                 cvr_stratum,
                 n_ratio,
             )
-        print(expected_pvalue)
 
         # step 2: bisection between n/1.1 and n
         low_n = ballots_to_sample / coefficient
@@ -626,7 +621,6 @@ def get_sample_size(
             mid_pvalue = try_n(
                 mid_n, alpha, contest, winner, loser, bp_stratum, cvr_stratum, n_ratio,
             )
-            print("trying...", mid_n, math.ceil(n_ratio * mid_n), mid_pvalue)
             if mid_n in [low_n, high_n]:
                 break
             if mid_pvalue <= alpha:
