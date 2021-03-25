@@ -1,5 +1,5 @@
 import React from 'react'
-import { screen, within } from '@testing-library/react'
+import { screen, within, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { withMockFetch, renderWithRouter } from './testUtilities'
 import App from '../App'
@@ -182,6 +182,39 @@ describe('Home screen', () => {
       // Should be on the setup screen
       await screen.findByText('The audit has not started.')
       await screen.findByText('Current file:')
+    })
+  })
+
+  it('deletes an audit', async () => {
+    const expectedCalls = [
+      aaApiCalls.getUserWithAudit,
+      aaApiCalls.getUserWithAudit, // Extra call to load the list of audits
+      aaApiCalls.deleteAudit,
+      aaApiCalls.getUser,
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderView('/')
+      await screen.findByRole('heading', {
+        name: 'Audits - State of California',
+      })
+      userEvent.click(screen.getByRole('button', { name: 'Delete Audit' }))
+
+      const dialog = (await screen.findByRole('heading', {
+        name: /Confirm/,
+      })).closest('.bp3-dialog')! as HTMLElement
+      within(dialog).getByText(
+        'Are you sure you want to delete November Presidential Election 2020?'
+      )
+      within(dialog).getByText('Warning: this action cannot be undone.')
+      userEvent.click(within(dialog).getByRole('button', { name: 'Delete' }))
+
+      await waitFor(() =>
+        expect(
+          screen.queryByRole('button', {
+            name: 'November Presidential Election 2020',
+          })
+        ).not.toBeInTheDocument()
+      )
     })
   })
 
