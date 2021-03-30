@@ -572,11 +572,9 @@ def get_sample_size(
         n_ratio = cvr_stratum.num_ballots / (
             cvr_stratum.num_ballots + bp_stratum.num_ballots
         )
-        num_sampled = max(
+        ballots_to_sample = max(
             MIN_SAMPLE_SIZE, cvr_stratum.sample_size + bp_stratum.sample_size
         )
-
-        ballots_to_sample = num_sampled
 
         expected_pvalue = 1.0
 
@@ -585,7 +583,7 @@ def get_sample_size(
         if bp_stratum.sample_size == 0 and cvr_stratum.sample_size == 0:
             coefficient = 2.0
 
-        # step 1: linear search, increasing n by a factor of 1.1 each time
+        # step 1: linear search, increasing n by a factor of 1.1 or 2 each time
         while (expected_pvalue > alpha) or (expected_pvalue is np.nan):
             ballots_to_sample = int(coefficient * ballots_to_sample)
             if ballots_to_sample > contest.ballots:
@@ -619,11 +617,11 @@ def get_sample_size(
             or (expected_pvalue is np.nan)
         ):
             mid_n = int(np.floor((low_n + high_n) / 2))  # cast for typechecker
+            if mid_n in [low_n, high_n]:
+                break
             mid_pvalue = try_n(
                 mid_n, alpha, contest, winner, loser, bp_stratum, cvr_stratum, n_ratio,
             )
-            if mid_n in [low_n, high_n]:
-                break
             if mid_pvalue <= alpha:
                 high_n = mid_n
             else:
