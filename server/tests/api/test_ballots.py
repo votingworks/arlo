@@ -1,4 +1,5 @@
 from typing import List
+import io
 import json
 from flask.testing import FlaskClient
 
@@ -6,6 +7,7 @@ from ..helpers import *  # pylint: disable=wildcard-import
 from ...auth import UserType
 from ...models import *  # pylint: disable=wildcard-import
 from ...util.jsonschema import JSONDict
+from ...worker.bgcompute import bgcompute_update_ballot_manifest_file
 
 BALLOT_1_BATCH_NAME = "4"
 BALLOT_1_POSITION = 3
@@ -1059,3 +1061,113 @@ def test_ja_ballots_count(
     )
     response = json.loads(rv.data)
     snapshot.assert_match(response)
+
+
+def test_ballots_human_sort_order(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    contest_ids: List[str],
+    election_settings,  # pylint: disable=unused-argument
+    snapshot,
+):
+    # Upload a manifest with mixed text/number batch names
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    human_ordered_batches = [
+        "Batch 1",
+        "Batch 1 - 1",
+        "Batch 1 - 2",
+        "Batch 1 - 10",
+        "Batch 2",
+        "Batch 10",
+    ]
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
+        data={
+            "manifest": (
+                io.BytesIO(
+                    (
+                        "Batch Name,Number of Ballots\n"
+                        + "\n".join(f"{batch},10" for batch in human_ordered_batches)
+                    ).encode()
+                ),
+                "manifest.csv",
+            )
+        },
+    )
+    assert_ok(rv)
+    bgcompute_update_ballot_manifest_file(election_id)
+
+    # Start round 1
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    sample_size_options = json.loads(rv.data)["sampleSizes"]
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {
+            "roundNum": 1,
+            "sampleSizes": {contest_ids[0]: sample_size_options[contest_ids[0]][0]},
+        },
+    )
+    assert_ok(rv)
+    rv = client.get(f"/api/election/{election_id}/round",)
+    rounds = json.loads(rv.data)["rounds"]
+    round_1_id = rounds[0]["id"]
+
+    # Create audit boards
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
+        [{"name": "Audit Board #1"}],
+    )
+    assert_ok(rv)
+
+    # Check that the ballots are ordered in human order
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/ballots/retrieval-list"
+    )
+    assert rv.status_code == 200
+    retrieval_list = rv.data.decode("utf-8").replace("\r\n", "\n")
+    snapshot.assert_match(retrieval_list)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/ballots"
+    )
+    ballots = json.loads(rv.data)["ballots"]
+
+    def unique_preserve_order(values):
+        return list(dict.fromkeys(values))
+
+    assert (
+        unique_preserve_order(ballot["batch"]["name"] for ballot in ballots)
+        == human_ordered_batches
+    )
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board"
+    )
+    audit_board_id = json.loads(rv.data)["auditBoards"][0]["id"]
+    set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_id)
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_id}/ballots"
+    )
+    ballots = json.loads(rv.data)["ballots"]
+
+    assert (
+        unique_preserve_order(ballot["batch"]["name"] for ballot in ballots)
+        == human_ordered_batches
+    )
+
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/report"
+    )
+    assert_match_report(rv.data, snapshot)
