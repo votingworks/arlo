@@ -196,6 +196,10 @@ class Election(BaseModel):
     )
     standardized_contests = Column(JSON)
 
+    # When a user deletes an audit, we keep it in the database just in case
+    # they change their mind, but flag it so that we can restrict access
+    deleted_at = Column(UTCDateTime)
+
     __table_args__ = (UniqueConstraint("organization_id", "audit_name"),)
 
 

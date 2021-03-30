@@ -251,6 +251,11 @@ export const aaApiCalls = {
     },
     response: { electionId: '1' },
   }),
+  deleteAudit: {
+    url: '/api/election/1',
+    options: { method: 'DELETE' },
+    response: { status: 'ok' },
+  },
   getRounds: (rounds: IRound[]) => ({
     url: '/api/election/1/round',
     response: { rounds },

@@ -109,6 +109,12 @@ describe('Ballot Polling', () => {
     cy.loginAuditAdmin(auditAdmin)
     cy.findByText(`TestAudit${id}`).click()
     cy.contains('Congratulations - the audit is complete!')
+
+    // Delete the audit
+    cy.findByRole('button', { name: /View Audits/ }).click()
+    cy.findByRole('button', { name: 'Delete Audit' }).click()
+    cy.findByRole('button', { name: 'Delete' }).click()
+    cy.findByText(/You haven't created any audits yet/)
   })
 
   it('online audit', () => {
