@@ -646,3 +646,58 @@ def test_hybrid_manifest_validation(
             }
         ]
     }
+
+
+def test_hybrid_filter_cvrs(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    contest_ids: List[str],  # pylint: disable=unused-argument
+    election_settings,  # pylint: disable=unused-argument
+    manifests,  # pylint: disable=unused-argument
+    cvrs,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/contest")
+    contests = json.loads(rv.data)["contests"]
+
+    assert (
+        CvrBallot.query.join(Batch)
+        .filter_by(has_cvrs=False)
+        .join(Jurisdiction)
+        .filter_by(election_id=election_id)
+        .count()
+        == 0
+    )
+
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    # Add some non-CVR ballots to the CVR
+    cvr = TEST_CVRS + (
+        "15,TABULATOR3,BATCH1,1,3-1-1,12345,COUNTY,0,1,1,1,0\n"
+        "16,TABULATOR3,BATCH1,2,3-1-2,12345,COUNTY,0,1,1,1,0\n"
+        "17,TABULATOR3,BATCH1,3,3-1-3,12345,COUNTY,0,1,1,1,0\n"
+    )
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
+        data={"cvrs": (io.BytesIO(cvr.encode()), "cvrs.csv",)},
+    )
+    assert_ok(rv)
+    bgcompute_update_cvr_file(election_id)
+
+    # Contest metadata should be the same, meaning those extra ballots got
+    # filtered out
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/contest")
+    new_contests = json.loads(rv.data)["contests"]
+    assert new_contests == contests
+
+    assert (
+        CvrBallot.query.join(Batch)
+        .filter_by(has_cvrs=False)
+        .join(Jurisdiction)
+        .filter_by(election_id=election_id)
+        .count()
+        == 0
+    )
