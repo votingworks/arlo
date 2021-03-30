@@ -10,7 +10,7 @@ https://github.com/pbstark/CORLA18
 """
 from itertools import product
 import math
-from typing import Tuple, Dict, TypedDict, NamedTuple
+from typing import Tuple, Dict, TypedDict, NamedTuple, List
 from collections import Counter
 
 from decimal import Decimal
@@ -566,9 +566,7 @@ def get_sample_size(
     """
 
     alpha = float(risk_limit) / 100
-
-    max_bp_sample_size = 0
-    max_cvr_sample_size = 0
+    sample_sizes: List[Tuple[int, int]] = []
 
     for winner, loser in product(contest.winners, contest.losers):
         n_ratio = cvr_stratum.num_ballots / (
@@ -631,13 +629,12 @@ def get_sample_size(
             else:
                 low_n = mid_n
 
-        cvr_ballots_to_sample = math.ceil(n_ratio * high_n)
-        bp_ballots_to_sample = math.ceil(high_n - cvr_ballots_to_sample)
+        cvr_ballots_to_sample = int(math.ceil(n_ratio * high_n))
+        bp_ballots_to_sample = int(math.ceil(high_n - cvr_ballots_to_sample))
+        sample_sizes.append((cvr_ballots_to_sample, bp_ballots_to_sample))
 
-        max_bp_sample_size = max(max_bp_sample_size, bp_ballots_to_sample)
-        max_cvr_sample_size = max(max_cvr_sample_size, cvr_ballots_to_sample)
-
-    return HybridPair(cvr=max_cvr_sample_size, non_cvr=max_bp_sample_size)
+    sample_size = sorted(sample_sizes, key=sum, reverse=True)[0]
+    return HybridPair(cvr=sample_size[0], non_cvr=sample_size[1])
 
 
 def compute_risk(
