@@ -93,7 +93,7 @@ def auth_me():
                     "elections": [
                         serialize_election(election)
                         for election in org.elections
-                        if not election.is_deleted
+                        if election.deleted_at is None
                     ],
                 }
                 for org in db_user.organizations
@@ -106,12 +106,12 @@ def auth_me():
                     "numBallots": jurisdiction.manifest_num_ballots,
                 }
                 for jurisdiction in db_user.jurisdictions
-                if not jurisdiction.election.is_deleted
+                if jurisdiction.election.deleted_at is None
             ],
         )
     elif user_type == UserType.AUDIT_BOARD:
         audit_board = AuditBoard.query.get(user_key)
-        if not audit_board.jurisdiction.election.is_deleted:
+        if audit_board.jurisdiction.election.deleted_at is None:
             user = dict(
                 type=user_type,
                 id=audit_board.id,

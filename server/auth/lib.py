@@ -171,7 +171,7 @@ def restrict_access(user_types: List[UserType]):
             if "election_id" in kwargs:
                 election_id = kwargs.pop("election_id")
                 election = get_or_404(Election, election_id)
-                if election.is_deleted:
+                if election.deleted_at is not None:
                     raise NotFound(f"Election {election_id} not found")
                 kwargs["election"] = election
 

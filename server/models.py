@@ -198,7 +198,7 @@ class Election(BaseModel):
 
     # When a user deletes an audit, we keep it in the database just in case
     # they change their mind, but flag it so that we can restrict access
-    is_deleted = Column(Boolean)
+    deleted_at = Column(UTCDateTime)
 
     __table_args__ = (UniqueConstraint("organization_id", "audit_name"),)
 

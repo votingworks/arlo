@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime, timezone
 from flask import jsonify, request
 from werkzeug.exceptions import Conflict
 
@@ -87,6 +88,6 @@ def create_election():
 @api.route("/election/<election_id>", methods=["DELETE"])
 @restrict_access([UserType.AUDIT_ADMIN])
 def delete_election(election: Election):
-    election.is_deleted = True
+    election.deleted_at = datetime.now(timezone.utc)
     db_session.commit()
     return jsonify(status="ok")
