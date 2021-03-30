@@ -41,7 +41,6 @@ def process_jurisdictions_file(session, election: Election, file: File) -> None:
         )
         # First, clear out the previously processed data.
         election.standardized_contests = None
-        election.contests = []
         election.standardized_contests_file.processing_started_at = None
         election.standardized_contests_file.processing_completed_at = None
         election.standardized_contests_file.processing_error = None
