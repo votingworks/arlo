@@ -347,12 +347,9 @@ const CreateAudit = ({ user }: { user: IAuditAdmin }) => {
                 )}
                 <Radio value="BATCH_COMPARISON">Batch Comparison</Radio>
                 <Radio value="BALLOT_COMPARISON">Ballot Comparison</Radio>
-                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                {(window as any)._arlo_flask_env !== 'production' && (
-                  <Radio value="HYBRID">
-                    Hybrid (SUITE - Ballot Comparison &amp; Ballot Polling)
-                  </Radio>
-                )}
+                <Radio value="HYBRID">
+                  Hybrid (SUITE - Ballot Comparison &amp; Ballot Polling)
+                </Radio>
               </RadioGroup>
             </label>
           </FormSection>
