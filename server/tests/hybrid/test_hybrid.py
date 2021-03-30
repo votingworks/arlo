@@ -466,10 +466,6 @@ def test_hybrid_two_rounds(
     assert_match_report(rv.data, snapshot)
     check_discrepancies(rv.data, audit_results)
 
-    # TODO test a second round once escalation works
-    # pylint: disable=unreachable
-    return
-
     # Start a second round
     rv = post_json(client, f"/api/election/{election_id}/round", {"roundNum": 2})
     assert_ok(rv)
@@ -485,7 +481,31 @@ def test_hybrid_two_rounds(
 
     # For round 2, audit results should match the CVR exactly.
     generate_audit_results(round_2_id)
-    audit_results = {}
+    audit_results = {
+        # CVR ballots
+        # We create fake audit results for them based on the CVR
+        ("J1", "TABULATOR1", "BATCH1", 1): ("0,1,1,1,0", (None, None)),
+        ("J1", "TABULATOR2", "BATCH2", 3): ("not found", (2, 2)),
+        ("J1", "TABULATOR2", "BATCH2", 5): (",,1,1,0", (None, None)),
+        ("J1", "TABULATOR2", "BATCH2", 6): (",,1,0,1", (None, None)),
+        ("J2", "TABULATOR1", "BATCH1", 1): ("0,1,1,1,0", (None, None)),
+        ("J2", "TABULATOR1", "BATCH1", 2): ("1,0,1,0,1", (None, None)),
+        ("J2", "TABULATOR1", "BATCH1", 3): ("0,1,1,1,0", (None, None)),
+        ("J2", "TABULATOR1", "BATCH2", 1): ("1,0,1,0,1", (None, None)),
+        ("J2", "TABULATOR1", "BATCH2", 3): ("1,0,1,0,1", (None, None)),
+        ("J2", "TABULATOR2", "BATCH2", 2): ("1,1,1,1,1", (None, None)),
+        ("J2", "TABULATOR2", "BATCH2", 5): (",,1,1,0", (None, None)),
+        ("J2", "TABULATOR2", "BATCH2", 6): (",,1,0,1", (None, None)),
+        # Non-CVR ballots
+        # We create fake audit results for them based on the reported margin,
+        # like in ballot polling
+        ("J1", "TABULATOR3", "BATCH1", 4): ("1,0,,,", (None, None)),
+        ("J1", "TABULATOR3", "BATCH1", 6): ("1,0,,,", (None, None)),
+        ("J1", "TABULATOR3", "BATCH1", 7): ("1,0,,,", (None, None)),
+        ("J2", "TABULATOR3", "BATCH1", 4): ("1,0,,,", (None, None)),
+        ("J2", "TABULATOR3", "BATCH1", 7): ("0,1,,,", (None, None)),
+        ("J2", "TABULATOR3", "BATCH1", 9): ("0,1,,,", (None, None)),
+    }
 
     audit_all_ballots(
         round_2_id, audit_results, target_contest_id, opportunistic_contest_id
