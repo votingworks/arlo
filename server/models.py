@@ -28,6 +28,8 @@ sqlalchemy.event.listen(
     "after_create",
     DDL(
         """
+BEGIN;
+SELECT pg_advisory_xact_lock(2142616474639426746); -- lock so that tests can run this concurrently
 CREATE OR REPLACE FUNCTION human_sort(text)
   RETURNS text[] AS
 $BODY$
@@ -52,6 +54,7 @@ $BODY$
     ) AS a
 $BODY$
   LANGUAGE sql IMMUTABLE;
+COMMIT;
 """
     ),
 )
