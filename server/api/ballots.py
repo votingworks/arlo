@@ -39,10 +39,10 @@ def ballot_retrieval_list(jurisdiction: Jurisdiction, round: Round) -> str:
         .join(SampledBallot.audit_board)
         .group_by(AuditBoard.id, SampledBallot.id, Batch.id, CvrBallot.imprinted_id)
         .order_by(
-            AuditBoard.name,
-            Batch.container,
-            Batch.tabulator,
-            Batch.name,
+            func.human_sort(AuditBoard.name),
+            func.human_sort(Batch.container),
+            func.human_sort(Batch.tabulator),
+            func.human_sort(Batch.name),
             SampledBallot.ballot_position,
         )
         .values(
@@ -213,10 +213,10 @@ def list_ballots_for_jurisdiction(
             ),
         )
         .order_by(
-            AuditBoard.name,
-            Batch.container,
-            Batch.tabulator,
-            Batch.name,
+            func.human_sort(AuditBoard.name),
+            func.human_sort(Batch.container),
+            func.human_sort(Batch.tabulator),
+            func.human_sort(Batch.name),
             SampledBallot.ballot_position,
         )
         .with_entities(SampledBallot, CvrBallot.imprinted_id)
@@ -258,7 +258,10 @@ def list_ballots_for_audit_board(
             ),
         )
         .order_by(
-            Batch.container, Batch.tabulator, Batch.name, SampledBallot.ballot_position
+            func.human_sort(Batch.container),
+            func.human_sort(Batch.tabulator),
+            func.human_sort(Batch.name),
+            SampledBallot.ballot_position,
         )
         .with_entities(SampledBallot, CvrBallot.imprinted_id)
         .options(

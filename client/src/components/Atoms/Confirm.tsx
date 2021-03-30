@@ -5,6 +5,7 @@ interface IConfirmOptions {
   title: ReactNode
   description: ReactNode
   yesButtonLabel?: string
+  yesButtonIntent?: Intent
   noButtonLabel?: string
   onYesClick: () => Promise<void>
 }
@@ -32,6 +33,7 @@ export const useConfirm = () => {
     title: options ? options.title : '',
     description: options ? options.description : '',
     yesButtonLabel: options ? options.yesButtonLabel : undefined,
+    yesButtonIntent: options ? options.yesButtonIntent : undefined,
     noButtonLabel: options ? options.noButtonLabel : undefined,
     onYesClick,
     onClose,
@@ -50,6 +52,7 @@ export const Confirm = ({
   title,
   description,
   yesButtonLabel,
+  yesButtonIntent,
   noButtonLabel,
   onYesClick,
   onClose,
@@ -76,7 +79,7 @@ export const Confirm = ({
             {noButtonLabel || 'Cancel'}
           </Button>
           <Button
-            intent={Intent.PRIMARY}
+            intent={yesButtonIntent || Intent.PRIMARY}
             onClick={handleYesClick}
             loading={isSubmitting}
           >

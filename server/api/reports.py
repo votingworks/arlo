@@ -487,9 +487,9 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
         .order_by(
             min_round_num.c.round_num,
             Jurisdiction.name,
-            Batch.container,
-            Batch.tabulator,
-            Batch.name,
+            func.human_sort(Batch.container),
+            func.human_sort(Batch.tabulator),
+            func.human_sort(Batch.name),
             SampledBallot.ballot_position,
         )
     )
@@ -605,7 +605,7 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
         .order_by(
             Round.round_num,
             Jurisdiction.name,
-            Batch.name,
+            func.human_sort(Batch.name),
             SampledBatchDraw.ticket_number,
         )
     )

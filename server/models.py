@@ -3,6 +3,7 @@ from typing import Type, TypeVar, cast as typing_cast
 from datetime import datetime as dt, timezone
 from werkzeug.exceptions import NotFound
 from sqlalchemy import *  # pylint: disable=wildcard-import
+import sqlalchemy
 from sqlalchemy.orm import (
     relationship,
     backref,
@@ -17,6 +18,46 @@ C = TypeVar("C")  # pylint: disable=invalid-name
 # Workaround to make sqlalchemy.orm.deferred have the right type
 def deferred(col: C) -> C:
     return typing_cast(C, sa_deferred(col))
+
+
+# Define a custom function to sort mixed text/number strings
+# From https://stackoverflow.com/a/20667107/1472662
+# You can call this function using func.human_sort
+sqlalchemy.event.listen(
+    Base.metadata,
+    "after_create",
+    DDL(
+        """
+BEGIN;
+SELECT pg_advisory_xact_lock(2142616474639426746); -- lock so that tests can run this concurrently
+CREATE OR REPLACE FUNCTION human_sort(text)
+  RETURNS text[] AS
+$BODY$
+  /* Split the input text into contiguous chunks where no numbers appear,
+     and contiguous chunks of only numbers. For the numbers, add leading
+     zeros to 20 digits, so we can use one text array, but sort the
+     numbers as if they were big integers.
+
+       For example, human_sort('Run 12 Miles') gives
+            {'Run ', '00000000000000000012', ' Miles'}
+  */
+  select array_agg(
+    case
+      when a.match_array[1]::text is not null
+        then a.match_array[1]::text
+      else lpad(a.match_array[2]::text, 20::int, '0'::text)::text
+    end::text)
+    from (
+      select regexp_matches(
+        case when $1 = '' then null else $1 end, E'(\\\\D+)|(\\\\d+)', 'g'
+      ) AS match_array
+    ) AS a
+$BODY$
+  LANGUAGE sql IMMUTABLE;
+COMMIT;
+"""
+    ),
+)
 
 
 class UTCDateTime(TypeDecorator):  # pylint: disable=abstract-method
@@ -154,6 +195,10 @@ class Election(BaseModel):
         cascade="all, delete-orphan",
     )
     standardized_contests = Column(JSON)
+
+    # When a user deletes an audit, we keep it in the database just in case
+    # they change their mind, but flag it so that we can restrict access
+    deleted_at = Column(UTCDateTime)
 
     __table_args__ = (UniqueConstraint("organization_id", "audit_name"),)
 

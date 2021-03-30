@@ -40,7 +40,7 @@ def get_batch_retrieval_list(
         .filter(Batch.id.notin_(already_audited_batches(jurisdiction, round)))
         .join(AuditBoard)
         .group_by(AuditBoard.id, Batch.id)
-        .order_by(AuditBoard.name, Batch.name)
+        .order_by(func.human_sort(AuditBoard.name), func.human_sort(Batch.name))
         .values(Batch.name, Batch.container, Batch.tabulator, AuditBoard.name,)
     )
     retrieval_list_rows = [["Batch Name", "Container", "Tabulator", "Audit Board",]] + [
@@ -83,7 +83,7 @@ def list_batches_for_jurisdiction(
         .filter_by(round_id=round.id)
         .filter(Batch.id.notin_(already_audited_batches(jurisdiction, round)))
         .outerjoin(AuditBoard)
-        .order_by(AuditBoard.name, Batch.name)
+        .order_by(func.human_sort(AuditBoard.name), func.human_sort(Batch.name))
         .all()
     )
 

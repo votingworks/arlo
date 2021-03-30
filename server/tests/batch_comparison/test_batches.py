@@ -1,8 +1,13 @@
 from typing import List
+import io
 from flask.testing import FlaskClient
 
 from ...models import *  # pylint: disable=wildcard-import
 from ..helpers import *  # pylint: disable=wildcard-import
+from ...worker.bgcompute import (
+    bgcompute_update_ballot_manifest_file,
+    bgcompute_update_batch_tallies_file,
+)
 
 J1_BATCHES_ROUND_1 = 2
 J2_BATCHES_ROUND_1 = 2
@@ -485,3 +490,150 @@ def test_record_batch_results_bad_round(
         {},
     )
     assert rv.status_code == 404
+
+
+def test_batches_human_sort_order(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    election_settings,  # pylint: disable=unused-argument
+    snapshot,
+):
+    human_ordered_batches = [
+        "Batch 1",
+        "Batch 1 - 1",
+        "Batch 1 - 2",
+        "Batch 1 - 10",
+        "Batch 2",
+        "Batch 10",
+    ]
+
+    # Set contests
+    contest_id = str(uuid.uuid4())
+    contests = [
+        {
+            "id": contest_id,
+            "name": "Contest 1",
+            "isTargeted": True,
+            "choices": [
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "candidate 1",
+                    "numVotes": len(human_ordered_batches) * 10 * 2,
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "candidate 2",
+                    "numVotes": len(human_ordered_batches) * 5 * 2,
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "candidate 3",
+                    "numVotes": len(human_ordered_batches) * 5 * 2,
+                },
+            ],
+            "numWinners": 1,
+            "votesAllowed": 1,
+            "jurisdictionIds": jurisdiction_ids[:2],
+        },
+    ]
+    rv = put_json(client, f"/api/election/{election_id}/contest", contests)
+    assert_ok(rv)
+
+    # Upload a manifest with mixed text/number batch names
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    for jurisdiction_id in jurisdiction_ids[:2]:
+        rv = client.put(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/ballot-manifest",
+            data={
+                "manifest": (
+                    io.BytesIO(
+                        (
+                            "Batch Name,Number of Ballots\n"
+                            + "\n".join(
+                                f"{batch},20" for batch in human_ordered_batches
+                            )
+                        ).encode()
+                    ),
+                    "manifest.csv",
+                )
+            },
+        )
+        assert_ok(rv)
+        bgcompute_update_ballot_manifest_file(election_id)
+
+        # Upload batch tallies
+        batch_tallies_file = (
+            "Batch Name,candidate 1,candidate 2,candidate 3\n"
+            + "\n".join(f"{batch},10,5,5" for batch in human_ordered_batches)
+        )
+        rv = client.put(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/batch-tallies",
+            data={
+                "batchTallies": (
+                    io.BytesIO(batch_tallies_file.encode()),
+                    "batchTallies.csv",
+                )
+            },
+        )
+        assert_ok(rv)
+        bgcompute_update_batch_tallies_file(election_id)
+        rv = client.get(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/batch-tallies",
+        )
+
+    # Start round 1
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    sample_size_options = json.loads(rv.data)["sampleSizes"]
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {
+            "roundNum": 1,
+            "sampleSizes": {contest_id: sample_size_options[contest_id][0]},
+        },
+    )
+    assert_ok(rv)
+    rv = client.get(f"/api/election/{election_id}/round",)
+    rounds = json.loads(rv.data)["rounds"]
+    round_1_id = rounds[0]["id"]
+
+    # Create audit boards
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
+        [{"name": "Audit Board #1"}],
+    )
+    assert_ok(rv)
+
+    # Check that the batches are ordered in human order
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/retrieval-list"
+    )
+    assert rv.status_code == 200
+    retrieval_list = rv.data.decode("utf-8").replace("\r\n", "\n")
+    snapshot.assert_match(retrieval_list)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches"
+    )
+    batches = json.loads(rv.data)["batches"]
+
+    def unique_preserve_order(values):
+        return list(dict.fromkeys(values))
+
+    unique_batches = unique_preserve_order(batch["name"] for batch in batches)
+    assert unique_batches == [
+        batch for batch in human_ordered_batches if batch in unique_batches
+    ]
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/report"
+    )
+    assert_match_report(rv.data, snapshot)

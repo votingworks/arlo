@@ -6,6 +6,9 @@ import {
   Radio,
   HTMLSelect,
   Callout,
+  ButtonGroup,
+  Button,
+  Intent,
 } from '@blueprintjs/core'
 import { useHistory, useLocation } from 'react-router-dom'
 import styled from 'styled-components'
@@ -14,6 +17,7 @@ import {
   useAuthDataContext,
   IAuditAdmin,
   IJurisdictionAdmin,
+  IElection,
 } from './UserContext'
 import { api } from './utilities'
 import LinkButton from './Atoms/LinkButton'
@@ -23,6 +27,7 @@ import { Wrapper, Inner } from './Atoms/Wrapper'
 import FormField from './Atoms/Form/FormField'
 import { groupBy, sortBy } from '../utils/array'
 import { IAuditSettings } from './MultiJurisdictionAudit/useAuditSettings'
+import { useConfirm, Confirm } from './Atoms/Confirm'
 
 const HomeScreen: React.FC = () => {
   const auth = useAuthDataContext()
@@ -114,12 +119,6 @@ const ListAuditsWrapper = styled.div`
   padding: 30px 30px 30px 0;
 `
 
-const AuditLink = styled(LinkButton)`
-  display: block;
-  justify-content: start;
-  margin-bottom: 15px;
-`
-
 const ListAuditsAuditAdmin: React.FC = () => {
   // Normally, we would use useAuthDataContext to get the audit admin's metadata
   // (including the list of audits). However, since this screen also is
@@ -129,19 +128,38 @@ const ListAuditsAuditAdmin: React.FC = () => {
   // the only screen that should have this issue. A better solution might be to
   // decouple loading the list of audits from loading the user data.
   const [user, setUser] = useState<IAuditAdmin | null>(null)
+  const { confirm, confirmProps } = useConfirm()
+
+  const loadUser = async () => {
+    const response = await api<{ user: IAuditAdmin }>('/me')
+    setUser(response && response.user)
+  }
 
   useEffect(() => {
-    ;(async () => {
-      try {
-        const response = await api<{ user: IAuditAdmin }>('/me')
-        setUser(response && response.user)
-      } catch (err) /* istanbul ignore next */ {
-        setUser(null)
-      }
-    })()
+    loadUser()
   }, [])
 
   if (!user) return null // Still loading
+
+  const onClickDeleteAudit = (election: IElection) => {
+    confirm({
+      title: 'Confirm',
+      description: (
+        <div>
+          <p>Are you sure you want to delete {election.auditName}?</p>
+          <p>
+            <strong>Warning: this action cannot be undone.</strong>
+          </p>
+        </div>
+      ),
+      yesButtonLabel: 'Delete',
+      yesButtonIntent: Intent.DANGER,
+      onYesClick: async () => {
+        await api(`/election/${election.id}`, { method: 'DELETE' })
+        await loadUser()
+      },
+    })
+  }
 
   return (
     <ListAuditsWrapper>
@@ -154,19 +172,32 @@ const ListAuditsAuditAdmin: React.FC = () => {
             </p>
           ) : (
             sortBy(organization.elections, e => e.auditName).map(election => (
-              <AuditLink
+              <ButtonGroup
                 key={election.id}
-                to={`/election/${election.id}`}
-                intent="primary"
-                large
                 fill
+                large
+                style={{ marginBottom: '15px' }}
               >
-                {election.auditName}
-              </AuditLink>
+                <LinkButton
+                  style={{ justifyContent: 'start' }}
+                  to={`/election/${election.id}`}
+                  intent="primary"
+                  fill
+                >
+                  {election.auditName}
+                </LinkButton>
+                <Button
+                  icon="trash"
+                  intent="primary"
+                  aria-label="Delete Audit"
+                  onClick={() => onClickDeleteAudit(election)}
+                />
+              </ButtonGroup>
             ))
           )}
         </div>
       ))}
+      <Confirm {...confirmProps} />
     </ListAuditsWrapper>
   )
 }
@@ -186,15 +217,19 @@ const ListAuditsJurisdictionAdmin = ({
         <div key={electionId}>
           <h2>Jurisdictions - {jurisdictions[0].election.auditName}</h2>
           {sortBy(jurisdictions, j => j.name).map(({ id, name, election }) => (
-            <AuditLink
+            <LinkButton
               key={id}
               to={`/election/${election.id}/jurisdiction/${id}`}
               intent="primary"
               large
               fill
+              style={{
+                justifyContent: 'start',
+                marginBottom: '15px',
+              }}
             >
               {name}
-            </AuditLink>
+            </LinkButton>
           ))}
         </div>
       ))}
@@ -347,12 +382,9 @@ const CreateAudit = ({ user }: { user: IAuditAdmin }) => {
                 )}
                 <Radio value="BATCH_COMPARISON">Batch Comparison</Radio>
                 <Radio value="BALLOT_COMPARISON">Ballot Comparison</Radio>
-                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                {(window as any)._arlo_flask_env !== 'production' && (
-                  <Radio value="HYBRID">
-                    Hybrid (SUITE - Ballot Comparison &amp; Ballot Polling)
-                  </Radio>
-                )}
+                <Radio value="HYBRID">
+                  Hybrid (SUITE - Ballot Comparison &amp; Ballot Polling)
+                </Radio>
               </RadioGroup>
             </label>
           </FormSection>
