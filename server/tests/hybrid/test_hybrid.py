@@ -5,7 +5,6 @@ from ..helpers import *  # pylint: disable=wildcard-import
 from ..ballot_comparison.test_ballot_comparison import (
     audit_all_ballots,
     check_discrepancies,
-    generate_audit_results,
 )
 from ...worker.bgcompute import (
     bgcompute_update_ballot_manifest_file,
@@ -480,7 +479,6 @@ def test_hybrid_two_rounds(
     assert sample_size_options[target_contest_id][0] == sample_size
 
     # For round 2, audit results should match the CVR exactly.
-    generate_audit_results(round_2_id)
     audit_results = {
         # CVR ballots
         # We create fake audit results for them based on the CVR
