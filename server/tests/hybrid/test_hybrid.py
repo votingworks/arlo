@@ -575,7 +575,50 @@ def test_hybrid_manifest_validation(
                         b"TABULATOR1,BATCH1,3,Y\n"
                         b"TABULATOR1,BATCH2,3,Y\n"
                         b"TABULATOR2,BATCH1,3,Y\n"
-                        b"TABULATOR2,BATCH2,6,N\n"
+                        b"TABULATOR2,BATCH2,4,Y\n"
+                        b"TABULATOR3,BATCH1,12,N"
+                    ),
+                    "manifest.csv",
+                )
+            },
+        )
+        assert_ok(rv)
+        bgcompute_update_ballot_manifest_file(election_id)
+
+        rv = client.put(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/cvrs",
+            data={"cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",)},
+        )
+        assert_ok(rv)
+        bgcompute_update_cvr_file(election_id)
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "For contest Contest 1, found 28 ballots in the CVRs, which is more than the total number of CVR ballots across all jurisdiction manifests (26) for jurisdictions in this contest's universe",
+            }
+        ]
+    }
+
+    # Next, try too few non-CVR ballots in the manifest
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    for jurisdiction_id in jurisdiction_ids[:2]:
+        rv = client.put(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/ballot-manifest",
+            data={
+                "manifest": (
+                    io.BytesIO(
+                        b"Tabulator,Batch Name,Number of Ballots,CVR\n"
+                        b"TABULATOR1,BATCH1,3,Y\n"
+                        b"TABULATOR1,BATCH2,3,Y\n"
+                        b"TABULATOR2,BATCH1,3,Y\n"
+                        b"TABULATOR2,BATCH2,6,Y\n"
                         b"TABULATOR3,BATCH1,10,N"
                     ),
                     "manifest.csv",
@@ -599,50 +642,7 @@ def test_hybrid_manifest_validation(
         "errors": [
             {
                 "errorType": "Conflict",
-                "message": "For contest Contest 1, found 28 ballots in the CVRs, which is more than the total number of CVR ballots across all jurisdiction manifests (18) for jurisdictions in this contest's universe",
-            }
-        ]
-    }
-
-    # Next, try too few non-CVR ballots in the manifest
-    set_logged_in_user(
-        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
-    )
-    for jurisdiction_id in jurisdiction_ids[:2]:
-        rv = client.put(
-            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/ballot-manifest",
-            data={
-                "manifest": (
-                    io.BytesIO(
-                        b"Tabulator,Batch Name,Number of Ballots,CVR\n"
-                        b"TABULATOR1,BATCH1,3,N\n"
-                        b"TABULATOR1,BATCH2,3,Y\n"
-                        b"TABULATOR2,BATCH1,3,Y\n"
-                        b"TABULATOR2,BATCH2,6,Y\n"
-                        b"TABULATOR3,BATCH1,10,Y"
-                    ),
-                    "manifest.csv",
-                )
-            },
-        )
-        assert_ok(rv)
-        bgcompute_update_ballot_manifest_file(election_id)
-
-        rv = client.put(
-            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/cvrs",
-            data={"cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",)},
-        )
-        assert_ok(rv)
-        bgcompute_update_cvr_file(election_id)
-
-    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.get(f"/api/election/{election_id}/sample-sizes")
-    assert rv.status_code == 409
-    assert json.loads(rv.data) == {
-        "errors": [
-            {
-                "errorType": "Conflict",
-                "message": "For contest Contest 1, choice votes for non-CVR ballots add up to 20, which is more than the total number of non-CVR ballots across all jurisdiction manifests (6) for jurisdictions in this contest's universe times the number of votes allowed (2)",
+                "message": "For contest Contest 1, choice votes for non-CVR ballots add up to 80, which is more than the total number of non-CVR ballots across all jurisdiction manifests (20) for jurisdictions in this contest's universe times the number of votes allowed (2)",
             }
         ]
     }

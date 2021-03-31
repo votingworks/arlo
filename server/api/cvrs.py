@@ -225,7 +225,7 @@ def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
                 # For hybrid audits, skip any batches that were marked as not
                 # having CVRs in the manifest
                 if (
-                    jurisdiction.election.audit_type is AuditType.HYBRID
+                    jurisdiction.election.audit_type == AuditType.HYBRID
                     and not db_batch.has_cvrs
                 ):
                     continue
