@@ -75,16 +75,12 @@ def test_sprt_analytic_example(analytic_strata):
 
 
 def test_edge_cases(analytic_strata):
-    with pytest.raises(ValueError, match=r"Null is impossible, given the sample"):
-        margin = (
-            analytic_strata["contest1"].vote_totals["winner"]
-            - analytic_strata["contest1"].vote_totals["loser"]
-        )
-        pvalue = analytic_strata["contest1"].compute_pvalue(
-            margin, "winner", "loser", 8
-        )
-        delta = Decimal(0.00005)
-        assert abs(pvalue - 1) < delta, "contest1"
+    margin = (
+        analytic_strata["contest1"].vote_totals["winner"]
+        - analytic_strata["contest1"].vote_totals["loser"]
+    )
+    pvalue = analytic_strata["contest1"].compute_pvalue(margin, "winner", "loser", 8)
+    assert pvalue == 0
 
 
 @pytest.fixture
@@ -447,9 +443,7 @@ def test_wide_margin():
     )
 
     # Now try getting a sample size
-    # TODO: investigate why this doesn't quite line up with the notebooks. I'm
-    # guessing it has to do with rounding and/or precision error.
-    expected_sample_size = HybridPair(cvr=9, non_cvr=0)
+    expected_sample_size = HybridPair(cvr=10, non_cvr=0)
 
     assert expected_sample_size == get_sample_size(
         5, contest, no_cvr_stratum, cvr_stratum
@@ -533,13 +527,10 @@ def test_wrong_outcome():
     no_cvr_stratum.sample = {"ex1": {"winner": 0, "loser": 49}}
     no_cvr_stratum.sample_size = 49
     # Compute its p-value and check, with a lambda of 0.7
-    with pytest.raises(
-        ValueError, match=r"Alternative hypothesis isn't consistent with the sample"
-    ):
-        pvalue = no_cvr_stratum.compute_pvalue(reported_margin, "winner", "loser", 0.7)
-        expected_pvalue = 1.0
-        diff = abs(expected_pvalue - pvalue)
-        assert diff < 0.00001, "Incorrect pvalue: {}!".format(pvalue)
+    pvalue = no_cvr_stratum.compute_pvalue(reported_margin, "winner", "loser", 0.7)
+    expected_pvalue = 1.0
+    diff = abs(expected_pvalue - pvalue)
+    assert diff < 0.00001, "Incorrect pvalue: {}!".format(pvalue)
 
     # Now get the combined pvalue
     pvalue, res = compute_risk(5, contest, no_cvr_stratum, cvr_stratum)
@@ -661,8 +652,8 @@ def test_escalation():
 
 def test_really_close_race():
     contest_dict = {
-        "winner": 501,
-        "loser": 499,
+        "winner": 502,
+        "loser": 498,
         "ballots": 1000,
         "numWinners": 1,
         "votesAllowed": 1,
@@ -729,6 +720,79 @@ def test_really_close_race():
     assert diff < 0.000001, "Got {}".format(pvalue)
 
     assert res  # TODO:?
+
+
+def test_multi_candidate():
+    contest_dict = {
+        "winner": 600,
+        "loser": 300,
+        "loser2": 100,
+        "ballots": 1000,
+        "numWinners": 1,
+        "votesAllowed": 1,
+    }
+
+    contest = Contest("ex1", contest_dict)
+    reported_margin = contest_dict["winner"] - contest_dict["loser"]
+
+    cvr_stratum_vote_totals = {
+        "winner": 400,
+        "loser": 200,
+        "loser2": 100,
+    }
+
+    cvr_stratum_ballots = 700
+
+    # We sample 500 ballots from the cvr stratum, and find no discrepancies
+    misstatements = {
+        ("winner", "loser"): {"o1": 0, "o2": 0, "u1": 0, "u2": 0,},
+        ("winner", "loser2"): {"o1": 0, "o2": 0, "u1": 0, "u2": 0,},
+    }
+
+    # Create our CVR stratum
+    cvr_stratum = BallotComparisonStratum(
+        cvr_stratum_ballots, cvr_stratum_vote_totals, misstatements, sample_size=0,
+    )
+
+    no_cvr_stratum_vote_totals = {"winner": 200, "loser": 100, "loser2": 0}
+    no_cvr_stratum_ballots = 300
+
+    # create our ballot polling stratum
+    no_cvr_stratum = BallotPollingStratum(
+        no_cvr_stratum_ballots, no_cvr_stratum_vote_totals, {}, sample_size=0,
+    )
+
+    expected_sample_size = HybridPair(cvr=33, non_cvr=14)
+
+    assert expected_sample_size == get_sample_size(
+        5, contest, no_cvr_stratum, cvr_stratum
+    )
+
+    # Take some silly samples
+
+    # Compute CVR stratum p-value and check, with a lambda of 0.3
+    cvr_stratum.sample_size = 33
+    expected_pvalue = 0.1215302377137314
+    pvalue = cvr_stratum.compute_pvalue(reported_margin, "winner", "loser", 0.3)
+    diff = abs(expected_pvalue - pvalue)
+    assert diff < 0.00001, "Incorrect pvalue!"
+
+    # In the no-cvr stratum, we sample 250 ballots and find 187 votes for the winner
+    # and 37 for the loser
+    no_cvr_stratum.sample = {"round1": {"winner": 10, "loser": 4, "loser2": 0}}
+    no_cvr_stratum.sample_size = 14
+    # Compute its p-value and check, with a lambda of 0.7
+    pvalue = no_cvr_stratum.compute_pvalue(reported_margin, "winner", "loser", 0.7)
+    expected_pvalue = 0.00820155391878346
+    diff = abs(expected_pvalue - pvalue)
+    assert diff < 0.00001, "Incorrect pvalue: {}!".format(pvalue)
+
+    # Now get the combined pvalue
+    pvalue, res = compute_risk(5, contest, no_cvr_stratum, cvr_stratum)
+    expected_pvalue = 0.015691091068564367
+    diff = abs(expected_pvalue - pvalue)
+    assert diff < 0.0001, "Got {}".format(pvalue)
+    assert res
 
 
 def test_tie():
@@ -817,7 +881,7 @@ def test_tiny_election():
         "winner": 6,
         "loser": 0,
     }
-    no_cvr_stratum_ballots = 7
+    no_cvr_stratum_ballots = 6
     no_cvr_sample = {"round1": {"winner": 0, "loser": 0}}
 
     # create our ballot polling strata
@@ -843,7 +907,7 @@ def test_tiny_election():
         cvr_stratum_ballots, cvr_stratum_vote_totals, misstatements, sample_size=0,
     )
 
-    expected_sample_size = HybridPair(cvr=3, non_cvr=4)
+    expected_sample_size = HybridPair(cvr=3, non_cvr=3)
 
     assert expected_sample_size == get_sample_size(
         5, contest, no_cvr_stratum, cvr_stratum
@@ -857,7 +921,7 @@ def test_tiny_election():
         0.05, contest, no_cvr_stratum, cvr_stratum, "winner", "loser", 1.0
     )
     # Compute its p-value and check, with a lambda of 0.7
-    expected_pvalue = 0.16154617764286328
+    expected_pvalue = 0.13732787993505824
     diff = abs(expected_pvalue - pvalue)
     assert diff < 0.00001, "Incorrect pvalue: {}!".format(pvalue)
 
