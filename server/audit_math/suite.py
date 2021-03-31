@@ -104,8 +104,8 @@ class BallotPollingStratum:
         if self.sample_size == 0 or reported_margin == 0:
             return 1.0
 
-        if self.sample_size == self.num_ballots:
-            return 0.0
+        # if self.sample_size == self.num_ballots:
+        #    return 0.0
 
         sample = bravo.compute_cumulative_sample(self.sample)
         n_w = sample[winner]
@@ -338,6 +338,7 @@ def maximize_fisher_combined_pvalue(
     Wn = bp_sample_winner_votes
     Ln = bp_sample_loser_votes
     Un = bp_stratum.sample_size - bp_sample_winner_votes - bp_sample_loser_votes
+    print(Un)
     assert Wn >= 0, f"{Wn, Ln, Un}"
     assert Ln >= 0, f"{Wn, Ln, Un}"
     assert Un >= 0, f"{Wn, Ln, Un}"
@@ -387,11 +388,13 @@ def maximize_fisher_combined_pvalue(
                 fisher_pvalues[i] = 1 - sp.stats.chi2.cdf(obs, df=2 * len(pvalues))
 
         pvalue = np.max(fisher_pvalues)
+        print(pvalue)
         alloc_lambda = test_lambdas[np.argmax(fisher_pvalues)]
 
         # If p-value is over the risk limit, then there's no need to refine the
         # maximization. We have a lower bound on the maximum.
         if pvalue > alpha or modulus is None:
+            print("mod here", pvalue)
             maximized_pvalue = pvalue
             break
 
@@ -401,9 +404,11 @@ def maximize_fisher_combined_pvalue(
         fisher_fun_alpha = sp.stats.chi2.ppf(1 - alpha, df=4)
         dist = np.abs(fisher_fun_obs - fisher_fun_alpha)
         mod = modulus(stepsize)
+        print(stepsize, mod, dist)
 
         if mod <= dist:
             maximized_pvalue = pvalue
+            print("here", pvalue)
             break
 
         # We haven't found a good enough max yet, keep looking
@@ -654,14 +659,30 @@ def compute_risk(
     assert alpha < 1
 
     pvalues = []
+
+    exception = False
     for winner, loser in product(contest.winners, contest.losers):
-        pvalues.append(
-            maximize_fisher_combined_pvalue(
-                alpha, contest, bp_stratum, cvr_stratum, winner, loser
+        if bp_stratum.sample_size >= bp_stratum.num_ballots:
+            exception = True
+            pvalues.append(cvr_stratum.compute_pvalue(alpha, winner, loser, 1))
+        elif cvr_stratum.sample_size >= cvr_stratum.num_ballots:
+            exception = True
+            pvalues.append(bp_stratum.compute_pvalue(alpha, winner, loser, 1))
+        else:
+            pvalues.append(
+                maximize_fisher_combined_pvalue(
+                    alpha, contest, bp_stratum, cvr_stratum, winner, loser
+                )
             )
-        )
 
     max_p = max(pvalues)
+
+    if exception:
+        raise ValueError(
+            "One or both strata has already been recounted. Possibly returning a p-value from the remaining stratum.",
+            max_p,
+            max_p <= alpha,
+        )
 
     return max_p, max_p <= alpha
 
