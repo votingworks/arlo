@@ -575,7 +575,50 @@ def test_hybrid_manifest_validation(
                         b"TABULATOR1,BATCH1,3,Y\n"
                         b"TABULATOR1,BATCH2,3,Y\n"
                         b"TABULATOR2,BATCH1,3,Y\n"
-                        b"TABULATOR2,BATCH2,6,N\n"
+                        b"TABULATOR2,BATCH2,4,Y\n"
+                        b"TABULATOR3,BATCH1,12,N"
+                    ),
+                    "manifest.csv",
+                )
+            },
+        )
+        assert_ok(rv)
+        bgcompute_update_ballot_manifest_file(election_id)
+
+        rv = client.put(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/cvrs",
+            data={"cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",)},
+        )
+        assert_ok(rv)
+        bgcompute_update_cvr_file(election_id)
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "For contest Contest 1, found 28 ballots in the CVRs, which is more than the total number of CVR ballots across all jurisdiction manifests (26) for jurisdictions in this contest's universe",
+            }
+        ]
+    }
+
+    # Next, try too few non-CVR ballots in the manifest
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    for jurisdiction_id in jurisdiction_ids[:2]:
+        rv = client.put(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/ballot-manifest",
+            data={
+                "manifest": (
+                    io.BytesIO(
+                        b"Tabulator,Batch Name,Number of Ballots,CVR\n"
+                        b"TABULATOR1,BATCH1,3,Y\n"
+                        b"TABULATOR1,BATCH2,3,Y\n"
+                        b"TABULATOR2,BATCH1,3,Y\n"
+                        b"TABULATOR2,BATCH2,6,Y\n"
                         b"TABULATOR3,BATCH1,10,N"
                     ),
                     "manifest.csv",
@@ -599,50 +642,62 @@ def test_hybrid_manifest_validation(
         "errors": [
             {
                 "errorType": "Conflict",
-                "message": "For contest Contest 1, found 28 ballots in the CVRs, which is more than the total number of CVR ballots across all jurisdiction manifests (18) for jurisdictions in this contest's universe",
+                "message": "For contest Contest 1, choice votes for non-CVR ballots add up to 80, which is more than the total number of non-CVR ballots across all jurisdiction manifests (20) for jurisdictions in this contest's universe times the number of votes allowed (2)",
             }
         ]
     }
 
-    # Next, try too few non-CVR ballots in the manifest
+
+def test_hybrid_filter_cvrs(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    contest_ids: List[str],  # pylint: disable=unused-argument
+    election_settings,  # pylint: disable=unused-argument
+    manifests,  # pylint: disable=unused-argument
+    cvrs,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/contest")
+    contests = json.loads(rv.data)["contests"]
+
+    assert (
+        CvrBallot.query.join(Batch)
+        .filter_by(has_cvrs=False)
+        .join(Jurisdiction)
+        .filter_by(election_id=election_id)
+        .count()
+        == 0
+    )
+
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    for jurisdiction_id in jurisdiction_ids[:2]:
-        rv = client.put(
-            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/ballot-manifest",
-            data={
-                "manifest": (
-                    io.BytesIO(
-                        b"Tabulator,Batch Name,Number of Ballots,CVR\n"
-                        b"TABULATOR1,BATCH1,3,N\n"
-                        b"TABULATOR1,BATCH2,3,Y\n"
-                        b"TABULATOR2,BATCH1,3,Y\n"
-                        b"TABULATOR2,BATCH2,6,Y\n"
-                        b"TABULATOR3,BATCH1,10,Y"
-                    ),
-                    "manifest.csv",
-                )
-            },
-        )
-        assert_ok(rv)
-        bgcompute_update_ballot_manifest_file(election_id)
+    # Add some non-CVR ballots to the CVR
+    cvr = TEST_CVRS + (
+        "15,TABULATOR3,BATCH1,1,3-1-1,12345,COUNTY,0,1,1,1,0\n"
+        "16,TABULATOR3,BATCH1,2,3-1-2,12345,COUNTY,0,1,1,1,0\n"
+        "17,TABULATOR3,BATCH1,3,3-1-3,12345,COUNTY,0,1,1,1,0\n"
+    )
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
+        data={"cvrs": (io.BytesIO(cvr.encode()), "cvrs.csv",)},
+    )
+    assert_ok(rv)
+    bgcompute_update_cvr_file(election_id)
 
-        rv = client.put(
-            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/cvrs",
-            data={"cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",)},
-        )
-        assert_ok(rv)
-        bgcompute_update_cvr_file(election_id)
-
+    # Contest metadata should be the same, meaning those extra ballots got
+    # filtered out
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.get(f"/api/election/{election_id}/sample-sizes")
-    assert rv.status_code == 409
-    assert json.loads(rv.data) == {
-        "errors": [
-            {
-                "errorType": "Conflict",
-                "message": "For contest Contest 1, choice votes for non-CVR ballots add up to 20, which is more than the total number of non-CVR ballots across all jurisdiction manifests (6) for jurisdictions in this contest's universe times the number of votes allowed (2)",
-            }
-        ]
-    }
+    rv = client.get(f"/api/election/{election_id}/contest")
+    new_contests = json.loads(rv.data)["contests"]
+    assert new_contests == contests
+
+    assert (
+        CvrBallot.query.join(Batch)
+        .filter_by(has_cvrs=False)
+        .join(Jurisdiction)
+        .filter_by(election_id=election_id)
+        .count()
+        == 0
+    )

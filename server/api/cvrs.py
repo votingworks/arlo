@@ -167,8 +167,8 @@ def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
             # Will be counted below
             contests_metadata[contest_name]["total_ballots_cast"] = 0
 
-        batch_key_to_id = {
-            (batch.tabulator, batch.name): batch.id for batch in jurisdiction.batches
+        batches_by_key = {
+            (batch.tabulator, batch.name): batch for batch in jurisdiction.batches
         }
 
         # Parse ballot rows and store them as CvrBallots. Since we may have
@@ -191,11 +191,12 @@ def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
                 ] = row[:first_contest_column]
                 interpretations = row[first_contest_column:]
 
-                db_batch_id = batch_key_to_id.get((tabulator_number, batch_id))
-                if not db_batch_id:
+                db_batch = batches_by_key.get((tabulator_number, batch_id))
+
+                if not db_batch:
                     close_matches = difflib.get_close_matches(
                         str((tabulator_number, batch_id)),
-                        (str(batch_key) for batch_key in batch_key_to_id),
+                        (str(batch_key) for batch_key in batches_by_key),
                         n=1,
                     )
                     closest_match = (
@@ -221,9 +222,17 @@ def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
                         " inconsistency in other rows in the CVR file."
                     )
 
+                # For hybrid audits, skip any batches that were marked as not
+                # having CVRs in the manifest
+                if (
+                    jurisdiction.election.audit_type == AuditType.HYBRID
+                    and not db_batch.has_cvrs
+                ):
+                    continue
+
                 ballots_csv.writerow(
                     [
-                        db_batch_id,
+                        db_batch.id,
                         record_id,
                         imprinted_id,
                         # Store the raw interpretation columns to save time/space -

@@ -51,7 +51,7 @@ def validate_hybrid_manifests_and_cvrs(contest: Contest):
 
     vote_counts = hybrid_contest_choice_vote_counts(contest)
     assert vote_counts is not None
-    non_cvr_votes = sum(count.cvr for count in vote_counts.values())
+    non_cvr_votes = sum(count.non_cvr for count in vote_counts.values())
     if manifest_ballots.non_cvr * contest.votes_allowed < non_cvr_votes:
         raise Conflict(
             f"For contest {contest.name}, choice votes for non-CVR ballots add up to {non_cvr_votes},"
