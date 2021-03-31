@@ -104,9 +104,6 @@ class BallotPollingStratum:
         if self.sample_size == 0 or reported_margin == 0:
             return 1.0
 
-        # if self.sample_size == self.num_ballots:
-        #    return 0.0
-
         sample = bravo.compute_cumulative_sample(self.sample)
         n_w = sample[winner]
         n_l = sample[loser]
@@ -338,7 +335,6 @@ def maximize_fisher_combined_pvalue(
     Wn = bp_sample_winner_votes
     Ln = bp_sample_loser_votes
     Un = bp_stratum.sample_size - bp_sample_winner_votes - bp_sample_loser_votes
-    print(Un)
     assert Wn >= 0, f"{Wn, Ln, Un}"
     assert Ln >= 0, f"{Wn, Ln, Un}"
     assert Un >= 0, f"{Wn, Ln, Un}"
@@ -388,13 +384,11 @@ def maximize_fisher_combined_pvalue(
                 fisher_pvalues[i] = 1 - sp.stats.chi2.cdf(obs, df=2 * len(pvalues))
 
         pvalue = np.max(fisher_pvalues)
-        print(pvalue)
         alloc_lambda = test_lambdas[np.argmax(fisher_pvalues)]
 
         # If p-value is over the risk limit, then there's no need to refine the
         # maximization. We have a lower bound on the maximum.
         if pvalue > alpha or modulus is None:
-            print("mod here", pvalue)
             maximized_pvalue = pvalue
             break
 
@@ -404,11 +398,9 @@ def maximize_fisher_combined_pvalue(
         fisher_fun_alpha = sp.stats.chi2.ppf(1 - alpha, df=4)
         dist = np.abs(fisher_fun_obs - fisher_fun_alpha)
         mod = modulus(stepsize)
-        print(stepsize, mod, dist)
 
         if mod <= dist:
             maximized_pvalue = pvalue
-            print("here", pvalue)
             break
 
         # We haven't found a good enough max yet, keep looking
