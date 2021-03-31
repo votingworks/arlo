@@ -584,7 +584,7 @@ def get_sample_size(
             coefficient = 2.0
 
         # step 1: linear search, increasing n by a factor of 1.1 or 2 each time
-        while (expected_pvalue > alpha) or (expected_pvalue is np.nan):
+        while expected_pvalue > alpha:
             ballots_to_sample = int(coefficient * ballots_to_sample)
             if ballots_to_sample > contest.ballots:
                 cvr_ballots_to_sample = math.ceil(n_ratio * contest.ballots)
@@ -610,12 +610,7 @@ def get_sample_size(
         mid_pvalue = 1.0
         # TODO: do we need this tolerance?
         risk_limit_tol = 0.8
-        # while (mid_pvalue > alpha) or (expected_pvalue is np.nan):
-        while (
-            (mid_pvalue > alpha)
-            or (mid_pvalue < risk_limit_tol * alpha)
-            or (expected_pvalue is np.nan)
-        ):
+        while (mid_pvalue > alpha) or (mid_pvalue < risk_limit_tol * alpha):
             mid_n = int(np.floor((low_n + high_n) / 2))  # cast for typechecker
             if mid_n in [low_n, high_n]:
                 break
