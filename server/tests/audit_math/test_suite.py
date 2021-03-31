@@ -1029,7 +1029,77 @@ def test_misstatements():
     assert misstatements(contest, cvr, sample_cvr) == expected
 
 
-def test_weird_contest():
+def test_cvr_recount():
+    contest_dict = {
+        "winner": 510,
+        "loser": 490,
+        "ballots": 1000,
+        "numWinners": 1,
+        "votesAllowed": 1,
+    }
+
+    contest = Contest("ex1", contest_dict)
+    reported_margin = contest_dict["winner"] - contest_dict["loser"]
+
+    no_cvr_stratum_vote_totals = {
+        "winner": 1,
+        "loser": 0,
+    }
+    no_cvr_stratum_ballots = 1
+    no_cvr_sample = {"round1": {"winner": 0, "loser": 0}}
+
+    # create our ballot polling strata
+    no_cvr_stratum = BallotPollingStratum(
+        no_cvr_stratum_ballots,
+        no_cvr_stratum_vote_totals,
+        no_cvr_sample,
+        sample_size=0,
+    )
+
+    cvr_stratum_vote_totals = {
+        "winner": 509,
+        "loser": 490,
+    }
+
+    cvr_stratum_ballots = 999
+
+    # We sample 500 ballots from the cvr stratum, and find no discrepancies
+    misstatements = {("winner", "loser"): {"o1": 0, "o2": 0, "u1": 0, "u2": 0,}}
+
+    # Create our CVR stratum
+    cvr_stratum = BallotComparisonStratum(
+        cvr_stratum_ballots, cvr_stratum_vote_totals, misstatements, sample_size=0,
+    )
+
+    cvr_stratum.sample_size = 999
+
+    expected_pvalue = 0.0
+    pvalue = cvr_stratum.compute_pvalue(reported_margin, "winner", "loser", 0.9)
+    diff = abs(expected_pvalue - pvalue)
+    assert diff < 0.00001, "Incorrect pvalue!"
+
+    no_cvr_stratum.sample = {"round1": {"winner": 0, "loser": 0}}
+    no_cvr_stratum.sample_size = 0
+    expected_pvalue = 1
+    pvalue = no_cvr_stratum.compute_pvalue(reported_margin, "winner", "loser", 0.1)
+    diff = abs(expected_pvalue - pvalue)
+    assert diff < 0.00001, "Incorrect pvalue: {}!".format(pvalue)
+
+    # Now get the combined pvalue
+    with pytest.raises(
+        ValueError,
+        match=r"One or both strata has already been recounted. Possibly returning a p-value from the remaining stratum.",
+    ) as error:
+        compute_risk(10, contest, no_cvr_stratum, cvr_stratum)
+
+        pvalue, res = error.args[1], error.args[2]
+        expected_pvalue = 0.005819346812076758
+        diff = abs(expected_pvalue - pvalue)
+        assert diff < 0.000001, "Got {}".format(pvalue)
+        assert not res
+
+
+def test_bp_recount():
     contest_dict = {
         "winner": 510,
         "loser": 490,
@@ -1078,9 +1148,9 @@ def test_weird_contest():
     diff = abs(expected_pvalue - pvalue)
     assert diff < 0.00001, "Incorrect pvalue!"
 
-    no_cvr_stratum.sample = {"round1": {"winner": 0, "loser": 0}}
+    no_cvr_stratum.sample = {"round1": {"winner": 1, "loser": 0}}
     no_cvr_stratum.sample_size = 1
-    expected_pvalue = 1
+    expected_pvalue = 0
     pvalue = no_cvr_stratum.compute_pvalue(reported_margin, "winner", "loser", 0.1)
     diff = abs(expected_pvalue - pvalue)
     assert diff < 0.00001, "Incorrect pvalue: {}!".format(pvalue)
@@ -1094,6 +1164,76 @@ def test_weird_contest():
 
         pvalue, res = error.args[1], error.args[2]
         expected_pvalue = 0.005819346812076758
+        diff = abs(expected_pvalue - pvalue)
+        assert diff < 0.000001, "Got {}".format(pvalue)
+        assert not res
+
+
+def test_full_recount():
+    contest_dict = {
+        "winner": 510,
+        "loser": 490,
+        "ballots": 1000,
+        "numWinners": 1,
+        "votesAllowed": 1,
+    }
+
+    contest = Contest("ex1", contest_dict)
+    reported_margin = contest_dict["winner"] - contest_dict["loser"]
+
+    no_cvr_stratum_vote_totals = {
+        "winner": 1,
+        "loser": 0,
+    }
+    no_cvr_stratum_ballots = 1
+    no_cvr_sample = {"round1": {"winner": 0, "loser": 0}}
+
+    # create our ballot polling strata
+    no_cvr_stratum = BallotPollingStratum(
+        no_cvr_stratum_ballots,
+        no_cvr_stratum_vote_totals,
+        no_cvr_sample,
+        sample_size=0,
+    )
+
+    cvr_stratum_vote_totals = {
+        "winner": 509,
+        "loser": 490,
+    }
+
+    cvr_stratum_ballots = 999
+
+    # We sample 500 ballots from the cvr stratum, and find no discrepancies
+    misstatements = {("winner", "loser"): {"o1": 0, "o2": 0, "u1": 0, "u2": 0,}}
+
+    # Create our CVR stratum
+    cvr_stratum = BallotComparisonStratum(
+        cvr_stratum_ballots, cvr_stratum_vote_totals, misstatements, sample_size=0,
+    )
+
+    cvr_stratum.sample_size = 999
+
+    expected_pvalue = 0.0
+    pvalue = cvr_stratum.compute_pvalue(reported_margin, "winner", "loser", 0.9)
+    diff = abs(expected_pvalue - pvalue)
+    assert diff < 0.00001, "Incorrect pvalue!"
+
+    no_cvr_stratum.sample = {"round1": {"winner": 1, "loser": 0}}
+    no_cvr_stratum.sample_size = 1
+    expected_pvalue = 0.0
+    pvalue = no_cvr_stratum.compute_pvalue(reported_margin, "winner", "loser", 0.1)
+    diff = abs(expected_pvalue - pvalue)
+    assert diff < 0.00001, "Incorrect pvalue: {}!".format(pvalue)
+
+    # Now get the combined pvalue
+    with pytest.raises(
+        ValueError,
+        match=r"One or both strata has already been recounted. Possibly returning a p-value from the remaining stratum.",
+    ) as error:
+        compute_risk(10, contest, no_cvr_stratum, cvr_stratum)
+
+        pvalue, res = error.args[1], error.args[2]
+        expected_pvalue = 0.0
         diff = abs(expected_pvalue - pvalue)
         assert diff < 0.000001, "Got {}".format(pvalue)
         assert not res

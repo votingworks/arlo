@@ -662,7 +662,14 @@ def compute_risk(
 
     exception = False
     for winner, loser in product(contest.winners, contest.losers):
-        if bp_stratum.sample_size >= bp_stratum.num_ballots:
+        if (
+            bp_stratum.sample_size >= bp_stratum.num_ballots
+            and cvr_stratum.sample_size >= cvr_stratum.num_ballots
+        ):
+            # We did a full recount already!
+            exception = True
+            pvalues.append(0.0)
+        elif bp_stratum.sample_size >= bp_stratum.num_ballots:
             exception = True
             pvalues.append(cvr_stratum.compute_pvalue(alpha, winner, loser, 1))
         elif cvr_stratum.sample_size >= cvr_stratum.num_ballots:
