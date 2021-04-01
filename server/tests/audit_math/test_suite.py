@@ -1,5 +1,6 @@
 # pylint: disable=invalid-name
 from decimal import Decimal
+from itertools import product
 import pytest
 
 
@@ -720,6 +721,88 @@ def test_really_close_race():
     assert diff < 0.000001, "Got {}".format(pvalue)
 
     assert not res
+
+
+def test_multi_winner():
+    contest_dict = {
+        "Bageman": 500,
+        "Booth": 125,
+        "Bullen": 2625,
+        "Clinton": 1789,
+        "Cummings": 123,
+        "Deaver": 3051,
+        "Fox": 2088,
+        "Foutz": 127,
+        "Guccione": 1680,
+        "Hoskins": 150,
+        "Jorgensen": 2112,
+        "Turner": 468,
+        "Vece": 127,
+        "ballots": 8402,
+        "numWinners": 2,
+        "votesAllowed": 2,
+    }
+
+    contest = Contest("ex1", contest_dict)
+    cvr_stratum_vote_totals = {
+        "Bageman": 396,
+        "Booth": 3,
+        "Bullen": 2484,
+        "Clinton": 1580,
+        "Cummings": 50,
+        "Deaver": 2519,
+        "Fox": 1978,
+        "Foutz": 16,
+        "Guccione": 1580,
+        "Hoskins": 50,
+        "Jorgensen": 2012,
+        "Turner": 358,
+        "Vece": 16,
+    }
+    cvr_stratum_ballots = 6542
+
+    misstatements = {}
+    for winner, loser in product(contest.winners, contest.losers):
+        # We sample 500 ballots from the cvr stratum, and find no discrepancies
+        misstatements[(winner, loser)] = {
+            "o1": 0,
+            "o2": 0,
+            "u1": 0,
+            "u2": 0,
+        }
+
+    # Create our CVR stratum
+    cvr_stratum = BallotComparisonStratum(
+        cvr_stratum_ballots, cvr_stratum_vote_totals, misstatements, sample_size=0,
+    )
+
+    no_cvr_stratum_vote_totals = {
+        "Bageman": 104,
+        "Booth": 122,
+        "Bullen": 141,
+        "Clinton": 209,
+        "Cummings": 73,
+        "Deaver": 532,
+        "Fox": 110,
+        "Foutz": 111,
+        "Guccione": 100,
+        "Hoskins": 100,
+        "Jorgensen": 100,
+        "Turner": 110,
+        "Vece": 111,
+    }
+    no_cvr_stratum_ballots = 1860
+
+    # create our ballot polling stratum
+    no_cvr_stratum = BallotPollingStratum(
+        no_cvr_stratum_ballots, no_cvr_stratum_vote_totals, {}, sample_size=0,
+    )
+
+    expected_sample_size = HybridPair(cvr=164, non_cvr=46)
+
+    assert expected_sample_size == get_sample_size(
+        5, contest, no_cvr_stratum, cvr_stratum
+    )
 
 
 def test_multi_candidate():
