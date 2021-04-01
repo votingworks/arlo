@@ -11,6 +11,7 @@ https://github.com/pbstark/CORLA18
 from itertools import product
 from multiprocessing import Pool, cpu_count
 import math
+import logging
 from typing import Tuple, Dict, TypedDict, NamedTuple, List
 from collections import Counter
 
@@ -630,7 +631,9 @@ def get_sample_size(
     alpha = float(risk_limit) / 100
     sample_sizes: List[Tuple[int, int]] = []
 
-    with Pool(cpu_count()) as pool:
+    logging.info(f"{cpu_count()}")
+
+    with Pool(cpu_count() - 1) as pool:
         sample_sizes = pool.starmap(
             get_sample_size_for_wl_pair,
             [
