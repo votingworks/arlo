@@ -9,9 +9,7 @@ This code borrows heavily from code already written by Stark and Ottoboni here:
 https://github.com/pbstark/CORLA18
 """
 from itertools import product
-from multiprocessing import Pool, cpu_count
 import math
-import logging
 from typing import Tuple, Dict, TypedDict, NamedTuple, List
 from collections import Counter
 
@@ -547,7 +545,7 @@ def try_n(
 
 
 def get_sample_size_for_wl_pair(
-    alpha: int,
+    alpha: float,
     contest: Contest,
     bp_stratum: BallotPollingStratum,
     cvr_stratum: BallotComparisonStratum,
@@ -629,21 +627,37 @@ def get_sample_size(
     """
 
     alpha = float(risk_limit) / 100
-    sample_sizes: List[Tuple[int, int]] = []
 
-    logging.info(f"{cpu_count()}")
+    # Note: because we are seeking to maximize the p-values in both strata,
+    # the p-values are monotonic, and assessing the hypothesis that the error
+    # in both strata is greater than or equal to some threshold value that
+    # depends on the margin, in votes, selecting the smallest margin maximizes
+    # the p-values for the first round.
 
-    with Pool(cpu_count() - 1) as pool:
-        sample_sizes = pool.starmap(
-            get_sample_size_for_wl_pair,
-            [
-                (alpha, contest, bp_stratum, cvr_stratum, winner, loser)
-                for winner, loser in product(contest.winners, contest.losers)
-            ],
+    if bp_stratum.sample_size == 0 and cvr_stratum.sample_size == 0:
+        worst_winner = min(  # type: ignore
+            {winner: contest.candidates[winner] for winner in contest.winners},
+            key=contest.candidates.get,
         )
-    print(sample_sizes)
+        best_loser = max(  # type: ignore
+            {loser: contest.candidates[loser] for loser in contest.losers},
+            key=contest.candidates.get,
+        )
 
-    sample_size = sorted(sample_sizes, key=sum, reverse=True)[0]
+        sample_size = get_sample_size_for_wl_pair(
+            alpha, contest, bp_stratum, cvr_stratum, worst_winner, best_loser
+        )
+    else:
+        sample_sizes: List[Tuple[int, int]] = []
+        for winner, loser in product(contest.winners, contest.losers):
+            sample_sizes.append(
+                get_sample_size_for_wl_pair(
+                    alpha, contest, bp_stratum, cvr_stratum, winner, loser
+                )
+            )
+
+        sample_size = sorted(sample_sizes, key=sum, reverse=True)[0]
+
     return HybridPair(cvr=sample_size[0], non_cvr=sample_size[1])
 
 
