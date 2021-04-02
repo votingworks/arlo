@@ -804,6 +804,56 @@ def test_multi_winner():
         5, contest, no_cvr_stratum, cvr_stratum
     )
 
+    cvr_stratum.sample_size = 164
+    no_cvr_stratum.sample_size = 46
+    no_cvr_stratum.sample = {
+        "round 1": {
+            "Bageman": int(
+                46 * no_cvr_stratum_vote_totals["Bageman"] / no_cvr_stratum_ballots
+            ),
+            "Booth": int(
+                46 * no_cvr_stratum_vote_totals["Booth"] / no_cvr_stratum_ballots
+            ),
+            "Bullen": int(
+                46 * no_cvr_stratum_vote_totals["Bullen"] / no_cvr_stratum_ballots
+            ),
+            "Clinton": int(
+                46 * no_cvr_stratum_vote_totals["Clinton"] / no_cvr_stratum_ballots
+            ),
+            "Cummings": int(
+                46 * no_cvr_stratum_vote_totals["Cummings"] / no_cvr_stratum_ballots
+            ),
+            "Deaver": int(
+                46 * no_cvr_stratum_vote_totals["Deaver"] / no_cvr_stratum_ballots
+            ),
+            "Fox": int(46 * no_cvr_stratum_vote_totals["Fox"] / no_cvr_stratum_ballots),
+            "Foutz": int(
+                46 * no_cvr_stratum_vote_totals["Foutz"] / no_cvr_stratum_ballots
+            ),
+            "Guccione": int(
+                46 * no_cvr_stratum_vote_totals["Guccione"] / no_cvr_stratum_ballots
+            ),
+            "Hoskins": int(
+                46 * no_cvr_stratum_vote_totals["Hoskins"] / no_cvr_stratum_ballots
+            ),
+            "Jorgensen": int(
+                46 * no_cvr_stratum_vote_totals["Jorgensen"] / no_cvr_stratum_ballots
+            ),
+            "Turner": int(
+                46 * no_cvr_stratum_vote_totals["Turner"] / no_cvr_stratum_ballots
+            ),
+            "Vece": int(
+                46 * no_cvr_stratum_vote_totals["Vece"] / no_cvr_stratum_ballots
+            ),
+        }
+    }
+
+    pvalue, res = compute_risk(5, contest, no_cvr_stratum, cvr_stratum)
+    expected_pvalue = 0.025606877326328936
+    diff = abs(expected_pvalue - pvalue)
+    assert diff < 0.0001, "Got {}".format(pvalue)
+    assert res
+
 
 def test_multi_candidate():
     contest_dict = {
