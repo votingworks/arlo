@@ -104,9 +104,6 @@ class BallotPollingStratum:
         if self.sample_size == 0 or reported_margin == 0:
             return 1.0
 
-        if self.sample_size == self.num_ballots:
-            return 0.0
-
         sample = bravo.compute_cumulative_sample(self.sample)
         n_w = sample[winner]
         n_l = sample[loser]
@@ -547,6 +544,70 @@ def try_n(
     )
 
 
+def get_sample_size_for_wl_pair(
+    alpha: float,
+    contest: Contest,
+    bp_stratum: BallotPollingStratum,
+    cvr_stratum: BallotComparisonStratum,
+    winner: str,
+    loser: str,
+) -> Tuple[int, int]:
+    n_ratio = cvr_stratum.num_ballots / (
+        cvr_stratum.num_ballots + bp_stratum.num_ballots
+    )
+    ballots_to_sample = max(
+        MIN_SAMPLE_SIZE, cvr_stratum.sample_size + bp_stratum.sample_size
+    )
+
+    expected_pvalue = 1.0
+
+    # this allows us to exactly match CORLA18's estimate_n and estimate_escalation_n
+    coefficient = 1.1
+    if bp_stratum.sample_size == 0 and cvr_stratum.sample_size == 0:
+        coefficient = 2.0
+
+    # step 1: linear search, increasing n by a factor of 1.1 or 2 each time
+    while expected_pvalue > alpha:
+        ballots_to_sample = int(coefficient * ballots_to_sample)
+        if ballots_to_sample > contest.ballots:
+            cvr_ballots_to_sample = math.ceil(n_ratio * contest.ballots)
+            bp_ballots_to_sample = int(contest.ballots - cvr_ballots_to_sample)
+            return (cvr_ballots_to_sample, bp_ballots_to_sample)
+
+        expected_pvalue = try_n(
+            ballots_to_sample,
+            alpha,
+            contest,
+            winner,
+            loser,
+            bp_stratum,
+            cvr_stratum,
+            n_ratio,
+        )
+
+    # step 2: bisection between n/1.1 and n
+    low_n = ballots_to_sample / coefficient
+    high_n = ballots_to_sample
+    mid_pvalue = 1.0
+    # TODO: do we need this tolerance?
+    risk_limit_tol = 0.8
+    while (mid_pvalue > alpha) or (mid_pvalue < risk_limit_tol * alpha):
+        mid_n = int(np.floor((low_n + high_n) / 2))  # cast for typechecker
+        if mid_n in [low_n, high_n]:
+            break
+        mid_pvalue = try_n(
+            mid_n, alpha, contest, winner, loser, bp_stratum, cvr_stratum, n_ratio,
+        )
+        if mid_pvalue <= alpha:
+            high_n = mid_n
+        else:
+            low_n = mid_n
+
+    cvr_ballots_to_sample = int(math.ceil(n_ratio * high_n))
+    bp_ballots_to_sample = int(math.ceil(high_n - cvr_ballots_to_sample))
+    return (cvr_ballots_to_sample, bp_ballots_to_sample)
+
+
 def get_sample_size(
     risk_limit: int,
     contest: Contest,
@@ -566,67 +627,37 @@ def get_sample_size(
     """
 
     alpha = float(risk_limit) / 100
-    sample_sizes: List[Tuple[int, int]] = []
 
-    for winner, loser in product(contest.winners, contest.losers):
-        n_ratio = cvr_stratum.num_ballots / (
-            cvr_stratum.num_ballots + bp_stratum.num_ballots
+    # Note: because we are seeking to maximize the p-values in both strata,
+    # the p-values are monotonic, and assessing the hypothesis that the error
+    # in both strata is greater than or equal to some threshold value that
+    # depends on the margin, in votes, selecting the smallest margin maximizes
+    # the p-values for the first round.
+
+    if bp_stratum.sample_size == 0 and cvr_stratum.sample_size == 0:
+        worst_winner = min(  # type: ignore
+            {winner: contest.candidates[winner] for winner in contest.winners},
+            key=contest.candidates.get,
         )
-        ballots_to_sample = max(
-            MIN_SAMPLE_SIZE, cvr_stratum.sample_size + bp_stratum.sample_size
+        best_loser = max(  # type: ignore
+            {loser: contest.candidates[loser] for loser in contest.losers},
+            key=contest.candidates.get,
         )
 
-        expected_pvalue = 1.0
-
-        # this allows us to exactly match CORLA18's estimate_n and estimate_escalation_n
-        coefficient = 1.1
-        if bp_stratum.sample_size == 0 and cvr_stratum.sample_size == 0:
-            coefficient = 2.0
-
-        # step 1: linear search, increasing n by a factor of 1.1 or 2 each time
-        while expected_pvalue > alpha:
-            ballots_to_sample = int(coefficient * ballots_to_sample)
-            if ballots_to_sample > contest.ballots:
-                cvr_ballots_to_sample = math.ceil(n_ratio * contest.ballots)
-                bp_ballots_to_sample = int(contest.ballots - cvr_ballots_to_sample)
-                return HybridPair(
-                    cvr=cvr_ballots_to_sample, non_cvr=bp_ballots_to_sample
+        sample_size = get_sample_size_for_wl_pair(
+            alpha, contest, bp_stratum, cvr_stratum, worst_winner, best_loser
+        )
+    else:
+        sample_sizes: List[Tuple[int, int]] = []
+        for winner, loser in product(contest.winners, contest.losers):
+            sample_sizes.append(
+                get_sample_size_for_wl_pair(
+                    alpha, contest, bp_stratum, cvr_stratum, winner, loser
                 )
-
-            expected_pvalue = try_n(
-                ballots_to_sample,
-                alpha,
-                contest,
-                winner,
-                loser,
-                bp_stratum,
-                cvr_stratum,
-                n_ratio,
             )
 
-        # step 2: bisection between n/1.1 and n
-        low_n = ballots_to_sample / coefficient
-        high_n = ballots_to_sample
-        mid_pvalue = 1.0
-        # TODO: do we need this tolerance?
-        risk_limit_tol = 0.8
-        while (mid_pvalue > alpha) or (mid_pvalue < risk_limit_tol * alpha):
-            mid_n = int(np.floor((low_n + high_n) / 2))  # cast for typechecker
-            if mid_n in [low_n, high_n]:
-                break
-            mid_pvalue = try_n(
-                mid_n, alpha, contest, winner, loser, bp_stratum, cvr_stratum, n_ratio,
-            )
-            if mid_pvalue <= alpha:
-                high_n = mid_n
-            else:
-                low_n = mid_n
+        sample_size = sorted(sample_sizes, key=sum, reverse=True)[0]
 
-        cvr_ballots_to_sample = int(math.ceil(n_ratio * high_n))
-        bp_ballots_to_sample = int(math.ceil(high_n - cvr_ballots_to_sample))
-        sample_sizes.append((cvr_ballots_to_sample, bp_ballots_to_sample))
-
-    sample_size = sorted(sample_sizes, key=sum, reverse=True)[0]
     return HybridPair(cvr=sample_size[0], non_cvr=sample_size[1])
 
 
@@ -654,14 +685,37 @@ def compute_risk(
     assert alpha < 1
 
     pvalues = []
+
+    exception = False
     for winner, loser in product(contest.winners, contest.losers):
-        pvalues.append(
-            maximize_fisher_combined_pvalue(
-                alpha, contest, bp_stratum, cvr_stratum, winner, loser
+        if (
+            bp_stratum.sample_size >= bp_stratum.num_ballots
+            and cvr_stratum.sample_size >= cvr_stratum.num_ballots
+        ):
+            # We did a full recount already!
+            exception = True
+            pvalues.append(0.0)
+        elif bp_stratum.sample_size >= bp_stratum.num_ballots:
+            exception = True
+            pvalues.append(cvr_stratum.compute_pvalue(alpha, winner, loser, 1))
+        elif cvr_stratum.sample_size >= cvr_stratum.num_ballots:
+            exception = True
+            pvalues.append(bp_stratum.compute_pvalue(alpha, winner, loser, 1))
+        else:
+            pvalues.append(
+                maximize_fisher_combined_pvalue(
+                    alpha, contest, bp_stratum, cvr_stratum, winner, loser
+                )
             )
-        )
 
     max_p = max(pvalues)
+
+    if exception:
+        raise ValueError(
+            "One or both strata has already been recounted. Possibly returning a p-value from the remaining stratum.",
+            max_p,
+            max_p <= alpha,
+        )
 
     return max_p, max_p <= alpha
 
