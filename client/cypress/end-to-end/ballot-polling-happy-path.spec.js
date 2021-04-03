@@ -22,6 +22,19 @@ describe('Ballot Polling', () => {
   })
 
   it('offline audit', () => {
+    // test deletion of audit
+    cy.findByText("View Audits").click()
+    cy.findByRole('button', { name: `TestAudit${id}` }).siblings('button').click()
+    cy.findByRole('button', { name: 'Delete' }).click()
+    cy.findByText(`TestAudit${id}`).should('not.exist')
+
+    // create new audit
+    id = uuid()
+    cy.get('input[name=auditName]').type(`TestAudit${id}`)
+    cy.get('input[value="BALLOT_POLLING"]').check({ force: true })
+    cy.get('input[value="BRAVO"]').check({ force: true })
+    cy.findByText('Create Audit').click()
+    cy.contains('Audit Setup')
     cy.fixture('CSVs/jurisdiction/sample_jurisdiction_filesheet.csv').then(
       fileContent => {
         cy.get('input[type="file"]')
@@ -118,6 +131,19 @@ describe('Ballot Polling', () => {
   })
 
   it('online audit', () => {
+    // test deletion of audit
+    cy.findByText("View Audits").click()
+    cy.findByRole('button', { name: `TestAudit${id}` }).siblings('button').click()
+    cy.findByRole('button', { name: 'Delete' }).click()
+    cy.findByText(`TestAudit${id}`).should('not.exist')
+
+    // create new audit
+    id = uuid()
+    cy.get('input[name=auditName]').type(`TestAudit${id}`)
+    cy.get('input[value="BALLOT_POLLING"]').check({ force: true })
+    cy.get('input[value="BRAVO"]').check({ force: true })
+    cy.findByText('Create Audit').click()
+    cy.contains('Audit Setup')
     cy.fixture('CSVs/jurisdiction/sample_jurisdiction_filesheet.csv').then(
       fileContent => {
         cy.get('input[type="file"]')

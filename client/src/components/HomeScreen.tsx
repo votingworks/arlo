@@ -210,29 +210,37 @@ const ListAuditsJurisdictionAdmin = ({
   const jurisdictionsByAudit = groupBy(user.jurisdictions, j => j.election.id)
   return (
     <ListAuditsWrapper>
-      {sortBy(
-        Object.entries(jurisdictionsByAudit),
-        ([_, jurisdictions]) => jurisdictions[0].election.auditName
-      ).map(([electionId, jurisdictions]) => (
-        <div key={electionId}>
-          <h2>Jurisdictions - {jurisdictions[0].election.auditName}</h2>
-          {sortBy(jurisdictions, j => j.name).map(({ id, name, election }) => (
-            <LinkButton
-              key={id}
-              to={`/election/${election.id}/jurisdiction/${id}`}
-              intent="primary"
-              large
-              fill
-              style={{
-                justifyContent: 'start',
-                marginBottom: '15px',
-              }}
-            >
-              {name}
-            </LinkButton>
-          ))}
-        </div>
-      ))}
+      {Object.entries(jurisdictionsByAudit).length === 0 ? (
+        <Callout intent="warning">
+          You don&apos;t have any available audits at the moment
+        </Callout>
+      ) : (
+        sortBy(
+          Object.entries(jurisdictionsByAudit),
+          ([_, jurisdictions]) => jurisdictions[0].election.auditName
+        ).map(([electionId, jurisdictions]) => (
+          <div key={electionId}>
+            <h2>Jurisdictions - {jurisdictions[0].election.auditName}</h2>
+            {sortBy(jurisdictions, j => j.name).map(
+              ({ id, name, election }) => (
+                <LinkButton
+                  key={id}
+                  to={`/election/${election.id}/jurisdiction/${id}`}
+                  intent="primary"
+                  large
+                  fill
+                  style={{
+                    justifyContent: 'start',
+                    marginBottom: '15px',
+                  }}
+                >
+                  {name}
+                </LinkButton>
+              )
+            )}
+          </div>
+        ))
+      )}
     </ListAuditsWrapper>
   )
 }
