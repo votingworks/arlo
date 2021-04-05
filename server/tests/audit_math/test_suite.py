@@ -689,11 +689,8 @@ def test_really_close_race():
         no_cvr_stratum_ballots, no_cvr_stratum_vote_totals, {}, sample_size=0,
     )
 
-    expected_sample_size = HybridPair(cvr=700, non_cvr=300)
-
-    assert expected_sample_size == get_sample_size(
-        5, contest, no_cvr_stratum, cvr_stratum
-    )
+    with pytest.raises(ValueError, match=r"One or both strata need to be recounted"):
+        get_sample_size(5, contest, no_cvr_stratum, cvr_stratum)
 
     # Take some silly samples
 
@@ -916,11 +913,8 @@ def test_tie():
         no_cvr_stratum_ballots, no_cvr_stratum_vote_totals, {}, sample_size=0,
     )
 
-    expected_sample_size = HybridPair(cvr=700, non_cvr=300)
-
-    assert expected_sample_size == get_sample_size(
-        5, contest, no_cvr_stratum, cvr_stratum
-    )
+    with pytest.raises(ValueError, match=r"One or both strata need to be recounted"):
+        get_sample_size(5, contest, no_cvr_stratum, cvr_stratum)
 
     # Take some silly samples
 

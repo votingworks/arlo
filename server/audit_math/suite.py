@@ -658,6 +658,12 @@ def get_sample_size(
 
         sample_size = sorted(sample_sizes, key=sum, reverse=True)[0]
 
+    if (
+        sample_size[0] == cvr_stratum.num_ballots
+        or sample_size[1] == bp_stratum.num_ballots
+    ):
+        raise ValueError("One or both strata need to be recounted.")
+
     return HybridPair(cvr=sample_size[0], non_cvr=sample_size[1])
 
 
