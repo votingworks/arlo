@@ -212,6 +212,7 @@ export const JurisdictionAdminView: React.FC = () => {
           cvrs={cvrs}
           auditBoards={auditBoards}
           auditType={auditSettings.auditType}
+          auditName={auditSettings.auditName}
         />
         <VerticalInner>
           <H2Title>Audit Source Data</H2Title>
@@ -315,6 +316,7 @@ export const JurisdictionAdminView: React.FC = () => {
         cvrs={cvrs}
         auditBoards={auditBoards}
         auditType={auditSettings.auditType}
+        auditName={auditSettings.auditName}
       />
       <Inner>
         <RoundManagement

@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
-import { Callout, H4, Button } from '@blueprintjs/core'
+import { Callout, H3, H4, Button } from '@blueprintjs/core'
 import { Formik } from 'formik'
 import { IJurisdiction, JurisdictionRoundStatus } from '../useJurisdictions'
 import { FileProcessingStatus, IFileInfo } from '../useCSV'
@@ -11,6 +11,12 @@ import { IContest } from '../../../types'
 import { IAuditBoard } from '../useAuditBoards'
 import { IRound } from '../useRoundsAuditAdmin'
 import { IAuditSettings } from '../useAuditSettings'
+
+const SpacedH3 = styled(H3)`
+  &.bp3-heading {
+    margin-bottom: 20px;
+  }
+`
 
 const Wrapper = styled(Callout)`
   display: flex;
@@ -26,6 +32,7 @@ const Wrapper = styled(Callout)`
 interface IStatusBoxProps {
   headline: string
   details: string[]
+  auditName: string
   buttonLabel?: string
   onButtonClick?: () => void
   children?: ReactElement
@@ -34,6 +41,7 @@ interface IStatusBoxProps {
 const StatusBox: React.FC<IStatusBoxProps> = ({
   headline,
   details,
+  auditName,
   buttonLabel,
   onButtonClick,
   children,
@@ -42,6 +50,7 @@ const StatusBox: React.FC<IStatusBoxProps> = ({
     <Wrapper icon={null}>
       <Inner>
         <div className="text">
+          <SpacedH3>{auditName}</SpacedH3>
           <H4>{headline}</H4>
           {details.map(detail => (
             <p key={detail}>{detail}</p>
@@ -167,7 +176,11 @@ export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
       )
     }
     return (
-      <StatusBox headline="The audit has not started." details={details}>
+      <StatusBox
+        headline="The audit has not started."
+        details={details}
+        auditName={auditSettings.auditName}
+      >
         {children}
       </StatusBox>
     )
@@ -189,6 +202,7 @@ export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
           `${numCompleted} of ${jurisdictions.length} jurisdictions` +
             ` have completed Round ${roundNum}`,
         ]}
+        auditName={auditSettings.auditName}
       >
         {children}
       </StatusBox>
@@ -203,6 +217,7 @@ export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
         details={[`When you are ready, start Round ${roundNum + 1}`]}
         buttonLabel={`Start Round ${roundNum + 1}`}
         onButtonClick={startNextRound}
+        auditName={auditSettings.auditName}
       >
         {children}
       </StatusBox>
@@ -216,6 +231,7 @@ export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
       details={[]}
       buttonLabel="Download Audit Report"
       onButtonClick={() => downloadAuditAdminReport(electionId)}
+      auditName={auditSettings.auditName}
     >
       {children}
     </StatusBox>
@@ -230,6 +246,7 @@ interface IJurisdictionAdminProps {
   auditBoards: IAuditBoard[]
   auditType: IAuditSettings['auditType']
   children?: ReactElement
+  auditName: string
 }
 
 export const JurisdictionAdminStatusBox = ({
@@ -240,6 +257,7 @@ export const JurisdictionAdminStatusBox = ({
   auditBoards,
   auditType,
   children,
+  auditName,
 }: IJurisdictionAdminProps) => {
   const { electionId, jurisdictionId } = useParams<{
     electionId: string
@@ -276,7 +294,11 @@ export const JurisdictionAdminStatusBox = ({
     }
 
     return (
-      <StatusBox headline="The audit has not started." details={details}>
+      <StatusBox
+        headline="The audit has not started."
+        details={details}
+        auditName={auditName}
+      >
         {children}
       </StatusBox>
     )
@@ -293,6 +315,7 @@ export const JurisdictionAdminStatusBox = ({
       <StatusBox
         headline={inProgressHeadline}
         details={['Audit boards not set up.']}
+        auditName={auditName}
       >
         {children}
       </StatusBox>
@@ -305,6 +328,7 @@ export const JurisdictionAdminStatusBox = ({
         <StatusBox
           headline={inProgressHeadline}
           details={['Auditing ballots.']}
+          auditName={auditName}
         >
           {children}
         </StatusBox>
@@ -322,7 +346,11 @@ export const JurisdictionAdminStatusBox = ({
         `Waiting for all jurisdictions to complete Round ${roundNum}.`
       )
     return (
-      <StatusBox headline={inProgressHeadline} details={details}>
+      <StatusBox
+        headline={inProgressHeadline}
+        details={details}
+        auditName={auditName}
+      >
         {children}
       </StatusBox>
     )
@@ -337,6 +365,7 @@ export const JurisdictionAdminStatusBox = ({
       onButtonClick={() =>
         downloadJurisdictionAdminReport(electionId, jurisdictionId)
       }
+      auditName={auditName}
     >
       {children}
     </StatusBox>

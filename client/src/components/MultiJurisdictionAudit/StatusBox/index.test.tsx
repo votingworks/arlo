@@ -53,6 +53,11 @@ describe('StatusBox', () => {
           />
         </Router>
       )
+
+      // check if audit name is present
+      screen.getByRole('heading', {
+        name: 'Test Audit',
+      })
       screen.getByText('Audit setup is not complete.')
       screen.getByText('The audit has not started.')
     })
@@ -297,9 +302,15 @@ describe('StatusBox', () => {
             batchTallies={{ file: null, processing: null }}
             cvrs={{ file: null, processing: null }}
             auditType="BALLOT_POLLING"
+            auditName="Test Audit"
           />
         </Router>
       )
+
+      // check if audit name is present
+      screen.getByRole('heading', {
+        name: 'Test Audit',
+      })
       screen.getByText('The audit has not started.')
       screen.getByText('Ballot manifest not uploaded.')
     })
@@ -317,6 +328,7 @@ describe('StatusBox', () => {
             batchTallies={{ file: null, processing: null }}
             cvrs={{ file: null, processing: null }}
             auditType="BALLOT_POLLING"
+            auditName="Test Audit"
           />
         </Router>
       )
@@ -338,6 +350,7 @@ describe('StatusBox', () => {
             batchTallies={{ file: null, processing: null }}
             cvrs={{ file: null, processing: null }}
             auditType="BALLOT_POLLING"
+            auditName="Test Audit"
           />
         </Router>
       )
@@ -358,6 +371,7 @@ describe('StatusBox', () => {
             batchTallies={{ file: null, processing: null }}
             cvrs={{ file: null, processing: null }}
             auditType="BALLOT_POLLING"
+            auditName="Test Audit"
           />
         </Router>
       )
@@ -378,6 +392,7 @@ describe('StatusBox', () => {
             batchTallies={{ file: null, processing: null }}
             cvrs={{ file: null, processing: null }}
             auditType="BALLOT_POLLING"
+            auditName="Test Audit"
           />
         </Router>
       )
@@ -398,6 +413,7 @@ describe('StatusBox', () => {
             batchTallies={{ file: null, processing: null }}
             cvrs={{ file: null, processing: null }}
             auditType="BALLOT_POLLING"
+            auditName="Test Audit"
           />
         </Router>
       )
@@ -419,6 +435,7 @@ describe('StatusBox', () => {
             batchTallies={{ file: null, processing: null }}
             cvrs={{ file: null, processing: null }}
             auditType="BALLOT_POLLING"
+            auditName="Test Audit"
           />
         </Router>
       )
@@ -441,6 +458,7 @@ describe('StatusBox', () => {
             batchTallies={{ file: null, processing: null }}
             cvrs={{ file: null, processing: null }}
             auditType="BALLOT_POLLING"
+            auditName="Test Audit"
           />
         </Router>
       )
@@ -472,6 +490,7 @@ describe('StatusBox', () => {
               batchTallies={{ file: null, processing: null }}
               cvrs={{ file: null, processing: null }}
               auditType={auditType}
+              auditName="Test Audit"
             />
           </Router>
         )
@@ -495,6 +514,7 @@ describe('StatusBox', () => {
                 processing: fileProcessingMocks.processed,
               }}
               auditType={auditType}
+              auditName="Test Audit"
             />
           </Router>
         )
@@ -519,6 +539,7 @@ describe('StatusBox', () => {
                 processing: fileProcessingMocks.errored,
               }}
               auditType={auditType}
+              auditName="Test Audit"
             />
           </Router>
         )
@@ -526,71 +547,75 @@ describe('StatusBox', () => {
         screen.getByText('1/2 files successfully uploaded.')
       })
     })
-  })
-  it(`renders BATCH_COMPARISON audit, tallies not uploaded`, () => {
-    render(
-      <Router>
-        <JurisdictionAdminStatusBox
-          rounds={[]}
-          auditBoards={[]}
-          ballotManifest={{
-            file: null,
-            processing: fileProcessingMocks.processed,
-          }}
-          batchTallies={{ file: null, processing: null }}
-          cvrs={{ file: null, processing: null }}
-          auditType="BATCH_COMPARISON"
-        />
-      </Router>
-    )
-    screen.getByText('The audit has not started.')
-    screen.getByText('1/2 files successfully uploaded.')
-  })
 
-  it(`renders BATCH_COMPARISON audit, tallies uploaded`, () => {
-    render(
-      <Router>
-        <JurisdictionAdminStatusBox
-          rounds={[]}
-          auditBoards={[]}
-          ballotManifest={{
-            file: null,
-            processing: fileProcessingMocks.processed,
-          }}
-          batchTallies={{
-            file: null,
-            processing: fileProcessingMocks.processed,
-          }}
-          cvrs={{ file: null, processing: null }}
-          auditType="BATCH_COMPARISON"
-        />
-      </Router>
-    )
-    screen.getByText('The audit has not started.')
-    screen.getByText('2/2 files successfully uploaded.')
-    screen.getByText('Waiting for Audit Administrator to launch audit.')
-  })
+    it(`renders BATCH_COMPARISON audit, tallies not uploaded`, () => {
+      render(
+        <Router>
+          <JurisdictionAdminStatusBox
+            rounds={[]}
+            auditBoards={[]}
+            ballotManifest={{
+              file: null,
+              processing: fileProcessingMocks.processed,
+            }}
+            batchTallies={{ file: null, processing: null }}
+            cvrs={{ file: null, processing: null }}
+            auditType="BATCH_COMPARISON"
+            auditName="Test Audit"
+          />
+        </Router>
+      )
+      screen.getByText('The audit has not started.')
+      screen.getByText('1/2 files successfully uploaded.')
+    })
 
-  it(`renders BATCH_COMPARISON audit, tallies errored`, () => {
-    render(
-      <Router>
-        <JurisdictionAdminStatusBox
-          rounds={[]}
-          auditBoards={[]}
-          ballotManifest={{
-            file: null,
-            processing: fileProcessingMocks.processed,
-          }}
-          batchTallies={{
-            file: null,
-            processing: fileProcessingMocks.errored,
-          }}
-          cvrs={{ file: null, processing: null }}
-          auditType="BATCH_COMPARISON"
-        />
-      </Router>
-    )
-    screen.getByText('The audit has not started.')
-    screen.getByText('1/2 files successfully uploaded.')
+    it(`renders BATCH_COMPARISON audit, tallies uploaded`, () => {
+      render(
+        <Router>
+          <JurisdictionAdminStatusBox
+            rounds={[]}
+            auditBoards={[]}
+            ballotManifest={{
+              file: null,
+              processing: fileProcessingMocks.processed,
+            }}
+            batchTallies={{
+              file: null,
+              processing: fileProcessingMocks.processed,
+            }}
+            cvrs={{ file: null, processing: null }}
+            auditType="BATCH_COMPARISON"
+            auditName="Test Audit"
+          />
+        </Router>
+      )
+      screen.getByText('The audit has not started.')
+      screen.getByText('2/2 files successfully uploaded.')
+      screen.getByText('Waiting for Audit Administrator to launch audit.')
+    })
+
+    it(`renders BATCH_COMPARISON audit, tallies errored`, () => {
+      render(
+        <Router>
+          <JurisdictionAdminStatusBox
+            rounds={[]}
+            auditBoards={[]}
+            ballotManifest={{
+              file: null,
+              processing: fileProcessingMocks.processed,
+            }}
+            batchTallies={{
+              file: null,
+              processing: fileProcessingMocks.errored,
+            }}
+            cvrs={{ file: null, processing: null }}
+            auditType="BATCH_COMPARISON"
+            auditName="Test Audit"
+          />
+        </Router>
+      )
+      screen.getByText('The audit has not started.')
+      screen.getByText('1/2 files successfully uploaded.')
+    })
   })
 })
