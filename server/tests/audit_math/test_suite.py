@@ -689,7 +689,7 @@ def test_really_close_race():
         no_cvr_stratum_ballots, no_cvr_stratum_vote_totals, {}, sample_size=0,
     )
 
-    with pytest.raises(ValueError, match=r"One or both strata need to be recouted"):
+    with pytest.raises(ValueError, match=r"One or both strata need to be recounted"):
         get_sample_size(5, contest, no_cvr_stratum, cvr_stratum)
 
     # Take some silly samples
@@ -913,7 +913,7 @@ def test_tie():
         no_cvr_stratum_ballots, no_cvr_stratum_vote_totals, {}, sample_size=0,
     )
 
-    with pytest.raises(ValueError, match=r"One or both strata need to be recouted"):
+    with pytest.raises(ValueError, match=r"One or both strata need to be recounted"):
         get_sample_size(5, contest, no_cvr_stratum, cvr_stratum)
 
     # Take some silly samples
