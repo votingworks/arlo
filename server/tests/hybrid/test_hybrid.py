@@ -378,10 +378,10 @@ def test_hybrid_two_rounds(
     ballots = json.loads(rv.data)["ballots"]
     assert len(ballots) == len(retrieval_list.splitlines()) - 1
 
-    assert ballots[0]["batch"]["name"] == "BATCH2"
+    assert ballots[0]["batch"]["name"] == "BATCH1"
     assert ballots[0]["batch"]["tabulator"] == "TABULATOR1"
-    assert ballots[0]["position"] == 2
-    assert ballots[0]["imprintedId"] == "1-2-2"
+    assert ballots[0]["position"] == 1
+    assert ballots[0]["imprintedId"] == "1-1-1"
 
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board"
@@ -394,10 +394,10 @@ def test_hybrid_two_rounds(
     )
     ballots = json.loads(rv.data)["ballots"]
 
-    assert ballots[0]["batch"]["name"] == "BATCH2"
+    assert ballots[0]["batch"]["name"] == "BATCH1"
     assert ballots[0]["batch"]["tabulator"] == "TABULATOR1"
-    assert ballots[0]["position"] == 2
-    assert ballots[0]["imprintedId"] == "1-2-2"
+    assert ballots[0]["position"] == 1
+    assert ballots[0]["imprintedId"] == "1-1-1"
 
     # Audit boards audit all the ballots.
     # Our goal is to mostly make the audit board interpretations match the CVRs
@@ -409,12 +409,17 @@ def test_hybrid_two_rounds(
     audit_results = {
         # CVR ballots
         # We create fake audit results for them based on the CVR
+        ("J1", "TABULATOR1", "BATCH1", 1): ("0,1,1,1,0", (None, None)),
         ("J1", "TABULATOR1", "BATCH2", 2): ("1,1,0,1,0", (-1, 1)),  # CVR: 0,1,1,1,0
         ("J1", "TABULATOR1", "BATCH2", 3): ("1,0,1,0,1", (None, None)),
         ("J1", "TABULATOR2", "BATCH2", 2): ("1,1,1,1,1", (None, None)),
+        ("J1", "TABULATOR2", "BATCH2", 3): ("not found", (2, 2)),  # CVR: missing
         ("J1", "TABULATOR2", "BATCH2", 4): (",,1,0,1", (None, None)),
+        ("J2", "TABULATOR1", "BATCH1", 3): ("0,1,1,1,0", (None, None)),
+        ("J2", "TABULATOR1", "BATCH2", 1): ("1,0,1,0,1", (None, None)),
         ("J2", "TABULATOR2", "BATCH1", 1): ("not found", (2, None)),  # CVR: 0,1,1,1,0
         ("J2", "TABULATOR2", "BATCH2", 1): ("1,0,1,0,1", (None, None)),
+        ("J2", "TABULATOR2", "BATCH2", 2): ("1,1,1,1,1", (None, None)),
         ("J2", "TABULATOR2", "BATCH2", 3): ("not found", (2, None)),  # CVR: missing
         # Non-CVR ballots
         # We create fake audit results for them based on the reported margin,
@@ -423,15 +428,9 @@ def test_hybrid_two_rounds(
         ("J1", "TABULATOR3", "BATCH1", 2): ("1,0,1,0,0", (None, None)),
         ("J1", "TABULATOR3", "BATCH1", 3): ("1,0,1,0,0", (None, None)),
         ("J1", "TABULATOR3", "BATCH1", 5): ("1,0,1,0,0", (None, None)),
-        ("J1", "TABULATOR3", "BATCH1", 8): ("1,0,1,0,0", (None, None)),
-        ("J1", "TABULATOR3", "BATCH1", 9): ("1,0,0,1,0", (None, None)),
-        ("J1", "TABULATOR3", "BATCH1", 10): ("1,0,0,0,1", (None, None)),
+        ("J1", "TABULATOR3", "BATCH1", 10): ("1,0,0,1,0", (None, None)),
         ("J2", "TABULATOR3", "BATCH1", 1): ("1,0,,,", (None, None)),
-        ("J2", "TABULATOR3", "BATCH1", 2): ("1,0,,,", (None, None)),
-        ("J2", "TABULATOR3", "BATCH1", 3): ("1,0,,,", (None, None)),
         ("J2", "TABULATOR3", "BATCH1", 5): ("1,0,,,", (None, None)),
-        ("J2", "TABULATOR3", "BATCH1", 6): ("0,1,,,", (None, None)),
-        ("J2", "TABULATOR3", "BATCH1", 8): ("0,1,,,", (None, None)),
         ("J2", "TABULATOR3", "BATCH1", 10): ("0,1,,,", (None, None)),
     }
 

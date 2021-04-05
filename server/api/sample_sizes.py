@@ -155,7 +155,7 @@ def sample_size_options(
             non_cvr_stratum, cvr_stratum = rounds.hybrid_contest_strata(
                 contest, round_one=round_one
             )
-            size_cvr, size_non_cvr = suite.get_sample_size(
+            size = suite.get_sample_size(
                 election.risk_limit,
                 sampler_contest.from_db_contest(contest),
                 non_cvr_stratum,
@@ -165,9 +165,9 @@ def sample_size_options(
             return {
                 "suite": {
                     "key": "suite",
-                    "sizeCvr": size_cvr,
-                    "sizeNonCvr": size_non_cvr,
-                    "size": size_cvr + size_non_cvr,
+                    "sizeCvr": size.cvr,
+                    "sizeNonCvr": size.non_cvr,
+                    "size": size.cvr + size.non_cvr,
                     "prob": None,
                 }
             }
