@@ -193,6 +193,7 @@ jobs:
           name: cypress
           command: |
             ./client/run-cypress-tests.sh
+      - save-screencaps
 workflows:
   version: 2
   build-and-test:
