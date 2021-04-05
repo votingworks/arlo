@@ -482,16 +482,16 @@ def test_hybrid_two_rounds(
     audit_results = {
         # CVR ballots
         # We create fake audit results for them based on the CVR
-        ("J1", "TABULATOR1", "BATCH1", 1): ("0,1,1,1,0", (None, None)),
-        ("J1", "TABULATOR2", "BATCH2", 3): ("not found", (2, 2)),
+        ("J1", "TABULATOR1", "BATCH1", 2): ("1,0,1,0,1", (None, None)),
+        ("J1", "TABULATOR2", "BATCH1", 2): ("1,0,1,0,1", (None, None)),
+        ("J1", "TABULATOR2", "BATCH2", 1): ("1,0,1,0,1", (None, None)),
         ("J1", "TABULATOR2", "BATCH2", 5): (",,1,1,0", (None, None)),
         ("J1", "TABULATOR2", "BATCH2", 6): (",,1,0,1", (None, None)),
         ("J2", "TABULATOR1", "BATCH1", 1): ("0,1,1,1,0", (None, None)),
         ("J2", "TABULATOR1", "BATCH1", 2): ("1,0,1,0,1", (None, None)),
-        ("J2", "TABULATOR1", "BATCH1", 3): ("0,1,1,1,0", (None, None)),
-        ("J2", "TABULATOR1", "BATCH2", 1): ("1,0,1,0,1", (None, None)),
         ("J2", "TABULATOR1", "BATCH2", 3): ("1,0,1,0,1", (None, None)),
-        ("J2", "TABULATOR2", "BATCH2", 2): ("1,1,1,1,1", (None, None)),
+        ("J2", "TABULATOR2", "BATCH1", 2): ("1,0,1,0,1", (None, None)),
+        ("J2", "TABULATOR2", "BATCH2", 4): (",,1,0,1", (None, None)),
         ("J2", "TABULATOR2", "BATCH2", 5): (",,1,1,0", (None, None)),
         ("J2", "TABULATOR2", "BATCH2", 6): (",,1,0,1", (None, None)),
         # Non-CVR ballots
@@ -500,8 +500,14 @@ def test_hybrid_two_rounds(
         ("J1", "TABULATOR3", "BATCH1", 4): ("1,0,,,", (None, None)),
         ("J1", "TABULATOR3", "BATCH1", 6): ("1,0,,,", (None, None)),
         ("J1", "TABULATOR3", "BATCH1", 7): ("1,0,,,", (None, None)),
-        ("J2", "TABULATOR3", "BATCH1", 4): ("1,0,,,", (None, None)),
+        ("J1", "TABULATOR3", "BATCH1", 8): ("1,0,,,", (None, None)),
+        ("J1", "TABULATOR3", "BATCH1", 9): ("1,0,,,", (None, None)),
+        ("J2", "TABULATOR3", "BATCH1", 2): ("1,0,,,", (None, None)),
+        ("J2", "TABULATOR3", "BATCH1", 3): ("1,0,,,", (None, None)),
+        ("J2", "TABULATOR3", "BATCH1", 4): ("0,1,,,", (None, None)),
+        ("J2", "TABULATOR3", "BATCH1", 6): ("0,1,,,", (None, None)),
         ("J2", "TABULATOR3", "BATCH1", 7): ("0,1,,,", (None, None)),
+        ("J2", "TABULATOR3", "BATCH1", 8): ("0,1,,,", (None, None)),
         ("J2", "TABULATOR3", "BATCH1", 9): ("0,1,,,", (None, None)),
     }
 
