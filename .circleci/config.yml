@@ -98,6 +98,17 @@ commands:
             sudo sed -i 's|HERE/chrome\"|HERE/chrome\" --disable-setuid-sandbox|g' /opt/google/chrome/google-chrome
             rm google-chrome.deb
 
+  save-screencaps:
+    steps:
+      - run:
+          name: Saving screenshots & videos from Cypress
+          command: |
+            mkdir /tmp/artifacts;
+            cp -r client/cypress/screenshots client/cypress/videos /tmp/artifacts;
+
+      - store_artifacts:
+          path: /tmp/artifacts
+
 jobs:
   preflight:
     executor: arlo
