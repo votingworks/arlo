@@ -104,7 +104,7 @@ commands:
           name: Saving screenshots & videos from Cypress
           command: |
             mkdir /tmp/artifacts;
-            cp -r client/cypress/screenshots client/cypress/videos /tmp/artifacts;
+            cp -r ./client/cypress/screenshots ./client/cypress/videos /tmp/artifacts;
 
       - store_artifacts:
           path: /tmp/artifacts
