@@ -602,10 +602,33 @@ class BallotDraw(NamedTuple):
 def draw_sample(round_id: str, election_id: str):
     round = Round.query.filter_by(id=round_id, election_id=election_id).one()
     election = round.election
+
+    # For rounds after the first round, automatically select a sample size
+    if round.round_num > 1:
+
+        def select_sample_size(options):
+            audit_type = AuditType(election.audit_type)
+            if audit_type == AuditType.BALLOT_POLLING:
+                return options.get("0.9", options.get("asn"))
+            elif audit_type == AuditType.BATCH_COMPARISON:
+                return options["macro"]
+            elif audit_type == AuditType.BALLOT_COMPARISON:
+                return options["supersimple"]
+            else:
+                assert audit_type == AuditType.HYBRID
+                return options["suite"]
+
+        sample_size_options = sample_sizes_module.sample_size_options(election)
+        for round_contest in round.round_contests:
+            if round_contest.contest_id in sample_size_options:
+                round_contest.sample_size = select_sample_size(
+                    sample_size_options[round_contest.contest_id]
+                )
+
     contest_sample_sizes = [
         (round_contest.contest, round_contest.sample_size)
         for round_contest in round.round_contests
-        if round_contest.sample_size  # Only targeted contests will have a sample size
+        if round_contest.sample_size
     ]
 
     # Special case: if we are sampling all ballots, we don't need to actually
@@ -897,30 +920,12 @@ def create_round(election: Election):
     )
     db_session.add(round)
 
-    # For round 1, use the given sample size for each contest.
+    # For round 1, use the given sample size for each contest. In later rounds,
+    # we'll select a sample size automatically when drawing the sample.
+    sample_sizes = {}
     if json_round["roundNum"] == 1:
         validate_sample_size(json_round, election)
         sample_sizes = json_round["sampleSizes"]
-    # In later rounds, select a sample size automatically.
-    else:
-        sample_size_options = sample_sizes_module.sample_size_options(election)
-
-        def select_sample_size(options):
-            audit_type = AuditType(election.audit_type)
-            if audit_type == AuditType.BALLOT_POLLING:
-                return options.get("0.9", options.get("asn"))
-            elif audit_type == AuditType.BATCH_COMPARISON:
-                return options["macro"]
-            elif audit_type == AuditType.BALLOT_COMPARISON:
-                return options["supersimple"]
-            else:
-                assert audit_type == AuditType.HYBRID
-                return options["suite"]
-
-        sample_sizes = {
-            contest_id: select_sample_size(options)
-            for contest_id, options in sample_size_options.items()
-        }
 
     # Figure out which contests still need auditing
     previous_round = get_previous_round(election, round)
@@ -939,9 +944,6 @@ def create_round(election: Election):
         RoundContest(
             round=round,
             contest=contest,
-            # Store the sample size we use for each contest so we can report on
-            # it later. Opportunistic contests don't have a sample size, so we
-            # store None.
             sample_size=sample_sizes.get(contest.id, None),
         )
         for contest in contests_that_havent_met_risk_limit
