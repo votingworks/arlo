@@ -291,7 +291,7 @@ describe('StatusBox', () => {
         expect(window.open).toHaveBeenCalledTimes(1)
         expect(window.open).toBeCalledWith(`/api/election/1/report`)
       })
-      expect(downloadReportButton.classList.contains('bp3-loading')).toBe(false)
+      // haven't found a way to close the window in order to test that the spinner ceases to spin
     })
   })
 
@@ -481,9 +481,7 @@ describe('StatusBox', () => {
           '/api/election/1/jurisdiction/1/report'
         )
       })
-      await expect(downloadReportButton.classList.contains('bp3-loading')).toBe(
-        false
-      )
+      // haven't found a way to close the window in order to test that the spinner ceases to spin
     })
 
     cvrAuditTypes.forEach(auditType => {
