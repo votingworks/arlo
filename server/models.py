@@ -781,7 +781,13 @@ class CvrBallot(Base):
         String(200), ForeignKey("batch.id", ondelete="cascade"), nullable=False,
     )
     batch = relationship("Batch")
-    ballot_position = Column(Integer, nullable=False)
+    # record_id is the identifying number given to the ballot by the tabulator
+    # (it uniquely identifies ballots in a batch within the CVR)
+    record_id = Column(Integer, nullable=False)
+    # ballot_position is the counting index of the ballot among all ballots
+    # from the batch in the CVR - we use this to match with sampled ballots from the manifest
+    ballot_position = Column(Integer)
+    # imprinted_id is a field in the CVR that uniquely identifies the ballot
     imprinted_id = Column(String(200), nullable=False)
     # We store the raw string of 0s and 1s from the CVR row to make insertion
     # fast. We parse them when needed by the audit math using the contest

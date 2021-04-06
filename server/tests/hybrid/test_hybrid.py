@@ -413,14 +413,14 @@ def test_hybrid_two_rounds(
         ("J1", "TABULATOR1", "BATCH2", 2): ("1,1,0,1,0", (-1, 1)),  # CVR: 0,1,1,1,0
         ("J1", "TABULATOR1", "BATCH2", 3): ("1,0,1,0,1", (None, None)),
         ("J1", "TABULATOR2", "BATCH2", 2): ("1,1,1,1,1", (None, None)),
-        ("J1", "TABULATOR2", "BATCH2", 3): ("not found", (2, 2)),  # CVR: missing
-        ("J1", "TABULATOR2", "BATCH2", 4): (",,1,0,1", (None, None)),
+        ("J1", "TABULATOR2", "BATCH2", 3): (",,1,0,1", (None, None)),
+        ("J1", "TABULATOR2", "BATCH2", 4): (",,1,1,0", (None, None)),
         ("J2", "TABULATOR1", "BATCH1", 3): ("0,1,1,1,0", (None, None)),
         ("J2", "TABULATOR1", "BATCH2", 1): ("1,0,1,0,1", (None, None)),
         ("J2", "TABULATOR2", "BATCH1", 1): ("not found", (2, None)),  # CVR: 0,1,1,1,0
         ("J2", "TABULATOR2", "BATCH2", 1): ("1,0,1,0,1", (None, None)),
         ("J2", "TABULATOR2", "BATCH2", 2): ("1,1,1,1,1", (None, None)),
-        ("J2", "TABULATOR2", "BATCH2", 3): ("not found", (2, None)),  # CVR: missing
+        ("J2", "TABULATOR2", "BATCH2", 3): (",,1,0,1", (None, None)),
         # Non-CVR ballots
         # We create fake audit results for them based on the reported margin,
         # like in ballot polling
