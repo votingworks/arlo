@@ -794,7 +794,10 @@ class CvrBallot(Base):
     # headers saved in Juridsiction.cvr_contests_metadata.
     interpretations = Column(Text, nullable=False)
 
-    __table_args__ = (PrimaryKeyConstraint("batch_id", "ballot_position"),)
+    __table_args__ = (
+        PrimaryKeyConstraint("batch_id", "record_id"),
+        UniqueConstraint("batch_id", "ballot_position"),
+    )
 
 
 class File(BaseModel):
