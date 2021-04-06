@@ -231,10 +231,6 @@ def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
                     [
                         db_batch.id,
                         record_id,
-                        # We start by setting ballot_position to record_id to
-                        # satisfy the not-null constraint on insert. It gets
-                        # set to its proper value below.
-                        record_id,
                         imprinted_id,
                         # Store the raw interpretation columns to save time/space -
                         # we can parse them on demand for just the ballots that get
@@ -289,7 +285,6 @@ def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
                         COPY cvr_ballot (
                             batch_id,
                             record_id,
-                            ballot_position,
                             imprinted_id,
                             interpretations
                         )

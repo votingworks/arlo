@@ -21,6 +21,7 @@ def upgrade():
     op.create_primary_key(
         op.f("cvr_ballot_pkey"), "cvr_ballot", ["batch_id", "record_id"]
     )
+    op.alter_column("cvr_ballot", "ballot_position", nullable=True)
     op.create_unique_constraint(
         op.f("cvr_ballot_batch_id_ballot_position_key"),
         "cvr_ballot",
