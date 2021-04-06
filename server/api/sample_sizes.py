@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from typing import Dict
 from collections import Counter
 from flask import jsonify
@@ -5,6 +6,7 @@ from werkzeug.exceptions import BadRequest, Conflict
 
 from . import api
 from ..models import *  # pylint: disable=wildcard-import
+from ..database import db_session
 from ..auth import restrict_access, UserType
 from ..audit_math import (
     ballot_polling,
@@ -18,6 +20,11 @@ from .cvrs import validate_uploaded_cvrs, hybrid_contest_choice_vote_counts
 from .ballot_manifest import (
     validate_all_manifests_uploaded,
     hybrid_contest_total_ballots,
+)
+from ..worker.tasks import (
+    serialize_background_task,
+    create_background_task,
+    background_task,
 )
 
 
@@ -186,18 +193,72 @@ def sample_size_options(
     }
 
 
+@background_task
+def first_round_sample_size_options(election_id: str):
+    election = Election.query.get(election_id)
+    election.sample_size_options = sample_size_options(election, round_one=True)
+
+
+def serialize_sample_size_options(sample_size_options):
+    if sample_size_options is None:
+        return None
+    return {
+        contest_id: list(options.values())
+        for contest_id, options in sample_size_options.items()
+    }
+
+
 @api.route("/election/<election_id>/sample-sizes", methods=["GET"])
 @restrict_access([UserType.AUDIT_ADMIN])
 def get_sample_sizes(election: Election):
-    sample_sizes = {
-        contest_id: list(options.values())
-        for contest_id, options in sample_size_options(election, round_one=True).items()
-    }
+    task = serialize_background_task(election.sample_size_options_task)
+
     # If we've already started the first round, return which sample size was
     # selected for each contest so we can show the user
-    selected_sample_sizes = dict(
-        RoundContest.query.join(Round)
-        .filter_by(election_id=election.id, round_num=1)
-        .values(RoundContest.contest_id, RoundContest.sample_size)
+    if len(list(election.rounds)) > 0:
+        selected_sample_sizes = dict(
+            RoundContest.query.join(Round)
+            .filter_by(election_id=election.id, round_num=1)
+            .values(RoundContest.contest_id, RoundContest.sample_size)
+        )
+        return jsonify(
+            sampleSizes=serialize_sample_size_options(election.sample_size_options),
+            selected=selected_sample_sizes,
+            task=task,
+        )
+
+    # If we're still in audit setup, and we recently computed sample sizes, return them.
+    if (
+        election.sample_size_options_task
+        and election.sample_size_options_task.completed_at
+    ):
+        age = (
+            datetime.now(timezone.utc) - election.sample_size_options_task.completed_at
+        )
+        if age < timedelta(seconds=5):
+            return jsonify(
+                sampleSizes=serialize_sample_size_options(election.sample_size_options),
+                selected=None,
+                task=task,
+            )
+
+    # Otherwise, start a background task to compute sample size options (as
+    # long as there isn't already one in progress).
+    if task is None or (
+        task["status"]
+        not in [ProcessingStatus.READY_TO_PROCESS, ProcessingStatus.PROCESSING]
+    ):
+        election.sample_size_options = None
+        election.sample_size_options_task = create_background_task(
+            first_round_sample_size_options, dict(election_id=election.id)
+        )
+        db_session.commit()
+
+    # In tests, the background task will complete immediately, so we return
+    # the sample size options here. In other environments, the background
+    # task will not complete immediately, so this will return None.
+    return jsonify(
+        sampleSizes=serialize_sample_size_options(election.sample_size_options),
+        selected=None,
+        task=serialize_background_task(election.sample_size_options_task),
     )
-    return jsonify({"sampleSizes": sample_sizes, "selected": selected_sample_sizes})

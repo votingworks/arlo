@@ -196,6 +196,14 @@ class Election(BaseModel):
     )
     standardized_contests = Column(JSON)
 
+    # During audit setup, we compute sample size options for the first
+    # round of the audit in a background task and store the results here.
+    sample_size_options_task_id = Column(
+        String(200), ForeignKey("background_task.id", ondelete="cascade")
+    )
+    sample_size_options_task = relationship("BackgroundTask")
+    sample_size_options = Column(JSON)
+
     # When a user deletes an audit, we keep it in the database just in case
     # they change their mind, but flag it so that we can restrict access
     deleted_at = Column(UTCDateTime)

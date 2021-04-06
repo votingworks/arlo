@@ -48,7 +48,7 @@ def test_sample_sizes_round_1(
     snapshot.assert_match(
         {contest_id_to_name[id]: sizes for id, sizes in response["sampleSizes"].items()}
     )
-    assert response["selected"] == {}
+    assert response["selected"] is None
 
 
 def test_sample_sizes_round_2(
