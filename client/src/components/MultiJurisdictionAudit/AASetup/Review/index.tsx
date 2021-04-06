@@ -37,6 +37,7 @@ import { ISampleSizes } from '../../useRoundsAuditAdmin'
 import { mapValues } from '../../../../utils/objects'
 import { FlexTable } from '../../../Atoms/Table'
 import { pluralize } from '../../../../utils/string'
+import { ErrorLabel } from '../../../Atoms/Form/_helpers'
 
 const percentFormatter = new Intl.NumberFormat(undefined, {
   style: 'percent',
@@ -76,11 +77,7 @@ const Review: React.FC<IProps> = ({
     !!contests &&
     !!auditSettings &&
     isSetupComplete(jurisdictions, contests, auditSettings)
-  // eslint-disable-next-line prefer-const
-  let [sampleSizeOptions, selectedSampleSizes] = useSampleSizes(
-    electionId,
-    setupComplete
-  ) || [null, null]
+  const sampleSizesResponse = useSampleSizes(electionId, setupComplete)
 
   if (!jurisdictions || !contests || !auditSettings) return null // Still loading
 
@@ -102,9 +99,10 @@ const Review: React.FC<IProps> = ({
   } = auditSettings
 
   // Add custom option to sample size options from backend
-  sampleSizeOptions =
-    sampleSizeOptions &&
-    mapValues(sampleSizeOptions, options => {
+  const sampleSizeOptions =
+    sampleSizesResponse &&
+    sampleSizesResponse.sampleSizes &&
+    mapValues(sampleSizesResponse.sampleSizes, options => {
       if (auditType === 'HYBRID') return options
       return [...options, { key: 'custom', size: null, prob: null }]
     })
@@ -112,9 +110,9 @@ const Review: React.FC<IProps> = ({
   // If locked, meaning the audit already was launched, show which sample size got selected.
   // Otherwise default select the first option.
   const initialValues: IFormOptions =
-    sampleSizeOptions && selectedSampleSizes
+    sampleSizesResponse && sampleSizeOptions && sampleSizesResponse.selected
       ? locked
-        ? selectedSampleSizes
+        ? sampleSizesResponse.selected
         : mapValues(sampleSizeOptions, options => options[0])
       : {}
 
@@ -362,15 +360,33 @@ const Review: React.FC<IProps> = ({
           sampleSizes: IFormOptions
         }>) => (
           <form>
-            {setupComplete ? (
-              sampleSizeOptions === null ? (
-                <div style={{ display: 'flex' }}>
-                  <Spinner size={Spinner.SIZE_SMALL} />
-                  <span style={{ marginLeft: '10px' }}>
-                    Loading sample size options...
-                  </span>
-                </div>
-              ) : (
+            {(() => {
+              if (!setupComplete)
+                return (
+                  <p>
+                    All jurisdiction files must be uploaded and all audit
+                    settings must be configured in order to calculate the sample
+                    size.{' '}
+                    <Link to={`/election/${electionId}/progress`}>
+                      View jurisdiction upload progress.
+                    </Link>
+                  </p>
+                )
+
+              if (sampleSizesResponse === null)
+                return (
+                  <div style={{ display: 'flex' }}>
+                    <Spinner size={Spinner.SIZE_SMALL} />
+                    <span style={{ marginLeft: '10px' }}>
+                      Loading sample size options...
+                    </span>
+                  </div>
+                )
+
+              if (sampleSizesResponse.task.error !== null)
+                return <ErrorLabel>{sampleSizesResponse.task.error}</ErrorLabel>
+
+              return (
                 <FormSection>
                   <FormSectionDescription>
                     Choose the initial sample size for each contest you would
@@ -461,15 +477,7 @@ const Review: React.FC<IProps> = ({
                     })}
                 </FormSection>
               )
-            ) : (
-              <p>
-                All jurisdiction files must be uploaded and all audit settings
-                must be configured in order to calculate the sample size.{' '}
-                <Link to={`/election/${electionId}/progress`}>
-                  View jurisdiction upload progress.
-                </Link>
-              </p>
-            )}
+            })()}
             <FormButtonBar>
               <FormButton onClick={prevStage.activate}>Back</FormButton>
               <FormButton

@@ -25,6 +25,7 @@ from ..worker.tasks import (
     serialize_background_task,
     create_background_task,
     background_task,
+    UserError,
 )
 
 
@@ -76,9 +77,11 @@ def sample_size_options(
     election: Election, round_one=False
 ) -> Dict[str, Dict[str, ballot_polling.SampleSizeOption]]:
     if not election.contests:
-        raise BadRequest("Cannot compute sample sizes until contests are set")
+        raise UserError("Cannot compute sample sizes until contests are set")
     if election.risk_limit is None:
-        raise BadRequest("Cannot compute sample sizes until risk limit is set")
+        raise UserError("Cannot compute sample sizes until risk limit is set")
+
+    raise UserError("Bad bad")
 
     def sample_sizes_for_contest(contest: Contest):
         assert election.risk_limit is not None
