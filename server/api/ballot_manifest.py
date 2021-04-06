@@ -36,11 +36,6 @@ def all_manifests_uploaded(contest: Contest):
     )
 
 
-def validate_all_manifests_uploaded(contest: Contest):
-    if not all_manifests_uploaded(contest):
-        raise Conflict("Some jurisdictions haven't uploaded their manifests yet")
-
-
 def set_total_ballots_from_manifests(contest: Contest):
     if not all_manifests_uploaded(contest):
         return

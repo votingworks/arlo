@@ -17,16 +17,18 @@ from ..audit_math import (
 )
 from . import rounds  # pylint: disable=cyclic-import
 from .cvrs import validate_uploaded_cvrs, hybrid_contest_choice_vote_counts
-from .ballot_manifest import (
-    validate_all_manifests_uploaded,
-    hybrid_contest_total_ballots,
-)
+from .ballot_manifest import hybrid_contest_total_ballots, all_manifests_uploaded
 from ..worker.tasks import (
     serialize_background_task,
     create_background_task,
     background_task,
     UserError,
 )
+
+
+def validate_all_manifests_uploaded(contest: Contest):
+    if not all_manifests_uploaded(contest):
+        raise UserError("Some jurisdictions haven't uploaded their manifests yet")
 
 
 def validate_hybrid_manifests_and_cvrs(contest: Contest):
@@ -36,7 +38,7 @@ def validate_hybrid_manifests_and_cvrs(contest: Contest):
     total_votes = sum(choice.num_votes for choice in contest.choices)
     assert contest.votes_allowed is not None
     if total_votes > total_manifest_ballots * contest.votes_allowed:
-        raise Conflict(
+        raise UserError(
             f"Contest {contest.name} vote counts add up to {total_votes},"
             f" which is more than the total number of ballots across all jurisdiction manifests ({total_manifest_ballots})"
             f" times the number of votes allowed ({contest.votes_allowed})"
@@ -51,7 +53,7 @@ def validate_hybrid_manifests_and_cvrs(contest: Contest):
         .count()
     )
     if manifest_ballots.cvr < cvr_ballots:
-        raise Conflict(
+        raise UserError(
             f"For contest {contest.name}, found {cvr_ballots} ballots in the CVRs,"
             f" which is more than the total number of CVR ballots across all jurisdiction manifests ({manifest_ballots.cvr})"
             " for jurisdictions in this contest's universe"
@@ -61,7 +63,7 @@ def validate_hybrid_manifests_and_cvrs(contest: Contest):
     assert vote_counts is not None
     non_cvr_votes = sum(count.non_cvr for count in vote_counts.values())
     if manifest_ballots.non_cvr * contest.votes_allowed < non_cvr_votes:
-        raise Conflict(
+        raise UserError(
             f"For contest {contest.name}, choice votes for non-CVR ballots add up to {non_cvr_votes},"
             f" which is more than the total number of non-CVR ballots across all jurisdiction manifests ({manifest_ballots.non_cvr})"
             " for jurisdictions in this contest's universe"
@@ -80,8 +82,6 @@ def sample_size_options(
         raise UserError("Cannot compute sample sizes until contests are set")
     if election.risk_limit is None:
         raise UserError("Cannot compute sample sizes until risk limit is set")
-
-    raise UserError("Bad bad")
 
     def sample_sizes_for_contest(contest: Contest):
         assert election.risk_limit is not None
