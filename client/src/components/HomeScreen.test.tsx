@@ -387,4 +387,15 @@ describe('Home screen', () => {
       )
     })
   })
+
+  it('show note if no audits for ja user', async () => {
+    const expectedCalls = [jaApiCalls.getUserWithoutElections]
+    await withMockFetch(expectedCalls, async () => {
+      renderView('/')
+
+      await screen.findByText(
+        "You don't have any available audits at the moment"
+      )
+    })
+  })
 })

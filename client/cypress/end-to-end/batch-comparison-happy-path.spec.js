@@ -17,19 +17,6 @@ describe('Batch Comparison', () => {
     cy.findByText('Create Audit').click()
     cy.viewport(1000, 2000)
     cy.contains('Audit Setup')
-
-    // test deletion of audit
-    cy.findByText("View Audits").click()
-    cy.findByRole('button', { name: `TestAudit${id}` }).siblings('button').click()
-    cy.findByRole('button', { name: 'Delete' }).click()
-    cy.findByText(`TestAudit${id}`).should('not.exist')
-
-    // create new audit
-    id = uuid()
-    cy.get('input[name=auditName]').type(`TestAudit${id}`)
-    cy.get('input[value="BATCH_COMPARISON"]').check({ force: true })
-    cy.findByText("Create Audit").click()
-    cy.contains("Audit Setup")
     cy.fixture('CSVs/jurisdiction/sample_jurisdiction_filesheet.csv').then(
       fileContent => {
         cy.get('input[type="file"]')
