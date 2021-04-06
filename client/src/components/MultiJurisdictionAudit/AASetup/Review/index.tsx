@@ -292,8 +292,14 @@ const Review: React.FC<IProps> = ({
                         <td>{choice.numVotes.toLocaleString()}</td>
                         {auditType === 'HYBRID' && (
                           <>
-                            <td>{choice.numVotesCvr!.toLocaleString()}</td>
-                            <td>{choice.numVotesNonCvr!.toLocaleString()}</td>
+                            <td>
+                              {choice.numVotesCvr != null &&
+                                choice.numVotesCvr.toLocaleString()}
+                            </td>
+                            <td>
+                              {choice.numVotesNonCvr != null &&
+                                choice.numVotesNonCvr.toLocaleString()}
+                            </td>
                           </>
                         )}
                       </tr>
