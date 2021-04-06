@@ -100,6 +100,19 @@ export const jaApiCalls = {
       supportUser: null,
     },
   },
+  getUserWithoutElections: {
+    url: '/api/me',
+    response: {
+      user: {
+        type: 'jurisdiction_admin',
+        name: 'Joe',
+        email: 'jurisdictionadmin@email.org',
+        jurisdictions: [],
+        organizations: [],
+      },
+      supportUser: null,
+    },
+  },
   getRounds: {
     url: '/api/election/1/jurisdiction/jurisdiction-id-1/round',
     response: { rounds: [] },

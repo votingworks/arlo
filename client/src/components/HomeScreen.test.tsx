@@ -218,6 +218,37 @@ describe('Home screen', () => {
     })
   })
 
+  it('should not delete audit when cancelled', async () => {
+    const expectedCalls = [
+      aaApiCalls.getUserWithAudit,
+      aaApiCalls.getUserWithAudit, // Extra call to load the list of audits
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderView('/')
+      await screen.findByRole('heading', {
+        name: 'Audits - State of California',
+      })
+      userEvent.click(screen.getByRole('button', { name: 'Delete Audit' }))
+
+      const dialog = (await screen.findByRole('heading', {
+        name: /Confirm/,
+      })).closest('.bp3-dialog')! as HTMLElement
+      within(dialog).getByText(
+        'Are you sure you want to delete November Presidential Election 2020?'
+      )
+      within(dialog).getByText('Warning: this action cannot be undone.')
+      userEvent.click(within(dialog).getByRole('button', { name: 'Cancel' }))
+
+      await waitFor(() =>
+        expect(
+          screen.queryByRole('button', {
+            name: 'November Presidential Election 2020',
+          })
+        )
+      )
+    })
+  })
+
   it('creates ballot comparison audits', async () => {
     const expectedCalls = [
       aaApiCalls.getUser,
@@ -333,6 +364,38 @@ describe('Home screen', () => {
       // Click on a jurisdiction to go to the audit
       userEvent.click(j1Button)
       await screen.findByText('The audit has not started.')
+    })
+  })
+
+  it('should not show delete button for ja users', async () => {
+    const expectedCalls = [jaApiCalls.getUser]
+    await withMockFetch(expectedCalls, async () => {
+      renderView('/')
+
+      const auditOneHeading = await screen.findByRole('heading', {
+        name: 'Jurisdictions - audit one',
+      })
+
+      within(auditOneHeading.closest('div')!).getByRole('button', {
+        name: 'Jurisdiction One',
+      })
+
+      await waitFor(() =>
+        expect(
+          screen.queryByRole('button', { name: 'Delete Audit' })
+        ).not.toBeInTheDocument()
+      )
+    })
+  })
+
+  it('show note if no audits for ja user', async () => {
+    const expectedCalls = [jaApiCalls.getUserWithoutElections]
+    await withMockFetch(expectedCalls, async () => {
+      renderView('/')
+
+      await screen.findByText(
+        "You don't have any available audits at the moment"
+      )
     })
   })
 })
