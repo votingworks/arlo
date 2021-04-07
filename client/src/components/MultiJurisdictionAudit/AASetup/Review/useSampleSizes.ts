@@ -16,11 +16,11 @@ export interface ISampleSizeOptions {
   [contestId: string]: ISampleSizeOption[]
 }
 
-interface ISelectedSampleSizes {
+export interface ISelectedSampleSizes {
   [contestId: string]: ISampleSizeOption
 }
 
-interface ISampleSizesResponse {
+export interface ISampleSizesResponse {
   sampleSizes: ISampleSizeOptions | null
   selected: ISelectedSampleSizes | null
   task: {
