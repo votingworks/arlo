@@ -196,10 +196,13 @@ def sample_size_options(
         if round_one
         else targeted_contests.join(RoundContest).filter_by(is_complete=False).all()
     )
-    return {
-        contest.id: sample_sizes_for_contest(contest)
-        for contest in targeted_contests_that_havent_met_risk_limit
-    }
+    try:
+        return {
+            contest.id: sample_sizes_for_contest(contest)
+            for contest in targeted_contests_that_havent_met_risk_limit
+        }
+    except ValueError as exc:
+        raise UserError(exc) from exc
 
 
 @background_task
