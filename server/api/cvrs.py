@@ -30,11 +30,33 @@ from ..util.group_by import group_by
 from ..audit_math.suite import HybridPair
 
 
+def validate_uploaded_cvrs(contest: Contest):
+    choice_names = {choice.name for choice in contest.choices}
+
+    for jurisdiction in contest.jurisdictions:
+        contests_metadata = typing.cast(JSONDict, jurisdiction.cvr_contests_metadata)
+        if contests_metadata is None:
+            raise Exception("Some jurisdictions haven't uploaded their CVRs yet.")
+
+        if contest.name not in contests_metadata:
+            raise Exception(
+                f"Couldn't find contest {contest.name} in the CVR for jurisdiction {jurisdiction.name}"
+            )
+
+        cvr_choice_names = contests_metadata[contest.name]["choices"].keys()
+        missing_choice_names = choice_names - cvr_choice_names
+        if len(missing_choice_names) > 0:
+            raise Exception(
+                f"Couldn't find some contest choices ({', '.join(sorted(missing_choice_names))})"
+                f" in the CVR for jurisdiction {jurisdiction.name}"
+            )
+
+
 def are_uploaded_cvrs_valid(contest: Contest):
     try:
         validate_uploaded_cvrs(contest)
         return True
-    except Conflict:
+    except Exception:
         return False
 
 

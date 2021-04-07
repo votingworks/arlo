@@ -2,7 +2,6 @@ from datetime import datetime, timedelta
 from typing import Dict
 from collections import Counter
 from flask import jsonify
-from werkzeug.exceptions import BadRequest, Conflict
 
 from . import api
 from ..models import *  # pylint: disable=wildcard-import
@@ -29,6 +28,13 @@ from ..worker.tasks import (
 def validate_all_manifests_uploaded(contest: Contest):
     if not all_manifests_uploaded(contest):
         raise UserError("Some jurisdictions haven't uploaded their manifests yet")
+
+
+def validate_cvrs(contest: Contest):
+    try:
+        validate_uploaded_cvrs(contest)
+    except Exception as exc:
+        raise UserError(exc) from exc
 
 
 def validate_hybrid_manifests_and_cvrs(contest: Contest):
@@ -122,7 +128,7 @@ def sample_size_options(
 
         elif election.audit_type == AuditType.BALLOT_COMPARISON:
             validate_all_manifests_uploaded(contest)
-            validate_uploaded_cvrs(contest)
+            validate_cvrs(contest)
 
             contest_for_sampler = sampler_contest.from_db_contest(contest)
 
@@ -159,7 +165,7 @@ def sample_size_options(
             assert election.audit_type == AuditType.HYBRID
 
             validate_all_manifests_uploaded(contest)
-            validate_uploaded_cvrs(contest)
+            validate_cvrs(contest)
             validate_hybrid_manifests_and_cvrs(contest)
 
             non_cvr_stratum, cvr_stratum = rounds.hybrid_contest_strata(
