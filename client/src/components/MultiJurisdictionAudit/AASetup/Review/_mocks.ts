@@ -1,5 +1,4 @@
 import { IAuditSettings } from '../../useAuditSettings'
-import { fileProcessingMocks } from '../../useSetupMenuItems/_mocks'
 import { FileProcessingStatus } from '../../useCSV'
 
 export const settingsMock: {

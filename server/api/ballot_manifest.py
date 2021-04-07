@@ -3,7 +3,7 @@ import logging
 from datetime import datetime
 from sqlalchemy.orm.session import Session
 from flask import request, jsonify, Request
-from werkzeug.exceptions import BadRequest, NotFound, Conflict
+from werkzeug.exceptions import BadRequest, NotFound
 
 from . import api
 from ..database import db_session

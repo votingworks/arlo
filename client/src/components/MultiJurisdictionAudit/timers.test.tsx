@@ -8,17 +8,13 @@ import { Route } from 'react-router-dom'
 import FakeTimers from '@sinonjs/fake-timers'
 import userEvent from '@testing-library/user-event'
 import { AuditAdminView } from './index'
-import {
-  renderWithRouter,
-  withMockFetch,
-  routerTestProps,
-} from '../testUtilities'
+import { renderWithRouter, withMockFetch } from '../testUtilities'
 import AuthDataProvider, { useAuthDataContext } from '../UserContext'
 import getJurisdictionFileStatus from './useSetupMenuItems/getJurisdictionFileStatus'
 import getRoundStatus from './useSetupMenuItems/getRoundStatus'
 import { aaApiCalls } from './_mocks'
 import { auditSettings, roundMocks } from './useSetupMenuItems/_mocks'
-import { settingsMock, sampleSizeMock } from './AASetup/Review/_mocks'
+import { sampleSizeMock } from './AASetup/Review/_mocks'
 
 const getJurisdictionFileStatusMock = getJurisdictionFileStatus as jest.Mock
 const getRoundStatusMock = getRoundStatus as jest.Mock
