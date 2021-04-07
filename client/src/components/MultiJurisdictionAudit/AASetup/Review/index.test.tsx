@@ -20,6 +20,16 @@ import { IAuditSettings } from '../../useAuditSettings'
 import { ISampleSizeOptions, ISampleSizeOption } from './useSampleSizes'
 
 const apiCalls = {
+  serverError: (
+    url: string,
+    error = { status: 500, statusText: 'Server Error' }
+  ) => ({
+    url,
+    response: {
+      errors: [{ errorType: 'Server Error', message: error.statusText }],
+    },
+    error,
+  }),
   getSettings: (response: IAuditSettings) => ({
     url: '/api/election/1/settings',
     response,
@@ -334,6 +344,41 @@ describe('Audit Setup > Review & Launch', () => {
       expect(options[0].closest('label')).toHaveTextContent(
         '10 samples (3 CVR ballots and 7 non-CVR ballots)'
       )
+    })
+  })
+
+  it('for hybrid audits, doesnt show the CVR/non-CVR vote totals when sample sizes errors', async () => {
+    const expectedCalls = [
+      apiCalls.getSettings(auditSettings.hybridAll),
+      apiCalls.getJurisdictions({
+        jurisdictions: jurisdictionMocks.allManifestsWithCVRs,
+      }),
+      apiCalls.getJurisdictionFile,
+      apiCalls.getContests(contestMocks.filledTargeted),
+      apiCalls.getStandardizedContestsFile,
+      apiCalls.serverError('/api/election/1/sample-sizes'),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderView()
+      await screen.findByText('Review & Launch')
+
+      const contest1 = screen
+        .getAllByRole('heading', { name: 'Contest Name' })[0]
+        .closest('div.bp3-card') as HTMLElement
+      const choices = within(contest1)
+        .getByRole('columnheader', {
+          name: 'Choice',
+        })
+        .closest('table')!
+      within(choices).getByRole('columnheader', { name: 'Votes' })
+      within(choices).getByRole('columnheader', { name: 'CVR' })
+      within(choices).getByRole('columnheader', { name: 'Non-CVR' })
+      const choiceRows = within(choices).getAllByRole('row')
+      expect(
+        within(choiceRows[1])
+          .getAllByRole('cell')
+          .map(cell => cell.textContent)
+      ).toEqual(['Choice One', '10', '', ''])
     })
   })
 
