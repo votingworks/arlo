@@ -81,15 +81,6 @@ const Review: React.FC<IProps> = ({
 
   if (!jurisdictions || !contests || !auditSettings) return null // Still loading
 
-  const submit = async ({ sampleSizes }: { sampleSizes: IFormOptions }) => {
-    if (await startNextRound(sampleSizes)) {
-      refresh()
-      history.push(`/election/${electionId}/progress`)
-    } else {
-      // TEST TODO when withMockFetch works with error handling
-    }
-  }
-
   const {
     electionName,
     randomSeed,
@@ -368,6 +359,19 @@ const Review: React.FC<IProps> = ({
         const initialValues: IFormOptions =
           sampleSizesResponse.selected ||
           mapValues(sampleSizeOptions, options => options[0])
+
+        const submit = async ({
+          sampleSizes,
+        }: {
+          sampleSizes: IFormOptions
+        }) => {
+          if (await startNextRound(sampleSizes)) {
+            refresh()
+            history.push(`/election/${electionId}/progress`)
+          } else {
+            // TEST TODO when withMockFetch works with error handling
+          }
+        }
 
         return (
           <Formik
