@@ -55,7 +55,7 @@ export const sampleSizeMock = {
       { prob: 0.9, size: 125, key: '0.9' },
     ],
   },
-  selected: {},
+  selected: null,
   task: {
     status: FileProcessingStatus.PROCESSED,
     startedAt: '2019-07-18T16:34:07.000+00:00',

@@ -261,6 +261,7 @@ exports[`Audit Setup > Review & Launch custom sample size validation - ballot co
                 class="bp3-control bp3-radio"
               >
                 <input
+                  checked=""
                   name="sampleSizes[contest-id]"
                   type="radio"
                   value="asn"
@@ -334,31 +335,31 @@ exports[`Audit Setup > Review & Launch custom sample size validation - ballot co
           </div>
         </div>
       </div>
-      <div
-        class="sc-bdVaJa kcYonD"
-      >
-        <button
-          class="bp3-button sc-bxivhb WkpPV"
-          type="button"
-        >
-          <span
-            class="bp3-button-text"
-          >
-            Back
-          </span>
-        </button>
-        <button
-          class="bp3-button bp3-intent-primary sc-bxivhb WkpPV"
-          type="button"
-        >
-          <span
-            class="bp3-button-text"
-          >
-            Launch Audit
-          </span>
-        </button>
-      </div>
     </form>
+    <div
+      class="sc-bdVaJa kcYonD"
+    >
+      <button
+        class="bp3-button sc-bxivhb WkpPV"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Back
+        </span>
+      </button>
+      <button
+        class="bp3-button bp3-intent-primary sc-bxivhb WkpPV"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Launch Audit
+        </span>
+      </button>
+    </div>
   </div>
 </div>
 `;
@@ -610,6 +611,7 @@ exports[`Audit Setup > Review & Launch custom sample size validation - batch com
                 class="bp3-control bp3-radio"
               >
                 <input
+                  checked=""
                   name="sampleSizes[contest-id]"
                   type="radio"
                   value="asn"
@@ -683,31 +685,31 @@ exports[`Audit Setup > Review & Launch custom sample size validation - batch com
           </div>
         </div>
       </div>
-      <div
-        class="sc-bdVaJa kcYonD"
-      >
-        <button
-          class="bp3-button sc-bxivhb WkpPV"
-          type="button"
-        >
-          <span
-            class="bp3-button-text"
-          >
-            Back
-          </span>
-        </button>
-        <button
-          class="bp3-button bp3-intent-primary sc-bxivhb WkpPV"
-          type="button"
-        >
-          <span
-            class="bp3-button-text"
-          >
-            Launch Audit
-          </span>
-        </button>
-      </div>
     </form>
+    <div
+      class="sc-bdVaJa kcYonD"
+    >
+      <button
+        class="bp3-button sc-bxivhb WkpPV"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Back
+        </span>
+      </button>
+      <button
+        class="bp3-button bp3-intent-primary sc-bxivhb WkpPV"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Launch Audit
+        </span>
+      </button>
+    </div>
   </div>
 </div>
 `;
@@ -959,6 +961,7 @@ exports[`Audit Setup > Review & Launch renders empty state 1`] = `
                 class="bp3-control bp3-radio"
               >
                 <input
+                  checked=""
                   name="sampleSizes[contest-id]"
                   type="radio"
                   value="asn"
@@ -1032,31 +1035,31 @@ exports[`Audit Setup > Review & Launch renders empty state 1`] = `
           </div>
         </div>
       </div>
-      <div
-        class="sc-bdVaJa kcYonD"
-      >
-        <button
-          class="bp3-button sc-bxivhb WkpPV"
-          type="button"
-        >
-          <span
-            class="bp3-button-text"
-          >
-            Back
-          </span>
-        </button>
-        <button
-          class="bp3-button bp3-intent-primary sc-bxivhb WkpPV"
-          type="button"
-        >
-          <span
-            class="bp3-button-text"
-          >
-            Launch Audit
-          </span>
-        </button>
-      </div>
     </form>
+    <div
+      class="sc-bdVaJa kcYonD"
+    >
+      <button
+        class="bp3-button sc-bxivhb WkpPV"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Back
+        </span>
+      </button>
+      <button
+        class="bp3-button bp3-intent-primary sc-bxivhb WkpPV"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Launch Audit
+        </span>
+      </button>
+    </div>
   </div>
 </div>
 `;
@@ -1308,6 +1311,7 @@ exports[`Audit Setup > Review & Launch renders full state 1`] = `
                 class="bp3-control bp3-radio"
               >
                 <input
+                  checked=""
                   name="sampleSizes[contest-id]"
                   type="radio"
                   value="asn"
@@ -1381,31 +1385,31 @@ exports[`Audit Setup > Review & Launch renders full state 1`] = `
           </div>
         </div>
       </div>
-      <div
-        class="sc-bdVaJa kcYonD"
-      >
-        <button
-          class="bp3-button sc-bxivhb WkpPV"
-          type="button"
-        >
-          <span
-            class="bp3-button-text"
-          >
-            Back
-          </span>
-        </button>
-        <button
-          class="bp3-button bp3-intent-primary sc-bxivhb WkpPV"
-          type="button"
-        >
-          <span
-            class="bp3-button-text"
-          >
-            Launch Audit
-          </span>
-        </button>
-      </div>
     </form>
+    <div
+      class="sc-bdVaJa kcYonD"
+    >
+      <button
+        class="bp3-button sc-bxivhb WkpPV"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Back
+        </span>
+      </button>
+      <button
+        class="bp3-button bp3-intent-primary sc-bxivhb WkpPV"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Launch Audit
+        </span>
+      </button>
+    </div>
   </div>
 </div>
 `;
@@ -1657,6 +1661,7 @@ exports[`Audit Setup > Review & Launch renders full state with batch comparison 
                 class="bp3-control bp3-radio"
               >
                 <input
+                  checked=""
                   name="sampleSizes[contest-id]"
                   type="radio"
                   value="asn"
@@ -1730,31 +1735,31 @@ exports[`Audit Setup > Review & Launch renders full state with batch comparison 
           </div>
         </div>
       </div>
-      <div
-        class="sc-bdVaJa kcYonD"
-      >
-        <button
-          class="bp3-button sc-bxivhb WkpPV"
-          type="button"
-        >
-          <span
-            class="bp3-button-text"
-          >
-            Back
-          </span>
-        </button>
-        <button
-          class="bp3-button bp3-intent-primary sc-bxivhb WkpPV"
-          type="button"
-        >
-          <span
-            class="bp3-button-text"
-          >
-            Launch Audit
-          </span>
-        </button>
-      </div>
     </form>
+    <div
+      class="sc-bdVaJa kcYonD"
+    >
+      <button
+        class="bp3-button sc-bxivhb WkpPV"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Back
+        </span>
+      </button>
+      <button
+        class="bp3-button bp3-intent-primary sc-bxivhb WkpPV"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Launch Audit
+        </span>
+      </button>
+    </div>
   </div>
 </div>
 `;
@@ -1981,43 +1986,41 @@ exports[`Audit Setup > Review & Launch renders full state with batch comparison 
     >
       Sample Size
     </h4>
-    <form>
-      <p>
-        All jurisdiction files must be uploaded and all audit settings must be configured in order to calculate the sample size.
-         
-        <a
-          href="/election/1/progress"
-        >
-          View jurisdiction upload progress.
-        </a>
-      </p>
-      <div
-        class="sc-bdVaJa kcYonD"
+    <p>
+      All jurisdiction files must be uploaded and all audit settings must be configured in order to calculate the sample size.
+       
+      <a
+        href="/election/1/progress"
       >
-        <button
-          class="bp3-button sc-bxivhb WkpPV"
-          type="button"
+        View jurisdiction upload progress.
+      </a>
+    </p>
+    <div
+      class="sc-bdVaJa kcYonD"
+    >
+      <button
+        class="bp3-button sc-bxivhb WkpPV"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
         >
-          <span
-            class="bp3-button-text"
-          >
-            Back
-          </span>
-        </button>
-        <button
-          class="bp3-button bp3-disabled bp3-intent-primary sc-bxivhb WkpPV"
-          disabled=""
-          tabindex="-1"
-          type="button"
+          Back
+        </span>
+      </button>
+      <button
+        class="bp3-button bp3-disabled bp3-intent-primary sc-bxivhb WkpPV"
+        disabled=""
+        tabindex="-1"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
         >
-          <span
-            class="bp3-button-text"
-          >
-            Launch Audit
-          </span>
-        </button>
-      </div>
-    </form>
+          Launch Audit
+        </span>
+      </button>
+    </div>
   </div>
 </div>
 `;
@@ -2377,6 +2380,7 @@ exports[`Audit Setup > Review & Launch renders full state with jurisdictions wit
                 class="bp3-control bp3-radio"
               >
                 <input
+                  checked=""
                   name="sampleSizes[contest-id]"
                   type="radio"
                   value="asn"
@@ -2450,31 +2454,31 @@ exports[`Audit Setup > Review & Launch renders full state with jurisdictions wit
           </div>
         </div>
       </div>
-      <div
-        class="sc-bdVaJa kcYonD"
-      >
-        <button
-          class="bp3-button sc-bxivhb WkpPV"
-          type="button"
-        >
-          <span
-            class="bp3-button-text"
-          >
-            Back
-          </span>
-        </button>
-        <button
-          class="bp3-button bp3-intent-primary sc-bxivhb WkpPV"
-          type="button"
-        >
-          <span
-            class="bp3-button-text"
-          >
-            Launch Audit
-          </span>
-        </button>
-      </div>
     </form>
+    <div
+      class="sc-bdVaJa kcYonD"
+    >
+      <button
+        class="bp3-button sc-bxivhb WkpPV"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Back
+        </span>
+      </button>
+      <button
+        class="bp3-button bp3-intent-primary sc-bxivhb WkpPV"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Launch Audit
+        </span>
+      </button>
+    </div>
   </div>
 </div>
 `;
@@ -2726,6 +2730,7 @@ exports[`Audit Setup > Review & Launch renders full state with offline setting 1
                 class="bp3-control bp3-radio"
               >
                 <input
+                  checked=""
                   name="sampleSizes[contest-id]"
                   type="radio"
                   value="asn"
@@ -2799,31 +2804,31 @@ exports[`Audit Setup > Review & Launch renders full state with offline setting 1
           </div>
         </div>
       </div>
-      <div
-        class="sc-bdVaJa kcYonD"
-      >
-        <button
-          class="bp3-button sc-bxivhb WkpPV"
-          type="button"
-        >
-          <span
-            class="bp3-button-text"
-          >
-            Back
-          </span>
-        </button>
-        <button
-          class="bp3-button bp3-intent-primary sc-bxivhb WkpPV"
-          type="button"
-        >
-          <span
-            class="bp3-button-text"
-          >
-            Launch Audit
-          </span>
-        </button>
-      </div>
     </form>
+    <div
+      class="sc-bdVaJa kcYonD"
+    >
+      <button
+        class="bp3-button sc-bxivhb WkpPV"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Back
+        </span>
+      </button>
+      <button
+        class="bp3-button bp3-intent-primary sc-bxivhb WkpPV"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Launch Audit
+        </span>
+      </button>
+    </div>
   </div>
 </div>
 `;

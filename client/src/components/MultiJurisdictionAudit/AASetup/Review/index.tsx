@@ -98,24 +98,6 @@ const Review: React.FC<IProps> = ({
     auditType,
   } = auditSettings
 
-  // Add custom option to sample size options from backend
-  const sampleSizeOptions =
-    sampleSizesResponse &&
-    sampleSizesResponse.sampleSizes &&
-    mapValues(sampleSizesResponse.sampleSizes, options => {
-      if (auditType === 'HYBRID') return options
-      return [...options, { key: 'custom', size: null, prob: null }]
-    })
-
-  // If locked, meaning the audit already was launched, show which sample size got selected.
-  // Otherwise default select the first option.
-  const initialValues: IFormOptions =
-    sampleSizesResponse && sampleSizeOptions && sampleSizesResponse.selected
-      ? locked
-        ? sampleSizesResponse.selected
-        : mapValues(sampleSizeOptions, options => options[0])
-      : {}
-
   const participatingJurisdictions = jurisdictions.filter(({ id }) =>
     contests.some(c => c.jurisdictionIds.includes(id))
   )
@@ -344,49 +326,66 @@ const Review: React.FC<IProps> = ({
       ))}
       <br />
       <H4>Sample Size</H4>
-      <Formik
-        initialValues={{
-          sampleSizes: initialValues,
-        }}
-        enableReinitialize
-        onSubmit={submit}
-      >
-        {({
-          values,
-          handleSubmit,
-          isSubmitting,
-          setFieldValue,
-        }: FormikProps<{
-          sampleSizes: IFormOptions
-        }>) => (
-          <form>
-            {(() => {
-              if (!setupComplete)
-                return (
-                  <p>
-                    All jurisdiction files must be uploaded and all audit
-                    settings must be configured in order to calculate the sample
-                    size.{' '}
-                    <Link to={`/election/${electionId}/progress`}>
-                      View jurisdiction upload progress.
-                    </Link>
-                  </p>
-                )
+      {(() => {
+        if (!setupComplete)
+          return (
+            <p>
+              All jurisdiction files must be uploaded and all audit settings
+              must be configured in order to calculate the sample size.{' '}
+              <Link to={`/election/${electionId}/progress`}>
+                View jurisdiction upload progress.
+              </Link>
+            </p>
+          )
 
-              if (sampleSizesResponse === null)
-                return (
-                  <div style={{ display: 'flex' }}>
-                    <Spinner size={Spinner.SIZE_SMALL} />
-                    <span style={{ marginLeft: '10px' }}>
-                      Loading sample size options...
-                    </span>
-                  </div>
-                )
+        if (
+          sampleSizesResponse === null ||
+          sampleSizesResponse.sampleSizes === null
+        )
+          return (
+            <div style={{ display: 'flex' }}>
+              <Spinner size={Spinner.SIZE_SMALL} />
+              <span style={{ marginLeft: '10px' }}>
+                Loading sample size options...
+              </span>
+            </div>
+          )
 
-              if (sampleSizesResponse.task.error !== null)
-                return <ErrorLabel>{sampleSizesResponse.task.error}</ErrorLabel>
+        if (sampleSizesResponse.task.error !== null)
+          return <ErrorLabel>{sampleSizesResponse.task.error}</ErrorLabel>
 
-              return (
+        // Add custom option to sample size options from backend
+        const sampleSizeOptions = mapValues(
+          sampleSizesResponse.sampleSizes,
+          options => {
+            if (auditType === 'HYBRID') return options
+            return [...options, { key: 'custom', size: null, prob: null }]
+          }
+        )
+
+        // If the audit was already launched, show which sample size got selected.
+        // Otherwise default select the first option.
+        const initialValues: IFormOptions =
+          sampleSizesResponse.selected ||
+          mapValues(sampleSizeOptions, options => options[0])
+
+        return (
+          <Formik
+            initialValues={{
+              sampleSizes: initialValues,
+            }}
+            enableReinitialize
+            onSubmit={submit}
+          >
+            {({
+              values,
+              handleSubmit,
+              isSubmitting,
+              setFieldValue,
+            }: FormikProps<{
+              sampleSizes: IFormOptions
+            }>) => (
+              <form>
                 <FormSection>
                   <FormSectionDescription>
                     Choose the initial sample size for each contest you would
@@ -476,34 +475,37 @@ const Review: React.FC<IProps> = ({
                       )
                     })}
                 </FormSection>
-              )
-            })()}
-            <FormButtonBar>
-              <FormButton onClick={prevStage.activate}>Back</FormButton>
-              <FormButton
-                intent="primary"
-                disabled={
-                  sampleSizeOptions === null || locked || !setupComplete
-                }
-                onClick={() => setIsConfirmDialogOpen(true)}
-              >
-                Launch Audit
-              </FormButton>
-            </FormButtonBar>
-            <ConfirmLaunch
-              isOpen={isConfirmDialogOpen}
-              handleClose={() => setIsConfirmDialogOpen(false)}
-              handleSubmit={handleSubmit}
-              isSubmitting={isSubmitting}
-              message={
-                auditType === 'BALLOT_POLLING'
-                  ? `${numManifestUploadsComplete} of ${participatingJurisdictions.length} jurisdictions have uploaded ballot manifests.`
-                  : undefined
-              }
-            />
-          </form>
-        )}
-      </Formik>
+                <ConfirmLaunch
+                  isOpen={isConfirmDialogOpen}
+                  handleClose={() => setIsConfirmDialogOpen(false)}
+                  handleSubmit={handleSubmit}
+                  isSubmitting={isSubmitting}
+                  message={
+                    auditType === 'BALLOT_POLLING'
+                      ? `${numManifestUploadsComplete} of ${participatingJurisdictions.length} jurisdictions have uploaded ballot manifests.`
+                      : undefined
+                  }
+                />
+              </form>
+            )}
+          </Formik>
+        )
+      })()}
+      <FormButtonBar>
+        <FormButton onClick={prevStage.activate}>Back</FormButton>
+        <FormButton
+          intent="primary"
+          disabled={
+            sampleSizesResponse === null ||
+            sampleSizesResponse.sampleSizes === null ||
+            locked ||
+            !setupComplete
+          }
+          onClick={() => setIsConfirmDialogOpen(true)}
+        >
+          Launch Audit
+        </FormButton>
+      </FormButtonBar>
     </div>
   )
 }
