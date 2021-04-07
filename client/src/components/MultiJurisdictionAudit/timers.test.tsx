@@ -6,6 +6,7 @@ import React, { ReactElement } from 'react'
 import { screen, act } from '@testing-library/react'
 import { Route } from 'react-router-dom'
 import FakeTimers from '@sinonjs/fake-timers'
+import userEvent from '@testing-library/user-event'
 import { AuditAdminView } from './index'
 import {
   renderWithRouter,
@@ -17,6 +18,7 @@ import getJurisdictionFileStatus from './useSetupMenuItems/getJurisdictionFileSt
 import getRoundStatus from './useSetupMenuItems/getRoundStatus'
 import { aaApiCalls } from './_mocks'
 import { auditSettings, roundMocks } from './useSetupMenuItems/_mocks'
+import { settingsMock, sampleSizeMock } from './AASetup/Review/_mocks'
 
 const getJurisdictionFileStatusMock = getJurisdictionFileStatus as jest.Mock
 const getRoundStatusMock = getRoundStatus as jest.Mock
@@ -104,6 +106,40 @@ describe('timers', () => {
       })
       screen.getByText(
         'For large elections, this can take a couple of minutes.'
+      )
+    })
+  })
+
+  it('shows a spinner while sample sizes are computed', async () => {
+    const expectedCalls = [
+      aaApiCalls.getUser,
+      ...loadEach,
+      ...loadEach,
+      aaApiCalls.getSettings(auditSettings.all),
+      aaApiCalls.getJurisdictionFile,
+      aaApiCalls.getSettings(auditSettings.all),
+      aaApiCalls.getJurisdictions,
+      aaApiCalls.getJurisdictionFile,
+      aaApiCalls.getContests,
+      ...loadEach,
+      aaApiCalls.getSampleSizes,
+      { ...aaApiCalls.getSampleSizes, response: sampleSizeMock },
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderWithRoute('/election/1/setup', <AuditAdminViewWithAuth />)
+      await act(async () => {
+        await clock.nextAsync()
+      })
+      await screen.findByRole('heading', { name: 'Audit Setup' })
+      userEvent.click(screen.getByText('Review & Launch'))
+      await screen.findByRole('heading', { name: 'Sample Size' })
+      screen.getByText('Loading sample size options...')
+
+      await act(async () => {
+        await clock.tickAsync(1000 * 60)
+      })
+      screen.getByText(
+        'Choose the initial sample size for each contest you would like to use for Round 1 of the audit from the options below.'
       )
     })
   })

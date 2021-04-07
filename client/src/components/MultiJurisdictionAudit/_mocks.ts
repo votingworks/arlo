@@ -351,7 +351,16 @@ export const aaApiCalls = {
   }),
   getSampleSizes: {
     url: '/api/election/1/sample-sizes',
-    response: { sampleSizes: null },
+    response: {
+      sampleSizes: null,
+      selected: null,
+      task: {
+        status: 'READY_TO_PROCESS',
+        startedAt: null,
+        completedAt: null,
+        error: null,
+      },
+    },
   },
   putJurisdictionFile: {
     url: '/api/election/1/jurisdiction/file',
