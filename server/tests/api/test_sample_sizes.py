@@ -81,6 +81,15 @@ def test_sample_sizes_round_2(
     snapshot.assert_match(
         {contest_id_to_name[id]: size for id, size in response["selected"].items()}
     )
+    compare_json(
+        response["task"],
+        {
+            "status": "PROCESSED",
+            "startedAt": assert_is_date,
+            "completedAt": assert_is_date,
+            "error": None,
+        },
+    )
 
 
 def test_sample_sizes_background(
@@ -165,3 +174,26 @@ def test_sample_sizes_background(
     }
 
     config.RUN_BACKGROUND_TASKS_IMMEDIATELY = orig_run_background_tasks_immediately
+
+
+def test_sample_sizes_background_backwards_compatible(
+    client: FlaskClient,
+    election_id: str,
+    round_1_id: str,  # pylint: disable=unused-argument
+):
+    # Test that audits that were created before we moved sample size options to
+    # a background task will still be able to load sample sizes after audit launch.
+
+    # Simulate an audit that launched without having a background task to
+    # compute sample size options.
+    election = Election.query.get(election_id)
+    election.sample_size_options = None
+    election.sample_size_options_task_id = None
+    db_session.commit()
+
+    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    response = json.loads(rv.data)
+    assert response["sampleSizes"] is not None
+    assert response["selected"] is not None
+    assert response["task"] is not None
+    assert response["task"]["status"] == "PROCESSED"
