@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from typing import Dict
-from collections import Counter
+from collections import Counter, defaultdict
 from flask import jsonify
 
 from . import api
@@ -35,6 +35,27 @@ def validate_cvrs(contest: Contest):
         validate_uploaded_cvrs(contest)
     except Exception as exc:
         raise UserError(exc) from exc
+
+
+def validate_batch_tallies(contest):
+    total_votes_by_choice: Dict[str, int] = defaultdict(int)
+    for jurisdiction in contest.jurisdictions:
+        batch_tallies = typing_cast(rounds.BatchTallies, jurisdiction.batch_tallies)
+        if batch_tallies is None:
+            raise UserError(
+                "Some jurisdictions haven't uploaded their batch tallies files yet."
+            )
+        for tally in batch_tallies.values():
+            for choice_id, votes in tally[contest.id].items():
+                total_votes_by_choice[choice_id] += votes
+
+    for choice in contest.choices:
+        if total_votes_by_choice[choice.id] > choice.num_votes:
+            raise UserError(
+                f"Total votes in batch tallies files for contest choice {choice.name}"
+                f" ({total_votes_by_choice[choice.id]}) is greater than the"
+                f" reported number of votes for that choice ({choice.num_votes})."
+            )
 
 
 def validate_hybrid_manifests_and_cvrs(contest: Contest):
@@ -109,6 +130,8 @@ def sample_size_options(
             }
 
         elif election.audit_type == AuditType.BATCH_COMPARISON:
+            validate_batch_tallies(contest)
+
             cumulative_batch_results = rounds.cumulative_batch_results(election)
             if round_one:
                 cumulative_batch_results = {

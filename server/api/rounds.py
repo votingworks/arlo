@@ -165,27 +165,6 @@ def batch_tallies(election: Election) -> BatchTallies:
     assert len(list(election.contests)) == 1
     contest = list(election.contests)[0]
 
-    # Validate the batch tallies files. We can't do this validation when they
-    # are uploaded because we need all of the jurisdictions' files.
-    total_votes_by_choice: Dict[str, int] = defaultdict(int)
-    for jurisdiction in contest.jurisdictions:
-        batch_tallies = typing_cast(BatchTallies, jurisdiction.batch_tallies)
-        if batch_tallies is None:
-            raise Conflict(
-                "Some jurisdictions haven't uploaded their batch tallies files yet."
-            )
-        for tally in batch_tallies.values():
-            for choice_id, votes in tally[contest.id].items():
-                total_votes_by_choice[choice_id] += votes
-
-    for choice in contest.choices:
-        if total_votes_by_choice[choice.id] > choice.num_votes:
-            raise Conflict(
-                f"Total votes in batch tallies files for contest choice {choice.name}"
-                f" ({total_votes_by_choice[choice.id]}) is greater than the"
-                f" reported number of votes for that choice ({choice.num_votes})."
-            )
-
     # Key each batch by jurisdiction name and batch name since batch names
     # are only guaranteed unique within a jurisdiction
     return {
