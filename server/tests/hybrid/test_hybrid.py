@@ -5,7 +5,6 @@ from ..helpers import *  # pylint: disable=wildcard-import
 from ..ballot_comparison.test_ballot_comparison import (
     audit_all_ballots,
     check_discrepancies,
-    generate_audit_results,
 )
 from ...worker.bgcompute import (
     bgcompute_update_ballot_manifest_file,
@@ -466,34 +465,22 @@ def test_hybrid_two_rounds(
     assert_match_report(rv.data, snapshot)
     check_discrepancies(rv.data, audit_results)
 
-    # TODO test a second round once escalation works
-    # pylint: disable=unreachable
-    return
-
-    # Start a second round
+    # Try to start a second round
     rv = post_json(client, f"/api/election/{election_id}/round", {"roundNum": 2})
     assert_ok(rv)
 
     rv = client.get(f"/api/election/{election_id}/round",)
-    round_2_id = json.loads(rv.data)["rounds"][1]["id"]
+    round_2 = json.loads(rv.data)["rounds"][1]
+    assert round_2["drawSampleTask"]["status"] == "ERRORED"
+    assert (
+        round_2["drawSampleTask"]["error"] == "One or both strata need to be recounted."
+    )
 
     # Sample sizes endpoint should still return round 1 sample size
     rv = client.get(f"/api/election/{election_id}/sample-sizes")
     sample_size_options = json.loads(rv.data)["sampleSizes"]
     assert len(sample_size_options) == 1
     assert sample_size_options[target_contest_id][0] == sample_size
-
-    # For round 2, audit results should match the CVR exactly.
-    generate_audit_results(round_2_id)
-    audit_results = {}
-
-    audit_all_ballots(
-        round_2_id, audit_results, target_contest_id, opportunistic_contest_id
-    )
-
-    rv = client.get(f"/api/election/{election_id}/report")
-    assert_match_report(rv.data, snapshot)
-    check_discrepancies(rv.data, audit_results)
 
 
 def test_hybrid_manifest_validation_too_many_votes(
