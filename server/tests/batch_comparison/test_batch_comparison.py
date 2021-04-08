@@ -73,46 +73,33 @@ def test_batch_comparison_without_all_batch_tallies(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    contest_id: str,
+    contest_id: str,  # pylint: disable=unused-argument
     election_settings,  # pylint: disable=unused-argument
     manifests,  # pylint: disable=unused-argument
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/sample-sizes")
-    assert rv.status_code == 409
-    assert json.loads(rv.data) == {
-        "errors": [
-            {
-                "errorType": "Conflict",
-                "message": "Some jurisdictions haven't uploaded their batch tallies files yet.",
-            }
-        ]
-    }
-
-    rv = post_json(
-        client,
-        f"/api/election/{election_id}/round",
+    assert rv.status_code == 200
+    compare_json(
+        json.loads(rv.data),
         {
-            "roundNum": 1,
-            "sampleSizes": {contest_id: {"key": "custom", "size": 1, "prob": None}},
+            "sampleSizes": None,
+            "selected": None,
+            "task": {
+                "status": "ERRORED",
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": "Some jurisdictions haven't uploaded their batch tallies files yet.",
+            },
         },
     )
-    assert rv.status_code == 409
-    assert json.loads(rv.data) == {
-        "errors": [
-            {
-                "errorType": "Conflict",
-                "message": "Some jurisdictions haven't uploaded their batch tallies files yet.",
-            }
-        ]
-    }
 
 
 def test_batch_comparison_too_many_votes(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    contest_id: str,
+    contest_id: str,  # pylint: disable=unused-argument
     election_settings,  # pylint: disable=unused-argument
     manifests,  # pylint: disable=unused-argument
     batch_tallies,  # pylint: disable=unused-argument
@@ -134,23 +121,21 @@ def test_batch_comparison_too_many_votes(
     bgcompute_update_batch_tallies_file(election_id)
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = post_json(
-        client,
-        f"/api/election/{election_id}/round",
+    assert rv.status_code == 200
+    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    compare_json(
+        json.loads(rv.data),
         {
-            "roundNum": 1,
-            "sampleSizes": {contest_id: {"key": "custom", "size": 1, "prob": None}},
+            "sampleSizes": None,
+            "selected": None,
+            "task": {
+                "status": "ERRORED",
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": "Total votes in batch tallies files for contest choice candidate 1 (5200) is greater than the reported number of votes for that choice (5000).",
+            },
         },
     )
-    assert rv.status_code == 409
-    assert json.loads(rv.data) == {
-        "errors": [
-            {
-                "errorType": "Conflict",
-                "message": "Total votes in batch tallies files for contest choice candidate 1 (5200) is greater than the reported number of votes for that choice (5000).",
-            }
-        ]
-    }
 
 
 def test_batch_comparison_round_1(
