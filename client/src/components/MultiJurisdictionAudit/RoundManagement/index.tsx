@@ -161,10 +161,7 @@ export const JAFileDownloadButtons = ({
                 ? 'batches'
                 : 'ballots'
             }/retrieval-list`
-          ).catch(err => {
-            // eslint-disable-next-line no-console
-            console.error(err)
-          })
+          )
       }
     >
       Download Aggregated{' '}

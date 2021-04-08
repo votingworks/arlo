@@ -45,7 +45,7 @@ export const api = async <T>(
 }
 
 export const apiDownload = (endpoint: string) =>
-  new Promise((resolve, reject) => {
+  new Promise(resolve => {
     try {
       const windowObj = window.open(`/api${endpoint}`)
       if (windowObj != null) {
@@ -54,7 +54,8 @@ export const apiDownload = (endpoint: string) =>
         }
       }
     } catch (err) {
-      reject(err)
+      // eslint-disable-next-line no-console
+      console.error(err)
     }
   })
 
