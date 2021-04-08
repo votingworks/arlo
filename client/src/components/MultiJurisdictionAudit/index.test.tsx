@@ -541,9 +541,6 @@ describe('JA setup', () => {
   })
 
   it('submits CVRs', async () => {
-    /** *
-     * Flaky on CI. Getting unexpected call to /api/election/1/round after other calls, and not finding upload successful text
-     */
     const expectedCalls = [
       jaApiCalls.getUser,
       jaApiCalls.getSettings(auditSettings.ballotComparisonAll),
