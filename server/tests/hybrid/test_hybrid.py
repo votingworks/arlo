@@ -173,15 +173,20 @@ def test_sample_size_before_manifest(
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/sample-sizes")
-    assert rv.status_code == 409
-    assert json.loads(rv.data) == {
-        "errors": [
-            {
-                "errorType": "Conflict",
-                "message": "Some jurisdictions haven't uploaded their manifests yet",
-            }
-        ]
-    }
+    assert rv.status_code == 200
+    compare_json(
+        json.loads(rv.data),
+        {
+            "sampleSizes": None,
+            "selected": None,
+            "task": {
+                "status": "ERRORED",
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": "Some jurisdictions haven't uploaded their manifests yet",
+            },
+        },
+    )
 
 
 def test_sample_size_before_cvrs(
@@ -194,15 +199,20 @@ def test_sample_size_before_cvrs(
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/sample-sizes")
-    assert rv.status_code == 409
-    assert json.loads(rv.data) == {
-        "errors": [
-            {
-                "errorType": "Conflict",
-                "message": "Some jurisdictions haven't uploaded their CVRs yet.",
-            }
-        ]
-    }
+    assert rv.status_code == 200
+    compare_json(
+        json.loads(rv.data),
+        {
+            "sampleSizes": None,
+            "selected": None,
+            "task": {
+                "status": "ERRORED",
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": "Some jurisdictions haven't uploaded their CVRs yet.",
+            },
+        },
+    )
 
 
 def test_contest_names_dont_match_cvrs(
@@ -233,15 +243,20 @@ def test_contest_names_dont_match_cvrs(
     assert_ok(rv)
 
     rv = client.get(f"/api/election/{election_id}/sample-sizes")
-    assert rv.status_code == 409
-    assert json.loads(rv.data) == {
-        "errors": [
-            {
-                "errorType": "Conflict",
-                "message": "Couldn't find contest Bad Contest Name in the CVR for jurisdiction J1",
-            }
-        ]
-    }
+    assert rv.status_code == 200
+    compare_json(
+        json.loads(rv.data),
+        {
+            "sampleSizes": None,
+            "selected": None,
+            "task": {
+                "status": "ERRORED",
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": "Couldn't find contest Bad Contest Name in the CVR for jurisdiction J1",
+            },
+        },
+    )
 
 
 def test_contest_choices_dont_match_cvrs(
@@ -277,15 +292,20 @@ def test_contest_choices_dont_match_cvrs(
     assert_ok(rv)
 
     rv = client.get(f"/api/election/{election_id}/sample-sizes")
-    assert rv.status_code == 409
-    assert json.loads(rv.data) == {
-        "errors": [
-            {
-                "errorType": "Conflict",
-                "message": "Couldn't find some contest choices (Another Bad Choice Name, Bad Choice Name) in the CVR for jurisdiction J1",
-            }
-        ]
-    }
+    assert rv.status_code == 200
+    compare_json(
+        json.loads(rv.data),
+        {
+            "sampleSizes": None,
+            "selected": None,
+            "task": {
+                "status": "ERRORED",
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": "Couldn't find some contest choices (Another Bad Choice Name, Bad Choice Name) in the CVR for jurisdiction J1",
+            },
+        },
+    )
 
 
 def test_hybrid_two_rounds(
@@ -476,7 +496,7 @@ def test_hybrid_two_rounds(
     check_discrepancies(rv.data, audit_results)
 
 
-def test_hybrid_manifest_validation(
+def test_hybrid_manifest_validation_too_many_votes(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
@@ -512,7 +532,7 @@ def test_hybrid_manifest_validation(
         assert_ok(rv)
         bgcompute_update_cvr_file(election_id)
 
-    # First test with vote counts that are too large for the total ballots in the manifests
+    # Vote counts that are too large for the total ballots in the manifests
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     contests = [
         {
@@ -532,17 +552,28 @@ def test_hybrid_manifest_validation(
     assert_ok(rv)
 
     rv = client.get(f"/api/election/{election_id}/sample-sizes")
-    assert rv.status_code == 409
-    assert json.loads(rv.data) == {
-        "errors": [
-            {
-                "errorType": "Conflict",
-                "message": "Contest Contest 1 vote counts add up to 130, which is more than the total number of ballots across all jurisdiction manifests (50) times the number of votes allowed (2)",
-            }
-        ]
-    }
+    assert rv.status_code == 200
+    compare_json(
+        json.loads(rv.data),
+        {
+            "sampleSizes": None,
+            "selected": None,
+            "task": {
+                "status": "ERRORED",
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": "Contest Contest 1 vote counts add up to 130, which is more than the total number of ballots across all jurisdiction manifests (50) times the number of votes allowed (2)",
+            },
+        },
+    )
 
-    # Correct that error
+
+def test_hybrid_manifest_validation_too_few_cvr_ballots(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    election_settings,  # pylint: disable=unused-argument
+):
     contests = [
         {
             "id": str(uuid.uuid4()),
@@ -560,7 +591,7 @@ def test_hybrid_manifest_validation(
     rv = put_json(client, f"/api/election/{election_id}/contest", contests)
     assert_ok(rv)
 
-    # Next, try too few CVR ballots in the manifest
+    # Too few CVR ballots in the manifest
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
@@ -593,17 +624,46 @@ def test_hybrid_manifest_validation(
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/sample-sizes")
-    assert rv.status_code == 409
-    assert json.loads(rv.data) == {
-        "errors": [
-            {
-                "errorType": "Conflict",
-                "message": "For contest Contest 1, found 28 ballots in the CVRs, which is more than the total number of CVR ballots across all jurisdiction manifests (26) for jurisdictions in this contest's universe",
-            }
-        ]
-    }
+    assert rv.status_code == 200
+    compare_json(
+        json.loads(rv.data),
+        {
+            "sampleSizes": None,
+            "selected": None,
+            "task": {
+                "status": "ERRORED",
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": "For contest Contest 1, found 28 ballots in the CVRs, which is more than the total number of CVR ballots across all jurisdiction manifests (26) for jurisdictions in this contest's universe",
+            },
+        },
+    )
 
-    # Next, try too few non-CVR ballots in the manifest
+
+def test_hybrid_manifest_validation_few_non_cvr_ballots(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    election_settings,  # pylint: disable=unused-argument
+):
+    contests = [
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Contest 1",
+            "isTargeted": True,
+            "choices": [
+                {"id": str(uuid.uuid4()), "name": "Choice 1-1", "numVotes": 60},
+                {"id": str(uuid.uuid4()), "name": "Choice 1-2", "numVotes": 40},
+            ],
+            "numWinners": 1,
+            "votesAllowed": 2,
+            "jurisdictionIds": jurisdiction_ids[:2],
+        },
+    ]
+    rv = put_json(client, f"/api/election/{election_id}/contest", contests)
+    assert_ok(rv)
+
+    # Too few non-CVR ballots in the manifest
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
@@ -636,15 +696,20 @@ def test_hybrid_manifest_validation(
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/sample-sizes")
-    assert rv.status_code == 409
-    assert json.loads(rv.data) == {
-        "errors": [
-            {
-                "errorType": "Conflict",
-                "message": "For contest Contest 1, choice votes for non-CVR ballots add up to 80, which is more than the total number of non-CVR ballots across all jurisdiction manifests (20) for jurisdictions in this contest's universe times the number of votes allowed (2)",
-            }
-        ]
-    }
+    assert rv.status_code == 200
+    compare_json(
+        json.loads(rv.data),
+        {
+            "sampleSizes": None,
+            "selected": None,
+            "task": {
+                "status": "ERRORED",
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": "For contest Contest 1, choice votes for non-CVR ballots add up to 80, which is more than the total number of non-CVR ballots across all jurisdiction manifests (20) for jurisdictions in this contest's universe times the number of votes allowed (2)",
+            },
+        },
+    )
 
 
 def test_hybrid_filter_cvrs(

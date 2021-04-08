@@ -1,10 +1,11 @@
+from datetime import datetime, timedelta
 from typing import Dict
 from collections import Counter
 from flask import jsonify
-from werkzeug.exceptions import BadRequest, Conflict
 
 from . import api
 from ..models import *  # pylint: disable=wildcard-import
+from ..database import db_session
 from ..auth import restrict_access, UserType
 from ..audit_math import (
     ballot_polling,
@@ -15,10 +16,25 @@ from ..audit_math import (
 )
 from . import rounds  # pylint: disable=cyclic-import
 from .cvrs import validate_uploaded_cvrs, hybrid_contest_choice_vote_counts
-from .ballot_manifest import (
-    validate_all_manifests_uploaded,
-    hybrid_contest_total_ballots,
+from .ballot_manifest import hybrid_contest_total_ballots, all_manifests_uploaded
+from ..worker.tasks import (
+    serialize_background_task,
+    create_background_task,
+    background_task,
+    UserError,
 )
+
+
+def validate_all_manifests_uploaded(contest: Contest):
+    if not all_manifests_uploaded(contest):
+        raise UserError("Some jurisdictions haven't uploaded their manifests yet")
+
+
+def validate_cvrs(contest: Contest):
+    try:
+        validate_uploaded_cvrs(contest)
+    except Exception as exc:
+        raise UserError(exc) from exc
 
 
 def validate_hybrid_manifests_and_cvrs(contest: Contest):
@@ -28,7 +44,7 @@ def validate_hybrid_manifests_and_cvrs(contest: Contest):
     total_votes = sum(choice.num_votes for choice in contest.choices)
     assert contest.votes_allowed is not None
     if total_votes > total_manifest_ballots * contest.votes_allowed:
-        raise Conflict(
+        raise UserError(
             f"Contest {contest.name} vote counts add up to {total_votes},"
             f" which is more than the total number of ballots across all jurisdiction manifests ({total_manifest_ballots})"
             f" times the number of votes allowed ({contest.votes_allowed})"
@@ -43,7 +59,7 @@ def validate_hybrid_manifests_and_cvrs(contest: Contest):
         .count()
     )
     if manifest_ballots.cvr < cvr_ballots:
-        raise Conflict(
+        raise UserError(
             f"For contest {contest.name}, found {cvr_ballots} ballots in the CVRs,"
             f" which is more than the total number of CVR ballots across all jurisdiction manifests ({manifest_ballots.cvr})"
             " for jurisdictions in this contest's universe"
@@ -53,7 +69,7 @@ def validate_hybrid_manifests_and_cvrs(contest: Contest):
     assert vote_counts is not None
     non_cvr_votes = sum(count.non_cvr for count in vote_counts.values())
     if manifest_ballots.non_cvr * contest.votes_allowed < non_cvr_votes:
-        raise Conflict(
+        raise UserError(
             f"For contest {contest.name}, choice votes for non-CVR ballots add up to {non_cvr_votes},"
             f" which is more than the total number of non-CVR ballots across all jurisdiction manifests ({manifest_ballots.non_cvr})"
             " for jurisdictions in this contest's universe"
@@ -69,9 +85,9 @@ def sample_size_options(
     election: Election, round_one=False
 ) -> Dict[str, Dict[str, ballot_polling.SampleSizeOption]]:
     if not election.contests:
-        raise BadRequest("Cannot compute sample sizes until contests are set")
+        raise UserError("Cannot compute sample sizes until contests are set")
     if election.risk_limit is None:
-        raise BadRequest("Cannot compute sample sizes until risk limit is set")
+        raise UserError("Cannot compute sample sizes until risk limit is set")
 
     def sample_sizes_for_contest(contest: Contest):
         assert election.risk_limit is not None
@@ -112,7 +128,7 @@ def sample_size_options(
 
         elif election.audit_type == AuditType.BALLOT_COMPARISON:
             validate_all_manifests_uploaded(contest)
-            validate_uploaded_cvrs(contest)
+            validate_cvrs(contest)
 
             contest_for_sampler = sampler_contest.from_db_contest(contest)
 
@@ -149,7 +165,7 @@ def sample_size_options(
             assert election.audit_type == AuditType.HYBRID
 
             validate_all_manifests_uploaded(contest)
-            validate_uploaded_cvrs(contest)
+            validate_cvrs(contest)
             validate_hybrid_manifests_and_cvrs(contest)
 
             non_cvr_stratum, cvr_stratum = rounds.hybrid_contest_strata(
@@ -186,18 +202,72 @@ def sample_size_options(
     }
 
 
+@background_task
+def first_round_sample_size_options(election_id: str):
+    election = Election.query.get(election_id)
+    election.sample_size_options = sample_size_options(election, round_one=True)
+
+
+def serialize_sample_size_options(sample_size_options):
+    if sample_size_options is None:
+        return None
+    return {
+        contest_id: list(options.values())
+        for contest_id, options in sample_size_options.items()
+    }
+
+
 @api.route("/election/<election_id>/sample-sizes", methods=["GET"])
 @restrict_access([UserType.AUDIT_ADMIN])
 def get_sample_sizes(election: Election):
-    sample_sizes = {
-        contest_id: list(options.values())
-        for contest_id, options in sample_size_options(election, round_one=True).items()
-    }
+    task = serialize_background_task(election.sample_size_options_task)
+
     # If we've already started the first round, return which sample size was
     # selected for each contest so we can show the user
-    selected_sample_sizes = dict(
-        RoundContest.query.join(Round)
-        .filter_by(election_id=election.id, round_num=1)
-        .values(RoundContest.contest_id, RoundContest.sample_size)
+    if len(list(election.rounds)) > 0:
+        selected_sample_sizes = dict(
+            RoundContest.query.join(Round)
+            .filter_by(election_id=election.id, round_num=1)
+            .values(RoundContest.contest_id, RoundContest.sample_size)
+        )
+        return jsonify(
+            sampleSizes=serialize_sample_size_options(election.sample_size_options),
+            selected=selected_sample_sizes,
+            task=task,
+        )
+
+    # If we're still in audit setup, and we recently computed sample sizes, return them.
+    if (
+        election.sample_size_options_task
+        and election.sample_size_options_task.completed_at
+    ):
+        age = (
+            datetime.now(timezone.utc) - election.sample_size_options_task.completed_at
+        )
+        if age < timedelta(seconds=5):
+            return jsonify(
+                sampleSizes=serialize_sample_size_options(election.sample_size_options),
+                selected=None,
+                task=task,
+            )
+
+    # Otherwise, start a background task to compute sample size options (as
+    # long as there isn't already one in progress).
+    if task is None or (
+        task["status"]
+        not in [ProcessingStatus.READY_TO_PROCESS, ProcessingStatus.PROCESSING]
+    ):
+        election.sample_size_options = None
+        election.sample_size_options_task = create_background_task(
+            first_round_sample_size_options, dict(election_id=election.id)
+        )
+        db_session.commit()
+
+    # In tests, the background task will complete immediately, so we return
+    # the sample size options here. In other environments, the background
+    # task will not complete immediately, so this will return None.
+    return jsonify(
+        sampleSizes=serialize_sample_size_options(election.sample_size_options),
+        selected=None,
+        task=serialize_background_task(election.sample_size_options_task),
     )
-    return jsonify({"sampleSizes": sample_sizes, "selected": selected_sample_sizes})

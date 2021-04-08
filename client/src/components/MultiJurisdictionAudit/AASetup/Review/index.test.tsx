@@ -17,27 +17,15 @@ import { withMockFetch, renderWithRouter } from '../../../testUtilities'
 import { IJurisdiction } from '../../useJurisdictions'
 import { IContest } from '../../../../types'
 import { IAuditSettings } from '../../useAuditSettings'
-import { ISampleSizeOptions, ISampleSizeOption } from './useSampleSizes'
+import { ISampleSizesResponse } from './useSampleSizes'
+import { FileProcessingStatus } from '../../useCSV'
 
 const apiCalls = {
-  serverError: (
-    url: string,
-    error = { status: 500, statusText: 'Server Error' }
-  ) => ({
-    url,
-    response: {
-      errors: [{ errorType: 'Server Error', message: error.statusText }],
-    },
-    error,
-  }),
   getSettings: (response: IAuditSettings) => ({
     url: '/api/election/1/settings',
     response,
   }),
-  getSampleSizeOptions: (response: {
-    sampleSizes: ISampleSizeOptions
-    selected: { [contestId: string]: ISampleSizeOption }
-  }) => ({
+  getSampleSizeOptions: (response: ISampleSizesResponse) => ({
     url: '/api/election/1/sample-sizes',
     response,
   }),
@@ -303,12 +291,12 @@ describe('Audit Setup > Review & Launch', () => {
       apiCalls.getContests(contestMocks.filledTargetedAndOpportunistic),
       apiCalls.getStandardizedContestsFile,
       apiCalls.getSampleSizeOptions({
+        ...sampleSizeMock,
         sampleSizes: {
           'contest-id': [
             { key: 'suite', size: 10, sizeCvr: 3, sizeNonCvr: 7, prob: null },
           ],
         },
-        selected: {},
       }),
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -356,7 +344,14 @@ describe('Audit Setup > Review & Launch', () => {
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargeted),
       apiCalls.getStandardizedContestsFile,
-      apiCalls.serverError('/api/election/1/sample-sizes'),
+      apiCalls.getSampleSizeOptions({
+        ...sampleSizeMock,
+        task: {
+          ...sampleSizeMock.task,
+          status: FileProcessingStatus.ERRORED,
+          error: 'sample sizes error',
+        },
+      }),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
@@ -379,6 +374,10 @@ describe('Audit Setup > Review & Launch', () => {
           .getAllByRole('cell')
           .map(cell => cell.textContent)
       ).toEqual(['Choice One', '10', '', ''])
+
+      // Check that the error from the sample size endpoint is shown
+      screen.getByRole('heading', { name: 'Sample Size' })
+      screen.getByText('sample sizes error')
     })
   })
 
@@ -640,7 +639,7 @@ describe('Audit Setup > Review & Launch', () => {
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
       apiCalls.getSampleSizeOptions({
-        sampleSizes: sampleSizeMock.sampleSizes,
+        ...sampleSizeMock,
         selected: { 'contest-id': { key: 'custom', size: 100, prob: null } },
       }),
     ]

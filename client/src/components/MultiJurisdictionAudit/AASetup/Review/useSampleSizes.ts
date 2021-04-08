@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
-import { api } from '../../../utilities'
+import { toast } from 'react-toastify'
+import { api, poll } from '../../../utilities'
+import { FileProcessingStatus } from '../../useCSV'
 
 export interface ISampleSizeOption {
   size: number | null
@@ -14,31 +16,52 @@ export interface ISampleSizeOptions {
   [contestId: string]: ISampleSizeOption[]
 }
 
-interface ISelectedSampleSizes {
+export interface ISelectedSampleSizes {
   [contestId: string]: ISampleSizeOption
 }
 
-const loadSampleSizes = async (
-  electionId: string
-): Promise<[ISampleSizeOptions, ISelectedSampleSizes] | null> => {
-  const response = await api<{
-    sampleSizes: ISampleSizeOptions
-    selected: ISelectedSampleSizes
-  }>(`/election/${electionId}/sample-sizes`)
-  return response && [response.sampleSizes, response.selected]
+export interface ISampleSizesResponse {
+  sampleSizes: ISampleSizeOptions | null
+  selected: ISelectedSampleSizes | null
+  task: {
+    status: FileProcessingStatus
+    startedAt: string | null
+    completedAt: string | null
+    error: string | null
+  }
 }
+
+const getSampleSizeOptions = async (
+  electionId: string
+): Promise<ISampleSizesResponse | null> =>
+  api(`/election/${electionId}/sample-sizes`)
 
 const useSampleSizes = (
   electionId: string,
   shouldFetch: boolean
-): [ISampleSizeOptions, ISelectedSampleSizes] | null => {
-  const [sampleSizeOptions, setSampleSizeOptions] = useState<
-    [ISampleSizeOptions, ISelectedSampleSizes] | null
-  >(null)
+): ISampleSizesResponse | null => {
+  const [
+    sampleSizeOptions,
+    setSampleSizeOptions,
+  ] = useState<ISampleSizesResponse | null>(null)
 
   useEffect(() => {
     ;(async () => {
-      if (shouldFetch) setSampleSizeOptions(await loadSampleSizes(electionId))
+      const isComplete = async () => {
+        const response = await getSampleSizeOptions(electionId)
+        if (response && response.task.completedAt !== null) {
+          setSampleSizeOptions(response)
+          return true
+        }
+        return false
+      }
+      if (shouldFetch)
+        poll(
+          isComplete,
+          () => null,
+          err => toast.error(err.message),
+          5 * 60 * 1000 // Time out loading sample sizes after 5 minutes
+        )
     })()
   }, [electionId, shouldFetch])
 

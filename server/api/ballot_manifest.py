@@ -3,7 +3,7 @@ import logging
 from datetime import datetime
 from sqlalchemy.orm.session import Session
 from flask import request, jsonify, Request
-from werkzeug.exceptions import BadRequest, NotFound, Conflict
+from werkzeug.exceptions import BadRequest, NotFound
 
 from . import api
 from ..database import db_session
@@ -34,11 +34,6 @@ def all_manifests_uploaded(contest: Contest):
         jurisdiction.manifest_num_ballots is not None
         for jurisdiction in contest.jurisdictions
     )
-
-
-def validate_all_manifests_uploaded(contest: Contest):
-    if not all_manifests_uploaded(contest):
-        raise Conflict("Some jurisdictions haven't uploaded their manifests yet")
 
 
 def set_total_ballots_from_manifests(contest: Contest):

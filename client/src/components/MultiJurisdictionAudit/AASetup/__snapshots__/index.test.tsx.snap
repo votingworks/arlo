@@ -3443,43 +3443,41 @@ exports[`Setup renders Review & Launch stage 1`] = `
     >
       Sample Size
     </h4>
-    <form>
-      <p>
-        All jurisdiction files must be uploaded and all audit settings must be configured in order to calculate the sample size.
-         
-        <a
-          href="/election/1/progress"
-        >
-          View jurisdiction upload progress.
-        </a>
-      </p>
-      <div
-        class="sc-bdVaJa kcYonD"
+    <p>
+      All jurisdiction files must be uploaded and all audit settings must be configured in order to calculate the sample size.
+       
+      <a
+        href="/election/1/progress"
       >
-        <button
-          class="bp3-button sc-bxivhb WkpPV"
-          type="button"
+        View jurisdiction upload progress.
+      </a>
+    </p>
+    <div
+      class="sc-bdVaJa kcYonD"
+    >
+      <button
+        class="bp3-button sc-bxivhb WkpPV"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
         >
-          <span
-            class="bp3-button-text"
-          >
-            Back
-          </span>
-        </button>
-        <button
-          class="bp3-button bp3-disabled bp3-intent-primary sc-bxivhb WkpPV"
-          disabled=""
-          tabindex="-1"
-          type="button"
+          Back
+        </span>
+      </button>
+      <button
+        class="bp3-button bp3-disabled bp3-intent-primary sc-bxivhb WkpPV"
+        disabled=""
+        tabindex="-1"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
         >
-          <span
-            class="bp3-button-text"
-          >
-            Launch Audit
-          </span>
-        </button>
-      </div>
-    </form>
+          Launch Audit
+        </span>
+      </button>
+    </div>
   </div>
 </div>
 `;
@@ -3683,43 +3681,41 @@ exports[`Setup renders Review & Launch stage with locked next stage 1`] = `
     >
       Sample Size
     </h4>
-    <form>
-      <p>
-        All jurisdiction files must be uploaded and all audit settings must be configured in order to calculate the sample size.
-         
-        <a
-          href="/election/1/progress"
-        >
-          View jurisdiction upload progress.
-        </a>
-      </p>
-      <div
-        class="sc-bdVaJa kcYonD"
+    <p>
+      All jurisdiction files must be uploaded and all audit settings must be configured in order to calculate the sample size.
+       
+      <a
+        href="/election/1/progress"
       >
-        <button
-          class="bp3-button sc-bxivhb WkpPV"
-          type="button"
+        View jurisdiction upload progress.
+      </a>
+    </p>
+    <div
+      class="sc-bdVaJa kcYonD"
+    >
+      <button
+        class="bp3-button sc-bxivhb WkpPV"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
         >
-          <span
-            class="bp3-button-text"
-          >
-            Back
-          </span>
-        </button>
-        <button
-          class="bp3-button bp3-disabled bp3-intent-primary sc-bxivhb WkpPV"
-          disabled=""
-          tabindex="-1"
-          type="button"
+          Back
+        </span>
+      </button>
+      <button
+        class="bp3-button bp3-disabled bp3-intent-primary sc-bxivhb WkpPV"
+        disabled=""
+        tabindex="-1"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
         >
-          <span
-            class="bp3-button-text"
-          >
-            Launch Audit
-          </span>
-        </button>
-      </div>
-    </form>
+          Launch Audit
+        </span>
+      </button>
+    </div>
   </div>
 </div>
 `;
@@ -3923,43 +3919,41 @@ exports[`Setup renders Review & Launch stage with processing next stage 1`] = `
     >
       Sample Size
     </h4>
-    <form>
-      <p>
-        All jurisdiction files must be uploaded and all audit settings must be configured in order to calculate the sample size.
-         
-        <a
-          href="/election/1/progress"
-        >
-          View jurisdiction upload progress.
-        </a>
-      </p>
-      <div
-        class="sc-bdVaJa kcYonD"
+    <p>
+      All jurisdiction files must be uploaded and all audit settings must be configured in order to calculate the sample size.
+       
+      <a
+        href="/election/1/progress"
       >
-        <button
-          class="bp3-button sc-bxivhb WkpPV"
-          type="button"
+        View jurisdiction upload progress.
+      </a>
+    </p>
+    <div
+      class="sc-bdVaJa kcYonD"
+    >
+      <button
+        class="bp3-button sc-bxivhb WkpPV"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
         >
-          <span
-            class="bp3-button-text"
-          >
-            Back
-          </span>
-        </button>
-        <button
-          class="bp3-button bp3-disabled bp3-intent-primary sc-bxivhb WkpPV"
-          disabled=""
-          tabindex="-1"
-          type="button"
+          Back
+        </span>
+      </button>
+      <button
+        class="bp3-button bp3-disabled bp3-intent-primary sc-bxivhb WkpPV"
+        disabled=""
+        tabindex="-1"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
         >
-          <span
-            class="bp3-button-text"
-          >
-            Launch Audit
-          </span>
-        </button>
-      </div>
-    </form>
+          Launch Audit
+        </span>
+      </button>
+    </div>
   </div>
 </div>
 `;

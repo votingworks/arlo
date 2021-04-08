@@ -237,15 +237,20 @@ def test_require_cvr_uploads(
     # AA tries to select a sample size - should get an error because CVRs have
     # to be uploaded first
     rv = client.get(f"/api/election/{election_id}/sample-sizes")
-    assert rv.status_code == 409
-    assert json.loads(rv.data) == {
-        "errors": [
-            {
-                "errorType": "Conflict",
-                "message": "Some jurisdictions haven't uploaded their CVRs yet.",
-            }
-        ]
-    }
+    assert rv.status_code == 200
+    compare_json(
+        json.loads(rv.data),
+        {
+            "sampleSizes": None,
+            "selected": None,
+            "task": {
+                "status": "ERRORED",
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": "Some jurisdictions haven't uploaded their CVRs yet.",
+            },
+        },
+    )
 
 
 def test_require_manifest_uploads(
@@ -275,15 +280,20 @@ def test_require_manifest_uploads(
     # AA tries to select a sample size - should get an error because manifests have
     # to be uploaded first
     rv = client.get(f"/api/election/{election_id}/sample-sizes")
-    assert rv.status_code == 409
-    assert json.loads(rv.data) == {
-        "errors": [
-            {
-                "errorType": "Conflict",
-                "message": "Some jurisdictions haven't uploaded their manifests yet",
-            }
-        ]
-    }
+    assert rv.status_code == 200
+    compare_json(
+        json.loads(rv.data),
+        {
+            "sampleSizes": None,
+            "selected": None,
+            "task": {
+                "status": "ERRORED",
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": "Some jurisdictions haven't uploaded their manifests yet",
+            },
+        },
+    )
 
 
 def test_contest_names_dont_match_cvr_contests(
@@ -308,15 +318,20 @@ def test_contest_names_dont_match_cvr_contests(
     assert_ok(rv)
 
     rv = client.get(f"/api/election/{election_id}/sample-sizes")
-    assert rv.status_code == 409
-    assert json.loads(rv.data) == {
-        "errors": [
-            {
-                "errorType": "Conflict",
-                "message": "Couldn't find contest Bad Contest Name in the CVR for jurisdiction J1",
-            }
-        ]
-    }
+    assert rv.status_code == 200
+    compare_json(
+        json.loads(rv.data),
+        {
+            "sampleSizes": None,
+            "selected": None,
+            "task": {
+                "status": "ERRORED",
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": "Couldn't find contest Bad Contest Name in the CVR for jurisdiction J1",
+            },
+        },
+    )
 
 
 def audit_all_ballots(
