@@ -31,7 +31,7 @@ def upgrade():
         "background_task",
         ["sample_size_options_task_id"],
         ["id"],
-        ondelete="cascade",
+        ondelete="set null",
     )
 
 
