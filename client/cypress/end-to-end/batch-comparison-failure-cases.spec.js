@@ -151,17 +151,6 @@ describe('Batch Comparison', () => {
     })
     cy.findAllByText('Upload File').click()
     cy.findAllByText(/Upload successfully completed/).should('have.length', 2)
-    cy.logout(jurisdictionAdmin)
-    cy.loginAuditAdmin(auditAdmin)
-    cy.findByText(`TestAudit${id}`).click()
-    cy.findByText('Review & Launch').click()
-
-    // custom size validation test
-    cy.findByText('Enter your own sample size (not recommended)').click()
-    cy.findByRole('spinbutton').type('20').blur()
-    cy.findByText('Must be less than or equal to: 5 (the total number of batches in the contest)')
-
-    cy.get('input[type="radio"]').first().click({force: true})
     // ending here since there are no further failure cases on this path
   })
 })
