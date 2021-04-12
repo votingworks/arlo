@@ -1,6 +1,6 @@
 import io, csv
 from typing import Dict, List, Optional, Tuple
-from collections import defaultdict
+from collections import defaultdict, Counter
 from sqlalchemy.dialects.postgresql import aggregate_order_by
 
 from . import api
@@ -306,7 +306,12 @@ def round_rows(election: Election):
             "Start Time",
             "End Time",
             "Audited Votes",
-        ],
+        ]
+        + (
+            ["Audited Votes: CVR", "Audited Votes: Non CVR"]
+            if election.audit_type == AuditType.HYBRID
+            else []
+        ),
     ]
 
     round_contests = (
@@ -319,19 +324,36 @@ def round_rows(election: Election):
     for round_contest in round_contests:
         round = round_contest.round
         contest = round_contest.contest
-        audited_votes = pretty_choice_votes(
-            {
-                choice.name: next(
-                    (
-                        result.result
-                        for result in round_contest.results
-                        if result.contest_choice_id == choice.id
-                    ),
-                    0,
-                )
-                for choice in contest.choices
-            }
-        )
+        total_choice_votes = {
+            choice.name: next(
+                (
+                    result.result
+                    for result in round_contest.results
+                    if result.contest_choice_id == choice.id
+                ),
+                0,
+            )
+            for choice in contest.choices
+        }
+
+        if election.audit_type == AuditType.HYBRID:
+            # In hybrid audits, round contest results only store vote counts
+            # for non-CVR ballots. So we compute the totals using the ballot
+            # interpretations for the CVR ballots.
+            non_cvr_choice_vote = total_choice_votes
+            choice_id_to_name = {choice.id: choice.name for choice in contest.choices}
+            cvr_choice_votes = Counter({choice.name: 0 for choice in contest.choices})
+            for ballot in sampled_ballot_interpretations_to_cvrs(contest).values():
+                choice_votes = ballot["cvr"] and ballot["cvr"].get(contest.id)  # type: ignore
+                if choice_votes:
+                    cvr_choice_votes += Counter(
+                        {
+                            choice_id_to_name[choice_id]: count
+                            for choice_id, count in choice_votes.items()
+                        }
+                    )
+            total_choice_votes = Counter(non_cvr_choice_vote) + cvr_choice_votes
+
         rows.append(
             [
                 round.round_num,
@@ -342,8 +364,16 @@ def round_rows(election: Election):
                 pretty_pvalue(round_contest.end_p_value),
                 isoformat(round.created_at),
                 isoformat(round.ended_at),
-                audited_votes,
+                pretty_choice_votes(total_choice_votes),
             ]
+            + (
+                [
+                    pretty_choice_votes(cvr_choice_votes),
+                    pretty_choice_votes(non_cvr_choice_vote),
+                ]
+                if election.audit_type == AuditType.HYBRID
+                else []
+            )
         )
     return rows
 

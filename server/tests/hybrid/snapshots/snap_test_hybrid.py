@@ -44,9 +44,9 @@ J1,Audit Board #1,,,,\r
 J2,Audit Board #1,,,,\r
 \r
 ######## ROUNDS ########\r
-Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes\r
-1,Contest 1,Targeted,22,No,0.7747175905,DATETIME,DATETIME,Choice 1-1: 7; Choice 1-2: 1\r
-1,Contest 2,Opportunistic,,No,1.0,DATETIME,DATETIME,Choice 2-1: 4; Choice 2-2: 1; Choice 2-3: 0\r
+Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes,Audited Votes: CVR,Audited Votes: Non CVR\r
+1,Contest 1,Targeted,22,No,0.7747175905,DATETIME,DATETIME,Choice 1-1: 13; Choice 1-2: 6,Choice 1-2: 5; Choice 1-1: 6,Choice 1-1: 7; Choice 1-2: 1\r
+1,Contest 2,Opportunistic,,No,1.0,DATETIME,DATETIME,Choice 2-1: 9; Choice 2-2: 5; Choice 2-3: 3,Choice 2-1: 5; Choice 2-2: 4; Choice 2-3: 3,Choice 2-1: 4; Choice 2-2: 1; Choice 2-3: 0\r
 \r
 ######## SAMPLED BALLOTS ########\r
 Jurisdiction Name,Tabulator,Batch Name,Ballot Position,Imprinted ID,Ticket Numbers: Contest 1,Audited?,Audit Result: Contest 1,CVR Result: Contest 1,Discrepancy: Contest 1,Audit Result: Contest 2,CVR Result: Contest 2,Discrepancy: Contest 2\r
