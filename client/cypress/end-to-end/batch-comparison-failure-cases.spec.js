@@ -151,6 +151,6 @@ describe('Batch Comparison', () => {
     })
     cy.findAllByText('Upload File').click()
     cy.findAllByText(/Upload successfully completed/).should('have.length', 2)
-    // ending here since replace file functionality is now tested, and there are no further failure cases on this path
+    // ending here since there are no further failure cases on this path
   })
 })
