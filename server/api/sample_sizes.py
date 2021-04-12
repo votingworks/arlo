@@ -246,54 +246,42 @@ def serialize_sample_size_options(sample_size_options):
 @api.route("/election/<election_id>/sample-sizes", methods=["GET"])
 @restrict_access([UserType.AUDIT_ADMIN])
 def get_sample_sizes(election: Election):
-    task = serialize_background_task(election.sample_size_options_task)
-
-    # If we've already started the first round, return which sample size was
-    # selected for each contest so we can show the user
-    if len(list(election.rounds)) > 0:
-        selected_sample_sizes = dict(
-            RoundContest.query.join(Round)
-            .filter_by(election_id=election.id, round_num=1)
-            .values(RoundContest.contest_id, RoundContest.sample_size)
-        )
-        return jsonify(
-            sampleSizes=serialize_sample_size_options(election.sample_size_options),
-            selected=selected_sample_sizes,
-            task=task,
-        )
-
-    # If we're still in audit setup, and we recently computed sample sizes, return them.
-    if (
+    # If we don't have sample sizes stored already, or we do but they expired,
+    # start a background task to compute sample size options. We invalidate
+    # sample size options after 5 seconds because they depend on a lot of data
+    # that might change (e.g. manifests, CVRs, contest settings, random seed),
+    # so we want to recompute them whenever they are requested.
+    existing_options_expired = (
         election.sample_size_options_task
         and election.sample_size_options_task.completed_at
-    ):
-        age = (
+        and (
             datetime.now(timezone.utc) - election.sample_size_options_task.completed_at
+            > timedelta(seconds=5)
         )
-        if age < timedelta(seconds=5):
-            return jsonify(
-                sampleSizes=serialize_sample_size_options(election.sample_size_options),
-                selected=None,
-                task=task,
-            )
-
-    # Otherwise, start a background task to compute sample size options (as
-    # long as there isn't already one in progress).
-    if task is None or (
-        task["status"]
-        not in [ProcessingStatus.READY_TO_PROCESS, ProcessingStatus.PROCESSING]
-    ):
+        # Don't need to recompute after the audit launches
+        and len(list(election.rounds)) == 0
+    )
+    if not election.sample_size_options_task or existing_options_expired:
         election.sample_size_options = None
         election.sample_size_options_task = create_background_task(
             first_round_sample_size_options, dict(election_id=election.id)
         )
         db_session.commit()
 
-    # In tests, the background task will complete immediately, so we return
-    # the sample size options here. In other environments, the background
-    # task will not complete immediately, so this will return None.
+    # If we've already started the first round, return which sample size was
+    # selected for each contest so we can show the user
+    selected_sample_sizes = (
+        dict(
+            RoundContest.query.join(Round)
+            .filter_by(election_id=election.id, round_num=1)
+            .values(RoundContest.contest_id, RoundContest.sample_size)
+        )
+        if len(list(election.rounds)) > 0
+        else None
+    )
+
     return jsonify(
         sampleSizes=serialize_sample_size_options(election.sample_size_options),
-        selected=None,
+        selected=selected_sample_sizes,
         task=serialize_background_task(election.sample_size_options_task),
     )
