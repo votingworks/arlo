@@ -665,7 +665,12 @@ class RoundContest(BaseModel):
     )
     contest = relationship("Contest")
 
-    results = relationship("RoundContestResult", uselist=True, passive_deletes=True,)
+    results = relationship(
+        "RoundContestResult",
+        uselist=True,
+        passive_deletes=True,
+        cascade="all, delete-orphan",
+    )
 
     __table_args__ = (PrimaryKeyConstraint("round_id", "contest_id"),)
 
