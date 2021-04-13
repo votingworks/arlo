@@ -35,7 +35,11 @@ At present, only plurality elections are supported, as they are the predominant 
 
 ### Statistical methods
 
-Arlo uses the BRAVO ballot polling method of measuring risk and estimating how many ballots need to be examined ([Lindeman et al, 2012](https://www.usenix.org/system/files/conference/evtwote12/evtwote12-final27.pdf)).
+The statistics used in Arlo include:
+- For ballot polling: Lindeman, M., P.B. Stark, and V.S. Yates, 2012. BRAVO: Ballot-polling Risk-Limiting Audits to Verify Outcomes. 2012 Electronic Voting Technology Workshop/Workshop on Trustworthy Elections (EVT/WOTE '12). (reprint:https://www.usenix.org/system/files/conference/evtwote12/evtwote12-final27.pdf)
+- For ballot comparison: Stark, P.B., 2008. Conservative Statistical Post Election Audits. The Annals of Applied Statistics, 2, 550–581.http://arxiv.org/abs/0807.4005
+- For hybrid/SUITE: Ottoboni, K., P.B. Stark, M. Lindeman, and N. McBurnett, 2018. Risk-Limiting Audits by Stratified Union-Intersection Tests of Elections (SUITE), to appear in Electronic Voting. E-Vote-ID 2018. Lecture Notes in Computer Science, Springer.https://link.springer.com/chapter/10.1007/978-3-030-00419-4_12. Preprint: https://arxiv.org/abs/1809.04235
+
 
 Random sampling of ballots is done using [Rivest's Consistent Sampler](https://github.com/ron-rivest/consistent_sampler).
 
