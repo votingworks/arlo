@@ -30,6 +30,7 @@ Arlo also supports:
 - single jurisdiction or multi-jurisdiction audits
 - single winner or multi-winner contests
 - auditing multiple contests simultaneously, both within and across jurisdictions (via independent sampling with maximum overlap, due to Rivest's Consistent Sampler)
+- online ballot data entry or offline, paper-based ballot data collection, where applicable (e.g. offline data entry for ballot polling allows for tally sheets to be used onsite to capture individual ballot data, and only aggregate totals need to be entered into Arlo. Ballot comparison and hybrid methods require ballot-by-ballot data entry, however.)
 
 At present, only plurality elections are supported, as they are the predominant election method in the United States.
 
@@ -77,19 +78,7 @@ Note that batch names are strings with no required naming conventions - use what
 
 Ongoing development is planned to support:
 
-- Ballot-by-ballot data entry
-
-- Multiple targeted contests
-
-- Distributed multi-jurisdiction contests
-
-- Batch comparison RLAs
-
-- Ballot comparison RLAs
-
-- Public audit dashboard
-
-- Additional election types (proportional contests, etc.)
+- Additional election types (proportional contests, RCV elections, etc.)
 
 - More efficient statitstical methods
 
