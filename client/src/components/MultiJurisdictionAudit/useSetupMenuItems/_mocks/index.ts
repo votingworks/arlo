@@ -149,7 +149,8 @@ export const roundMocks: {
     | 'twoIncomplete'
     | 'singleComplete'
     | 'needAnother'
-    | 'drawSampleInProgress']: IRound[]
+    | 'drawSampleInProgress'
+    | 'drawSampleErrored']: IRound[]
 } = {
   empty: [],
   singleIncomplete: [
@@ -243,6 +244,22 @@ export const roundMocks: {
         startedAt: '2020-09-14T17:35:19.482Z',
         completedAt: null,
         error: null,
+      },
+    },
+  ],
+  drawSampleErrored: [
+    {
+      endedAt: null,
+      roundNum: 1,
+      isAuditComplete: false,
+      startedAt: '2019-07-18T16:34:07.000+00:00',
+      id: 'round-1',
+      sampledAllBallots: false,
+      drawSampleTask: {
+        status: FileProcessingStatus.ERRORED,
+        startedAt: '2020-09-14T17:35:19.482Z',
+        completedAt: '2020-09-14T17:36:19.482Z',
+        error: 'something went wrong',
       },
     },
   ],

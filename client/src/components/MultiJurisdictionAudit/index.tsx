@@ -24,11 +24,13 @@ import useJurisdictions from './useJurisdictions'
 import useContests from './useContests'
 import useRoundsAuditAdmin, {
   isDrawSampleComplete,
+  drawSampleError,
 } from './useRoundsAuditAdmin'
 import useAuditSettingsJurisdictionAdmin from './RoundManagement/useAuditSettingsJurisdictionAdmin'
 import H2Title from '../Atoms/H2Title'
 import CSVFile from './CSVForm'
 import { useInterval } from '../utilities'
+import { ErrorLabel } from '../Atoms/Form/_helpers'
 
 const VerticalInner = styled(Inner)`
   flex-direction: column;
@@ -99,6 +101,30 @@ export const AuditAdminView: React.FC = () => {
             </div>
             <H3>Drawing a random sample of ballots...</H3>
             <p>For large elections, this can take a couple of minutes.</p>
+          </div>
+        </Inner>
+      </Wrapper>
+    )
+  }
+
+  if (rounds.length > 0 && drawSampleError(rounds)) {
+    return (
+      <Wrapper>
+        <Inner>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              width: '100%',
+              marginTop: '100px',
+            }}
+          >
+            <H3>Arlo could not draw the sample</H3>
+            <p>
+              Please contact our support team for help resolving this issue.
+            </p>
+            <ErrorLabel>Error: {drawSampleError(rounds)}</ErrorLabel>
           </div>
         </Inner>
       </Wrapper>

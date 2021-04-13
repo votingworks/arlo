@@ -342,6 +342,36 @@ describe('AA setup flow', () => {
       })
     })
   })
+
+  it('shows an error if drawing the sample fails', async () => {
+    const loadAfterLaunch = [
+      aaApiCalls.getRounds(roundMocks.drawSampleErrored),
+      aaApiCalls.getJurisdictions,
+      aaApiCalls.getContests,
+      aaApiCalls.getSettings(auditSettings.all),
+    ]
+    const expectedCalls = [
+      aaApiCalls.getUser,
+      ...loadAfterLaunch,
+      ...loadAfterLaunch,
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      render(
+        <AuthDataProvider>
+          <Router>
+            <AuditAdminViewWithAuth />
+          </Router>
+        </AuthDataProvider>
+      )
+      await screen.findByRole('heading', {
+        name: 'Arlo could not draw the sample',
+      })
+      screen.getByText(
+        'Please contact our support team for help resolving this issue.'
+      )
+      screen.getByText('Error: something went wrong')
+    })
+  })
 })
 
 describe('JA setup', () => {
