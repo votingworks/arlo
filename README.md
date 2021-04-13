@@ -21,10 +21,10 @@ As part of the audit, Arlo:
 ### Supported election types, audit methods, and processes
 
 Arlo currently supports multiple risk-limiting audit methods, including:
-- ballot polling 
+- ballot polling (BRAVO & Minerva)
 - batch comparison
 - ballot comparison
-- hybrid (ballot polling & ballot comparison) 
+- hybrid (SUITE, combining ballot polling & ballot comparison) 
 
 Arlo also supports:
 - single jurisdiction or multi-jurisdiction audits
