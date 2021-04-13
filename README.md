@@ -20,7 +20,18 @@ As part of the audit, Arlo:
 
 ### Supported election types, audit methods, and processes
 
-Arlo currently supports ballot polling risk-limiting audits of single or multi-winner plurality contests. Only one targeted contest is supported at this time, although mutliple instances of the tool may also be run in parallel if multiple targeted contests are desired. If multiple jurisdictions are participating in the audit, ballot manifests and vote/ballot totals for each jurisdiction must be manually combined. Votes from individual audited ballots are currently recorded & tallied manually, then entered into the tool as totals.
+Arlo currently supports multiple risk-limiting audit methods, including:
+- ballot polling 
+- batch comparison
+- ballot comparison
+- hybrid (ballot polling & ballot comparison) 
+
+Arlo also supports:
+- single jurisdiction or multi-jurisdiction audits
+- single winner or multi-winner contests
+- auditing multiple contests simultaneously, both within and across jurisdictions (via independent sampling with maximum overlap, due to Rivest's Consistent Sampler)
+
+At present, only plurality elections are supported, as they are the predominant election method in the United States.
 
 ### Statistical methods
 
