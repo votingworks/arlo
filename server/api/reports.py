@@ -346,13 +346,15 @@ def round_rows(election: Election):
             for ballot in sampled_ballot_interpretations_to_cvrs(contest).values():
                 choice_votes = ballot["cvr"] and ballot["cvr"].get(contest.id)  # type: ignore
                 if choice_votes:
-                    cvr_choice_votes += Counter(
+                    cvr_choice_votes.update(
                         {
                             choice_id_to_name[choice_id]: count
                             for choice_id, count in choice_votes.items()
                         }
                     )
-            total_choice_votes = Counter(non_cvr_choice_vote) + cvr_choice_votes
+            total_choice_votes = Counter()
+            total_choice_votes.update(non_cvr_choice_vote)
+            total_choice_votes.update(cvr_choice_votes)
 
         rows.append(
             [
