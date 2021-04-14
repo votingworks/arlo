@@ -30,7 +30,6 @@ import useAuditSettingsJurisdictionAdmin from './RoundManagement/useAuditSetting
 import H2Title from '../Atoms/H2Title'
 import CSVFile from './CSVForm'
 import { useInterval } from '../utilities'
-import { ErrorLabel } from '../Atoms/Form/_helpers'
 
 const VerticalInner = styled(Inner)`
   flex-direction: column;
@@ -107,30 +106,6 @@ export const AuditAdminView: React.FC = () => {
     )
   }
 
-  if (rounds.length > 0 && drawSampleError(rounds)) {
-    return (
-      <Wrapper>
-        <Inner>
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              width: '100%',
-              marginTop: '100px',
-            }}
-          >
-            <H3>Arlo could not draw the sample</H3>
-            <p>
-              Please contact our support team for help resolving this issue.
-            </p>
-            <ErrorLabel>Error: {drawSampleError(rounds)}</ErrorLabel>
-          </div>
-        </Inner>
-      </Wrapper>
-    )
-  }
-
   switch (view) {
     case 'setup':
       return (
@@ -168,13 +143,15 @@ export const AuditAdminView: React.FC = () => {
           >
             <RefreshTag refresh={refresh} />
           </AuditAdminStatusBox>
-          <Inner>
-            <Progress
-              jurisdictions={jurisdictions}
-              auditSettings={auditSettings}
-              round={rounds[rounds.length - 1]}
-            />
-          </Inner>
+          {!drawSampleError(rounds) && (
+            <Inner>
+              <Progress
+                jurisdictions={jurisdictions}
+                auditSettings={auditSettings}
+                round={rounds[rounds.length - 1]}
+              />
+            </Inner>
+          )}
         </Wrapper>
       )
     default:

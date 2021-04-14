@@ -354,6 +354,8 @@ describe('AA setup flow', () => {
       aaApiCalls.getUser,
       ...loadAfterLaunch,
       ...loadAfterLaunch,
+      aaApiCalls.getSettings(auditSettings.all),
+      aaApiCalls.getJurisdictionFile,
     ]
     await withMockFetch(expectedCalls, async () => {
       render(
