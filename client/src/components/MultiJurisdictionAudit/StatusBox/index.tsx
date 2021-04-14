@@ -9,7 +9,7 @@ import { apiDownload } from '../../utilities'
 import { Inner } from '../../Atoms/Wrapper'
 import { IContest } from '../../../types'
 import { IAuditBoard } from '../useAuditBoards'
-import { IRound } from '../useRoundsAuditAdmin'
+import { IRound, drawSampleError } from '../useRoundsAuditAdmin'
 import { IAuditSettings } from '../useAuditSettings'
 
 const SpacedH3 = styled(H3)`
@@ -179,6 +179,21 @@ export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
       <StatusBox
         headline="The audit has not started."
         details={details}
+        auditName={auditSettings.auditName}
+      >
+        {children}
+      </StatusBox>
+    )
+  }
+
+  if (drawSampleError(rounds)) {
+    return (
+      <StatusBox
+        headline="Arlo could not draw the sample"
+        details={[
+          'Please contact our support team for help resolving this issue.',
+          `Error: ${drawSampleError(rounds)}`,
+        ]}
         auditName={auditSettings.auditName}
       >
         {children}
