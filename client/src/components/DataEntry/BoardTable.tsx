@@ -8,6 +8,7 @@ import { BallotStatus } from '../../types'
 import LinkButton from '../Atoms/LinkButton'
 import { IBallot } from '../MultiJurisdictionAudit/RoundManagement/useBallots'
 import { IAuditBoard } from '../UserContext'
+import StatusTag from '../Atoms/StatusTag'
 
 const RightWrapper = styled.div`
   display: flex;
@@ -50,9 +51,9 @@ const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
         return ballot.status !== BallotStatus.NOT_AUDITED ? (
           <>
             {ballot.status === BallotStatus.AUDITED ? (
-              <span>Audited</span>
+              <StatusTag intent="success">Audited</StatusTag>
             ) : (
-              <span>Not Found</span>
+              <StatusTag intent="danger">Not Found</StatusTag>
             )}
             <ReAuditBtn
               to={`${url}/batch/${ballot.batch.id}/ballot/${ballot.position}`}
@@ -62,7 +63,7 @@ const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
             </ReAuditBtn>
           </>
         ) : (
-          'Not Audited'
+          <StatusTag intent="warning">Not Audited</StatusTag>
         )
       },
     },
