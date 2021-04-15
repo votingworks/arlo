@@ -240,3 +240,59 @@ def list_audit_board_contests(
 ):
     json_contests = [serialize_contest(c) for c in jurisdiction.contests]
     return jsonify({"contests": json_contests})
+
+
+# { jurisdiction_id: { contest_name: cvr_contest_name }}
+CONTEST_NAME_STANDARDIZATIONS_SCHEMA = {
+    "type": "object",
+    "patternProperties": {
+        "^.*$": {
+            "type": "object",
+            "patternProperties": {"^.*$": {"type": "string", "minLength": 1}},
+        },
+    },
+}
+
+
+@api.route("/election/<election_id>/contest/standardizations", methods=["PUT"])
+@restrict_access([UserType.AUDIT_ADMIN])
+def put_contest_name_standardizations(election: Election):
+    standardizations = request.get_json()
+    validate(standardizations, CONTEST_NAME_STANDARDIZATIONS_SCHEMA)
+
+    for jurisdiction in election.jurisdictions:
+        jurisdiction.contest_name_standardizations = standardizations.get(
+            jurisdiction.id
+        )
+    db_session.commit()
+
+    return jsonify(status="ok")
+
+
+@api.route("/election/<election_id>/contest/standardizations", methods=["GET"])
+@restrict_access([UserType.AUDIT_ADMIN])
+def get_contest_name_standardizations(election: Election):
+    contest_names = {contest.name for contest in election.contests}
+
+    # Since the targeted/opportunistic contests or CVR contests could have
+    # changed since these mappings were created, filter out any outdated
+    # standardizations.
+    def valid_standardizations(jurisdiction):
+        if jurisdiction.contest_name_standardizations is None:
+            return None
+        return {
+            contest_name: cvr_contest_name
+            for contest_name, cvr_contest_name in jurisdiction.contest_name_standardizations.items()
+            if (
+                contest_name in contest_names
+                and cvr_contest_name in jurisdiction.cvr_contests_metadata
+            )
+        }
+
+    return jsonify(
+        {
+            jurisdiction.id: valid_standardizations(jurisdiction)
+            for jurisdiction in election.jurisdictions
+        }
+    )
+
