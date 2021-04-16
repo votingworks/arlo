@@ -2,7 +2,6 @@ import uuid
 import io
 import tempfile
 import csv
-import typing
 from typing import Dict, Optional, TypedDict
 from collections import defaultdict
 import re
@@ -25,7 +24,6 @@ from ..util.process_file import (
 )
 from ..util.csv_download import csv_response
 from ..util.csv_parse import decode_csv_file
-from ..util.jsonschema import JSONDict
 from ..util.group_by import group_by
 from ..audit_math.suite import HybridPair
 
@@ -43,7 +41,7 @@ class CvrContestMetadata(TypedDict):
 
 
 # { contest_id: CvrContestMetadata }
-CVR_CONTESTS_METADATA = Dict[str, CvrContestMetadata]
+CVR_CONTESTS_METADATA = Dict[str, CvrContestMetadata]  # pylint: disable=invalid-name
 
 
 def validate_uploaded_cvrs(contest: Contest):
@@ -92,12 +90,14 @@ def cvr_contests_metadata(
     standardizations = typing_cast(
         Optional[Dict[str, str]], jurisdiction.contest_name_standardizations
     )
-
-    def standardized_name(cvr_contest_name: str) -> str:
-        return (standardizations or {}).get(cvr_contest_name, cvr_contest_name)
+    standardizations = {
+        cvr_contest_name: contest_name
+        for contest_name, cvr_contest_name in (standardizations or {}).items()
+        if cvr_contest_name
+    }
 
     return {
-        standardized_name(cvr_contest_name): contest_metadata
+        standardizations.get(cvr_contest_name, cvr_contest_name): contest_metadata
         for cvr_contest_name, contest_metadata in metadata.items()
     }
 

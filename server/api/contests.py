@@ -242,13 +242,17 @@ def list_audit_board_contests(
     return jsonify({"contests": json_contests})
 
 
-# { jurisdiction_id: { contest_name: cvr_contest_name }}
+# { jurisdiction_id: { contest_name: cvr_contest_name | null }}
 CONTEST_NAME_STANDARDIZATIONS_SCHEMA = {
     "type": "object",
     "patternProperties": {
         "^.*$": {
             "type": "object",
-            "patternProperties": {"^.*$": {"type": "string", "minLength": 1}},
+            "patternProperties": {
+                "^.*$": {
+                    "anyOf": [{"type": "string", "minLength": 1}, {"type": "null"}]
+                }
+            },
         },
     },
 }
@@ -264,6 +268,11 @@ def put_contest_name_standardizations(election: Election):
         jurisdiction.contest_name_standardizations = standardizations.get(
             jurisdiction.id
         )
+
+    # TODO test for why we need this
+    for contest in election.contests:
+        set_contest_metadata_from_cvrs(contest)
+
     db_session.commit()
 
     return jsonify(status="ok")
@@ -272,27 +281,30 @@ def put_contest_name_standardizations(election: Election):
 @api.route("/election/<election_id>/contest/standardizations", methods=["GET"])
 @restrict_access([UserType.AUDIT_ADMIN])
 def get_contest_name_standardizations(election: Election):
-    contest_names = {contest.name for contest in election.contests}
-
-    # Since the targeted/opportunistic contests or CVR contests could have
-    # changed since these mappings were created, filter out any outdated
-    # standardizations.
-    def valid_standardizations(jurisdiction):
-        if jurisdiction.contest_name_standardizations is None:
-            return None
-        return {
+    def standardizations(jurisdiction):
+        contests_needing_standardization = [
+            contest
+            for contest in jurisdiction.contests
+            if contest.name not in jurisdiction.cvr_contests_metadata
+        ]
+        # Since CVR contests could have changed since these mappings were
+        # created, filter out any outdated standardizations.
+        valid_standardizations = {
             contest_name: cvr_contest_name
-            for contest_name, cvr_contest_name in jurisdiction.contest_name_standardizations.items()
-            if (
-                contest_name in contest_names
-                and cvr_contest_name in jurisdiction.cvr_contests_metadata
-            )
+            for contest_name, cvr_contest_name in (
+                jurisdiction.contest_name_standardizations or {}
+            ).items()
+            if cvr_contest_name in jurisdiction.cvr_contests_metadata
+        }
+        return {
+            contest.name: valid_standardizations.get(contest.name)
+            for contest in contests_needing_standardization
         }
 
     return jsonify(
         {
-            jurisdiction.id: valid_standardizations(jurisdiction)
+            jurisdiction.id: standardizations(jurisdiction)
             for jurisdiction in election.jurisdictions
+            if standardizations(jurisdiction)
         }
     )
-
