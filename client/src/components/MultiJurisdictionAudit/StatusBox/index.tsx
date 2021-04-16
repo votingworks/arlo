@@ -78,16 +78,14 @@ const StatusBox: React.FC<IStatusBoxProps> = ({
   )
 }
 
-const downloadAuditAdminReport = (electionId: string) => {
+const downloadAuditAdminReport = (electionId: string) =>
   apiDownload(`/election/${electionId}/report`)
-}
 
 const downloadJurisdictionAdminReport = (
   electionId: string,
   jurisdictionId: string
-) => {
+) =>
   apiDownload(`/election/${electionId}/jurisdiction/${jurisdictionId}/report`)
-}
 
 export const allCvrsUploaded = (jurisdictions: IJurisdiction[]): boolean =>
   jurisdictions.every(
@@ -245,7 +243,7 @@ export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
       headline="Congratulations - the audit is complete!"
       details={[]}
       buttonLabel="Download Audit Report"
-      onButtonClick={() => downloadAuditAdminReport(electionId)}
+      onButtonClick={async () => downloadAuditAdminReport(electionId)}
       auditName={auditSettings.auditName}
     >
       {children}
@@ -377,7 +375,7 @@ export const JurisdictionAdminStatusBox = ({
       headline="The audit is complete"
       details={['Download the audit report.']}
       buttonLabel="Download Audit Report"
-      onButtonClick={() =>
+      onButtonClick={async () =>
         downloadJurisdictionAdminReport(electionId, jurisdictionId)
       }
       auditName={auditName}

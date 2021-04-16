@@ -330,6 +330,7 @@ describe('Progress screen', () => {
           name: /Download Aggregated Ballot Retrieval List/,
         })
       )
+
       expect(window.open).toHaveBeenCalledWith(
         '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/ballots/retrieval-list'
       )

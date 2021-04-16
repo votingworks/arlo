@@ -1,6 +1,7 @@
 import React from 'react'
 import { BrowserRouter as Router, useParams } from 'react-router-dom'
 import { render, fireEvent, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { AuditAdminStatusBox, JurisdictionAdminStatusBox } from '.'
 import {
   auditSettings,
@@ -266,7 +267,8 @@ describe('StatusBox', () => {
     })
 
     it('downloads audit report', async () => {
-      window.open = jest.fn()
+      const mockDownloadWindow: { onbeforeunload?: () => void } = {}
+      window.open = jest.fn().mockReturnValue(mockDownloadWindow)
       render(
         <Router>
           <AuditAdminStatusBox
@@ -278,15 +280,18 @@ describe('StatusBox', () => {
           />
         </Router>
       )
-      fireEvent.click(
-        screen.getByRole('button', { name: 'Download Audit Report' }),
-        {
-          bubbles: true,
-        }
-      )
+      const downloadReportButton = screen.getByRole('button', {
+        name: 'Download Audit Report',
+      })
+      userEvent.click(downloadReportButton)
+      expect(downloadReportButton).toBeDisabled()
       await waitFor(() => {
         expect(window.open).toHaveBeenCalledTimes(1)
         expect(window.open).toBeCalledWith(`/api/election/1/report`)
+      })
+      mockDownloadWindow.onbeforeunload!()
+      await waitFor(() => {
+        expect(downloadReportButton).toBeEnabled()
       })
     })
   })
@@ -445,7 +450,8 @@ describe('StatusBox', () => {
     })
 
     it('downloads audit report', async () => {
-      window.open = jest.fn()
+      const mockDownloadWindow: { onbeforeunload?: () => void } = {}
+      window.open = jest.fn().mockReturnValue(mockDownloadWindow)
       render(
         <Router>
           <JurisdictionAdminStatusBox
@@ -462,17 +468,20 @@ describe('StatusBox', () => {
           />
         </Router>
       )
-      fireEvent.click(
-        screen.getByRole('button', { name: 'Download Audit Report' }),
-        {
-          bubbles: true,
-        }
-      )
+      const downloadReportButton = screen.getByRole('button', {
+        name: 'Download Audit Report',
+      })
+      userEvent.click(downloadReportButton)
+      expect(downloadReportButton).toBeDisabled()
       await waitFor(() => {
         expect(window.open).toHaveBeenCalledTimes(1)
         expect(window.open).toHaveBeenCalledWith(
           '/api/election/1/jurisdiction/1/report'
         )
+      })
+      mockDownloadWindow.onbeforeunload!()
+      await waitFor(() => {
+        expect(downloadReportButton).toBeEnabled()
       })
     })
 
