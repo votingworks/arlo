@@ -269,7 +269,6 @@ def put_contest_name_standardizations(election: Election):
             jurisdiction.id
         )
 
-    # TODO test for why we need this
     for contest in election.contests:
         set_contest_metadata_from_cvrs(contest)
 
@@ -282,6 +281,8 @@ def put_contest_name_standardizations(election: Election):
 @restrict_access([UserType.AUDIT_ADMIN])
 def get_contest_name_standardizations(election: Election):
     def standardizations(jurisdiction):
+        if jurisdiction.cvr_contests_metadata is None:
+            return None
         contests_needing_standardization = [
             contest
             for contest in jurisdiction.contests
