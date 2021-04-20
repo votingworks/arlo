@@ -41,11 +41,17 @@ def test_standardize_contest_names(
     rv = client.get(f"/api/election/{election_id}/contest/standardizations")
     assert rv.status_code == 200
     assert json.loads(rv.data) == {
-        jurisdiction_ids[0]: {
-            "Standardized Contest 1": None,
-            "Standardized Contest 2": None,
+        "standardizations": {
+            jurisdiction_ids[0]: {
+                "Standardized Contest 1": None,
+                "Standardized Contest 2": None,
+            },
+            jurisdiction_ids[1]: {"Standardized Contest 1": None},
         },
-        jurisdiction_ids[1]: {"Standardized Contest 1": None,},
+        "cvrContestNames": {
+            jurisdiction_ids[0]: ["Contest 1", "Contest 2"],
+            jurisdiction_ids[1]: ["Contest 1", "Contest 2"],
+        },
     }
 
     # Put some standardizations
@@ -65,7 +71,7 @@ def test_standardize_contest_names(
     # Get again, should have been saved
     rv = client.get(f"/api/election/{election_id}/contest/standardizations")
     assert rv.status_code == 200
-    assert json.loads(rv.data) == {
+    assert json.loads(rv.data)["standardizations"] == {
         jurisdiction_ids[0]: {
             "Standardized Contest 1": None,
             "Standardized Contest 2": "Contest 2",
@@ -108,7 +114,7 @@ def test_standardize_contest_names(
     # Get again, should have been saved
     rv = client.get(f"/api/election/{election_id}/contest/standardizations")
     assert rv.status_code == 200
-    assert json.loads(rv.data) == {
+    assert json.loads(rv.data)["standardizations"] == {
         jurisdiction_ids[0]: {
             "Standardized Contest 1": "Contest 1",
             "Standardized Contest 2": "Contest 2",
@@ -152,7 +158,7 @@ def test_standardize_contest_names_before_cvrs(
 
     rv = client.get(f"/api/election/{election_id}/contest/standardizations")
     assert rv.status_code == 200
-    assert json.loads(rv.data) == {}
+    assert json.loads(rv.data) == {"standardizations": {}, "cvrContestNames": {}}
 
 
 def test_standardize_contest_names_before_contests(
@@ -166,7 +172,7 @@ def test_standardize_contest_names_before_contests(
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/contest/standardizations")
     assert rv.status_code == 200
-    assert json.loads(rv.data) == {}
+    assert json.loads(rv.data) == {"standardizations": {}, "cvrContestNames": {}}
 
 
 def test_standardize_contest_names_cvr_change(
@@ -194,7 +200,8 @@ def test_standardize_contest_names_cvr_change(
     rv = client.get(f"/api/election/{election_id}/contest/standardizations")
     assert rv.status_code == 200
     assert json.loads(rv.data) == {
-        jurisdiction_ids[0]: {"Standardized Contest 1": None},
+        "standardizations": {jurisdiction_ids[0]: {"Standardized Contest 1": None},},
+        "cvrContestNames": {jurisdiction_ids[0]: ["Contest 1", "Contest 2"]},
     }
 
     # Put some standardizations
@@ -226,7 +233,8 @@ def test_standardize_contest_names_cvr_change(
     rv = client.get(f"/api/election/{election_id}/contest/standardizations")
     assert rv.status_code == 200
     assert json.loads(rv.data) == {
-        jurisdiction_ids[0]: {"Standardized Contest 1": None},
+        "standardizations": {jurisdiction_ids[0]: {"Standardized Contest 1": None}},
+        "cvrContestNames": {jurisdiction_ids[0]: ["Contest A", "Contest 2"]},
     }
 
     # Try to get the sample sizes - should fail because we haven't standardized
@@ -274,7 +282,8 @@ def test_standardize_contest_names_contest_change(
     rv = client.get(f"/api/election/{election_id}/contest/standardizations")
     assert rv.status_code == 200
     assert json.loads(rv.data) == {
-        jurisdiction_ids[0]: {"Standardized Contest 1": None},
+        "standardizations": {jurisdiction_ids[0]: {"Standardized Contest 1": None},},
+        "cvrContestNames": {jurisdiction_ids[0]: ["Contest 1", "Contest 2"]},
     }
 
     # Put some standardizations
@@ -302,7 +311,8 @@ def test_standardize_contest_names_contest_change(
     rv = client.get(f"/api/election/{election_id}/contest/standardizations")
     assert rv.status_code == 200
     assert json.loads(rv.data) == {
-        jurisdiction_ids[0]: {"Standardized Contest A": None},
+        "standardizations": {jurisdiction_ids[0]: {"Standardized Contest A": None}},
+        "cvrContestNames": {jurisdiction_ids[0]: ["Contest 1", "Contest 2"]},
     }
 
     # Try to get the sample sizes - should fail because we haven't standardized

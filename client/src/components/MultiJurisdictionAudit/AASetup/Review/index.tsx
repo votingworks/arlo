@@ -43,7 +43,9 @@ import { mapValues } from '../../../../utils/objects'
 import { FlexTable } from '../../../Atoms/Table'
 import { pluralize } from '../../../../utils/string'
 import { ErrorLabel } from '../../../Atoms/Form/_helpers'
-import useContestNameStandardizations from '../../useContestNameStandardizations'
+import useContestNameStandardizations, {
+  IContestNameStandardizations,
+} from '../../useContestNameStandardizations'
 
 const percentFormatter = new Intl.NumberFormat(undefined, {
   style: 'percent',
@@ -91,10 +93,11 @@ const Review: React.FC<IProps> = ({
     !!standardizations && Object.values(standardizations).length > 0
   const standardizationComplete =
     !!standardizations &&
-    Object.values(standardizations).every(jurisdictionStandardizations =>
-      Object.values(jurisdictionStandardizations).every(
-        cvrContestName => cvrContestName !== null
-      )
+    Object.values(standardizations.standardizations).every(
+      jurisdictionStandardizations =>
+        Object.values(jurisdictionStandardizations).every(
+          cvrContestName => cvrContestName !== null
+        )
     )
 
   const setupComplete =
@@ -229,6 +232,42 @@ const Review: React.FC<IProps> = ({
       </Card>
       <br />
       <H4>Contests</H4>
+      {standardizationNeeded && (
+        <>
+          {!standardizationComplete ? (
+            <Callout intent="warning">
+              <p>
+                Some contest names in the CVR files do not match the
+                target/opportunistic contest names.
+              </p>
+              <Button
+                intent="primary"
+                onClick={() => setIsStandardizationsDialogOpen(true)}
+              >
+                Standardize Contest Names
+              </Button>
+            </Callout>
+          ) : (
+            <Callout intent="success">
+              <p>
+                All contest names in the CVR files have been standardized to
+                match the target/opportunistic contest names.
+              </p>
+              <Button onClick={() => setIsStandardizationsDialogOpen(true)}>
+                Edit Standardized Contest Names
+              </Button>
+            </Callout>
+          )}
+          <StandardizeContestNamesDialog
+            isOpen={isStandardizationsDialogOpen}
+            onClose={() => setIsStandardizationsDialogOpen(false)}
+            standardizations={standardizations}
+            updateStandardizations={updateStandardizations}
+            jurisdictionIdToName={jurisdictionIdToName}
+          />
+          <br />
+        </>
+      )}
       {contests.map(contest => (
         <Card key={contest.id}>
           <div
@@ -346,103 +385,12 @@ const Review: React.FC<IProps> = ({
       <br />
       <H4>Sample Size</H4>
       {(() => {
-        if (standardizationNeeded)
+        if (standardizationNeeded && !standardizationComplete)
           return (
-            <>
-              {!standardizationComplete ? (
-                <Callout intent="warning">
-                  <p>
-                    Some contest names in the CVR files do not match the
-                    target/opportunistic contest names.
-                  </p>
-                  <Button
-                    intent="primary"
-                    onClick={() => setIsStandardizationsDialogOpen(true)}
-                  >
-                    Standardize Contest Names
-                  </Button>
-                </Callout>
-              ) : (
-                <Callout intent="success">Standardization Complete</Callout>
-              )}
-              <Dialog
-                isOpen={isStandardizationsDialogOpen}
-                onClose={() => setIsStandardizationsDialogOpen(false)}
-                title="Standardize Contest Names"
-              >
-                <Formik
-                  initialValues={standardizations}
-                  enableReinitialize
-                  onSubmit={newStandardizations =>
-                    updateStandardizations(newStandardizations)
-                  }
-                >
-                  {({ values, setFieldValue, handleSubmit, isSubmitting }) => (
-                    <form>
-                      <div className={Classes.DIALOG_BODY}>
-                        <p>
-                          For each contest below, select the CVR contest name
-                          that matches the standard target/opportunistic contest
-                          name.
-                        </p>
-                        {
-                          <HTMLTable>
-                            <thead>
-                              <tr>
-                                <th>Jurisdiction</th>
-                                <th>Target/Opportunistic Contest</th>
-                                <th>CVR Contest</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {Object.entries(values).map(
-                                ([
-                                  jurisdictionId,
-                                  jurisdictionStandardizations,
-                                ]) =>
-                                  Object.entries(
-                                    jurisdictionStandardizations
-                                  ).map(([contestName, cvrContestName]) => (
-                                    <tr key={jurisdictionId + contestName}>
-                                      <td>
-                                        {jurisdictionIdToName[jurisdictionId]}
-                                      </td>
-                                      <td>{contestName}</td>
-                                      <td>
-                                        <HTMLSelect
-                                          value={cvrContestName || undefined}
-                                        ></HTMLSelect>
-                                      </td>
-                                    </tr>
-                                  ))
-                              )}
-                            </tbody>
-                          </HTMLTable>
-                        }
-                      </div>
-                      <div className={Classes.DIALOG_FOOTER}>
-                        <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-                          <Button
-                            onClick={() =>
-                              setIsStandardizationsDialogOpen(false)
-                            }
-                          >
-                            Cancel
-                          </Button>
-                          <FormButton
-                            intent={Intent.PRIMARY}
-                            onClick={handleSubmit}
-                            loading={isSubmitting}
-                          >
-                            Submit
-                          </FormButton>
-                        </div>
-                      </div>
-                    </form>
-                  )}
-                </Formik>
-              </Dialog>
-            </>
+            <p>
+              All contest names must be standardized in order to calculate the
+              sample size.
+            </p>
           )
 
         if (!setupComplete)
@@ -641,5 +589,112 @@ const Review: React.FC<IProps> = ({
     </div>
   )
 }
+
+interface IStandardizeContestNamesDialogProps {
+  isOpen: boolean
+  onClose: () => void
+  standardizations: IContestNameStandardizations
+  updateStandardizations: (
+    standardizations: IContestNameStandardizations['standardizations']
+  ) => Promise<boolean>
+  jurisdictionIdToName: { [jurisdictionId: string]: string }
+}
+
+const StandardizeContestNamesDialog = ({
+  isOpen,
+  onClose,
+  standardizations,
+  updateStandardizations,
+  jurisdictionIdToName,
+}: IStandardizeContestNamesDialogProps) => (
+  <Dialog isOpen={isOpen} onClose={onClose} title="Standardize Contest Names">
+    <Formik
+      initialValues={standardizations.standardizations}
+      enableReinitialize
+      onSubmit={async newStandardizations => {
+        await updateStandardizations(newStandardizations)
+        onClose()
+      }}
+    >
+      {({ values, setValues, handleSubmit, isSubmitting }) => (
+        <form>
+          <div className={Classes.DIALOG_BODY}>
+            <p>
+              For each contest below, select the CVR contest name that matches
+              the standard target/opportunistic contest name.
+            </p>
+            {
+              <HTMLTable>
+                <thead>
+                  <tr>
+                    <th>Jurisdiction</th>
+                    <th>Target/Opportunistic Contest</th>
+                    <th>CVR Contest</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Object.entries(values).map(
+                    ([jurisdictionId, jurisdictionStandardizations]) =>
+                      Object.entries(jurisdictionStandardizations).map(
+                        ([contestName, standardizedCvrContestName]) => (
+                          <tr key={jurisdictionId + contestName}>
+                            <td>{jurisdictionIdToName[jurisdictionId]}</td>
+                            <td>{contestName}</td>
+                            <td>
+                              <HTMLSelect
+                                value={standardizedCvrContestName || undefined}
+                                onChange={e =>
+                                  // We have to use setValues because the contest name
+                                  // might have a dot or apostrophe in it, so
+                                  // setFieldValue won't work.
+                                  setValues({
+                                    ...values,
+                                    [jurisdictionId]: {
+                                      ...values[jurisdictionId],
+                                      [contestName]:
+                                        e.currentTarget.value || null,
+                                    },
+                                  })
+                                }
+                              >
+                                {[<option key="" value="" />].concat(
+                                  standardizations.cvrContestNames[
+                                    jurisdictionId
+                                  ].map(cvrContestName => (
+                                    <option
+                                      value={cvrContestName}
+                                      key={cvrContestName}
+                                    >
+                                      {cvrContestName}
+                                    </option>
+                                  ))
+                                )}
+                              </HTMLSelect>
+                            </td>
+                          </tr>
+                        )
+                      )
+                  )}
+                </tbody>
+              </HTMLTable>
+            }
+          </div>
+          <div className={Classes.DIALOG_FOOTER}>
+            <div className={Classes.DIALOG_FOOTER_ACTIONS}>
+              <Button onClick={onClose}>Cancel</Button>
+              <FormButton
+                intent={Intent.PRIMARY}
+                onClick={handleSubmit}
+                loading={isSubmitting}
+              >
+                Submit
+              </FormButton>
+            </div>
+          </div>
+        </form>
+      )}
+    </Formik>
+  </Dialog>
+)
 
 export default Review

@@ -2,8 +2,13 @@ import { useEffect, useState } from 'react'
 import { api } from '../utilities'
 
 export interface IContestNameStandardizations {
-  [jurisdictionId: string]: {
-    [contestName: string]: string | null // CVR contest name
+  standardizations: {
+    [jurisdictionId: string]: {
+      [contestName: string]: string | null // CVR contest name
+    }
+  }
+  cvrContestNames: {
+    [jurisdictionId: string]: string[]
   }
 }
 
@@ -16,7 +21,9 @@ const useContestNameStandardizations = (
   electionId: string
 ): [
   IContestNameStandardizations | null,
-  (standardizations: IContestNameStandardizations) => Promise<boolean>
+  (
+    standardizations: IContestNameStandardizations['standardizations']
+  ) => Promise<boolean>
 ] => {
   const [
     standardizations,
@@ -24,7 +31,7 @@ const useContestNameStandardizations = (
   ] = useState<IContestNameStandardizations | null>(null)
 
   const updateStandardizations = async (
-    newStandardizations: IContestNameStandardizations
+    newStandardizations: IContestNameStandardizations['standardizations']
   ): Promise<boolean> => {
     const response = await api(
       `/election/${electionId}/contest/standardizations`,
@@ -36,6 +43,7 @@ const useContestNameStandardizations = (
         },
       }
     )
+    if (response) setStandardizations(await getStandardizations(electionId))
     return !!response
   }
 

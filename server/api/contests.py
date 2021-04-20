@@ -302,10 +302,22 @@ def get_contest_name_standardizations(election: Election):
             for contest in contests_needing_standardization
         }
 
+    standardizations_by_jurisdiction = {
+        jurisdiction: standardizations(jurisdiction)
+        for jurisdiction in election.jurisdictions
+    }
+
     return jsonify(
-        {
-            jurisdiction.id: standardizations(jurisdiction)
-            for jurisdiction in election.jurisdictions
-            if standardizations(jurisdiction)
-        }
+        standardizations={
+            jurisdiction.id: jurisdiction_standardizations
+            for jurisdiction, jurisdiction_standardizations in standardizations_by_jurisdiction.items()
+            if jurisdiction_standardizations
+        },
+        cvrContestNames={
+            jurisdiction.id: list(
+                typing.cast(dict, jurisdiction.cvr_contests_metadata).keys()
+            )
+            for jurisdiction, jurisdiction_standardizations in standardizations_by_jurisdiction.items()
+            if jurisdiction_standardizations
+        },
     )
