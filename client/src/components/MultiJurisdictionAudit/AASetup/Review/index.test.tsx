@@ -346,6 +346,7 @@ describe('Audit Setup > Review & Launch', () => {
       apiCalls.getStandardizedContestsFile,
       apiCalls.getSampleSizeOptions({
         ...sampleSizeMock,
+        sampleSizes: null,
         task: {
           ...sampleSizeMock.task,
           status: FileProcessingStatus.ERRORED,

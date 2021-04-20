@@ -329,6 +329,9 @@ const Review: React.FC<IProps> = ({
             </p>
           )
 
+        if (sampleSizesResponse && sampleSizesResponse.task.error !== null)
+          return <ErrorLabel>{sampleSizesResponse.task.error}</ErrorLabel>
+
         if (
           sampleSizesResponse === null ||
           sampleSizesResponse.sampleSizes === null
@@ -341,9 +344,6 @@ const Review: React.FC<IProps> = ({
               </span>
             </div>
           )
-
-        if (sampleSizesResponse.task.error !== null)
-          return <ErrorLabel>{sampleSizesResponse.task.error}</ErrorLabel>
 
         // Add custom option to sample size options from backend
         const sampleSizeOptions = mapValues(
