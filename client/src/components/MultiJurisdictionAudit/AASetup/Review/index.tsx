@@ -38,6 +38,7 @@ import { mapValues } from '../../../../utils/objects'
 import { FlexTable } from '../../../Atoms/Table'
 import { pluralize } from '../../../../utils/string'
 import { ErrorLabel } from '../../../Atoms/Form/_helpers'
+import useContestNameStandardizations from '../../useContestNameStandardizations'
 
 const percentFormatter = new Intl.NumberFormat(undefined, {
   style: 'percent',
@@ -71,6 +72,10 @@ const Review: React.FC<IProps> = ({
   const [contests] = useContests(electionId)
   const history = useHistory()
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
+  const [
+    standardizations,
+    updateStandardizations,
+  ] = useContestNameStandardizations(electionId)
 
   const setupComplete =
     !!jurisdictions &&
