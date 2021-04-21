@@ -19,32 +19,65 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
       </strong>
     </p>
     <div
-      class="sc-bxivhb jRPCFd"
+      class="sc-bxivhb hKSReE"
     >
-      <button
-        class="bp3-button bp3-disabled"
-        disabled=""
-        href="/"
-        tabindex="-1"
-        type="button"
+      <div
+        class="sc-ifAKCX imHVNF"
       >
-        <span
-          class="bp3-button-text"
+        <h5
+          class="bp3-heading"
         >
-          Start Auditing
+          Ballot Audit Status
+        </h5>
+        <span
+          class="bp3-tag bp3-intent-warning bp3-minimal sc-htpNat ljtTnF"
+        >
+          <span
+            class="bp3-text-overflow-ellipsis bp3-fill"
+          >
+            Not Audited: 
+            0
+          </span>
         </span>
-      </button>
-      <button
-        class="bp3-button"
-        href="/home/signoff"
-        type="button"
+        <span
+          class="bp3-tag bp3-intent-danger bp3-minimal sc-htpNat ljtTnF"
+        >
+          <span
+            class="bp3-text-overflow-ellipsis bp3-fill"
+          >
+            Not Found: 
+            1
+          </span>
+        </span>
+      </div>
+      <div
+        class="sc-EHOje jRMUiN"
       >
-        <span
-          class="bp3-button-text"
+        <button
+          class="bp3-button bp3-disabled"
+          disabled=""
+          href="/"
+          tabindex="-1"
+          type="button"
         >
-          Auditing Complete - Submit Results
-        </span>
-      </button>
+          <span
+            class="bp3-button-text"
+          >
+            Start Auditing
+          </span>
+        </button>
+        <button
+          class="bp3-button"
+          href="/home/signoff"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Auditing Complete - Submit Results
+          </span>
+        </button>
+      </div>
     </div>
     <table
       class="sc-bdVaJa ldGrnX"
@@ -236,7 +269,7 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
               </span>
             </span>
             <a
-              class="bp3-button bp3-small sc-ifAKCX cPBYcZ"
+              class="bp3-button bp3-small sc-bZQynM iMDvCJ"
               href="/home/batch/batch-id-1/ballot/313"
             >
               Re-audit
@@ -274,7 +307,7 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
               </span>
             </span>
             <a
-              class="bp3-button bp3-small sc-ifAKCX cPBYcZ"
+              class="bp3-button bp3-small sc-bZQynM iMDvCJ"
               href="/home/batch/batch-id-1/ballot/2112"
             >
               Re-audit
@@ -312,7 +345,7 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
               </span>
             </span>
             <a
-              class="bp3-button bp3-small sc-ifAKCX cPBYcZ"
+              class="bp3-button bp3-small sc-bZQynM iMDvCJ"
               href="/home/batch/batch-id-1/ballot/1789"
             >
               Re-audit
@@ -350,7 +383,7 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
               </span>
             </span>
             <a
-              class="bp3-button bp3-small sc-ifAKCX cPBYcZ"
+              class="bp3-button bp3-small sc-bZQynM iMDvCJ"
               href="/home/batch/batch-id-1/ballot/1965"
             >
               Re-audit
@@ -382,32 +415,65 @@ exports[`BoardTable renders container and no tabulator columns 1`] = `
       </strong>
     </p>
     <div
-      class="sc-bxivhb jRPCFd"
+      class="sc-bxivhb hKSReE"
     >
-      <button
-        class="bp3-button bp3-disabled"
-        disabled=""
-        href="/"
-        tabindex="-1"
-        type="button"
+      <div
+        class="sc-ifAKCX imHVNF"
       >
-        <span
-          class="bp3-button-text"
+        <h5
+          class="bp3-heading"
         >
-          Start Auditing
+          Ballot Audit Status
+        </h5>
+        <span
+          class="bp3-tag bp3-intent-warning bp3-minimal sc-htpNat ljtTnF"
+        >
+          <span
+            class="bp3-text-overflow-ellipsis bp3-fill"
+          >
+            Not Audited: 
+            0
+          </span>
         </span>
-      </button>
-      <button
-        class="bp3-button"
-        href="/home/signoff"
-        type="button"
+        <span
+          class="bp3-tag bp3-intent-danger bp3-minimal sc-htpNat ljtTnF"
+        >
+          <span
+            class="bp3-text-overflow-ellipsis bp3-fill"
+          >
+            Not Found: 
+            0
+          </span>
+        </span>
+      </div>
+      <div
+        class="sc-EHOje jRMUiN"
       >
-        <span
-          class="bp3-button-text"
+        <button
+          class="bp3-button bp3-disabled"
+          disabled=""
+          href="/"
+          tabindex="-1"
+          type="button"
         >
-          Auditing Complete - Submit Results
-        </span>
-      </button>
+          <span
+            class="bp3-button-text"
+          >
+            Start Auditing
+          </span>
+        </button>
+        <button
+          class="bp3-button"
+          href="/home/signoff"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Auditing Complete - Submit Results
+          </span>
+        </button>
+      </div>
     </div>
     <table
       class="sc-bdVaJa ldGrnX"
@@ -599,7 +665,7 @@ exports[`BoardTable renders container and no tabulator columns 1`] = `
               </span>
             </span>
             <a
-              class="bp3-button bp3-small sc-ifAKCX cPBYcZ"
+              class="bp3-button bp3-small sc-bZQynM iMDvCJ"
               href="/home/batch/batch-id-1/ballot/313"
             >
               Re-audit
@@ -631,32 +697,65 @@ exports[`BoardTable renders container and tabulator columns 1`] = `
       </strong>
     </p>
     <div
-      class="sc-bxivhb jRPCFd"
+      class="sc-bxivhb hKSReE"
     >
-      <button
-        class="bp3-button bp3-disabled"
-        disabled=""
-        href="/"
-        tabindex="-1"
-        type="button"
+      <div
+        class="sc-ifAKCX imHVNF"
       >
-        <span
-          class="bp3-button-text"
+        <h5
+          class="bp3-heading"
         >
-          Start Auditing
+          Ballot Audit Status
+        </h5>
+        <span
+          class="bp3-tag bp3-intent-warning bp3-minimal sc-htpNat ljtTnF"
+        >
+          <span
+            class="bp3-text-overflow-ellipsis bp3-fill"
+          >
+            Not Audited: 
+            0
+          </span>
         </span>
-      </button>
-      <button
-        class="bp3-button"
-        href="/home/signoff"
-        type="button"
+        <span
+          class="bp3-tag bp3-intent-danger bp3-minimal sc-htpNat ljtTnF"
+        >
+          <span
+            class="bp3-text-overflow-ellipsis bp3-fill"
+          >
+            Not Found: 
+            0
+          </span>
+        </span>
+      </div>
+      <div
+        class="sc-EHOje jRMUiN"
       >
-        <span
-          class="bp3-button-text"
+        <button
+          class="bp3-button bp3-disabled"
+          disabled=""
+          href="/"
+          tabindex="-1"
+          type="button"
         >
-          Auditing Complete - Submit Results
-        </span>
-      </button>
+          <span
+            class="bp3-button-text"
+          >
+            Start Auditing
+          </span>
+        </button>
+        <button
+          class="bp3-button"
+          href="/home/signoff"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Auditing Complete - Submit Results
+          </span>
+        </button>
+      </div>
     </div>
     <table
       class="sc-bdVaJa ldGrnX"
@@ -890,7 +989,7 @@ exports[`BoardTable renders container and tabulator columns 1`] = `
               </span>
             </span>
             <a
-              class="bp3-button bp3-small sc-ifAKCX cPBYcZ"
+              class="bp3-button bp3-small sc-bZQynM iMDvCJ"
               href="/home/batch/batch-id-1/ballot/313"
             >
               Re-audit
@@ -922,32 +1021,65 @@ exports[`BoardTable renders no container and no tabulator columns 1`] = `
       </strong>
     </p>
     <div
-      class="sc-bxivhb jRPCFd"
+      class="sc-bxivhb hKSReE"
     >
-      <button
-        class="bp3-button bp3-disabled"
-        disabled=""
-        href="/"
-        tabindex="-1"
-        type="button"
+      <div
+        class="sc-ifAKCX imHVNF"
       >
-        <span
-          class="bp3-button-text"
+        <h5
+          class="bp3-heading"
         >
-          Start Auditing
+          Ballot Audit Status
+        </h5>
+        <span
+          class="bp3-tag bp3-intent-warning bp3-minimal sc-htpNat ljtTnF"
+        >
+          <span
+            class="bp3-text-overflow-ellipsis bp3-fill"
+          >
+            Not Audited: 
+            0
+          </span>
         </span>
-      </button>
-      <button
-        class="bp3-button"
-        href="/home/signoff"
-        type="button"
+        <span
+          class="bp3-tag bp3-intent-danger bp3-minimal sc-htpNat ljtTnF"
+        >
+          <span
+            class="bp3-text-overflow-ellipsis bp3-fill"
+          >
+            Not Found: 
+            0
+          </span>
+        </span>
+      </div>
+      <div
+        class="sc-EHOje jRMUiN"
       >
-        <span
-          class="bp3-button-text"
+        <button
+          class="bp3-button bp3-disabled"
+          disabled=""
+          href="/"
+          tabindex="-1"
+          type="button"
         >
-          Auditing Complete - Submit Results
-        </span>
-      </button>
+          <span
+            class="bp3-button-text"
+          >
+            Start Auditing
+          </span>
+        </button>
+        <button
+          class="bp3-button"
+          href="/home/signoff"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Auditing Complete - Submit Results
+          </span>
+        </button>
+      </div>
     </div>
     <table
       class="sc-bdVaJa ldGrnX"
@@ -1097,7 +1229,7 @@ exports[`BoardTable renders no container and no tabulator columns 1`] = `
               </span>
             </span>
             <a
-              class="bp3-button bp3-small sc-ifAKCX cPBYcZ"
+              class="bp3-button bp3-small sc-bZQynM iMDvCJ"
               href="/home/batch/batch-id-1/ballot/313"
             >
               Re-audit
@@ -1129,32 +1261,65 @@ exports[`BoardTable renders tabulator and no container columns 1`] = `
       </strong>
     </p>
     <div
-      class="sc-bxivhb jRPCFd"
+      class="sc-bxivhb hKSReE"
     >
-      <button
-        class="bp3-button bp3-disabled"
-        disabled=""
-        href="/"
-        tabindex="-1"
-        type="button"
+      <div
+        class="sc-ifAKCX imHVNF"
       >
-        <span
-          class="bp3-button-text"
+        <h5
+          class="bp3-heading"
         >
-          Start Auditing
+          Ballot Audit Status
+        </h5>
+        <span
+          class="bp3-tag bp3-intent-warning bp3-minimal sc-htpNat ljtTnF"
+        >
+          <span
+            class="bp3-text-overflow-ellipsis bp3-fill"
+          >
+            Not Audited: 
+            0
+          </span>
         </span>
-      </button>
-      <button
-        class="bp3-button"
-        href="/home/signoff"
-        type="button"
+        <span
+          class="bp3-tag bp3-intent-danger bp3-minimal sc-htpNat ljtTnF"
+        >
+          <span
+            class="bp3-text-overflow-ellipsis bp3-fill"
+          >
+            Not Found: 
+            0
+          </span>
+        </span>
+      </div>
+      <div
+        class="sc-EHOje jRMUiN"
       >
-        <span
-          class="bp3-button-text"
+        <button
+          class="bp3-button bp3-disabled"
+          disabled=""
+          href="/"
+          tabindex="-1"
+          type="button"
         >
-          Auditing Complete - Submit Results
-        </span>
-      </button>
+          <span
+            class="bp3-button-text"
+          >
+            Start Auditing
+          </span>
+        </button>
+        <button
+          class="bp3-button"
+          href="/home/signoff"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Auditing Complete - Submit Results
+          </span>
+        </button>
+      </div>
     </div>
     <table
       class="sc-bdVaJa ldGrnX"
@@ -1346,7 +1511,7 @@ exports[`BoardTable renders tabulator and no container columns 1`] = `
               </span>
             </span>
             <a
-              class="bp3-button bp3-small sc-ifAKCX cPBYcZ"
+              class="bp3-button bp3-small sc-bZQynM iMDvCJ"
               href="/home/batch/batch-id-1/ballot/313"
             >
               Re-audit

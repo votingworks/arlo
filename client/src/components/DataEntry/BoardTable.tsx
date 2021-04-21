@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { H1 } from '@blueprintjs/core'
+import { H1, H5 } from '@blueprintjs/core'
 import { Link } from 'react-router-dom'
 import { Column } from 'react-table'
 import { Table } from '../Atoms/Table'
@@ -12,7 +12,8 @@ import StatusTag from '../Atoms/StatusTag'
 
 const RightWrapper = styled.div`
   display: flex;
-  justify-content: flex-end;
+  align-items: flex-start;
+  justify-content: space-between;
   margin: 20px 0;
   .bp3-button {
     margin-left: 10px;
@@ -20,6 +21,25 @@ const RightWrapper = styled.div`
   @media (max-width: 775px) {
     .bp3-button {
       width: 100%;
+    }
+  }
+  @media (max-width: 767px) {
+    flex-direction: column;
+  }
+`
+
+const LeftSection = styled.div`
+  .bp3-tag {
+    margin-right: 10px;
+  }
+`
+
+const RightSection = styled.div`
+  @media (max-width: 768px) {
+    display: flex;
+    margin-top: 10px;
+    .bp3-button:first-child {
+      margin-left: 0;
     }
   }
 `
@@ -87,6 +107,14 @@ const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
     b => b.status === BallotStatus.NOT_AUDITED
   )
 
+  const getTotalNotFound = ballots.filter(
+    ballot => ballot.status === BallotStatus.NOT_FOUND
+  ).length
+
+  const getTotalNotAudited = ballots.filter(
+    ballot => ballot.status === BallotStatus.NOT_AUDITED
+  ).length
+
   return (
     <div className="board-table-container">
       <H1>{boardName}: Ballot Cards to Audit</H1>
@@ -103,19 +131,28 @@ const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
         </strong>
       </p>
       <RightWrapper>
-        <LinkButton
-          to={
-            unauditedBallot
-              ? `${url}/batch/${unauditedBallot.batch.id}/ballot/${unauditedBallot.position}`
-              : ''
-          }
-          disabled={roundComplete}
-        >
-          Start Auditing
-        </LinkButton>
-        <LinkButton to={`${url}/signoff`} disabled={!roundComplete}>
-          Auditing Complete - Submit Results
-        </LinkButton>
+        <LeftSection>
+          <H5>Ballot Audit Status</H5>
+          <StatusTag intent="warning">
+            Not Audited: {getTotalNotAudited}
+          </StatusTag>
+          <StatusTag intent="danger">Not Found: {getTotalNotFound}</StatusTag>
+        </LeftSection>
+        <RightSection>
+          <LinkButton
+            to={
+              unauditedBallot
+                ? `${url}/batch/${unauditedBallot.batch.id}/ballot/${unauditedBallot.position}`
+                : ''
+            }
+            disabled={roundComplete}
+          >
+            Start Auditing
+          </LinkButton>
+          <LinkButton to={`${url}/signoff`} disabled={!roundComplete}>
+            Auditing Complete - Submit Results
+          </LinkButton>
+        </RightSection>
       </RightWrapper>
       {/* <ActionWrapper> // commented out until feature is added
         {!roundComplete && (
