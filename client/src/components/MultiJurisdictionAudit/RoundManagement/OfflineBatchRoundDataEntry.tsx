@@ -128,12 +128,18 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
   const { results, finalizedAt } = batchResults
 
   const total = (choiceId: string) =>
-    sum(results.map(batch => batch.choiceResults[choiceId]))
+    sum(results.map(batch => Number(batch.choiceResults[choiceId])))
+
+  // set default choiceResults to blank for controlled input
+  const defaultChoiceArr: { [key: string]: string } = {}
+  contest.choices.forEach(choice => {
+    defaultChoiceArr[choice.id] = ''
+  })
 
   const emptyBatch = (): IOfflineBatchResult => ({
     batchName: '',
     batchType: '',
-    choiceResults: {},
+    choiceResults: defaultChoiceArr,
   })
 
   interface FormValues {
@@ -246,7 +252,9 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
                       ))}
                       <td style={totalStyle}>
                         {sum(
-                          Object.values(batch.choiceResults)
+                          Object.values(batch.choiceResults).map(choice =>
+                            Number(choice)
+                          )
                         ).toLocaleString()}
                       </td>
                     </tr>
@@ -284,6 +292,7 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
                     })
                   }
                   intent="primary"
+                  disabled={!!finalizedAt}
                 >
                   Add batch
                 </Button>
@@ -292,7 +301,10 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
                     document.getElementById('results-table')!.outerHTML
                   }
                 />
-                <Button onClick={() => setIsConfirmOpen(true)}>
+                <Button
+                  onClick={() => setIsConfirmOpen(true)}
+                  disabled={!!finalizedAt}
+                >
                   Finalize Results
                 </Button>
               </div>
