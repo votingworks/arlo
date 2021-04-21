@@ -19,6 +19,7 @@ import { IContest } from '../../../../types'
 import { IAuditSettings } from '../../useAuditSettings'
 import { ISampleSizesResponse } from './useSampleSizes'
 import { FileProcessingStatus } from '../../useCSV'
+import { IContestNameStandardizations } from '../../useContestNameStandardizations'
 
 const apiCalls = {
   getSettings: (response: IAuditSettings) => ({
@@ -68,6 +69,23 @@ const apiCalls = {
   getContests: (response: { contests: IContest[] }) => ({
     url: '/api/election/1/contest',
     response,
+  }),
+  getStandardizations: (response: IContestNameStandardizations) => ({
+    url: '/api/election/1/contest/standardizations',
+    response,
+  }),
+  putStandardizations: (
+    standardizations: IContestNameStandardizations['standardizations']
+  ) => ({
+    url: '/api/election/1/contest/standardizations',
+    response: { status: 'ok' },
+    options: {
+      body: JSON.stringify(standardizations),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      method: 'PUT',
+    },
   }),
 }
 
@@ -290,6 +308,10 @@ describe('Audit Setup > Review & Launch', () => {
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedAndOpportunistic),
       apiCalls.getStandardizedContestsFile,
+      apiCalls.getStandardizations({
+        standardizations: {},
+        cvrContestNames: {},
+      }),
       apiCalls.getSampleSizeOptions({
         ...sampleSizeMock,
         sampleSizes: {
@@ -344,6 +366,10 @@ describe('Audit Setup > Review & Launch', () => {
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargeted),
       apiCalls.getStandardizedContestsFile,
+      apiCalls.getStandardizations({
+        standardizations: {},
+        cvrContestNames: {},
+      }),
       apiCalls.getSampleSizeOptions({
         ...sampleSizeMock,
         sampleSizes: null,
@@ -391,6 +417,10 @@ describe('Audit Setup > Review & Launch', () => {
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedAndOpportunistic),
       apiCalls.getStandardizedContestsFile,
+      apiCalls.getStandardizations({
+        standardizations: {},
+        cvrContestNames: {},
+      }),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
@@ -552,6 +582,10 @@ describe('Audit Setup > Review & Launch', () => {
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
       apiCalls.getStandardizedContestsFile,
+      apiCalls.getStandardizations({
+        standardizations: {},
+        cvrContestNames: {},
+      }),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
@@ -610,6 +644,10 @@ describe('Audit Setup > Review & Launch', () => {
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
       apiCalls.getStandardizedContestsFile,
+      apiCalls.getStandardizations({
+        standardizations: {},
+        cvrContestNames: {},
+      }),
       apiCalls.getSampleSizeOptions(sampleSizeMock),
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -671,6 +709,151 @@ describe('Audit Setup > Review & Launch', () => {
       const customSampleSizeInput = screen.getByRole('spinbutton')
       expect(customSampleSizeInput).toHaveValue(100)
       expect(customSampleSizeInput).toBeDisabled()
+    })
+  })
+
+  it('shows warning and dialog to standardize contest names', async () => {
+    const standardizations = {
+      'jurisdiction-id-1': {
+        'Contest 1': null,
+      },
+      'jurisdiction-id-2': {
+        'Contest 2': null,
+      },
+    }
+    const cvrContestNames = {
+      'jurisdiction-id-1': ['Contest One', 'Contest Two'],
+      'jurisdiction-id-2': ['Contest One', 'Contest Two'],
+    }
+    const expectedCalls = [
+      apiCalls.getSettings(auditSettings.ballotComparisonAll),
+      apiCalls.getJurisdictions({
+        jurisdictions: jurisdictionMocks.allManifestsWithCVRs,
+      }),
+      apiCalls.getJurisdictionFile,
+      apiCalls.getContests(contestMocks.filledTargetedAndOpportunistic),
+      apiCalls.getStandardizedContestsFile,
+      apiCalls.getStandardizations({
+        standardizations,
+        cvrContestNames,
+      }),
+      apiCalls.putStandardizations({
+        'jurisdiction-id-1': {
+          'Contest 1': 'Contest One',
+        },
+        'jurisdiction-id-2': {
+          'Contest 2': null,
+        },
+      }),
+      apiCalls.getStandardizations({
+        standardizations: {
+          ...standardizations,
+          'jurisdiction-id-1': { 'Contest 1': 'Contest One' },
+        },
+        cvrContestNames,
+      }),
+      apiCalls.putStandardizations({
+        'jurisdiction-id-1': {
+          'Contest 1': 'Contest One',
+        },
+        'jurisdiction-id-2': {
+          'Contest 2': 'Contest Two',
+        },
+      }),
+      apiCalls.getStandardizations({
+        standardizations: {
+          'jurisdiction-id-1': { 'Contest 1': 'Contest One' },
+          'jurisdiction-id-2': { 'Contest 2': 'Contest Two' },
+        },
+        cvrContestNames,
+      }),
+      apiCalls.getSampleSizeOptions(sampleSizeMock),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderView()
+      await screen.findByText('Review & Launch')
+
+      // Sample size should not be fetched
+      screen.getByRole('heading', { name: 'Sample Size' })
+      screen.getByText(
+        'All contest names must be standardized in order to calculate the sample size.'
+      )
+      expect(
+        screen.getByRole('button', { name: 'Launch Audit' })
+      ).toBeDisabled()
+
+      // Open the dialog
+      screen.getByText(
+        'Some contest names in the CVR files do not match the target/opportunistic contest names.'
+      )
+      userEvent.click(
+        screen.getByRole('button', { name: 'Standardize Contest Names' })
+      )
+
+      // Should show a form
+      let dialog = (await screen.findByRole('heading', {
+        name: 'Standardize Contest Names',
+      })).closest('div.bp3-dialog') as HTMLElement
+      expect(
+        within(dialog)
+          .getAllByRole('columnheader')
+          .map(header => header.textContent)
+      ).toEqual(['Jurisdiction', 'Target/Opportunistic Contest', 'CVR Contest'])
+      let rows = within(dialog).getAllByRole('row')
+      within(rows[1]).getByRole('cell', { name: 'Jurisdiction 1' })
+      within(rows[1]).getByRole('cell', { name: 'Contest 1' })
+      within(rows[2]).getByRole('cell', { name: 'Jurisdiction 2' })
+      within(rows[2]).getByRole('cell', { name: 'Contest 2' })
+
+      // Select a CVR contest name
+      const contest1Select = within(rows[1]).getByRole('combobox')
+      expect(contest1Select).toHaveValue('')
+      userEvent.selectOptions(contest1Select, 'Contest One')
+
+      // Submit the form
+      userEvent.click(within(dialog).getByRole('button', { name: 'Submit' }))
+      await waitFor(() => expect(dialog).not.toBeInTheDocument())
+
+      // Should still show warning since we didn't finish standardizing
+      screen.getByText(
+        'Some contest names in the CVR files do not match the target/opportunistic contest names.'
+      )
+
+      // Reopen the form - should show the standardization we already did
+      userEvent.click(
+        screen.getByRole('button', { name: 'Standardize Contest Names' })
+      )
+      dialog = (await screen.findByRole('heading', {
+        name: 'Standardize Contest Names',
+      })).closest('div.bp3-dialog') as HTMLElement
+      rows = within(dialog).getAllByRole('row')
+      expect(within(rows[1]).getByRole('combobox')).toHaveValue('Contest One')
+
+      // Finish standardizing
+      userEvent.selectOptions(
+        within(rows[2]).getByRole('combobox'),
+        'Contest Two'
+      )
+      userEvent.click(within(dialog).getByRole('button', { name: 'Submit' }))
+      await waitFor(() => expect(dialog).not.toBeInTheDocument())
+
+      // Warning is gone, sample sizes are shown
+      screen.getByText(
+        'All contest names in the CVR files have been standardized to match the target/opportunistic contest names.'
+      )
+      screen.getByText(
+        'Choose the initial sample size for each contest you would like to use for Round 1 of the audit from the options below.'
+      )
+
+      // Can still open dialog to edit
+      userEvent.click(
+        screen.getByRole('button', { name: 'Edit Standardized Contest Names' })
+      )
+      dialog = (await screen.findByRole('heading', {
+        name: 'Standardize Contest Names',
+      })).closest('div.bp3-dialog') as HTMLElement
+      userEvent.click(screen.getByRole('button', { name: 'Cancel' }))
+      await waitFor(() => expect(dialog).not.toBeInTheDocument())
     })
   })
 })

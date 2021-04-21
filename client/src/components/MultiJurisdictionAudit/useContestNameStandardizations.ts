@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { api } from '../utilities'
+import { IAuditSettings } from './useAuditSettings'
 
 export interface IContestNameStandardizations {
   standardizations: {
@@ -18,7 +19,8 @@ const getStandardizations = async (electionId: string) =>
   )
 
 const useContestNameStandardizations = (
-  electionId: string
+  electionId: string,
+  auditSettings: IAuditSettings | null
 ): [
   IContestNameStandardizations | null,
   (
@@ -47,11 +49,18 @@ const useContestNameStandardizations = (
     return !!response
   }
 
+  const auditType = auditSettings && auditSettings.auditType
+
   useEffect(() => {
     ;(async () => {
-      setStandardizations(await getStandardizations(electionId))
+      if (auditType === null) return
+      if (auditType === 'BALLOT_COMPARISON' || auditType === 'HYBRID')
+        setStandardizations(await getStandardizations(electionId))
+      // Set to empty values for other audit types so the consuming code knows
+      // we're not still trying to load (signified by null)
+      else setStandardizations({ standardizations: {}, cvrContestNames: {} })
     })()
-  }, [electionId])
+  }, [electionId, auditType])
 
   return [standardizations, updateStandardizations]
 }

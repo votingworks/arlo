@@ -15,8 +15,10 @@ import {
   Classes,
   HTMLTable,
   HTMLSelect,
+  Colors,
 } from '@blueprintjs/core'
 import { Formik, FormikProps, getIn, Field } from 'formik'
+import styled from 'styled-components'
 import FormButtonBar from '../../../Atoms/Form/FormButtonBar'
 import FormButton from '../../../Atoms/Form/FormButton'
 import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
@@ -83,34 +85,35 @@ const Review: React.FC<IProps> = ({
   const [
     standardizations,
     updateStandardizations,
-  ] = useContestNameStandardizations(electionId)
+  ] = useContestNameStandardizations(electionId, auditSettings)
   const [
     isStandardizationsDialogOpen,
     setIsStandardizationsDialogOpen,
   ] = useState(false)
 
   const standardizationNeeded =
-    !!standardizations && Object.values(standardizations).length > 0
-  const standardizationComplete =
     !!standardizations &&
-    Object.values(standardizations.standardizations).every(
+    Object.values(standardizations.standardizations).length > 0
+  const standardizationOutstanding =
+    !!standardizations &&
+    Object.values(standardizations.standardizations).some(
       jurisdictionStandardizations =>
-        Object.values(jurisdictionStandardizations).every(
-          cvrContestName => cvrContestName !== null
+        Object.values(jurisdictionStandardizations).some(
+          cvrContestName => cvrContestName === null
         )
     )
+  const standardizationComplete =
+    !!standardizations && !(standardizationNeeded && standardizationOutstanding)
 
   const setupComplete =
     !!jurisdictions &&
     !!contests &&
     !!auditSettings &&
     isSetupComplete(jurisdictions, contests, auditSettings)
-  const shouldLoadSampleSizes =
-    setupComplete && (!standardizationNeeded || standardizationComplete)
+  const shouldLoadSampleSizes = setupComplete && standardizationComplete
   const sampleSizesResponse = useSampleSizes(electionId, shouldLoadSampleSizes)
 
-  if (!jurisdictions || !contests || !auditSettings || !standardizations)
-    return null // Still loading
+  if (!jurisdictions || !contests || !auditSettings) return null // Still loading
 
   const {
     electionName,
@@ -232,9 +235,9 @@ const Review: React.FC<IProps> = ({
       </Card>
       <br />
       <H4>Contests</H4>
-      {standardizationNeeded && (
+      {standardizations && standardizationNeeded && (
         <>
-          {!standardizationComplete ? (
+          {standardizationOutstanding ? (
             <Callout intent="warning">
               <p>
                 Some contest names in the CVR files do not match the
@@ -385,7 +388,7 @@ const Review: React.FC<IProps> = ({
       <br />
       <H4>Sample Size</H4>
       {(() => {
-        if (standardizationNeeded && !standardizationComplete)
+        if (!standardizationComplete)
           return (
             <p>
               All contest names must be standardized in order to calculate the
@@ -579,7 +582,7 @@ const Review: React.FC<IProps> = ({
             sampleSizesResponse.sampleSizes === null ||
             locked ||
             !setupComplete ||
-            (standardizationNeeded && !standardizationComplete)
+            !standardizationComplete
           }
           onClick={() => setIsConfirmDialogOpen(true)}
         >
@@ -600,6 +603,18 @@ interface IStandardizeContestNamesDialogProps {
   jurisdictionIdToName: { [jurisdictionId: string]: string }
 }
 
+const StandardizeContestsTable = styled(HTMLTable)`
+  border: 1px solid ${Colors.LIGHT_GRAY1};
+  background: ${Colors.WHITE};
+  width: 100%;
+
+  tr th,
+  tr td {
+    vertical-align: middle;
+    word-wrap: break-word;
+  }
+`
+
 const StandardizeContestNamesDialog = ({
   isOpen,
   onClose,
@@ -607,7 +622,12 @@ const StandardizeContestNamesDialog = ({
   updateStandardizations,
   jurisdictionIdToName,
 }: IStandardizeContestNamesDialogProps) => (
-  <Dialog isOpen={isOpen} onClose={onClose} title="Standardize Contest Names">
+  <Dialog
+    isOpen={isOpen}
+    onClose={onClose}
+    title="Standardize Contest Names"
+    style={{ width: '600px' }}
+  >
     <Formik
       initialValues={standardizations.standardizations}
       enableReinitialize
@@ -624,7 +644,7 @@ const StandardizeContestNamesDialog = ({
               the standard target/opportunistic contest name.
             </p>
             {
-              <HTMLTable>
+              <StandardizeContestsTable striped bordered>
                 <thead>
                   <tr>
                     <th>Jurisdiction</th>
@@ -676,7 +696,7 @@ const StandardizeContestNamesDialog = ({
                       )
                   )}
                 </tbody>
-              </HTMLTable>
+              </StandardizeContestsTable>
             }
           </div>
           <div className={Classes.DIALOG_FOOTER}>
