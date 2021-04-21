@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { H1, H5 } from '@blueprintjs/core'
+import { H1 } from '@blueprintjs/core'
 import { Link } from 'react-router-dom'
 import { Column } from 'react-table'
 import { Table } from '../Atoms/Table'
@@ -136,7 +136,6 @@ const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
       </p>
       <RightWrapper>
         <LeftSection>
-          <H5>Ballot Audit Status</H5>
           <StatusTag intent="success">Audited: {getTotalAudited}</StatusTag>
           <StatusTag intent="warning">
             Not Audited: {getTotalNotAudited}

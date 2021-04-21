@@ -24,11 +24,16 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
       <div
         class="sc-ifAKCX imHVNF"
       >
-        <h5
-          class="bp3-heading"
+        <span
+          class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
         >
-          Ballot Audit Status
-        </h5>
+          <span
+            class="bp3-text-overflow-ellipsis bp3-fill"
+          >
+            Audited: 
+            3
+          </span>
+        </span>
         <span
           class="bp3-tag bp3-intent-warning bp3-minimal sc-htpNat ljtTnF"
         >
@@ -420,11 +425,16 @@ exports[`BoardTable renders container and no tabulator columns 1`] = `
       <div
         class="sc-ifAKCX imHVNF"
       >
-        <h5
-          class="bp3-heading"
+        <span
+          class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
         >
-          Ballot Audit Status
-        </h5>
+          <span
+            class="bp3-text-overflow-ellipsis bp3-fill"
+          >
+            Audited: 
+            1
+          </span>
+        </span>
         <span
           class="bp3-tag bp3-intent-warning bp3-minimal sc-htpNat ljtTnF"
         >
@@ -432,16 +442,6 @@ exports[`BoardTable renders container and no tabulator columns 1`] = `
             class="bp3-text-overflow-ellipsis bp3-fill"
           >
             Not Audited: 
-            0
-          </span>
-        </span>
-        <span
-          class="bp3-tag bp3-intent-danger bp3-minimal sc-htpNat ljtTnF"
-        >
-          <span
-            class="bp3-text-overflow-ellipsis bp3-fill"
-          >
-            Not Found: 
             0
           </span>
         </span>
@@ -702,11 +702,16 @@ exports[`BoardTable renders container and tabulator columns 1`] = `
       <div
         class="sc-ifAKCX imHVNF"
       >
-        <h5
-          class="bp3-heading"
+        <span
+          class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
         >
-          Ballot Audit Status
-        </h5>
+          <span
+            class="bp3-text-overflow-ellipsis bp3-fill"
+          >
+            Audited: 
+            1
+          </span>
+        </span>
         <span
           class="bp3-tag bp3-intent-warning bp3-minimal sc-htpNat ljtTnF"
         >
@@ -714,16 +719,6 @@ exports[`BoardTable renders container and tabulator columns 1`] = `
             class="bp3-text-overflow-ellipsis bp3-fill"
           >
             Not Audited: 
-            0
-          </span>
-        </span>
-        <span
-          class="bp3-tag bp3-intent-danger bp3-minimal sc-htpNat ljtTnF"
-        >
-          <span
-            class="bp3-text-overflow-ellipsis bp3-fill"
-          >
-            Not Found: 
             0
           </span>
         </span>
@@ -1026,11 +1021,16 @@ exports[`BoardTable renders no container and no tabulator columns 1`] = `
       <div
         class="sc-ifAKCX imHVNF"
       >
-        <h5
-          class="bp3-heading"
+        <span
+          class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
         >
-          Ballot Audit Status
-        </h5>
+          <span
+            class="bp3-text-overflow-ellipsis bp3-fill"
+          >
+            Audited: 
+            1
+          </span>
+        </span>
         <span
           class="bp3-tag bp3-intent-warning bp3-minimal sc-htpNat ljtTnF"
         >
@@ -1038,16 +1038,6 @@ exports[`BoardTable renders no container and no tabulator columns 1`] = `
             class="bp3-text-overflow-ellipsis bp3-fill"
           >
             Not Audited: 
-            0
-          </span>
-        </span>
-        <span
-          class="bp3-tag bp3-intent-danger bp3-minimal sc-htpNat ljtTnF"
-        >
-          <span
-            class="bp3-text-overflow-ellipsis bp3-fill"
-          >
-            Not Found: 
             0
           </span>
         </span>
@@ -1266,11 +1256,16 @@ exports[`BoardTable renders tabulator and no container columns 1`] = `
       <div
         class="sc-ifAKCX imHVNF"
       >
-        <h5
-          class="bp3-heading"
+        <span
+          class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
         >
-          Ballot Audit Status
-        </h5>
+          <span
+            class="bp3-text-overflow-ellipsis bp3-fill"
+          >
+            Audited: 
+            1
+          </span>
+        </span>
         <span
           class="bp3-tag bp3-intent-warning bp3-minimal sc-htpNat ljtTnF"
         >
@@ -1278,16 +1273,6 @@ exports[`BoardTable renders tabulator and no container columns 1`] = `
             class="bp3-text-overflow-ellipsis bp3-fill"
           >
             Not Audited: 
-            0
-          </span>
-        </span>
-        <span
-          class="bp3-tag bp3-intent-danger bp3-minimal sc-htpNat ljtTnF"
-        >
-          <span
-            class="bp3-text-overflow-ellipsis bp3-fill"
-          >
-            Not Found: 
             0
           </span>
         </span>

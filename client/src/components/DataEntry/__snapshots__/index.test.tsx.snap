@@ -393,11 +393,16 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
           <div
             class="sc-ifAKCX imHVNF"
           >
-            <h5
-              class="bp3-heading"
+            <span
+              class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
             >
-              Ballot Audit Status
-            </h5>
+              <span
+                class="bp3-text-overflow-ellipsis bp3-fill"
+              >
+                Audited: 
+                18
+              </span>
+            </span>
             <span
               class="bp3-tag bp3-intent-warning bp3-minimal sc-htpNat ljtTnF"
             >
@@ -406,16 +411,6 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
               >
                 Not Audited: 
                 9
-              </span>
-            </span>
-            <span
-              class="bp3-tag bp3-intent-danger bp3-minimal sc-htpNat ljtTnF"
-            >
-              <span
-                class="bp3-text-overflow-ellipsis bp3-fill"
-              >
-                Not Found: 
-                0
               </span>
             </span>
           </div>
@@ -1617,11 +1612,16 @@ exports[`DataEntry ballot interaction renders board table with no ballots 1`] = 
           <div
             class="sc-ifAKCX imHVNF"
           >
-            <h5
-              class="bp3-heading"
+            <span
+              class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
             >
-              Ballot Audit Status
-            </h5>
+              <span
+                class="bp3-text-overflow-ellipsis bp3-fill"
+              >
+                Audited: 
+                0
+              </span>
+            </span>
             <span
               class="bp3-tag bp3-intent-warning bp3-minimal sc-htpNat ljtTnF"
             >
@@ -1629,16 +1629,6 @@ exports[`DataEntry ballot interaction renders board table with no ballots 1`] = 
                 class="bp3-text-overflow-ellipsis bp3-fill"
               >
                 Not Audited: 
-                0
-              </span>
-            </span>
-            <span
-              class="bp3-tag bp3-intent-danger bp3-minimal sc-htpNat ljtTnF"
-            >
-              <span
-                class="bp3-text-overflow-ellipsis bp3-fill"
-              >
-                Not Found: 
                 0
               </span>
             </span>
@@ -1831,11 +1821,16 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
           <div
             class="sc-ifAKCX imHVNF"
           >
-            <h5
-              class="bp3-heading"
+            <span
+              class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
             >
-              Ballot Audit Status
-            </h5>
+              <span
+                class="bp3-text-overflow-ellipsis bp3-fill"
+              >
+                Audited: 
+                18
+              </span>
+            </span>
             <span
               class="bp3-tag bp3-intent-warning bp3-minimal sc-htpNat ljtTnF"
             >
@@ -1844,16 +1839,6 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
               >
                 Not Audited: 
                 9
-              </span>
-            </span>
-            <span
-              class="bp3-tag bp3-intent-danger bp3-minimal sc-htpNat ljtTnF"
-            >
-              <span
-                class="bp3-text-overflow-ellipsis bp3-fill"
-              >
-                Not Found: 
-                0
               </span>
             </span>
           </div>
