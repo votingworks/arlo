@@ -34,15 +34,7 @@ describe('Ballot Comparison Failure Cases', () => {
     cy.findAllByText('Upload File').spread((firstButton, secondButton) => {
       firstButton.click()
     })
-    cy.get('.Toastify')
-      .find('div')
-      .find('div')
-      .contains('Missing required CSV field "Jurisdiction"')
-      .invoke('text')
-      .then(text => {
-        const toastText = text
-        expect(toastText).to.equal('Missing required CSV field "Jurisdiction"')
-      })
+    cy.findAndCloseToast('Missing required CSV field "Jurisdiction"')
 
     // upload valid jurisdiction filesheet
     cy.findAllByText('Upload File').should('have.length', 2)
@@ -101,19 +93,7 @@ describe('Ballot Comparison Failure Cases', () => {
 
     // neglect to select a targeted contest
     cy.findByText('Save & Next').click()
-    cy.get('.Toastify')
-      .find('div')
-      .find('div')
-      .contains('Must have at least one targeted contest')
-      .invoke('text')
-      .then(text =>
-        expect(text).to.equal('Must have at least one targeted contest')
-      )
-    cy.get('.Toastify')
-      .find('div')
-      .should('not.have.class', 'Toastify__bounce-exit--top-right')
-      .get('.Toastify__close-button')
-      .click()
+    cy.findAndCloseToast('Must have at least one targeted contest')
 
     cy.findByText('Back').click()
 
@@ -218,7 +198,9 @@ describe('Ballot Comparison Failure Cases', () => {
     cy.findByText(`TestAudit${id}`).click()
     cy.findByText('Review & Launch').click()
 
-    cy.get('input[type="radio"]').first().click({force: true})
+    cy.get('input[type="radio"]')
+      .first()
+      .click({ force: true })
     cy.findByRole('button', { name: 'Launch Audit' })
       .should('be.enabled')
       .click()
@@ -262,17 +244,7 @@ describe('Ballot Comparison Failure Cases', () => {
       // submit empty ballot review
       cy.findByText('Review').click()
       cy.findByText('Submit & Next Ballot').click()
-      cy.get('.Toastify')
-        .find('div')
-        .find('div')
-        .contains('Must include an interpretation for each contest.')
-        .invoke('text')
-        .then(text => {
-          const toastText = text
-          expect(toastText).to.equal(
-            'Must include an interpretation for each contest.'
-          )
-        })
+      cy.findAndCloseToast('Must include an interpretation for each contest.')
     })
 
     // audit all ballots
@@ -302,17 +274,7 @@ describe('Ballot Comparison Failure Cases', () => {
     cy.findByText('Sign Off')
       .should('not.be.disabled')
       .click()
-    cy.get('.Toastify')
-      .get('.Toastify__toast-body')
-      .should('be.visible')
-      .contains('Audit board member name did not match: Member 1')
-      .invoke('text')
-      .then(text => {
-        const toastText = text
-        expect(toastText).to.equal(
-          'Audit board member name did not match: Member 1'
-        )
-      })
+    cy.findAndCloseToast('Audit board member name did not match: Member 1')
 
     // correct the audit board member name and signoff
     cy.findAllByText('Audit Board Member: Board Member 1')

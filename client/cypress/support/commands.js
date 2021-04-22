@@ -62,3 +62,14 @@ Cypress.Commands.add('logout', email => {
   cy.wait(['@logout'])
   cy.contains('Participating in an audit in your local jurisdiction?')
 })
+
+// Whenever we check for a toast, we should also close it before moving forward,
+// because otherwise it might cover up the user menu or other items we need to
+// find on the screen.
+Cypress.Commands.add('findAndCloseToast', message => {
+  cy.findByRole('alert')
+    .contains(message)
+    .parent()
+    .findByRole('button', { name: 'close' })
+    .click()
+})
