@@ -332,3 +332,27 @@ def test_standardize_contest_names_contest_change(
             },
         },
     )
+
+
+def test_standardize_contest_names_wrong_audit_type(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    election_settings,  # pylint: disable=unused-argument
+    manifests,  # pylint: disable=unused-argument
+):
+    election = Election.query.get(election_id)
+    election.audit_type = AuditType.BALLOT_POLLING
+    db_session.commit()
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = put_json(client, f"/api/election/{election_id}/contest/standardizations", {})
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Cannot standardize contest names for this audit type",
+            }
+        ]
+    }

@@ -261,6 +261,9 @@ CONTEST_NAME_STANDARDIZATIONS_SCHEMA = {
 @api.route("/election/<election_id>/contest/standardizations", methods=["PUT"])
 @restrict_access([UserType.AUDIT_ADMIN])
 def put_contest_name_standardizations(election: Election):
+    if election.audit_type not in [AuditType.BALLOT_COMPARISON, AuditType.HYBRID]:
+        raise Conflict("Cannot standardize contest names for this audit type")
+
     standardizations = request.get_json()
     validate(standardizations, CONTEST_NAME_STANDARDIZATIONS_SCHEMA)
 
