@@ -31,15 +31,7 @@ describe('Batch Comparison', () => {
         })
     })
     cy.findByText('Upload File').click({ force: true })
-    cy.get('.Toastify')
-      .find('div')
-      .find('div')
-      .contains('Missing required CSV field "Jurisdiction"')
-      .invoke('text')
-      .then(text => {
-        const toastText = text
-        expect(toastText).to.equal('Missing required CSV field "Jurisdiction"')
-      })
+    cy.findAndCloseToast('Missing required CSV field "Jurisdiction"')
 
     // upload valid jurisdiction filesheet
     cy.fixture('CSVs/jurisdiction/sample_jurisdiction_filesheet.csv').then(
