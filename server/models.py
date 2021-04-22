@@ -265,7 +265,7 @@ class Jurisdiction(BaseModel):
     # Sometimes contest names in a jurisdiction's CVR don't match the contest
     # names selected by the AA. Here we store corrections made by the AA to
     # apply to the cvr_contests_metadata.
-    # { cvr_contest_name: standardized_contest_name }
+    # { contest_name: cvr_contest_name }
     contest_name_standardizations = Column(JSON)
 
     # For ballot polling audits where offline batch results are recorded
