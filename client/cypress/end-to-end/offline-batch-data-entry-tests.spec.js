@@ -126,19 +126,7 @@ describe('Offline Batch Data Entry', () => {
     cy.findByLabelText('A').type('300')
     cy.findByLabelText('B').type('100')
     cy.findByRole('button', {name: 'Save Batch'}).click()
-    cy.get('.Toastify')
-    .find('div')
-    .find('div')
-    .contains('Batch names must be unique')
-    .invoke('text')
-    .then(text =>
-      expect(text).to.equal('Batch names must be unique')
-    )
-    cy.get('.Toastify')
-      .find('div')
-      .should('not.have.class', 'Toastify__bounce-exit--top-right')
-      .get('.Toastify__close-button')
-      .click()
+    cy.findAndCloseToast('Batch names must be unique')
     cy.findByRole('button', {name: 'Cancel'}).click()
 
     // editing batch

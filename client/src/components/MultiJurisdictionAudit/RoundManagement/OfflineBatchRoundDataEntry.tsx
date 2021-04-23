@@ -129,7 +129,7 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
   const { results, finalizedAt } = batchResults
 
   const total = (choiceId: string) =>
-    sum(results.map(batch => Number(batch.choiceResults[choiceId])))
+    sum(results.map(batch => batch.choiceResults[choiceId]))
 
   const emptyBatch = (): IOfflineBatchResult => ({
     batchName: '',
@@ -247,9 +247,7 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
                       ))}
                       <td style={totalStyle}>
                         {sum(
-                          Object.values(batch.choiceResults).map(choice =>
-                            Number(choice)
-                          )
+                          Object.values(batch.choiceResults)
                         ).toLocaleString()}
                       </td>
                     </tr>

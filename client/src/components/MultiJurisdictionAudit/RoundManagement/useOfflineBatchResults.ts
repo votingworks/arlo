@@ -11,7 +11,7 @@ export interface IOfflineBatchResult {
     | 'Other'
     | ''
   choiceResults: {
-    [choiceId: string]: number | string
+    [choiceId: string]: number
   }
 }
 
