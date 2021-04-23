@@ -1,6 +1,10 @@
 import { IBatch } from './useBatchResults'
 import { IRound } from '../useRoundsAuditAdmin'
 import { FileProcessingStatus } from '../useCSV'
+import {
+  IOfflineBatchResult,
+  IOfflineBatchResults,
+} from './useOfflineBatchResults'
 
 export interface INullResultValues {
   [contestId: string]: {
@@ -9,7 +13,7 @@ export interface INullResultValues {
 }
 
 export const roundMocks: {
-  [key in 'incomplete' | 'complete']: IRound
+  [key in 'incomplete' | 'complete' | 'singleIncompleteOffline']: IRound
 } = {
   incomplete: {
     id: 'round-1',
@@ -32,6 +36,20 @@ export const roundMocks: {
     endedAt: '2020-09-14T17:35:19.482Z',
     isAuditComplete: true,
     sampledAllBallots: false,
+    drawSampleTask: {
+      status: FileProcessingStatus.PROCESSED,
+      startedAt: '2020-09-14T17:35:19.482Z',
+      completedAt: '2020-09-14T17:36:19.482Z',
+      error: null,
+    },
+  },
+  singleIncompleteOffline: {
+    id: 'round-1',
+    roundNum: 1,
+    startedAt: '2020-09-14T17:35:19.482Z',
+    endedAt: null,
+    isAuditComplete: false,
+    sampledAllBallots: true,
     drawSampleTask: {
       status: FileProcessingStatus.PROCESSED,
       startedAt: '2020-09-14T17:35:19.482Z',
@@ -154,5 +172,105 @@ export const batchesMocks: {
         },
       },
     ],
+  },
+}
+
+export const offlineBatchMocks: {
+  [key in
+    | 'empty'
+    | 'complete'
+    | 'updated'
+    | 'finalized'
+    | 'completeWithMultipleBatch']: IOfflineBatchResults
+} = {
+  empty: {
+    finalizedAt: '',
+    results: [],
+  },
+  complete: {
+    finalizedAt: '',
+    results: [
+      {
+        batchName: 'Batch1',
+        batchType: 'Other',
+        choiceResults: {
+          'choice-id-1': 10,
+          'choice-id-2': 20,
+        },
+      },
+    ],
+  },
+  completeWithMultipleBatch: {
+    finalizedAt: '',
+    results: [
+      {
+        batchName: 'Batch1',
+        batchType: 'Other',
+        choiceResults: {
+          'choice-id-1': 5,
+          'choice-id-2': 15,
+        },
+      },
+      {
+        batchName: 'Batch2',
+        batchType: 'Provisional',
+        choiceResults: {
+          'choice-id-1': 5,
+          'choice-id-2': 5,
+        },
+      },
+    ],
+  },
+  updated: {
+    finalizedAt: '',
+    results: [
+      {
+        batchName: 'Batch12',
+        batchType: 'Other',
+        choiceResults: {
+          'choice-id-1': 10,
+          'choice-id-2': 20,
+        },
+      },
+    ],
+  },
+  finalized: {
+    finalizedAt: '2021-04-13T15:01:00.383031+00:00',
+    results: [
+      {
+        batchName: 'Batch12',
+        batchType: 'Other',
+        choiceResults: {
+          'choice-id-1': 10,
+          'choice-id-2': 20,
+        },
+      },
+    ],
+  },
+}
+
+export const offlineBatchResultsMocks: {
+  [key in 'empty' | 'complete' | 'updated']: IOfflineBatchResult
+} = {
+  empty: {
+    batchName: '',
+    batchType: '',
+    choiceResults: {},
+  },
+  complete: {
+    batchName: 'Batch1',
+    batchType: 'Other',
+    choiceResults: {
+      'choice-id-1': 10,
+      'choice-id-2': 20,
+    },
+  },
+  updated: {
+    batchName: 'Batch12',
+    batchType: 'Other',
+    choiceResults: {
+      'choice-id-1': 10,
+      'choice-id-2': 20,
+    },
   },
 }
