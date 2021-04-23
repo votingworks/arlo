@@ -19,7 +19,7 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
       </strong>
     </p>
     <div
-      class="sc-bxivhb hKSReE"
+      class="sc-bxivhb hKbymO"
     >
       <div
         class="sc-ifAKCX imHVNF"
@@ -420,7 +420,7 @@ exports[`BoardTable renders container and no tabulator columns 1`] = `
       </strong>
     </p>
     <div
-      class="sc-bxivhb hKSReE"
+      class="sc-bxivhb hKbymO"
     >
       <div
         class="sc-ifAKCX imHVNF"
@@ -697,7 +697,7 @@ exports[`BoardTable renders container and tabulator columns 1`] = `
       </strong>
     </p>
     <div
-      class="sc-bxivhb hKSReE"
+      class="sc-bxivhb hKbymO"
     >
       <div
         class="sc-ifAKCX imHVNF"
@@ -1016,7 +1016,7 @@ exports[`BoardTable renders no container and no tabulator columns 1`] = `
       </strong>
     </p>
     <div
-      class="sc-bxivhb hKSReE"
+      class="sc-bxivhb hKbymO"
     >
       <div
         class="sc-ifAKCX imHVNF"
@@ -1251,7 +1251,7 @@ exports[`BoardTable renders tabulator and no container columns 1`] = `
       </strong>
     </p>
     <div
-      class="sc-bxivhb hKSReE"
+      class="sc-bxivhb hKbymO"
     >
       <div
         class="sc-ifAKCX imHVNF"

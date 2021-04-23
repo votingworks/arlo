@@ -10,9 +10,9 @@ import { IBallot } from '../MultiJurisdictionAudit/RoundManagement/useBallots'
 import { IAuditBoard } from '../UserContext'
 import StatusTag from '../Atoms/StatusTag'
 
-const RightWrapper = styled.div`
+const Wrapper = styled.div`
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   margin: 20px 0;
   .bp3-button {
@@ -107,15 +107,15 @@ const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
     b => b.status === BallotStatus.NOT_AUDITED
   )
 
-  const getTotalAudited = ballots.filter(
+  const totalAudited = ballots.filter(
     ballot => ballot.status === BallotStatus.AUDITED
   ).length
 
-  const getTotalNotFound = ballots.filter(
+  const totalNotFound = ballots.filter(
     ballot => ballot.status === BallotStatus.NOT_FOUND
   ).length
 
-  const getTotalNotAudited = ballots.filter(
+  const totalNotAudited = ballots.filter(
     ballot => ballot.status === BallotStatus.NOT_AUDITED
   ).length
 
@@ -134,14 +134,12 @@ const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
           submitted.
         </strong>
       </p>
-      <RightWrapper>
+      <Wrapper>
         <LeftSection>
-          <StatusTag intent="success">Audited: {getTotalAudited}</StatusTag>
-          <StatusTag intent="warning">
-            Not Audited: {getTotalNotAudited}
-          </StatusTag>
-          {getTotalNotFound > 0 && (
-            <StatusTag intent="danger">Not Found: {getTotalNotFound}</StatusTag>
+          <StatusTag intent="success">Audited: {totalAudited}</StatusTag>
+          <StatusTag intent="warning">Not Audited: {totalNotAudited}</StatusTag>
+          {totalNotFound > 0 && (
+            <StatusTag intent="danger">Not Found: {totalNotFound}</StatusTag>
           )}
         </LeftSection>
         <RightSection>
@@ -159,7 +157,7 @@ const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
             Auditing Complete - Submit Results
           </LinkButton>
         </RightSection>
-      </RightWrapper>
+      </Wrapper>
       {/* <ActionWrapper> // commented out until feature is added
         {!roundComplete && (
           <>
