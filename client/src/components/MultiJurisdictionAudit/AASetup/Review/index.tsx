@@ -616,6 +616,10 @@ const StandardizeContestsTable = styled(HTMLTable)`
     vertical-align: middle;
     word-wrap: break-word;
   }
+
+  .bp3-html-select {
+    width: 100%;
+  }
 `
 
 const StandardizeContestNamesDialog = ({
