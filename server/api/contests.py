@@ -263,6 +263,8 @@ CONTEST_NAME_STANDARDIZATIONS_SCHEMA = {
 def put_contest_name_standardizations(election: Election):
     if election.audit_type not in [AuditType.BALLOT_COMPARISON, AuditType.HYBRID]:
         raise Conflict("Cannot standardize contest names for this audit type")
+    if len(list(election.rounds)) > 0:
+        raise Conflict("Cannot standardize contest names after the audit has started.")
 
     standardizations = request.get_json()
     validate(standardizations, CONTEST_NAME_STANDARDIZATIONS_SCHEMA)

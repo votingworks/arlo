@@ -356,3 +356,48 @@ def test_standardize_contest_names_wrong_audit_type(
             }
         ]
     }
+
+
+def test_standardize_contest_names_after_audit_starts(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    election_settings,  # pylint: disable=unused-argument
+    manifests,  # pylint: disable=unused-argument
+    cvrs,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    contest_id = str(uuid.uuid4())
+    contests = [
+        {
+            "id": contest_id,
+            "name": "Contest 1",
+            "isTargeted": True,
+            "numWinners": 1,
+            "jurisdictionIds": jurisdiction_ids[:1],
+        },
+    ]
+    rv = put_json(client, f"/api/election/{election_id}/contest", contests)
+    assert_ok(rv)
+
+    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    assert rv.status_code == 200
+    sample_sizes = json.loads(rv.data)["sampleSizes"]
+
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {"roundNum": 1, "sampleSizes": {contest_id: sample_sizes[contest_id][0]}},
+    )
+    assert_ok(rv)
+
+    rv = put_json(client, f"/api/election/{election_id}/contest/standardizations", {})
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Cannot standardize contest names after the audit has started.",
+            }
+        ]
+    }

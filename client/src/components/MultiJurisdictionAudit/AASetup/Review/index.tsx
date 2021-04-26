@@ -256,7 +256,10 @@ const Review: React.FC<IProps> = ({
                 All contest names in the CVR files have been standardized to
                 match the target/opportunistic contest names.
               </p>
-              <Button onClick={() => setIsStandardizationsDialogOpen(true)}>
+              <Button
+                onClick={() => setIsStandardizationsDialogOpen(true)}
+                disabled={locked}
+              >
                 Edit Standardized Contest Names
               </Button>
             </Callout>
