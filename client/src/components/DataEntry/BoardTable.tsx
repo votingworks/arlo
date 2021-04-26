@@ -8,10 +8,12 @@ import { BallotStatus } from '../../types'
 import LinkButton from '../Atoms/LinkButton'
 import { IBallot } from '../MultiJurisdictionAudit/RoundManagement/useBallots'
 import { IAuditBoard } from '../UserContext'
+import StatusTag from '../Atoms/StatusTag'
 
-const RightWrapper = styled.div`
+const Wrapper = styled.div`
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: space-between;
   margin: 20px 0;
   .bp3-button {
     margin-left: 10px;
@@ -19,6 +21,25 @@ const RightWrapper = styled.div`
   @media (max-width: 775px) {
     .bp3-button {
       width: 100%;
+    }
+  }
+  @media (max-width: 767px) {
+    flex-direction: column;
+  }
+`
+
+const LeftSection = styled.div`
+  .bp3-tag {
+    margin-right: 10px;
+  }
+`
+
+const RightSection = styled.div`
+  @media (max-width: 768px) {
+    display: flex;
+    margin-top: 10px;
+    .bp3-button:first-child {
+      margin-left: 0;
     }
   }
 `
@@ -50,9 +71,9 @@ const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
         return ballot.status !== BallotStatus.NOT_AUDITED ? (
           <>
             {ballot.status === BallotStatus.AUDITED ? (
-              <span>Audited</span>
+              <StatusTag intent="success">Audited</StatusTag>
             ) : (
-              <span>Not Found</span>
+              <StatusTag intent="danger">Not Found</StatusTag>
             )}
             <ReAuditBtn
               to={`${url}/batch/${ballot.batch.id}/ballot/${ballot.position}`}
@@ -62,7 +83,7 @@ const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
             </ReAuditBtn>
           </>
         ) : (
-          'Not Audited'
+          <StatusTag intent="warning">Not Audited</StatusTag>
         )
       },
     },
@@ -86,6 +107,18 @@ const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
     b => b.status === BallotStatus.NOT_AUDITED
   )
 
+  const totalAudited = ballots.filter(
+    ballot => ballot.status === BallotStatus.AUDITED
+  ).length
+
+  const totalNotFound = ballots.filter(
+    ballot => ballot.status === BallotStatus.NOT_FOUND
+  ).length
+
+  const totalNotAudited = ballots.filter(
+    ballot => ballot.status === BallotStatus.NOT_AUDITED
+  ).length
+
   return (
     <div className="board-table-container">
       <H1>{boardName}: Ballot Cards to Audit</H1>
@@ -101,21 +134,30 @@ const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
           submitted.
         </strong>
       </p>
-      <RightWrapper>
-        <LinkButton
-          to={
-            unauditedBallot
-              ? `${url}/batch/${unauditedBallot.batch.id}/ballot/${unauditedBallot.position}`
-              : ''
-          }
-          disabled={roundComplete}
-        >
-          Start Auditing
-        </LinkButton>
-        <LinkButton to={`${url}/signoff`} disabled={!roundComplete}>
-          Auditing Complete - Submit Results
-        </LinkButton>
-      </RightWrapper>
+      <Wrapper>
+        <LeftSection>
+          <StatusTag intent="success">Audited: {totalAudited}</StatusTag>
+          <StatusTag intent="warning">Not Audited: {totalNotAudited}</StatusTag>
+          {totalNotFound > 0 && (
+            <StatusTag intent="danger">Not Found: {totalNotFound}</StatusTag>
+          )}
+        </LeftSection>
+        <RightSection>
+          <LinkButton
+            to={
+              unauditedBallot
+                ? `${url}/batch/${unauditedBallot.batch.id}/ballot/${unauditedBallot.position}`
+                : ''
+            }
+            disabled={roundComplete}
+          >
+            Start Auditing
+          </LinkButton>
+          <LinkButton to={`${url}/signoff`} disabled={!roundComplete}>
+            Auditing Complete - Submit Results
+          </LinkButton>
+        </RightSection>
+      </Wrapper>
       {/* <ActionWrapper> // commented out until feature is added
         {!roundComplete && (
           <>
