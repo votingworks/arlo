@@ -30,13 +30,6 @@ def validate_all_manifests_uploaded(contest: Contest):
         raise UserError("Some jurisdictions haven't uploaded their manifests yet")
 
 
-def validate_cvrs(contest: Contest):
-    try:
-        validate_uploaded_cvrs(contest)
-    except Exception as exc:
-        raise UserError(exc) from exc
-
-
 def validate_batch_tallies(contest):
     total_votes_by_choice: Dict[str, int] = defaultdict(int)
     for jurisdiction in contest.jurisdictions:
@@ -151,7 +144,7 @@ def sample_size_options(
 
         elif election.audit_type == AuditType.BALLOT_COMPARISON:
             validate_all_manifests_uploaded(contest)
-            validate_cvrs(contest)
+            validate_uploaded_cvrs(contest)
 
             contest_for_sampler = sampler_contest.from_db_contest(contest)
 
@@ -188,7 +181,7 @@ def sample_size_options(
             assert election.audit_type == AuditType.HYBRID
 
             validate_all_manifests_uploaded(contest)
-            validate_cvrs(contest)
+            validate_uploaded_cvrs(contest)
             validate_hybrid_manifests_and_cvrs(contest)
 
             non_cvr_stratum, cvr_stratum = rounds.hybrid_contest_strata(

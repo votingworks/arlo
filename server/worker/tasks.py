@@ -8,6 +8,7 @@ from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
 from ..util.isoformat import isoformat
 from ..util.jsonschema import JSONDict
+from ..util.process_file import UserError
 from .. import config
 
 
@@ -43,10 +44,6 @@ def create_background_task(
         run_task(task)
 
     return task
-
-
-class UserError(Exception):
-    pass
 
 
 def task_log_data(task: BackgroundTask) -> JSONDict:

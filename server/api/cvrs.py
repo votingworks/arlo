@@ -45,32 +45,46 @@ CVR_CONTESTS_METADATA = Dict[str, CvrContestMetadata]  # pylint: disable=invalid
 
 
 def validate_uploaded_cvrs(contest: Contest):
-    choice_names = {choice.name for choice in contest.choices}
-
     for jurisdiction in contest.jurisdictions:
         contests_metadata = cvr_contests_metadata(jurisdiction)
         if contests_metadata is None:
-            raise Exception("Some jurisdictions haven't uploaded their CVRs yet.")
+            raise UserError("Some jurisdictions haven't uploaded their CVRs yet.")
 
         if contest.name not in contests_metadata:
-            raise Exception(
+            raise UserError(
                 f"Couldn't find contest {contest.name} in the CVR for jurisdiction {jurisdiction.name}"
             )
 
-        cvr_choice_names = contests_metadata[contest.name]["choices"].keys()
-        missing_choice_names = choice_names - cvr_choice_names
-        if len(missing_choice_names) > 0:
-            raise Exception(
-                f"Couldn't find some contest choices ({', '.join(sorted(missing_choice_names))})"
-                f" in the CVR for jurisdiction {jurisdiction.name}"
+        def choice_names(jurisdiction):
+            return set(
+                cvr_contests_metadata(jurisdiction)[contest.name]["choices"].keys()
             )
+
+        first_jurisdiction = list(contest.jurisdictions)[0]
+        if choice_names(jurisdiction) != choice_names(first_jurisdiction):
+            raise UserError(
+                f"CVR choice names don't match for contest {contest.name}:\n"
+                f"{jurisdiction.name}: {', '.join(sorted(choice_names(jurisdiction)))}\n"
+                f"{first_jurisdiction.name}: {', '.join(sorted(choice_names(first_jurisdiction)))}"
+            )
+
+        # In hybrid audits specifically, we also need to check that the choice
+        # names match those entered by the audit admin.
+        if first_jurisdiction.election.audit_type == AuditType.HYBRID:
+            contest_choice_names = {choice.name for choice in contest.choices}
+            if choice_names(jurisdiction) != contest_choice_names:
+                raise UserError(
+                    f"CVR choice names don't match for contest {contest.name}:\n"
+                    f"{jurisdiction.name}: {', '.join(sorted(choice_names(jurisdiction)))}\n"
+                    f"Contest settings: {', '.join(sorted(contest_choice_names))}"
+                )
 
 
 def are_uploaded_cvrs_valid(contest: Contest):
     try:
         validate_uploaded_cvrs(contest)
         return True
-    except Exception:
+    except UserError:
         return False
 
 
