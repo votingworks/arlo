@@ -2,14 +2,14 @@ import 'cypress-file-upload'
 
 before(() => cy.exec('./cypress/seed-test-db.sh'))
 
-describe('Ballot Comparison Failure Cases', () => {
+describe('Ballot Comparison Test Cases', () => {
   const auditAdmin = 'audit-admin-cypress@example.com'
   const jurisdictionAdmin = 'wtarkin@empire.gov'
   const uuid = () => Cypress._.random(0, 1e6)
   let id = 0
   let board_credentials_url = ''
 
-  it('CSV and input errors', () => {
+  it('success & failure cases', () => {
     id = uuid()
     cy.visit('/')
     cy.loginAuditAdmin(auditAdmin)
