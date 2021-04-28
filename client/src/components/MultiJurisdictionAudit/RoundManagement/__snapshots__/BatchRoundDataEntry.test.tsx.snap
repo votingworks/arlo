@@ -15,17 +15,17 @@ exports[`offline round data entry renders 1`] = `
         Batch: Batch One, Contest: Contest 1
       </h5>
       <label
-        class="sc-dnqmqq cUrdEb"
+        class="sc-iwsKbI gesrUq"
         for="results[batch-1][choice-id-1]"
       >
         Votes for 
         Choice One
         :
         <div
-          class="sc-bwzfXH jsIzlm"
+          class="sc-bxivhb dIUGFb"
         >
           <div
-            class="bp3-input-group sc-htpNat iapfBj"
+            class="bp3-input-group sc-ifAKCX juRnqx"
           >
             <input
               class="bp3-input"
@@ -38,17 +38,17 @@ exports[`offline round data entry renders 1`] = `
         </div>
       </label>
       <label
-        class="sc-dnqmqq cUrdEb"
+        class="sc-iwsKbI gesrUq"
         for="results[batch-1][choice-id-2]"
       >
         Votes for 
         Choice Two
         :
         <div
-          class="sc-bwzfXH jsIzlm"
+          class="sc-bxivhb dIUGFb"
         >
           <div
-            class="bp3-input-group sc-htpNat iapfBj"
+            class="bp3-input-group sc-ifAKCX juRnqx"
           >
             <input
               class="bp3-input"
@@ -70,17 +70,17 @@ exports[`offline round data entry renders 1`] = `
         Batch: Batch Two, Contest: Contest 1
       </h5>
       <label
-        class="sc-dnqmqq cUrdEb"
+        class="sc-iwsKbI gesrUq"
         for="results[batch-2][choice-id-1]"
       >
         Votes for 
         Choice One
         :
         <div
-          class="sc-bwzfXH jsIzlm"
+          class="sc-bxivhb dIUGFb"
         >
           <div
-            class="bp3-input-group sc-htpNat iapfBj"
+            class="bp3-input-group sc-ifAKCX juRnqx"
           >
             <input
               class="bp3-input"
@@ -93,17 +93,17 @@ exports[`offline round data entry renders 1`] = `
         </div>
       </label>
       <label
-        class="sc-dnqmqq cUrdEb"
+        class="sc-iwsKbI gesrUq"
         for="results[batch-2][choice-id-2]"
       >
         Votes for 
         Choice Two
         :
         <div
-          class="sc-bwzfXH jsIzlm"
+          class="sc-bxivhb dIUGFb"
         >
           <div
-            class="bp3-input-group sc-htpNat iapfBj"
+            class="bp3-input-group sc-ifAKCX juRnqx"
           >
             <input
               class="bp3-input"
@@ -125,17 +125,17 @@ exports[`offline round data entry renders 1`] = `
         Batch: Batch Three, Contest: Contest 1
       </h5>
       <label
-        class="sc-dnqmqq cUrdEb"
+        class="sc-iwsKbI gesrUq"
         for="results[batch-3][choice-id-1]"
       >
         Votes for 
         Choice One
         :
         <div
-          class="sc-bwzfXH jsIzlm"
+          class="sc-bxivhb dIUGFb"
         >
           <div
-            class="bp3-input-group sc-htpNat iapfBj"
+            class="bp3-input-group sc-ifAKCX juRnqx"
           >
             <input
               class="bp3-input"
@@ -148,17 +148,17 @@ exports[`offline round data entry renders 1`] = `
         </div>
       </label>
       <label
-        class="sc-dnqmqq cUrdEb"
+        class="sc-iwsKbI gesrUq"
         for="results[batch-3][choice-id-2]"
       >
         Votes for 
         Choice Two
         :
         <div
-          class="sc-bwzfXH jsIzlm"
+          class="sc-bxivhb dIUGFb"
         >
           <div
-            class="bp3-input-group sc-htpNat iapfBj"
+            class="bp3-input-group sc-ifAKCX juRnqx"
           >
             <input
               class="bp3-input"
@@ -172,7 +172,7 @@ exports[`offline round data entry renders 1`] = `
       </label>
     </div>
     <button
-      class="bp3-button bp3-intent-primary sc-htoDjs hNDkTe sc-gzVnrw kdzzfK"
+      class="bp3-button bp3-intent-primary sc-dnqmqq bytmcb sc-htoDjs dESvso"
       type="submit"
     >
       <span
@@ -200,7 +200,7 @@ exports[`offline round data entry renders after submission 1`] = `
         Batch: Batch One, Contest: Contest 1
       </h5>
       <label
-        class="sc-dnqmqq cUrdEb"
+        class="sc-iwsKbI gesrUq"
         for="results[batch-1][choice-id-1]"
       >
         Votes for 
@@ -209,7 +209,7 @@ exports[`offline round data entry renders after submission 1`] = `
         1
       </label>
       <label
-        class="sc-dnqmqq cUrdEb"
+        class="sc-iwsKbI gesrUq"
         for="results[batch-1][choice-id-2]"
       >
         Votes for 
@@ -227,7 +227,7 @@ exports[`offline round data entry renders after submission 1`] = `
         Batch: Batch Two, Contest: Contest 1
       </h5>
       <label
-        class="sc-dnqmqq cUrdEb"
+        class="sc-iwsKbI gesrUq"
         for="results[batch-2][choice-id-1]"
       >
         Votes for 
@@ -236,7 +236,7 @@ exports[`offline round data entry renders after submission 1`] = `
         1
       </label>
       <label
-        class="sc-dnqmqq cUrdEb"
+        class="sc-iwsKbI gesrUq"
         for="results[batch-2][choice-id-2]"
       >
         Votes for 
@@ -254,7 +254,7 @@ exports[`offline round data entry renders after submission 1`] = `
         Batch: Batch Three, Contest: Contest 1
       </h5>
       <label
-        class="sc-dnqmqq cUrdEb"
+        class="sc-iwsKbI gesrUq"
         for="results[batch-3][choice-id-1]"
       >
         Votes for 
@@ -263,7 +263,7 @@ exports[`offline round data entry renders after submission 1`] = `
         1
       </label>
       <label
-        class="sc-dnqmqq cUrdEb"
+        class="sc-iwsKbI gesrUq"
         for="results[batch-3][choice-id-2]"
       >
         Votes for 
@@ -273,7 +273,7 @@ exports[`offline round data entry renders after submission 1`] = `
       </label>
     </div>
     <button
-      class="bp3-button bp3-disabled bp3-intent-primary sc-htoDjs hNDkTe sc-gzVnrw kdzzfK"
+      class="bp3-button bp3-disabled bp3-intent-primary sc-dnqmqq bytmcb sc-htoDjs dESvso"
       disabled=""
       tabindex="-1"
       type="submit"
@@ -303,7 +303,7 @@ exports[`offline round data entry submits 1`] = `
         Batch: Batch One, Contest: Contest 1
       </h5>
       <label
-        class="sc-dnqmqq cUrdEb"
+        class="sc-iwsKbI gesrUq"
         for="results[batch-1][choice-id-1]"
       >
         Votes for 
@@ -312,7 +312,7 @@ exports[`offline round data entry submits 1`] = `
         1
       </label>
       <label
-        class="sc-dnqmqq cUrdEb"
+        class="sc-iwsKbI gesrUq"
         for="results[batch-1][choice-id-2]"
       >
         Votes for 
@@ -330,7 +330,7 @@ exports[`offline round data entry submits 1`] = `
         Batch: Batch Two, Contest: Contest 1
       </h5>
       <label
-        class="sc-dnqmqq cUrdEb"
+        class="sc-iwsKbI gesrUq"
         for="results[batch-2][choice-id-1]"
       >
         Votes for 
@@ -339,7 +339,7 @@ exports[`offline round data entry submits 1`] = `
         1
       </label>
       <label
-        class="sc-dnqmqq cUrdEb"
+        class="sc-iwsKbI gesrUq"
         for="results[batch-2][choice-id-2]"
       >
         Votes for 
@@ -357,7 +357,7 @@ exports[`offline round data entry submits 1`] = `
         Batch: Batch Three, Contest: Contest 1
       </h5>
       <label
-        class="sc-dnqmqq cUrdEb"
+        class="sc-iwsKbI gesrUq"
         for="results[batch-3][choice-id-1]"
       >
         Votes for 
@@ -366,7 +366,7 @@ exports[`offline round data entry submits 1`] = `
         1
       </label>
       <label
-        class="sc-dnqmqq cUrdEb"
+        class="sc-iwsKbI gesrUq"
         for="results[batch-3][choice-id-2]"
       >
         Votes for 
@@ -376,7 +376,7 @@ exports[`offline round data entry submits 1`] = `
       </label>
     </div>
     <button
-      class="bp3-button bp3-disabled bp3-intent-primary sc-htoDjs hNDkTe sc-gzVnrw kdzzfK"
+      class="bp3-button bp3-disabled bp3-intent-primary sc-dnqmqq bytmcb sc-htoDjs dESvso"
       disabled=""
       tabindex="-1"
       type="submit"

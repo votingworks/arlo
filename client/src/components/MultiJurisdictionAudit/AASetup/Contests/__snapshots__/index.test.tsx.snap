@@ -14,7 +14,7 @@ exports[`Audit Setup > Contests renders empty opportunistic state correctly 1`] 
         Opportunistic Contests
       </h2>
       <div
-        class="bp3-card bp3-elevation-2 sc-kgoBCf cGUESD"
+        class="bp3-card bp3-elevation-2 sc-kGXeez drpedP"
       >
         <div
           class="sc-htpNat hKxttc"
@@ -39,10 +39,10 @@ exports[`Audit Setup > Contests renders empty opportunistic state correctly 1`] 
               
                Name
               <div
-                class="sc-ifAKCX eNyQfb"
+                class="sc-bZQynM iEAxBy"
               >
                 <div
-                  class="bp3-input-group sc-EHOje bzcNaj"
+                  class="bp3-input-group sc-gzVnrw htprzv"
                 >
                   <input
                     class="bp3-input"
@@ -65,10 +65,10 @@ exports[`Audit Setup > Contests renders empty opportunistic state correctly 1`] 
           >
             Winners
             <div
-              class="sc-ifAKCX eNyQfb"
+              class="sc-bZQynM iEAxBy"
             >
               <div
-                class="bp3-input-group sc-EHOje bzcNaj"
+                class="bp3-input-group sc-gzVnrw htprzv"
               >
                 <input
                   class="bp3-input"
@@ -90,10 +90,10 @@ exports[`Audit Setup > Contests renders empty opportunistic state correctly 1`] 
           >
             Votes Allowed
             <div
-              class="sc-ifAKCX eNyQfb"
+              class="sc-bZQynM iEAxBy"
             >
               <div
-                class="bp3-input-group sc-EHOje bzcNaj"
+                class="bp3-input-group sc-gzVnrw htprzv"
               >
                 <input
                   class="bp3-input"
@@ -120,21 +120,21 @@ exports[`Audit Setup > Contests renders empty opportunistic state correctly 1`] 
             Enter the name of each candidate choice that appears on the ballot for this contest.
           </div>
           <div
-            class="sc-iwsKbI lkODvP"
+            class="sc-gZMcBi knllut"
           >
             <div
-              class="sc-gZMcBi cKoNuO"
+              class="sc-gqjmRU gOWiEX"
             >
               <label
-                class="bp3-label sc-VigVT hUBjjB"
+                class="bp3-label sc-jTzLTM hdHzOo"
               >
                 Name of Candidate/Choice 
                 1
                 <div
-                  class="sc-gqjmRU crDldu sc-ifAKCX eNyQfb"
+                  class="sc-VigVT kbonos sc-bZQynM iEAxBy"
                 >
                   <div
-                    class="bp3-input-group sc-EHOje bzcNaj"
+                    class="bp3-input-group sc-gzVnrw htprzv"
                   >
                     <input
                       class="bp3-input"
@@ -146,15 +146,15 @@ exports[`Audit Setup > Contests renders empty opportunistic state correctly 1`] 
                 </div>
               </label>
               <label
-                class="bp3-label sc-VigVT hUBjjB"
+                class="bp3-label sc-jTzLTM hdHzOo"
               >
                 Votes for Candidate/Choice 
                 1
                 <div
-                  class="sc-gqjmRU crDldu sc-ifAKCX eNyQfb"
+                  class="sc-VigVT kbonos sc-bZQynM iEAxBy"
                 >
                   <div
-                    class="bp3-input-group sc-EHOje bzcNaj"
+                    class="bp3-input-group sc-gzVnrw htprzv"
                   >
                     <input
                       class="bp3-input"
@@ -167,18 +167,18 @@ exports[`Audit Setup > Contests renders empty opportunistic state correctly 1`] 
               </label>
             </div>
             <div
-              class="sc-gZMcBi cKoNuO"
+              class="sc-gqjmRU gOWiEX"
             >
               <label
-                class="bp3-label sc-VigVT hUBjjB"
+                class="bp3-label sc-jTzLTM hdHzOo"
               >
                 Name of Candidate/Choice 
                 2
                 <div
-                  class="sc-gqjmRU crDldu sc-ifAKCX eNyQfb"
+                  class="sc-VigVT kbonos sc-bZQynM iEAxBy"
                 >
                   <div
-                    class="bp3-input-group sc-EHOje bzcNaj"
+                    class="bp3-input-group sc-gzVnrw htprzv"
                   >
                     <input
                       class="bp3-input"
@@ -190,15 +190,15 @@ exports[`Audit Setup > Contests renders empty opportunistic state correctly 1`] 
                 </div>
               </label>
               <label
-                class="bp3-label sc-VigVT hUBjjB"
+                class="bp3-label sc-jTzLTM hdHzOo"
               >
                 Votes for Candidate/Choice 
                 2
                 <div
-                  class="sc-gqjmRU crDldu sc-ifAKCX eNyQfb"
+                  class="sc-VigVT kbonos sc-bZQynM iEAxBy"
                 >
                   <div
-                    class="bp3-input-group sc-EHOje bzcNaj"
+                    class="bp3-input-group sc-gzVnrw htprzv"
                   >
                     <input
                       class="bp3-input"
@@ -211,7 +211,7 @@ exports[`Audit Setup > Contests renders empty opportunistic state correctly 1`] 
               </label>
             </div>
             <p
-              class="sc-jTzLTM DJcIy"
+              class="sc-fjdhpX digwQU"
             >
               Add a new candidate/choice
             </p>
@@ -237,10 +237,10 @@ exports[`Audit Setup > Contests renders empty opportunistic state correctly 1`] 
              
             
             <div
-              class="sc-ifAKCX eNyQfb"
+              class="sc-bZQynM iEAxBy"
             >
               <div
-                class="bp3-input-group sc-EHOje bzcNaj"
+                class="bp3-input-group sc-gzVnrw htprzv"
               >
                 <input
                   class="bp3-input"
@@ -273,7 +273,7 @@ exports[`Audit Setup > Contests renders empty opportunistic state correctly 1`] 
               class="bp3-popover-target"
             >
               <button
-                class="bp3-button sc-kAzzGY icCzNQ"
+                class="bp3-button sc-chPdSV cAXnIg"
                 type="button"
               >
                 <span
@@ -287,10 +287,10 @@ exports[`Audit Setup > Contests renders empty opportunistic state correctly 1`] 
         </div>
       </div>
       <div
-        class="sc-fjdhpX ljTFuz"
+        class="sc-jzJRlG kmWpbo"
       >
         <button
-          class="bp3-button sc-kAzzGY icCzNQ"
+          class="bp3-button sc-chPdSV cAXnIg"
           type="button"
         >
           <span
@@ -305,10 +305,10 @@ exports[`Audit Setup > Contests renders empty opportunistic state correctly 1`] 
       </div>
     </div>
     <div
-      class="sc-fjdhpX ljTFuz"
+      class="sc-jzJRlG kmWpbo"
     >
       <button
-        class="bp3-button sc-kAzzGY icCzNQ"
+        class="bp3-button sc-chPdSV cAXnIg"
         type="button"
       >
         <span
@@ -318,7 +318,7 @@ exports[`Audit Setup > Contests renders empty opportunistic state correctly 1`] 
         </span>
       </button>
       <button
-        class="bp3-button bp3-intent-primary sc-kAzzGY icCzNQ"
+        class="bp3-button bp3-intent-primary sc-chPdSV cAXnIg"
         type="submit"
       >
         <span
@@ -346,7 +346,7 @@ exports[`Audit Setup > Contests renders empty targeted state correctly 1`] = `
         Target Contests
       </h2>
       <div
-        class="bp3-card bp3-elevation-2 sc-kgoBCf cGUESD"
+        class="bp3-card bp3-elevation-2 sc-kGXeez drpedP"
       >
         <div
           class="sc-htpNat hKxttc"
@@ -371,10 +371,10 @@ exports[`Audit Setup > Contests renders empty targeted state correctly 1`] = `
               
                Name
               <div
-                class="sc-ifAKCX eNyQfb"
+                class="sc-bZQynM iEAxBy"
               >
                 <div
-                  class="bp3-input-group sc-EHOje bzcNaj"
+                  class="bp3-input-group sc-gzVnrw htprzv"
                 >
                   <input
                     class="bp3-input"
@@ -397,10 +397,10 @@ exports[`Audit Setup > Contests renders empty targeted state correctly 1`] = `
           >
             Winners
             <div
-              class="sc-ifAKCX eNyQfb"
+              class="sc-bZQynM iEAxBy"
             >
               <div
-                class="bp3-input-group sc-EHOje bzcNaj"
+                class="bp3-input-group sc-gzVnrw htprzv"
               >
                 <input
                   class="bp3-input"
@@ -422,10 +422,10 @@ exports[`Audit Setup > Contests renders empty targeted state correctly 1`] = `
           >
             Votes Allowed
             <div
-              class="sc-ifAKCX eNyQfb"
+              class="sc-bZQynM iEAxBy"
             >
               <div
-                class="bp3-input-group sc-EHOje bzcNaj"
+                class="bp3-input-group sc-gzVnrw htprzv"
               >
                 <input
                   class="bp3-input"
@@ -452,21 +452,21 @@ exports[`Audit Setup > Contests renders empty targeted state correctly 1`] = `
             Enter the name of each candidate choice that appears on the ballot for this contest.
           </div>
           <div
-            class="sc-iwsKbI lkODvP"
+            class="sc-gZMcBi knllut"
           >
             <div
-              class="sc-gZMcBi cKoNuO"
+              class="sc-gqjmRU gOWiEX"
             >
               <label
-                class="bp3-label sc-VigVT hUBjjB"
+                class="bp3-label sc-jTzLTM hdHzOo"
               >
                 Name of Candidate/Choice 
                 1
                 <div
-                  class="sc-gqjmRU crDldu sc-ifAKCX eNyQfb"
+                  class="sc-VigVT kbonos sc-bZQynM iEAxBy"
                 >
                   <div
-                    class="bp3-input-group sc-EHOje bzcNaj"
+                    class="bp3-input-group sc-gzVnrw htprzv"
                   >
                     <input
                       class="bp3-input"
@@ -478,15 +478,15 @@ exports[`Audit Setup > Contests renders empty targeted state correctly 1`] = `
                 </div>
               </label>
               <label
-                class="bp3-label sc-VigVT hUBjjB"
+                class="bp3-label sc-jTzLTM hdHzOo"
               >
                 Votes for Candidate/Choice 
                 1
                 <div
-                  class="sc-gqjmRU crDldu sc-ifAKCX eNyQfb"
+                  class="sc-VigVT kbonos sc-bZQynM iEAxBy"
                 >
                   <div
-                    class="bp3-input-group sc-EHOje bzcNaj"
+                    class="bp3-input-group sc-gzVnrw htprzv"
                   >
                     <input
                       class="bp3-input"
@@ -499,18 +499,18 @@ exports[`Audit Setup > Contests renders empty targeted state correctly 1`] = `
               </label>
             </div>
             <div
-              class="sc-gZMcBi cKoNuO"
+              class="sc-gqjmRU gOWiEX"
             >
               <label
-                class="bp3-label sc-VigVT hUBjjB"
+                class="bp3-label sc-jTzLTM hdHzOo"
               >
                 Name of Candidate/Choice 
                 2
                 <div
-                  class="sc-gqjmRU crDldu sc-ifAKCX eNyQfb"
+                  class="sc-VigVT kbonos sc-bZQynM iEAxBy"
                 >
                   <div
-                    class="bp3-input-group sc-EHOje bzcNaj"
+                    class="bp3-input-group sc-gzVnrw htprzv"
                   >
                     <input
                       class="bp3-input"
@@ -522,15 +522,15 @@ exports[`Audit Setup > Contests renders empty targeted state correctly 1`] = `
                 </div>
               </label>
               <label
-                class="bp3-label sc-VigVT hUBjjB"
+                class="bp3-label sc-jTzLTM hdHzOo"
               >
                 Votes for Candidate/Choice 
                 2
                 <div
-                  class="sc-gqjmRU crDldu sc-ifAKCX eNyQfb"
+                  class="sc-VigVT kbonos sc-bZQynM iEAxBy"
                 >
                   <div
-                    class="bp3-input-group sc-EHOje bzcNaj"
+                    class="bp3-input-group sc-gzVnrw htprzv"
                   >
                     <input
                       class="bp3-input"
@@ -543,7 +543,7 @@ exports[`Audit Setup > Contests renders empty targeted state correctly 1`] = `
               </label>
             </div>
             <p
-              class="sc-jTzLTM DJcIy"
+              class="sc-fjdhpX digwQU"
             >
               Add a new candidate/choice
             </p>
@@ -569,10 +569,10 @@ exports[`Audit Setup > Contests renders empty targeted state correctly 1`] = `
              
             
             <div
-              class="sc-ifAKCX eNyQfb"
+              class="sc-bZQynM iEAxBy"
             >
               <div
-                class="bp3-input-group sc-EHOje bzcNaj"
+                class="bp3-input-group sc-gzVnrw htprzv"
               >
                 <input
                   class="bp3-input"
@@ -605,7 +605,7 @@ exports[`Audit Setup > Contests renders empty targeted state correctly 1`] = `
               class="bp3-popover-target"
             >
               <button
-                class="bp3-button sc-kAzzGY icCzNQ"
+                class="bp3-button sc-chPdSV cAXnIg"
                 type="button"
               >
                 <span
@@ -619,10 +619,10 @@ exports[`Audit Setup > Contests renders empty targeted state correctly 1`] = `
         </div>
       </div>
       <div
-        class="sc-fjdhpX ljTFuz"
+        class="sc-jzJRlG kmWpbo"
       >
         <button
-          class="bp3-button sc-kAzzGY icCzNQ"
+          class="bp3-button sc-chPdSV cAXnIg"
           type="button"
         >
           <span
@@ -637,10 +637,10 @@ exports[`Audit Setup > Contests renders empty targeted state correctly 1`] = `
       </div>
     </div>
     <div
-      class="sc-fjdhpX ljTFuz"
+      class="sc-jzJRlG kmWpbo"
     >
       <button
-        class="bp3-button sc-kAzzGY icCzNQ"
+        class="bp3-button sc-chPdSV cAXnIg"
         type="button"
       >
         <span
@@ -650,7 +650,7 @@ exports[`Audit Setup > Contests renders empty targeted state correctly 1`] = `
         </span>
       </button>
       <button
-        class="bp3-button bp3-intent-primary sc-kAzzGY icCzNQ"
+        class="bp3-button bp3-intent-primary sc-chPdSV cAXnIg"
         type="submit"
       >
         <span
@@ -678,7 +678,7 @@ exports[`Audit Setup > Contests renders filled opportunistic state correctly 1`]
         Opportunistic Contests
       </h2>
       <div
-        class="bp3-card bp3-elevation-2 sc-kgoBCf cGUESD"
+        class="bp3-card bp3-elevation-2 sc-kGXeez drpedP"
       >
         <div
           class="sc-htpNat hKxttc"
@@ -703,10 +703,10 @@ exports[`Audit Setup > Contests renders filled opportunistic state correctly 1`]
               
                Name
               <div
-                class="sc-ifAKCX eNyQfb"
+                class="sc-bZQynM iEAxBy"
               >
                 <div
-                  class="bp3-input-group sc-EHOje bzcNaj"
+                  class="bp3-input-group sc-gzVnrw htprzv"
                 >
                   <input
                     class="bp3-input"
@@ -729,10 +729,10 @@ exports[`Audit Setup > Contests renders filled opportunistic state correctly 1`]
           >
             Winners
             <div
-              class="sc-ifAKCX eNyQfb"
+              class="sc-bZQynM iEAxBy"
             >
               <div
-                class="bp3-input-group sc-EHOje bzcNaj"
+                class="bp3-input-group sc-gzVnrw htprzv"
               >
                 <input
                   class="bp3-input"
@@ -754,10 +754,10 @@ exports[`Audit Setup > Contests renders filled opportunistic state correctly 1`]
           >
             Votes Allowed
             <div
-              class="sc-ifAKCX eNyQfb"
+              class="sc-bZQynM iEAxBy"
             >
               <div
-                class="bp3-input-group sc-EHOje bzcNaj"
+                class="bp3-input-group sc-gzVnrw htprzv"
               >
                 <input
                   class="bp3-input"
@@ -784,21 +784,21 @@ exports[`Audit Setup > Contests renders filled opportunistic state correctly 1`]
             Enter the name of each candidate choice that appears on the ballot for this contest.
           </div>
           <div
-            class="sc-iwsKbI lkODvP"
+            class="sc-gZMcBi knllut"
           >
             <div
-              class="sc-gZMcBi cKoNuO"
+              class="sc-gqjmRU gOWiEX"
             >
               <label
-                class="bp3-label sc-VigVT hUBjjB"
+                class="bp3-label sc-jTzLTM hdHzOo"
               >
                 Name of Candidate/Choice 
                 1
                 <div
-                  class="sc-gqjmRU crDldu sc-ifAKCX eNyQfb"
+                  class="sc-VigVT kbonos sc-bZQynM iEAxBy"
                 >
                   <div
-                    class="bp3-input-group sc-EHOje bzcNaj"
+                    class="bp3-input-group sc-gzVnrw htprzv"
                   >
                     <input
                       class="bp3-input"
@@ -810,15 +810,15 @@ exports[`Audit Setup > Contests renders filled opportunistic state correctly 1`]
                 </div>
               </label>
               <label
-                class="bp3-label sc-VigVT hUBjjB"
+                class="bp3-label sc-jTzLTM hdHzOo"
               >
                 Votes for Candidate/Choice 
                 1
                 <div
-                  class="sc-gqjmRU crDldu sc-ifAKCX eNyQfb"
+                  class="sc-VigVT kbonos sc-bZQynM iEAxBy"
                 >
                   <div
-                    class="bp3-input-group sc-EHOje bzcNaj"
+                    class="bp3-input-group sc-gzVnrw htprzv"
                   >
                     <input
                       class="bp3-input"
@@ -831,18 +831,18 @@ exports[`Audit Setup > Contests renders filled opportunistic state correctly 1`]
               </label>
             </div>
             <div
-              class="sc-gZMcBi cKoNuO"
+              class="sc-gqjmRU gOWiEX"
             >
               <label
-                class="bp3-label sc-VigVT hUBjjB"
+                class="bp3-label sc-jTzLTM hdHzOo"
               >
                 Name of Candidate/Choice 
                 2
                 <div
-                  class="sc-gqjmRU crDldu sc-ifAKCX eNyQfb"
+                  class="sc-VigVT kbonos sc-bZQynM iEAxBy"
                 >
                   <div
-                    class="bp3-input-group sc-EHOje bzcNaj"
+                    class="bp3-input-group sc-gzVnrw htprzv"
                   >
                     <input
                       class="bp3-input"
@@ -854,15 +854,15 @@ exports[`Audit Setup > Contests renders filled opportunistic state correctly 1`]
                 </div>
               </label>
               <label
-                class="bp3-label sc-VigVT hUBjjB"
+                class="bp3-label sc-jTzLTM hdHzOo"
               >
                 Votes for Candidate/Choice 
                 2
                 <div
-                  class="sc-gqjmRU crDldu sc-ifAKCX eNyQfb"
+                  class="sc-VigVT kbonos sc-bZQynM iEAxBy"
                 >
                   <div
-                    class="bp3-input-group sc-EHOje bzcNaj"
+                    class="bp3-input-group sc-gzVnrw htprzv"
                   >
                     <input
                       class="bp3-input"
@@ -875,7 +875,7 @@ exports[`Audit Setup > Contests renders filled opportunistic state correctly 1`]
               </label>
             </div>
             <p
-              class="sc-jTzLTM DJcIy"
+              class="sc-fjdhpX digwQU"
             >
               Add a new candidate/choice
             </p>
@@ -901,10 +901,10 @@ exports[`Audit Setup > Contests renders filled opportunistic state correctly 1`]
              
             
             <div
-              class="sc-ifAKCX eNyQfb"
+              class="sc-bZQynM iEAxBy"
             >
               <div
-                class="bp3-input-group sc-EHOje bzcNaj"
+                class="bp3-input-group sc-gzVnrw htprzv"
               >
                 <input
                   class="bp3-input"
@@ -937,7 +937,7 @@ exports[`Audit Setup > Contests renders filled opportunistic state correctly 1`]
               class="bp3-popover-target"
             >
               <button
-                class="bp3-button sc-kAzzGY icCzNQ"
+                class="bp3-button sc-chPdSV cAXnIg"
                 type="button"
               >
                 <span
@@ -951,10 +951,10 @@ exports[`Audit Setup > Contests renders filled opportunistic state correctly 1`]
         </div>
       </div>
       <div
-        class="sc-fjdhpX ljTFuz"
+        class="sc-jzJRlG kmWpbo"
       >
         <button
-          class="bp3-button sc-kAzzGY icCzNQ"
+          class="bp3-button sc-chPdSV cAXnIg"
           type="button"
         >
           <span
@@ -969,10 +969,10 @@ exports[`Audit Setup > Contests renders filled opportunistic state correctly 1`]
       </div>
     </div>
     <div
-      class="sc-fjdhpX ljTFuz"
+      class="sc-jzJRlG kmWpbo"
     >
       <button
-        class="bp3-button sc-kAzzGY icCzNQ"
+        class="bp3-button sc-chPdSV cAXnIg"
         type="button"
       >
         <span
@@ -982,7 +982,7 @@ exports[`Audit Setup > Contests renders filled opportunistic state correctly 1`]
         </span>
       </button>
       <button
-        class="bp3-button bp3-intent-primary sc-kAzzGY icCzNQ"
+        class="bp3-button bp3-intent-primary sc-chPdSV cAXnIg"
         type="submit"
       >
         <span
@@ -1010,7 +1010,7 @@ exports[`Audit Setup > Contests renders filled targeted state correctly 1`] = `
         Target Contests
       </h2>
       <div
-        class="bp3-card bp3-elevation-2 sc-kgoBCf cGUESD"
+        class="bp3-card bp3-elevation-2 sc-kGXeez drpedP"
       >
         <div
           class="sc-htpNat hKxttc"
@@ -1035,10 +1035,10 @@ exports[`Audit Setup > Contests renders filled targeted state correctly 1`] = `
               
                Name
               <div
-                class="sc-ifAKCX eNyQfb"
+                class="sc-bZQynM iEAxBy"
               >
                 <div
-                  class="bp3-input-group sc-EHOje bzcNaj"
+                  class="bp3-input-group sc-gzVnrw htprzv"
                 >
                   <input
                     class="bp3-input"
@@ -1061,10 +1061,10 @@ exports[`Audit Setup > Contests renders filled targeted state correctly 1`] = `
           >
             Winners
             <div
-              class="sc-ifAKCX eNyQfb"
+              class="sc-bZQynM iEAxBy"
             >
               <div
-                class="bp3-input-group sc-EHOje bzcNaj"
+                class="bp3-input-group sc-gzVnrw htprzv"
               >
                 <input
                   class="bp3-input"
@@ -1086,10 +1086,10 @@ exports[`Audit Setup > Contests renders filled targeted state correctly 1`] = `
           >
             Votes Allowed
             <div
-              class="sc-ifAKCX eNyQfb"
+              class="sc-bZQynM iEAxBy"
             >
               <div
-                class="bp3-input-group sc-EHOje bzcNaj"
+                class="bp3-input-group sc-gzVnrw htprzv"
               >
                 <input
                   class="bp3-input"
@@ -1116,21 +1116,21 @@ exports[`Audit Setup > Contests renders filled targeted state correctly 1`] = `
             Enter the name of each candidate choice that appears on the ballot for this contest.
           </div>
           <div
-            class="sc-iwsKbI lkODvP"
+            class="sc-gZMcBi knllut"
           >
             <div
-              class="sc-gZMcBi cKoNuO"
+              class="sc-gqjmRU gOWiEX"
             >
               <label
-                class="bp3-label sc-VigVT hUBjjB"
+                class="bp3-label sc-jTzLTM hdHzOo"
               >
                 Name of Candidate/Choice 
                 1
                 <div
-                  class="sc-gqjmRU crDldu sc-ifAKCX eNyQfb"
+                  class="sc-VigVT kbonos sc-bZQynM iEAxBy"
                 >
                   <div
-                    class="bp3-input-group sc-EHOje bzcNaj"
+                    class="bp3-input-group sc-gzVnrw htprzv"
                   >
                     <input
                       class="bp3-input"
@@ -1142,15 +1142,15 @@ exports[`Audit Setup > Contests renders filled targeted state correctly 1`] = `
                 </div>
               </label>
               <label
-                class="bp3-label sc-VigVT hUBjjB"
+                class="bp3-label sc-jTzLTM hdHzOo"
               >
                 Votes for Candidate/Choice 
                 1
                 <div
-                  class="sc-gqjmRU crDldu sc-ifAKCX eNyQfb"
+                  class="sc-VigVT kbonos sc-bZQynM iEAxBy"
                 >
                   <div
-                    class="bp3-input-group sc-EHOje bzcNaj"
+                    class="bp3-input-group sc-gzVnrw htprzv"
                   >
                     <input
                       class="bp3-input"
@@ -1163,18 +1163,18 @@ exports[`Audit Setup > Contests renders filled targeted state correctly 1`] = `
               </label>
             </div>
             <div
-              class="sc-gZMcBi cKoNuO"
+              class="sc-gqjmRU gOWiEX"
             >
               <label
-                class="bp3-label sc-VigVT hUBjjB"
+                class="bp3-label sc-jTzLTM hdHzOo"
               >
                 Name of Candidate/Choice 
                 2
                 <div
-                  class="sc-gqjmRU crDldu sc-ifAKCX eNyQfb"
+                  class="sc-VigVT kbonos sc-bZQynM iEAxBy"
                 >
                   <div
-                    class="bp3-input-group sc-EHOje bzcNaj"
+                    class="bp3-input-group sc-gzVnrw htprzv"
                   >
                     <input
                       class="bp3-input"
@@ -1186,15 +1186,15 @@ exports[`Audit Setup > Contests renders filled targeted state correctly 1`] = `
                 </div>
               </label>
               <label
-                class="bp3-label sc-VigVT hUBjjB"
+                class="bp3-label sc-jTzLTM hdHzOo"
               >
                 Votes for Candidate/Choice 
                 2
                 <div
-                  class="sc-gqjmRU crDldu sc-ifAKCX eNyQfb"
+                  class="sc-VigVT kbonos sc-bZQynM iEAxBy"
                 >
                   <div
-                    class="bp3-input-group sc-EHOje bzcNaj"
+                    class="bp3-input-group sc-gzVnrw htprzv"
                   >
                     <input
                       class="bp3-input"
@@ -1207,7 +1207,7 @@ exports[`Audit Setup > Contests renders filled targeted state correctly 1`] = `
               </label>
             </div>
             <p
-              class="sc-jTzLTM DJcIy"
+              class="sc-fjdhpX digwQU"
             >
               Add a new candidate/choice
             </p>
@@ -1233,10 +1233,10 @@ exports[`Audit Setup > Contests renders filled targeted state correctly 1`] = `
              
             
             <div
-              class="sc-ifAKCX eNyQfb"
+              class="sc-bZQynM iEAxBy"
             >
               <div
-                class="bp3-input-group sc-EHOje bzcNaj"
+                class="bp3-input-group sc-gzVnrw htprzv"
               >
                 <input
                   class="bp3-input"
@@ -1269,7 +1269,7 @@ exports[`Audit Setup > Contests renders filled targeted state correctly 1`] = `
               class="bp3-popover-target"
             >
               <button
-                class="bp3-button sc-kAzzGY icCzNQ"
+                class="bp3-button sc-chPdSV cAXnIg"
                 type="button"
               >
                 <span
@@ -1283,10 +1283,10 @@ exports[`Audit Setup > Contests renders filled targeted state correctly 1`] = `
         </div>
       </div>
       <div
-        class="sc-fjdhpX ljTFuz"
+        class="sc-jzJRlG kmWpbo"
       >
         <button
-          class="bp3-button sc-kAzzGY icCzNQ"
+          class="bp3-button sc-chPdSV cAXnIg"
           type="button"
         >
           <span
@@ -1301,10 +1301,10 @@ exports[`Audit Setup > Contests renders filled targeted state correctly 1`] = `
       </div>
     </div>
     <div
-      class="sc-fjdhpX ljTFuz"
+      class="sc-jzJRlG kmWpbo"
     >
       <button
-        class="bp3-button sc-kAzzGY icCzNQ"
+        class="bp3-button sc-chPdSV cAXnIg"
         type="button"
       >
         <span
@@ -1314,7 +1314,7 @@ exports[`Audit Setup > Contests renders filled targeted state correctly 1`] = `
         </span>
       </button>
       <button
-        class="bp3-button bp3-intent-primary sc-kAzzGY icCzNQ"
+        class="bp3-button bp3-intent-primary sc-chPdSV cAXnIg"
         type="submit"
       >
         <span
