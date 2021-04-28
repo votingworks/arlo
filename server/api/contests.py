@@ -32,7 +32,11 @@ CONTEST_SCHEMA = {
         "choices": {"type": "array", "items": CONTEST_CHOICE_SCHEMA},
         "numWinners": {"type": "integer", "minimum": 1},
         "votesAllowed": {"type": "integer", "minimum": 1},
-        "jurisdictionIds": {"type": "array", "items": {"type": "string"}},
+        "jurisdictionIds": {
+            "type": "array",
+            "items": {"type": "string"},
+            "minItems": 1,
+        },
     },
     "additionalProperties": False,
     "required": [
@@ -152,6 +156,14 @@ def validate_contests(contests: List[JSONDict], election: Election):
             }[AuditType(election.audit_type)],
         },
     )
+
+    contest_jurisdiction_ids = set(
+        id for contest in contests for id in contest["jurisdictionIds"]
+    )
+    if Jurisdiction.query.filter(
+        Jurisdiction.id.in_(contest_jurisdiction_ids)
+    ).count() < len(contest_jurisdiction_ids):
+        raise BadRequest("Invalid jurisdiction ids")
 
     if not any(contest["isTargeted"] for contest in contests):
         raise BadRequest("Must have at least one targeted contest")
