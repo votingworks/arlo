@@ -301,7 +301,11 @@ def test_contest_choices_dont_match_cvrs(
                 "status": "ERRORED",
                 "startedAt": assert_is_date,
                 "completedAt": assert_is_date,
-                "error": "Couldn't find some contest choices (Another Bad Choice Name, Bad Choice Name) in the CVR for jurisdiction J1",
+                "error": (
+                    "CVR choice names don't match for contest Contest 1:\n"
+                    "J1: Choice 1-1, Choice 1-2\n"
+                    "Contest settings: Another Bad Choice Name, Bad Choice Name, Choice 1-2"
+                ),
             },
         },
     )

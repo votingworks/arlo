@@ -32,7 +32,7 @@ from ..audit_math import (
     sampler_contest,
     suite,
 )
-from .cvrs import hybrid_contest_choice_vote_counts
+from .cvrs import hybrid_contest_choice_vote_counts, cvr_contests_metadata
 from .ballot_manifest import hybrid_contest_total_ballots
 from ..worker.tasks import (
     background_task,
@@ -228,10 +228,9 @@ def cvrs_for_contest(contest: Contest) -> sampler_contest.CVRS:
     cvrs: sampler_contest.CVRS = {}
 
     for jurisdiction in contest.jurisdictions:
-        cvr_contests_metadata = typing_cast(
-            JSONDict, jurisdiction.cvr_contests_metadata
-        )
-        choices_metadata = cvr_contests_metadata[contest.name]["choices"]
+        metadata = cvr_contests_metadata(jurisdiction)
+        assert metadata is not None
+        choices_metadata = metadata[contest.name]["choices"]
 
         interpretations_by_ballot = (
             CvrBallot.query.join(Batch)

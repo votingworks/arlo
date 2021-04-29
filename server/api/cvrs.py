@@ -2,8 +2,7 @@ import uuid
 import io
 import tempfile
 import csv
-import typing
-from typing import Dict, Optional
+from typing import Dict, Optional, TypedDict
 from collections import defaultdict
 import re
 import difflib
@@ -25,39 +24,96 @@ from ..util.process_file import (
 )
 from ..util.csv_download import csv_response
 from ..util.csv_parse import decode_csv_file
-from ..util.jsonschema import JSONDict
 from ..util.group_by import group_by
 from ..audit_math.suite import HybridPair
 
 
-def validate_uploaded_cvrs(contest: Contest):
-    choice_names = {choice.name for choice in contest.choices}
+class CvrChoiceMetadata(TypedDict):
+    num_votes: int
+    column: int
 
+
+class CvrContestMetadata(TypedDict):
+    votes_allowed: int
+    total_ballots_cast: int
+    # { choice_name: CvrChoiceMetadata }
+    choices: Dict[str, CvrChoiceMetadata]
+
+
+# { contest_id: CvrContestMetadata }
+CVR_CONTESTS_METADATA = Dict[str, CvrContestMetadata]  # pylint: disable=invalid-name
+
+
+def validate_uploaded_cvrs(contest: Contest):
     for jurisdiction in contest.jurisdictions:
-        contests_metadata = typing.cast(JSONDict, jurisdiction.cvr_contests_metadata)
+        contests_metadata = cvr_contests_metadata(jurisdiction)
         if contests_metadata is None:
-            raise Exception("Some jurisdictions haven't uploaded their CVRs yet.")
+            raise UserError("Some jurisdictions haven't uploaded their CVRs yet.")
 
         if contest.name not in contests_metadata:
-            raise Exception(
+            raise UserError(
                 f"Couldn't find contest {contest.name} in the CVR for jurisdiction {jurisdiction.name}"
             )
 
-        cvr_choice_names = contests_metadata[contest.name]["choices"].keys()
-        missing_choice_names = choice_names - cvr_choice_names
-        if len(missing_choice_names) > 0:
-            raise Exception(
-                f"Couldn't find some contest choices ({', '.join(sorted(missing_choice_names))})"
-                f" in the CVR for jurisdiction {jurisdiction.name}"
+        def choice_names(jurisdiction):
+            return set(
+                cvr_contests_metadata(jurisdiction)[contest.name]["choices"].keys()
             )
+
+        first_jurisdiction = list(contest.jurisdictions)[0]
+        if choice_names(jurisdiction) != choice_names(first_jurisdiction):
+            raise UserError(
+                f"CVR choice names don't match for contest {contest.name}:\n"
+                f"{jurisdiction.name}: {', '.join(sorted(choice_names(jurisdiction)))}\n"
+                f"{first_jurisdiction.name}: {', '.join(sorted(choice_names(first_jurisdiction)))}"
+            )
+
+        # In hybrid audits specifically, we also need to check that the choice
+        # names match those entered by the audit admin.
+        if first_jurisdiction.election.audit_type == AuditType.HYBRID:
+            contest_choice_names = {choice.name for choice in contest.choices}
+            if choice_names(jurisdiction) != contest_choice_names:
+                raise UserError(
+                    f"CVR choice names don't match for contest {contest.name}:\n"
+                    f"{jurisdiction.name}: {', '.join(sorted(choice_names(jurisdiction)))}\n"
+                    f"Contest settings: {', '.join(sorted(contest_choice_names))}"
+                )
 
 
 def are_uploaded_cvrs_valid(contest: Contest):
     try:
         validate_uploaded_cvrs(contest)
         return True
-    except Exception:
+    except UserError:
         return False
+
+
+# Wraps Jurisdiction.cvr_contest_metadata, applying any contest name
+# standardizations in Jurisdiction.contest_name_standardizations. This wrapper
+# should always be used for reading the metadata, so that the contest names
+# from the CVR will match those selected by the AA.
+def cvr_contests_metadata(
+    jurisdiction: Jurisdiction,
+) -> Optional[CVR_CONTESTS_METADATA]:
+    metadata = typing_cast(
+        Optional[CVR_CONTESTS_METADATA], jurisdiction.cvr_contests_metadata
+    )
+    if metadata is None:
+        return None
+
+    standardizations = typing_cast(
+        Optional[Dict[str, str]], jurisdiction.contest_name_standardizations
+    )
+    standardizations = {
+        cvr_contest_name: contest_name
+        for contest_name, cvr_contest_name in (standardizations or {}).items()
+        if cvr_contest_name
+    }
+
+    return {
+        standardizations.get(cvr_contest_name, cvr_contest_name): contest_metadata
+        for cvr_contest_name, contest_metadata in metadata.items()
+    }
 
 
 def set_contest_metadata_from_cvrs(contest: Contest):
@@ -67,9 +123,9 @@ def set_contest_metadata_from_cvrs(contest: Contest):
     contest.choices = []
 
     for jurisdiction in contest.jurisdictions:
-        contest_metadata = typing.cast(JSONDict, jurisdiction.cvr_contests_metadata)[
-            contest.name
-        ]
+        metadata = cvr_contests_metadata(jurisdiction)
+        assert metadata is not None
+        contest_metadata = metadata[contest.name]
 
         if len(contest.choices) == 0:
             contest.choices = [
@@ -99,10 +155,9 @@ def hybrid_contest_choice_vote_counts(
 
     cvr_choice_votes = {choice.id: 0 for choice in contest.choices}
     for jurisdiction in contest.jurisdictions:
-        cvr_contests_metadata = typing.cast(
-            JSONDict, jurisdiction.cvr_contests_metadata
-        )
-        contest_metadata = cvr_contests_metadata[contest.name]
+        metadata = cvr_contests_metadata(jurisdiction)
+        assert metadata is not None
+        contest_metadata = metadata[contest.name]
         for choice_name, choice_metadata in contest_metadata["choices"].items():
             choice = next(c for c in contest.choices if c.name == choice_name)
             cvr_choice_votes[choice.id] += choice_metadata["num_votes"]

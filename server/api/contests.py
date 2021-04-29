@@ -240,3 +240,89 @@ def list_audit_board_contests(
 ):
     json_contests = [serialize_contest(c) for c in jurisdiction.contests]
     return jsonify({"contests": json_contests})
+
+
+# { jurisdiction_id: { contest_name: cvr_contest_name | null }}
+CONTEST_NAME_STANDARDIZATIONS_SCHEMA = {
+    "type": "object",
+    "patternProperties": {
+        "^.*$": {
+            "type": "object",
+            "patternProperties": {
+                "^.*$": {
+                    "anyOf": [{"type": "string", "minLength": 1}, {"type": "null"}]
+                }
+            },
+        },
+    },
+}
+
+
+@api.route("/election/<election_id>/contest/standardizations", methods=["PUT"])
+@restrict_access([UserType.AUDIT_ADMIN])
+def put_contest_name_standardizations(election: Election):
+    if election.audit_type not in [AuditType.BALLOT_COMPARISON, AuditType.HYBRID]:
+        raise Conflict("Cannot standardize contest names for this audit type")
+    if len(list(election.rounds)) > 0:
+        raise Conflict("Cannot standardize contest names after the audit has started.")
+
+    standardizations = request.get_json()
+    validate(standardizations, CONTEST_NAME_STANDARDIZATIONS_SCHEMA)
+
+    for jurisdiction in election.jurisdictions:
+        jurisdiction.contest_name_standardizations = standardizations.get(
+            jurisdiction.id
+        )
+
+    for contest in election.contests:
+        set_contest_metadata_from_cvrs(contest)
+
+    db_session.commit()
+
+    return jsonify(status="ok")
+
+
+@api.route("/election/<election_id>/contest/standardizations", methods=["GET"])
+@restrict_access([UserType.AUDIT_ADMIN])
+def get_contest_name_standardizations(election: Election):
+    def standardizations(jurisdiction):
+        if jurisdiction.cvr_contests_metadata is None:
+            return None
+        contests_needing_standardization = [
+            contest
+            for contest in jurisdiction.contests
+            if contest.name not in jurisdiction.cvr_contests_metadata
+        ]
+        # Since CVR contests could have changed since these mappings were
+        # created, filter out any outdated standardizations.
+        valid_standardizations = {
+            contest_name: cvr_contest_name
+            for contest_name, cvr_contest_name in (
+                jurisdiction.contest_name_standardizations or {}
+            ).items()
+            if cvr_contest_name in jurisdiction.cvr_contests_metadata
+        }
+        return {
+            contest.name: valid_standardizations.get(contest.name)
+            for contest in contests_needing_standardization
+        }
+
+    standardizations_by_jurisdiction = {
+        jurisdiction: standardizations(jurisdiction)
+        for jurisdiction in election.jurisdictions
+    }
+
+    return jsonify(
+        standardizations={
+            jurisdiction.id: jurisdiction_standardizations
+            for jurisdiction, jurisdiction_standardizations in standardizations_by_jurisdiction.items()
+            if jurisdiction_standardizations
+        },
+        cvrContestNames={
+            jurisdiction.id: list(
+                typing.cast(dict, jurisdiction.cvr_contests_metadata).keys()
+            )
+            for jurisdiction, jurisdiction_standardizations in standardizations_by_jurisdiction.items()
+            if jurisdiction_standardizations
+        },
+    )
