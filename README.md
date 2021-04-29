@@ -20,11 +20,27 @@ As part of the audit, Arlo:
 
 ### Supported election types, audit methods, and processes
 
-Arlo currently supports ballot polling risk-limiting audits of single or multi-winner plurality contests. Only one targeted contest is supported at this time, although mutliple instances of the tool may also be run in parallel if multiple targeted contests are desired. If multiple jurisdictions are participating in the audit, ballot manifests and vote/ballot totals for each jurisdiction must be manually combined. Votes from individual audited ballots are currently recorded & tallied manually, then entered into the tool as totals.
+Arlo currently supports multiple risk-limiting audit methods, including:
+- ballot polling (BRAVO & Minerva)
+- batch comparison
+- ballot comparison
+- hybrid (SUITE, combining ballot polling & ballot comparison) 
+
+Arlo also supports:
+- single jurisdiction or multi-jurisdiction audits
+- single winner or multi-winner contests
+- auditing multiple contests simultaneously, both within and across jurisdictions (via independent sampling with maximum overlap, due to Rivest's Consistent Sampler)
+- online ballot data entry or offline, paper-based ballot data collection, where applicable (e.g. offline data entry for ballot polling allows for tally sheets to be used onsite to capture individual ballot data, and only aggregate totals need to be entered into Arlo. Ballot comparison and hybrid methods require ballot-by-ballot data entry, however.)
+
+At present, only plurality elections are supported, as they are the predominant election method in the United States.
 
 ### Statistical methods
 
-Arlo uses the BRAVO ballot polling method of measuring risk and estimating how many ballots need to be examined ([Lindeman et al, 2012](https://www.usenix.org/system/files/conference/evtwote12/evtwote12-final27.pdf)).
+The statistics used in Arlo include:
+- For ballot polling: Lindeman, M., P.B. Stark, and V.S. Yates, 2012. BRAVO: Ballot-polling Risk-Limiting Audits to Verify Outcomes. 2012 Electronic Voting Technology Workshop/Workshop on Trustworthy Elections (EVT/WOTE '12). (reprint:https://www.usenix.org/system/files/conference/evtwote12/evtwote12-final27.pdf)
+- For ballot comparison: Stark, P.B., 2008. Conservative Statistical Post Election Audits. The Annals of Applied Statistics, 2, 550–581.http://arxiv.org/abs/0807.4005
+- For hybrid/SUITE: Ottoboni, K., P.B. Stark, M. Lindeman, and N. McBurnett, 2018. Risk-Limiting Audits by Stratified Union-Intersection Tests of Elections (SUITE), to appear in Electronic Voting. E-Vote-ID 2018. Lecture Notes in Computer Science, Springer.https://link.springer.com/chapter/10.1007/978-3-030-00419-4_12. Preprint: https://arxiv.org/abs/1809.04235
+
 
 Random sampling of ballots is done using [Rivest's Consistent Sampler](https://github.com/ron-rivest/consistent_sampler).
 
@@ -62,19 +78,7 @@ Note that batch names are strings with no required naming conventions - use what
 
 Ongoing development is planned to support:
 
-- Ballot-by-ballot data entry
-
-- Multiple targeted contests
-
-- Distributed multi-jurisdiction contests
-
-- Batch comparison RLAs
-
-- Ballot comparison RLAs
-
-- Public audit dashboard
-
-- Additional election types (proportional contests, etc.)
+- Additional election types (proportional contests, RCV elections, etc.)
 
 - More efficient statitstical methods
 
