@@ -37,7 +37,7 @@ def json_contests(jurisdiction_ids: List[str]) -> List[JSONDict]:
             "totalBallotsCast": 500,
             "numWinners": 1,
             "votesAllowed": 1,
-            "jurisdictionIds": [],
+            "jurisdictionIds": jurisdiction_ids,
         },
         {
             "id": str(uuid.uuid4()),
@@ -212,7 +212,27 @@ def test_update_contests_missing_field(
         }
 
 
-def test_contest_too_many_votes(client: FlaskClient, election_id: str):
+def test_update_contests_invalid_jurisdictions(
+    client: FlaskClient, election_id: str, json_contests
+):
+    json_contests[0]["jurisdictionIds"] = []
+    rv = put_json(client, f"/api/election/{election_id}/contest", [json_contests[0]])
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [{"message": "[] is too short", "errorType": "Bad Request",}]
+    }
+
+    json_contests[0]["jurisdictionIds"] = ["not a real jurisdiction id"]
+    rv = put_json(client, f"/api/election/{election_id}/contest", [json_contests[0]])
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [{"message": "Invalid jurisdiction ids", "errorType": "Bad Request",}]
+    }
+
+
+def test_contest_too_many_votes(
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+):
     contest = {
         "id": str(uuid.uuid4()),
         "name": "Contest 1",
@@ -224,7 +244,7 @@ def test_contest_too_many_votes(client: FlaskClient, election_id: str):
         "totalBallotsCast": 500,
         "numWinners": 1,
         "votesAllowed": 1,
-        "jurisdictionIds": [],
+        "jurisdictionIds": jurisdiction_ids,
     }
 
     rv = put_json(client, f"/api/election/{election_id}/contest", [contest])
@@ -249,7 +269,7 @@ def test_contest_too_many_votes(client: FlaskClient, election_id: str):
         "totalBallotsCast": 500,
         "numWinners": 1,
         "votesAllowed": 2,
-        "jurisdictionIds": [],
+        "jurisdictionIds": jurisdiction_ids,
     }
 
     rv = put_json(client, f"/api/election/{election_id}/contest", [contest])
@@ -289,7 +309,7 @@ def test_jurisdictions_contests_list(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/contest"
     )
     contests = json.loads(rv.data)
-    assert contests == {"contests": json_contests[:1]}
+    assert contests == {"contests": json_contests[:2]}
 
 
 def test_audit_board_contests_list_empty(

@@ -42,6 +42,9 @@ const contestsSchema = (auditType: IAuditSettings['auditType']) =>
                 }
               )
               .required('Required'),
+            jurisdictionIds: Yup.array()
+              .required('Required')
+              .of(Yup.string()),
           }),
           choices: Yup.array()
             .required()

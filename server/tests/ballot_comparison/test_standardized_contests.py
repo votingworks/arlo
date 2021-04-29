@@ -173,6 +173,45 @@ def test_standardized_contests_bad_jurisdiction(
     assert json.loads(rv.data) is None
 
 
+def test_standardized_contests_no_jurisdictions(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+):
+    rv = client.put(
+        f"/api/election/{election_id}/standardized-contests/file",
+        data={
+            "standardized-contests": (
+                io.BytesIO(b"Contest Name,Jurisdictions\n" b"Contest 1,"),
+                "standardized-contests.csv",
+            )
+        },
+    )
+    assert_ok(rv)
+
+    bgcompute_update_standardized_contests_file(election_id)
+
+    rv = client.get(f"/api/election/{election_id}/standardized-contests/file")
+    compare_json(
+        json.loads(rv.data),
+        {
+            "file": {
+                "name": "standardized-contests.csv",
+                "uploadedAt": assert_is_date,
+            },
+            "processing": {
+                "status": ProcessingStatus.ERRORED,
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": "All cells must have values. Got empty cell at column Jurisdictions, row 2.",
+            },
+        },
+    )
+
+    rv = client.get(f"/api/election/{election_id}/standardized-contests")
+    assert json.loads(rv.data) is None
+
+
 def test_standardized_contests_missing_file(
     client: FlaskClient,
     election_id: str,

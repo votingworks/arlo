@@ -3,10 +3,10 @@
 exports[`FormField renders a Field 1`] = `
 <div>
   <div
-    class="sc-bdVaJa NQGah"
+    class="sc-htpNat gdpVCF"
   >
     <div
-      class="bp3-input-group sc-bwzfXH hmTEuO"
+      class="bp3-input-group sc-bxivhb eSUmfF"
     >
       <input
         class="bp3-input"
@@ -23,10 +23,10 @@ exports[`FormField renders a Field 1`] = `
 exports[`FormField renders a Field with errors 1`] = `
 <div>
   <div
-    class="sc-bdVaJa NQGah"
+    class="sc-htpNat gdpVCF"
   >
     <div
-      class="bp3-input-group sc-bwzfXH hmTEuO"
+      class="bp3-input-group sc-bxivhb eSUmfF"
     >
       <input
         class="bp3-input"
@@ -37,7 +37,7 @@ exports[`FormField renders a Field with errors 1`] = `
       />
     </div>
     <p
-      class="sc-ifAKCX jFsqnc"
+      class="sc-bdVaJa djOlwt"
       data-testid="field-name-error"
     >
       Required
@@ -49,10 +49,10 @@ exports[`FormField renders a Field with errors 1`] = `
 exports[`FormField renders a numeric Field 1`] = `
 <div>
   <div
-    class="sc-bdVaJa NQGah"
+    class="sc-htpNat gdpVCF"
   >
     <div
-      class="bp3-control-group bp3-numeric-input sc-bxivhb dCvGLi"
+      class="bp3-control-group bp3-numeric-input sc-EHOje jbWIMM"
     >
       <div
         class="bp3-input-group"

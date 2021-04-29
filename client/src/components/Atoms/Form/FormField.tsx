@@ -2,6 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { InputGroup, NumericInput, TextArea } from '@blueprintjs/core'
 import { getIn, FieldProps } from 'formik'
+import { ErrorLabel } from './_helpers'
 
 interface IWrapperProps {
   wide: boolean
@@ -37,11 +38,6 @@ const NumberField = styled(NumericInput)`
     transform: translateX(-100%);
     z-index: 15;
   }
-`
-
-const ErrorLabel = styled.p`
-  width: 100%;
-  color: #ff0000;
 `
 
 export interface IProps {

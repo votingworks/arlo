@@ -220,7 +220,9 @@ describe('Audit Setup > Contests', () => {
 
   it('is able to submit the form successfully', async () => {
     apiMock.mockImplementation(
-      generateApiMock(contestMocks.emptyTargeted, { jurisdictions: [] })
+      generateApiMock(contestMocks.emptyTargeted, {
+        jurisdictions: jurisdictionMocks.noManifests,
+      })
     )
     const { findByText, getByLabelText, getByText } = render(
       <Contests
@@ -240,6 +242,11 @@ describe('Audit Setup > Contests', () => {
       typeInto(input, inputData.value)
       expect(input.value).toBe(inputData.value)
     })
+
+    userEvent.click(
+      screen.getByRole('button', { name: 'Select Jurisdictions' })
+    )
+    userEvent.click(screen.getByRole('checkbox', { name: 'Jurisdiction 1' }))
 
     fireEvent.click(getByText('Save & Next'), { bubbles: true })
     await waitFor(() => {
@@ -454,16 +461,27 @@ describe('Audit Setup > Contests', () => {
   it('handles submission when there is a pre-existing contest', async () => {
     apiMock
       .mockImplementationOnce(
-        generateApiMock(contestMocks.filledOpportunistic, { jurisdictions: [] })
+        generateApiMock(contestMocks.filledOpportunistic, {
+          jurisdictions: jurisdictionMocks.noManifests,
+        })
       )
       .mockImplementationOnce(
-        generateApiMock(contestMocks.filledOpportunistic, { jurisdictions: [] })
+        generateApiMock(contestMocks.filledOpportunistic, {
+          jurisdictions: jurisdictionMocks.noManifests,
+        })
       )
       .mockImplementationOnce(
-        generateApiMock(contestMocks.filledOpportunistic, { jurisdictions: [] })
+        generateApiMock(contestMocks.filledOpportunistic, {
+          jurisdictions: jurisdictionMocks.noManifests,
+        })
       )
       .mockImplementation(
-        generateApiMock({ status: 'ok' }, { jurisdictions: [] })
+        generateApiMock(
+          { status: 'ok' },
+          {
+            jurisdictions: jurisdictionMocks.noManifests,
+          }
+        )
       )
     const { getAllByLabelText, getAllByText, findByText } = render(
       <Contests
@@ -483,6 +501,11 @@ describe('Audit Setup > Contests', () => {
       typeInto(input[input.length - 1], inputData.value)
       expect(input[input.length - 1].value).toBe(inputData.value)
     })
+
+    userEvent.click(
+      screen.getByRole('button', { name: 'Select Jurisdictions' })
+    )
+    userEvent.click(screen.getByRole('checkbox', { name: 'Jurisdiction 1' }))
 
     const submit = getAllByText('Save & Next')
     fireEvent.click(submit[submit.length - 1], { bubbles: true })
