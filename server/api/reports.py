@@ -1,5 +1,5 @@
 import io, csv
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, cast as typing_cast
 from collections import defaultdict, Counter
 from sqlalchemy.dialects.postgresql import aggregate_order_by
 
@@ -236,6 +236,27 @@ def contest_rows(election: Election):
                 ]
         rows.append(row)
     return rows
+
+
+def contest_name_standardization_rows(election: Election):
+    if election.audit_type not in [AuditType.BALLOT_COMPARISON, AuditType.HYBRID]:
+        return None
+
+    standardization_rows = [
+        [jurisdiction.name, contest_name, cvr_contest_name]
+        for jurisdiction in election.jurisdictions
+        if jurisdiction.contest_name_standardizations
+        for contest_name, cvr_contest_name in typing_cast(
+            Dict, jurisdiction.contest_name_standardizations
+        ).items()
+    ]
+    if len(standardization_rows) == 0:
+        return None
+
+    return [
+        heading("CONTEST NAME STANDARDIZATIONS"),
+        ["Jurisdiction", "Contest Name", "CVR Contest Name"],
+    ] + standardization_rows
 
 
 def audit_settings_rows(election: Election):
@@ -678,6 +699,7 @@ def audit_admin_audit_report(election: Election):
     row_sets = [
         election_info_rows(election),
         contest_rows(election),
+        contest_name_standardization_rows(election),
         audit_settings_rows(election),
         audit_board_rows(election),
         round_rows(election),

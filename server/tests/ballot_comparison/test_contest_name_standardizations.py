@@ -135,6 +135,10 @@ def test_standardize_contest_names(
     # Should match test_ballot_comparison_two_rounds from test_ballot_comparison.py
     snapshot.assert_match(response["sampleSizes"][contests[0]["id"]])
 
+    rv = client.get(f"/api/election/{election_id}/report")
+    assert rv.status_code == 200
+    assert_match_report(rv.data, snapshot)
+
 
 def test_standardize_contest_names_before_cvrs(
     client: FlaskClient,
