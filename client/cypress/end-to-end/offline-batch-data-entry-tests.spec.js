@@ -58,9 +58,6 @@ describe('Offline Batch Data Entry', () => {
     cy.findAllByText('Review & Launch').should('have.length', 2)
     cy.logout(auditAdmin)
     cy.loginJurisdictionAdmin(jurisdictionAdmin)
-    cy.findByText(`Jurisdictions - TestAudit${id}`)
-      .siblings('button')
-      .click()
     cy.fixture('CSVs/manifest/ballot_polling_manifest.csv').then(
       fileContent => {
         cy.get('input[type="file"]')
@@ -93,9 +90,6 @@ describe('Offline Batch Data Entry', () => {
     cy.findByRole('heading', { name: 'Audit Progress' })
     cy.logout(auditAdmin)
     cy.loginJurisdictionAdmin(jurisdictionAdmin)
-    cy.findByText(`Jurisdictions - TestAudit${id}`)
-      .siblings('button')
-      .click()
     cy.contains('Number of Audit Boards')
     cy.findByText('Save & Next').click()
 
@@ -169,9 +163,6 @@ describe('Offline Batch Data Entry', () => {
     cy.findByText('Death Star').closest('tr').contains('In progress')
     cy.logout(auditAdmin)
     cy.loginJurisdictionAdmin(jurisdictionAdmin)
-    cy.findByText(`Jurisdictions - TestAudit${id}`)
-      .siblings('button')
-      .click()
 
     // finalize results again
     cy.findByRole('button', {name: 'Finalize Results'}).click()

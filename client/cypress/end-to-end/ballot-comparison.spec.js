@@ -119,9 +119,6 @@ describe('Ballot Comparison Test Cases', () => {
     cy.findByText('Save & Next').click()
     cy.logout(auditAdmin)
     cy.loginJurisdictionAdmin(jurisdictionAdmin)
-    cy.findByText(`Jurisdictions - TestAudit${id}`)
-      .siblings('button')
-      .click()
 
     // upload invalid manifest
     cy.fixture('CSVs/manifest/ballot_comparison_manifest_col_error.csv').then(
@@ -210,9 +207,6 @@ describe('Ballot Comparison Test Cases', () => {
     cy.findByRole('heading', { name: 'Audit Progress' })
     cy.logout(auditAdmin)
     cy.loginJurisdictionAdmin(jurisdictionAdmin)
-    cy.findByText(`Jurisdictions - TestAudit${id}`)
-      .siblings('button')
-      .click()
     cy.contains('Number of Audit Boards')
     cy.findByText('Save & Next').click()
     cy.findByText('Download Audit Board Credentials').click()

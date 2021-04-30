@@ -436,4 +436,20 @@ describe('Home screen', () => {
       )
     })
   })
+
+  it('redirects to audit screen if only one election exists for JA', async () => {
+    const expectedCalls = [
+      jaApiCalls.getUserWithOneElection,
+      jaApiCalls.getSettings(auditSettings.blank),
+      jaApiCalls.getRounds,
+      jaApiCalls.getBallotManifestFile({ file: null, processing: null }),
+      jaApiCalls.getBatchTalliesFile({ file: null, processing: null }),
+      jaApiCalls.getCVRSfile({ file: null, processing: null }),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      const { container } = renderView('/')
+      await screen.findByText('Audit Source Data')
+      expect(container).toMatchSnapshot()
+    })
+  })
 })
