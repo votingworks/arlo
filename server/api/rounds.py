@@ -800,35 +800,48 @@ def sample_batches(
         db_session.add(sampled_batch_draw)
 
 
-CREATE_ROUND_REQUEST_SCHEMA = {
-    "type": "object",
-    "properties": {
-        "roundNum": {"type": "integer", "minimum": 1,},
-        "sampleSizes": {
-            "type": "object",
-            "patternProperties": {
-                "^.*$": {
-                    "type": "object",
-                    "properties": {
-                        "size": {"type": "integer"},
-                        "key": {"type": "string"},
-                        "prob": {"anyOf": [{"type": "number"}, {"type": "null"}]},
-                        "sizeCvr": {"type": "integer"},  # Only in hybrid audits
-                        "sizeNonCvr": {"type": "integer"},  # Only in hybrid audits
-                    },
-                    "additionalProperties": False,
-                    "required": ["size", "key", "prob"],
-                }
+def create_round_schema(audit_type: AuditType):
+    return {
+        "type": "object",
+        "properties": {
+            "roundNum": {"type": "integer", "minimum": 1,},
+            "sampleSizes": {
+                "type": "object",
+                "patternProperties": {
+                    "^.*$": {
+                        "type": "object",
+                        "properties": {
+                            "size": {"type": "integer"},
+                            "key": {"type": "string"},
+                            "prob": {"anyOf": [{"type": "number"}, {"type": "null"}]},
+                            **(
+                                {
+                                    "sizeCvr": {"type": "integer"},
+                                    "sizeNonCvr": {"type": "integer"},
+                                }
+                                if audit_type == AuditType.HYBRID
+                                else {}
+                            ),
+                        },
+                        "additionalProperties": False,
+                        "required": ["size", "key", "prob"]
+                        + (
+                            ["sizeCvr", "sizeNonCvr"]
+                            if audit_type == AuditType.HYBRID
+                            else []
+                        ),
+                    }
+                },
             },
         },
-    },
-    "additionalProperties": False,
-    "required": ["roundNum"],
-}
+        "additionalProperties": False,
+        "required": ["roundNum"],
+    }
+
 
 # Raises if invalid
 def validate_round(round: dict, election: Election):
-    validate(round, CREATE_ROUND_REQUEST_SCHEMA)
+    validate(round, create_round_schema(AuditType(election.audit_type)))
 
     current_round = get_current_round(election)
     if current_round and not current_round.draw_sample_task.completed_at:
@@ -869,23 +882,41 @@ def validate_sample_size(round: dict, election: Election):
                 contest.total_ballots_cast,
             ),
             AuditType.BATCH_COMPARISON: (["macro", "custom"], total_batches),
-            AuditType.HYBRID: (["suite"], contest.total_ballots_cast),
+            AuditType.HYBRID: (["suite", "custom"], contest.total_ballots_cast),
         }[AuditType(election.audit_type)]
 
         if sample_size["key"] not in valid_keys:
             raise BadRequest(
                 f"Invalid sample size key for contest {contest.name}: {sample_size['key']}"
             )
-        if sample_size["key"] == "custom" and sample_size["size"] > max_sample_size:
-            ballots_or_batches = (
-                "batches"
-                if election.audit_type == AuditType.BATCH_COMPARISON
-                else "ballots"
-            )
-            raise BadRequest(
-                f"Sample size for contest {contest.name} must be less than or equal to:"
-                f" {max_sample_size} (the total number of {ballots_or_batches} in the contest)"
-            )
+        if sample_size["key"] == "custom":
+            if sample_size["size"] > max_sample_size:
+                ballots_or_batches = (
+                    "batches"
+                    if election.audit_type == AuditType.BATCH_COMPARISON
+                    else "ballots"
+                )
+                raise BadRequest(
+                    f"Sample size for contest {contest.name} must be less than or equal to:"
+                    f" {max_sample_size} (the total number of {ballots_or_batches} in the contest)"
+                )
+            if election.audit_type == AuditType.HYBRID:
+                total_ballots = hybrid_contest_total_ballots(contest)
+                if (
+                    sample_size["sizeCvr"] + sample_size["sizeNonCvr"]
+                    != sample_size["size"]
+                ):
+                    raise BadRequest("sizeCvr and sizeNonCvr must add up to size")
+                if sample_size["sizeCvr"] > total_ballots.cvr:
+                    raise BadRequest(
+                        f"CVR sample size for contest {contest.name} must be less than or equal to:"
+                        f" {total_ballots.cvr} (the total number of CVR ballots in the contest)"
+                    )
+                if sample_size["sizeNonCvr"] > total_ballots.non_cvr:
+                    raise BadRequest(
+                        f"Non-CVR sample size for contest {contest.name} must be less than or equal to:"
+                        f" {total_ballots.non_cvr} (the total number of non-CVR ballots in the contest)"
+                    )
 
 
 @api.route("/election/<election_id>/round", methods=["POST"])
