@@ -539,10 +539,10 @@ const Review: React.FC<IProps> = ({
                             {currentOption &&
                               currentOption.key === 'custom' &&
                               (auditType === 'HYBRID' ? (
-                                <div>
+                                <>
                                   <div>
                                     {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                                    <label style={{ marginTop: '5px' }}>
+                                    <label>
                                       CVR ballots:
                                       <Field
                                         component={FormField}
@@ -568,7 +568,7 @@ const Review: React.FC<IProps> = ({
                                       />
                                     </label>
                                   </div>
-                                  <div>
+                                  <div style={{ marginTop: '10px' }}>
                                     {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
                                     <label style={{ marginTop: '5px' }}>
                                       Non-CVR ballots:
@@ -592,7 +592,7 @@ const Review: React.FC<IProps> = ({
                                       />
                                     </label>
                                   </div>
-                                </div>
+                                </>
                               ) : (
                                 <Field
                                   component={FormField}
