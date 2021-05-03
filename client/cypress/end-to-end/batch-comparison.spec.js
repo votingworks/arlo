@@ -8,7 +8,7 @@ describe('Batch Comparison', () => {
   const uuid = () => Cypress._.random(0, 1e6)
   let id = 0
 
-  it('Creates, launches, and audits', () => {
+  it('success & failure cases', () => {
     id = uuid()
     cy.visit('/')
     cy.loginAuditAdmin(auditAdmin)
@@ -17,6 +17,23 @@ describe('Batch Comparison', () => {
     cy.findByText('Create Audit').click()
     cy.viewport(1000, 2000)
     cy.contains('Audit Setup')
+
+    // upload invalid jurisdiction filesheet
+    cy.fixture(
+      'CSVs/jurisdiction/sample_jurisdiction_filesheet_jurisdiction_col_error.csv'
+    ).then(fileContent => {
+      cy.get('input[type="file"]')
+        .first()
+        .attachFile({
+          fileContent: fileContent.toString(),
+          fileName: 'sample_jurisdiction_filesheet_jurisdiction_col_error.csv',
+          mimeType: 'csv',
+        })
+    })
+    cy.findByText('Upload File').click({ force: true })
+    cy.findAndCloseToast('Missing required CSV field "Jurisdiction"')
+
+    // upload valid jurisdiction filesheet
     cy.fixture('CSVs/jurisdiction/sample_jurisdiction_filesheet.csv').then(
       fileContent => {
         cy.get('input[type="file"]')
@@ -28,9 +45,7 @@ describe('Batch Comparison', () => {
           })
       }
     )
-    cy.findAllByText('Upload File').spread((firstButton, secondButton) => {
-      firstButton.click()
-    })
+    cy.findByText('Upload File').click()
     cy.contains('Upload successfully completed')
 
     cy.get('button[type="submit"]')
@@ -57,6 +72,27 @@ describe('Batch Comparison', () => {
     cy.findByText(`Jurisdictions - TestAudit${id}`)
       .siblings('button')
       .click()
+
+    // upload invalid manifest
+    cy.fixture('CSVs/manifest/batch_comparison_manifest_col_error.csv').then(
+      fileContent => {
+        cy.get('input[type="file"]')
+          .first()
+          .attachFile({
+            fileContent: fileContent.toString(),
+            fileName: 'batch_comparison_manifest_col_error.csv',
+            mimeType: 'csv',
+          })
+      }
+    )
+    cy.findAllByText('Upload File').spread((firstButton, secondButton) => {
+      firstButton.click()
+    })
+    cy.contains('Missing required column: Number of Ballots.')
+
+    // upload valid manifest
+    cy.findByText('Replace File').click()
+    cy.findAllByText('Upload File').should('have.length', 2)
     cy.fixture('CSVs/manifest/batch_comparison_manifest.csv').then(
       fileContent => {
         cy.get('input[type="file"]')
@@ -72,6 +108,28 @@ describe('Batch Comparison', () => {
       firstButton.click()
     })
     cy.contains('Upload successfully completed')
+
+    // upload invalid batch tallies
+    cy.fixture(
+      'CSVs/candidate-total-batch/sample_candidate_totals_by_batch_col_error.csv'
+    ).then(fileContent => {
+      cy.get('input[type="file"]')
+        .last()
+        .attachFile({
+          fileContent: fileContent.toString(),
+          fileName: 'sample_candidate_totals_by_batch_col_error.csv',
+          mimeType: 'csv',
+        })
+    })
+    cy.findAllByText('Upload File')
+      .last()
+      .click()
+    cy.contains(/Missing required column: Palpatine/)
+
+    // now upload valid batch tallies
+    cy.findAllByText('Replace File').spread((firstButton, secondButton) => {
+      secondButton.click()
+    })
     cy.fixture(
       'CSVs/candidate-total-batch/sample_candidate_totals_by_batch.csv'
     ).then(fileContent => {

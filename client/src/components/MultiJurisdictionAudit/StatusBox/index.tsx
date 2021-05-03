@@ -9,7 +9,7 @@ import { apiDownload } from '../../utilities'
 import { Inner } from '../../Atoms/Wrapper'
 import { IContest } from '../../../types'
 import { IAuditBoard } from '../useAuditBoards'
-import { IRound } from '../useRoundsAuditAdmin'
+import { IRound, drawSampleError } from '../useRoundsAuditAdmin'
 import { IAuditSettings } from '../useAuditSettings'
 
 const SpacedH3 = styled(H3)`
@@ -78,16 +78,14 @@ const StatusBox: React.FC<IStatusBoxProps> = ({
   )
 }
 
-const downloadAuditAdminReport = (electionId: string) => {
+const downloadAuditAdminReport = (electionId: string) =>
   apiDownload(`/election/${electionId}/report`)
-}
 
 const downloadJurisdictionAdminReport = (
   electionId: string,
   jurisdictionId: string
-) => {
+) =>
   apiDownload(`/election/${electionId}/jurisdiction/${jurisdictionId}/report`)
-}
 
 export const allCvrsUploaded = (jurisdictions: IJurisdiction[]): boolean =>
   jurisdictions.every(
@@ -186,6 +184,21 @@ export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
     )
   }
 
+  if (drawSampleError(rounds)) {
+    return (
+      <StatusBox
+        headline="Arlo could not draw the sample"
+        details={[
+          'Please contact our support team for help resolving this issue.',
+          `Error: ${drawSampleError(rounds)}`,
+        ]}
+        auditName={auditSettings.auditName}
+      >
+        {children}
+      </StatusBox>
+    )
+  }
+
   const { roundNum, endedAt, isAuditComplete } = rounds[rounds.length - 1]
 
   // Round in progress
@@ -230,7 +243,7 @@ export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
       headline="Congratulations - the audit is complete!"
       details={[]}
       buttonLabel="Download Audit Report"
-      onButtonClick={() => downloadAuditAdminReport(electionId)}
+      onButtonClick={async () => downloadAuditAdminReport(electionId)}
       auditName={auditSettings.auditName}
     >
       {children}
@@ -362,7 +375,7 @@ export const JurisdictionAdminStatusBox = ({
       headline="The audit is complete"
       details={['Download the audit report.']}
       buttonLabel="Download Audit Report"
-      onButtonClick={() =>
+      onButtonClick={async () =>
         downloadJurisdictionAdminReport(electionId, jurisdictionId)
       }
       auditName={auditName}

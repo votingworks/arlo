@@ -63,7 +63,10 @@ def test_cvr_upload(
     )
 
     cvr_ballots = (
-        CvrBallot.query.join(Batch).filter_by(jurisdiction_id=jurisdiction_ids[0]).all()
+        CvrBallot.query.join(Batch)
+        .filter_by(jurisdiction_id=jurisdiction_ids[0])
+        .order_by(CvrBallot.imprinted_id)
+        .all()
     )
     assert len(cvr_ballots) == len(TEST_CVRS.splitlines()) - 4
     snapshot.assert_match(
@@ -166,7 +169,10 @@ def test_cvrs_counting_group(
     )
 
     cvr_ballots = (
-        CvrBallot.query.join(Batch).filter_by(jurisdiction_id=jurisdiction_ids[0]).all()
+        CvrBallot.query.join(Batch)
+        .filter_by(jurisdiction_id=jurisdiction_ids[0])
+        .order_by(CvrBallot.imprinted_id)
+        .all()
     )
     assert len(cvr_ballots) == 15
     snapshot.assert_match(
@@ -224,7 +230,10 @@ def test_cvrs_replace(
     bgcompute_update_cvr_file(election_id)
 
     cvr_ballots = (
-        CvrBallot.query.join(Batch).filter_by(jurisdiction_id=jurisdiction_ids[0]).all()
+        CvrBallot.query.join(Batch)
+        .filter_by(jurisdiction_id=jurisdiction_ids[0])
+        .order_by(CvrBallot.imprinted_id)
+        .all()
     )
     assert len(cvr_ballots) == len(TEST_CVRS.splitlines()) - 4 - 2
 
@@ -263,7 +272,10 @@ def test_cvrs_clear(
     assert File.query.get(file_id) is None
     assert jurisdiction.cvr_contests_metadata is None
     cvr_ballots = (
-        CvrBallot.query.join(Batch).filter_by(jurisdiction_id=jurisdiction_ids[0]).all()
+        CvrBallot.query.join(Batch)
+        .filter_by(jurisdiction_id=jurisdiction_ids[0])
+        .order_by(CvrBallot.imprinted_id)
+        .all()
     )
     assert len(cvr_ballots) == 0
 
@@ -442,7 +454,10 @@ def test_cvrs_newlines(
     )
 
     cvr_ballots = (
-        CvrBallot.query.join(Batch).filter_by(jurisdiction_id=jurisdiction_ids[0]).all()
+        CvrBallot.query.join(Batch)
+        .filter_by(jurisdiction_id=jurisdiction_ids[0])
+        .order_by(CvrBallot.imprinted_id)
+        .all()
     )
     assert len(cvr_ballots) == 15
     snapshot.assert_match(

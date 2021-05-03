@@ -32,7 +32,7 @@ from ..audit_math import (
     sampler_contest,
     suite,
 )
-from .cvrs import hybrid_contest_choice_vote_counts
+from .cvrs import hybrid_contest_choice_vote_counts, cvr_contests_metadata
 from .ballot_manifest import hybrid_contest_total_ballots
 from ..worker.tasks import (
     background_task,
@@ -228,10 +228,9 @@ def cvrs_for_contest(contest: Contest) -> sampler_contest.CVRS:
     cvrs: sampler_contest.CVRS = {}
 
     for jurisdiction in contest.jurisdictions:
-        cvr_contests_metadata = typing_cast(
-            JSONDict, jurisdiction.cvr_contests_metadata
-        )
-        choices_metadata = cvr_contests_metadata[contest.name]["choices"]
+        metadata = cvr_contests_metadata(jurisdiction)
+        assert metadata is not None
+        choices_metadata = metadata[contest.name]["choices"]
 
         interpretations_by_ballot = (
             CvrBallot.query.join(Batch)
@@ -271,11 +270,7 @@ def cvrs_for_contest(contest: Contest) -> sampler_contest.CVRS:
 def sampled_ballot_interpretations_to_cvrs(
     contest: Contest,
 ) -> sampler_contest.SAMPLECVRS:
-    ballots_query = (
-        SampledBallot.query.join(Batch)
-        .join(Jurisdiction)
-        .filter(Jurisdiction.contests.contains(contest))
-    )
+    ballots_query = SampledBallot.query.join(Batch)
 
     # In hybrid audits, only count CVR ballots
     if contest.election.audit_type == AuditType.HYBRID:
@@ -293,7 +288,12 @@ def sampled_ballot_interpretations_to_cvrs(
         )
     # For opportunistic contests, we say each ballot was only sampled once
     else:
-        ballots_query = ballots_query.with_entities(SampledBallot, literal(1))
+        ballots_query = (
+            ballots_query.join(Jurisdiction)
+            .join(Jurisdiction.contests)
+            .filter_by(id=contest.id)
+            .with_entities(SampledBallot, literal(1))
+        )
 
     ballots = ballots_query.options(
         joinedload(SampledBallot.interpretations)

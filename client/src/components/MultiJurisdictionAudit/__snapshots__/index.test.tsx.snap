@@ -6,7 +6,7 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
     class="sc-bdVaJa bKocXA"
   >
     <div
-      class="bp3-callout sc-cvbbAY diAOwm"
+      class="bp3-callout sc-eHgmQL gudjM"
     >
       <div
         class="sc-bwzfXH jiphYj"
@@ -15,7 +15,7 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
           class="text"
         >
           <h3
-            class="bp3-heading sc-eHgmQL bGWJpe"
+            class="bp3-heading sc-hSdWYo ebeAbt"
           >
             Test Audit
           </h3>
@@ -289,7 +289,7 @@ exports[`JA setup renders initial state 1`] = `
     class="sc-bdVaJa bKocXA"
   >
     <div
-      class="bp3-callout sc-cvbbAY diAOwm"
+      class="bp3-callout sc-eHgmQL gudjM"
     >
       <div
         class="sc-bwzfXH jiphYj"
@@ -298,7 +298,7 @@ exports[`JA setup renders initial state 1`] = `
           class="text"
         >
           <h3
-            class="bp3-heading sc-eHgmQL bGWJpe"
+            class="bp3-heading sc-hSdWYo ebeAbt"
           >
             Test Audit
           </h3>

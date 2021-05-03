@@ -335,6 +335,10 @@ const ContestForm: React.FC<IProps> = ({
                               formikBag={{ values, setFieldValue }}
                               contestIndex={i}
                             />
+                            <ErrorMessage
+                              name={`contests[${i}].jurisdictionIds`}
+                              component={ErrorLabel}
+                            />
                           </FormSection>
                         )}
                         {values.contests.length > 1 && (

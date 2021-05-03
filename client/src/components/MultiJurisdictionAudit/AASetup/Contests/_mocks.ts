@@ -1,4 +1,5 @@
 import { IContest } from '../../../../types'
+import { jurisdictionMocks } from '../../useSetupMenuItems/_mocks'
 
 export const contestMocks: {
   [key: string]: { contests: IContest[] }
@@ -62,7 +63,7 @@ export const contestMocks: {
         totalBallotsCast: '30',
         numWinners: '1',
         votesAllowed: '1',
-        jurisdictionIds: [],
+        jurisdictionIds: [jurisdictionMocks.noManifests[0].id],
         choices: [
           {
             id: 'choice-id-1',

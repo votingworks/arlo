@@ -3,16 +3,16 @@
 exports[`DataEntry ballot interaction renders ballot route 1`] = `
 <div>
   <div
-    class="sc-eNQAEJ bGgAbS"
+    class="sc-iAyFgw jNbEKw"
   >
     <div
-      class="sc-hMqMXs sc-kEYyzF kicQVf"
+      class="sc-hSdWYo sc-eHgmQL PYaig"
     >
       <div
-        class="sc-ckVGcZ bxAWbg"
+        class="sc-kEYyzF koCczG"
       >
         <h1
-          class="bp3-heading sc-dxgOiQ huYUSL"
+          class="bp3-heading sc-hMqMXs kwaZrg"
         >
           Audit Board #1
           : Ballot Card Data Entry
@@ -23,7 +23,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
           Enter Ballot Information
         </h3>
         <div
-          class="bp3-callout sc-jKJlTe hzNJni"
+          class="bp3-callout sc-kkGfuU crQZD"
         >
           Auditing ballot 
           2
@@ -31,7 +31,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
           27
         </div>
         <div
-          class="sc-dnqmqq etEanz"
+          class="sc-gqjmRU kTzBLL"
         >
           <div
             class="ballot-side"
@@ -55,7 +55,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
             </div>
           </div>
           <div
-            class="bp3-divider sc-htoDjs kvcmFh"
+            class="bp3-divider sc-gZMcBi jbSoiK"
           />
           <div
             class="ballot-main"
@@ -93,7 +93,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
           </div>
         </div>
         <div
-          class="sc-dnqmqq etEanz"
+          class="sc-gqjmRU kTzBLL"
         >
           <div
             class="ballot-side"
@@ -121,7 +121,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
             </p>
             <form>
               <div
-                class="sc-iwsKbI zTyzr"
+                class="sc-VigVT eBCusi"
               >
                 <h3
                   class="bp3-heading"
@@ -129,10 +129,10 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                   Contest 1
                 </h3>
                 <div
-                  class="bp3-divider sc-htoDjs kvcmFh"
+                  class="bp3-divider sc-gZMcBi jbSoiK"
                 />
                 <label
-                  class="bp3-control bp3-checkbox sc-kgoBCf fUVsXF"
+                  class="bp3-control bp3-checkbox sc-ckVGcZ feFhx"
                 >
                   <input
                     type="checkbox"
@@ -148,7 +148,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                   </span>
                 </label>
                 <label
-                  class="bp3-control bp3-checkbox sc-kgoBCf fUVsXF"
+                  class="bp3-control bp3-checkbox sc-ckVGcZ feFhx"
                 >
                   <input
                     type="checkbox"
@@ -164,7 +164,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                   </span>
                 </label>
                 <label
-                  class="bp3-control bp3-checkbox sc-kgoBCf fUVsXF"
+                  class="bp3-control bp3-checkbox sc-ckVGcZ feFhx"
                 >
                   <input
                     type="checkbox"
@@ -180,7 +180,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                   </span>
                 </label>
                 <label
-                  class="bp3-control bp3-checkbox sc-kgoBCf fUVsXF"
+                  class="bp3-control bp3-checkbox sc-ckVGcZ feFhx"
                 >
                   <input
                     type="checkbox"
@@ -226,7 +226,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                 </button>
               </div>
               <div
-                class="sc-iwsKbI zTyzr"
+                class="sc-VigVT eBCusi"
               >
                 <h3
                   class="bp3-heading"
@@ -234,10 +234,10 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                   Contest 2
                 </h3>
                 <div
-                  class="bp3-divider sc-htoDjs kvcmFh"
+                  class="bp3-divider sc-gZMcBi jbSoiK"
                 />
                 <label
-                  class="bp3-control bp3-checkbox sc-kgoBCf fUVsXF"
+                  class="bp3-control bp3-checkbox sc-ckVGcZ feFhx"
                 >
                   <input
                     type="checkbox"
@@ -253,7 +253,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                   </span>
                 </label>
                 <label
-                  class="bp3-control bp3-checkbox sc-kgoBCf fUVsXF"
+                  class="bp3-control bp3-checkbox sc-ckVGcZ feFhx"
                 >
                   <input
                     type="checkbox"
@@ -269,7 +269,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                   </span>
                 </label>
                 <label
-                  class="bp3-control bp3-checkbox sc-kgoBCf fUVsXF"
+                  class="bp3-control bp3-checkbox sc-ckVGcZ feFhx"
                 >
                   <input
                     type="checkbox"
@@ -285,7 +285,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                   </span>
                 </label>
                 <label
-                  class="bp3-control bp3-checkbox sc-kgoBCf fUVsXF"
+                  class="bp3-control bp3-checkbox sc-ckVGcZ feFhx"
                 >
                   <input
                     type="checkbox"
@@ -331,10 +331,10 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                 </button>
               </div>
               <div
-                class="sc-gqjmRU imtrkY"
+                class="sc-fjdhpX hGGYTz"
               >
                 <button
-                  class="bp3-button bp3-intent-success sc-gzVnrw kdzzfK"
+                  class="bp3-button bp3-intent-success sc-iwsKbI drSRDt"
                   type="submit"
                 >
                   <span
@@ -366,10 +366,10 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
 exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
 <div>
   <div
-    class="sc-eNQAEJ bGgAbS"
+    class="sc-iAyFgw jNbEKw"
   >
     <div
-      class="sc-hMqMXs sc-kEYyzF kicQVf"
+      class="sc-hSdWYo sc-eHgmQL PYaig"
     >
       <div
         class="board-table-container"
@@ -388,32 +388,60 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
           </strong>
         </p>
         <div
-          class="sc-htpNat kPVHnv"
+          class="sc-bxivhb hKbymO"
         >
-          <button
-            class="bp3-button"
-            href="/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/2112"
-            type="button"
+          <div
+            class="sc-ifAKCX imHVNF"
           >
             <span
-              class="bp3-button-text"
+              class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
             >
-              Start Auditing
+              <span
+                class="bp3-text-overflow-ellipsis bp3-fill"
+              >
+                Audited: 
+                18
+              </span>
             </span>
-          </button>
-          <button
-            class="bp3-button bp3-disabled"
-            disabled=""
-            href="/election/1/audit-board/audit-board-1/signoff"
-            tabindex="-1"
-            type="button"
-          >
             <span
-              class="bp3-button-text"
+              class="bp3-tag bp3-intent-warning bp3-minimal sc-htpNat ljtTnF"
             >
-              Auditing Complete - Submit Results
+              <span
+                class="bp3-text-overflow-ellipsis bp3-fill"
+              >
+                Not Audited: 
+                9
+              </span>
             </span>
-          </button>
+          </div>
+          <div
+            class="sc-EHOje jRMUiN"
+          >
+            <button
+              class="bp3-button"
+              href="/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/2112"
+              type="button"
+            >
+              <span
+                class="bp3-button-text"
+              >
+                Start Auditing
+              </span>
+            </button>
+            <button
+              class="bp3-button bp3-disabled"
+              disabled=""
+              href="/election/1/audit-board/audit-board-1/signoff"
+              tabindex="-1"
+              type="button"
+            >
+              <span
+                class="bp3-button-text"
+              >
+                Auditing Complete - Submit Results
+              </span>
+            </button>
+          </div>
         </div>
         <table
           class="sc-bdVaJa ldGrnX"
@@ -595,11 +623,17 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
               <td
                 role="cell"
               >
-                <span>
-                  Audited
+                <span
+                  class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Audited
+                  </span>
                 </span>
                 <a
-                  class="bp3-button bp3-small sc-bxivhb fwIxfy"
+                  class="bp3-button bp3-small sc-bZQynM iMDvCJ"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/313"
                 >
                   Re-audit
@@ -627,7 +661,15 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
               <td
                 role="cell"
               >
-                Not Audited
+                <span
+                  class="bp3-tag bp3-intent-warning bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Not Audited
+                  </span>
+                </span>
               </td>
             </tr>
             <tr
@@ -651,11 +693,17 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
               <td
                 role="cell"
               >
-                <span>
-                  Audited
+                <span
+                  class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Audited
+                  </span>
                 </span>
                 <a
-                  class="bp3-button bp3-small sc-bxivhb fwIxfy"
+                  class="bp3-button bp3-small sc-bZQynM iMDvCJ"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/1789"
                 >
                   Re-audit
@@ -683,11 +731,17 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
               <td
                 role="cell"
               >
-                <span>
-                  Audited
+                <span
+                  class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Audited
+                  </span>
                 </span>
                 <a
-                  class="bp3-button bp3-small sc-bxivhb fwIxfy"
+                  class="bp3-button bp3-small sc-bZQynM iMDvCJ"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-2/ballot/313"
                 >
                   Re-audit
@@ -715,7 +769,15 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
               <td
                 role="cell"
               >
-                Not Audited
+                <span
+                  class="bp3-tag bp3-intent-warning bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Not Audited
+                  </span>
+                </span>
               </td>
             </tr>
             <tr
@@ -739,11 +801,17 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
               <td
                 role="cell"
               >
-                <span>
-                  Audited
+                <span
+                  class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Audited
+                  </span>
                 </span>
                 <a
-                  class="bp3-button bp3-small sc-bxivhb fwIxfy"
+                  class="bp3-button bp3-small sc-bZQynM iMDvCJ"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-2/ballot/1789"
                 >
                   Re-audit
@@ -771,11 +839,17 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
               <td
                 role="cell"
               >
-                <span>
-                  Audited
+                <span
+                  class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Audited
+                  </span>
                 </span>
                 <a
-                  class="bp3-button bp3-small sc-bxivhb fwIxfy"
+                  class="bp3-button bp3-small sc-bZQynM iMDvCJ"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-3/ballot/313"
                 >
                   Re-audit
@@ -803,7 +877,15 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
               <td
                 role="cell"
               >
-                Not Audited
+                <span
+                  class="bp3-tag bp3-intent-warning bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Not Audited
+                  </span>
+                </span>
               </td>
             </tr>
             <tr
@@ -827,11 +909,17 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
               <td
                 role="cell"
               >
-                <span>
-                  Audited
+                <span
+                  class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Audited
+                  </span>
                 </span>
                 <a
-                  class="bp3-button bp3-small sc-bxivhb fwIxfy"
+                  class="bp3-button bp3-small sc-bZQynM iMDvCJ"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-3/ballot/1789"
                 >
                   Re-audit
@@ -859,11 +947,17 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
               <td
                 role="cell"
               >
-                <span>
-                  Audited
+                <span
+                  class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Audited
+                  </span>
                 </span>
                 <a
-                  class="bp3-button bp3-small sc-bxivhb fwIxfy"
+                  class="bp3-button bp3-small sc-bZQynM iMDvCJ"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-4/ballot/313"
                 >
                   Re-audit
@@ -891,7 +985,15 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
               <td
                 role="cell"
               >
-                Not Audited
+                <span
+                  class="bp3-tag bp3-intent-warning bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Not Audited
+                  </span>
+                </span>
               </td>
             </tr>
             <tr
@@ -915,11 +1017,17 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
               <td
                 role="cell"
               >
-                <span>
-                  Audited
+                <span
+                  class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Audited
+                  </span>
                 </span>
                 <a
-                  class="bp3-button bp3-small sc-bxivhb fwIxfy"
+                  class="bp3-button bp3-small sc-bZQynM iMDvCJ"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-4/ballot/1789"
                 >
                   Re-audit
@@ -947,11 +1055,17 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
               <td
                 role="cell"
               >
-                <span>
-                  Audited
+                <span
+                  class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Audited
+                  </span>
                 </span>
                 <a
-                  class="bp3-button bp3-small sc-bxivhb fwIxfy"
+                  class="bp3-button bp3-small sc-bZQynM iMDvCJ"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-5/ballot/313"
                 >
                   Re-audit
@@ -979,7 +1093,15 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
               <td
                 role="cell"
               >
-                Not Audited
+                <span
+                  class="bp3-tag bp3-intent-warning bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Not Audited
+                  </span>
+                </span>
               </td>
             </tr>
             <tr
@@ -1003,11 +1125,17 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
               <td
                 role="cell"
               >
-                <span>
-                  Audited
+                <span
+                  class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Audited
+                  </span>
                 </span>
                 <a
-                  class="bp3-button bp3-small sc-bxivhb fwIxfy"
+                  class="bp3-button bp3-small sc-bZQynM iMDvCJ"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-5/ballot/1789"
                 >
                   Re-audit
@@ -1035,11 +1163,17 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
               <td
                 role="cell"
               >
-                <span>
-                  Audited
+                <span
+                  class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Audited
+                  </span>
                 </span>
                 <a
-                  class="bp3-button bp3-small sc-bxivhb fwIxfy"
+                  class="bp3-button bp3-small sc-bZQynM iMDvCJ"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-6/ballot/313"
                 >
                   Re-audit
@@ -1067,7 +1201,15 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
               <td
                 role="cell"
               >
-                Not Audited
+                <span
+                  class="bp3-tag bp3-intent-warning bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Not Audited
+                  </span>
+                </span>
               </td>
             </tr>
             <tr
@@ -1091,11 +1233,17 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
               <td
                 role="cell"
               >
-                <span>
-                  Audited
+                <span
+                  class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Audited
+                  </span>
                 </span>
                 <a
-                  class="bp3-button bp3-small sc-bxivhb fwIxfy"
+                  class="bp3-button bp3-small sc-bZQynM iMDvCJ"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-6/ballot/1789"
                 >
                   Re-audit
@@ -1123,11 +1271,17 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
               <td
                 role="cell"
               >
-                <span>
-                  Audited
+                <span
+                  class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Audited
+                  </span>
                 </span>
                 <a
-                  class="bp3-button bp3-small sc-bxivhb fwIxfy"
+                  class="bp3-button bp3-small sc-bZQynM iMDvCJ"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-7/ballot/313"
                 >
                   Re-audit
@@ -1155,7 +1309,15 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
               <td
                 role="cell"
               >
-                Not Audited
+                <span
+                  class="bp3-tag bp3-intent-warning bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Not Audited
+                  </span>
+                </span>
               </td>
             </tr>
             <tr
@@ -1179,11 +1341,17 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
               <td
                 role="cell"
               >
-                <span>
-                  Audited
+                <span
+                  class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Audited
+                  </span>
                 </span>
                 <a
-                  class="bp3-button bp3-small sc-bxivhb fwIxfy"
+                  class="bp3-button bp3-small sc-bZQynM iMDvCJ"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-7/ballot/1789"
                 >
                   Re-audit
@@ -1211,11 +1379,17 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
               <td
                 role="cell"
               >
-                <span>
-                  Audited
+                <span
+                  class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Audited
+                  </span>
                 </span>
                 <a
-                  class="bp3-button bp3-small sc-bxivhb fwIxfy"
+                  class="bp3-button bp3-small sc-bZQynM iMDvCJ"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-8/ballot/313"
                 >
                   Re-audit
@@ -1243,7 +1417,15 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
               <td
                 role="cell"
               >
-                Not Audited
+                <span
+                  class="bp3-tag bp3-intent-warning bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Not Audited
+                  </span>
+                </span>
               </td>
             </tr>
             <tr
@@ -1267,11 +1449,17 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
               <td
                 role="cell"
               >
-                <span>
-                  Audited
+                <span
+                  class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Audited
+                  </span>
                 </span>
                 <a
-                  class="bp3-button bp3-small sc-bxivhb fwIxfy"
+                  class="bp3-button bp3-small sc-bZQynM iMDvCJ"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-8/ballot/1789"
                 >
                   Re-audit
@@ -1299,11 +1487,17 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
               <td
                 role="cell"
               >
-                <span>
-                  Audited
+                <span
+                  class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Audited
+                  </span>
                 </span>
                 <a
-                  class="bp3-button bp3-small sc-bxivhb fwIxfy"
+                  class="bp3-button bp3-small sc-bZQynM iMDvCJ"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-9/ballot/313"
                 >
                   Re-audit
@@ -1331,7 +1525,15 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
               <td
                 role="cell"
               >
-                Not Audited
+                <span
+                  class="bp3-tag bp3-intent-warning bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Not Audited
+                  </span>
+                </span>
               </td>
             </tr>
             <tr
@@ -1355,11 +1557,17 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
               <td
                 role="cell"
               >
-                <span>
-                  Audited
+                <span
+                  class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Audited
+                  </span>
                 </span>
                 <a
-                  class="bp3-button bp3-small sc-bxivhb fwIxfy"
+                  class="bp3-button bp3-small sc-bZQynM iMDvCJ"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-9/ballot/1789"
                 >
                   Re-audit
@@ -1377,10 +1585,10 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
 exports[`DataEntry ballot interaction renders board table with no ballots 1`] = `
 <div>
   <div
-    class="sc-eNQAEJ bGgAbS"
+    class="sc-iAyFgw jNbEKw"
   >
     <div
-      class="sc-hMqMXs sc-kEYyzF kicQVf"
+      class="sc-hSdWYo sc-eHgmQL PYaig"
     >
       <div
         class="board-table-container"
@@ -1399,32 +1607,60 @@ exports[`DataEntry ballot interaction renders board table with no ballots 1`] = 
           </strong>
         </p>
         <div
-          class="sc-htpNat kPVHnv"
+          class="sc-bxivhb hKbymO"
         >
-          <button
-            class="bp3-button bp3-disabled"
-            disabled=""
-            href="/"
-            tabindex="-1"
-            type="button"
+          <div
+            class="sc-ifAKCX imHVNF"
           >
             <span
-              class="bp3-button-text"
+              class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
             >
-              Start Auditing
+              <span
+                class="bp3-text-overflow-ellipsis bp3-fill"
+              >
+                Audited: 
+                0
+              </span>
             </span>
-          </button>
-          <button
-            class="bp3-button"
-            href="/election/1/audit-board/audit-board-1/signoff"
-            type="button"
-          >
             <span
-              class="bp3-button-text"
+              class="bp3-tag bp3-intent-warning bp3-minimal sc-htpNat ljtTnF"
             >
-              Auditing Complete - Submit Results
+              <span
+                class="bp3-text-overflow-ellipsis bp3-fill"
+              >
+                Not Audited: 
+                0
+              </span>
             </span>
-          </button>
+          </div>
+          <div
+            class="sc-EHOje jRMUiN"
+          >
+            <button
+              class="bp3-button bp3-disabled"
+              disabled=""
+              href="/"
+              tabindex="-1"
+              type="button"
+            >
+              <span
+                class="bp3-button-text"
+              >
+                Start Auditing
+              </span>
+            </button>
+            <button
+              class="bp3-button"
+              href="/election/1/audit-board/audit-board-1/signoff"
+              type="button"
+            >
+              <span
+                class="bp3-button-text"
+              >
+                Auditing Complete - Submit Results
+              </span>
+            </button>
+          </div>
         </div>
         <table
           class="sc-bdVaJa ldGrnX"
@@ -1558,10 +1794,10 @@ exports[`DataEntry ballot interaction renders board table with no ballots 1`] = 
 exports[`DataEntry member form submits and goes to ballot table 1`] = `
 <div>
   <div
-    class="sc-eNQAEJ bGgAbS"
+    class="sc-iAyFgw jNbEKw"
   >
     <div
-      class="sc-hMqMXs sc-kEYyzF kicQVf"
+      class="sc-hSdWYo sc-eHgmQL PYaig"
     >
       <div
         class="board-table-container"
@@ -1580,32 +1816,60 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
           </strong>
         </p>
         <div
-          class="sc-htpNat kPVHnv"
+          class="sc-bxivhb hKbymO"
         >
-          <button
-            class="bp3-button"
-            href="/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/2112"
-            type="button"
+          <div
+            class="sc-ifAKCX imHVNF"
           >
             <span
-              class="bp3-button-text"
+              class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
             >
-              Start Auditing
+              <span
+                class="bp3-text-overflow-ellipsis bp3-fill"
+              >
+                Audited: 
+                18
+              </span>
             </span>
-          </button>
-          <button
-            class="bp3-button bp3-disabled"
-            disabled=""
-            href="/election/1/audit-board/audit-board-1/signoff"
-            tabindex="-1"
-            type="button"
-          >
             <span
-              class="bp3-button-text"
+              class="bp3-tag bp3-intent-warning bp3-minimal sc-htpNat ljtTnF"
             >
-              Auditing Complete - Submit Results
+              <span
+                class="bp3-text-overflow-ellipsis bp3-fill"
+              >
+                Not Audited: 
+                9
+              </span>
             </span>
-          </button>
+          </div>
+          <div
+            class="sc-EHOje jRMUiN"
+          >
+            <button
+              class="bp3-button"
+              href="/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/2112"
+              type="button"
+            >
+              <span
+                class="bp3-button-text"
+              >
+                Start Auditing
+              </span>
+            </button>
+            <button
+              class="bp3-button bp3-disabled"
+              disabled=""
+              href="/election/1/audit-board/audit-board-1/signoff"
+              tabindex="-1"
+              type="button"
+            >
+              <span
+                class="bp3-button-text"
+              >
+                Auditing Complete - Submit Results
+              </span>
+            </button>
+          </div>
         </div>
         <table
           class="sc-bdVaJa ldGrnX"
@@ -1787,11 +2051,17 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
               <td
                 role="cell"
               >
-                <span>
-                  Audited
+                <span
+                  class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Audited
+                  </span>
                 </span>
                 <a
-                  class="bp3-button bp3-small sc-bxivhb fwIxfy"
+                  class="bp3-button bp3-small sc-bZQynM iMDvCJ"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/313"
                 >
                   Re-audit
@@ -1819,7 +2089,15 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
               <td
                 role="cell"
               >
-                Not Audited
+                <span
+                  class="bp3-tag bp3-intent-warning bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Not Audited
+                  </span>
+                </span>
               </td>
             </tr>
             <tr
@@ -1843,11 +2121,17 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
               <td
                 role="cell"
               >
-                <span>
-                  Audited
+                <span
+                  class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Audited
+                  </span>
                 </span>
                 <a
-                  class="bp3-button bp3-small sc-bxivhb fwIxfy"
+                  class="bp3-button bp3-small sc-bZQynM iMDvCJ"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/1789"
                 >
                   Re-audit
@@ -1875,11 +2159,17 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
               <td
                 role="cell"
               >
-                <span>
-                  Audited
+                <span
+                  class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Audited
+                  </span>
                 </span>
                 <a
-                  class="bp3-button bp3-small sc-bxivhb fwIxfy"
+                  class="bp3-button bp3-small sc-bZQynM iMDvCJ"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-2/ballot/313"
                 >
                   Re-audit
@@ -1907,7 +2197,15 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
               <td
                 role="cell"
               >
-                Not Audited
+                <span
+                  class="bp3-tag bp3-intent-warning bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Not Audited
+                  </span>
+                </span>
               </td>
             </tr>
             <tr
@@ -1931,11 +2229,17 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
               <td
                 role="cell"
               >
-                <span>
-                  Audited
+                <span
+                  class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Audited
+                  </span>
                 </span>
                 <a
-                  class="bp3-button bp3-small sc-bxivhb fwIxfy"
+                  class="bp3-button bp3-small sc-bZQynM iMDvCJ"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-2/ballot/1789"
                 >
                   Re-audit
@@ -1963,11 +2267,17 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
               <td
                 role="cell"
               >
-                <span>
-                  Audited
+                <span
+                  class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Audited
+                  </span>
                 </span>
                 <a
-                  class="bp3-button bp3-small sc-bxivhb fwIxfy"
+                  class="bp3-button bp3-small sc-bZQynM iMDvCJ"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-3/ballot/313"
                 >
                   Re-audit
@@ -1995,7 +2305,15 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
               <td
                 role="cell"
               >
-                Not Audited
+                <span
+                  class="bp3-tag bp3-intent-warning bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Not Audited
+                  </span>
+                </span>
               </td>
             </tr>
             <tr
@@ -2019,11 +2337,17 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
               <td
                 role="cell"
               >
-                <span>
-                  Audited
+                <span
+                  class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Audited
+                  </span>
                 </span>
                 <a
-                  class="bp3-button bp3-small sc-bxivhb fwIxfy"
+                  class="bp3-button bp3-small sc-bZQynM iMDvCJ"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-3/ballot/1789"
                 >
                   Re-audit
@@ -2051,11 +2375,17 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
               <td
                 role="cell"
               >
-                <span>
-                  Audited
+                <span
+                  class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Audited
+                  </span>
                 </span>
                 <a
-                  class="bp3-button bp3-small sc-bxivhb fwIxfy"
+                  class="bp3-button bp3-small sc-bZQynM iMDvCJ"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-4/ballot/313"
                 >
                   Re-audit
@@ -2083,7 +2413,15 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
               <td
                 role="cell"
               >
-                Not Audited
+                <span
+                  class="bp3-tag bp3-intent-warning bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Not Audited
+                  </span>
+                </span>
               </td>
             </tr>
             <tr
@@ -2107,11 +2445,17 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
               <td
                 role="cell"
               >
-                <span>
-                  Audited
+                <span
+                  class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Audited
+                  </span>
                 </span>
                 <a
-                  class="bp3-button bp3-small sc-bxivhb fwIxfy"
+                  class="bp3-button bp3-small sc-bZQynM iMDvCJ"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-4/ballot/1789"
                 >
                   Re-audit
@@ -2139,11 +2483,17 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
               <td
                 role="cell"
               >
-                <span>
-                  Audited
+                <span
+                  class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Audited
+                  </span>
                 </span>
                 <a
-                  class="bp3-button bp3-small sc-bxivhb fwIxfy"
+                  class="bp3-button bp3-small sc-bZQynM iMDvCJ"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-5/ballot/313"
                 >
                   Re-audit
@@ -2171,7 +2521,15 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
               <td
                 role="cell"
               >
-                Not Audited
+                <span
+                  class="bp3-tag bp3-intent-warning bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Not Audited
+                  </span>
+                </span>
               </td>
             </tr>
             <tr
@@ -2195,11 +2553,17 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
               <td
                 role="cell"
               >
-                <span>
-                  Audited
+                <span
+                  class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Audited
+                  </span>
                 </span>
                 <a
-                  class="bp3-button bp3-small sc-bxivhb fwIxfy"
+                  class="bp3-button bp3-small sc-bZQynM iMDvCJ"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-5/ballot/1789"
                 >
                   Re-audit
@@ -2227,11 +2591,17 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
               <td
                 role="cell"
               >
-                <span>
-                  Audited
+                <span
+                  class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Audited
+                  </span>
                 </span>
                 <a
-                  class="bp3-button bp3-small sc-bxivhb fwIxfy"
+                  class="bp3-button bp3-small sc-bZQynM iMDvCJ"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-6/ballot/313"
                 >
                   Re-audit
@@ -2259,7 +2629,15 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
               <td
                 role="cell"
               >
-                Not Audited
+                <span
+                  class="bp3-tag bp3-intent-warning bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Not Audited
+                  </span>
+                </span>
               </td>
             </tr>
             <tr
@@ -2283,11 +2661,17 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
               <td
                 role="cell"
               >
-                <span>
-                  Audited
+                <span
+                  class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Audited
+                  </span>
                 </span>
                 <a
-                  class="bp3-button bp3-small sc-bxivhb fwIxfy"
+                  class="bp3-button bp3-small sc-bZQynM iMDvCJ"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-6/ballot/1789"
                 >
                   Re-audit
@@ -2315,11 +2699,17 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
               <td
                 role="cell"
               >
-                <span>
-                  Audited
+                <span
+                  class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Audited
+                  </span>
                 </span>
                 <a
-                  class="bp3-button bp3-small sc-bxivhb fwIxfy"
+                  class="bp3-button bp3-small sc-bZQynM iMDvCJ"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-7/ballot/313"
                 >
                   Re-audit
@@ -2347,7 +2737,15 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
               <td
                 role="cell"
               >
-                Not Audited
+                <span
+                  class="bp3-tag bp3-intent-warning bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Not Audited
+                  </span>
+                </span>
               </td>
             </tr>
             <tr
@@ -2371,11 +2769,17 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
               <td
                 role="cell"
               >
-                <span>
-                  Audited
+                <span
+                  class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Audited
+                  </span>
                 </span>
                 <a
-                  class="bp3-button bp3-small sc-bxivhb fwIxfy"
+                  class="bp3-button bp3-small sc-bZQynM iMDvCJ"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-7/ballot/1789"
                 >
                   Re-audit
@@ -2403,11 +2807,17 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
               <td
                 role="cell"
               >
-                <span>
-                  Audited
+                <span
+                  class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Audited
+                  </span>
                 </span>
                 <a
-                  class="bp3-button bp3-small sc-bxivhb fwIxfy"
+                  class="bp3-button bp3-small sc-bZQynM iMDvCJ"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-8/ballot/313"
                 >
                   Re-audit
@@ -2435,7 +2845,15 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
               <td
                 role="cell"
               >
-                Not Audited
+                <span
+                  class="bp3-tag bp3-intent-warning bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Not Audited
+                  </span>
+                </span>
               </td>
             </tr>
             <tr
@@ -2459,11 +2877,17 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
               <td
                 role="cell"
               >
-                <span>
-                  Audited
+                <span
+                  class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Audited
+                  </span>
                 </span>
                 <a
-                  class="bp3-button bp3-small sc-bxivhb fwIxfy"
+                  class="bp3-button bp3-small sc-bZQynM iMDvCJ"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-8/ballot/1789"
                 >
                   Re-audit
@@ -2491,11 +2915,17 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
               <td
                 role="cell"
               >
-                <span>
-                  Audited
+                <span
+                  class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Audited
+                  </span>
                 </span>
                 <a
-                  class="bp3-button bp3-small sc-bxivhb fwIxfy"
+                  class="bp3-button bp3-small sc-bZQynM iMDvCJ"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-9/ballot/313"
                 >
                   Re-audit
@@ -2523,7 +2953,15 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
               <td
                 role="cell"
               >
-                Not Audited
+                <span
+                  class="bp3-tag bp3-intent-warning bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Not Audited
+                  </span>
+                </span>
               </td>
             </tr>
             <tr
@@ -2547,11 +2985,17 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
               <td
                 role="cell"
               >
-                <span>
-                  Audited
+                <span
+                  class="bp3-tag bp3-intent-success bp3-minimal sc-htpNat ljtTnF"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    Audited
+                  </span>
                 </span>
                 <a
-                  class="bp3-button bp3-small sc-bxivhb fwIxfy"
+                  class="bp3-button bp3-small sc-bZQynM iMDvCJ"
                   href="/election/1/audit-board/audit-board-1/batch/batch-id-9/ballot/1789"
                 >
                   Re-audit

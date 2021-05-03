@@ -24,6 +24,7 @@ import useJurisdictions from './useJurisdictions'
 import useContests from './useContests'
 import useRoundsAuditAdmin, {
   isDrawSampleComplete,
+  drawSampleError,
 } from './useRoundsAuditAdmin'
 import useAuditSettingsJurisdictionAdmin from './RoundManagement/useAuditSettingsJurisdictionAdmin'
 import H2Title from '../Atoms/H2Title'
@@ -142,13 +143,15 @@ export const AuditAdminView: React.FC = () => {
           >
             <RefreshTag refresh={refresh} />
           </AuditAdminStatusBox>
-          <Inner>
-            <Progress
-              jurisdictions={jurisdictions}
-              auditSettings={auditSettings}
-              round={rounds[rounds.length - 1]}
-            />
-          </Inner>
+          {!drawSampleError(rounds) && (
+            <Inner>
+              <Progress
+                jurisdictions={jurisdictions}
+                auditSettings={auditSettings}
+                round={rounds[rounds.length - 1]}
+              />
+            </Inner>
+          )}
         </Wrapper>
       )
     default:
