@@ -127,5 +127,8 @@ def draw_ppeb_sample(
     ]
 
     return generator.choice(
-        list(batch_results.keys()), sample_size + num_sampled, p=weighted_errors
-    )
+        list(batch_results.keys()),
+        sample_size + num_sampled,
+        p=weighted_errors,
+        replace=True,
+    )[num_sampled:]
