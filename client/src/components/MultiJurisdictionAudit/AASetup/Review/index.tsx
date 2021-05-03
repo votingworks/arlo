@@ -443,13 +443,6 @@ const Review: React.FC<IProps> = ({
         }: {
           sampleSizes: IFormOptions
         }) => {
-          if (auditType === 'HYBRID') {
-            // eslint-disable-next-line no-param-reassign
-            sampleSizes = mapValues(sampleSizes, sampleSize => ({
-              ...sampleSize,
-              size: (sampleSize.sizeCvr || 0) + (sampleSize.sizeNonCvr || 0),
-            }))
-          }
           if (await startNextRound(sampleSizes)) {
             refresh()
             history.push(`/election/${electionId}/progress`)

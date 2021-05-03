@@ -811,24 +811,26 @@ def create_round_schema(audit_type: AuditType):
                     "^.*$": {
                         "type": "object",
                         "properties": {
-                            "size": {"type": "integer"},
                             "key": {"type": "string"},
                             "prob": {"anyOf": [{"type": "number"}, {"type": "null"}]},
                             **(
                                 {
                                     "sizeCvr": {"type": "integer"},
                                     "sizeNonCvr": {"type": "integer"},
+                                    # We ignore size in hybrid audits
+                                    "size": {
+                                        "anyOf": [{"type": "integer"}, {"type": "null"}]
+                                    },
                                 }
                                 if audit_type == AuditType.HYBRID
-                                else {}
+                                else {"size": {"type": "integer"}}
                             ),
                         },
                         "additionalProperties": False,
-                        "required": ["size", "key", "prob"]
-                        + (
-                            ["sizeCvr", "sizeNonCvr"]
+                        "required": (
+                            ["sizeCvr", "sizeNonCvr", "key", "prob"]
                             if audit_type == AuditType.HYBRID
-                            else []
+                            else ["size", "key", "prob"]
                         ),
                     }
                 },
@@ -902,11 +904,6 @@ def validate_sample_size(round: dict, election: Election):
                     raise BadRequest(
                         f"Non-CVR sample size for contest {contest.name} must be less than or equal to:"
                         f" {total_ballots.non_cvr} (the total number of non-CVR ballots in the contest)"
-                    )
-                if sample_size["sizeCvr"] + sample_size["sizeNonCvr"] > max_sample_size:
-                    raise BadRequest(
-                        f"Total sample size for contest {contest.name} must be less than or equal to:"
-                        f" {max_sample_size} (the total number of ballots in the contest)"
                     )
 
             elif sample_size["size"] > max_sample_size:

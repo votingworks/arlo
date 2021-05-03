@@ -770,7 +770,7 @@ def test_hybrid_custom_sample_size(
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     sample_size = {
         "key": "custom",
-        "size": 10,
+        "size": None,
         "sizeCvr": 2,
         "sizeNonCvr": 8,
         "prob": None,
@@ -810,32 +810,15 @@ def test_hybrid_invalid_sample_size(
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     invalid_sample_sizes = [
+        ({"key": "custom", "prob": None}, "'sizeCvr' is a required property",),
         (
-            {"key": "custom", "size": 10, "prob": None},
-            "'sizeCvr' is a required property",
-        ),
-        (
-            {"key": "custom", "size": 10, "sizeCvr": 2, "prob": None},
+            {"key": "custom", "sizeCvr": 2, "prob": None},
             "'sizeNonCvr' is a required property",
         ),
         (
-            {"key": "custom", "size": 10, "sizeCvr": 2, "sizeNonCvr": 4, "prob": None},
-            "sizeCvr and sizeNonCvr must add up to size",
-        ),
-        (
             {
                 "key": "custom",
-                "size": 60,
-                "sizeCvr": 50,
-                "sizeNonCvr": 10,
-                "prob": None,
-            },
-            "Total sample size for contest Contest 1 must be less than or equal to: 50 (the total number of ballots in the contest)",
-        ),
-        (
-            {
-                "key": "custom",
-                "size": 50,
+                "size": None,
                 "sizeCvr": 40,
                 "sizeNonCvr": 10,
                 "prob": None,
@@ -845,7 +828,7 @@ def test_hybrid_invalid_sample_size(
         (
             {
                 "key": "custom",
-                "size": 50,
+                "size": None,
                 "sizeCvr": 20,
                 "sizeNonCvr": 30,
                 "prob": None,
