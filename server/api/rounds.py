@@ -889,24 +889,10 @@ def validate_sample_size(round: dict, election: Election):
             raise BadRequest(
                 f"Invalid sample size key for contest {contest.name}: {sample_size['key']}"
             )
+
         if sample_size["key"] == "custom":
-            if sample_size["size"] > max_sample_size:
-                ballots_or_batches = (
-                    "batches"
-                    if election.audit_type == AuditType.BATCH_COMPARISON
-                    else "ballots"
-                )
-                raise BadRequest(
-                    f"Sample size for contest {contest.name} must be less than or equal to:"
-                    f" {max_sample_size} (the total number of {ballots_or_batches} in the contest)"
-                )
             if election.audit_type == AuditType.HYBRID:
                 total_ballots = hybrid_contest_total_ballots(contest)
-                if (
-                    sample_size["sizeCvr"] + sample_size["sizeNonCvr"]
-                    != sample_size["size"]
-                ):
-                    raise BadRequest("sizeCvr and sizeNonCvr must add up to size")
                 if sample_size["sizeCvr"] > total_ballots.cvr:
                     raise BadRequest(
                         f"CVR sample size for contest {contest.name} must be less than or equal to:"
@@ -917,6 +903,22 @@ def validate_sample_size(round: dict, election: Election):
                         f"Non-CVR sample size for contest {contest.name} must be less than or equal to:"
                         f" {total_ballots.non_cvr} (the total number of non-CVR ballots in the contest)"
                     )
+                if sample_size["sizeCvr"] + sample_size["sizeNonCvr"] > max_sample_size:
+                    raise BadRequest(
+                        f"Total sample size for contest {contest.name} must be less than or equal to:"
+                        f" {max_sample_size} (the total number of ballots in the contest)"
+                    )
+
+            elif sample_size["size"] > max_sample_size:
+                ballots_or_batches = (
+                    "batches"
+                    if election.audit_type == AuditType.BATCH_COMPARISON
+                    else "ballots"
+                )
+                raise BadRequest(
+                    f"Sample size for contest {contest.name} must be less than or equal to:"
+                    f" {max_sample_size} (the total number of {ballots_or_batches} in the contest)"
+                )
 
 
 @api.route("/election/<election_id>/round", methods=["POST"])

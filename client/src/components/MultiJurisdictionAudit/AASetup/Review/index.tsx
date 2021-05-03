@@ -429,10 +429,7 @@ const Review: React.FC<IProps> = ({
         // Add custom option to sample size options from backend
         const sampleSizeOptions = mapValues(
           sampleSizesResponse.sampleSizes,
-          options => {
-            if (auditType === 'HYBRID') return options
-            return [...options, { key: 'custom', size: null, prob: null }]
-          }
+          options => [...options, { key: 'custom', size: null, prob: null }]
         )
 
         // If the audit was already launched, show which sample size got selected.
@@ -446,6 +443,13 @@ const Review: React.FC<IProps> = ({
         }: {
           sampleSizes: IFormOptions
         }) => {
+          if (auditType === 'HYBRID') {
+            // eslint-disable-next-line no-param-reassign
+            sampleSizes = mapValues(sampleSizes, sampleSize => ({
+              ...sampleSize,
+              size: (sampleSize.sizeCvr || 0) + (sampleSize.sizeNonCvr || 0),
+            }))
+          }
           if (await startNextRound(sampleSizes)) {
             refresh()
             history.push(`/election/${electionId}/progress`)
@@ -533,7 +537,63 @@ const Review: React.FC<IProps> = ({
                               )}
                             </RadioGroup>
                             {currentOption &&
-                              currentOption.key === 'custom' && (
+                              currentOption.key === 'custom' &&
+                              (auditType === 'HYBRID' ? (
+                                <div>
+                                  <div>
+                                    {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+                                    <label style={{ marginTop: '5px' }}>
+                                      CVR ballots:
+                                      <Field
+                                        component={FormField}
+                                        name={`sampleSizes[${contest.id}].sizeCvr`}
+                                        value={
+                                          currentOption.sizeCvr === null
+                                            ? undefined
+                                            : currentOption.sizeCvr
+                                        }
+                                        onValueChange={(value: number) =>
+                                          setFieldValue(
+                                            `sampleSizes[${contest.id}].sizeCvr`,
+                                            value
+                                          )
+                                        }
+                                        type="number"
+                                        // We rely on backend validation in this
+                                        // case, since we don't have the total
+                                        // CVR/non-CVR ballots loaded in the
+                                        // frontend
+                                        validate={testNumber()}
+                                        disabled={locked}
+                                      />
+                                    </label>
+                                  </div>
+                                  <div>
+                                    {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+                                    <label style={{ marginTop: '5px' }}>
+                                      Non-CVR ballots:
+                                      <Field
+                                        component={FormField}
+                                        name={`sampleSizes[${contest.id}].sizeNonCvr`}
+                                        value={
+                                          currentOption.sizeNonCvr === null
+                                            ? undefined
+                                            : currentOption.sizeNonCvr
+                                        }
+                                        onValueChange={(value: number) =>
+                                          setFieldValue(
+                                            `sampleSizes[${contest.id}].sizeNonCvr`,
+                                            value
+                                          )
+                                        }
+                                        type="number"
+                                        validate={testNumber()}
+                                        disabled={locked}
+                                      />
+                                    </label>
+                                  </div>
+                                </div>
+                              ) : (
                                 <Field
                                   component={FormField}
                                   name={`sampleSizes[${contest.id}].size`}
@@ -554,7 +614,7 @@ const Review: React.FC<IProps> = ({
                                   )}
                                   disabled={locked}
                                 />
-                              )}
+                              ))}
                           </FormSectionDescription>
                         </Card>
                       )

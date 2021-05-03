@@ -830,7 +830,7 @@ def test_hybrid_invalid_sample_size(
                 "sizeNonCvr": 10,
                 "prob": None,
             },
-            "Sample size for contest Contest 1 must be less than or equal to: 50 (the total number of ballots in the contest)",
+            "Total sample size for contest Contest 1 must be less than or equal to: 50 (the total number of ballots in the contest)",
         ),
         (
             {
