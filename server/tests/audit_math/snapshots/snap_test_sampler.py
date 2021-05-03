@@ -2,52 +2,26 @@
 # snapshottest: v1 - https://goo.gl/zC4yUc
 from __future__ import unicode_literals
 
-from snapshottest import Snapshot
+from snapshottest import GenericRepr, Snapshot
 
 
 snapshots = Snapshot()
 
-snapshots["test_draw_macro_multiple_contests 1"] = [
-    ("0.000617786", "pct 2", 1),
-    ("0.000643783", "pct 0", 1),
-    ("0.001336893", "pct 1", 1),
-    ("0.002991631", "pct 3", 1),
-    ("0.003821286", "pct 7", 1),
-    ("0.004006309", "pct 9", 1),
-    ("0.004122879", "pct 6", 1),
-    ("0.006792362", "pct 0", 1),
-    ("0.006987107", "pct 7", 1),
-    ("0.007060432", "pct 2", 1),
-]
+snapshots["test_draw_macro_multiple_contests 1"] = GenericRepr(
+    "array(['pct 5', 'pct 4', 'pct 5', 'pct 0', 'pct 6', 'pct 8', 'pct 9',\n       'pct 8', 'pct 5', 'pct 2'], dtype='<U6')"
+)
 
-snapshots["test_draw_macro_sample 1"] = [
-    ("0.092252362", "pct 7", 1),
-    ("0.097291018", "pct 5", 1),
-    ("0.099439125", "pct 19", 1),
-    ("0.105714660", "pct 12", 1),
-    ("0.130457464", "pct 2", 1),
-    ("0.170838307", "pct 12", 2),
-    ("0.184242188", "pct 9", 1),
-    ("0.198541554", "pct 14", 1),
-    ("0.210407685", "pct 13", 1),
-    ("0.230651143", "pct 7", 2),
-]
+snapshots["test_draw_macro_sample 1"] = GenericRepr(
+    "array(['pct 8', 'pct 6', 'pct 8', 'pct 0', 'pct 9', 'pct 14', 'pct 18',\n       'pct 17', 'pct 8', 'pct 2'], dtype='<U6')"
+)
 
-snapshots["test_draw_more_macro_sample 1"] = [
-    ("0.092252362", "pct 7", 1),
-    ("0.097291018", "pct 5", 1),
-    ("0.099439125", "pct 19", 1),
-    ("0.105714660", "pct 12", 1),
-    ("0.130457464", "pct 2", 1),
-]
+snapshots["test_draw_more_macro_sample 1"] = GenericRepr(
+    "array(['pct 8', 'pct 6', 'pct 8', 'pct 0', 'pct 9'], dtype='<U6')"
+)
 
-snapshots["test_draw_more_macro_sample 2"] = [
-    ("0.170838307", "pct 12", 2),
-    ("0.184242188", "pct 9", 1),
-    ("0.198541554", "pct 14", 1),
-    ("0.210407685", "pct 13", 1),
-    ("0.230651143", "pct 7", 2),
-]
+snapshots["test_draw_more_macro_sample 2"] = GenericRepr(
+    "array(['pct 8', 'pct 6', 'pct 8', 'pct 0', 'pct 9', 'pct 14', 'pct 18',\n       'pct 17', 'pct 8', 'pct 2'], dtype='<U6')"
+)
 
 snapshots["test_draw_more_samples 1"] = [
     ("0.000617786129909912", ("pct 2", 3), 1),

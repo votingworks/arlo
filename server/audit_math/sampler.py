@@ -1,7 +1,7 @@
 # pylint: disable=invalid-name
 # Handles generating sample sizes and taking samples
 from typing import cast, Any, Dict, List, Tuple
-from decimal import Decimal
+from numpy.random import default_rng
 import consistent_sampler
 
 from . import macro
@@ -73,7 +73,7 @@ def draw_ppeb_sample(
     sample_size: int,
     num_sampled: int,
     batch_results: Dict[Any, Dict[str, Dict[str, int]]],
-) -> List[Tuple[str, Tuple[str, int], int]]:
+) -> List[str]:
     """
     Draws sample with replacement of size <sample_size> from the
     provided ballot manifest using proportional-with-error-bound (PPEB) sampling.
@@ -110,6 +110,10 @@ def draw_ppeb_sample(
 
     assert batch_results, "Must have batch-level results to use MACRO"
 
+    # Convert seed into something numpy can use
+    int_seed = int(consistent_sampler.sha256_hex(seed), 16)
+    generator = default_rng(int_seed)
+
     U = macro.compute_U(batch_results, {}, contest)
 
     # This can only be the case if we've already recounted
@@ -117,48 +121,11 @@ def draw_ppeb_sample(
         return []
 
     # Map each batch to its weighted probability of being picked
-    batch_to_prob: Dict[str, Decimal] = {}
-    min_prob = Decimal(1.0)
-    # Get u_ps
-    for batch in batch_results:
-        error = macro.compute_max_error(batch_results[batch], contest)
+    weighted_errors = [
+        macro.compute_max_error(batch_results[batch], contest) / U
+        for batch in batch_results
+    ]
 
-        # Set a floor on the error so it can't go to 0
-        if error == 0:
-            error = Decimal(1) / Decimal(contest.ballots)
-
-        # Probability of being picked is directly related to how much this
-        # batch contributes to the overall possible error
-        batch_to_prob[batch] = error / U
-
-        if error / U < min_prob:
-            min_prob = error / U
-
-    sample_from = []
-    # Now build faux list of batches, where each batch appears a number of
-    # times proportional to its prob
-    for batch in batch_to_prob:
-        times = int(batch_to_prob[batch] / min_prob)
-
-        for i in range(times):
-            # We have to create "unique" records for the sampler, so we add
-            # a 'n' to the batch name so we know which duplicate it is.
-            sample_from.append((batch, i))
-
-    # Now draw the sample
-    faux_sample = list(
-        consistent_sampler.sampler(
-            sample_from,
-            seed=seed,
-            take=sample_size + num_sampled,
-            with_replacement=True,
-            output="tuple",
-        )
-    )[num_sampled:]
-
-    # here we take off the decimals.
-    sample = []
-    for item in faux_sample:
-        sample.append((item[0], item[1][0], item[2]))
-
-    return sample
+    return generator.choice(
+        list(batch_results.keys()), sample_size + num_sampled, p=weighted_errors
+    )
