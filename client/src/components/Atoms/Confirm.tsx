@@ -1,7 +1,7 @@
 import React, { useState, ReactNode } from 'react'
 import { Dialog, Classes, Button, Intent } from '@blueprintjs/core'
 
-interface IConfirmOptions {
+export interface IConfirmOptions {
   title: ReactNode
   description: ReactNode
   yesButtonLabel?: string
@@ -15,7 +15,7 @@ export const useConfirm = () => {
   // On close, we set options to null.
   const [options, setOptions] = useState<IConfirmOptions | null>(null)
 
-  const confirm = (newOptions: IConfirmOptions) => {
+  const confirm = (newOptions: IConfirmOptions | null) => {
     setOptions(newOptions)
   }
 
