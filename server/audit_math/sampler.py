@@ -73,7 +73,7 @@ def draw_ppeb_sample(
     sample_size: int,
     num_sampled: int,
     batch_results: Dict[Any, Dict[str, Dict[str, int]]],
-) -> List[str]:
+) -> List[Tuple[str, Tuple[Any, int], int]]:
     """
     Draws sample with replacement of size <sample_size> from the
     provided ballot manifest using proportional-with-error-bound (PPEB) sampling.
@@ -111,7 +111,7 @@ def draw_ppeb_sample(
     assert batch_results, "Must have batch-level results to use MACRO"
 
     # Convert seed into something numpy can use
-    int_seed = int(consistent_sampler.sha256_hex(seed), 16)
+    int_seed = int(consistent_sampler.sha256_hex(seed), 16)  # type: ignore
     generator = default_rng(int_seed)
 
     U = macro.compute_U(batch_results, {}, contest)
@@ -126,9 +126,42 @@ def draw_ppeb_sample(
         for batch in batch_results
     ]
 
-    return generator.choice(
+    sample = generator.choice(
         list(batch_results.keys()),
         sample_size + num_sampled,
         p=weighted_errors,
         replace=True,
-    )[num_sampled:]
+    )
+
+    # Now create "ticket numbers" for each item in the sample
+
+    # Map seen batches to counts
+    counts: Dict[Any, int] = {}
+    tickets: Dict[Any, List[str]] = {}
+
+    sample_tuples: List[Tuple[str, Tuple[Any, int], int]] = []
+
+    for batch in sample:
+        # For some reason np converts the tuple to a list in sampling
+
+        batch_tuple = batch if batch.isinstance(str) else tuple(batch)
+        count = counts.get(batch_tuple, 0) + 1
+
+        ticket = (
+            consistent_sampler.first_fraction(batch_tuple, seed)  # type: ignore
+            if count == 1
+            else consistent_sampler.next_fraction(tickets.get(batch_tuple)[-1])  # type: ignore
+        )
+
+        # Trim the ticket number
+        ticket = ticket[:18]
+
+        sample_tuples.append((ticket, batch_tuple, count))
+        counts[batch_tuple] = count
+
+        if batch_tuple in tickets:
+            tickets[batch_tuple].append(ticket)
+        else:
+            tickets[batch_tuple] = [ticket]
+
+    return sample_tuples
