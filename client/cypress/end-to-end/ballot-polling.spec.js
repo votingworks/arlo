@@ -59,9 +59,6 @@ describe('Ballot Polling', () => {
     cy.findAllByText('Review & Launch').should('have.length', 2)
     cy.logout(auditAdmin)
     cy.loginJurisdictionAdmin(jurisdictionAdmin)
-    cy.findByText(`Jurisdictions - TestAudit${id}`)
-      .siblings('button')
-      .click()
     cy.fixture('CSVs/manifest/ballot_polling_manifest.csv').then(
       fileContent => {
         cy.get('input[type="file"]')
@@ -89,9 +86,6 @@ describe('Ballot Polling', () => {
     cy.findByRole('heading', { name: 'Audit Progress' })
     cy.logout(auditAdmin)
     cy.loginJurisdictionAdmin(jurisdictionAdmin)
-    cy.findByText(`Jurisdictions - TestAudit${id}`)
-      .siblings('button')
-      .click()
     cy.contains('Number of Audit Boards')
     cy.findByText('Save & Next').click()
     cy.contains('Round 1 Data Entry')
@@ -165,9 +159,6 @@ describe('Ballot Polling', () => {
     cy.findAllByText('Review & Launch').should('have.length', 2)
     cy.logout(auditAdmin)
     cy.loginJurisdictionAdmin(jurisdictionAdmin)
-    cy.findByText(`Jurisdictions - TestAudit${id}`)
-      .siblings('button')
-      .click()
     cy.fixture('CSVs/manifest/ballot_polling_manifest.csv').then(
       fileContent => {
         cy.get('input[type="file"]')
@@ -195,9 +186,6 @@ describe('Ballot Polling', () => {
     cy.findByRole('heading', { name: 'Audit Progress' })
     cy.logout(auditAdmin)
     cy.loginJurisdictionAdmin(jurisdictionAdmin)
-    cy.findByText(`Jurisdictions - TestAudit${id}`)
-      .siblings('button')
-      .click()
     cy.contains('Number of Audit Boards')
     cy.findByText('Save & Next').click()
     cy.findByText('Download Audit Board Credentials').click()

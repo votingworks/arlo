@@ -99,6 +99,30 @@ export const jaApiCalls = {
       supportUser: null,
     },
   },
+  getUserWithOneElection: {
+    url: '/api/me',
+    response: {
+      user: {
+        type: 'jurisdiction_admin',
+        name: 'Joe',
+        email: 'jurisdictionadmin@email.org',
+        jurisdictions: [
+          {
+            id: 'jurisdiction-id-1',
+            name: 'Jurisdiction One',
+            election: {
+              id: '1',
+              auditName: 'audit one',
+              electionName: 'election one',
+              state: 'AL',
+            },
+          },
+        ],
+        organizations: [],
+      },
+      supportUser: null,
+    },
+  },
   getUserWithoutElections: {
     url: '/api/me',
     response: {

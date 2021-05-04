@@ -10,7 +10,7 @@ import {
   Button,
   Intent,
 } from '@blueprintjs/core'
-import { useHistory, useLocation } from 'react-router-dom'
+import { useHistory, useLocation, Redirect } from 'react-router-dom'
 import styled from 'styled-components'
 import { Formik, FormikProps, Field } from 'formik'
 import {
@@ -51,7 +51,17 @@ const HomeScreen: React.FC = () => {
           </Inner>
         </Wrapper>
       )
-    case 'jurisdiction_admin':
+    case 'jurisdiction_admin': {
+      if (user.jurisdictions.length === 1) {
+        const electionId = user.jurisdictions[0].election.id
+        const jurisdictionId = user.jurisdictions[0].id
+        return (
+          <Redirect
+            to={`election/${electionId}/jurisdiction/${jurisdictionId}`}
+          />
+        )
+      }
+
       return (
         <Wrapper>
           <Inner>
@@ -61,6 +71,7 @@ const HomeScreen: React.FC = () => {
           </Inner>
         </Wrapper>
       )
+    }
     case 'audit_board':
       return <LoginScreen />
     default:

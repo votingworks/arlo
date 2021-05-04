@@ -69,9 +69,6 @@ describe('Batch Comparison', () => {
     cy.findAllByText('Review & Launch').should('have.length', 2)
     cy.logout(auditAdmin)
     cy.loginJurisdictionAdmin(jurisdictionAdmin)
-    cy.findByText(`Jurisdictions - TestAudit${id}`)
-      .siblings('button')
-      .click()
 
     // upload invalid manifest
     cy.fixture('CSVs/manifest/batch_comparison_manifest_col_error.csv').then(
@@ -157,9 +154,6 @@ describe('Batch Comparison', () => {
     cy.findByRole('heading', { name: 'Audit Progress' })
     cy.logout(auditAdmin)
     cy.loginJurisdictionAdmin(jurisdictionAdmin)
-    cy.findByText(`Jurisdictions - TestAudit${id}`)
-      .siblings('button')
-      .click()
     cy.contains('Number of Audit Boards')
     cy.findByText('Save & Next').click()
     cy.get('.bp3-card')
