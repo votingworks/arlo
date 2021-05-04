@@ -54,8 +54,12 @@ const HomeScreen: React.FC = () => {
     case 'jurisdiction_admin': {
       if (user.jurisdictions.length === 1) {
         const electionId = user.jurisdictions[0].election.id
-        const userId = user.jurisdictions[0].id
-        return <Redirect to={`election/${electionId}/jurisdiction/${userId}`} />
+        const jurisdictionId = user.jurisdictions[0].id
+        return (
+          <Redirect
+            to={`election/${electionId}/jurisdiction/${jurisdictionId}`}
+          />
+        )
       }
 
       return (
