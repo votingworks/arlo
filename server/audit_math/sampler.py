@@ -164,4 +164,4 @@ def draw_ppeb_sample(
         else:
             tickets[batch_tuple] = [ticket]
 
-    return sample_tuples
+    return sample_tuples[num_sampled:]
