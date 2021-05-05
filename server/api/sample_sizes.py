@@ -91,10 +91,6 @@ def validate_hybrid_manifests_and_cvrs(contest: Contest):
         )
 
 
-# Because the /sample-sizes endpoint is only used for the audit setup flow,
-# we always want it to return the sample size options for the first round.
-# So we support a flag in this function to compute the sample sizes for
-# round one specifically, even if the audit has progressed further.
 def sample_size_options(
     election: Election,
 ) -> Dict[str, Dict[str, ballot_polling.SampleSizeOption]]:
