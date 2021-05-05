@@ -791,7 +791,7 @@ def sample_batches(
         batch_tallies(election),
     )
 
-    for (ticket_number, batch_key, _) in sample:
+    for (ticket_number, batch_key) in sample:
         sampled_batch_draw = SampledBatchDraw(
             batch_id=batch_key_to_id[batch_key],
             round_id=round.id,

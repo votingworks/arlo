@@ -73,7 +73,7 @@ def draw_ppeb_sample(
     sample_size: int,
     num_sampled: int,
     batch_results: Dict[Tuple[Any, Any], Dict[str, Dict[str, int]]],
-) -> List[Tuple[Any, Tuple[Any, Any], int]]:
+) -> List[Tuple[Any, Tuple[Any, Any]]]:
     """
     Draws sample with replacement of size <sample_size> from the
     provided ballot manifest using proportional-with-error-bound (PPEB) sampling.
@@ -102,7 +102,6 @@ def draw_ppeb_sample(
                     (
                         '0.235789114', # ticket number
                         (<batch>, <ballot number>), # id, here a tuple (batch, ballot)
-                        1                           # number of times this item has been picked
                     ),
                     ...
                 ]
@@ -139,7 +138,7 @@ def draw_ppeb_sample(
     counts: Dict[Any, int] = {}
     tickets: Dict[Any, List[str]] = {}
 
-    sample_tuples: List[Tuple[Any, Tuple[Any, Any], int]] = []
+    sample_tuples: List[Tuple[Any, Tuple[Any, Any]]] = []
 
     for batch in sample:
         # For some reason np converts the tuple to a list in sampling
@@ -156,7 +155,7 @@ def draw_ppeb_sample(
         ticket = ticket[:18]
 
         # I can't seem tomake mypy realize the tuple is what we expect
-        sample_tuples.append((ticket, batch_tuple, count))  # type: ignore
+        sample_tuples.append((ticket, batch_tuple))  # type: ignore
         counts[batch_tuple] = count
 
         if batch_tuple in tickets:
