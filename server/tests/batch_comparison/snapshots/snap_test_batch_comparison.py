@@ -22,7 +22,3 @@ snapshots["test_batch_comparison_round_1 2"] = {
     "numUniqueAudited": 0,
     "status": "NOT_STARTED",
 }
-
-snapshots["test_batch_comparison_sample_size 1"] = [
-    {"key": "macro", "prob": None, "size": 6}
-]

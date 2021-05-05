@@ -72,8 +72,8 @@ def draw_ppeb_sample(
     contest: Contest,
     sample_size: int,
     num_sampled: int,
-    batch_results: Dict[Any, Dict[str, Dict[str, int]]],
-) -> List[Tuple[str, Tuple[Any, int], int]]:
+    batch_results: Dict[Tuple[Any, Any], Dict[str, Dict[str, int]]],
+) -> List[Tuple[Any, Tuple[Any, Any], int]]:
     """
     Draws sample with replacement of size <sample_size> from the
     provided ballot manifest using proportional-with-error-bound (PPEB) sampling.
@@ -126,7 +126,7 @@ def draw_ppeb_sample(
         for batch in batch_results
     ]
 
-    sample = generator.choice(
+    sample: List[Tuple[Any, Any]] = generator.choice(
         list(batch_results.keys()),
         sample_size + num_sampled,
         p=weighted_errors,
@@ -139,12 +139,11 @@ def draw_ppeb_sample(
     counts: Dict[Any, int] = {}
     tickets: Dict[Any, List[str]] = {}
 
-    sample_tuples: List[Tuple[str, Tuple[Any, int], int]] = []
+    sample_tuples: List[Tuple[Any, Tuple[Any, Any], int]] = []
 
     for batch in sample:
         # For some reason np converts the tuple to a list in sampling
-
-        batch_tuple = batch if batch.isinstance(str) else tuple(batch)
+        batch_tuple = tuple(batch)
         count = counts.get(batch_tuple, 0) + 1
 
         ticket = (
@@ -156,7 +155,8 @@ def draw_ppeb_sample(
         # Trim the ticket number
         ticket = ticket[:18]
 
-        sample_tuples.append((ticket, batch_tuple, count))
+        # I can't seem tomake mypy realize the tuple is what we expect
+        sample_tuples.append((ticket, batch_tuple, count))  # type: ignore
         counts[batch_tuple] = count
 
         if batch_tuple in tickets:
