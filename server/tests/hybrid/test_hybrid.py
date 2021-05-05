@@ -756,3 +756,93 @@ def test_hybrid_filter_cvrs(
         .count()
         == 0
     )
+
+
+def test_hybrid_custom_sample_size(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    contest_ids: List[str],  # pylint: disable=unused-argument
+    election_settings,  # pylint: disable=unused-argument
+    manifests,  # pylint: disable=unused-argument
+    cvrs,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    sample_size = {
+        "key": "custom",
+        "size": None,
+        "sizeCvr": 2,
+        "sizeNonCvr": 8,
+        "prob": None,
+    }
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {"roundNum": 1, "sampleSizes": {contest_ids[0]: sample_size},},
+    )
+    assert_ok(rv)
+
+    ballot_draws = list(
+        SampledBallotDraw.query.join(SampledBallot)
+        .join(Batch)
+        .join(Jurisdiction)
+        .filter_by(election_id=election_id)
+        .all()
+    )
+    assert (
+        len([draw for draw in ballot_draws if draw.sampled_ballot.batch.has_cvrs])
+        == sample_size["sizeCvr"]
+    )
+    assert (
+        len([draw for draw in ballot_draws if not draw.sampled_ballot.batch.has_cvrs])
+        == sample_size["sizeNonCvr"]
+    )
+
+
+def test_hybrid_invalid_sample_size(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    contest_ids: List[str],  # pylint: disable=unused-argument
+    election_settings,  # pylint: disable=unused-argument
+    manifests,  # pylint: disable=unused-argument
+    cvrs,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    invalid_sample_sizes = [
+        ({"key": "custom", "prob": None}, "'sizeCvr' is a required property",),
+        (
+            {"key": "custom", "sizeCvr": 2, "prob": None},
+            "'sizeNonCvr' is a required property",
+        ),
+        (
+            {
+                "key": "custom",
+                "size": None,
+                "sizeCvr": 40,
+                "sizeNonCvr": 10,
+                "prob": None,
+            },
+            "CVR sample size for contest Contest 1 must be less than or equal to: 30 (the total number of CVR ballots in the contest)",
+        ),
+        (
+            {
+                "key": "custom",
+                "size": None,
+                "sizeCvr": 20,
+                "sizeNonCvr": 30,
+                "prob": None,
+            },
+            "Non-CVR sample size for contest Contest 1 must be less than or equal to: 20 (the total number of non-CVR ballots in the contest)",
+        ),
+    ]
+    for invalid_sample_size, expected_error in invalid_sample_sizes:
+        rv = post_json(
+            client,
+            f"/api/election/{election_id}/round",
+            {"roundNum": 1, "sampleSizes": {contest_ids[0]: invalid_sample_size},},
+        )
+        assert rv.status_code == 400
+        assert json.loads(rv.data) == {
+            "errors": [{"errorType": "Bad Request", "message": expected_error}]
+        }

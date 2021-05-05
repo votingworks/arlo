@@ -299,7 +299,7 @@ describe('Audit Setup > Review & Launch', () => {
     })
   })
 
-  it('for hybrid audits, shows the CVR/non-CVR vote totals and sample sizes', async () => {
+  it('for hybrid audits, shows the CVR/non-CVR vote totals and sample sizes, including a custom option', async () => {
     const expectedCalls = [
       apiCalls.getSettings(auditSettings.hybridAll),
       apiCalls.getJurisdictions({
@@ -350,10 +350,39 @@ describe('Audit Setup > Review & Launch', () => {
 
       // Sample sizes
       const options = screen.getAllByRole('radio')
-      expect(options).toHaveLength(1)
+      expect(options).toHaveLength(2)
       expect(options[0].closest('label')).toHaveTextContent(
         '10 samples (3 CVR ballots and 7 non-CVR ballots)'
       )
+      expect(options[1].closest('label')).toHaveTextContent(
+        'Enter your own sample size (not recommended)'
+      )
+
+      // Enter a custom sample size
+      userEvent.click(options[1])
+      const cvrInput = screen.getByLabelText(/^CVR ballots:/)
+      userEvent.type(cvrInput, '10')
+      const nonCvrInput = screen.getByLabelText(/Non-CVR ballots:/)
+      userEvent.type(nonCvrInput, '20')
+
+      const launchButton = await screen.findByText('Launch Audit')
+      userEvent.click(launchButton)
+      await screen.findByText('Are you sure you want to launch the audit?')
+      const confirmLaunchButton = screen.getAllByText('Launch Audit')[1]
+      userEvent.click(confirmLaunchButton)
+
+      await waitFor(() => {
+        expect(startNextRoundMock).toHaveBeenCalledWith({
+          'contest-id': {
+            key: 'custom',
+            sizeCvr: 10,
+            sizeNonCvr: 20,
+            size: null,
+            prob: null,
+          },
+        })
+        expect(refreshMock).toHaveBeenCalled()
+      })
     })
   })
 
