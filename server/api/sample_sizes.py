@@ -91,12 +91,8 @@ def validate_hybrid_manifests_and_cvrs(contest: Contest):
         )
 
 
-# Because the /sample-sizes endpoint is only used for the audit setup flow,
-# we always want it to return the sample size options for the first round.
-# So we support a flag in this function to compute the sample sizes for
-# round one specifically, even if the audit has progressed further.
 def sample_size_options(
-    election: Election, round_one=False
+    election: Election,
 ) -> Dict[str, Dict[str, ballot_polling.SampleSizeOption]]:
     if not election.contests:
         raise UserError("Cannot compute sample sizes until contests are set")
@@ -106,9 +102,7 @@ def sample_size_options(
     def sample_sizes_for_contest(contest: Contest):
         assert election.risk_limit is not None
         if election.audit_type == AuditType.BALLOT_POLLING:
-            sample_results = (
-                None if round_one else rounds.contest_results_by_round(contest)
-            )
+            sample_results = rounds.contest_results_by_round(contest)
             sample_size_options = ballot_polling.get_sample_size(
                 election.risk_limit,
                 sampler_contest.from_db_contest(contest),
@@ -126,14 +120,6 @@ def sample_size_options(
             validate_batch_tallies(contest)
 
             cumulative_batch_results = rounds.cumulative_batch_results(election)
-            if round_one:
-                cumulative_batch_results = {
-                    batch_key: {
-                        contest_id: {choice_id: 0 for choice_id in contest_results}
-                        for contest_id, contest_results in batch_results.items()
-                    }
-                    for batch_key, batch_results in cumulative_batch_results.items()
-                }
             sample_size = macro.get_sample_sizes(
                 election.risk_limit,
                 sampler_contest.from_db_contest(contest),
@@ -148,27 +134,24 @@ def sample_size_options(
 
             contest_for_sampler = sampler_contest.from_db_contest(contest)
 
-            if round_one:
-                discrepancy_counts = None
-            else:
-                num_previous_samples = SampledBallotDraw.query.filter_by(
-                    contest_id=contest.id
-                ).count()
-                discrepancies = supersimple.compute_discrepancies(
-                    contest_for_sampler,
-                    rounds.cvrs_for_contest(contest),
-                    rounds.sampled_ballot_interpretations_to_cvrs(contest),
-                )
-                discrepancy_counter = Counter(
-                    d["counted_as"] for d in discrepancies.values()
-                )
-                discrepancy_counts = {
-                    "sample_size": num_previous_samples,
-                    "1-under": discrepancy_counter[-1],
-                    "1-over": discrepancy_counter[1],
-                    "2-under": discrepancy_counter[-2],
-                    "2-over": discrepancy_counter[2],
-                }
+            num_previous_samples = SampledBallotDraw.query.filter_by(
+                contest_id=contest.id
+            ).count()
+            discrepancies = supersimple.compute_discrepancies(
+                contest_for_sampler,
+                rounds.cvrs_for_contest(contest),
+                rounds.sampled_ballot_interpretations_to_cvrs(contest),
+            )
+            discrepancy_counter = Counter(
+                d["counted_as"] for d in discrepancies.values()
+            )
+            discrepancy_counts = {
+                "sample_size": num_previous_samples,
+                "1-under": discrepancy_counter[-1],
+                "1-over": discrepancy_counter[1],
+                "2-under": discrepancy_counter[-2],
+                "2-over": discrepancy_counter[2],
+            }
 
             sample_size = supersimple.get_sample_sizes(
                 election.risk_limit, contest_for_sampler, discrepancy_counts
@@ -184,9 +167,7 @@ def sample_size_options(
             validate_uploaded_cvrs(contest)
             validate_hybrid_manifests_and_cvrs(contest)
 
-            non_cvr_stratum, cvr_stratum = rounds.hybrid_contest_strata(
-                contest, round_one=round_one
-            )
+            non_cvr_stratum, cvr_stratum = rounds.hybrid_contest_strata(contest)
             size = suite.get_sample_size(
                 election.risk_limit,
                 sampler_contest.from_db_contest(contest),
@@ -209,7 +190,7 @@ def sample_size_options(
     )
     targeted_contests_that_havent_met_risk_limit = (
         targeted_contests.all()
-        if round_one
+        if len(list(election.rounds)) == 0
         else targeted_contests.join(RoundContest).filter_by(is_complete=False).all()
     )
     try:
@@ -224,7 +205,7 @@ def sample_size_options(
 @background_task
 def first_round_sample_size_options(election_id: str):
     election = Election.query.get(election_id)
-    election.sample_size_options = sample_size_options(election, round_one=True)
+    election.sample_size_options = sample_size_options(election)
 
 
 def serialize_sample_size_options(sample_size_options):
