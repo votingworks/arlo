@@ -54,7 +54,7 @@ export const downloadLabels = async (
             labels.splitTextToSize(line!, LABEL_WIDTH - LABEL_PADDING_X * 2)[0]
         )
 
-      labels.text(leftX + LABEL_PADDING_X, topY + LABEL_PADDING_Y, lines, {
+      labels.text(lines, leftX + LABEL_PADDING_X, topY + LABEL_PADDING_Y, {
         baseline: 'top',
       })
     })
@@ -133,11 +133,13 @@ export const downloadAuditBoardCredentials = async (
     if (board.currentRoundStatus.numSampledBallots > 0) {
       if (i > 0) auditBoardCreds.addPage('letter')
       const url = qr.toDataURL()
+      auditBoardCreds.setFont('Helvetica', '', 'bold')
       auditBoardCreds.setFontSize(22)
-      auditBoardCreds.setFontStyle('bold')
+      // auditBoardCreds.setFontStyle('bold')
       auditBoardCreds.text(board.name, 20, 20)
+      auditBoardCreds.setFont('Helvetica', '', 'normal')
       auditBoardCreds.setFontSize(14)
-      auditBoardCreds.setFontStyle('normal')
+      // auditBoardCreds.setFontStyle('normal')
       auditBoardCreds.text(
         'Scan this QR code to enter the votes you see on your assigned ballots.',
         20,
