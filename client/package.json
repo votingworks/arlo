@@ -91,7 +91,7 @@
     "formik": "^2.2.0",
     "history": "^4.9.0",
     "http-proxy-middleware": "^0.19.1",
-    "jspdf": "^1.5.3",
+    "jspdf": "^2.3.1",
     "qrcode.react": "^0.9.3",
     "react": "16.13.1",
     "react-app-polyfill": "^1.0.1",
