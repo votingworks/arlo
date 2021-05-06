@@ -13,12 +13,12 @@ def macro_batches():
 
     # 10 batches will have max error of .08
     for i in range(10):
-        batches["pct {}".format(i)] = {
+        batches[("Jx 1", "pct {}".format(i))] = {
             "test1": {"cand1": 40, "cand2": 10, "ballots": 50}
         }
         # 10 batches will have max error of .04
     for i in range(11, 20):
-        batches["pct {}".format(i)] = {
+        batches[("Jx 1", "pct {}".format(i))] = {
             "test1": {"cand1": 20, "cand2": 30, "ballots": 50}
         }
 
@@ -29,10 +29,18 @@ def macro_batches():
 def close_macro_batches():
     batches = {}
 
-    batches["pct {}".format(1)] = {"test1": {"cand1": 100, "cand2": 0, "ballots": 100}}
-    batches["pct {}".format(2)] = {"test1": {"cand1": 100, "cand2": 0, "ballots": 100}}
-    batches["pct {}".format(3)] = {"test1": {"cand1": 0, "cand2": 100, "ballots": 100}}
-    batches["pct {}".format(4)] = {"test1": {"cand1": 0, "cand2": 98, "ballots": 100}}
+    batches[("Jx 1", "pct {}".format(1))] = {
+        "test1": {"cand1": 100, "cand2": 0, "ballots": 100}
+    }
+    batches[("Jx 1", "pct {}".format(2))] = {
+        "test1": {"cand1": 100, "cand2": 0, "ballots": 100}
+    }
+    batches[("Jx 1", "pct {}".format(3))] = {
+        "test1": {"cand1": 0, "cand2": 100, "ballots": 100}
+    }
+    batches[("Jx 1", "pct {}".format(4))] = {
+        "test1": {"cand1": 0, "cand2": 98, "ballots": 100}
+    }
     return batches
 
 
@@ -148,7 +156,7 @@ def test_draw_macro_multiple_contests(macro_batches, snapshot):
     other_contest = Contest(name, info_dict)
 
     for batch in macro_batches:
-        pct = int(batch.split(" ")[-1])
+        pct = int(batch[1].split(" ")[-1])
         if pct < 10:
             macro_batches[batch]["test2"] = {"cand1": 40, "cand2": 10, "ballots": 50}
 

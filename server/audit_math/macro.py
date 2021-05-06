@@ -119,8 +119,8 @@ def compute_max_error(
 
 
 def compute_U(
-    reported_results: Dict[str, Dict[str, Dict[str, int]]],
-    sample_results: Dict[Any, Dict[str, Dict[str, int]]],
+    reported_results: Dict[Tuple[Any, Any], Dict[str, Dict[str, int]]],
+    sample_results: Dict[Tuple[Any, Any], Dict[str, Dict[str, int]]],
     contest: Contest,
 ) -> Decimal:
     """

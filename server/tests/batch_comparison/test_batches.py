@@ -9,8 +9,8 @@ from ...worker.bgcompute import (
     bgcompute_update_batch_tallies_file,
 )
 
-J1_BATCHES_ROUND_1 = 2
-J2_BATCHES_ROUND_1 = 2
+J1_BATCHES_ROUND_1 = 3
+J2_BATCHES_ROUND_1 = 1
 
 
 def test_list_batches_bad_round_id(
@@ -159,10 +159,11 @@ def test_record_batch_results(
         for batch in batches
     }
 
-    for batch in batches:
-        results[batch["id"]][choice_ids[0]] = 400
-        results[batch["id"]][choice_ids[1]] = 50
-        results[batch["id"]][choice_ids[2]] = 40
+    results = {
+        batches[0]["id"]: {choice_ids[0]: 400, choice_ids[1]: 50, choice_ids[2]: 40,},
+        batches[1]["id"]: {choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 40,},
+        batches[2]["id"]: {choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 40,},
+    }
 
     rv = put_json(
         client,

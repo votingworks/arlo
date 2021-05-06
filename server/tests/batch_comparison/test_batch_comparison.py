@@ -284,8 +284,9 @@ def test_batch_comparison_round_2(
     # Record some batch results
     choice_ids = [choice["id"] for choice in contests[0]["choices"]]
     batch_results = {
-        batch["id"]: {choice_ids[0]: 400, choice_ids[1]: 50, choice_ids[2]: 40,}
-        for batch in batches
+        batches[0]["id"]: {choice_ids[0]: 400, choice_ids[1]: 50, choice_ids[2]: 40,},
+        batches[1]["id"]: {choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 40,},
+        batches[2]["id"]: {choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 40,},
     }
 
     rv = put_json(
