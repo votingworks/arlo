@@ -1,5 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`Confirm component closes confirm component 1`] = `<div />`;
-
-exports[`Confirm component opens confirm component 1`] = `<div />`;
