@@ -18,10 +18,10 @@ const mockRound = roundMocks.incomplete
 
 const mockSavePDF = jest.fn()
 jest.mock('jspdf', () => {
-  const realjspdf = jest.requireActual('jspdf')
+  const { jsPDF } = jest.requireActual('jspdf')
   // eslint-disable-next-line func-names, @typescript-eslint/no-explicit-any
   return function(options: any) {
-    const mockjspdf = new realjspdf(options)
+    const mockjspdf = new jsPDF(options)
     return {
       ...mockjspdf,
       addImage: jest.fn(),

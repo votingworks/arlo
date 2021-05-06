@@ -19,8 +19,8 @@ jest.mock('react-router', () => ({
 // Borrowed from generateSheets.test.tsx
 const mockSavePDF = jest.fn()
 jest.mock('jspdf', () => {
-  const realjspdf = jest.requireActual('jspdf')
-  const mockjspdf = new realjspdf({ format: 'letter' })
+  const { jsPDF } = jest.requireActual('jspdf')
+  const mockjspdf = new jsPDF({ format: 'letter' })
   // eslint-disable-next-line func-names
   return function() {
     return {
