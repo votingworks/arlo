@@ -157,3 +157,33 @@ J1,TABULATOR2,BATCH1,1,2-1-1,Round 2: 0.866942401925500729,AUDITED,Choice 1-2,Ch
 J2,TABULATOR1,BATCH2,2,1-2-2,"Round 2: 0.802360074986437243, 0.820653389137078523",AUDITED,Choice 1-2,Choice 1-2,,"Choice 2-1, Choice 2-2","Choice 2-1, Choice 2-2",\r
 J2,TABULATOR2,BATCH1,3,2-1-3,"Round 2: 0.803716379074313244, 0.853400178985340640",AUDITED,Choice 1-1,Choice 1-1,,"Choice 2-1, Choice 2-2","Choice 2-1, Choice 2-2",\r
 """
+
+snapshots["test_set_contest_metadata_on_contest_creation 1"] = {
+    "choices": [
+        {"name": "Choice 2-1", "num_votes": 26},
+        {"name": "Choice 2-2", "num_votes": 12},
+        {"name": "Choice 2-3", "num_votes": 14},
+    ],
+    "total_ballots_cast": 30,
+    "votes_allowed": 2,
+}
+
+snapshots["test_set_contest_metadata_on_manifest_and_cvr_upload 1"] = {
+    "choices": [
+        {"name": "Choice 2-1", "num_votes": 26},
+        {"name": "Choice 2-2", "num_votes": 12},
+        {"name": "Choice 2-3", "num_votes": 14},
+    ],
+    "total_ballots_cast": 30,
+    "votes_allowed": 2,
+}
+
+snapshots["test_set_contest_metadata_on_manifest_and_cvr_upload 2"] = {
+    "choices": [
+        {"name": "Choice 2-1", "num_votes": 16},
+        {"name": "Choice 2-2", "num_votes": 8},
+        {"name": "Choice 2-3", "num_votes": 8},
+    ],
+    "total_ballots_cast": 21,
+    "votes_allowed": 2,
+}
