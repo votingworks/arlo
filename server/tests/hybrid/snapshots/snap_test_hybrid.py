@@ -71,7 +71,3 @@ J2,TABULATOR3,BATCH1,1,,Round 1: 0.052129356711674929,AUDITED,Choice 1-1,,,CONTE
 J2,TABULATOR3,BATCH1,5,,Round 1: 0.037027823153316024,AUDITED,Choice 1-1,,,CONTEST_NOT_ON_BALLOT,,\r
 J2,TABULATOR3,BATCH1,10,,Round 1: 0.087764767095634400,AUDITED,Choice 1-2,,,CONTEST_NOT_ON_BALLOT,,\r
 """
-
-snapshots["test_sample_size 1"] = [
-    {"key": "suite", "prob": None, "size": 22, "sizeCvr": 14, "sizeNonCvr": 8}
-]

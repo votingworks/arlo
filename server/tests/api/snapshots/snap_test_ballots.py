@@ -7,14 +7,6 @@ from snapshottest import Snapshot
 
 snapshots = Snapshot()
 
-snapshots["test_ab_list_ballot_round_1 1"] = 46
-
-snapshots["test_ab_list_ballot_round_1 2"] = 30
-
-snapshots["test_ab_list_ballots_round_2 1"] = 122
-
-snapshots["test_ab_list_ballots_round_2 2"] = 16
-
 snapshots[
     "test_ballots_human_sort_order 1"
 ] = """Batch Name,Ballot Number,Ticket Numbers,Already Audited,Audit Board
@@ -419,12 +411,4 @@ snapshots[
 3,121,0.178384032450647531,Y,Audit Board #3
 """
 
-snapshots["test_ja_ballots_before_audit_boards_set_up 1"] = 76
-
 snapshots["test_ja_ballots_count 1"] = {"count": 76}
-
-snapshots["test_ja_ballots_round_1 1"] = 76
-
-snapshots["test_ja_ballots_round_2 1"] = 201
-
-snapshots["test_ja_ballots_round_2 2"] = 28

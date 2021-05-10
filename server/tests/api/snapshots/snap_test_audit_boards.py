@@ -7,4 +7,4 @@ from snapshottest import Snapshot
 
 snapshots = Snapshot()
 
-snapshots["test_audit_boards_create_two 1"] = 80
+snapshots["test_audit_boards_create_round_2 1"] = 248
