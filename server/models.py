@@ -485,7 +485,9 @@ class AuditBoard(BaseModel):
     )
     jurisdiction = relationship("Jurisdiction", back_populates="audit_boards")
 
-    round_id = Column(String(200), ForeignKey("round.id", ondelete="cascade"))
+    round_id = Column(
+        String(200), ForeignKey("round.id", ondelete="cascade"), nullable=False
+    )
     round = relationship("Round", back_populates="audit_boards")
 
     name = Column(String(200))
@@ -518,7 +520,7 @@ class Round(BaseModel):
     ended_at = Column(UTCDateTime)
 
     draw_sample_task_id = Column(
-        String(200), ForeignKey("background_task.id", ondelete="cascade")
+        String(200), ForeignKey("background_task.id", ondelete="set null")
     )
     draw_sample_task = relationship("BackgroundTask")
 
