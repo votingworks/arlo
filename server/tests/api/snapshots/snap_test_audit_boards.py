@@ -48,3 +48,36 @@ snapshots["test_audit_boards_list_round_2 1"] = [
         "name": "Audit Board #3",
     },
 ]
+
+snapshots["test_audit_boards_list_two 1"] = [
+    {
+        "currentRoundStatus": {"numAuditedBallots": 0, "numSampledBallots": 46},
+        "name": "Audit Board #1",
+    },
+    {
+        "currentRoundStatus": {"numAuditedBallots": 0, "numSampledBallots": 30},
+        "name": "Audit Board #2",
+    },
+]
+
+snapshots["test_audit_boards_list_two 2"] = [
+    {
+        "currentRoundStatus": {"numAuditedBallots": 10, "numSampledBallots": 46},
+        "name": "Audit Board #1",
+    },
+    {
+        "currentRoundStatus": {"numAuditedBallots": 20, "numSampledBallots": 30},
+        "name": "Audit Board #2",
+    },
+]
+
+snapshots["test_audit_boards_list_two 3"] = [
+    {
+        "currentRoundStatus": {"numAuditedBallots": 46, "numSampledBallots": 46},
+        "name": "Audit Board #1",
+    },
+    {
+        "currentRoundStatus": {"numAuditedBallots": 20, "numSampledBallots": 30},
+        "name": "Audit Board #2",
+    },
+]
