@@ -186,7 +186,8 @@ export const jaApiCalls = {
     response: { auditBoards },
   }),
   getBallots: (ballots: IBallot[]) => ({
-    url: '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/ballots',
+    url:
+      '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/ballots?offset=0&limit=2000',
     response: { ballots },
   }),
   getBallotCount: (ballots: IBallot[]) => ({

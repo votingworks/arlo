@@ -304,7 +304,9 @@ describe('Progress screen', () => {
     const expectedCalls = [
       jaApiCalls.getAuditBoards(auditBoardMocks.unfinished),
       jaApiCalls.getBallotCount(dummyBallots.ballots),
+      jaApiCalls.getBallotCount(dummyBallots.ballots),
       jaApiCalls.getBallots(dummyBallots.ballots),
+      jaApiCalls.getBallotCount(dummyBallots.ballots),
       jaApiCalls.getBallots(dummyBallots.ballots),
     ]
     await withMockFetch(expectedCalls, async () => {

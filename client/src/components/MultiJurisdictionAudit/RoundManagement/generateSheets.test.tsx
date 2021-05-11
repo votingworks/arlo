@@ -34,8 +34,12 @@ window.URL.createObjectURL = jest.fn()
 
 const apiCalls = {
   getBallots: {
-    url: `/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/ballots`,
+    url: `/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/ballots?offset=0&limit=2000`,
     response: dummyBallots,
+  },
+  getBallotsCount: {
+    url: `/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/ballots?count=true`,
+    response: { count: dummyBallots.ballots.length },
   },
 }
 
@@ -44,7 +48,7 @@ describe('generateSheets', () => {
 
   describe('downloadLabels', () => {
     it('generates label sheets', async () => {
-      const expectedCalls = [apiCalls.getBallots]
+      const expectedCalls = [apiCalls.getBallotsCount, apiCalls.getBallots]
       await withMockFetch(expectedCalls, async () => {
         const pdf = await downloadLabels(
           mockJurisdiction.election.id,
@@ -63,6 +67,7 @@ describe('generateSheets', () => {
 
     it('generates label sheets for ballot comparison audits', async () => {
       const expectedCalls = [
+        apiCalls.getBallotsCount,
         {
           ...apiCalls.getBallots,
           response: {
@@ -91,6 +96,7 @@ describe('generateSheets', () => {
 
     it('does nothing with no ballots', async () => {
       const expectedCalls = [
+        apiCalls.getBallotsCount,
         { ...apiCalls.getBallots, response: { ballots: [] } },
       ]
       await withMockFetch(expectedCalls, async () => {
@@ -111,6 +117,7 @@ describe('generateSheets', () => {
     jest.setTimeout(10000)
     it('generates placeholder sheets', async () => {
       const expectedCalls = [
+        apiCalls.getBallotsCount,
         {
           ...apiCalls.getBallots,
           // Test times out with too many ballots cuz the placeholder image is so large
@@ -135,6 +142,7 @@ describe('generateSheets', () => {
 
     it('generates placeholder sheets for ballot comparison audits', async () => {
       const expectedCalls = [
+        apiCalls.getBallotsCount,
         {
           ...apiCalls.getBallots,
           // Test times out with too many ballots cuz the placeholder image is so large
@@ -166,6 +174,7 @@ describe('generateSheets', () => {
 
     it('does nothing with no ballots', async () => {
       const expectedCalls = [
+        apiCalls.getBallotsCount,
         { ...apiCalls.getBallots, response: { ballots: [] } },
       ]
       await withMockFetch(expectedCalls, async () => {
