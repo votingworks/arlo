@@ -29,7 +29,6 @@ const getBallotCount = async (
   return response && response.count
 }
 
-// TODO add pagination to this endpoint and yield a continuous stream of ballots
 export const getBallots = async (
   electionId: string,
   jurisdictionId: string,
