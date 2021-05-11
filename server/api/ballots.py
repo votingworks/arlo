@@ -199,6 +199,9 @@ def list_ballots_for_jurisdiction(
         )
         return jsonify({"count": count})
 
+    offset = request.args.get("offset", type=int) if request.args.get("offset") else 0
+    limit = request.args.get("limit", type=int) if request.args.get("limit") else 0
+
     ballots = (
         SampledBallot.query.join(Batch)
         .filter_by(jurisdiction_id=jurisdiction.id)
@@ -229,6 +232,10 @@ def list_ballots_for_jurisdiction(
         )
         .all()
     )
+    # limit and offset is not giving expected results
+    # as it applies them before grouping hence using this method
+    if limit != 0:
+        ballots = ballots[offset:limit]
     json_ballots = [
         serialize_ballot(ballot, AuditType(election.audit_type), imprinted_id)
         for ballot, imprinted_id in ballots

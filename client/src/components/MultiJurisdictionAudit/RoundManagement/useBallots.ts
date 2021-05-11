@@ -18,18 +18,6 @@ export interface IBallot {
   imprintedId?: string
 }
 
-// TODO add pagination to this endpoint and yield a continuous stream of ballots
-export const getBallots = async (
-  electionId: string,
-  jurisdictionId: string,
-  roundId: string
-) => {
-  const response = await api<{ ballots: IBallot[] }>(
-    `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/ballots`
-  )
-  return response && response.ballots
-}
-
 const getBallotCount = async (
   electionId: string,
   jurisdictionId: string,
@@ -39,6 +27,30 @@ const getBallotCount = async (
     `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/ballots?count=true`
   )
   return response && response.count
+}
+
+// TODO add pagination to this endpoint and yield a continuous stream of ballots
+export const getBallots = async (
+  electionId: string,
+  jurisdictionId: string,
+  roundId: string
+) => {
+  const total = await getBallotCount(electionId, jurisdictionId, roundId)
+  const totalBallots = total || 0
+  const threshold = 2000
+  const count = Math.ceil(totalBallots / threshold)
+  const response = []
+  for (let index = 1; index <= count; index += 1) {
+    const offset = threshold * index - threshold
+    const limit = threshold * index
+    // eslint-disable-next-line no-await-in-loop
+    const ballotsResponse = await api<{ ballots: IBallot[] }>(
+      `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/ballots?offset=${offset}&limit=${limit}`
+    )
+    response.push(...ballotsResponse!.ballots)
+  }
+
+  return response
 }
 
 const useBallotCount = (
