@@ -135,11 +135,9 @@ export const downloadAuditBoardCredentials = async (
       const url = qr.toDataURL()
       auditBoardCreds.setFont('Helvetica', '', 'bold')
       auditBoardCreds.setFontSize(22)
-      // auditBoardCreds.setFontStyle('bold')
       auditBoardCreds.text(board.name, 20, 20)
       auditBoardCreds.setFont('Helvetica', '', 'normal')
       auditBoardCreds.setFontSize(14)
-      // auditBoardCreds.setFontStyle('normal')
       auditBoardCreds.text(
         'Scan this QR code to enter the votes you see on your assigned ballots.',
         20,
