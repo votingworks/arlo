@@ -15,7 +15,7 @@ export const useConfirm = () => {
   // On close, we set options to null.
   const [options, setOptions] = useState<IConfirmOptions | null>(null)
 
-  const confirm = (newOptions: IConfirmOptions | null) => {
+  const confirm = (newOptions: IConfirmOptions) => {
     setOptions(newOptions)
   }
 

@@ -83,6 +83,8 @@ describe('Confirm component', () => {
 
     userEvent.click(within(dialog).getByRole('button', { name: 'Yes' }))
 
+    expect(onYesClickMock).toHaveBeenCalled()
+
     await waitFor(() => {
       expect(
         screen.queryByText(
