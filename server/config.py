@@ -160,6 +160,8 @@ MINERVA_MULTIPLE = setup_minerva()
 
 SENTRY_DSN = os.environ.get("SENTRY_DSN")
 
+SLACK_WEBHOOK_URL = os.environ.get("SLACK_WEBHOOK_URL")
+
 RUN_BACKGROUND_TASKS_IMMEDIATELY = bool(
     os.environ.get("RUN_BACKGROUND_TASKS_IMMEDIATELY")
 )

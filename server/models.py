@@ -845,6 +845,17 @@ class BackgroundTask(BaseModel):
     error = Column(Text)
 
 
+class ActivityLogRecord(BaseModel):
+    id = Column(String(200), primary_key=True)
+    organization_id = Column(
+        String(200), ForeignKey("organization.id", ondelete="cascade"), nullable=False
+    )
+    activity_name = Column(String(200), nullable=False)
+    info = Column(JSON, nullable=False)
+
+    posted_to_slack_at = Column(UTCDateTime)
+
+
 class ProcessingStatus(str, enum.Enum):
     READY_TO_PROCESS = "READY_TO_PROCESS"
     PROCESSING = "PROCESSING"

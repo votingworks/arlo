@@ -8,6 +8,7 @@ from ..models import *  # pylint: disable=wildcard-import
 from ..database import db_session
 from ..auth import check_access, UserType, restrict_access
 from ..util.jsonschema import JSONDict, validate
+from ..activity_log import activity_log
 
 ELECTION_SCHEMA = {
     "type": "object",
@@ -79,6 +80,17 @@ def create_election():
     check_access([UserType.AUDIT_ADMIN], election)
 
     db_session.add(election)
+
+    organization = Organization.query.get(election.organization_id)
+    activity_log.record_activity(
+        activity_log.CreateAudit(
+            organization_id=election.organization_id,
+            organization_name=organization.name,
+            election_id=election.id,
+            audit_name=election.audit_name,
+            audit_type=election.audit_type,
+        )
+    )
 
     db_session.commit()
 
