@@ -29,8 +29,9 @@ def watch_and_send_slack_notifications():
                 activity_log, record.activity_name
             )
             message = ActivityClass(**record.info).slack_message(record.created_at)
+            print(message)
 
-            rv = requests.post(SLACK_WEBHOOK_URL, json=dict(text=message))
+            rv = requests.post(SLACK_WEBHOOK_URL, json=message)
             if rv.status_code != 200:
                 raise Exception(f"Error posting record {record.id}:\n\n{rv.text}")
 
