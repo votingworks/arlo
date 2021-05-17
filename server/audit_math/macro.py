@@ -160,7 +160,6 @@ def get_sample_sizes(
     contest: Contest,
     reported_results: Dict[Any, Dict[str, Dict[str, int]]],
     sample_results: Dict[Any, Dict[str, Dict[str, int]]],
-    times_sampled: Dict[Any, int],
 ) -> int:
     """
     Computes initial sample sizes parameterized by likelihood that the
@@ -186,8 +185,6 @@ def get_sample_sizes(
         sample_results - if a sample has already been drawn, this will
                          contain its results, of the same form as
                          reported_results
-        times_sampled - a mapping from batch id to the number of times the batch
-                        was sampled
 
     Outputs:
         samples - dictionary mapping confirmation likelihood to sample size:

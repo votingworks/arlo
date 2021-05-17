@@ -168,10 +168,9 @@ def test_get_sizes_extra_contests(contests, batches):
 
     # This should give us zeros for error
     sample = {}
-    times_sampled = {}
     for contest in contests:
         computed = macro.get_sample_sizes(
-            RISK_LIMIT, contests[contest], batches, sample, times_sampled
+            RISK_LIMIT, contests[contest], batches, sample
         )
 
         assert (
@@ -192,7 +191,7 @@ def test_get_sample_sizes(contests, batches):
     times_sampled = {}
     for contest in contests:
         computed = macro.get_sample_sizes(
-            RISK_LIMIT, contests[contest], batches, sample, times_sampled
+            RISK_LIMIT, contests[contest], batches, sample
         )
 
         assert (
@@ -218,7 +217,7 @@ def test_get_sample_sizes(contests, batches):
 
     for contest in contests:
         computed = macro.get_sample_sizes(
-            RISK_LIMIT, contests[contest], batches, sample, times_sampled
+            RISK_LIMIT, contests[contest], batches, sample
         )
 
         assert (
@@ -244,7 +243,7 @@ def test_get_sample_sizes(contests, batches):
 
     for contest in contests:
         computed = macro.get_sample_sizes(
-            RISK_LIMIT, contests[contest], batches, sample, times_sampled
+            RISK_LIMIT, contests[contest], batches, sample
         )
 
         assert (
@@ -261,9 +260,7 @@ def test_full_recount(contests, batches):
     for contest in contests:
 
         with pytest.raises(ValueError, match=r"All ballots have already been counted!"):
-            macro.get_sample_sizes(
-                RISK_LIMIT, contests[contest], batches, sample, times_sampled
-            )
+            macro.get_sample_sizes(RISK_LIMIT, contests[contest], batches, sample)
 
         computed_p, result = macro.compute_risk(
             RISK_LIMIT, contests[contest], batches, sample, times_sampled
@@ -291,10 +288,9 @@ def test_almost_done():
     batches = {"Batch 1": {"test1": {"winner": 600, "loser": 400}}}
 
     sample = {"Batch 1": {"test1": {"winner": 500, "loser": 500}}}
-    times_sampled = {"Batch 1": 1}
 
     with pytest.raises(ValueError, match=r"All ballots have already been counted!"):
-        macro.get_sample_sizes(RISK_LIMIT, contest, batches, sample, times_sampled)
+        macro.get_sample_sizes(RISK_LIMIT, contest, batches, sample)
 
 
 def test_worst_case():
@@ -391,9 +387,7 @@ def test_tied_contest():
     sample_results = {}
     times_sampled = {}
 
-    sample_size = macro.get_sample_sizes(
-        RISK_LIMIT, contest, batches, sample_results, times_sampled
-    )
+    sample_size = macro.get_sample_sizes(RISK_LIMIT, contest, batches, sample_results)
 
     assert sample_size == len(batches)
 
@@ -454,9 +448,7 @@ def test_close_contest():
     sample_results = {}
     times_sampled = {}
 
-    sample_size = macro.get_sample_sizes(
-        RISK_LIMIT, contest, batches, sample_results, times_sampled
-    )
+    sample_size = macro.get_sample_sizes(RISK_LIMIT, contest, batches, sample_results)
 
     assert sample_size == len(batches)
 
