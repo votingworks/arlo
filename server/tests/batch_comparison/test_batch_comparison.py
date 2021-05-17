@@ -321,8 +321,7 @@ def test_batch_comparison_round_2(
 
     # Record results for the second jurisdiction
     batch_results = {
-        batch["id"]: {choice_ids[0]: 400, choice_ids[1]: 50, choice_ids[2]: 40,}
-        for batch in batches
+        batches[0]["id"]: {choice_ids[0]: 100, choice_ids[1]: 100, choice_ids[2]: 40,}
     }
 
     rv = put_json(
@@ -359,7 +358,7 @@ def test_batch_comparison_round_2(
 
     # Check that we automatically select the sample size
     batch_draws = SampledBatchDraw.query.filter_by(round_id=rounds[1]["id"]).all()
-    assert len(batch_draws) == 4
+    assert len(batch_draws) == 5
 
     # Check that we're sampling batches from the jurisdiction that uploaded manifests
     sampled_jurisdictions = {draw.batch.jurisdiction_id for draw in batch_draws}

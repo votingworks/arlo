@@ -176,9 +176,7 @@ def batch_tallies(election: Election) -> BatchTallies:
     }
 
 
-def sampled_batch_results(
-    election: Election,
-) -> Tuple[BatchTallies, Dict[Tuple[str, str], int]]:
+def sampled_batch_results(election: Election,) -> BatchTallies:
     results_by_batch_and_choice = (
         Batch.query.join(Jurisdiction)
         .filter_by(election_id=election.id)
@@ -207,7 +205,7 @@ def sampled_batch_results(
     # We only support one contest for batch audits
     assert len(list(election.contests)) == 1
     contest_id = list(election.contests)[0].id
-    batch_results = {
+    return {
         batch_key: {
             contest_id: {
                 choice_id: result for (_, _, choice_id, result) in batch_results
@@ -216,6 +214,8 @@ def sampled_batch_results(
         for batch_key, batch_results in results_by_batch.items()
     }
 
+
+def batches_times_sampled(election: Election) -> Dict[Tuple[str, str], int]:
     sampled_batch_draw_counts = (
         SampledBatchDraw.query.join(Batch)
         .join(Jurisdiction)
@@ -225,12 +225,10 @@ def sampled_batch_results(
             Jurisdiction.name, Batch.name, func.count(SampledBatchDraw.ticket_number)
         )
     )
-    times_sampled = {
+    return {
         (jurisdiction_name, batch_name): count
         for jurisdiction_name, batch_name, count in sampled_batch_draw_counts
     }
-
-    return batch_results, times_sampled
 
 
 def round_sizes(contest: Contest) -> Dict[int, int]:
@@ -432,13 +430,12 @@ def calculate_risk_measurements(election: Election, round: Round):
             )
             p_value = max(p_values.values())
         elif election.audit_type == AuditType.BATCH_COMPARISON:
-            batch_results, times_sampled = sampled_batch_results(election)
             p_value, is_complete = macro.compute_risk(
                 election.risk_limit,
                 sampler_contest.from_db_contest(contest),
                 batch_tallies(election),
-                batch_results,
-                times_sampled,
+                sampled_batch_results(election),
+                batches_times_sampled(election),
             )
         elif election.audit_type == AuditType.BALLOT_COMPARISON:
             p_value, is_complete = supersimple.compute_risk(

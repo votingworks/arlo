@@ -35,7 +35,7 @@ J1,Batch 10,"Round 1: 0.772049767819343419, 0.875085546411266410",No,candidate 1
 """
 
 snapshots["test_record_batch_results 1"] = {
-    "Contest 1 - candidate 1": 1800,
-    "Contest 1 - candidate 2": 300,
-    "Contest 1 - candidate 3": 240,
+    "Contest 1 - candidate 1": 910,
+    "Contest 1 - candidate 2": 200,
+    "Contest 1 - candidate 3": 160,
 }

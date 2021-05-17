@@ -162,7 +162,7 @@ def test_record_batch_results(
     results = {
         batches[0]["id"]: {choice_ids[0]: 400, choice_ids[1]: 50, choice_ids[2]: 40,},
         batches[1]["id"]: {choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 40,},
-        batches[2]["id"]: {choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 40,},
+        batches[2]["id"]: {choice_ids[0]: 10, choice_ids[1]: 50, choice_ids[2]: 40,},
     }
 
     rv = put_json(
