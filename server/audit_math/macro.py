@@ -160,6 +160,7 @@ def get_sample_sizes(
     contest: Contest,
     reported_results: Dict[Any, Dict[str, Dict[str, int]]],
     sample_results: Dict[Any, Dict[str, Dict[str, int]]],
+    times_sampled: Dict[Any, int],
 ) -> int:
     """
     Computes initial sample sizes parameterized by likelihood that the
@@ -185,6 +186,8 @@ def get_sample_sizes(
         sample_results - if a sample has already been drawn, this will
                          contain its results, of the same form as
                          reported_results
+        times_sampled - a mapping from batch id to the number of times the batch
+                        was sampled
 
     Outputs:
         samples - dictionary mapping confirmation likelihood to sample size:
@@ -230,6 +233,7 @@ def compute_risk(
     contest: Contest,
     reported_results: Dict[Any, Dict[str, Dict[str, int]]],
     sample_results: Dict[Any, Dict[str, Dict[str, int]]],
+    times_sampled: Dict[Any, int],
 ) -> Tuple[float, bool]:
     """
     Computes the risk-value of <sample_results> based on results in <contest>.
@@ -253,6 +257,8 @@ def compute_risk(
         sample_results - if a sample has already been drawn, this will
                          contain its results, of the same form as
                          reported_results
+        times_sampled - a mapping from batch id to the number of times the batch
+                        was sampled
     Outputs:
         measurements    - the p-value of the hypotheses that the election
                           result is correct based on the sample for each
@@ -285,7 +291,7 @@ def compute_risk(
         if taint == 1:
             p = Decimal("inf")  # Our p-value blows up
         else:
-            p *= (1 - 1 / U) / (1 - taint)
+            p *= ((1 - 1 / U) / (1 - taint)) ** times_sampled[batch]
 
         if p <= alpha:
             return float(p), True
