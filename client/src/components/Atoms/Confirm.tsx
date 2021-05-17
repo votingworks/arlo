@@ -1,7 +1,7 @@
 import React, { useState, ReactNode } from 'react'
 import { Dialog, Classes, Button, Intent } from '@blueprintjs/core'
 
-interface IConfirmOptions {
+export interface IConfirmOptions {
   title: ReactNode
   description: ReactNode
   yesButtonLabel?: string
