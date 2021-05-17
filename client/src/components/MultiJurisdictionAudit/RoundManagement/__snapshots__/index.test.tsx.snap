@@ -1430,64 +1430,6 @@ exports[`RoundManagement renders links & data entry with batch audit 1`] = `
             Retrieval List
           </span>
         </button>
-        <button
-          class="bp3-button"
-          type="button"
-        >
-          <span
-            class="bp3-icon bp3-icon-document"
-            icon="document"
-          >
-            <svg
-              data-icon="document"
-              height="16"
-              viewBox="0 0 16 16"
-              width="16"
-            >
-              <desc>
-                document
-              </desc>
-              <path
-                d="M9 0H3c-.55 0-1 .45-1 1v14c0 .55.45 1 1 1h10c.55 0 1-.45 1-1V5L9 0zm3 14H4V2h4v4h4v8z"
-                fill-rule="evenodd"
-              />
-            </svg>
-          </span>
-          <span
-            class="bp3-button-text"
-          >
-            Download Placeholder Sheets
-          </span>
-        </button>
-        <button
-          class="bp3-button"
-          type="button"
-        >
-          <span
-            class="bp3-icon bp3-icon-label"
-            icon="label"
-          >
-            <svg
-              data-icon="label"
-              height="16"
-              viewBox="0 0 16 16"
-              width="16"
-            >
-              <desc>
-                label
-              </desc>
-              <path
-                d="M11 2H1c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h14c.55 0 1-.45 1-1V7l-5-5zm3 10H2V4h8v2H3v1h7v1h4v4zm-3-5V4l3 3h-3zm-8 3h10V9H3v1z"
-                fill-rule="evenodd"
-              />
-            </svg>
-          </span>
-          <span
-            class="bp3-button-text"
-          >
-            Download Ballot Labels
-          </span>
-        </button>
       </div>
     </div>
     <div

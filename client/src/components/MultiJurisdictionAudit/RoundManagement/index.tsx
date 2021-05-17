@@ -168,49 +168,53 @@ export const JAFileDownloadButtons = ({
       {auditSettings.auditType === 'BATCH_COMPARISON' ? 'Batch' : 'Ballot'}{' '}
       Retrieval List
     </Button>
-    <AsyncButton
-      icon="document"
-      onClick={() =>
-        downloadPlaceholders(
-          electionId,
-          jurisdictionId,
-          round,
-          jurisdictionName,
-          auditSettings.auditName
-        )
-      }
-    >
-      Download Placeholder Sheets
-    </AsyncButton>
-    <AsyncButton
-      icon="label"
-      onClick={() =>
-        downloadLabels(
-          electionId,
-          jurisdictionId,
-          round,
-          jurisdictionName,
-          auditSettings.auditName
-        )
-      }
-    >
-      Download Ballot Labels
-    </AsyncButton>
-    {auditSettings.online && (
+    {auditSettings.auditType !== 'BATCH_COMPARISON' && (
       <>
         <AsyncButton
-          icon="key"
+          icon="document"
           onClick={() =>
-            downloadAuditBoardCredentials(
-              auditBoards,
+            downloadPlaceholders(
+              electionId,
+              jurisdictionId,
+              round,
               jurisdictionName,
               auditSettings.auditName
             )
           }
         >
-          Download Audit Board Credentials
+          Download Placeholder Sheets
         </AsyncButton>
-        <QRs passphrases={auditBoards.map(b => b.passphrase)} />
+        <AsyncButton
+          icon="label"
+          onClick={() =>
+            downloadLabels(
+              electionId,
+              jurisdictionId,
+              round,
+              jurisdictionName,
+              auditSettings.auditName
+            )
+          }
+        >
+          Download Ballot Labels
+        </AsyncButton>
+        {auditSettings.online && (
+          <>
+            <AsyncButton
+              icon="key"
+              onClick={() =>
+                downloadAuditBoardCredentials(
+                  auditBoards,
+                  jurisdictionName,
+                  auditSettings.auditName
+                )
+              }
+            >
+              Download Audit Board Credentials
+            </AsyncButton>
+            <QRs passphrases={auditBoards.map(b => b.passphrase)} />
+          </>
+        )}
       </>
     )}
   </ButtonGroup>
