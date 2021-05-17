@@ -152,7 +152,7 @@ def draw_ppeb_sample(
         )
 
         # Trim the ticket number
-        ticket = ticket[:18]
+        ticket = consistent_sampler.trim(ticket, 18)  # type: ignore
 
         # I can't seem tomake mypy realize the tuple is what we expect
         sample_tuples.append((ticket, batch_tuple))  # type: ignore
