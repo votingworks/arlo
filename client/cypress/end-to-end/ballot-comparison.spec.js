@@ -232,22 +232,32 @@ describe('Ballot Comparison Test Cases', () => {
         .siblings('input')
         .type('Board Member 2')
       cy.findByText('Next').click()
-      cy.contains(/Ballot Cards to Audit/)
-      cy.findByText('Start Auditing').click()
+      cy.contains('Ballots for Audit Board #1')
+
+      // button name when no ballots are audited
+      cy.findByText('Audit First Ballot').click()
 
       // submit empty ballot review
       cy.findByText('Review').click()
       cy.findByText('Submit & Next Ballot').click()
       cy.findAndCloseToast('Must include an interpretation for each contest.')
+      cy.get('input[type="checkbox"]')
+        .first()
+        .click({ force: true })
+      cy.findByText('Review').click()
+      cy.findByText('Submit & Next Ballot').click()
+      cy.findByText(/Auditing ballot 3 of/)
+      cy.findByText('Return to audit overview').click()
     })
 
+    cy.contains('Ballots for Audit Board #1')
+
     // audit all ballots
-    cy.findByText('Return to audit overview').click()
-    cy.contains(/Ballot Cards to Audit/)
     cy.get('table tbody tr').each(($el, index, list) => {
       // iterate through exactly the number of ballots available to avoid conditions
       if (index == 0) {
-        cy.findByText('Start Auditing').click()
+        // button name when some ballots are audited
+        cy.findByText('Audit Next Ballot').click()
       }
       cy.get('input[type="checkbox"]')
         .first()
@@ -255,8 +265,22 @@ describe('Ballot Comparison Test Cases', () => {
       cy.findByText('Review').click()
       cy.findByText('Submit & Next Ballot').click()
     })
-    cy.wait(100)
-    cy.findByText('Auditing Complete - Submit Results').click()
+    cy.contains('Ballots for Audit Board #1')
+
+    // test Re-Audit button
+    cy.findAllByText('Re-Audit').first().click()
+    cy.get('input[type="checkbox"]')
+        .first()
+        .click({ force: true })
+    cy.findByText('Review').click()
+    cy.findByText('Submit & Next Ballot').click()
+    cy.findByText('Return to audit overview').click()
+
+    cy.contains('Ballots for Audit Board #1')
+    cy.findAllByText('Submit Audited Ballots').spread((firstButton, secondButton) => {
+      // assert bottom submit button
+      secondButton.click()
+    })
 
     // input wrong audit board member name in signoff
     cy.findAllByText('Audit Board Member: Board Member 1')
