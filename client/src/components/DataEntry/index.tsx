@@ -261,47 +261,45 @@ const DataEntry: React.FC = () => {
 
   return (
     <Wrapper>
-      <PaddedInner>
-        <Switch>
-          <Route
-            exact
-            path="/election/:electionId/audit-board/:auditBoardId"
-            render={({ match: { url: routeURL } }) => (
-              <BoardTable
-                boardName={auditBoard.name}
-                ballots={ballots}
-                url={routeURL}
-              />
-            )}
-          />
-          <Route
-            path={`${url}/batch/:batchId/ballot/:ballotPosition`}
-            render={({
-              match: {
-                params: { batchId, ballotPosition },
-              },
-            }) => (
-              <Ballot
-                home={url}
-                previousBallot={previousBallot(batchId, Number(ballotPosition))}
-                nextBallot={nextBallot(batchId, Number(ballotPosition))}
-                submitBallot={submitBallot}
-                contests={contests}
-                batchId={batchId}
-                ballotPosition={Number(ballotPosition)}
-                ballots={ballots}
-                boardName={auditBoard.name}
-              />
-            )}
-          />
-          <Route
-            path={`${url}/signoff`}
-            render={() => (
-              <SignOff auditBoard={auditBoard} submitSignoff={submitSignoff} />
-            )}
-          />
-        </Switch>
-      </PaddedInner>
+      <Switch>
+        <Route
+          exact
+          path="/election/:electionId/audit-board/:auditBoardId"
+          render={({ match: { url: routeURL } }) => (
+            <BoardTable
+              boardName={auditBoard.name}
+              ballots={ballots}
+              url={routeURL}
+            />
+          )}
+        />
+        <Route
+          path={`${url}/batch/:batchId/ballot/:ballotPosition`}
+          render={({
+            match: {
+              params: { batchId, ballotPosition },
+            },
+          }) => (
+            <Ballot
+              home={url}
+              previousBallot={previousBallot(batchId, Number(ballotPosition))}
+              nextBallot={nextBallot(batchId, Number(ballotPosition))}
+              submitBallot={submitBallot}
+              contests={contests}
+              batchId={batchId}
+              ballotPosition={Number(ballotPosition)}
+              ballots={ballots}
+              boardName={auditBoard.name}
+            />
+          )}
+        />
+        <Route
+          path={`${url}/signoff`}
+          render={() => (
+            <SignOff auditBoard={auditBoard} submitSignoff={submitSignoff} />
+          )}
+        />
+      </Switch>
     </Wrapper>
   )
 }

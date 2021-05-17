@@ -54,6 +54,18 @@ const Nav = styled(Navbar)`
   }
 `
 
+const AuditBoardNav = styled(Navbar)`
+  background-color: #000000;
+  width: 100%;
+  height: auto;
+  padding: 0;
+  color: #ffffff;
+  .bp3-navbar-heading img {
+    height: 35px;
+    padding-top: 5px;
+  }
+`
+
 const UserMenu = styled.div`
   .bp3-button {
     border: 1px solid ${Colors.GRAY4};
@@ -71,6 +83,19 @@ const UserMenu = styled.div`
 
 const InnerBar = styled(Inner)`
   display: inherit;
+`
+
+const AuditBoardInnerBar = styled(Inner)`
+  justify-content: space-between;
+  .members-name {
+    margin-bottom: 0;
+  }
+`
+
+const NavbarGroupAuditBoardLink = styled(NavbarGroup)`
+  a {
+    color: #ffffff;
+  }
 `
 
 interface TParams {
@@ -117,7 +142,7 @@ const Header: React.FC<{}> = () => {
           </InnerBar>
         </SupportBar>
       )}
-      {!supportMatch && (
+      {!supportMatch && auth && auth.user && auth.user.type !== 'audit_board' && (
         <Nav>
           <InnerBar>
             <NavbarGroup align={Alignment.LEFT}>
@@ -170,9 +195,7 @@ const Header: React.FC<{}> = () => {
                     fill
                   >
                     <Button icon="user" minimal>
-                      {auth.user.type === 'audit_board'
-                        ? auth.user.name
-                        : auth.user.email}
+                      {auth.user.email}
                     </Button>
                   </Popover>
                 </UserMenu>
@@ -180,6 +203,30 @@ const Header: React.FC<{}> = () => {
             )}
           </InnerBar>
         </Nav>
+      )}
+      {auth && auth.user && auth.user.type === 'audit_board' && (
+        <AuditBoardNav>
+          <AuditBoardInnerBar>
+            <NavbarGroup>
+              <NavbarHeading>
+                <Link to="/">
+                  <img src="/arlo.png" alt="Arlo, by VotingWorks" />
+                </Link>
+              </NavbarHeading>
+            </NavbarGroup>
+            <NavbarGroup>
+              <p className="members-name">
+                {auth.user.name} :{' '}
+                <strong>
+                  {auth.user.members.map(member => member.name).join(', ')}
+                </strong>
+              </p>
+            </NavbarGroup>
+            <NavbarGroupAuditBoardLink>
+              <Link to="/auth/logout">Sign Out</Link>
+            </NavbarGroupAuditBoardLink>
+          </AuditBoardInnerBar>
+        </AuditBoardNav>
       )}
     </>
   )

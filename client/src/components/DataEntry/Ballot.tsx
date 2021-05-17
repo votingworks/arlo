@@ -11,6 +11,7 @@ import {
   IContest,
 } from '../../types'
 import { BallotRow, FlushDivider } from './Atoms'
+import { Inner } from '../Atoms/Wrapper'
 import { IBallot } from '../MultiJurisdictionAudit/RoundManagement/useBallots'
 import { hashBy } from '../../utils/array'
 
@@ -21,6 +22,10 @@ const TopH1 = styled(H1)`
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
+`
+
+const PaddedInner = styled(Inner)`
+  padding-top: 30px;
 `
 
 const MainCallout = styled(Callout)`
@@ -99,74 +104,76 @@ const Ballot: React.FC<IProps> = ({
   return !ballot ? (
     <Redirect to={home} />
   ) : (
-    <Wrapper>
-      <TopH1>{boardName}: Ballot Card Data Entry</TopH1>
-      <H3>Enter Ballot Information</H3>
-      <MainCallout icon={null}>
-        Auditing ballot {ballotIx + 1} of {ballots.length}
-      </MainCallout>
-      <BallotRow>
-        <div className="ballot-side">
-          <H4>Current ballot:</H4>
-          {ballot.batch.container && (
-            <div>Container: {ballot.batch.container}</div>
-          )}
-          {ballot.batch.tabulator && (
-            <div>Tabulator: {ballot.batch.tabulator}</div>
-          )}
-          <div>Batch: {ballot.batch.name}</div>
-          <div>Record/Position: {ballot.position}</div>
-          {ballot.imprintedId !== undefined && (
-            <div>Imprinted ID: {ballot.imprintedId}</div>
-          )}
-        </div>
-        <FlushDivider />
-        <div className="ballot-main">
-          <H4>Are you looking at the correct ballot?</H4>
-          <p>
-            Before continuing, check the &quot;Current ballot&quot; information
-            to make sure you are entering data for the correct ballot. If the
-            ballot could not be found, click &quot;Ballot not found&quot; below
-            and move on to the next ballot.
-          </p>
-          <p>
-            <Button onClick={submitNotFound} intent="danger">
-              Ballot {ballotPosition} not found - move to next ballot
-            </Button>
-          </p>
-          <p>
-            <Link to={home} className="bp3-button bp3-intent-primary">
-              Return to audit overview
-            </Link>
-          </p>
-        </div>
-      </BallotRow>
-      {auditing ? (
-        <BallotAudit
-          contests={contests}
-          goReview={() => setAuditing(false)}
-          interpretations={interpretations}
-          setInterpretations={setInterpretations}
-          previousBallot={previousBallot}
-        />
-      ) : (
-        <BallotReview
-          contests={contests}
-          interpretations={interpretations}
-          goAudit={() => setAuditing(true)}
-          nextBallot={nextBallot}
-          submitBallot={ballotInterpretations =>
-            submitBallot(
-              ballot.id,
-              BallotStatus.AUDITED,
-              ballotInterpretations.filter(
-                ({ interpretation }) => interpretation !== null
+    <PaddedInner>
+      <Wrapper>
+        <TopH1>{boardName}: Ballot Card Data Entry</TopH1>
+        <H3>Enter Ballot Information</H3>
+        <MainCallout icon={null}>
+          Auditing ballot {ballotIx + 1} of {ballots.length}
+        </MainCallout>
+        <BallotRow>
+          <div className="ballot-side">
+            <H4>Current ballot:</H4>
+            {ballot.batch.container && (
+              <div>Container: {ballot.batch.container}</div>
+            )}
+            {ballot.batch.tabulator && (
+              <div>Tabulator: {ballot.batch.tabulator}</div>
+            )}
+            <div>Batch: {ballot.batch.name}</div>
+            <div>Record/Position: {ballot.position}</div>
+            {ballot.imprintedId !== undefined && (
+              <div>Imprinted ID: {ballot.imprintedId}</div>
+            )}
+          </div>
+          <FlushDivider />
+          <div className="ballot-main">
+            <H4>Are you looking at the correct ballot?</H4>
+            <p>
+              Before continuing, check the &quot;Current ballot&quot;&nbsp;
+              information to make sure you are entering data for the correct
+              ballot. If the ballot could not be found, click &quot;Ballot not
+              found&quot; below and move on to the next ballot.
+            </p>
+            <p>
+              <Button onClick={submitNotFound} intent="danger">
+                Ballot {ballotPosition} not found - move to next ballot
+              </Button>
+            </p>
+            <p>
+              <Link to={home} className="bp3-button bp3-intent-primary">
+                Return to audit overview
+              </Link>
+            </p>
+          </div>
+        </BallotRow>
+        {auditing ? (
+          <BallotAudit
+            contests={contests}
+            goReview={() => setAuditing(false)}
+            interpretations={interpretations}
+            setInterpretations={setInterpretations}
+            previousBallot={previousBallot}
+          />
+        ) : (
+          <BallotReview
+            contests={contests}
+            interpretations={interpretations}
+            goAudit={() => setAuditing(true)}
+            nextBallot={nextBallot}
+            submitBallot={ballotInterpretations =>
+              submitBallot(
+                ballot.id,
+                BallotStatus.AUDITED,
+                ballotInterpretations.filter(
+                  ({ interpretation }) => interpretation !== null
+                )
               )
-            )
-          }
-        />
-      )}
-    </Wrapper>
+            }
+          />
+        )}
+      </Wrapper>
+    </PaddedInner>
   )
 }
 
