@@ -4,7 +4,12 @@ import { Route } from 'react-router-dom'
 import userEvent from '@testing-library/user-event'
 import { renderWithRouter, withMockFetch } from '../testUtilities'
 import DataEntry from './index'
-import { dummyBoards, dummyBallots, doneDummyBallots } from './_mocks'
+import {
+  dummyBoards,
+  dummyBallots,
+  doneDummyBallots,
+  dummyBallotsNotAudited,
+} from './_mocks'
 import { contestMocks } from '../MultiJurisdictionAudit/useSetupMenuItems/_mocks'
 
 window.scrollTo = jest.fn()
@@ -65,6 +70,11 @@ const apiCalls = {
       '/api/election/1/jurisdiction/jurisdiction-1/round/round-1/audit-board/audit-board-1/ballots',
     response: dummyBallots,
   },
+  getBallotsNotAudited: {
+    url:
+      '/api/election/1/jurisdiction/jurisdiction-1/round/round-1/audit-board/audit-board-1/ballots',
+    response: dummyBallotsNotAudited,
+  },
   putAuditBallot: (ballotId: string, body: object) => ({
     url: `/api/election/1/jurisdiction/jurisdiction-1/round/round-1/audit-board/audit-board-1/ballots/${ballotId}`,
     options: {
@@ -113,7 +123,7 @@ describe('DataEntry', () => {
         await userEvent.type(nameInputs[1], `Name 2`)
         userEvent.click(screen.getByRole('button', { name: 'Next' }))
 
-        await screen.findByText('Audit Board #1: Ballot Cards to Audit')
+        await screen.findByText('Ballots for Audit Board #1')
         expect(container).toMatchSnapshot()
       })
     })
@@ -132,7 +142,28 @@ describe('DataEntry', () => {
       await withMockFetch(expectedCalls, async () => {
         const { container } = renderDataEntry()
 
-        await screen.findByText('Audit Board #1: Ballot Cards to Audit')
+        await screen.findByText('Ballots for Audit Board #1')
+        expect(container).toMatchSnapshot()
+      })
+    })
+
+    it('renders board table with not audited ballots', async () => {
+      const expectedCalls = [
+        apiCalls.getAuditBoard,
+        apiCalls.getContests,
+        apiCalls.getBallotsNotAudited,
+      ]
+      await withMockFetch(expectedCalls, async () => {
+        const { container } = renderDataEntry()
+
+        await screen.findByText('Ballots for Audit Board #1')
+        expect(screen.getByRole('button', { name: 'Audit First Ballot' }))
+        await screen.findByText('0 of 27 ballots have been audited.')
+        expect(
+          screen.getByRole('button', {
+            name: 'Submit Audited Ballots',
+          })
+        ).toBeDisabled()
         expect(container).toMatchSnapshot()
       })
     })
@@ -146,13 +177,14 @@ describe('DataEntry', () => {
       await withMockFetch(expectedCalls, async () => {
         const { container } = renderDataEntry()
 
-        await screen.findByText('Audit Board #1: Ballot Cards to Audit')
+        await screen.findByText('Ballots for Audit Board #1')
         expect(
-          screen.getByRole('button', { name: 'Start Auditing' })
+          screen.getByRole('button', { name: 'Audit Next Ballot' })
         ).toBeEnabled()
+        await screen.findByText('18 of 27 ballots have been audited.')
         expect(
           screen.getByRole('button', {
-            name: 'Auditing Complete - Submit Results',
+            name: 'Submit Audited Ballots',
           })
         ).toBeDisabled()
         expect(container).toMatchSnapshot()
@@ -277,12 +309,12 @@ describe('DataEntry', () => {
         renderDataEntry()
 
         await screen.findByRole('heading', {
-          name: 'Audit Board #1: Ballot Cards to Audit',
+          name: 'Ballots for Audit Board #1',
         })
 
         // Go to the first ballot
         userEvent.click(
-          await screen.findByRole('button', { name: 'Start Auditing' })
+          await screen.findByRole('button', { name: 'Audit Next Ballot' })
         )
         screen.getByRole('heading', {
           name: 'Audit Board #1: Ballot Card Data Entry',
@@ -342,7 +374,7 @@ describe('DataEntry', () => {
         renderDataEntry()
 
         userEvent.click(
-          await screen.findByRole('button', { name: 'Start Auditing' })
+          await screen.findByRole('button', { name: 'Audit Next Ballot' })
         )
 
         // Try selecting and then deselecting some choices

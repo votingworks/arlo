@@ -5,257 +5,261 @@ exports[`Ballot redirects if ballot does not exist 1`] = `<div />`;
 exports[`Ballot renders correctly with an audited ballot 1`] = `
 <div>
   <div
-    class="sc-chPdSV dXrGDv"
+    class="sc-chPdSV sc-kpOJdX fqbIQz"
   >
-    <h1
-      class="bp3-heading sc-kAzzGY dpovjb"
-    >
-      audit board #1
-      : Ballot Card Data Entry
-    </h1>
-    <h3
-      class="bp3-heading"
-    >
-      Enter Ballot Information
-    </h3>
     <div
-      class="bp3-callout sc-kgoBCf fqHVDn"
+      class="sc-kGXeez jkxADl"
     >
-      Auditing ballot 
-      1
-       of 
-      27
-    </div>
-    <div
-      class="sc-bwzfXH kYAzKM"
-    >
-      <div
-        class="ballot-side"
+      <h1
+        class="bp3-heading sc-kgoBCf ccmSSD"
       >
-        <h4
-          class="bp3-heading"
-        >
-          Current ballot:
-        </h4>
-        <div>
-          Tabulator: 
-          11
-        </div>
-        <div>
-          Batch: 
-          0003-04-Precinct 13 (Jonesboro Fire Department)
-        </div>
-        <div>
-          Record/Position: 
-          313
-        </div>
+        audit board #1
+        : Ballot Card Data Entry
+      </h1>
+      <h3
+        class="bp3-heading"
+      >
+        Enter Ballot Information
+      </h3>
+      <div
+        class="bp3-callout sc-dxgOiQ imJcEu"
+      >
+        Auditing ballot 
+        1
+         of 
+        27
       </div>
       <div
-        class="bp3-divider sc-bdVaJa gqVLlZ"
-      />
-      <div
-        class="ballot-main"
+        class="sc-bwzfXH kYAzKM"
       >
-        <h4
-          class="bp3-heading"
+        <div
+          class="ballot-side"
         >
-          Are you looking at the correct ballot?
-        </h4>
-        <p>
-          Before continuing, check the "Current ballot" information to make sure you are entering data for the correct ballot. If the ballot could not be found, click "Ballot not found" below and move on to the next ballot.
-        </p>
-        <p>
-          <button
-            class="bp3-button bp3-intent-danger"
-            type="button"
+          <h4
+            class="bp3-heading"
           >
-            <span
-              class="bp3-button-text"
-            >
-              Ballot 
-              313
-               not found - move to next ballot
-            </span>
-          </button>
-        </p>
-        <p>
-          <a
-            class="bp3-button bp3-intent-primary"
-            href="/election/1/audit-board/1"
-          >
-            Return to audit overview
-          </a>
-        </p>
-      </div>
-    </div>
-    <div
-      class="sc-bwzfXH kYAzKM"
-    >
-      <div
-        class="ballot-side"
-      />
-      <div
-        class="ballot-main"
-      >
-        <h4
-          class="bp3-heading"
+            Current ballot:
+          </h4>
+          <div>
+            Tabulator: 
+            11
+          </div>
+          <div>
+            Batch: 
+            0003-04-Precinct 13 (Jonesboro Fire Department)
+          </div>
+          <div>
+            Record/Position: 
+            313
+          </div>
+        </div>
+        <div
+          class="bp3-divider sc-bdVaJa gqVLlZ"
+        />
+        <div
+          class="ballot-main"
         >
-          Instructions
-        </h4>
-        <p>
-          Select 
-          <strong>
-            all
-          </strong>
-           the candidates/choices below that you see marked on the paper ballot.
-        </p>
-        <p>
-          If the voter did not vote in the contest, select "Blank vote."
-        </p>
-        <p>
-          If this contest is not shown on this ballot, select "Not on ballot."
-        </p>
-        <form>
-          <div
-            class="sc-htpNat jWiLEy"
+          <h4
+            class="bp3-heading"
           >
-            <h3
-              class="bp3-heading"
-            >
-              Contest Name
-            </h3>
-            <div
-              class="bp3-divider sc-bdVaJa gqVLlZ"
-            />
-            <label
-              class="bp3-control bp3-checkbox sc-fjdhpX cTxEvm"
-            >
-              <input
-                type="checkbox"
-              />
-              <span
-                class="undefined bp3-control-indicator"
-              >
-                <span
-                  class="checkbox-text"
-                >
-                  Choice One
-                </span>
-              </span>
-            </label>
-            <label
-              class="bp3-control bp3-checkbox sc-fjdhpX cTxEvm"
-            >
-              <input
-                type="checkbox"
-              />
-              <span
-                class="undefined bp3-control-indicator"
-              >
-                <span
-                  class="checkbox-text"
-                >
-                  Choice Two
-                </span>
-              </span>
-            </label>
-            <label
-              class="bp3-control bp3-checkbox sc-fjdhpX cTxEvm"
-            >
-              <input
-                type="checkbox"
-              />
-              <span
-                class="gray bp3-control-indicator"
-              >
-                <span
-                  class="checkbox-text"
-                >
-                  Blank vote
-                </span>
-              </span>
-            </label>
-            <label
-              class="bp3-control bp3-checkbox sc-fjdhpX cTxEvm"
-            >
-              <input
-                type="checkbox"
-              />
-              <span
-                class="gray bp3-control-indicator"
-              >
-                <span
-                  class="checkbox-text"
-                >
-                  Not on Ballot
-                </span>
-              </span>
-            </label>
+            Are you looking at the correct ballot?
+          </h4>
+          <p>
+            Before continuing, check the "Current ballot"  information to make sure you are entering data for the correct ballot. If the ballot could not be found, click "Ballot not found" below and move on to the next ballot.
+          </p>
+          <p>
             <button
-              class="bp3-button bp3-minimal"
+              class="bp3-button bp3-intent-danger"
               type="button"
             >
               <span
-                class="bp3-icon bp3-icon-edit"
-                icon="edit"
-              >
-                <svg
-                  data-icon="edit"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  width="16"
-                >
-                  <desc>
-                    edit
-                  </desc>
-                  <path
-                    d="M3.25 10.26l2.47 2.47 6.69-6.69-2.46-2.48-6.7 6.7zM.99 14.99l3.86-1.39-2.46-2.44-1.4 3.83zm12.25-14c-.48 0-.92.2-1.24.51l-1.44 1.44 2.47 2.47 1.44-1.44c.32-.32.51-.75.51-1.24.01-.95-.77-1.74-1.74-1.74z"
-                    fill-rule="evenodd"
-                  />
-                </svg>
-              </span>
-              <span
                 class="bp3-button-text"
               >
-                Remove comment
+                Ballot 
+                313
+                 not found - move to next ballot
               </span>
             </button>
-            <div
-              class="sc-gZMcBi bddzxw"
+          </p>
+          <p>
+            <a
+              class="bp3-button bp3-intent-primary"
+              href="/election/1/audit-board/1"
             >
-              <textarea
-                class="bp3-input sc-VigVT hfLuvB"
-                name="comment-Contest Name"
+              Return to audit overview
+            </a>
+          </p>
+        </div>
+      </div>
+      <div
+        class="sc-bwzfXH kYAzKM"
+      >
+        <div
+          class="ballot-side"
+        />
+        <div
+          class="ballot-main"
+        >
+          <h4
+            class="bp3-heading"
+          >
+            Instructions
+          </h4>
+          <p>
+            Select 
+            <strong>
+              all
+            </strong>
+             the candidates/choices below that you see marked on the paper ballot.
+          </p>
+          <p>
+            If the voter did not vote in the contest, select "Blank vote."
+          </p>
+          <p>
+            If this contest is not shown on this ballot, select "Not on ballot."
+          </p>
+          <form>
+            <div
+              class="sc-htpNat jWiLEy"
+            >
+              <h3
+                class="bp3-heading"
               >
-                Good ballot
-              </textarea>
+                Contest Name
+              </h3>
+              <div
+                class="bp3-divider sc-bdVaJa gqVLlZ"
+              />
+              <label
+                class="bp3-control bp3-checkbox sc-fjdhpX cTxEvm"
+              >
+                <input
+                  type="checkbox"
+                />
+                <span
+                  class="undefined bp3-control-indicator"
+                >
+                  <span
+                    class="checkbox-text"
+                  >
+                    Choice One
+                  </span>
+                </span>
+              </label>
+              <label
+                class="bp3-control bp3-checkbox sc-fjdhpX cTxEvm"
+              >
+                <input
+                  type="checkbox"
+                />
+                <span
+                  class="undefined bp3-control-indicator"
+                >
+                  <span
+                    class="checkbox-text"
+                  >
+                    Choice Two
+                  </span>
+                </span>
+              </label>
+              <label
+                class="bp3-control bp3-checkbox sc-fjdhpX cTxEvm"
+              >
+                <input
+                  type="checkbox"
+                />
+                <span
+                  class="gray bp3-control-indicator"
+                >
+                  <span
+                    class="checkbox-text"
+                  >
+                    Blank vote
+                  </span>
+                </span>
+              </label>
+              <label
+                class="bp3-control bp3-checkbox sc-fjdhpX cTxEvm"
+              >
+                <input
+                  type="checkbox"
+                />
+                <span
+                  class="gray bp3-control-indicator"
+                >
+                  <span
+                    class="checkbox-text"
+                  >
+                    Not on Ballot
+                  </span>
+                </span>
+              </label>
+              <button
+                class="bp3-button bp3-minimal"
+                type="button"
+              >
+                <span
+                  class="bp3-icon bp3-icon-edit"
+                  icon="edit"
+                >
+                  <svg
+                    data-icon="edit"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    width="16"
+                  >
+                    <desc>
+                      edit
+                    </desc>
+                    <path
+                      d="M3.25 10.26l2.47 2.47 6.69-6.69-2.46-2.48-6.7 6.7zM.99 14.99l3.86-1.39-2.46-2.44-1.4 3.83zm12.25-14c-.48 0-.92.2-1.24.51l-1.44 1.44 2.47 2.47 1.44-1.44c.32-.32.51-.75.51-1.24.01-.95-.77-1.74-1.74-1.74z"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+                <span
+                  class="bp3-button-text"
+                >
+                  Remove comment
+                </span>
+              </button>
+              <div
+                class="sc-gZMcBi bddzxw"
+              >
+                <textarea
+                  class="bp3-input sc-VigVT hfLuvB"
+                  name="comment-Contest Name"
+                >
+                  Good ballot
+                </textarea>
+              </div>
             </div>
-          </div>
-          <div
-            class="sc-ifAKCX jzSIMx"
-          >
-            <button
-              class="bp3-button bp3-intent-success sc-htoDjs dESvso"
-              type="submit"
+            <div
+              class="sc-ifAKCX jzSIMx"
             >
-              <span
-                class="bp3-button-text"
+              <button
+                class="bp3-button bp3-intent-success sc-htoDjs dESvso"
+                type="submit"
               >
-                Review
-              </span>
-            </button>
-            <button
-              class="bp3-button bp3-minimal"
-              type="button"
-            >
-              <span
-                class="bp3-button-text"
+                <span
+                  class="bp3-button-text"
+                >
+                  Review
+                </span>
+              </button>
+              <button
+                class="bp3-button bp3-minimal"
+                type="button"
               >
-                Back
-              </span>
-            </button>
-          </div>
-        </form>
+                <span
+                  class="bp3-button-text"
+                >
+                  Back
+                </span>
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   </div>
@@ -265,117 +269,355 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
 exports[`Ballot renders correctly with an unaudited ballot 1`] = `
 <div>
   <div
-    class="sc-chPdSV dXrGDv"
+    class="sc-chPdSV sc-kpOJdX fqbIQz"
   >
-    <h1
-      class="bp3-heading sc-kAzzGY dpovjb"
-    >
-      audit board #1
-      : Ballot Card Data Entry
-    </h1>
-    <h3
-      class="bp3-heading"
-    >
-      Enter Ballot Information
-    </h3>
     <div
-      class="bp3-callout sc-kgoBCf fqHVDn"
+      class="sc-kGXeez jkxADl"
     >
-      Auditing ballot 
-      2
-       of 
-      27
-    </div>
-    <div
-      class="sc-bwzfXH kYAzKM"
-    >
-      <div
-        class="ballot-side"
+      <h1
+        class="bp3-heading sc-kgoBCf ccmSSD"
       >
-        <h4
-          class="bp3-heading"
-        >
-          Current ballot:
-        </h4>
-        <div>
-          Tabulator: 
-          11
-        </div>
-        <div>
-          Batch: 
-          0003-04-Precinct 19 (Jonesboro Fire Department)
-        </div>
-        <div>
-          Record/Position: 
-          2112
-        </div>
+        audit board #1
+        : Ballot Card Data Entry
+      </h1>
+      <h3
+        class="bp3-heading"
+      >
+        Enter Ballot Information
+      </h3>
+      <div
+        class="bp3-callout sc-dxgOiQ imJcEu"
+      >
+        Auditing ballot 
+        2
+         of 
+        27
       </div>
       <div
-        class="bp3-divider sc-bdVaJa gqVLlZ"
-      />
-      <div
-        class="ballot-main"
+        class="sc-bwzfXH kYAzKM"
       >
-        <h4
-          class="bp3-heading"
+        <div
+          class="ballot-side"
         >
-          Are you looking at the correct ballot?
-        </h4>
-        <p>
-          Before continuing, check the "Current ballot" information to make sure you are entering data for the correct ballot. If the ballot could not be found, click "Ballot not found" below and move on to the next ballot.
-        </p>
-        <p>
-          <button
-            class="bp3-button bp3-intent-danger"
-            type="button"
+          <h4
+            class="bp3-heading"
           >
-            <span
-              class="bp3-button-text"
+            Current ballot:
+          </h4>
+          <div>
+            Tabulator: 
+            11
+          </div>
+          <div>
+            Batch: 
+            0003-04-Precinct 19 (Jonesboro Fire Department)
+          </div>
+          <div>
+            Record/Position: 
+            2112
+          </div>
+        </div>
+        <div
+          class="bp3-divider sc-bdVaJa gqVLlZ"
+        />
+        <div
+          class="ballot-main"
+        >
+          <h4
+            class="bp3-heading"
+          >
+            Are you looking at the correct ballot?
+          </h4>
+          <p>
+            Before continuing, check the "Current ballot"  information to make sure you are entering data for the correct ballot. If the ballot could not be found, click "Ballot not found" below and move on to the next ballot.
+          </p>
+          <p>
+            <button
+              class="bp3-button bp3-intent-danger"
+              type="button"
             >
-              Ballot 
-              2112
-               not found - move to next ballot
-            </span>
-          </button>
-        </p>
-        <p>
-          <a
-            class="bp3-button bp3-intent-primary"
-            href="/election/1/audit-board/1"
+              <span
+                class="bp3-button-text"
+              >
+                Ballot 
+                2112
+                 not found - move to next ballot
+              </span>
+            </button>
+          </p>
+          <p>
+            <a
+              class="bp3-button bp3-intent-primary"
+              href="/election/1/audit-board/1"
+            >
+              Return to audit overview
+            </a>
+          </p>
+        </div>
+      </div>
+      <div
+        class="sc-bwzfXH kYAzKM"
+      >
+        <div
+          class="ballot-side"
+        />
+        <div
+          class="ballot-main"
+        >
+          <h4
+            class="bp3-heading"
           >
-            Return to audit overview
-          </a>
-        </p>
+            Instructions
+          </h4>
+          <p>
+            Select 
+            <strong>
+              all
+            </strong>
+             the candidates/choices below that you see marked on the paper ballot.
+          </p>
+          <p>
+            If the voter did not vote in the contest, select "Blank vote."
+          </p>
+          <p>
+            If this contest is not shown on this ballot, select "Not on ballot."
+          </p>
+          <form>
+            <div
+              class="sc-htpNat jWiLEy"
+            >
+              <h3
+                class="bp3-heading"
+              >
+                Contest Name
+              </h3>
+              <div
+                class="bp3-divider sc-bdVaJa gqVLlZ"
+              />
+              <label
+                class="bp3-control bp3-checkbox sc-fjdhpX cTxEvm"
+              >
+                <input
+                  type="checkbox"
+                />
+                <span
+                  class="undefined bp3-control-indicator"
+                >
+                  <span
+                    class="checkbox-text"
+                  >
+                    Choice One
+                  </span>
+                </span>
+              </label>
+              <label
+                class="bp3-control bp3-checkbox sc-fjdhpX cTxEvm"
+              >
+                <input
+                  type="checkbox"
+                />
+                <span
+                  class="undefined bp3-control-indicator"
+                >
+                  <span
+                    class="checkbox-text"
+                  >
+                    Choice Two
+                  </span>
+                </span>
+              </label>
+              <label
+                class="bp3-control bp3-checkbox sc-fjdhpX cTxEvm"
+              >
+                <input
+                  type="checkbox"
+                />
+                <span
+                  class="gray bp3-control-indicator"
+                >
+                  <span
+                    class="checkbox-text"
+                  >
+                    Blank vote
+                  </span>
+                </span>
+              </label>
+              <label
+                class="bp3-control bp3-checkbox sc-fjdhpX cTxEvm"
+              >
+                <input
+                  type="checkbox"
+                />
+                <span
+                  class="gray bp3-control-indicator"
+                >
+                  <span
+                    class="checkbox-text"
+                  >
+                    Not on Ballot
+                  </span>
+                </span>
+              </label>
+              <button
+                class="bp3-button bp3-minimal"
+                type="button"
+              >
+                <span
+                  class="bp3-icon bp3-icon-edit"
+                  icon="edit"
+                >
+                  <svg
+                    data-icon="edit"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    width="16"
+                  >
+                    <desc>
+                      edit
+                    </desc>
+                    <path
+                      d="M3.25 10.26l2.47 2.47 6.69-6.69-2.46-2.48-6.7 6.7zM.99 14.99l3.86-1.39-2.46-2.44-1.4 3.83zm12.25-14c-.48 0-.92.2-1.24.51l-1.44 1.44 2.47 2.47 1.44-1.44c.32-.32.51-.75.51-1.24.01-.95-.77-1.74-1.74-1.74z"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+                <span
+                  class="bp3-button-text"
+                >
+                  Add comment
+                </span>
+              </button>
+            </div>
+            <div
+              class="sc-ifAKCX jzSIMx"
+            >
+              <button
+                class="bp3-button bp3-intent-success sc-htoDjs dESvso"
+                type="submit"
+              >
+                <span
+                  class="bp3-button-text"
+                >
+                  Review
+                </span>
+              </button>
+              <button
+                class="bp3-button bp3-minimal"
+                type="button"
+              >
+                <span
+                  class="bp3-button-text"
+                >
+                  Back
+                </span>
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
+  </div>
+</div>
+`;
+
+exports[`Ballot selects Blank vote 1`] = `
+<div>
+  <div
+    class="sc-chPdSV sc-kpOJdX fqbIQz"
+  >
     <div
-      class="sc-bwzfXH kYAzKM"
+      class="sc-kGXeez jkxADl"
     >
-      <div
-        class="ballot-side"
-      />
-      <div
-        class="ballot-main"
+      <h1
+        class="bp3-heading sc-kgoBCf ccmSSD"
       >
-        <h4
-          class="bp3-heading"
+        audit board #1
+        : Ballot Card Data Entry
+      </h1>
+      <h3
+        class="bp3-heading"
+      >
+        Enter Ballot Information
+      </h3>
+      <div
+        class="bp3-callout sc-dxgOiQ imJcEu"
+      >
+        Auditing ballot 
+        2
+         of 
+        27
+      </div>
+      <div
+        class="sc-bwzfXH kYAzKM"
+      >
+        <div
+          class="ballot-side"
         >
-          Instructions
-        </h4>
-        <p>
-          Select 
-          <strong>
-            all
-          </strong>
-           the candidates/choices below that you see marked on the paper ballot.
-        </p>
-        <p>
-          If the voter did not vote in the contest, select "Blank vote."
-        </p>
-        <p>
-          If this contest is not shown on this ballot, select "Not on ballot."
-        </p>
-        <form>
+          <h4
+            class="bp3-heading"
+          >
+            Current ballot:
+          </h4>
+          <div>
+            Tabulator: 
+            11
+          </div>
+          <div>
+            Batch: 
+            0003-04-Precinct 19 (Jonesboro Fire Department)
+          </div>
+          <div>
+            Record/Position: 
+            2112
+          </div>
+        </div>
+        <div
+          class="bp3-divider sc-bdVaJa gqVLlZ"
+        />
+        <div
+          class="ballot-main"
+        >
+          <h4
+            class="bp3-heading"
+          >
+            Are you looking at the correct ballot?
+          </h4>
+          <p>
+            Before continuing, check the "Current ballot"  information to make sure you are entering data for the correct ballot. If the ballot could not be found, click "Ballot not found" below and move on to the next ballot.
+          </p>
+          <p>
+            <button
+              class="bp3-button bp3-intent-danger"
+              type="button"
+            >
+              <span
+                class="bp3-button-text"
+              >
+                Ballot 
+                2112
+                 not found - move to next ballot
+              </span>
+            </button>
+          </p>
+          <p>
+            <a
+              class="bp3-button bp3-intent-primary"
+              href="/election/1/audit-board/1"
+            >
+              Return to audit overview
+            </a>
+          </p>
+        </div>
+      </div>
+      <div
+        class="sc-bwzfXH kYAzKM"
+      >
+        <div
+          class="ballot-side"
+        />
+        <div
+          class="ballot-main"
+        >
           <div
             class="sc-htpNat jWiLEy"
           >
@@ -387,99 +629,52 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
             <div
               class="bp3-divider sc-bdVaJa gqVLlZ"
             />
-            <label
-              class="bp3-control bp3-checkbox sc-fjdhpX cTxEvm"
+            <div
+              class="sc-jzJRlG hxkCDK"
             >
-              <input
-                type="checkbox"
-              />
-              <span
-                class="undefined bp3-control-indicator"
+              <button
+                class="bp3-button bp3-disabled bp3-large bp3-intent-primary sc-cSHVUG iYMJEW sc-htoDjs dESvso"
+                disabled=""
+                tabindex="-1"
+                type="button"
               >
                 <span
-                  class="checkbox-text"
-                >
-                  Choice One
-                </span>
-              </span>
-            </label>
-            <label
-              class="bp3-control bp3-checkbox sc-fjdhpX cTxEvm"
-            >
-              <input
-                type="checkbox"
-              />
-              <span
-                class="undefined bp3-control-indicator"
-              >
-                <span
-                  class="checkbox-text"
-                >
-                  Choice Two
-                </span>
-              </span>
-            </label>
-            <label
-              class="bp3-control bp3-checkbox sc-fjdhpX cTxEvm"
-            >
-              <input
-                type="checkbox"
-              />
-              <span
-                class="gray bp3-control-indicator"
-              >
-                <span
-                  class="checkbox-text"
+                  class="bp3-button-text"
                 >
                   Blank vote
                 </span>
-              </span>
-            </label>
-            <label
-              class="bp3-control bp3-checkbox sc-fjdhpX cTxEvm"
-            >
-              <input
-                type="checkbox"
-              />
-              <span
-                class="gray bp3-control-indicator"
+              </button>
+              <button
+                class="bp3-button bp3-minimal"
+                type="button"
               >
                 <span
-                  class="checkbox-text"
+                  class="bp3-icon bp3-icon-edit"
+                  icon="edit"
                 >
-                  Not on Ballot
+                  <svg
+                    data-icon="edit"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    width="16"
+                  >
+                    <desc>
+                      edit
+                    </desc>
+                    <path
+                      d="M3.25 10.26l2.47 2.47 6.69-6.69-2.46-2.48-6.7 6.7zM.99 14.99l3.86-1.39-2.46-2.44-1.4 3.83zm12.25-14c-.48 0-.92.2-1.24.51l-1.44 1.44 2.47 2.47 1.44-1.44c.32-.32.51-.75.51-1.24.01-.95-.77-1.74-1.74-1.74z"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
                 </span>
-              </span>
-            </label>
-            <button
-              class="bp3-button bp3-minimal"
-              type="button"
-            >
-              <span
-                class="bp3-icon bp3-icon-edit"
-                icon="edit"
-              >
-                <svg
-                  data-icon="edit"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  width="16"
+                <span
+                  class="bp3-button-text"
                 >
-                  <desc>
-                    edit
-                  </desc>
-                  <path
-                    d="M3.25 10.26l2.47 2.47 6.69-6.69-2.46-2.48-6.7 6.7zM.99 14.99l3.86-1.39-2.46-2.44-1.4 3.83zm12.25-14c-.48 0-.92.2-1.24.51l-1.44 1.44 2.47 2.47 1.44-1.44c.32-.32.51-.75.51-1.24.01-.95-.77-1.74-1.74-1.74z"
-                    fill-rule="evenodd"
-                  />
-                </svg>
-              </span>
-              <span
-                class="bp3-button-text"
-              >
-                Add comment
-              </span>
-            </button>
+                  Edit
+                </span>
+              </button>
+            </div>
+            <p />
           </div>
           <div
             class="sc-ifAKCX jzSIMx"
@@ -491,7 +686,7 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
               <span
                 class="bp3-button-text"
               >
-                Review
+                Submit & Next Ballot
               </span>
             </button>
             <button
@@ -505,189 +700,6 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
               </span>
             </button>
           </div>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`Ballot selects Blank vote 1`] = `
-<div>
-  <div
-    class="sc-chPdSV dXrGDv"
-  >
-    <h1
-      class="bp3-heading sc-kAzzGY dpovjb"
-    >
-      audit board #1
-      : Ballot Card Data Entry
-    </h1>
-    <h3
-      class="bp3-heading"
-    >
-      Enter Ballot Information
-    </h3>
-    <div
-      class="bp3-callout sc-kgoBCf fqHVDn"
-    >
-      Auditing ballot 
-      2
-       of 
-      27
-    </div>
-    <div
-      class="sc-bwzfXH kYAzKM"
-    >
-      <div
-        class="ballot-side"
-      >
-        <h4
-          class="bp3-heading"
-        >
-          Current ballot:
-        </h4>
-        <div>
-          Tabulator: 
-          11
-        </div>
-        <div>
-          Batch: 
-          0003-04-Precinct 19 (Jonesboro Fire Department)
-        </div>
-        <div>
-          Record/Position: 
-          2112
-        </div>
-      </div>
-      <div
-        class="bp3-divider sc-bdVaJa gqVLlZ"
-      />
-      <div
-        class="ballot-main"
-      >
-        <h4
-          class="bp3-heading"
-        >
-          Are you looking at the correct ballot?
-        </h4>
-        <p>
-          Before continuing, check the "Current ballot" information to make sure you are entering data for the correct ballot. If the ballot could not be found, click "Ballot not found" below and move on to the next ballot.
-        </p>
-        <p>
-          <button
-            class="bp3-button bp3-intent-danger"
-            type="button"
-          >
-            <span
-              class="bp3-button-text"
-            >
-              Ballot 
-              2112
-               not found - move to next ballot
-            </span>
-          </button>
-        </p>
-        <p>
-          <a
-            class="bp3-button bp3-intent-primary"
-            href="/election/1/audit-board/1"
-          >
-            Return to audit overview
-          </a>
-        </p>
-      </div>
-    </div>
-    <div
-      class="sc-bwzfXH kYAzKM"
-    >
-      <div
-        class="ballot-side"
-      />
-      <div
-        class="ballot-main"
-      >
-        <div
-          class="sc-htpNat jWiLEy"
-        >
-          <h3
-            class="bp3-heading"
-          >
-            Contest Name
-          </h3>
-          <div
-            class="bp3-divider sc-bdVaJa gqVLlZ"
-          />
-          <div
-            class="sc-jzJRlG hxkCDK"
-          >
-            <button
-              class="bp3-button bp3-disabled bp3-large bp3-intent-primary sc-cSHVUG iYMJEW sc-htoDjs dESvso"
-              disabled=""
-              tabindex="-1"
-              type="button"
-            >
-              <span
-                class="bp3-button-text"
-              >
-                Blank vote
-              </span>
-            </button>
-            <button
-              class="bp3-button bp3-minimal"
-              type="button"
-            >
-              <span
-                class="bp3-icon bp3-icon-edit"
-                icon="edit"
-              >
-                <svg
-                  data-icon="edit"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  width="16"
-                >
-                  <desc>
-                    edit
-                  </desc>
-                  <path
-                    d="M3.25 10.26l2.47 2.47 6.69-6.69-2.46-2.48-6.7 6.7zM.99 14.99l3.86-1.39-2.46-2.44-1.4 3.83zm12.25-14c-.48 0-.92.2-1.24.51l-1.44 1.44 2.47 2.47 1.44-1.44c.32-.32.51-.75.51-1.24.01-.95-.77-1.74-1.74-1.74z"
-                    fill-rule="evenodd"
-                  />
-                </svg>
-              </span>
-              <span
-                class="bp3-button-text"
-              >
-                Edit
-              </span>
-            </button>
-          </div>
-          <p />
-        </div>
-        <div
-          class="sc-ifAKCX jzSIMx"
-        >
-          <button
-            class="bp3-button bp3-intent-success sc-htoDjs dESvso"
-            type="submit"
-          >
-            <span
-              class="bp3-button-text"
-            >
-              Submit & Next Ballot
-            </span>
-          </button>
-          <button
-            class="bp3-button bp3-minimal"
-            type="button"
-          >
-            <span
-              class="bp3-button-text"
-            >
-              Back
-            </span>
-          </button>
         </div>
       </div>
     </div>
@@ -698,122 +710,170 @@ exports[`Ballot selects Blank vote 1`] = `
 exports[`Ballot selects Not on Ballot 1`] = `
 <div>
   <div
-    class="sc-chPdSV dXrGDv"
+    class="sc-chPdSV sc-kpOJdX fqbIQz"
   >
-    <h1
-      class="bp3-heading sc-kAzzGY dpovjb"
-    >
-      audit board #1
-      : Ballot Card Data Entry
-    </h1>
-    <h3
-      class="bp3-heading"
-    >
-      Enter Ballot Information
-    </h3>
     <div
-      class="bp3-callout sc-kgoBCf fqHVDn"
+      class="sc-kGXeez jkxADl"
     >
-      Auditing ballot 
-      2
-       of 
-      27
-    </div>
-    <div
-      class="sc-bwzfXH kYAzKM"
-    >
-      <div
-        class="ballot-side"
+      <h1
+        class="bp3-heading sc-kgoBCf ccmSSD"
       >
-        <h4
-          class="bp3-heading"
-        >
-          Current ballot:
-        </h4>
-        <div>
-          Tabulator: 
-          11
-        </div>
-        <div>
-          Batch: 
-          0003-04-Precinct 19 (Jonesboro Fire Department)
-        </div>
-        <div>
-          Record/Position: 
-          2112
-        </div>
+        audit board #1
+        : Ballot Card Data Entry
+      </h1>
+      <h3
+        class="bp3-heading"
+      >
+        Enter Ballot Information
+      </h3>
+      <div
+        class="bp3-callout sc-dxgOiQ imJcEu"
+      >
+        Auditing ballot 
+        2
+         of 
+        27
       </div>
       <div
-        class="bp3-divider sc-bdVaJa gqVLlZ"
-      />
-      <div
-        class="ballot-main"
-      >
-        <h4
-          class="bp3-heading"
-        >
-          Are you looking at the correct ballot?
-        </h4>
-        <p>
-          Before continuing, check the "Current ballot" information to make sure you are entering data for the correct ballot. If the ballot could not be found, click "Ballot not found" below and move on to the next ballot.
-        </p>
-        <p>
-          <button
-            class="bp3-button bp3-intent-danger"
-            type="button"
-          >
-            <span
-              class="bp3-button-text"
-            >
-              Ballot 
-              2112
-               not found - move to next ballot
-            </span>
-          </button>
-        </p>
-        <p>
-          <a
-            class="bp3-button bp3-intent-primary"
-            href="/election/1/audit-board/1"
-          >
-            Return to audit overview
-          </a>
-        </p>
-      </div>
-    </div>
-    <div
-      class="sc-bwzfXH kYAzKM"
-    >
-      <div
-        class="ballot-side"
-      />
-      <div
-        class="ballot-main"
+        class="sc-bwzfXH kYAzKM"
       >
         <div
-          class="sc-htpNat jWiLEy"
+          class="ballot-side"
         >
-          <h3
+          <h4
             class="bp3-heading"
           >
-            Contest Name
-          </h3>
-          <div
-            class="bp3-divider sc-bdVaJa gqVLlZ"
-          />
-          <div
-            class="sc-jzJRlG hxkCDK"
+            Current ballot:
+          </h4>
+          <div>
+            Tabulator: 
+            11
+          </div>
+          <div>
+            Batch: 
+            0003-04-Precinct 19 (Jonesboro Fire Department)
+          </div>
+          <div>
+            Record/Position: 
+            2112
+          </div>
+        </div>
+        <div
+          class="bp3-divider sc-bdVaJa gqVLlZ"
+        />
+        <div
+          class="ballot-main"
+        >
+          <h4
+            class="bp3-heading"
           >
+            Are you looking at the correct ballot?
+          </h4>
+          <p>
+            Before continuing, check the "Current ballot"  information to make sure you are entering data for the correct ballot. If the ballot could not be found, click "Ballot not found" below and move on to the next ballot.
+          </p>
+          <p>
             <button
-              class="bp3-button bp3-disabled bp3-large bp3-intent-primary sc-cSHVUG iYMJEW sc-htoDjs dESvso"
-              disabled=""
-              tabindex="-1"
+              class="bp3-button bp3-intent-danger"
               type="button"
             >
               <span
                 class="bp3-button-text"
               >
-                Not on Ballot
+                Ballot 
+                2112
+                 not found - move to next ballot
+              </span>
+            </button>
+          </p>
+          <p>
+            <a
+              class="bp3-button bp3-intent-primary"
+              href="/election/1/audit-board/1"
+            >
+              Return to audit overview
+            </a>
+          </p>
+        </div>
+      </div>
+      <div
+        class="sc-bwzfXH kYAzKM"
+      >
+        <div
+          class="ballot-side"
+        />
+        <div
+          class="ballot-main"
+        >
+          <div
+            class="sc-htpNat jWiLEy"
+          >
+            <h3
+              class="bp3-heading"
+            >
+              Contest Name
+            </h3>
+            <div
+              class="bp3-divider sc-bdVaJa gqVLlZ"
+            />
+            <div
+              class="sc-jzJRlG hxkCDK"
+            >
+              <button
+                class="bp3-button bp3-disabled bp3-large bp3-intent-primary sc-cSHVUG iYMJEW sc-htoDjs dESvso"
+                disabled=""
+                tabindex="-1"
+                type="button"
+              >
+                <span
+                  class="bp3-button-text"
+                >
+                  Not on Ballot
+                </span>
+              </button>
+              <button
+                class="bp3-button bp3-minimal"
+                type="button"
+              >
+                <span
+                  class="bp3-icon bp3-icon-edit"
+                  icon="edit"
+                >
+                  <svg
+                    data-icon="edit"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    width="16"
+                  >
+                    <desc>
+                      edit
+                    </desc>
+                    <path
+                      d="M3.25 10.26l2.47 2.47 6.69-6.69-2.46-2.48-6.7 6.7zM.99 14.99l3.86-1.39-2.46-2.44-1.4 3.83zm12.25-14c-.48 0-.92.2-1.24.51l-1.44 1.44 2.47 2.47 1.44-1.44c.32-.32.51-.75.51-1.24.01-.95-.77-1.74-1.74-1.74z"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+                <span
+                  class="bp3-button-text"
+                >
+                  Edit
+                </span>
+              </button>
+            </div>
+            <p />
+          </div>
+          <div
+            class="sc-ifAKCX jzSIMx"
+          >
+            <button
+              class="bp3-button bp3-intent-success sc-htoDjs dESvso"
+              type="submit"
+            >
+              <span
+                class="bp3-button-text"
+              >
+                Submit & Next Ballot
               </span>
             </button>
             <button
@@ -821,56 +881,12 @@ exports[`Ballot selects Not on Ballot 1`] = `
               type="button"
             >
               <span
-                class="bp3-icon bp3-icon-edit"
-                icon="edit"
-              >
-                <svg
-                  data-icon="edit"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  width="16"
-                >
-                  <desc>
-                    edit
-                  </desc>
-                  <path
-                    d="M3.25 10.26l2.47 2.47 6.69-6.69-2.46-2.48-6.7 6.7zM.99 14.99l3.86-1.39-2.46-2.44-1.4 3.83zm12.25-14c-.48 0-.92.2-1.24.51l-1.44 1.44 2.47 2.47 1.44-1.44c.32-.32.51-.75.51-1.24.01-.95-.77-1.74-1.74-1.74z"
-                    fill-rule="evenodd"
-                  />
-                </svg>
-              </span>
-              <span
                 class="bp3-button-text"
               >
-                Edit
+                Back
               </span>
             </button>
           </div>
-          <p />
-        </div>
-        <div
-          class="sc-ifAKCX jzSIMx"
-        >
-          <button
-            class="bp3-button bp3-intent-success sc-htoDjs dESvso"
-            type="submit"
-          >
-            <span
-              class="bp3-button-text"
-            >
-              Submit & Next Ballot
-            </span>
-          </button>
-          <button
-            class="bp3-button bp3-minimal"
-            type="button"
-          >
-            <span
-              class="bp3-button-text"
-            >
-              Back
-            </span>
-          </button>
         </div>
       </div>
     </div>
@@ -881,122 +897,170 @@ exports[`Ballot selects Not on Ballot 1`] = `
 exports[`Ballot switches audit and review views 1`] = `
 <div>
   <div
-    class="sc-chPdSV dXrGDv"
+    class="sc-chPdSV sc-kpOJdX fqbIQz"
   >
-    <h1
-      class="bp3-heading sc-kAzzGY dpovjb"
-    >
-      audit board #1
-      : Ballot Card Data Entry
-    </h1>
-    <h3
-      class="bp3-heading"
-    >
-      Enter Ballot Information
-    </h3>
     <div
-      class="bp3-callout sc-kgoBCf fqHVDn"
+      class="sc-kGXeez jkxADl"
     >
-      Auditing ballot 
-      2
-       of 
-      27
-    </div>
-    <div
-      class="sc-bwzfXH kYAzKM"
-    >
-      <div
-        class="ballot-side"
+      <h1
+        class="bp3-heading sc-kgoBCf ccmSSD"
       >
-        <h4
-          class="bp3-heading"
-        >
-          Current ballot:
-        </h4>
-        <div>
-          Tabulator: 
-          11
-        </div>
-        <div>
-          Batch: 
-          0003-04-Precinct 19 (Jonesboro Fire Department)
-        </div>
-        <div>
-          Record/Position: 
-          2112
-        </div>
+        audit board #1
+        : Ballot Card Data Entry
+      </h1>
+      <h3
+        class="bp3-heading"
+      >
+        Enter Ballot Information
+      </h3>
+      <div
+        class="bp3-callout sc-dxgOiQ imJcEu"
+      >
+        Auditing ballot 
+        2
+         of 
+        27
       </div>
       <div
-        class="bp3-divider sc-bdVaJa gqVLlZ"
-      />
-      <div
-        class="ballot-main"
-      >
-        <h4
-          class="bp3-heading"
-        >
-          Are you looking at the correct ballot?
-        </h4>
-        <p>
-          Before continuing, check the "Current ballot" information to make sure you are entering data for the correct ballot. If the ballot could not be found, click "Ballot not found" below and move on to the next ballot.
-        </p>
-        <p>
-          <button
-            class="bp3-button bp3-intent-danger"
-            type="button"
-          >
-            <span
-              class="bp3-button-text"
-            >
-              Ballot 
-              2112
-               not found - move to next ballot
-            </span>
-          </button>
-        </p>
-        <p>
-          <a
-            class="bp3-button bp3-intent-primary"
-            href="/election/1/audit-board/1"
-          >
-            Return to audit overview
-          </a>
-        </p>
-      </div>
-    </div>
-    <div
-      class="sc-bwzfXH kYAzKM"
-    >
-      <div
-        class="ballot-side"
-      />
-      <div
-        class="ballot-main"
+        class="sc-bwzfXH kYAzKM"
       >
         <div
-          class="sc-htpNat jWiLEy"
+          class="ballot-side"
         >
-          <h3
+          <h4
             class="bp3-heading"
           >
-            Contest Name
-          </h3>
-          <div
-            class="bp3-divider sc-bdVaJa gqVLlZ"
-          />
-          <div
-            class="sc-jzJRlG hxkCDK"
+            Current ballot:
+          </h4>
+          <div>
+            Tabulator: 
+            11
+          </div>
+          <div>
+            Batch: 
+            0003-04-Precinct 19 (Jonesboro Fire Department)
+          </div>
+          <div>
+            Record/Position: 
+            2112
+          </div>
+        </div>
+        <div
+          class="bp3-divider sc-bdVaJa gqVLlZ"
+        />
+        <div
+          class="ballot-main"
+        >
+          <h4
+            class="bp3-heading"
           >
+            Are you looking at the correct ballot?
+          </h4>
+          <p>
+            Before continuing, check the "Current ballot"  information to make sure you are entering data for the correct ballot. If the ballot could not be found, click "Ballot not found" below and move on to the next ballot.
+          </p>
+          <p>
             <button
-              class="bp3-button bp3-disabled bp3-large bp3-intent-primary sc-cSHVUG iYMJEW sc-htoDjs dESvso"
-              disabled=""
-              tabindex="-1"
+              class="bp3-button bp3-intent-danger"
               type="button"
             >
               <span
                 class="bp3-button-text"
               >
-                Choice One
+                Ballot 
+                2112
+                 not found - move to next ballot
+              </span>
+            </button>
+          </p>
+          <p>
+            <a
+              class="bp3-button bp3-intent-primary"
+              href="/election/1/audit-board/1"
+            >
+              Return to audit overview
+            </a>
+          </p>
+        </div>
+      </div>
+      <div
+        class="sc-bwzfXH kYAzKM"
+      >
+        <div
+          class="ballot-side"
+        />
+        <div
+          class="ballot-main"
+        >
+          <div
+            class="sc-htpNat jWiLEy"
+          >
+            <h3
+              class="bp3-heading"
+            >
+              Contest Name
+            </h3>
+            <div
+              class="bp3-divider sc-bdVaJa gqVLlZ"
+            />
+            <div
+              class="sc-jzJRlG hxkCDK"
+            >
+              <button
+                class="bp3-button bp3-disabled bp3-large bp3-intent-primary sc-cSHVUG iYMJEW sc-htoDjs dESvso"
+                disabled=""
+                tabindex="-1"
+                type="button"
+              >
+                <span
+                  class="bp3-button-text"
+                >
+                  Choice One
+                </span>
+              </button>
+              <button
+                class="bp3-button bp3-minimal"
+                type="button"
+              >
+                <span
+                  class="bp3-icon bp3-icon-edit"
+                  icon="edit"
+                >
+                  <svg
+                    data-icon="edit"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    width="16"
+                  >
+                    <desc>
+                      edit
+                    </desc>
+                    <path
+                      d="M3.25 10.26l2.47 2.47 6.69-6.69-2.46-2.48-6.7 6.7zM.99 14.99l3.86-1.39-2.46-2.44-1.4 3.83zm12.25-14c-.48 0-.92.2-1.24.51l-1.44 1.44 2.47 2.47 1.44-1.44c.32-.32.51-.75.51-1.24.01-.95-.77-1.74-1.74-1.74z"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+                <span
+                  class="bp3-button-text"
+                >
+                  Edit
+                </span>
+              </button>
+            </div>
+            <p />
+          </div>
+          <div
+            class="sc-ifAKCX jzSIMx"
+          >
+            <button
+              class="bp3-button bp3-intent-success sc-htoDjs dESvso"
+              type="submit"
+            >
+              <span
+                class="bp3-button-text"
+              >
+                Submit & Next Ballot
               </span>
             </button>
             <button
@@ -1004,56 +1068,12 @@ exports[`Ballot switches audit and review views 1`] = `
               type="button"
             >
               <span
-                class="bp3-icon bp3-icon-edit"
-                icon="edit"
-              >
-                <svg
-                  data-icon="edit"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  width="16"
-                >
-                  <desc>
-                    edit
-                  </desc>
-                  <path
-                    d="M3.25 10.26l2.47 2.47 6.69-6.69-2.46-2.48-6.7 6.7zM.99 14.99l3.86-1.39-2.46-2.44-1.4 3.83zm12.25-14c-.48 0-.92.2-1.24.51l-1.44 1.44 2.47 2.47 1.44-1.44c.32-.32.51-.75.51-1.24.01-.95-.77-1.74-1.74-1.74z"
-                    fill-rule="evenodd"
-                  />
-                </svg>
-              </span>
-              <span
                 class="bp3-button-text"
               >
-                Edit
+                Back
               </span>
             </button>
           </div>
-          <p />
-        </div>
-        <div
-          class="sc-ifAKCX jzSIMx"
-        >
-          <button
-            class="bp3-button bp3-intent-success sc-htoDjs dESvso"
-            type="submit"
-          >
-            <span
-              class="bp3-button-text"
-            >
-              Submit & Next Ballot
-            </span>
-          </button>
-          <button
-            class="bp3-button bp3-minimal"
-            type="button"
-          >
-            <span
-              class="bp3-button-text"
-            >
-              Back
-            </span>
-          </button>
         </div>
       </div>
     </div>
@@ -1064,122 +1084,170 @@ exports[`Ballot switches audit and review views 1`] = `
 exports[`Ballot toggles and deletes a comment 1`] = `
 <div>
   <div
-    class="sc-chPdSV dXrGDv"
+    class="sc-chPdSV sc-kpOJdX fqbIQz"
   >
-    <h1
-      class="bp3-heading sc-kAzzGY dpovjb"
-    >
-      audit board #1
-      : Ballot Card Data Entry
-    </h1>
-    <h3
-      class="bp3-heading"
-    >
-      Enter Ballot Information
-    </h3>
     <div
-      class="bp3-callout sc-kgoBCf fqHVDn"
+      class="sc-kGXeez jkxADl"
     >
-      Auditing ballot 
-      2
-       of 
-      27
-    </div>
-    <div
-      class="sc-bwzfXH kYAzKM"
-    >
-      <div
-        class="ballot-side"
+      <h1
+        class="bp3-heading sc-kgoBCf ccmSSD"
       >
-        <h4
-          class="bp3-heading"
-        >
-          Current ballot:
-        </h4>
-        <div>
-          Tabulator: 
-          11
-        </div>
-        <div>
-          Batch: 
-          0003-04-Precinct 19 (Jonesboro Fire Department)
-        </div>
-        <div>
-          Record/Position: 
-          2112
-        </div>
+        audit board #1
+        : Ballot Card Data Entry
+      </h1>
+      <h3
+        class="bp3-heading"
+      >
+        Enter Ballot Information
+      </h3>
+      <div
+        class="bp3-callout sc-dxgOiQ imJcEu"
+      >
+        Auditing ballot 
+        2
+         of 
+        27
       </div>
       <div
-        class="bp3-divider sc-bdVaJa gqVLlZ"
-      />
-      <div
-        class="ballot-main"
-      >
-        <h4
-          class="bp3-heading"
-        >
-          Are you looking at the correct ballot?
-        </h4>
-        <p>
-          Before continuing, check the "Current ballot" information to make sure you are entering data for the correct ballot. If the ballot could not be found, click "Ballot not found" below and move on to the next ballot.
-        </p>
-        <p>
-          <button
-            class="bp3-button bp3-intent-danger"
-            type="button"
-          >
-            <span
-              class="bp3-button-text"
-            >
-              Ballot 
-              2112
-               not found - move to next ballot
-            </span>
-          </button>
-        </p>
-        <p>
-          <a
-            class="bp3-button bp3-intent-primary"
-            href="/election/1/audit-board/1"
-          >
-            Return to audit overview
-          </a>
-        </p>
-      </div>
-    </div>
-    <div
-      class="sc-bwzfXH kYAzKM"
-    >
-      <div
-        class="ballot-side"
-      />
-      <div
-        class="ballot-main"
+        class="sc-bwzfXH kYAzKM"
       >
         <div
-          class="sc-htpNat jWiLEy"
+          class="ballot-side"
         >
-          <h3
+          <h4
             class="bp3-heading"
           >
-            Contest Name
-          </h3>
-          <div
-            class="bp3-divider sc-bdVaJa gqVLlZ"
-          />
-          <div
-            class="sc-jzJRlG hxkCDK"
+            Current ballot:
+          </h4>
+          <div>
+            Tabulator: 
+            11
+          </div>
+          <div>
+            Batch: 
+            0003-04-Precinct 19 (Jonesboro Fire Department)
+          </div>
+          <div>
+            Record/Position: 
+            2112
+          </div>
+        </div>
+        <div
+          class="bp3-divider sc-bdVaJa gqVLlZ"
+        />
+        <div
+          class="ballot-main"
+        >
+          <h4
+            class="bp3-heading"
           >
+            Are you looking at the correct ballot?
+          </h4>
+          <p>
+            Before continuing, check the "Current ballot"  information to make sure you are entering data for the correct ballot. If the ballot could not be found, click "Ballot not found" below and move on to the next ballot.
+          </p>
+          <p>
             <button
-              class="bp3-button bp3-disabled bp3-large bp3-intent-primary sc-cSHVUG iYMJEW sc-htoDjs dESvso"
-              disabled=""
-              tabindex="-1"
+              class="bp3-button bp3-intent-danger"
               type="button"
             >
               <span
                 class="bp3-button-text"
               >
-                Choice One
+                Ballot 
+                2112
+                 not found - move to next ballot
+              </span>
+            </button>
+          </p>
+          <p>
+            <a
+              class="bp3-button bp3-intent-primary"
+              href="/election/1/audit-board/1"
+            >
+              Return to audit overview
+            </a>
+          </p>
+        </div>
+      </div>
+      <div
+        class="sc-bwzfXH kYAzKM"
+      >
+        <div
+          class="ballot-side"
+        />
+        <div
+          class="ballot-main"
+        >
+          <div
+            class="sc-htpNat jWiLEy"
+          >
+            <h3
+              class="bp3-heading"
+            >
+              Contest Name
+            </h3>
+            <div
+              class="bp3-divider sc-bdVaJa gqVLlZ"
+            />
+            <div
+              class="sc-jzJRlG hxkCDK"
+            >
+              <button
+                class="bp3-button bp3-disabled bp3-large bp3-intent-primary sc-cSHVUG iYMJEW sc-htoDjs dESvso"
+                disabled=""
+                tabindex="-1"
+                type="button"
+              >
+                <span
+                  class="bp3-button-text"
+                >
+                  Choice One
+                </span>
+              </button>
+              <button
+                class="bp3-button bp3-minimal"
+                type="button"
+              >
+                <span
+                  class="bp3-icon bp3-icon-edit"
+                  icon="edit"
+                >
+                  <svg
+                    data-icon="edit"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    width="16"
+                  >
+                    <desc>
+                      edit
+                    </desc>
+                    <path
+                      d="M3.25 10.26l2.47 2.47 6.69-6.69-2.46-2.48-6.7 6.7zM.99 14.99l3.86-1.39-2.46-2.44-1.4 3.83zm12.25-14c-.48 0-.92.2-1.24.51l-1.44 1.44 2.47 2.47 1.44-1.44c.32-.32.51-.75.51-1.24.01-.95-.77-1.74-1.74-1.74z"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+                <span
+                  class="bp3-button-text"
+                >
+                  Edit
+                </span>
+              </button>
+            </div>
+            <p />
+          </div>
+          <div
+            class="sc-ifAKCX jzSIMx"
+          >
+            <button
+              class="bp3-button bp3-intent-success sc-htoDjs dESvso"
+              type="submit"
+            >
+              <span
+                class="bp3-button-text"
+              >
+                Submit & Next Ballot
               </span>
             </button>
             <button
@@ -1187,56 +1255,12 @@ exports[`Ballot toggles and deletes a comment 1`] = `
               type="button"
             >
               <span
-                class="bp3-icon bp3-icon-edit"
-                icon="edit"
-              >
-                <svg
-                  data-icon="edit"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  width="16"
-                >
-                  <desc>
-                    edit
-                  </desc>
-                  <path
-                    d="M3.25 10.26l2.47 2.47 6.69-6.69-2.46-2.48-6.7 6.7zM.99 14.99l3.86-1.39-2.46-2.44-1.4 3.83zm12.25-14c-.48 0-.92.2-1.24.51l-1.44 1.44 2.47 2.47 1.44-1.44c.32-.32.51-.75.51-1.24.01-.95-.77-1.74-1.74-1.74z"
-                    fill-rule="evenodd"
-                  />
-                </svg>
-              </span>
-              <span
                 class="bp3-button-text"
               >
-                Edit
+                Back
               </span>
             </button>
           </div>
-          <p />
-        </div>
-        <div
-          class="sc-ifAKCX jzSIMx"
-        >
-          <button
-            class="bp3-button bp3-intent-success sc-htoDjs dESvso"
-            type="submit"
-          >
-            <span
-              class="bp3-button-text"
-            >
-              Submit & Next Ballot
-            </span>
-          </button>
-          <button
-            class="bp3-button bp3-minimal"
-            type="button"
-          >
-            <span
-              class="bp3-button-text"
-            >
-              Back
-            </span>
-          </button>
         </div>
       </div>
     </div>
@@ -1247,122 +1271,172 @@ exports[`Ballot toggles and deletes a comment 1`] = `
 exports[`Ballot toggles and submits comment 1`] = `
 <div>
   <div
-    class="sc-chPdSV dXrGDv"
+    class="sc-chPdSV sc-kpOJdX fqbIQz"
   >
-    <h1
-      class="bp3-heading sc-kAzzGY dpovjb"
-    >
-      audit board #1
-      : Ballot Card Data Entry
-    </h1>
-    <h3
-      class="bp3-heading"
-    >
-      Enter Ballot Information
-    </h3>
     <div
-      class="bp3-callout sc-kgoBCf fqHVDn"
+      class="sc-kGXeez jkxADl"
     >
-      Auditing ballot 
-      2
-       of 
-      27
-    </div>
-    <div
-      class="sc-bwzfXH kYAzKM"
-    >
-      <div
-        class="ballot-side"
+      <h1
+        class="bp3-heading sc-kgoBCf ccmSSD"
       >
-        <h4
-          class="bp3-heading"
-        >
-          Current ballot:
-        </h4>
-        <div>
-          Tabulator: 
-          11
-        </div>
-        <div>
-          Batch: 
-          0003-04-Precinct 19 (Jonesboro Fire Department)
-        </div>
-        <div>
-          Record/Position: 
-          2112
-        </div>
+        audit board #1
+        : Ballot Card Data Entry
+      </h1>
+      <h3
+        class="bp3-heading"
+      >
+        Enter Ballot Information
+      </h3>
+      <div
+        class="bp3-callout sc-dxgOiQ imJcEu"
+      >
+        Auditing ballot 
+        2
+         of 
+        27
       </div>
       <div
-        class="bp3-divider sc-bdVaJa gqVLlZ"
-      />
-      <div
-        class="ballot-main"
-      >
-        <h4
-          class="bp3-heading"
-        >
-          Are you looking at the correct ballot?
-        </h4>
-        <p>
-          Before continuing, check the "Current ballot" information to make sure you are entering data for the correct ballot. If the ballot could not be found, click "Ballot not found" below and move on to the next ballot.
-        </p>
-        <p>
-          <button
-            class="bp3-button bp3-intent-danger"
-            type="button"
-          >
-            <span
-              class="bp3-button-text"
-            >
-              Ballot 
-              2112
-               not found - move to next ballot
-            </span>
-          </button>
-        </p>
-        <p>
-          <a
-            class="bp3-button bp3-intent-primary"
-            href="/election/1/audit-board/1"
-          >
-            Return to audit overview
-          </a>
-        </p>
-      </div>
-    </div>
-    <div
-      class="sc-bwzfXH kYAzKM"
-    >
-      <div
-        class="ballot-side"
-      />
-      <div
-        class="ballot-main"
+        class="sc-bwzfXH kYAzKM"
       >
         <div
-          class="sc-htpNat jWiLEy"
+          class="ballot-side"
         >
-          <h3
+          <h4
             class="bp3-heading"
           >
-            Contest Name
-          </h3>
-          <div
-            class="bp3-divider sc-bdVaJa gqVLlZ"
-          />
-          <div
-            class="sc-jzJRlG hxkCDK"
+            Current ballot:
+          </h4>
+          <div>
+            Tabulator: 
+            11
+          </div>
+          <div>
+            Batch: 
+            0003-04-Precinct 19 (Jonesboro Fire Department)
+          </div>
+          <div>
+            Record/Position: 
+            2112
+          </div>
+        </div>
+        <div
+          class="bp3-divider sc-bdVaJa gqVLlZ"
+        />
+        <div
+          class="ballot-main"
+        >
+          <h4
+            class="bp3-heading"
           >
+            Are you looking at the correct ballot?
+          </h4>
+          <p>
+            Before continuing, check the "Current ballot"  information to make sure you are entering data for the correct ballot. If the ballot could not be found, click "Ballot not found" below and move on to the next ballot.
+          </p>
+          <p>
             <button
-              class="bp3-button bp3-disabled bp3-large bp3-intent-primary sc-cSHVUG iYMJEW sc-htoDjs dESvso"
-              disabled=""
-              tabindex="-1"
+              class="bp3-button bp3-intent-danger"
               type="button"
             >
               <span
                 class="bp3-button-text"
               >
-                Choice One
+                Ballot 
+                2112
+                 not found - move to next ballot
+              </span>
+            </button>
+          </p>
+          <p>
+            <a
+              class="bp3-button bp3-intent-primary"
+              href="/election/1/audit-board/1"
+            >
+              Return to audit overview
+            </a>
+          </p>
+        </div>
+      </div>
+      <div
+        class="sc-bwzfXH kYAzKM"
+      >
+        <div
+          class="ballot-side"
+        />
+        <div
+          class="ballot-main"
+        >
+          <div
+            class="sc-htpNat jWiLEy"
+          >
+            <h3
+              class="bp3-heading"
+            >
+              Contest Name
+            </h3>
+            <div
+              class="bp3-divider sc-bdVaJa gqVLlZ"
+            />
+            <div
+              class="sc-jzJRlG hxkCDK"
+            >
+              <button
+                class="bp3-button bp3-disabled bp3-large bp3-intent-primary sc-cSHVUG iYMJEW sc-htoDjs dESvso"
+                disabled=""
+                tabindex="-1"
+                type="button"
+              >
+                <span
+                  class="bp3-button-text"
+                >
+                  Choice One
+                </span>
+              </button>
+              <button
+                class="bp3-button bp3-minimal"
+                type="button"
+              >
+                <span
+                  class="bp3-icon bp3-icon-edit"
+                  icon="edit"
+                >
+                  <svg
+                    data-icon="edit"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    width="16"
+                  >
+                    <desc>
+                      edit
+                    </desc>
+                    <path
+                      d="M3.25 10.26l2.47 2.47 6.69-6.69-2.46-2.48-6.7 6.7zM.99 14.99l3.86-1.39-2.46-2.44-1.4 3.83zm12.25-14c-.48 0-.92.2-1.24.51l-1.44 1.44 2.47 2.47 1.44-1.44c.32-.32.51-.75.51-1.24.01-.95-.77-1.74-1.74-1.74z"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+                <span
+                  class="bp3-button-text"
+                >
+                  Edit
+                </span>
+              </button>
+            </div>
+            <p>
+              COMMENT: a test comment
+            </p>
+          </div>
+          <div
+            class="sc-ifAKCX jzSIMx"
+          >
+            <button
+              class="bp3-button bp3-intent-success sc-htoDjs dESvso"
+              type="submit"
+            >
+              <span
+                class="bp3-button-text"
+              >
+                Submit & Next Ballot
               </span>
             </button>
             <button
@@ -1370,58 +1444,12 @@ exports[`Ballot toggles and submits comment 1`] = `
               type="button"
             >
               <span
-                class="bp3-icon bp3-icon-edit"
-                icon="edit"
-              >
-                <svg
-                  data-icon="edit"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  width="16"
-                >
-                  <desc>
-                    edit
-                  </desc>
-                  <path
-                    d="M3.25 10.26l2.47 2.47 6.69-6.69-2.46-2.48-6.7 6.7zM.99 14.99l3.86-1.39-2.46-2.44-1.4 3.83zm12.25-14c-.48 0-.92.2-1.24.51l-1.44 1.44 2.47 2.47 1.44-1.44c.32-.32.51-.75.51-1.24.01-.95-.77-1.74-1.74-1.74z"
-                    fill-rule="evenodd"
-                  />
-                </svg>
-              </span>
-              <span
                 class="bp3-button-text"
               >
-                Edit
+                Back
               </span>
             </button>
           </div>
-          <p>
-            COMMENT: a test comment
-          </p>
-        </div>
-        <div
-          class="sc-ifAKCX jzSIMx"
-        >
-          <button
-            class="bp3-button bp3-intent-success sc-htoDjs dESvso"
-            type="submit"
-          >
-            <span
-              class="bp3-button-text"
-            >
-              Submit & Next Ballot
-            </span>
-          </button>
-          <button
-            class="bp3-button bp3-minimal"
-            type="button"
-          >
-            <span
-              class="bp3-button-text"
-            >
-              Back
-            </span>
-          </button>
         </div>
       </div>
     </div>
