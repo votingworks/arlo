@@ -360,6 +360,29 @@ def test_compute_risk(contests, batches):
 
         assert result, "Audit did not terminate but should have"
 
+    # Now test that duplication works
+    for i in range(100, 103):
+        sample["Batch {}".format(i)] = {
+            "Contest A": {"winner": 190, "loser": 190,},
+            "Contest C": {"winner": 200, "loser": 140,},
+        }
+        times_sampled["Batch {}".format(i)] = 2
+
+    for contest in contests:
+        computed_p, result = macro.compute_risk(
+            RISK_LIMIT, contests[contest], batches, sample, times_sampled
+        )
+
+        expected_p = 0.247688222
+
+        delta = abs(expected_p - computed_p)
+
+        assert delta < 10 ** -2, "Incorrect p-value: Got {}, expected {}".format(
+            computed_p, expected_p
+        )
+
+        assert result, "Audit did not terminate but should have"
+
 
 def test_tied_contest():
 
