@@ -148,17 +148,11 @@ describe('Header', () => {
       })
 
       // Audit board name
-      const userButton = screen.getByRole('button', {
-        name: /Audit Board #1/,
-      })
-      userEvent.click(userButton)
+      await screen.findByText(/Audit Board #1/)
 
-      // Dropdown menu should show with log out option
-      const logOutButton = screen.getByRole('link', { name: 'Log out' })
-      expect(logOutButton).toHaveAttribute('href', '/auth/logout')
-
-      // No other buttons
-      expect(screen.getAllByRole('button')).toHaveLength(1)
+      // Sign Out link available for audit board
+      const signOutButton = screen.getByRole('link', { name: 'Sign Out' })
+      expect(signOutButton).toHaveAttribute('href', '/auth/logout')
     })
   })
 
