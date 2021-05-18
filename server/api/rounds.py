@@ -221,9 +221,7 @@ def batches_times_sampled(election: Election) -> Dict[Tuple[str, str], int]:
         .join(Jurisdiction)
         .filter_by(election_id=election.id)
         .group_by(Jurisdiction.name, Batch.name)
-        .values(
-            Jurisdiction.name, Batch.name, func.count(SampledBatchDraw.ticket_number)
-        )
+        .values(Jurisdiction.name, Batch.name, func.count())
     )
     return {
         (jurisdiction_name, batch_name): count
