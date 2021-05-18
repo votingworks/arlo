@@ -43,7 +43,6 @@ sentry-sdk = {extras = ["flask"], version = "*"}
 athena = {git = "https://github.com/filipzz/athena.git", editable = true, ref = "v0.8.3"}
 auth0-python = "*"
 gunicorn = "*"
-attr = "*"
 
 [requires]
 python_version = "3.8"

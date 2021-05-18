@@ -995,7 +995,7 @@ def create_round(election: Election):
             timestamp=round.created_at,
             base=activity_base(election),
             round_num=round.round_num,
-        ),
+        )
     )
 
     db_session.commit()
