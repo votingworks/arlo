@@ -101,5 +101,17 @@ def create_election():
 @restrict_access([UserType.AUDIT_ADMIN])
 def delete_election(election: Election):
     election.deleted_at = datetime.now(timezone.utc)
+
+    organization = Organization.query.get(election.organization_id)
+    activity_log.record_activity(
+        activity_log.DeleteAudit(
+            organization_id=election.organization_id,
+            organization_name=organization.name,
+            election_id=election.id,
+            audit_name=election.audit_name,
+            audit_type=election.audit_type,
+        )
+    )
+
     db_session.commit()
     return jsonify(status="ok")
