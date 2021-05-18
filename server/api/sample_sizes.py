@@ -119,12 +119,11 @@ def sample_size_options(
         elif election.audit_type == AuditType.BATCH_COMPARISON:
             validate_batch_tallies(contest)
 
-            cumulative_batch_results = rounds.cumulative_batch_results(election)
             sample_size = macro.get_sample_sizes(
                 election.risk_limit,
                 sampler_contest.from_db_contest(contest),
                 rounds.batch_tallies(election),
-                cumulative_batch_results,
+                rounds.sampled_batch_results(election),
             )
             return {"macro": {"key": "macro", "size": sample_size, "prob": None}}
 

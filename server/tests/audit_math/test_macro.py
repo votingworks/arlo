@@ -188,6 +188,7 @@ def test_get_sample_sizes(contests, batches):
     }
 
     sample = {}
+    times_sampled = {}
     for contest in contests:
         computed = macro.get_sample_sizes(
             RISK_LIMIT, contests[contest], batches, sample
@@ -206,6 +207,7 @@ def test_get_sample_sizes(contests, batches):
             "Contest B": {"winner": 200, "loser": 160,},
             "Contest C": {"winner": 200, "loser": 140,},
         }
+        times_sampled["Batch {}".format(i)] = 1
 
     expected_second_round = {
         "Contest A": 26,
@@ -231,6 +233,7 @@ def test_get_sample_sizes(contests, batches):
             "Contest A": {"winner": 190, "loser": 190,},
             "Contest C": {"winner": 200, "loser": 140,},
         }
+        times_sampled["Batch {}".format(i)] = 1
 
     expected_third_round = {
         "Contest A": 25,
@@ -253,13 +256,14 @@ def test_get_sample_sizes(contests, batches):
 def test_full_recount(contests, batches):
     # Do a full recount:
     sample = batches
+    times_sampled = {batch: 1 for batch in batches}
     for contest in contests:
 
         with pytest.raises(ValueError, match=r"All ballots have already been counted!"):
             macro.get_sample_sizes(RISK_LIMIT, contests[contest], batches, sample)
 
         computed_p, result = macro.compute_risk(
-            RISK_LIMIT, contests[contest], batches, sample
+            RISK_LIMIT, contests[contest], batches, sample, times_sampled
         )
 
         assert computed_p == 0.0, "Incorrect p-value: Got {}, expected {}".format(
@@ -311,8 +315,9 @@ def test_worst_case():
     }
 
     sample = {"Batch 1": {"test1": {"winner": 0, "loser": 500}}}
+    times_sampled = {"Batch 1": 1}
 
-    assert macro.compute_risk(RISK_LIMIT, contest, batches, sample) == (
+    assert macro.compute_risk(RISK_LIMIT, contest, batches, sample, times_sampled) == (
         Decimal(1.0),
         False,
     )
@@ -321,6 +326,7 @@ def test_worst_case():
 def test_compute_risk(contests, batches):
 
     sample = {}
+    times_sampled = {}
 
     # Draws with taint of 0
     for i in range(31):
@@ -329,6 +335,7 @@ def test_compute_risk(contests, batches):
             "Contest B": {"winner": 200, "loser": 160,},
             "Contest C": {"winner": 200, "loser": 140,},
         }
+        times_sampled["Batch {}".format(i)] = 1
 
     # draws with taint of 0.04047619
     for i in range(100, 106):
@@ -336,10 +343,34 @@ def test_compute_risk(contests, batches):
             "Contest A": {"winner": 190, "loser": 190,},
             "Contest C": {"winner": 200, "loser": 140,},
         }
+        times_sampled["Batch {}".format(i)] = 1
 
     for contest in contests:
         computed_p, result = macro.compute_risk(
-            RISK_LIMIT, contests[contest], batches, sample
+            RISK_LIMIT, contests[contest], batches, sample, times_sampled
+        )
+
+        expected_p = 0.247688222
+
+        delta = abs(expected_p - computed_p)
+
+        assert delta < 10 ** -2, "Incorrect p-value: Got {}, expected {}".format(
+            computed_p, expected_p
+        )
+
+        assert result, "Audit did not terminate but should have"
+
+    # Now test that duplication works
+    for i in range(100, 103):
+        sample["Batch {}".format(i)] = {
+            "Contest A": {"winner": 190, "loser": 190,},
+            "Contest C": {"winner": 200, "loser": 140,},
+        }
+        times_sampled["Batch {}".format(i)] = 2
+
+    for contest in contests:
+        computed_p, result = macro.compute_risk(
+            RISK_LIMIT, contests[contest], batches, sample, times_sampled
         )
 
         expected_p = 0.247688222
@@ -377,6 +408,7 @@ def test_tied_contest():
         }
 
     sample_results = {}
+    times_sampled = {}
 
     sample_size = macro.get_sample_sizes(RISK_LIMIT, contest, batches, sample_results)
 
@@ -392,14 +424,20 @@ def test_tied_contest():
             }
         }
     }
+    times_sampled = {0: 1}
 
-    computed_p, res = macro.compute_risk(RISK_LIMIT, contest, batches, sample_results)
+    computed_p, res = macro.compute_risk(
+        RISK_LIMIT, contest, batches, sample_results, times_sampled
+    )
 
     assert computed_p > ALPHA
     assert not res
 
     # Now do a full hand recount
-    computed_p, res = macro.compute_risk(RISK_LIMIT, contest, batches, batches)
+    times_sampled = {batch: 1 for batch in batches}
+    computed_p, res = macro.compute_risk(
+        RISK_LIMIT, contest, batches, batches, times_sampled
+    )
 
     assert not computed_p
     assert res
@@ -431,6 +469,7 @@ def test_close_contest():
     }
 
     sample_results = {}
+    times_sampled = {}
 
     sample_size = macro.get_sample_sizes(RISK_LIMIT, contest, batches, sample_results)
 
@@ -446,14 +485,20 @@ def test_close_contest():
             }
         }
     }
+    times_sampled[1] = 1
 
-    computed_p, res = macro.compute_risk(RISK_LIMIT, contest, batches, sample_results)
+    computed_p, res = macro.compute_risk(
+        RISK_LIMIT, contest, batches, sample_results, times_sampled
+    )
 
     assert computed_p > ALPHA
     assert not res
 
     # Now do a full hand recount
-    computed_p, res = macro.compute_risk(RISK_LIMIT, contest, batches, batches)
+    times_sampled = {batch: 1 for batch in batches}
+    computed_p, res = macro.compute_risk(
+        RISK_LIMIT, contest, batches, batches, times_sampled
+    )
 
     assert not computed_p
     assert res

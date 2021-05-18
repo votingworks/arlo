@@ -69,15 +69,18 @@ def count_audited_votes(election: Election, round: Round):
     for round_contest in round.round_contests:
         contest = round_contest.contest
 
-        # For batch audits, count the votes from each BatchResult
+        # For batch audits, count the votes for each audited Batch
         if election.audit_type == AuditType.BATCH_COMPARISON:
             vote_counts = dict(
-                BatchResult.query.join(
-                    SampledBatchDraw, BatchResult.batch_id == SampledBatchDraw.batch_id
+                BatchResult.query.filter(
+                    BatchResult.batch_id.in_(
+                        SampledBatchDraw.query.filter_by(round_id=round.id)
+                        .with_entities(SampledBatchDraw.batch_id)
+                        .subquery()
+                    )
                 )
-                .filter_by(round_id=round.id)
                 .group_by(BatchResult.contest_choice_id)
-                .values(BatchResult.contest_choice_id, func.sum(BatchResult.result),)
+                .values(BatchResult.contest_choice_id, func.sum(BatchResult.result))
             )
 
         # Otherwise, handle ballot polling, ballot comparison, and hybrid
@@ -173,7 +176,7 @@ def batch_tallies(election: Election) -> BatchTallies:
     }
 
 
-def cumulative_batch_results(election: Election) -> BatchTallies:
+def sampled_batch_results(election: Election,) -> BatchTallies:
     results_by_batch_and_choice = (
         Batch.query.join(Jurisdiction)
         .filter_by(election_id=election.id)
@@ -187,12 +190,12 @@ def cumulative_batch_results(election: Election) -> BatchTallies:
                 BatchResult.contest_choice_id == ContestChoice.id,
             ),
         )
-        .group_by(Jurisdiction.id, Batch.id, ContestChoice.id)
+        .distinct(Jurisdiction.id, Batch.id, ContestChoice.id)
         .values(
             Jurisdiction.name,
             Batch.name,
             ContestChoice.id,
-            func.coalesce(func.sum(BatchResult.result), 0),
+            func.coalesce(BatchResult.result, 0),
         )
     )
     results_by_batch = group_by(
@@ -209,6 +212,20 @@ def cumulative_batch_results(election: Election) -> BatchTallies:
             }
         }
         for batch_key, batch_results in results_by_batch.items()
+    }
+
+
+def batches_times_sampled(election: Election) -> Dict[Tuple[str, str], int]:
+    sampled_batch_draw_counts = (
+        SampledBatchDraw.query.join(Batch)
+        .join(Jurisdiction)
+        .filter_by(election_id=election.id)
+        .group_by(Jurisdiction.name, Batch.name)
+        .values(Jurisdiction.name, Batch.name, func.count())
+    )
+    return {
+        (jurisdiction_name, batch_name): count
+        for jurisdiction_name, batch_name, count in sampled_batch_draw_counts
     }
 
 
@@ -415,7 +432,8 @@ def calculate_risk_measurements(election: Election, round: Round):
                 election.risk_limit,
                 sampler_contest.from_db_contest(contest),
                 batch_tallies(election),
-                cumulative_batch_results(election),
+                sampled_batch_results(election),
+                batches_times_sampled(election),
             )
         elif election.audit_type == AuditType.BALLOT_COMPARISON:
             p_value, is_complete = supersimple.compute_risk(

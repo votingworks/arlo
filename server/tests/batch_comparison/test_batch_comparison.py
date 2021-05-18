@@ -321,8 +321,7 @@ def test_batch_comparison_round_2(
 
     # Record results for the second jurisdiction
     batch_results = {
-        batch["id"]: {choice_ids[0]: 400, choice_ids[1]: 50, choice_ids[2]: 40,}
-        for batch in batches
+        batches[0]["id"]: {choice_ids[0]: 100, choice_ids[1]: 100, choice_ids[2]: 40,}
     }
 
     rv = put_json(
@@ -359,7 +358,7 @@ def test_batch_comparison_round_2(
 
     # Check that we automatically select the sample size
     batch_draws = SampledBatchDraw.query.filter_by(round_id=rounds[1]["id"]).all()
-    assert len(batch_draws) == 4
+    assert len(batch_draws) == 5
 
     # Check that we're sampling batches from the jurisdiction that uploaded manifests
     sampled_jurisdictions = {draw.batch.jurisdiction_id for draw in batch_draws}
@@ -425,3 +424,91 @@ def test_batch_comparison_custom_sample_size_validation(
         assert json.loads(rv.data) == {
             "errors": [{"message": expected_error, "errorType": "Bad Request",}]
         }
+
+
+def test_batch_comparison_batches_sampled_multiple_times(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    round_1_id: str,
+    audit_board_round_1_ids: List[str],  # pylint: disable=unused-argument
+    snapshot,
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/contest")
+    assert rv.status_code == 200
+    contests = json.loads(rv.data)["contests"]
+
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches"
+    )
+    assert rv.status_code == 200
+    batches = json.loads(rv.data)["batches"]
+
+    # Make sure some batches got sampled multiple times
+    assert len(batches) < (
+        SampledBatchDraw.query.join(Batch)
+        .filter_by(jurisdiction_id=jurisdiction_ids[0])
+        .count()
+    )
+
+    # Record batch results that match batch tallies exactly
+    choice_ids = [choice["id"] for choice in contests[0]["choices"]]
+    batch_results = {
+        # Batch 1
+        batches[0]["id"]: {choice_ids[0]: 500, choice_ids[1]: 250, choice_ids[2]: 250,},
+        # Batch 8
+        batches[1]["id"]: {choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 50,},
+        # Batch 6
+        batches[2]["id"]: {choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 50,},
+    }
+
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/results",
+        batch_results,
+    )
+    assert_ok(rv)
+
+    # Now do the second jurisdiction
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/audit-board",
+        [{"name": "Audit Board #1"}],
+    )
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/batches"
+    )
+    assert rv.status_code == 200
+    batches = json.loads(rv.data)["batches"]
+
+    # Record batch results that match batch tallies exactly
+    batch_results = {
+        # Batch 3
+        batches[0]["id"]: {choice_ids[0]: 500, choice_ids[1]: 250, choice_ids[2]: 250,}
+    }
+
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/batches/results",
+        batch_results,
+    )
+    assert_ok(rv)
+
+    # Audit should be complete
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/round")
+    rounds = json.loads(rv.data)["rounds"]
+    assert rounds[0]["endedAt"] is not None
+    assert rounds[0]["isAuditComplete"] is True
+
+    # Test the audit report
+    rv = client.get(f"/api/election/{election_id}/report")
+    assert_match_report(rv.data, snapshot)
