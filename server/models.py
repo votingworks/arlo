@@ -845,8 +845,9 @@ class BackgroundTask(BaseModel):
     error = Column(Text)
 
 
-class ActivityLogRecord(BaseModel):
+class ActivityLogRecord(Base):
     id = Column(String(200), primary_key=True)
+    timestamp = Column(UTCDateTime, nullable=False)
     organization_id = Column(
         String(200), ForeignKey("organization.id", ondelete="cascade"), nullable=False
     )

@@ -6,83 +6,77 @@ import requests
 from ..config import SLACK_WEBHOOK_URL, HTTP_ORIGIN
 from ..models import ActivityLogRecord
 from ..database import db_session
-from .activity_log import *  # pylint: disable=wildcard-import
 from . import activity_log
 
 
-def slack_message(activity: ActivityBase):
-    org_link = urljoin(HTTP_ORIGIN, f"/support/orgs/{activity.organization_id}")
+def slack_message(activity: activity_log.Activity):
+    base = activity.base
+    org_link = urljoin(HTTP_ORIGIN, f"/support/orgs/{base.organization_id}")
     org_context = dict(
-        type="mrkdwn", text=f":flag-us: <{org_link}|{activity.organization_name}>",
+        type="mrkdwn", text=f":flag-us: <{org_link}|{base.organization_name}>",
     )
     user_context = dict(
         type="mrkdwn",
         text=(
-            f":technologist: Support user {activity.support_user_email} logged in as audit admin {activity.user_display_name}"
-            if activity.support_user_email
-            else f":technologist: Audit admin {activity.user_display_name}"
+            f":technologist: Support user {base.support_user_email} logged in as audit admin {base.user_key}"
+            if base.support_user_email
+            else f":technologist: Audit admin {base.user_key}"
         ),
     )
-    assert activity.timestamp is not None
     time_context = dict(
         type="mrkdwn",
         text=f":clock3: <!date^{int(activity.timestamp.timestamp())}^{{date_short}}, {{time_secs}}|{activity.timestamp.isoformat()}>",
     )
 
-    org_level_activity_context = dict(
-        type="context", elements=[org_context, time_context, user_context],
+    audit_link = urljoin(HTTP_ORIGIN, f"/support/audits/{base.election_id}")
+    audit_type = dict(
+        BALLOT_POLLING="Ballot Polling",
+        BALLOT_COMPARISON="Ballot Comparison",
+        BATCH_COMPARISON="Batch Comparison",
+        HYBRID="Hybrid",
+    )[base.audit_type]
+    audit_context = dict(
+        type="mrkdwn",
+        text=f":microscope: <{audit_link}|{base.audit_name}> ({audit_type})",
     )
 
-    acting_user = activity.support_user_email or activity.user_display_name
+    acting_user = base.support_user_email or base.user_key
 
-    if isinstance(activity, AuditActivity):
-        audit_link = urljoin(HTTP_ORIGIN, f"/support/audits/{activity.election_id}")
-        audit_type = dict(
-            BALLOT_POLLING="Ballot Polling",
-            BALLOT_COMPARISON="Ballot Comparison",
-            BATCH_COMPARISON="Batch Comparison",
-            HYBRID="Hybrid",
-        )[activity.audit_type]
-        audit_context = dict(
-            type="mrkdwn",
-            text=f":microscope: <{audit_link}|{activity.audit_name}> ({audit_type})",
-        )
-        audit_level_activity_context = dict(
-            type="context",
-            elements=[org_context, audit_context, time_context, user_context],
-        )
-
-    if isinstance(activity, CreateAudit):
+    if isinstance(activity, activity_log.CreateAudit):
         return dict(
-            text=f"{acting_user} created an audit: {activity.audit_name} ({audit_type})",
+            text=f"{acting_user} created an audit: {base.audit_name} ({audit_type})",
             blocks=[
                 dict(
                     type="section",
                     text=dict(
                         type="mrkdwn",
-                        text=f"*{acting_user} created an audit:*\n*<{audit_link}|{activity.audit_name}>* ({audit_type})",
+                        text=f"*{acting_user} created an audit: <{audit_link}|{base.audit_name}>* ({audit_type})",
                     ),
                 ),
-                org_level_activity_context,
+                dict(
+                    type="context", elements=[org_context, time_context, user_context],
+                ),
             ],
         )
 
-    if isinstance(activity, DeleteAudit):
+    if isinstance(activity, activity_log.DeleteAudit):
         return dict(
-            text=f"{acting_user} deleted an audit: {activity.audit_name} ({audit_type})",
+            text=f"{acting_user} deleted an audit: {base.audit_name} ({audit_type})",
             blocks=[
                 dict(
                     type="section",
                     text=dict(
                         type="mrkdwn",
-                        text=f"*{acting_user} deleted an audit:*\n*<{audit_link}|{activity.audit_name}>* ({audit_type})",
+                        text=f"*{acting_user} deleted an audit: <{audit_link}|{base.audit_name}>* ({audit_type})",
                     ),
                 ),
-                org_level_activity_context,
+                dict(
+                    type="context", elements=[org_context, time_context, user_context],
+                ),
             ],
         )
 
-    if isinstance(activity, StartRound):
+    if isinstance(activity, activity_log.StartRound):
         return dict(
             text=f"{acting_user} started round {activity.round_num}",
             blocks=[
@@ -93,22 +87,48 @@ def slack_message(activity: ActivityBase):
                         text=f"*{acting_user} started round {activity.round_num}*",
                     ),
                 ),
-                audit_level_activity_context,
+                dict(
+                    type="context",
+                    elements=[org_context, audit_context, time_context, user_context],
+                ),
             ],
         )
 
-    if isinstance(activity, EndRound):
+    if isinstance(activity, activity_log.EndRound):
+        audit_status = (
+            "audit complete"
+            if activity.is_audit_complete
+            else "another round is needed"
+        )
         return dict(
-            text=f"Round {activity.round_num} ended",
+            text=f"Round {activity.round_num} ended, {audit_status}",
             blocks=[
                 dict(
                     type="section",
                     text=dict(
-                        type="mrkdwn", text=f"*Round {activity.round_num} ended*"
+                        type="mrkdwn",
+                        text=f"*Round {activity.round_num} ended, {audit_status}*",
                     ),
                 ),
                 dict(
                     type="context", elements=[org_context, audit_context, time_context],
+                ),
+            ],
+        )
+
+    if isinstance(activity, activity_log.CalculateSampleSizes):
+        return dict(
+            text=f"{acting_user} calculated sample sizes",
+            blocks=[
+                dict(
+                    type="section",
+                    text=dict(
+                        type="mrkdwn", text=f"*{acting_user} calculated sample sizes*"
+                    ),
+                ),
+                dict(
+                    type="context",
+                    elements=[org_context, audit_context, time_context, user_context],
                 ),
             ],
         )
@@ -118,7 +138,7 @@ def slack_message(activity: ActivityBase):
     )
 
 
-def watch_and_send_slack_notifications():
+def watch_and_send_slack_notifications() -> None:
     if SLACK_WEBHOOK_URL is None:
         return
 
@@ -129,15 +149,21 @@ def watch_and_send_slack_notifications():
             ActivityLogRecord.query.filter(
                 ActivityLogRecord.posted_to_slack_at.is_(None)
             )
-            .order_by(ActivityLogRecord.created_at.desc())
+            .order_by(ActivityLogRecord.timestamp)
             .limit(1)
             .one_or_none()
         )
         if record:
-            ActivityClass: ActivityBase = getattr(  # pylint: disable=invalid-name
+            ActivityClass = getattr(  # pylint: disable=invalid-name
                 activity_log, record.activity_name
             )
-            activity = ActivityClass(**dict(record.info, timestamp=record.created_at))
+            activity: activity_log.Activity = ActivityClass(
+                **dict(
+                    record.info,
+                    base=activity_log.ActivityBase(**record.info["base"]),
+                    timestamp=record.timestamp,
+                )
+            )
 
             rv = requests.post(SLACK_WEBHOOK_URL, json=slack_message(activity))
             if rv.status_code != 200:

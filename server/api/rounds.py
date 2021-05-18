@@ -39,7 +39,12 @@ from ..worker.tasks import (
     create_background_task,
     serialize_background_task,
 )
-from ..activity_log import activity_log
+from ..activity_log import (
+    record_activity,
+    activity_base,
+    StartRound,
+    EndRound,
+)
 
 
 def get_current_round(election: Election) -> Optional[Round]:
@@ -462,15 +467,13 @@ def end_round(election: Election, round: Round):
     calculate_risk_measurements(election, round)
     round.ended_at = datetime.now(timezone.utc)
 
-    organization = Organization.query.get(election.organization_id)
-    activity_log.record_activity(
-        activity_log.EndRound(
-            organization_id=election.organization_id,
-            organization_name=organization.name,
-            election_id=election.id,
-            audit_name=election.audit_name,
-            audit_type=election.audit_type,
+    db_session.flush()  # Ensure round contest results are queryable by is_audit_complete
+    record_activity(
+        EndRound(
+            timestamp=round.ended_at,
+            base=activity_base(election),
             round_num=round.round_num,
+            is_audit_complete=is_audit_complete(round),
         )
     )
 
@@ -987,16 +990,12 @@ def create_round(election: Election):
         draw_sample, dict(election_id=election.id, round_id=round.id),
     )
 
-    organization = Organization.query.get(election.organization_id)
-    activity_log.record_activity(
-        activity_log.StartRound(
-            organization_id=election.organization_id,
-            organization_name=organization.name,
-            election_id=election.id,
-            audit_name=election.audit_name,
-            audit_type=election.audit_type,
+    record_activity(
+        StartRound(
+            timestamp=round.created_at,
+            base=activity_base(election),
             round_num=round.round_num,
-        )
+        ),
     )
 
     db_session.commit()

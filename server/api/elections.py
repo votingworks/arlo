@@ -8,7 +8,12 @@ from ..models import *  # pylint: disable=wildcard-import
 from ..database import db_session
 from ..auth import check_access, UserType, restrict_access
 from ..util.jsonschema import JSONDict, validate
-from ..activity_log import activity_log
+from ..activity_log import (
+    CreateAudit,
+    DeleteAudit,
+    activity_base,
+    record_activity,
+)
 
 ELECTION_SCHEMA = {
     "type": "object",
@@ -81,15 +86,9 @@ def create_election():
 
     db_session.add(election)
 
-    organization = Organization.query.get(election.organization_id)
-    activity_log.record_activity(
-        activity_log.CreateAudit(
-            organization_id=election.organization_id,
-            organization_name=organization.name,
-            election_id=election.id,
-            audit_name=election.audit_name,
-            audit_type=election.audit_type,
-        )
+    db_session.flush()  # Ensure we can read election.organization in activity_base
+    record_activity(
+        CreateAudit(timestamp=election.created_at, base=activity_base(election))
     )
 
     db_session.commit()
@@ -102,15 +101,8 @@ def create_election():
 def delete_election(election: Election):
     election.deleted_at = datetime.now(timezone.utc)
 
-    organization = Organization.query.get(election.organization_id)
-    activity_log.record_activity(
-        activity_log.DeleteAudit(
-            organization_id=election.organization_id,
-            organization_name=organization.name,
-            election_id=election.id,
-            audit_name=election.audit_name,
-            audit_type=election.audit_type,
-        )
+    record_activity(
+        DeleteAudit(timestamp=election.deleted_at, base=activity_base(election))
     )
 
     db_session.commit()
