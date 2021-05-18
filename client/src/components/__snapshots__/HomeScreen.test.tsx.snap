@@ -6,13 +6,13 @@ exports[`Home screen redirects to audit screen if only one election exists for J
     class="Toastify"
   />
   <div
-    class="sc-jtRfpW jThIAk"
+    class="sc-eXEjpC fLqhFD"
   >
     <div
       class="bp3-navbar sc-bxivhb fJOOqK"
     >
       <div
-        class="sc-bwzfXH sc-EHOje bgNFlR"
+        class="sc-bwzfXH sc-bZQynM ezCmGO"
       >
         <div
           class="bp3-navbar-group bp3-align-left"
@@ -40,7 +40,7 @@ exports[`Home screen redirects to audit screen if only one election exists for J
           class="bp3-navbar-group bp3-align-right"
         >
           <div
-            class="sc-ifAKCX fWzXiF"
+            class="sc-EHOje fOUAJN"
           >
             <div
               class="bp3-popover-wrapper bp3-fill"
@@ -87,7 +87,7 @@ exports[`Home screen redirects to audit screen if only one election exists for J
       class="sc-bdVaJa bKocXA"
     >
       <div
-        class="bp3-callout sc-cMljjf IXxXU"
+        class="bp3-callout sc-gPEVay bivkYG"
       >
         <div
           class="sc-bwzfXH jiphYj"
@@ -96,7 +96,7 @@ exports[`Home screen redirects to audit screen if only one election exists for J
             class="text"
           >
             <h3
-              class="bp3-heading sc-brqgnP bTyIdG"
+              class="bp3-heading sc-jDwBTQ kSuPTu"
             >
               Test Audit
             </h3>
@@ -112,22 +112,22 @@ exports[`Home screen redirects to audit screen if only one election exists for J
         </div>
       </div>
       <div
-        class="sc-bwzfXH sc-kgAjT eWUQgE"
+        class="sc-bwzfXH sc-hmzhuo hwfNhd"
       >
         <h2
-          class="bp3-heading sc-bZQynM eVSWVp"
+          class="bp3-heading sc-dnqmqq dMLSzf"
         >
           Audit Source Data
         </h2>
         <form>
           <div
-            class="sc-gqjmRU bpifYU"
+            class="sc-fjdhpX jaSwrG"
           >
             <h2
-              class="bp3-heading sc-bZQynM eVSWVp"
+              class="bp3-heading sc-dnqmqq dMLSzf"
             />
             <div
-              class="sc-fjdhpX bHlbRA"
+              class="sc-kAzzGY iPDebS"
             >
               <h4
                 class="bp3-heading"
@@ -135,7 +135,7 @@ exports[`Home screen redirects to audit screen if only one election exists for J
                 Ballot Manifest
               </h4>
               <div
-                class="sc-jzJRlG lkbpuy"
+                class="sc-chPdSV dGLcDt"
               >
                 Click "Browse" to choose the appropriate Ballot
                 Manifest file from your computer. This file should be a
@@ -155,7 +155,7 @@ exports[`Home screen redirects to audit screen if only one election exists for J
               </div>
             </div>
             <div
-              class="sc-fjdhpX bHlbRA"
+              class="sc-kAzzGY iPDebS"
             >
               <label
                 class="bp3-file-input"
@@ -174,7 +174,7 @@ exports[`Home screen redirects to audit screen if only one election exists for J
             </div>
             <div>
               <button
-                class="bp3-button bp3-intent-primary sc-gZMcBi eZVGYn"
+                class="bp3-button bp3-intent-primary sc-jTzLTM kWdIFo"
                 type="submit"
               >
                 <span
