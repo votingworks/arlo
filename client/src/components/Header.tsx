@@ -228,6 +228,19 @@ const Header: React.FC<{}> = () => {
           </AuditBoardInnerBar>
         </AuditBoardNav>
       )}
+      {!supportMatch && !auth && (
+        <Nav>
+          <InnerBar>
+            <NavbarGroup align={Alignment.LEFT}>
+              <NavbarHeading>
+                <Link to="/">
+                  <img src="/arlo.png" alt="Arlo, by VotingWorks" />
+                </Link>
+              </NavbarHeading>
+            </NavbarGroup>
+          </InnerBar>
+        </Nav>
+      )}
     </>
   )
 }
