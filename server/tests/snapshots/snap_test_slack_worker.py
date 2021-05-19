@@ -157,3 +157,37 @@ snapshots["test_slack_worker_message_format 5"] = {
     ],
     "text": "Round 2 ended, audit complete",
 }
+
+snapshots["test_slack_worker_message_format 6"] = {
+    "blocks": [
+        {
+            "text": {
+                "text": "*test_user@example.com calculated sample sizes*",
+                "type": "mrkdwn",
+            },
+            "type": "section",
+        },
+        {
+            "elements": [
+                {
+                    "text": ":flag-us: <http://localhost:3000/support/orgs/test_org_id|Test Org>",
+                    "type": "mrkdwn",
+                },
+                {
+                    "text": ":microscope: <http://localhost:3000/support/audits/test_election_id|Test Audit> (Hybrid)",
+                    "type": "mrkdwn",
+                },
+                {
+                    "text": ":clock3: <!date^1621449073^{date_short}, {time_secs}|2021-05-19T18:31:13.576657+00:00>",
+                    "type": "mrkdwn",
+                },
+                {
+                    "text": ":technologist: Audit admin test_user@example.com",
+                    "type": "mrkdwn",
+                },
+            ],
+            "type": "context",
+        },
+    ],
+    "text": "test_user@example.com calculated sample sizes",
+}

@@ -161,3 +161,7 @@ def test_slack_worker_message_format(snapshot):
             activity_log.EndRound(timestamp, base, round_num=2, is_audit_complete=True)
         )
     )
+
+    snapshot.assert_match(
+        slack_worker.slack_message(activity_log.CalculateSampleSizes(timestamp, base))
+    )
