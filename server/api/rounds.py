@@ -39,6 +39,12 @@ from ..worker.tasks import (
     create_background_task,
     serialize_background_task,
 )
+from ..activity_log import (
+    record_activity,
+    activity_base,
+    StartRound,
+    EndRound,
+)
 
 
 def get_current_round(election: Election) -> Optional[Round]:
@@ -460,6 +466,16 @@ def end_round(election: Election, round: Round):
     count_audited_votes(election, round)
     calculate_risk_measurements(election, round)
     round.ended_at = datetime.now(timezone.utc)
+
+    db_session.flush()  # Ensure round contest results are queryable by is_audit_complete
+    record_activity(
+        EndRound(
+            timestamp=round.ended_at,
+            base=activity_base(election),
+            round_num=round.round_num,
+            is_audit_complete=is_audit_complete(round),
+        )
+    )
 
 
 def is_round_complete(election: Election, round: Round) -> bool:
@@ -972,6 +988,14 @@ def create_round(election: Election):
     # Create a new task to draw the sample in the background.
     round.draw_sample_task = create_background_task(
         draw_sample, dict(election_id=election.id, round_id=round.id),
+    )
+
+    record_activity(
+        StartRound(
+            timestamp=round.created_at,
+            base=activity_base(election),
+            round_num=round.round_num,
+        )
     )
 
     db_session.commit()

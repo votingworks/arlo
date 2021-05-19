@@ -23,6 +23,7 @@ from ..worker.tasks import (
     background_task,
     UserError,
 )
+from .. import activity_log
 
 
 def validate_all_manifests_uploaded(contest: Contest):
@@ -239,6 +240,15 @@ def get_sample_sizes(election: Election):
         election.sample_size_options_task = create_background_task(
             first_round_sample_size_options, dict(election_id=election.id)
         )
+
+        db_session.flush()  # Ensure we can read task.created_at
+        activity_log.record_activity(
+            activity_log.CalculateSampleSizes(
+                timestamp=election.sample_size_options_task.created_at,
+                base=activity_log.activity_base(election),
+            )
+        )
+
         db_session.commit()
 
     # If we've already started the first round, return which sample size was
