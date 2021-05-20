@@ -11,13 +11,8 @@ export const BallotRow = styled.div`
   justify-content: flex-start;
   margin: 20px 0;
 
-  .ballot-side {
-    width: 200px;
-    padding: 20px 0;
-  }
   .ballot-main {
-    width: 50%;
-    padding: 20px;
+    width: 100%;
 
     .bp3-button {
       text-align: center;
@@ -75,4 +70,29 @@ export const LabelText = styled.label`
 export const NameField = styled(Field)`
   margin-bottom: 20px;
   width: 300px;
+`
+
+export const BlockCheckboxes = styled.div`
+  display: flex;
+  justify-content: space-between;
+  @media only screen and (max-width: 767px) {
+    flex-direction: column;
+  }
+`
+
+export const LeftCheckboxes = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  @media only screen and (max-width: 767px) {
+    width: 100%;
+  }
+`
+
+export const RightCheckboxes = styled.div`
+  width: 30%;
+  @media only screen and (max-width: 767px) {
+    margin-top: 20px;
+    width: 100%;
+  }
 `
