@@ -220,7 +220,7 @@ describe('Ballot Polling', () => {
         cy.get('input[type="checkbox"]')
           .first()
           .click({ force: true })
-        cy.findByText('Review').click()
+        cy.findByRole('button', { name: 'Submit Selections' }).click()
         cy.findByText('Submit & Next Ballot').click()
       })
       cy.contains('Ballots for Audit Board #1')
