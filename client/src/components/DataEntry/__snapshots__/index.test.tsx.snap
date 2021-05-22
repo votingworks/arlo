@@ -142,7 +142,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                             Contest 1
                           </h3>
                           <label
-                            class="bp3-control bp3-checkbox sc-brqgnP gPLqZU"
+                            class="bp3-control bp3-checkbox sc-brqgnP kIOuuT"
                           >
                             <input
                               type="checkbox"
@@ -158,7 +158,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                             </span>
                           </label>
                           <label
-                            class="bp3-control bp3-checkbox sc-brqgnP gPLqZU"
+                            class="bp3-control bp3-checkbox sc-brqgnP kIOuuT"
                           >
                             <input
                               type="checkbox"
@@ -178,7 +178,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                           class="sc-kEYyzF bzbCzW"
                         >
                           <label
-                            class="bp3-control bp3-checkbox sc-brqgnP gPLqZU"
+                            class="bp3-control bp3-checkbox sc-brqgnP kIOuuT"
                           >
                             <input
                               type="checkbox"
@@ -194,7 +194,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                             </span>
                           </label>
                           <label
-                            class="bp3-control bp3-checkbox sc-brqgnP gPLqZU"
+                            class="bp3-control bp3-checkbox sc-brqgnP kIOuuT"
                           >
                             <input
                               type="checkbox"
@@ -236,7 +236,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                             Contest 2
                           </h3>
                           <label
-                            class="bp3-control bp3-checkbox sc-brqgnP gPLqZU"
+                            class="bp3-control bp3-checkbox sc-brqgnP kIOuuT"
                           >
                             <input
                               type="checkbox"
@@ -252,7 +252,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                             </span>
                           </label>
                           <label
-                            class="bp3-control bp3-checkbox sc-brqgnP gPLqZU"
+                            class="bp3-control bp3-checkbox sc-brqgnP kIOuuT"
                           >
                             <input
                               type="checkbox"
@@ -272,7 +272,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                           class="sc-kEYyzF bzbCzW"
                         >
                           <label
-                            class="bp3-control bp3-checkbox sc-brqgnP gPLqZU"
+                            class="bp3-control bp3-checkbox sc-brqgnP kIOuuT"
                           >
                             <input
                               type="checkbox"
@@ -288,7 +288,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                             </span>
                           </label>
                           <label
-                            class="bp3-control bp3-checkbox sc-brqgnP gPLqZU"
+                            class="bp3-control bp3-checkbox sc-brqgnP kIOuuT"
                           >
                             <input
                               type="checkbox"

@@ -37,6 +37,7 @@ const BallotAudit: React.FC<IProps> = ({
   contests,
   interpretations,
   setInterpretations,
+  goReview,
 }: IProps) => {
   return (
     <BallotRow>
@@ -47,6 +48,7 @@ const BallotAudit: React.FC<IProps> = ({
           enableReinitialize
           onSubmit={async values => {
             await setInterpretations(values.interpretations)
+            goReview()
           }}
         >
           {({

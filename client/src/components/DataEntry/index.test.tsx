@@ -222,7 +222,7 @@ describe('DataEntry', () => {
 
         userEvent.click(
           await screen.findByRole('button', {
-            name: 'Ballot 2112 Not Found',
+            name: 'Ballot Not Found',
           })
         )
         await waitFor(() => {
@@ -328,6 +328,7 @@ describe('DataEntry', () => {
         userEvent.click(
           screen.getByRole('button', { name: 'Submit Selections' })
         )
+        await screen.findByText('Submit & Next Ballot')
         expect(
           await screen.findByRole('button', { name: 'Choice One' })
         ).toBeDisabled()

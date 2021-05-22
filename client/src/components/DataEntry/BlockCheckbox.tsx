@@ -37,10 +37,13 @@ const Block = styled.label`
       &.small {
         height: 2em;
       }
+    }
 
-      input:checked ~ .bp3-control-indicator {
-        background-color: #137cbd;
-      }
+    input:checked ~ .bp3-control-indicator,
+    &:hover .bp3-control-indicator {
+      background-color: ${Colors.BLUE3};
+      background-image: none;
+      color: #ffffff;
     }
   }
 `
