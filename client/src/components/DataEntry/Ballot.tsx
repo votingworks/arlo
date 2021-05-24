@@ -188,7 +188,7 @@ const Ballot: React.FC<IProps> = ({
     if (!auditing) {
       goReview()
     }
-  }, [auditing])
+  }, [auditing, goReview])
 
   const contestsHash = hashBy(contests, c => c.id)
   useEffect(() => {
