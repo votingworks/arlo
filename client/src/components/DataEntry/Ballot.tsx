@@ -160,25 +160,6 @@ const Ballot: React.FC<IProps> = ({
     setAuditing(false)
   }
 
-  const goReview = () => {
-    confirm({
-      interpretations,
-      contests,
-      onYesClick: async () => {
-        submitBallot(
-          ballot.id,
-          BallotStatus.AUDITED,
-          interpretations.filter(
-            ({ interpretation }) => interpretation !== null
-          )
-        )
-        setAuditing(true)
-        nextBallot()
-      },
-    })
-    setAuditing(true)
-  }
-
   const submitNotFound = async () => {
     await submitBallot(ballot.id, BallotStatus.NOT_FOUND, [])
     nextBallot()
@@ -186,9 +167,32 @@ const Ballot: React.FC<IProps> = ({
 
   useEffect(() => {
     if (!auditing) {
-      goReview()
+      confirm({
+        interpretations,
+        contests,
+        onYesClick: async () => {
+          submitBallot(
+            ballot.id,
+            BallotStatus.AUDITED,
+            interpretations.filter(
+              ({ interpretation }) => interpretation !== null
+            )
+          )
+          setAuditing(true)
+          nextBallot()
+        },
+      })
+      setAuditing(true)
     }
-  }, [auditing, goReview])
+  }, [
+    auditing,
+    confirm,
+    interpretations,
+    contests,
+    submitBallot,
+    ballot,
+    nextBallot,
+  ])
 
   const contestsHash = hashBy(contests, c => c.id)
   useEffect(() => {
@@ -259,7 +263,6 @@ const Ballot: React.FC<IProps> = ({
               <div>
                 <BallotAudit
                   contests={contests}
-                  // goReview={goReview}
                   goReview={() => setAuditing(false)}
                   interpretations={interpretations}
                   setInterpretations={setInterpretationsFunc}
