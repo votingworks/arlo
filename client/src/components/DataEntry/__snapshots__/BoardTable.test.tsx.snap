@@ -72,7 +72,7 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
             Audit Board #1
           </h3>
           <div
-            class="sc-gZMcBi etSblx"
+            class="sc-gZMcBi ebxAVo"
           >
             <table
               class="sc-bdVaJa ldGrnX"
@@ -691,7 +691,7 @@ exports[`BoardTable renders container and no tabulator columns 1`] = `
             Audit Board #1
           </h3>
           <div
-            class="sc-gZMcBi etSblx"
+            class="sc-gZMcBi ebxAVo"
           >
             <table
               class="sc-bdVaJa ldGrnX"
@@ -1076,7 +1076,7 @@ exports[`BoardTable renders container and tabulator columns 1`] = `
             Audit Board #1
           </h3>
           <div
-            class="sc-gZMcBi etSblx"
+            class="sc-gZMcBi ebxAVo"
           >
             <table
               class="sc-bdVaJa ldGrnX"
@@ -1508,7 +1508,7 @@ exports[`BoardTable renders no container and no tabulator columns 1`] = `
             Audit Board #1
           </h3>
           <div
-            class="sc-gZMcBi etSblx"
+            class="sc-gZMcBi ebxAVo"
           >
             <table
               class="sc-bdVaJa ldGrnX"
@@ -1846,7 +1846,7 @@ exports[`BoardTable renders tabulator and no container columns 1`] = `
             Audit Board #1
           </h3>
           <div
-            class="sc-gZMcBi etSblx"
+            class="sc-gZMcBi ebxAVo"
           >
             <table
               class="sc-bdVaJa ldGrnX"
@@ -2231,7 +2231,7 @@ exports[`BoardTable shows audit first ballot button when no ballots are audited 
             Audit Board #1
           </h3>
           <div
-            class="sc-gZMcBi etSblx"
+            class="sc-gZMcBi ebxAVo"
           >
             <table
               class="sc-bdVaJa ldGrnX"
@@ -4079,7 +4079,7 @@ exports[`BoardTable shows audit next ballot button when some are remaining to au
             Audit Board #1
           </h3>
           <div
-            class="sc-gZMcBi etSblx"
+            class="sc-gZMcBi ebxAVo"
           >
             <table
               class="sc-bdVaJa ldGrnX"
