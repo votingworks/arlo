@@ -1,5 +1,5 @@
 import React from 'react'
-import { waitFor, screen } from '@testing-library/react'
+import { waitFor, screen, within } from '@testing-library/react'
 import { Route } from 'react-router-dom'
 import userEvent from '@testing-library/user-event'
 import { renderWithRouter, withMockFetch } from '../testUtilities'
@@ -199,12 +199,12 @@ describe('DataEntry', () => {
       ]
       await withMockFetch(expectedCalls, async () => {
         const { container } = renderBallot()
-        await screen.findByText('Enter Ballot Information')
+        await screen.findByText('Audit Ballot Selections')
         expect(container).toMatchSnapshot()
       })
     })
 
-    it('advances ballot forward and backward', async () => {
+    it('advances ballot forward', async () => {
       const expectedCalls = [
         apiCalls.getAuditBoard,
         apiCalls.getContests,
@@ -222,28 +222,21 @@ describe('DataEntry', () => {
 
         userEvent.click(
           await screen.findByRole('button', {
-            name: 'Ballot 2112 not found - move to next ballot',
+            name: 'Ballot Not Found',
           })
         )
         await waitFor(() => {
           expect(pushSpy).toBeCalledTimes(1)
         })
 
-        userEvent.click(screen.getByText('Back'))
-        await waitFor(() => {
-          expect(pushSpy).toBeCalledTimes(2)
-        })
-
         expect(pushSpy.mock.calls[0][0]).toBe(
           '/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/1789'
-        )
-        expect(pushSpy.mock.calls[1][0]).toBe(
-          '/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/313'
         )
       })
     })
 
     it('submits ballot', async () => {
+      jest.setTimeout(15000)
       const expectedCalls = [
         apiCalls.getAuditBoard,
         apiCalls.getContests,
@@ -267,12 +260,21 @@ describe('DataEntry', () => {
         userEvent.click(
           await screen.findByRole('checkbox', { name: 'Choice One' })
         )
-        userEvent.click(await screen.findByRole('button', { name: 'Review' }))
         userEvent.click(
-          await screen.findByRole('button', { name: 'Submit & Next Ballot' })
+          await screen.findByRole('button', { name: 'Submit Selections' })
+        )
+
+        const dialog = (await screen.findByRole('heading', {
+          name: /Confirm the Ballot Selections/,
+        })).closest('.bp3-dialog')! as HTMLElement
+        within(dialog).getByText('Contest 1')
+        within(dialog).getByText('Choice One')
+        userEvent.click(
+          within(dialog).getByRole('button', { name: 'Confirm Selections' })
         )
 
         await waitFor(() => {
+          expect(dialog).not.toBeInTheDocument()
           expect(history.location.pathname).toBe(
             '/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/1789'
           )
@@ -317,9 +319,8 @@ describe('DataEntry', () => {
           await screen.findByRole('button', { name: 'Audit Next Ballot' })
         )
         screen.getByRole('heading', {
-          name: 'Audit Board #1: Ballot Card Data Entry',
+          name: 'Audit Ballot Selections',
         })
-        screen.getByText('Auditing ballot 2 of 27')
 
         // Select some choices for each contest
         screen.getByRole('heading', { name: 'Contest 1' })
@@ -332,22 +333,25 @@ describe('DataEntry', () => {
         )
 
         // Review the choices
-        userEvent.click(screen.getByRole('button', { name: 'Review' }))
-        expect(
-          await screen.findByRole('button', { name: 'Choice One' })
-        ).toBeDisabled()
-        expect(
-          screen.getByRole('button', { name: 'Not on Ballot' })
-        ).toBeDisabled()
-        expect(screen.queryByText('Choice Two')).not.toBeInTheDocument()
-        expect(screen.queryByText('Choice Three')).not.toBeInTheDocument()
-        expect(screen.queryByText('Choice Four')).not.toBeInTheDocument()
-
-        // Submit the ballot
         userEvent.click(
-          screen.getByRole('button', { name: 'Submit & Next Ballot' })
+          screen.getByRole('button', { name: 'Submit Selections' })
         )
-        await screen.findByText('Auditing ballot 3 of 27')
+
+        const dialog = (await screen.findByRole('heading', {
+          name: /Confirm the Ballot Selections/,
+        })).closest('.bp3-dialog')! as HTMLElement
+        within(dialog).getByText('Contest 1')
+        within(dialog).getByText('Choice One')
+        within(dialog).getByText('Not on Ballot')
+        userEvent.click(
+          within(dialog).getByRole('button', { name: 'Confirm Selections' })
+        )
+
+        await waitFor(() => {
+          expect(dialog).not.toBeInTheDocument()
+        })
+
+        await screen.findByText('Audit Ballot Selections')
       })
     })
 
@@ -385,11 +389,24 @@ describe('DataEntry', () => {
         userEvent.click(screen.getByRole('checkbox', { name: 'Choice Three' }))
 
         // Review and submit (with no choice selected for Contest 1)
-        userEvent.click(screen.getByRole('button', { name: 'Review' }))
         userEvent.click(
-          await screen.findByRole('button', { name: 'Submit & Next Ballot' })
+          screen.getByRole('button', { name: 'Submit Selections' })
         )
-        await screen.findByText('Auditing ballot 3 of 27')
+
+        const dialog = (await screen.findByRole('heading', {
+          name: /Confirm the Ballot Selections/,
+        })).closest('.bp3-dialog')! as HTMLElement
+        within(dialog).getByText('Contest 1')
+        within(dialog).getByText('Choice Three')
+        userEvent.click(
+          within(dialog).getByRole('button', { name: 'Confirm Selections' })
+        )
+
+        await waitFor(() => {
+          expect(dialog).not.toBeInTheDocument()
+        })
+
+        await screen.findByText('Audit Ballot Selections')
       })
     })
   })

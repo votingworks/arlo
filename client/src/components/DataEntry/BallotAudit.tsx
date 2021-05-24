@@ -1,11 +1,41 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { Formik, FormikProps, Field } from 'formik'
-import { H4, H3, Button } from '@blueprintjs/core'
-import { BallotRow, ContestCard, ProgressActions, FlushDivider } from './Atoms'
+import styled from 'styled-components'
+import { H3 } from '@blueprintjs/core'
+import {
+  BallotRow,
+  ContestCard,
+  ProgressActions,
+  BlockCheckboxes,
+  LeftCheckboxes,
+  RightCheckboxes,
+  SubTitle,
+} from './Atoms'
 import FormButton from '../Atoms/Form/FormButton'
 import { IBallotInterpretation, Interpretation, IContest } from '../../types'
 import FormField from '../Atoms/Form/FormField'
 import BlockCheckbox from './BlockCheckbox'
+
+const NoteField = styled(Field)`
+  textarea {
+    height: 100px;
+  }
+`
+
+const ContestTitle = styled(H3)`
+  margin-bottom: 20px;
+  font-weight: 500;
+`
+
+const SubmitButton = styled(FormButton)`
+  border-radius: 5px;
+  width: 12em;
+  font-weight: 600;
+
+  @media only screen and (max-width: 767px) {
+    width: auto;
+  }
+`
 
 interface IProps {
   contests: IContest[]
@@ -19,37 +49,16 @@ const BallotAudit: React.FC<IProps> = ({
   contests,
   interpretations,
   setInterpretations,
-  goReview,
-  previousBallot,
 }: IProps) => {
   return (
     <BallotRow>
-      <div className="ballot-side"></div>
       <div className="ballot-main">
-        <H4>Instructions</H4>
-        <p>
-          Select <strong>all</strong> the candidates/choices below that you see
-          marked on the paper ballot.
-        </p>
-        <p>
-          If the voter did not vote in the contest, select &quot;Blank
-          vote.&quot;
-        </p>
-        <p>
-          If this contest is not shown on this ballot, select &quot;Not on
-          ballot.&quot;
-        </p>
-        {/* <p>
-          If the audit board cannot agree, select &quot;Audit board can&apos;t
-          agree.&quot; You may add a comment for additional information about
-          the disagreement.
-        </p> */}
+        <SubTitle>Ballot Contests</SubTitle>
         <Formik
           initialValues={{ interpretations }}
           enableReinitialize
-          onSubmit={values => {
-            setInterpretations(values.interpretations)
-            goReview()
+          onSubmit={async values => {
+            await setInterpretations(values.interpretations)
           }}
         >
           {({
@@ -70,16 +79,17 @@ const BallotAudit: React.FC<IProps> = ({
                   />
                 ))}
                 <ProgressActions>
-                  <FormButton
+                  <SubmitButton
                     type="submit"
                     onClick={handleSubmit}
                     intent="success"
+                    large
                   >
-                    Review
-                  </FormButton>
-                  <Button onClick={previousBallot} minimal>
+                    Submit Selections
+                  </SubmitButton>
+                  {/* <Button onClick={previousBallot} minimal>
                     Back
-                  </Button>
+                  </Button> */}
                 </ProgressActions>
               </form>
             )
@@ -101,16 +111,6 @@ const BallotAuditContest = ({
   interpretation,
   setInterpretation,
 }: IBallotAuditContestProps) => {
-  const [commenting, setCommenting] = useState(false)
-  useEffect(() => {
-    setCommenting(!!interpretation.comment)
-  }, [interpretation.comment])
-
-  const toggleCommenting = () => {
-    setCommenting(!commenting)
-    setInterpretation({ ...interpretation, comment: null })
-  }
-
   const onCheckboxClick = (value: string) => (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -141,53 +141,49 @@ const BallotAuditContest = ({
 
   return (
     <ContestCard>
-      <H3>{contest.name}</H3>
-      <FlushDivider />
-      {contest.choices.map(c => (
-        <BlockCheckbox
-          key={c.id}
-          handleChange={onCheckboxClick(c.id)}
-          checked={isVote && interpretation.choiceIds.includes(c.id)}
-          label={c.name}
-        />
-      ))}
-      {/* <BlockCheckbox
-        handleChange={onCheckboxClick(Interpretation.CANT_AGREE)}
-        gray
-        checked={interpretation.interpretation === Interpretation.CANT_AGREE}
-        label="Audit board can't agree"
-      /> */}
-      <BlockCheckbox
-        handleChange={onCheckboxClick(Interpretation.BLANK)}
-        gray
-        checked={interpretation.interpretation === Interpretation.BLANK}
-        label="Blank vote"
-      />
-      <BlockCheckbox
-        handleChange={onCheckboxClick(Interpretation.CONTEST_NOT_ON_BALLOT)}
-        gray
-        checked={
-          interpretation.interpretation === Interpretation.CONTEST_NOT_ON_BALLOT
-        }
-        label="Not on Ballot"
-      />
-      <Button minimal icon="edit" onClick={toggleCommenting}>
-        {commenting ? 'Remove comment' : 'Add comment'}
-      </Button>
-      {commenting && (
-        <Field
-          name={`comment-${contest.name}`}
-          type="textarea"
-          component={FormField}
-          value={interpretation.comment || ''}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            setInterpretation({
-              ...interpretation,
-              comment: e.currentTarget.value,
-            })
-          }
-        />
-      )}
+      <BlockCheckboxes>
+        <LeftCheckboxes>
+          <ContestTitle>{contest.name}</ContestTitle>
+          {contest.choices.map(c => (
+            <BlockCheckbox
+              key={c.id}
+              handleChange={onCheckboxClick(c.id)}
+              checked={isVote && interpretation.choiceIds.includes(c.id)}
+              label={c.name}
+            />
+          ))}
+        </LeftCheckboxes>
+        <RightCheckboxes>
+          <BlockCheckbox
+            handleChange={onCheckboxClick(Interpretation.BLANK)}
+            checked={interpretation.interpretation === Interpretation.BLANK}
+            label="Blank vote"
+            small
+          />
+          <BlockCheckbox
+            handleChange={onCheckboxClick(Interpretation.CONTEST_NOT_ON_BALLOT)}
+            checked={
+              interpretation.interpretation ===
+              Interpretation.CONTEST_NOT_ON_BALLOT
+            }
+            label="Not on Ballot"
+            small
+          />
+          <NoteField
+            name={`comment-${contest.name}`}
+            type="textarea"
+            component={FormField}
+            value={interpretation.comment || ''}
+            placeholder="Add Note"
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setInterpretation({
+                ...interpretation,
+                comment: e.currentTarget.value,
+              })
+            }
+          />
+        </RightCheckboxes>
+      </BlockCheckboxes>
     </ContestCard>
   )
 }

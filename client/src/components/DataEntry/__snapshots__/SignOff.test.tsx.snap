@@ -3,7 +3,7 @@
 exports[`Sign Off handles inputs 1`] = `
 <div>
   <div
-    class="sc-gqjmRU sc-VigVT dNuQpU"
+    class="sc-jzJRlG sc-cSHVUG fTSAZa"
   >
     <div>
       <h1
@@ -62,7 +62,7 @@ exports[`Sign Off handles inputs 1`] = `
           />
         </div>
         <button
-          class="bp3-button bp3-disabled bp3-loading bp3-intent-primary sc-iwsKbI drSRDt"
+          class="bp3-button bp3-disabled bp3-loading bp3-intent-primary sc-jTzLTM kWdIFo"
           disabled=""
           tabindex="-1"
           type="button"
@@ -108,7 +108,7 @@ exports[`Sign Off handles inputs 1`] = `
 exports[`Sign Off renders correctly 1`] = `
 <div>
   <div
-    class="sc-gqjmRU sc-VigVT dNuQpU"
+    class="sc-jzJRlG sc-cSHVUG fTSAZa"
   >
     <div>
       <h1
@@ -167,7 +167,7 @@ exports[`Sign Off renders correctly 1`] = `
           />
         </div>
         <button
-          class="bp3-button bp3-disabled bp3-intent-primary sc-iwsKbI drSRDt"
+          class="bp3-button bp3-disabled bp3-intent-primary sc-jTzLTM kWdIFo"
           disabled=""
           tabindex="-1"
           type="button"
