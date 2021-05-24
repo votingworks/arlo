@@ -1,7 +1,7 @@
 import React from 'react'
 import { Formik, FormikProps, Field } from 'formik'
 import styled from 'styled-components'
-import { H4, H3 } from '@blueprintjs/core'
+import { H3 } from '@blueprintjs/core'
 import {
   BallotRow,
   ContestCard,
@@ -9,6 +9,7 @@ import {
   BlockCheckboxes,
   LeftCheckboxes,
   RightCheckboxes,
+  SubTitle,
 } from './Atoms'
 import FormButton from '../Atoms/Form/FormButton'
 import { IBallotInterpretation, Interpretation, IContest } from '../../types'
@@ -23,6 +24,17 @@ const NoteField = styled(Field)`
 
 const ContestTitle = styled(H3)`
   margin-bottom: 20px;
+  font-weight: 500;
+`
+
+const SubmitButton = styled(FormButton)`
+  border-radius: 5px;
+  width: 12em;
+  font-weight: 600;
+
+  @media only screen and (max-width: 767px) {
+    width: auto;
+  }
 `
 
 interface IProps {
@@ -37,18 +49,16 @@ const BallotAudit: React.FC<IProps> = ({
   contests,
   interpretations,
   setInterpretations,
-  goReview,
 }: IProps) => {
   return (
     <BallotRow>
       <div className="ballot-main">
-        <H4>Ballot Contests</H4>
+        <SubTitle>Ballot Contests</SubTitle>
         <Formik
           initialValues={{ interpretations }}
           enableReinitialize
           onSubmit={async values => {
             await setInterpretations(values.interpretations)
-            goReview()
           }}
         >
           {({
@@ -69,14 +79,14 @@ const BallotAudit: React.FC<IProps> = ({
                   />
                 ))}
                 <ProgressActions>
-                  <FormButton
+                  <SubmitButton
                     type="submit"
                     onClick={handleSubmit}
                     intent="success"
                     large
                   >
                     Submit Selections
-                  </FormButton>
+                  </SubmitButton>
                   {/* <Button onClick={previousBallot} minimal>
                     Back
                   </Button> */}

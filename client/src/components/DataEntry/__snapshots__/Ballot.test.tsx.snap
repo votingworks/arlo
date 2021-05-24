@@ -5,282 +5,286 @@ exports[`Ballot redirects if ballot does not exist 1`] = `<div />`;
 exports[`Ballot renders correctly with an audited ballot 1`] = `
 <div>
   <div
-    class="sc-ckVGcZ hkbcRl"
+    class="sc-hSdWYo iirkAi"
   >
     <div
-      class="sc-eNQAEJ gXOgPQ"
+      class="sc-ckVGcZ hkbcRl"
     >
       <div
-        class="sc-hMqMXs eXQboI"
+        class="sc-cvbbAY gwPMhu"
       >
         <div
-          class="sc-kEYyzF ftIbIl"
+          class="sc-jWBwVP bmgJcF"
         >
           <div
-            class="sc-jWBwVP hYQrug"
+            class="sc-brqgnP dvGbcs"
           >
-            <button
-              class="bp3-button bp3-minimal sc-cvbbAY hfuCAB"
-              href="/election/1/audit-board/1"
-              type="button"
+            <div
+              class="sc-iRbamj fagPRr"
             >
-              <span
-                class="bp3-icon bp3-icon-caret-left"
-                icon="caret-left"
-              >
-                <svg
-                  data-icon="caret-left"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  width="16"
-                >
-                  <desc>
-                    caret-left
-                  </desc>
-                  <path
-                    d="M9.5 4c-.13 0-.24.05-.33.13l-4 3.5c-.1.09-.17.22-.17.37s.07.28.17.37l4 3.5a.495.495 0 00.83-.37v-7c0-.28-.22-.5-.5-.5z"
-                    fill-rule="evenodd"
-                  />
-                </svg>
-              </span>
-              <span
-                class="bp3-button-text"
-              >
-                All Ballots
-              </span>
-            </button>
-            <h3
-              class="bp3-heading sc-jKJlTe jiOjCA"
-            >
-              Audit Board Selections
-            </h3>
-          </div>
-          <div
-            class="bp3-divider sc-bdVaJa gqVLlZ"
-          />
-          <div
-            class="sc-iAyFgw dGwwDw"
-          >
-            <div>
-              <h5
-                class="bp3-heading sc-hSdWYo javYLu"
-              >
-                batch
-              </h5>
-              <h4
-                class="bp3-heading sc-eHgmQL dWBpUZ"
-              >
-                0003-04-Precinct 13 (Jonesboro Fire Department)
-              </h4>
-            </div>
-            <div>
-              <h5
-                class="bp3-heading sc-hSdWYo javYLu"
-              >
-                position
-              </h5>
-              <h4
-                class="bp3-heading sc-eHgmQL dWBpUZ"
-              >
-                313
-              </h4>
-            </div>
-            <div>
-              <h5
-                class="bp3-heading sc-hSdWYo javYLu"
-              >
-                tabulator
-              </h5>
-              <h4
-                class="bp3-heading sc-eHgmQL dWBpUZ"
-              >
-                11
-              </h4>
-            </div>
-            <div>
               <button
-                class="bp3-button bp3-intent-danger"
+                class="bp3-button bp3-minimal sc-gPEVay hwAtFh"
+                href="/election/1/audit-board/1"
                 type="button"
               >
                 <span
+                  class="bp3-icon bp3-icon-caret-left"
+                  icon="caret-left"
+                >
+                  <svg
+                    data-icon="caret-left"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    width="16"
+                  >
+                    <desc>
+                      caret-left
+                    </desc>
+                    <path
+                      d="M9.5 4c-.13 0-.24.05-.33.13l-4 3.5c-.1.09-.17.22-.17.37s.07.28.17.37l4 3.5a.495.495 0 00.83-.37v-7c0-.28-.22-.5-.5-.5z"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+                <span
                   class="bp3-button-text"
                 >
-                  Ballot Not Found
+                  All Ballots
                 </span>
               </button>
-            </div>
-          </div>
-          <div
-            class="bp3-divider sc-bdVaJa gqVLlZ"
-          />
-          <div>
-            <div
-              class="sc-bwzfXH kvMlvD"
-            >
-              <div
-                class="ballot-main"
+              <h3
+                class="bp3-heading sc-eHgmQL hKVbcd"
               >
+                Audit Ballot Selections
+              </h3>
+            </div>
+            <div
+              class="bp3-divider sc-bdVaJa gqVLlZ"
+            />
+            <div
+              class="sc-jAaTju hmiqEV"
+            >
+              <div>
                 <h4
-                  class="bp3-heading"
+                  class="bp3-heading sc-iwsKbI krynZG"
                 >
-                  Ballot Contests
+                  batch
                 </h4>
-                <form>
-                  <div
-                    class="sc-htpNat jWiLEy"
+                <h4
+                  class="bp3-heading sc-jDwBTQ iqySSz"
+                >
+                  0003-04-Precinct 13 (Jonesboro Fire Department)
+                </h4>
+              </div>
+              <div>
+                <h4
+                  class="bp3-heading sc-iwsKbI krynZG"
+                >
+                  position
+                </h4>
+                <h4
+                  class="bp3-heading sc-jDwBTQ iqySSz"
+                >
+                  313
+                </h4>
+              </div>
+              <div>
+                <h4
+                  class="bp3-heading sc-iwsKbI krynZG"
+                >
+                  tabulator
+                </h4>
+                <h4
+                  class="bp3-heading sc-jDwBTQ iqySSz"
+                >
+                  11
+                </h4>
+              </div>
+              <div>
+                <button
+                  class="bp3-button bp3-large bp3-intent-danger sc-jlyJG iNWejO"
+                  type="button"
+                >
+                  <span
+                    class="bp3-button-text"
                   >
+                    Ballot Not Found
+                  </span>
+                </button>
+              </div>
+            </div>
+            <div
+              class="bp3-divider sc-bdVaJa gqVLlZ"
+            />
+            <div>
+              <div
+                class="sc-bwzfXH dSMaUq"
+              >
+                <div
+                  class="ballot-main"
+                >
+                  <h4
+                    class="bp3-heading sc-iwsKbI krynZG"
+                  >
+                    Ballot Contests
+                  </h4>
+                  <form>
                     <div
-                      class="sc-gzVnrw eUAHzK"
+                      class="sc-htpNat kWdSWK"
                     >
                       <div
-                        class="sc-htoDjs ClGoI"
+                        class="sc-gzVnrw eUAHzK"
                       >
-                        <h3
-                          class="bp3-heading sc-kgoBCf bwYjCS"
-                        >
-                          Contest Name
-                        </h3>
-                        <label
-                          class="bp3-control bp3-checkbox sc-kAzzGY fEaaAO"
-                        >
-                          <input
-                            type="checkbox"
-                          />
-                          <span
-                            class="undefined bp3-control-indicator"
-                          >
-                            <span
-                              class="checkbox-text"
-                            >
-                              Choice One
-                            </span>
-                          </span>
-                        </label>
-                        <label
-                          class="bp3-control bp3-checkbox sc-kAzzGY fEaaAO"
-                        >
-                          <input
-                            type="checkbox"
-                          />
-                          <span
-                            class="undefined bp3-control-indicator"
-                          >
-                            <span
-                              class="checkbox-text"
-                            >
-                              Choice Two
-                            </span>
-                          </span>
-                        </label>
-                      </div>
-                      <div
-                        class="sc-dnqmqq eyBucE"
-                      >
-                        <label
-                          class="bp3-control bp3-checkbox sc-kAzzGY fEaaAO"
-                        >
-                          <input
-                            type="checkbox"
-                          />
-                          <span
-                            class="small bp3-control-indicator"
-                          >
-                            <span
-                              class="checkbox-text"
-                            >
-                              Blank vote
-                            </span>
-                          </span>
-                        </label>
-                        <label
-                          class="bp3-control bp3-checkbox sc-kAzzGY fEaaAO"
-                        >
-                          <input
-                            type="checkbox"
-                          />
-                          <span
-                            class="small bp3-control-indicator"
-                          >
-                            <span
-                              class="checkbox-text"
-                            >
-                              Not on Ballot
-                            </span>
-                          </span>
-                        </label>
                         <div
-                          class="sc-chPdSV hVjAOW sc-jTzLTM hDLiwJ"
+                          class="sc-htoDjs ClGoI"
                         >
-                          <textarea
-                            class="bp3-input sc-jzJRlG lpfNbV"
-                            name="comment-Contest Name"
-                            placeholder="Add Note"
+                          <h3
+                            class="bp3-heading sc-kGXeez fUYjWP"
                           >
-                            Good ballot
-                          </textarea>
+                            Contest Name
+                          </h3>
+                          <label
+                            class="bp3-control bp3-checkbox sc-chPdSV gVsrQj"
+                          >
+                            <input
+                              type="checkbox"
+                            />
+                            <span
+                              class="undefined bp3-control-indicator"
+                            >
+                              <span
+                                class="checkbox-text"
+                              >
+                                Choice One
+                              </span>
+                            </span>
+                          </label>
+                          <label
+                            class="bp3-control bp3-checkbox sc-chPdSV gVsrQj"
+                          >
+                            <input
+                              type="checkbox"
+                            />
+                            <span
+                              class="undefined bp3-control-indicator"
+                            >
+                              <span
+                                class="checkbox-text"
+                              >
+                                Choice Two
+                              </span>
+                            </span>
+                          </label>
+                        </div>
+                        <div
+                          class="sc-dnqmqq fUHzAV"
+                        >
+                          <label
+                            class="bp3-control bp3-checkbox sc-chPdSV gVsrQj"
+                          >
+                            <input
+                              type="checkbox"
+                            />
+                            <span
+                              class="small bp3-control-indicator"
+                            >
+                              <span
+                                class="checkbox-text"
+                              >
+                                Blank vote
+                              </span>
+                            </span>
+                          </label>
+                          <label
+                            class="bp3-control bp3-checkbox sc-chPdSV gVsrQj"
+                          >
+                            <input
+                              type="checkbox"
+                            />
+                            <span
+                              class="small bp3-control-indicator"
+                            >
+                              <span
+                                class="checkbox-text"
+                              >
+                                Not on Ballot
+                              </span>
+                            </span>
+                          </label>
+                          <div
+                            class="sc-kgoBCf byjvik sc-fjdhpX fAFgBy"
+                          >
+                            <textarea
+                              class="bp3-input sc-cSHVUG gCafTO"
+                              name="comment-Contest Name"
+                              placeholder="Add Note"
+                            >
+                              Good ballot
+                            </textarea>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div
-                    class="sc-ifAKCX jzSIMx"
-                  >
-                    <button
-                      class="bp3-button bp3-large bp3-intent-success sc-gZMcBi eZVGYn"
-                      type="submit"
+                    <div
+                      class="sc-ifAKCX jzSIMx"
                     >
-                      <span
-                        class="bp3-button-text"
+                      <button
+                        class="bp3-button bp3-large bp3-intent-success sc-kpOJdX fHhlNF sc-gqjmRU eotNvg"
+                        type="submit"
                       >
-                        Submit Selections
-                      </span>
-                    </button>
-                  </div>
-                </form>
+                        <span
+                          class="bp3-button-text"
+                        >
+                          Submit Selections
+                        </span>
+                      </button>
+                    </div>
+                  </form>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div
-          class="sc-kkGfuU pZHjH"
-        >
-          <h4
-            class="bp3-heading"
+          <div
+            class="sc-cMljjf ePGiKI"
           >
-            Instructions
-          </h4>
-          <ol
-            class="bp3-list"
-          >
-            <li>
-              Confirm that you are looking at the correct ballot for the batch and position. If the ballot was not located, select
-               
-              <strong>
-                Ballot Not Found at the top of the screen.
-              </strong>
-            </li>
-            <li>
-              For each contest, select all the candidate/choices which you see marked on the paper ballot. Select 
-              <strong>
-                Blank Vote
-              </strong>
-               
-              if the voter did not make any selections. Select
-               
-              <strong>
-                Not on Ballot
-              </strong>
-               if the contest does not appear on the ballot.
-            </li>
-            <li>
-              Once all votes are recorded, 
-              <strong>
-                Submit Selections
-              </strong>
-               
-              and proceed to the next ballot until all ballots have been audited.
-            </li>
-          </ol>
+            <h4
+              class="bp3-heading"
+            >
+              Instructions
+            </h4>
+            <ol
+              class="bp3-list sc-gipzik fCDfMG"
+            >
+              <li>
+                Confirm that you are looking at the correct ballot for the batch and position. If the ballot was not located, select
+                 
+                <strong>
+                  Ballot Not Found
+                </strong>
+                 at the top of the screen.
+              </li>
+              <li>
+                For each contest, select all the candidate/choices which you see marked on the paper ballot. Select
+                 
+                <strong>
+                  Blank Vote
+                </strong>
+                 if the voter did not make any selections. Select 
+                <strong>
+                  Not on Ballot
+                </strong>
+                 if the contest does not appear on the ballot.
+              </li>
+              <li>
+                Once all votes are recorded,
+                 
+                <strong>
+                  Submit Selections
+                </strong>
+                 and proceed to the next ballot until all ballots have been audited.
+              </li>
+            </ol>
+          </div>
         </div>
       </div>
     </div>
@@ -291,280 +295,284 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
 exports[`Ballot renders correctly with an unaudited ballot 1`] = `
 <div>
   <div
-    class="sc-ckVGcZ hkbcRl"
+    class="sc-hSdWYo iirkAi"
   >
     <div
-      class="sc-eNQAEJ gXOgPQ"
+      class="sc-ckVGcZ hkbcRl"
     >
       <div
-        class="sc-hMqMXs eXQboI"
+        class="sc-cvbbAY gwPMhu"
       >
         <div
-          class="sc-kEYyzF ftIbIl"
+          class="sc-jWBwVP bmgJcF"
         >
           <div
-            class="sc-jWBwVP hYQrug"
+            class="sc-brqgnP dvGbcs"
           >
-            <button
-              class="bp3-button bp3-minimal sc-cvbbAY hfuCAB"
-              href="/election/1/audit-board/1"
-              type="button"
+            <div
+              class="sc-iRbamj fagPRr"
             >
-              <span
-                class="bp3-icon bp3-icon-caret-left"
-                icon="caret-left"
-              >
-                <svg
-                  data-icon="caret-left"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  width="16"
-                >
-                  <desc>
-                    caret-left
-                  </desc>
-                  <path
-                    d="M9.5 4c-.13 0-.24.05-.33.13l-4 3.5c-.1.09-.17.22-.17.37s.07.28.17.37l4 3.5a.495.495 0 00.83-.37v-7c0-.28-.22-.5-.5-.5z"
-                    fill-rule="evenodd"
-                  />
-                </svg>
-              </span>
-              <span
-                class="bp3-button-text"
-              >
-                All Ballots
-              </span>
-            </button>
-            <h3
-              class="bp3-heading sc-jKJlTe jiOjCA"
-            >
-              Audit Board Selections
-            </h3>
-          </div>
-          <div
-            class="bp3-divider sc-bdVaJa gqVLlZ"
-          />
-          <div
-            class="sc-iAyFgw dGwwDw"
-          >
-            <div>
-              <h5
-                class="bp3-heading sc-hSdWYo javYLu"
-              >
-                batch
-              </h5>
-              <h4
-                class="bp3-heading sc-eHgmQL dWBpUZ"
-              >
-                0003-04-Precinct 19 (Jonesboro Fire Department)
-              </h4>
-            </div>
-            <div>
-              <h5
-                class="bp3-heading sc-hSdWYo javYLu"
-              >
-                position
-              </h5>
-              <h4
-                class="bp3-heading sc-eHgmQL dWBpUZ"
-              >
-                2112
-              </h4>
-            </div>
-            <div>
-              <h5
-                class="bp3-heading sc-hSdWYo javYLu"
-              >
-                tabulator
-              </h5>
-              <h4
-                class="bp3-heading sc-eHgmQL dWBpUZ"
-              >
-                11
-              </h4>
-            </div>
-            <div>
               <button
-                class="bp3-button bp3-intent-danger"
+                class="bp3-button bp3-minimal sc-gPEVay hwAtFh"
+                href="/election/1/audit-board/1"
                 type="button"
               >
                 <span
+                  class="bp3-icon bp3-icon-caret-left"
+                  icon="caret-left"
+                >
+                  <svg
+                    data-icon="caret-left"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    width="16"
+                  >
+                    <desc>
+                      caret-left
+                    </desc>
+                    <path
+                      d="M9.5 4c-.13 0-.24.05-.33.13l-4 3.5c-.1.09-.17.22-.17.37s.07.28.17.37l4 3.5a.495.495 0 00.83-.37v-7c0-.28-.22-.5-.5-.5z"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+                <span
                   class="bp3-button-text"
                 >
-                  Ballot Not Found
+                  All Ballots
                 </span>
               </button>
-            </div>
-          </div>
-          <div
-            class="bp3-divider sc-bdVaJa gqVLlZ"
-          />
-          <div>
-            <div
-              class="sc-bwzfXH kvMlvD"
-            >
-              <div
-                class="ballot-main"
+              <h3
+                class="bp3-heading sc-eHgmQL hKVbcd"
               >
+                Audit Ballot Selections
+              </h3>
+            </div>
+            <div
+              class="bp3-divider sc-bdVaJa gqVLlZ"
+            />
+            <div
+              class="sc-jAaTju hmiqEV"
+            >
+              <div>
                 <h4
-                  class="bp3-heading"
+                  class="bp3-heading sc-iwsKbI krynZG"
                 >
-                  Ballot Contests
+                  batch
                 </h4>
-                <form>
-                  <div
-                    class="sc-htpNat jWiLEy"
+                <h4
+                  class="bp3-heading sc-jDwBTQ iqySSz"
+                >
+                  0003-04-Precinct 19 (Jonesboro Fire Department)
+                </h4>
+              </div>
+              <div>
+                <h4
+                  class="bp3-heading sc-iwsKbI krynZG"
+                >
+                  position
+                </h4>
+                <h4
+                  class="bp3-heading sc-jDwBTQ iqySSz"
+                >
+                  2112
+                </h4>
+              </div>
+              <div>
+                <h4
+                  class="bp3-heading sc-iwsKbI krynZG"
+                >
+                  tabulator
+                </h4>
+                <h4
+                  class="bp3-heading sc-jDwBTQ iqySSz"
+                >
+                  11
+                </h4>
+              </div>
+              <div>
+                <button
+                  class="bp3-button bp3-large bp3-intent-danger sc-jlyJG iNWejO"
+                  type="button"
+                >
+                  <span
+                    class="bp3-button-text"
                   >
+                    Ballot Not Found
+                  </span>
+                </button>
+              </div>
+            </div>
+            <div
+              class="bp3-divider sc-bdVaJa gqVLlZ"
+            />
+            <div>
+              <div
+                class="sc-bwzfXH dSMaUq"
+              >
+                <div
+                  class="ballot-main"
+                >
+                  <h4
+                    class="bp3-heading sc-iwsKbI krynZG"
+                  >
+                    Ballot Contests
+                  </h4>
+                  <form>
                     <div
-                      class="sc-gzVnrw eUAHzK"
+                      class="sc-htpNat kWdSWK"
                     >
                       <div
-                        class="sc-htoDjs ClGoI"
+                        class="sc-gzVnrw eUAHzK"
                       >
-                        <h3
-                          class="bp3-heading sc-kgoBCf bwYjCS"
-                        >
-                          Contest Name
-                        </h3>
-                        <label
-                          class="bp3-control bp3-checkbox sc-kAzzGY fEaaAO"
-                        >
-                          <input
-                            type="checkbox"
-                          />
-                          <span
-                            class="undefined bp3-control-indicator"
-                          >
-                            <span
-                              class="checkbox-text"
-                            >
-                              Choice One
-                            </span>
-                          </span>
-                        </label>
-                        <label
-                          class="bp3-control bp3-checkbox sc-kAzzGY fEaaAO"
-                        >
-                          <input
-                            type="checkbox"
-                          />
-                          <span
-                            class="undefined bp3-control-indicator"
-                          >
-                            <span
-                              class="checkbox-text"
-                            >
-                              Choice Two
-                            </span>
-                          </span>
-                        </label>
-                      </div>
-                      <div
-                        class="sc-dnqmqq eyBucE"
-                      >
-                        <label
-                          class="bp3-control bp3-checkbox sc-kAzzGY fEaaAO"
-                        >
-                          <input
-                            type="checkbox"
-                          />
-                          <span
-                            class="small bp3-control-indicator"
-                          >
-                            <span
-                              class="checkbox-text"
-                            >
-                              Blank vote
-                            </span>
-                          </span>
-                        </label>
-                        <label
-                          class="bp3-control bp3-checkbox sc-kAzzGY fEaaAO"
-                        >
-                          <input
-                            type="checkbox"
-                          />
-                          <span
-                            class="small bp3-control-indicator"
-                          >
-                            <span
-                              class="checkbox-text"
-                            >
-                              Not on Ballot
-                            </span>
-                          </span>
-                        </label>
                         <div
-                          class="sc-chPdSV hVjAOW sc-jTzLTM hDLiwJ"
+                          class="sc-htoDjs ClGoI"
                         >
-                          <textarea
-                            class="bp3-input sc-jzJRlG lpfNbV"
-                            name="comment-Contest Name"
-                            placeholder="Add Note"
-                          />
+                          <h3
+                            class="bp3-heading sc-kGXeez fUYjWP"
+                          >
+                            Contest Name
+                          </h3>
+                          <label
+                            class="bp3-control bp3-checkbox sc-chPdSV gVsrQj"
+                          >
+                            <input
+                              type="checkbox"
+                            />
+                            <span
+                              class="undefined bp3-control-indicator"
+                            >
+                              <span
+                                class="checkbox-text"
+                              >
+                                Choice One
+                              </span>
+                            </span>
+                          </label>
+                          <label
+                            class="bp3-control bp3-checkbox sc-chPdSV gVsrQj"
+                          >
+                            <input
+                              type="checkbox"
+                            />
+                            <span
+                              class="undefined bp3-control-indicator"
+                            >
+                              <span
+                                class="checkbox-text"
+                              >
+                                Choice Two
+                              </span>
+                            </span>
+                          </label>
+                        </div>
+                        <div
+                          class="sc-dnqmqq fUHzAV"
+                        >
+                          <label
+                            class="bp3-control bp3-checkbox sc-chPdSV gVsrQj"
+                          >
+                            <input
+                              type="checkbox"
+                            />
+                            <span
+                              class="small bp3-control-indicator"
+                            >
+                              <span
+                                class="checkbox-text"
+                              >
+                                Blank vote
+                              </span>
+                            </span>
+                          </label>
+                          <label
+                            class="bp3-control bp3-checkbox sc-chPdSV gVsrQj"
+                          >
+                            <input
+                              type="checkbox"
+                            />
+                            <span
+                              class="small bp3-control-indicator"
+                            >
+                              <span
+                                class="checkbox-text"
+                              >
+                                Not on Ballot
+                              </span>
+                            </span>
+                          </label>
+                          <div
+                            class="sc-kgoBCf byjvik sc-fjdhpX fAFgBy"
+                          >
+                            <textarea
+                              class="bp3-input sc-cSHVUG gCafTO"
+                              name="comment-Contest Name"
+                              placeholder="Add Note"
+                            />
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div
-                    class="sc-ifAKCX jzSIMx"
-                  >
-                    <button
-                      class="bp3-button bp3-large bp3-intent-success sc-gZMcBi eZVGYn"
-                      type="submit"
+                    <div
+                      class="sc-ifAKCX jzSIMx"
                     >
-                      <span
-                        class="bp3-button-text"
+                      <button
+                        class="bp3-button bp3-large bp3-intent-success sc-kpOJdX fHhlNF sc-gqjmRU eotNvg"
+                        type="submit"
                       >
-                        Submit Selections
-                      </span>
-                    </button>
-                  </div>
-                </form>
+                        <span
+                          class="bp3-button-text"
+                        >
+                          Submit Selections
+                        </span>
+                      </button>
+                    </div>
+                  </form>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div
-          class="sc-kkGfuU pZHjH"
-        >
-          <h4
-            class="bp3-heading"
+          <div
+            class="sc-cMljjf ePGiKI"
           >
-            Instructions
-          </h4>
-          <ol
-            class="bp3-list"
-          >
-            <li>
-              Confirm that you are looking at the correct ballot for the batch and position. If the ballot was not located, select
-               
-              <strong>
-                Ballot Not Found at the top of the screen.
-              </strong>
-            </li>
-            <li>
-              For each contest, select all the candidate/choices which you see marked on the paper ballot. Select 
-              <strong>
-                Blank Vote
-              </strong>
-               
-              if the voter did not make any selections. Select
-               
-              <strong>
-                Not on Ballot
-              </strong>
-               if the contest does not appear on the ballot.
-            </li>
-            <li>
-              Once all votes are recorded, 
-              <strong>
-                Submit Selections
-              </strong>
-               
-              and proceed to the next ballot until all ballots have been audited.
-            </li>
-          </ol>
+            <h4
+              class="bp3-heading"
+            >
+              Instructions
+            </h4>
+            <ol
+              class="bp3-list sc-gipzik fCDfMG"
+            >
+              <li>
+                Confirm that you are looking at the correct ballot for the batch and position. If the ballot was not located, select
+                 
+                <strong>
+                  Ballot Not Found
+                </strong>
+                 at the top of the screen.
+              </li>
+              <li>
+                For each contest, select all the candidate/choices which you see marked on the paper ballot. Select
+                 
+                <strong>
+                  Blank Vote
+                </strong>
+                 if the voter did not make any selections. Select 
+                <strong>
+                  Not on Ballot
+                </strong>
+                 if the contest does not appear on the ballot.
+              </li>
+              <li>
+                Once all votes are recorded,
+                 
+                <strong>
+                  Submit Selections
+                </strong>
+                 and proceed to the next ballot until all ballots have been audited.
+              </li>
+            </ol>
+          </div>
         </div>
       </div>
     </div>
@@ -575,250 +583,284 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
 exports[`Ballot selects Blank vote 1`] = `
 <div>
   <div
-    class="sc-ckVGcZ hkbcRl"
+    class="sc-hSdWYo iirkAi"
   >
     <div
-      class="sc-eNQAEJ gXOgPQ"
+      class="sc-ckVGcZ hkbcRl"
     >
       <div
-        class="sc-hMqMXs eXQboI"
+        class="sc-cvbbAY gwPMhu"
       >
         <div
-          class="sc-kEYyzF ftIbIl"
+          class="sc-jWBwVP bmgJcF"
         >
           <div
-            class="sc-jWBwVP hYQrug"
+            class="sc-brqgnP dvGbcs"
           >
-            <button
-              class="bp3-button bp3-minimal sc-cvbbAY hfuCAB"
-              href="/election/1/audit-board/1"
-              type="button"
+            <div
+              class="sc-iRbamj fagPRr"
             >
-              <span
-                class="bp3-icon bp3-icon-caret-left"
-                icon="caret-left"
-              >
-                <svg
-                  data-icon="caret-left"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  width="16"
-                >
-                  <desc>
-                    caret-left
-                  </desc>
-                  <path
-                    d="M9.5 4c-.13 0-.24.05-.33.13l-4 3.5c-.1.09-.17.22-.17.37s.07.28.17.37l4 3.5a.495.495 0 00.83-.37v-7c0-.28-.22-.5-.5-.5z"
-                    fill-rule="evenodd"
-                  />
-                </svg>
-              </span>
-              <span
-                class="bp3-button-text"
-              >
-                All Ballots
-              </span>
-            </button>
-            <h3
-              class="bp3-heading sc-jKJlTe jiOjCA"
-            >
-              Audit Board Selections
-            </h3>
-          </div>
-          <div
-            class="bp3-divider sc-bdVaJa gqVLlZ"
-          />
-          <div
-            class="sc-iAyFgw dGwwDw"
-          >
-            <div>
-              <h5
-                class="bp3-heading sc-hSdWYo javYLu"
-              >
-                batch
-              </h5>
-              <h4
-                class="bp3-heading sc-eHgmQL dWBpUZ"
-              >
-                0003-04-Precinct 19 (Jonesboro Fire Department)
-              </h4>
-            </div>
-            <div>
-              <h5
-                class="bp3-heading sc-hSdWYo javYLu"
-              >
-                position
-              </h5>
-              <h4
-                class="bp3-heading sc-eHgmQL dWBpUZ"
-              >
-                2112
-              </h4>
-            </div>
-            <div>
-              <h5
-                class="bp3-heading sc-hSdWYo javYLu"
-              >
-                tabulator
-              </h5>
-              <h4
-                class="bp3-heading sc-eHgmQL dWBpUZ"
-              >
-                11
-              </h4>
-            </div>
-            <div>
               <button
-                class="bp3-button bp3-intent-danger"
+                class="bp3-button bp3-minimal sc-gPEVay hwAtFh"
+                href="/election/1/audit-board/1"
                 type="button"
               >
                 <span
+                  class="bp3-icon bp3-icon-caret-left"
+                  icon="caret-left"
+                >
+                  <svg
+                    data-icon="caret-left"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    width="16"
+                  >
+                    <desc>
+                      caret-left
+                    </desc>
+                    <path
+                      d="M9.5 4c-.13 0-.24.05-.33.13l-4 3.5c-.1.09-.17.22-.17.37s.07.28.17.37l4 3.5a.495.495 0 00.83-.37v-7c0-.28-.22-.5-.5-.5z"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+                <span
                   class="bp3-button-text"
                 >
-                  Ballot Not Found
+                  All Ballots
                 </span>
               </button>
+              <h3
+                class="bp3-heading sc-eHgmQL hKVbcd"
+              >
+                Audit Ballot Selections
+              </h3>
             </div>
-          </div>
-          <div
-            class="bp3-divider sc-bdVaJa gqVLlZ"
-          />
-          <div>
             <div
-              class="sc-bwzfXH kvMlvD"
+              class="bp3-divider sc-bdVaJa gqVLlZ"
+            />
+            <div
+              class="sc-jAaTju hmiqEV"
             >
+              <div>
+                <h4
+                  class="bp3-heading sc-iwsKbI krynZG"
+                >
+                  batch
+                </h4>
+                <h4
+                  class="bp3-heading sc-jDwBTQ iqySSz"
+                >
+                  0003-04-Precinct 19 (Jonesboro Fire Department)
+                </h4>
+              </div>
+              <div>
+                <h4
+                  class="bp3-heading sc-iwsKbI krynZG"
+                >
+                  position
+                </h4>
+                <h4
+                  class="bp3-heading sc-jDwBTQ iqySSz"
+                >
+                  2112
+                </h4>
+              </div>
+              <div>
+                <h4
+                  class="bp3-heading sc-iwsKbI krynZG"
+                >
+                  tabulator
+                </h4>
+                <h4
+                  class="bp3-heading sc-jDwBTQ iqySSz"
+                >
+                  11
+                </h4>
+              </div>
+              <div>
+                <button
+                  class="bp3-button bp3-large bp3-intent-danger sc-jlyJG iNWejO"
+                  type="button"
+                >
+                  <span
+                    class="bp3-button-text"
+                  >
+                    Ballot Not Found
+                  </span>
+                </button>
+              </div>
+            </div>
+            <div
+              class="bp3-divider sc-bdVaJa gqVLlZ"
+            />
+            <div>
               <div
-                class="ballot-side"
-              />
-              <div
-                class="ballot-main"
+                class="sc-bwzfXH dSMaUq"
               >
                 <div
-                  class="sc-htpNat jWiLEy"
+                  class="ballot-main"
                 >
-                  <h3
-                    class="bp3-heading"
+                  <h4
+                    class="bp3-heading sc-iwsKbI krynZG"
                   >
-                    Contest Name
-                  </h3>
-                  <div
-                    class="bp3-divider sc-bdVaJa gqVLlZ"
-                  />
-                  <div
-                    class="sc-kGXeez iykkKD"
-                  >
-                    <button
-                      class="bp3-button bp3-disabled bp3-large bp3-intent-primary sc-kpOJdX hOTJdR sc-gZMcBi eZVGYn"
-                      disabled=""
-                      tabindex="-1"
-                      type="button"
+                    Ballot Contests
+                  </h4>
+                  <form>
+                    <div
+                      class="sc-htpNat kWdSWK"
                     >
-                      <span
-                        class="bp3-button-text"
+                      <div
+                        class="sc-gzVnrw eUAHzK"
                       >
-                        Blank vote
-                      </span>
-                    </button>
-                    <button
-                      class="bp3-button bp3-minimal"
-                      type="button"
-                    >
-                      <span
-                        class="bp3-icon bp3-icon-edit"
-                        icon="edit"
-                      >
-                        <svg
-                          data-icon="edit"
-                          height="16"
-                          viewBox="0 0 16 16"
-                          width="16"
+                        <div
+                          class="sc-htoDjs ClGoI"
                         >
-                          <desc>
-                            edit
-                          </desc>
-                          <path
-                            d="M3.25 10.26l2.47 2.47 6.69-6.69-2.46-2.48-6.7 6.7zM.99 14.99l3.86-1.39-2.46-2.44-1.4 3.83zm12.25-14c-.48 0-.92.2-1.24.51l-1.44 1.44 2.47 2.47 1.44-1.44c.32-.32.51-.75.51-1.24.01-.95-.77-1.74-1.74-1.74z"
-                            fill-rule="evenodd"
-                          />
-                        </svg>
-                      </span>
-                      <span
-                        class="bp3-button-text"
+                          <h3
+                            class="bp3-heading sc-kGXeez fUYjWP"
+                          >
+                            Contest Name
+                          </h3>
+                          <label
+                            class="bp3-control bp3-checkbox sc-chPdSV gVsrQj"
+                          >
+                            <input
+                              type="checkbox"
+                            />
+                            <span
+                              class="undefined bp3-control-indicator"
+                            >
+                              <span
+                                class="checkbox-text"
+                              >
+                                Choice One
+                              </span>
+                            </span>
+                          </label>
+                          <label
+                            class="bp3-control bp3-checkbox sc-chPdSV gVsrQj"
+                          >
+                            <input
+                              type="checkbox"
+                            />
+                            <span
+                              class="undefined bp3-control-indicator"
+                            >
+                              <span
+                                class="checkbox-text"
+                              >
+                                Choice Two
+                              </span>
+                            </span>
+                          </label>
+                        </div>
+                        <div
+                          class="sc-dnqmqq fUHzAV"
+                        >
+                          <label
+                            class="bp3-control bp3-checkbox sc-chPdSV gVsrQj"
+                          >
+                            <input
+                              type="checkbox"
+                            />
+                            <span
+                              class="small bp3-control-indicator"
+                            >
+                              <span
+                                class="checkbox-text"
+                              >
+                                Blank vote
+                              </span>
+                            </span>
+                          </label>
+                          <label
+                            class="bp3-control bp3-checkbox sc-chPdSV gVsrQj"
+                          >
+                            <input
+                              type="checkbox"
+                            />
+                            <span
+                              class="small bp3-control-indicator"
+                            >
+                              <span
+                                class="checkbox-text"
+                              >
+                                Not on Ballot
+                              </span>
+                            </span>
+                          </label>
+                          <div
+                            class="sc-kgoBCf byjvik sc-fjdhpX fAFgBy"
+                          >
+                            <textarea
+                              class="bp3-input sc-cSHVUG gCafTO"
+                              name="comment-Contest Name"
+                              placeholder="Add Note"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="sc-ifAKCX jzSIMx"
+                    >
+                      <button
+                        class="bp3-button bp3-large bp3-intent-success sc-kpOJdX fHhlNF sc-gqjmRU eotNvg"
+                        type="submit"
                       >
-                        Edit
-                      </span>
-                    </button>
-                  </div>
-                  <p />
-                </div>
-                <div
-                  class="sc-ifAKCX jzSIMx"
-                >
-                  <button
-                    class="bp3-button bp3-intent-success sc-gZMcBi eZVGYn"
-                    type="submit"
-                  >
-                    <span
-                      class="bp3-button-text"
-                    >
-                      Submit & Next Ballot
-                    </span>
-                  </button>
-                  <button
-                    class="bp3-button bp3-minimal"
-                    type="button"
-                  >
-                    <span
-                      class="bp3-button-text"
-                    >
-                      Back
-                    </span>
-                  </button>
+                        <span
+                          class="bp3-button-text"
+                        >
+                          Submit Selections
+                        </span>
+                      </button>
+                    </div>
+                  </form>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        <div
-          class="sc-kkGfuU pZHjH"
-        >
-          <h4
-            class="bp3-heading"
+          <div
+            class="sc-cMljjf ePGiKI"
           >
-            Instructions
-          </h4>
-          <ol
-            class="bp3-list"
-          >
-            <li>
-              Confirm that you are looking at the correct ballot for the batch and position. If the ballot was not located, select
-               
-              <strong>
-                Ballot Not Found at the top of the screen.
-              </strong>
-            </li>
-            <li>
-              For each contest, select all the candidate/choices which you see marked on the paper ballot. Select 
-              <strong>
-                Blank Vote
-              </strong>
-               
-              if the voter did not make any selections. Select
-               
-              <strong>
-                Not on Ballot
-              </strong>
-               if the contest does not appear on the ballot.
-            </li>
-            <li>
-              Once all votes are recorded, 
-              <strong>
-                Submit Selections
-              </strong>
-               
-              and proceed to the next ballot until all ballots have been audited.
-            </li>
-          </ol>
+            <h4
+              class="bp3-heading"
+            >
+              Instructions
+            </h4>
+            <ol
+              class="bp3-list sc-gipzik fCDfMG"
+            >
+              <li>
+                Confirm that you are looking at the correct ballot for the batch and position. If the ballot was not located, select
+                 
+                <strong>
+                  Ballot Not Found
+                </strong>
+                 at the top of the screen.
+              </li>
+              <li>
+                For each contest, select all the candidate/choices which you see marked on the paper ballot. Select
+                 
+                <strong>
+                  Blank Vote
+                </strong>
+                 if the voter did not make any selections. Select 
+                <strong>
+                  Not on Ballot
+                </strong>
+                 if the contest does not appear on the ballot.
+              </li>
+              <li>
+                Once all votes are recorded,
+                 
+                <strong>
+                  Submit Selections
+                </strong>
+                 and proceed to the next ballot until all ballots have been audited.
+              </li>
+            </ol>
+          </div>
         </div>
       </div>
     </div>
@@ -829,250 +871,284 @@ exports[`Ballot selects Blank vote 1`] = `
 exports[`Ballot selects Not on Ballot 1`] = `
 <div>
   <div
-    class="sc-ckVGcZ hkbcRl"
+    class="sc-hSdWYo iirkAi"
   >
     <div
-      class="sc-eNQAEJ gXOgPQ"
+      class="sc-ckVGcZ hkbcRl"
     >
       <div
-        class="sc-hMqMXs eXQboI"
+        class="sc-cvbbAY gwPMhu"
       >
         <div
-          class="sc-kEYyzF ftIbIl"
+          class="sc-jWBwVP bmgJcF"
         >
           <div
-            class="sc-jWBwVP hYQrug"
+            class="sc-brqgnP dvGbcs"
           >
-            <button
-              class="bp3-button bp3-minimal sc-cvbbAY hfuCAB"
-              href="/election/1/audit-board/1"
-              type="button"
+            <div
+              class="sc-iRbamj fagPRr"
             >
-              <span
-                class="bp3-icon bp3-icon-caret-left"
-                icon="caret-left"
-              >
-                <svg
-                  data-icon="caret-left"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  width="16"
-                >
-                  <desc>
-                    caret-left
-                  </desc>
-                  <path
-                    d="M9.5 4c-.13 0-.24.05-.33.13l-4 3.5c-.1.09-.17.22-.17.37s.07.28.17.37l4 3.5a.495.495 0 00.83-.37v-7c0-.28-.22-.5-.5-.5z"
-                    fill-rule="evenodd"
-                  />
-                </svg>
-              </span>
-              <span
-                class="bp3-button-text"
-              >
-                All Ballots
-              </span>
-            </button>
-            <h3
-              class="bp3-heading sc-jKJlTe jiOjCA"
-            >
-              Audit Board Selections
-            </h3>
-          </div>
-          <div
-            class="bp3-divider sc-bdVaJa gqVLlZ"
-          />
-          <div
-            class="sc-iAyFgw dGwwDw"
-          >
-            <div>
-              <h5
-                class="bp3-heading sc-hSdWYo javYLu"
-              >
-                batch
-              </h5>
-              <h4
-                class="bp3-heading sc-eHgmQL dWBpUZ"
-              >
-                0003-04-Precinct 19 (Jonesboro Fire Department)
-              </h4>
-            </div>
-            <div>
-              <h5
-                class="bp3-heading sc-hSdWYo javYLu"
-              >
-                position
-              </h5>
-              <h4
-                class="bp3-heading sc-eHgmQL dWBpUZ"
-              >
-                2112
-              </h4>
-            </div>
-            <div>
-              <h5
-                class="bp3-heading sc-hSdWYo javYLu"
-              >
-                tabulator
-              </h5>
-              <h4
-                class="bp3-heading sc-eHgmQL dWBpUZ"
-              >
-                11
-              </h4>
-            </div>
-            <div>
               <button
-                class="bp3-button bp3-intent-danger"
+                class="bp3-button bp3-minimal sc-gPEVay hwAtFh"
+                href="/election/1/audit-board/1"
                 type="button"
               >
                 <span
+                  class="bp3-icon bp3-icon-caret-left"
+                  icon="caret-left"
+                >
+                  <svg
+                    data-icon="caret-left"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    width="16"
+                  >
+                    <desc>
+                      caret-left
+                    </desc>
+                    <path
+                      d="M9.5 4c-.13 0-.24.05-.33.13l-4 3.5c-.1.09-.17.22-.17.37s.07.28.17.37l4 3.5a.495.495 0 00.83-.37v-7c0-.28-.22-.5-.5-.5z"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+                <span
                   class="bp3-button-text"
                 >
-                  Ballot Not Found
+                  All Ballots
                 </span>
               </button>
+              <h3
+                class="bp3-heading sc-eHgmQL hKVbcd"
+              >
+                Audit Ballot Selections
+              </h3>
             </div>
-          </div>
-          <div
-            class="bp3-divider sc-bdVaJa gqVLlZ"
-          />
-          <div>
             <div
-              class="sc-bwzfXH kvMlvD"
+              class="bp3-divider sc-bdVaJa gqVLlZ"
+            />
+            <div
+              class="sc-jAaTju hmiqEV"
             >
+              <div>
+                <h4
+                  class="bp3-heading sc-iwsKbI krynZG"
+                >
+                  batch
+                </h4>
+                <h4
+                  class="bp3-heading sc-jDwBTQ iqySSz"
+                >
+                  0003-04-Precinct 19 (Jonesboro Fire Department)
+                </h4>
+              </div>
+              <div>
+                <h4
+                  class="bp3-heading sc-iwsKbI krynZG"
+                >
+                  position
+                </h4>
+                <h4
+                  class="bp3-heading sc-jDwBTQ iqySSz"
+                >
+                  2112
+                </h4>
+              </div>
+              <div>
+                <h4
+                  class="bp3-heading sc-iwsKbI krynZG"
+                >
+                  tabulator
+                </h4>
+                <h4
+                  class="bp3-heading sc-jDwBTQ iqySSz"
+                >
+                  11
+                </h4>
+              </div>
+              <div>
+                <button
+                  class="bp3-button bp3-large bp3-intent-danger sc-jlyJG iNWejO"
+                  type="button"
+                >
+                  <span
+                    class="bp3-button-text"
+                  >
+                    Ballot Not Found
+                  </span>
+                </button>
+              </div>
+            </div>
+            <div
+              class="bp3-divider sc-bdVaJa gqVLlZ"
+            />
+            <div>
               <div
-                class="ballot-side"
-              />
-              <div
-                class="ballot-main"
+                class="sc-bwzfXH dSMaUq"
               >
                 <div
-                  class="sc-htpNat jWiLEy"
+                  class="ballot-main"
                 >
-                  <h3
-                    class="bp3-heading"
+                  <h4
+                    class="bp3-heading sc-iwsKbI krynZG"
                   >
-                    Contest Name
-                  </h3>
-                  <div
-                    class="bp3-divider sc-bdVaJa gqVLlZ"
-                  />
-                  <div
-                    class="sc-kGXeez iykkKD"
-                  >
-                    <button
-                      class="bp3-button bp3-disabled bp3-large bp3-intent-primary sc-kpOJdX hOTJdR sc-gZMcBi eZVGYn"
-                      disabled=""
-                      tabindex="-1"
-                      type="button"
+                    Ballot Contests
+                  </h4>
+                  <form>
+                    <div
+                      class="sc-htpNat kWdSWK"
                     >
-                      <span
-                        class="bp3-button-text"
+                      <div
+                        class="sc-gzVnrw eUAHzK"
                       >
-                        Not on Ballot
-                      </span>
-                    </button>
-                    <button
-                      class="bp3-button bp3-minimal"
-                      type="button"
-                    >
-                      <span
-                        class="bp3-icon bp3-icon-edit"
-                        icon="edit"
-                      >
-                        <svg
-                          data-icon="edit"
-                          height="16"
-                          viewBox="0 0 16 16"
-                          width="16"
+                        <div
+                          class="sc-htoDjs ClGoI"
                         >
-                          <desc>
-                            edit
-                          </desc>
-                          <path
-                            d="M3.25 10.26l2.47 2.47 6.69-6.69-2.46-2.48-6.7 6.7zM.99 14.99l3.86-1.39-2.46-2.44-1.4 3.83zm12.25-14c-.48 0-.92.2-1.24.51l-1.44 1.44 2.47 2.47 1.44-1.44c.32-.32.51-.75.51-1.24.01-.95-.77-1.74-1.74-1.74z"
-                            fill-rule="evenodd"
-                          />
-                        </svg>
-                      </span>
-                      <span
-                        class="bp3-button-text"
+                          <h3
+                            class="bp3-heading sc-kGXeez fUYjWP"
+                          >
+                            Contest Name
+                          </h3>
+                          <label
+                            class="bp3-control bp3-checkbox sc-chPdSV gVsrQj"
+                          >
+                            <input
+                              type="checkbox"
+                            />
+                            <span
+                              class="undefined bp3-control-indicator"
+                            >
+                              <span
+                                class="checkbox-text"
+                              >
+                                Choice One
+                              </span>
+                            </span>
+                          </label>
+                          <label
+                            class="bp3-control bp3-checkbox sc-chPdSV gVsrQj"
+                          >
+                            <input
+                              type="checkbox"
+                            />
+                            <span
+                              class="undefined bp3-control-indicator"
+                            >
+                              <span
+                                class="checkbox-text"
+                              >
+                                Choice Two
+                              </span>
+                            </span>
+                          </label>
+                        </div>
+                        <div
+                          class="sc-dnqmqq fUHzAV"
+                        >
+                          <label
+                            class="bp3-control bp3-checkbox sc-chPdSV gVsrQj"
+                          >
+                            <input
+                              type="checkbox"
+                            />
+                            <span
+                              class="small bp3-control-indicator"
+                            >
+                              <span
+                                class="checkbox-text"
+                              >
+                                Blank vote
+                              </span>
+                            </span>
+                          </label>
+                          <label
+                            class="bp3-control bp3-checkbox sc-chPdSV gVsrQj"
+                          >
+                            <input
+                              type="checkbox"
+                            />
+                            <span
+                              class="small bp3-control-indicator"
+                            >
+                              <span
+                                class="checkbox-text"
+                              >
+                                Not on Ballot
+                              </span>
+                            </span>
+                          </label>
+                          <div
+                            class="sc-kgoBCf byjvik sc-fjdhpX fAFgBy"
+                          >
+                            <textarea
+                              class="bp3-input sc-cSHVUG gCafTO"
+                              name="comment-Contest Name"
+                              placeholder="Add Note"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="sc-ifAKCX jzSIMx"
+                    >
+                      <button
+                        class="bp3-button bp3-large bp3-intent-success sc-kpOJdX fHhlNF sc-gqjmRU eotNvg"
+                        type="submit"
                       >
-                        Edit
-                      </span>
-                    </button>
-                  </div>
-                  <p />
-                </div>
-                <div
-                  class="sc-ifAKCX jzSIMx"
-                >
-                  <button
-                    class="bp3-button bp3-intent-success sc-gZMcBi eZVGYn"
-                    type="submit"
-                  >
-                    <span
-                      class="bp3-button-text"
-                    >
-                      Submit & Next Ballot
-                    </span>
-                  </button>
-                  <button
-                    class="bp3-button bp3-minimal"
-                    type="button"
-                  >
-                    <span
-                      class="bp3-button-text"
-                    >
-                      Back
-                    </span>
-                  </button>
+                        <span
+                          class="bp3-button-text"
+                        >
+                          Submit Selections
+                        </span>
+                      </button>
+                    </div>
+                  </form>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        <div
-          class="sc-kkGfuU pZHjH"
-        >
-          <h4
-            class="bp3-heading"
+          <div
+            class="sc-cMljjf ePGiKI"
           >
-            Instructions
-          </h4>
-          <ol
-            class="bp3-list"
-          >
-            <li>
-              Confirm that you are looking at the correct ballot for the batch and position. If the ballot was not located, select
-               
-              <strong>
-                Ballot Not Found at the top of the screen.
-              </strong>
-            </li>
-            <li>
-              For each contest, select all the candidate/choices which you see marked on the paper ballot. Select 
-              <strong>
-                Blank Vote
-              </strong>
-               
-              if the voter did not make any selections. Select
-               
-              <strong>
-                Not on Ballot
-              </strong>
-               if the contest does not appear on the ballot.
-            </li>
-            <li>
-              Once all votes are recorded, 
-              <strong>
-                Submit Selections
-              </strong>
-               
-              and proceed to the next ballot until all ballots have been audited.
-            </li>
-          </ol>
+            <h4
+              class="bp3-heading"
+            >
+              Instructions
+            </h4>
+            <ol
+              class="bp3-list sc-gipzik fCDfMG"
+            >
+              <li>
+                Confirm that you are looking at the correct ballot for the batch and position. If the ballot was not located, select
+                 
+                <strong>
+                  Ballot Not Found
+                </strong>
+                 at the top of the screen.
+              </li>
+              <li>
+                For each contest, select all the candidate/choices which you see marked on the paper ballot. Select
+                 
+                <strong>
+                  Blank Vote
+                </strong>
+                 if the voter did not make any selections. Select 
+                <strong>
+                  Not on Ballot
+                </strong>
+                 if the contest does not appear on the ballot.
+              </li>
+              <li>
+                Once all votes are recorded,
+                 
+                <strong>
+                  Submit Selections
+                </strong>
+                 and proceed to the next ballot until all ballots have been audited.
+              </li>
+            </ol>
+          </div>
         </div>
       </div>
     </div>
@@ -1083,506 +1159,284 @@ exports[`Ballot selects Not on Ballot 1`] = `
 exports[`Ballot switches audit and review views 1`] = `
 <div>
   <div
-    class="sc-ckVGcZ hkbcRl"
+    class="sc-hSdWYo iirkAi"
   >
     <div
-      class="sc-eNQAEJ gXOgPQ"
+      class="sc-ckVGcZ hkbcRl"
     >
       <div
-        class="sc-hMqMXs eXQboI"
+        class="sc-cvbbAY gwPMhu"
       >
         <div
-          class="sc-kEYyzF ftIbIl"
+          class="sc-jWBwVP bmgJcF"
         >
           <div
-            class="sc-jWBwVP hYQrug"
+            class="sc-brqgnP dvGbcs"
           >
-            <button
-              class="bp3-button bp3-minimal sc-cvbbAY hfuCAB"
-              href="/election/1/audit-board/1"
-              type="button"
+            <div
+              class="sc-iRbamj fagPRr"
             >
-              <span
-                class="bp3-icon bp3-icon-caret-left"
-                icon="caret-left"
-              >
-                <svg
-                  data-icon="caret-left"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  width="16"
-                >
-                  <desc>
-                    caret-left
-                  </desc>
-                  <path
-                    d="M9.5 4c-.13 0-.24.05-.33.13l-4 3.5c-.1.09-.17.22-.17.37s.07.28.17.37l4 3.5a.495.495 0 00.83-.37v-7c0-.28-.22-.5-.5-.5z"
-                    fill-rule="evenodd"
-                  />
-                </svg>
-              </span>
-              <span
-                class="bp3-button-text"
-              >
-                All Ballots
-              </span>
-            </button>
-            <h3
-              class="bp3-heading sc-jKJlTe jiOjCA"
-            >
-              Audit Board Selections
-            </h3>
-          </div>
-          <div
-            class="bp3-divider sc-bdVaJa gqVLlZ"
-          />
-          <div
-            class="sc-iAyFgw dGwwDw"
-          >
-            <div>
-              <h5
-                class="bp3-heading sc-hSdWYo javYLu"
-              >
-                batch
-              </h5>
-              <h4
-                class="bp3-heading sc-eHgmQL dWBpUZ"
-              >
-                0003-04-Precinct 19 (Jonesboro Fire Department)
-              </h4>
-            </div>
-            <div>
-              <h5
-                class="bp3-heading sc-hSdWYo javYLu"
-              >
-                position
-              </h5>
-              <h4
-                class="bp3-heading sc-eHgmQL dWBpUZ"
-              >
-                2112
-              </h4>
-            </div>
-            <div>
-              <h5
-                class="bp3-heading sc-hSdWYo javYLu"
-              >
-                tabulator
-              </h5>
-              <h4
-                class="bp3-heading sc-eHgmQL dWBpUZ"
-              >
-                11
-              </h4>
-            </div>
-            <div>
               <button
-                class="bp3-button bp3-intent-danger"
+                class="bp3-button bp3-minimal sc-gPEVay hwAtFh"
+                href="/election/1/audit-board/1"
                 type="button"
               >
                 <span
+                  class="bp3-icon bp3-icon-caret-left"
+                  icon="caret-left"
+                >
+                  <svg
+                    data-icon="caret-left"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    width="16"
+                  >
+                    <desc>
+                      caret-left
+                    </desc>
+                    <path
+                      d="M9.5 4c-.13 0-.24.05-.33.13l-4 3.5c-.1.09-.17.22-.17.37s.07.28.17.37l4 3.5a.495.495 0 00.83-.37v-7c0-.28-.22-.5-.5-.5z"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+                <span
                   class="bp3-button-text"
                 >
-                  Ballot Not Found
+                  All Ballots
                 </span>
               </button>
+              <h3
+                class="bp3-heading sc-eHgmQL hKVbcd"
+              >
+                Audit Ballot Selections
+              </h3>
             </div>
-          </div>
-          <div
-            class="bp3-divider sc-bdVaJa gqVLlZ"
-          />
-          <div>
             <div
-              class="sc-bwzfXH kvMlvD"
+              class="bp3-divider sc-bdVaJa gqVLlZ"
+            />
+            <div
+              class="sc-jAaTju hmiqEV"
             >
+              <div>
+                <h4
+                  class="bp3-heading sc-iwsKbI krynZG"
+                >
+                  batch
+                </h4>
+                <h4
+                  class="bp3-heading sc-jDwBTQ iqySSz"
+                >
+                  0003-04-Precinct 19 (Jonesboro Fire Department)
+                </h4>
+              </div>
+              <div>
+                <h4
+                  class="bp3-heading sc-iwsKbI krynZG"
+                >
+                  position
+                </h4>
+                <h4
+                  class="bp3-heading sc-jDwBTQ iqySSz"
+                >
+                  2112
+                </h4>
+              </div>
+              <div>
+                <h4
+                  class="bp3-heading sc-iwsKbI krynZG"
+                >
+                  tabulator
+                </h4>
+                <h4
+                  class="bp3-heading sc-jDwBTQ iqySSz"
+                >
+                  11
+                </h4>
+              </div>
+              <div>
+                <button
+                  class="bp3-button bp3-large bp3-intent-danger sc-jlyJG iNWejO"
+                  type="button"
+                >
+                  <span
+                    class="bp3-button-text"
+                  >
+                    Ballot Not Found
+                  </span>
+                </button>
+              </div>
+            </div>
+            <div
+              class="bp3-divider sc-bdVaJa gqVLlZ"
+            />
+            <div>
               <div
-                class="ballot-side"
-              />
-              <div
-                class="ballot-main"
+                class="sc-bwzfXH dSMaUq"
               >
                 <div
-                  class="sc-htpNat jWiLEy"
+                  class="ballot-main"
                 >
-                  <h3
-                    class="bp3-heading"
+                  <h4
+                    class="bp3-heading sc-iwsKbI krynZG"
                   >
-                    Contest Name
-                  </h3>
-                  <div
-                    class="bp3-divider sc-bdVaJa gqVLlZ"
-                  />
-                  <div
-                    class="sc-kGXeez iykkKD"
-                  >
-                    <button
-                      class="bp3-button bp3-disabled bp3-large bp3-intent-primary sc-kpOJdX hOTJdR sc-gZMcBi eZVGYn"
-                      disabled=""
-                      tabindex="-1"
-                      type="button"
+                    Ballot Contests
+                  </h4>
+                  <form>
+                    <div
+                      class="sc-htpNat kWdSWK"
                     >
-                      <span
-                        class="bp3-button-text"
+                      <div
+                        class="sc-gzVnrw eUAHzK"
                       >
-                        Choice One
-                      </span>
-                    </button>
-                    <button
-                      class="bp3-button bp3-minimal"
-                      type="button"
-                    >
-                      <span
-                        class="bp3-icon bp3-icon-edit"
-                        icon="edit"
-                      >
-                        <svg
-                          data-icon="edit"
-                          height="16"
-                          viewBox="0 0 16 16"
-                          width="16"
+                        <div
+                          class="sc-htoDjs ClGoI"
                         >
-                          <desc>
-                            edit
-                          </desc>
-                          <path
-                            d="M3.25 10.26l2.47 2.47 6.69-6.69-2.46-2.48-6.7 6.7zM.99 14.99l3.86-1.39-2.46-2.44-1.4 3.83zm12.25-14c-.48 0-.92.2-1.24.51l-1.44 1.44 2.47 2.47 1.44-1.44c.32-.32.51-.75.51-1.24.01-.95-.77-1.74-1.74-1.74z"
-                            fill-rule="evenodd"
-                          />
-                        </svg>
-                      </span>
-                      <span
-                        class="bp3-button-text"
+                          <h3
+                            class="bp3-heading sc-kGXeez fUYjWP"
+                          >
+                            Contest Name
+                          </h3>
+                          <label
+                            class="bp3-control bp3-checkbox sc-chPdSV gVsrQj"
+                          >
+                            <input
+                              type="checkbox"
+                            />
+                            <span
+                              class="undefined bp3-control-indicator"
+                            >
+                              <span
+                                class="checkbox-text"
+                              >
+                                Choice One
+                              </span>
+                            </span>
+                          </label>
+                          <label
+                            class="bp3-control bp3-checkbox sc-chPdSV gVsrQj"
+                          >
+                            <input
+                              type="checkbox"
+                            />
+                            <span
+                              class="undefined bp3-control-indicator"
+                            >
+                              <span
+                                class="checkbox-text"
+                              >
+                                Choice Two
+                              </span>
+                            </span>
+                          </label>
+                        </div>
+                        <div
+                          class="sc-dnqmqq fUHzAV"
+                        >
+                          <label
+                            class="bp3-control bp3-checkbox sc-chPdSV gVsrQj"
+                          >
+                            <input
+                              type="checkbox"
+                            />
+                            <span
+                              class="small bp3-control-indicator"
+                            >
+                              <span
+                                class="checkbox-text"
+                              >
+                                Blank vote
+                              </span>
+                            </span>
+                          </label>
+                          <label
+                            class="bp3-control bp3-checkbox sc-chPdSV gVsrQj"
+                          >
+                            <input
+                              type="checkbox"
+                            />
+                            <span
+                              class="small bp3-control-indicator"
+                            >
+                              <span
+                                class="checkbox-text"
+                              >
+                                Not on Ballot
+                              </span>
+                            </span>
+                          </label>
+                          <div
+                            class="sc-kgoBCf byjvik sc-fjdhpX fAFgBy"
+                          >
+                            <textarea
+                              class="bp3-input sc-cSHVUG gCafTO"
+                              name="comment-Contest Name"
+                              placeholder="Add Note"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="sc-ifAKCX jzSIMx"
+                    >
+                      <button
+                        class="bp3-button bp3-large bp3-intent-success sc-kpOJdX fHhlNF sc-gqjmRU eotNvg"
+                        type="submit"
                       >
-                        Edit
-                      </span>
-                    </button>
-                  </div>
-                  <p />
-                </div>
-                <div
-                  class="sc-ifAKCX jzSIMx"
-                >
-                  <button
-                    class="bp3-button bp3-intent-success sc-gZMcBi eZVGYn"
-                    type="submit"
-                  >
-                    <span
-                      class="bp3-button-text"
-                    >
-                      Submit & Next Ballot
-                    </span>
-                  </button>
-                  <button
-                    class="bp3-button bp3-minimal"
-                    type="button"
-                  >
-                    <span
-                      class="bp3-button-text"
-                    >
-                      Back
-                    </span>
-                  </button>
+                        <span
+                          class="bp3-button-text"
+                        >
+                          Submit Selections
+                        </span>
+                      </button>
+                    </div>
+                  </form>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        <div
-          class="sc-kkGfuU pZHjH"
-        >
-          <h4
-            class="bp3-heading"
-          >
-            Instructions
-          </h4>
-          <ol
-            class="bp3-list"
-          >
-            <li>
-              Confirm that you are looking at the correct ballot for the batch and position. If the ballot was not located, select
-               
-              <strong>
-                Ballot Not Found at the top of the screen.
-              </strong>
-            </li>
-            <li>
-              For each contest, select all the candidate/choices which you see marked on the paper ballot. Select 
-              <strong>
-                Blank Vote
-              </strong>
-               
-              if the voter did not make any selections. Select
-               
-              <strong>
-                Not on Ballot
-              </strong>
-               if the contest does not appear on the ballot.
-            </li>
-            <li>
-              Once all votes are recorded, 
-              <strong>
-                Submit Selections
-              </strong>
-               
-              and proceed to the next ballot until all ballots have been audited.
-            </li>
-          </ol>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`Ballot toggles and submits comment 1`] = `
-<div>
-  <div
-    class="sc-ckVGcZ hkbcRl"
-  >
-    <div
-      class="sc-eNQAEJ gXOgPQ"
-    >
-      <div
-        class="sc-hMqMXs eXQboI"
-      >
-        <div
-          class="sc-kEYyzF ftIbIl"
-        >
           <div
-            class="sc-jWBwVP hYQrug"
+            class="sc-cMljjf ePGiKI"
           >
-            <button
-              class="bp3-button bp3-minimal sc-cvbbAY hfuCAB"
-              href="/election/1/audit-board/1"
-              type="button"
+            <h4
+              class="bp3-heading"
             >
-              <span
-                class="bp3-icon bp3-icon-caret-left"
-                icon="caret-left"
-              >
-                <svg
-                  data-icon="caret-left"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  width="16"
-                >
-                  <desc>
-                    caret-left
-                  </desc>
-                  <path
-                    d="M9.5 4c-.13 0-.24.05-.33.13l-4 3.5c-.1.09-.17.22-.17.37s.07.28.17.37l4 3.5a.495.495 0 00.83-.37v-7c0-.28-.22-.5-.5-.5z"
-                    fill-rule="evenodd"
-                  />
-                </svg>
-              </span>
-              <span
-                class="bp3-button-text"
-              >
-                All Ballots
-              </span>
-            </button>
-            <h3
-              class="bp3-heading sc-jKJlTe jiOjCA"
+              Instructions
+            </h4>
+            <ol
+              class="bp3-list sc-gipzik fCDfMG"
             >
-              Audit Board Selections
-            </h3>
-          </div>
-          <div
-            class="bp3-divider sc-bdVaJa gqVLlZ"
-          />
-          <div
-            class="sc-iAyFgw dGwwDw"
-          >
-            <div>
-              <h5
-                class="bp3-heading sc-hSdWYo javYLu"
-              >
-                batch
-              </h5>
-              <h4
-                class="bp3-heading sc-eHgmQL dWBpUZ"
-              >
-                0003-04-Precinct 19 (Jonesboro Fire Department)
-              </h4>
-            </div>
-            <div>
-              <h5
-                class="bp3-heading sc-hSdWYo javYLu"
-              >
-                position
-              </h5>
-              <h4
-                class="bp3-heading sc-eHgmQL dWBpUZ"
-              >
-                2112
-              </h4>
-            </div>
-            <div>
-              <h5
-                class="bp3-heading sc-hSdWYo javYLu"
-              >
-                tabulator
-              </h5>
-              <h4
-                class="bp3-heading sc-eHgmQL dWBpUZ"
-              >
-                11
-              </h4>
-            </div>
-            <div>
-              <button
-                class="bp3-button bp3-intent-danger"
-                type="button"
-              >
-                <span
-                  class="bp3-button-text"
-                >
+              <li>
+                Confirm that you are looking at the correct ballot for the batch and position. If the ballot was not located, select
+                 
+                <strong>
                   Ballot Not Found
-                </span>
-              </button>
-            </div>
+                </strong>
+                 at the top of the screen.
+              </li>
+              <li>
+                For each contest, select all the candidate/choices which you see marked on the paper ballot. Select
+                 
+                <strong>
+                  Blank Vote
+                </strong>
+                 if the voter did not make any selections. Select 
+                <strong>
+                  Not on Ballot
+                </strong>
+                 if the contest does not appear on the ballot.
+              </li>
+              <li>
+                Once all votes are recorded,
+                 
+                <strong>
+                  Submit Selections
+                </strong>
+                 and proceed to the next ballot until all ballots have been audited.
+              </li>
+            </ol>
           </div>
-          <div
-            class="bp3-divider sc-bdVaJa gqVLlZ"
-          />
-          <div>
-            <div
-              class="sc-bwzfXH kvMlvD"
-            >
-              <div
-                class="ballot-side"
-              />
-              <div
-                class="ballot-main"
-              >
-                <div
-                  class="sc-htpNat jWiLEy"
-                >
-                  <h3
-                    class="bp3-heading"
-                  >
-                    Contest Name
-                  </h3>
-                  <div
-                    class="bp3-divider sc-bdVaJa gqVLlZ"
-                  />
-                  <div
-                    class="sc-kGXeez iykkKD"
-                  >
-                    <button
-                      class="bp3-button bp3-disabled bp3-large bp3-intent-primary sc-kpOJdX hOTJdR sc-gZMcBi eZVGYn"
-                      disabled=""
-                      tabindex="-1"
-                      type="button"
-                    >
-                      <span
-                        class="bp3-button-text"
-                      >
-                        Choice One
-                      </span>
-                    </button>
-                    <button
-                      class="bp3-button bp3-minimal"
-                      type="button"
-                    >
-                      <span
-                        class="bp3-icon bp3-icon-edit"
-                        icon="edit"
-                      >
-                        <svg
-                          data-icon="edit"
-                          height="16"
-                          viewBox="0 0 16 16"
-                          width="16"
-                        >
-                          <desc>
-                            edit
-                          </desc>
-                          <path
-                            d="M3.25 10.26l2.47 2.47 6.69-6.69-2.46-2.48-6.7 6.7zM.99 14.99l3.86-1.39-2.46-2.44-1.4 3.83zm12.25-14c-.48 0-.92.2-1.24.51l-1.44 1.44 2.47 2.47 1.44-1.44c.32-.32.51-.75.51-1.24.01-.95-.77-1.74-1.74-1.74z"
-                            fill-rule="evenodd"
-                          />
-                        </svg>
-                      </span>
-                      <span
-                        class="bp3-button-text"
-                      >
-                        Edit
-                      </span>
-                    </button>
-                  </div>
-                  <p>
-                    COMMENT: a test comment
-                  </p>
-                </div>
-                <div
-                  class="sc-ifAKCX jzSIMx"
-                >
-                  <button
-                    class="bp3-button bp3-intent-success sc-gZMcBi eZVGYn"
-                    type="submit"
-                  >
-                    <span
-                      class="bp3-button-text"
-                    >
-                      Submit & Next Ballot
-                    </span>
-                  </button>
-                  <button
-                    class="bp3-button bp3-minimal"
-                    type="button"
-                  >
-                    <span
-                      class="bp3-button-text"
-                    >
-                      Back
-                    </span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div
-          class="sc-kkGfuU pZHjH"
-        >
-          <h4
-            class="bp3-heading"
-          >
-            Instructions
-          </h4>
-          <ol
-            class="bp3-list"
-          >
-            <li>
-              Confirm that you are looking at the correct ballot for the batch and position. If the ballot was not located, select
-               
-              <strong>
-                Ballot Not Found at the top of the screen.
-              </strong>
-            </li>
-            <li>
-              For each contest, select all the candidate/choices which you see marked on the paper ballot. Select 
-              <strong>
-                Blank Vote
-              </strong>
-               
-              if the voter did not make any selections. Select
-               
-              <strong>
-                Not on Ballot
-              </strong>
-               if the contest does not appear on the ballot.
-            </li>
-            <li>
-              Once all votes are recorded, 
-              <strong>
-                Submit Selections
-              </strong>
-               
-              and proceed to the next ballot until all ballots have been audited.
-            </li>
-          </ol>
         </div>
       </div>
     </div>
