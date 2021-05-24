@@ -1,5 +1,12 @@
 import React from 'react'
-import { render, fireEvent, waitFor, screen } from '@testing-library/react'
+import {
+  render,
+  fireEvent,
+  waitFor,
+  screen,
+  within,
+} from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { Router } from 'react-router-dom'
 import { createMemoryHistory } from 'history'
 import Ballot from './Ballot'
@@ -50,6 +57,7 @@ describe('Ballot', () => {
   })
 
   it('switches audit and review views', async () => {
+    jest.setTimeout(10000)
     const { container, getByText } = render(
       <Router history={history}>
         <Ballot
@@ -67,32 +75,35 @@ describe('Ballot', () => {
     )
 
     fireEvent.click(getByText('Choice One'), { bubbles: true })
-    await waitFor(() =>
-      fireEvent.click(
-        screen.getByRole('button', { name: 'Submit Selections' }),
-        { bubbles: true }
-      )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Submit Selections' }), {
+      bubbles: true,
+    })
+
+    const dialog = (await screen.findByRole('heading', {
+      name: /Confirm the Ballot Selections/,
+    })).closest('.bp3-dialog')! as HTMLElement
+    within(dialog).getByText('Contest Name')
+    within(dialog).getByText('Choice One')
+    userEvent.click(
+      within(dialog).getByRole('button', { name: 'Change Selections' })
     )
+
     await waitFor(() => {
-      expect(
-        screen.getByRole('button', { name: 'Submit & Next Ballot' })
-      ).toBeTruthy()
+      expect(dialog).not.toBeInTheDocument()
     })
-    await waitFor(() => {
-      expect(container).toMatchSnapshot()
-    })
-    fireEvent.click(getByText('Edit'), { bubbles: true })
-    await waitFor(() => {
-      expect(getByText('Choice One')).toBeTruthy()
-      expect(
-        screen.getByRole('button', { name: 'Submit Selections' })
-      ).toBeTruthy()
-    })
+
+    expect(getByText('Choice One')).toBeTruthy()
+    expect(
+      screen.getByRole('button', { name: 'Submit Selections' })
+    ).toBeTruthy()
+    expect(container).toMatchSnapshot()
   })
 
   const buttonLabels = ['Blank vote', 'Not on Ballot']
   buttonLabels.forEach(buttonLabel => {
     it(`selects ${buttonLabel}`, async () => {
+      jest.setTimeout(10000)
       const { container, getByLabelText } = render(
         <Router history={history}>
           <Ballot
@@ -112,26 +123,26 @@ describe('Ballot', () => {
       fireEvent.click(getByLabelText(buttonLabel), {
         bubbles: true,
       })
-      await waitFor(() =>
-        fireEvent.click(
-          screen.getByRole('button', { name: 'Submit Selections' }),
-          { bubbles: true }
-        )
+      userEvent.click(
+        await screen.findByRole('button', { name: 'Submit Selections' })
       )
-      await waitFor(() =>
-        expect(
-          screen.getByRole('button', { name: 'Submit & Next Ballot' })
-        ).toBeTruthy()
-      )
+
+      const dialog = (await screen.findByRole('heading', {
+        name: /Confirm the Ballot Selections/,
+      })).closest('.bp3-dialog')! as HTMLElement
+      within(dialog).getByText(buttonLabel)
+
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: buttonLabel })).toBeTruthy()
-        expect(container).toMatchSnapshot()
+        expect(within(dialog).getByText(buttonLabel)).toBeTruthy()
       })
+
+      expect(container).toMatchSnapshot()
     })
   })
 
   it('toggles and submits comment', async () => {
-    const { container, getByText, queryByText, getByRole } = render(
+    jest.setTimeout(15000)
+    const { getByText, getByRole } = render(
       <Router history={history}>
         <Ballot
           home="/election/1/audit-board/1"
@@ -151,41 +162,41 @@ describe('Ballot', () => {
     fireEvent.change(commentInput, { target: { value: 'a test comment' } })
 
     fireEvent.click(getByText('Choice One'), { bubbles: true })
-    await waitFor(() =>
-      fireEvent.click(
-        screen.getByRole('button', { name: 'Submit Selections' }),
-        { bubbles: true }
-      )
-    )
-    await waitFor(() => {
-      expect(
-        screen.getByRole('button', { name: 'Submit & Next Ballot' })
-      ).toBeTruthy()
-      expect(getByText('COMMENT: a test comment')).toBeTruthy()
-      expect(container).toMatchSnapshot()
+    fireEvent.click(screen.getByRole('button', { name: 'Submit Selections' }), {
+      bubbles: true,
     })
 
-    // Go back and make sure an empty comment doesn't get saved
-    fireEvent.click(getByText('Edit'), { bubbles: true })
+    const dialog = (await screen.findByRole('heading', {
+      name: /Confirm the Ballot Selections/,
+    })).closest('.bp3-dialog')! as HTMLElement
+    within(dialog).getByText('Contest Name')
+    within(dialog).getByText('Comment: a test comment')
+    userEvent.click(
+      within(dialog).getByRole('button', { name: 'Change Selections' })
+    )
+
+    await waitFor(() => {
+      expect(dialog).not.toBeInTheDocument()
+    })
 
     fireEvent.change(commentInput, { target: { value: '' } })
 
     fireEvent.click(getByText('Choice One'), { bubbles: true })
-    await waitFor(() =>
-      fireEvent.click(
-        screen.getByRole('button', { name: 'Submit Selections' }),
-        { bubbles: true }
-      )
-    )
-    await waitFor(() => {
-      expect(queryByText('COMMENT:')).toBeFalsy()
+    fireEvent.click(screen.getByRole('button', { name: 'Submit Selections' }), {
+      bubbles: true,
     })
+
+    const dialog2 = (await screen.findByRole('heading', {
+      name: /Confirm the Ballot Selections/,
+    })).closest('.bp3-dialog')! as HTMLElement
+
+    expect(within(dialog2).queryByText('COMMENT:')).toBeFalsy()
   })
 
   it('submits review and progresses to next ballot', async () => {
     const submitMock = jest.fn()
     const nextBallotMock = jest.fn()
-    const { getByText, findByText } = render(
+    const { getByText } = render(
       <Router history={history}>
         <Ballot
           home="/election/1/audit-board/1"
@@ -207,8 +218,19 @@ describe('Ballot', () => {
       name: 'Submit Selections',
     })
     fireEvent.click(reviewButton, { bubbles: true })
-    const nextButton = await findByText('Submit & Next Ballot')
-    fireEvent.click(nextButton, { bubbles: true })
+
+    const dialog = (await screen.findByRole('heading', {
+      name: /Confirm the Ballot Selections/,
+    })).closest('.bp3-dialog')! as HTMLElement
+    within(dialog).getByText('Contest Name')
+    within(dialog).getByText('Choice One')
+    userEvent.click(
+      within(dialog).getByRole('button', { name: 'Confirm Selections' })
+    )
+
+    await waitFor(() => {
+      expect(dialog).not.toBeInTheDocument()
+    })
 
     await waitFor(() => {
       expect(nextBallotMock).toBeCalled()
@@ -219,7 +241,7 @@ describe('Ballot', () => {
   it('submits review with double click without screwing up', async () => {
     const submitMock = jest.fn()
     const nextBallotMock = jest.fn()
-    const { getByText, findByText } = render(
+    const { getByText } = render(
       <Router history={history}>
         <Ballot
           home="/election/1/audit-board/1"
@@ -241,9 +263,20 @@ describe('Ballot', () => {
       name: 'Submit Selections',
     })
     fireEvent.click(reviewButton, { bubbles: true })
-    const nextButton = await findByText('Submit & Next Ballot')
-    fireEvent.click(nextButton, { bubbles: true }) // the doubleClick event doesn't submit it at all
-    fireEvent.click(nextButton, { bubbles: true }) // but this successfully fails without the Formik double submission protection
+    const dialog = (await screen.findByRole('heading', {
+      name: /Confirm the Ballot Selections/,
+    })).closest('.bp3-dialog')! as HTMLElement
+    within(dialog).getByText('Contest Name')
+    within(dialog).getByText('Choice One')
+    const confirmButton = within(dialog).getByRole('button', {
+      name: 'Confirm Selections',
+    })
+    fireEvent.click(confirmButton, { bubbles: true }) // the doubleClick event doesn't submit it at all
+    fireEvent.click(confirmButton, { bubbles: true }) // but this successfully fails without the Formik double submission protection
+
+    await waitFor(() => {
+      expect(dialog).not.toBeInTheDocument()
+    })
 
     await waitFor(() => {
       expect(submitMock).toHaveBeenCalledTimes(1)
