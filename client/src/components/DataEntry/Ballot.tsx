@@ -16,14 +16,6 @@ import { IBallot } from '../MultiJurisdictionAudit/RoundManagement/useBallots'
 import { hashBy } from '../../utils/array'
 import { useConfirm, ConfirmReview } from './ConfirmReview'
 
-const AuditBoardContainer = styled.div`
-  font-family: 'ProximaNova-Condensed-Regular', 'Helvetica', 'Arial', sans-serif;
-  font-size: 1.2em;
-  .bp3-heading {
-    color: ${Colors.BLACK};
-  }
-`
-
 const TopH3 = styled(H3)`
   display: inline-block;
   margin-bottom: 0;
@@ -210,7 +202,7 @@ const Ballot: React.FC<IProps> = ({
   return !ballot ? (
     <Redirect to={home} />
   ) : (
-    <AuditBoardContainer>
+    <div>
       <Inner>
         <Wrapper>
           <ContentWrapper>
@@ -296,7 +288,7 @@ const Ballot: React.FC<IProps> = ({
           </ContentWrapper>
         </Wrapper>
       </Inner>
-    </AuditBoardContainer>
+    </div>
   )
 }
 

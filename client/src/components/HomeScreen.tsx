@@ -72,8 +72,11 @@ const HomeScreen: React.FC = () => {
         </Wrapper>
       )
     }
-    case 'audit_board':
-      return <LoginScreen />
+    case 'audit_board': {
+      const { electionId, id: auditBoardId } = user
+      const auditBoardUrl = `/election/${electionId}/audit-board/${auditBoardId}`
+      return <Redirect to={auditBoardUrl} />
+    }
     default:
       /* istanbul ignore next */
       return null // Shouldn't happen

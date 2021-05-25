@@ -50,29 +50,6 @@ const Nav = styled(Navbar)`
   }
 `
 
-const AuditBoardNav = styled(Navbar)`
-  background-color: ${Colors.BLACK};
-  width: 100%;
-  height: auto;
-  padding: 0;
-  color: ${Colors.WHITE};
-  .bp3-navbar-heading img {
-    height: 35px;
-    padding-top: 5px;
-  }
-  .logo-mobile {
-    display: none;
-  }
-  @media only screen and (max-width: 767px) {
-    .logo-desktop {
-      display: none;
-    }
-    .logo-mobile {
-      display: block;
-    }
-  }
-`
-
 const UserMenu = styled.div`
   .bp3-button {
     border: 1px solid ${Colors.GRAY4};
@@ -89,24 +66,23 @@ const UserMenu = styled.div`
 `
 
 const InnerBar = styled(Inner)`
-  display: inherit;
-`
-
-const AuditBoardInnerBar = styled(Inner)`
+  display: flex;
   justify-content: space-between;
-  .members-name {
-    justify-content: center;
-    width: 65%;
-    p {
-      margin-bottom: 0;
-      text-align: center;
-    }
-  }
-`
 
-const NavbarGroupAuditBoardLink = styled(NavbarGroup)`
-  a {
-    color: #ffffff;
+  .members-name p {
+    margin-bottom: 0;
+  }
+
+  .logo-mobile {
+    display: none;
+  }
+  @media only screen and (max-width: 767px) {
+    .logo-desktop {
+      display: none;
+    }
+    .logo-mobile {
+      display: block;
+    }
   }
 `
 
@@ -154,13 +130,22 @@ const Header: React.FC<{}> = () => {
           </InnerBar>
         </SupportBar>
       )}
-      {!supportMatch && auth && auth.user && auth.user.type !== 'audit_board' && (
+      {!supportMatch && (
         <Nav>
           <InnerBar>
             <NavbarGroup align={Alignment.LEFT}>
               <NavbarHeading>
                 <Link to="/">
-                  <img src="/arlo.png" alt="Arlo, by VotingWorks" />
+                  <img
+                    src="/arlo.png"
+                    alt="Arlo, by VotingWorks"
+                    className="logo-desktop"
+                  />
+                  <img
+                    src="/arlo-mobile.png"
+                    alt="Arlo, by VotingWorks"
+                    className="logo-mobile"
+                  />
                 </Link>
               </NavbarHeading>
               {jurisdiction && (
@@ -168,102 +153,72 @@ const Header: React.FC<{}> = () => {
               )}
             </NavbarGroup>
             {auth && auth.user && (
-              <NavbarGroup align={Alignment.RIGHT}>
-                {electionId && auth.user.type === 'audit_admin' && (
-                  <>
-                    <LinkButton
-                      to={`/election/${electionId}/setup`}
-                      minimal
-                      icon="wrench"
-                    >
-                      Audit Setup
-                    </LinkButton>
-                    <LinkButton
-                      to={`/election/${electionId}/progress`}
-                      minimal
-                      icon="horizontal-bar-chart"
-                    >
-                      Audit Progress
-                    </LinkButton>
-                    <LinkButton to="/" minimal icon="projects">
-                      View Audits
-                    </LinkButton>
-                    <LinkButton to="/" minimal icon="insert">
-                      New Audit
-                    </LinkButton>
-                    <NavbarDivider />
-                  </>
+              <>
+                {auth.user.type === 'audit_board' && auth.user.members && (
+                  <NavbarGroup className="members-name">
+                    <NavbarHeading>
+                      {auth.user.name}
+                      {auth.user.members && (
+                        <>
+                          :{' '}
+                          <strong>
+                            {auth.user.members
+                              .map(member => member.name)
+                              .join(', ')}
+                          </strong>
+                        </>
+                      )}
+                    </NavbarHeading>
+                  </NavbarGroup>
                 )}
-                <UserMenu>
-                  <Popover
-                    content={
-                      <Menu>
-                        <MenuItem text="Log out" href="/auth/logout" />
-                      </Menu>
-                    }
-                    usePortal={false}
-                    position={Position.BOTTOM}
-                    minimal
-                    fill
-                  >
-                    <Button icon="user" minimal>
-                      {auth.user.email}
-                    </Button>
-                  </Popover>
-                </UserMenu>
-              </NavbarGroup>
+                <NavbarGroup align={Alignment.RIGHT}>
+                  {electionId && auth.user.type === 'audit_admin' && (
+                    <>
+                      <LinkButton
+                        to={`/election/${electionId}/setup`}
+                        minimal
+                        icon="wrench"
+                      >
+                        Audit Setup
+                      </LinkButton>
+                      <LinkButton
+                        to={`/election/${electionId}/progress`}
+                        minimal
+                        icon="horizontal-bar-chart"
+                      >
+                        Audit Progress
+                      </LinkButton>
+                      <LinkButton to="/" minimal icon="projects">
+                        View Audits
+                      </LinkButton>
+                      <LinkButton to="/" minimal icon="insert">
+                        New Audit
+                      </LinkButton>
+                      <NavbarDivider />
+                    </>
+                  )}
+                  <UserMenu>
+                    <Popover
+                      content={
+                        <Menu>
+                          <MenuItem text="Log out" href="/auth/logout" />
+                        </Menu>
+                      }
+                      usePortal={false}
+                      position={Position.BOTTOM}
+                      minimal
+                      fill
+                    >
+                      <Button icon="user" minimal>
+                        {auth.user.type === 'audit_board'
+                          ? auth.user.name
+                          : auth.user.email}
+                      </Button>
+                    </Popover>
+                  </UserMenu>
+                </NavbarGroup>
+              </>
             )}
-          </InnerBar>
-        </Nav>
-      )}
-      {auth && auth.user && auth.user.type === 'audit_board' && (
-        <AuditBoardNav>
-          <AuditBoardInnerBar>
-            <NavbarGroup>
-              <NavbarHeading>
-                <Link to="/">
-                  <img
-                    src="/arlo-white.svg"
-                    alt="Arlo, by VotingWorks"
-                    className="logo-desktop"
-                  />
-                  <img
-                    src="/arlo-white-mobile.svg"
-                    alt="Arlo, by VotingWorks"
-                    className="logo-mobile"
-                  />
-                </Link>
-              </NavbarHeading>
-            </NavbarGroup>
-            <NavbarGroup className="members-name">
-              <p className="members-name">
-                {auth.user.name}
-                {auth.user.members && (
-                  <>
-                    :{' '}
-                    <strong>
-                      {auth.user.members.map(member => member.name).join(', ')}
-                    </strong>
-                  </>
-                )}
-              </p>
-            </NavbarGroup>
-            <NavbarGroupAuditBoardLink>
-              <a href="/auth/logout">Sign Out</a>
-            </NavbarGroupAuditBoardLink>
-          </AuditBoardInnerBar>
-        </AuditBoardNav>
-      )}
-      {!supportMatch && !auth && (
-        <Nav>
-          <InnerBar>
-            <NavbarGroup align={Alignment.LEFT}>
-              <NavbarHeading>
-                <Link to="/">
-                  <img src="/arlo.png" alt="Arlo, by VotingWorks" />
-                </Link>
-              </NavbarHeading>
-            </NavbarGroup>
           </InnerBar>
         </Nav>
       )}

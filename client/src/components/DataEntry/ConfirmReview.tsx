@@ -1,13 +1,5 @@
 import React, { useState } from 'react'
-import {
-  Dialog,
-  Classes,
-  Button,
-  Intent,
-  Colors,
-  H4,
-  H3,
-} from '@blueprintjs/core'
+import { Dialog, Classes, Button, Intent, H3 } from '@blueprintjs/core'
 import styled from 'styled-components'
 import {
   IBallotInterpretation,
@@ -23,28 +15,12 @@ export interface IConfirmOptions {
 }
 
 const AuditBoardDialog = styled(Dialog)`
-  background-color: ${Colors.WHITE};
   padding-bottom: 0;
-  font-family: 'ProximaNova-Condensed-Regular', 'Helvetica', 'Arial', sans-serif;
-  font-size: 1.2em;
-  .bp3-heading {
-    color: ${Colors.BLACK};
-  }
-`
-
-const DialogHeader = styled.div`
-  background-color: ${Colors.BLACK};
-  min-height: 50px;
-  .bp3-heading,
-  .bp3-button .bp3-icon {
-    color: ${Colors.WHITE};
-  }
 `
 
 const DialogFooter = styled.div`
   margin: 0;
   border-radius: 0 0 6px 6px;
-  background-color: ${Colors.BLACK};
   padding: 10px 20px;
 `
 
@@ -143,10 +119,12 @@ export const ConfirmReview = ({
   }
 
   return (
-    <AuditBoardDialog onClose={onClose} isOpen={isOpen}>
-      <DialogHeader className={Classes.DIALOG_HEADER}>
-        <H4 className={Classes.HEADING}>Confirm the Ballot Selections</H4>
-      </DialogHeader>
+    <AuditBoardDialog
+      icon="info-sign"
+      onClose={onClose}
+      title="Confirm the Ballot Selections"
+      isOpen={isOpen}
+    >
       <div className={Classes.DIALOG_BODY}>
         {contests.map((contest, i) => (
           <ContestReviewCard key={contest.id}>
@@ -161,14 +139,13 @@ export const ConfirmReview = ({
       </div>
       <DialogFooter className={Classes.DIALOG_FOOTER}>
         <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-          <Button disabled={isSubmitting} onClick={onClose} large>
+          <Button disabled={isSubmitting} onClick={onClose}>
             Change Selections
           </Button>
           <YesButton
             intent={Intent.SUCCESS}
             onClick={handleYesClick}
             loading={isSubmitting}
-            large
           >
             Confirm Selections
           </YesButton>

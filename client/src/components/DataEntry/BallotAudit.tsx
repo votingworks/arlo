@@ -1,7 +1,7 @@
 import React from 'react'
 import { Formik, FormikProps, Field } from 'formik'
 import styled from 'styled-components'
-import { H3 } from '@blueprintjs/core'
+import { H3, Button } from '@blueprintjs/core'
 import {
   BallotRow,
   ContestCard,
@@ -49,6 +49,7 @@ const BallotAudit: React.FC<IProps> = ({
   contests,
   interpretations,
   setInterpretations,
+  previousBallot,
 }: IProps) => {
   return (
     <BallotRow>
@@ -87,9 +88,9 @@ const BallotAudit: React.FC<IProps> = ({
                   >
                     Submit Selections
                   </SubmitButton>
-                  {/* <Button onClick={previousBallot} minimal>
+                  <Button onClick={previousBallot} intent="none">
                     Back
-                  </Button> */}
+                  </Button>
                 </ProgressActions>
               </form>
             )

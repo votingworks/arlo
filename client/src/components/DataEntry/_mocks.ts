@@ -12,6 +12,7 @@ export const dummyBoards = (): IAuditBoard[] => [
     name: 'Audit Board #1',
     jurisdictionId: 'jurisdiction-1',
     jurisdictionName: 'Jurisdiction 1',
+    electionId: '1',
     roundId: 'round-1',
     members: [
       {
@@ -31,6 +32,7 @@ export const dummyBoards = (): IAuditBoard[] => [
     name: 'Audit Board #2',
     jurisdictionId: 'jurisdiction-1',
     jurisdictionName: 'Jurisdiction 1',
+    electionId: '1',
     roundId: 'round-1',
     members: [],
     signedOffAt: null,

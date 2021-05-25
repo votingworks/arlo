@@ -48,7 +48,9 @@ describe('App', () => {
       const expectedCalls = [jaApiCalls.getUser]
       await withMockFetch(expectedCalls, async () => {
         const { container } = renderView('/')
-        await screen.findByAltText('Arlo, by VotingWorks')
+        expect(
+          (await screen.findAllByAltText('Arlo, by VotingWorks')).length
+        ).toBe(2)
         expect(container).toMatchSnapshot()
       })
     })
@@ -57,16 +59,18 @@ describe('App', () => {
       const expectedCalls = [aaApiCalls.getUser, aaApiCalls.getUser]
       await withMockFetch(expectedCalls, async () => {
         const { container } = renderView('/')
-        await screen.findByAltText('Arlo, by VotingWorks')
+        expect(
+          (await screen.findAllByAltText('Arlo, by VotingWorks')).length
+        ).toBe(2)
         expect(container).toMatchSnapshot()
       })
     })
 
     it('when logged in as an audit board, shows the login screen', async () => {
-      const expectedCalls = [apiMocks.abAuth]
+      const expectedCalls = [apiMocks.abAuth, apiMocks.abAuth]
       await withMockFetch(expectedCalls, async () => {
         renderView('/')
-        await screen.findByRole('button', { name: 'Log in to your audit' })
+        await screen.findAllByText(/Audit Board #2/)
       })
     })
   })
@@ -89,7 +93,9 @@ describe('App', () => {
         const { container } = renderView(
           '/election/1/audit-board/audit-board-1'
         )
-        await screen.findByAltText('Arlo, by VotingWorks')
+        expect(
+          (await screen.findAllByAltText('Arlo, by VotingWorks')).length
+        ).toBe(2)
         expect(container).toMatchSnapshot()
       })
     })
@@ -100,7 +106,9 @@ describe('App', () => {
         const { container } = renderView(
           '/election/1/audit-board/audit-board-1'
         )
-        await screen.findByAltText('Arlo, by VotingWorks')
+        expect(
+          (await screen.findAllByAltText('Arlo, by VotingWorks')).length
+        ).toBe(2)
         expect(container).toMatchSnapshot()
       })
     })
@@ -147,7 +155,9 @@ describe('App', () => {
         const { container } = renderView(
           '/election/1/jurisdiction/jurisdiction-id-1'
         )
-        await screen.findByAltText('Arlo, by VotingWorks')
+        expect(
+          (await screen.findAllByAltText('Arlo, by VotingWorks')).length
+        ).toBe(2)
         expect(container).toMatchSnapshot()
       })
     })

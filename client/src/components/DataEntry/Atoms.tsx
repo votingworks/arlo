@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 import { Field } from 'formik'
-import { RadioGroup, Divider, H4, Colors } from '@blueprintjs/core'
+import { RadioGroup, Divider, H5, Colors } from '@blueprintjs/core'
 
 export const FlushDivider = styled(Divider)`
   margin: 5px 0;
@@ -101,7 +101,7 @@ export const RightCheckboxes = styled.div`
   }
 `
 
-export const SubTitle = styled(H4)`
+export const SubTitle = styled(H5)`
   margin-bottom: 0;
   color: ${Colors.BLACK};
   font-weight: 400;

@@ -27,9 +27,9 @@ describe('Header', () => {
       renderHeader('/')
 
       // Arlo logo
-      const arloLogo = await screen.findByRole('link', {
+      const arloLogo = screen.getAllByRole('link', {
         name: 'Arlo, by VotingWorks',
-      })
+      })[0]
       expect(arloLogo).toHaveAttribute('href', '/')
       expect(within(arloLogo).getByRole('img')).toHaveAttribute(
         'src',
@@ -148,11 +148,17 @@ describe('Header', () => {
       })
 
       // Audit board name
-      await screen.findByText(/Audit Board #1/)
+      expect(screen.getAllByText(/Audit Board #1/).length).toBe(2)
 
       // Sign Out link available for audit board
-      const signOutButton = screen.getByRole('link', { name: 'Sign Out' })
-      expect(signOutButton).toHaveAttribute('href', '/auth/logout')
+      const userButton = screen.getByRole('button', {
+        name: /Audit Board #1/,
+      })
+      userEvent.click(userButton)
+
+      // Dropdown menu should show with log out option
+      const logOutButton = screen.getByRole('link', { name: 'Log out' })
+      expect(logOutButton).toHaveAttribute('href', '/auth/logout')
     })
   })
 

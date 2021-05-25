@@ -11,11 +11,6 @@ import LinkButton from '../Atoms/LinkButton'
 import { IBallot } from '../MultiJurisdictionAudit/RoundManagement/useBallots'
 import { IAuditBoard } from '../UserContext'
 
-const AuditBoardContainer = styled.div`
-  font-family: 'ProximaNova-Condensed-Regular', 'Helvetica', 'Arial', sans-serif;
-  font-size: 1.2em;
-`
-
 const LeftSection = styled.div`
   .summary-label {
     margin-right: 10px;
@@ -261,14 +256,13 @@ const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
           : ''
       }
       intent="success"
-      large
     >
       {totalAudited === 0 ? 'Audit First Ballot' : 'Audit Next Ballot'}
     </HeaderLinkBtn>
   )
 
   return (
-    <AuditBoardContainer className="board-table-container">
+    <div className="board-table-container">
       <HeaderWrapper>
         <HeaderInnerWrapper>
           <LeftSection>
@@ -322,7 +316,7 @@ const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
           </InstructionsWrapper>
         </ContentWrapper>
       </Inner>
-    </AuditBoardContainer>
+    </div>
   )
 }
 

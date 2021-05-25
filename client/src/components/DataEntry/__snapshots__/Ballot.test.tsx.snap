@@ -4,26 +4,24 @@ exports[`Ballot redirects if ballot does not exist 1`] = `<div />`;
 
 exports[`Ballot renders correctly with an audited ballot 1`] = `
 <div>
-  <div
-    class="sc-hSdWYo iirkAi"
-  >
+  <div>
     <div
       class="sc-ckVGcZ hkbcRl"
     >
       <div
-        class="sc-cvbbAY gwPMhu"
+        class="sc-hSdWYo bBCYTy"
       >
         <div
-          class="sc-jWBwVP bmgJcF"
+          class="sc-eHgmQL dcJsFa"
         >
           <div
-            class="sc-brqgnP dvGbcs"
+            class="sc-cvbbAY gRuSFg"
           >
             <div
-              class="sc-iRbamj fagPRr"
+              class="sc-jDwBTQ gSQAvM"
             >
               <button
-                class="bp3-button bp3-minimal sc-gPEVay hwAtFh"
+                class="bp3-button bp3-minimal sc-jAaTju haGJix"
                 href="/election/1/audit-board/1"
                 type="button"
               >
@@ -53,7 +51,7 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
                 </span>
               </button>
               <h3
-                class="bp3-heading sc-eHgmQL hKVbcd"
+                class="bp3-heading sc-iAyFgw jccTdz"
               >
                 Audit Ballot Selections
               </h3>
@@ -62,47 +60,47 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
               class="bp3-divider sc-bdVaJa gqVLlZ"
             />
             <div
-              class="sc-jAaTju hmiqEV"
+              class="sc-brqgnP mJeGI"
             >
               <div>
-                <h4
+                <h5
                   class="bp3-heading sc-iwsKbI krynZG"
                 >
                   batch
-                </h4>
+                </h5>
                 <h4
-                  class="bp3-heading sc-jDwBTQ iqySSz"
+                  class="bp3-heading sc-cMljjf eWlDYe"
                 >
                   0003-04-Precinct 13 (Jonesboro Fire Department)
                 </h4>
               </div>
               <div>
-                <h4
+                <h5
                   class="bp3-heading sc-iwsKbI krynZG"
                 >
                   position
-                </h4>
+                </h5>
                 <h4
-                  class="bp3-heading sc-jDwBTQ iqySSz"
+                  class="bp3-heading sc-cMljjf eWlDYe"
                 >
                   313
                 </h4>
               </div>
               <div>
-                <h4
+                <h5
                   class="bp3-heading sc-iwsKbI krynZG"
                 >
                   tabulator
-                </h4>
+                </h5>
                 <h4
-                  class="bp3-heading sc-jDwBTQ iqySSz"
+                  class="bp3-heading sc-cMljjf eWlDYe"
                 >
                   11
                 </h4>
               </div>
               <div>
                 <button
-                  class="bp3-button bp3-large bp3-intent-danger sc-jlyJG iNWejO"
+                  class="bp3-button bp3-large bp3-intent-danger sc-gPEVay ehdNJA"
                   type="button"
                 >
                   <span
@@ -123,11 +121,11 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
                 <div
                   class="ballot-main"
                 >
-                  <h4
+                  <h5
                     class="bp3-heading sc-iwsKbI krynZG"
                   >
                     Ballot Contests
-                  </h4>
+                  </h5>
                   <form>
                     <div
                       class="sc-htpNat kWdSWK"
@@ -238,6 +236,16 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
                           Submit Selections
                         </span>
                       </button>
+                      <button
+                        class="bp3-button"
+                        type="button"
+                      >
+                        <span
+                          class="bp3-button-text"
+                        >
+                          Back
+                        </span>
+                      </button>
                     </div>
                   </form>
                 </div>
@@ -245,7 +253,7 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
             </div>
           </div>
           <div
-            class="sc-cMljjf ePGiKI"
+            class="sc-jWBwVP fydRML"
           >
             <h4
               class="bp3-heading"
@@ -253,7 +261,7 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
               Instructions
             </h4>
             <ol
-              class="bp3-list sc-gipzik fCDfMG"
+              class="bp3-list sc-iRbamj iNBjzq"
             >
               <li>
                 Confirm that you are looking at the correct ballot for the batch and position. If the ballot was not located, select
@@ -294,26 +302,24 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
 
 exports[`Ballot renders correctly with an unaudited ballot 1`] = `
 <div>
-  <div
-    class="sc-hSdWYo iirkAi"
-  >
+  <div>
     <div
       class="sc-ckVGcZ hkbcRl"
     >
       <div
-        class="sc-cvbbAY gwPMhu"
+        class="sc-hSdWYo bBCYTy"
       >
         <div
-          class="sc-jWBwVP bmgJcF"
+          class="sc-eHgmQL dcJsFa"
         >
           <div
-            class="sc-brqgnP dvGbcs"
+            class="sc-cvbbAY gRuSFg"
           >
             <div
-              class="sc-iRbamj fagPRr"
+              class="sc-jDwBTQ gSQAvM"
             >
               <button
-                class="bp3-button bp3-minimal sc-gPEVay hwAtFh"
+                class="bp3-button bp3-minimal sc-jAaTju haGJix"
                 href="/election/1/audit-board/1"
                 type="button"
               >
@@ -343,7 +349,7 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
                 </span>
               </button>
               <h3
-                class="bp3-heading sc-eHgmQL hKVbcd"
+                class="bp3-heading sc-iAyFgw jccTdz"
               >
                 Audit Ballot Selections
               </h3>
@@ -352,47 +358,47 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
               class="bp3-divider sc-bdVaJa gqVLlZ"
             />
             <div
-              class="sc-jAaTju hmiqEV"
+              class="sc-brqgnP mJeGI"
             >
               <div>
-                <h4
+                <h5
                   class="bp3-heading sc-iwsKbI krynZG"
                 >
                   batch
-                </h4>
+                </h5>
                 <h4
-                  class="bp3-heading sc-jDwBTQ iqySSz"
+                  class="bp3-heading sc-cMljjf eWlDYe"
                 >
                   0003-04-Precinct 19 (Jonesboro Fire Department)
                 </h4>
               </div>
               <div>
-                <h4
+                <h5
                   class="bp3-heading sc-iwsKbI krynZG"
                 >
                   position
-                </h4>
+                </h5>
                 <h4
-                  class="bp3-heading sc-jDwBTQ iqySSz"
+                  class="bp3-heading sc-cMljjf eWlDYe"
                 >
                   2112
                 </h4>
               </div>
               <div>
-                <h4
+                <h5
                   class="bp3-heading sc-iwsKbI krynZG"
                 >
                   tabulator
-                </h4>
+                </h5>
                 <h4
-                  class="bp3-heading sc-jDwBTQ iqySSz"
+                  class="bp3-heading sc-cMljjf eWlDYe"
                 >
                   11
                 </h4>
               </div>
               <div>
                 <button
-                  class="bp3-button bp3-large bp3-intent-danger sc-jlyJG iNWejO"
+                  class="bp3-button bp3-large bp3-intent-danger sc-gPEVay ehdNJA"
                   type="button"
                 >
                   <span
@@ -413,11 +419,11 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
                 <div
                   class="ballot-main"
                 >
-                  <h4
+                  <h5
                     class="bp3-heading sc-iwsKbI krynZG"
                   >
                     Ballot Contests
-                  </h4>
+                  </h5>
                   <form>
                     <div
                       class="sc-htpNat kWdSWK"
@@ -526,6 +532,16 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
                           Submit Selections
                         </span>
                       </button>
+                      <button
+                        class="bp3-button"
+                        type="button"
+                      >
+                        <span
+                          class="bp3-button-text"
+                        >
+                          Back
+                        </span>
+                      </button>
                     </div>
                   </form>
                 </div>
@@ -533,7 +549,7 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
             </div>
           </div>
           <div
-            class="sc-cMljjf ePGiKI"
+            class="sc-jWBwVP fydRML"
           >
             <h4
               class="bp3-heading"
@@ -541,7 +557,7 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
               Instructions
             </h4>
             <ol
-              class="bp3-list sc-gipzik fCDfMG"
+              class="bp3-list sc-iRbamj iNBjzq"
             >
               <li>
                 Confirm that you are looking at the correct ballot for the batch and position. If the ballot was not located, select
@@ -582,26 +598,24 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
 
 exports[`Ballot selects Blank vote 1`] = `
 <div>
-  <div
-    class="sc-hSdWYo iirkAi"
-  >
+  <div>
     <div
       class="sc-ckVGcZ hkbcRl"
     >
       <div
-        class="sc-cvbbAY gwPMhu"
+        class="sc-hSdWYo bBCYTy"
       >
         <div
-          class="sc-jWBwVP bmgJcF"
+          class="sc-eHgmQL dcJsFa"
         >
           <div
-            class="sc-brqgnP dvGbcs"
+            class="sc-cvbbAY gRuSFg"
           >
             <div
-              class="sc-iRbamj fagPRr"
+              class="sc-jDwBTQ gSQAvM"
             >
               <button
-                class="bp3-button bp3-minimal sc-gPEVay hwAtFh"
+                class="bp3-button bp3-minimal sc-jAaTju haGJix"
                 href="/election/1/audit-board/1"
                 type="button"
               >
@@ -631,7 +645,7 @@ exports[`Ballot selects Blank vote 1`] = `
                 </span>
               </button>
               <h3
-                class="bp3-heading sc-eHgmQL hKVbcd"
+                class="bp3-heading sc-iAyFgw jccTdz"
               >
                 Audit Ballot Selections
               </h3>
@@ -640,47 +654,47 @@ exports[`Ballot selects Blank vote 1`] = `
               class="bp3-divider sc-bdVaJa gqVLlZ"
             />
             <div
-              class="sc-jAaTju hmiqEV"
+              class="sc-brqgnP mJeGI"
             >
               <div>
-                <h4
+                <h5
                   class="bp3-heading sc-iwsKbI krynZG"
                 >
                   batch
-                </h4>
+                </h5>
                 <h4
-                  class="bp3-heading sc-jDwBTQ iqySSz"
+                  class="bp3-heading sc-cMljjf eWlDYe"
                 >
                   0003-04-Precinct 19 (Jonesboro Fire Department)
                 </h4>
               </div>
               <div>
-                <h4
+                <h5
                   class="bp3-heading sc-iwsKbI krynZG"
                 >
                   position
-                </h4>
+                </h5>
                 <h4
-                  class="bp3-heading sc-jDwBTQ iqySSz"
+                  class="bp3-heading sc-cMljjf eWlDYe"
                 >
                   2112
                 </h4>
               </div>
               <div>
-                <h4
+                <h5
                   class="bp3-heading sc-iwsKbI krynZG"
                 >
                   tabulator
-                </h4>
+                </h5>
                 <h4
-                  class="bp3-heading sc-jDwBTQ iqySSz"
+                  class="bp3-heading sc-cMljjf eWlDYe"
                 >
                   11
                 </h4>
               </div>
               <div>
                 <button
-                  class="bp3-button bp3-large bp3-intent-danger sc-jlyJG iNWejO"
+                  class="bp3-button bp3-large bp3-intent-danger sc-gPEVay ehdNJA"
                   type="button"
                 >
                   <span
@@ -701,11 +715,11 @@ exports[`Ballot selects Blank vote 1`] = `
                 <div
                   class="ballot-main"
                 >
-                  <h4
+                  <h5
                     class="bp3-heading sc-iwsKbI krynZG"
                   >
                     Ballot Contests
-                  </h4>
+                  </h5>
                   <form>
                     <div
                       class="sc-htpNat kWdSWK"
@@ -814,6 +828,16 @@ exports[`Ballot selects Blank vote 1`] = `
                           Submit Selections
                         </span>
                       </button>
+                      <button
+                        class="bp3-button"
+                        type="button"
+                      >
+                        <span
+                          class="bp3-button-text"
+                        >
+                          Back
+                        </span>
+                      </button>
                     </div>
                   </form>
                 </div>
@@ -821,7 +845,7 @@ exports[`Ballot selects Blank vote 1`] = `
             </div>
           </div>
           <div
-            class="sc-cMljjf ePGiKI"
+            class="sc-jWBwVP fydRML"
           >
             <h4
               class="bp3-heading"
@@ -829,7 +853,7 @@ exports[`Ballot selects Blank vote 1`] = `
               Instructions
             </h4>
             <ol
-              class="bp3-list sc-gipzik fCDfMG"
+              class="bp3-list sc-iRbamj iNBjzq"
             >
               <li>
                 Confirm that you are looking at the correct ballot for the batch and position. If the ballot was not located, select
@@ -870,26 +894,24 @@ exports[`Ballot selects Blank vote 1`] = `
 
 exports[`Ballot selects Not on Ballot 1`] = `
 <div>
-  <div
-    class="sc-hSdWYo iirkAi"
-  >
+  <div>
     <div
       class="sc-ckVGcZ hkbcRl"
     >
       <div
-        class="sc-cvbbAY gwPMhu"
+        class="sc-hSdWYo bBCYTy"
       >
         <div
-          class="sc-jWBwVP bmgJcF"
+          class="sc-eHgmQL dcJsFa"
         >
           <div
-            class="sc-brqgnP dvGbcs"
+            class="sc-cvbbAY gRuSFg"
           >
             <div
-              class="sc-iRbamj fagPRr"
+              class="sc-jDwBTQ gSQAvM"
             >
               <button
-                class="bp3-button bp3-minimal sc-gPEVay hwAtFh"
+                class="bp3-button bp3-minimal sc-jAaTju haGJix"
                 href="/election/1/audit-board/1"
                 type="button"
               >
@@ -919,7 +941,7 @@ exports[`Ballot selects Not on Ballot 1`] = `
                 </span>
               </button>
               <h3
-                class="bp3-heading sc-eHgmQL hKVbcd"
+                class="bp3-heading sc-iAyFgw jccTdz"
               >
                 Audit Ballot Selections
               </h3>
@@ -928,47 +950,47 @@ exports[`Ballot selects Not on Ballot 1`] = `
               class="bp3-divider sc-bdVaJa gqVLlZ"
             />
             <div
-              class="sc-jAaTju hmiqEV"
+              class="sc-brqgnP mJeGI"
             >
               <div>
-                <h4
+                <h5
                   class="bp3-heading sc-iwsKbI krynZG"
                 >
                   batch
-                </h4>
+                </h5>
                 <h4
-                  class="bp3-heading sc-jDwBTQ iqySSz"
+                  class="bp3-heading sc-cMljjf eWlDYe"
                 >
                   0003-04-Precinct 19 (Jonesboro Fire Department)
                 </h4>
               </div>
               <div>
-                <h4
+                <h5
                   class="bp3-heading sc-iwsKbI krynZG"
                 >
                   position
-                </h4>
+                </h5>
                 <h4
-                  class="bp3-heading sc-jDwBTQ iqySSz"
+                  class="bp3-heading sc-cMljjf eWlDYe"
                 >
                   2112
                 </h4>
               </div>
               <div>
-                <h4
+                <h5
                   class="bp3-heading sc-iwsKbI krynZG"
                 >
                   tabulator
-                </h4>
+                </h5>
                 <h4
-                  class="bp3-heading sc-jDwBTQ iqySSz"
+                  class="bp3-heading sc-cMljjf eWlDYe"
                 >
                   11
                 </h4>
               </div>
               <div>
                 <button
-                  class="bp3-button bp3-large bp3-intent-danger sc-jlyJG iNWejO"
+                  class="bp3-button bp3-large bp3-intent-danger sc-gPEVay ehdNJA"
                   type="button"
                 >
                   <span
@@ -989,11 +1011,11 @@ exports[`Ballot selects Not on Ballot 1`] = `
                 <div
                   class="ballot-main"
                 >
-                  <h4
+                  <h5
                     class="bp3-heading sc-iwsKbI krynZG"
                   >
                     Ballot Contests
-                  </h4>
+                  </h5>
                   <form>
                     <div
                       class="sc-htpNat kWdSWK"
@@ -1102,6 +1124,16 @@ exports[`Ballot selects Not on Ballot 1`] = `
                           Submit Selections
                         </span>
                       </button>
+                      <button
+                        class="bp3-button"
+                        type="button"
+                      >
+                        <span
+                          class="bp3-button-text"
+                        >
+                          Back
+                        </span>
+                      </button>
                     </div>
                   </form>
                 </div>
@@ -1109,7 +1141,7 @@ exports[`Ballot selects Not on Ballot 1`] = `
             </div>
           </div>
           <div
-            class="sc-cMljjf ePGiKI"
+            class="sc-jWBwVP fydRML"
           >
             <h4
               class="bp3-heading"
@@ -1117,7 +1149,7 @@ exports[`Ballot selects Not on Ballot 1`] = `
               Instructions
             </h4>
             <ol
-              class="bp3-list sc-gipzik fCDfMG"
+              class="bp3-list sc-iRbamj iNBjzq"
             >
               <li>
                 Confirm that you are looking at the correct ballot for the batch and position. If the ballot was not located, select
@@ -1158,26 +1190,24 @@ exports[`Ballot selects Not on Ballot 1`] = `
 
 exports[`Ballot switches audit and review views 1`] = `
 <div>
-  <div
-    class="sc-hSdWYo iirkAi"
-  >
+  <div>
     <div
       class="sc-ckVGcZ hkbcRl"
     >
       <div
-        class="sc-cvbbAY gwPMhu"
+        class="sc-hSdWYo bBCYTy"
       >
         <div
-          class="sc-jWBwVP bmgJcF"
+          class="sc-eHgmQL dcJsFa"
         >
           <div
-            class="sc-brqgnP dvGbcs"
+            class="sc-cvbbAY gRuSFg"
           >
             <div
-              class="sc-iRbamj fagPRr"
+              class="sc-jDwBTQ gSQAvM"
             >
               <button
-                class="bp3-button bp3-minimal sc-gPEVay hwAtFh"
+                class="bp3-button bp3-minimal sc-jAaTju haGJix"
                 href="/election/1/audit-board/1"
                 type="button"
               >
@@ -1207,7 +1237,7 @@ exports[`Ballot switches audit and review views 1`] = `
                 </span>
               </button>
               <h3
-                class="bp3-heading sc-eHgmQL hKVbcd"
+                class="bp3-heading sc-iAyFgw jccTdz"
               >
                 Audit Ballot Selections
               </h3>
@@ -1216,47 +1246,47 @@ exports[`Ballot switches audit and review views 1`] = `
               class="bp3-divider sc-bdVaJa gqVLlZ"
             />
             <div
-              class="sc-jAaTju hmiqEV"
+              class="sc-brqgnP mJeGI"
             >
               <div>
-                <h4
+                <h5
                   class="bp3-heading sc-iwsKbI krynZG"
                 >
                   batch
-                </h4>
+                </h5>
                 <h4
-                  class="bp3-heading sc-jDwBTQ iqySSz"
+                  class="bp3-heading sc-cMljjf eWlDYe"
                 >
                   0003-04-Precinct 19 (Jonesboro Fire Department)
                 </h4>
               </div>
               <div>
-                <h4
+                <h5
                   class="bp3-heading sc-iwsKbI krynZG"
                 >
                   position
-                </h4>
+                </h5>
                 <h4
-                  class="bp3-heading sc-jDwBTQ iqySSz"
+                  class="bp3-heading sc-cMljjf eWlDYe"
                 >
                   2112
                 </h4>
               </div>
               <div>
-                <h4
+                <h5
                   class="bp3-heading sc-iwsKbI krynZG"
                 >
                   tabulator
-                </h4>
+                </h5>
                 <h4
-                  class="bp3-heading sc-jDwBTQ iqySSz"
+                  class="bp3-heading sc-cMljjf eWlDYe"
                 >
                   11
                 </h4>
               </div>
               <div>
                 <button
-                  class="bp3-button bp3-large bp3-intent-danger sc-jlyJG iNWejO"
+                  class="bp3-button bp3-large bp3-intent-danger sc-gPEVay ehdNJA"
                   type="button"
                 >
                   <span
@@ -1277,11 +1307,11 @@ exports[`Ballot switches audit and review views 1`] = `
                 <div
                   class="ballot-main"
                 >
-                  <h4
+                  <h5
                     class="bp3-heading sc-iwsKbI krynZG"
                   >
                     Ballot Contests
-                  </h4>
+                  </h5>
                   <form>
                     <div
                       class="sc-htpNat kWdSWK"
@@ -1390,6 +1420,16 @@ exports[`Ballot switches audit and review views 1`] = `
                           Submit Selections
                         </span>
                       </button>
+                      <button
+                        class="bp3-button"
+                        type="button"
+                      >
+                        <span
+                          class="bp3-button-text"
+                        >
+                          Back
+                        </span>
+                      </button>
                     </div>
                   </form>
                 </div>
@@ -1397,7 +1437,7 @@ exports[`Ballot switches audit and review views 1`] = `
             </div>
           </div>
           <div
-            class="sc-cMljjf ePGiKI"
+            class="sc-jWBwVP fydRML"
           >
             <h4
               class="bp3-heading"
@@ -1405,7 +1445,7 @@ exports[`Ballot switches audit and review views 1`] = `
               Instructions
             </h4>
             <ol
-              class="bp3-list sc-gipzik fCDfMG"
+              class="bp3-list sc-iRbamj iNBjzq"
             >
               <li>
                 Confirm that you are looking at the correct ballot for the batch and position. If the ballot was not located, select

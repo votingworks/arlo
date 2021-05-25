@@ -284,7 +284,7 @@ describe('Ballot', () => {
     })
   })
 
-  it.skip('navigates to previous ballot', async () => {
+  it('navigates to previous ballot', async () => {
     const previousBallotMock = jest.fn()
     const { getByText } = render(
       <Router history={history}>
@@ -305,25 +305,6 @@ describe('Ballot', () => {
 
     await waitFor(() => {
       expect(previousBallotMock).toBeCalledTimes(1)
-    })
-
-    fireEvent.click(getByText('Choice One'), { bubbles: true })
-    await waitFor(() =>
-      fireEvent.click(
-        screen.getByRole('button', { name: 'Submit Selections' }),
-        { bubbles: true }
-      )
-    )
-    await waitFor(() => {
-      expect(
-        screen.getByRole('button', { name: 'Submit & Next Ballot' })
-      ).toBeTruthy()
-    })
-    fireEvent.click(getByText('Back'), { bubbles: true })
-    await waitFor(() => {
-      expect(
-        screen.getByRole('button', { name: 'Submit Selections' })
-      ).toBeTruthy()
     })
   })
 
