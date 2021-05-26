@@ -12,7 +12,7 @@ exports[`App / renders aa logged in properly 1`] = `
       class="bp3-navbar sc-bxivhb gvSyoM"
     >
       <div
-        class="sc-bwzfXH sc-EHOje cPaIqj"
+        class="sc-bwzfXH sc-EHOje GDJyz"
       >
         <div
           class="bp3-navbar-group bp3-align-left"
@@ -282,7 +282,7 @@ exports[`App / renders ja logged in properly 1`] = `
       class="bp3-navbar sc-bxivhb gvSyoM"
     >
       <div
-        class="sc-bwzfXH sc-EHOje cPaIqj"
+        class="sc-bwzfXH sc-EHOje GDJyz"
       >
         <div
           class="bp3-navbar-group bp3-align-left"
@@ -433,7 +433,7 @@ exports[`App / renders unauthenticated properly 1`] = `
       class="bp3-navbar sc-bxivhb gvSyoM"
     >
       <div
-        class="sc-bwzfXH sc-EHOje cPaIqj"
+        class="sc-bwzfXH sc-EHOje GDJyz"
       >
         <div
           class="bp3-navbar-group bp3-align-left"
@@ -515,7 +515,7 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders aa logged i
       class="bp3-navbar sc-bxivhb gvSyoM"
     >
       <div
-        class="sc-bwzfXH sc-EHOje cPaIqj"
+        class="sc-bwzfXH sc-EHOje GDJyz"
       >
         <div
           class="bp3-navbar-group bp3-align-left"
@@ -785,7 +785,7 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders ab logged i
       class="bp3-navbar sc-bxivhb gvSyoM"
     >
       <div
-        class="sc-bwzfXH sc-EHOje cPaIqj"
+        class="sc-bwzfXH sc-EHOje GDJyz"
       >
         <div
           class="bp3-navbar-group bp3-align-left"
@@ -1143,7 +1143,7 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders ja logged i
       class="bp3-navbar sc-bxivhb gvSyoM"
     >
       <div
-        class="sc-bwzfXH sc-EHOje cPaIqj"
+        class="sc-bwzfXH sc-EHOje GDJyz"
       >
         <div
           class="bp3-navbar-group bp3-align-left"
@@ -1294,7 +1294,7 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders unauthentic
       class="bp3-navbar sc-bxivhb gvSyoM"
     >
       <div
-        class="sc-bwzfXH sc-EHOje cPaIqj"
+        class="sc-bwzfXH sc-EHOje GDJyz"
       >
         <div
           class="bp3-navbar-group bp3-align-left"
@@ -1376,7 +1376,7 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders aa logge
       class="bp3-navbar sc-bxivhb gvSyoM"
     >
       <div
-        class="sc-bwzfXH sc-EHOje cPaIqj"
+        class="sc-bwzfXH sc-EHOje GDJyz"
       >
         <div
           class="bp3-navbar-group bp3-align-left"
@@ -1646,7 +1646,7 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders ja logge
       class="bp3-navbar sc-bxivhb gvSyoM"
     >
       <div
-        class="sc-bwzfXH sc-EHOje cPaIqj"
+        class="sc-bwzfXH sc-EHOje GDJyz"
       >
         <div
           class="bp3-navbar-group bp3-align-left"
@@ -1909,7 +1909,7 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders unauthen
       class="bp3-navbar sc-bxivhb gvSyoM"
     >
       <div
-        class="sc-bwzfXH sc-EHOje cPaIqj"
+        class="sc-bwzfXH sc-EHOje GDJyz"
       >
         <div
           class="bp3-navbar-group bp3-align-left"
