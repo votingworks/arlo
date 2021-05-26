@@ -443,6 +443,7 @@ def test_auth_me_audit_board(
             "id": audit_board.id,
             "jurisdictionId": audit_board.jurisdiction_id,
             "jurisdictionName": audit_board.jurisdiction.name,
+            "electionId": audit_board.jurisdiction.election.id,
             "roundId": audit_board.round_id,
             "name": audit_board.name,
             "members": [],

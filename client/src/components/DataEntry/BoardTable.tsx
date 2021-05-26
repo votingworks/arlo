@@ -108,13 +108,7 @@ const InstructionsList = styled(OL)`
 
 const HeaderLinkBtn = styled(LinkButton)`
   border-radius: 5px;
-  width: 12em;
   font-weight: 600;
-  &.bp3-button.bp3-large {
-    height: 2.5em;
-    min-height: auto;
-    font-size: 17px;
-  }
 `
 
 const SubmitBallotButton = styled(LinkButton)`
@@ -245,7 +239,7 @@ const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
   ).length
 
   const HeaderButton = roundComplete ? (
-    <HeaderLinkBtn to={`${url}/signoff`} intent="success" large>
+    <HeaderLinkBtn to={`${url}/signoff`} intent="success">
       Submit Audited Ballots
     </HeaderLinkBtn>
   ) : (
