@@ -204,7 +204,16 @@ def jurisdictionadmin_login_callback():
         user = User.query.filter_by(email=userinfo["email"]).first()
         if user and len(user.jurisdiction_administrations) > 0:
             set_loggedin_user(session, UserType.JURISDICTION_ADMIN, userinfo["email"])
-
+        else:
+            return redirect(
+                "/?"
+                + urlencode(
+                    {
+                        "error": "email_not_found",
+                        "message": "Incorrect Email ID, please check & try again.",
+                    }
+                )
+            )
     return redirect("/")
 
 

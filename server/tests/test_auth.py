@@ -370,6 +370,21 @@ def test_audit_board_not_found(client: FlaskClient,):
         assert session.get("_user") is None
 
 
+def test_jurisdictionadmin_incorrect_email(client: FlaskClient):
+    with patch.object(auth0_ja, "authorize_access_token", return_value=None):
+        mock_response = Mock()
+        mock_response.json = MagicMock(return_value={"email": "test@test.com"})
+        with patch.object(auth0_ja, "get", return_value=mock_response):
+            rv = client.get("/auth/jurisdictionadmin/callback?code=foobar")
+            assert rv.status_code == 302
+            location = urlparse(rv.location)
+            assert location.path == "/"
+            assert (
+                location.query
+                == "error=email_not_found&message=Incorrect+Email+ID%2C+please+check+%26+try+again."
+            )
+
+
 # Tests for /api/me
 
 
