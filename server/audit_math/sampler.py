@@ -129,7 +129,10 @@ def draw_ppeb_sample(
         list(batch_results.keys()),
         sample_size + num_sampled,
         p=weighted_errors,
-        replace=True,
+        # When the sample size indicates a full hand recount, sample without
+        # replacement to ensure we draw every batch. Otherwise, sample with
+        # replacement.
+        replace=sample_size < len(batch_results),
     )
 
     # Now create "ticket numbers" for each item in the sample
