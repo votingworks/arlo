@@ -109,4 +109,21 @@ const useBatchResults = (
   return [results, batches, updateResults]
 }
 
+export const useBatchCount = (
+  electionId: string,
+  jurisdictionId: string,
+  roundId: string
+): number | null => {
+  const [numBatches, setNumBatches] = useState<number | null>(null)
+
+  useEffect(() => {
+    ;(async () => {
+      const batches = await getBatches(electionId, jurisdictionId, roundId)
+      if (batches) setNumBatches(batches.length)
+    })()
+  })
+
+  return numBatches
+}
+
 export default useBatchResults
