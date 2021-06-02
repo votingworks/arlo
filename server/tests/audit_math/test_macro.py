@@ -273,6 +273,26 @@ def test_full_recount(contests, batches):
         assert result, "Audit did not terminate but should have"
 
 
+def test_full_recount_with_replacement(contests, batches):
+    # Do a full recount where all of the batches were sampled multiple times
+    sample = batches
+    times_sampled = {batch: 2 for batch in batches}
+    for contest in contests:
+
+        with pytest.raises(ValueError, match=r"All ballots have already been counted!"):
+            macro.get_sample_sizes(RISK_LIMIT, contests[contest], batches, sample)
+
+        computed_p, result = macro.compute_risk(
+            RISK_LIMIT, contests[contest], batches, sample, times_sampled
+        )
+
+        assert computed_p == 0.0, "Incorrect p-value: Got {}, expected {}".format(
+            computed_p, 0.0
+        )
+
+        assert result, "Audit did not terminate but should have"
+
+
 def test_almost_done():
     info_dict = {
         "winner": 600,

@@ -125,11 +125,17 @@ def draw_ppeb_sample(
         for batch in batch_results
     ]
 
-    sample: List[Tuple[Any, Any]] = generator.choice(
-        list(batch_results.keys()),
-        sample_size + num_sampled,
-        p=weighted_errors,
-        replace=True,
+    sample: List[Tuple[Any, Any]] = (
+        generator.choice(
+            list(batch_results.keys()),
+            sample_size + num_sampled,
+            p=weighted_errors,
+            replace=True,
+        )
+        # When the sample size indicates a full hand recount, ensure we draw
+        # each batch once and only once
+        if sample_size < len(batch_results)
+        else list(batch_results.keys())
     )
 
     # Now create "ticket numbers" for each item in the sample

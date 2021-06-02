@@ -40,17 +40,17 @@ J2,Batch 3,"Round 1: 0.368061935896261076, 0.733615858338543383",Yes,candidate 1
 """
 
 snapshots["test_batch_comparison_round_1 1"] = {
-    "numSamples": 10,
+    "numSamples": 9,
     "numSamplesAudited": 0,
-    "numUnique": 6,
+    "numUnique": 9,
     "numUniqueAudited": 0,
     "status": "NOT_STARTED",
 }
 
 snapshots["test_batch_comparison_round_1 2"] = {
-    "numSamples": 5,
+    "numSamples": 6,
     "numSamplesAudited": 0,
-    "numUnique": 2,
+    "numUnique": 6,
     "numUniqueAudited": 0,
     "status": "NOT_STARTED",
 }

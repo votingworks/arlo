@@ -266,7 +266,7 @@ def compute_risk(
     assert alpha < 1, "The risk-limit must be less than one!"
 
     # We've done a full hand recount
-    if sum(times_sampled.values()) == len(reported_results):
+    if len(sample_results) == len(reported_results):
         return 0, True
 
     p = Decimal(1.0)
