@@ -83,14 +83,14 @@ const RoundManagement = ({
   }
 
   const ballotsOrBatches =
-    auditSettings.auditType === 'BATCH_COMPARISON' ? 'batches' : 'ballots'
+    auditSettings.auditType === 'BATCH_COMPARISON' ? 'Batches' : 'Ballots'
 
   if (numSamples === 0 && !round.sampledAllBallots) {
     return (
       <PaddedWrapper>
         <StrongP>
-          Your jurisdiction has not been assigned any {ballotsOrBatches} to
-          audit in this round.
+          Your jurisdiction has not been assigned any{' '}
+          {ballotsOrBatches.toLowerCase()} to audit in this round.
         </StrongP>
       </PaddedWrapper>
     )
@@ -103,8 +103,7 @@ const RoundManagement = ({
     </StrongP>
   ) : (
     <StrongP>
-      {numSamples.toLocaleString()} {ballotsOrBatches} to audit in Round{' '}
-      {roundNum}
+      {ballotsOrBatches} to audit: {numSamples.toLocaleString()}
     </StrongP>
   )
 
