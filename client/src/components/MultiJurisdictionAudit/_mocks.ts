@@ -73,6 +73,7 @@ export const jaApiCalls = {
               electionName: 'election one',
               state: 'AL',
             },
+            numBallots: 100,
           },
           {
             id: 'jurisdiction-id-2',
@@ -83,6 +84,7 @@ export const jaApiCalls = {
               electionName: 'election two',
               state: 'AL',
             },
+            numBallots: 200,
           },
           {
             id: 'jurisdiction-id-3',
@@ -93,6 +95,7 @@ export const jaApiCalls = {
               electionName: 'election one',
               state: 'AL',
             },
+            numBallots: 300,
           },
         ],
         organizations: [],

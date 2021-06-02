@@ -81,10 +81,11 @@ const RoundManagement = ({
       </PaddedWrapper>
     )
   }
+
   const ballotsOrBatches =
     auditSettings.auditType === 'BATCH_COMPARISON' ? 'batches' : 'ballots'
 
-  if (numSamples === 0) {
+  if (numSamples === 0 && !round.sampledAllBallots) {
     return (
       <PaddedWrapper>
         <StrongP>
