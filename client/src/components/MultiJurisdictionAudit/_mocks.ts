@@ -10,6 +10,7 @@ import jurisdictionFile, {
   jurisdictionErrorFile,
   standardizedContestsFile,
 } from './AASetup/Participants/_mocks'
+import { IBatch } from './RoundManagement/useBatchResults'
 
 const jurisdictionFormData: FormData = new FormData()
 jurisdictionFormData.append(
@@ -193,6 +194,10 @@ export const jaApiCalls = {
     url:
       '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/ballots?count=true',
     response: { count: ballots.length },
+  }),
+  getBatches: (batches: IBatch[]) => ({
+    url: '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/batches',
+    response: { batches },
   }),
   deleteManifest: {
     url: '/api/election/1/jurisdiction/jurisdiction-id-1/ballot-manifest',

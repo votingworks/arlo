@@ -52,7 +52,7 @@ const getResults = async (
   return reformatResults(response, false)
 }
 
-const getBatches = async (
+export const getBatches = async (
   electionId: string,
   jurisdictionId: string,
   roundId: string
@@ -107,23 +107,6 @@ const useBatchResults = (
     })()
   }, [electionId, jurisdictionId, roundId])
   return [results, batches, updateResults]
-}
-
-export const useBatchCount = (
-  electionId: string,
-  jurisdictionId: string,
-  roundId: string
-): number | null => {
-  const [numBatches, setNumBatches] = useState<number | null>(null)
-
-  useEffect(() => {
-    ;(async () => {
-      const batches = await getBatches(electionId, jurisdictionId, roundId)
-      if (batches) setNumBatches(batches.length)
-    })()
-  })
-
-  return numBatches
 }
 
 export default useBatchResults

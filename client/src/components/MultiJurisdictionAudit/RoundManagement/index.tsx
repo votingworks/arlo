@@ -17,12 +17,12 @@ import RoundDataEntry from './RoundDataEntry'
 import useAuditSettingsJurisdictionAdmin from './useAuditSettingsJurisdictionAdmin'
 import BatchRoundDataEntry from './BatchRoundDataEntry'
 import { useAuthDataContext, IJurisdictionAdmin } from '../../UserContext'
-import useBallotCount from './useBallots'
 import { IRound } from '../useRoundsAuditAdmin'
 import OfflineBatchRoundDataEntry from './OfflineBatchRoundDataEntry'
 import { IAuditSettings } from '../useAuditSettings'
 import AsyncButton from '../../Atoms/AsyncButton'
-import { useBatchCount } from './useBatchResults'
+import useBallotOrBatchCount from './useBallots'
+
 const PaddedWrapper = styled(Wrapper)`
   flex-direction: column;
   align-items: flex-start;
@@ -55,21 +55,19 @@ const RoundManagement = ({
     jurisdictionId: string
   }>()
   const auth = useAuthDataContext()
-  const numBallots = useBallotCount(electionId, jurisdictionId, round.id)
-  const numBatches = useBatchCount(electionId, jurisdictionId, round.id)
   const auditSettings = useAuditSettingsJurisdictionAdmin(
     electionId,
     jurisdictionId
   )
-
-  if (
-    !auth ||
-    !auth.user ||
-    numBallots === null ||
-    numBatches === null ||
-    !auditSettings
+  const auditType = auditSettings && auditSettings.auditType
+  const numSamples = useBallotOrBatchCount(
+    electionId,
+    jurisdictionId,
+    round.id,
+    auditType
   )
-    return null // Still loading
+
+  if (!auth || !auth.user || !auditSettings || numSamples === null) return null // Still loading
 
   const jurisdiction = (auth.user as IJurisdictionAdmin).jurisdictions.find(
     j => j.id === jurisdictionId
@@ -83,36 +81,31 @@ const RoundManagement = ({
       </PaddedWrapper>
     )
   }
+  const ballotsOrBatches =
+    auditSettings.auditType === 'BATCH_COMPARISON' ? 'batches' : 'ballots'
 
-  if (
-    (auditSettings.auditType === 'BATCH_COMPARISON'
-      ? numBatches
-      : numBallots) === 0
-  ) {
+  if (numSamples === 0) {
     return (
       <PaddedWrapper>
         <StrongP>
-          Your jurisdiction has not been assigned any ballots to audit.
+          Your jurisdiction has not been assigned any {ballotsOrBatches} to
+          audit in this round.
         </StrongP>
       </PaddedWrapper>
     )
   }
 
-  const samplesToAudit =
-    auditSettings.auditType === 'BATCH_COMPARISON' ? (
-      <StrongP>
-        {numBatches.toLocaleString()} batches to audit in Round {roundNum}
-      </StrongP>
-    ) : round.sampledAllBallots ? (
-      <StrongP>
-        Please audit all of the ballots in your jurisdiction (
-        {jurisdiction.numBallots} ballots)
-      </StrongP>
-    ) : (
-      <StrongP>
-        {numBallots.toLocaleString()} ballots to audit in Round {roundNum}
-      </StrongP>
-    )
+  const samplesToAudit = round.sampledAllBallots ? (
+    <StrongP>
+      Please audit all of the ballots in your jurisdiction (
+      {jurisdiction.numBallots} ballots)
+    </StrongP>
+  ) : (
+    <StrongP>
+      {numSamples.toLocaleString()} {ballotsOrBatches} to audit in Round{' '}
+      {roundNum}
+    </StrongP>
+  )
 
   if (auditBoards.length === 0) {
     return (

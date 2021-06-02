@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { api } from '../../utilities'
 import { IAuditBoard } from '../useAuditBoards'
 import { BallotStatus, IBallotInterpretation } from '../../../types'
+import { IAuditSettings } from '../useAuditSettings'
+import { getBatches } from './useBatchResults'
 
 export interface IBallot {
   id: string
@@ -41,20 +43,27 @@ const getBallotCount = async (
   return response && response.count
 }
 
-const useBallotCount = (
+const useBallotOrBatchCount = (
   electionId: string,
   jurisdictionId: string,
-  roundId: string
+  roundId: string,
+  auditType: IAuditSettings['auditType'] | null
 ): number | null => {
-  const [numBallots, setNumBallots] = useState<number | null>(null)
+  const [count, setCount] = useState<number | null>(null)
 
   useEffect(() => {
     ;(async () => {
-      setNumBallots(await getBallotCount(electionId, jurisdictionId, roundId))
+      if (auditType === null) return
+      if (auditType === 'BATCH_COMPARISON') {
+        const batches = await getBatches(electionId, jurisdictionId, roundId)
+        setCount(batches && batches.length)
+      } else {
+        setCount(await getBallotCount(electionId, jurisdictionId, roundId))
+      }
     })()
-  }, [electionId, jurisdictionId, roundId])
+  }, [electionId, jurisdictionId, roundId, auditType])
 
-  return numBallots
+  return count
 }
 
-export default useBallotCount
+export default useBallotOrBatchCount

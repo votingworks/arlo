@@ -423,7 +423,7 @@ describe('Progress screen', () => {
     render(
       <Progress
         jurisdictions={jurisdictionMocks.twoManifestsOneTallies}
-        auditSettings={auditSettings.all}
+        auditSettings={auditSettings.batchComparisonAll}
         round={null}
       />
     )
@@ -447,7 +447,7 @@ describe('Progress screen', () => {
     rows = screen.getAllByRole('row')
     within(rows[1]).getByRole('cell', { name: '2/2 files uploaded' })
 
-    // Shows manifest and tallies the modal
+    // Shows manifest and tallies in the modal
     userEvent.click(screen.getByText('2/2 files uploaded'))
     const modal = screen
       .getByRole('heading', { name: 'Jurisdiction 3' })
@@ -474,5 +474,27 @@ describe('Progress screen', () => {
       'href',
       '/api/election/1/jurisdiction/jurisdiction-id-3/batch-tallies/csv'
     )
+  })
+
+  it('shows a message in the detail modal when no batches sampled', async () => {
+    const expectedCalls = [
+      jaApiCalls.getAuditBoards(auditBoardMocks.unfinished),
+      jaApiCalls.getBatches([]),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      render(
+        <Progress
+          jurisdictions={jurisdictionMocks.oneComplete}
+          auditSettings={auditSettings.batchComparisonAll}
+          round={roundMocks.singleIncomplete[0]}
+        />
+      )
+
+      userEvent.click(screen.getByRole('button', { name: 'Jurisdiction 1' }))
+      const modal = screen
+        .getByRole('heading', { name: 'Jurisdiction 1' })
+        .closest('div.bp3-dialog')! as HTMLElement
+      await within(modal).findByText('No batches sampled')
+    })
   })
 })

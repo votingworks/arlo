@@ -18,7 +18,7 @@ import useAuditBoards from '../useAuditBoards'
 import StatusTag from '../../Atoms/StatusTag'
 import { api } from '../../utilities'
 import { IAuditSettings } from '../useAuditSettings'
-import useBallotCount from '../RoundManagement/useBallots'
+import useBallotOrBatchCount from '../RoundManagement/useBallots'
 
 const FileStatusTag = ({
   processing,
@@ -154,8 +154,13 @@ const RoundStatusSection = ({
   auditSettings: IAuditSettings
 }) => {
   const [auditBoards] = useAuditBoards(electionId, jurisdiction.id, [round])
-  const numBallots = useBallotCount(electionId, jurisdiction.id, round.id)
-  if (!auditBoards || numBallots === null) return null
+  const numSamples = useBallotOrBatchCount(
+    electionId,
+    jurisdiction.id,
+    round.id,
+    auditSettings.auditType
+  )
+  if (!auditBoards || numSamples === null) return null
 
   const status = (() => {
     const jurisdictionStatus =
@@ -197,7 +202,10 @@ const RoundStatusSection = ({
       )
     }
 
-    if (numBallots === 0) return <p>No ballots sampled</p>
+    const ballotsOrBatches =
+      auditSettings.auditType === 'BATCH_COMPARISON' ? 'batches' : 'ballots'
+
+    if (numSamples === 0) return <p>No {ballotsOrBatches} sampled</p>
     if (jurisdictionStatus === JurisdictionRoundStatus.COMPLETE)
       return <p>Data entry complete</p>
     if (auditBoards.length === 0)

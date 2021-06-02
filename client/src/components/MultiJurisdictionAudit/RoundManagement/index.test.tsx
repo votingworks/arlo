@@ -64,9 +64,9 @@ const apiCalls = {
 describe('RoundManagement', () => {
   it('renders audit setup with batch audit', async () => {
     const expectedCalls = [
-      apiCalls.getBallotCount,
       apiCalls.getSettings(auditSettings.batchComparisonAll),
       jaApiCalls.getUser,
+      apiCalls.getBatches(batchesMocks.emptyInitial),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderView({
@@ -81,9 +81,9 @@ describe('RoundManagement', () => {
 
   it('renders audit setup with ballot audit', async () => {
     const expectedCalls = [
-      apiCalls.getBallotCount,
       apiCalls.getSettings(auditSettings.all),
       jaApiCalls.getUser,
+      apiCalls.getBallotCount,
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderView({
@@ -98,9 +98,9 @@ describe('RoundManagement', () => {
 
   it('renders complete view', async () => {
     const expectedCalls = [
-      apiCalls.getBallotCount,
       apiCalls.getSettings(auditSettings.all),
       jaApiCalls.getUser,
+      apiCalls.getBallotCount,
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderView({
@@ -117,9 +117,9 @@ describe('RoundManagement', () => {
 
   it('renders links & progress with online ballot audit', async () => {
     const expectedCalls = [
-      apiCalls.getBallotCount,
       apiCalls.getSettings(auditSettings.all),
       jaApiCalls.getUser,
+      apiCalls.getBallotCount,
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderView({
@@ -134,9 +134,9 @@ describe('RoundManagement', () => {
 
   it('renders links & data entry with offline ballot audit', async () => {
     const expectedCalls = [
-      apiCalls.getBallotCount,
       apiCalls.getSettings(auditSettings.offlineAll),
       jaApiCalls.getUser,
+      apiCalls.getBallotCount,
       apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
       apiCalls.getResults(batchResultsMocks.empty),
     ]
@@ -153,9 +153,9 @@ describe('RoundManagement', () => {
 
   it('renders links & data entry with batch audit', async () => {
     const expectedCalls = [
-      apiCalls.getBallotCount,
       apiCalls.getSettings(auditSettings.batchComparisonAll),
       jaApiCalls.getUser,
+      apiCalls.getBatches(batchesMocks.emptyInitial),
       apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
       apiCalls.getBatches(batchesMocks.emptyInitial),
       apiCalls.getBatchResults(batchResultsMocks.empty),
@@ -168,6 +168,42 @@ describe('RoundManagement', () => {
       })
       await screen.findByText('Download Aggregated Batch Retrieval List')
       expect(container).toMatchSnapshot()
+    })
+  })
+
+  it('shows a message when no ballots assigned', async () => {
+    const expectedCalls = [
+      apiCalls.getSettings(auditSettings.all),
+      jaApiCalls.getUser,
+      jaApiCalls.getBallotCount([]),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderView({
+        round: roundMocks.incomplete,
+        auditBoards: auditBoardMocks.unfinished,
+        createAuditBoards: jest.fn(),
+      })
+      await screen.findByText(
+        'Your jurisdiction has not been assigned any ballots to audit in this round.'
+      )
+    })
+  })
+
+  it('shows a message when no batches assigned', async () => {
+    const expectedCalls = [
+      apiCalls.getSettings(auditSettings.batchComparisonAll),
+      jaApiCalls.getUser,
+      apiCalls.getBatches({ batches: [] }),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderView({
+        round: roundMocks.incomplete,
+        auditBoards: auditBoardMocks.unfinished,
+        createAuditBoards: jest.fn(),
+      })
+      await screen.findByText(
+        'Your jurisdiction has not been assigned any batches to audit in this round.'
+      )
     })
   })
 })
