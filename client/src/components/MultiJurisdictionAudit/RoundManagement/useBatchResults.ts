@@ -52,7 +52,7 @@ const getResults = async (
   return reformatResults(response, false)
 }
 
-const getBatches = async (
+export const getBatches = async (
   electionId: string,
   jurisdictionId: string,
   roundId: string

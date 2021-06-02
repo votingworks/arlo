@@ -13,7 +13,7 @@ export interface INullResultValues {
 }
 
 export const roundMocks: {
-  [key in 'incomplete' | 'complete' | 'singleIncompleteOffline']: IRound
+  [key in 'incomplete' | 'complete' | 'sampledAllBallotsIncomplete']: IRound
 } = {
   incomplete: {
     id: 'round-1',
@@ -43,7 +43,7 @@ export const roundMocks: {
       error: null,
     },
   },
-  singleIncompleteOffline: {
+  sampledAllBallotsIncomplete: {
     id: 'round-1',
     roundNum: 1,
     startedAt: '2020-09-14T17:35:19.482Z',

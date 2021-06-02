@@ -88,7 +88,7 @@ describe('offline batch round data entry', () => {
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderWithRouter(
         <OfflineBatchRoundDataEntry
-          round={roundMocks.singleIncompleteOffline}
+          round={roundMocks.sampledAllBallotsIncomplete}
         />,
         {
           route: '/election/1/jurisdiction/1',
@@ -107,7 +107,7 @@ describe('offline batch round data entry', () => {
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderWithRouter(
         <OfflineBatchRoundDataEntry
-          round={roundMocks.singleIncompleteOffline}
+          round={roundMocks.sampledAllBallotsIncomplete}
         />,
         {
           route: '/election/1/jurisdiction/1',
@@ -142,7 +142,7 @@ describe('offline batch round data entry', () => {
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderWithRouter(
         <OfflineBatchRoundDataEntry
-          round={roundMocks.singleIncompleteOffline}
+          round={roundMocks.sampledAllBallotsIncomplete}
         />,
         {
           route: '/election/1/jurisdiction/1',
@@ -187,7 +187,7 @@ describe('offline batch round data entry', () => {
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderWithRouter(
         <OfflineBatchRoundDataEntry
-          round={roundMocks.singleIncompleteOffline}
+          round={roundMocks.sampledAllBallotsIncomplete}
         />,
         {
           route: '/election/1/jurisdiction/1',
@@ -207,7 +207,7 @@ describe('offline batch round data entry', () => {
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderWithRouter(
         <OfflineBatchRoundDataEntry
-          round={roundMocks.singleIncompleteOffline}
+          round={roundMocks.sampledAllBallotsIncomplete}
         />,
         {
           route: '/election/1/jurisdiction/1',
@@ -236,7 +236,7 @@ describe('offline batch round data entry', () => {
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderWithRouter(
         <OfflineBatchRoundDataEntry
-          round={roundMocks.singleIncompleteOffline}
+          round={roundMocks.sampledAllBallotsIncomplete}
         />,
         {
           route: '/election/1/jurisdiction/1',
@@ -273,7 +273,7 @@ describe('offline batch round data entry', () => {
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderWithRouter(
         <OfflineBatchRoundDataEntry
-          round={roundMocks.singleIncompleteOffline}
+          round={roundMocks.sampledAllBallotsIncomplete}
         />,
         {
           route: '/election/1/jurisdiction/1',
@@ -307,7 +307,7 @@ describe('offline batch round data entry', () => {
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderWithRouter(
         <OfflineBatchRoundDataEntry
-          round={roundMocks.singleIncompleteOffline}
+          round={roundMocks.sampledAllBallotsIncomplete}
         />,
         {
           route: '/election/1/jurisdiction/1',

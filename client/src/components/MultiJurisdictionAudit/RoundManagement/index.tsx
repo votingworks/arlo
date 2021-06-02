@@ -17,11 +17,11 @@ import RoundDataEntry from './RoundDataEntry'
 import useAuditSettingsJurisdictionAdmin from './useAuditSettingsJurisdictionAdmin'
 import BatchRoundDataEntry from './BatchRoundDataEntry'
 import { useAuthDataContext, IJurisdictionAdmin } from '../../UserContext'
-import useBallotCount from './useBallots'
 import { IRound } from '../useRoundsAuditAdmin'
 import OfflineBatchRoundDataEntry from './OfflineBatchRoundDataEntry'
 import { IAuditSettings } from '../useAuditSettings'
 import AsyncButton from '../../Atoms/AsyncButton'
+import useBallotOrBatchCount from './useBallots'
 
 const PaddedWrapper = styled(Wrapper)`
   flex-direction: column;
@@ -55,13 +55,19 @@ const RoundManagement = ({
     jurisdictionId: string
   }>()
   const auth = useAuthDataContext()
-  const numBallots = useBallotCount(electionId, jurisdictionId, round.id)
   const auditSettings = useAuditSettingsJurisdictionAdmin(
     electionId,
     jurisdictionId
   )
+  const auditType = auditSettings && auditSettings.auditType
+  const numSamples = useBallotOrBatchCount(
+    electionId,
+    jurisdictionId,
+    round.id,
+    auditType
+  )
 
-  if (!auth || !auth.user || numBallots === null || !auditSettings) return null // Still loading
+  if (!auth || !auth.user || !auditSettings || numSamples === null) return null // Still loading
 
   const jurisdiction = (auth.user as IJurisdictionAdmin).jurisdictions.find(
     j => j.id === jurisdictionId
@@ -76,14 +82,29 @@ const RoundManagement = ({
     )
   }
 
-  const ballotsToAudit = round.sampledAllBallots ? (
+  const ballotsOrBatches =
+    auditSettings.auditType === 'BATCH_COMPARISON' ? 'batches' : 'ballots'
+
+  if (numSamples === 0 && !round.sampledAllBallots) {
+    return (
+      <PaddedWrapper>
+        <StrongP>
+          Your jurisdiction has not been assigned any {ballotsOrBatches} to
+          audit in this round.
+        </StrongP>
+      </PaddedWrapper>
+    )
+  }
+
+  const samplesToAudit = round.sampledAllBallots ? (
     <StrongP>
       Please audit all of the ballots in your jurisdiction (
       {jurisdiction.numBallots} ballots)
     </StrongP>
   ) : (
     <StrongP>
-      {numBallots.toLocaleString()} ballots to audit in Round {roundNum}
+      {numSamples.toLocaleString()} {ballotsOrBatches} to audit in Round{' '}
+      {roundNum}
     </StrongP>
   )
 
@@ -91,7 +112,7 @@ const RoundManagement = ({
     return (
       <PaddedWrapper>
         <H3>Round {roundNum} Audit Board Setup</H3>
-        {ballotsToAudit}
+        {samplesToAudit}
         <CreateAuditBoards createAuditBoards={createAuditBoards} />
       </PaddedWrapper>
     )
@@ -101,10 +122,10 @@ const RoundManagement = ({
     <PaddedWrapper>
       <H3>Round {roundNum} Data Entry</H3>
       {round.sampledAllBallots ? (
-        ballotsToAudit
+        samplesToAudit
       ) : (
         <SpacedDiv>
-          {ballotsToAudit}
+          {samplesToAudit}
           <JAFileDownloadButtons
             electionId={electionId}
             jurisdictionId={jurisdictionId}
