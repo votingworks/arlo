@@ -34,10 +34,10 @@ describe('Ballot Comparison Test Cases', () => {
     cy.findAllByText('Upload File').spread((firstButton, secondButton) => {
       firstButton.click()
     })
-    cy.findAndCloseToast('Missing required CSV field "Jurisdiction"')
+    cy.findByText('Missing required column: Jurisdiction.')
 
     // upload valid jurisdiction filesheet
-    cy.findAllByText('Upload File').should('have.length', 2)
+    cy.findByRole('button', { name: 'Replace File' }).click()
     cy.fixture('CSVs/jurisdiction/sample_jurisdiction_filesheet.csv').then(
       fileContent => {
         cy.get('input[type="file"]')

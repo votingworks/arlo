@@ -18,22 +18,6 @@ describe('Batch Comparison', () => {
     cy.viewport(1000, 2000)
     cy.contains('Audit Setup')
 
-    // upload invalid jurisdiction filesheet
-    cy.fixture(
-      'CSVs/jurisdiction/sample_jurisdiction_filesheet_jurisdiction_col_error.csv'
-    ).then(fileContent => {
-      cy.get('input[type="file"]')
-        .first()
-        .attachFile({
-          fileContent: fileContent.toString(),
-          fileName: 'sample_jurisdiction_filesheet_jurisdiction_col_error.csv',
-          mimeType: 'csv',
-        })
-    })
-    cy.findByText('Upload File').click({ force: true })
-    cy.findAndCloseToast('Missing required CSV field "Jurisdiction"')
-
-    // upload valid jurisdiction filesheet
     cy.fixture('CSVs/jurisdiction/sample_jurisdiction_filesheet.csv').then(
       fileContent => {
         cy.get('input[type="file"]')
