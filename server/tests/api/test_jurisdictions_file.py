@@ -315,3 +315,38 @@ def test_upload_jurisdictions_file_after_audit_starts(
             }
         ]
     }
+
+
+def test_upload_jurisdictions_file_duplicate_row(
+    client: FlaskClient, election_id: str,
+):
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/file",
+        data={
+            "jurisdictions": (
+                io.BytesIO(
+                    b"Jurisdiction,Admin Email\n"
+                    b"J1,j1@example.com\n"
+                    b"J1,j1@example.com"
+                ),
+                "jurisdictions.csv",
+            )
+        },
+    )
+    assert_ok(rv)
+
+    bgcompute_update_election_jurisdictions_file(election_id)
+
+    rv = client.get(f"/api/election/{election_id}/jurisdiction/file")
+    compare_json(
+        json.loads(rv.data),
+        {
+            "file": {"name": "jurisdictions.csv", "uploadedAt": assert_is_date},
+            "processing": {
+                "status": ProcessingStatus.ERRORED,
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": "Each row must be uniquely identified by ('Admin Email', 'Jurisdiction'). Found duplicate: ('j1@example.com', 'J1').",
+            },
+        },
+    )

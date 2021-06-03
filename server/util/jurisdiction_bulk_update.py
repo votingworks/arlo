@@ -12,8 +12,8 @@ JURISDICTION_NAME = "Jurisdiction"
 ADMIN_EMAIL = "Admin Email"
 
 JURISDICTIONS_COLUMNS = [
-    CSVColumnType("Jurisdiction", CSVValueType.TEXT),
-    CSVColumnType("Admin Email", CSVValueType.EMAIL),
+    CSVColumnType("Jurisdiction", CSVValueType.TEXT, unique=True),
+    CSVColumnType("Admin Email", CSVValueType.EMAIL, unique=True),
 ]
 
 
