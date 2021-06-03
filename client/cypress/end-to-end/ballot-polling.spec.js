@@ -29,7 +29,7 @@ describe('Ballot Polling', () => {
           .attachFile({
             fileContent: fileContent.toString(),
             fileName: 'sample_jurisdiction_filesheet.csv',
-            mimeType: 'csv',
+            mimeType: 'text/csv',
           })
       }
     )
@@ -66,7 +66,7 @@ describe('Ballot Polling', () => {
           .attachFile({
             fileContent: fileContent.toString(),
             fileName: 'ballot_polling_manifest.csv',
-            mimeType: 'csv',
+            mimeType: 'text/csv',
           })
       }
     )
@@ -119,7 +119,7 @@ describe('Ballot Polling', () => {
           .attachFile({
             fileContent: fileContent.toString(),
             fileName: 'sample_jurisdiction_filesheet.csv',
-            mimeType: 'csv',
+            mimeType: 'text/csv',
           })
       }
     )
@@ -166,7 +166,7 @@ describe('Ballot Polling', () => {
           .attachFile({
             fileContent: fileContent.toString(),
             fileName: 'ballot_polling_manifest.csv',
-            mimeType: 'csv',
+            mimeType: 'text/csv',
           })
       }
     )

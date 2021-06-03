@@ -28,7 +28,7 @@ describe('Offline Batch Data Entry', () => {
           .attachFile({
             fileContent: fileContent.toString(),
             fileName: 'sample_jurisdiction_filesheet.csv',
-            mimeType: 'csv',
+            mimeType: 'text/csv',
           })
       }
     )
@@ -65,7 +65,7 @@ describe('Offline Batch Data Entry', () => {
           .attachFile({
             fileContent: fileContent.toString(),
             fileName: 'ballot_polling_manifest.csv',
-            mimeType: 'csv',
+            mimeType: 'text/csv',
           })
       }
     )
@@ -79,7 +79,9 @@ describe('Offline Batch Data Entry', () => {
 
     // add custom sample size to be same as total ballots cast
     cy.findByText('Enter your own sample size (not recommended)').click()
-    cy.findByRole('spinbutton').type('400').blur()
+    cy.findByRole('spinbutton')
+      .type('400')
+      .blur()
 
     cy.findByRole('button', { name: 'Launch Audit' })
       .should('be.enabled')
@@ -102,7 +104,7 @@ describe('Offline Batch Data Entry', () => {
     cy.findByLabelText('Batch Type').select('Other')
     cy.findByLabelText('A').type('200')
     cy.findByLabelText('B').type('50')
-    cy.findByRole('button', {name: 'Save Batch'}).click()
+    cy.findByRole('button', { name: 'Save Batch' }).click()
     cy.contains('Batch 1')
 
     cy.findByRole('button', { name: /Add batch/ }).click()
@@ -110,7 +112,7 @@ describe('Offline Batch Data Entry', () => {
     cy.findByLabelText('Batch Type').select('Provisional')
     cy.findByLabelText('A').type('100')
     cy.findByLabelText('B').type('50')
-    cy.findByRole('button', {name: 'Save Batch'}).click()
+    cy.findByRole('button', { name: 'Save Batch' }).click()
     cy.contains('Batch 2')
 
     // shouldn't allow same batch name to be used
@@ -119,19 +121,27 @@ describe('Offline Batch Data Entry', () => {
     cy.findByLabelText('Batch Type').select('Other')
     cy.findByLabelText('A').type('300')
     cy.findByLabelText('B').type('100')
-    cy.findByRole('button', {name: 'Save Batch'}).click()
+    cy.findByRole('button', { name: 'Save Batch' }).click()
     cy.findAndCloseToast('Batch names must be unique')
-    cy.findByRole('button', {name: 'Cancel'}).click()
+    cy.findByRole('button', { name: 'Cancel' }).click()
 
     // editing batch
-    cy.findByText('Batch 1').closest('tr').findByRole('button', /Edit/).click()
+    cy.findByText('Batch 1')
+      .closest('tr')
+      .findByRole('button', /Edit/)
+      .click()
     cy.findByLabelText('Batch Type').select('Election Day')
-    cy.findByRole('button', {name: 'Save Batch'}).click()
-    cy.findAllByText('Batch 1').closest('tr').contains('Election Day')
+    cy.findByRole('button', { name: 'Save Batch' }).click()
+    cy.findAllByText('Batch 1')
+      .closest('tr')
+      .contains('Election Day')
 
     // deleting batch
-    cy.findByText('Batch 2').closest('tr').findByRole('button', /Edit/).click()
-    cy.findByRole('button', {name: 'Remove Batch'}).click()
+    cy.findByText('Batch 2')
+      .closest('tr')
+      .findByRole('button', /Edit/)
+      .click()
+    cy.findByRole('button', { name: 'Remove Batch' }).click()
     cy.findByText('Batch 2').should('not.exist')
 
     // adding batch again
@@ -140,36 +150,44 @@ describe('Offline Batch Data Entry', () => {
     cy.findByLabelText('Batch Type').select('Provisional')
     cy.findByLabelText('A').type('100')
     cy.findByLabelText('B').type('50')
-    cy.findByRole('button', {name: 'Save Batch'}).click()
+    cy.findByRole('button', { name: 'Save Batch' }).click()
     cy.contains('Batch 2')
 
     //verify total
-    cy.findAllByText('Total').closest('tr').last().contains('400')
+    cy.findAllByText('Total')
+      .closest('tr')
+      .last()
+      .contains('400')
 
     // finalize results
-    cy.findByRole('button', {name: 'Finalize Results'}).click()
+    cy.findByRole('button', { name: 'Finalize Results' }).click()
     cy.contains('Are you sure you want to finalize your results?')
     cy.findAllByText('Finalize Results').spread((firstButton, secondButton) => {
-        secondButton.click()
+      secondButton.click()
     })
-    cy.findByRole('button', {name: 'Finalize Results'}).should('be.disabled')
+    cy.findByRole('button', { name: 'Finalize Results' }).should('be.disabled')
 
     // unfinalize results
     cy.logout(jurisdictionAdmin)
     cy.loginAuditAdmin(auditAdmin)
     cy.findByText(`TestAudit${id}`).click()
-    cy.findByText('Death Star').closest('tr').findByText('Complete').click({force: true})
-    cy.findByRole('button', {name: 'Unfinalize Results'}).click()
-    cy.findByText('Death Star').closest('tr').contains('In progress')
+    cy.findByText('Death Star')
+      .closest('tr')
+      .findByText('Complete')
+      .click({ force: true })
+    cy.findByRole('button', { name: 'Unfinalize Results' }).click()
+    cy.findByText('Death Star')
+      .closest('tr')
+      .contains('In progress')
     cy.logout(auditAdmin)
     cy.loginJurisdictionAdmin(jurisdictionAdmin)
 
     // finalize results again
-    cy.findByRole('button', {name: 'Finalize Results'}).click()
+    cy.findByRole('button', { name: 'Finalize Results' }).click()
     cy.contains('Are you sure you want to finalize your results?')
     cy.findAllByText('Finalize Results').spread((firstButton, secondButton) => {
-        secondButton.click()
+      secondButton.click()
     })
-    cy.findByRole('button', {name: 'Finalize Results'}).should('be.disabled')
+    cy.findByRole('button', { name: 'Finalize Results' }).should('be.disabled')
   })
 })

@@ -28,7 +28,7 @@ describe('Ballot Comparison Test Cases', () => {
         .attachFile({
           fileContent: fileContent.toString(),
           fileName: 'sample_jurisdiction_filesheet_jurisdiction_col_error.csv',
-          mimeType: 'csv',
+          mimeType: 'text/csv',
         })
     })
     cy.findAllByText('Upload File').spread((firstButton, secondButton) => {
@@ -45,7 +45,7 @@ describe('Ballot Comparison Test Cases', () => {
           .attachFile({
             fileContent: fileContent.toString(),
             fileName: 'sample_jurisdiction_filesheet.csv',
-            mimeType: 'csv',
+            mimeType: 'text/csv',
           })
       }
     )
@@ -63,7 +63,7 @@ describe('Ballot Comparison Test Cases', () => {
         .attachFile({
           fileContent: fileContent.toString(),
           fileName: 'sample_standardized_contests_contest_name_col_error.csv',
-          mimeType: 'csv',
+          mimeType: 'text/csv',
         })
     })
     cy.findAllByText('Upload File').click()
@@ -80,7 +80,7 @@ describe('Ballot Comparison Test Cases', () => {
           .attachFile({
             fileContent: fileContent.toString(),
             fileName: 'ballot_comparison_contests.csv',
-            mimeType: 'csv',
+            mimeType: 'text/csv',
           })
       }
     )
@@ -128,7 +128,7 @@ describe('Ballot Comparison Test Cases', () => {
           .attachFile({
             fileContent: fileContent.toString(),
             fileName: 'ballot_comparison_manifest_col_error.csv',
-            mimeType: 'csv',
+            mimeType: 'text/csv',
           })
       }
     )
@@ -147,7 +147,7 @@ describe('Ballot Comparison Test Cases', () => {
           .attachFile({
             fileContent: fileContent.toString(),
             fileName: 'ballot_comparison_manifest.csv',
-            mimeType: 'csv',
+            mimeType: 'text/csv',
           })
       }
     )
@@ -164,7 +164,7 @@ describe('Ballot Comparison Test Cases', () => {
           .attachFile({
             fileContent: fileContent.toString(),
             fileName: 'ballot_comparison_cvr_col_error.csv',
-            mimeType: 'csv',
+            mimeType: 'text/csv',
           })
       }
     )
@@ -184,7 +184,7 @@ describe('Ballot Comparison Test Cases', () => {
         .attachFile({
           fileContent: fileContent.toString(),
           fileName: 'ballot_comparison_cvr.csv',
-          mimeType: 'csv',
+          mimeType: 'text/csv',
         })
     })
     cy.findAllByText('Upload File').click()
