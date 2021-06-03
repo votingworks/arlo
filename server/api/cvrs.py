@@ -420,7 +420,7 @@ def validate_cvr_upload(
 # We save the CVR file, and bgcompute finds it and processes it in
 # the background.
 def save_cvr_file(cvr, jurisdiction: Jurisdiction):
-    cvr_string = decode_csv_file(cvr.read())
+    cvr_string = decode_csv_file(cvr)
     jurisdiction.cvr_file = File(
         id=str(uuid.uuid4()),
         name=cvr.filename,

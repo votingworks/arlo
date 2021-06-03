@@ -388,7 +388,7 @@ def update_jurisdictions_file(election: Election):
     election.jurisdictions_file = File(
         id=str(uuid.uuid4()),
         name=jurisdictions_file.filename,
-        contents=decode_csv_file(jurisdictions_file.read()),
+        contents=decode_csv_file(jurisdictions_file),
         uploaded_at=datetime.datetime.now(timezone.utc),
     )
 

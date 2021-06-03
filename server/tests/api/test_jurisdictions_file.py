@@ -25,23 +25,15 @@ def test_bad_csv_file(client: FlaskClient, election_id: str):
         f"/api/election/{election_id}/jurisdiction/file",
         data={"jurisdictions": (io.BytesIO(b"not a CSV file"), "random.txt")},
     )
-    assert_ok(rv)
-
-    bgcompute_update_election_jurisdictions_file(election_id)
-
-    rv = client.get(f"/api/election/{election_id}/jurisdiction/file")
-    compare_json(
-        json.loads(rv.data),
-        {
-            "file": {"name": "random.txt", "uploadedAt": assert_is_date},
-            "processing": {
-                "status": ProcessingStatus.ERRORED,
-                "startedAt": assert_is_date,
-                "completedAt": assert_is_date,
-                "error": "Please submit a valid CSV file with columns separated by commas.",
-            },
-        },
-    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "message": "Please submit a valid CSV. If you are working with an Excel spreadsheet, make sure you export it as a .csv file before uploading",
+                "errorType": "Bad Request",
+            }
+        ]
+    }
 
 
 def test_missing_one_csv_field(client, election_id):

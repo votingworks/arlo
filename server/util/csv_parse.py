@@ -4,6 +4,7 @@ from typing import List, Iterator, Dict, Any, NamedTuple, Tuple
 import csv as py_csv
 import io, re, locale, chardet
 from werkzeug.exceptions import BadRequest
+from werkzeug.datastructures import FileStorage
 from .process_file import UserError
 
 locale.setlocale(locale.LC_ALL, "en_US.UTF-8")
@@ -288,19 +289,23 @@ def pluralize(word: str, num: int) -> str:
     return word if num == 1 else f"{word}s"
 
 
-def decode_csv_file(file: bytes) -> str:
+def decode_csv_file(file: FileStorage) -> str:
+    user_error = BadRequest(
+        "Please submit a valid CSV."
+        " If you are working with an Excel spreadsheet,"
+        " make sure you export it as a .csv file before uploading"
+    )
+    if file.mimetype != "text/csv":
+        raise user_error
+
     try:
+        file_bytes = file.read()
+        return str(file_bytes.decode("utf-8-sig"))
+    except UnicodeDecodeError as err:
         try:
-            return file.decode("utf-8-sig")
-        except UnicodeDecodeError:
-            detect_result = chardet.detect(file)
+            detect_result = chardet.detect(file_bytes)
             if not detect_result["encoding"]:
-                raise
-            return file.decode(detect_result["encoding"])
-    except UnicodeDecodeError:
-        # pylint: disable=raise-missing-from
-        raise BadRequest(
-            "Please submit a valid CSV."
-            " If you are working with an Excel spreadsheet,"
-            " make sure you export it as a .csv file before uploading"
-        )
+                raise user_error from err
+            return str(file_bytes.decode(detect_result["encoding"]))
+        except Exception:
+            raise user_error from err

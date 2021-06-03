@@ -174,7 +174,7 @@ def validate_ballot_manifest_upload(request: Request):
 # We save the ballot manifest file, and bgcompute finds it and processes it in
 # the background.
 def save_ballot_manifest_file(manifest, jurisdiction: Jurisdiction):
-    manifest_string = decode_csv_file(manifest.read())
+    manifest_string = decode_csv_file(manifest)
     jurisdiction.manifest_file = File(
         id=str(uuid.uuid4()),
         name=manifest.filename,
