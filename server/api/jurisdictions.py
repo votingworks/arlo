@@ -2,12 +2,10 @@ from typing import Dict, Optional, Mapping
 import enum
 import uuid
 import datetime
-import csv
-import io
 from flask import jsonify, request
 from sqlalchemy import func
 from sqlalchemy.orm import joinedload
-from werkzeug.exceptions import Conflict
+from werkzeug.exceptions import Conflict, BadRequest
 
 from . import api
 from ..models import *  # pylint: disable=wildcard-import
@@ -384,57 +382,16 @@ def update_jurisdictions_file(election: Election):
         raise Conflict("Cannot update jurisdictions after audit has started.")
 
     if "jurisdictions" not in request.files:
-        return (
-            jsonify(
-                errors=[
-                    {
-                        "message": 'Expected file parameter "jurisdictions" was missing',
-                        "errorType": "MissingFile",
-                    }
-                ]
-            ),
-            400,
-        )
+        raise BadRequest("Missing required file parameter 'jurisdictions'")
 
     jurisdictions_file = request.files["jurisdictions"]
-    jurisdictions_file_string = decode_csv_file(jurisdictions_file.read())
-
-    old_jurisdictions_file = election.jurisdictions_file
     election.jurisdictions_file = File(
         id=str(uuid.uuid4()),
         name=jurisdictions_file.filename,
-        contents=jurisdictions_file_string,
+        contents=decode_csv_file(jurisdictions_file.read()),
         uploaded_at=datetime.datetime.now(timezone.utc),
     )
 
-    jurisdictions_csv = csv.DictReader(
-        io.StringIO(jurisdictions_file_string, newline=None)
-    )
-
-    missing_fields = [
-        field
-        for field in [JURISDICTION_NAME, ADMIN_EMAIL]
-        if field not in (jurisdictions_csv.fieldnames or [])
-    ]
-
-    if missing_fields:
-        return (
-            jsonify(
-                errors=[
-                    {
-                        "message": f'Missing required CSV field "{field}"',
-                        "errorType": "MissingRequiredCsvField",
-                        "fieldName": field,
-                    }
-                    for field in missing_fields
-                ]
-            ),
-            400,
-        )
-
-    if old_jurisdictions_file:
-        db_session.delete(old_jurisdictions_file)
-    db_session.add(election)
     db_session.commit()
 
     return jsonify(status="ok")
