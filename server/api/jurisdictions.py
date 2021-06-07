@@ -1,7 +1,8 @@
-from typing import Dict, Optional, Mapping
+from typing import Dict, Optional, Mapping, cast as typing_cast
 import enum
 import uuid
 import datetime
+import math
 from flask import jsonify, request
 from sqlalchemy import func
 from sqlalchemy.orm import joinedload
@@ -35,9 +36,24 @@ def serialize_jurisdiction(
     }
 
     if election.audit_type == AuditType.BATCH_COMPARISON:
+        num_ballots = None
+        if jurisdiction.batch_tallies and len(list(election.contests)) == 1:
+            contest = list(election.contests)[0]
+            assert contest.votes_allowed
+            num_ballots = math.ceil(
+                sum(
+                    tally[contest.id][choice.id]
+                    for tally in typing_cast(
+                        JSONDict, jurisdiction.batch_tallies
+                    ).values()
+                    for choice in contest.choices
+                )
+                / contest.votes_allowed
+            )
         json_jurisdiction["batchTallies"] = {
             "file": serialize_file(jurisdiction.batch_tallies_file),
             "processing": serialize_file_processing(jurisdiction.batch_tallies_file),
+            "numBallots": num_ballots,
         }
 
     if election.audit_type in [AuditType.BALLOT_COMPARISON, AuditType.HYBRID]:
