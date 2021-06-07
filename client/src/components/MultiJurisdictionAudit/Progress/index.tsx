@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
-import { Column, Cell } from 'react-table'
+import { Column, Cell, TableInstance } from 'react-table'
 import { Button, Switch, ITagProps } from '@blueprintjs/core'
 import H2Title from '../../Atoms/H2Title'
 import { JurisdictionRoundStatus, IJurisdiction } from '../useJurisdictions'
@@ -30,7 +30,14 @@ const TableControls = styled.div`
   }
 `
 
-const formatNumber = (n: number | null | undefined) => n && n.toLocaleString()
+const formatNumber = ({ value }: { value: number | null }) =>
+  value && value.toLocaleString()
+
+const sum = (nums: number[]) => nums.reduce((a, b) => a + b, 0)
+
+const totalFooter = <T extends object>(headerName: string) => (
+  info: TableInstance<T>
+) => sum(info.rows.map(row => row.values[headerName])).toLocaleString()
 
 interface IProps {
   jurisdictions: IJurisdiction[]
@@ -69,6 +76,7 @@ const Progress: React.FC<IProps> = ({
           {jurisdiction.name}
         </Button>
       ),
+      Footer: 'Total',
     },
     {
       Header: 'Status',
@@ -157,11 +165,43 @@ const Progress: React.FC<IProps> = ({
           }[currentRoundStatus.status]
         }
       ),
+      Footer: info => {
+        const numJurisdictionsComplete = sum(
+          info.rows.map(row => {
+            const {
+              currentRoundStatus,
+              ballotManifest,
+              batchTallies,
+              cvrs,
+            } = row.original
+
+            if (!currentRoundStatus) {
+              const files: IFileInfo['processing'][] = [
+                ballotManifest.processing,
+              ]
+              if (batchTallies) files.push(batchTallies.processing)
+              if (cvrs) files.push(cvrs.processing)
+
+              const numComplete = files.filter(
+                f => f && f.status === FileProcessingStatus.PROCESSED
+              ).length
+
+              return numComplete === files.length ? 1 : 0
+            }
+            return currentRoundStatus.status ===
+              JurisdictionRoundStatus.COMPLETE
+              ? 1
+              : 0
+          })
+        )
+        return `${numJurisdictionsComplete.toLocaleString()}/${info.rows.length.toLocaleString()} complete`
+      },
     },
     {
-      Header: `Ballots in Manifest`,
-      accessor: ({ ballotManifest: { numBallots } }) =>
-        formatNumber(numBallots),
+      Header: 'Ballots in Manifest',
+      accessor: ({ ballotManifest: { numBallots } }) => numBallots,
+      Cell: formatNumber,
+      Footer: totalFooter('Ballots in Manifest'),
     },
   ]
 
@@ -169,12 +209,15 @@ const Progress: React.FC<IProps> = ({
     if (auditSettings.auditType === 'BATCH_COMPARISON') {
       columns.push({
         Header: 'Batches in Manifest',
-        accessor: ({ ballotManifest: { numBatches } }) =>
-          formatNumber(numBatches),
+        accessor: ({ ballotManifest: { numBatches } }) => numBatches,
+        Cell: formatNumber,
+        Footer: totalFooter('Batches in Manifest'),
       })
       columns.push({
         Header: 'Valid Voted Ballots in Batches',
-        accessor: ({ batchTallies }) => formatNumber(batchTallies!.numBallots),
+        accessor: ({ batchTallies }) => batchTallies!.numBallots,
+        Cell: formatNumber,
+        Footer: totalFooter('Valid Voted Ballots in Batches'),
       })
     }
 
@@ -182,12 +225,16 @@ const Progress: React.FC<IProps> = ({
       columns.push({
         Header: 'Non-CVR Ballots in Manifest',
         accessor: ({ ballotManifest: { numBallotsNonCvr } }) =>
-          formatNumber(numBallotsNonCvr),
+          numBallotsNonCvr !== undefined ? numBallotsNonCvr : null,
+        Cell: formatNumber,
+        Footer: totalFooter('Non-CVR Ballots in Manifest'),
       })
       columns.push({
         Header: 'CVR Ballots in Manifest',
         accessor: ({ ballotManifest: { numBallotsCvr } }) =>
-          formatNumber(numBallotsCvr),
+          numBallotsCvr !== undefined ? numBallotsCvr : null,
+        Cell: formatNumber,
+        Footer: totalFooter('CVR Ballots in Manifest'),
       })
     }
 
@@ -197,7 +244,9 @@ const Progress: React.FC<IProps> = ({
     ) {
       columns.push({
         Header: 'Ballots in CVR',
-        accessor: ({ cvrs }) => formatNumber(cvrs!.numBallots),
+        accessor: ({ cvrs }) => cvrs!.numBallots,
+        Cell: formatNumber,
+        Footer: totalFooter('Ballots in CVR'),
       })
     }
   }
@@ -207,20 +256,19 @@ const Progress: React.FC<IProps> = ({
       {
         Header: `${ballotsOrBatches} Audited`,
         accessor: ({ currentRoundStatus: s }) =>
-          s &&
-          formatNumber(
-            isShowingUnique ? s.numUniqueAudited : s.numSamplesAudited
-          ),
+          s && (isShowingUnique ? s.numUniqueAudited : s.numSamplesAudited),
+        Cell: formatNumber,
+        Footer: totalFooter(`${ballotsOrBatches} Audited`),
       },
       {
         Header: `${ballotsOrBatches} Remaining`,
         accessor: ({ currentRoundStatus: s }) =>
           s &&
-          formatNumber(
-            isShowingUnique
-              ? s.numUnique - s.numUniqueAudited
-              : s.numSamples - s.numSamplesAudited
-          ),
+          (isShowingUnique
+            ? s.numUnique - s.numUniqueAudited
+            : s.numSamples - s.numSamplesAudited),
+        Cell: formatNumber,
+        Footer: totalFooter(`${ballotsOrBatches} Remaining`),
       }
     )
     // Special column for offline batch results (full hand tally)
@@ -230,8 +278,9 @@ const Progress: React.FC<IProps> = ({
     ) {
       columns.push({
         Header: 'Batches Audited',
-        accessor: ({ currentRoundStatus: s }) =>
-          s && formatNumber(s.numBatchesAudited!),
+        accessor: ({ currentRoundStatus: s }) => s && s.numBatchesAudited!,
+        Cell: formatNumber,
+        Footer: totalFooter('Batches Audited'),
       })
     }
   }

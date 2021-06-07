@@ -333,8 +333,8 @@ export const manifestMocks: { [key: string]: IBallotManifestInfo } = {
   empty: {
     file: null,
     processing: null,
-    numBatches: 0,
-    numBallots: 0,
+    numBatches: null,
+    numBallots: null,
   },
   processed: {
     file: { name: 'manifest.csv', uploadedAt: '2020-06-08T21:39:05.765+00:00' },
