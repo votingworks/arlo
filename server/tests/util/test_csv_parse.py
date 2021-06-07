@@ -865,6 +865,15 @@ def test_parse_csv_real_world_examples():
         assert len(parsed) == expected_rows
 
 
+def test_decode_windows_csv_mimetype():
+    assert (
+        decode_csv_file(
+            FileStorage(io.BytesIO(b"a,b,c"), content_type="application/vnd.ms-excel")
+        )
+        == "a,b,c"
+    )
+
+
 def test_decode_excel_file():
     excel_file_path = os.path.join(
         os.path.dirname(__file__), "test-ballot-manifest.xlsx"

@@ -295,7 +295,8 @@ def decode_csv_file(file: FileStorage) -> str:
         " If you are working with an Excel spreadsheet,"
         " make sure you export it as a .csv file before uploading"
     )
-    if file.mimetype != "text/csv":
+    # In Windows, CSVs have mimetype application/vnd.ms-excel
+    if file.mimetype not in ["text/csv", "application/vnd.ms-excel"]:
         raise user_error
 
     try:
