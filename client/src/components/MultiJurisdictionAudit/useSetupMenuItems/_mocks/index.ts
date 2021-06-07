@@ -377,7 +377,7 @@ export const talliesMocks: { [key: string]: IBatchTalliesFileInfo } = {
       completedAt: '2020-07-08T21:39:14.574+00:00',
       error: null,
     },
-    numBallots: 10,
+    numBallots: 15,
   },
   errored: {
     file: {
@@ -685,6 +685,38 @@ export const jurisdictionMocks: { [key: string]: IJurisdiction[] } = {
       name: 'Jurisdiction 3',
       ballotManifest: manifestMocks.processed,
       cvrs: cvrsMocks.processed,
+      currentRoundStatus: null,
+    },
+  ],
+  // Hybrid
+  hybridTwoManifestsOneCvr: [
+    {
+      id: 'jurisdiction-id-1',
+      name: 'Jurisdiction 1',
+      ballotManifest: {
+        ...manifestMocks.processed,
+        numBallotsCvr: 2000,
+        numBallotsNonCvr: 117,
+      },
+      cvrs: cvrsMocks.empty,
+      currentRoundStatus: null,
+    },
+    {
+      id: 'jurisdiction-id-2',
+      name: 'Jurisdiction 2',
+      ballotManifest: {
+        ...manifestMocks.processed,
+        numBallotsCvr: 1000,
+        numBallotsNonCvr: 1117,
+      },
+      cvrs: cvrsMocks.processed,
+      currentRoundStatus: null,
+    },
+    {
+      id: 'jurisdiction-id-3',
+      name: 'Jurisdiction 3',
+      ballotManifest: manifestMocks.empty,
+      cvrs: cvrsMocks.empty,
       currentRoundStatus: null,
     },
   ],
