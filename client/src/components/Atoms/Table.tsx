@@ -124,13 +124,15 @@ export const Table = <T extends object>({ data, columns }: ITableProps<T>) => {
           )
         })}
       </tbody>
-      <tfoot>
-        <tr>
-          {headers.map(column => (
-            <td {...column.getFooterProps()}>{column.render('Footer')}</td>
-          ))}
-        </tr>
-      </tfoot>
+      {columns.some(column => column.Footer) && (
+        <tfoot>
+          <tr>
+            {headers.map(column => (
+              <td {...column.getFooterProps()}>{column.render('Footer')}</td>
+            ))}
+          </tr>
+        </tfoot>
+      )}
     </StyledTable>
   )
 }
