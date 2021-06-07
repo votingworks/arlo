@@ -10,6 +10,13 @@ from ...worker.bgcompute import bgcompute_update_ballot_manifest_file
 def test_hybrid_manifest(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
 ):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    assert rv.status_code == 200
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    assert jurisdictions[0]["ballotManifest"]["numBallotsCvr"] is None
+    assert jurisdictions[0]["ballotManifest"]["numBallotsNonCvr"] is None
+
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
@@ -56,6 +63,13 @@ def test_hybrid_manifest(
         if batch.container in ["CONTAINER3", "CONTAINER4"]
     )
 
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    assert rv.status_code == 200
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    assert jurisdictions[0]["ballotManifest"]["numBallotsCvr"] == 8 * 50
+    assert jurisdictions[0]["ballotManifest"]["numBallotsNonCvr"] == 8 * 50
+
 
 def test_hybrid_manifest_missing_cvr_column(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
@@ -95,6 +109,16 @@ def test_hybrid_manifest_missing_cvr_column(
         },
     )
 
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    assert rv.status_code == 200
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    assert jurisdictions[0]["ballotManifest"]["numBallotsCvr"] is None
+    assert jurisdictions[0]["ballotManifest"]["numBallotsNonCvr"] is None
+
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
         data={

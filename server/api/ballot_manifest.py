@@ -58,6 +58,17 @@ def hybrid_contest_total_ballots(contest: Contest) -> HybridPair:
     )
 
 
+def hybrid_jurisdiction_total_ballots(jurisdiction: Jurisdiction) -> HybridPair:
+    total_ballots = dict(
+        Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
+        .group_by(Batch.has_cvrs)
+        .values(Batch.has_cvrs, func.sum(Batch.num_ballots))
+    )
+    return HybridPair(
+        cvr=total_ballots.get(True, 0), non_cvr=total_ballots.get(False, 0)
+    )
+
+
 def process_ballot_manifest_file(
     session: Session, jurisdiction: Jurisdiction, file: File
 ):
