@@ -194,25 +194,15 @@ def test_ballot_manifest_upload_bad_csv(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
         data={"manifest": (io.BytesIO(b"not a CSV file"), "random.txt")},
     )
-    assert_ok(rv)
-
-    bgcompute_update_ballot_manifest_file(election_id)
-
-    rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"
-    )
-    compare_json(
-        json.loads(rv.data),
-        {
-            "file": {"name": "random.txt", "uploadedAt": assert_is_date,},
-            "processing": {
-                "status": ProcessingStatus.ERRORED,
-                "startedAt": assert_is_date,
-                "completedAt": assert_is_date,
-                "error": "Please submit a valid CSV file with columns separated by commas.",
-            },
-        },
-    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Bad Request",
+                "message": "Please submit a valid CSV. If you are working with an Excel spreadsheet, make sure you export it as a .csv file before uploading",
+            }
+        ]
+    }
 
 
 def test_ballot_manifest_upload_missing_field(

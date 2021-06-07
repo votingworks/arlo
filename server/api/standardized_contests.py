@@ -117,7 +117,7 @@ def upload_standardized_contests_file(election: Election):
     election.standardized_contests_file = File(
         id=str(uuid.uuid4()),
         name=file.filename,
-        contents=decode_csv_file(file.read()),
+        contents=decode_csv_file(file),
         uploaded_at=datetime.now(timezone.utc),
     )
     election.standardized_contests = None

@@ -25,7 +25,7 @@ describe('Batch Comparison', () => {
           .attachFile({
             fileContent: fileContent.toString(),
             fileName: 'sample_jurisdiction_filesheet.csv',
-            mimeType: 'csv',
+            mimeType: 'text/csv',
           })
       }
     )
@@ -62,7 +62,7 @@ describe('Batch Comparison', () => {
           .attachFile({
             fileContent: fileContent.toString(),
             fileName: 'batch_comparison_manifest_col_error.csv',
-            mimeType: 'csv',
+            mimeType: 'text/csv',
           })
       }
     )
@@ -81,7 +81,7 @@ describe('Batch Comparison', () => {
           .attachFile({
             fileContent: fileContent.toString(),
             fileName: 'batch_comparison_manifest.csv',
-            mimeType: 'csv',
+            mimeType: 'text/csv',
           })
       }
     )
@@ -99,7 +99,7 @@ describe('Batch Comparison', () => {
         .attachFile({
           fileContent: fileContent.toString(),
           fileName: 'sample_candidate_totals_by_batch_col_error.csv',
-          mimeType: 'csv',
+          mimeType: 'text/csv',
         })
     })
     cy.findAllByText('Upload File')
@@ -119,7 +119,7 @@ describe('Batch Comparison', () => {
         .attachFile({
           fileContent: fileContent.toString(),
           fileName: 'sample_candidate_totals_by_batch.csv',
-          mimeType: 'csv',
+          mimeType: 'text/csv',
         })
     })
     cy.findAllByText('Upload File').click()

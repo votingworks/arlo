@@ -133,7 +133,7 @@ def upload_batch_tallies(
     jurisdiction.batch_tallies_file = File(
         id=str(uuid.uuid4()),
         name=batch_tallies.filename,
-        contents=decode_csv_file(batch_tallies.read()),
+        contents=decode_csv_file(batch_tallies),
         uploaded_at=datetime.now(timezone.utc),
     )
     db_session.commit()

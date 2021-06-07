@@ -239,33 +239,19 @@ def test_standardized_contests_bad_csv(
         data={
             "standardized-contests": (
                 io.BytesIO(b"not a csv"),
-                "standardized-contests.csv",
+                "standardized-contests.txt",
             )
         },
     )
-    assert_ok(rv)
-
-    bgcompute_update_standardized_contests_file(election_id)
-
-    rv = client.get(f"/api/election/{election_id}/standardized-contests/file")
-    compare_json(
-        json.loads(rv.data),
-        {
-            "file": {
-                "name": "standardized-contests.csv",
-                "uploadedAt": assert_is_date,
-            },
-            "processing": {
-                "status": ProcessingStatus.ERRORED,
-                "startedAt": assert_is_date,
-                "completedAt": assert_is_date,
-                "error": "Please submit a valid CSV file with columns separated by commas.",
-            },
-        },
-    )
-
-    rv = client.get(f"/api/election/{election_id}/standardized-contests")
-    assert json.loads(rv.data) is None
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Bad Request",
+                "message": "Please submit a valid CSV. If you are working with an Excel spreadsheet, make sure you export it as a .csv file before uploading",
+            }
+        ]
+    }
 
 
 def test_standardized_contests_wrong_audit_type(
