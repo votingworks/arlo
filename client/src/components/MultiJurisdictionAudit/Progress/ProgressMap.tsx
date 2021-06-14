@@ -65,6 +65,9 @@ const SVGMap = styled.svg`
   .gray {
     fill: ${Colors.GRAY4};
   }
+  .default {
+    fill: ${Colors.WHITE};
+  }
 `
 
 const Tooltip = styled.div`
@@ -201,7 +204,7 @@ const Map = ({
           }
         }
       }
-      return ''
+      return 'default'
     },
     [jurisdictions]
   )

@@ -209,6 +209,12 @@ export const jaApiCalls = {
     },
     response: { status: 'ok' },
   },
+  getMapData: {
+    url: 'https://cdn.jsdelivr.net/npm/us-atlas@3/counties-10m.json',
+    response: new Response(
+      'https://cdn.jsdelivr.net/npm/us-atlas@3/counties-10m.json'
+    ),
+  },
 }
 
 const aaUser = {
@@ -445,6 +451,12 @@ export const aaApiCalls = {
     url: '/api/election/1/standardized-contests/file',
     response,
   }),
+  getMapData: {
+    url: 'https://cdn.jsdelivr.net/npm/us-atlas@3/counties-10m.json',
+    response: new Response(
+      'https://cdn.jsdelivr.net/npm/us-atlas@3/counties-10m.json'
+    ),
+  },
 }
 
 export const supportApiCalls = {

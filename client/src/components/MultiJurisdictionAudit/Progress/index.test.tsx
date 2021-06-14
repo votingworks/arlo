@@ -496,6 +496,7 @@ describe('Progress screen', () => {
 
   it('shows the detail modal with JA file download buttons after the audit starts', async () => {
     const expectedCalls = [
+      jaApiCalls.getMapData,
       jaApiCalls.getAuditBoards(auditBoardMocks.unfinished),
       jaApiCalls.getBallotCount(dummyBallots.ballots),
       jaApiCalls.getBallots(dummyBallots.ballots),
@@ -569,6 +570,7 @@ describe('Progress screen', () => {
 
   it('shows a message in the detail modal when no ballots sampled', async () => {
     const expectedCalls = [
+      jaApiCalls.getMapData,
       jaApiCalls.getAuditBoards(auditBoardMocks.unfinished),
       jaApiCalls.getBallotCount([]),
     ]
@@ -591,6 +593,7 @@ describe('Progress screen', () => {
 
   it('shows a message in the detail modal when no audit boards set up', async () => {
     const expectedCalls = [
+      jaApiCalls.getMapData,
       jaApiCalls.getAuditBoards([]),
       jaApiCalls.getBallotCount(dummyBallots.ballots),
     ]
