@@ -51,12 +51,15 @@ export const FilterInput = <T extends object>({
   </div>
 )
 
-interface IDownloadCSVProps {
+interface IDownloadCSVButtonProps {
   tableId: string
   fileName?: string
 }
 
-export const DownloadCSV = ({ tableId, fileName }: IDownloadCSVProps) => {
+export const DownloadCSVButton = ({
+  tableId,
+  fileName,
+}: IDownloadCSVButtonProps) => {
   const onClick = () => {
     const table = document.querySelector(`#${tableId}`)!
     const headers = Array.from(table.querySelectorAll('th')).map(

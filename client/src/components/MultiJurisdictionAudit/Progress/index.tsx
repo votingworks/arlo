@@ -6,7 +6,12 @@ import { Button, Switch, ITagProps } from '@blueprintjs/core'
 import H2Title from '../../Atoms/H2Title'
 import { JurisdictionRoundStatus, IJurisdiction } from '../useJurisdictions'
 import JurisdictionDetail from './JurisdictionDetail'
-import { Table, sortByRank, FilterInput, DownloadCSV } from '../../Atoms/Table'
+import {
+  Table,
+  sortByRank,
+  FilterInput,
+  DownloadCSVButton,
+} from '../../Atoms/Table'
 import { IRound } from '../useRoundsAuditAdmin'
 import StatusTag from '../../Atoms/StatusTag'
 import { IAuditSettings } from '../useAuditSettings'
@@ -308,7 +313,7 @@ const Progress: React.FC<IProps> = ({
           onChange={() => setIsShowingUnique(!isShowingUnique)}
           style={{ marginRight: '20px' }}
         />
-        <DownloadCSV
+        <DownloadCSVButton
           tableId="progress-table"
           fileName={`audit-progress-${
             auditSettings.auditName
