@@ -7,10 +7,12 @@ const StyledTable = styled.table`
   width: 100%;
   table-layout: fixed;
 
-  thead {
+  thead,
+  tfoot {
     background-color: #e1e8ed; /* BlueprintJS light-gray3 */
     border-spacing: 0;
     color: #394b59; /* BlueprintJS dark-gray5 */
+    font-weight: 700;
   }
 
   th,
@@ -122,6 +124,15 @@ export const Table = <T extends object>({ data, columns }: ITableProps<T>) => {
           )
         })}
       </tbody>
+      {columns.some(column => column.Footer) && (
+        <tfoot>
+          <tr>
+            {headers.map(column => (
+              <td {...column.getFooterProps()}>{column.render('Footer')}</td>
+            ))}
+          </tr>
+        </tfoot>
+      )}
     </StyledTable>
   )
 }

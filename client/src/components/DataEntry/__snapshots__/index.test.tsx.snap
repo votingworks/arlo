@@ -444,7 +444,7 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
           </div>
         </div>
         <table
-          class="sc-bdVaJa ldGrnX"
+          class="sc-bdVaJa djjOKa"
           role="table"
         >
           <thead>
@@ -1663,7 +1663,7 @@ exports[`DataEntry ballot interaction renders board table with no ballots 1`] = 
           </div>
         </div>
         <table
-          class="sc-bdVaJa ldGrnX"
+          class="sc-bdVaJa djjOKa"
           role="table"
         >
           <thead>
@@ -1872,7 +1872,7 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
           </div>
         </div>
         <table
-          class="sc-bdVaJa ldGrnX"
+          class="sc-bdVaJa djjOKa"
           role="table"
         >
           <thead>
