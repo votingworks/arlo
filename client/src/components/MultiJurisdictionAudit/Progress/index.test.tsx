@@ -131,6 +131,89 @@ describe('Progress screen', () => {
     within(rows[3]).getByRole('cell', { name: '0' })
   })
 
+  it('shows additional columns during setup for batch audits', () => {
+    render(
+      <Progress
+        jurisdictions={jurisdictionMocks.twoManifestsOneTallies}
+        auditSettings={auditSettings.batchComparisonAll}
+        round={null}
+      />
+    )
+    screen.getByRole('columnheader', { name: 'Jurisdiction' })
+    screen.getByRole('columnheader', { name: 'Status' })
+    screen.getByRole('columnheader', { name: 'Ballots in Manifest' })
+    screen.getByRole('columnheader', { name: 'Batches in Manifest' })
+    screen.getByRole('columnheader', { name: 'Valid Voted Ballots in Batches' })
+    const rows = screen.getAllByRole('row')
+    // Jurisdiction 1 - manifest errored, no ballot/batches count shown
+    const row1 = within(rows[1]).getAllByRole('cell')
+    expect(row1[2]).toBeEmpty()
+    expect(row1[3]).toBeEmpty()
+    expect(row1[4]).toBeEmpty()
+    // Jurisdiction 2 - manifest success, no tallies
+    const row2 = within(rows[2]).getAllByRole('cell')
+    expect(row2[2]).toHaveTextContent('2,117')
+    expect(row2[3]).toHaveTextContent('10')
+    expect(row2[4]).toBeEmpty()
+    // Jurisdiction 3 - manifest success, tallies success
+    const row3 = within(rows[3]).getAllByRole('cell')
+    expect(row3[2]).toHaveTextContent('2,117')
+    expect(row3[3]).toHaveTextContent('10')
+    expect(row3[4]).toHaveTextContent('15')
+  })
+
+  it('shows additional columns during setup for ballot comparison audits', () => {
+    render(
+      <Progress
+        jurisdictions={jurisdictionMocks.allManifestsSomeCVRs}
+        auditSettings={auditSettings.ballotComparisonAll}
+        round={null}
+      />
+    )
+    screen.getByRole('columnheader', { name: 'Jurisdiction' })
+    screen.getByRole('columnheader', { name: 'Status' })
+    screen.getByRole('columnheader', { name: 'Ballots in Manifest' })
+    screen.getByRole('columnheader', { name: 'Ballots in CVR' })
+    const rows = screen.getAllByRole('row')
+    // Jurisdiction 1 - manifest success, no CVR
+    const row1 = within(rows[1]).getAllByRole('cell')
+    expect(row1[2]).toHaveTextContent('2,117')
+    expect(row1[3]).toBeEmpty()
+    // Jurisdiction 2 - manifest success, CVR success
+    const row2 = within(rows[2]).getAllByRole('cell')
+    expect(row2[2]).toHaveTextContent('2,117')
+    expect(row2[3]).toHaveTextContent('10')
+  })
+
+  it('shows additional columns during setup for hybrid audits', () => {
+    render(
+      <Progress
+        jurisdictions={jurisdictionMocks.hybridTwoManifestsOneCvr}
+        auditSettings={auditSettings.hybridAll}
+        round={null}
+      />
+    )
+    screen.getByRole('columnheader', { name: 'Jurisdiction' })
+    screen.getByRole('columnheader', { name: 'Status' })
+    screen.getByRole('columnheader', { name: 'Ballots in Manifest' })
+    screen.getByRole('columnheader', { name: 'Non-CVR Ballots in Manifest' })
+    screen.getByRole('columnheader', { name: 'CVR Ballots in Manifest' })
+    screen.getByRole('columnheader', { name: 'Ballots in CVR' })
+    const rows = screen.getAllByRole('row')
+    // Jurisdiction 1 - manifest success, no CVR
+    const row1 = within(rows[1]).getAllByRole('cell')
+    expect(row1[2]).toHaveTextContent('2,117')
+    expect(row1[3]).toHaveTextContent('117')
+    expect(row1[4]).toHaveTextContent('2,000')
+    expect(row1[5]).toBeEmpty()
+    // Jurisdiction 2 - manifest success, CVR success
+    const row2 = within(rows[2]).getAllByRole('cell')
+    expect(row2[2]).toHaveTextContent('2,117')
+    expect(row2[3]).toHaveTextContent('1,117')
+    expect(row2[4]).toHaveTextContent('1,000')
+    expect(row2[5]).toHaveTextContent('10')
+  })
+
   it('shows a different toggle label for batch audits', () => {
     render(
       <Progress

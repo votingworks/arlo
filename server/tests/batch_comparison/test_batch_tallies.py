@@ -42,6 +42,12 @@ def test_batch_tallies_upload(
     contest_id: str,
     manifests,  # pylint: disable=unused-argument
 ):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    assert rv.status_code == 200
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    assert jurisdictions[0]["batchTallies"]["numBallots"] is None
+
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
@@ -135,6 +141,7 @@ def test_batch_tallies_upload(
                 "completedAt": assert_is_date,
                 "error": None,
             },
+            "numBallots": (111 + 222 + 333) / 2,
         },
     )
 

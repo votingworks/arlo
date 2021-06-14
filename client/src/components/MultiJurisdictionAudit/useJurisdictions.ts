@@ -5,6 +5,17 @@ import { IFileInfo } from './useCSV'
 export interface IBallotManifestInfo extends IFileInfo {
   numBallots: number | null
   numBatches: number | null
+  // Only in Hybrid audits
+  numBallotsCvr?: number | null
+  numBallotsNonCvr?: number | null
+}
+
+export interface ICvrFileInfo extends IFileInfo {
+  numBallots: number | null
+}
+
+export interface IBatchTalliesFileInfo extends IFileInfo {
+  numBallots: number | null
 }
 
 export enum JurisdictionRoundStatus {
@@ -17,8 +28,8 @@ export interface IJurisdiction {
   id: string
   name: string
   ballotManifest: IBallotManifestInfo
-  batchTallies?: IFileInfo
-  cvrs?: IFileInfo
+  batchTallies?: IBatchTalliesFileInfo
+  cvrs?: ICvrFileInfo
   currentRoundStatus: {
     status: JurisdictionRoundStatus
     numSamples: number

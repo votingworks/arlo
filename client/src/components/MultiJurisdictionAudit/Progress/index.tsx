@@ -30,7 +30,7 @@ const TableControls = styled.div`
   }
 `
 
-const formatNumber = (n: number | null) => n && n.toLocaleString()
+const formatNumber = (n: number | null | undefined) => n && n.toLocaleString()
 
 interface IProps {
   jurisdictions: IJurisdiction[]
@@ -159,15 +159,49 @@ const Progress: React.FC<IProps> = ({
       ),
     },
     {
-      Header: `${ballotsOrBatches} in Manifest`,
-      accessor: ({ ballotManifest: { numBallots, numBatches } }) =>
-        formatNumber(
-          auditSettings.auditType === 'BATCH_COMPARISON'
-            ? numBatches
-            : numBallots
-        ),
+      Header: `Ballots in Manifest`,
+      accessor: ({ ballotManifest: { numBallots } }) =>
+        formatNumber(numBallots),
     },
   ]
+
+  if (!round) {
+    if (auditSettings.auditType === 'BATCH_COMPARISON') {
+      columns.push({
+        Header: 'Batches in Manifest',
+        accessor: ({ ballotManifest: { numBatches } }) =>
+          formatNumber(numBatches),
+      })
+      columns.push({
+        Header: 'Valid Voted Ballots in Batches',
+        accessor: ({ batchTallies }) => formatNumber(batchTallies!.numBallots),
+      })
+    }
+
+    if (auditSettings.auditType === 'HYBRID') {
+      columns.push({
+        Header: 'Non-CVR Ballots in Manifest',
+        accessor: ({ ballotManifest: { numBallotsNonCvr } }) =>
+          formatNumber(numBallotsNonCvr),
+      })
+      columns.push({
+        Header: 'CVR Ballots in Manifest',
+        accessor: ({ ballotManifest: { numBallotsCvr } }) =>
+          formatNumber(numBallotsCvr),
+      })
+    }
+
+    if (
+      auditSettings.auditType === 'BALLOT_COMPARISON' ||
+      auditSettings.auditType === 'HYBRID'
+    ) {
+      columns.push({
+        Header: 'Ballots in CVR',
+        accessor: ({ cvrs }) => formatNumber(cvrs!.numBallots),
+      })
+    }
+  }
+
   if (round) {
     columns.push(
       {
@@ -189,6 +223,7 @@ const Progress: React.FC<IProps> = ({
           ),
       }
     )
+    // Special column for offline batch results (full hand tally)
     if (
       jurisdictions[0].currentRoundStatus &&
       jurisdictions[0].currentRoundStatus.numBatchesAudited !== undefined

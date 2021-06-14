@@ -1,7 +1,8 @@
-from typing import Dict, Optional, Mapping
+from typing import Dict, Optional, Mapping, cast as typing_cast
 import enum
 import uuid
 import datetime
+import math
 from flask import jsonify, request
 from sqlalchemy import func
 from sqlalchemy.orm import joinedload
@@ -12,6 +13,7 @@ from ..models import *  # pylint: disable=wildcard-import
 from ..database import db_session
 from ..auth import restrict_access, UserType
 from .rounds import get_current_round, sampled_all_ballots
+from .ballot_manifest import hybrid_jurisdiction_total_ballots
 from ..util.process_file import serialize_file, serialize_file_processing
 from ..util.jsonschema import JSONDict
 from ..util.csv_parse import decode_csv_file
@@ -21,7 +23,7 @@ from ..util.csv_download import csv_response
 def serialize_jurisdiction(
     election: Election, jurisdiction: Jurisdiction, round_status: Optional[JSONDict]
 ) -> JSONDict:
-    json_jurisdiction = {
+    json_jurisdiction: JSONDict = {
         "id": jurisdiction.id,
         "name": jurisdiction.name,
         "ballotManifest": {
@@ -32,16 +34,58 @@ def serialize_jurisdiction(
         },
         "currentRoundStatus": round_status,
     }
+
     if election.audit_type == AuditType.BATCH_COMPARISON:
+        num_ballots = None
+        if jurisdiction.batch_tallies and len(list(election.contests)) == 1:
+            contest = list(election.contests)[0]
+            assert contest.votes_allowed
+            num_ballots = math.ceil(
+                sum(
+                    tally[contest.id][choice.id]
+                    for tally in typing_cast(
+                        JSONDict, jurisdiction.batch_tallies
+                    ).values()
+                    for choice in contest.choices
+                )
+                / contest.votes_allowed
+            )
         json_jurisdiction["batchTallies"] = {
             "file": serialize_file(jurisdiction.batch_tallies_file),
             "processing": serialize_file_processing(jurisdiction.batch_tallies_file),
+            "numBallots": num_ballots,
         }
+
     if election.audit_type in [AuditType.BALLOT_COMPARISON, AuditType.HYBRID]:
+        processing = serialize_file_processing(jurisdiction.cvr_file)
+        num_cvr_ballots = (
+            CvrBallot.query.join(Batch)
+            .filter_by(jurisdiction_id=jurisdiction.id)
+            .count()
+            if processing and processing["status"] == ProcessingStatus.PROCESSED
+            else None
+        )
         json_jurisdiction["cvrs"] = {
             "file": serialize_file(jurisdiction.cvr_file),
             "processing": serialize_file_processing(jurisdiction.cvr_file),
+            "numBallots": num_cvr_ballots,
         }
+
+    if election.audit_type == AuditType.HYBRID:
+        ballot_counts = (
+            hybrid_jurisdiction_total_ballots(jurisdiction)
+            if json_jurisdiction["ballotManifest"]["processing"]
+            and json_jurisdiction["ballotManifest"]["processing"]["status"]
+            == ProcessingStatus.PROCESSED
+            else None
+        )
+        json_jurisdiction["ballotManifest"]["numBallotsCvr"] = (
+            ballot_counts and ballot_counts.cvr
+        )
+        json_jurisdiction["ballotManifest"]["numBallotsNonCvr"] = (
+            ballot_counts and ballot_counts.non_cvr
+        )
+
     return json_jurisdiction
 
 

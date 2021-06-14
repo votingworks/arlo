@@ -70,6 +70,11 @@ def test_contest_vote_counts_before_cvrs(
         ],
     )
 
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    assert rv.status_code == 200
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    assert jurisdictions[0]["cvrs"]["numBallots"] is None
+
 
 def test_contest_vote_counts(
     client: FlaskClient,
@@ -127,6 +132,11 @@ def test_contest_vote_counts(
             },
         ],
     )
+
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    assert rv.status_code == 200
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    assert jurisdictions[0]["cvrs"]["numBallots"] == len(TEST_CVRS.splitlines()) - 4
 
 
 def test_sample_size(

@@ -5,6 +5,8 @@ import {
   IJurisdiction,
   JurisdictionRoundStatus,
   IBallotManifestInfo,
+  ICvrFileInfo,
+  IBatchTalliesFileInfo,
 } from '../../useJurisdictions' // uses IFileInfo instead of IBallotManifest and allows `file: null`
 import { IAuditBoard } from '../../useAuditBoards'
 import { IRound } from '../../useRoundsAuditAdmin'
@@ -361,10 +363,11 @@ export const manifestMocks: { [key: string]: IBallotManifestInfo } = {
   },
 }
 
-export const talliesMocks: { [key: string]: IFileInfo } = {
+export const talliesMocks: { [key: string]: IBatchTalliesFileInfo } = {
   empty: {
     file: null,
     processing: null,
+    numBallots: null,
   },
   processed: {
     file: { name: 'tallies.csv', uploadedAt: '2020-07-08T21:39:05.765+00:00' },
@@ -374,6 +377,7 @@ export const talliesMocks: { [key: string]: IFileInfo } = {
       completedAt: '2020-07-08T21:39:14.574+00:00',
       error: null,
     },
+    numBallots: 15,
   },
   errored: {
     file: {
@@ -386,13 +390,15 @@ export const talliesMocks: { [key: string]: IFileInfo } = {
       startedAt: '2020-05-05T17:25:26.09743+00:00',
       status: FileProcessingStatus.ERRORED,
     },
+    numBallots: null,
   },
 }
 
-export const cvrsMocks: { [key: string]: IFileInfo } = {
+export const cvrsMocks: { [key: string]: ICvrFileInfo } = {
   empty: {
     file: null,
     processing: null,
+    numBallots: null,
   },
   processed: {
     file: { name: 'cvrs.csv', uploadedAt: '2020-11-18T21:39:05.765+00:00' },
@@ -402,6 +408,7 @@ export const cvrsMocks: { [key: string]: IFileInfo } = {
       completedAt: '2020-11-18T21:39:14.574+00:00',
       error: null,
     },
+    numBallots: 10,
   },
   errored: {
     file: {
@@ -414,6 +421,7 @@ export const cvrsMocks: { [key: string]: IFileInfo } = {
       startedAt: '2020-11-15T17:25:26.09743+00:00',
       status: FileProcessingStatus.ERRORED,
     },
+    numBallots: null,
   },
 }
 
@@ -677,6 +685,38 @@ export const jurisdictionMocks: { [key: string]: IJurisdiction[] } = {
       name: 'Jurisdiction 3',
       ballotManifest: manifestMocks.processed,
       cvrs: cvrsMocks.processed,
+      currentRoundStatus: null,
+    },
+  ],
+  // Hybrid
+  hybridTwoManifestsOneCvr: [
+    {
+      id: 'jurisdiction-id-1',
+      name: 'Jurisdiction 1',
+      ballotManifest: {
+        ...manifestMocks.processed,
+        numBallotsCvr: 2000,
+        numBallotsNonCvr: 117,
+      },
+      cvrs: cvrsMocks.empty,
+      currentRoundStatus: null,
+    },
+    {
+      id: 'jurisdiction-id-2',
+      name: 'Jurisdiction 2',
+      ballotManifest: {
+        ...manifestMocks.processed,
+        numBallotsCvr: 1000,
+        numBallotsNonCvr: 1117,
+      },
+      cvrs: cvrsMocks.processed,
+      currentRoundStatus: null,
+    },
+    {
+      id: 'jurisdiction-id-3',
+      name: 'Jurisdiction 3',
+      ballotManifest: manifestMocks.empty,
+      cvrs: cvrsMocks.empty,
       currentRoundStatus: null,
     },
   ],
