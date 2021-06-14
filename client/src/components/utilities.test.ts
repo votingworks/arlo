@@ -1,6 +1,6 @@
 import { waitFor } from '@testing-library/react'
 import { toast } from 'react-toastify'
-import { api, testNumber, poll, checkAndToast } from './utilities'
+import { api, testNumber, poll, checkAndToast, downloadFile } from './utilities'
 
 const response = () =>
   new Response(new Blob([JSON.stringify({ success: true })]))
@@ -179,6 +179,31 @@ describe('utilities.ts', () => {
       expect(checkAndToast(null)).toBeFalsy()
       expect(checkAndToast('')).toBeFalsy()
       expect(toastSpy).toBeCalledTimes(0)
+    })
+  })
+
+  describe('downloadFile', () => {
+    it('creates a hidden anchor element, attaches the file for download, and clicks it', () => {
+      const mockAnchor = {
+        href: undefined,
+        download: undefined,
+        click: jest.fn(),
+      }
+      document.createElement = jest.fn().mockReturnValue(mockAnchor)
+      document.body.appendChild = jest.fn()
+      document.body.removeChild = jest.fn()
+      URL.createObjectURL = jest.fn().mockReturnValue('test object url')
+
+      const fileContents = new Blob(['test file contents'])
+      downloadFile(fileContents, 'test filename.txt')
+
+      expect(document.createElement).toHaveBeenCalledWith('a')
+      expect(URL.createObjectURL).toHaveBeenCalledWith(fileContents)
+      expect(mockAnchor.href).toEqual('test object url')
+      expect(mockAnchor.download).toEqual('test filename.txt')
+      expect(mockAnchor.click).toHaveBeenCalled()
+      expect(document.body.appendChild).toHaveBeenCalledWith(mockAnchor)
+      expect(document.body.removeChild).toHaveBeenCalledWith(mockAnchor)
     })
   })
 })

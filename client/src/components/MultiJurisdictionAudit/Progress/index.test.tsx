@@ -11,6 +11,7 @@ import {
 import { withMockFetch } from '../../testUtilities'
 import { jaApiCalls } from '../_mocks'
 import { dummyBallots } from '../../DataEntry/_mocks'
+import * as utilities from '../../utilities'
 
 jest.mock('react-router', () => ({
   useParams: jest.fn().mockReturnValue({ electionId: '1' }),
@@ -296,6 +297,45 @@ describe('Progress screen', () => {
     screen.getByRole('checkbox', {
       name: 'Count unique sampled batches',
     })
+  })
+
+  it('shows a button to download the table as a CSV', async () => {
+    // JSDOM doesn't implement innerText, so we implement it using textContent
+    // (but we have to strip out the label for the sorting icon)
+    Object.defineProperty(HTMLElement.prototype, 'innerText', {
+      get() {
+        return this.textContent.replace('double-caret-vertical', '')
+      },
+      configurable: true,
+    })
+    const downloadFileMock = jest
+      .spyOn(utilities, 'downloadFile')
+      .mockImplementation()
+
+    render(
+      <Progress
+        jurisdictions={jurisdictionMocks.oneComplete}
+        auditSettings={auditSettings.all}
+        round={roundMocks.singleIncomplete[0]}
+      />
+    )
+    userEvent.click(screen.getByRole('button', { name: /Download as CSV/ }))
+    expect(downloadFileMock).toHaveBeenCalled()
+    expect(downloadFileMock.mock.calls[0][1]).toMatch(
+      /audit-progress-Test Audit-/
+    )
+    const fileBlob = downloadFileMock.mock.calls[0][0] as Blob
+    expect(fileBlob.type).toEqual('text/csv')
+    expect(await new Response(fileBlob).text()).toEqual(
+      '"Jurisdiction","Status","Ballots in Manifest","Ballots Audited","Ballots Remaining"\n' +
+        '"Jurisdiction 1","In progress","2,117","4","6"\n' +
+        '"Jurisdiction 2","Not started","2,117","0","20"\n' +
+        '"Jurisdiction 3","Complete","2,117","30","0"\n' +
+        '"Total","1/3 complete","6,351","34","26"'
+    )
+
+    downloadFileMock.mockRestore()
+    delete HTMLElement.prototype.innerText
   })
 
   it('filters by jurisdiction name', async () => {
