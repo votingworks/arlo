@@ -60,6 +60,15 @@ export const apiDownload = (endpoint: string) =>
     }
   })
 
+export const downloadFile = (fileBlob: Blob, fileName?: string) => {
+  const a = document.createElement('a')
+  document.body.appendChild(a)
+  a.href = URL.createObjectURL(fileBlob)
+  a.download = fileName || ''
+  a.click()
+  document.body.removeChild(a)
+}
+
 export const poll = (
   condition: () => Promise<boolean>,
   callback: () => void,

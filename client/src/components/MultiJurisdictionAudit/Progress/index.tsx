@@ -6,7 +6,12 @@ import { Button, Switch, ITagProps } from '@blueprintjs/core'
 import H2Title from '../../Atoms/H2Title'
 import { JurisdictionRoundStatus, IJurisdiction } from '../useJurisdictions'
 import JurisdictionDetail from './JurisdictionDetail'
-import { Table, sortByRank, FilterInput } from '../../Atoms/Table'
+import {
+  Table,
+  sortByRank,
+  FilterInput,
+  DownloadCSVButton,
+} from '../../Atoms/Table'
 import { IRound } from '../useRoundsAuditAdmin'
 import StatusTag from '../../Atoms/StatusTag'
 import { IAuditSettings } from '../useAuditSettings'
@@ -24,10 +29,6 @@ const TableControls = styled.div`
   align-items: baseline;
   justify-content: space-between;
   margin-bottom: 0.5rem;
-
-  > div {
-    width: 50%;
-  }
 `
 
 const formatNumber = ({ value }: { value: number | null }) =>
@@ -299,18 +300,31 @@ const Progress: React.FC<IProps> = ({
         jurisdiction.
       </p>
       <TableControls>
+        <div style={{ flexGrow: 1, marginRight: '20px' }}>
+          <FilterInput
+            placeholder="Filter by jurisdiction name..."
+            value={filter}
+            onChange={value => setFilter(value)}
+          />
+        </div>
         <Switch
           checked={isShowingUnique}
           label={`Count unique sampled ${ballotsOrBatches.toLowerCase()}`}
           onChange={() => setIsShowingUnique(!isShowingUnique)}
+          style={{ marginRight: '20px' }}
         />
-        <FilterInput
-          placeholder="Filter by jurisdiction name..."
-          value={filter}
-          onChange={value => setFilter(value)}
+        <DownloadCSVButton
+          tableId="progress-table"
+          fileName={`audit-progress-${
+            auditSettings.auditName
+          }-${new Date().toISOString()}.csv`}
         />
       </TableControls>
-      <Table data={filteredJurisdictions} columns={columns} />
+      <Table
+        data={filteredJurisdictions}
+        columns={columns}
+        id="progress-table"
+      />
       {jurisdictionDetail && (
         <JurisdictionDetail
           jurisdiction={jurisdictionDetail}

@@ -1,7 +1,8 @@
 import React from 'react'
 import { useTable, useSortBy, Column, Row } from 'react-table'
 import styled from 'styled-components'
-import { Icon, HTMLTable } from '@blueprintjs/core'
+import { Icon, HTMLTable, Button } from '@blueprintjs/core'
+import { downloadFile } from '../utilities'
 
 const StyledTable = styled.table`
   width: 100%;
@@ -50,12 +51,52 @@ export const FilterInput = <T extends object>({
   </div>
 )
 
+interface IDownloadCSVButtonProps {
+  tableId: string
+  fileName?: string
+}
+
+export const DownloadCSVButton = ({
+  tableId,
+  fileName,
+}: IDownloadCSVButtonProps) => {
+  const onClick = () => {
+    const table = document.querySelector(`#${tableId}`)!
+    const headers = Array.from(table.querySelectorAll('th')).map(
+      header => header.innerText
+    )
+    const bodyAndFooter = Array.from(
+      table.querySelectorAll('tbody tr, tfoot tr')
+    ).map(row =>
+      Array.from(row.querySelectorAll('td')).map(cell => cell.innerText)
+    )
+    const tableRows = [headers].concat(bodyAndFooter)
+    const quotedRows = tableRows.map(row =>
+      row.map(cell => `"${cell.replace(/"/g, '""')}"`)
+    )
+    const csvString = quotedRows.map(row => row.join(',')).join('\n')
+    const csvBlob = new Blob([csvString], { type: 'text/csv' })
+    downloadFile(csvBlob, fileName)
+  }
+
+  return (
+    <Button icon="download" onClick={onClick}>
+      Download as CSV
+    </Button>
+  )
+}
+
 interface ITableProps<T extends object> {
   data: T[]
   columns: Column<T>[]
+  id?: string
 }
 
-export const Table = <T extends object>({ data, columns }: ITableProps<T>) => {
+export const Table = <T extends object>({
+  data,
+  columns,
+  id,
+}: ITableProps<T>) => {
   const {
     getTableProps,
     getTableBodyProps,
@@ -75,7 +116,7 @@ export const Table = <T extends object>({ data, columns }: ITableProps<T>) => {
   /* All the keys are added automatically by react-table */
 
   return (
-    <StyledTable {...getTableProps()}>
+    <StyledTable id={id} {...getTableProps()}>
       <thead>
         <tr>
           {headers.map(column => (
