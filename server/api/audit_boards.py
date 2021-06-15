@@ -15,6 +15,12 @@ from .rounds import get_current_round, is_round_complete, end_round
 from ..util.jsonschema import validate, JSONDict
 from ..util.binpacking import BalancedBucketList, Bucket
 from ..util.isoformat import isoformat
+from ..activity_log.activity_log import (
+    AuditBoardSignOff,
+    CreateAuditBoards,
+    record_activity,
+    activity_base,
+)
 
 WORDS = xp.generate_wordlist(wordfile=xp.locate_wordfile())
 
@@ -192,6 +198,16 @@ def create_audit_boards(election: Election, jurisdiction: Jurisdiction, round: R
         assign_sampled_batches(jurisdiction, round, audit_boards)
     else:
         assign_sampled_ballots(jurisdiction, round, audit_boards)
+
+    record_activity(
+        CreateAuditBoards(
+            timestamp=datetime.now(timezone.utc),
+            base=activity_base(election),
+            jurisdiction_id=jurisdiction.id,
+            jurisdiction_name=jurisdiction.name,
+            num_audit_boards=len(audit_boards),
+        )
+    )
 
     db_session.commit()
 
@@ -383,6 +399,17 @@ def sign_off_audit_board(
     validate_sign_off(request.get_json(), audit_board)
 
     audit_board.signed_off_at = datetime.now(timezone.utc)
+
+    assert audit_board.name
+    record_activity(
+        AuditBoardSignOff(
+            timestamp=audit_board.signed_off_at,
+            base=activity_base(election),
+            jurisdiction_id=jurisdiction.id,
+            jurisdiction_name=jurisdiction.name,
+            audit_board_name=audit_board.name,
+        )
+    )
 
     if is_round_complete(election, round):
         end_round(election, round)

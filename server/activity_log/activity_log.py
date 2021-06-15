@@ -54,6 +54,33 @@ class CalculateSampleSizes(Activity):
     pass
 
 
+@dataclass
+class JurisdictionActivity(Activity):
+    jurisdiction_id: str
+    jurisdiction_name: str
+
+
+@dataclass
+class UploadFile(JurisdictionActivity):
+    file_type: str
+    error: Optional[str]
+
+
+@dataclass
+class CreateAuditBoards(JurisdictionActivity):
+    num_audit_boards: int
+
+
+@dataclass
+class RecordResults(JurisdictionActivity):
+    pass
+
+
+@dataclass
+class AuditBoardSignOff(JurisdictionActivity):
+    audit_board_name: str
+
+
 def activity_base(election: Election) -> ActivityBase:
     user_type, user_key = get_loggedin_user(session) if session else (None, None)
     support_user_email = get_support_user(session) if session else None

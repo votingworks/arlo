@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 import io, csv
 from flask import jsonify, request
 from werkzeug.exceptions import BadRequest, Conflict
@@ -11,6 +12,7 @@ from .rounds import is_round_complete, end_round, get_current_round
 from ..util.csv_download import csv_response, jurisdiction_timestamp_name
 from ..util.jsonschema import JSONDict, validate
 from ..util.group_by import group_by
+from ..activity_log.activity_log import RecordResults, activity_base, record_activity
 
 
 def already_audited_batches(jurisdiction: Jurisdiction, round: Round) -> Query:
@@ -172,6 +174,15 @@ def record_batch_results(
                     result=result,
                 )
             )
+
+    record_activity(
+        RecordResults(
+            timestamp=datetime.now(timezone.utc),
+            base=activity_base(election),
+            jurisdiction_id=jurisdiction.id,
+            jurisdiction_name=jurisdiction.name,
+        )
+    )
 
     if is_round_complete(election, round):
         end_round(election, round)

@@ -5,22 +5,35 @@ import requests
 
 from .. import config
 from ..models import ActivityLogRecord
+from ..auth.lib import UserType
 from ..database import db_session
 from . import activity_log
 
 
+# pylint: disable=too-many-return-statements
 def slack_message(activity: activity_log.Activity):
     base = activity.base
     org_link = urljoin(config.HTTP_ORIGIN, f"/support/orgs/{base.organization_id}")
     org_context = dict(
         type="mrkdwn", text=f":flag-us: <{org_link}|{base.organization_name}>",
     )
+    user_type = {
+        UserType.AUDIT_ADMIN: "Audit admin",
+        UserType.JURISDICTION_ADMIN: "Jurisdiction admin",
+        UserType.AUDIT_BOARD: "",  # We already put "Audit Board" in every audit board's name
+        None: "",
+    }[UserType(base.user_type)]
+    user_name = (
+        activity.audit_board_name
+        if isinstance(activity, activity_log.AuditBoardSignOff)
+        else base.user_key
+    )
     user_context = dict(
         type="mrkdwn",
         text=(
-            f":technologist: Support user {base.support_user_email} logged in as audit admin {base.user_key}"
+            f":technologist: Support user {base.support_user_email} logged in as {user_type.lower()} {user_name}"
             if base.support_user_email
-            else f":technologist: Audit admin {base.user_key}"
+            else f":technologist: {user_type} {user_name}"
         ),
     )
     time_context = dict(
@@ -39,6 +52,15 @@ def slack_message(activity: activity_log.Activity):
         type="mrkdwn",
         text=f":microscope: <{audit_link}|{base.audit_name}> ({audit_type})",
     )
+
+    if isinstance(activity, activity_log.JurisdictionActivity):
+        jurisdiction_link = urljoin(
+            config.HTTP_ORIGIN, f"/support/orgs/{activity.jurisdiction_id}"
+        )
+        jurisdiction_context = dict(
+            type="mrkdwn",
+            text=f":classical_building: <{jurisdiction_link}|{activity.jurisdiction_name}> ",
+        )
 
     acting_user = base.support_user_email or base.user_key
 
@@ -129,6 +151,123 @@ def slack_message(activity: activity_log.Activity):
                 dict(
                     type="context",
                     elements=[org_context, audit_context, time_context, user_context],
+                ),
+            ],
+        )
+
+    if isinstance(activity, activity_log.UploadFile):
+        file_type = dict(
+            ballot_manifest="Ballot manifest",
+            batch_tallies="Batch tallies",
+            cvrs="CVR",
+        )[activity.file_type]
+        outcome = "failed" if activity.error else "succeeded"
+        return dict(
+            text=f"{file_type} upload {outcome} for {activity.jurisdiction_name}",
+            blocks=list(
+                filter(
+                    lambda block: block,
+                    [
+                        dict(
+                            type="section",
+                            text=dict(
+                                type="mrkdwn",
+                                text=f"*{file_type} upload {outcome} for {activity.jurisdiction_name}*",
+                            ),
+                        ),
+                        (
+                            dict(
+                                type="context",
+                                elements=[
+                                    dict(type="mrkdwn", text=f":x: {activity.error}")
+                                ],
+                            )
+                            if activity.error
+                            else None
+                        ),
+                        dict(
+                            type="context",
+                            elements=[
+                                org_context,
+                                jurisdiction_context,
+                                audit_context,
+                                time_context,
+                            ],
+                        ),
+                    ],
+                )
+            ),
+        )
+
+    if isinstance(activity, activity_log.CreateAuditBoards):
+        s = "s" if activity.num_audit_boards > 1 else ""  # pylint: disable=invalid-name
+        return dict(
+            text=f"{activity.num_audit_boards} audit board{s} created for {activity.jurisdiction_name}",
+            blocks=[
+                dict(
+                    type="section",
+                    text=dict(
+                        type="mrkdwn",
+                        text=f"*{activity.num_audit_boards} audit boards created for {activity.jurisdiction_name}*",
+                    ),
+                ),
+                dict(
+                    type="context",
+                    elements=[
+                        org_context,
+                        jurisdiction_context,
+                        audit_context,
+                        time_context,
+                        user_context,
+                    ],
+                ),
+            ],
+        )
+
+    if isinstance(activity, activity_log.RecordResults):
+        return dict(
+            text=f"Results recorded for {activity.jurisdiction_name}",
+            blocks=[
+                dict(
+                    type="section",
+                    text=dict(
+                        type="mrkdwn",
+                        text=f"*Results recorded for {activity.jurisdiction_name}*",
+                    ),
+                ),
+                dict(
+                    type="context",
+                    elements=[
+                        org_context,
+                        jurisdiction_context,
+                        audit_context,
+                        time_context,
+                        user_context,
+                    ],
+                ),
+            ],
+        )
+
+    if isinstance(activity, activity_log.AuditBoardSignOff):
+        return dict(
+            text=f"{activity.audit_board_name} in {activity.jurisdiction_name} signed off",
+            blocks=[
+                dict(
+                    type="section",
+                    text=dict(
+                        type="mrkdwn",
+                        text=f"*{activity.audit_board_name} in {activity.jurisdiction_name} signed off*",
+                    ),
+                ),
+                dict(
+                    type="context",
+                    elements=[
+                        org_context,
+                        jurisdiction_context,
+                        audit_context,
+                        time_context,
+                        user_context,
+                    ],
                 ),
             ],
         )
