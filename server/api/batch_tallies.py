@@ -16,6 +16,7 @@ from ..util.process_file import (
 )
 from ..util.csv_download import csv_response
 from ..util.csv_parse import decode_csv_file, parse_csv, CSVValueType, CSVColumnType
+from ..activity_log.activity_log import UploadFile, activity_base, record_activity
 
 BATCH_NAME = "Batch Name"
 
@@ -88,6 +89,18 @@ def process_batch_tallies_file(
         }
 
     process_file(session, file, process)
+
+    assert file.processing_started_at
+    record_activity(
+        UploadFile(
+            timestamp=file.processing_started_at,
+            base=activity_base(jurisdiction.election),
+            jurisdiction_id=jurisdiction.id,
+            jurisdiction_name=jurisdiction.name,
+            file_type="batch_tallies",
+            error=file.processing_error,
+        )
+    )
 
 
 # Raises if invalid

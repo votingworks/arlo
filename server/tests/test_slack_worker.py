@@ -128,7 +128,7 @@ def test_slack_worker_message_format(snapshot):
         election_id="test_election_id",
         audit_name="Test Audit",
         audit_type="BALLOT_COMPARISON",
-        user_type="AUDIT_ADMIN",
+        user_type="audit_admin",
         user_key="test_user@example.com",
         support_user_email=None,
     )
@@ -164,4 +164,78 @@ def test_slack_worker_message_format(snapshot):
 
     snapshot.assert_match(
         slack_worker.slack_message(activity_log.CalculateSampleSizes(timestamp, base))
+    )
+
+    base.user_type = "jurisdiction_admin"
+    snapshot.assert_match(
+        slack_worker.slack_message(
+            activity_log.UploadFile(
+                timestamp,
+                base,
+                jurisdiction_id="test_jurisdiction_id",
+                jurisdiction_name="Test Jurisdiction",
+                file_type="ballot_manifest",
+                error=None,
+            )
+        )
+    )
+    snapshot.assert_match(
+        slack_worker.slack_message(
+            activity_log.UploadFile(
+                timestamp,
+                base,
+                jurisdiction_id="test_jurisdiction_id",
+                jurisdiction_name="Test Jurisdiction",
+                file_type="cvrs",
+                error="Something went wrong",
+            )
+        )
+    )
+    snapshot.assert_match(
+        slack_worker.slack_message(
+            activity_log.UploadFile(
+                timestamp,
+                base,
+                jurisdiction_id="test_jurisdiction_id",
+                jurisdiction_name="Test Jurisdiction",
+                file_type="batch_tallies",
+                error=None,
+            )
+        )
+    )
+
+    snapshot.assert_match(
+        slack_worker.slack_message(
+            activity_log.CreateAuditBoards(
+                timestamp,
+                base,
+                jurisdiction_id="test_jurisdiction_id",
+                jurisdiction_name="Test Jurisdiction",
+                num_audit_boards=3,
+            )
+        )
+    )
+
+    snapshot.assert_match(
+        slack_worker.slack_message(
+            activity_log.RecordResults(
+                timestamp,
+                base,
+                jurisdiction_id="test_jurisdiction_id",
+                jurisdiction_name="Test Jurisdiction",
+            )
+        )
+    )
+
+    base.user_type = "audit_board"
+    snapshot.assert_match(
+        slack_worker.slack_message(
+            activity_log.AuditBoardSignOff(
+                timestamp,
+                base,
+                jurisdiction_id="test_jurisdiction_id",
+                jurisdiction_name="Test Jurisdiction",
+                audit_board_name="Audit Board #1",
+            )
+        )
     )

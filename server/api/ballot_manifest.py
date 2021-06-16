@@ -19,6 +19,7 @@ from ..util.csv_parse import decode_csv_file, parse_csv, CSVValueType, CSVColumn
 from ..audit_math.suite import HybridPair
 from .cvrs import process_cvr_file
 from .batch_tallies import process_batch_tallies_file
+from ..activity_log.activity_log import UploadFile, activity_base, record_activity
 
 logger = logging.getLogger("arlo")
 
@@ -125,6 +126,18 @@ def process_ballot_manifest_file(
                 set_total_ballots_from_manifests(contest)
 
     process_file(session, file, process)
+
+    assert file.processing_started_at
+    record_activity(
+        UploadFile(
+            timestamp=file.processing_started_at,
+            base=activity_base(jurisdiction.election),
+            jurisdiction_id=jurisdiction.id,
+            jurisdiction_name=jurisdiction.name,
+            file_type="ballot_manifest",
+            error=file.processing_error,
+        )
+    )
 
     # If CVR file already uploaded, try reprocessing it, since it depends on
     # batch names from the manifest

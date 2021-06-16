@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from typing import List, Optional
 from flask import jsonify, request
 from werkzeug.exceptions import BadRequest, Conflict
@@ -8,6 +9,7 @@ from ..models import *  # pylint: disable=wildcard-import
 from .rounds import is_round_complete, end_round, get_current_round, sampled_all_ballots
 from ..auth import restrict_access, UserType
 from ..util.jsonschema import JSONDict, validate
+from ..activity_log.activity_log import RecordResults, activity_base, record_activity
 
 OFFLINE_RESULTS_SCHEMA = {
     "type": "object",
@@ -117,6 +119,15 @@ def record_offline_results(
             for choice_id, result in results[round_contest.contest_id].items()
         ]
         db_session.add_all(jurisdiction_results)
+
+    record_activity(
+        RecordResults(
+            timestamp=datetime.now(timezone.utc),
+            base=activity_base(election),
+            jurisdiction_id=jurisdiction.id,
+            jurisdiction_name=jurisdiction.name,
+        )
+    )
 
     if is_round_complete(election, round):
         end_round(election, round)
