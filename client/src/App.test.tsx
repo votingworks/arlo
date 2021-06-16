@@ -138,7 +138,7 @@ describe('App', () => {
       const expectedCalls = [
         jaApiCalls.getUser,
         jaApiCalls.getSettings(auditSettings.batchComparisonAll),
-        jaApiCalls.getRounds,
+        jaApiCalls.getRounds([]),
         jaApiCalls.getBallotManifestFile(manifestMocks.empty),
         jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
         jaApiCalls.getCVRSfile(cvrsMocks.empty),

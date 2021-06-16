@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { api } from '../utilities'
 import { hashBy } from '../../utils/array'
-import { IRound } from './useRoundsAuditAdmin'
+import { IRound, isAuditStarted } from './useRoundsAuditAdmin'
 
 export interface IAuditBoardMember {
   name: string
@@ -64,7 +64,7 @@ const useAuditBoards = (
   useEffect(() => {
     ;(async () => {
       if (!rounds) return setAuditBoards(null)
-      if (rounds.length === 0) return setAuditBoards([])
+      if (!isAuditStarted(rounds)) return setAuditBoards([])
       const roundId = rounds[rounds.length - 1].id
       return setAuditBoards(
         await getAuditBoards(electionId, jurisdictionId, roundId)

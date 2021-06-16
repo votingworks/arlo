@@ -54,6 +54,9 @@ export const isDrawSampleComplete = (rounds: IRound[]) =>
 export const drawSampleError = (rounds: IRound[]) =>
   rounds.length > 0 && rounds[rounds.length - 1].drawSampleTask.error
 
+export const isAuditStarted = (rounds: IRound[]) =>
+  rounds.length > 0 && isDrawSampleComplete(rounds) && !drawSampleError(rounds)
+
 const useRoundsAuditAdmin = (
   electionId: string,
   refreshId?: string

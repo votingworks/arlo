@@ -140,10 +140,10 @@ export const jaApiCalls = {
       supportUser: null,
     },
   },
-  getRounds: {
+  getRounds: (rounds: IRound[]) => ({
     url: '/api/election/1/jurisdiction/jurisdiction-id-1/round',
-    response: { rounds: [] },
-  },
+    response: { rounds },
+  }),
   getBallotManifestFile: (response: IFileInfo) => ({
     url: '/api/election/1/jurisdiction/jurisdiction-id-1/ballot-manifest',
     response,

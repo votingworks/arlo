@@ -371,7 +371,7 @@ describe('Home screen', () => {
     const expectedCalls = [
       jaApiCalls.getUser,
       jaApiCalls.getSettings(auditSettings.blank),
-      jaApiCalls.getRounds,
+      jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile({ file: null, processing: null }),
       jaApiCalls.getBatchTalliesFile({ file: null, processing: null }),
       jaApiCalls.getCVRSfile({ file: null, processing: null }),
@@ -441,7 +441,7 @@ describe('Home screen', () => {
     const expectedCalls = [
       jaApiCalls.getUserWithOneElection,
       jaApiCalls.getSettings(auditSettings.blank),
-      jaApiCalls.getRounds,
+      jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile({ file: null, processing: null }),
       jaApiCalls.getBatchTalliesFile({ file: null, processing: null }),
       jaApiCalls.getCVRSfile({ file: null, processing: null }),

@@ -9,7 +9,7 @@ import { apiDownload } from '../../utilities'
 import { Inner } from '../../Atoms/Wrapper'
 import { IContest } from '../../../types'
 import { IAuditBoard } from '../useAuditBoards'
-import { IRound, drawSampleError } from '../useRoundsAuditAdmin'
+import { IRound, drawSampleError, isAuditStarted } from '../useRoundsAuditAdmin'
 import { IAuditSettings } from '../useAuditSettings'
 
 const SpacedH3 = styled(H3)`
@@ -278,7 +278,7 @@ export const JurisdictionAdminStatusBox = ({
   }>()
 
   // Audit has not started
-  if (rounds.length === 0) {
+  if (!isAuditStarted(rounds)) {
     const files: IFileInfo['processing'][] = [ballotManifest.processing]
     if (auditType === 'BATCH_COMPARISON') files.push(batchTallies.processing)
     if (auditType === 'BALLOT_COMPARISON' || auditType === 'HYBRID')
