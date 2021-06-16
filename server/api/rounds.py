@@ -1056,3 +1056,37 @@ def list_rounds_jurisdiction_admin(
     election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
 ):
     return jsonify({"rounds": [serialize_round(r) for r in election.rounds]})
+
+
+@api.route("/election/<election_id>/round/<round_id>", methods=["DELETE"])
+@restrict_access([UserType.AUDIT_ADMIN])
+def undo_create_round(election: Election, round: Round):
+    current_round = get_current_round(election)
+    if not current_round or current_round.id != round.id:
+        raise Conflict(
+            "Cannot undo starting this round because it is not the current round."
+        )
+
+    if len(list(round.audit_boards)) > 0:
+        raise Conflict(
+            "Cannot undo starting this round because some jurisdictions have already created audit boards."
+        )
+
+    db_session.delete(round)
+    # Delete any sampled ballots that were created this round (they will have no
+    # associated SampledBallotDraws, since they are deleted by cascade when
+    # deleting the round).
+    SampledBallot.query.filter(
+        SampledBallot.id.in_(
+            SampledBallot.query.join(Batch)
+            .join(Jurisdiction)
+            .filter_by(election_id=election.id)
+            .filter(not_(SampledBallot.draws.any()))
+            .with_entities(SampledBallot.id)
+            .subquery()
+        )
+    ).with_entities(SampledBallot).delete(synchronize_session=False)
+
+    db_session.commit()
+
+    return jsonify(status="ok")

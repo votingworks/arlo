@@ -557,3 +557,21 @@ def test_batch_comparison_sample_all_batches(
 
     # Every batch should get sampled exactly once
     assert len(all_batches) == sample_size
+
+
+def test_batch_comparison_undo_start_round_1(
+    client: FlaskClient, election_id: str, round_1_id: str
+):
+    rv = client.delete(f"/api/election/{election_id}/round/{round_1_id}")
+    assert_ok(rv)
+
+    rv = client.get(f"/api/election/{election_id}/round")
+    assert json.loads(rv.data) == {"rounds": []}
+
+    assert (
+        SampledBatchDraw.query.join(Batch)
+        .join(Jurisdiction)
+        .filter_by(election_id=election_id)
+        .count()
+        == 0
+    )
