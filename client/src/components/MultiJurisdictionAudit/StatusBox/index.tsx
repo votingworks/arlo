@@ -134,6 +134,7 @@ export const isSetupComplete = (
 interface IAuditAdminProps {
   rounds: IRound[]
   startNextRound: () => Promise<boolean>
+  undoRoundStart: () => Promise<boolean>
   jurisdictions: IJurisdiction[]
   contests: IContest[]
   auditSettings: IAuditSettings
@@ -143,6 +144,7 @@ interface IAuditAdminProps {
 export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
   rounds,
   startNextRound,
+  undoRoundStart,
   jurisdictions,
   contests,
   auditSettings,
@@ -193,6 +195,8 @@ export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
           `Error: ${drawSampleError(rounds)}`,
         ]}
         auditName={auditSettings.auditName}
+        buttonLabel={rounds.length === 1 ? 'Undo Audit Launch' : undefined}
+        onButtonClick={rounds.length === 1 ? undoRoundStart : undefined}
       >
         {children}
       </StatusBox>
@@ -205,9 +209,16 @@ export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
   if (!endedAt) {
     const numCompleted = jurisdictions.filter(
       ({ currentRoundStatus }) =>
-        currentRoundStatus &&
-        currentRoundStatus.status === JurisdictionRoundStatus.COMPLETE
+        currentRoundStatus!.status === JurisdictionRoundStatus.COMPLETE
     ).length
+
+    const canUndoLaunch =
+      roundNum === 1 &&
+      jurisdictions.every(
+        ({ currentRoundStatus }) =>
+          currentRoundStatus!.status !== JurisdictionRoundStatus.IN_PROGRESS
+      )
+
     return (
       <StatusBox
         headline={`Round ${roundNum} of the audit is in progress`}
@@ -216,6 +227,8 @@ export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
             ` have completed Round ${roundNum}`,
         ]}
         auditName={auditSettings.auditName}
+        buttonLabel={canUndoLaunch ? 'Undo Audit Launch' : undefined}
+        onButtonClick={canUndoLaunch ? undoRoundStart : undefined}
       >
         {children}
       </StatusBox>

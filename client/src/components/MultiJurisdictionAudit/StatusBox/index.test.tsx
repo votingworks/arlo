@@ -48,6 +48,7 @@ describe('StatusBox', () => {
           <AuditAdminStatusBox
             rounds={[]}
             startNextRound={jest.fn()}
+            undoRoundStart={jest.fn()}
             jurisdictions={[]}
             contests={[]}
             auditSettings={auditSettings.blank!}
@@ -69,6 +70,7 @@ describe('StatusBox', () => {
           <AuditAdminStatusBox
             rounds={[]}
             startNextRound={jest.fn()}
+            undoRoundStart={jest.fn()}
             jurisdictions={jurisdictionMocks.oneManifest}
             contests={[]}
             auditSettings={auditSettings.blank!}
@@ -86,6 +88,7 @@ describe('StatusBox', () => {
           <AuditAdminStatusBox
             rounds={[]}
             startNextRound={jest.fn()}
+            undoRoundStart={jest.fn()}
             jurisdictions={jurisdictionMocks.allManifests}
             contests={[]}
             auditSettings={auditSettings.blank!}
@@ -104,6 +107,7 @@ describe('StatusBox', () => {
             <AuditAdminStatusBox
               rounds={[]}
               startNextRound={jest.fn()}
+              undoRoundStart={jest.fn()}
               jurisdictions={jurisdictionMocks.allManifestsSomeCVRs}
               contests={[]}
               auditSettings={
@@ -125,6 +129,7 @@ describe('StatusBox', () => {
             <AuditAdminStatusBox
               rounds={[]}
               startNextRound={jest.fn()}
+              undoRoundStart={jest.fn()}
               jurisdictions={jurisdictionMocks.allManifestsWithCVRs}
               contests={[]}
               auditSettings={
@@ -147,6 +152,7 @@ describe('StatusBox', () => {
           <AuditAdminStatusBox
             rounds={[]}
             startNextRound={jest.fn()}
+            undoRoundStart={jest.fn()}
             jurisdictions={jurisdictionMocks.twoManifestsOneTallies}
             contests={[]}
             auditSettings={auditSettings.blankBatch}
@@ -164,6 +170,7 @@ describe('StatusBox', () => {
           <AuditAdminStatusBox
             rounds={[]}
             startNextRound={jest.fn()}
+            undoRoundStart={jest.fn()}
             jurisdictions={jurisdictionMocks.allManifestsAllTallies}
             contests={[]}
             auditSettings={auditSettings.blankBatch}
@@ -181,6 +188,7 @@ describe('StatusBox', () => {
           <AuditAdminStatusBox
             rounds={[]}
             startNextRound={jest.fn()}
+            undoRoundStart={jest.fn()}
             jurisdictions={jurisdictionMocks.allManifests}
             contests={contestMocks.filledTargeted.contests}
             auditSettings={auditSettings.all}
@@ -192,12 +200,31 @@ describe('StatusBox', () => {
       screen.getByText('3 of 3 jurisdictions have completed file uploads.')
     })
 
+    it('renders just launched round one state', () => {
+      render(
+        <Router>
+          <AuditAdminStatusBox
+            rounds={roundMocks.singleIncomplete}
+            startNextRound={jest.fn()}
+            undoRoundStart={jest.fn()}
+            jurisdictions={jurisdictionMocks.noneStarted}
+            contests={contestMocks.filledTargeted.contests}
+            auditSettings={auditSettings.all}
+          />
+        </Router>
+      )
+      screen.getByText('Round 1 of the audit is in progress')
+      screen.getByText('1 of 3 jurisdictions have completed Round 1')
+      screen.getByRole('button', { name: 'Undo Audit Launch' })
+    })
+
     it('renders one of two jurisdictions done round one state', () => {
       render(
         <Router>
           <AuditAdminStatusBox
             rounds={roundMocks.singleIncomplete}
             startNextRound={jest.fn()}
+            undoRoundStart={jest.fn()}
             jurisdictions={jurisdictionMocks.oneComplete}
             contests={contestMocks.filledTargeted.contests}
             auditSettings={auditSettings.all}
@@ -206,6 +233,7 @@ describe('StatusBox', () => {
       )
       screen.getByText('Round 1 of the audit is in progress')
       screen.getByText('1 of 3 jurisdictions have completed Round 1')
+      expect(screen.queryByRole('button')).not.toBeInTheDocument()
     })
 
     it('renders round complete, need another round state', () => {
@@ -214,6 +242,7 @@ describe('StatusBox', () => {
           <AuditAdminStatusBox
             rounds={roundMocks.needAnother}
             startNextRound={jest.fn()}
+            undoRoundStart={jest.fn()}
             jurisdictions={jurisdictionMocks.allComplete}
             contests={contestMocks.filledTargeted.contests}
             auditSettings={auditSettings.all}
@@ -234,6 +263,7 @@ describe('StatusBox', () => {
           <AuditAdminStatusBox
             rounds={roundMocks.needAnother}
             startNextRound={startNextRoundMock}
+            undoRoundStart={jest.fn()}
             jurisdictions={jurisdictionMocks.allComplete}
             contests={contestMocks.filledTargeted.contests}
             auditSettings={auditSettings.all}
@@ -256,6 +286,7 @@ describe('StatusBox', () => {
           <AuditAdminStatusBox
             rounds={roundMocks.singleComplete}
             startNextRound={jest.fn()}
+            undoRoundStart={jest.fn()}
             jurisdictions={jurisdictionMocks.allComplete}
             contests={contestMocks.filledTargeted.contests}
             auditSettings={auditSettings.all}
@@ -274,6 +305,7 @@ describe('StatusBox', () => {
           <AuditAdminStatusBox
             rounds={roundMocks.singleComplete}
             startNextRound={jest.fn()}
+            undoRoundStart={jest.fn()}
             jurisdictions={jurisdictionMocks.allComplete}
             contests={contestMocks.filledTargeted.contests}
             auditSettings={auditSettings.all}

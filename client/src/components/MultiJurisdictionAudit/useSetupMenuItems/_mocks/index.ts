@@ -559,6 +559,47 @@ export const jurisdictionMocks: { [key: string]: IJurisdiction[] } = {
     },
   ],
   // In progress - Batch comparison (can also be used for ballot polling)
+  noneStarted: [
+    {
+      id: 'jurisdiction-id-1',
+      name: 'Jurisdiction 1',
+      ballotManifest: manifestMocks.processed,
+      batchTallies: talliesMocks.processed,
+      currentRoundStatus: {
+        status: JurisdictionRoundStatus.NOT_STARTED,
+        numUniqueAudited: 0,
+        numUnique: 10,
+        numSamplesAudited: 0,
+        numSamples: 11,
+      },
+    },
+    {
+      id: 'jurisdiction-id-2',
+      name: 'Jurisdiction 2',
+      ballotManifest: manifestMocks.processed,
+      batchTallies: talliesMocks.processed,
+      currentRoundStatus: {
+        status: JurisdictionRoundStatus.NOT_STARTED,
+        numUniqueAudited: 0,
+        numUnique: 20,
+        numSamplesAudited: 0,
+        numSamples: 22,
+      },
+    },
+    {
+      id: 'jurisdiction-id-3',
+      name: 'Jurisdiction 3',
+      ballotManifest: manifestMocks.processed,
+      batchTallies: talliesMocks.processed,
+      currentRoundStatus: {
+        status: JurisdictionRoundStatus.COMPLETE,
+        numUniqueAudited: 0,
+        numUnique: 0,
+        numSamplesAudited: 0,
+        numSamples: 0,
+      },
+    },
+  ],
   oneComplete: [
     {
       id: 'jurisdiction-id-1',
