@@ -25,6 +25,7 @@ import useContests from './useContests'
 import useRoundsAuditAdmin, {
   isDrawSampleComplete,
   drawSampleError,
+  isAuditStarted,
 } from './useRoundsAuditAdmin'
 import useAuditSettingsJurisdictionAdmin from './RoundManagement/useAuditSettingsJurisdictionAdmin'
 import H2Title from '../Atoms/H2Title'
@@ -205,7 +206,7 @@ export const JurisdictionAdminView: React.FC = () => {
   )
     return null // Still loading
 
-  if (!rounds.length) {
+  if (!isAuditStarted(rounds)) {
     return (
       <Wrapper>
         <JurisdictionAdminStatusBox

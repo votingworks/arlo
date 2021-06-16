@@ -406,7 +406,7 @@ describe('JA setup', () => {
     const expectedCalls = [
       jaApiCalls.getUser,
       jaApiCalls.getSettings(auditSettings.batchComparisonAll),
-      jaApiCalls.getRounds,
+      jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile(manifestMocks.empty),
       jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
       jaApiCalls.getCVRSfile(cvrsMocks.empty),
@@ -422,7 +422,7 @@ describe('JA setup', () => {
     const expectedCalls = [
       jaApiCalls.getUser,
       jaApiCalls.getSettings(auditSettings.batchComparisonAll),
-      jaApiCalls.getRounds,
+      jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile(manifestMocks.empty),
       jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
       jaApiCalls.getCVRSfile(cvrsMocks.empty),
@@ -463,7 +463,7 @@ describe('JA setup', () => {
     const expectedCalls = [
       jaApiCalls.getUser,
       jaApiCalls.getSettings(auditSettings.batchComparisonAll),
-      jaApiCalls.getRounds,
+      jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile(manifestMocks.empty),
       jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
       jaApiCalls.getCVRSfile(cvrsMocks.empty),
@@ -510,7 +510,7 @@ describe('JA setup', () => {
     const expectedCalls = [
       jaApiCalls.getUser,
       jaApiCalls.getSettings(auditSettings.batchComparisonAll),
-      jaApiCalls.getRounds,
+      jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
       jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
       jaApiCalls.getCVRSfile(cvrsMocks.empty),
@@ -544,7 +544,7 @@ describe('JA setup', () => {
     const expectedCalls = [
       jaApiCalls.getUser,
       jaApiCalls.getSettings(auditSettings.ballotComparisonAll),
-      jaApiCalls.getRounds,
+      jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
       jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
       jaApiCalls.getCVRSfile(cvrsMocks.empty),
@@ -578,7 +578,7 @@ describe('JA setup', () => {
     const expectedCalls = [
       jaApiCalls.getUser,
       jaApiCalls.getSettings(auditSettings.batchComparisonAll),
-      jaApiCalls.getRounds,
+      jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile(manifestMocks.empty),
       jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
       jaApiCalls.getCVRSfile(cvrsMocks.empty),
@@ -617,7 +617,7 @@ describe('JA setup', () => {
     const expectedCalls = [
       jaApiCalls.getUser,
       jaApiCalls.getSettings(auditSettings.batchComparisonAll),
-      jaApiCalls.getRounds,
+      jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
       jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
       jaApiCalls.getCVRSfile(cvrsMocks.empty),
@@ -650,6 +650,38 @@ describe('JA setup', () => {
 
       userEvent.click(manifestButton)
       await screen.findByText('Current file:')
+    })
+  })
+
+  it('stays on the file upload screen when sample is being drawn', async () => {
+    const expectedCalls = [
+      jaApiCalls.getUser,
+      jaApiCalls.getSettings(auditSettings.all),
+      jaApiCalls.getRounds(roundMocks.drawSampleInProgress),
+      jaApiCalls.getBallotManifestFile(manifestMocks.processed),
+      jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
+      jaApiCalls.getCVRSfile(cvrsMocks.empty),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderView()
+      await screen.findByRole('heading', { name: 'Audit Source Data' })
+      screen.getByText('The audit has not started.')
+    })
+  })
+
+  it('stays on the file upload screen when drawing sample errors', async () => {
+    const expectedCalls = [
+      jaApiCalls.getUser,
+      jaApiCalls.getSettings(auditSettings.all),
+      jaApiCalls.getRounds(roundMocks.drawSampleErrored),
+      jaApiCalls.getBallotManifestFile(manifestMocks.processed),
+      jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
+      jaApiCalls.getCVRSfile(cvrsMocks.empty),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderView()
+      await screen.findByRole('heading', { name: 'Audit Source Data' })
+      screen.getByText('The audit has not started.')
     })
   })
 })
