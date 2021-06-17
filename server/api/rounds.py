@@ -180,7 +180,7 @@ def samples_not_found_by_round(contest: Contest) -> Dict[str, int]:
             .join(Jurisdiction)
             .join(Jurisdiction.contests)
             .filter_by(id=contest.id)
-            .join(SampledBallotDraw)
+            .join(SampledBallot.draws)
             .group_by(SampledBallotDraw.round_id)
             .values(SampledBallotDraw.round_id, func.count(SampledBallot.id.distinct()))
         )
@@ -447,12 +447,10 @@ def calculate_risk_measurements(election: Election, round: Round):
 
         if election.audit_type == AuditType.BALLOT_POLLING:
             assert election.audit_math_type is not None
-            print(samples_not_found_by_round(contest))
             p_values, is_complete = ballot_polling.compute_risk(
                 election.risk_limit,
                 sampler_contest.from_db_contest(contest),
                 contest_results_by_round(contest) or {},
-                # {},
                 samples_not_found_by_round(contest),
                 AuditMathType(election.audit_math_type),
                 round_sizes(contest),

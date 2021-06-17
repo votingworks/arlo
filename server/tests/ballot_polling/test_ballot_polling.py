@@ -1,7 +1,7 @@
 from flask.testing import FlaskClient
 
-from ...models import *
-from ..helpers import *
+from ...models import *  # pylint: disable=wildcard-import
+from ..helpers import *  # pylint: disable=wildcard-import
 
 
 def test_not_found_ballots(
@@ -9,7 +9,7 @@ def test_not_found_ballots(
     election_id: str,
     contest_ids: List[str],
     round_1_id: str,
-    audit_board_round_1_ids: List[str],
+    audit_board_round_1_ids: List[str],  # pylint: disable=unused-argument
     snapshot,
 ):
     round = Round.query.get(round_1_id)
@@ -18,7 +18,7 @@ def test_not_found_ballots(
 
     # First, audit all ballots for the winner and see what the p-value is
     ballot_draws = SampledBallotDraw.query.filter_by(round_id=round_1_id).all()
-    for draw in ballot_draws:
+    for i, draw in enumerate(ballot_draws):
         audit_ballot(
             draw.sampled_ballot,
             targeted_contest.id,
@@ -29,7 +29,7 @@ def test_not_found_ballots(
             draw.sampled_ballot,
             opportunistic_contest.id,
             Interpretation.VOTE,
-            [opportunistic_contest.choices[1]],
+            [opportunistic_contest.choices[i % 2]],
         )
     end_round(round.election, round)
     db_session.commit()
@@ -58,7 +58,6 @@ def test_not_found_ballots(
 
     # Not found ballots should be counted as votes for the losers, which should
     # increase the p-value
-    print(all_audited_p_values, not_found_p_values)
     assert (
         all_audited_p_values[targeted_contest.id]
         < not_found_p_values[targeted_contest.id]
