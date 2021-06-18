@@ -525,7 +525,7 @@ def test_ballot_polling_not_found_ballots(snapshot):
 
     contest = Contest("Contest", contest_data)
 
-    sample_results = {"round1": {"cand1": 50, "cand2": 20, "cand3": 10, "cand4": 10}}
+    sample_results = {"round1": {"cand1": 50, "cand2": 20, "cand3": 10, "cand4": 12}}
 
     all_audited_p_values, _ = ballot_polling.compute_risk(
         RISK_LIMIT, contest, sample_results, {"round1": 0}, AuditMathType.BRAVO, {}
@@ -540,7 +540,7 @@ def test_ballot_polling_not_found_ballots(snapshot):
         )
         # Should add the number of not found votes for each loser
         expected_sample_results = {
-            "round1": {"cand1": 50, "cand2": 20, "cand3": 12, "cand4": 12}
+            "round1": {"cand1": 50, "cand2": 20, "cand3": 12, "cand4": 14}
         }
         mock_bravo_compute_risk.assert_called_with(
             RISK_LIMIT, contest, expected_sample_results
