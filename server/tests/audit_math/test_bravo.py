@@ -1,6 +1,7 @@
 # pylint: disable=invalid-name
 from decimal import Decimal
 import math
+from unittest.mock import patch
 import pytest
 
 from ...audit_math import bravo
@@ -514,16 +515,17 @@ def test_tied_contest():
 def test_ballot_polling_not_found_ballots(snapshot):
     contest_data = {
         "cand1": 500,
-        "cand2": 400,
+        "cand2": 200,
         "cand3": 100,
+        "cand4": 100,
         "ballots": 1000,
         "numWinners": 2,
-        "votesAllowed": 1,
+        "votesAllowed": 2,
     }
 
     contest = Contest("Contest", contest_data)
 
-    sample_results = {"round1": {"cand1": 50, "cand2": 40, "cand3": 10}}
+    sample_results = {"round1": {"cand1": 50, "cand2": 20, "cand3": 10, "cand4": 10}}
 
     all_audited_p_values, _ = ballot_polling.compute_risk(
         RISK_LIMIT, contest, sample_results, {"round1": 0}, AuditMathType.BRAVO, {}
@@ -531,6 +533,18 @@ def test_ballot_polling_not_found_ballots(snapshot):
     not_found_p_values, _ = ballot_polling.compute_risk(
         RISK_LIMIT, contest, sample_results, {"round1": 1}, AuditMathType.BRAVO, {}
     )
+
+    with patch.object(bravo, "compute_risk") as mock_bravo_compute_risk:
+        ballot_polling.compute_risk(
+            RISK_LIMIT, contest, sample_results, {"round1": 2}, AuditMathType.BRAVO, {}
+        )
+        # Should add the number of not found votes for each loser
+        expected_sample_results = {
+            "round1": {"cand1": 50, "cand2": 20, "cand3": 12, "cand4": 12}
+        }
+        mock_bravo_compute_risk.assert_called_with(
+            RISK_LIMIT, contest, expected_sample_results
+        )
 
     for candidate_pair, all_audited_p_value in all_audited_p_values.items():
         assert all_audited_p_value < not_found_p_values[candidate_pair]
