@@ -18,6 +18,7 @@ from ..api.rounds import (
     cvrs_for_contest,
     sampled_ballot_interpretations_to_cvrs,
     sampled_all_ballots,
+    samples_not_found_by_round,
 )
 from ..api.ballot_manifest import hybrid_contest_total_ballots
 from ..api.cvrs import hybrid_contest_choice_vote_counts
@@ -310,8 +311,17 @@ def audit_board_rows(election: Election):
     return rows
 
 
-def pretty_choice_votes(choice_votes: Dict[str, int]) -> str:
-    return "; ".join([f"{name}: {votes}" for name, votes in choice_votes.items()])
+def pretty_choice_votes(
+    choice_votes: Dict[str, int], not_found: Optional[int] = None
+) -> str:
+    return "; ".join(
+        [f"{name}: {votes}" for name, votes in choice_votes.items()]
+        + (
+            [f"Ballots not found (counted for loser): {not_found}"]
+            if not_found is not None
+            else []
+        )
+    )
 
 
 def round_rows(election: Election):
@@ -356,6 +366,11 @@ def round_rows(election: Election):
             )
             for choice in contest.choices
         }
+        not_found_ballots = (
+            samples_not_found_by_round(contest).get(round.id, 0)
+            if election.audit_type == AuditType.BALLOT_POLLING and election.online
+            else None
+        )
 
         if election.audit_type == AuditType.HYBRID:
             # In hybrid audits, round contest results only store vote counts
@@ -387,7 +402,7 @@ def round_rows(election: Election):
                 pretty_pvalue(round_contest.end_p_value),
                 isoformat(round.created_at),
                 isoformat(round.ended_at),
-                pretty_choice_votes(total_choice_votes),
+                pretty_choice_votes(total_choice_votes, not_found=not_found_ballots),
             ]
             + (
                 [

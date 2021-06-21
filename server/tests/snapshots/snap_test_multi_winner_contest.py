@@ -30,8 +30,8 @@ Jurisdiction Name,Audit Board Name,Member 1 Name,Member 1 Affiliation,Member 2 N
 \r
 ######## ROUNDS ########\r
 Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes\r
-1,Contest 1,Targeted,48,No,1.0,DATETIME,DATETIME,candidate 1: 24; candidate 2: 14; candidate 3: 10\r
-2,Contest 1,Targeted,72,Yes,0.0042194626,DATETIME,DATETIME,candidate 1: 50; candidate 2: 20; candidate 3: 2\r
+1,Contest 1,Targeted,48,No,1.0,DATETIME,DATETIME,candidate 1: 24; candidate 2: 14; candidate 3: 10; Ballots not found (counted for loser): 0\r
+2,Contest 1,Targeted,72,Yes,0.0042194626,DATETIME,DATETIME,candidate 1: 50; candidate 2: 20; candidate 3: 2; Ballots not found (counted for loser): 0\r
 \r
 ######## SAMPLED BALLOTS ########\r
 Jurisdiction Name,Batch Name,Ballot Position,Ticket Numbers: Contest 1,Audited?,Audit Result: Contest 1\r

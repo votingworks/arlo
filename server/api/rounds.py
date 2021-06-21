@@ -164,6 +164,28 @@ def contest_results_by_round(contest: Contest) -> Optional[Dict[str, Dict[str, i
     return results_by_round if len(results_by_round) > 0 else None
 
 
+def samples_not_found_by_round(contest: Contest) -> Dict[str, int]:
+    if contest.is_targeted:
+        return dict(
+            SampledBallotDraw.query.filter_by(contest_id=contest.id)
+            .join(SampledBallot)
+            .filter_by(status=BallotStatus.NOT_FOUND)
+            .group_by(SampledBallotDraw.round_id)
+            .values(SampledBallotDraw.round_id, func.count())
+        )
+    else:
+        return dict(
+            SampledBallot.query.filter_by(status=BallotStatus.NOT_FOUND)
+            .join(Batch)
+            .join(Jurisdiction)
+            .join(Jurisdiction.contests)
+            .filter_by(id=contest.id)
+            .join(SampledBallot.draws)
+            .group_by(SampledBallotDraw.round_id)
+            .values(SampledBallotDraw.round_id, func.count(SampledBallot.id.distinct()))
+        )
+
+
 # { batch_key: { contest_id: { choice_id: votes }}}
 BatchTallies = Dict[Tuple[str, str], Dict[str, Dict[str, int]]]
 
@@ -429,6 +451,7 @@ def calculate_risk_measurements(election: Election, round: Round):
                 election.risk_limit,
                 sampler_contest.from_db_contest(contest),
                 contest_results_by_round(contest) or {},
+                samples_not_found_by_round(contest),
                 AuditMathType(election.audit_math_type),
                 round_sizes(contest),
             )

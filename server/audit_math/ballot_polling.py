@@ -52,9 +52,18 @@ def compute_risk(
     risk_limit: int,
     contest: Contest,
     sample_results: Dict[str, Dict[str, int]],
+    samples_not_found: Dict[str, int],
     math_type: AuditMathType,
     round_sizes: Dict[int, int],
 ) -> Tuple[Dict[Tuple[str, str], float], bool]:
+    sample_results = {  # Make a copy so we don't mutate the original results
+        round_id: dict(round_results)
+        for round_id, round_results in sample_results.items()
+    }
+    # When a sampled ballot can't be found, count it as a vote for every loser
+    for round_id, num_not_found in samples_not_found.items():
+        for loser in contest.losers:
+            sample_results[round_id][loser] += num_not_found
 
     if math_type == AuditMathType.MINERVA:
         return minerva.compute_risk(risk_limit, contest, sample_results, round_sizes)
