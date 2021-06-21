@@ -22,10 +22,7 @@ const ConfirmLaunch = ({
       title="Are you sure you want to launch the audit?"
       isOpen={isOpen}
     >
-      <div className={Classes.DIALOG_BODY}>
-        <p>This action cannot be undone</p>
-        {message && <p>{message}</p>}
-      </div>
+      <div className={Classes.DIALOG_BODY}>{message && <p>{message}</p>}</div>
       <div className={Classes.DIALOG_FOOTER}>
         <div className={Classes.DIALOG_FOOTER_ACTIONS}>
           <FormButton disabled={isSubmitting} onClick={handleClose}>
