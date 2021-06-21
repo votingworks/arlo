@@ -180,10 +180,10 @@ snapshots["test_set_contest_metadata_on_manifest_and_cvr_upload 1"] = {
 
 snapshots["test_set_contest_metadata_on_manifest_and_cvr_upload 2"] = {
     "choices": [
-        {"name": "Choice 2-1", "num_votes": 16},
-        {"name": "Choice 2-2", "num_votes": 8},
-        {"name": "Choice 2-3", "num_votes": 8},
+        {"name": "Choice 2-1", "num_votes": 19},
+        {"name": "Choice 2-2", "num_votes": 9},
+        {"name": "Choice 2-3", "num_votes": 10},
     ],
-    "total_ballots_cast": 21,
+    "total_ballots_cast": 24,
     "votes_allowed": 2,
 }
