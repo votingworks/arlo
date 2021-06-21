@@ -53,9 +53,9 @@ def test_batch_tallies_upload(
     )
     batch_tallies_file = (
         b"Batch Name,candidate 1,candidate 2,candidate 3\n"
+        b"Batch 3,3,30,300\n"
         b"Batch 1,1,10,100\n"
         b"Batch 2,2,20,200\n"
-        b"Batch 3,3,30,300\n"
     )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
@@ -474,9 +474,9 @@ def test_batch_tallies_too_many_tallies(
             "batchTallies": (
                 io.BytesIO(
                     b"Batch Name,candidate 1,candidate 2,candidate 3\n"
+                    b"Batch 3,3,30,300\n"
                     b"Batch 1,300,10,100\n"
                     b"Batch 2,2,20,200\n"
-                    b"Batch 3,3,30,300\n"
                 ),
                 "batchTallies.csv",
             )
@@ -631,9 +631,9 @@ def test_batch_tallies_reprocess_after_manifest_reupload(
             "batchTallies": (
                 io.BytesIO(
                     b"Batch Name,candidate 1,candidate 2,candidate 3\n"
+                    b"Batch 3,3,30,300\n"
                     b"Batch 1,1,10,100\n"
                     b"Batch 2,2,20,200\n"
-                    b"Batch 3,3,30,300\n"
                 ),
                 "batchTallies.csv",
             )
