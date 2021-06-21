@@ -1,4 +1,5 @@
 # pylint: disable=stop-iteration-return
+from collections import defaultdict
 from enum import Enum
 from typing import List, Iterator, Dict, Any, NamedTuple, Tuple
 import csv as py_csv
@@ -52,9 +53,11 @@ def parse_csv(csv_string: str, columns: List[CSVColumnType]) -> CSVDictIterator:
     dict_csv = reject_total_rows(dict_csv)
     dict_csv = validate_and_parse_values(dict_csv, columns)
     dict_csv = reject_duplicate_values(dict_csv, columns)
-    # Filter out empty rows last so we can get accurate row numbers in all the
-    # other checkers
+    # Filter out empty rows towards the end so we can get accurate row numbers
+    # in all the other checkers
     dict_csv = skip_empty_rows(dict_csv)
+    dict_csv = reject_final_total_row(dict_csv, columns)
+
     return dict_csv
 
 
@@ -258,13 +261,36 @@ def reject_duplicate_values(
         yield row
 
 
+TOTAL_REGEX = re.compile(r"(^|[^a-zA-Z])(sub)?totals?($|[^a-zA-Z])", re.IGNORECASE)
+
+
 def reject_total_rows(csv: CSVDictIterator) -> CSVDictIterator:
     for r, row in enumerate(csv):  # pylint: disable=invalid-name
         for value in row.values():
-            if value.lower() in ["total", "totals", "total ballots", "county totals"]:
-                raise CSVParseError(f"Remove total row (row {r+2})")
-
+            if TOTAL_REGEX.search(value):
+                raise CSVParseError(
+                    f"It looks like you might have a total row (row {r+2})."
+                    " Please remove this row from the CSV."
+                )
         yield row
+
+
+def reject_final_total_row(csv: CSVDictIterator, columns: List[CSVColumnType]):
+    column_values = defaultdict(list)
+
+    for row in csv:
+        for column in columns:
+            value = row.get(column.name)
+            if column.value_type == CSVValueType.NUMBER and value is not None:
+                column_values[column.name].append(value)
+        yield row
+
+    for values in column_values.values():
+        if sum(values[:-1]) == values[-1]:
+            raise CSVParseError(
+                "It looks like the last row in the CSV might be a total row."
+                " Please remove this row from the CSV."
+            )
 
 
 def convert_rows_to_dicts(csv: CSVIterator) -> CSVDictIterator:
