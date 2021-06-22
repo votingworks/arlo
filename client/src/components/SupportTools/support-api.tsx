@@ -28,6 +28,7 @@ export interface IElectionBase {
     | 'BALLOT_COMPARISON'
     | 'BATCH_COMPARISON'
     | 'HYBRID'
+  online: boolean
 }
 
 export interface IAuditAdmin {
@@ -44,8 +45,10 @@ export interface IJurisdictionBase {
 }
 
 export interface IJurisdiction extends IJurisdictionBase {
+  election: IElectionBase
   jurisdictionAdmins: IJurisdictionAdmin[]
   auditBoards: IAuditBoard[]
+  recordedResultsAt: string
 }
 
 export interface IJurisdictionAdmin {
@@ -157,6 +160,28 @@ export const useReopenAuditBoard = () => {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return useMutation<any, Error, any>(reopenAuditBoard, {
+    onSuccess: (_data, variables) =>
+      queryClient.invalidateQueries([
+        'jurisdictions',
+        variables.jurisdictionId,
+      ]),
+  })
+}
+
+export const useClearOfflineResults = () => {
+  const clearOfflineResults = async ({
+    jurisdictionId,
+  }: {
+    jurisdictionId: string
+  }) =>
+    fetchApi(`/api/support/jurisdictions/${jurisdictionId}/results`, {
+      method: 'DELETE',
+    })
+
+  const queryClient = useQueryClient()
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return useMutation<any, Error, any>(clearOfflineResults, {
     onSuccess: (_data, variables) =>
       queryClient.invalidateQueries([
         'jurisdictions',
