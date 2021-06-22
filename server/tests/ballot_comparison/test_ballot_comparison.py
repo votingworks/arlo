@@ -177,7 +177,8 @@ def test_set_contest_metadata_on_manifest_and_cvr_upload(
                 io.BytesIO(
                     b"Tabulator,Batch Name,Number of Ballots\n"
                     b"TABULATOR1,BATCH1,3\n"
-                    b"TABULATOR1,BATCH2,3"
+                    b"TABULATOR1,BATCH2,3\n"
+                    b"TABULATOR2,BATCH1,3"
                 ),
                 "manifest.csv",
             )
@@ -186,7 +187,7 @@ def test_set_contest_metadata_on_manifest_and_cvr_upload(
     assert_ok(rv)
     bgcompute_update_ballot_manifest_file(election_id)
 
-    new_cvr = "\n".join(TEST_CVRS.splitlines()[:7])
+    new_cvr = "\n".join(TEST_CVRS.splitlines()[:10])
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
         data={"cvrs": (io.BytesIO(new_cvr.encode()), "cvrs.csv",)},

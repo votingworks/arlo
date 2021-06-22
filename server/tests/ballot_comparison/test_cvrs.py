@@ -607,9 +607,9 @@ def test_cvr_reprocess_after_manifest_reupload(
             "manifest": (
                 io.BytesIO(
                     b"Tabulator,Batch Name,Number of Ballots\n"
+                    b"TABULATOR2,BATCH2,6\n"
                     b"TABULATOR1,BATCH1,3\n"
-                    b"TABULATOR1,BATCH2,3\n"
-                    b"TABULATOR2,BATCH2,6"
+                    b"TABULATOR1,BATCH2,3"
                 ),
                 "manifest.csv",
             )

@@ -337,6 +337,7 @@ def test_parse_csv_total_row():
         "Total Ballots",
         "total ballots",
         "COUNTY TOTALS",
+        "subtotal",
     ]:
         with pytest.raises(CSVParseError) as error:
             list(
@@ -350,7 +351,29 @@ def test_parse_csv_total_row():
                     BALLOT_MANIFEST_COLUMNS,
                 )
             )
-    assert str(error.value) == "Remove total row (row 4)"
+        assert (
+            str(error.value)
+            == "It looks like you might have a total row (row 4). Please remove this row from the CSV."
+        )
+
+    with pytest.raises(CSVParseError) as error:
+        list(
+            parse_csv(
+                (
+                    "Batch Name,Number of Ballots\n"
+                    "Batch A,20\n"
+                    "Batch B,30\n"
+                    "Batch C,40\n"
+                    "XXX,90\n"
+                    ","
+                ),
+                BALLOT_MANIFEST_COLUMNS,
+            )
+        )
+    assert (
+        str(error.value)
+        == "It looks like the last row in the CSV might be a total row. Please remove this row from the CSV."
+    )
 
 
 # Cases where we are lenient
@@ -628,7 +651,7 @@ Center Twp,,,180
 91-FERGUSON NORTH CENTRAL,373
 Totals,"32,990"
 """,
-        "Remove total row (row 89)",
+        "It looks like you might have a total row (row 89). Please remove this row from the CSV.",
         BALLOT_MANIFEST_COLUMNS,
     ),
 ]
