@@ -90,7 +90,6 @@ describe('timers', () => {
       aaApiCalls.getUser,
       ...loadAfterLaunch,
       ...loadAfterLaunch,
-      ...loadAfterLaunch,
     ]
     await withMockFetch(expectedCalls, async () => {
       renderWithRoute('/election/1/progress', <AuditAdminViewWithAuth />)

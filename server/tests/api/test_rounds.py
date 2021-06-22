@@ -336,3 +336,82 @@ def test_rounds_bad_sample_sizes(
         assert json.loads(rv.data) == {
             "errors": [{"message": expected_error, "errorType": "Bad Request",}]
         }
+
+
+def test_undo_start_round_1(client: FlaskClient, election_id: str, round_1_id: str):
+    rv = client.delete(f"/api/election/{election_id}/round/{round_1_id}")
+    assert_ok(rv)
+
+    rv = client.get(f"/api/election/{election_id}/round")
+    assert json.loads(rv.data) == {"rounds": []}
+
+    assert (
+        SampledBallot.query.join(Batch)
+        .join(Jurisdiction)
+        .filter_by(election_id=election_id)
+        .count()
+        == 0
+    )
+    assert (
+        SampledBallotDraw.query.join(SampledBallot)
+        .join(Batch)
+        .join(Jurisdiction)
+        .filter_by(election_id=election_id)
+        .count()
+        == 0
+    )
+
+
+def test_undo_start_round_1_with_audit_boards(
+    client: FlaskClient,
+    election_id: str,
+    round_1_id: str,
+    audit_board_round_1_ids: List[str],  # pylint: disable=unused-argument
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.delete(f"/api/election/{election_id}/round/{round_1_id}")
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "message": "Cannot undo starting this round because some jurisdictions have already created audit boards.",
+                "errorType": "Conflict",
+            }
+        ]
+    }
+
+
+def test_undo_start_round_2(
+    client: FlaskClient, election_id: str, round_1_id: str, round_2_id: str
+):
+    rv = client.delete(f"/api/election/{election_id}/round/{round_1_id}")
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "message": "Cannot undo starting this round because it is not the current round.",
+                "errorType": "Conflict",
+            }
+        ]
+    }
+
+    rv = client.delete(f"/api/election/{election_id}/round/{round_2_id}")
+    assert_ok(rv)
+
+    rv = client.get(f"/api/election/{election_id}/round")
+    rounds = json.loads(rv.data)["rounds"]
+    assert len(rounds) == 1
+    assert rounds[0]["id"] == round_1_id
+
+    sampled_ballots = (
+        SampledBallot.query.join(Batch)
+        .join(Jurisdiction)
+        .filter_by(election_id=election_id)
+        .all()
+    )
+    assert len(sampled_ballots) > 0
+    for ballot in sampled_ballots:
+        assert len(ballot.draws) > 0
+        assert all(draw.round_id == round_1_id for draw in ballot.draws)
+
+    assert SampledBallotDraw.query.filter_by(round_id=round_2_id).count() == 0
