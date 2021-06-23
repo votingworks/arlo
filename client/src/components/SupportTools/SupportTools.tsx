@@ -36,14 +36,15 @@ import {
 } from './support-api'
 import { useConfirm, Confirm } from '../Atoms/Confirm'
 
-const queryClient = new QueryClient(
-  // Turn off query retries in test so we can mock effectively
-  process.env.NODE_ENV === 'test'
-    ? {
-        defaultOptions: { queries: { retry: false } },
-      }
-    : {}
-)
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      // Turn off query retries in test so we can mock effectively
+      retry: process.env.NODE_ENV === 'test' ? false : undefined,
+      onError: error => toast.error((error as Error).message),
+    },
+  },
+})
 
 const SupportTools = () => {
   const auth = useAuthDataContext()
@@ -114,11 +115,7 @@ const Organizations = () => {
     name: string
   }>()
 
-  if (organizations.isLoading || organizations.isIdle) return null
-  if (organizations.isError) {
-    toast.error(organizations.error.message)
-    return null
-  }
+  if (!organizations.isSuccess) return null
 
   const onSubmitCreateOrganization = async ({ name }: { name: string }) => {
     try {
@@ -191,11 +188,7 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
 
   const { register, handleSubmit, reset, formState } = useForm<IAuditAdmin>()
 
-  if (organization.isLoading || organization.isIdle) return null
-  if (organization.isError) {
-    toast.error(organization.error.message)
-    return null
-  }
+  if (!organization.isSuccess) return null
 
   const onSubmitCreateAuditAdmin = async (auditAdmin: IAuditAdmin) => {
     try {
@@ -283,11 +276,7 @@ const prettyAuditType = (auditType: IElection['auditType']) =>
 const Audit = ({ electionId }: { electionId: string }) => {
   const election = useElection(electionId)
 
-  if (election.isLoading || election.isIdle) return null
-  if (election.isError) {
-    toast.error(election.error.message)
-    return null
-  }
+  if (!election.isSuccess) return null
 
   const { auditName, auditType, jurisdictions } = election.data
 
@@ -319,11 +308,7 @@ const Jurisdiction = ({ jurisdictionId }: { jurisdictionId: string }) => {
   const reopenAuditBoard = useReopenAuditBoard()
   const { confirm, confirmProps } = useConfirm()
 
-  if (jurisdiction.isLoading || jurisdiction.isIdle) return null
-  if (jurisdiction.isError) {
-    toast.error(jurisdiction.error.message)
-    return null
-  }
+  if (!jurisdiction.isSuccess) return null
 
   const { name, jurisdictionAdmins, auditBoards } = jurisdiction.data
 
@@ -338,7 +323,6 @@ const Jurisdiction = ({ jurisdictionId }: { jurisdictionId: string }) => {
           toast.success(`Cleared audit boards for ${name}`)
         } catch (error) {
           toast.error(error.message)
-          throw error
         }
       },
     })
@@ -358,7 +342,6 @@ const Jurisdiction = ({ jurisdictionId }: { jurisdictionId: string }) => {
           toast.success(`Reopened ${auditBoard.name}`)
         } catch (error) {
           toast.error(error.message)
-          throw error
         }
       },
     })

@@ -6,15 +6,79 @@ import { withMockFetch, renderWithRouter } from '../testUtilities'
 import SupportTools from './SupportTools'
 import AuthDataProvider from '../UserContext'
 import { supportApiCalls } from '../MultiJurisdictionAudit/_mocks'
+import {
+  IOrganizationBase,
+  IOrganization,
+  IElectionBase,
+  IElection,
+  IJurisdictionBase,
+  IJurisdiction,
+} from './support-api'
+
+const mockOrganizationBase: IOrganizationBase = {
+  id: 'organization-id-1',
+  name: 'Organization 1',
+}
+
+const mockElectionBase: IElectionBase = {
+  id: 'election-id-1',
+  auditName: 'Audit 1',
+  auditType: 'BALLOT_POLLING',
+}
+
+const mockJurisdictionBase: IJurisdictionBase = {
+  id: 'jurisdiction-id-1',
+  name: 'Jurisdiction 1',
+}
+
+const mockOrganization: IOrganization = {
+  ...mockOrganizationBase,
+  elections: [
+    mockElectionBase,
+    {
+      id: 'election-id-2',
+      auditName: 'Audit 2',
+      auditType: 'BALLOT_COMPARISON',
+    },
+  ],
+  auditAdmins: [
+    { email: 'audit-admin-1@example.org' },
+    { email: 'audit-admin-2@example.org' },
+  ],
+}
+
+const mockElection: IElection = {
+  ...mockElectionBase,
+  jurisdictions: [
+    mockJurisdictionBase,
+    {
+      id: 'jurisdiction-id-2',
+      name: 'Jurisdiction 2',
+    },
+  ],
+}
+
+const mockJurisdiction: IJurisdiction = {
+  ...mockJurisdictionBase,
+  jurisdictionAdmins: [
+    { email: 'jurisdiction-admin-1@example.org' },
+    { email: 'jurisdiction-admin-2@example.org' },
+  ],
+  auditBoards: [
+    {
+      id: 'audit-board-id-1',
+      name: 'Audit Board #1',
+      signedOffAt: '2021-01-21T18:19:35.493+00:00',
+    },
+    { id: 'audit-board-id-2', name: 'Audit Board #2', signedOffAt: null },
+  ],
+}
 
 const apiCalls = {
-  getOrganizations: {
+  getOrganizations: (response: IOrganizationBase[]) => ({
     url: '/api/support/organizations',
-    response: [
-      { id: 'organization-id-1', name: 'Organization 1' },
-      { id: 'organization-id-2', name: 'Organization 2' },
-    ],
-  },
+    response,
+  }),
   postOrganization: {
     url: '/api/support/organizations',
     options: {
@@ -26,47 +90,14 @@ const apiCalls = {
     },
     response: { status: 'ok' },
   },
-  getOrganization: {
+  getOrganization: (response: IOrganization) => ({
     url: '/api/support/organizations/organization-id-1',
-    response: {
-      id: 'organization-id-1',
-      name: 'Organization 1',
-      elections: [
-        {
-          id: 'election-id-1',
-          auditName: 'Audit 1',
-          auditType: 'BALLOT_POLLING',
-        },
-        {
-          id: 'election-id-2',
-          auditName: 'Audit 2',
-          auditType: 'BALLOT_COMPARISON',
-        },
-      ],
-      auditAdmins: [
-        { email: 'audit-admin-1@example.org' },
-        { email: 'audit-admin-2@example.org' },
-      ],
-    },
-  },
-  getElection: {
+    response,
+  }),
+  getElection: (response: IElection) => ({
     url: '/api/support/elections/election-id-1',
-    response: {
-      id: 'election-id-1',
-      auditName: 'Audit 1',
-      auditType: 'BALLOT_POLLING',
-      jurisdictions: [
-        {
-          id: 'jurisdiction-id-1',
-          name: 'Jurisdiction 1',
-        },
-        {
-          id: 'jurisdiction-id-2',
-          name: 'Jurisdiction 2',
-        },
-      ],
-    },
-  },
+    response,
+  }),
   postAuditAdmin: {
     url: '/api/support/organizations/organization-id-1/audit-admins',
     options: {
@@ -83,25 +114,10 @@ const apiCalls = {
     options: { method: 'DELETE' },
     response: { status: 'ok' },
   },
-  getJurisdiction: {
+  getJurisdiction: (response: IJurisdiction) => ({
     url: '/api/support/jurisdictions/jurisdiction-id-1',
-    response: {
-      id: 'jurisdiction-id-1',
-      name: 'Jurisdiction 1',
-      jurisdictionAdmins: [
-        { email: 'jurisdiction-admin-1@example.org' },
-        { email: 'jurisdiction-admin-2@example.org' },
-      ],
-      auditBoards: [
-        {
-          id: 'audit-board-id-1',
-          name: 'Audit Board #1',
-          signedOffAt: '2021-01-21T18:19:35.493+00:00',
-        },
-        { id: 'audit-board-id-2', name: 'Audit Board #2', signedOffAt: null },
-      ],
-    },
-  },
+    response,
+  }),
   reopenAuditBoard: {
     url: '/api/support/audit-boards/audit-board-id-1/sign-off',
     options: { method: 'DELETE' },
@@ -109,10 +125,15 @@ const apiCalls = {
   },
 }
 
-const serverError = (apiCall: { url: string; options?: object }) => ({
+const serverError = (
+  name: string,
+  apiCall: { url: string; options?: object }
+) => ({
   ...apiCall,
   response: {
-    errors: [{ errorType: 'Server Error', message: 'something went wrong' }],
+    errors: [
+      { errorType: 'Server Error', message: `something went wrong: ${name}` },
+    ],
   },
   error: { status: 500, statusText: 'Server Error' },
 })
@@ -130,8 +151,11 @@ describe('Support Tools', () => {
   it('home screen shows a list of orgs', async () => {
     const expectedCalls = [
       supportApiCalls.getUser,
-      apiCalls.getOrganizations,
-      apiCalls.getOrganization,
+      apiCalls.getOrganizations([
+        mockOrganizationBase,
+        { id: 'organization-id-2', name: 'Organization 2' },
+      ]),
+      apiCalls.getOrganization(mockOrganization),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { history } = renderRoute('/support')
@@ -148,18 +172,26 @@ describe('Support Tools', () => {
     })
   })
 
+  it('home screen handles error', async () => {
+    const expectedCalls = [
+      supportApiCalls.getUser,
+      serverError('getOrganizations', apiCalls.getOrganizations([])),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderRoute('/support')
+      const toast = await screen.findByRole('alert')
+      expect(toast).toHaveTextContent('something went wrong: getOrganizations')
+    })
+  })
+
   it('home screen shows a form to create a new org', async () => {
     const expectedCalls = [
       supportApiCalls.getUser,
-      apiCalls.getOrganizations,
+      apiCalls.getOrganizations([]),
       apiCalls.postOrganization,
-      {
-        ...apiCalls.getOrganizations,
-        response: [
-          ...apiCalls.getOrganizations.response,
-          { id: 'new-organization-id', name: 'New Organization' },
-        ],
-      },
+      apiCalls.getOrganizations([
+        { id: 'new-organization-id', name: 'New Organization' },
+      ]),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderRoute('/support')
@@ -178,11 +210,35 @@ describe('Support Tools', () => {
     })
   })
 
+  it('home screen handles error on create org', async () => {
+    const expectedCalls = [
+      supportApiCalls.getUser,
+      apiCalls.getOrganizations([]),
+      serverError('postOrganization', apiCalls.postOrganization),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderRoute('/support')
+
+      await screen.findByRole('heading', { name: 'Organizations' })
+
+      userEvent.type(
+        screen.getByPlaceholderText('New organization name'),
+        'New Organization'
+      )
+      userEvent.click(
+        screen.getByRole('button', { name: /Create Organization/ })
+      )
+
+      const toast = await screen.findByRole('alert')
+      expect(toast).toHaveTextContent('something went wrong: postOrganization')
+    })
+  })
+
   it('org screen shows a list of audits', async () => {
     const expectedCalls = [
       supportApiCalls.getUser,
-      apiCalls.getOrganization,
-      apiCalls.getElection,
+      apiCalls.getOrganization(mockOrganization),
+      apiCalls.getElection(mockElection),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { history } = renderRoute('/support/orgs/organization-id-1')
@@ -197,21 +253,33 @@ describe('Support Tools', () => {
     })
   })
 
+  it('org screen handles error', async () => {
+    const expectedCalls = [
+      supportApiCalls.getUser,
+      serverError(
+        'getOrganization',
+        apiCalls.getOrganization(mockOrganization)
+      ),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderRoute('/support/orgs/organization-id-1')
+      const toast = await screen.findByRole('alert')
+      expect(toast).toHaveTextContent('something went wrong')
+    })
+  })
+
   it('org screen shows a list of audit admins and a form to create a new audit admin', async () => {
     const expectedCalls = [
       supportApiCalls.getUser,
-      apiCalls.getOrganization,
+      apiCalls.getOrganization(mockOrganization),
       apiCalls.postAuditAdmin,
-      {
-        ...apiCalls.getOrganization,
-        response: {
-          ...apiCalls.getOrganization.response,
-          auditAdmins: [
-            ...apiCalls.getOrganization.response.auditAdmins,
-            { email: 'audit-admin-3@example.org' },
-          ],
-        },
-      },
+      apiCalls.getOrganization({
+        ...mockOrganization,
+        auditAdmins: [
+          ...mockOrganization.auditAdmins,
+          { email: 'audit-admin-3@example.org' },
+        ],
+      }),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderRoute('/support/orgs/organization-id-1')
@@ -244,11 +312,36 @@ describe('Support Tools', () => {
     })
   })
 
+  it('org screen handles error on create admin', async () => {
+    const expectedCalls = [
+      supportApiCalls.getUser,
+      apiCalls.getOrganization(mockOrganization),
+      serverError('postAuditAdmin', apiCalls.postAuditAdmin),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderRoute('/support/orgs/organization-id-1')
+
+      await screen.findByRole('heading', { name: 'Organization 1' })
+
+      // Create a new admin
+      userEvent.type(
+        screen.getByPlaceholderText('New admin email'),
+        'audit-admin-3@example.org'
+      )
+      userEvent.click(
+        screen.getByRole('button', { name: /Create Audit Admin/ })
+      )
+
+      const toast = await screen.findByRole('alert')
+      expect(toast).toHaveTextContent('something went wrong: postAuditAdmin')
+    })
+  })
+
   it('audit screen shows a list of jurisdictions', async () => {
     const expectedCalls = [
       supportApiCalls.getUser,
-      apiCalls.getElection,
-      apiCalls.getJurisdiction,
+      apiCalls.getElection(mockElection),
+      apiCalls.getJurisdiction(mockJurisdiction),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { history } = renderRoute('/support/audits/election-id-1')
@@ -267,29 +360,38 @@ describe('Support Tools', () => {
     })
   })
 
-  it('jurisdiction screen shows a list of audit boards', async () => {
+  it('audit screen handles error', async () => {
     const expectedCalls = [
       supportApiCalls.getUser,
-      apiCalls.getJurisdiction,
+      serverError('getElection', apiCalls.getElection(mockElection)),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderRoute('/support/audits/election-id-1')
+      const toast = await screen.findByRole('alert')
+      expect(toast).toHaveTextContent('something went wrong: getElection')
+    })
+  })
+
+  it('jurisdiction screen shows a list of audit boards with buttons to reopen them', async () => {
+    const expectedCalls = [
+      supportApiCalls.getUser,
+      apiCalls.getJurisdiction(mockJurisdiction),
       apiCalls.reopenAuditBoard,
-      {
-        ...apiCalls.getJurisdiction,
-        response: {
-          ...apiCalls.getJurisdiction.response,
-          auditBoards: [
-            {
-              id: 'audit-board-id-1',
-              name: 'Audit Board #1',
-              signedOffAt: null,
-            },
-            {
-              id: 'audit-board-id-2',
-              name: 'Audit Board #2',
-              signedOffAt: null,
-            },
-          ],
-        },
-      },
+      apiCalls.getJurisdiction({
+        ...mockJurisdiction,
+        auditBoards: [
+          {
+            id: 'audit-board-id-1',
+            name: 'Audit Board #1',
+            signedOffAt: null,
+          },
+          {
+            id: 'audit-board-id-2',
+            name: 'Audit Board #2',
+            signedOffAt: null,
+          },
+        ],
+      }),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderRoute('/support/jurisdictions/jurisdiction-id-1')
@@ -331,8 +433,54 @@ describe('Support Tools', () => {
     })
   })
 
+  it('jurisdiction screen handles error', async () => {
+    const expectedCalls = [
+      supportApiCalls.getUser,
+      serverError(
+        'getJurisdiction',
+        apiCalls.getJurisdiction(mockJurisdiction)
+      ),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderRoute('/support/jurisdictions/jurisdiction-id-1')
+      const toast = await screen.findByRole('alert')
+      expect(toast).toHaveTextContent('something went wrong: getJurisdiction')
+    })
+  })
+
+  it('jurisdiction screen handles error on reopen audit board', async () => {
+    const expectedCalls = [
+      supportApiCalls.getUser,
+      apiCalls.getJurisdiction(mockJurisdiction),
+      serverError('reopenAuditBoard', apiCalls.reopenAuditBoard),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderRoute('/support/jurisdictions/jurisdiction-id-1')
+
+      await screen.findByRole('heading', { name: 'Jurisdiction 1' })
+
+      // Click reopen button
+      const reopenButton1 = within(
+        screen.getByText('Audit Board #1').closest('tr')!
+      ).getByRole('button', { name: 'Reopen' })
+      userEvent.click(reopenButton1)
+
+      // Confirm dialog should open
+      const dialog = (await screen.findByRole('heading', {
+        name: /Confirm/,
+      })).closest('.bp3-dialog')! as HTMLElement
+      userEvent.click(within(dialog).getByRole('button', { name: 'Reopen' }))
+
+      const toast = await screen.findByRole('alert')
+      expect(toast).toHaveTextContent('something went wrong: reopenAuditBoard')
+    })
+  })
+
   it('jurisdiction screen shows a list of jurisdiction admins', async () => {
-    const expectedCalls = [supportApiCalls.getUser, apiCalls.getJurisdiction]
+    const expectedCalls = [
+      supportApiCalls.getUser,
+      apiCalls.getJurisdiction(mockJurisdiction),
+    ]
     await withMockFetch(expectedCalls, async () => {
       renderRoute('/support/jurisdictions/jurisdiction-id-1')
 
@@ -354,15 +502,12 @@ describe('Support Tools', () => {
   it('jurisdiction screen shows a button to clear audit boards', async () => {
     const expectedCalls = [
       supportApiCalls.getUser,
-      apiCalls.getJurisdiction,
+      apiCalls.getJurisdiction(mockJurisdiction),
       apiCalls.deleteAuditBoards,
-      {
-        ...apiCalls.getJurisdiction,
-        response: {
-          ...apiCalls.getJurisdiction.response,
-          auditBoards: [],
-        },
-      },
+      apiCalls.getJurisdiction({
+        ...mockJurisdiction,
+        auditBoards: [],
+      }),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderRoute('/support/jurisdictions/jurisdiction-id-1')
@@ -394,108 +539,11 @@ describe('Support Tools', () => {
     })
   })
 
-  it('home screen handles error', async () => {
-    const expectedCalls = [
-      supportApiCalls.getUser,
-      serverError(apiCalls.getOrganizations),
-    ]
-    await withMockFetch(expectedCalls, async () => {
-      renderRoute('/support')
-      const toast = await screen.findByRole('alert')
-      expect(toast).toHaveTextContent('something went wrong')
-    })
-  })
-
-  it('home screen handles error on create org', async () => {
-    const expectedCalls = [
-      supportApiCalls.getUser,
-      apiCalls.getOrganizations,
-      serverError(apiCalls.postOrganization),
-    ]
-    await withMockFetch(expectedCalls, async () => {
-      renderRoute('/support')
-
-      await screen.findByRole('heading', { name: 'Organizations' })
-
-      userEvent.type(
-        screen.getByPlaceholderText('New organization name'),
-        'New Organization'
-      )
-      userEvent.click(
-        screen.getByRole('button', { name: /Create Organization/ })
-      )
-
-      const toast = await screen.findByRole('alert')
-      expect(toast).toHaveTextContent('something went wrong')
-    })
-  })
-
-  it('org screen handles error', async () => {
-    const expectedCalls = [
-      supportApiCalls.getUser,
-      serverError(apiCalls.getOrganization),
-    ]
-    await withMockFetch(expectedCalls, async () => {
-      renderRoute('/support/orgs/organization-id-1')
-      const toast = await screen.findByRole('alert')
-      expect(toast).toHaveTextContent('something went wrong')
-    })
-  })
-
-  it('org screen handles error on create admin', async () => {
-    const expectedCalls = [
-      supportApiCalls.getUser,
-      apiCalls.getOrganization,
-      serverError(apiCalls.postAuditAdmin),
-    ]
-    await withMockFetch(expectedCalls, async () => {
-      renderRoute('/support/orgs/organization-id-1')
-
-      await screen.findByRole('heading', { name: 'Organization 1' })
-
-      // Create a new admin
-      userEvent.type(
-        screen.getByPlaceholderText('New admin email'),
-        'audit-admin-3@example.org'
-      )
-      userEvent.click(
-        screen.getByRole('button', { name: /Create Audit Admin/ })
-      )
-
-      const toast = await screen.findByRole('alert')
-      expect(toast).toHaveTextContent('something went wrong')
-    })
-  })
-
-  it('audit screen handles error', async () => {
-    const expectedCalls = [
-      supportApiCalls.getUser,
-      serverError(apiCalls.getElection),
-    ]
-    await withMockFetch(expectedCalls, async () => {
-      renderRoute('/support/audits/election-id-1')
-      const toast = await screen.findByRole('alert')
-      expect(toast).toHaveTextContent('something went wrong')
-    })
-  })
-
-  it('jurisdiction screen handles error', async () => {
-    const expectedCalls = [
-      supportApiCalls.getUser,
-      serverError(apiCalls.getJurisdiction),
-    ]
-    await withMockFetch(expectedCalls, async () => {
-      renderRoute('/support/jurisdictions/jurisdiction-id-1')
-      const toast = await screen.findByRole('alert')
-      expect(toast).toHaveTextContent('something went wrong')
-    })
-  })
-
   it('jurisdiction screen handles error on clear audit boards', async () => {
     const expectedCalls = [
       supportApiCalls.getUser,
-      apiCalls.getJurisdiction,
-      serverError(apiCalls.deleteAuditBoards),
+      apiCalls.getJurisdiction(mockJurisdiction),
+      serverError('deleteAuditBoards', apiCalls.deleteAuditBoards),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderRoute('/support/jurisdictions/jurisdiction-id-1')
@@ -518,35 +566,7 @@ describe('Support Tools', () => {
       )
 
       const toast = await screen.findByRole('alert')
-      expect(toast).toHaveTextContent('something went wrong')
-    })
-  })
-
-  it('jurisdiction screen handles error on reopen audit board', async () => {
-    const expectedCalls = [
-      supportApiCalls.getUser,
-      apiCalls.getJurisdiction,
-      serverError(apiCalls.reopenAuditBoard),
-    ]
-    await withMockFetch(expectedCalls, async () => {
-      renderRoute('/support/jurisdictions/jurisdiction-id-1')
-
-      await screen.findByRole('heading', { name: 'Jurisdiction 1' })
-
-      // Click reopen button
-      const reopenButton1 = within(
-        screen.getByText('Audit Board #1').closest('tr')!
-      ).getByRole('button', { name: 'Reopen' })
-      userEvent.click(reopenButton1)
-
-      // Confirm dialog should open
-      const dialog = (await screen.findByRole('heading', {
-        name: /Confirm/,
-      })).closest('.bp3-dialog')! as HTMLElement
-      userEvent.click(within(dialog).getByRole('button', { name: 'Reopen' }))
-
-      const toast = await screen.findByRole('alert')
-      expect(toast).toHaveTextContent('something went wrong')
+      expect(toast).toHaveTextContent('something went wrong: deleteAuditBoards')
     })
   })
 })
