@@ -23,6 +23,7 @@ from ..config import (
     FLASK_ENV,
 )
 from ..util.jsonschema import validate
+from ..util.isoformat import isoformat
 from .rounds import get_current_round
 from .batches import already_audited_batches
 
@@ -230,7 +231,7 @@ def get_jurisdiction(jurisdiction_id: str):
             )
             for audit_board in audit_boards
         ],
-        recordedResultsAt=recorded_results_at,
+        recordedResultsAt=isoformat(recorded_results_at),
     )
 
 
