@@ -48,7 +48,7 @@ export interface IJurisdiction extends IJurisdictionBase {
   election: IElectionBase
   jurisdictionAdmins: IJurisdictionAdmin[]
   auditBoards: IAuditBoard[]
-  recordedResultsAt: string
+  recordedResultsAt: string | null
 }
 
 export interface IJurisdictionAdmin {

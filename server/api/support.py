@@ -133,6 +133,7 @@ def get_election(election_id: str):
         id=election.id,
         auditName=election.audit_name,
         auditType=election.audit_type,
+        online=election.online,
         jurisdictions=[
             dict(id=jurisdiction.id, name=jurisdiction.name,)
             for jurisdiction in election.jurisdictions
