@@ -11,6 +11,7 @@ import jurisdictionFile, {
   standardizedContestsFile,
 } from './AASetup/Participants/_mocks'
 import { IBatch } from './RoundManagement/useBatchResults'
+import mockJSON from './Progress/us-states-counties'
 
 const jurisdictionFormData: FormData = new FormData()
 jurisdictionFormData.append(
@@ -211,9 +212,8 @@ export const jaApiCalls = {
   },
   getMapData: {
     url: 'https://cdn.jsdelivr.net/npm/us-atlas@3/counties-10m.json',
-    response: new Response(
-      'https://cdn.jsdelivr.net/npm/us-atlas@3/counties-10m.json'
-    ),
+    // getting json as response to render the map properly
+    response: mockJSON,
   },
 }
 
@@ -453,9 +453,8 @@ export const aaApiCalls = {
   }),
   getMapData: {
     url: 'https://cdn.jsdelivr.net/npm/us-atlas@3/counties-10m.json',
-    response: new Response(
-      'https://cdn.jsdelivr.net/npm/us-atlas@3/counties-10m.json'
-    ),
+    // getting json as response to render the map properly
+    response: mockJSON,
   },
 }
 

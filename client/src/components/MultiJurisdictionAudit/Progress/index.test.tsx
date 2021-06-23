@@ -495,6 +495,7 @@ describe('Progress screen', () => {
   })
 
   it('shows the detail modal with JA file download buttons after the audit starts', async () => {
+    jest.setTimeout(10000)
     const expectedCalls = [
       jaApiCalls.getMapData,
       jaApiCalls.getAuditBoards(auditBoardMocks.unfinished),
@@ -693,6 +694,48 @@ describe('Progress screen', () => {
         .getByRole('heading', { name: 'Jurisdiction 1' })
         .closest('div.bp3-dialog')! as HTMLElement
       await within(modal).findByText('No batches sampled')
+    })
+  })
+
+  it('renders progress map with jurisdictions filled', async () => {
+    const expectedCalls = [jaApiCalls.getMapData]
+    await withMockFetch(expectedCalls, async () => {
+      const { container } = render(
+        <Progress
+          jurisdictions={jurisdictionMocks.oneCompleteWithAlbamaJurisdictions}
+          auditSettings={auditSettings.all}
+          round={roundMocks.singleIncomplete[0]}
+        />
+      )
+
+      expect(container.querySelectorAll('.d3-component').length).toBe(1)
+
+      await waitFor(() => {
+        expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
+      })
+      expect(container.querySelectorAll('.county.success').length).toBe(1) // completed
+      expect(container.querySelectorAll('.county.progress').length).toBe(1) // in-progress
+      expect(container.querySelectorAll('.county.gray').length).toBe(1) // not started
+    })
+  })
+
+  it('renders progress map with all completed jurisdictions', async () => {
+    const expectedCalls = [jaApiCalls.getMapData]
+    await withMockFetch(expectedCalls, async () => {
+      const { container } = render(
+        <Progress
+          jurisdictions={jurisdictionMocks.allCompleteWithAlbamaJurisdictions}
+          auditSettings={auditSettings.all}
+          round={roundMocks.singleIncomplete[0]}
+        />
+      )
+
+      expect(container.querySelectorAll('.d3-component').length).toBe(1)
+
+      await waitFor(() => {
+        expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
+      })
+      expect(container.querySelectorAll('.county.success').length).toBe(3) // all completed
     })
   })
 })

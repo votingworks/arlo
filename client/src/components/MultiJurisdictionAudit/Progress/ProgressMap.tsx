@@ -109,6 +109,9 @@ const MapLabelsBoxes = styled.div`
   &.gray {
     background-color: ${Colors.GRAY4};
   }
+  &.default {
+    border: 1px solid ${Colors.BLACK};
+  }
 `
 
 const MapSpinner = styled(Spinner)`
@@ -116,6 +119,7 @@ const MapSpinner = styled(Spinner)`
   top: 50%;
   right: 0;
   left: 0;
+  transform: translateY(-50%);
   margin: 0 auto;
 `
 
@@ -230,23 +234,33 @@ const Map = ({
             respJsonData.objects.states
           ) as GeoJSON.FeatureCollection).features
         )
-        setUSState(
-          (feature(
-            respJsonData,
-            respJsonData.objects.states
-          ) as GeoJSON.FeatureCollection).features.filter(
-            d =>
-              d &&
-              d.properties &&
-              stateName &&
-              d.properties.name === getStateName(stateName)
-          )[0]
-        )
+        const singleState = (feature(
+          respJsonData,
+          respJsonData.objects.states
+        ) as GeoJSON.FeatureCollection).features.filter(
+          d =>
+            d &&
+            d.properties &&
+            stateName &&
+            d.properties.name === getStateName(stateName)
+        )[0]
+
+        setUSState(singleState)
+
+        // county ID's initial 2 characters are of state
+        // hence, just setting counties of audit state
         setUSCounties(
           (feature(
             respJsonData,
             respJsonData.objects.counties
-          ) as GeoJSON.FeatureCollection).features
+          ) as GeoJSON.FeatureCollection).features.filter(
+            (d, i) =>
+              d &&
+              d.id &&
+              singleState &&
+              singleState.id &&
+              d.id.toString().slice(0, 2) === singleState.id.toString()
+          )
         )
         setJsonData(respJsonData)
       }
@@ -330,6 +344,10 @@ const Map = ({
               <MapLabelsRow>
                 <MapLabelsBoxes className="gray" /> Not Started
               </MapLabelsRow>
+              <MapLabelsRow>
+                <MapLabelsBoxes className="default" /> Non-Participating
+                Jurisdiction
+              </MapLabelsRow>
             </div>
           ) : auditType === 'BALLOT_POLLING' ? (
             <div>
@@ -342,6 +360,10 @@ const Map = ({
               <MapLabelsRow>
                 <MapLabelsBoxes className="gray" /> No Manifest uploaded
               </MapLabelsRow>
+              <MapLabelsRow>
+                <MapLabelsBoxes className="default" /> Non-Participating
+                Jurisdiction
+              </MapLabelsRow>
             </div>
           ) : (
             <div>
@@ -353,6 +375,10 @@ const Map = ({
               </MapLabelsRow>
               <MapLabelsRow>
                 <MapLabelsBoxes className="gray" /> No files uploaded
+              </MapLabelsRow>
+              <MapLabelsRow>
+                <MapLabelsBoxes className="default" /> Non-Participating
+                Jurisdiction
               </MapLabelsRow>
             </div>
           )}
