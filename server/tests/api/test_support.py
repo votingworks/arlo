@@ -73,7 +73,7 @@ def test_support_get_election(
             "id": election_id,
             "auditName": "Test Audit test_support_get_election",
             "auditType": "BALLOT_POLLING",
-            "online": True,
+            "online": False,
             "jurisdictions": [
                 {"id": jurisdiction_ids[0], "name": "J1",},
                 {"id": jurisdiction_ids[1], "name": "J2",},
