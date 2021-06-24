@@ -35,7 +35,7 @@ export interface IAuditAdmin {
 }
 
 export interface IElection extends IElectionBase {
-  jurisdictions: IJurisdiction[]
+  jurisdictions: IJurisdictionBase[]
 }
 
 export interface IJurisdictionBase {
@@ -55,7 +55,7 @@ export interface IJurisdictionAdmin {
 export interface IAuditBoard {
   id: string
   name: string
-  signedOffAt: string
+  signedOffAt: string | null
 }
 
 export const useOrganizations = () =>
