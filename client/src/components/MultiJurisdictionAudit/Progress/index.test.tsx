@@ -9,7 +9,7 @@ import {
   auditBoardMocks,
 } from '../useSetupMenuItems/_mocks'
 import { withMockFetch } from '../../testUtilities'
-import { jaApiCalls } from '../_mocks'
+import { jaApiCalls, aaApiCalls } from '../_mocks'
 import { dummyBallots } from '../../DataEntry/_mocks'
 import * as utilities from '../../utilities'
 
@@ -497,7 +497,7 @@ describe('Progress screen', () => {
   it('shows the detail modal with JA file download buttons after the audit starts', async () => {
     jest.setTimeout(10000)
     const expectedCalls = [
-      jaApiCalls.getMapData,
+      aaApiCalls.getMapData,
       jaApiCalls.getAuditBoards(auditBoardMocks.unfinished),
       jaApiCalls.getBallotCount(dummyBallots.ballots),
       jaApiCalls.getBallots(dummyBallots.ballots),
@@ -571,7 +571,7 @@ describe('Progress screen', () => {
 
   it('shows a message in the detail modal when no ballots sampled', async () => {
     const expectedCalls = [
-      jaApiCalls.getMapData,
+      aaApiCalls.getMapData,
       jaApiCalls.getAuditBoards(auditBoardMocks.unfinished),
       jaApiCalls.getBallotCount([]),
     ]
@@ -594,7 +594,7 @@ describe('Progress screen', () => {
 
   it('shows a message in the detail modal when no audit boards set up', async () => {
     const expectedCalls = [
-      jaApiCalls.getMapData,
+      aaApiCalls.getMapData,
       jaApiCalls.getAuditBoards([]),
       jaApiCalls.getBallotCount(dummyBallots.ballots),
     ]
@@ -617,66 +617,69 @@ describe('Progress screen', () => {
     })
   })
 
-  it('shows status for ballot manifest and batch tallies for batch comparison audits', () => {
-    render(
-      <Progress
-        jurisdictions={jurisdictionMocks.twoManifestsOneTallies}
-        auditSettings={auditSettings.batchComparisonAll}
-        round={null}
-      />
-    )
-    // Shows aggregated status for multiple files
-    let rows = screen.getAllByRole('row')
-    within(rows[1]).getByRole('cell', {
-      name: 'Upload failed',
-    })
-    within(rows[2]).getByRole('cell', { name: '1/2 files uploaded' })
-    within(rows[3]).getByRole('cell', { name: '2/2 files uploaded' })
-
-    // Toggle sorting by status
-    const statusHeader = screen.getByRole('columnheader', {
-      name: 'Status',
-    })
-    userEvent.click(statusHeader)
-    rows = screen.getAllByRole('row')
-    within(rows[1]).getByText('Upload failed')
-
-    userEvent.click(statusHeader)
-    rows = screen.getAllByRole('row')
-    within(rows[1]).getByRole('cell', { name: '2/2 files uploaded' })
-
-    // Shows manifest and tallies in the modal
-    userEvent.click(screen.getByText('2/2 files uploaded'))
-    const modal = screen
-      .getByRole('heading', { name: 'Jurisdiction 3' })
-      .closest('div.bp3-dialog')! as HTMLElement
-    within(modal).getByRole('heading', {
-      name: 'Jurisdiction Files',
-    })
-    const manifestCard = within(modal)
-      .getByRole('heading', {
-        name: 'Ballot Manifest',
+  it('shows status for ballot manifest and batch tallies for batch comparison audits', async () => {
+    const expectedCalls = [aaApiCalls.getMapData]
+    await withMockFetch(expectedCalls, async () => {
+      render(
+        <Progress
+          jurisdictions={jurisdictionMocks.twoManifestsOneTallies}
+          auditSettings={auditSettings.batchComparisonAll}
+          round={null}
+        />
+      )
+      // Shows aggregated status for multiple files
+      let rows = screen.getAllByRole('row')
+      within(rows[1]).getByRole('cell', {
+        name: 'Upload failed',
       })
-      .closest('div')!
-    within(manifestCard).getByText('Uploaded')
-    const talliesCard = within(modal)
-      .getByRole('heading', {
-        name: 'Candidate Totals by Batch',
+      within(rows[2]).getByRole('cell', { name: '1/2 files uploaded' })
+      within(rows[3]).getByRole('cell', { name: '2/2 files uploaded' })
+
+      // Toggle sorting by status
+      const statusHeader = screen.getByRole('columnheader', {
+        name: 'Status',
       })
-      .closest('div')!
-    within(talliesCard).getByText('Uploaded')
-    const talliesLink = within(talliesCard).getByRole('link', {
-      name: 'tallies.csv',
+      userEvent.click(statusHeader)
+      rows = screen.getAllByRole('row')
+      within(rows[1]).getByText('Upload failed')
+
+      userEvent.click(statusHeader)
+      rows = screen.getAllByRole('row')
+      within(rows[1]).getByRole('cell', { name: '2/2 files uploaded' })
+
+      // Shows manifest and tallies in the modal
+      userEvent.click(screen.getByText('2/2 files uploaded'))
+      const modal = screen
+        .getByRole('heading', { name: 'Jurisdiction 3' })
+        .closest('div.bp3-dialog')! as HTMLElement
+      within(modal).getByRole('heading', {
+        name: 'Jurisdiction Files',
+      })
+      const manifestCard = within(modal)
+        .getByRole('heading', {
+          name: 'Ballot Manifest',
+        })
+        .closest('div')!
+      within(manifestCard).getByText('Uploaded')
+      const talliesCard = within(modal)
+        .getByRole('heading', {
+          name: 'Candidate Totals by Batch',
+        })
+        .closest('div')!
+      within(talliesCard).getByText('Uploaded')
+      const talliesLink = within(talliesCard).getByRole('link', {
+        name: 'tallies.csv',
+      })
+      expect(talliesLink).toHaveAttribute(
+        'href',
+        '/api/election/1/jurisdiction/jurisdiction-id-3/batch-tallies/csv'
+      )
     })
-    expect(talliesLink).toHaveAttribute(
-      'href',
-      '/api/election/1/jurisdiction/jurisdiction-id-3/batch-tallies/csv'
-    )
   })
 
   it('shows a message in the detail modal when no batches sampled', async () => {
     const expectedCalls = [
-      jaApiCalls.getMapData,
+      aaApiCalls.getMapData,
       jaApiCalls.getAuditBoards(auditBoardMocks.unfinished),
       jaApiCalls.getBatches([]),
     ]
@@ -698,7 +701,7 @@ describe('Progress screen', () => {
   })
 
   it('renders progress map with jurisdictions filled', async () => {
-    const expectedCalls = [jaApiCalls.getMapData]
+    const expectedCalls = [aaApiCalls.getMapData]
     await withMockFetch(expectedCalls, async () => {
       const { container } = render(
         <Progress
@@ -720,7 +723,7 @@ describe('Progress screen', () => {
   })
 
   it('renders progress map with all completed jurisdictions', async () => {
-    const expectedCalls = [jaApiCalls.getMapData]
+    const expectedCalls = [aaApiCalls.getMapData]
     await withMockFetch(expectedCalls, async () => {
       const { container } = render(
         <Progress

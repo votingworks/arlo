@@ -4,7 +4,11 @@ import styled from 'styled-components'
 import { Column, Cell, TableInstance } from 'react-table'
 import { Button, Switch, ITagProps } from '@blueprintjs/core'
 import H2Title from '../../Atoms/H2Title'
-import { JurisdictionRoundStatus, IJurisdiction } from '../useJurisdictions'
+import {
+  JurisdictionRoundStatus,
+  IJurisdiction,
+  getJurisdictionStatus,
+} from '../useJurisdictions'
 import JurisdictionDetail from './JurisdictionDetail'
 import {
   Table,
@@ -60,8 +64,11 @@ const Progress: React.FC<IProps> = ({
     setJurisdictionDetail,
   ] = useState<IJurisdiction | null>(null)
 
+  // gives prop validation error if used as auditSettings.auditType
+  const { auditType } = auditSettings
+
   const ballotsOrBatches =
-    auditSettings.auditType === 'BATCH_COMPARISON' ? 'Batches' : 'Ballots'
+    auditType === 'BATCH_COMPARISON' ? 'Batches' : 'Ballots'
 
   const columns: Column<IJurisdiction>[] = [
     {
@@ -82,6 +89,7 @@ const Progress: React.FC<IProps> = ({
     },
     {
       Header: 'Status',
+      // eslint-disable-next-line react/display-name
       accessor: jurisdiction => {
         const {
           currentRoundStatus,
@@ -98,50 +106,53 @@ const Progress: React.FC<IProps> = ({
           />
         )
 
-        if (!currentRoundStatus) {
-          const files: IFileInfo['processing'][] = [ballotManifest.processing]
-          if (batchTallies) files.push(batchTallies.processing)
-          if (cvrs) files.push(cvrs.processing)
+        const files: IFileInfo['processing'][] = [ballotManifest.processing]
+        if (batchTallies) files.push(batchTallies.processing)
+        if (cvrs) files.push(cvrs.processing)
 
-          const numComplete = files.filter(
-            f => f && f.status === FileProcessingStatus.PROCESSED
-          ).length
-          const anyFailed = files.some(
-            f => f && f.status === FileProcessingStatus.ERRORED
-          )
+        const numComplete = files.filter(
+          f => f && f.status === FileProcessingStatus.PROCESSED
+        ).length
 
-          // Special case when we just have a ballotManifest
-          if (files.length === 1) {
-            if (anyFailed) {
-              return <Status intent="danger">Manifest upload failed</Status>
-            }
-            if (numComplete === 1) {
-              return <Status intent="success">Manifest uploaded</Status>
-            }
-            return <Status>No manifest uploaded</Status>
-          }
-
-          // When we have multiple files
-          if (anyFailed) {
-            return <Status intent="danger">Upload failed</Status>
-          }
-          return (
-            <Status
-              intent={numComplete === files.length ? 'success' : undefined}
-            >
-              {numComplete}/{files.length} files uploaded
-            </Status>
-          )
+        const jurisdictionStatus = getJurisdictionStatus(jurisdiction)
+        switch (jurisdictionStatus) {
+          case JurisdictionRoundStatus.COMPLETE:
+            return (
+              <Status intent="success">
+                {(!currentRoundStatus &&
+                  auditType === 'BALLOT_POLLING' &&
+                  'Manifest uploaded') ||
+                  (!currentRoundStatus &&
+                    `${numComplete}/${files.length} files uploaded`) ||
+                  (currentRoundStatus && 'Complete')}
+              </Status>
+            )
+          case JurisdictionRoundStatus.FAILED:
+            return (
+              <Status intent="danger">
+                {(!currentRoundStatus &&
+                  auditType === 'BALLOT_POLLING' &&
+                  'Manifest upload failed') ||
+                  (!currentRoundStatus && 'Upload failed')}
+              </Status>
+            )
+          case JurisdictionRoundStatus.IN_PROGRESS:
+            return <Status intent="warning">In progress</Status>
+          case JurisdictionRoundStatus.NOT_STARTED:
+            return (
+              <Status>
+                {(!currentRoundStatus &&
+                  auditType === 'BALLOT_POLLING' &&
+                  'No manifest uploaded') ||
+                  (!currentRoundStatus &&
+                    files.length > 0 &&
+                    `${numComplete}/${files.length} files uploaded`) ||
+                  (currentRoundStatus && 'Not started')}
+              </Status>
+            )
+          default:
+            return null
         }
-        return {
-          [JurisdictionRoundStatus.NOT_STARTED]: <Status>Not started</Status>,
-          [JurisdictionRoundStatus.IN_PROGRESS]: (
-            <Status intent="warning">In progress</Status>
-          ),
-          [JurisdictionRoundStatus.COMPLETE]: (
-            <Status intent="success">Complete</Status>
-          ),
-        }[currentRoundStatus.status]
       },
       sortType: sortByRank(
         ({ currentRoundStatus, ballotManifest, batchTallies, cvrs }) => {
@@ -164,6 +175,7 @@ const Progress: React.FC<IProps> = ({
             [JurisdictionRoundStatus.NOT_STARTED]: 0,
             [JurisdictionRoundStatus.IN_PROGRESS]: 1,
             [JurisdictionRoundStatus.COMPLETE]: 2,
+            [JurisdictionRoundStatus.FAILED]: 3,
           }[currentRoundStatus.status]
         }
       ),
@@ -208,7 +220,7 @@ const Progress: React.FC<IProps> = ({
   ]
 
   if (!round) {
-    if (auditSettings.auditType === 'BATCH_COMPARISON') {
+    if (auditType === 'BATCH_COMPARISON') {
       columns.push({
         Header: 'Batches in Manifest',
         accessor: ({ ballotManifest: { numBatches } }) => numBatches,
@@ -223,7 +235,7 @@ const Progress: React.FC<IProps> = ({
       })
     }
 
-    if (auditSettings.auditType === 'HYBRID') {
+    if (auditType === 'HYBRID') {
       columns.push({
         Header: 'Non-CVR Ballots in Manifest',
         accessor: ({ ballotManifest: { numBallotsNonCvr } }) =>
@@ -240,10 +252,7 @@ const Progress: React.FC<IProps> = ({
       })
     }
 
-    if (
-      auditSettings.auditType === 'BALLOT_COMPARISON' ||
-      auditSettings.auditType === 'HYBRID'
-    ) {
+    if (auditType === 'BALLOT_COMPARISON' || auditType === 'HYBRID') {
       columns.push({
         Header: 'Ballots in CVR',
         accessor: ({ cvrs }) => cvrs!.numBallots,
@@ -299,7 +308,7 @@ const Progress: React.FC<IProps> = ({
           stateName={auditSettings.state}
           jurisdictions={jurisdictions}
           isRoundStarted={!!round}
-          auditType={auditSettings.auditType}
+          auditType={auditType}
         />
       )}
       <p>

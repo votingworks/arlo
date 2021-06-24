@@ -5,21 +5,20 @@ import { feature } from 'topojson-client'
 // topojson-specification is defined in package.json but throwing linting error here
 // eslint-disable-next-line import/no-unresolved
 import { Topology } from 'topojson-specification'
-import { Feature } from 'geojson'
 import { Colors, Spinner } from '@blueprintjs/core'
 import labelValueStates from '../AASetup/Settings/states'
-import { JurisdictionRoundStatus, IJurisdiction } from '../useJurisdictions'
-import { FileProcessingStatus, IFileInfo } from '../useCSV'
+import {
+  JurisdictionRoundStatus,
+  IJurisdiction,
+  getJurisdictionStatus,
+} from '../useJurisdictions'
+import { IAuditSettings } from '../useAuditSettings'
 
 interface IProps {
-  stateName?: string | null
+  stateName: string | null
   jurisdictions: IJurisdiction[]
   isRoundStarted: boolean
-  auditType:
-    | 'BALLOT_POLLING'
-    | 'BATCH_COMPARISON'
-    | 'BALLOT_COMPARISON'
-    | 'HYBRID'
+  auditType: IAuditSettings['auditType']
 }
 
 const MapWrapper = styled.div`
@@ -46,7 +45,6 @@ const SVGMap = styled.svg`
     stroke: ${Colors.BLACK};
   }
   .county {
-    cursor: pointer;
     fill: ${Colors.WHITE};
     stroke: ${Colors.BLACK};
   }
@@ -134,11 +132,7 @@ const Map = ({
   const d3Container = useRef(null)
   const tooltipContainer = useRef(null)
 
-  const [usCounties, setUSCounties] = useState<Feature[] | undefined>(undefined)
-  const [usStates, setUSStates] = useState<Feature[] | undefined>(undefined)
-  const [usState, setUSState] = useState<Feature | undefined>(undefined)
   const [jsonData, setJsonData] = useState<Topology | undefined>(undefined)
-  const [isMapLoaded, setIsMapLoaded] = useState<boolean>(false)
 
   const getStateName = (abbr: string) => {
     const filteredState = labelValueStates.find(
@@ -147,67 +141,28 @@ const Map = ({
     return filteredState && filteredState.label
   }
 
-  const getJurisdictionStatus = useCallback(
+  const getJurisdictionStatusNew = useCallback(
     (countyName: string) => {
       const filteredJurisdiction = jurisdictions.find(
         jurisdiction => jurisdiction.name === countyName
       )
 
       if (filteredJurisdiction) {
-        const {
-          currentRoundStatus,
-          ballotManifest,
-          batchTallies,
-          cvrs,
-        } = filteredJurisdiction
-
-        if (!currentRoundStatus) {
-          const files: IFileInfo['processing'][] = [ballotManifest.processing]
-          if (batchTallies) files.push(batchTallies.processing)
-          if (cvrs) files.push(cvrs.processing)
-
-          const numComplete = files.filter(
-            f => f && f.status === FileProcessingStatus.PROCESSED
-          ).length
-          const anyFailed = files.some(
-            f => f && f.status === FileProcessingStatus.ERRORED
-          )
-
-          // Special case when we just have a ballotManifest
-          if (files.length === 1) {
-            if (anyFailed) {
-              return 'danger'
-            }
-            if (numComplete === 1) {
-              return 'success'
-            }
-            return 'gray'
-          }
-
-          // When we have multiple files
-          if (anyFailed) {
-            return 'danger'
-          }
-          if (numComplete === files.length) {
-            return 'gray'
-          }
-        } else {
-          if (currentRoundStatus.status === JurisdictionRoundStatus.COMPLETE) {
+        const jurisdictionStatus = getJurisdictionStatus(filteredJurisdiction)
+        switch (jurisdictionStatus) {
+          case JurisdictionRoundStatus.COMPLETE:
             return 'success'
-          }
-          if (
-            currentRoundStatus.status === JurisdictionRoundStatus.IN_PROGRESS
-          ) {
+          case JurisdictionRoundStatus.FAILED:
+            return 'danger'
+          case JurisdictionRoundStatus.IN_PROGRESS:
             return 'progress'
-          }
-          if (
-            currentRoundStatus.status === JurisdictionRoundStatus.NOT_STARTED ||
-            currentRoundStatus.status === null
-          ) {
+          case JurisdictionRoundStatus.NOT_STARTED:
             return 'gray'
-          }
+          default:
+            return 'default'
         }
       }
+      // incase of non-participant jurisdictions
       return 'default'
     },
     [jurisdictions]
@@ -226,101 +181,83 @@ const Map = ({
         // use local topojson file if CDN link fails to load
         respJsonData = await json('/us-states-counties.json')
       }
-
-      if (respJsonData && respJsonData.objects) {
-        setUSStates(
-          (feature(
-            respJsonData,
-            respJsonData.objects.states
-          ) as GeoJSON.FeatureCollection).features
-        )
-        const singleState = (feature(
-          respJsonData,
-          respJsonData.objects.states
-        ) as GeoJSON.FeatureCollection).features.filter(
-          d =>
-            d &&
-            d.properties &&
-            stateName &&
-            d.properties.name === getStateName(stateName)
-        )[0]
-
-        setUSState(singleState)
-
-        // county ID's initial 2 characters are of state
-        // hence, just setting counties of audit state
-        setUSCounties(
-          (feature(
-            respJsonData,
-            respJsonData.objects.counties
-          ) as GeoJSON.FeatureCollection).features.filter(
-            (d, i) =>
-              d &&
-              d.id &&
-              singleState &&
-              singleState.id &&
-              d.id.toString().slice(0, 2) === singleState.id.toString()
-          )
-        )
-        setJsonData(respJsonData)
-      }
+      setJsonData(respJsonData)
     }
-
     loadMapData()
-  }, [stateName])
+  }, [])
 
   useEffect(() => {
     const projection = geoAlbers()
     const path = geoPath().projection(projection)
 
-    if (d3Container.current && tooltipContainer.current) {
+    if (d3Container.current && tooltipContainer.current && jsonData) {
       const svgElement = select(d3Container.current)
 
-      if (jsonData && usStates && usState && usCounties) {
-        projection.fitSize([width, height], usState)
+      const usState = (feature(
+        jsonData,
+        jsonData.objects.states
+      ) as GeoJSON.FeatureCollection).features.filter(
+        d =>
+          d &&
+          d.properties &&
+          stateName &&
+          d.properties.name === getStateName(stateName)
+      )[0]
 
-        svgElement
-          .append('path')
-          .datum(usState)
-          .attr('class', 'outline')
-          .attr('d', path)
-          .attr('id', 'single-state')
+      // county ID's initial 2 characters are of state
+      // hence, just setting counties of audit state
+      const usCounties = (feature(
+        jsonData,
+        jsonData.objects.counties
+      ) as GeoJSON.FeatureCollection).features.filter(
+        d =>
+          d &&
+          d.id &&
+          usState &&
+          usState.id &&
+          d.id.toString().slice(0, 2) === usState.id.toString()
+      )
+      projection.fitSize([width, height], usState)
 
-        svgElement
-          .append('clipPath')
-          .attr('id', 'clip-state')
-          .append('use')
-          .attr('xlink:href', '#single-state')
+      svgElement
+        .append('path')
+        .datum(usState)
+        .attr('class', 'outline')
+        .attr('d', path)
+        .attr('id', 'single-state')
 
-        svgElement
-          .selectAll('path')
-          .data(usCounties)
-          .enter()
-          .append('path')
-          .attr('d', path)
-          .attr('clip-path', 'url(#clip-state)')
-          .attr('class', d => {
-            let statusClass = ''
-            if (d && d.properties) {
-              statusClass = getJurisdictionStatus(d.properties.name)
-            }
-            return `county ${statusClass}`
-          })
-          .on('mouseover', event => {
-            select(tooltipContainer.current)
-              .style('display', 'block')
-              .style('left', `${event.offsetX + 10}px`)
-              .style('top', `${event.offsetY}px`)
-              .html(event.toElement.__data__.properties.name)
-          })
-          .on('mouseout', () => {
-            select('#tooltip').style('display', 'none')
-          })
+      svgElement
+        .append('clipPath')
+        .attr('id', 'clip-state')
+        .append('use')
+        .attr('xlink:href', '#single-state')
 
-        setIsMapLoaded(true)
-      }
+      svgElement
+        .selectAll('path')
+        .data(usCounties)
+        .enter()
+        .append('path')
+        .attr('d', path)
+        .attr('clip-path', 'url(#clip-state)')
+        .attr('class', d => {
+          let statusClass = ''
+          if (d && d.properties) {
+            statusClass = getJurisdictionStatusNew(d.properties.name)
+          }
+          return `county ${statusClass}`
+        })
+        .on('mouseover', event => {
+          select(tooltipContainer.current)
+            .style('display', 'block')
+            .style('left', `${event.offsetX + 10}px`)
+            .style('top', `${event.offsetY}px`)
+            .html(event.toElement.__data__.properties.name)
+        })
+        .on('mouseout', () => {
+          select('#tooltip').style('display', 'none')
+        })
     }
-  }, [jsonData, getJurisdictionStatus, usStates, usState, usCounties])
+  }, [jsonData, getJurisdictionStatusNew, stateName, jurisdictions])
 
   return (
     <MapWrapper>
@@ -331,7 +268,7 @@ const Map = ({
         ref={d3Container}
       />
       <Tooltip id="tooltip" className="hide-tooltip" ref={tooltipContainer} />
-      {isMapLoaded ? (
+      {jsonData ? (
         <MapLabels>
           {isRoundStarted ? (
             <div>
@@ -339,10 +276,10 @@ const Map = ({
                 <MapLabelsBoxes className="success" /> Complete
               </MapLabelsRow>
               <MapLabelsRow>
-                <MapLabelsBoxes className="progress" /> In-progress
+                <MapLabelsBoxes className="progress" /> In progress
               </MapLabelsRow>
               <MapLabelsRow>
-                <MapLabelsBoxes className="gray" /> Not Started
+                <MapLabelsBoxes className="gray" /> Not started
               </MapLabelsRow>
               <MapLabelsRow>
                 <MapLabelsBoxes className="default" /> Non-Participating
@@ -358,7 +295,7 @@ const Map = ({
                 <MapLabelsBoxes className="danger" /> Manifest upload failed
               </MapLabelsRow>
               <MapLabelsRow>
-                <MapLabelsBoxes className="gray" /> No Manifest uploaded
+                <MapLabelsBoxes className="gray" /> No manifest uploaded
               </MapLabelsRow>
               <MapLabelsRow>
                 <MapLabelsBoxes className="default" /> Non-Participating

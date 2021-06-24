@@ -210,11 +210,6 @@ export const jaApiCalls = {
     },
     response: { status: 'ok' },
   },
-  getMapData: {
-    url: 'https://cdn.jsdelivr.net/npm/us-atlas@3/counties-10m.json',
-    // getting json as response to render the map properly
-    response: mockJSON,
-  },
 }
 
 const aaUser = {
