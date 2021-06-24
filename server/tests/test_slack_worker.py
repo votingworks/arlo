@@ -166,7 +166,7 @@ def test_slack_worker_message_format(snapshot):
         slack_worker.slack_message(activity_log.CalculateSampleSizes(timestamp, base))
     )
 
-    base.user_type = "jurisdiction_admin"
+    base.user_type = None
     snapshot.assert_match(
         slack_worker.slack_message(
             activity_log.UploadFile(
@@ -204,6 +204,7 @@ def test_slack_worker_message_format(snapshot):
         )
     )
 
+    base.user_type = "jurisdiction_admin"
     snapshot.assert_match(
         slack_worker.slack_message(
             activity_log.CreateAuditBoards(
