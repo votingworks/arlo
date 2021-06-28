@@ -818,7 +818,7 @@ export const jurisdictionMocks: { [key: string]: IJurisdiction[] } = {
     },
     {
       id: 'jurisdiction-id-2',
-      name: 'Baldwin',
+      name: 'Baldwin County',
       ballotManifest: manifestMocks.processed,
       batchTallies: talliesMocks.processed,
       currentRoundStatus: {

@@ -726,6 +726,7 @@ describe('Progress screen', () => {
     const expectedCalls = [aaApiCalls.getMapData]
     await withMockFetch(expectedCalls, async () => {
       const { container } = render(
+        // jurisdiction name also contains "County" name
         <Progress
           jurisdictions={jurisdictionMocks.allCompleteWithAlbamaJurisdictions}
           auditSettings={auditSettings.all}

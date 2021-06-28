@@ -143,9 +143,15 @@ const Map = ({
 
   const getJurisdictionStatusClass = useCallback(
     (countyName: string) => {
-      const filteredJurisdiction = jurisdictions.find(
-        jurisdiction => jurisdiction.name === countyName
-      )
+      const filteredJurisdiction = jurisdictions.find(jurisdiction => {
+        const jurisdictionNameLower = jurisdiction.name.toLowerCase()
+        const countyNameLower = countyName.toLowerCase()
+        return (
+          jurisdictionNameLower === countyNameLower ||
+          (jurisdictionNameLower.includes(' county') &&
+            jurisdictionNameLower.replace(' county', '') === countyNameLower)
+        )
+      })
 
       if (filteredJurisdiction) {
         const jurisdictionStatus = getJurisdictionStatus(filteredJurisdiction)
@@ -192,6 +198,8 @@ const Map = ({
 
     if (d3Container.current && tooltipContainer.current && jsonData) {
       const svgElement = select(d3Container.current)
+
+      svgElement.selectAll('path').remove()
 
       const usState = (feature(
         jsonData,
