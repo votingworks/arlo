@@ -6,6 +6,7 @@ from ...models import *  # pylint: disable=wildcard-import
 from ..helpers import *  # pylint: disable=wildcard-import
 from ...util.group_by import group_by
 from ...worker.bgcompute import bgcompute_update_batch_tallies_file
+from ..api.test_support import SUPPORT_EMAIL
 
 
 def test_batch_comparison_only_one_contest_allowed(
@@ -575,3 +576,76 @@ def test_batch_comparison_undo_start_round_1(
         .count()
         == 0
     )
+
+
+def test_support_clear_offline_results_batch_comparison(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    round_1_id: str,
+    audit_board_round_1_ids: List[str],  # pylint: disable=unused-argument
+):
+    set_support_user(client, SUPPORT_EMAIL)
+    rv = client.get(f"/api/support/jurisdictions/{jurisdiction_ids[0]}")
+    assert json.loads(rv.data)["recordedResultsAt"] is None
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/contest")
+    assert rv.status_code == 200
+    contests = json.loads(rv.data)["contests"]
+
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches"
+    )
+    assert rv.status_code == 200
+    batches = json.loads(rv.data)["batches"]
+
+    # Record some batch results
+    choice_ids = [choice["id"] for choice in contests[0]["choices"]]
+    batch_results = {
+        batches[0]["id"]: {choice_ids[0]: 400, choice_ids[1]: 50, choice_ids[2]: 40,},
+        batches[1]["id"]: {choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 40,},
+        batches[2]["id"]: {choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 40,},
+    }
+
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/results",
+        batch_results,
+    )
+    assert_ok(rv)
+
+    rv = client.get(f"/api/support/jurisdictions/{jurisdiction_ids[0]}")
+    assert_is_date(json.loads(rv.data)["recordedResultsAt"])
+
+    # Clear results
+    rv = client.delete(f"/api/support/jurisdictions/{jurisdiction_ids[0]}/results")
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/results"
+    )
+    assert rv.status_code == 200
+    assert json.loads(rv.data) == {
+        batches[0]["id"]: {
+            choice_ids[0]: None,
+            choice_ids[1]: None,
+            choice_ids[2]: None,
+        },
+        batches[1]["id"]: {
+            choice_ids[0]: None,
+            choice_ids[1]: None,
+            choice_ids[2]: None,
+        },
+        batches[2]["id"]: {
+            choice_ids[0]: None,
+            choice_ids[1]: None,
+            choice_ids[2]: None,
+        },
+    }
+
+    rv = client.get(f"/api/support/jurisdictions/{jurisdiction_ids[0]}")
+    assert json.loads(rv.data)["recordedResultsAt"] is None

@@ -24,6 +24,7 @@ const mockElectionBase: IElectionBase = {
   id: 'election-id-1',
   auditName: 'Audit 1',
   auditType: 'BALLOT_POLLING',
+  online: true,
 }
 
 const mockJurisdictionBase: IJurisdictionBase = {
@@ -39,6 +40,7 @@ const mockOrganization: IOrganization = {
       id: 'election-id-2',
       auditName: 'Audit 2',
       auditType: 'BALLOT_COMPARISON',
+      online: false,
     },
   ],
   auditAdmins: [
@@ -60,6 +62,7 @@ const mockElection: IElection = {
 
 const mockJurisdiction: IJurisdiction = {
   ...mockJurisdictionBase,
+  election: mockElectionBase,
   jurisdictionAdmins: [
     { email: 'jurisdiction-admin-1@example.org' },
     { email: 'jurisdiction-admin-2@example.org' },
@@ -72,6 +75,7 @@ const mockJurisdiction: IJurisdiction = {
     },
     { id: 'audit-board-id-2', name: 'Audit Board #2', signedOffAt: null },
   ],
+  recordedResultsAt: null,
 }
 
 const apiCalls = {
@@ -120,6 +124,11 @@ const apiCalls = {
   }),
   reopenAuditBoard: {
     url: '/api/support/audit-boards/audit-board-id-1/sign-off',
+    options: { method: 'DELETE' },
+    response: { status: 'ok' },
+  },
+  deleteOfflineResults: {
+    url: '/api/support/jurisdictions/jurisdiction-id-1/results',
     options: { method: 'DELETE' },
     response: { status: 'ok' },
   },
@@ -567,6 +576,87 @@ describe('Support Tools', () => {
 
       const toast = await screen.findByRole('alert')
       expect(toast).toHaveTextContent('something went wrong: deleteAuditBoards')
+    })
+  })
+
+  it('jurisdiction screen shows offline results and a button to clear them', async () => {
+    const expectedCalls = [
+      supportApiCalls.getUser,
+      apiCalls.getJurisdiction({
+        ...mockJurisdiction,
+        election: { ...mockElection, online: false },
+        recordedResultsAt: '2021-06-23T18:51:56.759+00:00',
+      }),
+      apiCalls.deleteOfflineResults,
+      apiCalls.getJurisdiction({
+        ...mockJurisdiction,
+        election: { ...mockElection, online: false },
+        recordedResultsAt: null,
+      }),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderRoute('/support/jurisdictions/jurisdiction-id-1')
+
+      await screen.findByRole('heading', { name: 'Jurisdiction 1' })
+
+      screen.getByRole('heading', { name: 'Offline Results' })
+      screen.getByText('Results recorded at 6/23/2021, 6:51:56 PM.')
+
+      userEvent.click(
+        screen.getByRole('button', {
+          name: /Clear results/,
+        })
+      )
+
+      const dialog = screen
+        .getByRole('heading', { name: /Confirm/ })
+        .closest('.bp3-dialog')! as HTMLElement
+      within(dialog).getByText(
+        'Are you sure you want to clear results for Jurisdiction 1?'
+      )
+      userEvent.click(
+        within(dialog).getByRole('button', { name: /Clear results/ })
+      )
+
+      const toast = await screen.findByRole('alert')
+      expect(toast).toHaveTextContent('Cleared results for Jurisdiction 1')
+
+      screen.getByText('No results recorded yet.')
+    })
+  })
+
+  it('jurisdiction screen handles error on clear results', async () => {
+    const expectedCalls = [
+      supportApiCalls.getUser,
+      apiCalls.getJurisdiction({
+        ...mockJurisdiction,
+        election: { ...mockElection, online: false },
+        recordedResultsAt: '2021-06-23T18:51:56.759+00:00',
+      }),
+      serverError('deleteOfflineResults', apiCalls.deleteOfflineResults),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderRoute('/support/jurisdictions/jurisdiction-id-1')
+
+      await screen.findByRole('heading', { name: 'Jurisdiction 1' })
+
+      userEvent.click(
+        screen.getByRole('button', {
+          name: /Clear results/,
+        })
+      )
+
+      const dialog = screen
+        .getByRole('heading', { name: /Confirm/ })
+        .closest('.bp3-dialog')! as HTMLElement
+      userEvent.click(
+        within(dialog).getByRole('button', { name: /Clear results/ })
+      )
+
+      const toast = await screen.findByRole('alert')
+      expect(toast).toHaveTextContent(
+        'something went wrong: deleteOfflineResults'
+      )
     })
   })
 })

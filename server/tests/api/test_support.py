@@ -54,6 +54,7 @@ def test_support_get_organization(client: FlaskClient, org_id: str, election_id:
                     "id": election_id,
                     "auditName": "Test Audit test_support_get_organization",
                     "auditType": "BALLOT_POLLING",
+                    "online": False,
                 }
             ],
             "auditAdmins": [{"email": DEFAULT_AA_EMAIL}],
@@ -72,6 +73,7 @@ def test_support_get_election(
             "id": election_id,
             "auditName": "Test Audit test_support_get_election",
             "auditType": "BALLOT_POLLING",
+            "online": False,
             "jurisdictions": [
                 {"id": jurisdiction_ids[0], "name": "J1",},
                 {"id": jurisdiction_ids[1], "name": "J2",},
@@ -231,11 +233,18 @@ def test_support_get_jurisdiction(
         {
             "id": jurisdiction_ids[0],
             "name": "J1",
+            "election": {
+                "id": election_id,
+                "auditName": "Test Audit test_support_get_jurisdiction",
+                "auditType": "BALLOT_POLLING",
+                "online": True,
+            },
             "jurisdictionAdmins": [{"email": default_ja_email(election_id)}],
             "auditBoards": [
                 {"id": id, "name": f"Audit Board #{i+1}", "signedOffAt": None}
                 for i, id in enumerate(audit_board_round_1_ids)
             ],
+            "recordedResultsAt": None,
         },
     )
 
@@ -417,3 +426,123 @@ def test_support_reopen_audit_board(
     assert_ok(rv)
 
     assert AuditBoard.query.get(audit_board.id).signed_off_at is None
+
+
+# See test_batch_comparison.py for batch comparison test case
+def test_support_clear_offline_results_ballot_polling(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    contest_ids: List[str],
+    election_settings,  # pylint: disable=unused-argument
+    manifests,  # pylint: disable=unused-argument
+):
+    election = Election.query.get(election_id)
+    election.online = False
+    db_session.commit()
+
+    set_support_user(client, SUPPORT_EMAIL)
+    rv = client.get(f"/api/support/jurisdictions/{jurisdiction_ids[0]}")
+    assert json.loads(rv.data)["recordedResultsAt"] is None
+
+    # Can't clear results if audit hasn't started
+    rv = client.delete(f"/api/support/jurisdictions/{jurisdiction_ids[0]}/results")
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [{"errorType": "Conflict", "message": "Audit has not started.",}]
+    }
+
+    # Start the round
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    sample_sizes = json.loads(rv.data)["sampleSizes"]
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {
+            "roundNum": 1,
+            "sampleSizes": {contest_ids[0]: sample_sizes[contest_ids[0]][0]},
+        },
+    )
+    assert_ok(rv)
+    rv = client.get(f"/api/election/{election_id}/round")
+    round_1_id = json.loads(rv.data)["rounds"][0]["id"]
+
+    # Can't clear results if results haven't been recorded yet
+    rv = client.delete(f"/api/support/jurisdictions/{jurisdiction_ids[0]}/results")
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Jurisdiction doesn't have any results recorded.",
+            }
+        ]
+    }
+
+    # Create audit boards and record results
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
+        [{"name": "Audit Board #1"}],
+    )
+    assert_ok(rv)
+    contests = (
+        Contest.query.filter_by(election_id=election_id)
+        .order_by(Contest.created_at)
+        .all()
+    )
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results",
+        {
+            contest.id: {choice.id: 1 for choice in contest.choices}
+            for contest in contests
+        },
+    )
+    assert_ok(rv)
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results"
+    )
+
+    rv = client.get(f"/api/support/jurisdictions/{jurisdiction_ids[0]}")
+    assert_is_date(json.loads(rv.data)["recordedResultsAt"])
+
+    # Clear results
+    rv = client.delete(f"/api/support/jurisdictions/{jurisdiction_ids[0]}/results")
+    assert_ok(rv)
+
+    contests = (
+        Contest.query.filter_by(election_id=election_id)
+        .order_by(Contest.created_at)
+        .all()
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results"
+    )
+    assert json.loads(rv.data) == {
+        contest.id: {choice.id: None for choice in contest.choices}
+        for contest in contests
+    }
+
+    rv = client.get(f"/api/support/jurisdictions/{jurisdiction_ids[0]}")
+    assert json.loads(rv.data)["recordedResultsAt"] is None
+
+    # End the round
+    election = Election.query.get(election_id)
+    end_round(election, election.rounds[0])
+
+    # Can't clear results after round ends
+    rv = client.delete(f"/api/support/jurisdictions/{jurisdiction_ids[0]}/results")
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Can't clear results after round ends.",
+            }
+        ]
+    }

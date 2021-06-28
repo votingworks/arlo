@@ -33,6 +33,7 @@ import {
   IAuditBoard,
   useClearAuditBoards,
   useReopenAuditBoard,
+  useClearOfflineResults,
 } from './support-api'
 import { useConfirm, Confirm } from '../Atoms/Confirm'
 
@@ -166,14 +167,14 @@ const Organizations = () => {
 }
 
 const Table = styled(HTMLTable)`
-  margin-top: 10px;
+  margin: 10px 0;
   width: 100%;
   table-layout: fixed;
   td:first-child {
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  td:last-child {
+  td:last-child:not(:first-child) {
     padding-right: 15px;
     text-align: right;
   }
@@ -306,11 +307,18 @@ const Jurisdiction = ({ jurisdictionId }: { jurisdictionId: string }) => {
   const jurisdiction = useJurisdiction(jurisdictionId)
   const clearAuditBoards = useClearAuditBoards()
   const reopenAuditBoard = useReopenAuditBoard()
+  const clearOfflineResults = useClearOfflineResults()
   const { confirm, confirmProps } = useConfirm()
 
   if (!jurisdiction.isSuccess) return null
 
-  const { name, jurisdictionAdmins, auditBoards } = jurisdiction.data
+  const {
+    name,
+    election,
+    jurisdictionAdmins,
+    auditBoards,
+    recordedResultsAt,
+  } = jurisdiction.data
 
   const onClickClearAuditBoards = () => {
     confirm({
@@ -347,6 +355,25 @@ const Jurisdiction = ({ jurisdictionId }: { jurisdictionId: string }) => {
     })
   }
 
+  const onClickClearOfflineResults = () => {
+    confirm({
+      title: 'Confirm',
+      description: `Are you sure you want to clear results for ${name}?`,
+      yesButtonLabel: 'Clear results',
+      onYesClick: async () => {
+        try {
+          await clearOfflineResults.mutateAsync({
+            jurisdictionId,
+          })
+          toast.success(`Cleared results for ${name}`)
+        } catch (error) {
+          toast.error(error.message)
+          throw error
+        }
+      },
+    })
+  }
+
   return (
     <div style={{ width: '100%' }}>
       <H2>{name}</H2>
@@ -354,7 +381,7 @@ const Jurisdiction = ({ jurisdictionId }: { jurisdictionId: string }) => {
         <Column>
           <H3>Current Round Audit Boards</H3>
           {auditBoards.length === 0 ? (
-            "The jurisdiction hasn't created audit boards yet."
+            <p>The jurisdiction hasn&apos;t created audit boards yet.</p>
           ) : (
             <>
               <Button intent="danger" onClick={onClickClearAuditBoards}>
@@ -365,19 +392,41 @@ const Jurisdiction = ({ jurisdictionId }: { jurisdictionId: string }) => {
                   {auditBoards.map(auditBoard => (
                     <tr key={auditBoard.id}>
                       <td>{auditBoard.name}</td>
-                      <td>
-                        <Button
-                          onClick={() => onClickReopenAuditBoard(auditBoard)}
-                          disabled={!auditBoard.signedOffAt}
-                        >
-                          Reopen
-                        </Button>
-                      </td>
+                      {election.online && (
+                        <td>
+                          <Button
+                            onClick={() => onClickReopenAuditBoard(auditBoard)}
+                            disabled={!auditBoard.signedOffAt}
+                          >
+                            Reopen
+                          </Button>
+                        </td>
+                      )}
                     </tr>
                   ))}
                 </tbody>
               </Table>
-              <Confirm {...confirmProps} />
+            </>
+          )}
+          {!election.online && (
+            <>
+              <H3>Offline Results</H3>
+              {recordedResultsAt ? (
+                <>
+                  <p>
+                    Results recorded at{' '}
+                    {new Date(recordedResultsAt).toLocaleString()}.
+                  </p>
+                  <Button
+                    intent={Intent.DANGER}
+                    onClick={onClickClearOfflineResults}
+                  >
+                    Clear results
+                  </Button>
+                </>
+              ) : (
+                <p>No results recorded yet.</p>
+              )}
             </>
           )}
         </Column>
@@ -401,6 +450,7 @@ const Jurisdiction = ({ jurisdictionId }: { jurisdictionId: string }) => {
             </tbody>
           </Table>
         </Column>
+        <Confirm {...confirmProps} />
       </div>
     </div>
   )

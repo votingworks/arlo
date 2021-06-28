@@ -23,7 +23,9 @@ from ..config import (
     FLASK_ENV,
 )
 from ..util.jsonschema import validate
+from ..util.isoformat import isoformat
 from .rounds import get_current_round
+from .batches import already_audited_batches
 
 AUTH0_DOMAIN = urlparse(AUDITADMIN_AUTH0_BASE_URL).hostname
 
@@ -109,6 +111,7 @@ def get_organization(organization_id: str):
                 id=election.id,
                 auditName=election.audit_name,
                 auditType=election.audit_type,
+                online=election.online,
             )
             for election in organization.elections
         ],
@@ -130,6 +133,7 @@ def get_election(election_id: str):
         id=election.id,
         auditName=election.audit_name,
         auditType=election.audit_type,
+        online=election.online,
         jurisdictions=[
             dict(id=jurisdiction.id, name=jurisdiction.name,)
             for jurisdiction in election.jurisdictions
@@ -186,9 +190,33 @@ def get_jurisdiction(jurisdiction_id: str):
         jurisdiction_id=jurisdiction.id, round_id=round and round.id
     )
 
+    if jurisdiction.election.audit_type == AuditType.BATCH_COMPARISON:
+        recorded_results_at = (
+            BatchResult.query.join(Batch)
+            .filter_by(jurisdiction_id=jurisdiction_id)
+            .join(SampledBatchDraw)
+            .filter_by(round_id=round and round.id)
+            .limit(1)
+            .value(BatchResult.created_at)
+        )
+    else:
+        recorded_results_at = (
+            JurisdictionResult.query.filter_by(
+                jurisdiction_id=jurisdiction.id, round_id=round and round.id
+            )
+            .limit(1)
+            .value(JurisdictionResult.created_at)
+        )
+
     return jsonify(
         id=jurisdiction.id,
         name=jurisdiction.name,
+        election=dict(
+            id=jurisdiction.election.id,
+            auditName=jurisdiction.election.audit_name,
+            auditType=jurisdiction.election.audit_type,
+            online=jurisdiction.election.online,
+        ),
         jurisdictionAdmins=sorted(
             [
                 dict(email=admin.user.email)
@@ -204,6 +232,7 @@ def get_jurisdiction(jurisdiction_id: str):
             )
             for audit_board in audit_boards
         ],
+        recordedResultsAt=isoformat(recorded_results_at),
     )
 
 
@@ -250,6 +279,44 @@ def reopen_audit_board(audit_board_id: str):
         raise Conflict("Audit board has not signed off.")
 
     audit_board.signed_off_at = None
+    db_session.commit()
+
+    return jsonify(status="ok")
+
+
+@api.route("/support/jurisdictions/<jurisdiction_id>/results", methods=["DELETE"])
+@restrict_access_support
+def clear_offline_results(jurisdiction_id: str):
+    jurisdiction = get_or_404(Jurisdiction, jurisdiction_id)
+    round = get_current_round(jurisdiction.election)
+
+    if not round:
+        raise Conflict("Audit has not started.")
+    if round.ended_at:
+        raise Conflict("Can't clear results after round ends.")
+
+    if jurisdiction.election.audit_type == AuditType.BATCH_COMPARISON:
+        num_deleted = (
+            BatchResult.query.filter(
+                BatchResult.batch_id.in_(
+                    Batch.query.filter_by(jurisdiction_id=jurisdiction_id)
+                    .join(SampledBatchDraw)
+                    .filter_by(round_id=round.id)
+                    .with_entities(Batch.id)
+                    .subquery()
+                )
+            )
+            .filter(Batch.id.notin_(already_audited_batches(jurisdiction, round)))
+            .delete(synchronize_session=False)
+        )
+    else:
+        num_deleted = JurisdictionResult.query.filter_by(
+            jurisdiction_id=jurisdiction.id, round_id=round.id
+        ).delete(synchronize_session=False)
+
+    if num_deleted == 0:
+        raise Conflict("Jurisdiction doesn't have any results recorded.")
+
     db_session.commit()
 
     return jsonify(status="ok")
