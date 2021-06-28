@@ -11,15 +11,21 @@ https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1443314 for the
 publication).
 """
 from decimal import Decimal, ROUND_CEILING
-from typing import Dict, Tuple, Any
+from typing import Dict, Tuple, Any, TypedDict
 from .sampler_contest import Contest
 
 
+class BatchError(TypedDict):
+    error: int
+    weighted_error: Decimal
+
+
+# TODO record negative errors in the report even though we count them as 0
 def compute_error(
     batch_results: Dict[str, Dict[str, int]],
     sampled_results: Dict[str, Dict[str, int]],
     contest: Contest,
-) -> Decimal:
+) -> BatchError:
     """
     Computes the error in this batch
 
@@ -42,11 +48,11 @@ def compute_error(
         the maximum across-contest relative overstatement for batch p
     """
 
-    error = Decimal(0.0)
+    max_error = BatchError(error=0, weighted_error=Decimal(0.0))
     margins = contest.margins
 
     if contest.name not in batch_results:
-        return Decimal(0.0)
+        return max_error
 
     for winner in margins["winners"]:
         for loser in margins["losers"]:
@@ -60,12 +66,12 @@ def compute_error(
             if V_wl == 0:
                 return Decimal("inf")
 
-            e_pwl = Decimal((v_wp - v_lp) - (a_wp - a_lp)) / Decimal(V_wl)
+            error = (v_wp - v_lp) - (a_wp - a_lp)
+            weighted_error = Decimal(error) / Decimal(V_wl)
+            if error["weighted_error"] > max_error["weighted_error"]:
+                max_error = error
 
-            if e_pwl > error:
-                error = e_pwl
-
-    return error
+    return max_error
 
 
 def compute_max_error(
@@ -148,7 +154,9 @@ def compute_U(
     U = Decimal(0.0)
     for batch in reported_results:
         if batch in sample_results:
-            U += compute_error(reported_results[batch], sample_results[batch], contest)
+            U += compute_error(reported_results[batch], sample_results[batch], contest)[
+                "weighted_error"
+            ]
         else:
             U += compute_max_error(reported_results[batch], contest)
 
@@ -275,7 +283,9 @@ def compute_risk(
     U = compute_U(reported_results, {}, contest)
 
     for batch in sample_results:
-        e_p = compute_error(reported_results[batch], sample_results[batch], contest)
+        e_p = compute_error(reported_results[batch], sample_results[batch], contest)[
+            "weighted_error"
+        ]
 
         u_p = compute_max_error(reported_results[batch], contest)
 
