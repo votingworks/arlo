@@ -8,6 +8,7 @@ from ..models import ActivityLogRecord
 from ..auth.lib import UserType
 from ..database import db_session
 from . import activity_log
+from ..sentry import configure_sentry
 
 
 # pylint: disable=too-many-return-statements
@@ -314,6 +315,7 @@ def send_new_slack_notification(organization_id: str = None) -> None:
 
 
 if __name__ == "__main__":  # pragma: no cover
+    configure_sentry()
     # We send at most one Slack notification per second, since that's what the
     # Slack API allows.
     while True:

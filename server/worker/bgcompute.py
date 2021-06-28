@@ -9,6 +9,7 @@ from server.api.ballot_manifest import process_ballot_manifest_file
 from server.api.batch_tallies import process_batch_tallies_file
 from server.api.cvrs import process_cvr_file
 from server.worker.tasks import run_new_tasks
+from server.sentry import configure_sentry
 
 
 def bgcompute():
@@ -203,4 +204,5 @@ def bgcompute_forever():
 
 
 if __name__ == "__main__":
+    configure_sentry()
     bgcompute_forever()
