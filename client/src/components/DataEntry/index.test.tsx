@@ -1,6 +1,6 @@
 import React from 'react'
 import { waitFor, screen, within } from '@testing-library/react'
-import { Route } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import userEvent from '@testing-library/user-event'
 import { renderWithRouter, withMockFetch } from '../testUtilities'
 import DataEntry from './index'
@@ -11,15 +11,38 @@ import {
   dummyBallotsNotAudited,
 } from './_mocks'
 import { contestMocks } from '../MultiJurisdictionAudit/useSetupMenuItems/_mocks'
+import AuthDataProvider, { useAuthDataContext } from '../UserContext'
+
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'), // use actual for all non-hook parts
+  useRouteMatch: jest.fn(),
+  useParams: jest.fn(),
+}))
+const paramsMock = useParams as jest.Mock
+paramsMock.mockReturnValue({
+  electionId: '1',
+  auditBoardId: 'audit-board-1',
+})
+
+afterEach(() => {
+  paramsMock.mockReturnValue({
+    electionId: '1',
+    auditBoardId: 'audit-board-1',
+  })
+})
 
 window.scrollTo = jest.fn()
 
+const DataEntryWithAuth: React.FC = () => {
+  const auth = useAuthDataContext()
+  return auth ? <DataEntry /> : null
+}
+
 const renderDataEntry = () =>
   renderWithRouter(
-    <Route
-      path="/election/:electionId/audit-board/:auditBoardId"
-      component={DataEntry}
-    />,
+    <AuthDataProvider>
+      <DataEntryWithAuth />
+    </AuthDataProvider>,
     {
       route: '/election/1/audit-board/audit-board-1',
     }
@@ -27,10 +50,9 @@ const renderDataEntry = () =>
 
 const renderBallot = () =>
   renderWithRouter(
-    <Route
-      path="/election/:electionId/audit-board/:auditBoardId/batch/:batchId/ballot/:ballotPosition"
-      component={DataEntry}
-    />,
+    <AuthDataProvider>
+      <DataEntryWithAuth />
+    </AuthDataProvider>,
     {
       route:
         '/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/2112',
@@ -41,7 +63,14 @@ const apiCalls = {
   getAuditBoard: {
     url: '/api/me',
     response: {
-      user: { ...dummyBoards()[0], type: 'AUDIT_BOARD' },
+      user: { ...dummyBoards()[0] },
+      supportUser: null,
+    },
+  },
+  getAuditBoardInitial: {
+    url: '/api/me',
+    response: {
+      user: { ...dummyBoards()[1] },
       supportUser: null,
     },
   },
@@ -103,10 +132,7 @@ describe('DataEntry', () => {
   describe('member form', () => {
     it('submits and goes to ballot table', async () => {
       const expectedCalls = [
-        {
-          ...apiCalls.getAuditBoard,
-          response: { user: { ...dummyBoards()[1], type: 'AUDIT_BOARD' } }, // No members set
-        },
+        apiCalls.getAuditBoardInitial,
         apiCalls.putAuditBoardMembers,
         apiCalls.getAuditBoard,
         apiCalls.getContests,
@@ -115,12 +141,12 @@ describe('DataEntry', () => {
       await withMockFetch(expectedCalls, async () => {
         const { container } = renderDataEntry()
 
-        await screen.findByText('Audit Board #2: Member Sign-in')
+        await screen.findByText('Audit Board #1: Member Sign-in')
         const nameInputs = screen.getAllByLabelText('Full Name')
         expect(nameInputs).toHaveLength(2)
 
-        await userEvent.type(nameInputs[0], `Name 1`)
-        await userEvent.type(nameInputs[1], `Name 2`)
+        userEvent.type(nameInputs[0], `Name 1`)
+        userEvent.type(nameInputs[1], `Name 2`)
         userEvent.click(screen.getByRole('button', { name: 'Next' }))
 
         await screen.findByText('Ballots for Audit Board #1')
@@ -147,7 +173,8 @@ describe('DataEntry', () => {
       })
     })
 
-    it('renders board table with not audited ballots', async () => {
+    it('renders board table with no audited ballots', async () => {
+      jest.setTimeout(10000)
       const expectedCalls = [
         apiCalls.getAuditBoard,
         apiCalls.getContests,
@@ -225,7 +252,16 @@ describe('DataEntry', () => {
             name: 'Ballot Not Found',
           })
         )
+        const dialog = (await screen.findByRole('heading', {
+          name: /Confirm the Ballot Selections/,
+        })).closest('.bp3-dialog')! as HTMLElement
+        expect(within(dialog).getAllByText('Ballot Not Found').length).toBe(2)
+        userEvent.click(
+          within(dialog).getByRole('button', { name: 'Confirm Selections' })
+        )
+
         await waitFor(() => {
+          expect(dialog).not.toBeInTheDocument()
           expect(pushSpy).toBeCalledTimes(1)
         })
 

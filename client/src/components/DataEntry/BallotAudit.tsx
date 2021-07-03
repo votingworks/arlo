@@ -39,7 +39,6 @@ const SubmitButton = styled(FormButton)`
 
 interface IProps {
   contests: IContest[]
-  goReview: () => void
   interpretations: IBallotInterpretation[]
   setInterpretations: (interpretations: IBallotInterpretation[]) => void
   previousBallot: () => void
@@ -58,9 +57,7 @@ const BallotAudit: React.FC<IProps> = ({
         <Formik
           initialValues={{ interpretations }}
           enableReinitialize
-          onSubmit={async values => {
-            await setInterpretations(values.interpretations)
-          }}
+          onSubmit={values => setInterpretations(values.interpretations)}
         >
           {({
             handleSubmit,
@@ -85,6 +82,13 @@ const BallotAudit: React.FC<IProps> = ({
                     onClick={handleSubmit}
                     intent="success"
                     large
+                    disabled={
+                      !(
+                        values.interpretations.filter(
+                          ({ interpretation }) => interpretation != null
+                        ).length > 0
+                      )
+                    }
                   >
                     Submit Selections
                   </SubmitButton>

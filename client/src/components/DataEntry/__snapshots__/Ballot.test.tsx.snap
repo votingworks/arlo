@@ -9,19 +9,19 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
       class="sc-ckVGcZ hkbcRl"
     >
       <div
-        class="sc-hSdWYo bBCYTy"
+        class="sc-eNQAEJ gXOgPQ"
       >
         <div
-          class="sc-eHgmQL dcJsFa"
+          class="sc-hMqMXs eXQboI"
         >
           <div
-            class="sc-cvbbAY gRuSFg"
+            class="sc-kEYyzF kpxmCw"
           >
             <div
-              class="sc-jDwBTQ gSQAvM"
+              class="sc-cvbbAY hPtbBE"
             >
               <button
-                class="bp3-button bp3-minimal sc-jAaTju haGJix"
+                class="bp3-button bp3-minimal sc-eHgmQL dcdZhM"
                 href="/election/1/audit-board/1"
                 type="button"
               >
@@ -51,7 +51,7 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
                 </span>
               </button>
               <h3
-                class="bp3-heading sc-iAyFgw jccTdz"
+                class="bp3-heading sc-jKJlTe jiOjCA"
               >
                 Audit Ballot Selections
               </h3>
@@ -60,7 +60,7 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
               class="bp3-divider sc-bdVaJa gqVLlZ"
             />
             <div
-              class="sc-brqgnP mJeGI"
+              class="sc-iAyFgw cyFnbk"
             >
               <div>
                 <h5
@@ -69,7 +69,7 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
                   batch
                 </h5>
                 <h4
-                  class="bp3-heading sc-cMljjf eWlDYe"
+                  class="bp3-heading sc-hSdWYo hdYogx"
                 >
                   0003-04-Precinct 13 (Jonesboro Fire Department)
                 </h4>
@@ -81,7 +81,7 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
                   position
                 </h5>
                 <h4
-                  class="bp3-heading sc-cMljjf eWlDYe"
+                  class="bp3-heading sc-hSdWYo hdYogx"
                 >
                   313
                 </h4>
@@ -93,14 +93,14 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
                   tabulator
                 </h5>
                 <h4
-                  class="bp3-heading sc-cMljjf eWlDYe"
+                  class="bp3-heading sc-hSdWYo hdYogx"
                 >
                   11
                 </h4>
               </div>
               <div>
                 <button
-                  class="bp3-button bp3-large bp3-intent-danger sc-gPEVay ehdNJA"
+                  class="bp3-button bp3-large bp3-intent-danger sc-jWBwVP hdEXRk"
                   type="button"
                 >
                   <span
@@ -253,7 +253,7 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
             </div>
           </div>
           <div
-            class="sc-jWBwVP fydRML"
+            class="sc-kkGfuU hgHiwW"
           >
             <h4
               class="bp3-heading"
@@ -261,7 +261,7 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
               Instructions
             </h4>
             <ol
-              class="bp3-list sc-iRbamj iNBjzq"
+              class="bp3-list sc-brqgnP cxHmEu"
             >
               <li>
                 Confirm that you are looking at the correct ballot for the batch and position. If the ballot was not located, select
@@ -307,19 +307,19 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
       class="sc-ckVGcZ hkbcRl"
     >
       <div
-        class="sc-hSdWYo bBCYTy"
+        class="sc-eNQAEJ gXOgPQ"
       >
         <div
-          class="sc-eHgmQL dcJsFa"
+          class="sc-hMqMXs eXQboI"
         >
           <div
-            class="sc-cvbbAY gRuSFg"
+            class="sc-kEYyzF kpxmCw"
           >
             <div
-              class="sc-jDwBTQ gSQAvM"
+              class="sc-cvbbAY hPtbBE"
             >
               <button
-                class="bp3-button bp3-minimal sc-jAaTju haGJix"
+                class="bp3-button bp3-minimal sc-eHgmQL dcdZhM"
                 href="/election/1/audit-board/1"
                 type="button"
               >
@@ -349,7 +349,7 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
                 </span>
               </button>
               <h3
-                class="bp3-heading sc-iAyFgw jccTdz"
+                class="bp3-heading sc-jKJlTe jiOjCA"
               >
                 Audit Ballot Selections
               </h3>
@@ -358,7 +358,7 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
               class="bp3-divider sc-bdVaJa gqVLlZ"
             />
             <div
-              class="sc-brqgnP mJeGI"
+              class="sc-iAyFgw cyFnbk"
             >
               <div>
                 <h5
@@ -367,7 +367,7 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
                   batch
                 </h5>
                 <h4
-                  class="bp3-heading sc-cMljjf eWlDYe"
+                  class="bp3-heading sc-hSdWYo hdYogx"
                 >
                   0003-04-Precinct 19 (Jonesboro Fire Department)
                 </h4>
@@ -379,7 +379,7 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
                   position
                 </h5>
                 <h4
-                  class="bp3-heading sc-cMljjf eWlDYe"
+                  class="bp3-heading sc-hSdWYo hdYogx"
                 >
                   2112
                 </h4>
@@ -391,14 +391,14 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
                   tabulator
                 </h5>
                 <h4
-                  class="bp3-heading sc-cMljjf eWlDYe"
+                  class="bp3-heading sc-hSdWYo hdYogx"
                 >
                   11
                 </h4>
               </div>
               <div>
                 <button
-                  class="bp3-button bp3-large bp3-intent-danger sc-gPEVay ehdNJA"
+                  class="bp3-button bp3-large bp3-intent-danger sc-jWBwVP hdEXRk"
                   type="button"
                 >
                   <span
@@ -523,7 +523,9 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
                       class="sc-ifAKCX jzSIMx"
                     >
                       <button
-                        class="bp3-button bp3-large bp3-intent-success sc-kpOJdX fHhlNF sc-gqjmRU eotNvg"
+                        class="bp3-button bp3-disabled bp3-large bp3-intent-success sc-kpOJdX fHhlNF sc-gqjmRU eotNvg"
+                        disabled=""
+                        tabindex="-1"
                         type="submit"
                       >
                         <span
@@ -549,7 +551,7 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
             </div>
           </div>
           <div
-            class="sc-jWBwVP fydRML"
+            class="sc-kkGfuU hgHiwW"
           >
             <h4
               class="bp3-heading"
@@ -557,7 +559,7 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
               Instructions
             </h4>
             <ol
-              class="bp3-list sc-iRbamj iNBjzq"
+              class="bp3-list sc-brqgnP cxHmEu"
             >
               <li>
                 Confirm that you are looking at the correct ballot for the batch and position. If the ballot was not located, select

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { H3, H4, Button, Colors, OL } from '@blueprintjs/core'
 import styled from 'styled-components'
 import { Redirect } from 'react-router-dom'
@@ -9,12 +9,13 @@ import {
   IContest as IContestApi,
   BallotStatus,
   IContest,
+  Interpretation,
 } from '../../types'
 import { FlushDivider, SubTitle } from './Atoms'
 import { Inner } from '../Atoms/Wrapper'
 import { IBallot } from '../MultiJurisdictionAudit/RoundManagement/useBallots'
 import { hashBy } from '../../utils/array'
-import { useConfirm, ConfirmReview } from './ConfirmReview'
+import { useConfirm, Confirm } from '../Atoms/Confirm'
 
 const TopH3 = styled(H3)`
   display: inline-block;
@@ -139,52 +140,99 @@ const Ballot: React.FC<IProps> = ({
   )
   const ballot = ballots[ballotIx]
 
-  const [auditing, setAuditing] = useState(true)
   const [interpretations, setInterpretations] = useState<
     IBallotInterpretation[]
   >(contests.map(emptyInterpretation))
   const { confirm, confirmProps } = useConfirm()
 
+  const interpretiationsRef = useRef<IBallotInterpretation[]>(
+    contests.map(emptyInterpretation)
+  )
+  interpretiationsRef.current = interpretations
+
+  const renderInterpretation = (
+    { interpretation, choiceIds }: IBallotInterpretation,
+    contest: IContest
+  ) => {
+    if (!interpretation) return <div />
+    switch (interpretation) {
+      case Interpretation.VOTE:
+        return contest.choices.map(choice =>
+          choiceIds.includes(choice.id) ? (
+            <h3 key={choice.id}>{choice.name}</h3>
+          ) : null
+        )
+      case Interpretation.BLANK:
+        return <h3>Blank vote</h3>
+      case Interpretation.CONTEST_NOT_ON_BALLOT:
+        return <h3>Not on Ballot</h3>
+      // case Interpretation.CANT_AGREE:
+      // case for Interpretation.CANT_AGREE in case we decide to put it back in again
+      // return (
+      //   <LockedButton disabled large intent="primary">
+      //     Audit board can&apos;t agree
+      //   </LockedButton>
+      // )
+      default:
+        return null
+    }
+  }
+
+  const ballotSubmitFunc = (isNotFound: boolean) =>
+    isNotFound
+      ? submitBallot(ballot.id, BallotStatus.NOT_FOUND, [])
+      : submitBallot(
+          ballot.id,
+          BallotStatus.AUDITED,
+          interpretiationsRef.current.filter(
+            ({ interpretation }) => interpretation !== null
+          )
+        )
+
+  const initiateConfirm = (isNotFound: boolean) =>
+    confirm({
+      title: 'Confirm the Ballot Selections',
+      description: (
+        <>
+          {contests.map((contest, i) => (
+            <div key={contest.id}>
+              <p>{contest.name}</p>
+              {isNotFound ? (
+                <h3>Ballot Not Found</h3>
+              ) : (
+                <>
+                  {renderInterpretation(
+                    interpretiationsRef.current[i],
+                    contest
+                  )}
+                  <p>
+                    {interpretiationsRef.current[i].comment &&
+                      `Comment: ${interpretiationsRef.current[i].comment}`}
+                  </p>
+                </>
+              )}
+            </div>
+          ))}
+        </>
+      ),
+      onYesClick: async () => {
+        ballotSubmitFunc(isNotFound)
+        nextBallot()
+      },
+      yesButtonLabel: 'Confirm Selections',
+      noButtonLabel: 'Change Selections',
+    })
+
   const setInterpretationsFunc = (
     newInterpretations: IBallotInterpretation[]
   ) => {
     setInterpretations(newInterpretations)
-    setAuditing(false)
+    initiateConfirm(true)
   }
 
   const submitNotFound = async () => {
-    await submitBallot(ballot.id, BallotStatus.NOT_FOUND, [])
-    nextBallot()
+    initiateConfirm(true)
   }
-
-  useEffect(() => {
-    if (!auditing) {
-      confirm({
-        interpretations,
-        contests,
-        onYesClick: async () => {
-          submitBallot(
-            ballot.id,
-            BallotStatus.AUDITED,
-            interpretations.filter(
-              ({ interpretation }) => interpretation !== null
-            )
-          )
-          setAuditing(true)
-          nextBallot()
-        },
-      })
-      setAuditing(true)
-    }
-  }, [
-    auditing,
-    confirm,
-    interpretations,
-    contests,
-    submitBallot,
-    ballot,
-    nextBallot,
-  ])
 
   const contestsHash = hashBy(contests, c => c.id)
   useEffect(() => {
@@ -255,12 +303,11 @@ const Ballot: React.FC<IProps> = ({
               <div>
                 <BallotAudit
                   contests={contests}
-                  goReview={() => setAuditing(false)}
                   interpretations={interpretations}
                   setInterpretations={setInterpretationsFunc}
                   previousBallot={previousBallot}
                 />
-                <ConfirmReview {...confirmProps} />
+                <Confirm {...confirmProps} />
               </div>
             </BallotWrapper>
             <InstructionsWrapper>

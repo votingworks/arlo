@@ -10,15 +10,19 @@ import Ballot from './Ballot'
 import SignOff from './SignOff'
 import { Wrapper, Inner } from '../Atoms/Wrapper'
 import { IBallot } from '../MultiJurisdictionAudit/RoundManagement/useBallots'
-import { IAuditBoard, IAuditBoardMember } from '../UserContext'
+import {
+  IAuditBoardMember,
+  useAuthDataContext,
+  IAuthData,
+} from '../UserContext'
 
 const PaddedInner = styled(Inner)`
   padding-top: 30px;
 `
 
-const loadAuditBoard = async (): Promise<IAuditBoard | null> => {
-  const response = await api<{ user: IAuditBoard }>(`/me`)
-  return response && response.user
+const loadAuditBoard = async () => {
+  const response = await api<IAuthData>('/me')
+  return response
 }
 
 const loadContests = async (
@@ -117,29 +121,31 @@ const postSignoff = async (
 }
 
 const DataEntry: React.FC = () => {
+  const auth = useAuthDataContext()
+
   const history = useHistory()
   const { electionId, auditBoardId } = useParams<{
     electionId: string
     auditBoardId: string
   }>()
-  const [auditBoard, setAuditBoard] = useState<IAuditBoard | null>(null)
+
   const [contests, setContests] = useState<IContest[] | null>(null)
   const [ballots, setBallots] = useState<IBallot[] | null>(null)
 
-  useEffect(() => {
-    ;(async () => {
-      const response = await loadAuditBoard()
-      if (!response) return
-      setAuditBoard(response)
-    })()
-  }, [electionId, auditBoardId])
+  const auditBoard =
+    auth && auth.user && auth.user.type === 'audit_board' ? auth.user : null
 
   useEffect(() => {
     ;(async () => {
+      if (auditBoard === null) return
       if (auditBoard && auditBoard.members.length > 0) {
         const { jurisdictionId, roundId, id } = auditBoard
-        setContests(await loadContests(electionId, jurisdictionId, roundId, id))
-        setBallots(await loadBallots(electionId, jurisdictionId, roundId, id))
+        loadContests(electionId, jurisdictionId, roundId, id).then(contest =>
+          setContests(contest)
+        )
+        loadBallots(electionId, jurisdictionId, roundId, id).then(ballotsObj =>
+          setBallots(ballotsObj)
+        )
       }
     })()
   }, [electionId, auditBoard])
@@ -154,8 +160,8 @@ const DataEntry: React.FC = () => {
     )
     if (!response1) return
     const response2 = await loadAuditBoard()
-    if (!response2) return
-    setAuditBoard(response2)
+    if (!response2 || !auth) return
+    auth.setAuthData(response2)
   }
 
   if (auditBoard && auditBoard.members.length === 0) {
@@ -242,8 +248,8 @@ const DataEntry: React.FC = () => {
     )
     if (!response1) return
     const response2 = await loadAuditBoard()
-    if (!response2) return
-    setAuditBoard(response2)
+    if (!response2 || !auth) return
+    auth.setAuthData(response2)
   }
 
   if (auditBoard.signedOffAt) {

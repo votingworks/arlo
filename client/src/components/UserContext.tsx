@@ -69,6 +69,7 @@ export interface ISupportUser {
 export interface IAuthData {
   user: IUser | null
   supportUser: ISupportUser | null
+  setAuthData: (arg0: IAuthData) => void
 }
 
 const AuthDataContext = createContext<IAuthData | null>(null)
@@ -84,7 +85,10 @@ const AuthDataProvider = (props: any) => {
     })()
   }, [])
 
-  const authDataValue = useMemo(() => authData && { ...authData }, [authData])
+  const authDataValue = useMemo(
+    () => authData && { ...authData, setAuthData },
+    [authData]
+  )
 
   return <AuthDataContext.Provider value={authDataValue} {...props} />
 }

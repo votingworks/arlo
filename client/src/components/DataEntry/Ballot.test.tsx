@@ -181,7 +181,6 @@ describe('Ballot', () => {
 
     fireEvent.change(commentInput, { target: { value: '' } })
 
-    fireEvent.click(getByText('Choice One'), { bubbles: true })
     fireEvent.click(screen.getByRole('button', { name: 'Submit Selections' }), {
       bubbles: true,
     })

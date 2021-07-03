@@ -10,19 +10,19 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
         class="sc-bxivhb hMnACT"
       >
         <div
-          class="sc-eqIVtm iBmTPb"
+          class="sc-hzDkRC gVPzYn"
         >
           <div
-            class="sc-fAjcbJ hYkZyc"
+            class="sc-jhAzac joyqzP"
           >
             <div
-              class="sc-caSCKo jdQsxZ"
+              class="sc-fBuWsC bHPSMB"
             >
               <div
-                class="sc-kgAjT juwsQL"
+                class="sc-caSCKo bNtiHN"
               >
                 <button
-                  class="bp3-button bp3-minimal sc-TOsTZ NwIPA"
+                  class="bp3-button bp3-minimal sc-fAjcbJ kXjHwO"
                   href="/election/1/audit-board/audit-board-1"
                   type="button"
                 >
@@ -52,7 +52,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                   </span>
                 </button>
                 <h3
-                  class="bp3-heading sc-dVhcbM eeCuiv"
+                  class="bp3-heading sc-bRBYWo jwWDGO"
                 >
                   Audit Ballot Selections
                 </h3>
@@ -61,7 +61,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                 class="bp3-divider sc-ckVGcZ dgQdnS"
               />
               <div
-                class="sc-kjoXOD gJWPX"
+                class="sc-dVhcbM hsvMYv"
               >
                 <div>
                   <h5
@@ -70,7 +70,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                     batch
                   </h5>
                   <h4
-                    class="bp3-heading sc-cHGsZl kWlJOT"
+                    class="bp3-heading sc-eqIVtm herKMF"
                   >
                     0003-04-Precinct 19 (Jonesboro Fire Department)
                   </h4>
@@ -82,7 +82,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                     position
                   </h5>
                   <h4
-                    class="bp3-heading sc-cHGsZl kWlJOT"
+                    class="bp3-heading sc-eqIVtm herKMF"
                   >
                     2112
                   </h4>
@@ -94,14 +94,14 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                     tabulator
                   </h5>
                   <h4
-                    class="bp3-heading sc-cHGsZl kWlJOT"
+                    class="bp3-heading sc-eqIVtm herKMF"
                   >
                     11
                   </h4>
                 </div>
                 <div>
                   <button
-                    class="bp3-button bp3-large bp3-intent-danger sc-cJSrbW gkJUvS"
+                    class="bp3-button bp3-large bp3-intent-danger sc-gisBJw lnGrEx"
                     type="button"
                   >
                     <span
@@ -320,7 +320,9 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                         class="sc-kEYyzF hgMwhC"
                       >
                         <button
-                          class="bp3-button bp3-large bp3-intent-success sc-Rmtcm gwMGjf sc-dxgOiQ iagcVQ"
+                          class="bp3-button bp3-disabled bp3-large bp3-intent-success sc-Rmtcm gwMGjf sc-dxgOiQ iagcVQ"
+                          disabled=""
+                          tabindex="-1"
                           type="submit"
                         >
                           <span
@@ -346,7 +348,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
               </div>
             </div>
             <div
-              class="sc-gisBJw czZWPZ"
+              class="sc-fMiknA cVdEgP"
             >
               <h4
                 class="bp3-heading"
@@ -354,7 +356,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                 Instructions
               </h4>
               <ol
-                class="bp3-list sc-ksYbfQ djGxGZ"
+                class="bp3-list sc-kjoXOD ilvKfD"
               >
                 <li>
                   Confirm that you are looking at the correct ballot for the batch and position. If the ballot was not located, select
@@ -2613,7 +2615,7 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                 Audit each ballot by indicating the votes you see marked.
               </li>
               <li>
-                Once all ballots are audited, Submit audited ballots. Once results are submitted, no further edits can be made.
+                Once all ballots are audited, click Submit Audited Ballots. Once results are submitted, no further edits can be made.
               </li>
             </ol>
           </div>
@@ -2624,280 +2626,7 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
 </div>
 `;
 
-exports[`DataEntry ballot interaction renders board table with no ballots 1`] = `
-<div>
-  <div
-    class="sc-htpNat cBZqYS"
-  >
-    <div
-      class="board-table-container"
-    >
-      <div
-        class="sc-bZQynM gcSISu"
-      >
-        <div
-          class="sc-bxivhb sc-gzVnrw dPFfSP"
-        >
-          <div
-            class="sc-ifAKCX Eaynb"
-          >
-            <p>
-              0
-               of 
-              0
-               ballots have been audited.
-            </p>
-            <span
-              class="summary-label sc-jTzLTM gLFziH"
-            >
-              Audited: 
-              0
-            </span>
-            <span
-              class="summary-label sc-fjdhpX cExqPy"
-            >
-              Not Audited: 
-              0
-            </span>
-          </div>
-          <div
-            class="sc-EHOje iSYCcM"
-          >
-            <button
-              class="bp3-button bp3-intent-success sc-cSHVUG cVsyeo"
-              href="/election/1/audit-board/audit-board-1/signoff"
-              type="button"
-            >
-              <span
-                class="bp3-button-text"
-              >
-                Submit Audited Ballots
-              </span>
-            </button>
-          </div>
-        </div>
-      </div>
-      <div
-        class="sc-bxivhb hMnACT"
-      >
-        <div
-          class="sc-htoDjs hxAtLW"
-        >
-          <div
-            class="sc-dnqmqq iEAKuG"
-          >
-            <h3
-              class="bp3-heading"
-            >
-              Ballots for 
-              Audit Board #1
-            </h3>
-            <div
-              class="sc-iwsKbI cgDfoK"
-            >
-              <table
-                class="sc-bdVaJa ldGrnX"
-                role="table"
-              >
-                <thead>
-                  <tr>
-                    <th
-                      colspan="1"
-                      role="columnheader"
-                      style="cursor: pointer;"
-                      title="Batch"
-                    >
-                      <div
-                        style="display: flex; align-items: center; padding-right: 15px;"
-                      >
-                        <span
-                          style="margin-right: 5px;"
-                        >
-                          Batch
-                        </span>
-                        <span>
-                          <span
-                            class="bp3-icon bp3-icon-double-caret-vertical"
-                            icon="double-caret-vertical"
-                          >
-                            <svg
-                              data-icon="double-caret-vertical"
-                              height="16"
-                              viewBox="0 0 16 16"
-                              width="16"
-                            >
-                              <desc>
-                                double-caret-vertical
-                              </desc>
-                              <path
-                                d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                                fill-rule="evenodd"
-                              />
-                            </svg>
-                          </span>
-                        </span>
-                      </div>
-                    </th>
-                    <th
-                      colspan="1"
-                      role="columnheader"
-                      style="cursor: pointer;"
-                      title="Position"
-                    >
-                      <div
-                        style="display: flex; align-items: center; padding-right: 15px;"
-                      >
-                        <span
-                          style="margin-right: 5px;"
-                        >
-                          Position
-                        </span>
-                        <span>
-                          <span
-                            class="bp3-icon bp3-icon-double-caret-vertical"
-                            icon="double-caret-vertical"
-                          >
-                            <svg
-                              data-icon="double-caret-vertical"
-                              height="16"
-                              viewBox="0 0 16 16"
-                              width="16"
-                            >
-                              <desc>
-                                double-caret-vertical
-                              </desc>
-                              <path
-                                d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                                fill-rule="evenodd"
-                              />
-                            </svg>
-                          </span>
-                        </span>
-                      </div>
-                    </th>
-                    <th
-                      colspan="1"
-                      role="columnheader"
-                      style="cursor: pointer;"
-                      title="Status"
-                    >
-                      <div
-                        style="display: flex; align-items: center; padding-right: 15px;"
-                      >
-                        <span
-                          style="margin-right: 5px;"
-                        >
-                          Status
-                        </span>
-                        <span>
-                          <span
-                            class="bp3-icon bp3-icon-double-caret-vertical"
-                            icon="double-caret-vertical"
-                          >
-                            <svg
-                              data-icon="double-caret-vertical"
-                              height="16"
-                              viewBox="0 0 16 16"
-                              width="16"
-                            >
-                              <desc>
-                                double-caret-vertical
-                              </desc>
-                              <path
-                                d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                                fill-rule="evenodd"
-                              />
-                            </svg>
-                          </span>
-                        </span>
-                      </div>
-                    </th>
-                    <th
-                      colspan="1"
-                      role="columnheader"
-                      style="cursor: pointer;"
-                      title="Actions"
-                    >
-                      <div
-                        style="display: flex; align-items: center; padding-right: 15px;"
-                      >
-                        <span
-                          style="margin-right: 5px;"
-                        >
-                          Actions
-                        </span>
-                        <span>
-                          <span
-                            class="bp3-icon bp3-icon-double-caret-vertical"
-                            icon="double-caret-vertical"
-                          >
-                            <svg
-                              data-icon="double-caret-vertical"
-                              height="16"
-                              viewBox="0 0 16 16"
-                              width="16"
-                            >
-                              <desc>
-                                double-caret-vertical
-                              </desc>
-                              <path
-                                d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                                fill-rule="evenodd"
-                              />
-                            </svg>
-                          </span>
-                        </span>
-                      </div>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody
-                  role="rowgroup"
-                />
-              </table>
-            </div>
-            <button
-              class="bp3-button bp3-large bp3-intent-success sc-kAzzGY gZMjPs"
-              href="/election/1/audit-board/audit-board-1/signoff"
-              type="button"
-            >
-              <span
-                class="bp3-button-text"
-              >
-                Submit Audited Ballots
-              </span>
-            </button>
-          </div>
-          <div
-            class="sc-gZMcBi jxSIXn"
-          >
-            <h4
-              class="bp3-heading"
-            >
-              Instructions
-            </h4>
-            <ol
-              class="bp3-list sc-jzJRlG bxayEV"
-            >
-              <li>
-                Locate and retrieve the list of ballots to audit from storage.
-              </li>
-              <li>
-                Audit each ballot by indicating the votes you see marked.
-              </li>
-              <li>
-                Once all ballots are audited, Submit audited ballots. Once results are submitted, no further edits can be made.
-              </li>
-            </ol>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`DataEntry ballot interaction renders board table with not audited ballots 1`] = `
+exports[`DataEntry ballot interaction renders board table with no audited ballots 1`] = `
 <div>
   <div
     class="sc-htpNat cBZqYS"
@@ -4738,7 +4467,280 @@ exports[`DataEntry ballot interaction renders board table with not audited ballo
                 Audit each ballot by indicating the votes you see marked.
               </li>
               <li>
-                Once all ballots are audited, Submit audited ballots. Once results are submitted, no further edits can be made.
+                Once all ballots are audited, click Submit Audited Ballots. Once results are submitted, no further edits can be made.
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`DataEntry ballot interaction renders board table with no ballots 1`] = `
+<div>
+  <div
+    class="sc-htpNat cBZqYS"
+  >
+    <div
+      class="board-table-container"
+    >
+      <div
+        class="sc-bZQynM gcSISu"
+      >
+        <div
+          class="sc-bxivhb sc-gzVnrw dPFfSP"
+        >
+          <div
+            class="sc-ifAKCX Eaynb"
+          >
+            <p>
+              0
+               of 
+              0
+               ballots have been audited.
+            </p>
+            <span
+              class="summary-label sc-jTzLTM gLFziH"
+            >
+              Audited: 
+              0
+            </span>
+            <span
+              class="summary-label sc-fjdhpX cExqPy"
+            >
+              Not Audited: 
+              0
+            </span>
+          </div>
+          <div
+            class="sc-EHOje iSYCcM"
+          >
+            <button
+              class="bp3-button bp3-intent-success sc-cSHVUG cVsyeo"
+              href="/election/1/audit-board/audit-board-1/signoff"
+              type="button"
+            >
+              <span
+                class="bp3-button-text"
+              >
+                Submit Audited Ballots
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div
+        class="sc-bxivhb hMnACT"
+      >
+        <div
+          class="sc-htoDjs hxAtLW"
+        >
+          <div
+            class="sc-dnqmqq iEAKuG"
+          >
+            <h3
+              class="bp3-heading"
+            >
+              Ballots for 
+              Audit Board #1
+            </h3>
+            <div
+              class="sc-iwsKbI cgDfoK"
+            >
+              <table
+                class="sc-bdVaJa ldGrnX"
+                role="table"
+              >
+                <thead>
+                  <tr>
+                    <th
+                      colspan="1"
+                      role="columnheader"
+                      style="cursor: pointer;"
+                      title="Batch"
+                    >
+                      <div
+                        style="display: flex; align-items: center; padding-right: 15px;"
+                      >
+                        <span
+                          style="margin-right: 5px;"
+                        >
+                          Batch
+                        </span>
+                        <span>
+                          <span
+                            class="bp3-icon bp3-icon-double-caret-vertical"
+                            icon="double-caret-vertical"
+                          >
+                            <svg
+                              data-icon="double-caret-vertical"
+                              height="16"
+                              viewBox="0 0 16 16"
+                              width="16"
+                            >
+                              <desc>
+                                double-caret-vertical
+                              </desc>
+                              <path
+                                d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                                fill-rule="evenodd"
+                              />
+                            </svg>
+                          </span>
+                        </span>
+                      </div>
+                    </th>
+                    <th
+                      colspan="1"
+                      role="columnheader"
+                      style="cursor: pointer;"
+                      title="Position"
+                    >
+                      <div
+                        style="display: flex; align-items: center; padding-right: 15px;"
+                      >
+                        <span
+                          style="margin-right: 5px;"
+                        >
+                          Position
+                        </span>
+                        <span>
+                          <span
+                            class="bp3-icon bp3-icon-double-caret-vertical"
+                            icon="double-caret-vertical"
+                          >
+                            <svg
+                              data-icon="double-caret-vertical"
+                              height="16"
+                              viewBox="0 0 16 16"
+                              width="16"
+                            >
+                              <desc>
+                                double-caret-vertical
+                              </desc>
+                              <path
+                                d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                                fill-rule="evenodd"
+                              />
+                            </svg>
+                          </span>
+                        </span>
+                      </div>
+                    </th>
+                    <th
+                      colspan="1"
+                      role="columnheader"
+                      style="cursor: pointer;"
+                      title="Status"
+                    >
+                      <div
+                        style="display: flex; align-items: center; padding-right: 15px;"
+                      >
+                        <span
+                          style="margin-right: 5px;"
+                        >
+                          Status
+                        </span>
+                        <span>
+                          <span
+                            class="bp3-icon bp3-icon-double-caret-vertical"
+                            icon="double-caret-vertical"
+                          >
+                            <svg
+                              data-icon="double-caret-vertical"
+                              height="16"
+                              viewBox="0 0 16 16"
+                              width="16"
+                            >
+                              <desc>
+                                double-caret-vertical
+                              </desc>
+                              <path
+                                d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                                fill-rule="evenodd"
+                              />
+                            </svg>
+                          </span>
+                        </span>
+                      </div>
+                    </th>
+                    <th
+                      colspan="1"
+                      role="columnheader"
+                      style="cursor: pointer;"
+                      title="Actions"
+                    >
+                      <div
+                        style="display: flex; align-items: center; padding-right: 15px;"
+                      >
+                        <span
+                          style="margin-right: 5px;"
+                        >
+                          Actions
+                        </span>
+                        <span>
+                          <span
+                            class="bp3-icon bp3-icon-double-caret-vertical"
+                            icon="double-caret-vertical"
+                          >
+                            <svg
+                              data-icon="double-caret-vertical"
+                              height="16"
+                              viewBox="0 0 16 16"
+                              width="16"
+                            >
+                              <desc>
+                                double-caret-vertical
+                              </desc>
+                              <path
+                                d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                                fill-rule="evenodd"
+                              />
+                            </svg>
+                          </span>
+                        </span>
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody
+                  role="rowgroup"
+                />
+              </table>
+            </div>
+            <button
+              class="bp3-button bp3-large bp3-intent-success sc-kAzzGY gZMjPs"
+              href="/election/1/audit-board/audit-board-1/signoff"
+              type="button"
+            >
+              <span
+                class="bp3-button-text"
+              >
+                Submit Audited Ballots
+              </span>
+            </button>
+          </div>
+          <div
+            class="sc-gZMcBi jxSIXn"
+          >
+            <h4
+              class="bp3-heading"
+            >
+              Instructions
+            </h4>
+            <ol
+              class="bp3-list sc-jzJRlG bxayEV"
+            >
+              <li>
+                Locate and retrieve the list of ballots to audit from storage.
+              </li>
+              <li>
+                Audit each ballot by indicating the votes you see marked.
+              </li>
+              <li>
+                Once all ballots are audited, click Submit Audited Ballots. Once results are submitted, no further edits can be made.
               </li>
             </ol>
           </div>
@@ -6968,7 +6970,7 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                 Audit each ballot by indicating the votes you see marked.
               </li>
               <li>
-                Once all ballots are audited, Submit audited ballots. Once results are submitted, no further edits can be made.
+                Once all ballots are audited, click Submit Audited Ballots. Once results are submitted, no further edits can be made.
               </li>
             </ol>
           </div>

@@ -28,8 +28,8 @@ export const dummyBoards = (): IAuditBoard[] => [
   },
   {
     type: 'audit_board',
-    id: 'audit-board-2',
-    name: 'Audit Board #2',
+    id: 'audit-board-1',
+    name: 'Audit Board #1',
     jurisdictionId: 'jurisdiction-1',
     jurisdictionName: 'Jurisdiction 1',
     electionId: '1',

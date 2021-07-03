@@ -615,7 +615,7 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
               Audit each ballot by indicating the votes you see marked.
             </li>
             <li>
-              Once all ballots are audited, Submit audited ballots. Once results are submitted, no further edits can be made.
+              Once all ballots are audited, click Submit Audited Ballots. Once results are submitted, no further edits can be made.
             </li>
           </ol>
         </div>
@@ -1000,7 +1000,7 @@ exports[`BoardTable renders container and no tabulator columns 1`] = `
               Audit each ballot by indicating the votes you see marked.
             </li>
             <li>
-              Once all ballots are audited, Submit audited ballots. Once results are submitted, no further edits can be made.
+              Once all ballots are audited, click Submit Audited Ballots. Once results are submitted, no further edits can be made.
             </li>
           </ol>
         </div>
@@ -1432,7 +1432,7 @@ exports[`BoardTable renders container and tabulator columns 1`] = `
               Audit each ballot by indicating the votes you see marked.
             </li>
             <li>
-              Once all ballots are audited, Submit audited ballots. Once results are submitted, no further edits can be made.
+              Once all ballots are audited, click Submit Audited Ballots. Once results are submitted, no further edits can be made.
             </li>
           </ol>
         </div>
@@ -1770,7 +1770,7 @@ exports[`BoardTable renders no container and no tabulator columns 1`] = `
               Audit each ballot by indicating the votes you see marked.
             </li>
             <li>
-              Once all ballots are audited, Submit audited ballots. Once results are submitted, no further edits can be made.
+              Once all ballots are audited, click Submit Audited Ballots. Once results are submitted, no further edits can be made.
             </li>
           </ol>
         </div>
@@ -2155,7 +2155,7 @@ exports[`BoardTable renders tabulator and no container columns 1`] = `
               Audit each ballot by indicating the votes you see marked.
             </li>
             <li>
-              Once all ballots are audited, Submit audited ballots. Once results are submitted, no further edits can be made.
+              Once all ballots are audited, click Submit Audited Ballots. Once results are submitted, no further edits can be made.
             </li>
           </ol>
         </div>
@@ -4003,7 +4003,7 @@ exports[`BoardTable shows audit first ballot button when no ballots are audited 
               Audit each ballot by indicating the votes you see marked.
             </li>
             <li>
-              Once all ballots are audited, Submit audited ballots. Once results are submitted, no further edits can be made.
+              Once all ballots are audited, click Submit Audited Ballots. Once results are submitted, no further edits can be made.
             </li>
           </ol>
         </div>
@@ -6229,7 +6229,7 @@ exports[`BoardTable shows audit next ballot button when some are remaining to au
               Audit each ballot by indicating the votes you see marked.
             </li>
             <li>
-              Once all ballots are audited, Submit audited ballots. Once results are submitted, no further edits can be made.
+              Once all ballots are audited, click Submit Audited Ballots. Once results are submitted, no further edits can be made.
             </li>
           </ol>
         </div>

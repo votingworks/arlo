@@ -67,16 +67,14 @@ const UserMenu = styled.div`
 
 const InnerBar = styled(Inner)`
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
-
-  .members-name p {
-    margin-bottom: 0;
-  }
-
   .logo-mobile {
     display: none;
   }
   @media only screen and (max-width: 767px) {
+    justify-content: center;
+
     .logo-desktop {
       display: none;
     }
@@ -110,6 +108,23 @@ const Header: React.FC<{}> = () => {
     auth.user.type === 'jurisdiction_admin' &&
     auth.user.jurisdictions.find(
       j => j.id === jurisdictionMatch.params.jurisdictionId
+    )
+
+  const auditBoardName = auth &&
+    auth.user &&
+    auth.user.type === 'audit_board' &&
+    auth.user.members && (
+      <NavbarHeading>
+        {auth.user.name}
+        {auth.user.members.length > 0 && (
+          <>
+            :{' '}
+            <strong>
+              {auth.user.members.map(member => member.name).join(', ')}
+            </strong>
+          </>
+        )}
+      </NavbarHeading>
     )
   return (
     <>
@@ -151,26 +166,10 @@ const Header: React.FC<{}> = () => {
               {jurisdiction && (
                 <NavbarHeading>Jurisdiction: {jurisdiction.name}</NavbarHeading>
               )}
+              {auditBoardName}
             </NavbarGroup>
             {auth && auth.user && (
               <>
-                {auth.user.type === 'audit_board' && auth.user.members && (
-                  <NavbarGroup className="members-name">
-                    <NavbarHeading>
-                      {auth.user.name}
-                      {auth.user.members && (
-                        <>
-                          :{' '}
-                          <strong>
-                            {auth.user.members
-                              .map(member => member.name)
-                              .join(', ')}
-                          </strong>
-                        </>
-                      )}
-                    </NavbarHeading>
-                  </NavbarGroup>
-                )}
                 <NavbarGroup align={Alignment.RIGHT}>
                   {electionId && auth.user.type === 'audit_admin' && (
                     <>
@@ -197,25 +196,30 @@ const Header: React.FC<{}> = () => {
                       <NavbarDivider />
                     </>
                   )}
-                  <UserMenu>
-                    <Popover
-                      content={
-                        <Menu>
-                          <MenuItem text="Log out" href="/auth/logout" />
-                        </Menu>
-                      }
-                      usePortal={false}
-                      position={Position.BOTTOM}
-                      minimal
-                      fill
-                    >
-                      <Button icon="user" minimal>
-                        {auth.user.type === 'audit_board'
-                          ? auth.user.name
-                          : auth.user.email}
-                      </Button>
-                    </Popover>
-                  </UserMenu>
+                  {auth.user.type === 'audit_board' ? (
+                    <a href="/auth/logout">
+                      {' '}
+                      <span>Log out</span>{' '}
+                    </a>
+                  ) : (
+                    <UserMenu>
+                      <Popover
+                        content={
+                          <Menu>
+                            <MenuItem text="Log out" href="/auth/logout" />
+                          </Menu>
+                        }
+                        usePortal={false}
+                        position={Position.BOTTOM}
+                        minimal
+                        fill
+                      >
+                        <Button icon="user" minimal>
+                          {auth.user.email}
+                        </Button>
+                      </Popover>
+                    </UserMenu>
+                  )}
                 </NavbarGroup>
               </>
             )}

@@ -303,7 +303,7 @@ const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
               </li>
               <li>Audit each ballot by indicating the votes you see marked.</li>
               <li>
-                Once all ballots are audited, Submit audited ballots. Once
+                Once all ballots are audited, click Submit Audited Ballots. Once
                 results are submitted, no further edits can be made.
               </li>
             </InstructionsList>

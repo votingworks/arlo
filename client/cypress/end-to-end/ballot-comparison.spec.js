@@ -238,9 +238,9 @@ describe('Ballot Comparison Test Cases', () => {
       cy.findByText('Audit First Ballot').click()
 
       // submit empty ballot review
-      cy.findByRole('button', { name: 'Submit Selections' }).click()
-      cy.findByText('Confirm Selections').click()
-      cy.findAndCloseToast('Must include an interpretation for each contest.')
+      cy.findByRole('button', { name: 'Submit Selections' }).should('be.disabled')
+      // cy.findByText('Confirm Selections').click()
+      // cy.findAndCloseToast('Must include an interpretation for each contest.')
       cy.get('input[type="checkbox"]')
         .first()
         .click({ force: true })
@@ -259,12 +259,15 @@ describe('Ballot Comparison Test Cases', () => {
         // button name when some ballots are audited
         cy.findByText('Audit Next Ballot').click()
       }
-      cy.get('input[type="checkbox"]')
-        .first()
-        .click({ force: true })
-      cy.findByRole('button', { name: 'Submit Selections' }).click()
-      cy.findByText('Confirm Selections').click()
-      cy.findByText('Change Selections').should('not.exist')
+      // since the first ballot is already audited
+      if(index < (list.length - 1)) {
+        cy.get('input[type="checkbox"]')
+          .first()
+          .click({ force: true })
+        cy.findByRole('button', { name: 'Submit Selections' }).click()
+        cy.findByText('Confirm Selections').click()
+        cy.findByText('Change Selections').should('not.exist')
+      }
     })
     cy.contains('Ballots for Audit Board #1')
 
