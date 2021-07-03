@@ -75,7 +75,7 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
             class="sc-iwsKbI cgDfoK"
           >
             <table
-              class="sc-bdVaJa ldGrnX"
+              class="sc-bdVaJa djjOKa"
               role="table"
             >
               <thead>
@@ -694,7 +694,7 @@ exports[`BoardTable renders container and no tabulator columns 1`] = `
             class="sc-iwsKbI cgDfoK"
           >
             <table
-              class="sc-bdVaJa ldGrnX"
+              class="sc-bdVaJa djjOKa"
               role="table"
             >
               <thead>
@@ -1079,7 +1079,7 @@ exports[`BoardTable renders container and tabulator columns 1`] = `
             class="sc-iwsKbI cgDfoK"
           >
             <table
-              class="sc-bdVaJa ldGrnX"
+              class="sc-bdVaJa djjOKa"
               role="table"
             >
               <thead>
@@ -1511,7 +1511,7 @@ exports[`BoardTable renders no container and no tabulator columns 1`] = `
             class="sc-iwsKbI cgDfoK"
           >
             <table
-              class="sc-bdVaJa ldGrnX"
+              class="sc-bdVaJa djjOKa"
               role="table"
             >
               <thead>
@@ -1849,7 +1849,7 @@ exports[`BoardTable renders tabulator and no container columns 1`] = `
             class="sc-iwsKbI cgDfoK"
           >
             <table
-              class="sc-bdVaJa ldGrnX"
+              class="sc-bdVaJa djjOKa"
               role="table"
             >
               <thead>
@@ -2234,7 +2234,7 @@ exports[`BoardTable shows audit first ballot button when no ballots are audited 
             class="sc-iwsKbI cgDfoK"
           >
             <table
-              class="sc-bdVaJa ldGrnX"
+              class="sc-bdVaJa djjOKa"
               role="table"
             >
               <thead>
@@ -4082,7 +4082,7 @@ exports[`BoardTable shows audit next ballot button when some are remaining to au
             class="sc-iwsKbI cgDfoK"
           >
             <table
-              class="sc-bdVaJa ldGrnX"
+              class="sc-bdVaJa djjOKa"
               role="table"
             >
               <thead>
