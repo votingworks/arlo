@@ -178,8 +178,8 @@ const Ballot: React.FC<IProps> = ({
     }
   }
 
-  const ballotSubmitFunc = (isNotFound: boolean) =>
-    isNotFound
+  const ballotSubmitFunc = (selectionType: 'not_found' | 'general') =>
+    selectionType === 'not_found'
       ? submitBallot(ballot.id, BallotStatus.NOT_FOUND, [])
       : submitBallot(
           ballot.id,
@@ -189,7 +189,7 @@ const Ballot: React.FC<IProps> = ({
           )
         )
 
-  const initiateConfirm = (isNotFound: boolean) =>
+  const initiateConfirm = (selectionType: 'not_found' | 'general') =>
     confirm({
       title: 'Confirm the Ballot Selections',
       description: (
@@ -197,7 +197,7 @@ const Ballot: React.FC<IProps> = ({
           {contests.map((contest, i) => (
             <div key={contest.id}>
               <p>{contest.name}</p>
-              {isNotFound ? (
+              {selectionType === 'not_found' ? (
                 <h3>Ballot Not Found</h3>
               ) : (
                 <>
@@ -216,7 +216,7 @@ const Ballot: React.FC<IProps> = ({
         </>
       ),
       onYesClick: async () => {
-        ballotSubmitFunc(isNotFound)
+        ballotSubmitFunc(selectionType)
         nextBallot()
       },
       yesButtonLabel: 'Confirm Selections',
@@ -227,11 +227,11 @@ const Ballot: React.FC<IProps> = ({
     newInterpretations: IBallotInterpretation[]
   ) => {
     setInterpretations(newInterpretations)
-    initiateConfirm(true)
+    initiateConfirm('general')
   }
 
   const submitNotFound = async () => {
-    initiateConfirm(true)
+    initiateConfirm('not_found')
   }
 
   const contestsHash = hashBy(contests, c => c.id)
