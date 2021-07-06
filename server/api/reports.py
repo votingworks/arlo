@@ -13,7 +13,7 @@ from ..util.csv_download import (
 )
 from ..util.isoformat import isoformat
 from ..util.group_by import group_by
-from ..audit_math import supersimple, sampler_contest
+from ..audit_math import supersimple, sampler_contest, macro
 from ..api.rounds import (
     cvrs_for_contest,
     sampled_ballot_interpretations_to_cvrs,
@@ -151,19 +151,17 @@ def pretty_discrepancy(
         return ""
 
 
-def pretty_batch_results(batch: Batch, contest: Contest) -> str:
-    choice_votes = []
-    for choice in contest.choices:
-        choice_result = next(
-            (
-                result.result
-                for result in batch.results
-                if result.contest_choice_id == choice.id
-            ),
-            0,
+def pretty_choice_votes(
+    choice_votes: Dict[str, int], not_found: Optional[int] = None
+) -> str:
+    return "; ".join(
+        [f"{name}: {votes}" for name, votes in choice_votes.items()]
+        + (
+            [f"Ballots not found (counted for loser): {not_found}"]
+            if not_found is not None
+            else []
         )
-        choice_votes.append(f"{choice.name}: {choice_result}")
-    return "; ".join(choice_votes)
+    )
 
 
 def heading(heading: str):
@@ -309,19 +307,6 @@ def audit_board_rows(election: Election):
                 ]
             )
     return rows
-
-
-def pretty_choice_votes(
-    choice_votes: Dict[str, int], not_found: Optional[int] = None
-) -> str:
-    return "; ".join(
-        [f"{name}: {votes}" for name, votes in choice_votes.items()]
-        + (
-            [f"Ballots not found (counted for loser): {not_found}"]
-            if not_found is not None
-            else []
-        )
-    )
 
 
 def round_rows(election: Election):
@@ -686,25 +671,70 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
     # We only support one contest for batch audits
     assert len(list(election.contests)) == 1
     contest = list(election.contests)[0]
+
     rows.append(
         [
             "Jurisdiction Name",
             "Batch Name",
             "Ticket Numbers",
             "Audited?",
-            "Audit Result",
+            "Audit Results",
+            "Reported Results",
+            "Discrepancy",
         ]
     )
     for batch in batches:
+        reported_results = {
+            choice.name: batch.jurisdiction.batch_tallies[batch.name][contest.id][
+                choice.id
+            ]
+            for choice in contest.choices
+        }
+
+        audit_results = {
+            choice: next(
+                (
+                    result.result
+                    for result in batch.results
+                    if result.contest_choice_id == choice.id
+                ),
+                0,
+            )
+            for choice in contest.choices
+        }
+
+        is_audited = len(batch.results) > 0
+
+        error = (
+            macro.compute_error(
+                batch.jurisdiction.batch_tallies[batch.name],
+                {
+                    contest.id: {
+                        choice.id: result for choice, result in audit_results.items()
+                    }
+                },
+                sampler_contest.from_db_contest(contest),
+            )
+            if is_audited
+            else None
+        )
+
         rows.append(
             [
                 batch.jurisdiction.name,
                 batch.name,
                 pretty_batch_ticket_numbers(batch, round_id_to_num),
-                pretty_boolean(len(batch.results) > 0),
-                pretty_batch_results(batch, contest),
+                pretty_boolean(is_audited),
+                pretty_choice_votes(
+                    {choice.name: result for choice, result in audit_results.items()}
+                )
+                if is_audited
+                else "",
+                pretty_choice_votes(reported_results),
+                error["counted_as"] if error else "",
             ]
         )
+
     return rows
 
 
