@@ -692,7 +692,7 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
         }
 
         audit_results = {
-            choice.name: next(
+            choice: next(
                 (
                     result.result
                     for result in batch.results
@@ -707,20 +707,13 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
 
         error = (
             macro.compute_error(
-                {contest.name: reported_results},
-                {contest.name: audit_results},
-                # Construct the contest object by hand instead of using
-                # from_db_contest so that we can use choice names (to match
-                # audit_results) instead of choice ids
-                sampler_contest.Contest(
-                    contest.name,
-                    {
-                        "ballots": typing_cast(int, contest.total_ballots_cast),
-                        "numWinners": typing_cast(int, contest.num_winners),
-                        "votesAllowed": typing_cast(int, contest.votes_allowed),
-                        **reported_results,
-                    },
-                ),
+                batch.jurisdiction.batch_tallies[batch.name],
+                {
+                    contest.id: {
+                        choice.id: result for choice, result in audit_results.items()
+                    }
+                },
+                sampler_contest.from_db_contest(contest),
             )
             if is_audited
             else None
@@ -732,7 +725,11 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
                 batch.name,
                 pretty_batch_ticket_numbers(batch, round_id_to_num),
                 pretty_boolean(is_audited),
-                pretty_choice_votes(audit_results) if is_audited else "",
+                pretty_choice_votes(
+                    {choice.name: result for choice, result in audit_results.items()}
+                )
+                if is_audited
+                else "",
                 pretty_choice_votes(reported_results),
                 error["counted_as"] if error else "",
             ]
