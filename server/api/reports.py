@@ -164,26 +164,6 @@ def pretty_choice_votes(
     )
 
 
-def pretty_batch_results(batch: Batch, contest: Contest) -> str:
-    return pretty_choice_votes(
-        {
-            choice.name: next(
-                (
-                    result.result
-                    for result in batch.results
-                    if result.contest_choice_id == choice.id
-                ),
-                0,
-            )
-            for choice in contest.choices
-        }
-    )
-
-
-def pretty_batch_tallies() -> str:
-    pass
-
-
 def heading(heading: str):
     return [f"######## {heading} ########"]
 
