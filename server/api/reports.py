@@ -1,5 +1,4 @@
 import io, csv
-from server.audit_math import macro
 from typing import Dict, List, Optional, Tuple, cast as typing_cast
 from collections import defaultdict, Counter
 from sqlalchemy.dialects.postgresql import aggregate_order_by
@@ -14,7 +13,7 @@ from ..util.csv_download import (
 )
 from ..util.isoformat import isoformat
 from ..util.group_by import group_by
-from ..audit_math import supersimple, sampler_contest
+from ..audit_math import supersimple, sampler_contest, macro
 from ..api.rounds import (
     cvrs_for_contest,
     sampled_ballot_interpretations_to_cvrs,
@@ -692,7 +691,6 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
     # We only support one contest for batch audits
     assert len(list(election.contests)) == 1
     contest = list(election.contests)[0]
-    math_contest = sampler_contest.from_db_contest(contest)
 
     rows.append(
         [
@@ -702,9 +700,17 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
             "Audited?",
             "Audit Results",
             "Reported Results",
+            "Discrepancy",
         ]
     )
     for batch in batches:
+        reported_results = {
+            choice.name: batch.jurisdiction.batch_tallies[batch.name][contest.id][
+                choice.id
+            ]
+            for choice in contest.choices
+        }
+
         audit_results = {
             choice.name: next(
                 (
@@ -717,26 +723,41 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
             for choice in contest.choices
         }
 
-        reported_results = {
-            choice.name: batch.jurisdiction.batch_tallies[batch.name][contest.id][
-                choice.id
-            ]
-            for choice in contest.choices
-        }
+        is_audited = len(batch.results) > 0
 
-        error = macro.compute_error(reported_results, audit_results, math_contest)
+        error = (
+            macro.compute_error(
+                {contest.name: reported_results},
+                {contest.name: audit_results},
+                # Construct the contest object by hand instead of using
+                # from_db_contest so that we can use choice names (to match
+                # audit_results) instead of choice ids
+                sampler_contest.Contest(
+                    contest.name,
+                    {
+                        "ballots": typing_cast(int, contest.total_ballots_cast),
+                        "numWinners": typing_cast(int, contest.num_winners),
+                        "votesAllowed": typing_cast(int, contest.votes_allowed),
+                        **reported_results,
+                    },
+                ),
+            )
+            if is_audited
+            else None
+        )
 
         rows.append(
             [
                 batch.jurisdiction.name,
                 batch.name,
                 pretty_batch_ticket_numbers(batch, round_id_to_num),
-                pretty_boolean(len(batch.results) > 0),
-                pretty_choice_votes(audit_results),
+                pretty_boolean(is_audited),
+                pretty_choice_votes(audit_results) if is_audited else "",
                 pretty_choice_votes(reported_results),
-                error["error"] if error["error"] > 0 else ""
+                error["counted_as"] if error else "",
             ]
         )
+
     return rows
 
 
