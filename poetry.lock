@@ -788,7 +788,7 @@ typing-extensions = ">=3.7.4"
 
 [[package]]
 name = "sqlalchemy-utils"
-version = "0.36.8"
+version = "0.36.7"
 description = "Various utility functions for SQLAlchemy."
 category = "main"
 optional = false
@@ -905,7 +905,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "65cfb8cd9c86381b1e45df77ee385f2d2c167ea844c32542bae3aff12d8949d3"
+content-hash = "9f971f6f6970b583bc622a7d8c4af56e6ed6c469e457fd8265e80f045fd6a5a8"
 
 [metadata.files]
 alembic = [
@@ -1496,7 +1496,7 @@ sqlalchemy-stubs = [
     {file = "sqlalchemy_stubs-0.3-py3-none-any.whl", hash = "sha256:ca1250605a39648cc433f5c70cb1a6f9fe0b60bdda4c51e1f9a2ab3651daadc8"},
 ]
 sqlalchemy-utils = [
-    {file = "SQLAlchemy-Utils-0.36.8.tar.gz", hash = "sha256:fb66e9956e41340011b70b80f898fde6064ec1817af77199ee21ace71d7d6ab0"},
+    {file = "SQLAlchemy-Utils-0.36.7.tar.gz", hash = "sha256:be319a16022b6a01e1d6c838340485beb4d34fd9c1c19d2303356804fa0faa09"},
 ]
 termcolor = [
     {file = "termcolor-1.1.0.tar.gz", hash = "sha256:1d6d69ce66211143803fbc56652b41d73b4a400a2891d7bf7a1cdf4c02de613b"},
