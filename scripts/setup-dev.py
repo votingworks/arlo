@@ -93,7 +93,7 @@ try:
                     print('"{}" is not a valid port.'.format(res))
 
             print("Running nOAuth on port {}".format(res))
-            command = "PORT=8080 pipenv run python app.py"
+            command = "PORT=8080 poetry run python app.py"
             # pylint: disable=subprocess-popen-preexec-fn
             child = subprocess.Popen(
                 [command],
@@ -139,7 +139,7 @@ try:
 
     print("Setting up test org")
     output = subprocess.run(
-        ["pipenv run python -m scripts.create-org {}".format(orgname)],
+        ["poetry run python -m scripts.create-org {}".format(orgname)],
         shell=True,
         capture_output=True,
         text=True,
@@ -154,7 +154,7 @@ try:
         email = "test@test.test"
 
     subprocess.run(
-        ["pipenv run python -m scripts.create-admin {} {}".format(orgid, email)],
+        ["poetry run python -m scripts.create-admin {} {}".format(orgid, email)],
         shell=True,
         check=True,
     )

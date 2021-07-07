@@ -22,7 +22,7 @@ commands:
       - restore_cache:
           name: Restore Pip Cache
           keys:
-            - pip-packages-v7-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+            - pip-packages-v7-{{ .Branch }}-{{ checksum "poetry.lock" }}
             - pip-packages-v7-{{ .Branch }}-
             - pip-packages-v7-
   save-pip-cache:
@@ -31,7 +31,7 @@ commands:
       - run: sudo chown -R circleci:circleci /usr/local/lib/python3.8/site-packages
       - save_cache:
           name: Save Pip Cache
-          key: pip-packages-v7-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+          key: pip-packages-v7-{{ .Branch }}-{{ checksum "poetry.lock" }}
           paths:
             - ~/.local
             - ~/.cache
@@ -41,7 +41,7 @@ commands:
       - run:
           name: install
           command: |
-            pipenv install --dev
+            poetry install
 
   create-data-model:
     steps:
@@ -140,7 +140,7 @@ jobs:
       - run:
           name: test server
           command: |
-            pipenv run pytest -n 8 --cov=.
+            poetry run pytest -n 8 --cov=.
 
   build-and-test-client:
     executor: arlo

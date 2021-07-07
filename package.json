@@ -15,8 +15,8 @@
       "prettier --write"
     ],
     "*.py": [
-      "pipenv run black",
-      "pipenv run pylint -j 0"
+      "poetry run black",
+      "poetry run pylint -j 0"
     ],
     "package.json": [
       "sort-package-json"

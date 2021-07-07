@@ -121,16 +121,19 @@ def draw_ppeb_sample(
 
     # Map each batch to its weighted probability of being picked
     weighted_errors = [
-        macro.compute_max_error(batch_results[batch], contest) / U
+        float(macro.compute_max_error(batch_results[batch], contest) / U)
         for batch in batch_results
     ]
 
-    sample: List[Tuple[Any, Any]] = (
-        generator.choice(
-            list(batch_results.keys()),
-            sample_size + num_sampled,
-            p=weighted_errors,
-            replace=True,
+    sample: List = (
+        cast(
+            List[Tuple[Any, Any]],
+            generator.choice(
+                list(batch_results.keys()),
+                sample_size + num_sampled,
+                p=weighted_errors,
+                replace=True,
+            ),
         )
         # When the sample size indicates a full hand recount, ensure we draw
         # each batch once and only once
