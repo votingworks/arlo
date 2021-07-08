@@ -902,8 +902,8 @@ python-versions = "*"
 
 [metadata]
 lock-version = "1.1"
-python-versions = "3.8"
-content-hash = "3fedf33f45c347ee72ef635453a80afed038833b23710324ba814e6d02aa726f"
+python-versions = "3.8.11" # Heroku buildpack requires a specific version
+content-hash = "182045bbb2a3aa57fc91277b43e9c34dcd9554f295b822603f1f4813bb424835"
 
 [metadata.files]
 alembic = [
