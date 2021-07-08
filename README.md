@@ -21,12 +21,14 @@ As part of the audit, Arlo:
 ### Supported election types, audit methods, and processes
 
 Arlo currently supports multiple risk-limiting audit methods, including:
+
 - ballot polling (BRAVO & Minerva)
 - batch comparison
 - ballot comparison
-- hybrid (SUITE, combining ballot polling & ballot comparison) 
+- hybrid (SUITE, combining ballot polling & ballot comparison)
 
 Arlo also supports:
+
 - single jurisdiction or multi-jurisdiction audits
 - single winner or multi-winner contests
 - auditing multiple contests simultaneously, both within and across jurisdictions (via independent sampling with maximum overlap, due to Rivest's Consistent Sampler)
@@ -37,10 +39,10 @@ At present, only plurality elections are supported, as they are the predominant 
 ### Statistical methods
 
 The statistics used in Arlo include:
+
 - For ballot polling: Lindeman, M., P.B. Stark, and V.S. Yates, 2012. BRAVO: Ballot-polling Risk-Limiting Audits to Verify Outcomes. 2012 Electronic Voting Technology Workshop/Workshop on Trustworthy Elections (EVT/WOTE '12). (reprint:https://www.usenix.org/system/files/conference/evtwote12/evtwote12-final27.pdf)
 - For ballot comparison: Stark, P.B., 2008. Conservative Statistical Post Election Audits. The Annals of Applied Statistics, 2, 550–581.http://arxiv.org/abs/0807.4005
 - For hybrid/SUITE: Ottoboni, K., P.B. Stark, M. Lindeman, and N. McBurnett, 2018. Risk-Limiting Audits by Stratified Union-Intersection Tests of Elections (SUITE), to appear in Electronic Voting. E-Vote-ID 2018. Lecture Notes in Computer Science, Springer.https://link.springer.com/chapter/10.1007/978-3-030-00419-4_12. Preprint: https://arxiv.org/abs/1809.04235
-
 
 Random sampling of ballots is done using [Rivest's Consistent Sampler](https://github.com/ron-rivest/consistent_sampler).
 
@@ -123,13 +125,13 @@ mirrored in the appropriate auth0 tenant user database.
 
 To create an organization in the database:
 
-`pipenv run python -m scripts.create-org <org_name>`
+`poetry run python -m scripts.create-org <org_name>`
 
 which returns the `organization_id`.
 
 Then, to create an administrator for the organization:
 
-`pipenv run python -m scripts.create-admin <org_id> <admin_email>`
+`poetry run python -m scripts.create-admin <org_id> <admin_email>`
 
 which returns the `user_id`.
 
@@ -161,13 +163,12 @@ We recommend Ubuntu 18.0.4.
 
 #### Automatic configuration and setup
 
-If you would just like to run Arlo and do not wish to setup a custom configuration, you can run `pipenv run python -m scripts.setup-dev`, which provides interactive configuration. The script optionally installs VotingWorks' [nOAuth](https://github.com/votingworks/nOAuth) locally, runs it, and configures Arlo to use it. It creates the necessary audit administrator and jurisdiction administrator credentials discussed above, and launches a dev instance of Arlo. Once you have navigated to `localhost:3000` in your broswer, you should be able to log in as an audit admin using the credentials you configured earlier in the script.
+If you would just like to run Arlo and do not wish to setup a custom configuration, you can run `poetry run python -m scripts.setup-dev`, which provides interactive configuration. The script optionally installs VotingWorks' [nOAuth](https://github.com/votingworks/nOAuth) locally, runs it, and configures Arlo to use it. It creates the necessary audit administrator and jurisdiction administrator credentials discussed above, and launches a dev instance of Arlo. Once you have navigated to `localhost:3000` in your broswer, you should be able to log in as an audit admin using the credentials you configured earlier in the script.
 
 #### Troubleshooting
 
 - Postgres is best installed by grabbing `postgresql-server-dev-10` and `postgresql-client-10`.
-- `psychopg2` has known issues depending on your install (see, e.g., [here](https://github.com/psycopg/psycopg2/issues/674)). If you run into issues, switch `psychopg2` to `psychopg2-binary` in the Pipfile
-- `pipenv install` can hang attempting to get [a lock on the packages it's installing](https://github.com/pypa/pipenv/issues/3827). To get around this, add the `--skip-lock` flag in the Makefile (the first line should be `pipenv install --skip-lock`).
+- `psycopg2` has known issues depending on your install (see, e.g., [here](https://github.com/psycopg/psycopg2/issues/674)). If you run into issues, switch `psycopg2` to `psycopg2-binary` in pyproject.toml
 - A password may have to be set in the `DATABASE_URL` env var depending on your install of postgres. To do this, change `postgresql://postgres@localhost:5432/arlo` to `postgresql://postgres:{PASSWORD}@localhost:5432/arlo`, replacing `{PASSWORD}` with the password.
 - You may need to create `arlo` and `arlo-test` databases manually [via postgres](https://www.postgresql.org/docs/9.0/sql-createdatabase.html).
 - If you run into the error `fe_sendauth: no password supplied` when running
@@ -188,6 +189,6 @@ To run the tests all the way through, use these commands:
 
 To run tests while developing, you can use these commands to make things more interactive:
 
-- Server tests: `pipenv run pytest` (you can add flags - e.g. `-k <pattern>` only runs tests that match the pattern, `-n auto` to run the tests in parallel)
+- Server tests: `poetry run pytest` (you can add flags - e.g. `-k <pattern>` only runs tests that match the pattern, `-n auto` to run the tests in parallel)
 - Client tests: `yarn --cwd client test` (runs interactive test CLI)
 - End-to-end tests: first run `FLASK_ENV=test ./run-dev.sh` to run the server, then, in a separate shell, run `yarn --cwd client run cypress open` (opens the Cypress test app for interactive test running/debugging)
