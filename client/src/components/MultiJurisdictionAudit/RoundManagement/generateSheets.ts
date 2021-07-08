@@ -99,7 +99,8 @@ export const downloadPlaceholders = async (
           : null,
       ]
         .filter(line => line)
-        .map(line => placeholders.splitTextToSize(line!, PLACEHOLDERS_WIDTH)[0])
+        .map(line => placeholders.splitTextToSize(line!, PLACEHOLDERS_WIDTH))
+        .flat()
 
       placeholders.text(lines, PLACEHOLDERS_START_X, PLACEHOLDERS_START_Y, {
         baseline: 'top',
