@@ -57,7 +57,7 @@ def shutdown_session(exception=None):  # pylint: disable=unused-argument
     db_session.remove()
 
 
-configure_sentry()
+configure_sentry(app)
 
 # Dispose the database engine after we're finished with app setup. (A new
 # connection will be created when requests start coming in.) This ensures that
