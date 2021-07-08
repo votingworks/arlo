@@ -129,11 +129,7 @@ def test_support_callback(
                 assert datetime.now(timezone.utc) - datetime.fromisoformat(
                     session["_last_request_at"]
                 ) < timedelta(seconds=1)
-                assert list(session.keys()) == [
-                    "_created_at",
-                    "_last_request_at",
-                    "_support_user",
-                ]
+                assert session.get("_user") is None
 
             assert auth0_sa.authorize_access_token.called
             assert auth0_sa.get.called
