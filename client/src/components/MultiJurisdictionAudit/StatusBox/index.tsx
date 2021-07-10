@@ -367,6 +367,10 @@ export const JurisdictionAdminStatusBox = ({
     const details = [
       `${numCompleted} of ${auditBoards.length} audit boards complete.`,
     ]
+    /* temporary fix to prevent confusion of '1 of 1 audit boards complete' message before audit boards start */
+    if (auditType === 'BATCH_COMPARISON') {
+      details.pop()
+    }
     if (numCompleted === auditBoards.length)
       details.push(
         `Waiting for all jurisdictions to complete Round ${roundNum}.`
