@@ -367,7 +367,7 @@ export const JurisdictionAdminStatusBox = ({
     const details = [
       `${numCompleted} of ${auditBoards.length} audit boards complete.`,
     ]
-    /* temporary fix to prevent confusion of '1 of 1 audit boards complete' message before audit boards start */
+    // Batch Comparison audits always have 0 numSampledBallots and 0 numAuditedBallots
     if (auditType === 'BATCH_COMPARISON') {
       details.pop()
     }
