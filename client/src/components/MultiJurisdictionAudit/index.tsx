@@ -225,6 +225,7 @@ export const JurisdictionAdminView: React.FC = () => {
           auditBoards={auditBoards}
           auditType={auditSettings.auditType}
           auditName={auditSettings.auditName}
+          isAuditOnline={!!auditSettings.online}
         />
         <VerticalInner>
           <H2Title>Audit Source Data</H2Title>
@@ -329,6 +330,7 @@ export const JurisdictionAdminView: React.FC = () => {
         auditBoards={auditBoards}
         auditType={auditSettings.auditType}
         auditName={auditSettings.auditName}
+        isAuditOnline={!!auditSettings.online}
       />
       <Inner>
         <RoundManagement

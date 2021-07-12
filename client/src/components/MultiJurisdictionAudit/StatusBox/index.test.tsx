@@ -340,6 +340,7 @@ describe('StatusBox', () => {
             cvrs={{ file: null, processing: null }}
             auditType="BALLOT_POLLING"
             auditName="Test Audit"
+            isAuditOnline
           />
         </Router>
       )
@@ -366,6 +367,7 @@ describe('StatusBox', () => {
             cvrs={{ file: null, processing: null }}
             auditType="BALLOT_POLLING"
             auditName="Test Audit"
+            isAuditOnline
           />
         </Router>
       )
@@ -388,6 +390,7 @@ describe('StatusBox', () => {
             cvrs={{ file: null, processing: null }}
             auditType="BALLOT_POLLING"
             auditName="Test Audit"
+            isAuditOnline
           />
         </Router>
       )
@@ -409,6 +412,7 @@ describe('StatusBox', () => {
             cvrs={{ file: null, processing: null }}
             auditType="BALLOT_POLLING"
             auditName="Test Audit"
+            isAuditOnline
           />
         </Router>
       )
@@ -430,6 +434,7 @@ describe('StatusBox', () => {
             cvrs={{ file: null, processing: null }}
             auditType="BALLOT_POLLING"
             auditName="Test Audit"
+            isAuditOnline
           />
         </Router>
       )
@@ -451,12 +456,40 @@ describe('StatusBox', () => {
             cvrs={{ file: null, processing: null }}
             auditType="BALLOT_POLLING"
             auditName="Test Audit"
+            isAuditOnline
           />
         </Router>
       )
       screen.getByText('Round 1 of the audit is in progress.')
       screen.getByText('1 of 1 audit boards complete.')
       screen.getByText('Waiting for all jurisdictions to complete Round 1.')
+    })
+
+    it('renders no audit board status if offline', async () => {
+      render(
+        <Router>
+          <JurisdictionAdminStatusBox
+            rounds={roundMocks.singleIncomplete}
+            auditBoards={auditBoardMocks.signedOff}
+            ballotManifest={{
+              file: null,
+              processing: fileProcessingMocks.processed,
+            }}
+            batchTallies={{ file: null, processing: null }}
+            cvrs={{ file: null, processing: null }}
+            auditType="BALLOT_POLLING"
+            auditName="Test Audit"
+            isAuditOnline={false}
+          />
+        </Router>
+      )
+      screen.getByText('Round 1 of the audit is in progress.')
+      screen.getByText('Waiting for all jurisdictions to complete Round 1.')
+      await waitFor(() =>
+        expect(
+          screen.queryByText('1 of 1 audit boards complete.')
+        ).not.toBeInTheDocument()
+      )
     })
 
     it('renders completion in first round state', () => {
@@ -473,6 +506,7 @@ describe('StatusBox', () => {
             cvrs={{ file: null, processing: null }}
             auditType="BALLOT_POLLING"
             auditName="Test Audit"
+            isAuditOnline
           />
         </Router>
       )
@@ -497,6 +531,7 @@ describe('StatusBox', () => {
             cvrs={{ file: null, processing: null }}
             auditType="BALLOT_POLLING"
             auditName="Test Audit"
+            isAuditOnline
           />
         </Router>
       )
@@ -532,6 +567,7 @@ describe('StatusBox', () => {
               cvrs={{ file: null, processing: null }}
               auditType={auditType}
               auditName="Test Audit"
+              isAuditOnline
             />
           </Router>
         )
@@ -556,6 +592,7 @@ describe('StatusBox', () => {
               }}
               auditType={auditType}
               auditName="Test Audit"
+              isAuditOnline
             />
           </Router>
         )
@@ -581,6 +618,7 @@ describe('StatusBox', () => {
               }}
               auditType={auditType}
               auditName="Test Audit"
+              isAuditOnline
             />
           </Router>
         )
@@ -603,6 +641,7 @@ describe('StatusBox', () => {
             cvrs={{ file: null, processing: null }}
             auditType="BATCH_COMPARISON"
             auditName="Test Audit"
+            isAuditOnline={false}
           />
         </Router>
       )
@@ -627,6 +666,7 @@ describe('StatusBox', () => {
             cvrs={{ file: null, processing: null }}
             auditType="BATCH_COMPARISON"
             auditName="Test Audit"
+            isAuditOnline={false}
           />
         </Router>
       )
@@ -652,6 +692,7 @@ describe('StatusBox', () => {
             cvrs={{ file: null, processing: null }}
             auditType="BATCH_COMPARISON"
             auditName="Test Audit"
+            isAuditOnline={false}
           />
         </Router>
       )
