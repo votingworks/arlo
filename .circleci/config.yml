@@ -5,7 +5,7 @@ orbs:
 executors:
   arlo:
     docker:
-      - image: circleci/python:3.8.3-node-browsers
+      - image: circleci/python:3.8.11-node-browsers
         environment:
           DATABASE_URL: postgresql://root@localhost:5432/arlo-test
           FLASK_ENV: test
