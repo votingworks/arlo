@@ -273,6 +273,7 @@ interface IJurisdictionAdminProps {
   auditType: IAuditSettings['auditType']
   children?: ReactElement
   auditName: string
+  isAuditOnline: boolean
 }
 
 export const JurisdictionAdminStatusBox = ({
@@ -284,6 +285,7 @@ export const JurisdictionAdminStatusBox = ({
   auditType,
   children,
   auditName,
+  isAuditOnline,
 }: IJurisdictionAdminProps) => {
   const { electionId, jurisdictionId } = useParams<{
     electionId: string
@@ -364,12 +366,11 @@ export const JurisdictionAdminStatusBox = ({
       ({ currentRoundStatus, signedOffAt }) =>
         currentRoundStatus.numSampledBallots === 0 || signedOffAt
     ).length
-    const details = [
-      `${numCompleted} of ${auditBoards.length} audit boards complete.`,
-    ]
-    // Batch Comparison audits always have 0 numSampledBallots and 0 numAuditedBallots
-    if (auditType === 'BATCH_COMPARISON') {
-      details.pop()
+    const details = []
+    if (isAuditOnline) {
+      details.push(
+        `${numCompleted} of ${auditBoards.length} audit boards complete.`
+      )
     }
     if (numCompleted === auditBoards.length)
       details.push(
