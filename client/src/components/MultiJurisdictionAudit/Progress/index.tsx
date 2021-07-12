@@ -8,6 +8,7 @@ import {
   JurisdictionRoundStatus,
   IJurisdiction,
   getJurisdictionStatus,
+  JurisdictionProgressStatus,
 } from '../useJurisdictions'
 import JurisdictionDetail from './JurisdictionDetail'
 import {
@@ -116,29 +117,23 @@ const Progress: React.FC<IProps> = ({
 
         const jurisdictionStatus = getJurisdictionStatus(jurisdiction)
         switch (jurisdictionStatus) {
-          case JurisdictionRoundStatus.COMPLETE:
+          case JurisdictionProgressStatus.UPLOADS_COMPLETE:
             return (
               <Status intent="success">
-                {(!currentRoundStatus &&
-                  auditType === 'BALLOT_POLLING' &&
-                  'Manifest uploaded') ||
-                  (!currentRoundStatus &&
-                    `${numComplete}/${files.length} files uploaded`) ||
-                  (currentRoundStatus && 'Complete')}
+                {(auditType === 'BALLOT_POLLING' && 'Manifest uploaded') ||
+                  `${numComplete}/${files.length} files uploaded`}
               </Status>
             )
-          case JurisdictionRoundStatus.FAILED:
+          case JurisdictionProgressStatus.UPLOADS_FAILED:
             return (
               <Status intent="danger">
-                {(!currentRoundStatus &&
-                  auditType === 'BALLOT_POLLING' &&
-                  'Manifest upload failed') ||
-                  (!currentRoundStatus && 'Upload failed')}
+                {(auditType === 'BALLOT_POLLING' && 'Manifest upload failed') ||
+                  'Upload failed'}
               </Status>
             )
-          case JurisdictionRoundStatus.IN_PROGRESS:
+          case JurisdictionProgressStatus.AUDIT_IN_PROGRESS:
             return <Status intent="warning">In progress</Status>
-          case JurisdictionRoundStatus.NOT_STARTED:
+          case JurisdictionProgressStatus.UPLOADS_NOT_STARTED:
             return (
               <Status>
                 {(!currentRoundStatus &&
@@ -150,6 +145,10 @@ const Progress: React.FC<IProps> = ({
                   (currentRoundStatus && 'Not started')}
               </Status>
             )
+          case JurisdictionProgressStatus.AUDIT_COMPLETE:
+            return <Status intent="success">Complete</Status>
+          case JurisdictionProgressStatus.AUDIT_NOT_STARTED:
+            return <Status intent="success">Not started</Status>
           default:
             return null
         }
@@ -175,7 +174,6 @@ const Progress: React.FC<IProps> = ({
             [JurisdictionRoundStatus.NOT_STARTED]: 0,
             [JurisdictionRoundStatus.IN_PROGRESS]: 1,
             [JurisdictionRoundStatus.COMPLETE]: 2,
-            [JurisdictionRoundStatus.FAILED]: 3,
           }[currentRoundStatus.status]
         }
       ),

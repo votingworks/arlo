@@ -761,7 +761,7 @@ export const jurisdictionMocks: { [key: string]: IJurisdiction[] } = {
       currentRoundStatus: null,
     },
   ],
-  oneCompleteWithAlbamaJurisdictions: [
+  oneCompleteWithAlabamaJurisdictions: [
     {
       id: 'jurisdiction-id-1',
       name: 'Jackson',
@@ -802,10 +802,92 @@ export const jurisdictionMocks: { [key: string]: IJurisdiction[] } = {
       },
     },
   ],
-  allCompleteWithAlbamaJurisdictions: [
+  allCompleteWithAlabamaJurisdictions: [
     {
       id: 'jurisdiction-id-1',
       name: 'Jackson',
+      ballotManifest: manifestMocks.processed,
+      batchTallies: talliesMocks.processed,
+      currentRoundStatus: {
+        status: JurisdictionRoundStatus.COMPLETE,
+        numUniqueAudited: 10,
+        numUnique: 10,
+        numSamplesAudited: 11,
+        numSamples: 11,
+      },
+    },
+    {
+      id: 'jurisdiction-id-2',
+      name: 'Baldwin County',
+      ballotManifest: manifestMocks.processed,
+      batchTallies: talliesMocks.processed,
+      currentRoundStatus: {
+        status: JurisdictionRoundStatus.COMPLETE,
+        numUniqueAudited: 20,
+        numUnique: 20,
+        numSamplesAudited: 22,
+        numSamples: 22,
+      },
+    },
+    {
+      id: 'jurisdiction-id-3',
+      name: 'Geneva',
+      ballotManifest: manifestMocks.processed,
+      batchTallies: talliesMocks.processed,
+      currentRoundStatus: {
+        status: JurisdictionRoundStatus.COMPLETE,
+        numUniqueAudited: 30,
+        numUnique: 30,
+        numSamplesAudited: 31,
+        numSamples: 31,
+      },
+    },
+  ],
+  allCompleteWithOneMatchedAlabamaJurisdictions: [
+    {
+      id: 'jurisdiction-id-1',
+      name: 'Jurisdiction 1',
+      ballotManifest: manifestMocks.processed,
+      batchTallies: talliesMocks.processed,
+      currentRoundStatus: {
+        status: JurisdictionRoundStatus.COMPLETE,
+        numUniqueAudited: 10,
+        numUnique: 10,
+        numSamplesAudited: 11,
+        numSamples: 11,
+      },
+    },
+    {
+      id: 'jurisdiction-id-2',
+      name: 'Jurisdiction 2',
+      ballotManifest: manifestMocks.processed,
+      batchTallies: talliesMocks.processed,
+      currentRoundStatus: {
+        status: JurisdictionRoundStatus.COMPLETE,
+        numUniqueAudited: 20,
+        numUnique: 20,
+        numSamplesAudited: 22,
+        numSamples: 22,
+      },
+    },
+    {
+      id: 'jurisdiction-id-3',
+      name: 'Geneva',
+      ballotManifest: manifestMocks.processed,
+      batchTallies: talliesMocks.processed,
+      currentRoundStatus: {
+        status: JurisdictionRoundStatus.COMPLETE,
+        numUniqueAudited: 30,
+        numUnique: 30,
+        numSamplesAudited: 31,
+        numSamples: 31,
+      },
+    },
+  ],
+  allCompleteWithTwoMatchedAlabamaJurisdictions: [
+    {
+      id: 'jurisdiction-id-1',
+      name: 'Jurisdiction 1',
       ballotManifest: manifestMocks.processed,
       batchTallies: talliesMocks.processed,
       currentRoundStatus: {

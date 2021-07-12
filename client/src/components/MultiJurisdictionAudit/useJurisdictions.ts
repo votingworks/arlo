@@ -22,7 +22,15 @@ export enum JurisdictionRoundStatus {
   NOT_STARTED = 'NOT_STARTED',
   IN_PROGRESS = 'IN_PROGRESS',
   COMPLETE = 'COMPLETE',
-  FAILED = 'FAILED',
+}
+
+export enum JurisdictionProgressStatus {
+  UPLOADS_NOT_STARTED = 'UPLOADS_NOT_STARTED',
+  UPLOADS_COMPLETE = 'UPLOADS_COMPLETE',
+  UPLOADS_FAILED = 'UPLOADS_FAILED',
+  AUDIT_NOT_STARTED = 'AUDIT_NOT_STARTED',
+  AUDIT_IN_PROGRESS = 'AUDIT_IN_PROGRESS',
+  AUDIT_COMPLETE = 'AUDIT_COMPLETE',
 }
 
 export interface IJurisdiction {
@@ -64,30 +72,30 @@ export const getJurisdictionStatus = (jurisdiction: IJurisdiction) => {
     // Special case when we just have a ballotManifest
     if (files.length === 1) {
       if (anyFailed) {
-        return JurisdictionRoundStatus.FAILED
+        return JurisdictionProgressStatus.UPLOADS_FAILED
       }
       if (numComplete === 1) {
-        return JurisdictionRoundStatus.COMPLETE
+        return JurisdictionProgressStatus.UPLOADS_COMPLETE
       }
     }
 
     // When we have multiple files
     if (anyFailed) {
-      return JurisdictionRoundStatus.FAILED
+      return JurisdictionProgressStatus.UPLOADS_FAILED
     }
     if (numComplete === files.length) {
-      return JurisdictionRoundStatus.COMPLETE
+      return JurisdictionProgressStatus.UPLOADS_COMPLETE
     }
-    return JurisdictionRoundStatus.NOT_STARTED
+    return JurisdictionProgressStatus.UPLOADS_NOT_STARTED
   }
   if (currentRoundStatus.status === JurisdictionRoundStatus.COMPLETE) {
-    return JurisdictionRoundStatus.COMPLETE
+    return JurisdictionProgressStatus.AUDIT_COMPLETE
   }
   if (currentRoundStatus.status === JurisdictionRoundStatus.IN_PROGRESS) {
-    return JurisdictionRoundStatus.IN_PROGRESS
+    return JurisdictionProgressStatus.AUDIT_IN_PROGRESS
   }
 
-  return JurisdictionRoundStatus.NOT_STARTED
+  return JurisdictionProgressStatus.AUDIT_NOT_STARTED
 }
 
 const useJurisdictions = (

@@ -8,9 +8,9 @@ import { Topology } from 'topojson-specification'
 import { Colors, Spinner } from '@blueprintjs/core'
 import labelValueStates from '../AASetup/Settings/states'
 import {
-  JurisdictionRoundStatus,
   IJurisdiction,
   getJurisdictionStatus,
+  JurisdictionProgressStatus,
 } from '../useJurisdictions'
 import { IAuditSettings } from '../useAuditSettings'
 
@@ -133,6 +133,9 @@ const Map = ({
   const tooltipContainer = useRef(null)
 
   const [jsonData, setJsonData] = useState<Topology | undefined>(undefined)
+  const [matchedJurisdictions, setMatchedJurisdictions] = useState<boolean>(
+    false
+  )
 
   const getStateName = (abbr: string) => {
     const filteredState = labelValueStates.find(
@@ -148,21 +151,22 @@ const Map = ({
         const countyNameLower = countyName.toLowerCase()
         return (
           jurisdictionNameLower === countyNameLower ||
-          (jurisdictionNameLower.includes(' county') &&
-            jurisdictionNameLower.replace(' county', '') === countyNameLower)
+          jurisdictionNameLower.replace(' county', '') === countyNameLower
         )
       })
 
       if (filteredJurisdiction) {
         const jurisdictionStatus = getJurisdictionStatus(filteredJurisdiction)
         switch (jurisdictionStatus) {
-          case JurisdictionRoundStatus.COMPLETE:
+          case JurisdictionProgressStatus.UPLOADS_COMPLETE:
+          case JurisdictionProgressStatus.AUDIT_COMPLETE:
             return 'success'
-          case JurisdictionRoundStatus.FAILED:
+          case JurisdictionProgressStatus.UPLOADS_FAILED:
             return 'danger'
-          case JurisdictionRoundStatus.IN_PROGRESS:
+          case JurisdictionProgressStatus.AUDIT_IN_PROGRESS:
             return 'progress'
-          case JurisdictionRoundStatus.NOT_STARTED:
+          case JurisdictionProgressStatus.UPLOADS_NOT_STARTED:
+          case JurisdictionProgressStatus.AUDIT_NOT_STARTED:
             return 'gray'
           default:
             return 'default'
@@ -196,7 +200,7 @@ const Map = ({
     const projection = geoAlbers()
     const path = geoPath().projection(projection)
 
-    if (d3Container.current && tooltipContainer.current && jsonData) {
+    if (jsonData) {
       const svgElement = select(d3Container.current)
 
       svgElement.selectAll('path').remove()
@@ -225,112 +229,123 @@ const Map = ({
           usState.id &&
           d.id.toString().slice(0, 2) === usState.id.toString()
       )
-      projection.fitSize([width, height], usState)
 
-      svgElement
-        .append('path')
-        .datum(usState)
-        .attr('class', 'outline')
-        .attr('d', path)
-        .attr('id', 'single-state')
+      const jurisdictionNames = jurisdictions.map(jurisdiction =>
+        jurisdiction.name
+          .toLowerCase()
+          .replace('county', '')
+          .trim()
+      )
+      const filteredCounties = Object.values(usCounties).filter(county =>
+        jurisdictionNames.includes(
+          county.properties && county.properties.name.toLowerCase()
+        )
+      )
 
-      svgElement
-        .append('clipPath')
-        .attr('id', 'clip-state')
-        .append('use')
-        .attr('xlink:href', '#single-state')
+      if (filteredCounties.length / jurisdictions.length >= 0.5) {
+        setMatchedJurisdictions(true)
+        projection.fitSize([width, height], usState)
 
-      svgElement
-        .selectAll('path')
-        .data(usCounties)
-        .enter()
-        .append('path')
-        .attr('d', path)
-        .attr('clip-path', 'url(#clip-state)')
-        .attr('class', d => {
-          let statusClass = ''
-          if (d && d.properties) {
-            statusClass = getJurisdictionStatusClass(d.properties.name)
-          }
-          return `county ${statusClass}`
-        })
-        .on('mouseover', event => {
-          select(tooltipContainer.current)
-            .style('display', 'block')
-            .style('left', `${event.offsetX + 10}px`)
-            .style('top', `${event.offsetY}px`)
-            .html(event.toElement.__data__.properties.name)
-        })
-        .on('mouseout', () => {
-          select('#tooltip').style('display', 'none')
-        })
+        svgElement.attr('width', width).attr('height', height)
+
+        svgElement
+          .append('path')
+          .datum(usState)
+          .attr('class', 'outline')
+          .attr('d', path)
+          .attr('id', 'single-state')
+
+        svgElement
+          .append('clipPath')
+          .attr('id', 'clip-state')
+          .append('use')
+          .attr('xlink:href', '#single-state')
+
+        svgElement
+          .selectAll('path')
+          .data(usCounties)
+          .enter()
+          .append('path')
+          .attr('d', path)
+          .attr('clip-path', 'url(#clip-state)')
+          .attr('class', d => {
+            let statusClass = ''
+            if (d && d.properties) {
+              statusClass = getJurisdictionStatusClass(d.properties.name)
+            }
+            return `county ${statusClass}`
+          })
+          .on('mouseover', event => {
+            select(tooltipContainer.current)
+              .style('display', 'block')
+              .style('left', `${event.offsetX + 10}px`)
+              .style('top', `${event.offsetY}px`)
+              .html(event.toElement.__data__.properties.name)
+          })
+          .on('mouseout', () => {
+            select('#tooltip').style('display', 'none')
+          })
+      }
     }
   }, [jsonData, getJurisdictionStatusClass, stateName, jurisdictions])
 
   return (
     <MapWrapper>
-      <SVGMap
-        className="d3-component"
-        width={width}
-        height={height}
-        ref={d3Container}
-      />
+      <SVGMap className="d3-component" width={0} height={0} ref={d3Container} />
       <Tooltip id="tooltip" className="hide-tooltip" ref={tooltipContainer} />
-      {jsonData ? (
-        <MapLabels>
-          {isRoundStarted ? (
-            <div>
-              <MapLabelsRow>
-                <MapLabelsBoxes className="success" /> Complete
-              </MapLabelsRow>
-              <MapLabelsRow>
-                <MapLabelsBoxes className="progress" /> In progress
-              </MapLabelsRow>
-              <MapLabelsRow>
-                <MapLabelsBoxes className="gray" /> Not started
-              </MapLabelsRow>
-              <MapLabelsRow>
-                <MapLabelsBoxes className="default" /> Non-Participating
-                Jurisdiction
-              </MapLabelsRow>
-            </div>
-          ) : auditType === 'BALLOT_POLLING' ? (
-            <div>
-              <MapLabelsRow>
-                <MapLabelsBoxes className="success" /> Manifest uploaded
-              </MapLabelsRow>
-              <MapLabelsRow>
-                <MapLabelsBoxes className="danger" /> Manifest upload failed
-              </MapLabelsRow>
-              <MapLabelsRow>
-                <MapLabelsBoxes className="gray" /> No manifest uploaded
-              </MapLabelsRow>
-              <MapLabelsRow>
-                <MapLabelsBoxes className="default" /> Non-Participating
-                Jurisdiction
-              </MapLabelsRow>
-            </div>
-          ) : (
-            <div>
-              <MapLabelsRow>
-                <MapLabelsBoxes className="success" /> All files uploaded
-              </MapLabelsRow>
-              <MapLabelsRow>
-                <MapLabelsBoxes className="danger" /> File upload failed
-              </MapLabelsRow>
-              <MapLabelsRow>
-                <MapLabelsBoxes className="gray" /> No files uploaded
-              </MapLabelsRow>
-              <MapLabelsRow>
-                <MapLabelsBoxes className="default" /> Non-Participating
-                Jurisdiction
-              </MapLabelsRow>
-            </div>
-          )}
-        </MapLabels>
-      ) : (
-        <MapSpinner size={Spinner.SIZE_STANDARD} />
-      )}
+      {matchedJurisdictions &&
+        (jsonData ? (
+          <MapLabels>
+            {isRoundStarted ? (
+              <div>
+                <MapLabelsRow>
+                  <MapLabelsBoxes className="success" /> Complete
+                </MapLabelsRow>
+                <MapLabelsRow>
+                  <MapLabelsBoxes className="progress" /> In progress
+                </MapLabelsRow>
+                <MapLabelsRow>
+                  <MapLabelsBoxes className="gray" /> Not started
+                </MapLabelsRow>
+                <MapLabelsRow>
+                  <MapLabelsBoxes className="default" /> No data
+                </MapLabelsRow>
+              </div>
+            ) : auditType === 'BALLOT_POLLING' ? (
+              <div>
+                <MapLabelsRow>
+                  <MapLabelsBoxes className="success" /> Manifest uploaded
+                </MapLabelsRow>
+                <MapLabelsRow>
+                  <MapLabelsBoxes className="danger" /> Manifest upload failed
+                </MapLabelsRow>
+                <MapLabelsRow>
+                  <MapLabelsBoxes className="gray" /> No manifest uploaded
+                </MapLabelsRow>
+                <MapLabelsRow>
+                  <MapLabelsBoxes className="default" /> No data
+                </MapLabelsRow>
+              </div>
+            ) : (
+              <div>
+                <MapLabelsRow>
+                  <MapLabelsBoxes className="success" /> All files uploaded
+                </MapLabelsRow>
+                <MapLabelsRow>
+                  <MapLabelsBoxes className="danger" /> File upload failed
+                </MapLabelsRow>
+                <MapLabelsRow>
+                  <MapLabelsBoxes className="gray" /> No files uploaded
+                </MapLabelsRow>
+                <MapLabelsRow>
+                  <MapLabelsBoxes className="default" /> No data
+                </MapLabelsRow>
+              </div>
+            )}
+          </MapLabels>
+        ) : (
+          <MapSpinner size={Spinner.SIZE_STANDARD} />
+        ))}
     </MapWrapper>
   )
 }

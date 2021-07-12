@@ -568,7 +568,7 @@ describe('Progress screen', () => {
       expect(modal).not.toBeInTheDocument()
 
       // Click on a different jurisdiction's status tag to open the modal
-      userEvent.click(screen.queryAllByText('Manifest uploaded')[1])
+      userEvent.click(screen.getByText('Manifest uploaded'))
       modal = screen
         .getByRole('heading', { name: 'Jurisdiction 3' })
         .closest('div.bp3-dialog')! as HTMLElement
@@ -584,7 +584,7 @@ describe('Progress screen', () => {
       userEvent.click(screen.getByRole('button', { name: 'Close' }))
 
       // Check the last jurisdiction with no manifest uploaded
-      userEvent.click(screen.queryAllByText('No manifest uploaded')[1])
+      userEvent.click(screen.getByText('No manifest uploaded'))
       modal = screen
         .getByRole('heading', { name: 'Jurisdiction 2' })
         .closest('div.bp3-dialog')! as HTMLElement
@@ -840,7 +840,7 @@ describe('Progress screen', () => {
     await withMockFetch(expectedCalls, async () => {
       const { container } = render(
         <Progress
-          jurisdictions={jurisdictionMocks.oneCompleteWithAlbamaJurisdictions}
+          jurisdictions={jurisdictionMocks.oneCompleteWithAlabamaJurisdictions}
           auditSettings={auditSettings.all}
           round={roundMocks.singleIncomplete[0]}
         />
@@ -863,7 +863,7 @@ describe('Progress screen', () => {
       const { container } = render(
         // jurisdiction name also contains "County" name
         <Progress
-          jurisdictions={jurisdictionMocks.allCompleteWithAlbamaJurisdictions}
+          jurisdictions={jurisdictionMocks.allCompleteWithAlabamaJurisdictions}
           auditSettings={auditSettings.all}
           round={roundMocks.singleIncomplete[0]}
         />
@@ -875,6 +875,57 @@ describe('Progress screen', () => {
         expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
       })
       expect(container.querySelectorAll('.county.success').length).toBe(3) // all completed
+    })
+  })
+
+  it('renders progress map with 2 matched & completed jurisdictions', async () => {
+    const expectedCalls = [aaApiCalls.getMapData]
+    await withMockFetch(expectedCalls, async () => {
+      const { container } = render(
+        // jurisdiction name also contains "County" name
+        <Progress
+          jurisdictions={
+            jurisdictionMocks.allCompleteWithTwoMatchedAlabamaJurisdictions
+          }
+          auditSettings={auditSettings.all}
+          round={roundMocks.singleIncomplete[0]}
+        />
+      )
+
+      expect(container.querySelectorAll('.d3-component').length).toBe(1)
+
+      await waitFor(() => {
+        expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
+      })
+      expect(container.querySelectorAll('.county.success').length).toBe(2) // all completed
+
+      // should including showing map label
+      expect(screen.queryAllByText('Complete').length).toBe(4)
+    })
+  })
+
+  it('does not render progress map with 1 matched & completed jurisdictions', async () => {
+    const expectedCalls = [aaApiCalls.getMapData]
+    await withMockFetch(expectedCalls, async () => {
+      const { container } = render(
+        // jurisdiction name also contains "County" name
+        <Progress
+          jurisdictions={
+            jurisdictionMocks.allCompleteWithOneMatchedAlabamaJurisdictions
+          }
+          auditSettings={auditSettings.all}
+          round={roundMocks.singleIncomplete[0]}
+        />
+      )
+
+      expect(container.querySelectorAll('.d3-component').length).toBe(1)
+
+      await waitFor(() => {
+        expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
+      })
+
+      // should not show map label
+      expect(screen.queryAllByText('Complete').length).toBe(3) // all completed
     })
   })
 })
