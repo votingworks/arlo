@@ -484,7 +484,6 @@ describe('StatusBox', () => {
         </Router>
       )
       screen.getByText('Round 1 of the audit is in progress.')
-      screen.queryByText('1 of 1 audit boards complete.')
       screen.getByText('Waiting for all jurisdictions to complete Round 1.')
       await waitFor(() =>
         expect(
