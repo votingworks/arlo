@@ -42,12 +42,14 @@ interface IProps {
   interpretations: IBallotInterpretation[]
   setInterpretations: (interpretations: IBallotInterpretation[]) => void
   previousBallot: () => void
+  confirmSelections: () => void
 }
 
 const BallotAudit: React.FC<IProps> = ({
   contests,
   interpretations,
   setInterpretations,
+  confirmSelections,
   previousBallot,
 }: IProps) => {
   return (
@@ -57,7 +59,10 @@ const BallotAudit: React.FC<IProps> = ({
         <Formik
           initialValues={{ interpretations }}
           enableReinitialize
-          onSubmit={values => setInterpretations(values.interpretations)}
+          onSubmit={values => {
+            setInterpretations(values.interpretations)
+            confirmSelections()
+          }}
         >
           {({
             handleSubmit,

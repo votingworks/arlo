@@ -145,10 +145,10 @@ const Ballot: React.FC<IProps> = ({
   >(contests.map(emptyInterpretation))
   const { confirm, confirmProps } = useConfirm()
 
-  const interpretiationsRef = useRef<IBallotInterpretation[]>(
+  const interpretationsRef = useRef<IBallotInterpretation[]>(
     contests.map(emptyInterpretation)
   )
-  interpretiationsRef.current = interpretations
+  interpretationsRef.current = interpretations
 
   const renderInterpretation = (
     { interpretation, choiceIds }: IBallotInterpretation,
@@ -166,30 +166,19 @@ const Ballot: React.FC<IProps> = ({
         return <h3>Blank vote</h3>
       case Interpretation.CONTEST_NOT_ON_BALLOT:
         return <h3>Not on Ballot</h3>
-      // case Interpretation.CANT_AGREE:
-      // case for Interpretation.CANT_AGREE in case we decide to put it back in again
-      // return (
-      //   <LockedButton disabled large intent="primary">
-      //     Audit board can&apos;t agree
-      //   </LockedButton>
-      // )
+      // case Interpretation.CANT_AGREE: (we do not support this case now)
       default:
         return null
     }
   }
 
-  const ballotSubmitFunc = (selectionType: 'not_found' | 'general') =>
-    selectionType === 'not_found'
-      ? submitBallot(ballot.id, BallotStatus.NOT_FOUND, [])
-      : submitBallot(
-          ballot.id,
-          BallotStatus.AUDITED,
-          interpretiationsRef.current.filter(
-            ({ interpretation }) => interpretation !== null
-          )
-        )
+  const setInterpretationsFunc = (
+    newInterpretations: IBallotInterpretation[]
+  ) => {
+    setInterpretations(newInterpretations)
+  }
 
-  const initiateConfirm = (selectionType: 'not_found' | 'general') =>
+  const confirmSelections = () => {
     confirm({
       title: 'Confirm the Ballot Selections',
       description: (
@@ -197,41 +186,45 @@ const Ballot: React.FC<IProps> = ({
           {contests.map((contest, i) => (
             <div key={contest.id}>
               <p>{contest.name}</p>
-              {selectionType === 'not_found' ? (
-                <h3>Ballot Not Found</h3>
-              ) : (
-                <>
-                  {renderInterpretation(
-                    interpretiationsRef.current[i],
-                    contest
-                  )}
-                  <p>
-                    {interpretiationsRef.current[i].comment &&
-                      `Comment: ${interpretiationsRef.current[i].comment}`}
-                  </p>
-                </>
-              )}
+              {renderInterpretation(interpretationsRef.current[i], contest)}
+              <p>
+                {interpretationsRef.current[i].comment &&
+                  `Comment: ${interpretationsRef.current[i].comment}`}
+              </p>
             </div>
           ))}
         </>
       ),
       onYesClick: async () => {
-        ballotSubmitFunc(selectionType)
+        submitBallot(
+          ballot.id,
+          BallotStatus.AUDITED,
+          interpretationsRef.current.filter(
+            ({ interpretation }) => interpretation !== null
+          )
+        )
         nextBallot()
       },
       yesButtonLabel: 'Confirm Selections',
       noButtonLabel: 'Change Selections',
     })
-
-  const setInterpretationsFunc = (
-    newInterpretations: IBallotInterpretation[]
-  ) => {
-    setInterpretations(newInterpretations)
-    initiateConfirm('general')
   }
 
   const submitNotFound = async () => {
-    initiateConfirm('not_found')
+    confirm({
+      title: 'Confirm the Ballot Selections',
+      description: (
+        <div>
+          <h3>Ballot Not Found</h3>
+        </div>
+      ),
+      onYesClick: async () => {
+        submitBallot(ballot.id, BallotStatus.NOT_FOUND, [])
+        nextBallot()
+      },
+      yesButtonLabel: 'Confirm Selections',
+      noButtonLabel: 'Change Selections',
+    })
   }
 
   const contestsHash = hashBy(contests, c => c.id)
@@ -305,6 +298,7 @@ const Ballot: React.FC<IProps> = ({
                   contests={contests}
                   interpretations={interpretations}
                   setInterpretations={setInterpretationsFunc}
+                  confirmSelections={() => confirmSelections()}
                   previousBallot={previousBallot}
                 />
                 <Confirm {...confirmProps} />

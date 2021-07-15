@@ -255,7 +255,7 @@ describe('DataEntry', () => {
         const dialog = (await screen.findByRole('heading', {
           name: /Confirm the Ballot Selections/,
         })).closest('.bp3-dialog')! as HTMLElement
-        expect(within(dialog).getAllByText('Ballot Not Found').length).toBe(2)
+        expect(within(dialog).getAllByText('Ballot Not Found').length).toBe(1)
         userEvent.click(
           within(dialog).getByRole('button', { name: 'Confirm Selections' })
         )
