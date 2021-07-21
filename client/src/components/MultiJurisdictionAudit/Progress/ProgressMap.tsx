@@ -121,6 +121,9 @@ const MapSpinner = styled(Spinner)`
   margin: 0 auto;
 `
 
+const convertCountyToJurisdiction = (countyName: string): string =>
+  countyName.toLowerCase().replace(/\s+county(\s+|$)/i, '')
+
 const Map = ({
   stateName,
   jurisdictions,
@@ -143,14 +146,11 @@ const Map = ({
 
   const getJurisdictionStatusClass = useCallback(
     (countyName: string) => {
-      const filteredJurisdiction = jurisdictions.find(jurisdiction => {
-        const jurisdictionNameLower = jurisdiction.name.toLowerCase()
-        const countyNameLower = countyName.toLowerCase()
-        return (
-          jurisdictionNameLower === countyNameLower ||
-          jurisdictionNameLower.replace(' county', '') === countyNameLower
-        )
-      })
+      const filteredJurisdiction = jurisdictions.find(
+        ({ name }) =>
+          convertCountyToJurisdiction(name) ===
+          convertCountyToJurisdiction(countyName)
+      )
 
       if (filteredJurisdiction) {
         const jurisdictionStatus = getJurisdictionStatus(filteredJurisdiction)
@@ -228,16 +228,14 @@ const Map = ({
         d.id.toString().slice(0, 2) === usState.id.toString()
     )
 
-    const jurisdictionNames = jurisdictions.map(jurisdiction =>
-      jurisdiction.name
-        .toLowerCase()
-        .replace('county', '')
-        .trim()
-    )
     filteredCounties = Object.values(usCounties).filter(county =>
-      jurisdictionNames.includes(
-        county.properties && county.properties.name.toLowerCase()
-      )
+      jurisdictions
+        .map(({ name }) => convertCountyToJurisdiction(name))
+        .includes(
+          county.properties &&
+            county.properties.name &&
+            convertCountyToJurisdiction(county.properties.name)
+        )
     )
 
     if (filteredCounties.length / jurisdictions.length < 0.5) return null
