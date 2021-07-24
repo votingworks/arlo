@@ -174,22 +174,18 @@ const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
     {
       Header: 'Actions',
       accessor: ballot => {
-        return ballot.status === BallotStatus.AUDITED ||
-          ballot.status === BallotStatus.NOT_FOUND ? (
+        return (
           <AuditBtn
             to={`${url}/batch/${ballot.batch.id}/ballot/${ballot.position}`}
             minimal
             fill
           >
-            Re-Audit
-          </AuditBtn>
-        ) : (
-          <AuditBtn
-            to={`${url}/batch/${ballot.batch.id}/ballot/${ballot.position}`}
-            minimal
-            fill
-          >
-            <strong>Audit Ballot</strong>
+            {ballot.status === BallotStatus.AUDITED ||
+            ballot.status === BallotStatus.NOT_FOUND ? (
+              'Re-Audit'
+            ) : (
+              <strong>Audit Ballot</strong>
+            )}
           </AuditBtn>
         )
       },

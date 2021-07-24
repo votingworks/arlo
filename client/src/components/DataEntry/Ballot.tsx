@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import { H3, H4, Button, Colors, OL } from '@blueprintjs/core'
 import styled from 'styled-components'
 import { Redirect } from 'react-router-dom'
@@ -145,11 +145,6 @@ const Ballot: React.FC<IProps> = ({
   >(contests.map(emptyInterpretation))
   const { confirm, confirmProps } = useConfirm()
 
-  const interpretationsRef = useRef<IBallotInterpretation[]>(
-    contests.map(emptyInterpretation)
-  )
-  interpretationsRef.current = interpretations
-
   const renderInterpretation = (
     { interpretation, choiceIds }: IBallotInterpretation,
     contest: IContest
@@ -172,13 +167,7 @@ const Ballot: React.FC<IProps> = ({
     }
   }
 
-  const setInterpretationsFunc = (
-    newInterpretations: IBallotInterpretation[]
-  ) => {
-    setInterpretations(newInterpretations)
-  }
-
-  const confirmSelections = () => {
+  const confirmSelections = (newInterpretations: IBallotInterpretation[]) => {
     confirm({
       title: 'Confirm the Ballot Selections',
       description: (
@@ -186,20 +175,20 @@ const Ballot: React.FC<IProps> = ({
           {contests.map((contest, i) => (
             <div key={contest.id}>
               <p>{contest.name}</p>
-              {renderInterpretation(interpretationsRef.current[i], contest)}
+              {renderInterpretation(newInterpretations[i], contest)}
               <p>
-                {interpretationsRef.current[i].comment &&
-                  `Comment: ${interpretationsRef.current[i].comment}`}
+                {newInterpretations[i].comment &&
+                  `Comment: ${newInterpretations[i].comment}`}
               </p>
             </div>
           ))}
         </>
       ),
       onYesClick: async () => {
-        submitBallot(
+        await submitBallot(
           ballot.id,
           BallotStatus.AUDITED,
-          interpretationsRef.current.filter(
+          newInterpretations.filter(
             ({ interpretation }) => interpretation !== null
           )
         )
@@ -219,7 +208,7 @@ const Ballot: React.FC<IProps> = ({
         </div>
       ),
       onYesClick: async () => {
-        submitBallot(ballot.id, BallotStatus.NOT_FOUND, [])
+        await submitBallot(ballot.id, BallotStatus.NOT_FOUND, [])
         nextBallot()
       },
       yesButtonLabel: 'Confirm Selections',
@@ -297,8 +286,8 @@ const Ballot: React.FC<IProps> = ({
                 <BallotAudit
                   contests={contests}
                   interpretations={interpretations}
-                  setInterpretations={setInterpretationsFunc}
-                  confirmSelections={() => confirmSelections()}
+                  setInterpretations={setInterpretations}
+                  confirmSelections={confirmSelections}
                   previousBallot={previousBallot}
                 />
                 <Confirm {...confirmProps} />
