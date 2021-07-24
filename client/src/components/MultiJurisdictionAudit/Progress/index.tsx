@@ -120,15 +120,17 @@ const Progress: React.FC<IProps> = ({
           case JurisdictionProgressStatus.UPLOADS_COMPLETE:
             return (
               <Status intent="success">
-                {(auditType === 'BALLOT_POLLING' && 'Manifest uploaded') ||
-                  `${numComplete}/${files.length} files uploaded`}
+                {auditType === 'BALLOT_POLLING'
+                  ? 'Manifest uploaded'
+                  : `${numComplete}/${files.length} files uploaded`}
               </Status>
             )
           case JurisdictionProgressStatus.UPLOADS_FAILED:
             return (
               <Status intent="danger">
-                {(auditType === 'BALLOT_POLLING' && 'Manifest upload failed') ||
-                  'Upload failed'}
+                {auditType === 'BALLOT_POLLING'
+                  ? 'Manifest upload failed'
+                  : 'Upload failed'}
               </Status>
             )
           case JurisdictionProgressStatus.AUDIT_IN_PROGRESS:
@@ -136,13 +138,11 @@ const Progress: React.FC<IProps> = ({
           case JurisdictionProgressStatus.UPLOADS_NOT_STARTED:
             return (
               <Status>
-                {(!currentRoundStatus &&
-                  auditType === 'BALLOT_POLLING' &&
-                  'No manifest uploaded') ||
-                  (!currentRoundStatus &&
-                    files.length > 0 &&
-                    `${numComplete}/${files.length} files uploaded`) ||
-                  (currentRoundStatus && 'Not started')}
+                {currentRoundStatus
+                  ? 'Not started'
+                  : auditType === 'BALLOT_POLLING'
+                  ? 'No manifest uploaded'
+                  : `${numComplete}/${files.length} files uploaded`}
               </Status>
             )
           case JurisdictionProgressStatus.AUDIT_COMPLETE:
