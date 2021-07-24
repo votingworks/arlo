@@ -11,6 +11,7 @@ import jurisdictionFile, {
   standardizedContestsFile,
 } from './AASetup/Participants/_mocks'
 import { IBatch } from './RoundManagement/useBatchResults'
+import mockJSON from './Progress/us-states-counties'
 
 const jurisdictionFormData: FormData = new FormData()
 jurisdictionFormData.append(
@@ -445,6 +446,11 @@ export const aaApiCalls = {
     url: '/api/election/1/standardized-contests/file',
     response,
   }),
+  getMapData: {
+    url: 'https://cdn.jsdelivr.net/npm/us-atlas@3/counties-10m.json',
+    // getting json as response to render the map properly
+    response: mockJSON,
+  },
 }
 
 export const supportApiCalls = {

@@ -59,6 +59,7 @@ describe('timers', () => {
       aaApiCalls.getUser,
       ...loadEach,
       ...loadEach,
+      aaApiCalls.getMapData,
       ...loadEach,
     ]
     await withMockFetch(expectedCalls, async () => {
