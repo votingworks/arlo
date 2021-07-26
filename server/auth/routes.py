@@ -1,9 +1,13 @@
+from datetime import datetime, timedelta, timezone
 from urllib.parse import urljoin, urlencode
 from flask import redirect, jsonify, request, session
 from authlib.integrations.flask_client import OAuth, OAuthError
+from werkzeug.exceptions import BadRequest
+from pyotp import HOTP
 
 from . import auth
 from ..models import *  # pylint: disable=wildcard-import
+from ..database import db_session
 from .lib import (
     get_loggedin_user,
     set_loggedin_user,
@@ -189,22 +193,70 @@ def auditadmin_login_callback():
     return redirect("/")
 
 
-@auth.route("/auth/jurisdictionadmin/start")
-def jurisdictionadmin_login():
-    redirect_uri = urljoin(request.host_url, JURISDICTIONADMIN_OAUTH_CALLBACK_URL)
-    return auth0_ja.authorize_redirect(redirect_uri=redirect_uri)
+JURISDICTION_ADMIN_CODE_TTL = timedelta(seconds=5)
+
+LOGIN_CODE_SECRET = "GTVB42APXOXCW3CRP3SNADQ2G557C7EC"  # TODO move to config
 
 
-@auth.route(JURISDICTIONADMIN_OAUTH_CALLBACK_URL)
-def jurisdictionadmin_login_callback():
-    auth0_ja.authorize_access_token()
-    resp = auth0_ja.get("userinfo")
-    userinfo = resp.json()
+def generate_login_code(timestamp: datetime, expiration: timedelta):
+    return HOTP(LOGIN_CODE_SECRET).at(
+        int(timestamp.timestamp() / expiration.total_seconds())
+    )
 
-    if userinfo and userinfo["email"]:
-        user = User.query.filter_by(email=userinfo["email"]).first()
-        if user and len(user.jurisdiction_administrations) > 0:
-            set_loggedin_user(session, UserType.JURISDICTION_ADMIN, userinfo["email"])
+
+def verify_login_code(timestamp: datetime, expiration: timedelta, code: str):
+    return HOTP(LOGIN_CODE_SECRET).verify(
+        code, int(timestamp.timestamp() / expiration.total_seconds())
+    )
+
+
+def send_login_code_email(to_address: str, code: str):
+    print(f"SENT LOGIN CODE: {to_address} - {code}")
+
+
+@auth.route("/auth/jurisdictionadmin/code", methods=["POST"])
+def jurisdiction_admin_generate_code():
+    body = request.get_json()
+    user = User.query.filter_by(email=body.get("email")).one_or_none()
+    if user is None:
+        return BadRequest("Invalid email address")
+
+    if user.login_code_requested_at is None or (
+        datetime.now(timezone.utc) - user.login_code_requested_at
+        > JURISDICTION_ADMIN_CODE_TTL
+    ):
+        user.login_code_requested_at = datetime.now(timezone.utc)
+
+    send_login_code_email(
+        to_address=user.email,
+        code=generate_login_code(
+            user.login_code_requested_at, JURISDICTION_ADMIN_CODE_TTL
+        ),
+    )
+
+    db_session.commit()
+
+    return jsonify(status="ok")
+
+
+@auth.route("/auth/jurisdictionadmin/login", methods=["POST"])
+def jurisdiction_admin_login():
+    body = request.get_json()
+    user = User.query.filter_by(email=body.get("email")).one_or_none()
+    if user is None:
+        return BadRequest("Invalid email address")
+
+    if user.login_code_requested_at is None or (
+        not verify_login_code(
+            user.login_code_requested_at, JURISDICTION_ADMIN_CODE_TTL, body.get("code")
+        )
+    ):
+        return BadRequest("Invalid code")  # TODO should this be Unauthorized 401?
+
+    user.login_code_requested_at = None
+    db_session.commit()
+
+    set_loggedin_user(session, UserType.JURISDICTION_ADMIN, user.email)
 
     return redirect("/")
 
