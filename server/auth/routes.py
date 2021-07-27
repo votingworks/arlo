@@ -247,7 +247,7 @@ def jurisdiction_admin_login():
 
     set_loggedin_user(session, UserType.JURISDICTION_ADMIN, user.email)
 
-    return redirect("/")
+    return jsonify(status="ok")
 
 
 @auth.route("/auditboard/<passphrase>", methods=["GET"])

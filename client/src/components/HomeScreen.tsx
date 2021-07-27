@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import {
   Card,
-  AnchorButton,
   RadioGroup,
   Radio,
   HTMLSelect,
@@ -9,17 +8,20 @@ import {
   ButtonGroup,
   Button,
   Intent,
+  Classes,
 } from '@blueprintjs/core'
 import { useHistory, useLocation, Redirect } from 'react-router-dom'
 import styled from 'styled-components'
 import { Formik, FormikProps, Field } from 'formik'
+import { useForm } from 'react-hook-form'
+import { toast } from 'react-toastify'
 import {
   useAuthDataContext,
   IAuditAdmin,
   IJurisdictionAdmin,
   IElection,
 } from './UserContext'
-import { api } from './utilities'
+import { api, parseApiError } from './utilities'
 import LinkButton from './Atoms/LinkButton'
 import FormSection from './Atoms/Form/FormSection'
 import FormButton from './Atoms/Form/FormButton'
@@ -28,6 +30,7 @@ import FormField from './Atoms/Form/FormField'
 import { groupBy, sortBy } from '../utils/array'
 import { IAuditSettings } from './MultiJurisdictionAudit/useAuditSettings'
 import { useConfirm, Confirm } from './Atoms/Confirm'
+import { ErrorLabel } from './Atoms/Form/_helpers'
 
 const HomeScreen: React.FC = () => {
   const auth = useAuthDataContext()
@@ -100,6 +103,68 @@ const LoginScreen: React.FC = () => {
   // Support two query parameters: 'error' and 'message'
   // We use these to communicate authentication errors to the user.
   const query = new URLSearchParams(useLocation().search)
+  const {
+    register: registerEmail,
+    handleSubmit: handleSubmitEmail,
+    errors: errorsEmail,
+    setError: setErrorEmail,
+  } = useForm<{
+    email: string
+  }>()
+  const {
+    register: registerCode,
+    handleSubmit: handleSubmitCode,
+    errors: errorsCode,
+    setError: setErrorCode,
+  } = useForm<{
+    code: string
+  }>()
+  const [submittedEmail, setSubmittedEmail] = useState<string | null>(null)
+
+  const onSubmitEmail = async ({ email }: { email: string }) => {
+    const response = await fetch('/auth/jurisdictionadmin/code', {
+      method: 'POST',
+      headers: { 'Content-type': 'application/json' },
+      body: JSON.stringify({ email }),
+    })
+    if (response.ok) {
+      setSubmittedEmail(email)
+      return
+    }
+
+    if (response.status === 400) {
+      setErrorEmail('email', {
+        message:
+          'This email email address is not authorized to access Arlo.' +
+          ' Please check that you typed the email correctly,' +
+          ' or contact your Arlo administrator for access.',
+      })
+    } else {
+      const error = await parseApiError(response)
+      toast.error(error.message)
+    }
+  }
+
+  const onSubmitCode = async ({ code }: { code: string }) => {
+    const response = await fetch('/auth/jurisdictionadmin/login', {
+      method: 'POST',
+      headers: { 'Content-type': 'application/json' },
+      body: JSON.stringify({ email: submittedEmail, code }),
+    })
+    if (response.ok) {
+      window.location.reload()
+      return
+    }
+    if (response.status === 400) {
+      setErrorCode('code', {
+        message:
+          'Invalid code. Try entering the code again or click Back to send a new code.',
+      })
+    } else {
+      const error = await parseApiError(response)
+      toast.error(error.message)
+    }
+  }
 
   return (
     <LoginWrapper>
@@ -110,14 +175,66 @@ const LoginScreen: React.FC = () => {
         </Callout>
       )}
       <Card style={{ margin: '25px 0 15px 0' }}>
-        <p>Participating in an audit in your local jurisdiction?</p>
-        <AnchorButton
-          href="/auth/jurisdictionadmin/start"
-          intent="primary"
-          large
-        >
-          Log in to your audit
-        </AnchorButton>
+        {!submittedEmail ? (
+          <form onSubmit={handleSubmitEmail(onSubmitEmail)}>
+            <p>Participating in an audit in your local jurisdiction?</p>
+            <label
+              htmlFor="email"
+              style={{ display: 'block', marginBottom: '10px' }}
+            >
+              <p>Enter your email to log in:</p>
+              <input
+                type="email"
+                name="email"
+                ref={registerEmail}
+                className={`${Classes.INPUT} ${Classes.LARGE}`}
+                key="email"
+                style={{ width: '250px' }}
+              />
+            </label>
+            {errorsEmail.email && (
+              <ErrorLabel>{errorsEmail.email.message}</ErrorLabel>
+            )}
+            <Button type="submit" intent={Intent.PRIMARY} large>
+              Log in to your audit
+            </Button>
+          </form>
+        ) : (
+          <>
+            <form onSubmit={handleSubmitCode(onSubmitCode)}>
+              <p>We sent an email with a login code to {submittedEmail}.</p>
+              <label
+                htmlFor="code"
+                style={{ display: 'block', marginBottom: '10px' }}
+              >
+                <p>Enter the six-digit code below:</p>
+                <input
+                  type="text"
+                  name="code"
+                  ref={registerCode}
+                  className={`${Classes.INPUT} ${Classes.LARGE}`}
+                  key="code"
+                />
+              </label>
+              {errorsCode.code && (
+                <ErrorLabel>{errorsCode.code.message}</ErrorLabel>
+              )}
+              <div>
+                <Button onClick={() => setSubmittedEmail(null)} large>
+                  Back
+                </Button>
+                <Button
+                  type="submit"
+                  intent={Intent.PRIMARY}
+                  large
+                  style={{ marginLeft: '5px' }}
+                >
+                  Submit code
+                </Button>
+              </div>
+            </form>
+          </>
+        )}
       </Card>
       <div>
         <p>
