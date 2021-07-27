@@ -1,9 +1,10 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from urllib.parse import urljoin, urlencode
-from flask import redirect, jsonify, request, session
+from flask import redirect, jsonify, request, session, render_template
 from authlib.integrations.flask_client import OAuth, OAuthError
 from werkzeug.exceptions import BadRequest
 from pyotp import HOTP
+import requests
 
 from . import auth
 from ..models import *  # pylint: disable=wildcard-import
@@ -20,6 +21,10 @@ from .lib import (
 from ..api.audit_boards import serialize_members
 from ..util.isoformat import isoformat
 from ..config import (
+    LOGIN_CODE_LIFETIME,
+    LOGIN_CODE_SECRET,
+    MAILGUN_API_KEY,
+    MAILGUN_DOMAIN,
     SUPPORT_AUTH0_BASE_URL,
     SUPPORT_AUTH0_CLIENT_ID,
     SUPPORT_AUTH0_CLIENT_SECRET,
@@ -27,14 +32,10 @@ from ..config import (
     AUDITADMIN_AUTH0_BASE_URL,
     AUDITADMIN_AUTH0_CLIENT_ID,
     AUDITADMIN_AUTH0_CLIENT_SECRET,
-    JURISDICTIONADMIN_AUTH0_BASE_URL,
-    JURISDICTIONADMIN_AUTH0_CLIENT_ID,
-    JURISDICTIONADMIN_AUTH0_CLIENT_SECRET,
 )
 
 SUPPORT_OAUTH_CALLBACK_URL = "/auth/support/callback"
 AUDITADMIN_OAUTH_CALLBACK_URL = "/auth/auditadmin/callback"
-JURISDICTIONADMIN_OAUTH_CALLBACK_URL = "/auth/jurisdictionadmin/callback"
 
 oauth = OAuth()
 
@@ -56,17 +57,6 @@ auth0_aa = oauth.register(
     api_base_url=AUDITADMIN_AUTH0_BASE_URL,
     access_token_url=f"{AUDITADMIN_AUTH0_BASE_URL}/oauth/token",
     authorize_url=f"{AUDITADMIN_AUTH0_BASE_URL}/authorize",
-    authorize_params={"max_age": "0"},
-    client_kwargs={"scope": "openid profile email"},
-)
-
-auth0_ja = oauth.register(
-    "auth0_ja",
-    client_id=JURISDICTIONADMIN_AUTH0_CLIENT_ID,
-    client_secret=JURISDICTIONADMIN_AUTH0_CLIENT_SECRET,
-    api_base_url=JURISDICTIONADMIN_AUTH0_BASE_URL,
-    access_token_url=f"{JURISDICTIONADMIN_AUTH0_BASE_URL}/oauth/token",
-    authorize_url=f"{JURISDICTIONADMIN_AUTH0_BASE_URL}/authorize",
     authorize_params={"max_age": "0"},
     client_kwargs={"scope": "openid profile email"},
 )
@@ -193,25 +183,16 @@ def auditadmin_login_callback():
     return redirect("/")
 
 
-JURISDICTION_ADMIN_CODE_TTL = timedelta(seconds=5)
-
-LOGIN_CODE_SECRET = "GTVB42APXOXCW3CRP3SNADQ2G557C7EC"  # TODO move to config
-
-
-def generate_login_code(timestamp: datetime, expiration: timedelta):
+def generate_login_code(timestamp: datetime):
     return HOTP(LOGIN_CODE_SECRET).at(
-        int(timestamp.timestamp() / expiration.total_seconds())
+        int(timestamp.timestamp() / LOGIN_CODE_LIFETIME.total_seconds())
     )
 
 
-def verify_login_code(timestamp: datetime, expiration: timedelta, code: str):
+def verify_login_code(timestamp: datetime, code: str):
     return HOTP(LOGIN_CODE_SECRET).verify(
-        code, int(timestamp.timestamp() / expiration.total_seconds())
+        code, int(timestamp.timestamp() / LOGIN_CODE_LIFETIME.total_seconds())
     )
-
-
-def send_login_code_email(to_address: str, code: str):
-    print(f"SENT LOGIN CODE: {to_address} - {code}")
 
 
 @auth.route("/auth/jurisdictionadmin/code", methods=["POST"])
@@ -222,17 +203,27 @@ def jurisdiction_admin_generate_code():
         return BadRequest("Invalid email address")
 
     if user.login_code_requested_at is None or (
+        # Reuse the existing login code if it hasn't expired yet. That way if
+        # they request a new code while waiting for a slow email, we won't wipe
+        # out the code we sent when the email does come through.
         datetime.now(timezone.utc) - user.login_code_requested_at
-        > JURISDICTION_ADMIN_CODE_TTL
+        > LOGIN_CODE_LIFETIME
     ):
         user.login_code_requested_at = datetime.now(timezone.utc)
 
-    send_login_code_email(
-        to_address=user.email,
-        code=generate_login_code(
-            user.login_code_requested_at, JURISDICTION_ADMIN_CODE_TTL
-        ),
+    code = generate_login_code(user.login_code_requested_at)
+    email_response = requests.post(
+        f"https://api.mailgun.net/v3/{MAILGUN_DOMAIN}/messages",
+        auth=("api", MAILGUN_API_KEY),
+        data={
+            "from": "Arlo Support <rla@vx.support>",
+            "to": [user.email],
+            "subject": "Welcome to Arlo - Use the Code in this Email to Log In",
+            "text": render_template("email_login_code.txt", code=code),
+            "html": render_template("email_login_code.html", code=code),
+        },
     )
+    email_response.raise_for_status()
 
     db_session.commit()
 
@@ -247,9 +238,7 @@ def jurisdiction_admin_login():
         return BadRequest("Invalid email address")
 
     if user.login_code_requested_at is None or (
-        not verify_login_code(
-            user.login_code_requested_at, JURISDICTION_ADMIN_CODE_TTL, body.get("code")
-        )
+        not verify_login_code(user.login_code_requested_at, body.get("code"))
     ):
         return BadRequest("Invalid code")  # TODO should this be Unauthorized 401?
 

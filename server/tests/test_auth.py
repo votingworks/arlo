@@ -8,7 +8,7 @@ import pytest
 from flask.testing import FlaskClient
 
 from ..auth import UserType
-from ..auth.routes import auth0_sa, auth0_aa, auth0_ja
+from ..auth.routes import auth0_sa, auth0_aa
 from ..models import *  # pylint: disable=wildcard-import
 from ..util.jsonschema import JSONDict
 from .helpers import *  # pylint: disable=wildcard-import
@@ -190,37 +190,37 @@ def test_auditadmin_callback(client: FlaskClient, aa_email: str):
             assert auth0_aa.get.called
 
 
-def test_jurisdictionadmin_start(client: FlaskClient):
-    rv = client.get("/auth/jurisdictionadmin/start")
-    check_redirect_contains_redirect_uri(rv, "/auth/jurisdictionadmin/callback")
+# def test_jurisdictionadmin_start(client: FlaskClient):
+#     rv = client.get("/auth/jurisdictionadmin/start")
+#     check_redirect_contains_redirect_uri(rv, "/auth/jurisdictionadmin/callback")
 
 
-def test_jurisdictionadmin_callback(client: FlaskClient, ja_email: str):
-    with patch.object(auth0_ja, "authorize_access_token", return_value=None):
+# def test_jurisdictionadmin_callback(client: FlaskClient, ja_email: str):
+#     with patch.object(auth0_ja, "authorize_access_token", return_value=None):
 
-        mock_response = Mock()
-        mock_response.json = MagicMock(return_value={"email": ja_email})
-        with patch.object(auth0_ja, "get", return_value=mock_response):
+#         mock_response = Mock()
+#         mock_response.json = MagicMock(return_value={"email": ja_email})
+#         with patch.object(auth0_ja, "get", return_value=mock_response):
 
-            rv = client.get("/auth/jurisdictionadmin/callback?code=foobar")
-            assert rv.status_code == 302
+#             rv = client.get("/auth/jurisdictionadmin/callback?code=foobar")
+#             assert rv.status_code == 302
 
-            with client.session_transaction() as session:  # type: ignore
-                assert session["_user"]["type"] == UserType.JURISDICTION_ADMIN
-                assert session["_user"]["key"] == ja_email
-                assert_is_date(session["_created_at"])
-                assert (
-                    datetime.now(timezone.utc)
-                    - datetime.fromisoformat(session["_created_at"])
-                ) < timedelta(seconds=1)
-                assert_is_date(session["_last_request_at"])
-                assert (
-                    datetime.now(timezone.utc)
-                    - datetime.fromisoformat(session["_last_request_at"])
-                ) < timedelta(seconds=1)
+#             with client.session_transaction() as session:  # type: ignore
+#                 assert session["_user"]["type"] == UserType.JURISDICTION_ADMIN
+#                 assert session["_user"]["key"] == ja_email
+#                 assert_is_date(session["_created_at"])
+#                 assert (
+#                     datetime.now(timezone.utc)
+#                     - datetime.fromisoformat(session["_created_at"])
+#                 ) < timedelta(seconds=1)
+#                 assert_is_date(session["_last_request_at"])
+#                 assert (
+#                     datetime.now(timezone.utc)
+#                     - datetime.fromisoformat(session["_last_request_at"])
+#                 ) < timedelta(seconds=1)
 
-            assert auth0_ja.authorize_access_token.called
-            assert auth0_ja.get.called
+#             assert auth0_ja.authorize_access_token.called
+#             assert auth0_ja.get.called
 
 
 def test_audit_board_log_in(
