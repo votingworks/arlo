@@ -1,8 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from 'react-query'
-import { tryJson } from '../utilities'
+import { tryJson, addCSRFToken } from '../utilities'
 
 const fetchApi = async (url: string, options?: RequestInit) => {
-  const response = await fetch(url, options)
+  const response = await fetch(url, addCSRFToken(options))
   if (response.ok) return response.json()
   const text = await response.text()
   const { errors } = tryJson(text)
