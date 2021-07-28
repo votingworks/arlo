@@ -135,7 +135,7 @@ const LoginScreen: React.FC = () => {
     if (response.status === 400) {
       setErrorEmail('email', {
         message:
-          'This email email address is not authorized to access Arlo.' +
+          'This email address is not authorized to access Arlo.' +
           ' Please check that you typed the email correctly,' +
           ' or contact your Arlo administrator for access.',
       })
