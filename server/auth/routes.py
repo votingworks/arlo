@@ -200,7 +200,11 @@ def jurisdiction_admin_generate_code():
     body = request.get_json()
     user = User.query.filter_by(email=body.get("email")).one_or_none()
     if user is None:
-        return BadRequest("Invalid email address")
+        raise BadRequest(
+            "This email address is not authorized to access Arlo."
+            " Please check that you typed the email correctly,"
+            " or contact your Arlo administrator for access."
+        )
 
     if user.login_code_requested_at is None or (
         # Reuse the existing login code if it hasn't expired yet. That way if
@@ -210,6 +214,8 @@ def jurisdiction_admin_generate_code():
         > LOGIN_CODE_LIFETIME
     ):
         user.login_code_requested_at = datetime.now(timezone.utc)
+
+    user.login_code_attempts = 0
 
     code = generate_login_code(user.login_code_requested_at)
     email_response = requests.post(
@@ -235,12 +241,22 @@ def jurisdiction_admin_login():
     body = request.get_json()
     user = User.query.filter_by(email=body.get("email")).one_or_none()
     if user is None:
-        return BadRequest("Invalid email address")
+        raise BadRequest("Invalid email address.")
+
+    if user.login_code_attempts > 20:
+        user.login_code_requested_at = None
+        db_session.commit()
+        raise BadRequest("Too many incorrect attempts. Please request a new code.")
+
+    user.login_code_attempts += 1
+    db_session.commit()
 
     if user.login_code_requested_at is None or (
         not verify_login_code(user.login_code_requested_at, body.get("code"))
     ):
-        return BadRequest("Invalid code")  # TODO should this be Unauthorized 401?
+        raise BadRequest(
+            "Invalid code. Try entering the code again or click Back and request a new code."
+        )
 
     user.login_code_requested_at = None
     db_session.commit()

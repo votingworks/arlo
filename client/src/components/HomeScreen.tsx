@@ -132,17 +132,10 @@ const LoginScreen: React.FC = () => {
       return
     }
 
-    if (response.status === 400) {
-      setErrorEmail('email', {
-        message:
-          'This email address is not authorized to access Arlo.' +
-          ' Please check that you typed the email correctly,' +
-          ' or contact your Arlo administrator for access.',
-      })
-    } else {
-      const error = await parseApiError(response)
-      toast.error(error.message)
-    }
+    const error = await parseApiError(response)
+    if (response.status === 400)
+      setErrorEmail('email', { message: error.message })
+    else toast.error(error.message)
   }
 
   const onSubmitCode = async ({ code }: { code: string }) => {
@@ -155,15 +148,11 @@ const LoginScreen: React.FC = () => {
       window.location.reload()
       return
     }
-    if (response.status === 400) {
-      setErrorCode('code', {
-        message:
-          'Invalid code. Try entering the code again or click Back to send a new code.',
-      })
-    } else {
-      const error = await parseApiError(response)
-      toast.error(error.message)
-    }
+
+    const error = await parseApiError(response)
+    if (response.status === 400)
+      setErrorCode('code', { message: error.message })
+    else toast.error(error.message)
   }
 
   return (
@@ -186,9 +175,9 @@ const LoginScreen: React.FC = () => {
               <input
                 type="email"
                 name="email"
-                ref={registerEmail}
-                className={`${Classes.INPUT} ${Classes.LARGE}`}
                 key="email"
+                ref={registerEmail({ required: true })}
+                className={`${Classes.INPUT} ${Classes.LARGE}`}
                 style={{ width: '250px' }}
               />
             </label>
@@ -211,9 +200,9 @@ const LoginScreen: React.FC = () => {
                 <input
                   type="text"
                   name="code"
-                  ref={registerCode}
-                  className={`${Classes.INPUT} ${Classes.LARGE}`}
                   key="code"
+                  ref={registerCode({ required: true })}
+                  className={`${Classes.INPUT} ${Classes.LARGE}`}
                 />
               </label>
               {errorsCode.code && (

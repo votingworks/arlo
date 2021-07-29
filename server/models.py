@@ -307,6 +307,7 @@ class User(BaseModel):
     # Jurisdiction admins login by requesting a one-time code. We generate this
     # code using the timestamp of their request.
     login_code_requested_at = Column(UTCDateTime)
+    login_code_attempts = Column(Integer)
 
     @validates("email")
     def lowercase_email(self, _key, email):

@@ -21,6 +21,7 @@ def upgrade():
     op.add_column(
         "user", sa.Column("login_code_requested_at", sa.DateTime(), nullable=True)
     )
+    op.add_column("user", sa.Column("login_code_attempts", sa.Integer(), nullable=True))
 
 
 def downgrade():
