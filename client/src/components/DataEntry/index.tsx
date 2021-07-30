@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { H1 } from '@blueprintjs/core'
 import { Route, Switch, useParams, useHistory } from 'react-router-dom'
 import styled from 'styled-components'
+import HeaderDataEntry from './HeaderDataEntry'
 import { IBallotInterpretation, IContest, BallotStatus } from '../../types'
 import { api } from '../utilities'
 import BoardTable from './BoardTable'
@@ -10,19 +11,15 @@ import Ballot from './Ballot'
 import SignOff from './SignOff'
 import { Wrapper, Inner } from '../Atoms/Wrapper'
 import { IBallot } from '../MultiJurisdictionAudit/RoundManagement/useBallots'
-import {
-  IAuditBoardMember,
-  useAuthDataContext,
-  IAuthData,
-} from '../UserContext'
+import { IAuditBoard, IAuditBoardMember } from '../UserContext'
 
 const PaddedInner = styled(Inner)`
   padding-top: 30px;
 `
 
-const loadAuditBoard = async () => {
-  const response = await api<IAuthData>('/me')
-  return response
+const loadAuditBoard = async (): Promise<IAuditBoard | null> => {
+  const response = await api<{ user: IAuditBoard }>(`/me`)
+  return response && response.user
 }
 
 const loadContests = async (
@@ -121,31 +118,30 @@ const postSignoff = async (
 }
 
 const DataEntry: React.FC = () => {
-  const auth = useAuthDataContext()
-
   const history = useHistory()
   const { electionId, auditBoardId } = useParams<{
     electionId: string
     auditBoardId: string
   }>()
 
+  const [auditBoard, setAuditBoard] = useState<IAuditBoard | null>(null)
   const [contests, setContests] = useState<IContest[] | null>(null)
   const [ballots, setBallots] = useState<IBallot[] | null>(null)
 
-  const auditBoard =
-    auth && auth.user && auth.user.type === 'audit_board' ? auth.user : null
+  useEffect(() => {
+    ;(async () => {
+      const response = await loadAuditBoard()
+      if (!response) return
+      setAuditBoard(response)
+    })()
+  }, [electionId, auditBoardId])
 
   useEffect(() => {
     ;(async () => {
-      if (auditBoard === null) return
       if (auditBoard && auditBoard.members.length > 0) {
         const { jurisdictionId, roundId, id } = auditBoard
-        loadContests(electionId, jurisdictionId, roundId, id).then(contest =>
-          setContests(contest)
-        )
-        loadBallots(electionId, jurisdictionId, roundId, id).then(ballotsObj =>
-          setBallots(ballotsObj)
-        )
+        setContests(await loadContests(electionId, jurisdictionId, roundId, id))
+        setBallots(await loadBallots(electionId, jurisdictionId, roundId, id))
       }
     })()
   }, [electionId, auditBoard])
@@ -160,13 +156,17 @@ const DataEntry: React.FC = () => {
     )
     if (!response1) return
     const response2 = await loadAuditBoard()
-    if (!response2 || !auth) return
-    auth.setAuthData(response2)
+    if (!response2) return
+    setAuditBoard(response2)
   }
 
   if (auditBoard && auditBoard.members.length === 0) {
     return (
       <Wrapper>
+        <HeaderDataEntry
+          members={auditBoard.members}
+          boardName={auditBoard.name}
+        />
         <PaddedInner>
           <MemberForm
             submitMembers={submitMembers}
@@ -248,13 +248,17 @@ const DataEntry: React.FC = () => {
     )
     if (!response1) return
     const response2 = await loadAuditBoard()
-    if (!response2 || !auth) return
-    auth.setAuthData(response2)
+    if (!response2) return
+    setAuditBoard(response2)
   }
 
   if (auditBoard.signedOffAt) {
     return (
       <Wrapper>
+        <HeaderDataEntry
+          members={auditBoard.members}
+          boardName={auditBoard.name}
+        />
         <PaddedInner>
           <div>
             <H1>{auditBoard.name}: Auditing Complete</H1>
@@ -267,6 +271,10 @@ const DataEntry: React.FC = () => {
 
   return (
     <Wrapper>
+      <HeaderDataEntry
+        members={auditBoard.members}
+        boardName={auditBoard.name}
+      />
       <Switch>
         <Route
           exact

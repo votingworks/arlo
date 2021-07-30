@@ -67,7 +67,7 @@ describe('App', () => {
     })
 
     it('when logged in as an audit board, shows the login screen', async () => {
-      const expectedCalls = [apiMocks.abAuth]
+      const expectedCalls = [apiMocks.abAuth, apiMocks.abAuth]
       await withMockFetch(expectedCalls, async () => {
         renderView('/')
         await screen.findAllByText(/Audit Board #1/)
@@ -114,7 +114,7 @@ describe('App', () => {
     })
 
     it('renders ab logged in properly', async () => {
-      const expectedCalls = [apiMocks.abAuth]
+      const expectedCalls = [apiMocks.abAuth, apiMocks.abAuth]
       await withMockFetch(expectedCalls, async () => {
         const { container } = render(
           <MemoryRouter

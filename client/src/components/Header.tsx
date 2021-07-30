@@ -110,22 +110,8 @@ const Header: React.FC<{}> = () => {
       j => j.id === jurisdictionMatch.params.jurisdictionId
     )
 
-  const auditBoardName = auth &&
-    auth.user &&
-    auth.user.type === 'audit_board' &&
-    auth.user.members && (
-      <NavbarHeading>
-        {auth.user.name}
-        {auth.user.members.length > 0 && (
-          <>
-            :{' '}
-            <strong>
-              {auth.user.members.map(member => member.name).join(', ')}
-            </strong>
-          </>
-        )}
-      </NavbarHeading>
-    )
+  if (auth && auth.user && auth.user.type === 'audit_board') return null
+
   return (
     <>
       {auth && auth.supportUser && (
@@ -166,9 +152,8 @@ const Header: React.FC<{}> = () => {
               {jurisdiction && (
                 <NavbarHeading>Jurisdiction: {jurisdiction.name}</NavbarHeading>
               )}
-              {auditBoardName}
             </NavbarGroup>
-            {auth && auth.user && (
+            {auth && auth.user && auth.user.type !== 'audit_board' && (
               <>
                 <NavbarGroup align={Alignment.RIGHT}>
                   {electionId && auth.user.type === 'audit_admin' && (
@@ -196,30 +181,23 @@ const Header: React.FC<{}> = () => {
                       <NavbarDivider />
                     </>
                   )}
-                  {auth.user.type === 'audit_board' ? (
-                    <a href="/auth/logout">
-                      {' '}
-                      <span>Log out</span>{' '}
-                    </a>
-                  ) : (
-                    <UserMenu>
-                      <Popover
-                        content={
-                          <Menu>
-                            <MenuItem text="Log out" href="/auth/logout" />
-                          </Menu>
-                        }
-                        usePortal={false}
-                        position={Position.BOTTOM}
-                        minimal
-                        fill
-                      >
-                        <Button icon="user" minimal>
-                          {auth.user.email}
-                        </Button>
-                      </Popover>
-                    </UserMenu>
-                  )}
+                  <UserMenu>
+                    <Popover
+                      content={
+                        <Menu>
+                          <MenuItem text="Log out" href="/auth/logout" />
+                        </Menu>
+                      }
+                      usePortal={false}
+                      position={Position.BOTTOM}
+                      minimal
+                      fill
+                    >
+                      <Button icon="user" minimal>
+                        {auth.user.email}
+                      </Button>
+                    </Popover>
+                  </UserMenu>
                 </NavbarGroup>
               </>
             )}

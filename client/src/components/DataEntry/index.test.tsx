@@ -80,8 +80,8 @@ const apiCalls = {
     options: {
       method: 'PUT',
       body: JSON.stringify([
-        { name: 'Name 1', affiliation: null },
-        { name: 'Name 2', affiliation: null },
+        { name: 'John Doe', affiliation: null },
+        { name: 'Jane Doe', affiliation: null },
       ]),
       headers: {
         'Content-Type': 'application/json',
@@ -130,8 +130,9 @@ const apiCalls = {
 
 describe('DataEntry', () => {
   describe('member form', () => {
-    it('submits and goes to ballot table', async () => {
+    it('submits, goes to ballot table, and header shows member names', async () => {
       const expectedCalls = [
+        apiCalls.getAuditBoardInitial,
         apiCalls.getAuditBoardInitial,
         apiCalls.putAuditBoardMembers,
         apiCalls.getAuditBoard,
@@ -141,15 +142,28 @@ describe('DataEntry', () => {
       await withMockFetch(expectedCalls, async () => {
         const { container } = renderDataEntry()
 
+        await screen.findByRole('link', {
+          name: 'Arlo, by VotingWorks',
+        })
+
+        // Audit board name
+        expect(screen.getAllByText(/Audit Board #1/).length).toBe(3)
+
+        // should show log out link
+        const logOutButton = screen.getByRole('link', { name: 'Log out' })
+        expect(logOutButton).toHaveAttribute('href', '/auth/logout')
+
         await screen.findByText('Audit Board #1: Member Sign-in')
         const nameInputs = screen.getAllByLabelText('Full Name')
         expect(nameInputs).toHaveLength(2)
 
-        userEvent.type(nameInputs[0], `Name 1`)
-        userEvent.type(nameInputs[1], `Name 2`)
+        userEvent.type(nameInputs[0], `John Doe`)
+        userEvent.type(nameInputs[1], `Jane Doe`)
         userEvent.click(screen.getByRole('button', { name: 'Next' }))
 
         await screen.findByText('Ballots for Audit Board #1')
+        await screen.findByText(/John Doe, Jane Doe/) // member names shows up in header now
+
         expect(container).toMatchSnapshot()
       })
     })
@@ -158,6 +172,7 @@ describe('DataEntry', () => {
   describe('ballot interaction', () => {
     it('renders board table with no ballots', async () => {
       const expectedCalls = [
+        apiCalls.getAuditBoard,
         apiCalls.getAuditBoard,
         apiCalls.getContests,
         {
@@ -176,6 +191,7 @@ describe('DataEntry', () => {
     it('renders board table with no audited ballots', async () => {
       jest.setTimeout(10000)
       const expectedCalls = [
+        apiCalls.getAuditBoard,
         apiCalls.getAuditBoard,
         apiCalls.getContests,
         apiCalls.getBallotsNotAudited,
@@ -197,6 +213,7 @@ describe('DataEntry', () => {
 
     it('renders board table with ballots', async () => {
       const expectedCalls = [
+        apiCalls.getAuditBoard,
         apiCalls.getAuditBoard,
         apiCalls.getContests,
         apiCalls.getBallotsInitial,
@@ -221,6 +238,7 @@ describe('DataEntry', () => {
     it('renders ballot route', async () => {
       const expectedCalls = [
         apiCalls.getAuditBoard,
+        apiCalls.getAuditBoard,
         apiCalls.getContests,
         apiCalls.getBallotsInitial,
       ]
@@ -233,6 +251,7 @@ describe('DataEntry', () => {
 
     it('advances ballot forward', async () => {
       const expectedCalls = [
+        apiCalls.getAuditBoard,
         apiCalls.getAuditBoard,
         apiCalls.getContests,
         apiCalls.getBallotsInitial,
@@ -274,6 +293,7 @@ describe('DataEntry', () => {
     it('submits ballot', async () => {
       jest.setTimeout(15000)
       const expectedCalls = [
+        apiCalls.getAuditBoard,
         apiCalls.getAuditBoard,
         apiCalls.getContests,
         apiCalls.getBallotsInitial,
@@ -321,6 +341,7 @@ describe('DataEntry', () => {
     it('audits ballots', async () => {
       jest.setTimeout(15000)
       const expectedCalls = [
+        apiCalls.getAuditBoard,
         apiCalls.getAuditBoard,
         apiCalls.getContests,
         apiCalls.getBallotsInitial,
@@ -394,6 +415,7 @@ describe('DataEntry', () => {
     it('deselects choices', async () => {
       jest.setTimeout(15000)
       const expectedCalls = [
+        apiCalls.getAuditBoard,
         apiCalls.getAuditBoard,
         apiCalls.getContests,
         apiCalls.getBallotsInitial,
