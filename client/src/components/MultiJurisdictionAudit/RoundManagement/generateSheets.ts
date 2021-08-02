@@ -1,6 +1,6 @@
 import jsPDF from 'jspdf'
 import { IAuditBoard } from '../useAuditBoards'
-import { getBallots } from './useBallots'
+import { getBallots, IBallot } from './useBallots'
 import { IRound } from '../useRoundsAuditAdmin'
 
 // Label constants in points
@@ -12,6 +12,44 @@ const LABEL_MARGIN_X = 9
 const LABEL_PADDING_Y = 7
 const LABEL_PADDING_X = 7
 
+const generateLabelPages = (labels: jsPDF, ballots: IBallot[]): string[][][] =>
+  ballots.reduce(
+    (a, ballot, ballotIndex) => {
+      const lines: string[] = [
+        `${ballot.auditBoard!.name} - Ballot Number: ${ballot.position}`,
+        ballot.batch.container && `Container: ${ballot.batch.container}`,
+        ballot.batch.tabulator && `Tabulator: ${ballot.batch.tabulator}`,
+        `Batch: ${ballot.batch.name}`,
+        ballot.imprintedId !== undefined
+          ? `Imprinted ID: ${ballot.imprintedId}`
+          : null,
+      ].filter(line => line) as string[] // ts is not seeing us filtering out the nulls
+      const finalLines: string[] = []
+      lines.forEach(line => {
+        if (lines.length < 8) {
+          finalLines.push(
+            ...labels.splitTextToSize(line, LABEL_WIDTH - LABEL_PADDING_X * 2)
+          )
+        } else {
+          finalLines.push(
+            ...labels.splitTextToSize(
+              line,
+              LABEL_WIDTH - LABEL_PADDING_X * 2
+            )[0]
+          )
+        }
+      })
+      // add an empty array for next page
+      if (Math.floor(ballotIndex / 30) + 1 > a.length) {
+        // eslint-disable-next-line no-param-reassign
+        a[Math.floor(ballotIndex / 30)] = []
+      }
+      a[Math.floor(ballotIndex / 30)].push(finalLines)
+      return a
+    },
+    [[]] as string[][][]
+  )
+
 export const downloadLabels = async (
   electionId: string,
   jurisdictionId: string,
@@ -22,40 +60,27 @@ export const downloadLabels = async (
   const ballots = await getBallots(electionId, jurisdictionId, round.id)
   if (ballots && ballots.length) {
     const labels = new jsPDF({ format: 'letter', unit: 'pt' })
-    labels.setFontSize(10)
-    let labelCount = 0
-    ballots.forEach(ballot => {
-      labelCount += 1
-      if (labelCount > 30) {
-        labels.addPage('letter')
-        labelCount = 1
-      }
-      const column = (labelCount - 1) % 3
-      const row = Math.floor((labelCount - 1) / 3)
-      const leftX = LABEL_START_X + column * (LABEL_WIDTH + LABEL_MARGIN_X)
-      const topY = LABEL_START_Y + row * LABEL_HEIGHT
+    labels.setFontSize(9)
+    let labelPages = generateLabelPages(labels, ballots)
+    if (labelPages.some(page => page.some(label => label.length > 6))) {
+      labels.setFontSize(7)
+      labelPages = generateLabelPages(labels, ballots)
+    }
+    labelPages.forEach((page, i) => {
+      if (i > 0) labels.addPage('letter')
+      page.forEach((label, j) => {
+        const labelCount = j + 1
+        const column = (labelCount - 1) % 3
+        const row = Math.floor((labelCount - 1) / 3)
+        const leftX = LABEL_START_X + column * (LABEL_WIDTH + LABEL_MARGIN_X)
+        const topY = LABEL_START_Y + row * LABEL_HEIGHT
 
-      // Useful for drawing the actual label boundary when testing
-      // labels.roundedRect(leftX, topY, LABEL_WIDTH, LABEL_HEIGHT, 7, 7, 'S')
+        // Useful for drawing the actual label boundary when testing
+        // labels.roundedRect(leftX, topY, LABEL_WIDTH, LABEL_HEIGHT, 7, 7, 'S')
 
-      const lines = [
-        ballot.auditBoard!.name,
-        ballot.batch.container && `Container: ${ballot.batch.container}`,
-        ballot.batch.tabulator && `Tabulator: ${ballot.batch.tabulator}`,
-        `Batch: ${ballot.batch.name}`,
-        `Ballot Number: ${ballot.position}`,
-        ballot.imprintedId !== undefined
-          ? `Imprinted ID: ${ballot.imprintedId}`
-          : null,
-      ]
-        .filter(line => line)
-        .map(
-          line =>
-            labels.splitTextToSize(line!, LABEL_WIDTH - LABEL_PADDING_X * 2)[0]
-        )
-
-      labels.text(lines, leftX + LABEL_PADDING_X, topY + LABEL_PADDING_Y, {
-        baseline: 'top',
+        labels.text(label, leftX + LABEL_PADDING_X, topY + LABEL_PADDING_Y, {
+          baseline: 'top',
+        })
       })
     })
     labels.autoPrint()
