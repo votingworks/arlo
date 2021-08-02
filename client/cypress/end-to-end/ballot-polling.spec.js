@@ -211,20 +211,22 @@ describe('Ballot Polling', () => {
         .siblings('input')
         .type('Board Member 2')
       cy.findByText('Next').click()
-      cy.contains(/Ballot Cards to Audit/)
+      cy.contains('Ballots for Audit Board #1')
       cy.get('table tbody tr').each(($el, index, list) => {
         // iterate through exactly the number of ballots available to avoid conditions
         if (index == 0) {
-          cy.findByText('Start Auditing').click()
+          cy.findByText('Audit First Ballot').click()
         }
         cy.get('input[type="checkbox"]')
           .first()
           .click({ force: true })
-        cy.findByText('Review').click()
-        cy.findByText('Submit & Next Ballot').click()
+        cy.findByRole('button', { name: 'Submit Selections' }).click()
+        cy.findByText('Confirm Selections').click()
+        cy.findByText('Change Selections').should('not.exist')
       })
-      cy.wait(100)
-      cy.findByText('Auditing Complete - Submit Results').click()
+      cy.findByText(/Not Audited/).should('have.length', 1)
+      cy.contains('Ballots for Audit Board #1')
+      cy.findAllByText('Submit Audited Ballots').eq(1).click({ force: true })
       cy.findAllByText('Audit Board Member: Board Member 1')
         .siblings('input')
         .type('Board Member 1')

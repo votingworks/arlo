@@ -2,176 +2,184 @@
 
 exports[`Sign Off handles inputs 1`] = `
 <div>
-  <div>
-    <h1
-      class="bp3-heading"
-    >
-      Audit Board #1
-      : Board Member Sign-off
-    </h1>
-    <p>
-      Thank you for completing the ballots assigned to your Audit Board. Please sign your name below to confirm that all ballots were audited to the best of your ability and in accordance with the appropriate state statutes and guidelines.
-    </p>
-    <p>
-      If another round of auditing is needed, you will be notified by election officials.
-    </p>
-    <form>
-      <div
-        class="sc-bdVaJa kKNzTG"
+  <div
+    class="sc-jzJRlG sc-cSHVUG fTSAZa"
+  >
+    <div>
+      <h1
+        class="bp3-heading"
       >
-        <h5
-          class="bp3-heading"
-        >
-          Audit Board Member: John Doe
-        </h5>
-        <label
-          class="sc-gzVnrw cVHFGk"
-          for="[0]"
-        >
-          Full Name
-        </label>
-        <input
-          class="sc-htoDjs jNCbsf"
-          id="[0]"
-          name="[0]"
-          value="John Doe"
-        />
-      </div>
-      <div
-        class="sc-bdVaJa kKNzTG"
-      >
-        <h5
-          class="bp3-heading"
-        >
-          Audit Board Member: Jane Doe
-        </h5>
-        <label
-          class="sc-gzVnrw cVHFGk"
-          for="[1]"
-        >
-          Full Name
-        </label>
-        <input
-          class="sc-htoDjs jNCbsf"
-          id="[1]"
-          name="[1]"
-          value="Jane Doe"
-        />
-      </div>
-      <button
-        class="bp3-button bp3-disabled bp3-loading bp3-intent-primary sc-iwsKbI drSRDt"
-        disabled=""
-        tabindex="-1"
-        type="button"
-      >
+        Audit Board #1
+        : Board Member Sign-off
+      </h1>
+      <p>
+        Thank you for completing the ballots assigned to your Audit Board. Please sign your name below to confirm that all ballots were audited to the best of your ability and in accordance with the appropriate state statutes and guidelines.
+      </p>
+      <p>
+        If another round of auditing is needed, you will be notified by election officials.
+      </p>
+      <form>
         <div
-          class="bp3-spinner bp3-button-spinner"
+          class="sc-bdVaJa kKNzTG"
+        >
+          <h5
+            class="bp3-heading"
+          >
+            Audit Board Member: John Doe
+          </h5>
+          <label
+            class="sc-gzVnrw cVHFGk"
+            for="[0]"
+          >
+            Full Name
+          </label>
+          <input
+            class="sc-htoDjs jNCbsf"
+            id="[0]"
+            name="[0]"
+            value="John Doe"
+          />
+        </div>
+        <div
+          class="sc-bdVaJa kKNzTG"
+        >
+          <h5
+            class="bp3-heading"
+          >
+            Audit Board Member: Jane Doe
+          </h5>
+          <label
+            class="sc-gzVnrw cVHFGk"
+            for="[1]"
+          >
+            Full Name
+          </label>
+          <input
+            class="sc-htoDjs jNCbsf"
+            id="[1]"
+            name="[1]"
+            value="Jane Doe"
+          />
+        </div>
+        <button
+          class="bp3-button bp3-disabled bp3-loading bp3-intent-primary sc-jTzLTM kWdIFo"
+          disabled=""
+          tabindex="-1"
+          type="button"
         >
           <div
-            class="bp3-spinner-animation"
+            class="bp3-spinner bp3-button-spinner"
           >
-            <svg
-              height="20"
-              stroke-width="16.00"
-              viewBox="-3.00 -3.00 106.00 106.00"
-              width="20"
+            <div
+              class="bp3-spinner-animation"
             >
-              <path
-                class="bp3-spinner-track"
-                d="M 50,50 m 0,-45 a 45,45 0 1 1 0,90 a 45,45 0 1 1 0,-90"
-              />
-              <path
-                class="bp3-spinner-head"
-                d="M 50,50 m 0,-45 a 45,45 0 1 1 0,90 a 45,45 0 1 1 0,-90"
-                pathLength="280"
-                stroke-dasharray="280 280"
-                stroke-dashoffset="210"
-              />
-            </svg>
+              <svg
+                height="20"
+                stroke-width="16.00"
+                viewBox="-3.00 -3.00 106.00 106.00"
+                width="20"
+              >
+                <path
+                  class="bp3-spinner-track"
+                  d="M 50,50 m 0,-45 a 45,45 0 1 1 0,90 a 45,45 0 1 1 0,-90"
+                />
+                <path
+                  class="bp3-spinner-head"
+                  d="M 50,50 m 0,-45 a 45,45 0 1 1 0,90 a 45,45 0 1 1 0,-90"
+                  pathLength="280"
+                  stroke-dasharray="280 280"
+                  stroke-dashoffset="210"
+                />
+              </svg>
+            </div>
           </div>
-        </div>
-        <span
-          class="bp3-button-text"
-        >
-          Sign Off
-        </span>
-      </button>
-    </form>
+          <span
+            class="bp3-button-text"
+          >
+            Sign Off
+          </span>
+        </button>
+      </form>
+    </div>
   </div>
 </div>
 `;
 
 exports[`Sign Off renders correctly 1`] = `
 <div>
-  <div>
-    <h1
-      class="bp3-heading"
-    >
-      Audit Board #1
-      : Board Member Sign-off
-    </h1>
-    <p>
-      Thank you for completing the ballots assigned to your Audit Board. Please sign your name below to confirm that all ballots were audited to the best of your ability and in accordance with the appropriate state statutes and guidelines.
-    </p>
-    <p>
-      If another round of auditing is needed, you will be notified by election officials.
-    </p>
-    <form>
-      <div
-        class="sc-bdVaJa kKNzTG"
+  <div
+    class="sc-jzJRlG sc-cSHVUG fTSAZa"
+  >
+    <div>
+      <h1
+        class="bp3-heading"
       >
-        <h5
-          class="bp3-heading"
+        Audit Board #1
+        : Board Member Sign-off
+      </h1>
+      <p>
+        Thank you for completing the ballots assigned to your Audit Board. Please sign your name below to confirm that all ballots were audited to the best of your ability and in accordance with the appropriate state statutes and guidelines.
+      </p>
+      <p>
+        If another round of auditing is needed, you will be notified by election officials.
+      </p>
+      <form>
+        <div
+          class="sc-bdVaJa kKNzTG"
         >
-          Audit Board Member: John Doe
-        </h5>
-        <label
-          class="sc-gzVnrw cVHFGk"
-          for="[0]"
+          <h5
+            class="bp3-heading"
+          >
+            Audit Board Member: John Doe
+          </h5>
+          <label
+            class="sc-gzVnrw cVHFGk"
+            for="[0]"
+          >
+            Full Name
+          </label>
+          <input
+            class="sc-htoDjs jNCbsf"
+            id="[0]"
+            name="[0]"
+            value=""
+          />
+        </div>
+        <div
+          class="sc-bdVaJa kKNzTG"
         >
-          Full Name
-        </label>
-        <input
-          class="sc-htoDjs jNCbsf"
-          id="[0]"
-          name="[0]"
-          value=""
-        />
-      </div>
-      <div
-        class="sc-bdVaJa kKNzTG"
-      >
-        <h5
-          class="bp3-heading"
+          <h5
+            class="bp3-heading"
+          >
+            Audit Board Member: Jane Doe
+          </h5>
+          <label
+            class="sc-gzVnrw cVHFGk"
+            for="[1]"
+          >
+            Full Name
+          </label>
+          <input
+            class="sc-htoDjs jNCbsf"
+            id="[1]"
+            name="[1]"
+            value=""
+          />
+        </div>
+        <button
+          class="bp3-button bp3-disabled bp3-intent-primary sc-jTzLTM kWdIFo"
+          disabled=""
+          tabindex="-1"
+          type="button"
         >
-          Audit Board Member: Jane Doe
-        </h5>
-        <label
-          class="sc-gzVnrw cVHFGk"
-          for="[1]"
-        >
-          Full Name
-        </label>
-        <input
-          class="sc-htoDjs jNCbsf"
-          id="[1]"
-          name="[1]"
-          value=""
-        />
-      </div>
-      <button
-        class="bp3-button bp3-disabled bp3-intent-primary sc-iwsKbI drSRDt"
-        disabled=""
-        tabindex="-1"
-        type="button"
-      >
-        <span
-          class="bp3-button-text"
-        >
-          Sign Off
-        </span>
-      </button>
-    </form>
+          <span
+            class="bp3-button-text"
+          >
+            Sign Off
+          </span>
+        </button>
+      </form>
+    </div>
   </div>
 </div>
 `;

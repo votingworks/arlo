@@ -6,13 +6,13 @@ exports[`App / renders aa logged in properly 1`] = `
     class="Toastify"
   />
   <div
-    class="sc-hwwEjo lexMrb"
+    class="sc-iujRgT jTfiFp"
   >
     <div
-      class="bp3-navbar sc-bxivhb fJOOqK"
+      class="bp3-navbar sc-bxivhb gvSyoM"
     >
       <div
-        class="sc-bwzfXH sc-EHOje bgNFlR"
+        class="sc-bwzfXH sc-EHOje mfJYp"
       >
         <div
           class="bp3-navbar-group bp3-align-left"
@@ -25,7 +25,13 @@ exports[`App / renders aa logged in properly 1`] = `
             >
               <img
                 alt="Arlo, by VotingWorks"
+                class="logo-desktop"
                 src="/arlo.png"
+              />
+              <img
+                alt="Arlo, by VotingWorks"
+                class="logo-mobile"
+                src="/arlo-mobile.png"
               />
             </a>
           </div>
@@ -87,7 +93,7 @@ exports[`App / renders aa logged in properly 1`] = `
           style="width: 50%;"
         >
           <div
-            class="sc-jtRfpW fUxNLz"
+            class="sc-cmthru ibpZkp"
           >
             <div>
               <h2>
@@ -105,7 +111,7 @@ exports[`App / renders aa logged in properly 1`] = `
           style="width: 50%;"
         >
           <div
-            class="sc-kTUwUJ KcVnP"
+            class="sc-hMFtBS gtAomC"
           >
             <h2>
               New Audit
@@ -123,7 +129,7 @@ exports[`App / renders aa logged in properly 1`] = `
                   Audit name
                 </p>
                 <div
-                  class="sc-gxMtzJ deCeyK sc-kAzzGY bLtYsq"
+                  class="sc-gqPbQI jqzBqO sc-kAzzGY bLtYsq"
                 >
                   <div
                     class="bp3-input-group sc-chPdSV PhUsl"
@@ -165,7 +171,7 @@ exports[`App / renders aa logged in properly 1`] = `
                     Ballot Polling
                   </label>
                   <div
-                    class="sc-dqBHgY hcXUpp"
+                    class="sc-cLQEGU cQoaO"
                   >
                     <label
                       for="auditMathType"
@@ -270,13 +276,13 @@ exports[`App / renders ja logged in properly 1`] = `
     class="Toastify"
   />
   <div
-    class="sc-hwwEjo lexMrb"
+    class="sc-iujRgT jTfiFp"
   >
     <div
-      class="bp3-navbar sc-bxivhb fJOOqK"
+      class="bp3-navbar sc-bxivhb gvSyoM"
     >
       <div
-        class="sc-bwzfXH sc-EHOje bgNFlR"
+        class="sc-bwzfXH sc-EHOje mfJYp"
       >
         <div
           class="bp3-navbar-group bp3-align-left"
@@ -289,7 +295,13 @@ exports[`App / renders ja logged in properly 1`] = `
             >
               <img
                 alt="Arlo, by VotingWorks"
+                class="logo-desktop"
                 src="/arlo.png"
+              />
+              <img
+                alt="Arlo, by VotingWorks"
+                class="logo-mobile"
+                src="/arlo-mobile.png"
               />
             </a>
           </div>
@@ -351,7 +363,7 @@ exports[`App / renders ja logged in properly 1`] = `
           style="width: 50%;"
         >
           <div
-            class="sc-jtRfpW fUxNLz"
+            class="sc-cmthru ibpZkp"
           >
             <div>
               <h2>
@@ -415,13 +427,13 @@ exports[`App / renders unauthenticated properly 1`] = `
     class="Toastify"
   />
   <div
-    class="sc-hwwEjo lexMrb"
+    class="sc-iujRgT jTfiFp"
   >
     <div
-      class="bp3-navbar sc-bxivhb fJOOqK"
+      class="bp3-navbar sc-bxivhb gvSyoM"
     >
       <div
-        class="sc-bwzfXH sc-EHOje bgNFlR"
+        class="sc-bwzfXH sc-EHOje mfJYp"
       >
         <div
           class="bp3-navbar-group bp3-align-left"
@@ -434,7 +446,13 @@ exports[`App / renders unauthenticated properly 1`] = `
             >
               <img
                 alt="Arlo, by VotingWorks"
+                class="logo-desktop"
                 src="/arlo.png"
+              />
+              <img
+                alt="Arlo, by VotingWorks"
+                class="logo-mobile"
+                src="/arlo-mobile.png"
               />
             </a>
           </div>
@@ -442,7 +460,7 @@ exports[`App / renders unauthenticated properly 1`] = `
       </div>
     </div>
     <div
-      class="sc-elJkPf gfpiaf"
+      class="sc-esOvli ijkheZ"
     >
       <img
         alt="Arlo, by VotingWorks"
@@ -491,13 +509,13 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders aa logged i
     class="Toastify"
   />
   <div
-    class="sc-hwwEjo lexMrb"
+    class="sc-iujRgT jTfiFp"
   >
     <div
-      class="bp3-navbar sc-bxivhb fJOOqK"
+      class="bp3-navbar sc-bxivhb gvSyoM"
     >
       <div
-        class="sc-bwzfXH sc-EHOje bgNFlR"
+        class="sc-bwzfXH sc-EHOje mfJYp"
       >
         <div
           class="bp3-navbar-group bp3-align-left"
@@ -510,7 +528,13 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders aa logged i
             >
               <img
                 alt="Arlo, by VotingWorks"
+                class="logo-desktop"
                 src="/arlo.png"
+              />
+              <img
+                alt="Arlo, by VotingWorks"
+                class="logo-mobile"
+                src="/arlo-mobile.png"
               />
             </a>
           </div>
@@ -572,7 +596,7 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders aa logged i
           style="width: 50%;"
         >
           <div
-            class="sc-jtRfpW fUxNLz"
+            class="sc-cmthru ibpZkp"
           >
             <div>
               <h2>
@@ -590,7 +614,7 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders aa logged i
           style="width: 50%;"
         >
           <div
-            class="sc-kTUwUJ KcVnP"
+            class="sc-hMFtBS gtAomC"
           >
             <h2>
               New Audit
@@ -608,7 +632,7 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders aa logged i
                   Audit name
                 </p>
                 <div
-                  class="sc-gxMtzJ deCeyK sc-kAzzGY bLtYsq"
+                  class="sc-gqPbQI jqzBqO sc-kAzzGY bLtYsq"
                 >
                   <div
                     class="bp3-input-group sc-chPdSV PhUsl"
@@ -650,7 +674,7 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders aa logged i
                     Ballot Polling
                   </label>
                   <div
-                    class="sc-dqBHgY hcXUpp"
+                    class="sc-cLQEGU cQoaO"
                   >
                     <label
                       for="auditMathType"
@@ -755,95 +779,74 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders ab logged i
     class="Toastify"
   />
   <div
-    class="sc-hwwEjo lexMrb"
+    class="sc-iujRgT jTfiFp"
   >
-    <div
-      class="bp3-navbar sc-bxivhb fJOOqK"
-    >
-      <div
-        class="sc-bwzfXH sc-EHOje bgNFlR"
-      >
-        <div
-          class="bp3-navbar-group bp3-align-left"
-        >
-          <div
-            class="bp3-navbar-heading"
-          >
-            <a
-              href="/"
-            >
-              <img
-                alt="Arlo, by VotingWorks"
-                src="/arlo.png"
-              />
-            </a>
-          </div>
-        </div>
-        <div
-          class="bp3-navbar-group bp3-align-right"
-        >
-          <div
-            class="sc-ifAKCX fWzXiF"
-          >
-            <div
-              class="bp3-popover-wrapper bp3-fill"
-            >
-              <div
-                class="bp3-popover-target"
-              >
-                <button
-                  class="bp3-button bp3-minimal"
-                  type="button"
-                >
-                  <span
-                    class="bp3-icon bp3-icon-user"
-                    icon="user"
-                  >
-                    <svg
-                      data-icon="user"
-                      height="16"
-                      viewBox="0 0 16 16"
-                      width="16"
-                    >
-                      <desc>
-                        user
-                      </desc>
-                      <path
-                        d="M7.99-.01A7.998 7.998 0 00.03 8.77c.01.09.03.18.04.28.02.15.04.31.07.47.02.11.05.22.08.34.03.13.06.26.1.38.04.12.08.25.12.37.04.11.08.21.12.32a6.583 6.583 0 00.3.65c.07.14.14.27.22.4.04.07.08.13.12.2l.27.42.1.13a7.973 7.973 0 003.83 2.82c.03.01.05.02.07.03.37.12.75.22 1.14.29l.2.03c.39.06.79.1 1.2.1s.81-.04 1.2-.1l.2-.03c.39-.07.77-.16 1.14-.29.03-.01.05-.02.07-.03a8.037 8.037 0 003.83-2.82c.03-.04.06-.08.09-.13.1-.14.19-.28.28-.42.04-.07.08-.13.12-.2.08-.13.15-.27.22-.41.04-.08.08-.17.12-.26.06-.13.11-.26.17-.39.04-.1.08-.21.12-.32.04-.12.08-.24.12-.37.04-.13.07-.25.1-.38.03-.11.06-.22.08-.34.03-.16.05-.31.07-.47.01-.09.03-.18.04-.28.02-.26.04-.51.04-.78-.03-4.41-3.61-7.99-8.03-7.99zm0 14.4c-1.98 0-3.75-.9-4.92-2.31.67-.36 1.49-.66 2.14-.95 1.16-.52 1.04-.84 1.08-1.27.01-.06.01-.11.01-.17-.41-.36-.74-.86-.96-1.44v-.01c0-.01-.01-.02-.01-.02-.05-.13-.09-.26-.12-.39-.28-.05-.44-.35-.5-.63-.06-.11-.18-.38-.15-.69.04-.41.2-.59.38-.67v-.06c0-.51.05-1.24.14-1.72.02-.13.05-.26.09-.39.17-.59.53-1.12 1.01-1.49.49-.38 1.19-.59 1.82-.59.62 0 1.32.2 1.82.59.48.37.84.9 1.01 1.49.04.13.07.26.09.4.09.48.14 1.21.14 1.72v.07c.18.08.33.26.37.66.03.31-.1.58-.16.69-.06.27-.21.57-.48.62-.03.13-.07.26-.12.38 0 .01-.01.04-.01.04-.21.57-.54 1.06-.94 1.42 0 .06.01.13.01.19.04.43-.12.75 1.05 1.27.65.29 1.47.6 2.14.95a6.415 6.415 0 01-4.93 2.31z"
-                        fill-rule="evenodd"
-                      />
-                    </svg>
-                  </span>
-                  <span
-                    class="bp3-button-text"
-                  >
-                    Audit Board #2
-                  </span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
     <div
       class="sc-bdVaJa bKocXA"
     >
       <div
-        class="sc-bwzfXH sc-bYSBpT ihqqOe"
+        class="bp3-navbar sc-jqCOkK fNVyWX"
+      >
+        <div
+          class="sc-bwzfXH sc-uJMKN bEztny"
+        >
+          <div
+            class="bp3-navbar-group bp3-align-left"
+          >
+            <div
+              class="bp3-navbar-heading"
+            >
+              <a
+                href="/"
+              >
+                <img
+                  alt="Arlo, by VotingWorks"
+                  class="logo-desktop"
+                  src="/arlo.png"
+                />
+                <img
+                  alt="Arlo, by VotingWorks"
+                  class="logo-mobile"
+                  src="/arlo-mobile.png"
+                />
+              </a>
+            </div>
+            <div
+              class="bp3-navbar-heading"
+            >
+              Audit Board #1
+            </div>
+          </div>
+          <div
+            class="bp3-navbar-group bp3-align-right"
+          >
+            <a
+              href="/auth/logout"
+            >
+               
+              <span>
+                Log out
+              </span>
+               
+            </a>
+          </div>
+        </div>
+      </div>
+      <div
+        class="sc-bwzfXH sc-iuJeZd eoVPVX"
       >
         <div>
           <h1
             class="bp3-heading"
           >
-            Audit Board #2
+            Audit Board #1
             : Member Sign-in
           </h1>
           <p>
             Enter the information below for each member of 
             Jurisdiction 1
              
-            Audit Board #2
+            Audit Board #1
              below, then click "Next" to proceed.
           </p>
           <form>
@@ -856,19 +859,19 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders ab logged i
                 Audit Board Member
               </h5>
               <label
-                class="sc-cIShpX gBDDvL"
+                class="sc-dfVpRl gtsEbp"
                 for="[0]name"
               >
                 Full Name
               </label>
               <input
-                class="sc-kafWEX iCtBYG"
+                class="sc-gzOgki kKhQpI"
                 id="[0]name"
                 name="[0]name"
                 value=""
               />
               <label
-                class="sc-cIShpX gBDDvL"
+                class="sc-dfVpRl gtsEbp"
                 for="[0]affiliation"
               >
                 Party Affiliation 
@@ -967,19 +970,19 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders ab logged i
                 Audit Board Member
               </h5>
               <label
-                class="sc-cIShpX gBDDvL"
+                class="sc-dfVpRl gtsEbp"
                 for="[1]name"
               >
                 Full Name
               </label>
               <input
-                class="sc-kafWEX iCtBYG"
+                class="sc-gzOgki kKhQpI"
                 id="[1]name"
                 name="[1]name"
                 value=""
               />
               <label
-                class="sc-cIShpX gBDDvL"
+                class="sc-dfVpRl gtsEbp"
                 for="[1]affiliation"
               >
                 Party Affiliation 
@@ -1095,13 +1098,13 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders ja logged i
     class="Toastify"
   />
   <div
-    class="sc-hwwEjo lexMrb"
+    class="sc-iujRgT jTfiFp"
   >
     <div
-      class="bp3-navbar sc-bxivhb fJOOqK"
+      class="bp3-navbar sc-bxivhb gvSyoM"
     >
       <div
-        class="sc-bwzfXH sc-EHOje bgNFlR"
+        class="sc-bwzfXH sc-EHOje mfJYp"
       >
         <div
           class="bp3-navbar-group bp3-align-left"
@@ -1114,7 +1117,13 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders ja logged i
             >
               <img
                 alt="Arlo, by VotingWorks"
+                class="logo-desktop"
                 src="/arlo.png"
+              />
+              <img
+                alt="Arlo, by VotingWorks"
+                class="logo-mobile"
+                src="/arlo-mobile.png"
               />
             </a>
           </div>
@@ -1176,7 +1185,7 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders ja logged i
           style="width: 50%;"
         >
           <div
-            class="sc-jtRfpW fUxNLz"
+            class="sc-cmthru ibpZkp"
           >
             <div>
               <h2>
@@ -1240,13 +1249,13 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders unauthentic
     class="Toastify"
   />
   <div
-    class="sc-hwwEjo lexMrb"
+    class="sc-iujRgT jTfiFp"
   >
     <div
-      class="bp3-navbar sc-bxivhb fJOOqK"
+      class="bp3-navbar sc-bxivhb gvSyoM"
     >
       <div
-        class="sc-bwzfXH sc-EHOje bgNFlR"
+        class="sc-bwzfXH sc-EHOje mfJYp"
       >
         <div
           class="bp3-navbar-group bp3-align-left"
@@ -1259,7 +1268,13 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders unauthentic
             >
               <img
                 alt="Arlo, by VotingWorks"
+                class="logo-desktop"
                 src="/arlo.png"
+              />
+              <img
+                alt="Arlo, by VotingWorks"
+                class="logo-mobile"
+                src="/arlo-mobile.png"
               />
             </a>
           </div>
@@ -1267,7 +1282,7 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders unauthentic
       </div>
     </div>
     <div
-      class="sc-elJkPf gfpiaf"
+      class="sc-esOvli ijkheZ"
     >
       <img
         alt="Arlo, by VotingWorks"
@@ -1316,13 +1331,13 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders aa logge
     class="Toastify"
   />
   <div
-    class="sc-hwwEjo lexMrb"
+    class="sc-iujRgT jTfiFp"
   >
     <div
-      class="bp3-navbar sc-bxivhb fJOOqK"
+      class="bp3-navbar sc-bxivhb gvSyoM"
     >
       <div
-        class="sc-bwzfXH sc-EHOje bgNFlR"
+        class="sc-bwzfXH sc-EHOje mfJYp"
       >
         <div
           class="bp3-navbar-group bp3-align-left"
@@ -1335,7 +1350,13 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders aa logge
             >
               <img
                 alt="Arlo, by VotingWorks"
+                class="logo-desktop"
                 src="/arlo.png"
+              />
+              <img
+                alt="Arlo, by VotingWorks"
+                class="logo-mobile"
+                src="/arlo-mobile.png"
               />
             </a>
           </div>
@@ -1397,7 +1418,7 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders aa logge
           style="width: 50%;"
         >
           <div
-            class="sc-jtRfpW fUxNLz"
+            class="sc-cmthru ibpZkp"
           >
             <div>
               <h2>
@@ -1415,7 +1436,7 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders aa logge
           style="width: 50%;"
         >
           <div
-            class="sc-kTUwUJ KcVnP"
+            class="sc-hMFtBS gtAomC"
           >
             <h2>
               New Audit
@@ -1433,7 +1454,7 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders aa logge
                   Audit name
                 </p>
                 <div
-                  class="sc-gxMtzJ deCeyK sc-kAzzGY bLtYsq"
+                  class="sc-gqPbQI jqzBqO sc-kAzzGY bLtYsq"
                 >
                   <div
                     class="bp3-input-group sc-chPdSV PhUsl"
@@ -1475,7 +1496,7 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders aa logge
                     Ballot Polling
                   </label>
                   <div
-                    class="sc-dqBHgY hcXUpp"
+                    class="sc-cLQEGU cQoaO"
                   >
                     <label
                       for="auditMathType"
@@ -1580,13 +1601,13 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders ja logge
     class="Toastify"
   />
   <div
-    class="sc-hwwEjo lexMrb"
+    class="sc-iujRgT jTfiFp"
   >
     <div
-      class="bp3-navbar sc-bxivhb fJOOqK"
+      class="bp3-navbar sc-bxivhb gvSyoM"
     >
       <div
-        class="sc-bwzfXH sc-EHOje bgNFlR"
+        class="sc-bwzfXH sc-EHOje mfJYp"
       >
         <div
           class="bp3-navbar-group bp3-align-left"
@@ -1599,7 +1620,13 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders ja logge
             >
               <img
                 alt="Arlo, by VotingWorks"
+                class="logo-desktop"
                 src="/arlo.png"
+              />
+              <img
+                alt="Arlo, by VotingWorks"
+                class="logo-mobile"
+                src="/arlo-mobile.png"
               />
             </a>
           </div>
@@ -1837,13 +1864,13 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders unauthen
     class="Toastify"
   />
   <div
-    class="sc-hwwEjo lexMrb"
+    class="sc-iujRgT jTfiFp"
   >
     <div
-      class="bp3-navbar sc-bxivhb fJOOqK"
+      class="bp3-navbar sc-bxivhb gvSyoM"
     >
       <div
-        class="sc-bwzfXH sc-EHOje bgNFlR"
+        class="sc-bwzfXH sc-EHOje mfJYp"
       >
         <div
           class="bp3-navbar-group bp3-align-left"
@@ -1856,7 +1883,13 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders unauthen
             >
               <img
                 alt="Arlo, by VotingWorks"
+                class="logo-desktop"
                 src="/arlo.png"
+              />
+              <img
+                alt="Arlo, by VotingWorks"
+                class="logo-mobile"
+                src="/arlo-mobile.png"
               />
             </a>
           </div>
@@ -1864,7 +1897,7 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders unauthen
       </div>
     </div>
     <div
-      class="sc-elJkPf gfpiaf"
+      class="sc-esOvli ijkheZ"
     >
       <img
         alt="Arlo, by VotingWorks"

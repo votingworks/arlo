@@ -38,6 +38,7 @@ export interface IAuditBoard {
   name: string
   jurisdictionId: string
   jurisdictionName: string
+  electionId: string
   roundId: string
   members: IAuditBoardMember[]
   signedOffAt: string | null

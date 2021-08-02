@@ -9,7 +9,6 @@ import {
   apiCalls,
   jaApiCalls,
   supportApiCalls,
-  auditBoardApiCalls,
 } from './MultiJurisdictionAudit/_mocks'
 
 const renderHeader = (route: string) =>
@@ -27,9 +26,9 @@ describe('Header', () => {
       renderHeader('/')
 
       // Arlo logo
-      const arloLogo = await screen.findByRole('link', {
+      const arloLogo = screen.getAllByRole('link', {
         name: 'Arlo, by VotingWorks',
-      })
+      })[0]
       expect(arloLogo).toHaveAttribute('href', '/')
       expect(within(arloLogo).getByRole('img')).toHaveAttribute(
         'src',
@@ -125,31 +124,6 @@ describe('Header', () => {
       // User's email
       const userButton = screen.getByRole('button', {
         name: /jurisdictionadmin@email.org/,
-      })
-      userEvent.click(userButton)
-
-      // Dropdown menu should show with log out option
-      const logOutButton = screen.getByRole('link', { name: 'Log out' })
-      expect(logOutButton).toHaveAttribute('href', '/auth/logout')
-
-      // No other buttons
-      expect(screen.getAllByRole('button')).toHaveLength(1)
-    })
-  })
-
-  it('shows the active audit board name when authenticated as an audit board', async () => {
-    const expectedCalls = [auditBoardApiCalls.getUser]
-    await withMockFetch(expectedCalls, async () => {
-      renderHeader('/election/1/audit-board/audit-board-1')
-
-      // Arlo logo
-      await screen.findByRole('link', {
-        name: 'Arlo, by VotingWorks',
-      })
-
-      // Audit board name
-      const userButton = screen.getByRole('button', {
-        name: /Audit Board #1/,
       })
       userEvent.click(userButton)
 

@@ -1,20 +1,48 @@
 import React from 'react'
-import { waitFor, screen } from '@testing-library/react'
-import { Route } from 'react-router-dom'
+import { waitFor, screen, within } from '@testing-library/react'
+import { useParams } from 'react-router-dom'
 import userEvent from '@testing-library/user-event'
 import { renderWithRouter, withMockFetch } from '../testUtilities'
 import DataEntry from './index'
-import { dummyBoards, dummyBallots, doneDummyBallots } from './_mocks'
+import {
+  dummyBoards,
+  dummyBallots,
+  doneDummyBallots,
+  dummyBallotsNotAudited,
+} from './_mocks'
 import { contestMocks } from '../MultiJurisdictionAudit/useSetupMenuItems/_mocks'
+import AuthDataProvider, { useAuthDataContext } from '../UserContext'
+
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'), // use actual for all non-hook parts
+  useRouteMatch: jest.fn(),
+  useParams: jest.fn(),
+}))
+const paramsMock = useParams as jest.Mock
+paramsMock.mockReturnValue({
+  electionId: '1',
+  auditBoardId: 'audit-board-1',
+})
+
+afterEach(() => {
+  paramsMock.mockReturnValue({
+    electionId: '1',
+    auditBoardId: 'audit-board-1',
+  })
+})
 
 window.scrollTo = jest.fn()
 
+const DataEntryWithAuth: React.FC = () => {
+  const auth = useAuthDataContext()
+  return auth ? <DataEntry /> : null
+}
+
 const renderDataEntry = () =>
   renderWithRouter(
-    <Route
-      path="/election/:electionId/audit-board/:auditBoardId"
-      component={DataEntry}
-    />,
+    <AuthDataProvider>
+      <DataEntryWithAuth />
+    </AuthDataProvider>,
     {
       route: '/election/1/audit-board/audit-board-1',
     }
@@ -22,10 +50,9 @@ const renderDataEntry = () =>
 
 const renderBallot = () =>
   renderWithRouter(
-    <Route
-      path="/election/:electionId/audit-board/:auditBoardId/batch/:batchId/ballot/:ballotPosition"
-      component={DataEntry}
-    />,
+    <AuthDataProvider>
+      <DataEntryWithAuth />
+    </AuthDataProvider>,
     {
       route:
         '/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/2112',
@@ -36,7 +63,14 @@ const apiCalls = {
   getAuditBoard: {
     url: '/api/me',
     response: {
-      user: { ...dummyBoards()[0], type: 'AUDIT_BOARD' },
+      user: { ...dummyBoards()[0] },
+      supportUser: null,
+    },
+  },
+  getAuditBoardInitial: {
+    url: '/api/me',
+    response: {
+      user: { ...dummyBoards()[1] },
       supportUser: null,
     },
   },
@@ -46,8 +80,8 @@ const apiCalls = {
     options: {
       method: 'PUT',
       body: JSON.stringify([
-        { name: 'Name 1', affiliation: null },
-        { name: 'Name 2', affiliation: null },
+        { name: 'John Doe', affiliation: null },
+        { name: 'Jane Doe', affiliation: null },
       ]),
       headers: {
         'Content-Type': 'application/json',
@@ -64,6 +98,11 @@ const apiCalls = {
     url:
       '/api/election/1/jurisdiction/jurisdiction-1/round/round-1/audit-board/audit-board-1/ballots',
     response: dummyBallots,
+  },
+  getBallotsNotAudited: {
+    url:
+      '/api/election/1/jurisdiction/jurisdiction-1/round/round-1/audit-board/audit-board-1/ballots',
+    response: dummyBallotsNotAudited,
   },
   putAuditBallot: (ballotId: string, body: object) => ({
     url: `/api/election/1/jurisdiction/jurisdiction-1/round/round-1/audit-board/audit-board-1/ballots/${ballotId}`,
@@ -91,12 +130,10 @@ const apiCalls = {
 
 describe('DataEntry', () => {
   describe('member form', () => {
-    it('submits and goes to ballot table', async () => {
+    it('submits, goes to ballot table, and header shows member names', async () => {
       const expectedCalls = [
-        {
-          ...apiCalls.getAuditBoard,
-          response: { user: { ...dummyBoards()[1], type: 'AUDIT_BOARD' } }, // No members set
-        },
+        apiCalls.getAuditBoardInitial,
+        apiCalls.getAuditBoardInitial,
         apiCalls.putAuditBoardMembers,
         apiCalls.getAuditBoard,
         apiCalls.getContests,
@@ -105,15 +142,28 @@ describe('DataEntry', () => {
       await withMockFetch(expectedCalls, async () => {
         const { container } = renderDataEntry()
 
-        await screen.findByText('Audit Board #2: Member Sign-in')
+        await screen.findByRole('link', {
+          name: 'Arlo, by VotingWorks',
+        })
+
+        // Audit board name
+        expect(screen.getAllByText(/Audit Board #1/).length).toBe(3)
+
+        // should show log out link
+        const logOutButton = screen.getByRole('link', { name: 'Log out' })
+        expect(logOutButton).toHaveAttribute('href', '/auth/logout')
+
+        await screen.findByText('Audit Board #1: Member Sign-in')
         const nameInputs = screen.getAllByLabelText('Full Name')
         expect(nameInputs).toHaveLength(2)
 
-        await userEvent.type(nameInputs[0], `Name 1`)
-        await userEvent.type(nameInputs[1], `Name 2`)
+        userEvent.type(nameInputs[0], `John Doe`)
+        userEvent.type(nameInputs[1], `Jane Doe`)
         userEvent.click(screen.getByRole('button', { name: 'Next' }))
 
-        await screen.findByText('Audit Board #1: Ballot Cards to Audit')
+        await screen.findByText('Ballots for Audit Board #1')
+        await screen.findByText(/John Doe, Jane Doe/) // member names shows up in header now
+
         expect(container).toMatchSnapshot()
       })
     })
@@ -122,6 +172,7 @@ describe('DataEntry', () => {
   describe('ballot interaction', () => {
     it('renders board table with no ballots', async () => {
       const expectedCalls = [
+        apiCalls.getAuditBoard,
         apiCalls.getAuditBoard,
         apiCalls.getContests,
         {
@@ -132,7 +183,30 @@ describe('DataEntry', () => {
       await withMockFetch(expectedCalls, async () => {
         const { container } = renderDataEntry()
 
-        await screen.findByText('Audit Board #1: Ballot Cards to Audit')
+        await screen.findByText('Ballots for Audit Board #1')
+        expect(container).toMatchSnapshot()
+      })
+    })
+
+    it('renders board table with no audited ballots', async () => {
+      jest.setTimeout(10000)
+      const expectedCalls = [
+        apiCalls.getAuditBoard,
+        apiCalls.getAuditBoard,
+        apiCalls.getContests,
+        apiCalls.getBallotsNotAudited,
+      ]
+      await withMockFetch(expectedCalls, async () => {
+        const { container } = renderDataEntry()
+
+        await screen.findByText('Ballots for Audit Board #1')
+        expect(screen.getByRole('button', { name: 'Audit First Ballot' }))
+        await screen.findByText('0 of 27 ballots have been audited.')
+        expect(
+          screen.getByRole('button', {
+            name: 'Submit Audited Ballots',
+          })
+        ).toBeDisabled()
         expect(container).toMatchSnapshot()
       })
     })
@@ -140,19 +214,21 @@ describe('DataEntry', () => {
     it('renders board table with ballots', async () => {
       const expectedCalls = [
         apiCalls.getAuditBoard,
+        apiCalls.getAuditBoard,
         apiCalls.getContests,
         apiCalls.getBallotsInitial,
       ]
       await withMockFetch(expectedCalls, async () => {
         const { container } = renderDataEntry()
 
-        await screen.findByText('Audit Board #1: Ballot Cards to Audit')
+        await screen.findByText('Ballots for Audit Board #1')
         expect(
-          screen.getByRole('button', { name: 'Start Auditing' })
+          screen.getByRole('button', { name: 'Audit Next Ballot' })
         ).toBeEnabled()
+        await screen.findByText('18 of 27 ballots have been audited.')
         expect(
           screen.getByRole('button', {
-            name: 'Auditing Complete - Submit Results',
+            name: 'Submit Audited Ballots',
           })
         ).toBeDisabled()
         expect(container).toMatchSnapshot()
@@ -162,18 +238,20 @@ describe('DataEntry', () => {
     it('renders ballot route', async () => {
       const expectedCalls = [
         apiCalls.getAuditBoard,
+        apiCalls.getAuditBoard,
         apiCalls.getContests,
         apiCalls.getBallotsInitial,
       ]
       await withMockFetch(expectedCalls, async () => {
         const { container } = renderBallot()
-        await screen.findByText('Enter Ballot Information')
+        await screen.findByText('Audit Ballot Selections')
         expect(container).toMatchSnapshot()
       })
     })
 
-    it('advances ballot forward and backward', async () => {
+    it('advances ballot forward', async () => {
       const expectedCalls = [
+        apiCalls.getAuditBoard,
         apiCalls.getAuditBoard,
         apiCalls.getContests,
         apiCalls.getBallotsInitial,
@@ -190,29 +268,32 @@ describe('DataEntry', () => {
 
         userEvent.click(
           await screen.findByRole('button', {
-            name: 'Ballot 2112 not found - move to next ballot',
+            name: 'Ballot Not Found',
           })
         )
-        await waitFor(() => {
-          expect(pushSpy).toBeCalledTimes(1)
-        })
+        const dialog = (await screen.findByRole('heading', {
+          name: /Confirm the Ballot Selections/,
+        })).closest('.bp3-dialog')! as HTMLElement
+        expect(within(dialog).getAllByText('Ballot Not Found').length).toBe(1)
+        userEvent.click(
+          within(dialog).getByRole('button', { name: 'Confirm Selections' })
+        )
 
-        userEvent.click(screen.getByText('Back'))
         await waitFor(() => {
-          expect(pushSpy).toBeCalledTimes(2)
+          expect(dialog).not.toBeInTheDocument()
+          expect(pushSpy).toBeCalledTimes(1)
         })
 
         expect(pushSpy.mock.calls[0][0]).toBe(
           '/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/1789'
         )
-        expect(pushSpy.mock.calls[1][0]).toBe(
-          '/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/313'
-        )
       })
     })
 
     it('submits ballot', async () => {
+      jest.setTimeout(15000)
       const expectedCalls = [
+        apiCalls.getAuditBoard,
         apiCalls.getAuditBoard,
         apiCalls.getContests,
         apiCalls.getBallotsInitial,
@@ -235,12 +316,21 @@ describe('DataEntry', () => {
         userEvent.click(
           await screen.findByRole('checkbox', { name: 'Choice One' })
         )
-        userEvent.click(await screen.findByRole('button', { name: 'Review' }))
         userEvent.click(
-          await screen.findByRole('button', { name: 'Submit & Next Ballot' })
+          await screen.findByRole('button', { name: 'Submit Selections' })
+        )
+
+        const dialog = (await screen.findByRole('heading', {
+          name: /Confirm the Ballot Selections/,
+        })).closest('.bp3-dialog')! as HTMLElement
+        within(dialog).getByText('Contest 1')
+        within(dialog).getByText('Choice One')
+        userEvent.click(
+          within(dialog).getByRole('button', { name: 'Confirm Selections' })
         )
 
         await waitFor(() => {
+          expect(dialog).not.toBeInTheDocument()
           expect(history.location.pathname).toBe(
             '/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/1789'
           )
@@ -251,6 +341,7 @@ describe('DataEntry', () => {
     it('audits ballots', async () => {
       jest.setTimeout(15000)
       const expectedCalls = [
+        apiCalls.getAuditBoard,
         apiCalls.getAuditBoard,
         apiCalls.getContests,
         apiCalls.getBallotsInitial,
@@ -277,17 +368,16 @@ describe('DataEntry', () => {
         renderDataEntry()
 
         await screen.findByRole('heading', {
-          name: 'Audit Board #1: Ballot Cards to Audit',
+          name: 'Ballots for Audit Board #1',
         })
 
         // Go to the first ballot
         userEvent.click(
-          await screen.findByRole('button', { name: 'Start Auditing' })
+          await screen.findByRole('button', { name: 'Audit Next Ballot' })
         )
         screen.getByRole('heading', {
-          name: 'Audit Board #1: Ballot Card Data Entry',
+          name: 'Audit Ballot Selections',
         })
-        screen.getByText('Auditing ballot 2 of 27')
 
         // Select some choices for each contest
         screen.getByRole('heading', { name: 'Contest 1' })
@@ -300,28 +390,32 @@ describe('DataEntry', () => {
         )
 
         // Review the choices
-        userEvent.click(screen.getByRole('button', { name: 'Review' }))
-        expect(
-          await screen.findByRole('button', { name: 'Choice One' })
-        ).toBeDisabled()
-        expect(
-          screen.getByRole('button', { name: 'Not on Ballot' })
-        ).toBeDisabled()
-        expect(screen.queryByText('Choice Two')).not.toBeInTheDocument()
-        expect(screen.queryByText('Choice Three')).not.toBeInTheDocument()
-        expect(screen.queryByText('Choice Four')).not.toBeInTheDocument()
-
-        // Submit the ballot
         userEvent.click(
-          screen.getByRole('button', { name: 'Submit & Next Ballot' })
+          screen.getByRole('button', { name: 'Submit Selections' })
         )
-        await screen.findByText('Auditing ballot 3 of 27')
+
+        const dialog = (await screen.findByRole('heading', {
+          name: /Confirm the Ballot Selections/,
+        })).closest('.bp3-dialog')! as HTMLElement
+        within(dialog).getByText('Contest 1')
+        within(dialog).getByText('Choice One')
+        within(dialog).getByText('Not on Ballot')
+        userEvent.click(
+          within(dialog).getByRole('button', { name: 'Confirm Selections' })
+        )
+
+        await waitFor(() => {
+          expect(dialog).not.toBeInTheDocument()
+        })
+
+        await screen.findByText('Audit Ballot Selections')
       })
     })
 
     it('deselects choices', async () => {
       jest.setTimeout(15000)
       const expectedCalls = [
+        apiCalls.getAuditBoard,
         apiCalls.getAuditBoard,
         apiCalls.getContests,
         apiCalls.getBallotsInitial,
@@ -342,7 +436,7 @@ describe('DataEntry', () => {
         renderDataEntry()
 
         userEvent.click(
-          await screen.findByRole('button', { name: 'Start Auditing' })
+          await screen.findByRole('button', { name: 'Audit Next Ballot' })
         )
 
         // Try selecting and then deselecting some choices
@@ -353,11 +447,24 @@ describe('DataEntry', () => {
         userEvent.click(screen.getByRole('checkbox', { name: 'Choice Three' }))
 
         // Review and submit (with no choice selected for Contest 1)
-        userEvent.click(screen.getByRole('button', { name: 'Review' }))
         userEvent.click(
-          await screen.findByRole('button', { name: 'Submit & Next Ballot' })
+          screen.getByRole('button', { name: 'Submit Selections' })
         )
-        await screen.findByText('Auditing ballot 3 of 27')
+
+        const dialog = (await screen.findByRole('heading', {
+          name: /Confirm the Ballot Selections/,
+        })).closest('.bp3-dialog')! as HTMLElement
+        within(dialog).getByText('Contest 1')
+        within(dialog).getByText('Choice Three')
+        userEvent.click(
+          within(dialog).getByRole('button', { name: 'Confirm Selections' })
+        )
+
+        await waitFor(() => {
+          expect(dialog).not.toBeInTheDocument()
+        })
+
+        await screen.findByText('Audit Ballot Selections')
       })
     })
   })

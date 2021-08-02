@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { H1 } from '@blueprintjs/core'
 import { Route, Switch, useParams, useHistory } from 'react-router-dom'
 import styled from 'styled-components'
+import HeaderDataEntry from './HeaderDataEntry'
 import { IBallotInterpretation, IContest, BallotStatus } from '../../types'
 import { api } from '../utilities'
 import BoardTable from './BoardTable'
@@ -122,6 +123,7 @@ const DataEntry: React.FC = () => {
     electionId: string
     auditBoardId: string
   }>()
+
   const [auditBoard, setAuditBoard] = useState<IAuditBoard | null>(null)
   const [contests, setContests] = useState<IContest[] | null>(null)
   const [ballots, setBallots] = useState<IBallot[] | null>(null)
@@ -161,6 +163,10 @@ const DataEntry: React.FC = () => {
   if (auditBoard && auditBoard.members.length === 0) {
     return (
       <Wrapper>
+        <HeaderDataEntry
+          members={auditBoard.members}
+          boardName={auditBoard.name}
+        />
         <PaddedInner>
           <MemberForm
             submitMembers={submitMembers}
@@ -249,6 +255,10 @@ const DataEntry: React.FC = () => {
   if (auditBoard.signedOffAt) {
     return (
       <Wrapper>
+        <HeaderDataEntry
+          members={auditBoard.members}
+          boardName={auditBoard.name}
+        />
         <PaddedInner>
           <div>
             <H1>{auditBoard.name}: Auditing Complete</H1>
@@ -261,47 +271,49 @@ const DataEntry: React.FC = () => {
 
   return (
     <Wrapper>
-      <PaddedInner>
-        <Switch>
-          <Route
-            exact
-            path="/election/:electionId/audit-board/:auditBoardId"
-            render={({ match: { url: routeURL } }) => (
-              <BoardTable
-                boardName={auditBoard.name}
-                ballots={ballots}
-                url={routeURL}
-              />
-            )}
-          />
-          <Route
-            path={`${url}/batch/:batchId/ballot/:ballotPosition`}
-            render={({
-              match: {
-                params: { batchId, ballotPosition },
-              },
-            }) => (
-              <Ballot
-                home={url}
-                previousBallot={previousBallot(batchId, Number(ballotPosition))}
-                nextBallot={nextBallot(batchId, Number(ballotPosition))}
-                submitBallot={submitBallot}
-                contests={contests}
-                batchId={batchId}
-                ballotPosition={Number(ballotPosition)}
-                ballots={ballots}
-                boardName={auditBoard.name}
-              />
-            )}
-          />
-          <Route
-            path={`${url}/signoff`}
-            render={() => (
-              <SignOff auditBoard={auditBoard} submitSignoff={submitSignoff} />
-            )}
-          />
-        </Switch>
-      </PaddedInner>
+      <HeaderDataEntry
+        members={auditBoard.members}
+        boardName={auditBoard.name}
+      />
+      <Switch>
+        <Route
+          exact
+          path="/election/:electionId/audit-board/:auditBoardId"
+          render={({ match: { url: routeURL } }) => (
+            <BoardTable
+              boardName={auditBoard.name}
+              ballots={ballots}
+              url={routeURL}
+            />
+          )}
+        />
+        <Route
+          path={`${url}/batch/:batchId/ballot/:ballotPosition`}
+          render={({
+            match: {
+              params: { batchId, ballotPosition },
+            },
+          }) => (
+            <Ballot
+              home={url}
+              previousBallot={previousBallot(batchId, Number(ballotPosition))}
+              nextBallot={nextBallot(batchId, Number(ballotPosition))}
+              submitBallot={submitBallot}
+              contests={contests}
+              batchId={batchId}
+              ballotPosition={Number(ballotPosition)}
+              ballots={ballots}
+              boardName={auditBoard.name}
+            />
+          )}
+        />
+        <Route
+          path={`${url}/signoff`}
+          render={() => (
+            <SignOff auditBoard={auditBoard} submitSignoff={submitSignoff} />
+          )}
+        />
+      </Switch>
     </Wrapper>
   )
 }
