@@ -20,7 +20,7 @@ const asyncMock = (): [
 
 describe('AsyncButton', () => {
   it('disables the button until onClick resolves', async () => {
-    const [onClickMock, resolve, _] = asyncMock()
+    const [onClickMock, resolve] = asyncMock()
     render(<AsyncButton onClick={onClickMock}>Download</AsyncButton>)
     userEvent.click(screen.getByRole('button', { name: 'Download' }))
     expect(screen.getByRole('button')).toBeDisabled()
