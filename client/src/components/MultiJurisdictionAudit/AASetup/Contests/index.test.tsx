@@ -3,11 +3,7 @@ import { fireEvent, waitFor, render, screen } from '@testing-library/react'
 import { toast } from 'react-toastify'
 import { useParams } from 'react-router-dom'
 import userEvent from '@testing-library/user-event'
-import {
-  regexpEscape,
-  withMockFetch,
-  renderWithRouter,
-} from '../../../testUtilities'
+import { regexpEscape } from '../../../testUtilities'
 import * as utilities from '../../../utilities'
 import Contests from './index'
 import relativeStages from '../_mocks'
@@ -16,7 +12,6 @@ import { numberifyContest, IContestNumbered } from '../../useContests'
 import { IJurisdiction } from '../../useJurisdictions'
 import { IContest } from '../../../../types'
 import { jurisdictionMocks } from '../../useSetupMenuItems/_mocks'
-import { aaApiCalls } from '../../_mocks'
 
 const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
 const apiMock: jest.SpyInstance<
