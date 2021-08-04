@@ -9,7 +9,7 @@ import {
 } from './generateSheets'
 import { IAuditBoard } from '../useAuditBoards'
 import { jaApiCalls } from '../_mocks'
-import { dummyBallots } from '../../DataEntry/_mocks'
+import { dummyBallots, dummyBallotsMultipage } from '../../DataEntry/_mocks'
 import { withMockFetch } from '../../testUtilities'
 import { roundMocks } from './_mocks'
 
@@ -37,6 +37,10 @@ const apiCalls = {
     url: `/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/ballots`,
     response: dummyBallots,
   },
+  getBallotsMultipage: {
+    url: `/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/ballots`,
+    response: dummyBallotsMultipage,
+  },
 }
 
 describe('generateSheets', () => {
@@ -61,6 +65,24 @@ describe('generateSheets', () => {
       })
     })
 
+    it('generates multiple pages of sheets & wrap long lines', async () => {
+      const expectedCalls = [apiCalls.getBallotsMultipage]
+      await withMockFetch(expectedCalls, async () => {
+        const pdf = await downloadLabels(
+          mockJurisdiction.election.id,
+          mockJurisdiction.id,
+          mockRound,
+          mockJurisdiction.name,
+          mockJurisdiction.election.auditName
+        )
+        await expect(Buffer.from(pdf)).toMatchPdfSnapshot()
+        expect(mockSavePDF).toHaveBeenCalledWith(
+          'Round 1 Labels - Jurisdiction One - audit one.pdf',
+          { returnPromise: true }
+        )
+      })
+    })
+
     it('generates label sheets for ballot comparison audits', async () => {
       const expectedCalls = [
         {
@@ -69,6 +91,38 @@ describe('generateSheets', () => {
             ballots: dummyBallots.ballots.map(b => ({
               ...b,
               imprintedId: `${b.batch.name}-${b.position}`,
+            })),
+          },
+        },
+      ]
+      await withMockFetch(expectedCalls, async () => {
+        const pdf = await downloadLabels(
+          mockJurisdiction.election.id,
+          mockJurisdiction.id,
+          mockRound,
+          mockJurisdiction.name,
+          mockJurisdiction.election.auditName
+        )
+        await expect(Buffer.from(pdf)).toMatchPdfSnapshot()
+        expect(mockSavePDF).toHaveBeenCalledWith(
+          'Round 1 Labels - Jurisdiction One - audit one.pdf',
+          { returnPromise: true }
+        )
+      })
+    })
+
+    it('check for long lines for ballot comparison audits', async () => {
+      const expectedCalls = [
+        {
+          ...apiCalls.getBallots,
+          response: {
+            ballots: dummyBallots.ballots.map(b => ({
+              ...b,
+              imprintedId: `${b.batch.name}-${b.position}`,
+              batch: {
+                ...b.batch,
+                container: '5',
+              },
             })),
           },
         },
