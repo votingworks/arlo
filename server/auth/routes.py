@@ -239,11 +239,11 @@ def jurisdiction_admin_generate_code():
 @auth.route("/auth/jurisdictionadmin/login", methods=["POST"])
 def jurisdiction_admin_login():
     body = request.get_json()
-    user = User.query.filter_by(email=body.get("email")).one_or_none()
+    user = User.query.filter_by(email=body.get("email")).with_for_update().one_or_none()
     if user is None:
         raise BadRequest("Invalid email address.")
 
-    if user.login_code_attempts > 20:
+    if user.login_code_attempts > 10:
         user.login_code_requested_at = None
         db_session.commit()
         raise BadRequest("Too many incorrect attempts. Please request a new code.")

@@ -21,7 +21,7 @@ import {
   IJurisdictionAdmin,
   IElection,
 } from './UserContext'
-import { api, parseApiError } from './utilities'
+import { api, parseApiError, addCSRFToken } from './utilities'
 import LinkButton from './Atoms/LinkButton'
 import FormSection from './Atoms/Form/FormSection'
 import FormButton from './Atoms/Form/FormButton'
@@ -122,11 +122,14 @@ const LoginScreen: React.FC = () => {
   const [submittedEmail, setSubmittedEmail] = useState<string | null>(null)
 
   const onSubmitEmail = async ({ email }: { email: string }) => {
-    const response = await fetch('/auth/jurisdictionadmin/code', {
-      method: 'POST',
-      headers: { 'Content-type': 'application/json' },
-      body: JSON.stringify({ email }),
-    })
+    const response = await fetch(
+      '/auth/jurisdictionadmin/code',
+      addCSRFToken({
+        method: 'POST',
+        headers: { 'Content-type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+    )
     if (response.ok) {
       setSubmittedEmail(email)
       return
@@ -139,11 +142,14 @@ const LoginScreen: React.FC = () => {
   }
 
   const onSubmitCode = async ({ code }: { code: string }) => {
-    const response = await fetch('/auth/jurisdictionadmin/login', {
-      method: 'POST',
-      headers: { 'Content-type': 'application/json' },
-      body: JSON.stringify({ email: submittedEmail, code }),
-    })
+    const response = await fetch(
+      '/auth/jurisdictionadmin/login',
+      addCSRFToken({
+        method: 'POST',
+        headers: { 'Content-type': 'application/json' },
+        body: JSON.stringify({ email: submittedEmail, code }),
+      })
+    )
     if (response.ok) {
       window.location.reload()
       return
