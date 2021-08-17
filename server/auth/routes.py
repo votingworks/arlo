@@ -1,3 +1,4 @@
+import base64
 from datetime import datetime, timezone
 from urllib.parse import urljoin, urlencode
 from flask import redirect, jsonify, request, session, render_template
@@ -23,8 +24,6 @@ from ..util.isoformat import isoformat
 from ..config import (
     LOGIN_CODE_LIFETIME,
     LOGIN_CODE_SECRET,
-    MAILGUN_API_KEY,
-    MAILGUN_DOMAIN,
     SUPPORT_AUTH0_BASE_URL,
     SUPPORT_AUTH0_CLIENT_ID,
     SUPPORT_AUTH0_CLIENT_SECRET,
@@ -33,6 +32,7 @@ from ..config import (
     AUDITADMIN_AUTH0_CLIENT_ID,
     AUDITADMIN_AUTH0_CLIENT_SECRET,
 )
+from .. import config
 
 SUPPORT_OAUTH_CALLBACK_URL = "/auth/support/callback"
 AUDITADMIN_OAUTH_CALLBACK_URL = "/auth/auditadmin/callback"
@@ -183,16 +183,24 @@ def auditadmin_login_callback():
     return redirect("/")
 
 
-def generate_login_code(timestamp: datetime):
-    return HOTP(LOGIN_CODE_SECRET).at(
-        int(timestamp.timestamp() / LOGIN_CODE_LIFETIME.total_seconds())
+def base32_encode(string: str):
+    return base64.b32encode(string.encode("utf-8")).decode("utf-8")
+
+
+def generate_login_code(user_id: str, timestamp: datetime):
+    return HOTP(base32_encode(LOGIN_CODE_SECRET + user_id)).at(
+        int(timestamp.timestamp())
     )
 
 
-def verify_login_code(timestamp: datetime, code: str):
-    return HOTP(LOGIN_CODE_SECRET).verify(
-        code, int(timestamp.timestamp() / LOGIN_CODE_LIFETIME.total_seconds())
+def verify_login_code(user_id: str, timestamp: datetime, code: str):
+    return HOTP(base32_encode(LOGIN_CODE_SECRET + user_id)).verify(
+        code, int(timestamp.timestamp())
     )
+
+
+def is_code_expired(timestamp: datetime):
+    return datetime.now(timezone.utc) - timestamp > LOGIN_CODE_LIFETIME
 
 
 @auth.route("/auth/jurisdictionadmin/code", methods=["POST"])
@@ -207,20 +215,18 @@ def jurisdiction_admin_generate_code():
         )
 
     if user.login_code_requested_at is None or (
-        # Reuse the existing login code if it hasn't expired yet. That way if
-        # they request a new code while waiting for a slow email, we won't wipe
-        # out the code we sent when the email does come through.
-        datetime.now(timezone.utc) - user.login_code_requested_at
-        > LOGIN_CODE_LIFETIME
+        # Only set a new login code if the old one expired. That way if they
+        # request a new code while waiting for a slow email, we won't wipe out
+        # the code we sent when the email does come through.
+        is_code_expired(user.login_code_requested)
     ):
         user.login_code_requested_at = datetime.now(timezone.utc)
+        user.login_code_attempts = 0
 
-    user.login_code_attempts = 0
-
-    code = generate_login_code(user.login_code_requested_at)
+    code = generate_login_code(user.id, user.login_code_requested_at)
     email_response = requests.post(
-        f"https://api.mailgun.net/v3/{MAILGUN_DOMAIN}/messages",
-        auth=("api", MAILGUN_API_KEY),
+        f"https://api.mailgun.net/v3/{config.MAILGUN_DOMAIN}/messages",
+        auth=("api", config.MAILGUN_API_KEY),
         data={
             "from": "Arlo Support <rla@vx.support>",
             "to": [user.email],
@@ -251,8 +257,14 @@ def jurisdiction_admin_login():
     user.login_code_attempts += 1
     db_session.commit()
 
-    if user.login_code_requested_at is None or (
-        not verify_login_code(user.login_code_requested_at, body.get("code"))
+    if (
+        user.login_code_requested_at is None
+        or is_code_expired(user.login_code_requested)
+        or (
+            not verify_login_code(
+                user.id, user.login_code_requested_at, body.get("code")
+            )
+        )
     ):
         raise BadRequest(
             "Invalid code. Try entering the code again or click Back and request a new code."

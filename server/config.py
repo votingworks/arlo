@@ -82,18 +82,11 @@ def read_session_secret() -> str:
 
 SESSION_SECRET = read_session_secret()
 
-
-def base32_encode(string: str):
-    return base64.b32encode(string.encode("utf-8")).decode("utf-8")
-
-
-LOGIN_CODE_SECRET = base32_encode(
-    read_env_var(
-        "ARLO_LOGIN_CODE_SECRET",
-        env_defaults=dict(
-            development="arlo-dev-session-secret", test="arlo-test-session-secret"
-        ),
-    )
+LOGIN_CODE_SECRET = read_env_var(
+    "ARLO_LOGIN_CODE_SECRET",
+    env_defaults=dict(
+        development="arlo-dev-session-secret", test="arlo-test-session-secret"
+    ),
 )
 
 LOGIN_CODE_LIFETIME = timedelta(minutes=15)

@@ -190,37 +190,101 @@ def test_auditadmin_callback(client: FlaskClient, aa_email: str):
             assert auth0_aa.get.called
 
 
-# def test_jurisdictionadmin_start(client: FlaskClient):
-#     rv = client.get("/auth/jurisdictionadmin/start")
-#     check_redirect_contains_redirect_uri(rv, "/auth/jurisdictionadmin/callback")
+def parse_login_code(mock_post):
+    code_match = re.search(
+        r"Your verification code is: (\d\d\d\d\d\d)",
+        mock_post.call_args.kwargs["data"]["text"],
+    )
+    assert code_match
+    code = code_match.group(1)
+    assert code
+    return code
 
 
-# def test_jurisdictionadmin_callback(client: FlaskClient, ja_email: str):
-#     with patch.object(auth0_ja, "authorize_access_token", return_value=None):
+@patch("requests.post")
+def test_jurisdiction_admin_login(mock_post, client: FlaskClient, ja_email: str):
+    config.MAILGUN_DOMAIN = "test-mailgun-domain"
+    config.MAILGUN_API_KEY = "test-mailgun-api-key"
 
-#         mock_response = Mock()
-#         mock_response.json = MagicMock(return_value={"email": ja_email})
-#         with patch.object(auth0_ja, "get", return_value=mock_response):
+    mock_post.return_value = Mock(status_code=200)
 
-#             rv = client.get("/auth/jurisdictionadmin/callback?code=foobar")
-#             assert rv.status_code == 302
+    rv = post_json(client, "/auth/jurisdictionadmin/code", dict(email=ja_email))
+    assert_ok(rv)
 
-#             with client.session_transaction() as session:  # type: ignore
-#                 assert session["_user"]["type"] == UserType.JURISDICTION_ADMIN
-#                 assert session["_user"]["key"] == ja_email
-#                 assert_is_date(session["_created_at"])
-#                 assert (
-#                     datetime.now(timezone.utc)
-#                     - datetime.fromisoformat(session["_created_at"])
-#                 ) < timedelta(seconds=1)
-#                 assert_is_date(session["_last_request_at"])
-#                 assert (
-#                     datetime.now(timezone.utc)
-#                     - datetime.fromisoformat(session["_last_request_at"])
-#                 ) < timedelta(seconds=1)
+    mock_post.assert_called_once()
+    assert (
+        mock_post.call_args.args[0]
+        == "https://api.mailgun.net/v3/test-mailgun-domain/messages"
+    )
+    assert mock_post.call_args.kwargs["auth"] == ("api", "test-mailgun-api-key")
+    assert mock_post.call_args.kwargs["data"]["to"] == [ja_email]
+    code = parse_login_code(mock_post)
+    assert code in mock_post.call_args.kwargs["data"]["html"]
 
-#             assert auth0_ja.authorize_access_token.called
-#             assert auth0_ja.get.called
+    rv = post_json(
+        client, "/auth/jurisdictionadmin/login", dict(email=ja_email, code=code)
+    )
+    assert_ok(rv)
+
+    # JA should be logged in
+    with client.session_transaction() as session:  # type: ignore
+        assert session["_user"]["type"] == UserType.JURISDICTION_ADMIN
+        assert session["_user"]["key"] == ja_email
+        assert_is_date(session["_created_at"])
+        assert (
+            datetime.now(timezone.utc) - datetime.fromisoformat(session["_created_at"])
+        ) < timedelta(seconds=1)
+        assert_is_date(session["_last_request_at"])
+        assert (
+            datetime.now(timezone.utc)
+            - datetime.fromisoformat(session["_last_request_at"])
+        ) < timedelta(seconds=1)
+
+    time.sleep(1)
+
+    # Try requesting a code again - should get a new code
+    rv = post_json(client, "/auth/jurisdictionadmin/code", dict(email=ja_email))
+    assert_ok(rv)
+    assert parse_login_code(mock_post) != code
+
+
+@patch("requests.post")
+def test_jurisdiction_admin_two_users(
+    mock_post, client: FlaskClient, election_id: str, ja_email: str
+):
+    jurisdiction_id_2, _ = create_jurisdiction_and_admin(
+        election_id, "Jurisdiction 2", "ja2@example.com"
+    )
+
+    rv = post_json(client, "/auth/jurisdictionadmin/code", dict(email=ja_email))
+    assert_ok(rv)
+    code = parse_login_code(mock_post)
+
+    rv = post_json(
+        client, "/auth/jurisdictionadmin/code", dict(email="ja2@example.com")
+    )
+    assert_ok(rv)
+    assert parse_login_code(mock_post) != code
+
+
+def test_jurisdiction_admin_bad_email(client: FlaskClient, ja_email: str):
+    pass
+
+
+def test_jurisdiction_admin_reuse_code(client: FlaskClient, ja_email: str):
+    pass
+
+
+def test_jurisdiction_admin_mailgun_error(client: FlaskClient, ja_email: str):
+    pass
+
+
+def test_jurisdiction_admin_bad_code(client: FlaskClient, ja_email: str):
+    pass
+
+
+def test_jurisdiction_admin_too_many_attempts(client: FlaskClient, ja_email: str):
+    pass
 
 
 def test_audit_board_log_in(
