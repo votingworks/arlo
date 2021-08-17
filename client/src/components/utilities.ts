@@ -11,12 +11,27 @@ export const tryJson = (responseText: string) => {
   }
 }
 
+const parseCookies = () =>
+  Object.fromEntries(
+    document.cookie.split(';').map(pair => pair.trim().split('='))
+  )
+
+export const addCSRFToken = (options?: RequestInit) => {
+  const token = parseCookies()._csrf_token
+  if (token && options && ['POST', 'PUT', 'DELETE'].includes(options.method!))
+    return {
+      ...options,
+      headers: { ...options.headers, 'X-CSRFToken': token },
+    }
+  return options
+}
+
 export const api = async <T>(
   endpoint: string,
   options?: RequestInit
 ): Promise<T | null> => {
   try {
-    const response = await fetch(`/api${endpoint}`, options)
+    const response = await fetch(`/api${endpoint}`, addCSRFToken(options))
     if (!response.ok) {
       // If we get a 401, it most likely means the session expired, so we
       // redirect to the login screen with a flag to show a message.

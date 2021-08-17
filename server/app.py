@@ -1,6 +1,7 @@
 from urllib.parse import urlparse
 from flask import Flask
 from flask_talisman import Talisman
+from flask_seasurf import SeaSurf
 from werkzeug.wrappers import Request
 from werkzeug.middleware.proxy_fix import ProxyFix
 
@@ -26,7 +27,7 @@ if FLASK_ENV not in DEVELOPMENT_ENVS:
 app = Flask("arlo", static_folder=None, template_folder=STATIC_FOLDER)
 app.wsgi_app = ProxyFix(app.wsgi_app)  # type: ignore
 app.testing = FLASK_ENV == "test"
-T = Talisman(
+Talisman(
     app,
     force_https_permanent=True,
     session_cookie_http_only=True,
@@ -38,6 +39,7 @@ T = Talisman(
         "style-src": "'self' 'unsafe-inline'",
     },
 )
+csrf = SeaSurf(app)
 app.secret_key = SESSION_SECRET
 
 init_db()

@@ -13,6 +13,7 @@ from ..models import *  # pylint: disable=wildcard-import
 from ..util.jsonschema import JSONDict
 from .helpers import *  # pylint: disable=wildcard-import
 from .. import config
+from ..app import csrf
 
 
 SA_EMAIL = "sa@voting.works"
@@ -1015,3 +1016,40 @@ def test_support(client: FlaskClient):
     clear_support_user(client)
     rv = client.get("/api/support/organizations")
     assert rv.status_code == 403
+
+
+def test_csrf(client: FlaskClient, org_id: str):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    csrf._csrf_disable = False  # pylint: disable=protected-access
+
+    body = json.dumps(
+        dict(
+            auditName="Test CSRF",
+            organizationId=org_id,
+            auditType="BALLOT_POLLING",
+            auditMathType="BRAVO",
+        )
+    )
+
+    rv = client.post(
+        "/api/election", headers={"Content-Type": "application/json"}, data=body
+    )
+    assert rv.status_code == 403
+    assert json.loads(rv.data) == {
+        "errors": [
+            {"errorType": "Forbidden", "message": "CSRF token missing or incorrect."}
+        ]
+    }
+
+    rv = client.get("/")
+    csrf_token = next(
+        cookie for cookie in client.cookie_jar if cookie.name == "_csrf_token"
+    ).value
+    rv = client.post(
+        "/api/election",
+        headers={"Content-Type": "application/json", "X-CSRFToken": csrf_token},
+        data=body,
+    )
+    assert rv.status_code == 200
+
+    csrf._csrf_disable = True  # pylint: disable=protected-access
