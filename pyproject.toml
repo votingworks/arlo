@@ -28,7 +28,6 @@ psycopg2-binary = "~2.8.6"
 consistent-sampler = {git = "https://github.com/votingworks/consistent_sampler.git"}
 scipy = "~1.6.0"
 Flask-SeaSurf = "^0.3.0"
-pyotp = "^2.6.0"
 
 [tool.poetry.dev-dependencies]
 filelock = "^3.0.12"

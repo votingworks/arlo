@@ -18,10 +18,13 @@ depends_on = None
 
 
 def upgrade():
+    op.add_column("user", sa.Column("login_code", sa.String(length=200), nullable=True))
     op.add_column(
         "user", sa.Column("login_code_requested_at", sa.DateTime(), nullable=True)
     )
-    op.add_column("user", sa.Column("login_code_attempts", sa.Integer(), nullable=True))
+    op.add_column(
+        "user", sa.Column("login_code_attempts", sa.Integer(), nullable=True),
+    )
 
 
 def downgrade():

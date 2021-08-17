@@ -1,10 +1,10 @@
-import base64
+import secrets
+import string
 from datetime import datetime, timezone
 from urllib.parse import urljoin, urlencode
 from flask import redirect, jsonify, request, session, render_template
 from authlib.integrations.flask_client import OAuth, OAuthError
 from werkzeug.exceptions import BadRequest
-from pyotp import HOTP
 import requests
 
 from . import auth
@@ -22,8 +22,6 @@ from .lib import (
 from ..api.audit_boards import serialize_members
 from ..util.isoformat import isoformat
 from ..config import (
-    LOGIN_CODE_LIFETIME,
-    LOGIN_CODE_SECRET,
     SUPPORT_AUTH0_BASE_URL,
     SUPPORT_AUTH0_CLIENT_ID,
     SUPPORT_AUTH0_CLIENT_SECRET,
@@ -183,30 +181,18 @@ def auditadmin_login_callback():
     return redirect("/")
 
 
-def base32_encode(string: str):
-    return base64.b32encode(string.encode("utf-8")).decode("utf-8")
-
-
-def generate_login_code(user_id: str, timestamp: datetime):
-    return HOTP(base32_encode(LOGIN_CODE_SECRET + user_id)).at(
-        int(timestamp.timestamp())
-    )
-
-
-def verify_login_code(user_id: str, timestamp: datetime, code: str):
-    return HOTP(base32_encode(LOGIN_CODE_SECRET + user_id)).verify(
-        code, int(timestamp.timestamp())
-    )
-
-
 def is_code_expired(timestamp: datetime):
-    return datetime.now(timezone.utc) - timestamp > LOGIN_CODE_LIFETIME
+    return datetime.now(timezone.utc) - timestamp > config.LOGIN_CODE_LIFETIME
 
 
 @auth.route("/auth/jurisdictionadmin/code", methods=["POST"])
 def jurisdiction_admin_generate_code():
     body = request.get_json()
-    user = User.query.filter_by(email=body.get("email")).one_or_none()
+    user = (
+        User.query.filter_by(email=body.get("email"))
+        .join(JurisdictionAdministration)
+        .one_or_none()
+    )
     if user is None:
         raise BadRequest(
             "This email address is not authorized to access Arlo."
@@ -214,16 +200,22 @@ def jurisdiction_admin_generate_code():
             " or contact your Arlo administrator for access."
         )
 
-    if user.login_code_requested_at is None or (
+    if user.login_code is None or (
         # Only set a new login code if the old one expired. That way if they
         # request a new code while waiting for a slow email, we won't wipe out
-        # the code we sent when the email does come through.
-        is_code_expired(user.login_code_requested)
+        # the code we sent when the email does come through. This also creates
+        # a speed bump for brute force attacks.
+        is_code_expired(user.login_code_requested_at)
     ):
+        user.login_code = "".join(secrets.choice(string.digits) for _ in range(6))
         user.login_code_requested_at = datetime.now(timezone.utc)
         user.login_code_attempts = 0
 
-    code = generate_login_code(user.id, user.login_code_requested_at)
+    if user.login_code_attempts >= 10:
+        raise BadRequest(
+            "Too many incorrect login attempts. Please wait 15 minutes and then request a new code."
+        )
+
     email_response = requests.post(
         f"https://api.mailgun.net/v3/{config.MAILGUN_DOMAIN}/messages",
         auth=("api", config.MAILGUN_API_KEY),
@@ -231,11 +223,12 @@ def jurisdiction_admin_generate_code():
             "from": "Arlo Support <rla@vx.support>",
             "to": [user.email],
             "subject": "Welcome to Arlo - Use the Code in this Email to Log In",
-            "text": render_template("email_login_code.txt", code=code),
-            "html": render_template("email_login_code.html", code=code),
+            "text": render_template("email_login_code.txt", code=user.login_code),
+            "html": render_template("email_login_code.html", code=user.login_code),
         },
     )
-    email_response.raise_for_status()
+    if email_response.status_code != 200:
+        raise Exception(f"Error sending login code email: {email_response.text}")
 
     db_session.commit()
 
@@ -245,31 +238,34 @@ def jurisdiction_admin_generate_code():
 @auth.route("/auth/jurisdictionadmin/login", methods=["POST"])
 def jurisdiction_admin_login():
     body = request.get_json()
-    user = User.query.filter_by(email=body.get("email")).with_for_update().one_or_none()
+    user = (
+        User.query.filter_by(email=body.get("email"))
+        .join(JurisdictionAdministration)
+        .with_for_update()
+        .one_or_none()
+    )
     if user is None:
         raise BadRequest("Invalid email address.")
 
-    if user.login_code_attempts > 10:
-        user.login_code_requested_at = None
-        db_session.commit()
-        raise BadRequest("Too many incorrect attempts. Please request a new code.")
+    if user.login_code is None:
+        raise BadRequest("Please request a new code.")
+
+    if user.login_code_attempts >= 10:
+        raise BadRequest(
+            "Too many incorrect login attempts. Please wait 15 minutes and then request a new code."
+        )
 
     user.login_code_attempts += 1
     db_session.commit()
 
-    if (
-        user.login_code_requested_at is None
-        or is_code_expired(user.login_code_requested)
-        or (
-            not verify_login_code(
-                user.id, user.login_code_requested_at, body.get("code")
-            )
-        )
+    if is_code_expired(user.login_code_requested_at) or not secrets.compare_digest(
+        body.get("code"), user.login_code
     ):
         raise BadRequest(
             "Invalid code. Try entering the code again or click Back and request a new code."
         )
 
+    user.login_code = None
     user.login_code_requested_at = None
     db_session.commit()
 

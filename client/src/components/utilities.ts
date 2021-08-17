@@ -58,7 +58,11 @@ export const api = async <T>(
     }
     return response.json() as Promise<T>
   } catch (err) {
-    toast.error(err.message)
+    toast.error(
+      err.errorType === 'Internal Server Error'
+        ? 'Something went wrong. Please try again or contact support.'
+        : err.message
+    )
     return null
   }
 }

@@ -13,7 +13,7 @@ from ..models import *  # pylint: disable=wildcard-import
 from ..util.jsonschema import JSONDict
 from .helpers import *  # pylint: disable=wildcard-import
 from .. import config
-from ..app import csrf
+from ..app import csrf, app
 
 
 SA_EMAIL = "sa@voting.works"
@@ -252,9 +252,8 @@ def test_jurisdiction_admin_login(mock_post, client: FlaskClient, ja_email: str)
 def test_jurisdiction_admin_two_users(
     mock_post, client: FlaskClient, election_id: str, ja_email: str
 ):
-    jurisdiction_id_2, _ = create_jurisdiction_and_admin(
-        election_id, "Jurisdiction 2", "ja2@example.com"
-    )
+    mock_post.return_value = Mock(status_code=200)
+    create_jurisdiction_and_admin(election_id, "Jurisdiction 2", "ja2@example.com")
 
     rv = post_json(client, "/auth/jurisdictionadmin/code", dict(email=ja_email))
     assert_ok(rv)
@@ -267,24 +266,192 @@ def test_jurisdiction_admin_two_users(
     assert parse_login_code(mock_post) != code
 
 
-def test_jurisdiction_admin_bad_email(client: FlaskClient, ja_email: str):
-    pass
+def test_jurisdiction_admin_bad_email(client: FlaskClient):
+    rv = post_json(client, "/auth/jurisdictionadmin/code", dict(email=DEFAULT_AA_EMAIL))
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Bad Request",
+                "message": "This email address is not authorized to access Arlo. Please check that you typed the email correctly, or contact your Arlo administrator for access.",
+            }
+        ]
+    }
+
+    rv = post_json(
+        client, "/auth/jurisdictionadmin/code", dict(email="invalid@example.com")
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Bad Request",
+                "message": "This email address is not authorized to access Arlo. Please check that you typed the email correctly, or contact your Arlo administrator for access.",
+            }
+        ]
+    }
 
 
-def test_jurisdiction_admin_reuse_code(client: FlaskClient, ja_email: str):
-    pass
+@patch("requests.post")
+def test_jurisdiction_admin_reuse_code(mock_post, client: FlaskClient, ja_email: str):
+    mock_post.return_value = Mock(status_code=200)
+    config.LOGIN_CODE_LIFETIME = timedelta(seconds=1)
+
+    rv = post_json(client, "/auth/jurisdictionadmin/code", dict(email=ja_email))
+    assert_ok(rv)
+    code = parse_login_code(mock_post)
+
+    rv = post_json(client, "/auth/jurisdictionadmin/code", dict(email=ja_email))
+    assert_ok(rv)
+    assert parse_login_code(mock_post) == code
+
+    time.sleep(1.0)
+
+    rv = post_json(client, "/auth/jurisdictionadmin/code", dict(email=ja_email))
+    assert_ok(rv)
+    assert parse_login_code(mock_post) != code
 
 
-def test_jurisdiction_admin_mailgun_error(client: FlaskClient, ja_email: str):
-    pass
+@patch("requests.post")
+def test_jurisdiction_admin_mailgun_error(
+    mock_post, client: FlaskClient, ja_email: str
+):
+    app.config["PROPAGATE_EXCEPTIONS"] = False
+
+    mock_post.return_value = Mock(
+        status_code=400, text="test error message", reason="Bad Request"
+    )
+
+    rv = post_json(client, "/auth/jurisdictionadmin/code", dict(email=ja_email))
+    assert rv.status_code == 500
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Internal Server Error",
+                "message": "Error sending login code email: test error message",
+            }
+        ]
+    }
+
+    mock_post.assert_called_once()
 
 
-def test_jurisdiction_admin_bad_code(client: FlaskClient, ja_email: str):
-    pass
+@patch("requests.post")
+def test_jurisdiction_admin_bad_code(mock_post, client: FlaskClient, ja_email: str):
+    clear_logged_in_user(client)
+    mock_post.return_value = Mock(status_code=200)
+
+    # Try logging in without generating a code
+    rv = post_json(
+        client, "/auth/jurisdictionadmin/login", dict(email=ja_email, code=None)
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {"errorType": "Bad Request", "message": "Please request a new code.",}
+        ]
+    }
+
+    with client.session_transaction() as session:  # type: ignore
+        assert session["_user"] is None
+
+    # Try again with a code generated
+    rv = post_json(client, "/auth/jurisdictionadmin/code", dict(email=ja_email))
+    assert_ok(rv)
+    code = parse_login_code(mock_post)
+
+    rv = post_json(
+        client, "/auth/jurisdictionadmin/login", dict(email=ja_email, code="123456")
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Bad Request",
+                "message": "Invalid code. Try entering the code again or click Back and request a new code.",
+            }
+        ]
+    }
+
+    with client.session_transaction() as session:  # type: ignore
+        assert session["_user"] is None
+
+    # Try with the right code, wrong email
+    rv = post_json(
+        client, "/auth/jurisdictionadmin/login", dict(email=DEFAULT_AA_EMAIL, code=code)
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [{"errorType": "Bad Request", "message": "Invalid email address.",}]
+    }
+
+    with client.session_transaction() as session:  # type: ignore
+        assert session["_user"] is None
 
 
-def test_jurisdiction_admin_too_many_attempts(client: FlaskClient, ja_email: str):
-    pass
+@patch("requests.post")
+def test_jurisdiction_admin_too_many_attempts(
+    mock_post, client: FlaskClient, ja_email: str
+):
+    config.LOGIN_CODE_LIFETIME = timedelta(seconds=1)
+    clear_logged_in_user(client)
+    mock_post.return_value = Mock(status_code=200)
+
+    rv = post_json(client, "/auth/jurisdictionadmin/code", dict(email=ja_email))
+    assert_ok(rv)
+    code = parse_login_code(mock_post)
+
+    for _ in range(10):
+        rv = post_json(
+            client, "/auth/jurisdictionadmin/login", dict(email=ja_email, code="123456")
+        )
+        assert rv.status_code == 400
+        assert json.loads(rv.data) == {
+            "errors": [
+                {
+                    "errorType": "Bad Request",
+                    "message": "Invalid code. Try entering the code again or click Back and request a new code.",
+                }
+            ]
+        }
+
+    rv = post_json(
+        client, "/auth/jurisdictionadmin/login", dict(email=ja_email, code=code)
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Bad Request",
+                "message": "Too many incorrect login attempts. Please wait 15 minutes and then request a new code.",
+            }
+        ]
+    }
+
+    with client.session_transaction() as session:  # type: ignore
+        assert session["_user"] is None
+
+    rv = post_json(client, "/auth/jurisdictionadmin/code", dict(email=ja_email))
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Bad Request",
+                "message": "Too many incorrect login attempts. Please wait 15 minutes and then request a new code.",
+            }
+        ]
+    }
+
+    time.sleep(1)
+
+    rv = post_json(client, "/auth/jurisdictionadmin/code", dict(email=ja_email))
+    assert_ok(rv)
+    new_code = parse_login_code(mock_post)
+    assert new_code != code
+    rv = post_json(
+        client, "/auth/jurisdictionadmin/login", dict(email=ja_email, code=new_code)
+    )
+    assert_ok(rv)
 
 
 def test_audit_board_log_in(

@@ -1,6 +1,5 @@
 import os
 import logging
-import base64
 from typing import Tuple
 from datetime import timedelta
 
@@ -81,13 +80,6 @@ def read_session_secret() -> str:
 
 
 SESSION_SECRET = read_session_secret()
-
-LOGIN_CODE_SECRET = read_env_var(
-    "ARLO_LOGIN_CODE_SECRET",
-    env_defaults=dict(
-        development="arlo-dev-session-secret", test="arlo-test-session-secret"
-    ),
-)
 
 LOGIN_CODE_LIFETIME = timedelta(minutes=15)
 
