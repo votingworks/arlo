@@ -54,6 +54,24 @@ export const apiCalls = {
     url: '/api/me',
     response: { user: null, supportUser: null },
   },
+  requestJALoginCode: (email: string) => ({
+    url: '/auth/jurisdictionadmin/code',
+    options: {
+      method: 'POST',
+      headers: { 'Content-type': 'application/json' },
+      body: JSON.stringify({ email }),
+    },
+    response: { status: 'ok' },
+  }),
+  enterJALoginCode: (email: string, code: string) => ({
+    url: '/auth/jurisdictionadmin/login',
+    options: {
+      method: 'POST',
+      headers: { 'Content-type': 'application/json' },
+      body: JSON.stringify({ email, code }),
+    },
+    response: { status: 'ok' },
+  }),
 }
 
 export const jaApiCalls = {

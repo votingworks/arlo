@@ -19,23 +19,147 @@ const setupScreenCalls = [
 
 const renderView = (route: string) => renderWithRouter(<App />, { route })
 
+const error = (
+  apiCall: { url: string; options?: object },
+  statusCode: number,
+  message: string
+) => ({
+  ...apiCall,
+  response: {
+    errors: [{ errorType: 'Error', message }],
+  },
+  error: { status: statusCode, statusText: 'Error' },
+})
+
 describe('Home screen', () => {
   it('shows a login screen for unauthenticated users', async () => {
-    const expectedCalls = [apiCalls.unauthenticatedUser]
+    const expectedCalls = [
+      apiCalls.unauthenticatedUser,
+      apiCalls.requestJALoginCode('ja@example.com'),
+      apiCalls.enterJALoginCode('ja@example.com', '123456'),
+    ]
     await withMockFetch(expectedCalls, async () => {
       renderView('/')
       await screen.findByRole('img', { name: 'Arlo, by VotingWorks' })
-      const jaLoginButton = screen.getByRole('button', {
-        name: 'Log in to your audit',
-      })
-      expect(jaLoginButton).toHaveAttribute(
-        'href',
-        '/auth/jurisdictionadmin/start'
-      )
+
+      // Link to audit admin login flow
       const aaLoginButton = screen.getByRole('link', {
         name: 'Log in as an admin',
       })
       expect(aaLoginButton).toHaveAttribute('href', '/auth/auditadmin/start')
+
+      // Form for jursidiction admin to request a login code
+      userEvent.type(
+        screen.getByLabelText('Enter your email to log in:'),
+        'ja@example.com'
+      )
+      userEvent.click(
+        screen.getByRole('button', {
+          name: 'Log in to your audit',
+        })
+      )
+
+      await screen.findByText(
+        'We sent an email with a login code to ja@example.com.'
+      )
+      userEvent.type(
+        screen.getByLabelText('Enter the six-digit code below:'),
+        '123456'
+      )
+
+      Object.defineProperty(window, 'location', {
+        writable: true,
+        value: { reload: jest.fn() },
+      })
+      userEvent.click(
+        screen.getByRole('button', {
+          name: 'Submit code',
+        })
+      )
+      await waitFor(() => expect(window.location.reload).toHaveBeenCalled())
+    })
+  })
+
+  it('shows errors in JA login flow', async () => {
+    const expectedCalls = [
+      apiCalls.unauthenticatedUser,
+      error(
+        apiCalls.requestJALoginCode('ja@example.com'),
+        400,
+        'Invalid email'
+      ),
+      error(
+        apiCalls.requestJALoginCode('ja@example.com'),
+        500,
+        'Internal error'
+      ),
+      apiCalls.requestJALoginCode('ja@example.com'),
+      error(
+        apiCalls.enterJALoginCode('ja@example.com', '123456'),
+        400,
+        'Invalid code'
+      ),
+      error(
+        apiCalls.enterJALoginCode('ja@example.com', '123456'),
+        500,
+        'Internal error'
+      ),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderView('/')
+      await screen.findByRole('img', { name: 'Arlo, by VotingWorks' })
+
+      // Show user errors
+      userEvent.type(
+        screen.getByLabelText('Enter your email to log in:'),
+        'ja@example.com'
+      )
+      userEvent.click(
+        screen.getByRole('button', {
+          name: 'Log in to your audit',
+        })
+      )
+      await screen.findByText('Invalid email')
+
+      // Toast server errors
+      userEvent.click(
+        screen.getByRole('button', {
+          name: 'Log in to your audit',
+        })
+      )
+      let toast = await screen.findByRole('alert')
+      expect(toast).toHaveTextContent('Internal error')
+
+      // Navigate to form to submit code
+      userEvent.click(
+        screen.getByRole('button', {
+          name: 'Log in to your audit',
+        })
+      )
+      await screen.findByText(
+        'We sent an email with a login code to ja@example.com.'
+      )
+      userEvent.type(
+        screen.getByLabelText('Enter the six-digit code below:'),
+        '123456'
+      )
+
+      // Show user errors
+      userEvent.click(
+        screen.getByRole('button', {
+          name: 'Submit code',
+        })
+      )
+      await screen.findByText('Invalid code')
+
+      // Toast server errors
+      userEvent.click(
+        screen.getByRole('button', {
+          name: 'Submit code',
+        })
+      )
+      toast = await screen.findByRole('alert')
+      expect(toast).toHaveTextContent('Internal error')
     })
   })
 
