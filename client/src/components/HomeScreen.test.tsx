@@ -160,6 +160,14 @@ describe('Home screen', () => {
       )
       toast = await screen.findByRole('alert')
       expect(toast).toHaveTextContent('Internal error')
+
+      // Click back button to request a new code
+      userEvent.click(
+        screen.getByRole('button', {
+          name: 'Back',
+        })
+      )
+      screen.getByLabelText('Enter your email to log in:')
     })
   })
 
