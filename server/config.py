@@ -81,12 +81,6 @@ def read_session_secret() -> str:
 
 SESSION_SECRET = read_session_secret()
 
-LOGIN_CODE_LIFETIME = timedelta(minutes=15)
-
-MAILGUN_DOMAIN = read_env_var("MAILGUN_DOMAIN")
-MAILGUN_API_KEY = read_env_var("MAILGUN_API_KEY")
-
-
 # Max time a session can be used after it's created
 SESSION_LIFETIME = timedelta(hours=8)
 # Max time a session can be used after the last request
@@ -144,6 +138,11 @@ def read_auditadmin_auth0_creds() -> Tuple[str, str, str]:
     AUDITADMIN_AUTH0_CLIENT_ID,
     AUDITADMIN_AUTH0_CLIENT_SECRET,
 ) = read_auditadmin_auth0_creds()
+
+LOGIN_CODE_LIFETIME = timedelta(minutes=15)
+
+MAILGUN_DOMAIN = read_env_var("MAILGUN_DOMAIN", {"test": ""})
+MAILGUN_API_KEY = read_env_var("MAILGUN_API_KEY", {"test": ""})
 
 
 def setup_minerva():
