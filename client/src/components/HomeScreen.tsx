@@ -181,6 +181,7 @@ const LoginScreen: React.FC = () => {
               <input
                 type="email"
                 name="email"
+                id="email"
                 key="email"
                 ref={registerEmail({ required: true })}
                 className={`${Classes.INPUT} ${Classes.LARGE}`}
@@ -206,6 +207,7 @@ const LoginScreen: React.FC = () => {
                 <input
                   type="text"
                   name="code"
+                  id="code"
                   key="code"
                   ref={registerCode({ required: true })}
                   className={`${Classes.INPUT} ${Classes.LARGE}`}

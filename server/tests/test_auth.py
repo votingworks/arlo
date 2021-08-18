@@ -1,3 +1,4 @@
+from smtplib import SMTPServerDisconnected
 import time
 from datetime import timedelta
 import json, re, uuid
@@ -190,36 +191,38 @@ def test_auditadmin_callback(client: FlaskClient, aa_email: str):
             assert auth0_aa.get.called
 
 
-def parse_login_code(mock_post):
-    code_match = re.search(
-        r"Your verification code is: (\d\d\d\d\d\d)",
-        mock_post.call_args.kwargs["data"]["text"],
-    )
+def parse_login_code(text: str):
+    code_match = re.search(r"Your verification code is: (\d\d\d\d\d\d)", text)
     assert code_match
     code = code_match.group(1)
     assert code
     return code
 
 
-@patch("requests.post")
-def test_jurisdiction_admin_login(mock_post, client: FlaskClient, ja_email: str):
-    config.MAILGUN_DOMAIN = "test-mailgun-domain"
-    config.MAILGUN_API_KEY = "test-mailgun-api-key"
+def parse_login_code_from_smtp(mock_smtp):
+    message = mock_smtp.return_value.send_message.call_args.args[0]
+    return parse_login_code(message.get_body(("plain")).get_content())
 
-    mock_post.return_value = Mock(status_code=200)
 
+@patch("smtplib.SMTP", autospec=True)
+def test_jurisdiction_admin_login(mock_smtp, client: FlaskClient, ja_email: str):
     rv = post_json(client, "/auth/jurisdictionadmin/code", dict(email=ja_email))
     assert_ok(rv)
 
-    mock_post.assert_called_once()
-    assert (
-        mock_post.call_args.args[0]
-        == "https://api.mailgun.net/v3/test-mailgun-domain/messages"
+    mock_smtp.assert_called_once_with(host=config.SMTP_HOST, port=config.SMTP_PORT)
+    mock_smtp.return_value.login.assert_called_once_with(
+        config.SMTP_USERNAME, config.SMTP_PASSWORD
     )
-    assert mock_post.call_args.kwargs["auth"] == ("api", "test-mailgun-api-key")
-    assert mock_post.call_args.kwargs["data"]["to"] == [ja_email]
-    code = parse_login_code(mock_post)
-    assert code in mock_post.call_args.kwargs["data"]["html"]
+    mock_smtp.return_value.send_message.assert_called_once()
+    message = mock_smtp.return_value.send_message.call_args.args[0]
+    assert message["To"] == ja_email
+    assert message["From"] == "Arlo Support <rla@vx.support>"
+    assert (
+        message["Subject"] == "Welcome to Arlo - Use the Code in this Email to Log In"
+    )
+
+    code = parse_login_code(message.get_body(("plain")).get_content())
+    assert code in message.get_body(("html")).get_content()
 
     rv = post_json(
         client, "/auth/jurisdictionadmin/login", dict(email=ja_email, code=code)
@@ -245,25 +248,24 @@ def test_jurisdiction_admin_login(mock_post, client: FlaskClient, ja_email: str)
     # Try requesting a code again - should get a new code
     rv = post_json(client, "/auth/jurisdictionadmin/code", dict(email=ja_email))
     assert_ok(rv)
-    assert parse_login_code(mock_post) != code
+    assert parse_login_code_from_smtp(mock_smtp) != code
 
 
-@patch("requests.post")
+@patch("smtplib.SMTP", autospec=True)
 def test_jurisdiction_admin_two_users(
-    mock_post, client: FlaskClient, election_id: str, ja_email: str
+    mock_smtp, client: FlaskClient, election_id: str, ja_email: str
 ):
-    mock_post.return_value = Mock(status_code=200)
     create_jurisdiction_and_admin(election_id, "Jurisdiction 2", "ja2@example.com")
 
     rv = post_json(client, "/auth/jurisdictionadmin/code", dict(email=ja_email))
     assert_ok(rv)
-    code = parse_login_code(mock_post)
+    code = parse_login_code_from_smtp(mock_smtp)
 
     rv = post_json(
         client, "/auth/jurisdictionadmin/code", dict(email="ja2@example.com")
     )
     assert_ok(rv)
-    assert parse_login_code(mock_post) != code
+    assert parse_login_code_from_smtp(mock_smtp) != code
 
 
 def test_jurisdiction_admin_bad_email(client: FlaskClient):
@@ -292,34 +294,32 @@ def test_jurisdiction_admin_bad_email(client: FlaskClient):
     }
 
 
-@patch("requests.post")
-def test_jurisdiction_admin_reuse_code(mock_post, client: FlaskClient, ja_email: str):
-    mock_post.return_value = Mock(status_code=200)
+@patch("smtplib.SMTP", autospec=True)
+def test_jurisdiction_admin_reuse_code(mock_smtp, client: FlaskClient, ja_email: str):
     config.LOGIN_CODE_LIFETIME = timedelta(seconds=1)
 
     rv = post_json(client, "/auth/jurisdictionadmin/code", dict(email=ja_email))
     assert_ok(rv)
-    code = parse_login_code(mock_post)
+    code = parse_login_code_from_smtp(mock_smtp)
 
     rv = post_json(client, "/auth/jurisdictionadmin/code", dict(email=ja_email))
     assert_ok(rv)
-    assert parse_login_code(mock_post) == code
+    assert parse_login_code_from_smtp(mock_smtp) == code
 
     time.sleep(1.0)
 
     rv = post_json(client, "/auth/jurisdictionadmin/code", dict(email=ja_email))
     assert_ok(rv)
-    assert parse_login_code(mock_post) != code
+    assert parse_login_code_from_smtp(mock_smtp) != code
 
 
-@patch("requests.post")
-def test_jurisdiction_admin_mailgun_error(
-    mock_post, client: FlaskClient, ja_email: str
-):
+@patch("smtplib.SMTP", autospec=True)
+def test_jurisdiction_admin_smtp_error(mock_smtp, client: FlaskClient, ja_email: str):
     app.config["PROPAGATE_EXCEPTIONS"] = False
 
-    mock_post.return_value = Mock(
-        status_code=400, text="test error message", reason="Bad Request"
+    # Mock error when using the wrong SMTP password
+    mock_smtp.return_value.send_message.side_effect = SMTPServerDisconnected(
+        "Connection unexpectedly closed"
     )
 
     rv = post_json(client, "/auth/jurisdictionadmin/code", dict(email=ja_email))
@@ -328,18 +328,15 @@ def test_jurisdiction_admin_mailgun_error(
         "errors": [
             {
                 "errorType": "Internal Server Error",
-                "message": "Error sending login code email: test error message",
+                "message": "Connection unexpectedly closed",
             }
         ]
     }
 
-    mock_post.assert_called_once()
 
-
-@patch("requests.post")
-def test_jurisdiction_admin_bad_code(mock_post, client: FlaskClient, ja_email: str):
+@patch("smtplib.SMTP", autospec=True)
+def test_jurisdiction_admin_bad_code(mock_smtp, client: FlaskClient, ja_email: str):
     clear_logged_in_user(client)
-    mock_post.return_value = Mock(status_code=200)
 
     # Try logging in without generating a code
     rv = post_json(
@@ -358,7 +355,7 @@ def test_jurisdiction_admin_bad_code(mock_post, client: FlaskClient, ja_email: s
     # Try again with a code generated
     rv = post_json(client, "/auth/jurisdictionadmin/code", dict(email=ja_email))
     assert_ok(rv)
-    code = parse_login_code(mock_post)
+    code = parse_login_code_from_smtp(mock_smtp)
 
     rv = post_json(
         client, "/auth/jurisdictionadmin/login", dict(email=ja_email, code="123456")
@@ -389,17 +386,16 @@ def test_jurisdiction_admin_bad_code(mock_post, client: FlaskClient, ja_email: s
         assert session["_user"] is None
 
 
-@patch("requests.post")
+@patch("smtplib.SMTP", autospec=True)
 def test_jurisdiction_admin_too_many_attempts(
-    mock_post, client: FlaskClient, ja_email: str
+    mock_smtp, client: FlaskClient, ja_email: str
 ):
     config.LOGIN_CODE_LIFETIME = timedelta(seconds=1)
     clear_logged_in_user(client)
-    mock_post.return_value = Mock(status_code=200)
 
     rv = post_json(client, "/auth/jurisdictionadmin/code", dict(email=ja_email))
     assert_ok(rv)
-    code = parse_login_code(mock_post)
+    code = parse_login_code_from_smtp(mock_smtp)
 
     for _ in range(10):
         rv = post_json(
@@ -446,7 +442,7 @@ def test_jurisdiction_admin_too_many_attempts(
 
     rv = post_json(client, "/auth/jurisdictionadmin/code", dict(email=ja_email))
     assert_ok(rv)
-    new_code = parse_login_code(mock_post)
+    new_code = parse_login_code_from_smtp(mock_smtp)
     assert new_code != code
     rv = post_json(
         client, "/auth/jurisdictionadmin/login", dict(email=ja_email, code=new_code)

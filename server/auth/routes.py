@@ -1,11 +1,12 @@
+from email.message import EmailMessage
 import secrets
+import smtplib
 import string
 from datetime import datetime, timezone
 from urllib.parse import urljoin, urlencode
 from flask import redirect, jsonify, request, session, render_template
 from authlib.integrations.flask_client import OAuth, OAuthError
 from werkzeug.exceptions import BadRequest
-import requests
 
 from . import auth
 from ..models import *  # pylint: disable=wildcard-import
@@ -22,6 +23,10 @@ from .lib import (
 from ..api.audit_boards import serialize_members
 from ..util.isoformat import isoformat
 from ..config import (
+    SMTP_HOST,
+    SMTP_PASSWORD,
+    SMTP_PORT,
+    SMTP_USERNAME,
     SUPPORT_AUTH0_BASE_URL,
     SUPPORT_AUTH0_CLIENT_ID,
     SUPPORT_AUTH0_CLIENT_SECRET,
@@ -216,19 +221,18 @@ def jurisdiction_admin_generate_code():
             "Too many incorrect login attempts. Please wait 15 minutes and then request a new code."
         )
 
-    email_response = requests.post(
-        f"https://api.mailgun.net/v3/{config.MAILGUN_DOMAIN}/messages",
-        auth=("api", config.MAILGUN_API_KEY),
-        data={
-            "from": "Arlo Support <rla@vx.support>",
-            "to": [user.email],
-            "subject": "Welcome to Arlo - Use the Code in this Email to Log In",
-            "text": render_template("email_login_code.txt", code=user.login_code),
-            "html": render_template("email_login_code.html", code=user.login_code),
-        },
+    message = EmailMessage()
+    message["Subject"] = "Welcome to Arlo - Use the Code in this Email to Log In"
+    message["From"] = "Arlo Support <rla@vx.support>"
+    message["To"] = user.email
+    message.set_content(render_template("email_login_code.txt", code=user.login_code))
+    message.add_alternative(
+        render_template("email_login_code.html", code=user.login_code), subtype="html"
     )
-    if email_response.status_code != 200:
-        raise Exception(f"Error sending login code email: {email_response.text}")
+    smtp_server = smtplib.SMTP(SMTP_HOST, SMTP_PORT)
+    smtp_server.login(SMTP_USERNAME, SMTP_PASSWORD)
+    smtp_server.send_message(message)
+    smtp_server.quit()
 
     db_session.commit()
 

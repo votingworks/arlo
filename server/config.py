@@ -141,8 +141,10 @@ def read_auditadmin_auth0_creds() -> Tuple[str, str, str]:
 
 LOGIN_CODE_LIFETIME = timedelta(minutes=15)
 
-MAILGUN_DOMAIN = read_env_var("MAILGUN_DOMAIN", {"test": ""})
-MAILGUN_API_KEY = read_env_var("MAILGUN_API_KEY", {"test": ""})
+SMTP_HOST = read_env_var("ARLO_SMTP_HOST", {"test": "test-smtp-host"})
+SMTP_PORT = read_env_var("ARLO_SMTP_PORT", {"test": 587, "dev": 587})
+SMTP_USERNAME = read_env_var("ARLO_SMTP_USERNAME", {"test": "test-smtp-username"})
+SMTP_PASSWORD = read_env_var("ARLO_SMTP_PASSWORD", {"test": "test-smtp-password"})
 
 
 def setup_minerva():
