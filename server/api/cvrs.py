@@ -173,12 +173,15 @@ def hybrid_contest_choice_vote_counts(
 
 
 @background_task
-def process_cvr_file(jurisdiction_id: str):
+def process_cvr_file(jurisdiction_id: str, emit_progress):
     jurisdiction = Jurisdiction.query.get(jurisdiction_id)
 
     def process() -> None:
         if jurisdiction.cvr_file.contents == "":
             raise UserError("CVR file cannot be empty.")
+
+        total_lines = len(jurisdiction.cvr_file.contents.splitlines())
+        emit_progress(0, total_lines)
 
         cvrs = csv.reader(
             io.StringIO(jurisdiction.cvr_file.contents, newline=None), delimiter=","
@@ -193,6 +196,7 @@ def process_cvr_file(jurisdiction_id: str):
         contest_headers = contest_row[first_contest_column:]
         contest_choices = next(cvrs)[first_contest_column:]
         _headers_and_affiliations = next(cvrs)
+        emit_progress(4, total_lines)
 
         # Contest headers look like this: "Presidential Primary (Vote For=1)"
         # We want to parse: contest_name="Presidential Primary", votes_allowed=1
@@ -234,7 +238,10 @@ def process_cvr_file(jurisdiction_id: str):
         with tempfile.TemporaryFile(mode="w+") as ballots_tempfile:
             ballots_csv = csv.writer(ballots_tempfile)
 
-            for row in cvrs:
+            for i, row in enumerate(cvrs):
+                if i % 100 == 0:
+                    emit_progress(i + 4, total_lines)
+
                 [
                     cvr_number,
                     tabulator_number,
@@ -397,6 +404,8 @@ def process_cvr_file(jurisdiction_id: str):
             for contest in jurisdiction.election.contests:
                 set_contest_metadata_from_cvrs(contest)
 
+        emit_progress(total_lines, total_lines)
+
     error = None
     try:
         process()
@@ -443,6 +452,9 @@ def save_cvr_file(cvr, jurisdiction: Jurisdiction):
         name=cvr.filename,
         contents=cvr_string,
         uploaded_at=datetime.now(timezone.utc),
+        task=create_background_task(
+            process_cvr_file, dict(jurisdiction_id=jurisdiction.id)
+        ),
     )
     jurisdiction.cvr_file.task = create_background_task(
         process_cvr_file, dict(jurisdiction_id=jurisdiction.id)

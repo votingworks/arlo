@@ -2,7 +2,13 @@
 import React, { useState } from 'react'
 import { Formik, FormikProps } from 'formik'
 import styled from 'styled-components'
-import { HTMLSelect, FileInput, H4 } from '@blueprintjs/core'
+import {
+  HTMLSelect,
+  FileInput,
+  H4,
+  ProgressBar,
+  Intent,
+} from '@blueprintjs/core'
 import FormWrapper from '../../Atoms/Form/FormWrapper'
 import FormButton from '../../Atoms/Form/FormButton'
 import schema from './schema'
@@ -91,7 +97,7 @@ const CSVFileForm = ({
                 )}
               </FormSectionDescription>
             </FormSection>
-            <FormSection>
+            <div style={{ width: '300px' }}>
               {isEditing ? (
                 <>
                   <FileInput
@@ -110,10 +116,47 @@ const CSVFileForm = ({
                     text={values.csv ? values.csv.name : 'Select a CSV...'}
                     onBlur={handleBlur}
                     disabled={isSubmitting || isProcessing || !enabled}
+                    style={{ width: '100%' }}
                   />
                   {errors.csv && touched.csv && (
                     <ErrorLabel>{errors.csv}</ErrorLabel>
                   )}
+                  <div
+                    style={{
+                      display: 'flex',
+                      marginTop: '15px',
+                      marginBottom: '10px',
+                      alignItems: 'center',
+                      width: '300px',
+                    }}
+                  >
+                    {isSubmitting && <span>Uploading...</span>}
+                    {isProcessing && (
+                      <>
+                        <span style={{ marginRight: '5px' }}>
+                          Processing...
+                        </span>
+                        {processing!.workTotal && (
+                          <ProgressBar
+                            stripes={false}
+                            intent={Intent.PRIMARY}
+                            value={
+                              processing!.workProgress! / processing!.workTotal
+                            }
+                          />
+                        )}
+                      </>
+                    )}
+                  </div>
+                  <FormButton
+                    type="submit"
+                    intent="primary"
+                    onClick={handleSubmit}
+                    loading={isSubmitting || isProcessing}
+                    disabled={!enabled}
+                  >
+                    Upload File
+                  </FormButton>
                 </>
               ) : (
                 <>
@@ -126,29 +169,13 @@ const CSVFileForm = ({
                   {processing &&
                     processing.status === FileProcessingStatus.PROCESSED && (
                       <SuccessLabel>
-                        Upload successfully completed at{' '}
+                        Upload completed at{' '}
                         {new Date(`${processing.completedAt}`).toLocaleString()}
                         .
                       </SuccessLabel>
                     )}
-                </>
-              )}
-            </FormSection>
-            <div>
-              {isEditing ? (
-                <FormButton
-                  type="submit"
-                  intent="primary"
-                  onClick={handleSubmit}
-                  loading={isSubmitting || isProcessing}
-                  disabled={!enabled}
-                >
-                  Upload File
-                </FormButton>
-              ) : (
-                // We give these buttons a key to make sure React doesn't reuse
-                // the submit button for one of them.
-                <>
+                  {/* We give these buttons a key to make sure React doesn't
+                  reuse the submit button for one of them. */}
                   <FormButton
                     key="replace"
                     onClick={() => setIsEditing(true)}

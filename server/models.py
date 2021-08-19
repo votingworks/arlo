@@ -847,6 +847,10 @@ class BackgroundTask(BaseModel):
     completed_at = Column(UTCDateTime)
     error = Column(Text)
 
+    # Tasks can record progress in the work unit of their choosing
+    work_total = Column(Integer)
+    work_progress = Column(Integer)
+
 
 class ActivityLogRecord(Base):
     id = Column(String(200), primary_key=True)
