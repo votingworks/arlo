@@ -35,11 +35,7 @@ import { isSetupComplete, allCvrsUploaded } from '../../StatusBox'
 import ConfirmLaunch from './ConfirmLaunch'
 import FormField from '../../../Atoms/Form/FormField'
 import useSampleSizes, { ISampleSizeOption } from './useSampleSizes'
-import {
-  useJurisdictionsFile,
-  isFileProcessed,
-  useStandardizedContestsFile,
-} from '../../useCSV'
+import { useJurisdictionsFile, useStandardizedContestsFile } from '../../useCSV'
 import { ISampleSizes } from '../../useRoundsAuditAdmin'
 import { mapValues } from '../../../../utils/objects'
 import { FlexTable } from '../../../Atoms/Table'
@@ -135,8 +131,11 @@ const Review: React.FC<IProps> = ({
     !['BALLOT_COMPARISON', 'HYBRID'].includes(auditSettings.auditType) ||
     allCvrsUploaded(participatingJurisdictions)
 
-  const numManifestUploadsComplete = participatingJurisdictions.filter(j =>
-    isFileProcessed(j.ballotManifest)
+  const numManifestUploadsComplete = participatingJurisdictions.filter(
+    j =>
+      j.ballotManifest &&
+      j.ballotManifest.processing &&
+      j.ballotManifest.processing.status === 'PROCESSED'
   ).length
 
   const validateCustomSampleSize = (totalBallotsCast: string) => {
@@ -199,30 +198,31 @@ const Review: React.FC<IProps> = ({
             <tr>
               <td>Participating Jurisdictions:</td>
               <td>
-                <a
-                  href={`/api/election/${electionId}/jurisdiction/file/csv`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {jurisdictionsFile && jurisdictionsFile.file
-                    ? jurisdictionsFile.file.name
-                    : ''}
-                </a>
+                {jurisdictionsFile && jurisdictionsFile.status === 'PROCESSED' && (
+                  <a
+                    href={`/api/election/${electionId}/jurisdiction/file/csv`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {jurisdictionsFile.serverFile.file!.name}
+                  </a>
+                )}
               </td>
             </tr>
             {(auditType === 'BALLOT_COMPARISON' || auditType === 'HYBRID') && (
               <tr>
                 <td>Standardized Contests:</td>
                 <td>
-                  <a
-                    href={`/api/election/${electionId}/standardized-contests/file/csv`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {standardizedContestsFile && standardizedContestsFile.file
-                      ? standardizedContestsFile.file.name
-                      : ''}
-                  </a>
+                  {standardizedContestsFile &&
+                    standardizedContestsFile.status === 'PROCESSED' && (
+                      <a
+                        href={`/api/election/${electionId}/standardized-contests/file/csv`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {standardizedContestsFile.serverFile.file!.name}
+                      </a>
+                    )}
                 </td>
               </tr>
             )}

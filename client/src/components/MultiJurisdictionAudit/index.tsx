@@ -12,12 +12,7 @@ import useSetupMenuItems from './useSetupMenuItems'
 import RoundManagement from './RoundManagement'
 import useRoundsJurisdictionAdmin from './useRoundsJurisdictionAdmin'
 import { AuditAdminStatusBox, JurisdictionAdminStatusBox } from './StatusBox'
-import {
-  useBallotManifest,
-  useBatchTallies,
-  useCVRs,
-  FileProcessingStatus,
-} from './useCSV'
+import { useBallotManifest, useBatchTallies, useCVRs } from './useCSV'
 import useAuditBoards from './useAuditBoards'
 import useAuditSettings from './useAuditSettings'
 import useJurisdictions from './useJurisdictions'
@@ -29,8 +24,8 @@ import useRoundsAuditAdmin, {
 } from './useRoundsAuditAdmin'
 import useAuditSettingsJurisdictionAdmin from './RoundManagement/useAuditSettingsJurisdictionAdmin'
 import H2Title from '../Atoms/H2Title'
-import CSVFile from './CSVForm'
 import { useInterval } from '../utilities'
+import CSVFileForm from './CSVForm'
 
 const VerticalInner = styled(Inner)`
   flex-direction: column;
@@ -187,17 +182,15 @@ export const JurisdictionAdminView: React.FC = () => {
     jurisdictionId
   )
   const rounds = useRoundsJurisdictionAdmin(electionId, jurisdictionId)
-  const [
-    ballotManifest,
-    uploadBallotManifest,
-    deleteBallotManifest,
-  ] = useBallotManifest(electionId, jurisdictionId)
-  const [
-    batchTallies,
-    uploadBatchTallies,
-    deleteBatchTallies,
-  ] = useBatchTallies(electionId, jurisdictionId)
-  const [cvrs, uploadCVRS, deleteCVRS] = useCVRs(electionId, jurisdictionId)
+  const [ballotManifest, ballotManifestActions] = useBallotManifest(
+    electionId,
+    jurisdictionId
+  )
+  const [batchTallies, batchTalliesActions] = useBatchTallies(
+    electionId,
+    jurisdictionId
+  )
+  const [cvrs, cvrsActions] = useCVRs(electionId, jurisdictionId)
   const [auditBoards, createAuditBoards] = useAuditBoards(
     electionId,
     jurisdictionId,
@@ -229,10 +222,9 @@ export const JurisdictionAdminView: React.FC = () => {
         />
         <VerticalInner>
           <H2Title>Audit Source Data</H2Title>
-          <CSVFile
-            csvFile={ballotManifest}
-            uploadCSVFile={uploadBallotManifest}
-            deleteCSVFile={deleteBallotManifest}
+          <CSVFileForm
+            fileUpload={ballotManifest}
+            {...ballotManifestActions}
             title={
               auditSettings.auditType === 'HYBRID'
                 ? 'Ballot Manifest (All ballots)'
@@ -266,15 +258,10 @@ export const JurisdictionAdminView: React.FC = () => {
             enabled
           />
           {auditSettings.auditType === 'BATCH_COMPARISON' && (
-            <CSVFile
-              csvFile={batchTallies}
-              enabled={
-                !!ballotManifest.processing &&
-                ballotManifest.processing.status ===
-                  FileProcessingStatus.PROCESSED
-              }
-              uploadCSVFile={uploadBatchTallies}
-              deleteCSVFile={deleteBatchTallies}
+            <CSVFileForm
+              fileUpload={batchTallies}
+              {...batchTalliesActions}
+              enabled={ballotManifest.status === 'PROCESSED'}
               title="Candidate Totals by Batch"
               description='Click "Browse" to choose the appropriate Candidate
                   Totals by Batch file from your computer. This file should be a
@@ -288,15 +275,11 @@ export const JurisdictionAdminView: React.FC = () => {
           {['BALLOT_COMPARISON', 'HYBRID'].includes(
             auditSettings.auditType
           ) && (
-            <CSVFile
-              csvFile={cvrs}
-              enabled={
-                !!ballotManifest.processing &&
-                ballotManifest.processing.status ===
-                  FileProcessingStatus.PROCESSED
-              }
-              uploadCSVFile={uploadCVRS}
-              deleteCSVFile={deleteCVRS}
+            <CSVFileForm
+              fileUpload={cvrs}
+              {...cvrsActions}
+              enabled={ballotManifest.status === 'PROCESSED'}
+              showProgress
               title={
                 auditSettings.auditType === 'HYBRID'
                   ? 'Cast Vote Records (CVR ballots only)'

@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { Callout, H3, H4, Button } from '@blueprintjs/core'
 import { Formik } from 'formik'
 import { IJurisdiction, JurisdictionRoundStatus } from '../useJurisdictions'
-import { FileProcessingStatus, IFileInfo } from '../useCSV'
+import { FileProcessingStatus, IFileUpload, IFileInfo } from '../useCSV'
 import { apiDownload } from '../../utilities'
 import { Inner } from '../../Atoms/Wrapper'
 import { IContest } from '../../../types'
@@ -266,9 +266,9 @@ export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
 
 interface IJurisdictionAdminProps {
   rounds: IRound[]
-  ballotManifest: IFileInfo
-  batchTallies: IFileInfo
-  cvrs: IFileInfo
+  ballotManifest: IFileUpload
+  batchTallies: IFileUpload
+  cvrs: IFileUpload
   auditBoards: IAuditBoard[]
   auditType: IAuditSettings['auditType']
   children?: ReactElement
@@ -294,14 +294,12 @@ export const JurisdictionAdminStatusBox = ({
 
   // Audit has not started
   if (!isAuditStarted(rounds)) {
-    const files: IFileInfo['processing'][] = [ballotManifest.processing]
-    if (auditType === 'BATCH_COMPARISON') files.push(batchTallies.processing)
+    const files = [ballotManifest]
+    if (auditType === 'BATCH_COMPARISON') files.push(batchTallies)
     if (auditType === 'BALLOT_COMPARISON' || auditType === 'HYBRID')
-      files.push(cvrs.processing)
+      files.push(cvrs)
 
-    const numComplete = files.filter(
-      f => f && f.status === FileProcessingStatus.PROCESSED
-    ).length
+    const numComplete = files.filter(f => f.status === 'PROCESSED').length
 
     let details
     // Special case when we have just a ballotManifest

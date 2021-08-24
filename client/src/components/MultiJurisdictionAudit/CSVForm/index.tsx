@@ -1,6 +1,5 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import React, { useState } from 'react'
-import { Formik, FormikProps } from 'formik'
+import React from 'react'
 import styled from 'styled-components'
 import {
   HTMLSelect,
@@ -8,198 +7,216 @@ import {
   H4,
   ProgressBar,
   Intent,
+  Button,
 } from '@blueprintjs/core'
-import FormWrapper from '../../Atoms/Form/FormWrapper'
-import FormButton from '../../Atoms/Form/FormButton'
-import schema from './schema'
 import { ErrorLabel, SuccessLabel } from '../../Atoms/Form/_helpers'
 import FormSection, {
   FormSectionDescription,
 } from '../../Atoms/Form/FormSection'
-import { FileProcessingStatus, IFileInfo } from '../useCSV'
+import { IFileUpload, IFileUploadActions } from '../useCSV'
+import AsyncButton from '../../Atoms/AsyncButton'
 
 export const Select = styled(HTMLSelect)`
   margin-top: 5px;
 `
 
-interface IValues {
-  csv: File | null
-}
+const ButtonBar = styled.div`
+  display: 'flex';
+  align-items: 'center';
+  margin-top: 15px;
+  margin-bottom: 10px;
+  width: 300px;
+`
 
 interface IProps {
-  csvFile: IFileInfo
-  uploadCSVFile: (csv: File) => Promise<boolean>
-  deleteCSVFile?: () => Promise<boolean>
+  fileUpload: IFileUpload
+  selectFile: IFileUploadActions['selectFile']
+  uploadFile: IFileUploadActions['uploadFile']
+  deleteFile?: IFileUploadActions['deleteFile']
   title?: string
   description: string
   sampleFileLink: string
   enabled: boolean
+  showProgress?: boolean
 }
 
-const CSVFile: React.FC<IProps> = (props: IProps) => {
-  // Force the form to reset every time props.csvFile changes
-  // E.g. if we upload or delete a file
-  // See https://reactjs.org/blog/2018/06/07/you-probably-dont-need-derived-state.html#recap
-  return <CSVFileForm key={Date.now()} {...props} />
-}
-
+// TODO form validation
 const CSVFileForm = ({
-  csvFile,
-  uploadCSVFile,
-  deleteCSVFile,
+  fileUpload,
+  selectFile,
+  uploadFile,
+  deleteFile,
   title,
   description,
   sampleFileLink,
   enabled,
-}: IProps) => {
-  const { file, processing } = csvFile
-  const isProcessing = !!(processing && !processing.completedAt)
-  const [isEditing, setIsEditing] = useState<boolean>(!file || isProcessing)
-
-  return (
-    <Formik
-      initialValues={{ csv: isProcessing ? new File([], file!.name) : null }}
-      validationSchema={schema}
-      validateOnBlur={false}
-      onSubmit={async (values: IValues) => {
-        if (values.csv) {
-          await uploadCSVFile(values.csv)
-        }
-      }}
-    >
-      {({
-        handleSubmit,
-        setFieldValue,
-        values,
-        touched,
-        errors,
-        handleBlur,
-        isSubmitting,
-      }: FormikProps<IValues>) => (
-        <form>
-          <FormWrapper>
-            <FormSection>
-              {title && <H4>{title}</H4>}
-              <FormSectionDescription>
-                {description}
-                {sampleFileLink && (
-                  <>
-                    <br />
-                    <br />
-                    <a
-                      href={sampleFileLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      (Click here to view a sample file in the correct format.)
-                    </a>
-                  </>
-                )}
-              </FormSectionDescription>
-            </FormSection>
-            <div style={{ width: '300px' }}>
-              {isEditing ? (
+  showProgress,
+}: IProps) => (
+  <form style={{ maxWidth: '30rem' }}>
+    <FormSection>
+      {title && <H4>{title}</H4>}
+      <FormSectionDescription>
+        {description}
+        {sampleFileLink && (
+          <>
+            <br />
+            <br />
+            <a href={sampleFileLink} target="_blank" rel="noopener noreferrer">
+              (Click here to view a sample file in the correct format.)
+            </a>
+          </>
+        )}
+      </FormSectionDescription>
+    </FormSection>
+    <FormSection>
+      <div style={{ width: '300px' }}>
+        {(() => {
+          switch (fileUpload.status) {
+            case 'NO_FILE':
+            case 'SELECTED':
+              return (
                 <>
                   <FileInput
-                    inputProps={{
-                      accept: '.csv',
-                      name: 'csv',
-                    }}
+                    inputProps={{ accept: '.csv' }}
                     onInputChange={e => {
-                      setFieldValue(
-                        'csv',
+                      selectFile(
                         (e.currentTarget.files && e.currentTarget.files[0]) ||
-                          undefined
+                          null
                       )
                     }}
-                    hasSelection={!!values.csv}
-                    text={values.csv ? values.csv.name : 'Select a CSV...'}
-                    onBlur={handleBlur}
-                    disabled={isSubmitting || isProcessing || !enabled}
+                    hasSelection={fileUpload.status === 'SELECTED'}
+                    text={
+                      fileUpload.status === 'SELECTED'
+                        ? fileUpload.clientFile.name
+                        : 'Select a CSV...'
+                    }
+                    disabled={!enabled}
                     style={{ width: '100%' }}
                   />
-                  {errors.csv && touched.csv && (
-                    <ErrorLabel>{errors.csv}</ErrorLabel>
-                  )}
-                  <div
-                    style={{
-                      display: 'flex',
-                      marginTop: '15px',
-                      marginBottom: '10px',
-                      alignItems: 'center',
-                      width: '300px',
-                    }}
-                  >
-                    {isSubmitting && <span>Uploading...</span>}
-                    {isProcessing && (
-                      <>
+                  <ButtonBar>
+                    <Button
+                      type="submit"
+                      intent="primary"
+                      onClick={() =>
+                        fileUpload.status === 'SELECTED' &&
+                        uploadFile(fileUpload.clientFile)
+                      }
+                      disabled={!enabled}
+                    >
+                      Upload File
+                    </Button>
+                  </ButtonBar>
+                </>
+              )
+            case 'UPLOADING':
+            case 'READY_TO_PROCESS':
+            case 'PROCESSING':
+              return (
+                <>
+                  <FileInput
+                    hasSelection
+                    text={
+                      fileUpload.status === 'UPLOADING'
+                        ? fileUpload.clientFile.name
+                        : fileUpload.serverFile.file!.name
+                    }
+                    disabled
+                    style={{ width: '100%' }}
+                  />
+                  <ButtonBar>
+                    {showProgress && (
+                      <div
+                        style={{
+                          marginBottom: '10px',
+                          display: 'flex',
+                          alignItems: 'center',
+                        }}
+                      >
                         <span style={{ marginRight: '5px' }}>
-                          Processing...
+                          {fileUpload.status === 'UPLOADING'
+                            ? 'Uploading...'
+                            : 'Processing...'}
                         </span>
-                        {processing!.workTotal && (
+                        {fileUpload.status === 'UPLOADING' ? (
                           <ProgressBar
+                            key="uploading"
+                            stripes={false}
+                            intent={Intent.PRIMARY}
+                            value={fileUpload.uploadProgress}
+                          />
+                        ) : (
+                          <ProgressBar
+                            key="processing"
                             stripes={false}
                             intent={Intent.PRIMARY}
                             value={
-                              processing!.workProgress! / processing!.workTotal
+                              fileUpload.serverFile.processing!.workTotal
+                                ? fileUpload.serverFile.processing!
+                                    .workProgress! /
+                                  fileUpload.serverFile.processing!.workTotal
+                                : 0
                             }
                           />
                         )}
-                      </>
+                      </div>
                     )}
-                  </div>
-                  <FormButton
-                    type="submit"
-                    intent="primary"
-                    onClick={handleSubmit}
-                    loading={isSubmitting || isProcessing}
-                    disabled={!enabled}
-                  >
-                    Upload File
-                  </FormButton>
+                    <Button intent="primary" loading>
+                      Upload File
+                    </Button>
+                  </ButtonBar>
                 </>
-              ) : (
+              )
+            case 'PROCESSED':
+            case 'ERRORED': {
+              const {
+                serverFile: { file, processing },
+              } = fileUpload
+              return (
                 <>
                   <p>
                     <strong>Current file:</strong> {file!.name}
                   </p>
-                  {processing && processing.error && (
-                    <ErrorLabel>{processing.error}</ErrorLabel>
+                  {fileUpload.status === 'ERRORED' && (
+                    <ErrorLabel>{processing!.error}</ErrorLabel>
                   )}
-                  {processing &&
-                    processing.status === FileProcessingStatus.PROCESSED && (
-                      <SuccessLabel>
-                        Upload completed at{' '}
-                        {new Date(`${processing.completedAt}`).toLocaleString()}
-                        .
-                      </SuccessLabel>
-                    )}
-                  {/* We give these buttons a key to make sure React doesn't
+                  {fileUpload.status === 'PROCESSED' && (
+                    <SuccessLabel>
+                      Upload completed at{' '}
+                      {new Date(`${processing!.completedAt}`).toLocaleString()}.
+                    </SuccessLabel>
+                  )}
+                  <ButtonBar>
+                    {/* We give these buttons a key to make sure React doesn't
                   reuse the submit button for one of them. */}
-                  <FormButton
-                    key="replace"
-                    onClick={() => setIsEditing(true)}
-                    disabled={!enabled}
-                  >
-                    Replace File
-                  </FormButton>
-                  {deleteCSVFile && (
-                    <FormButton
-                      key="delete"
-                      onClick={deleteCSVFile}
+                    <Button
+                      key="replace"
+                      onClick={() => selectFile(null)}
                       disabled={!enabled}
                     >
-                      Delete File
-                    </FormButton>
-                  )}
+                      Replace File
+                    </Button>
+                    {deleteFile && (
+                      <span style={{ marginLeft: '10px' }}>
+                        <AsyncButton
+                          key="delete"
+                          onClick={deleteFile}
+                          disabled={!enabled}
+                        >
+                          Delete File
+                        </AsyncButton>
+                      </span>
+                    )}
+                  </ButtonBar>
                 </>
-              )}
-            </div>
-          </FormWrapper>
-        </form>
-      )}
-    </Formik>
-  )
-}
+              )
+            }
+            default:
+              return null
+          }
+        })()}
+      </div>
+    </FormSection>
+  </form>
+)
 
-export default CSVFile
+export default CSVFileForm
