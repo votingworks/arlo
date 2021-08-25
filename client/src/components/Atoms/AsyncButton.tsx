@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState, CSSProperties } from 'react'
 import { IButtonProps, Button } from '@blueprintjs/core'
 
 interface IAsyncButtonProps extends IButtonProps {
   onClick: () => Promise<unknown>
+  style?: CSSProperties
 }
 
 const AsyncButton: React.FC<IAsyncButtonProps> = (props: IAsyncButtonProps) => {

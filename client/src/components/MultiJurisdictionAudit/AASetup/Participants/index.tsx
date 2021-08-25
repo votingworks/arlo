@@ -4,9 +4,13 @@ import FormButtonBar from '../../../Atoms/Form/FormButtonBar'
 import FormButton from '../../../Atoms/Form/FormButton'
 import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
 import useAuditSettings from '../../useAuditSettings'
-import { useJurisdictionsFile, useStandardizedContestsFile } from '../../useCSV'
+import {
+  useJurisdictionsFile,
+  useStandardizedContestsFile,
+  isFileProcessed,
+} from '../../useCSV'
+import CSVFile from '../../CSVForm'
 import FormWrapper from '../../../Atoms/Form/FormWrapper'
-import CSVFileForm from '../../CSVForm'
 
 interface IProps {
   nextStage: ISidebarMenuItem
@@ -17,12 +21,12 @@ interface IProps {
 const Participants: React.FC<IProps> = ({ nextStage, refresh }: IProps) => {
   const { electionId } = useParams<{ electionId: string }>()
   const [auditSettings] = useAuditSettings(electionId)
-  const [jurisdictionsFile, jurisdictionsFileActions] = useJurisdictionsFile(
+  const [jurisdictionsFile, uploadJurisdictionsFile] = useJurisdictionsFile(
     electionId
   )
   const [
     standardizedContestsFile,
-    standardizedContestsFileActions,
+    uploadStandardizedContestsFile,
   ] = useStandardizedContestsFile(electionId, auditSettings)
 
   // Once the file uploads are complete, we need to notify the setupMenuItems to
@@ -32,12 +36,11 @@ const Participants: React.FC<IProps> = ({ nextStage, refresh }: IProps) => {
       jurisdictionsFile &&
       auditSettings &&
       standardizedContestsFile &&
-      jurisdictionsFile.status === 'PROCESSED' &&
-      (!(
-        auditSettings.auditType === 'BALLOT_COMPARISON' ||
-        auditSettings.auditType === 'HYBRID'
-      ) ||
-        standardizedContestsFile.status === 'PROCESSED') &&
+      isFileProcessed(jurisdictionsFile) &&
+      (auditSettings.auditType !== 'BALLOT_COMPARISON' ||
+        isFileProcessed(standardizedContestsFile)) &&
+      (auditSettings.auditType !== 'HYBRID' ||
+        isFileProcessed(standardizedContestsFile)) &&
       nextStage.state === 'locked'
     )
       refresh()
@@ -57,9 +60,9 @@ const Participants: React.FC<IProps> = ({ nextStage, refresh }: IProps) => {
           : 'Participants'
       }
     >
-      <CSVFileForm
-        fileUpload={jurisdictionsFile}
-        {...jurisdictionsFileActions}
+      <CSVFile
+        csvFile={jurisdictionsFile}
+        uploadCSVFile={uploadJurisdictionsFile}
         title={
           isBallotComparison || isHybrid
             ? 'Participating Jurisdictions'
@@ -70,13 +73,13 @@ const Participants: React.FC<IProps> = ({ nextStage, refresh }: IProps) => {
         enabled
       />
       {(isBallotComparison || isHybrid) && (
-        <CSVFileForm
-          fileUpload={standardizedContestsFile}
-          {...standardizedContestsFileActions}
+        <CSVFile
+          csvFile={standardizedContestsFile}
+          uploadCSVFile={uploadStandardizedContestsFile}
           title="Standardized Contests"
           description='Click "Browse" to choose the appropriate file from your computer. This file should be a comma-separated list of all the contests on the ballot, the vote choices available in each, and the jurisdiction(s) where each contest appeared on the ballot.'
           sampleFileLink="/sample_standardized_contests.csv"
-          enabled={jurisdictionsFile.status === 'PROCESSED'}
+          enabled={isFileProcessed(jurisdictionsFile)}
         />
       )}
       <FormButtonBar>
