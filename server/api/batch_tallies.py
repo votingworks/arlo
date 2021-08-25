@@ -24,7 +24,7 @@ BATCH_NAME = "Batch Name"
 def process_batch_tallies_file(jurisdiction_id: str):
     jurisdiction = Jurisdiction.query.get(jurisdiction_id)
 
-    def process():
+    def process() -> None:
         # We only support one contest for batch audits, so we can just take the
         # first contest from the jurisdiction's universe.
         assert len(list(jurisdiction.contests)) == 1

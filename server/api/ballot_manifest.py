@@ -76,7 +76,7 @@ def hybrid_jurisdiction_total_ballots(jurisdiction: Jurisdiction) -> HybridPair:
 def process_ballot_manifest_file(jurisdiction_id: str):
     jurisdiction = Jurisdiction.query.get(jurisdiction_id)
 
-    def process():
+    def process() -> None:
         # In ballot comparison and hybrid audits, each batch is uniquely
         # identified by (tabulator, batch name). For other types of audits, the
         # batch name is unique.

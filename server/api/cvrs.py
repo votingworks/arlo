@@ -177,7 +177,7 @@ def hybrid_contest_choice_vote_counts(
 def process_cvr_file(jurisdiction_id: str):
     jurisdiction = Jurisdiction.query.get(jurisdiction_id)
 
-    def process():
+    def process() -> None:
         if jurisdiction.cvr_file.contents == "":
             raise UserError("CVR file cannot be empty.")
 
