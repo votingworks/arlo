@@ -1,7 +1,6 @@
 import uuid
 import logging
 from datetime import datetime
-from sqlalchemy.orm.session import Session
 from flask import request, jsonify, Request
 from werkzeug.exceptions import BadRequest, NotFound
 
@@ -9,16 +8,19 @@ from . import api
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
 from ..auth import restrict_access, UserType
-from ..util.process_file import (
-    process_file,
-    serialize_file,
-    serialize_file_processing,
+from ..worker.tasks import (
+    background_task,
+    create_background_task,
 )
+from ..util.file import serialize_file, serialize_file_processing
 from ..util.csv_download import csv_response
 from ..util.csv_parse import decode_csv_file, parse_csv, CSVValueType, CSVColumnType
 from ..audit_math.suite import HybridPair
-from .cvrs import process_cvr_file
-from .batch_tallies import process_batch_tallies_file
+from .cvrs import clear_cvr_data, process_cvr_file
+from .batch_tallies import (
+    clear_batch_tallies_data,
+    process_batch_tallies_file,
+)
 from ..activity_log.activity_log import UploadFile, activity_base, record_activity
 
 logger = logging.getLogger("arlo")
@@ -70,10 +72,9 @@ def hybrid_jurisdiction_total_ballots(jurisdiction: Jurisdiction) -> HybridPair:
     )
 
 
-def process_ballot_manifest_file(
-    session: Session, jurisdiction: Jurisdiction, file: File
-):
-    assert jurisdiction.manifest_file_id == file.id
+@background_task
+def process_ballot_manifest_file(jurisdiction_id: str):
+    jurisdiction = Jurisdiction.query.get(jurisdiction_id)
 
     def process():
         # In ballot comparison and hybrid audits, each batch is uniquely
@@ -114,7 +115,7 @@ def process_ballot_manifest_file(
                 tabulator=row.get(TABULATOR, None),
                 has_cvrs=row.get(CVR, None),
             )
-            session.add(batch)
+            db_session.add(batch)
             num_batches += 1
             num_ballots += batch.num_ballots
 
@@ -125,67 +126,38 @@ def process_ballot_manifest_file(
             for contest in jurisdiction.contests:
                 set_total_ballots_from_manifests(contest)
 
-    process_file(session, file, process)
-
-    assert file.processing_started_at
-    record_activity(
-        UploadFile(
-            timestamp=file.processing_started_at,
-            base=activity_base(jurisdiction.election),
-            jurisdiction_id=jurisdiction.id,
-            jurisdiction_name=jurisdiction.name,
-            file_type="ballot_manifest",
-            error=file.processing_error,
-        )
-    )
-
-    # If CVR file already uploaded, try reprocessing it, since it depends on
-    # batch names from the manifest
-    if jurisdiction.cvr_file:
-        logger.info(
-            f"START_REPROCESSING_CVRS {dict(election_id=jurisdiction.election.id, jurisdiction_id=jurisdiction.id)}"
-        )
-        # First, clear out the previously processed data.
-        CvrBallot.query.filter(
-            CvrBallot.batch_id.in_(
-                Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
-                .with_entities(Batch.id)
-                .subquery()
+        # If CVR file already uploaded, try reprocessing it, since it depends on
+        # batch names from the manifest
+        if jurisdiction.cvr_file:
+            clear_cvr_data(jurisdiction)
+            jurisdiction.cvr_file.task = create_background_task(
+                process_cvr_file, dict(jurisdiction_id=jurisdiction.id)
             )
-        ).delete(synchronize_session=False)
-        jurisdiction.cvr_contests_metadata = None
-        jurisdiction.cvr_file.processing_started_at = None
-        jurisdiction.cvr_file.processing_completed_at = None
-        jurisdiction.cvr_file.processing_error = None
-        # Because process_cvr_file uses a COPY command outside of the session
-        # to load the CvrBallots, we need the batches from the manifest to be
-        # committed to the database. Unfortunately, this means we can't process
-        # both files in one transaction, but the worst case if the transaction
-        # is interrupted is that the CVR file will be set to its unprocessed
-        # state and picked up again by bgcompute.
-        session.commit()
-        process_cvr_file(session, jurisdiction, jurisdiction.cvr_file)
-        logger.info(
-            f"DONE_REPROCESSING_CVRS {dict(election_id=jurisdiction.election.id, jurisdiction_id=jurisdiction.id)}"
-        )
 
-    # If batch tallies file already uploaded, try reprocessing it, since it depends on
-    # batch names from the manifest
-    if jurisdiction.batch_tallies_file:
-        logger.info(
-            f"START_REPROCESSING_BATCH_TALLIES {dict(election_id=jurisdiction.election.id, jurisdiction_id=jurisdiction.id)}"
-        )
-        # First, clear out the previously processed data.
-        jurisdiction.batch_tallies = None
-        jurisdiction.batch_tallies_file.processing_started_at = None
-        jurisdiction.batch_tallies_file.processing_completed_at = None
-        jurisdiction.batch_tallies_file.processing_error = None
-        session.flush()  # Make sure process_file can read the changes we just made
-        process_batch_tallies_file(
-            session, jurisdiction, jurisdiction.batch_tallies_file
-        )
-        logger.info(
-            f"DONE_REPROCESSING_BATCH_TALLIES {dict(election_id=jurisdiction.election.id, jurisdiction_id=jurisdiction.id)}"
+        # If batch tallies file already uploaded, try reprocessing it, since it
+        # depends on batch names from the manifest
+        if jurisdiction.batch_tallies_file:
+            clear_batch_tallies_data(jurisdiction)
+            jurisdiction.batch_tallies_file.task = create_background_task(
+                process_batch_tallies_file, dict(jurisdiction_id=jurisdiction.id)
+            )
+
+    error = None
+    try:
+        process()
+    except Exception as exc:
+        error = str(error) or str(error.__class__.__name__)
+        raise exc
+    finally:
+        record_activity(
+            UploadFile(
+                timestamp=jurisdiction.manifest_file.uploaded_at,
+                base=activity_base(jurisdiction.election),
+                jurisdiction_id=jurisdiction.id,
+                jurisdiction_name=jurisdiction.name,
+                file_type="ballot_manifest",
+                error=error,
+            )
         )
 
 
@@ -204,6 +176,9 @@ def save_ballot_manifest_file(manifest, jurisdiction: Jurisdiction):
         name=manifest.filename,
         contents=manifest_string,
         uploaded_at=datetime.now(timezone.utc),
+    )
+    jurisdiction.manifest_file.task = create_background_task(
+        process_ballot_manifest_file, dict(jurisdiction_id=jurisdiction.id)
     )
 
 

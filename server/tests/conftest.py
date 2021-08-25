@@ -20,10 +20,6 @@ from ..database import reset_db
 from ..models import *  # pylint: disable=wildcard-import
 from ..auth import UserType, restrict_access
 from .helpers import *  # pylint: disable=wildcard-import
-from ..worker.bgcompute import (
-    bgcompute_update_election_jurisdictions_file,
-    bgcompute_update_ballot_manifest_file,
-)
 
 
 # The fixtures in this module are available in any test via dependency
@@ -92,7 +88,6 @@ def jurisdiction_ids(client: FlaskClient, election_id: str) -> List[str]:
         },
     )
     assert_ok(rv)
-    bgcompute_update_election_jurisdictions_file(election_id)
     jurisdictions = (
         Jurisdiction.query.filter_by(election_id=election_id)
         .order_by(Jurisdiction.name)
@@ -190,7 +185,6 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
         },
     )
     assert_ok(rv)
-    bgcompute_update_ballot_manifest_file(election_id)
 
 
 @pytest.fixture

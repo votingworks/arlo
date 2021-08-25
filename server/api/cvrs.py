@@ -8,7 +8,6 @@ import re
 import difflib
 import ast
 from datetime import datetime
-from sqlalchemy.orm.session import Session
 from flask import request, jsonify, Request
 from werkzeug.exceptions import BadRequest, NotFound, Conflict
 
@@ -16,15 +15,17 @@ from . import api
 from ..database import db_session, engine as db_engine
 from ..models import *  # pylint: disable=wildcard-import
 from ..auth import restrict_access, UserType
-from ..util.process_file import (
-    process_file,
-    serialize_file,
-    serialize_file_processing,
+from ..worker.tasks import (
     UserError,
+    background_task,
+    create_background_task,
+    serialize_background_task,
 )
+from ..util.file import serialize_file
 from ..util.csv_download import csv_response
 from ..util.csv_parse import decode_csv_file
 from ..util.group_by import group_by
+from ..util.jsonschema import JSONDict
 from ..audit_math.suite import HybridPair
 from ..activity_log.activity_log import UploadFile, activity_base, record_activity
 
@@ -172,8 +173,9 @@ def hybrid_contest_choice_vote_counts(
     }
 
 
-def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
-    assert jurisdiction.cvr_file_id == file.id
+@background_task
+def process_cvr_file(jurisdiction_id: str):
+    jurisdiction = Jurisdiction.query.get(jurisdiction_id)
 
     def process():
         if jurisdiction.cvr_file.contents == "":
@@ -209,7 +211,7 @@ def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
 
         # Parse out metadata about the contests to store - we'll later use this
         # to populate the Contest object.
-        contests_metadata = defaultdict(lambda: dict(choices=dict()))
+        contests_metadata: JSONDict = defaultdict(lambda: dict(choices=dict()))
         for column, (contest_name, votes_allowed, choice_name) in enumerate(
             zip(contest_names, contest_votes_allowed, contest_choices)
         ):
@@ -302,22 +304,27 @@ def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
                     zip(contest_names, contest_choices, interpretations),
                     key=lambda tuple: tuple[0],  # contest_name
                 )
-                for contest_name, interpretations in interpretations_by_contest.items():
+                for (
+                    contest_name,
+                    contest_interpretations,
+                ) in interpretations_by_contest.items():
                     # Skip contests not on ballot
                     if any(
-                        interpretation == "" for _, _, interpretation in interpretations
+                        interpretation == ""
+                        for _, _, interpretation in contest_interpretations
                     ):
                         continue
                     contests_on_ballot.add(contest_name)
 
                     # Skip overvotes
                     votes = sum(
-                        int(interpretation) for _, _, interpretation in interpretations
+                        int(interpretation)
+                        for _, _, interpretation in contest_interpretations
                     )
                     if votes > contests_metadata[contest_name]["votes_allowed"]:
                         continue
 
-                    for _, choice_name, interpretation in interpretations:
+                    for _, choice_name, interpretation in contest_interpretations:
                         contests_metadata[contest_name]["choices"][choice_name][
                             "num_votes"
                         ] += int(interpretation)
@@ -338,18 +345,18 @@ def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
                 ballots_tempfile.seek(0)
                 cursor.copy_expert(
                     """
-                        COPY cvr_ballot (
-                            batch_id,
-                            record_id,
-                            imprinted_id,
-                            interpretations
-                        )
-                        FROM STDIN
-                        WITH (
-                            FORMAT CSV,
-                            DELIMITER ','
-                        )
-                        """,
+                    COPY cvr_ballot (
+                        batch_id,
+                        record_id,
+                        imprinted_id,
+                        interpretations
+                    )
+                    FROM STDIN
+                    WITH (
+                        FORMAT CSV,
+                        DELIMITER ','
+                    )
+                    """,
                     ballots_tempfile,
                 )
                 cursor.execute("COMMIT")
@@ -391,29 +398,27 @@ def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
             for contest in jurisdiction.election.contests:
                 set_contest_metadata_from_cvrs(contest)
 
-    # Until we add validation/error handling to our CVR parsing, we'll just
-    # catch all errors and wrap them with a generic message.
-    def process_catch_exceptions():
-        try:
-            process()
-        except Exception as exc:
-            if isinstance(exc, UserError):
-                raise exc
-            raise Exception("Could not parse CVR file") from exc
-
-    process_file(session, file, process_catch_exceptions)
-
-    assert file.processing_started_at
-    record_activity(
-        UploadFile(
-            timestamp=file.processing_started_at,
-            base=activity_base(jurisdiction.election),
-            jurisdiction_id=jurisdiction.id,
-            jurisdiction_name=jurisdiction.name,
-            file_type="cvrs",
-            error=file.processing_error,
+    error = None
+    try:
+        process()
+    except Exception as exc:
+        error = str(exc) or str(exc.__class__.__name__)
+        if isinstance(exc, UserError):
+            raise exc
+        # Until we add validation/error handling to our CVR parsing, we'll just
+        # catch all errors and wrap them with a generic message.
+        raise Exception("Could not parse CVR file") from exc
+    finally:
+        record_activity(
+            UploadFile(
+                timestamp=jurisdiction.cvr_file.uploaded_at,
+                base=activity_base(jurisdiction.election),
+                jurisdiction_id=jurisdiction.id,
+                jurisdiction_name=jurisdiction.name,
+                file_type="cvrs",
+                error=error,
+            )
         )
-    )
 
 
 # Raises if invalid
@@ -440,19 +445,20 @@ def save_cvr_file(cvr, jurisdiction: Jurisdiction):
         contents=cvr_string,
         uploaded_at=datetime.now(timezone.utc),
     )
+    jurisdiction.cvr_file.task = create_background_task(
+        process_cvr_file, dict(jurisdiction_id=jurisdiction.id)
+    )
 
 
-def clear_cvr_file(jurisdiction: Jurisdiction):
-    if jurisdiction.cvr_file_id:
-        File.query.filter_by(id=jurisdiction.cvr_file_id).delete()
-        CvrBallot.query.filter(
-            CvrBallot.batch_id.in_(
-                Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
-                .with_entities(Batch.id)
-                .subquery()
-            )
-        ).delete(synchronize_session=False)
-        jurisdiction.cvr_contests_metadata = None
+def clear_cvr_data(jurisdiction: Jurisdiction):
+    CvrBallot.query.filter(
+        CvrBallot.batch_id.in_(
+            Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
+            .with_entities(Batch.id)
+            .subquery()
+        )
+    ).delete(synchronize_session=False)
+    jurisdiction.cvr_contests_metadata = None
 
 
 @api.route(
@@ -463,7 +469,7 @@ def upload_cvrs(
     election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
     validate_cvr_upload(request, election, jurisdiction)
-    clear_cvr_file(jurisdiction)
+    clear_cvr_data(jurisdiction)
     save_cvr_file(request.files["cvrs"], jurisdiction)
     db_session.commit()
     return jsonify(status="ok")
@@ -478,7 +484,10 @@ def get_cvrs(
 ):
     return jsonify(
         file=serialize_file(jurisdiction.cvr_file),
-        processing=serialize_file_processing(jurisdiction.cvr_file),
+        processing=(
+            jurisdiction.cvr_file
+            and serialize_background_task(jurisdiction.cvr_file.task)
+        ),
     )
 
 
@@ -502,6 +511,8 @@ def download_cvr_file(
 def clear_cvrs(
     election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
-    clear_cvr_file(jurisdiction)
+    if jurisdiction.cvr_file_id:
+        File.query.filter_by(id=jurisdiction.cvr_file_id).delete()
+        clear_cvr_data(jurisdiction)
     db_session.commit()
     return jsonify(status="ok")

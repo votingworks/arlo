@@ -4,10 +4,6 @@ from flask.testing import FlaskClient
 
 from ...models import *  # pylint: disable=wildcard-import
 from ..helpers import *  # pylint: disable=wildcard-import
-from ...worker.bgcompute import (
-    bgcompute_update_ballot_manifest_file,
-    bgcompute_update_cvr_file,
-)
 
 # Note that we intentionally leave out one row from the CVR to simulate what
 # happens when a row is missing. This would be the ballot: TABULATOR2,BATCH2,3,2-2-3
@@ -81,7 +77,6 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
         },
     )
     assert_ok(rv)
-    bgcompute_update_ballot_manifest_file(election_id)
 
 
 @pytest.fixture
@@ -104,4 +99,3 @@ def cvrs(
         data={"cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",)},
     )
     assert_ok(rv)
-    bgcompute_update_cvr_file(election_id)

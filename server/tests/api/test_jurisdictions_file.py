@@ -1,9 +1,7 @@
 import json, io
-
 from flask.testing import FlaskClient
 
 from ...models import *  # pylint: disable=wildcard-import
-from ...worker.bgcompute import bgcompute_update_election_jurisdictions_file
 from ..helpers import *  # pylint: disable=wildcard-import
 
 
@@ -48,8 +46,6 @@ def test_missing_one_csv_field(client, election_id):
     )
     assert_ok(rv)
 
-    bgcompute_update_election_jurisdictions_file(election_id)
-
     rv = client.get(f"/api/election/{election_id}/jurisdiction/file")
     compare_json(
         json.loads(rv.data),
@@ -65,7 +61,7 @@ def test_missing_one_csv_field(client, election_id):
     )
 
 
-def test_metadata(client, election_id):
+def test_jurisdictions_file_metadata(client, election_id):
     rv = client.get(f"/api/election/{election_id}/jurisdiction/file")
     assert json.loads(rv.data) == {"file": None, "processing": None}
 
@@ -87,22 +83,6 @@ def test_metadata(client, election_id):
     assert election.jurisdictions_file.name == "jurisdictions.csv"
     assert election.jurisdictions_file.uploaded_at
 
-    # Get the file data before processing.
-    rv = client.get(f"/api/election/{election_id}/jurisdiction/file")
-    response = json.loads(rv.data)
-    file = response["file"]
-    processing = response["processing"]
-    assert file["name"] == "jurisdictions.csv"
-    assert file["uploadedAt"]
-    assert processing["status"] == ProcessingStatus.READY_TO_PROCESS
-    assert processing["startedAt"] is None
-    assert processing["completedAt"] is None
-    assert processing["error"] is None
-
-    # Actually process the file.
-    bgcompute_update_election_jurisdictions_file(election_id)
-
-    # Now there should be data.
     rv = client.get(f"/api/election/{election_id}/jurisdiction/file")
     response = json.loads(rv.data)
     file = response["file"]
@@ -127,7 +107,11 @@ def test_replace_jurisdictions_file(client, election_id):
         f"/api/election/{election_id}/jurisdiction/file",
         data={
             "jurisdictions": (
-                io.BytesIO(b"Jurisdiction,Admin Email\n" b"J1,ja@example.com"),
+                io.BytesIO(
+                    b"Jurisdiction,Admin Email\n"
+                    b"J1,ja@example.com\n"
+                    b"J2,ja2@example.com"
+                ),
                 "jurisdictions.csv",
             )
         },
@@ -135,6 +119,11 @@ def test_replace_jurisdictions_file(client, election_id):
     assert_ok(rv)
 
     election = Election.query.get(election_id)
+    assert {
+        j.name: [ja.user.email for ja in j.jurisdiction_administrations]
+        for j in election.jurisdictions
+    } == {"J1": ["ja@example.com"], "J2": ["ja2@example.com"],}
+
     file_id = election.jurisdictions_file_id
 
     # Replace it with another file.
@@ -142,7 +131,11 @@ def test_replace_jurisdictions_file(client, election_id):
         f"/api/election/{election_id}/jurisdiction/file",
         data={
             "jurisdictions": (
-                io.BytesIO(b"Jurisdiction,Admin Email\n" b"J2,ja2@example.com"),
+                io.BytesIO(
+                    b"Jurisdiction,Admin Email\n"
+                    b"J2,ja2@example.com\n"
+                    b"J3,ja3@example.com"
+                ),
                 "jurisdictions2.csv",
             )
         },
@@ -156,6 +149,12 @@ def test_replace_jurisdictions_file(client, election_id):
 
     assert File.query.get(file_id) is None, "the old file should have been deleted"
 
+    election = Election.query.get(election_id)
+    assert {
+        j.name: [ja.user.email for ja in j.jurisdiction_administrations]
+        for j in election.jurisdictions
+    } == {"J2": ["ja2@example.com"], "J3": ["ja3@example.com"],}
+
 
 def test_no_jurisdiction(client, election_id):
     rv = client.put(
@@ -168,9 +167,6 @@ def test_no_jurisdiction(client, election_id):
         },
     )
     assert_ok(rv)
-
-    # Process the file in the background.
-    bgcompute_update_election_jurisdictions_file(election_id)
 
     election = Election.query.filter_by(id=election_id).one()
     assert election.jurisdictions == []
@@ -187,9 +183,6 @@ def test_single_jurisdiction_single_admin(client, election_id):
         },
     )
     assert_ok(rv)
-
-    # Process the file in the background.
-    bgcompute_update_election_jurisdictions_file(election_id)
 
     election = Election.query.filter_by(id=election_id).one()
     assert [j.name for j in election.jurisdictions] == ["J1"]
@@ -214,9 +207,6 @@ def test_single_jurisdiction_multiple_admins(client, election_id):
     )
     assert_ok(rv)
 
-    # Process the file in the background.
-    bgcompute_update_election_jurisdictions_file(election_id)
-
     election = Election.query.filter_by(id=election_id).one()
     assert [j.name for j in election.jurisdictions] == ["J1"]
 
@@ -240,9 +230,6 @@ def test_multiple_jurisdictions_single_admin(client, election_id):
         },
     )
     assert_ok(rv)
-
-    # Process the file in the background.
-    bgcompute_update_election_jurisdictions_file(election_id)
 
     election = Election.query.filter_by(id=election_id).one()
     assert [j.name for j in election.jurisdictions] == ["J1", "J2"]
@@ -274,9 +261,6 @@ def test_convert_emails_to_lowercase(client, election_id):
         },
     )
     assert_ok(rv)
-
-    # Process the file in the background.
-    bgcompute_update_election_jurisdictions_file(election_id)
 
     election = Election.query.filter_by(id=election_id).one()
     for jurisdiction in election.jurisdictions:
@@ -327,8 +311,6 @@ def test_upload_jurisdictions_file_duplicate_row(
     )
     assert_ok(rv)
 
-    bgcompute_update_election_jurisdictions_file(election_id)
-
     rv = client.get(f"/api/election/{election_id}/jurisdiction/file")
     compare_json(
         json.loads(rv.data),
@@ -341,4 +323,61 @@ def test_upload_jurisdictions_file_duplicate_row(
                 "error": "Each row must be uniquely identified by ('Admin Email', 'Jurisdiction'). Found duplicate: ('j1@example.com', 'J1').",
             },
         },
+    )
+
+
+def test_jurisdictions_file_dont_clobber_other_elections(
+    client: FlaskClient, election_id, org_id
+):
+    election = Election.query.get(election_id)
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, user_key=DEFAULT_AA_EMAIL)
+    other_election_id = create_election(
+        client, audit_name="Test Audit 2", organization_id=org_id
+    )
+
+    # Add jurisdictions.
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/file",
+        data={
+            "jurisdictions": (
+                io.BytesIO(b"Jurisdiction,Admin Email\n" b"J1,j1@example.com\n"),
+                "jurisdictions.csv",
+            )
+        },
+    )
+    assert_ok(rv)
+
+    # Add jurisdictions for other election
+    rv = client.put(
+        f"/api/election/{other_election_id}/jurisdiction/file",
+        data={
+            "jurisdictions": (
+                io.BytesIO(b"Jurisdiction,Admin Email\n" b"J2,j2@example.com\n"),
+                "jurisdictions.csv",
+            )
+        },
+    )
+    assert_ok(rv)
+
+    # Now change them
+    rv = client.put(
+        f"/api/election/{other_election_id}/jurisdiction/file",
+        data={
+            "jurisdictions": (
+                io.BytesIO(b"Jurisdiction,Admin Email\n" b"J3,j3@example.com\n"),
+                "jurisdictions.csv",
+            )
+        },
+    )
+    assert_ok(rv)
+
+    # Make sure first election admins were not clobbered
+    assert (
+        len(
+            Jurisdiction.query.filter_by(election_id=election.id)
+            .first()
+            .jurisdiction_administrations
+        )
+        == 1
     )

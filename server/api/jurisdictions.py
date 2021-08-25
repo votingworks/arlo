@@ -1,4 +1,5 @@
-from typing import Dict, Optional, Mapping, cast as typing_cast
+import logging
+from typing import Dict, List, Optional, Mapping, cast as typing_cast
 import enum
 import uuid
 import datetime
@@ -14,10 +15,93 @@ from ..database import db_session
 from ..auth import restrict_access, UserType
 from .rounds import get_current_round, sampled_all_ballots
 from .ballot_manifest import hybrid_jurisdiction_total_ballots
-from ..util.process_file import serialize_file, serialize_file_processing
+from .standardized_contests import process_standardized_contests_file
+from ..worker.tasks import (
+    background_task,
+    create_background_task,
+)
+from ..util.file import serialize_file, serialize_file_processing
 from ..util.jsonschema import JSONDict
-from ..util.csv_parse import decode_csv_file
+from ..util.csv_parse import CSVColumnType, CSVValueType, decode_csv_file, parse_csv
 from ..util.csv_download import csv_response
+
+logger = logging.getLogger("arlo")
+
+JURISDICTION_NAME = "Jurisdiction"
+ADMIN_EMAIL = "Admin Email"
+
+JURISDICTIONS_COLUMNS = [
+    CSVColumnType("Jurisdiction", CSVValueType.TEXT, unique=True),
+    CSVColumnType("Admin Email", CSVValueType.EMAIL, unique=True),
+]
+
+
+@background_task
+def process_jurisdictions_file(election_id: str):
+    election = Election.query.get(election_id)
+    jurisdictions_csv = parse_csv(
+        election.jurisdictions_file.contents, JURISDICTIONS_COLUMNS
+    )
+
+    # Clear existing admins.
+    JurisdictionAdministration.query.filter(
+        JurisdictionAdministration.jurisdiction_id.in_(
+            Jurisdiction.query.filter_by(election_id=election.id)
+            .with_entities(Jurisdiction.id)
+            .subquery()
+        )
+    ).delete(synchronize_session="fetch")
+    new_admins: List[JurisdictionAdministration] = []
+
+    for row in jurisdictions_csv:
+        name = row[JURISDICTION_NAME]
+        email = row[ADMIN_EMAIL]
+
+        # Find or create the user for this jurisdiction.
+        user = User.query.filter_by(email=email.lower()).one_or_none()
+
+        if not user:
+            user = User(id=str(uuid.uuid4()), email=email)
+            db_session.add(user)
+
+        # Find or create the jurisdiction by name.
+        jurisdiction = Jurisdiction.query.filter_by(
+            election=election, name=name
+        ).one_or_none()
+
+        if not jurisdiction:
+            jurisdiction = Jurisdiction(
+                id=str(uuid.uuid4()), election=election, name=name
+            )
+            db_session.add(jurisdiction)
+
+        # Link the user to the jurisdiction as an admin.
+        admin = JurisdictionAdministration(jurisdiction=jurisdiction, user=user)
+        db_session.add(admin)
+        new_admins.append(admin)
+
+    # Delete unmanaged jurisdictions.
+    unmanaged_admin_id_records = (
+        Jurisdiction.query.outerjoin(JurisdictionAdministration)
+        .filter(
+            Jurisdiction.election == election,
+            JurisdictionAdministration.jurisdiction_id.is_(None),
+        )
+        .with_entities(Jurisdiction.id)
+        .all()
+    )
+    unmanaged_admin_ids = [id for (id,) in unmanaged_admin_id_records]
+    Jurisdiction.query.filter(Jurisdiction.id.in_(unmanaged_admin_ids)).delete(
+        synchronize_session="fetch"
+    )
+
+    # If standardized contests file already uploaded, try reprocessing the
+    # standardized contests file as well, since it depends on jurisdiction names.
+    if election.standardized_contests_file:
+        election.standardized_contests = None
+        election.standardized_contests_file.task = create_background_task(
+            process_standardized_contests_file, dict(election_id=election.id)
+        )
 
 
 def serialize_jurisdiction(
@@ -67,7 +151,7 @@ def serialize_jurisdiction(
         )
         json_jurisdiction["cvrs"] = {
             "file": serialize_file(jurisdiction.cvr_file),
-            "processing": serialize_file_processing(jurisdiction.cvr_file),
+            "processing": processing,
             "numBallots": num_cvr_ballots,
         }
 
@@ -434,6 +518,9 @@ def update_jurisdictions_file(election: Election):
         name=jurisdictions_file.filename,
         contents=decode_csv_file(jurisdictions_file),
         uploaded_at=datetime.datetime.now(timezone.utc),
+    )
+    election.jurisdictions_file.task = create_background_task(
+        process_jurisdictions_file, dict(election_id=election.id)
     )
 
     db_session.commit()

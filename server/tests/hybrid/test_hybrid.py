@@ -6,10 +6,6 @@ from ..ballot_comparison.test_ballot_comparison import (
     audit_all_ballots,
     check_discrepancies,
 )
-from ...worker.bgcompute import (
-    bgcompute_update_ballot_manifest_file,
-    bgcompute_update_cvr_file,
-)
 from .conftest import TEST_CVRS
 
 
@@ -524,14 +520,12 @@ def test_hybrid_manifest_validation_too_many_votes(
             },
         )
         assert_ok(rv)
-        bgcompute_update_ballot_manifest_file(election_id)
 
         rv = client.put(
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/cvrs",
             data={"cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",)},
         )
         assert_ok(rv)
-        bgcompute_update_cvr_file(election_id)
 
     # Vote counts that are too large for the total ballots in the manifests
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -614,14 +608,12 @@ def test_hybrid_manifest_validation_too_few_cvr_ballots(
             },
         )
         assert_ok(rv)
-        bgcompute_update_ballot_manifest_file(election_id)
 
         rv = client.put(
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/cvrs",
             data={"cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",)},
         )
         assert_ok(rv)
-        bgcompute_update_cvr_file(election_id)
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/sample-sizes")
@@ -686,14 +678,12 @@ def test_hybrid_manifest_validation_few_non_cvr_ballots(
             },
         )
         assert_ok(rv)
-        bgcompute_update_ballot_manifest_file(election_id)
 
         rv = client.put(
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/cvrs",
             data={"cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",)},
         )
         assert_ok(rv)
-        bgcompute_update_cvr_file(election_id)
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/sample-sizes")
@@ -749,7 +739,6 @@ def test_hybrid_filter_cvrs(
         data={"cvrs": (io.BytesIO(cvr.encode()), "cvrs.csv",)},
     )
     assert_ok(rv)
-    bgcompute_update_cvr_file(election_id)
 
     # Contest metadata should be the same, meaning those extra ballots got
     # filtered out

@@ -6,7 +6,7 @@ import csv as py_csv
 import io, re, locale, chardet
 from werkzeug.exceptions import BadRequest
 from werkzeug.datastructures import FileStorage
-from .process_file import UserError
+from ..worker.tasks import UserError
 
 locale.setlocale(locale.LC_ALL, "en_US.UTF-8")
 

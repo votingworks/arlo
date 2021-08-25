@@ -4,8 +4,6 @@ from flask.testing import FlaskClient
 
 from ...models import *  # pylint: disable=wildcard-import
 from ..helpers import *  # pylint: disable=wildcard-import
-from ...worker.bgcompute import bgcompute_update_ballot_manifest_file
-from ...util.process_file import ProcessingStatus
 
 
 def test_ballot_manifest_upload(
@@ -26,24 +24,6 @@ def test_ballot_manifest_upload(
         },
     )
     assert_ok(rv)
-
-    rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"
-    )
-    compare_json(
-        json.loads(rv.data),
-        {
-            "file": {"name": "manifest.csv", "uploadedAt": assert_is_date,},
-            "processing": {
-                "status": ProcessingStatus.READY_TO_PROCESS,
-                "startedAt": None,
-                "completedAt": None,
-                "error": None,
-            },
-        },
-    )
-
-    bgcompute_update_ballot_manifest_file(election_id)
 
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"
@@ -94,8 +74,6 @@ def test_ballot_manifest_replace(
 
     file_id = Jurisdiction.query.get(jurisdiction_ids[0]).manifest_file_id
 
-    bgcompute_update_ballot_manifest_file(election_id)
-
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
         data={
@@ -111,8 +89,6 @@ def test_ballot_manifest_replace(
     jurisdiction = Jurisdiction.query.get(jurisdiction_ids[0])
     assert File.query.get(file_id) is None
     assert jurisdiction.manifest_file_id != file_id
-
-    bgcompute_update_ballot_manifest_file(election_id)
 
     jurisdiction = Jurisdiction.query.get(jurisdiction_ids[0])
     assert jurisdiction.manifest_num_batches == 2
@@ -142,8 +118,6 @@ def test_ballot_manifest_clear(
     assert_ok(rv)
 
     file_id = Jurisdiction.query.get(jurisdiction_ids[0]).manifest_file_id
-
-    bgcompute_update_ballot_manifest_file(election_id)
 
     rv = client.delete(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
@@ -226,8 +200,6 @@ def test_ballot_manifest_upload_missing_field(
         )
         assert_ok(rv)
 
-        bgcompute_update_ballot_manifest_file(election_id)
-
         rv = client.get(
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"
         )
@@ -261,8 +233,6 @@ def test_ballot_manifest_upload_invalid_num_ballots(
         },
     )
     assert_ok(rv)
-
-    bgcompute_update_ballot_manifest_file(election_id)
 
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"
@@ -299,8 +269,6 @@ def test_ballot_manifest_upload_duplicate_batch_name(
         },
     )
     assert_ok(rv)
-
-    bgcompute_update_ballot_manifest_file(election_id)
 
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"
