@@ -18,22 +18,25 @@
 const fs = require('fs')
 const path = require('path')
 const pdf = require('pdf-parse')
+const MailDev = require('maildev')
 
 const repoRoot = path.join(__dirname, '..', '..') // assumes pdf at project root
 
-const parsePdf = async (pdfName) => {
+const parsePdf = async pdfName => {
   const pdfPathname = path.join(repoRoot, pdfName)
   let dataBuffer = fs.readFileSync(pdfPathname)
-  return await pdf(dataBuffer)  // use async/await since pdf returns a promise 
+  return await pdf(dataBuffer) // use async/await since pdf returns a promise
 }
 
- module.exports = (on, config) => {
+// `on` is used to hook into various events Cypress emits
+// `config` is the resolved Cypress config
+module.exports = (on, config) => {
   on('task', {
-    getPdfContent (pdfName) {
+    getPdfContent(pdfName) {
       return parsePdf(pdfName)
-    }
+    },
   })
-  on("before:browser:launch", (browser = {}, launchOptions) => {
+  on('before:browser:launch', (browser = {}, launchOptions) => {
     const downloadDirectory = path.join(__dirname, '..', 'downloads')
 
     if (browser.family === 'chromium' && browser.name !== 'electron') {
@@ -45,6 +48,41 @@ const parsePdf = async (pdfName) => {
     }
     return launchOptions
   })
-  // `on` is used to hook into various events Cypress emits
-  // `config` is the resolved Cypress config
+
+  // Set up a mock SMTP server to intercept emails
+  // Based on https://github.com/bahmutov/cypress-email-example
+  const maildev = new MailDev({
+    ip: process.env.ARLO_SMTP_HOST,
+    smtp: process.env.ARLO_SMTP_PORT,
+    incomingUser: process.env.ARLO_SMTP_USERNAME,
+    incomingPass: process.env.ARLO_SMTP_PASSWORD,
+    disableWeb: true,
+  })
+  maildev.listen()
+
+  // email address -> last email received
+  let lastEmail = {}
+  maildev.on('new', email => {
+    lastEmail[email.headers.to] = email
+  })
+
+  const waitForValue = (valueFn, delay = 100) =>
+    new Promise((resolve, reject) => {
+      ;(function wait() {
+        const value = valueFn()
+        if (value !== null && value !== undefined) return resolve(value)
+        return setTimeout(wait, delay)
+      })()
+    })
+
+  on('task', {
+    clearEmails() {
+      lastEmail = {}
+      return null
+    },
+
+    waitForEmail(emailAddress) {
+      return waitForValue(() => lastEmail[emailAddress])
+    },
+  })
 }

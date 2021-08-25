@@ -10,7 +10,7 @@ def set_sentry_user():
     user_type, user_key = get_loggedin_user(session)
     sentry_sdk.set_user(dict(username=user_key, user_type=user_type))
 
-    election_id = request.view_args.get("election_id")
+    election_id = (request.view_args or {}).get("election_id")
     if election_id:
         sentry_sdk.set_tag("election_id", election_id)
         election = Election.query.get(election_id)

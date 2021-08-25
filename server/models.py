@@ -304,6 +304,11 @@ class User(BaseModel):
         "Jurisdiction", secondary="jurisdiction_administration", uselist=True
     )
 
+    # Jurisdiction admins log in by requesting a one-time code.
+    login_code = Column(String(200))
+    login_code_requested_at = Column(UTCDateTime)
+    login_code_attempts = Column(Integer)
+
     @validates("email")
     def lowercase_email(self, _key, email):
         return email.lower()

@@ -1,0 +1,29 @@
+{% extends "email_boilerplate.html" %} {% block content %}
+<div class="main">
+  <p style="text-align: left; margin-bottom: 30px;">
+    <img
+      src="https://public-assets.voting.works/arlo/votingworks-logo-circle-purple.png"
+      width="50"
+      alt="VotingWorks"
+      style="border: 0;height: auto;line-height: 100%;outline: none;text-decoration: none;"
+    />
+  </p>
+  <p style="font-size: 1.4em; line-height: 1.3;">
+    Your verification code is: <b>{{code}}</b>
+  </p>
+  <p>
+    If you are having any issues with your account, please don't hesitate to
+    contact us by replying to this email.
+  </p>
+  <br />
+  Thanks!
+  <br />
+  <strong>VotingWorks</strong>
+  <br /><br />
+  <hr style="border: 2px solid #EAEEF3; border-bottom: 0; margin: 20px 0;" />
+  <p style="text-align: center;color: #A9B3BC;">
+    If you did not make this request, please contact us by replying to this
+    email.
+  </p>
+</div>
+{% endblock %}

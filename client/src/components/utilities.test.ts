@@ -82,6 +82,38 @@ describe('utilities.ts', () => {
         method: 'GET',
       })
     })
+
+    it('toasts a user-friendly message on 500 errors', async () => {
+      fetchSpy.mockImplementationOnce(
+        async () =>
+          new Response(
+            new Blob([
+              JSON.stringify({
+                errors: [
+                  {
+                    errorType: 'Internal Server Error',
+                    message: 'internal error',
+                  },
+                ],
+              }),
+            ]),
+            {
+              status: 500,
+              statusText: 'Internal Server Error',
+            }
+          )
+      )
+      const result = await api('/test', { method: 'GET' })
+
+      await expect(toastSpy).toBeCalledWith(
+        'Something went wrong. Please try again or contact support.'
+      )
+      await expect(result).toBe(null)
+      expect(window.fetch).toBeCalledTimes(1)
+      expect(window.fetch).toBeCalledWith('/api/test', {
+        method: 'GET',
+      })
+    })
   })
 
   describe('testNumber', () => {

@@ -35,12 +35,12 @@ const renderView = (route: string) => renderWithRouter(<App />, { route })
 
 describe('App', () => {
   describe('/', () => {
-    it('renders unauthenticated properly', async () => {
+    it('renders login screen when unauthenticated', async () => {
       const expectedCalls = [apiMocks.failedAuth]
       await withMockFetch(expectedCalls, async () => {
-        const { container } = renderView('/')
+        renderView('/')
         await screen.findByRole('button', { name: 'Log in to your audit' })
-        expect(container).toMatchSnapshot()
+        screen.getByRole('link', { name: 'Log in as an admin' })
       })
     })
 
@@ -76,14 +76,12 @@ describe('App', () => {
   })
 
   describe('/election/:electionId/audit-board/:auditBoardId', () => {
-    it('renders unauthenticated properly', async () => {
+    it('redirects to login screen when unauthenticated', async () => {
       const expectedCalls = [apiMocks.failedAuth]
       await withMockFetch(expectedCalls, async () => {
-        const { container } = renderView(
-          '/election/1/audit-board/audit-board-1'
-        )
+        const { history } = renderView('/election/1/audit-board/audit-board-1')
         await screen.findByRole('button', { name: 'Log in to your audit' })
-        expect(container).toMatchSnapshot()
+        expect(history.location.pathname).toEqual('/')
       })
     })
 
@@ -131,14 +129,14 @@ describe('App', () => {
   })
 
   describe('/election/:electionId/jurisdiction/:jurisdictionId', () => {
-    it('renders unauthenticated properly', async () => {
+    it('redirects to login screen when unauthenticated', async () => {
       const expectedCalls = [apiMocks.failedAuth]
       await withMockFetch(expectedCalls, async () => {
-        const { container } = renderView(
+        const { history } = renderView(
           '/election/1/jurisdiction/jurisdiction-id-1'
         )
         await screen.findByRole('button', { name: 'Log in to your audit' })
-        expect(container).toMatchSnapshot()
+        expect(history.location.pathname).toEqual('/')
       })
     })
 

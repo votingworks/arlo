@@ -4,6 +4,13 @@ from typing import Tuple
 from datetime import timedelta
 
 
+def read_env_var(name: str, default=None, env_defaults=None):
+    value = os.environ.get(name, (env_defaults or {}).get(FLASK_ENV, default))
+    if not value:
+        raise Exception(f"Missing env var: {name}")
+    return value
+
+
 DEVELOPMENT_ENVS = ("development", "test")
 
 
@@ -132,20 +139,12 @@ def read_auditadmin_auth0_creds() -> Tuple[str, str, str]:
     AUDITADMIN_AUTH0_CLIENT_SECRET,
 ) = read_auditadmin_auth0_creds()
 
+LOGIN_CODE_LIFETIME = timedelta(minutes=15)
 
-def read_jurisdictionadmin_auth0_creds() -> Tuple[str, str, str]:
-    return (
-        os.environ.get("ARLO_JURISDICTIONADMIN_AUTH0_BASE_URL", ""),
-        os.environ.get("ARLO_JURISDICTIONADMIN_AUTH0_CLIENT_ID", ""),
-        os.environ.get("ARLO_JURISDICTIONADMIN_AUTH0_CLIENT_SECRET", ""),
-    )
-
-
-(
-    JURISDICTIONADMIN_AUTH0_BASE_URL,
-    JURISDICTIONADMIN_AUTH0_CLIENT_ID,
-    JURISDICTIONADMIN_AUTH0_CLIENT_SECRET,
-) = read_jurisdictionadmin_auth0_creds()
+SMTP_HOST = read_env_var("ARLO_SMTP_HOST", {"test": "test-smtp-host"})
+SMTP_PORT = read_env_var("ARLO_SMTP_PORT", {"test": 587, "dev": 587})
+SMTP_USERNAME = read_env_var("ARLO_SMTP_USERNAME", {"test": "test-smtp-username"})
+SMTP_PASSWORD = read_env_var("ARLO_SMTP_PASSWORD", {"test": "test-smtp-password"})
 
 
 def setup_minerva():

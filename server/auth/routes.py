@@ -1,9 +1,16 @@
+from email.message import EmailMessage
+import secrets
+import smtplib
+import string
+from datetime import datetime, timezone
 from urllib.parse import urljoin, urlencode
-from flask import redirect, jsonify, request, session
+from flask import redirect, jsonify, request, session, render_template
 from authlib.integrations.flask_client import OAuth, OAuthError
+from werkzeug.exceptions import BadRequest
 
 from . import auth
 from ..models import *  # pylint: disable=wildcard-import
+from ..database import db_session
 from .lib import (
     get_loggedin_user,
     set_loggedin_user,
@@ -16,6 +23,10 @@ from .lib import (
 from ..api.audit_boards import serialize_members
 from ..util.isoformat import isoformat
 from ..config import (
+    SMTP_HOST,
+    SMTP_PASSWORD,
+    SMTP_PORT,
+    SMTP_USERNAME,
     SUPPORT_AUTH0_BASE_URL,
     SUPPORT_AUTH0_CLIENT_ID,
     SUPPORT_AUTH0_CLIENT_SECRET,
@@ -23,14 +34,11 @@ from ..config import (
     AUDITADMIN_AUTH0_BASE_URL,
     AUDITADMIN_AUTH0_CLIENT_ID,
     AUDITADMIN_AUTH0_CLIENT_SECRET,
-    JURISDICTIONADMIN_AUTH0_BASE_URL,
-    JURISDICTIONADMIN_AUTH0_CLIENT_ID,
-    JURISDICTIONADMIN_AUTH0_CLIENT_SECRET,
 )
+from .. import config
 
 SUPPORT_OAUTH_CALLBACK_URL = "/auth/support/callback"
 AUDITADMIN_OAUTH_CALLBACK_URL = "/auth/auditadmin/callback"
-JURISDICTIONADMIN_OAUTH_CALLBACK_URL = "/auth/jurisdictionadmin/callback"
 
 oauth = OAuth()
 
@@ -52,17 +60,6 @@ auth0_aa = oauth.register(
     api_base_url=AUDITADMIN_AUTH0_BASE_URL,
     access_token_url=f"{AUDITADMIN_AUTH0_BASE_URL}/oauth/token",
     authorize_url=f"{AUDITADMIN_AUTH0_BASE_URL}/authorize",
-    authorize_params={"max_age": "0"},
-    client_kwargs={"scope": "openid profile email"},
-)
-
-auth0_ja = oauth.register(
-    "auth0_ja",
-    client_id=JURISDICTIONADMIN_AUTH0_CLIENT_ID,
-    client_secret=JURISDICTIONADMIN_AUTH0_CLIENT_SECRET,
-    api_base_url=JURISDICTIONADMIN_AUTH0_BASE_URL,
-    access_token_url=f"{JURISDICTIONADMIN_AUTH0_BASE_URL}/oauth/token",
-    authorize_url=f"{JURISDICTIONADMIN_AUTH0_BASE_URL}/authorize",
     authorize_params={"max_age": "0"},
     client_kwargs={"scope": "openid profile email"},
 )
@@ -189,24 +186,96 @@ def auditadmin_login_callback():
     return redirect("/")
 
 
-@auth.route("/auth/jurisdictionadmin/start")
-def jurisdictionadmin_login():
-    redirect_uri = urljoin(request.host_url, JURISDICTIONADMIN_OAUTH_CALLBACK_URL)
-    return auth0_ja.authorize_redirect(redirect_uri=redirect_uri)
+def is_code_expired(timestamp: datetime):
+    return datetime.now(timezone.utc) - timestamp > config.LOGIN_CODE_LIFETIME
 
 
-@auth.route(JURISDICTIONADMIN_OAUTH_CALLBACK_URL)
-def jurisdictionadmin_login_callback():
-    auth0_ja.authorize_access_token()
-    resp = auth0_ja.get("userinfo")
-    userinfo = resp.json()
+@auth.route("/auth/jurisdictionadmin/code", methods=["POST"])
+def jurisdiction_admin_generate_code():
+    body = request.get_json()
+    user = (
+        User.query.filter_by(email=body.get("email"))
+        .join(JurisdictionAdministration)
+        .one_or_none()
+    )
+    if user is None:
+        raise BadRequest(
+            "This email address is not authorized to access Arlo."
+            " Please check that you typed the email correctly,"
+            " or contact your Arlo administrator for access."
+        )
 
-    if userinfo and userinfo["email"]:
-        user = User.query.filter_by(email=userinfo["email"]).first()
-        if user and len(user.jurisdiction_administrations) > 0:
-            set_loggedin_user(session, UserType.JURISDICTION_ADMIN, userinfo["email"])
+    if user.login_code is None or (
+        # Only set a new login code if the old one expired. That way if they
+        # request a new code while waiting for a slow email, we won't wipe out
+        # the code we sent when the email does come through. This also creates
+        # a speed bump for brute force attacks.
+        is_code_expired(user.login_code_requested_at)
+    ):
+        user.login_code = "".join(secrets.choice(string.digits) for _ in range(6))
+        user.login_code_requested_at = datetime.now(timezone.utc)
+        user.login_code_attempts = 0
 
-    return redirect("/")
+    if user.login_code_attempts >= 10:
+        raise BadRequest(
+            "Too many incorrect login attempts. Please wait 15 minutes and then request a new code."
+        )
+
+    message = EmailMessage()
+    message["Subject"] = "Welcome to Arlo - Use the Code in this Email to Log In"
+    message["From"] = "Arlo Support <rla@vx.support>"
+    message["To"] = user.email
+    message.set_content(render_template("email_login_code.txt", code=user.login_code))
+    message.add_alternative(
+        render_template("email_login_code.html", code=user.login_code), subtype="html"
+    )
+    smtp_server = smtplib.SMTP(SMTP_HOST, SMTP_PORT)
+    smtp_server.login(SMTP_USERNAME, SMTP_PASSWORD)
+    smtp_server.send_message(message)
+    smtp_server.quit()
+
+    db_session.commit()
+
+    return jsonify(status="ok")
+
+
+@auth.route("/auth/jurisdictionadmin/login", methods=["POST"])
+def jurisdiction_admin_login():
+    body = request.get_json()
+    user = (
+        User.query.filter_by(email=body.get("email"))
+        .join(JurisdictionAdministration)
+        .with_for_update()
+        .one_or_none()
+    )
+    if user is None:
+        raise BadRequest("Invalid email address.")
+
+    if user.login_code is None:
+        raise BadRequest("Please request a new code.")
+
+    if user.login_code_attempts >= 10:
+        raise BadRequest(
+            "Too many incorrect login attempts. Please wait 15 minutes and then request a new code."
+        )
+
+    user.login_code_attempts += 1
+    db_session.commit()
+
+    if is_code_expired(user.login_code_requested_at) or not secrets.compare_digest(
+        body.get("code"), user.login_code
+    ):
+        raise BadRequest(
+            "Invalid code. Try entering the code again or click Back and request a new code."
+        )
+
+    user.login_code = None
+    user.login_code_requested_at = None
+    db_session.commit()
+
+    set_loggedin_user(session, UserType.JURISDICTION_ADMIN, user.email)
+
+    return jsonify(status="ok")
 
 
 @auth.route("/auditboard/<passphrase>", methods=["GET"])

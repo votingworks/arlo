@@ -26,7 +26,6 @@
 
 import url from 'url'
 import qs from 'querystring'
-// import 'cypress-file-upload'
 
 Cypress.Commands.add('loginAuditAdmin', email => {
   cy.request({ url: '/auth/auditadmin/start', followRedirect: false }).then(
@@ -41,17 +40,16 @@ Cypress.Commands.add('loginAuditAdmin', email => {
   )
 })
 
-Cypress.Commands.add('loginJurisdictionAdmin', email => {
-  cy.request({
-    url: '/auth/jurisdictionadmin/start',
-    followRedirect: false,
-  }).then(response => {
-    const { state } = qs.parse(url.parse(response.headers.location).query)
-    const callbackParams = qs.stringify({
-      code: email,
-      state,
-    })
-    cy.visit(`/auth/jurisdictionadmin/callback?${callbackParams}`)
+Cypress.Commands.add('loginJurisdictionAdmin', jaEmail => {
+  cy.task('clearEmails')
+  cy.findByLabelText('Enter your email to log in:').type(jaEmail)
+  cy.findByRole('button', { name: 'Log in to your audit' }).click()
+  cy.task('waitForEmail', jaEmail).then(email => {
+    const [_, code] = email.text.match(
+      /Your verification code is: (\d\d\d\d\d\d)/
+    )
+    cy.findByLabelText('Enter the six-digit code below:').type(code)
+    cy.findByRole('button', { name: 'Submit code' }).click()
   })
 })
 

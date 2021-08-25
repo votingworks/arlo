@@ -3,14 +3,6 @@ import { toast } from 'react-toastify'
 import number from '../utils/number-schema'
 import { IErrorResponse } from '../types'
 
-export const tryJson = (responseText: string) => {
-  try {
-    return JSON.parse(responseText)
-  } catch (err) {
-    return {}
-  }
-}
-
 const parseCookies = () =>
   Object.fromEntries(
     document.cookie.split(';').map(pair => pair.trim().split('='))
@@ -24,6 +16,22 @@ export const addCSRFToken = (options?: RequestInit) => {
       headers: { ...options.headers, 'X-CSRFToken': token },
     }
   return options
+}
+
+export const tryJson = (responseText: string) => {
+  try {
+    return JSON.parse(responseText)
+  } catch (err) {
+    return {}
+  }
+}
+
+export const parseApiError = async (response: Response) => {
+  const responseText = await response.text()
+  const { errors } = tryJson(responseText)
+  const error =
+    errors && errors.length ? errors[0] : { message: response.statusText }
+  return { ...error, responseText, response }
 }
 
 export const api = async <T>(
@@ -44,17 +52,17 @@ export const api = async <T>(
         return null
       }
 
-      const responseText = await response.text()
-      const { errors } = tryJson(responseText)
-      const error =
-        errors && errors.length ? errors[0] : { message: response.statusText }
-      const errorData = { ...error, responseText, response }
-      console.error(responseText) // eslint-disable-line no-console
-      throw errorData
+      const error = await parseApiError(response)
+      console.error(error.responseText) // eslint-disable-line no-console
+      throw error
     }
     return response.json() as Promise<T>
   } catch (err) {
-    toast.error(err.message)
+    toast.error(
+      err.errorType === 'Internal Server Error'
+        ? 'Something went wrong. Please try again or contact support.'
+        : err.message
+    )
     return null
   }
 }
