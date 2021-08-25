@@ -5,11 +5,6 @@ import pytest
 
 from ...models import *  # pylint: disable=wildcard-import
 from ..helpers import *  # pylint: disable=wildcard-import
-from ...worker.bgcompute import (
-    bgcompute_update_batch_tallies_file,
-    bgcompute_update_ballot_manifest_file,
-)
-from ...util.process_file import ProcessingStatus
 
 
 @pytest.fixture
@@ -32,7 +27,6 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
         },
     )
     assert_ok(rv)
-    bgcompute_update_ballot_manifest_file(election_id)
 
 
 def test_batch_tallies_upload(
@@ -62,24 +56,6 @@ def test_batch_tallies_upload(
         data={"batchTallies": (io.BytesIO(batch_tallies_file), "batchTallies.csv",)},
     )
     assert_ok(rv)
-
-    rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies"
-    )
-    compare_json(
-        json.loads(rv.data),
-        {
-            "file": {"name": "batchTallies.csv", "uploadedAt": assert_is_date,},
-            "processing": {
-                "status": ProcessingStatus.READY_TO_PROCESS,
-                "startedAt": None,
-                "completedAt": None,
-                "error": None,
-            },
-        },
-    )
-
-    bgcompute_update_batch_tallies_file(election_id)
 
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies"
@@ -184,8 +160,6 @@ def test_batch_tallies_replace(
 
     file_id = Jurisdiction.query.get(jurisdiction_ids[0]).batch_tallies_file_id
 
-    bgcompute_update_batch_tallies_file(election_id)
-
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
         data={
@@ -206,8 +180,6 @@ def test_batch_tallies_replace(
     jurisdiction = Jurisdiction.query.get(jurisdiction_ids[0])
     assert File.query.get(file_id) is None
     assert jurisdiction.batch_tallies_file_id != file_id
-
-    bgcompute_update_batch_tallies_file(election_id)
 
     jurisdiction = Jurisdiction.query.get(jurisdiction_ids[0])
     contest = Contest.query.get(contest_id)
@@ -266,8 +238,6 @@ def test_batch_tallies_clear(
     assert_ok(rv)
 
     file_id = Jurisdiction.query.get(jurisdiction_ids[0]).batch_tallies_file_id
-
-    bgcompute_update_batch_tallies_file(election_id)
 
     rv = client.delete(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
@@ -367,8 +337,6 @@ def test_batch_tallies_upload_missing_choice(
         )
         assert_ok(rv)
 
-        bgcompute_update_batch_tallies_file(election_id)
-
         rv = client.get(
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies"
         )
@@ -439,8 +407,6 @@ def test_batch_tallies_wrong_batch_names(
         )
         assert_ok(rv)
 
-        bgcompute_update_batch_tallies_file(election_id)
-
         rv = client.get(
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies"
         )
@@ -449,7 +415,7 @@ def test_batch_tallies_wrong_batch_names(
             {
                 "file": {"name": "batchTallies.csv", "uploadedAt": assert_is_date,},
                 "processing": {
-                    "status": ProcessingStatus.ERRORED,
+                    "status": "ERRORED",
                     "startedAt": assert_is_date,
                     "completedAt": assert_is_date,
                     "error": expected_error,
@@ -483,8 +449,6 @@ def test_batch_tallies_too_many_tallies(
         },
     )
     assert_ok(rv)
-
-    bgcompute_update_batch_tallies_file(election_id)
 
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies"
@@ -640,7 +604,6 @@ def test_batch_tallies_reprocess_after_manifest_reupload(
         },
     )
     assert_ok(rv)
-    bgcompute_update_batch_tallies_file(election_id)
 
     # Reupload a manifest but remove a batch
     rv = client.put(
@@ -655,7 +618,6 @@ def test_batch_tallies_reprocess_after_manifest_reupload(
         },
     )
     assert_ok(rv)
-    bgcompute_update_ballot_manifest_file(election_id)
 
     # Error should be recorded for tallies
     rv = client.get(
@@ -692,7 +654,6 @@ def test_batch_tallies_reprocess_after_manifest_reupload(
         },
     )
     assert_ok(rv)
-    bgcompute_update_ballot_manifest_file(election_id)
 
     # Tallies should be fixed
     rv = client.get(

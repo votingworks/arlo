@@ -2,7 +2,7 @@ from typing import Union, List
 import os, io, pytest
 from werkzeug.exceptions import BadRequest
 from werkzeug.datastructures import FileStorage
-from ...util.jurisdiction_bulk_update import JURISDICTIONS_COLUMNS
+from ...api.jurisdictions import JURISDICTIONS_COLUMNS
 from ...util.csv_parse import (
     parse_csv,
     decode_csv_file,

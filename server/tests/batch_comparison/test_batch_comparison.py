@@ -5,7 +5,6 @@ from flask.testing import FlaskClient
 from ...models import *  # pylint: disable=wildcard-import
 from ..helpers import *  # pylint: disable=wildcard-import
 from ...util.group_by import group_by
-from ...worker.bgcompute import bgcompute_update_batch_tallies_file
 from ..api.test_support import SUPPORT_EMAIL
 
 
@@ -119,7 +118,6 @@ def test_batch_comparison_too_many_votes(
         data={"batchTallies": (io.BytesIO(batch_tallies_file), "batchTallies.csv",)},
     )
     assert_ok(rv)
-    bgcompute_update_batch_tallies_file(election_id)
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     assert rv.status_code == 200

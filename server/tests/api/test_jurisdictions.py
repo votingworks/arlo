@@ -7,7 +7,6 @@ from ..helpers import *  # pylint: disable=wildcard-import
 from ...auth import UserType
 from ...database import db_session
 from ...models import *  # pylint: disable=wildcard-import
-from ...worker.bgcompute import bgcompute_update_ballot_manifest_file
 
 AB1_SAMPLES = 23  # Arbitrary num of ballots to assign to audit board 1
 
@@ -76,7 +75,6 @@ def test_jurisdictions_list_with_manifest(
         data={"manifest": (io.BytesIO(manifest), "manifest.csv",)},
     )
     assert_ok(rv)
-    bgcompute_update_ballot_manifest_file(election_id)
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
@@ -153,8 +151,6 @@ def test_duplicate_batch_name(client, election_id, jurisdiction_ids):
         },
     )
     assert_ok(rv)
-
-    bgcompute_update_ballot_manifest_file(election_id)
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/jurisdiction")

@@ -4,11 +4,6 @@ from flask.testing import FlaskClient
 
 from ...models import *  # pylint: disable=wildcard-import
 from ..helpers import *  # pylint: disable=wildcard-import
-from ...worker.bgcompute import (
-    bgcompute_update_cvr_file,
-    bgcompute_update_ballot_manifest_file,
-)
-from ...util.process_file import ProcessingStatus
 from .conftest import TEST_CVRS
 
 
@@ -38,30 +33,6 @@ def test_cvr_upload(
         data={"cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",)},
     )
     assert_ok(rv)
-
-    rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
-    )
-    compare_json(
-        json.loads(rv.data),
-        {
-            "file": {"name": "cvrs.csv", "uploadedAt": assert_is_date,},
-            "processing": {
-                "status": ProcessingStatus.READY_TO_PROCESS,
-                "startedAt": None,
-                "completedAt": None,
-                "error": None,
-            },
-        },
-    )
-
-    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.get(f"/api/election/{election_id}/jurisdiction")
-    assert rv.status_code == 200
-    jurisdictions = json.loads(rv.data)["jurisdictions"]
-    assert jurisdictions[0]["cvrs"]["numBallots"] is None
-
-    bgcompute_update_cvr_file(election_id)
 
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -173,8 +144,6 @@ def test_cvrs_counting_group(
     )
     assert_ok(rv)
 
-    bgcompute_update_cvr_file(election_id)
-
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
     )
@@ -232,8 +201,6 @@ def test_cvrs_replace(
 
     file_id = Jurisdiction.query.get(jurisdiction_ids[0]).cvr_file_id
 
-    bgcompute_update_cvr_file(election_id)
-
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
         data={
@@ -249,8 +216,6 @@ def test_cvrs_replace(
     jurisdiction = Jurisdiction.query.get(jurisdiction_ids[0])
     assert File.query.get(file_id) is None
     assert jurisdiction.cvr_file_id != file_id
-
-    bgcompute_update_cvr_file(election_id)
 
     cvr_ballots = (
         CvrBallot.query.join(Batch)
@@ -277,8 +242,6 @@ def test_cvrs_clear(
     assert_ok(rv)
 
     file_id = Jurisdiction.query.get(jurisdiction_ids[0]).cvr_file_id
-
-    bgcompute_update_cvr_file(election_id)
 
     rv = client.delete(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
@@ -448,8 +411,6 @@ def test_cvrs_newlines(
     )
     assert_ok(rv)
 
-    bgcompute_update_cvr_file(election_id)
-
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
     )
@@ -564,8 +525,6 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortio
         )
         assert_ok(rv)
 
-        bgcompute_update_cvr_file(election_id)
-
         rv = client.get(
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
         )
@@ -617,8 +576,6 @@ def test_cvr_reprocess_after_manifest_reupload(
     )
     assert_ok(rv)
 
-    bgcompute_update_ballot_manifest_file(election_id)
-
     # Error should be recorded for CVRs
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
@@ -661,8 +618,6 @@ def test_cvr_reprocess_after_manifest_reupload(
         },
     )
     assert_ok(rv)
-
-    bgcompute_update_ballot_manifest_file(election_id)
 
     # CVRs should be fixed
     rv = client.get(

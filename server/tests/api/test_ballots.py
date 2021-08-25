@@ -7,7 +7,6 @@ from ..helpers import *  # pylint: disable=wildcard-import
 from ...auth import UserType
 from ...models import *  # pylint: disable=wildcard-import
 from ...util.jsonschema import JSONDict
-from ...worker.bgcompute import bgcompute_update_ballot_manifest_file
 
 BALLOT_1_BATCH_NAME = "4"
 BALLOT_1_POSITION = 3
@@ -1098,7 +1097,6 @@ def test_ballots_human_sort_order(
         },
     )
     assert_ok(rv)
-    bgcompute_update_ballot_manifest_file(election_id)
 
     # Start round 1
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)

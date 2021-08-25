@@ -18,31 +18,7 @@ branch_labels = None
 depends_on = None
 
 
-def upgrade():
-    op.create_table(
-        "background_task",
-        sa.Column("created_at", sa.DateTime(), nullable=False),
-        sa.Column("updated_at", sa.DateTime(), nullable=False),
-        sa.Column("id", sa.String(length=200), nullable=False),
-        sa.Column("task_name", sa.String(length=200), nullable=False),
-        sa.Column("payload", sa.JSON(), nullable=False),
-        sa.Column("started_at", sa.DateTime(), nullable=True),
-        sa.Column("completed_at", sa.DateTime(), nullable=True),
-        sa.Column("error", sa.Text(), nullable=True),
-        sa.PrimaryKeyConstraint("id", name=op.f("background_task_pkey")),
-    )
-    op.add_column(
-        "round", sa.Column("draw_sample_task_id", sa.String(length=200), nullable=True)
-    )
-    op.create_foreign_key(
-        op.f("round_draw_sample_task_id_fkey"),
-        "round",
-        "background_task",
-        ["draw_sample_task_id"],
-        ["id"],
-        ondelete="cascade",
-    )
-
+def backfill():  # pragma: no cover
     # Backfill a background task for all previous rounds
     connection = op.get_bind()
     rounds = connection.execute("SELECT id, election_id, created_at FROM round")
@@ -79,6 +55,32 @@ def upgrade():
             WHERE id = '{round_id}'
             """
         )
+
+
+def upgrade():
+    op.create_table(
+        "background_task",
+        sa.Column("created_at", sa.DateTime(), nullable=False),
+        sa.Column("updated_at", sa.DateTime(), nullable=False),
+        sa.Column("id", sa.String(length=200), nullable=False),
+        sa.Column("task_name", sa.String(length=200), nullable=False),
+        sa.Column("payload", sa.JSON(), nullable=False),
+        sa.Column("started_at", sa.DateTime(), nullable=True),
+        sa.Column("completed_at", sa.DateTime(), nullable=True),
+        sa.Column("error", sa.Text(), nullable=True),
+        sa.PrimaryKeyConstraint("id", name=op.f("background_task_pkey")),
+    )
+    op.add_column(
+        "round", sa.Column("draw_sample_task_id", sa.String(length=200), nullable=True)
+    )
+    op.create_foreign_key(
+        op.f("round_draw_sample_task_id_fkey"),
+        "round",
+        "background_task",
+        ["draw_sample_task_id"],
+        ["id"],
+        ondelete="cascade",
+    )
 
 
 def downgrade():  # pragma: no cover

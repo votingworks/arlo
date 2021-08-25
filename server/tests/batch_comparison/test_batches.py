@@ -4,10 +4,6 @@ from flask.testing import FlaskClient
 
 from ...models import *  # pylint: disable=wildcard-import
 from ..helpers import *  # pylint: disable=wildcard-import
-from ...worker.bgcompute import (
-    bgcompute_update_ballot_manifest_file,
-    bgcompute_update_batch_tallies_file,
-)
 
 J1_BATCHES_ROUND_1 = 3
 J2_BATCHES_ROUND_1 = 1
@@ -563,7 +559,6 @@ def test_batches_human_sort_order(
             },
         )
         assert_ok(rv)
-        bgcompute_update_ballot_manifest_file(election_id)
 
         # Upload batch tallies
         batch_tallies_file = (
@@ -580,7 +575,6 @@ def test_batches_human_sort_order(
             },
         )
         assert_ok(rv)
-        bgcompute_update_batch_tallies_file(election_id)
         rv = client.get(
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/batch-tallies",
         )

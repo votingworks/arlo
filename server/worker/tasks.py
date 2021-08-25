@@ -8,11 +8,14 @@ from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
 from ..util.isoformat import isoformat
 from ..util.jsonschema import JSONDict
-from ..util.process_file import UserError
 from .. import config
 
 
 logger = logging.getLogger("arlo.worker")
+
+
+class UserError(Exception):
+    pass
 
 
 task_dispatch: Dict[str, Callable] = {}

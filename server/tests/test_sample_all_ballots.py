@@ -7,7 +7,6 @@ from flask.testing import FlaskClient
 
 from .helpers import *  # pylint: disable=wildcard-import
 from ..models import *  # pylint: disable=wildcard-import
-from ..worker.bgcompute import bgcompute_update_ballot_manifest_file
 from ..api.rounds import is_round_complete, end_round
 
 
@@ -75,7 +74,6 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
         },
     )
     assert_ok(rv)
-    bgcompute_update_ballot_manifest_file(election_id)
 
 
 def test_all_ballots_sample_size(

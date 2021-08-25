@@ -5,7 +5,6 @@ from flask.testing import FlaskClient
 from ...models import *  # pylint: disable=wildcard-import
 from ..helpers import *  # pylint: disable=wildcard-import
 from .conftest import TEST_CVRS
-from ...worker.bgcompute import bgcompute_update_cvr_file
 
 
 def test_standardize_contest_names(
@@ -230,7 +229,6 @@ def test_standardize_contest_names_cvr_change(
         },
     )
     assert_ok(rv)
-    bgcompute_update_cvr_file(election_id)
 
     # Get standardizations, should not include outdated standardization
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)

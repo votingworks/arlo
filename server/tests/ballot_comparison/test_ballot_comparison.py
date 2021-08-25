@@ -5,11 +5,6 @@ from flask.testing import FlaskClient
 
 from ...models import *  # pylint: disable=wildcard-import
 from ..helpers import *  # pylint: disable=wildcard-import
-from ...worker.bgcompute import (
-    bgcompute_update_standardized_contests_file,
-    bgcompute_update_cvr_file,
-    bgcompute_update_ballot_manifest_file,
-)
 from .conftest import TEST_CVRS
 
 
@@ -102,7 +97,6 @@ def test_set_contest_metadata_on_manifest_and_cvr_upload(
         },
     )
     assert_ok(rv)
-    bgcompute_update_ballot_manifest_file(election_id)
 
     # Contest total ballots isn't set when only some manifests uploaded
     contest = Contest.query.get(contest_id)
@@ -126,7 +120,6 @@ def test_set_contest_metadata_on_manifest_and_cvr_upload(
         },
     )
     assert_ok(rv)
-    bgcompute_update_ballot_manifest_file(election_id)
 
     # Contest total ballots is set when all manifests uploaded
     contest = Contest.query.get(contest_id)
@@ -139,7 +132,6 @@ def test_set_contest_metadata_on_manifest_and_cvr_upload(
         data={"cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",)},
     )
     assert_ok(rv)
-    bgcompute_update_cvr_file(election_id)
 
     # Contest votes allowed/choices isn't set when only some CVRs uploaded
     contest = Contest.query.get(contest_id)
@@ -152,7 +144,6 @@ def test_set_contest_metadata_on_manifest_and_cvr_upload(
         data={"cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",)},
     )
     assert_ok(rv)
-    bgcompute_update_cvr_file(election_id)
 
     # Contest votes allowed/choices is set when all CVRs uploaded
     contest = Contest.query.get(contest_id)
@@ -185,7 +176,6 @@ def test_set_contest_metadata_on_manifest_and_cvr_upload(
         },
     )
     assert_ok(rv)
-    bgcompute_update_ballot_manifest_file(election_id)
 
     new_cvr = "\n".join(TEST_CVRS.splitlines()[:10])
     rv = client.put(
@@ -193,7 +183,6 @@ def test_set_contest_metadata_on_manifest_and_cvr_upload(
         data={"cvrs": (io.BytesIO(new_cvr.encode()), "cvrs.csv",)},
     )
     assert_ok(rv)
-    bgcompute_update_cvr_file(election_id)
 
     contest = Contest.query.get(contest_id)
     snapshot.assert_match(
@@ -472,8 +461,6 @@ def test_ballot_comparison_two_rounds(
         },
     )
     assert_ok(rv)
-
-    bgcompute_update_standardized_contests_file(election_id)
 
     # AA selects a contest to target from the standardized contest list
     rv = client.get(f"/api/election/{election_id}/standardized-contests")
@@ -934,7 +921,6 @@ def test_ballot_comparison_cvr_choice_names_dont_match(
         },
     )
     assert_ok(rv)
-    bgcompute_update_cvr_file(election_id)
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/sample-sizes")
