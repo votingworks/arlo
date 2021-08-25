@@ -1,4 +1,3 @@
-# pragma: no cover
 import time
 
 from server.database import db_session
