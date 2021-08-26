@@ -137,13 +137,27 @@ export const useBallotManifest = (electionId: string, jurisdictionId: string) =>
     'manifest'
   )
 
-export const useBatchTallies = (electionId: string, jurisdictionId: string) =>
+export const useBatchTallies = (
+  electionId: string,
+  jurisdictionId: string,
+  auditSettings: IAuditSettings | null
+) =>
   useCSV(
     `/election/${electionId}/jurisdiction/${jurisdictionId}/batch-tallies`,
-    'batchTallies'
+    'batchTallies',
+    !!auditSettings && auditSettings.auditType === 'BATCH_COMPARISON'
   )
 
-export const useCVRs = (electionId: string, jurisdictionId: string) =>
-  useCSV(`/election/${electionId}/jurisdiction/${jurisdictionId}/cvrs`, 'cvrs')
-
+export const useCVRs = (
+  electionId: string,
+  jurisdictionId: string,
+  auditSettings: IAuditSettings | null
+) =>
+  useCSV(
+    `/election/${electionId}/jurisdiction/${jurisdictionId}/cvrs`,
+    'cvrs',
+    !!auditSettings &&
+      (auditSettings.auditType === 'BALLOT_COMPARISON' ||
+        auditSettings.auditType === 'HYBRID')
+  )
 export default useCSV

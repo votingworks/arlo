@@ -505,8 +505,6 @@ describe('Home screen', () => {
       jaApiCalls.getSettings(auditSettings.blank),
       jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile({ file: null, processing: null }),
-      jaApiCalls.getBatchTalliesFile({ file: null, processing: null }),
-      jaApiCalls.getCVRSfile({ file: null, processing: null }),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView('/')
@@ -575,8 +573,6 @@ describe('Home screen', () => {
       jaApiCalls.getSettings(auditSettings.blank),
       jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile({ file: null, processing: null }),
-      jaApiCalls.getBatchTalliesFile({ file: null, processing: null }),
-      jaApiCalls.getCVRSfile({ file: null, processing: null }),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderView('/')
