@@ -19,9 +19,8 @@ from ..worker.tasks import (
     UserError,
     background_task,
     create_background_task,
-    serialize_background_task,
 )
-from ..util.file import serialize_file
+from ..util.file import serialize_file, serialize_file_processing
 from ..util.csv_download import csv_response
 from ..util.csv_parse import decode_csv_file
 from ..util.group_by import group_by
@@ -484,10 +483,7 @@ def get_cvrs(
 ):
     return jsonify(
         file=serialize_file(jurisdiction.cvr_file),
-        processing=(
-            jurisdiction.cvr_file
-            and serialize_background_task(jurisdiction.cvr_file.task)
-        ),
+        processing=serialize_file_processing(jurisdiction.cvr_file),
     )
 
 
