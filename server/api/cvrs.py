@@ -452,9 +452,6 @@ def save_cvr_file(cvr, jurisdiction: Jurisdiction):
         name=cvr.filename,
         contents=cvr_string,
         uploaded_at=datetime.now(timezone.utc),
-        task=create_background_task(
-            process_cvr_file, dict(jurisdiction_id=jurisdiction.id)
-        ),
     )
     jurisdiction.cvr_file.task = create_background_task(
         process_cvr_file, dict(jurisdiction_id=jurisdiction.id)
