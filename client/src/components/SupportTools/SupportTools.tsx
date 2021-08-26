@@ -34,6 +34,7 @@ import {
   useClearAuditBoards,
   useReopenAuditBoard,
   useClearOfflineResults,
+  useDeleteOrganization,
 } from './support-api'
 import { useConfirm, Confirm } from '../Atoms/Confirm'
 
@@ -186,6 +187,8 @@ const Table = styled(HTMLTable)`
 const Organization = ({ organizationId }: { organizationId: string }) => {
   const organization = useOrganization(organizationId)
   const createAuditAdmin = useCreateAuditAdmin()
+  const deleteOrganization = useDeleteOrganization(organizationId)
+  const { confirm, confirmProps } = useConfirm()
 
   const { register, handleSubmit, reset, formState } = useForm<IAuditAdmin>()
 
@@ -202,9 +205,35 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
 
   const { name, elections, auditAdmins } = organization.data
 
+  const onClickDeleteOrg = () =>
+    confirm({
+      title: 'Confirm',
+      description: `Are you sure you want to delete organization ${name}?`,
+      yesButtonLabel: 'Delete',
+      onYesClick: async () => {
+        try {
+          await deleteOrganization.mutateAsync({})
+          toast.success(`Deleted organization ${name}`)
+        } catch (error) {
+          toast.error(error.message)
+        }
+      },
+    })
+
   return (
     <div style={{ width: '100%' }}>
-      <H2>{name}</H2>
+      <div style={{ display: 'flex', alignItems: 'baseline' }}>
+        <H2>{name}</H2>
+        <Button
+          icon="delete"
+          intent={Intent.DANGER}
+          minimal
+          onClick={onClickDeleteOrg}
+          style={{ marginLeft: '10px' }}
+        >
+          Delete
+        </Button>
+      </div>
       <div style={{ display: 'flex', width: '100%' }}>
         <Column>
           <H3>Audits</H3>
@@ -262,6 +291,7 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
           </Table>
         </Column>
       </div>
+      <Confirm {...confirmProps} />
     </div>
   )
 }

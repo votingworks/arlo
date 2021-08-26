@@ -1,4 +1,4 @@
-import React, { useState, ReactNode } from 'react'
+import React, { useState, ReactNode, useRef, useEffect } from 'react'
 import { Dialog, Classes, Button, Intent } from '@blueprintjs/core'
 
 export interface IConfirmOptions {
@@ -10,10 +10,25 @@ export interface IConfirmOptions {
   onYesClick: () => Promise<void>
 }
 
+// From https://usehooks-typescript.com/react-hook/use-is-mounted
+function useIsMounted() {
+  const isMounted = useRef(false)
+
+  useEffect(() => {
+    isMounted.current = true
+    return () => {
+      isMounted.current = false
+    }
+  }, [])
+
+  return () => isMounted.current
+}
+
 export const useConfirm = () => {
   // We show the dialog whenever options are set.
   // On close, we set options to null.
   const [options, setOptions] = useState<IConfirmOptions | null>(null)
+  const isMounted = useIsMounted()
 
   const confirm = (newOptions: IConfirmOptions) => {
     setOptions(newOptions)
@@ -21,7 +36,8 @@ export const useConfirm = () => {
 
   const onYesClick = async () => {
     await options!.onYesClick()
-    setOptions(null)
+    // onYesClick might redirect, unmounting us
+    if (isMounted()) setOptions(null)
   }
 
   const onClose = () => {
@@ -58,6 +74,7 @@ export const Confirm = ({
   onClose,
 }: IConfirmProps) => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
+  const isMounted = useIsMounted()
 
   const handleYesClick = async () => {
     setIsSubmitting(true)
@@ -66,7 +83,8 @@ export const Confirm = ({
     } catch (error) {
       // Do nothing, error handling should happen within onYesClick
     } finally {
-      setIsSubmitting(false)
+      // onYesClick might redirect, unmounting us
+      if (isMounted()) setIsSubmitting(false)
     }
   }
 

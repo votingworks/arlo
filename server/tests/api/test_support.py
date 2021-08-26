@@ -62,6 +62,38 @@ def test_support_get_organization(client: FlaskClient, org_id: str, election_id:
     )
 
 
+def test_support_delete_organization(client: FlaskClient):
+    set_support_user(client, SUPPORT_EMAIL)
+    org_id, _ = create_org_and_admin("Test Delete Org", "admin-delete@example.com")
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, "admin-delete@example.com")
+    election_id = create_election(client, organization_id=org_id)
+
+    rv = client.delete(f"/api/support/organizations/{org_id}")
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Cannot delete an org with audits. If you really want to delete this org, first delete all of its audits.",
+            }
+        ]
+    }
+
+    rv = client.delete(f"/api/election/{election_id}")
+    assert_ok(rv)
+
+    rv = client.delete(f"/api/support/organizations/{org_id}")
+    assert_ok(rv)
+
+    rv = client.get(f"/api/support/organizations/{org_id}")
+    assert rv.status_code == 404
+
+    rv = client.get("/api/me")
+    assert json.loads(rv.data)["user"]["organizations"] == []
+
+    assert Election.query.get(election_id) is None
+
+
 def test_support_get_election(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
 ):

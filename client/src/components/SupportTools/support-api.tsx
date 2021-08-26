@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from 'react-query'
+import { useHistory } from 'react-router-dom'
 import { tryJson, addCSRFToken } from '../utilities'
 
 const fetchApi = async (url: string, options?: RequestInit) => {
@@ -86,6 +87,25 @@ export const useOrganization = (organizationId: string) =>
   useQuery<IOrganization, Error>(['organizations', organizationId], () =>
     fetchApi(`/api/support/organizations/${organizationId}`)
   )
+
+export const useDeleteOrganization = (organizationId: string) => {
+  const deleteOrganization = async () =>
+    fetchApi(`/api/support/organizations/${organizationId}`, {
+      method: 'DELETE',
+    })
+
+  const queryClient = useQueryClient()
+  const history = useHistory()
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return useMutation<any, Error, any>(deleteOrganization, {
+    onSuccess: () => {
+      queryClient.removeQueries(['organizations', organizationId])
+      queryClient.resetQueries('organizations')
+      history.push('/support')
+    },
+  })
+}
 
 export const useCreateAuditAdmin = () => {
   const postAuditAdmin = async ({
