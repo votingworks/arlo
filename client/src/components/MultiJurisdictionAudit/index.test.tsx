@@ -32,7 +32,8 @@ import AuthDataProvider, { useAuthDataContext } from '../UserContext'
 import getJurisdictionFileStatus from './useSetupMenuItems/getJurisdictionFileStatus'
 import getRoundStatus from './useSetupMenuItems/getRoundStatus'
 import { jaApiCalls, aaApiCalls } from './_mocks'
-import jurisdictionFile, {
+import {
+  jurisdictionFile,
   jurisdictionErrorFile,
   standardizedContestsFile,
 } from './AASetup/Participants/_mocks'
@@ -436,6 +437,7 @@ describe('JA setup', () => {
       jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
       jaApiCalls.putManifest,
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
+      jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
@@ -472,37 +474,14 @@ describe('JA setup', () => {
       jaApiCalls.getUser,
       jaApiCalls.getSettings(auditSettings.batchComparisonAll),
       jaApiCalls.getRounds([]),
-      jaApiCalls.getBallotManifestFile(manifestMocks.empty),
-      jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
-      jaApiCalls.putManifest,
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
+      jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
       jaApiCalls.deleteManifest,
       jaApiCalls.getBallotManifestFile(manifestMocks.empty),
+      jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
-      await screen.findByText('Audit Source Data')
-      const [manifestInput, talliesInput] = screen.getAllByLabelText(
-        'Select a CSV...'
-      )
-      const [manifestButton, talliesButton] = screen.getAllByRole('button', {
-        name: 'Upload File',
-      })
-
-      expect(talliesInput).toBeDisabled()
-      expect(talliesButton).toBeDisabled()
-
-      userEvent.click(manifestButton)
-      await screen.findByText('You must upload a file')
-
-      userEvent.upload(manifestInput, manifestFile)
-      await waitFor(() =>
-        expect(
-          screen.queryByText('You must upload a file')
-        ).not.toBeInTheDocument()
-      )
-
-      userEvent.click(manifestButton)
       await screen.findByText(
         'Upload successfully completed at 6/8/2020, 9:39:14 PM.'
       )
@@ -546,6 +525,39 @@ describe('JA setup', () => {
     })
   })
 
+  it('displays errors after reprocessing batch tallies', async () => {
+    const expectedCalls = [
+      jaApiCalls.getUser,
+      jaApiCalls.getSettings(auditSettings.batchComparisonAll),
+      jaApiCalls.getRounds([]),
+      jaApiCalls.getBallotManifestFile(manifestMocks.processed),
+      jaApiCalls.getBatchTalliesFile(talliesMocks.processed),
+      jaApiCalls.putManifest,
+      jaApiCalls.getBallotManifestFile(manifestMocks.processed),
+      jaApiCalls.getBatchTalliesFile(talliesMocks.errored),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderView()
+      await screen.findByText('Audit Source Data')
+      expect(screen.getAllByText(/Upload successfully completed/)).toHaveLength(
+        2
+      )
+
+      // Upload a new manifest
+      userEvent.click(
+        screen.getAllByRole('button', { name: 'Replace File' })[0]
+      )
+      userEvent.upload(
+        await screen.findByLabelText('Select a CSV...'),
+        manifestFile
+      )
+      userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
+
+      await screen.findByText(/Upload successfully completed/)
+      screen.getByText('Invalid CSV')
+    })
+  })
+
   it('submits CVRs', async () => {
     const expectedCalls = [
       jaApiCalls.getUser,
@@ -579,6 +591,39 @@ describe('JA setup', () => {
     })
   })
 
+  it('displays errors after reprocessing batch tallies', async () => {
+    const expectedCalls = [
+      jaApiCalls.getUser,
+      jaApiCalls.getSettings(auditSettings.ballotComparisonAll),
+      jaApiCalls.getRounds([]),
+      jaApiCalls.getBallotManifestFile(manifestMocks.processed),
+      jaApiCalls.getCVRSfile(cvrsMocks.processed),
+      jaApiCalls.putManifest,
+      jaApiCalls.getBallotManifestFile(manifestMocks.processed),
+      jaApiCalls.getCVRSfile(cvrsMocks.errored),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderView()
+      await screen.findByText('Audit Source Data')
+      expect(screen.getAllByText(/Upload successfully completed/)).toHaveLength(
+        2
+      )
+
+      // Upload a new manifest
+      userEvent.click(
+        screen.getAllByRole('button', { name: 'Replace File' })[0]
+      )
+      userEvent.upload(
+        await screen.findByLabelText('Select a CSV...'),
+        manifestFile
+      )
+      userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
+
+      await screen.findByText(/Upload successfully completed/)
+      screen.getByText('Invalid CSV')
+    })
+  })
+
   it('shows error with incorrect file', async () => {
     const expectedCalls = [
       jaApiCalls.getUser,
@@ -588,6 +633,7 @@ describe('JA setup', () => {
       jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
       jaApiCalls.putManifest,
       jaApiCalls.getBallotManifestFile(manifestMocks.errored),
+      jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
@@ -626,6 +672,7 @@ describe('JA setup', () => {
       jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
       jaApiCalls.putManifest,
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
+      jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()

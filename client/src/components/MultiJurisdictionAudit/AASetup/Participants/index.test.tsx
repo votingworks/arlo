@@ -4,7 +4,7 @@ import { Route } from 'react-router-dom'
 import userEvent from '@testing-library/user-event'
 import relativeStages from '../_mocks'
 import Participants from './index'
-import jurisdictionFile from './_mocks'
+import { jurisdictionFile, jurisdictionErrorFile } from './_mocks'
 import { auditSettings } from '../../useSetupMenuItems/_mocks'
 import { renderWithRouter, withMockFetch } from '../../../testUtilities'
 import { aaApiCalls } from '../../_mocks'
@@ -162,6 +162,7 @@ describe('Audit Setup > Participants', () => {
       apiCalls.getStandardizedContestsFile(fileMocks.empty),
       apiCalls.putJurisdictionsFile(jurisdictionFile),
       apiCalls.getJurisdictionsFile(fileMocks.processed),
+      apiCalls.getStandardizedContestsFile(fileMocks.empty),
       apiCalls.putStandardizedContestsFile(contestsFile),
       apiCalls.getStandardizedContestsFile(fileMocks.processed),
     ]
@@ -218,6 +219,7 @@ describe('Audit Setup > Participants', () => {
       apiCalls.getStandardizedContestsFile(fileMocks.empty),
       apiCalls.putJurisdictionsFile(jurisdictionFile),
       apiCalls.getJurisdictionsFile(fileMocks.processed),
+      apiCalls.getStandardizedContestsFile(fileMocks.empty),
       apiCalls.putStandardizedContestsFile(contestsFile),
       apiCalls.getStandardizedContestsFile(fileMocks.processed),
     ]
@@ -331,6 +333,37 @@ describe('Audit Setup > Participants', () => {
           screen.queryByRole('heading', { name: 'Standardized Contests' })
         ).not.toBeInTheDocument()
       )
+    })
+  })
+
+  it('displays errors after reprocessing standardized contests', async () => {
+    const expectedCalls = [
+      aaApiCalls.getSettings(auditSettings.blankBallotComparison),
+      apiCalls.getJurisdictionsFile(fileMocks.processed),
+      apiCalls.getStandardizedContestsFile(fileMocks.processed),
+      apiCalls.putJurisdictionsFile(jurisdictionErrorFile),
+      apiCalls.getJurisdictionsFile(fileMocks.processed),
+      apiCalls.getStandardizedContestsFile(fileMocks.errored),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderParticipants()
+
+      expect(
+        await screen.findAllByText(/Upload successfully completed/)
+      ).toHaveLength(2)
+
+      // Upload a new jurisdictions file
+      userEvent.click(
+        screen.getAllByRole('button', { name: 'Replace File' })[0]
+      )
+      userEvent.upload(
+        screen.getByLabelText('Select a CSV...'),
+        jurisdictionErrorFile
+      )
+      userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
+
+      await screen.findByText(/Upload successfully completed/)
+      screen.getByText('something went wrong')
     })
   })
 })
