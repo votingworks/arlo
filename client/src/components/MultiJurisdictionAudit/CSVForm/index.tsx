@@ -86,9 +86,9 @@ const CSVFile = ({
                 )}
               </FormSectionDescription>
             </FormSection>
-            <FormSection>
-              {isEditing || !file || isProcessing ? (
-                <>
+            {isEditing || !file || isProcessing ? (
+              <>
+                <FormSection>
                   <FileInput
                     inputProps={{
                       accept: '.csv',
@@ -109,9 +109,23 @@ const CSVFile = ({
                   {errors.csv && touched.csv && (
                     <ErrorLabel>{errors.csv}</ErrorLabel>
                   )}
-                </>
-              ) : (
-                <>
+                </FormSection>
+
+                <div>
+                  <FormButton
+                    type="submit"
+                    intent="primary"
+                    onClick={handleSubmit}
+                    loading={isSubmitting || isProcessing}
+                    disabled={!enabled}
+                  >
+                    Upload File
+                  </FormButton>
+                </div>
+              </>
+            ) : (
+              <>
+                <FormSection>
                   <p>
                     <strong>Current file:</strong> {file.name}
                   </p>
@@ -126,24 +140,10 @@ const CSVFile = ({
                         .
                       </SuccessLabel>
                     )}
-                </>
-              )}
-            </FormSection>
-            <div>
-              {isEditing || !file || isProcessing ? (
-                <FormButton
-                  type="submit"
-                  intent="primary"
-                  onClick={handleSubmit}
-                  loading={isSubmitting || isProcessing}
-                  disabled={!enabled}
-                >
-                  Upload File
-                </FormButton>
-              ) : (
-                // We give these buttons a key to make sure React doesn't reuse
-                // the submit button for one of them.
-                <>
+                </FormSection>
+                <div>
+                  {/* We give these buttons a key to make sure React doesnt
+                    reuse the submit button for one of them. */}
                   <FormButton
                     key="replace"
                     onClick={() => {
@@ -166,9 +166,9 @@ const CSVFile = ({
                       Delete File
                     </FormButton>
                   )}
-                </>
-              )}
-            </div>
+                </div>
+              </>
+            )}
           </FormWrapper>
         </form>
       )}
