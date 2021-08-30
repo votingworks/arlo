@@ -11,6 +11,7 @@ from sqlalchemy.orm import (
     deferred as sa_deferred,
 )
 from sqlalchemy.types import TypeDecorator
+from sqlalchemy.dialects import postgresql
 from .database import Base  # pylint: disable=cyclic-import
 
 C = TypeVar("C")  # pylint: disable=invalid-name
@@ -856,7 +857,7 @@ class ActivityLogRecord(Base):
         String(200), ForeignKey("organization.id", ondelete="cascade"), nullable=False
     )
     activity_name = Column(String(200), nullable=False)
-    info = Column(JSON, nullable=False)
+    info = Column(postgresql.JSON, nullable=False)
 
     posted_to_slack_at = Column(UTCDateTime)
 

@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from 'react-query'
 import { useHistory } from 'react-router-dom'
 import { tryJson, addCSRFToken } from '../utilities'
 
-const fetchApi = async (url: string, options?: RequestInit) => {
+export const fetchApi = async (url: string, options?: RequestInit) => {
   const response = await fetch(url, addCSRFToken(options))
   if (response.ok) return response.json()
   const text = await response.text()

@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { Icon, HTMLTable, Button } from '@blueprintjs/core'
 import { downloadFile } from '../utilities'
 
-const StyledTable = styled.table`
+export const StyledTable = styled.table`
   width: 100%;
   table-layout: fixed;
 

@@ -31,6 +31,7 @@ import useAuditSettingsJurisdictionAdmin from './RoundManagement/useAuditSetting
 import H2Title from '../Atoms/H2Title'
 import CSVFile from './CSVForm'
 import { useInterval } from '../utilities'
+import ActivityLog from './ActivityLog'
 
 const VerticalInner = styled(Inner)`
   flex-direction: column;

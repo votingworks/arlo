@@ -156,27 +156,32 @@ const Header: React.FC<{}> = () => {
             {auth && auth.user && auth.user.type !== 'audit_board' && (
               <>
                 <NavbarGroup align={Alignment.RIGHT}>
-                  {electionId && auth.user.type === 'audit_admin' && (
+                  {auth.user.type === 'audit_admin' && (
                     <>
-                      <LinkButton
-                        to={`/election/${electionId}/setup`}
-                        minimal
-                        icon="wrench"
-                      >
-                        Audit Setup
-                      </LinkButton>
-                      <LinkButton
-                        to={`/election/${electionId}/progress`}
-                        minimal
-                        icon="horizontal-bar-chart"
-                      >
-                        Audit Progress
-                      </LinkButton>
+                      {electionId && (
+                        <>
+                          <LinkButton
+                            to={`/election/${electionId}/setup`}
+                            minimal
+                            icon="wrench"
+                          >
+                            Audit Setup
+                          </LinkButton>
+                          <LinkButton
+                            to={`/election/${electionId}/progress`}
+                            minimal
+                            icon="horizontal-bar-chart"
+                          >
+                            Audit Progress
+                          </LinkButton>
+                          <NavbarDivider />
+                        </>
+                      )}
                       <LinkButton to="/" minimal icon="projects">
-                        View Audits
+                        All Audits
                       </LinkButton>
-                      <LinkButton to="/" minimal icon="insert">
-                        New Audit
+                      <LinkButton to="/activity" minimal icon="history">
+                        Activity Log
                       </LinkButton>
                       <NavbarDivider />
                     </>
