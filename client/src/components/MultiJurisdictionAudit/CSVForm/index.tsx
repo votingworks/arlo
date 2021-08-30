@@ -30,14 +30,7 @@ interface IProps {
   enabled: boolean
 }
 
-const CSVFile: React.FC<IProps> = (props: IProps) => {
-  // Force the form to reset every time props.csvFile changes
-  // E.g. if we upload or delete a file
-  // See https://reactjs.org/blog/2018/06/07/you-probably-dont-need-derived-state.html#recap
-  return <CSVFileForm key={Date.now()} {...props} />
-}
-
-const CSVFileForm = ({
+const CSVFile = ({
   csvFile,
   uploadCSVFile,
   deleteCSVFile,
@@ -52,12 +45,14 @@ const CSVFileForm = ({
 
   return (
     <Formik
+      enableReinitialize
       initialValues={{ csv: isProcessing ? new File([], file!.name) : null }}
       validationSchema={schema}
       validateOnBlur={false}
       onSubmit={async (values: IValues) => {
         if (values.csv) {
           await uploadCSVFile(values.csv)
+          setIsEditing(false)
         }
       }}
     >
@@ -92,20 +87,20 @@ const CSVFileForm = ({
               </FormSectionDescription>
             </FormSection>
             <FormSection>
-              {isEditing ? (
+              {isEditing || !file || isProcessing ? (
                 <>
                   <FileInput
                     inputProps={{
                       accept: '.csv',
                       name: 'csv',
                     }}
-                    onInputChange={e => {
+                    onInputChange={e =>
                       setFieldValue(
                         'csv',
                         (e.currentTarget.files && e.currentTarget.files[0]) ||
                           undefined
                       )
-                    }}
+                    }
                     hasSelection={!!values.csv}
                     text={values.csv ? values.csv.name : 'Select a CSV...'}
                     onBlur={handleBlur}
@@ -118,7 +113,7 @@ const CSVFileForm = ({
               ) : (
                 <>
                   <p>
-                    <strong>Current file:</strong> {file!.name}
+                    <strong>Current file:</strong> {file.name}
                   </p>
                   {processing && processing.error && (
                     <ErrorLabel>{processing.error}</ErrorLabel>
@@ -135,7 +130,7 @@ const CSVFileForm = ({
               )}
             </FormSection>
             <div>
-              {isEditing ? (
+              {isEditing || !file || isProcessing ? (
                 <FormButton
                   type="submit"
                   intent="primary"
@@ -151,7 +146,10 @@ const CSVFileForm = ({
                 <>
                   <FormButton
                     key="replace"
-                    onClick={() => setIsEditing(true)}
+                    onClick={() => {
+                      setFieldValue('csv', null)
+                      setIsEditing(true)
+                    }}
                     disabled={!enabled}
                   >
                     Replace File
@@ -159,7 +157,10 @@ const CSVFileForm = ({
                   {deleteCSVFile && (
                     <FormButton
                       key="delete"
-                      onClick={deleteCSVFile}
+                      onClick={async () => {
+                        await deleteCSVFile()
+                        setIsEditing(true)
+                      }}
                       disabled={!enabled}
                     >
                       Delete File
