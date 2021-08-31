@@ -10,7 +10,11 @@ const parseCookies = () =>
 
 export const addCSRFToken = (options?: RequestInit) => {
   const token = parseCookies()._csrf_token
-  if (token && options && ['POST', 'PUT', 'DELETE'].includes(options.method!))
+  if (
+    token &&
+    options &&
+    ['POST', 'PUT', 'PATCH', 'DELETE'].includes(options.method!)
+  )
     return {
       ...options,
       headers: { ...options.headers, 'X-CSRFToken': token },

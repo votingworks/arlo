@@ -94,6 +94,27 @@ def test_support_delete_organization(client: FlaskClient):
     assert Election.query.get(election_id) is None
 
 
+def test_support_rename_organization(client: FlaskClient, org_id: str):
+    set_support_user(client, SUPPORT_EMAIL)
+
+    rv = patch_json(client, f"/api/support/organizations/{org_id}", {})
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {"errorType": "Bad Request", "message": "'name' is a required property"}
+        ]
+    }
+
+    rv = patch_json(
+        client, f"/api/support/organizations/{org_id}", dict(name="New Org Name")
+    )
+    assert_ok(rv)
+
+    rv = client.get(f"/api/support/organizations/{org_id}")
+    new_name = json.loads(rv.data)["name"]
+    assert new_name == "New Org Name"
+
+
 def test_support_get_election(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
 ):

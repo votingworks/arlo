@@ -35,6 +35,7 @@ import {
   useReopenAuditBoard,
   useClearOfflineResults,
   useDeleteOrganization,
+  useRenameOrganization,
 } from './support-api'
 import { useConfirm, Confirm } from '../Atoms/Confirm'
 
@@ -188,16 +189,26 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
   const organization = useOrganization(organizationId)
   const createAuditAdmin = useCreateAuditAdmin()
   const deleteOrganization = useDeleteOrganization(organizationId)
+  const renameOrganization = useRenameOrganization(organizationId)
   const { confirm, confirmProps } = useConfirm()
 
-  const { register, handleSubmit, reset, formState } = useForm<IAuditAdmin>()
+  const {
+    register: registerCreateAdmin,
+    handleSubmit: handleSubmitCreateAdmin,
+    reset: resetCreateAdmin,
+    formState: formStateCreateAdmin,
+  } = useForm<IAuditAdmin>()
+  const {
+    register: registerRename,
+    handleSubmit: handleSubmitRename,
+  } = useForm<{ name: string }>()
 
   if (!organization.isSuccess) return null
 
   const onSubmitCreateAuditAdmin = async (auditAdmin: IAuditAdmin) => {
     try {
       await createAuditAdmin.mutateAsync({ organizationId, auditAdmin })
-      reset()
+      resetCreateAdmin()
     } catch (error) {
       toast.error(error.message)
     }
@@ -220,20 +231,56 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
       },
     })
 
+  const onClickRenameOrg = () =>
+    confirm({
+      title: 'Rename',
+      description: (
+        <form>
+          <label htmlFor="name">
+            <p>Enter a new name for this organization: </p>
+            <input
+              type="text"
+              name="name"
+              className={Classes.INPUT}
+              ref={registerRename}
+              style={{ width: '100%' }}
+            />
+          </label>
+        </form>
+      ),
+      yesButtonLabel: 'Submit',
+      // eslint-disable-next-line no-shadow
+      onYesClick: handleSubmitRename(async ({ name }: { name: string }) => {
+        try {
+          await renameOrganization.mutateAsync({ name })
+        } catch (error) {
+          toast.error(error.message)
+        }
+      }),
+    })
+
   return (
     <div style={{ width: '100%' }}>
       <div style={{ display: 'flex', alignItems: 'baseline' }}>
         <H2>{name}</H2>
         <Button
+          icon="edit"
+          minimal
+          onClick={onClickRenameOrg}
+          style={{ marginLeft: '10px' }}
+        >
+          Rename
+        </Button>
+        <Button
           icon="delete"
           intent={Intent.DANGER}
           minimal
           onClick={onClickDeleteOrg}
-          style={{ marginLeft: '10px' }}
         >
           Delete
         </Button>
       </div>
+
       <div style={{ display: 'flex', width: '100%' }}>
         <Column>
           <H3>Audits</H3>
@@ -253,21 +300,21 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
           <H3>Audit Admins</H3>
           <form
             style={{ display: 'flex' }}
-            onSubmit={handleSubmit(onSubmitCreateAuditAdmin)}
+            onSubmit={handleSubmitCreateAdmin(onSubmitCreateAuditAdmin)}
           >
             <input
               type="text"
               name="email"
               className={Classes.INPUT}
               placeholder="New admin email"
-              ref={register}
+              ref={registerCreateAdmin}
               style={{ flexGrow: 1 }}
             />
             <Button
               type="submit"
               icon="new-person"
               style={{ marginLeft: '20px' }}
-              loading={formState.isSubmitting}
+              loading={formStateCreateAdmin.isSubmitting}
             >
               Create Audit Admin
             </Button>
