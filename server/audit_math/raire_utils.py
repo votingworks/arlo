@@ -173,7 +173,9 @@ class NEBAssertion(RaireAssertion):
         return False
 
     def display(self, stream=sys.stdout):
-        print("NEB,{},{},Eliminated".format(self.winner,self.loser),file=stream)
+        print("NEB,{},{},Eliminated [{}]".format(self.winner, self.loser,
+            self.difficulty), file=stream)
+
 
 class NENAssertion(RaireAssertion):
     """
@@ -220,7 +222,7 @@ class NENAssertion(RaireAssertion):
         for cand in self.eliminated:
             print(",{}".format(cand), file=stream, end='')
 
-        print("", file=stream)
+        print(" [{}]".format(self.difficulty), file=stream)
             
 
 class RaireNode:
@@ -237,7 +239,7 @@ class RaireNode:
         # An "ancestor" of this node is a node whose tail equals the latter
         # part of self.tail (i.e., if self.tail is ["A", "B", "C"], the node
         # will have an ancestor with tail ["B", "C"].
-        self.best_anscestor = None
+        self.best_ancestor = None
 
         # If there are candidates not mentioned in self.tail, this node
         # is not a leaf and it can be expanded.
@@ -267,16 +269,44 @@ class RaireNode:
 
         return self.tail[l1-l2:] == node.tail
 
+    def display(self, stream=sys.stdout):
+        print("{} | ".format(self.tail[0]), file=stream, end='')
+
+        for i in range(1, len(self.tail)):
+            print("{} ".format(self.tail[i]), file=stream, end='')
+
+        print("[{}]".format(self.estimate), file=stream, end='')
+
+        if self.best_ancestor != None:
+            print(" (Best Ancestor {} | ".format(self.best_ancestor.tail[0]),
+                file=stream, end='')
+
+            for i in range(1, len(self.best_ancestor.tail)):
+                print("{} ".format(self.best_ancestor.tail[i]), file=stream,
+                    end='')
+            print("[{}])".format(self.best_ancestor.estimate), file=stream,
+                end='')
+
+        print("")
+
 class RaireFrontier:
     def __init__(self):
         self.nodes = []
 
-    def replace_descendents(self, node : Type[RaireNode]):
+
+    def replace_descendents(self, node: Type[RaireNode], log: bool, 
+        stream=sys.stdout):
         '''
         Remove all descendents of the input 'node' from the frontier, and
         insert 'node' to the frontier in the appropriate position.
+
+        If 'log' is true, print logging statements to given 'stream'.
         '''
         descendents = []
+
+        if log:
+            print("Replacing descendents of ", file=stream, end='')
+            node.display(stream=stream)
 
         for i in range(len(self.nodes)):
             node_at_i = self.nodes[i]
@@ -286,9 +316,14 @@ class RaireFrontier:
                 descendents.append(i)
 
         for i in reversed(descendents):
+            if log:
+                print("Removing node: ", file=stream, end='')
+                self.nodes[i].display(stream=stream)
+
             del self.nodes[i]
 
         self.insert_node(node) 
+
 
     def insert_node(self, node: Type[RaireNode]):
         '''
@@ -321,6 +356,10 @@ class RaireFrontier:
 
             self.nodes.insert(i, node)   
 
+
+    def display(self, stream=sys.stdout):
+        for node in self.nodes:
+            node.display(stream=stream)
 
 
 def find_best_audit(contest : Contest, ballots: CBS, neb_matrix, \
@@ -424,7 +463,7 @@ def find_best_audit(contest : Contest, ballots: CBS, neb_matrix, \
 
 
 def perform_dive(node: Type[RaireNode], contest : Contest, ballots : CBS, \
-    neb_matrix, as_func: Callable):
+    neb_matrix, asn_func: Callable):
     '''
     Input:
     node: RaireNode    -  A node in the tree of alternate election outcomes.
@@ -454,7 +493,7 @@ def perform_dive(node: Type[RaireNode], contest : Contest, ballots : CBS, \
     rem_cands = [c for c in contest.candidates if not c in node.tail]
     next_cand = rem_cands[0]
 
-    newn = RaireNode([next_cand] ++ node.tail)
+    newn = RaireNode([next_cand] + node.tail)
     newn.expandable = False if len(newn.tail) == ncands else True
 
     # Assign a 'best ancestor' to the new node. 
