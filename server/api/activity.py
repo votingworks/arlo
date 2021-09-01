@@ -35,9 +35,7 @@ def list_activities(organization_id: str):
                     and dict(
                         key=activity.info["base"]["user_key"],
                         type=activity.info["base"]["user_type"],
-                        supportUser=(
-                            activity.info["base"].get("support_user_email") is not None
-                        ),
+                        supportUser=(activity.info["base"].get("support_user_email")),
                     )
                 ),
                 election=(

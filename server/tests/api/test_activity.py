@@ -9,8 +9,19 @@ def test_list_activities(
     org_id: str,
     election_id: str,
     jurisdiction_ids: List[str],
-    audit_board_round_1_ids: List[str],  # pylint: disable=unused-argument
+    round_1_id: str,
 ):
+    set_support_user(client, "support@example.gov")
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
+        [{"name": "Audit Board #1"}],
+    )
+    assert_ok(rv)
+
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/organizations/{org_id}/activities")
     activities = json.loads(rv.data)
@@ -29,12 +40,12 @@ def test_list_activities(
                 "info": {
                     "jurisdiction_id": jurisdiction_ids[0],
                     "jurisdiction_name": "J1",
-                    "num_audit_boards": 2,
+                    "num_audit_boards": 1,
                 },
                 "timestamp": assert_is_date,
                 "user": {
                     "key": default_ja_email(election_id),
-                    "supportUser": False,
+                    "supportUser": "support@example.gov",
                     "type": "jurisdiction_admin",
                 },
             },
@@ -50,7 +61,7 @@ def test_list_activities(
                 "timestamp": assert_is_date,
                 "user": {
                     "key": DEFAULT_AA_EMAIL,
-                    "supportUser": False,
+                    "supportUser": None,
                     "type": "audit_admin",
                 },
             },
@@ -66,7 +77,7 @@ def test_list_activities(
                 "timestamp": assert_is_date,
                 "user": {
                     "key": DEFAULT_AA_EMAIL,
-                    "supportUser": False,
+                    "supportUser": None,
                     "type": "audit_admin",
                 },
             },
@@ -116,7 +127,7 @@ def test_list_activities(
                 "timestamp": assert_is_date,
                 "user": {
                     "key": DEFAULT_AA_EMAIL,
-                    "supportUser": False,
+                    "supportUser": None,
                     "type": "audit_admin",
                 },
             },

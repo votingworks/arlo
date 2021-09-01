@@ -128,9 +128,7 @@ const ActivityLog = () => {
                   <td>
                     {activity.user &&
                       activity.user.type !== 'audit_board' &&
-                      (activity.user.supportUser
-                        ? 'VotingWorks Support'
-                        : activity.user.key)}
+                      (activity.user.supportUser || activity.user.key)}
                   </td>
                   <td>{prettyAction(activity)}</td>
                   <td>{activity.election && activity.election.auditName}</td>

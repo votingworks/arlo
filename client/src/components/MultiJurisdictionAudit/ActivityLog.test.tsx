@@ -18,19 +18,19 @@ const mockElection = {
 const mockAuditAdmin = {
   key: 'admin@example.gov',
   type: 'audit_admin',
-  supportUser: false,
+  supportUser: null,
 }
 
 const mockJurisdictionAdmin = {
   key: 'admin@example.gov',
   type: 'jurisdiction_admin',
-  supportUser: false,
+  supportUser: null,
 }
 
 const mockSupportUser = {
   key: 'admin@example.gov',
   type: 'audit_admin',
-  supportUser: true,
+  supportUser: 'support@example.gov',
 }
 
 // Adds a minute each time it's called
@@ -257,7 +257,7 @@ describe('Activity Log', () => {
         \\"8/31/2021, 11:01:49 PM\\",\\"\\",\\"Audit Board #1 signed off\\",\\"Test Audit\\",\\"Jurisdiction 1\\"
         \\"8/31/2021, 11:00:49 PM\\",\\"admin@example.gov\\",\\"Recorded results\\",\\"Test Audit\\",\\"Jurisdiction 1\\"
         \\"8/31/2021, 10:59:49 PM\\",\\"admin@example.gov\\",\\"Created audit boards\\",\\"Test Audit\\",\\"Jurisdiction 1\\"
-        \\"8/31/2021, 10:58:49 PM\\",\\"VotingWorks Support\\",\\"Started round 1\\",\\"Test Audit\\",\\"\\"
+        \\"8/31/2021, 10:58:49 PM\\",\\"support@example.gov\\",\\"Started round 1\\",\\"Test Audit\\",\\"\\"
         \\"8/31/2021, 10:57:49 PM\\",\\"admin@example.gov\\",\\"Calculated sample sizes\\",\\"Test Audit\\",\\"\\"
         \\"8/31/2021, 10:56:49 PM\\",\\"\\",\\"Successfully uploaded CVRs\\",\\"Test Audit\\",\\"Jurisdiction 1\\"
         \\"8/31/2021, 10:55:49 PM\\",\\"\\",\\"Successfully uploaded candidate totals by batch\\",\\"Test Audit\\",\\"Jurisdiction 1\\"
