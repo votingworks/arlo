@@ -68,7 +68,7 @@ const useCSV = (
       // Reload this file whenever a file it depends finishes processing. This is
       // useful when one file gets reprocessed on the backend after its dependency
       // processes (e.g. CVR depends on ballot manifest).
-      if (dependencyFile === undefined || dependencyFile) {
+      if (dependencyFile !== null) {
         setCSV(await loadCSVFile(url, shouldFetch))
       }
     })()
