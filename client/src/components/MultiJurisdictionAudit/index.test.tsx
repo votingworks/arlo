@@ -419,7 +419,6 @@ describe('JA setup', () => {
       jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile(manifestMocks.empty),
       jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
-      jaApiCalls.getCVRSfile(cvrsMocks.empty),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderView()
@@ -435,7 +434,6 @@ describe('JA setup', () => {
       jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile(manifestMocks.empty),
       jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
-      jaApiCalls.getCVRSfile(cvrsMocks.empty),
       jaApiCalls.putManifest,
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
     ]
@@ -476,7 +474,6 @@ describe('JA setup', () => {
       jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile(manifestMocks.empty),
       jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
-      jaApiCalls.getCVRSfile(cvrsMocks.empty),
       jaApiCalls.putManifest,
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
       jaApiCalls.deleteManifest,
@@ -523,7 +520,6 @@ describe('JA setup', () => {
       jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
       jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
-      jaApiCalls.getCVRSfile(cvrsMocks.empty),
       jaApiCalls.putTallies,
       jaApiCalls.getBatchTalliesFile(talliesMocks.processed),
     ]
@@ -556,7 +552,6 @@ describe('JA setup', () => {
       jaApiCalls.getSettings(auditSettings.ballotComparisonAll),
       jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
-      jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
       jaApiCalls.getCVRSfile(cvrsMocks.empty),
       jaApiCalls.putCVRs,
       jaApiCalls.getCVRSfile(cvrsMocks.processed),
@@ -591,7 +586,6 @@ describe('JA setup', () => {
       jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile(manifestMocks.empty),
       jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
-      jaApiCalls.getCVRSfile(cvrsMocks.empty),
       jaApiCalls.putManifest,
       jaApiCalls.getBallotManifestFile(manifestMocks.errored),
     ]
@@ -630,7 +624,6 @@ describe('JA setup', () => {
       jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
       jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
-      jaApiCalls.getCVRSfile(cvrsMocks.empty),
       jaApiCalls.putManifest,
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
     ]
@@ -669,8 +662,6 @@ describe('JA setup', () => {
       jaApiCalls.getSettings(auditSettings.all),
       jaApiCalls.getRounds(roundMocks.drawSampleInProgress),
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
-      jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
-      jaApiCalls.getCVRSfile(cvrsMocks.empty),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
@@ -685,8 +676,6 @@ describe('JA setup', () => {
       jaApiCalls.getSettings(auditSettings.all),
       jaApiCalls.getRounds(roundMocks.drawSampleErrored),
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
-      jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
-      jaApiCalls.getCVRSfile(cvrsMocks.empty),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()

@@ -147,7 +147,6 @@ describe('App', () => {
         jaApiCalls.getRounds([]),
         jaApiCalls.getBallotManifestFile(manifestMocks.empty),
         jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
-        jaApiCalls.getCVRSfile(cvrsMocks.empty),
       ]
       await withMockFetch(expectedCalls, async () => {
         const { container } = renderView(
