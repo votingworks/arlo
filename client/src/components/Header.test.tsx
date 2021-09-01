@@ -49,6 +49,13 @@ describe('Header', () => {
         name: 'Arlo, by VotingWorks',
       })
 
+      // Navigation buttons
+      const buttons = screen.getAllByRole('button')
+      expect(buttons[0]).toHaveTextContent(/All Audits/)
+      expect(buttons[0]).toHaveAttribute('href', '/')
+      expect(buttons[1]).toHaveTextContent(/Activity Log/)
+      expect(buttons[1]).toHaveAttribute('href', '/activity')
+
       // User's email
       const userButton = screen.getByRole('button', {
         name: /auditadmin@email.org/,
@@ -96,10 +103,10 @@ describe('Header', () => {
       expect(buttons[0]).toHaveAttribute('href', '/election/1/setup')
       expect(buttons[1]).toHaveTextContent(/Audit Progress/)
       expect(buttons[1]).toHaveAttribute('href', '/election/1/progress')
-      expect(buttons[2]).toHaveTextContent(/View Audits/)
+      expect(buttons[2]).toHaveTextContent(/All Audits/)
       expect(buttons[2]).toHaveAttribute('href', '/')
-      expect(buttons[3]).toHaveTextContent(/New Audit/)
-      expect(buttons[3]).toHaveAttribute('href', '/')
+      expect(buttons[3]).toHaveTextContent(/Activity Log/)
+      expect(buttons[3]).toHaveAttribute('href', '/activity')
 
       // User's email
       screen.getByRole('button', {

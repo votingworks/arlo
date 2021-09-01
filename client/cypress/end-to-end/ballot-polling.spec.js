@@ -105,7 +105,7 @@ describe('Ballot Polling', () => {
     cy.contains('Congratulations - the audit is complete!')
 
     // Delete the audit
-    cy.findByRole('button', { name: /View Audits/ }).click()
+    cy.findByRole('button', { name: /All Audits/ }).click()
     cy.findByRole('button', { name: 'Delete Audit' }).click()
     cy.findByRole('button', { name: 'Delete' }).click()
     cy.findByText(/You haven't created any audits yet/)
@@ -226,7 +226,9 @@ describe('Ballot Polling', () => {
       })
       cy.findByText(/Not Audited/).should('have.length', 1)
       cy.contains('Ballots for Audit Board #1')
-      cy.findAllByText('Submit Audited Ballots').eq(1).click({ force: true })
+      cy.findAllByText('Submit Audited Ballots')
+        .eq(1)
+        .click({ force: true })
       cy.findAllByText('Audit Board Member: Board Member 1')
         .siblings('input')
         .type('Board Member 1')

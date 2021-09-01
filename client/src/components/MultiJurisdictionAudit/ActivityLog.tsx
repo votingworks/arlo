@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import React, { useState } from 'react'
 import { useQuery } from 'react-query'
-import { HTMLSelect, H1, H2, H5, HTMLTable, H3 } from '@blueprintjs/core'
-import { api } from '../utilities'
-import { fetchApi } from '../SupportTools/support-api'
+import { HTMLSelect, H3 } from '@blueprintjs/core'
 import { useAuthDataContext, IAuditAdmin } from '../UserContext'
 import { Wrapper, Inner } from '../Atoms/Wrapper'
-import { StyledTable } from '../Atoms/Table'
+import { StyledTable, DownloadCSVButton } from '../Atoms/Table'
+import { fetchApi } from '../SupportTools/support-api'
 
 interface IActivity {
   id: string
@@ -22,11 +20,9 @@ interface IActivity {
     auditName: string
     auditType: string
   } | null
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   info: any
 }
-
-const camelToSentenceCase = (text: string) => text.replace(/([A-Z])/g, ' $1')
-const snakeToSentenceCase = (text: string) => text.replace(/_/g, ' ')
 
 const prettyAction = (activity: IActivity) => {
   switch (activity.activityName) {
@@ -64,43 +60,66 @@ const prettyAction = (activity: IActivity) => {
 const ActivityLog = () => {
   const auth = useAuthDataContext()
   const { user } = auth! as { user: IAuditAdmin }
-  const [organizationId, setOrganizationId] = useState(user.organizations[0].id)
-  const activities = useQuery(['orgs', organizationId, 'activities'], () =>
-    fetchApi(`/api/organizations/${organizationId}/activities`)
+  const [organization, setOrganization] = useState(user.organizations[0])
+  const activities = useQuery(['orgs', organization.id, 'activities'], () =>
+    fetchApi(`/api/organizations/${organization.id}/activities`)
   )
 
   if (!activities.isSuccess) return null
+
+  const showOrgSelect = user.organizations.length > 1
 
   return (
     <Wrapper>
       <Inner>
         <div style={{ marginTop: '20px', width: '100%' }}>
-          <H3>Activity Log</H3>
-          <div style={{ marginBottom: '15px', marginTop: '15px' }}>
-            {user.organizations.length > 1 && (
-              // eslint-disable-next-line jsx-a11y/label-has-associated-control
-              <label htmlFor="organizationId">
-                Organization:&nbsp;
-                <HTMLSelect
-                  id="organizationId"
-                  name="organizationId"
-                  onChange={e => setOrganizationId(e.currentTarget.value)}
-                  value={organizationId}
-                  options={user.organizations.map(({ id, name }) => ({
-                    label: name,
-                    value: id,
-                  }))}
-                />
-              </label>
-            )}
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '10px',
+            }}
+          >
+            <H3 style={{ margin: 0 }}>Activity Log</H3>
+            <div>
+              {showOrgSelect && (
+                // eslint-disable-next-line jsx-a11y/label-has-associated-control
+                <label htmlFor="organizationId" style={{ marginRight: '10px' }}>
+                  Organization:&nbsp;
+                  <HTMLSelect
+                    id="organizationId"
+                    name="organizationId"
+                    onChange={e =>
+                      setOrganization(
+                        user.organizations.find(
+                          ({ id }) => id === e.currentTarget.value
+                        )!
+                      )
+                    }
+                    value={organization.id}
+                    options={user.organizations.map(({ id, name }) => ({
+                      label: name,
+                      value: id,
+                    }))}
+                  />
+                </label>
+              )}
+              <DownloadCSVButton
+                tableId="activityLog"
+                fileName={`arlo-activity-${organization.name}.csv`}
+              />
+            </div>
           </div>
-          <StyledTable style={{ tableLayout: 'auto' }}>
+          <StyledTable id="activityLog" style={{ tableLayout: 'auto' }}>
             <thead>
-              <th>Timestamp</th>
-              <th>User</th>
-              <th>Action</th>
-              <th>Audit</th>
-              <th>Jurisdiction</th>
+              <tr>
+                <th>Timestamp</th>
+                <th>User</th>
+                <th>Action</th>
+                <th>Audit</th>
+                <th>Jurisdiction</th>
+              </tr>
             </thead>
             <tbody>
               {activities.data.map((activity: IActivity) => (

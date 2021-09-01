@@ -239,7 +239,7 @@ describe('Home screen', () => {
       expect(history.location.pathname).toEqual('/election/1/setup')
 
       // Go back to the home screen
-      userEvent.click(screen.getByRole('button', { name: /View Audits/ }))
+      userEvent.click(screen.getByRole('button', { name: /All Audits/ }))
 
       // Click on the audit to go the setup screen
       userEvent.click(
