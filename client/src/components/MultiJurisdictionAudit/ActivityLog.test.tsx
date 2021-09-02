@@ -279,7 +279,7 @@ describe('Activity Log', () => {
         \\"8/31/2021, 10:57:49 PM\\",\\"\\",\\"Successfully uploaded candidate totals by batch\\",\\"Test Audit\\",\\"Jurisdiction 1\\"
         \\"8/31/2021, 10:56:49 PM\\",\\"\\",\\"Uploaded invalid ballot manifest\\",\\"Test Audit\\",\\"Jurisdiction 1\\"
         \\"8/31/2021, 10:55:49 PM\\",\\"admin@example.gov\\",\\"Logged in as a Jurisdiction Manager\\",\\"Test Audit\\",\\"\\"
-        \\"8/31/2021, 10:54:49 PM\\",\\"admin@example.gov\\",\\"Failed to log in as a Jurisdiction Manager:Invalid code\\",\\"Test Audit\\",\\"\\"
+        \\"8/31/2021, 10:54:49 PM\\",\\"admin@example.gov\\",\\"Failed to log in as a Jurisdiction Manager: Invalid code\\",\\"Test Audit\\",\\"\\"
         \\"8/31/2021, 10:53:49 PM\\",\\"admin@example.gov\\",\\"Created audit\\",\\"Test Audit\\",\\"\\""
       `)
 

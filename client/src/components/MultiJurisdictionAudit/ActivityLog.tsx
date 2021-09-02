@@ -56,8 +56,7 @@ const prettyAction = (activity: IActivity) => {
       if (activity.info.error)
         return (
           <span>
-            Failed to log in as a Jurisdiction Manager:
-            <br />
+            Failed to log in as a Jurisdiction Manager: <br />
             {activity.info.error}
           </span>
         )

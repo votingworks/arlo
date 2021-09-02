@@ -202,7 +202,7 @@ exports[`Activity Log shows a table of activity for the org 1`] = `
       </td>
       <td>
         <span>
-          Failed to log in as a Jurisdiction Manager:
+          Failed to log in as a Jurisdiction Manager: 
           <br />
           Invalid code
         </span>
