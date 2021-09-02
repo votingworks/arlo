@@ -28,7 +28,7 @@ exports[`Activity Log shows a table of activity for the org 1`] = `
   <tbody>
     <tr>
       <td>
-        8/31/2021, 11:03:49 PM
+        8/31/2021, 11:05:49 PM
       </td>
       <td>
         admin@example.gov
@@ -43,7 +43,7 @@ exports[`Activity Log shows a table of activity for the org 1`] = `
     </tr>
     <tr>
       <td>
-        8/31/2021, 11:02:49 PM
+        8/31/2021, 11:04:49 PM
       </td>
       <td />
       <td>
@@ -56,7 +56,7 @@ exports[`Activity Log shows a table of activity for the org 1`] = `
     </tr>
     <tr>
       <td>
-        8/31/2021, 11:01:49 PM
+        8/31/2021, 11:03:49 PM
       </td>
       <td />
       <td>
@@ -71,7 +71,7 @@ exports[`Activity Log shows a table of activity for the org 1`] = `
     </tr>
     <tr>
       <td>
-        8/31/2021, 11:00:49 PM
+        8/31/2021, 11:02:49 PM
       </td>
       <td>
         admin@example.gov
@@ -88,7 +88,7 @@ exports[`Activity Log shows a table of activity for the org 1`] = `
     </tr>
     <tr>
       <td>
-        8/31/2021, 10:59:49 PM
+        8/31/2021, 11:01:49 PM
       </td>
       <td>
         admin@example.gov
@@ -105,7 +105,7 @@ exports[`Activity Log shows a table of activity for the org 1`] = `
     </tr>
     <tr>
       <td>
-        8/31/2021, 10:58:49 PM
+        8/31/2021, 11:00:49 PM
       </td>
       <td>
         support@example.gov
@@ -120,7 +120,7 @@ exports[`Activity Log shows a table of activity for the org 1`] = `
     </tr>
     <tr>
       <td>
-        8/31/2021, 10:57:49 PM
+        8/31/2021, 10:59:49 PM
       </td>
       <td>
         admin@example.gov
@@ -135,7 +135,7 @@ exports[`Activity Log shows a table of activity for the org 1`] = `
     </tr>
     <tr>
       <td>
-        8/31/2021, 10:56:49 PM
+        8/31/2021, 10:58:49 PM
       </td>
       <td />
       <td>
@@ -150,7 +150,7 @@ exports[`Activity Log shows a table of activity for the org 1`] = `
     </tr>
     <tr>
       <td>
-        8/31/2021, 10:55:49 PM
+        8/31/2021, 10:57:49 PM
       </td>
       <td />
       <td>
@@ -165,7 +165,7 @@ exports[`Activity Log shows a table of activity for the org 1`] = `
     </tr>
     <tr>
       <td>
-        8/31/2021, 10:54:49 PM
+        8/31/2021, 10:56:49 PM
       </td>
       <td />
       <td>
@@ -177,6 +177,40 @@ exports[`Activity Log shows a table of activity for the org 1`] = `
       <td>
         Jurisdiction 1
       </td>
+    </tr>
+    <tr>
+      <td>
+        8/31/2021, 10:55:49 PM
+      </td>
+      <td>
+        admin@example.gov
+      </td>
+      <td>
+        Logged in as a Jurisdiction Manager
+      </td>
+      <td>
+        Test Audit
+      </td>
+      <td />
+    </tr>
+    <tr>
+      <td>
+        8/31/2021, 10:54:49 PM
+      </td>
+      <td>
+        admin@example.gov
+      </td>
+      <td>
+        <span>
+          Failed to log in as a Jurisdiction Manager:
+          <br />
+          Invalid code
+        </span>
+      </td>
+      <td>
+        Test Audit
+      </td>
+      <td />
     </tr>
     <tr>
       <td>

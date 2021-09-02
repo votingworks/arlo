@@ -68,7 +68,15 @@ const apiCalls = {
         timestamp: nextTimestamp(),
         election: mockElection,
         user: mockJurisdictionAdmin,
-        info: {},
+        info: { error: 'Invalid code' },
+      },
+      {
+        id: nextId(),
+        activityName: 'JurisdictionAdminLogin',
+        timestamp: nextTimestamp(),
+        election: mockElection,
+        user: mockJurisdictionAdmin,
+        info: { error: null },
       },
       {
         id: nextId(),
@@ -260,16 +268,18 @@ describe('Activity Log', () => {
       expect(fileBlob.type).toEqual('text/csv')
       expect(await new Response(fileBlob).text()).toMatchInlineSnapshot(`
         "\\"Timestamp\\",\\"User\\",\\"Action\\",\\"Audit\\",\\"Jurisdiction\\"
-        \\"8/31/2021, 11:03:49 PM\\",\\"admin@example.gov\\",\\"Deleted audit\\",\\"Test Audit\\",\\"\\"
-        \\"8/31/2021, 11:02:49 PM\\",\\"\\",\\"Ended round 1\\",\\"Test Audit\\",\\"\\"
-        \\"8/31/2021, 11:01:49 PM\\",\\"\\",\\"Audit Board #1 signed off\\",\\"Test Audit\\",\\"Jurisdiction 1\\"
-        \\"8/31/2021, 11:00:49 PM\\",\\"admin@example.gov\\",\\"Recorded results\\",\\"Test Audit\\",\\"Jurisdiction 1\\"
-        \\"8/31/2021, 10:59:49 PM\\",\\"admin@example.gov\\",\\"Created audit boards\\",\\"Test Audit\\",\\"Jurisdiction 1\\"
-        \\"8/31/2021, 10:58:49 PM\\",\\"support@example.gov\\",\\"Started round 1\\",\\"Test Audit\\",\\"\\"
-        \\"8/31/2021, 10:57:49 PM\\",\\"admin@example.gov\\",\\"Calculated sample sizes\\",\\"Test Audit\\",\\"\\"
-        \\"8/31/2021, 10:56:49 PM\\",\\"\\",\\"Successfully uploaded CVRs\\",\\"Test Audit\\",\\"Jurisdiction 1\\"
-        \\"8/31/2021, 10:55:49 PM\\",\\"\\",\\"Successfully uploaded candidate totals by batch\\",\\"Test Audit\\",\\"Jurisdiction 1\\"
-        \\"8/31/2021, 10:54:49 PM\\",\\"\\",\\"Uploaded invalid ballot manifest\\",\\"Test Audit\\",\\"Jurisdiction 1\\"
+        \\"8/31/2021, 11:05:49 PM\\",\\"admin@example.gov\\",\\"Deleted audit\\",\\"Test Audit\\",\\"\\"
+        \\"8/31/2021, 11:04:49 PM\\",\\"\\",\\"Ended round 1\\",\\"Test Audit\\",\\"\\"
+        \\"8/31/2021, 11:03:49 PM\\",\\"\\",\\"Audit Board #1 signed off\\",\\"Test Audit\\",\\"Jurisdiction 1\\"
+        \\"8/31/2021, 11:02:49 PM\\",\\"admin@example.gov\\",\\"Recorded results\\",\\"Test Audit\\",\\"Jurisdiction 1\\"
+        \\"8/31/2021, 11:01:49 PM\\",\\"admin@example.gov\\",\\"Created audit boards\\",\\"Test Audit\\",\\"Jurisdiction 1\\"
+        \\"8/31/2021, 11:00:49 PM\\",\\"support@example.gov\\",\\"Started round 1\\",\\"Test Audit\\",\\"\\"
+        \\"8/31/2021, 10:59:49 PM\\",\\"admin@example.gov\\",\\"Calculated sample sizes\\",\\"Test Audit\\",\\"\\"
+        \\"8/31/2021, 10:58:49 PM\\",\\"\\",\\"Successfully uploaded CVRs\\",\\"Test Audit\\",\\"Jurisdiction 1\\"
+        \\"8/31/2021, 10:57:49 PM\\",\\"\\",\\"Successfully uploaded candidate totals by batch\\",\\"Test Audit\\",\\"Jurisdiction 1\\"
+        \\"8/31/2021, 10:56:49 PM\\",\\"\\",\\"Uploaded invalid ballot manifest\\",\\"Test Audit\\",\\"Jurisdiction 1\\"
+        \\"8/31/2021, 10:55:49 PM\\",\\"admin@example.gov\\",\\"Logged in as a Jurisdiction Manager\\",\\"Test Audit\\",\\"\\"
+        \\"8/31/2021, 10:54:49 PM\\",\\"admin@example.gov\\",\\"Failed to log in as a Jurisdiction Manager:Invalid code\\",\\"Test Audit\\",\\"\\"
         \\"8/31/2021, 10:53:49 PM\\",\\"admin@example.gov\\",\\"Created audit\\",\\"Test Audit\\",\\"\\""
       `)
 
