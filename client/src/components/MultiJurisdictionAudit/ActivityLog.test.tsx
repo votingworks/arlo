@@ -64,6 +64,14 @@ const apiCalls = {
       },
       {
         id: nextId(),
+        activityName: 'JurisdictionAdminLogin',
+        timestamp: nextTimestamp(),
+        election: mockElection,
+        user: mockJurisdictionAdmin,
+        info: {},
+      },
+      {
+        id: nextId(),
         activityName: 'UploadFile',
         timestamp: nextTimestamp(),
         election: mockElection,

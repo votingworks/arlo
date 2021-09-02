@@ -52,6 +52,16 @@ const prettyAction = (activity: IActivity) => {
       return 'Recorded results'
     case 'AuditBoardSignOff':
       return `${activity.info.audit_board_name} signed off`
+    case 'JurisdictionAdminLogin':
+      if (activity.info.error)
+        return (
+          <span>
+            Failed to log in as a Jurisdiction Manager:
+            <br />
+            {activity.info.error}
+          </span>
+        )
+      return 'Logged in as a Jurisdiction Manager'
     default:
       throw Error(`Unknown activity: ${activity.activityName}`)
   }

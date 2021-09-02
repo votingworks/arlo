@@ -3,6 +3,7 @@ import secrets
 import smtplib
 import string
 from datetime import datetime, timezone
+from typing import Optional
 from urllib.parse import urljoin, urlencode
 from flask import redirect, jsonify, request, session, render_template
 from authlib.integrations.flask_client import OAuth, OAuthError
@@ -21,6 +22,7 @@ from .lib import (
     UserType,
 )
 from ..api.audit_boards import serialize_members
+from ..activity_log import JurisdictionAdminLogin, record_activity, ActivityBase
 from ..util.isoformat import isoformat
 from ..config import (
     SMTP_HOST,
@@ -239,6 +241,27 @@ def jurisdiction_admin_generate_code():
     return jsonify(status="ok")
 
 
+def record_login(user: User, error: Optional[str] = None):
+    # JAs can only belong to one organization
+    organization = list(user.jurisdictions)[0].election.organization
+    record_activity(
+        JurisdictionAdminLogin(
+            timestamp=datetime.now(timezone.utc),
+            base=ActivityBase(
+                organization_id=organization.id,
+                organization_name=organization.name,
+                election_id=None,
+                audit_name=None,
+                audit_type=None,
+                user_type="jurisdiction_admin",
+                user_key=user.email,
+                support_user_email=None,
+            ),
+            error=error,
+        )
+    )
+
+
 @auth.route("/auth/jurisdictionadmin/login", methods=["POST"])
 def jurisdiction_admin_login():
     body = request.get_json()
@@ -252,9 +275,13 @@ def jurisdiction_admin_login():
         raise BadRequest("Invalid email address.")
 
     if user.login_code is None:
+        record_login(user, "Needs new code")
+        db_session.commit()
         raise BadRequest("Please request a new code.")
 
     if user.login_code_attempts >= 10:
+        record_login(user, "Too many incorrect attempts")
+        db_session.commit()
         raise BadRequest(
             "Too many incorrect login attempts. Please wait 15 minutes and then request a new code."
         )
@@ -265,15 +292,18 @@ def jurisdiction_admin_login():
     if is_code_expired(user.login_code_requested_at) or not secrets.compare_digest(
         body.get("code"), user.login_code
     ):
+        record_login(user, "Invalid code")
+        db_session.commit()
         raise BadRequest(
             "Invalid code. Try entering the code again or click Back and request a new code."
         )
 
     user.login_code = None
     user.login_code_requested_at = None
-    db_session.commit()
 
     set_loggedin_user(session, UserType.JURISDICTION_ADMIN, user.email)
+    record_login(user)
+    db_session.commit()
 
     return jsonify(status="ok")
 
