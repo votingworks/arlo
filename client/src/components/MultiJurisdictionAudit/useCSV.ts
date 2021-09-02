@@ -54,7 +54,8 @@ const deleteCSVFile = async (url: string): Promise<boolean> => {
 const useCSV = (
   url: string,
   formKey: string,
-  shouldFetch: boolean = true
+  shouldFetch: boolean = true,
+  dependencyFile?: IFileInfo | null
 ): [
   IFileInfo | null,
   (csv: File) => Promise<boolean>,
@@ -64,9 +65,14 @@ const useCSV = (
 
   useEffect(() => {
     ;(async () => {
-      setCSV(await loadCSVFile(url, shouldFetch))
+      // Reload this file whenever a file it depends finishes processing. This is
+      // useful when one file gets reprocessed on the backend after its dependency
+      // processes (e.g. CVR depends on ballot manifest).
+      if (dependencyFile !== null) {
+        setCSV(await loadCSVFile(url, shouldFetch))
+      }
     })()
-  }, [url, shouldFetch])
+  }, [url, shouldFetch, dependencyFile])
 
   const uploadCSV = async (csvFile: File): Promise<boolean> => {
     if (!shouldFetch) return false
@@ -118,14 +124,16 @@ export const useJurisdictionsFile = (
 
 export const useStandardizedContestsFile = (
   electionId: string,
-  auditSettings: IAuditSettings | null
+  auditSettings: IAuditSettings | null,
+  jurisdictionsFile?: IFileInfo | null
 ): [IFileInfo | null, (csv: File) => Promise<boolean>] => {
   const [csv, uploadCSV] = useCSV(
     `/election/${electionId}/standardized-contests/file`,
     'standardized-contests',
     !!auditSettings &&
       (auditSettings.auditType === 'BALLOT_COMPARISON' ||
-        auditSettings.auditType === 'HYBRID')
+        auditSettings.auditType === 'HYBRID'),
+    jurisdictionsFile
   )
   // Delete not supported
   return [csv, uploadCSV]
@@ -140,24 +148,28 @@ export const useBallotManifest = (electionId: string, jurisdictionId: string) =>
 export const useBatchTallies = (
   electionId: string,
   jurisdictionId: string,
-  auditSettings: IAuditSettings | null
+  auditSettings: IAuditSettings | null,
+  ballotManifest: IFileInfo | null
 ) =>
   useCSV(
     `/election/${electionId}/jurisdiction/${jurisdictionId}/batch-tallies`,
     'batchTallies',
-    !!auditSettings && auditSettings.auditType === 'BATCH_COMPARISON'
+    !!auditSettings && auditSettings.auditType === 'BATCH_COMPARISON',
+    ballotManifest
   )
 
 export const useCVRs = (
   electionId: string,
   jurisdictionId: string,
-  auditSettings: IAuditSettings | null
+  auditSettings: IAuditSettings | null,
+  ballotManifest: IFileInfo | null
 ) =>
   useCSV(
     `/election/${electionId}/jurisdiction/${jurisdictionId}/cvrs`,
     'cvrs',
     !!auditSettings &&
       (auditSettings.auditType === 'BALLOT_COMPARISON' ||
-        auditSettings.auditType === 'HYBRID')
+        auditSettings.auditType === 'HYBRID'),
+    ballotManifest
   )
 export default useCSV

@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs'
 import { join } from 'path'
 
-const jurisdictionFile = new File(
+export const jurisdictionFile = new File(
   [
     readFileSync(
       join(

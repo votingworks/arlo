@@ -196,11 +196,12 @@ export const JurisdictionAdminView: React.FC = () => {
     batchTallies,
     uploadBatchTallies,
     deleteBatchTallies,
-  ] = useBatchTallies(electionId, jurisdictionId, auditSettings)
+  ] = useBatchTallies(electionId, jurisdictionId, auditSettings, ballotManifest)
   const [cvrs, uploadCVRS, deleteCVRS] = useCVRs(
     electionId,
     jurisdictionId,
-    auditSettings
+    auditSettings,
+    ballotManifest
   )
   const [auditBoards, createAuditBoards] = useAuditBoards(
     electionId,
