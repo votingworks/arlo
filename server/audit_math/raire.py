@@ -64,6 +64,7 @@ def compute_raire_assertions(
                 continue
 
             asrn = NEBAssertion(contest.name, c, d)
+            
             tally_c = np.sum(
                 [asrn.is_vote_for_winner(r) for _,r in cvrs.items()]
             )
@@ -115,6 +116,9 @@ def compute_raire_assertions(
             if log:
                 print("TESTED ", file=stream, end='')
                 newn.display(stream=stream)
+                if newn.best_assertion != None:
+                    print("   Best audit ", file=stream, end='')
+                    newn.best_assertion.display(stream=stream)
 
             frontier.insert_node(newn)
 
@@ -127,6 +131,7 @@ def compute_raire_assertions(
         frontier.display(stream=stream)
         print("===============================================", file=stream)
     
+
     # -------------------- Find Assertions -----------------------------------
     while not audit_not_possible:
         # Check whether we can stop searching for assertions.
@@ -149,7 +154,7 @@ def compute_raire_assertions(
 
         if to_expand.best_ancestor != None and \
             to_expand.best_ancestor.estimate <= lowerbound:
-            frontier.replace_descendents(to_expand.best_anscestor, log,
+            frontier.replace_descendents(to_expand.best_ancestor, log,
                 stream=stream)
             continue
 
@@ -186,12 +191,13 @@ def compute_raire_assertions(
 
         if to_expand.best_ancestor != None and \
             to_expand.best_ancestor.estimate <= lowerbound:
-            frontier.replace_descendents(to_expand.best_anscestor)
+            frontier.replace_descendents(to_expand.best_ancestor, log,
+                stream=stream)
             continue
 
         if to_expand.estimate <= lowerbound:
             to_expand.expandable = False
-            fontier.insert_node(to_expand)
+            frontier.insert_node(to_expand)
             continue
         #--------------------------------------------------------------------
 
@@ -268,8 +274,20 @@ def compute_raire_assertions(
         return []
 
     # ------------------------------------------------------------------------
+    assertions = []
 
-    assertions = [node.best_assertion for node in frontier.nodes]
+    # Some assertions will be used to rule out multiple branches of our
+    # alternate outcome tree. Form a list of all these assertions, without
+    # duplicates.
+    for node in frontier.nodes:
+        skip = False
+        for assrtn in assertions:
+            if node.best_assertion.same_as(assrtn):
+                skip = True
+                break
+
+        if not skip:
+            assertions.append(node.best_assertion)
 
     # Assertions will be sorted in order of greatest to least difficulty.
     sorted_assertions = sorted(assertions)    
@@ -286,15 +304,19 @@ def compute_raire_assertions(
         assrtn_i = sorted_assertions[i]
 
         subsumed = False
-        for j in range(i, len_assertions):
-            assrtn_j = sorted_assertions[i]
+        for j in range(len_assertions):
+
+            if i == j: 
+                continue
+
+            assrtn_j = sorted_assertions[j]
             
-            if assertn_j.subsumes(assrtn_i):
+            if assrtn_j.subsumes(assrtn_i):
                 subsumed = True
                 break
 
         if not subsumed:
-            final_audit.appned(assrtn_i)
+            final_audit.append(assrtn_i)
 
     if log:
         print("===============================================", file=stream)

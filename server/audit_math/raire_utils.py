@@ -8,6 +8,25 @@ from typing import Type, Callable, Dict, List
 CB = Dict[str, int]
 CBS = List[CB]
 
+def index_of(cand: str, list_of_cand : list):
+    '''
+    Returns position of given candidate 'cand' in the list of candidates
+    'list_of_cand'. Returns -1 if 'cand' is not in the given list.
+
+    Input:
+        cand : string       - Identifier of candidate we are looking for
+        list_of_cand : list - List of candidate identifiers
+
+    Output:
+        Index (starting at 0) of 'cand' in 'list_of_cand', and -1 if 
+        'cand' is not in 'list_of_cand'.       
+    '''
+    for i in range(len(list_of_cand)):
+        if list_of_cand[i] == cand:
+            return i
+
+    return -1
+
 def ranking(cand: str, ballot: CB):
     '''
     Input:
@@ -56,7 +75,7 @@ def vote_for_cand(cand: str, eliminated: list, ballot: CB):
         if alt_c in eliminated: 
             continue
 
-        if a_idx < c_idx:
+        if (a_idx != 0 and a_idx != "not present") and a_idx < c_idx:
             return 0
 
     return 1
@@ -109,7 +128,10 @@ class RaireAssertion:
         """
         pass
 
-    def subsumes(self, assertion):
+    def subsumes(self, other):
+        pass
+
+    def same_as(self, other):
         pass
 
     # Assertions are ordered from greatest to least difficulty.
@@ -144,15 +166,25 @@ class NEBAssertion(RaireAssertion):
         super().__init__(contest, winner, loser)
 
     def is_vote_for_winner(self, cvr: CVR):
+        if not self.contest in cvr:
+            return 0
+
         return 1 if ranking(self.winner, cvr[self.contest]) == 1 else 0
-        
+    
     def is_vote_for_loser(self, cvr: CVR):
+        if not self.contest in cvr:
+            return 0
+
         w_idx = ranking(self.winner, cvr[self.contest])
         l_idx = ranking(self.loser, cvr[self.contest])
         
         return 1 if l_idx != -1 and (w_idx == -1 or (w_idx != -1 and \
             l_idx < w_idx)) else 0
         
+    def same_as(self, other : Type[RaireAssertion]):
+        return self.contest == other.contest and self.winner == other.winner\
+            and self.loser == other.loser
+
     def subsumes(self, other : Type[RaireAssertion]):
         if type(other) == NEBAssertion:
             return False
@@ -160,21 +192,21 @@ class NEBAssertion(RaireAssertion):
         if self.winner == other.winner and self.loser == other.loser:
             return True
 
-        if other.rules_out != None:
+        if other.rules_out != None:                      
             # If self.winner appears before self.loser in the list
-            # 'other.rules_out', then this assertion subsumes 'other'.
-            for c in other.rules_out:
-                if c == self.winner:
-                    return True
+            # 'other.rules_out', or self.loser appears and self.winner does 
+            # not, then this assertion subsumes 'other'.
+            idx_winner = index_of(self.winner, other.rules_out)
+            idx_loser = index_of(self.loser, other.rules_out)
 
-                if c == self.loser:
-                    return False
+            if idx_winner < idx_loser:
+                return True 
 
         return False
 
     def display(self, stream=sys.stdout):
-        print("NEB,{},{},Eliminated [{}]".format(self.winner, self.loser,
-            self.difficulty), file=stream)
+        print("NEB,Winner,{},Loser,{},Eliminated".format(self.winner, 
+            self.loser), file=stream)
 
 
 class NENAssertion(RaireAssertion):
@@ -200,10 +232,22 @@ class NENAssertion(RaireAssertion):
         self.eliminated = eliminated
 
     def is_vote_for_winner(self, cvr: CVR):
+        if not self.contest in cvr:
+            return 0
+
         return vote_for_cand(self.winner, self.eliminated, cvr[self.contest])
         
     def is_vote_for_loser(self, cvr: CVR):
+        if not self.contest in cvr:
+            return 0
+
         return vote_for_cand(self.loser, self.eliminated, cvr[self.contest])
+
+    def same_as(self, other : Type[RaireAssertion]):
+        return self.contest == other.contest \
+            and self.winner == other.winner \
+            and self.loser == other.loser \
+            and self.eliminated == other.eliminated
 
     def subsumes(self, other : Type[RaireAssertion]):
         if type(other) == NEBAssertion:
@@ -216,13 +260,13 @@ class NENAssertion(RaireAssertion):
         return False
     
     def display(self, stream=sys.stdout):
-        print("NEN,{},{},Eliminated".format(self.winner,self.loser), \
-            file=stream, end='')
+        print("NEN,Winner,{},Loser,{},Eliminated".format(self.winner,
+            self.loser), file=stream, end='')
 
         for cand in self.eliminated:
             print(",{}".format(cand), file=stream, end='')
 
-        print(" [{}]".format(self.difficulty), file=stream)
+        print("", file=stream)
             
 
 class RaireNode:
@@ -415,7 +459,7 @@ def find_best_audit(contest : Contest, ballots: CBS, neb_matrix, \
     for cand in contest.candidates:
         if cand in node.tail: continue
 
-        neb = neb_matrix[first_in_tail][cand]
+        neb = neb_matrix[cand][first_in_tail]
         
         if neb != None and (best_asrtn is None or neb.difficulty < \
             best_asrtn.difficulty):
