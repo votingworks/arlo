@@ -98,6 +98,11 @@ const apiCalls = {
     url: '/api/support/organizations/organization-id-1',
     response,
   }),
+  deleteOrganization: {
+    url: '/api/support/organizations/organization-id-1',
+    options: { method: 'DELETE' },
+    response: { status: 'ok' },
+  },
   getElection: (response: IElection) => ({
     url: '/api/support/elections/election-id-1',
     response,
@@ -343,6 +348,69 @@ describe('Support Tools', () => {
 
       const toast = await screen.findByRole('alert')
       expect(toast).toHaveTextContent('something went wrong: postAuditAdmin')
+    })
+  })
+
+  it('org screen has a button to delete the org', async () => {
+    const expectedCalls = [
+      supportApiCalls.getUser,
+      apiCalls.getOrganization(mockOrganization),
+      apiCalls.deleteOrganization,
+      apiCalls.getOrganizations([]),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      const { history } = renderRoute('/support/orgs/organization-id-1')
+
+      await screen.findByRole('heading', { name: 'Organization 1' })
+
+      userEvent.click(screen.getByRole('button', { name: /Delete/ }))
+
+      // Confirm dialog should open
+      const dialog = (await screen.findByRole('heading', {
+        name: /Confirm/,
+      })).closest('.bp3-dialog')! as HTMLElement
+      within(dialog).getByText(
+        'Are you sure you want to delete organization Organization 1?'
+      )
+      userEvent.click(within(dialog).getByRole('button', { name: 'Delete' }))
+
+      await screen.findByRole('heading', { name: 'Organizations' })
+      expect(history.location.pathname).toEqual('/support')
+      expect(
+        screen.queryByRole('button', { name: 'Organization 1' })
+      ).not.toBeInTheDocument()
+    })
+  })
+
+  it('org screen handles error on delete org', async () => {
+    const expectedCalls = [
+      supportApiCalls.getUser,
+      apiCalls.getOrganization(mockOrganization),
+      serverError('deleteOrganization', apiCalls.deleteOrganization),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      const { history } = renderRoute('/support/orgs/organization-id-1')
+
+      await screen.findByRole('heading', { name: 'Organization 1' })
+
+      userEvent.click(screen.getByRole('button', { name: /Delete/ }))
+
+      // Confirm dialog should open
+      const dialog = (await screen.findByRole('heading', {
+        name: /Confirm/,
+      })).closest('.bp3-dialog')! as HTMLElement
+      within(dialog).getByText(
+        'Are you sure you want to delete organization Organization 1?'
+      )
+      userEvent.click(within(dialog).getByRole('button', { name: 'Delete' }))
+
+      const toast = await screen.findByRole('alert')
+      expect(toast).toHaveTextContent(
+        'something went wrong: deleteOrganization'
+      )
+      expect(history.location.pathname).toEqual(
+        '/support/orgs/organization-id-1'
+      )
     })
   })
 

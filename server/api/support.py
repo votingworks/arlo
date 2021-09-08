@@ -125,6 +125,21 @@ def get_organization(organization_id: str):
     )
 
 
+@api.route("/support/organizations/<organization_id>", methods=["DELETE"])
+@restrict_access_support
+def delete_organization(organization_id: str):
+    organization = get_or_404(Organization, organization_id)
+    if any(election for election in organization.elections if not election.deleted_at):
+        raise Conflict(
+            "Cannot delete an org with audits."
+            " If you really want to delete this org, first delete all of its audits."
+        )
+
+    db_session.delete(organization)
+    db_session.commit()
+    return jsonify(status="ok")
+
+
 @api.route("/support/elections/<election_id>", methods=["GET"])
 @restrict_access_support
 def get_election(election_id: str):

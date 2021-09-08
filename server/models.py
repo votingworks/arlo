@@ -101,6 +101,7 @@ class Organization(BaseModel):
     elections = relationship(
         "Election",
         back_populates="organization",
+        cascade="all, delete",
         passive_deletes=True,
         order_by="Election.audit_name",
     )
