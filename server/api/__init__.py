@@ -20,4 +20,5 @@ from . import batches
 from . import offline_results
 from . import offline_batch_results
 from . import reports
+from . import activity
 from . import support

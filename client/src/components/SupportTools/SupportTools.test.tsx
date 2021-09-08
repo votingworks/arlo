@@ -2,6 +2,7 @@ import React from 'react'
 import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ToastContainer } from 'react-toastify'
+import { QueryClientProvider } from 'react-query'
 import { withMockFetch, renderWithRouter } from '../testUtilities'
 import SupportTools from './SupportTools'
 import AuthDataProvider from '../UserContext'
@@ -14,6 +15,7 @@ import {
   IJurisdictionBase,
   IJurisdiction,
 } from './support-api'
+import { queryClient } from '../../App'
 
 const mockOrganizationBase: IOrganizationBase = {
   id: 'organization-id-1',
@@ -163,10 +165,12 @@ const serverError = (
 
 const renderRoute = (route: string) =>
   renderWithRouter(
-    <AuthDataProvider>
-      <SupportTools />
-      <ToastContainer />
-    </AuthDataProvider>,
+    <QueryClientProvider client={queryClient}>
+      <AuthDataProvider>
+        <SupportTools />
+        <ToastContainer />
+      </AuthDataProvider>
+    </QueryClientProvider>,
     { route }
   )
 

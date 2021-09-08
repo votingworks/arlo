@@ -1,6 +1,4 @@
 import React from 'react'
-import { ReactQueryDevtools } from 'react-query/devtools'
-import { QueryClientProvider, QueryClient } from 'react-query'
 import { Redirect, Route, Switch } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import styled from 'styled-components'
@@ -39,53 +37,36 @@ import {
 } from './support-api'
 import { useConfirm, Confirm } from '../Atoms/Confirm'
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      // Turn off query retries in test so we can mock effectively
-      retry: process.env.NODE_ENV === 'test' ? false : undefined,
-      onError: error => toast.error((error as Error).message),
-    },
-  },
-})
-
 const SupportTools = () => {
   const auth = useAuthDataContext()
   if (!auth) return null // Still loading
   if (!auth.supportUser) return <Redirect to="/" />
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <Wrapper>
-        <Inner>
-          <div style={{ margin: '30px 0', width: '100%' }}>
-            <Switch>
-              <Route exact path="/support">
-                <Organizations />
-              </Route>
-              <Route path="/support/orgs/:organizationId">
-                {({ match }) => (
-                  <Organization organizationId={match!.params.organizationId} />
-                )}
-              </Route>
-              <Route path="/support/audits/:electionId">
-                {({ match }) => <Audit electionId={match!.params.electionId} />}
-              </Route>
-              <Route path="/support/jurisdictions/:jurisdictionId">
-                {({ match }) => (
-                  <Jurisdiction jurisdictionId={match!.params.jurisdictionId} />
-                )}
-              </Route>
-            </Switch>
-          </div>
-        </Inner>
-      </Wrapper>
-      {process.env.NODE_ENV !== 'test' && (
-        // Dev tools are automatically excluded from production, but we also
-        // don't want them clogging up the DOM output in test
-        <ReactQueryDevtools initialIsOpen={false} />
-      )}
-    </QueryClientProvider>
+    <Wrapper>
+      <Inner>
+        <div style={{ margin: '30px 0', width: '100%' }}>
+          <Switch>
+            <Route exact path="/support">
+              <Organizations />
+            </Route>
+            <Route path="/support/orgs/:organizationId">
+              {({ match }) => (
+                <Organization organizationId={match!.params.organizationId} />
+              )}
+            </Route>
+            <Route path="/support/audits/:electionId">
+              {({ match }) => <Audit electionId={match!.params.electionId} />}
+            </Route>
+            <Route path="/support/jurisdictions/:jurisdictionId">
+              {({ match }) => (
+                <Jurisdiction jurisdictionId={match!.params.jurisdictionId} />
+              )}
+            </Route>
+          </Switch>
+        </div>
+      </Inner>
+    </Wrapper>
   )
 }
 
