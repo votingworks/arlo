@@ -96,7 +96,14 @@ def test_list_activities(
                     "jurisdiction_name": "J2",
                 },
                 "timestamp": assert_is_date,
-                "user": None,
+                # Note that in non-test environments, file uploads happen in the
+                # background, so we don't have a user session to pull this info
+                # from, and "user" is None. But we can't easily simulate that in test.
+                "user": {
+                    "key": default_ja_email(election_id),
+                    "supportUser": None,
+                    "type": "jurisdiction_admin",
+                },
             },
             {
                 "activityName": "UploadFile",
@@ -113,7 +120,11 @@ def test_list_activities(
                     "jurisdiction_name": "J1",
                 },
                 "timestamp": assert_is_date,
-                "user": None,
+                "user": {
+                    "key": default_ja_email(election_id),
+                    "supportUser": None,
+                    "type": "jurisdiction_admin",
+                },
             },
             {
                 "activityName": "CreateAudit",
