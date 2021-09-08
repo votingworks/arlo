@@ -4,7 +4,6 @@ from flask.testing import FlaskClient
 
 from ...models import *  # pylint: disable=wildcard-import
 from ..helpers import *  # pylint: disable=wildcard-import
-from ...worker.bgcompute import bgcompute_update_ballot_manifest_file
 
 
 def test_hybrid_manifest(
@@ -49,8 +48,6 @@ def test_hybrid_manifest(
     )
     assert_ok(rv)
 
-    bgcompute_update_ballot_manifest_file(election_id)
-
     batches = Batch.query.join(Jurisdiction).filter_by(election_id=election_id).all()
     assert all(
         batch.has_cvrs is True
@@ -91,8 +88,6 @@ def test_hybrid_manifest_missing_cvr_column(
     )
     assert_ok(rv)
 
-    bgcompute_update_ballot_manifest_file(election_id)
-
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
     )
@@ -132,8 +127,6 @@ def test_hybrid_manifest_missing_cvr_column(
         },
     )
     assert_ok(rv)
-
-    bgcompute_update_ballot_manifest_file(election_id)
 
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",

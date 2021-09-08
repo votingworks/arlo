@@ -1,12 +1,13 @@
 [run]
 omit = 
     server/main.py
+    server/worker/worker.py
     server/tests/*
     server/config.py
     scripts/*
 
 [report]
-fail_under = 99
+fail_under = 99.4
 precision = 2
 skip_covered = true
 show_missing = true

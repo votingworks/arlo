@@ -4,10 +4,6 @@ from flask.testing import FlaskClient
 
 from ...models import *  # pylint: disable=wildcard-import
 from ..helpers import *  # pylint: disable=wildcard-import
-from ...worker.bgcompute import (
-    bgcompute_update_standardized_contests_file,
-    bgcompute_update_election_jurisdictions_file,
-)
 
 
 def test_upload_standardized_contests(
@@ -29,25 +25,6 @@ def test_upload_standardized_contests(
         },
     )
     assert_ok(rv)
-
-    rv = client.get(f"/api/election/{election_id}/standardized-contests/file")
-    compare_json(
-        json.loads(rv.data),
-        {
-            "file": {
-                "name": "standardized-contests.csv",
-                "uploadedAt": assert_is_date,
-            },
-            "processing": {
-                "status": ProcessingStatus.READY_TO_PROCESS,
-                "startedAt": None,
-                "completedAt": None,
-                "error": None,
-            },
-        },
-    )
-
-    bgcompute_update_standardized_contests_file(election_id)
 
     rv = client.get(f"/api/election/{election_id}/standardized-contests/file")
     compare_json(
@@ -103,9 +80,9 @@ def test_standardized_contests_replace(
     )
     assert_ok(rv)
 
-    file_id = Election.query.get(election_id).standardized_contests_file_id
-
-    bgcompute_update_standardized_contests_file(election_id)
+    election = Election.query.get(election_id)
+    file_id = election.standardized_contests_file_id
+    standardized_contests = election.standardized_contests
 
     rv = client.put(
         f"/api/election/{election_id}/standardized-contests/file",
@@ -121,9 +98,9 @@ def test_standardized_contests_replace(
     # The old file should have been deleted
     assert File.query.get(file_id) is None
     assert Election.query.get(election_id).standardized_contests_file_id != file_id
-    assert Election.query.get(election_id).standardized_contests is None
-
-    bgcompute_update_standardized_contests_file(election_id)
+    assert (
+        Election.query.get(election_id).standardized_contests != standardized_contests
+    )
 
     rv = client.get(f"/api/election/{election_id}/standardized-contests")
     assert json.loads(rv.data) == [
@@ -149,8 +126,6 @@ def test_standardized_contests_bad_jurisdiction(
         },
     )
     assert_ok(rv)
-
-    bgcompute_update_standardized_contests_file(election_id)
 
     rv = client.get(f"/api/election/{election_id}/standardized-contests/file")
     compare_json(
@@ -188,8 +163,6 @@ def test_standardized_contests_no_jurisdictions(
         },
     )
     assert_ok(rv)
-
-    bgcompute_update_standardized_contests_file(election_id)
 
     rv = client.get(f"/api/election/{election_id}/standardized-contests/file")
     compare_json(
@@ -328,8 +301,6 @@ def test_standardized_contests_newlines(
     )
     assert_ok(rv)
 
-    bgcompute_update_standardized_contests_file(election_id)
-
     rv = client.get(f"/api/election/{election_id}/standardized-contests")
     assert json.loads(rv.data) == [
         {"name": "Contest 1", "jurisdictionIds": jurisdiction_ids},
@@ -359,8 +330,6 @@ def test_standardized_contests_dominion_vote_for(
         },
     )
     assert_ok(rv)
-
-    bgcompute_update_standardized_contests_file(election_id)
 
     rv = client.get(f"/api/election/{election_id}/standardized-contests")
     assert json.loads(rv.data) == [
@@ -392,8 +361,6 @@ def test_standardized_contests_change_jurisdictions_file(
         },
     )
     assert_ok(rv)
-
-    bgcompute_update_standardized_contests_file(election_id)
 
     rv = put_json(
         client,
@@ -427,7 +394,6 @@ def test_standardized_contests_change_jurisdictions_file(
         },
     )
     assert_ok(rv)
-    bgcompute_update_election_jurisdictions_file(election_id)
 
     # Standardized contests should be automatically updated
     rv = client.get(f"/api/election/{election_id}/standardized-contests")
@@ -462,7 +428,6 @@ def test_standardized_contests_change_jurisdictions_file(
         },
     )
     assert_ok(rv)
-    bgcompute_update_election_jurisdictions_file(election_id)
 
     # Standardized contests should be cleared
     rv = client.get(f"/api/election/{election_id}/standardized-contests")
@@ -504,8 +469,6 @@ def test_standardized_contests_parse_all(
     )
     assert_ok(rv)
 
-    bgcompute_update_standardized_contests_file(election_id)
-
     rv = client.get(f"/api/election/{election_id}/standardized-contests")
     assert json.loads(rv.data) == [
         {"name": "Contest 1", "jurisdictionIds": jurisdiction_ids},
@@ -533,7 +496,6 @@ def test_reupload_standardized_contests_after_contests_selected(
         },
     )
     assert_ok(rv)
-    bgcompute_update_standardized_contests_file(election_id)
 
     # Select some contests
     rv = client.get(f"/api/election/{election_id}/standardized-contests")
@@ -575,7 +537,6 @@ def test_reupload_standardized_contests_after_contests_selected(
         },
     )
     assert_ok(rv)
-    bgcompute_update_standardized_contests_file(election_id)
 
     # Contests should be updated (Contest 2 deleted, Contest 1 universe changed)
     rv = client.get(f"/api/election/{election_id}/contest")

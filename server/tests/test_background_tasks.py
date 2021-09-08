@@ -76,6 +76,8 @@ def test_task_happy_path(caplog, db_session):
 
     assert task_ran is False
 
+    assert serialize_background_task(None) is None
+
     task = create_background_task(happy_path, test_payload, db_session)
     task_id = task.id
 

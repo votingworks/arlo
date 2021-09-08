@@ -835,10 +835,8 @@ class File(BaseModel):
     contents = deferred(Column(Text, nullable=False))
     uploaded_at = Column(UTCDateTime, nullable=False)
 
-    # Metadata for processing files in the background.
-    processing_started_at = Column(UTCDateTime)
-    processing_completed_at = Column(UTCDateTime)
-    processing_error = Column(Text)
+    task_id = Column(String(200), ForeignKey("background_task.id"))
+    task = relationship("BackgroundTask")
 
 
 class BackgroundTask(BaseModel):

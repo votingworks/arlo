@@ -1,6 +1,5 @@
 from datetime import datetime
 import uuid
-from sqlalchemy.orm.session import Session
 from flask import request, jsonify, Request
 from werkzeug.exceptions import BadRequest, NotFound, Conflict
 
@@ -8,12 +7,12 @@ from . import api
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
 from ..auth import restrict_access, UserType
-from ..util.process_file import (
-    process_file,
-    serialize_file,
-    serialize_file_processing,
+from ..worker.tasks import (
     UserError,
+    background_task,
+    create_background_task,
 )
+from ..util.file import serialize_file, serialize_file_processing
 from ..util.csv_download import csv_response
 from ..util.csv_parse import decode_csv_file, parse_csv, CSVValueType, CSVColumnType
 from ..activity_log.activity_log import UploadFile, activity_base, record_activity
@@ -21,14 +20,15 @@ from ..activity_log.activity_log import UploadFile, activity_base, record_activi
 BATCH_NAME = "Batch Name"
 
 
-def process_batch_tallies_file(
-    session: Session, jurisdiction: Jurisdiction, file: File
-):
-    def process():
+@background_task
+def process_batch_tallies_file(jurisdiction_id: str):
+    jurisdiction = Jurisdiction.query.get(jurisdiction_id)
+
+    def process() -> None:
         # We only support one contest for batch audits, so we can just take the
         # first contest from the jurisdiction's universe.
-        assert len(jurisdiction.contests) == 1
-        contest = jurisdiction.contests[0]
+        assert len(list(jurisdiction.contests)) == 1
+        contest = list(jurisdiction.contests)[0]
 
         columns = [CSVColumnType(BATCH_NAME, CSVValueType.TEXT, unique=True)] + [
             CSVColumnType(choice.name, CSVValueType.NUMBER)
@@ -63,6 +63,7 @@ def process_batch_tallies_file(
         num_ballots_by_batch = {
             batch.name: batch.num_ballots for batch in jurisdiction.batches
         }
+        assert contest.votes_allowed is not None
         for row in batch_tallies_csv:
             allowed_tallies = (
                 num_ballots_by_batch[row[BATCH_NAME]] * contest.votes_allowed
@@ -88,19 +89,23 @@ def process_batch_tallies_file(
             for row in batch_tallies_csv
         }
 
-    process_file(session, file, process)
-
-    assert file.processing_started_at
-    record_activity(
-        UploadFile(
-            timestamp=file.processing_started_at,
-            base=activity_base(jurisdiction.election),
-            jurisdiction_id=jurisdiction.id,
-            jurisdiction_name=jurisdiction.name,
-            file_type="batch_tallies",
-            error=file.processing_error,
+    error = None
+    try:
+        process()
+    except Exception as exc:
+        error = str(error) or str(error.__class__.__name__)
+        raise exc
+    finally:
+        record_activity(
+            UploadFile(
+                timestamp=jurisdiction.batch_tallies_file.uploaded_at,
+                base=activity_base(jurisdiction.election),
+                jurisdiction_id=jurisdiction.id,
+                jurisdiction_name=jurisdiction.name,
+                file_type="batch_tallies",
+                error=error,
+            )
         )
-    )
 
 
 # Raises if invalid
@@ -122,10 +127,8 @@ def validate_batch_tallies_upload(
         raise BadRequest("Missing required file parameter 'batchTallies'")
 
 
-def clear_batch_tallies_file(jurisdiction: Jurisdiction):
-    if jurisdiction.batch_tallies_file:
-        db_session.delete(jurisdiction.batch_tallies_file)
-        jurisdiction.batch_tallies = None
+def clear_batch_tallies_data(jurisdiction: Jurisdiction):
+    jurisdiction.batch_tallies = None
 
 
 @api.route(
@@ -138,10 +141,8 @@ def upload_batch_tallies(
 ):
     validate_batch_tallies_upload(request, election, jurisdiction)
 
-    clear_batch_tallies_file(jurisdiction)
+    clear_batch_tallies_data(jurisdiction)
 
-    # We save the batch tallies file, and bgcompute finds it and processes it in
-    # the background.
     batch_tallies = request.files["batchTallies"]
     jurisdiction.batch_tallies_file = File(
         id=str(uuid.uuid4()),
@@ -149,6 +150,10 @@ def upload_batch_tallies(
         contents=decode_csv_file(batch_tallies),
         uploaded_at=datetime.now(timezone.utc),
     )
+    jurisdiction.batch_tallies_file.task = create_background_task(
+        process_batch_tallies_file, dict(jurisdiction_id=jurisdiction.id)
+    )
+
     db_session.commit()
     return jsonify(status="ok")
 
@@ -191,6 +196,8 @@ def download_batch_tallies_file(
 def clear_batch_tallies(
     election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
-    clear_batch_tallies_file(jurisdiction)
+    if jurisdiction.batch_tallies_file:
+        db_session.delete(jurisdiction.batch_tallies_file)
+        clear_batch_tallies_data(jurisdiction)
     db_session.commit()
     return jsonify(status="ok")
