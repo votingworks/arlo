@@ -10,7 +10,7 @@ import sys
 
 def compute_raire_assertions(
     contest: Contest, cvrs: CVRS, winner: str, asn_func: Callable,
-    log: bool, stream=sys.stdout
+    log: bool, stream=sys.stdout, agap=0
 ) -> list:
 
     """
@@ -43,6 +43,11 @@ def compute_raire_assertions(
 
         stream         - stream to which logging statements should
                          be printed.
+        
+        agap           - allowed gap between the lower and upper bound
+                         on expected audit difficulty. Once these bounds
+                         converge (to within 'agap') algorithm can stop
+                         and return  audit configuration found. 
 
     Outputs:
         A list of RaireAssertions to be audited. If this collection of
@@ -78,8 +83,6 @@ def compute_raire_assertions(
                 asrn.difficulty = asn_func(asrn.margin)
 
                 nebs[c][d] = asrn
-
-                asrn.display()
 
 
     # The RAIRE algorithm progressively searches through the space of 
@@ -137,30 +140,29 @@ def compute_raire_assertions(
         # Check whether we can stop searching for assertions.
         max_on_frontier = max([node.estimate for node in frontier.nodes])
 
-        if max_on_frontier == lowerbound:
+        if agap > 0 and lowerbound > 0 and max_on_frontier-lowerbound <= agap:
             # We can rule out all branches of the tree with assertions that
             # have a difficulty that is <= lowerbound. 
             break
 
-        if log:
-            print("Max on frontier {}, lowerbound {}".format(max_on_frontier,
-                lowerbound), file=stream)
-
-        to_expand = frontier.nodes.pop(0)
+        to_expand = frontier.nodes[0]
 
         # We can also stop searching if all nodes on our frontier are leaves.
         if not to_expand.expandable:
             break
 
+        frontier.nodes.pop(0)
+
         if to_expand.best_ancestor != None and \
             to_expand.best_ancestor.estimate <= lowerbound:
             frontier.replace_descendents(to_expand.best_ancestor, log,
                 stream=stream)
+
             continue
 
         if to_expand.estimate <= lowerbound:
             to_expand.expandable = False
-            fontier.insert_node(to_expand)
+            frontier.insert_node(to_expand)
             continue
 
         #--------------------------------------------------------------------
@@ -193,6 +195,7 @@ def compute_raire_assertions(
             to_expand.best_ancestor.estimate <= lowerbound:
             frontier.replace_descendents(to_expand.best_ancestor, log,
                 stream=stream)
+
             continue
 
         if to_expand.estimate <= lowerbound:
@@ -241,6 +244,7 @@ def compute_raire_assertions(
                         lowerbound=max(lowerbound,newn.best_ancestor.estimate)
                         frontier.replace_descendents(newn.best_ancestor, log,
                             stream=stream)
+
                     else:
                         lowerbound=max(lowerbound,newn.estimate)
                         frontier.insert_node(newn)
@@ -313,6 +317,13 @@ def compute_raire_assertions(
             
             if assrtn_j.subsumes(assrtn_i):
                 subsumed = True
+
+                if log:
+                    print("", file=stream)
+                    print("{} SUBSUMES {}".format(assrtn_j.to_str(),
+                        assrtn_i.to_str()), file=stream)
+                    print("", file=stream)
+                    
                 break
 
         if not subsumed:
