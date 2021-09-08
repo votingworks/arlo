@@ -81,6 +81,7 @@ def upgrade():
         ["id"],
         ondelete="cascade",
     )
+    backfill()
 
 
 def downgrade():  # pragma: no cover
