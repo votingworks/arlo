@@ -1,0 +1,57 @@
+CONTEST 1
+NEN,Winner,131,Loser,129,Eliminated,130,39
+NEB,Winner,131,Loser,130,Eliminated
+NEB,Winner,131,Loser,39,Eliminated
+CONTEST 2
+NEN,Winner,120,Loser,122,Eliminated,40,121,123,124,125
+NEN,Winner,122,Loser,124,Eliminated,40,120,123,125
+NEN,Winner,120,Loser,124,Eliminated,40,121,122,123,125
+NEN,Winner,120,Loser,121,Eliminated,40,122,123,124,125
+NEN,Winner,121,Loser,124,Eliminated,40,120,122,123,125
+NEN,Winner,120,Loser,121,Eliminated,40,123,124,125
+NEN,Winner,121,Loser,124,Eliminated,40,120,123,125
+NEN,Winner,120,Loser,121,Eliminated,40,122,123,125
+NEN,Winner,120,Loser,122,Eliminated,40,121,123,125
+NEN,Winner,122,Loser,124,Eliminated,40,120,121,123,125
+NEN,Winner,120,Loser,122,Eliminated,40,123,125
+NEN,Winner,124,Loser,125,Eliminated,40,120,123
+NEB,Winner,120,Loser,123,Eliminated
+NEN,Winner,122,Loser,125,Eliminated,40,120,123,124
+NEN,Winner,124,Loser,125,Eliminated,40,120,121,123
+NEN,Winner,122,Loser,125,Eliminated,40,120,123
+NEN,Winner,120,Loser,125,Eliminated,40,122,123,124
+NEN,Winner,124,Loser,125,Eliminated,40,120,122,123
+NEN,Winner,120,Loser,125,Eliminated,40,123,124
+NEN,Winner,121,Loser,125,Eliminated,40,120,123,124
+NEN,Winner,121,Loser,125,Eliminated,40,120,122,123,124
+NEN,Winner,120,Loser,125,Eliminated,40,121,123,124
+NEN,Winner,120,Loser,125,Eliminated,40,121,122,123,124
+NEN,Winner,121,Loser,125,Eliminated,40,120,123
+NEN,Winner,120,Loser,125,Eliminated,40,123
+NEN,Winner,124,Loser,125,Eliminated,40,120,121,122,123
+NEN,Winner,120,Loser,125,Eliminated,40,122,123
+NEN,Winner,120,Loser,125,Eliminated,40,121,123
+NEN,Winner,122,Loser,125,Eliminated,40,120,121,123,124
+NEN,Winner,121,Loser,125,Eliminated,40,120,122,123
+NEN,Winner,122,Loser,125,Eliminated,40,120,121,123
+NEN,Winner,120,Loser,125,Eliminated,40,121,122,123
+NEB,Winner,120,Loser,40,Eliminated
+CONTEST 3
+NEN,Winner,441,Loser,440,Eliminated,442,132
+NEB,Winner,441,Loser,442,Eliminated
+NEB,Winner,441,Loser,132,Eliminated
+CONTEST 4
+NEN,Winner,117,Loser,119,Eliminated,35,116,118
+NEN,Winner,118,Loser,119,Eliminated,35,116,117
+NEN,Winner,117,Loser,118,Eliminated,35,116,119
+NEN,Winner,117,Loser,118,Eliminated,35,116
+NEN,Winner,117,Loser,116,Eliminated,35,119
+NEN,Winner,119,Loser,116,Eliminated,35,117,118
+NEN,Winner,117,Loser,116,Eliminated,35
+NEN,Winner,118,Loser,116,Eliminated,35,117,119
+NEN,Winner,117,Loser,116,Eliminated,35,118,119
+NEN,Winner,119,Loser,116,Eliminated,35,117
+NEN,Winner,118,Loser,116,Eliminated,35,117
+NEN,Winner,117,Loser,116,Eliminated,35,118
+NEB,Winner,117,Loser,35,Eliminated
+NEB,Winner,119,Loser,35,Eliminated
