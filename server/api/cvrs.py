@@ -240,7 +240,7 @@ def process_cvr_file(jurisdiction_id: str, emit_progress):
             ballots_csv = csv.writer(ballots_tempfile)
 
             for i, row in enumerate(cvrs):
-                if i % 100 == 0:
+                if i % 1000 == 0:
                     emit_progress(i + 4, total_lines)
                 [
                     cvr_number,

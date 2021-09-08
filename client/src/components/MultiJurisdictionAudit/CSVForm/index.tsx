@@ -125,20 +125,16 @@ const CSVFile = ({
                         width: '300px',
                       }}
                     >
-                      <>
-                        <span style={{ marginRight: '5px' }}>
-                          Processing...
-                        </span>
-                        {processing!.workTotal && (
-                          <ProgressBar
-                            stripes={false}
-                            intent={Intent.PRIMARY}
-                            value={
-                              processing!.workProgress! / processing!.workTotal
-                            }
-                          />
-                        )}
-                      </>
+                      <span style={{ marginRight: '5px' }}>Processing...</span>
+                      {processing!.workTotal && (
+                        <ProgressBar
+                          stripes={false}
+                          intent={Intent.PRIMARY}
+                          value={
+                            processing!.workProgress! / processing!.workTotal
+                          }
+                        />
+                      )}
                     </div>
                   )}
                 </FormSection>
