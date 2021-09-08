@@ -1,0 +1,19 @@
+CONTEST 1
+NEN,Winner,380,Loser,378,Eliminated,379,381,79
+NEB,Winner,380,Loser,379,Eliminated
+NEB,Winner,380,Loser,381,Eliminated
+NEB,Winner,380,Loser,79,Eliminated
+CONTEST 2
+NEN,Winner,385,Loser,384,Eliminated,77,382,383
+NEB,Winner,385,Loser,382,Eliminated
+NEB,Winner,385,Loser,383,Eliminated
+NEB,Winner,385,Loser,77,Eliminated
+CONTEST 3
+NEN,Winner,387,Loser,388,Eliminated,386,74
+NEB,Winner,387,Loser,386,Eliminated
+NEB,Winner,387,Loser,74,Eliminated
+CONTEST 4
+NEN,Winner,389,Loser,390,Eliminated,73,391
+NEN,Winner,389,Loser,391,Eliminated,73,390
+NEN,Winner,389,Loser,391,Eliminated,73
+NEB,Winner,389,Loser,73,Eliminated

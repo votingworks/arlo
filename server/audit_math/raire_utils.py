@@ -142,6 +142,9 @@ class RaireAssertion:
         return self.difficulty < other.difficulty
     
     def display(self, stream=sys.stdout):
+        print(self.to_str(), file=stream)
+    
+    def to_str(self):
         pass
         
 
@@ -204,9 +207,10 @@ class NEBAssertion(RaireAssertion):
 
         return False
 
-    def display(self, stream=sys.stdout):
-        print("NEB,Winner,{},Loser,{},Eliminated".format(self.winner, 
-            self.loser), file=stream)
+    def to_str(self):
+        return "NEB,Winner,{},Loser,{},Eliminated".format(self.winner,
+            self.loser)
+
 
 
 class NENAssertion(RaireAssertion):
@@ -259,14 +263,14 @@ class NENAssertion(RaireAssertion):
 
         return False
     
-    def display(self, stream=sys.stdout):
-        print("NEN,Winner,{},Loser,{},Eliminated".format(self.winner,
-            self.loser), file=stream, end='')
+    def to_str(self):
+        result = "NEN,Winner,{},Loser,{},Eliminated".format(self.winner,
+            self.loser)
 
         for cand in self.eliminated:
-            print(",{}".format(cand), file=stream, end='')
+            result += ",{}".format(cand)
 
-        print("", file=stream)
+        return result
             
 
 class RaireNode:
