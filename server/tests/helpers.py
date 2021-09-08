@@ -34,6 +34,12 @@ def put_json(client: FlaskClient, url: str, obj) -> Any:
     )
 
 
+def patch_json(client: FlaskClient, url: str, obj) -> Any:
+    return client.patch(
+        url, headers={"Content-Type": "application/json"}, data=json.dumps(obj)
+    )
+
+
 def assert_ok(rv: Response):
     __tracebackhide__ = True  # pylint: disable=unused-variable
     assert (

@@ -140,6 +140,25 @@ def delete_organization(organization_id: str):
     return jsonify(status="ok")
 
 
+@api.route("/support/organizations/<organization_id>", methods=["PATCH"])
+@restrict_access_support
+def rename_organization(organization_id: str):
+    organization = get_or_404(Organization, organization_id)
+    body = request.get_json()
+    validate(
+        body,
+        {
+            "type": "object",
+            "properties": {"name": {"type": "string"}},
+            "required": ["name"],
+            "additionalProperties": False,
+        },
+    )
+    organization.name = body["name"]
+    db_session.commit()
+    return jsonify(status="ok")
+
+
 @api.route("/support/elections/<election_id>", methods=["GET"])
 @restrict_access_support
 def get_election(election_id: str):

@@ -88,6 +88,23 @@ export const useOrganization = (organizationId: string) =>
     fetchApi(`/api/support/organizations/${organizationId}`)
   )
 
+export const useRenameOrganization = (organizationId: string) => {
+  const renameOrganization = (body: { name: string }) =>
+    fetchApi(`/api/support/organizations/${organizationId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(body),
+      headers: { 'Content-Type': 'application/json' },
+    })
+
+  const queryClient = useQueryClient()
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return useMutation<any, Error, any>(renameOrganization, {
+    onSuccess: () =>
+      queryClient.invalidateQueries(['organizations', organizationId]),
+  })
+}
+
 export const useDeleteOrganization = (organizationId: string) => {
   const deleteOrganization = async () =>
     fetchApi(`/api/support/organizations/${organizationId}`, {
