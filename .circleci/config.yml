@@ -182,6 +182,10 @@ jobs:
           name: cypress
           command: |
             ./client/run-cypress-tests.sh
+      - store_artifacts:
+          path: client/cypress/screenshots
+      - store_artifacts:
+          path: client/cypress/videos
 workflows:
   version: 2
   build-and-test:
