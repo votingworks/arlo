@@ -46,6 +46,7 @@ def slack_message(activity: activity_log.Activity):
     )
 
     audit_link = urljoin(config.HTTP_ORIGIN, f"/support/audits/{base.election_id}")
+    assert base.audit_type
     audit_type = dict(
         BALLOT_POLLING="Ballot Polling",
         BALLOT_COMPARISON="Ballot Comparison",
@@ -291,6 +292,7 @@ def send_new_slack_notification(organization_id: str = None) -> None:
     record = (
         ActivityLogRecord.query.filter(ActivityLogRecord.posted_to_slack_at.is_(None))
         .filter_by(**dict(organization_id=organization_id) if organization_id else {})
+        .filter(ActivityLogRecord.activity_name != "JurisdictionAdminLogin")
         .order_by(ActivityLogRecord.timestamp)
         .limit(1)
         .one_or_none()

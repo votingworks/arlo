@@ -14,9 +14,9 @@ from ..auth.lib import get_loggedin_user, get_support_user
 class ActivityBase:
     organization_id: str
     organization_name: str
-    election_id: str
-    audit_name: str
-    audit_type: str
+    election_id: Optional[str] = None
+    audit_name: Optional[str] = None
+    audit_type: Optional[str] = None
     user_type: Optional[str] = None
     user_key: Optional[str] = None
     support_user_email: Optional[str] = None
@@ -79,6 +79,11 @@ class RecordResults(JurisdictionActivity):
 @dataclass
 class AuditBoardSignOff(JurisdictionActivity):
     audit_board_name: str
+
+
+@dataclass
+class JurisdictionAdminLogin(Activity):
+    error: Optional[str]
 
 
 def activity_base(election: Election) -> ActivityBase:
