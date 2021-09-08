@@ -1,10 +1,12 @@
 import uuid
 import traceback
 import logging
+from inspect import signature
 from datetime import datetime
 from typing import Optional, Callable, Dict
+from sqlalchemy.orm import Session
 
-from ..database import db_session
+from ..database import db_session, engine
 from ..models import *  # pylint: disable=wildcard-import
 from ..util.isoformat import isoformat
 from ..util.jsonschema import JSONDict
@@ -53,6 +55,18 @@ def task_log_data(task: BackgroundTask) -> JSONDict:
     return dict(id=task.id, task_name=task.task_name, payload=task.payload)
 
 
+def emit_progress_for_task(task_id: str):
+    progress_session = Session(engine)
+
+    def emit_progress(work_progress: int, work_total: int):
+        task = progress_session.query(BackgroundTask).get(task_id)
+        task.work_progress = work_progress
+        task.work_total = work_total
+        progress_session.commit()
+
+    return emit_progress
+
+
 # Currently, we assume that only one worker is consuming tasks at a time. There
 # are no guards to prevent parallel workers from running the same task.
 #
@@ -72,8 +86,13 @@ def run_task(task: BackgroundTask, db_session=db_session) -> bool:
 
     db_session.commit()
 
+    task_args = dict(task.payload)
+    # Inject emit_progress for handlers that want to record task progress
+    if "emit_progress" in signature(task_handler).parameters:
+        task_args["emit_progress"] = emit_progress_for_task(task.id)
+
     try:
-        task_handler(**dict(task.payload))
+        task_handler(**task_args)
 
         task.completed_at = datetime.now(timezone.utc)
 
@@ -144,9 +163,15 @@ def serialize_background_task(task: Optional[BackgroundTask]) -> Optional[JSONDi
     else:
         status = ProcessingStatus.READY_TO_PROCESS
 
-    return {
+    json: JSONDict = {
         "status": status,
         "startedAt": isoformat(task.started_at),
         "completedAt": isoformat(task.completed_at),
         "error": task.error,
     }
+
+    if task.work_total is not None:
+        json["workProgress"] = task.work_progress
+        json["workTotal"] = task.work_total
+
+    return json

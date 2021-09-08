@@ -2,8 +2,24 @@ import enum
 from typing import Type, TypeVar, cast as typing_cast
 from datetime import datetime as dt, timezone
 from werkzeug.exceptions import NotFound
-from sqlalchemy import *  # pylint: disable=wildcard-import
 import sqlalchemy
+from sqlalchemy import (
+    Table,
+    DDL,
+    DateTime,
+    Column,
+    String,
+    Text,
+    Integer,
+    Float,
+    JSON,
+    Boolean,
+    Enum,
+    ForeignKey,
+    ForeignKeyConstraint,
+    UniqueConstraint,
+    PrimaryKeyConstraint,
+)
 from sqlalchemy.orm import (
     relationship,
     backref,
@@ -848,6 +864,10 @@ class BackgroundTask(BaseModel):
     started_at = Column(UTCDateTime)
     completed_at = Column(UTCDateTime)
     error = Column(Text)
+
+    # Tasks can record progress in the work unit of their choosing
+    work_total = Column(Integer)
+    work_progress = Column(Integer)
 
 
 class ActivityLogRecord(Base):
