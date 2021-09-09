@@ -582,13 +582,15 @@ describe('JA setup', () => {
 
       userEvent.click(cvrsButton)
 
+      await screen.findByText('Uploading...')
+
       await screen.findByText('Processing...')
 
       await screen.findByText('Uploaded at 11/18/2020, 9:39:14 PM.')
     })
   })
 
-  it('displays errors after reprocessing batch tallies', async () => {
+  it('displays errors after reprocessing CVRs', async () => {
     const expectedCalls = [
       jaApiCalls.getUser,
       jaApiCalls.getSettings(auditSettings.ballotComparisonAll),

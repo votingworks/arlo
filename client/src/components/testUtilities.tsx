@@ -148,10 +148,13 @@ export const withMockFetch = async (
   // To enable axios mock, the test file must have jest.mock('axios') at the top
   if ('mockImplementation' in (axios as any).default) {
     ;(axios as any).mockImplementation(
-      (
+      async (
         url: string,
-        { onUploadProgress: _, data, ...options }: AxiosRequestConfig
-      ) => mockFetch(url, { ...options, body: data })
+        { onUploadProgress, data, ...options }: AxiosRequestConfig
+      ) => {
+        if (onUploadProgress) onUploadProgress({ loaded: 1, total: 2 })
+        mockFetch(url, { ...options, body: data })
+      }
     )
   }
 

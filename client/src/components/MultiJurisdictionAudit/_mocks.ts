@@ -37,6 +37,8 @@ manifestFormData.append('manifest', manifestFile, manifestFile.name)
 const talliesFormData: FormData = new FormData()
 talliesFormData.append('batchTallies', talliesFile, talliesFile.name)
 const cvrsFormData: FormData = new FormData()
+// Make the mock CVR file large enough to trigger an "Uploading..." progress bar
+Object.defineProperty(cvrsFile, 'size', { value: 1000 * 1000 })
 cvrsFormData.append('cvrs', cvrsFile, cvrsFile.name)
 
 export const apiCalls = {
