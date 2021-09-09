@@ -57,6 +57,8 @@ jest.mock('./useSetupMenuItems/getRoundStatus')
 getJurisdictionFileStatusMock.mockReturnValue('PROCESSED')
 getRoundStatusMock.mockReturnValue(false)
 
+jest.mock('axios')
+
 afterEach(() => {
   paramsMock.mockReturnValue({
     electionId: '1',
@@ -527,6 +529,7 @@ describe('JA setup', () => {
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
       jaApiCalls.getBatchTalliesFile(talliesMocks.processed),
       jaApiCalls.putManifest,
+      jaApiCalls.getBallotManifestFile(manifestMocks.processing),
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
       jaApiCalls.getBatchTalliesFile(talliesMocks.errored),
     ]
@@ -546,7 +549,7 @@ describe('JA setup', () => {
       userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
 
       await screen.findByText(/Uploaded/)
-      screen.getByText('Invalid CSV')
+      await screen.findByText('Invalid CSV')
     })
   })
 
@@ -593,6 +596,7 @@ describe('JA setup', () => {
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
       jaApiCalls.getCVRSfile(cvrsMocks.processed),
       jaApiCalls.putManifest,
+      jaApiCalls.getBallotManifestFile(manifestMocks.processing),
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
       jaApiCalls.getCVRSfile(cvrsMocks.errored),
     ]
@@ -612,7 +616,7 @@ describe('JA setup', () => {
       userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
 
       await screen.findByText(/Uploaded/)
-      screen.getByText('Invalid CSV')
+      await screen.findByText('Invalid CSV')
     })
   })
 
@@ -664,7 +668,6 @@ describe('JA setup', () => {
       jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
       jaApiCalls.putManifest,
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
-      jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()

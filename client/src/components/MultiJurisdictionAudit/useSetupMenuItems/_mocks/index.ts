@@ -336,6 +336,17 @@ export const manifestMocks: { [key: string]: IBallotManifestInfo } = {
     numBatches: null,
     numBallots: null,
   },
+  processing: {
+    file: { name: 'manifest.csv', uploadedAt: '2020-06-08T21:39:05.765+00:00' },
+    processing: {
+      status: FileProcessingStatus.PROCESSING,
+      startedAt: '2020-06-08T21:39:05.765+00:00',
+      completedAt: null,
+      error: null,
+    },
+    numBatches: null,
+    numBallots: null,
+  },
   processed: {
     file: { name: 'manifest.csv', uploadedAt: '2020-06-08T21:39:05.765+00:00' },
     processing: {

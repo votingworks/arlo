@@ -1,3 +1,4 @@
+import axios, { AxiosRequestConfig } from 'axios'
 import React from 'react'
 import { createLocation, createMemoryHistory, MemoryHistory } from 'history'
 import { match as routerMatch, Router } from 'react-router-dom'
@@ -139,7 +140,20 @@ export const withMockFetch = async (
     }
     return new Response(JSON.stringify(null))
   })
+
+  // Set up fetch mock
   window.fetch = mockFetch as typeof window.fetch
+
+  // Also mock axios, since we use that in some cases
+  // To enable axios mock, the test file must have jest.mock('axios') at the top
+  if ('mockImplementation' in (axios as any).default) {
+    ;(axios as any).mockImplementation(
+      (
+        url: string,
+        { onUploadProgress: _, data, ...options }: AxiosRequestConfig
+      ) => mockFetch(url, { ...options, body: data })
+    )
+  }
 
   await testFn()
 

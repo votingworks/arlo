@@ -50,9 +50,8 @@ const putCSVFile = async (
   const formData: FormData = new FormData()
   formData.append(formKey, csv, csv.name)
   try {
-    await axios(addCSRFToken({
+    await axios(`/api${url}`, addCSRFToken({
       method: 'PUT',
-      url: `/api/${url}`,
       data: formData,
       onUploadProgress: progress =>
         trackProgress(progress.loaded / progress.total),
@@ -82,16 +81,28 @@ const useCSV = (
   const [csv, setCSV] = useState<IFileInfo | null>(null)
   const [upload, setUpload] = useState<IUpload | null>(null)
 
+  // Load (or reload) this file whenever a file it depends on changes. This is
+  // useful when one file gets reprocessed on the backend after its dependency
+  // processes (e.g. CVR depends on ballot manifest).
+  const hasDependency = dependencyFile !== undefined
+  const dependencyNotUploaded = dependencyFile && dependencyFile.file === null
+  const dependencyNotProcessing =
+    dependencyFile &&
+    dependencyFile.processing &&
+    dependencyFile.processing.completedAt !== null
   useEffect(() => {
     ;(async () => {
-      // Reload this file whenever a file it depends finishes processing. This is
-      // useful when one file gets reprocessed on the backend after its dependency
-      // processes (e.g. CVR depends on ballot manifest).
-      if (dependencyFile !== null) {
+      if (!hasDependency || dependencyNotUploaded || dependencyNotProcessing) {
         setCSV(await loadCSVFile(url, shouldFetch))
       }
     })()
-  }, [url, shouldFetch, dependencyFile])
+  }, [
+    url,
+    shouldFetch,
+    hasDependency,
+    dependencyNotUploaded,
+    dependencyNotProcessing,
+  ])
 
   const uploadCSV = async (file: File): Promise<boolean> => {
     if (!shouldFetch) return false

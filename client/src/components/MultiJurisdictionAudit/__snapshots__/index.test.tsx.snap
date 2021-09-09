@@ -373,8 +373,9 @@ exports[`JA setup renders initial state 1`] = `
                 Select a CSV...
               </span>
             </label>
-          </div>
-          <div>
+            <div
+              style="display: flex; margin-top: 15px; margin-bottom: 10px; align-items: center; width: 300px;"
+            />
             <button
               class="bp3-button bp3-intent-primary sc-gzVnrw kdzzfK"
               type="submit"
@@ -436,8 +437,9 @@ exports[`JA setup renders initial state 1`] = `
                 Select a CSV...
               </span>
             </label>
-          </div>
-          <div>
+            <div
+              style="display: flex; margin-top: 15px; margin-bottom: 10px; align-items: center; width: 300px;"
+            />
             <button
               class="bp3-button bp3-disabled bp3-intent-primary sc-gzVnrw kdzzfK"
               disabled=""
