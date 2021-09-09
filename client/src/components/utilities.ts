@@ -1,5 +1,6 @@
 import { useRef, useEffect } from 'react'
 import { toast } from 'react-toastify'
+import { AxiosRequestConfig } from 'axios'
 import number from '../utils/number-schema'
 import { IErrorResponse } from '../types'
 
@@ -8,7 +9,7 @@ const parseCookies = () =>
     document.cookie.split(';').map(pair => pair.trim().split('='))
   )
 
-export const addCSRFToken = (options?: RequestInit) => {
+export const addCSRFToken = (options?: RequestInit | AxiosRequestConfig) => {
   const token = parseCookies()._csrf_token
   if (
     token &&

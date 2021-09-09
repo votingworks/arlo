@@ -1,5 +1,7 @@
+import axios, { AxiosRequestConfig } from 'axios'
+import { toast } from 'react-toastify'
 import { useEffect, useState } from 'react'
-import { api, useInterval } from '../utilities'
+import { api, useInterval, addCSRFToken } from '../utilities'
 import { IAuditSettings } from './useAuditSettings'
 
 export enum FileProcessingStatus {
@@ -22,6 +24,12 @@ export interface IFileInfo {
     workProgress?: number
     workTotal?: number
   } | null
+  upload?: IUpload | null
+}
+
+interface IUpload {
+  file: File
+  progress: number
 }
 
 export const isFileProcessed = (file: IFileInfo): boolean =>
@@ -36,15 +44,24 @@ const loadCSVFile = async (
 const putCSVFile = async (
   url: string,
   csv: File,
-  formKey: string
+  formKey: string,
+  trackProgress: (progress: number) => void
 ): Promise<boolean> => {
   const formData: FormData = new FormData()
   formData.append(formKey, csv, csv.name)
-  const response = await api(url, {
-    method: 'PUT',
-    body: formData,
-  })
-  return !!response
+  try {
+    await axios(addCSRFToken({
+      method: 'PUT',
+      url: `/api/${url}`,
+      data: formData,
+      onUploadProgress: progress =>
+        trackProgress(progress.loaded / progress.total),
+    }) as AxiosRequestConfig)
+    return true
+  } catch (error) {
+    toast.error(error.message)
+    return false
+  }
 }
 
 const deleteCSVFile = async (url: string): Promise<boolean> => {
@@ -63,6 +80,7 @@ const useCSV = (
   () => Promise<boolean>
 ] => {
   const [csv, setCSV] = useState<IFileInfo | null>(null)
+  const [upload, setUpload] = useState<IUpload | null>(null)
 
   useEffect(() => {
     ;(async () => {
@@ -75,12 +93,19 @@ const useCSV = (
     })()
   }, [url, shouldFetch, dependencyFile])
 
-  const uploadCSV = async (csvFile: File): Promise<boolean> => {
+  const uploadCSV = async (file: File): Promise<boolean> => {
     if (!shouldFetch) return false
-    if (await putCSVFile(url, csvFile, formKey)) {
+    setUpload({ file, progress: 0 })
+    if (
+      await putCSVFile(url, file, formKey, progress =>
+        setUpload({ file, progress })
+      )
+    ) {
       setCSV(await loadCSVFile(url, shouldFetch))
+      setUpload(null)
       return true
     }
+    setUpload(null)
     return false
   }
 
@@ -102,7 +127,7 @@ const useCSV = (
     shouldPoll ? 1000 : null
   )
 
-  return [csv, uploadCSV, deleteCSV]
+  return [csv && { ...csv, upload }, uploadCSV, deleteCSV]
 }
 
 export const useJurisdictionsFile = (
