@@ -348,9 +348,7 @@ describe('Audit Setup > Participants', () => {
     await withMockFetch(expectedCalls, async () => {
       renderParticipants()
 
-      expect(
-        await screen.findAllByText(/Upload successfully completed/)
-      ).toHaveLength(2)
+      expect(await screen.findAllByText(/Uploaded/)).toHaveLength(2)
 
       // Upload a new jurisdictions file
       userEvent.click(
@@ -362,7 +360,7 @@ describe('Audit Setup > Participants', () => {
       )
       userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
 
-      await screen.findByText(/Upload successfully completed/)
+      await screen.findByText(/Uploaded/)
       screen.getByText('something went wrong')
     })
   })
