@@ -12,3 +12,5 @@ for instance in RaireData/Input/NSW2015/*.raire; do
 done
 
 python3.8 test_raire.py -i RaireData/Input/SpecialCases/SanFran_2007.raire -o RaireData/Output/SpecialCases/SanFran_2007.raire.out -agap 0.00001
+
+python3.8 test_raire.py -i RaireData/Input/SpecialCases/Aspen_2009_wrong_winner.raire -o RaireData/Output/SpecialCases/Aspen_2009_wrong_winner.raire.out
