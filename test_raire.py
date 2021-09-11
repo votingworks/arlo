@@ -6,11 +6,12 @@ from server.audit_math.raire import compute_raire_assertions
 import numpy as np
 
 import sys
+import argparse
 
 def compare_result(path, contests):
     expected = {}
 
-    with open(sys.argv[2], "r") as exp:
+    with open(path, "r") as exp:
         lines = exp.readlines()
 
         reading_contest = None
@@ -44,6 +45,13 @@ def compare_result(path, contests):
         assert asrtns == casrtns, \
             print("Assertions differ for {}, contest {}".format(path,c))
 
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-i', dest='input', required=True)
+parser.add_argument('-o', dest='exp_out', required=True)
+parser.add_argument('-agap', dest='agap', type=float, default=0)
+
+args = parser.parse_args()
 
 cvr1 = {"test_con" : {"Ann" : 1, "Sally" : 3, "Bob": 2, "Mike" : 4}}
 
@@ -80,7 +88,7 @@ assert(nen3.is_vote_for_loser(cvr1) == 0)
 contests = {}
 result = {}
 
-with open(sys.argv[1], "r") as data:
+with open(args.input, "r") as data:
     lines = data.readlines()
 
     ncontests = int(lines[0])
@@ -136,12 +144,13 @@ with open(sys.argv[1], "r") as data:
         winner = winners[c]
 
         audit = compute_raire_assertions(con, cvrs, winners[c], 
-            lambda m : 1/m if m > 0 else np.inf, False)
+            lambda m : 1/m if m > 0 else np.inf, False, agap=args.agap)
 
         asrtns = []
         for assertion in audit:
             asrtns.append(assertion.to_str())
 
-        result[c] = sorted(asrtns)
-  
-    compare_result(sys.argv[2], result)
+        sorted_asrtns = sorted(asrtns)
+        result[c] = sorted_asrtns
+
+    compare_result(args.exp_out, result)
