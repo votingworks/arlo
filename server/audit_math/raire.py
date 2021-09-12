@@ -47,7 +47,14 @@ def compute_raire_assertions(
         agap           - allowed gap between the lower and upper bound
                          on expected audit difficulty. Once these bounds
                          converge (to within 'agap') algorithm can stop
-                         and return  audit configuration found. 
+                         and return  audit configuration found. Generally,
+                         keep this at 0 unless the algorithm is not 
+                         terminating in a reasonable time. Then set it to
+                         as small a value as possible, and increase, until
+                         the algorithm terminates. For some instances, the
+                         difference between the lower and upper bound on 
+                         expected audit difficulty gets to a point where it
+                         is quite small, but doesn't converge. 
 
     Outputs:
         A list of RaireAssertions to be audited. If this collection of
@@ -70,17 +77,18 @@ def compute_raire_assertions(
 
             asrn = NEBAssertion(contest.name, c, d)
             
-            tally_c = np.sum(
-                [asrn.is_vote_for_winner(r) for _,r in cvrs.items()]
-            )
-
-            tally_d = np.sum(
-                [asrn.is_vote_for_loser(r) for _,r in cvrs.items()]
-            )
+            tally_c = 0
+            tally_d = 0
+            for _,r in cvrs.items():
+                tally_c += asrn.is_vote_for_winner(r)
+                tally_d += asrn.is_vote_for_loser(r)
 
             if tally_c > tally_d:
                 asrn.margin = tally_c - tally_d
                 asrn.difficulty = asn_func(asrn.margin)
+
+                asrn.votes_for_winner = tally_c
+                asrn.votes_for_loser = tally_d
 
                 nebs[c][d] = asrn
 
