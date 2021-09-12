@@ -101,6 +101,9 @@ class RaireAssertion:
         self.winner = winner
         self.loser = loser
 
+        self.votes_for_winner = 0
+        self.votes_for_loser = 0
+
         self.margin = -1
         self.difficulty = np.inf
 
@@ -129,9 +132,25 @@ class RaireAssertion:
         pass
 
     def subsumes(self, other):
+        '''
+        Returns true if this assertion 'subsumes' the input assertion 'other'.
+        An assertion 'A' subsumes assertion 'B' if the alternate outcomes
+        ruled out by 'B' is a subset of those ruled out by 'A'. If we include
+        'A' in an audit, we don't need to include 'B'. 
+
+        Input:
+        other : RaireAssertion   - Assertion 'B'
+
+        Output:
+        Returns true if this assertion subsumes assertion 'other'.
+        '''
         pass
 
     def same_as(self, other):
+        '''
+        Returns True if this assertion is equal to 'other' (i.e., they
+        are the same assertion), and False otherwise.
+        '''
         pass
 
     # Assertions are ordered from greatest to least difficulty.
@@ -189,6 +208,14 @@ class NEBAssertion(RaireAssertion):
             and self.loser == other.loser
 
     def subsumes(self, other : Type[RaireAssertion]):
+        '''
+        An NEBAssertion 'A' subsumes an assertion 'other' if:
+        - 'other' is not an NEBAssertion
+        - Both assertions have the same winner & loser
+        - 'other' rules out an outcome with the tail 'Tail' and either the
+          winner of this NEBAssertion assertion appears before the loser in
+          'Tail' or the loser appears and the winner does not. 
+        '''
         if type(other) == NEBAssertion:
             return False
 
@@ -254,6 +281,12 @@ class NENAssertion(RaireAssertion):
             and self.eliminated == other.eliminated
 
     def subsumes(self, other : Type[RaireAssertion]):
+        '''
+        An NENAssertion 'A' subsumes an assertion 'other' if 'other' is 
+        not an NEBAssertion, they have the same winner, and rule out
+        Tail sequences that contain same set of candidates. 
+        '''
+
         if type(other) == NEBAssertion:
             return False
 
@@ -501,6 +534,9 @@ def find_best_audit(contest : Contest, ballots: CBS, neb_matrix, \
 
                 nen.rules_out = node.tail
                 nen.difficulty = estimate
+
+                nen.votes_for_winner = tally_first_in_tail
+                nen.votes_for_loser = tally_later_cand
 
                 best_asrtn = nen
 
