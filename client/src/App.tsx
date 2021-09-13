@@ -109,10 +109,10 @@ const App: React.FC = () => {
             </Switch>
           </Main>
         </AuthDataProvider>
+        {(window as any)._arlo_flask_env === 'development' && ( // eslint-disable-line @typescript-eslint/no-explicit-any
+          <ReactQueryDevtools initialIsOpen={false} />
+        )}
       </QueryClientProvider>
-      {(window as any)._arlo_flask_env === 'development' && ( // eslint-disable-line @typescript-eslint/no-explicit-any
-        <ReactQueryDevtools initialIsOpen={false} />
-      )}
     </>
   )
 }
