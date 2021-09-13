@@ -8,7 +8,7 @@
     "lint:fix": "yarn lint --fix",
     "start": "react-scripts start",
     "test": "TZ=UTC is-ci \"test:ci\" \"test:watch\"",
-    "test:ci": "CI=true tsc && react-scripts test --maxWorkers 4 --env=jest-environment-jsdom-sixteen --coverage",
+    "test:ci": "CI=true tsc && react-scripts test --maxWorkers 4 --env=jest-environment-jsdom-sixteen --coverage --testTimeout 10000",
     "test:coverage": "TZ=UTC react-scripts test --coverage --watchAll=false --env=jest-environment-jsdom-sixteen",
     "test:update": "react-scripts test -u  --watchAll=false --env=jest-environment-jsdom-sixteen",
     "test:watch": "react-scripts test --env=jest-environment-jsdom-sixteen"
