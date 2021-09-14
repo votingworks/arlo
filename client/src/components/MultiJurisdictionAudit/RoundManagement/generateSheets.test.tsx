@@ -162,7 +162,6 @@ describe('generateSheets', () => {
   })
 
   describe('downloadPlaceholders', () => {
-    jest.setTimeout(10000)
     it('generates placeholder sheets', async () => {
       const expectedCalls = [
         {

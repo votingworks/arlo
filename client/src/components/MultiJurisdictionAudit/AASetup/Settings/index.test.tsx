@@ -19,7 +19,6 @@ const renderSettings = () =>
   )
 
 describe('Setup > Settings', () => {
-  jest.setTimeout(10000)
   it('updates settings', async () => {
     const expectedCalls = [
       aaApiCalls.getSettings(auditSettings.blank),
