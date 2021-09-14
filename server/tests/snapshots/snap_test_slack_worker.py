@@ -330,6 +330,10 @@ snapshots["test_slack_worker_message_format 7"] = {
                     "text": ":clock3: <!date^1621449073^{date_short}, {time_secs}|2021-05-19T18:31:13.576657+00:00>",
                     "type": "mrkdwn",
                 },
+                {
+                    "text": ":technologist: Jurisdiction admin test_user@example.com",
+                    "type": "mrkdwn",
+                },
             ],
             "type": "context",
         },
@@ -368,6 +372,10 @@ snapshots["test_slack_worker_message_format 8"] = {
                     "text": ":clock3: <!date^1621449073^{date_short}, {time_secs}|2021-05-19T18:31:13.576657+00:00>",
                     "type": "mrkdwn",
                 },
+                {
+                    "text": ":technologist: Jurisdiction admin test_user@example.com",
+                    "type": "mrkdwn",
+                },
             ],
             "type": "context",
         },
@@ -400,6 +408,10 @@ snapshots["test_slack_worker_message_format 9"] = {
                 },
                 {
                     "text": ":clock3: <!date^1621449073^{date_short}, {time_secs}|2021-05-19T18:31:13.576657+00:00>",
+                    "type": "mrkdwn",
+                },
+                {
+                    "text": ":technologist: Jurisdiction admin test_user@example.com",
                     "type": "mrkdwn",
                 },
             ],

@@ -197,6 +197,7 @@ def slack_message(activity: activity_log.Activity):
                                 jurisdiction_context,
                                 audit_context,
                                 time_context,
+                                user_context,
                             ],
                         ),
                     ],
