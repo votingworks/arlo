@@ -4,9 +4,10 @@ from datetime import datetime
 from flask import request, jsonify, Request
 from werkzeug.exceptions import BadRequest, NotFound
 from sqlalchemy import func
+from sqlalchemy.orm import Session
 
 from . import api
-from ..database import db_session
+from ..database import db_session, engine
 from ..models import *  # pylint: disable=wildcard-import
 from ..auth import restrict_access, UserType
 from ..worker.tasks import (
@@ -147,9 +148,10 @@ def process_ballot_manifest_file(jurisdiction_id: str):
     try:
         process()
     except Exception as exc:
-        error = str(error) or str(error.__class__.__name__)
+        error = str(exc) or str(exc.__class__.__name__)
         raise exc
     finally:
+        session = Session(engine)
         record_activity(
             UploadFile(
                 timestamp=jurisdiction.manifest_file.uploaded_at,
@@ -158,8 +160,10 @@ def process_ballot_manifest_file(jurisdiction_id: str):
                 jurisdiction_name=jurisdiction.name,
                 file_type="ballot_manifest",
                 error=error,
-            )
+            ),
+            session,
         )
+        session.commit()
 
 
 # Raises if invalid

@@ -4,6 +4,7 @@ from typing import Optional
 from datetime import datetime
 from dataclasses import dataclass
 from flask import session
+from sqlalchemy.orm import Session
 
 from ..models import ActivityLogRecord, Election
 from ..database import db_session
@@ -102,11 +103,11 @@ def activity_base(election: Election) -> ActivityBase:
     )
 
 
-def record_activity(activity: Activity):
+def record_activity(activity: Activity, session: Session = db_session):
     info = dict(activity.__dict__, base=activity.base.__dict__)
     del info["timestamp"]  # Remove timestamp since we store it in a column
 
-    db_session.add(
+    session.add(
         ActivityLogRecord(
             id=str(uuid.uuid4()),
             timestamp=activity.timestamp,
