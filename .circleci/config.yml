@@ -162,6 +162,11 @@ jobs:
           name: test client
           command: |
             make test-client
+      - run:
+          name: test client second attempt
+          command: |
+            make test-client
+          when: on_fail
 
   cypress:
     executor: arlo
@@ -182,6 +187,11 @@ jobs:
           name: cypress
           command: |
             ./client/run-cypress-tests.sh
+      - run:
+          name: cypress second attempt
+          command: |
+            ./client/run-cypress-tests.sh
+          when: on_fail
       - store_artifacts:
           path: client/cypress/screenshots
       - store_artifacts:
