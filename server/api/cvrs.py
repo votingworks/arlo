@@ -8,7 +8,7 @@ import re
 import difflib
 import ast
 from datetime import datetime
-from flask import request, jsonify, Request
+from flask import request, jsonify, Request, session
 from werkzeug.exceptions import BadRequest, NotFound, Conflict
 from sqlalchemy import func, and_
 from sqlalchemy.orm import Session
@@ -16,7 +16,7 @@ from sqlalchemy.orm import Session
 from . import api
 from ..database import db_session, engine as db_engine
 from ..models import *  # pylint: disable=wildcard-import
-from ..auth import restrict_access, UserType
+from ..auth import restrict_access, UserType, get_loggedin_user, get_support_user
 from ..worker.tasks import (
     UserError,
     background_task,
@@ -175,7 +175,12 @@ def hybrid_contest_choice_vote_counts(
 
 
 @background_task
-def process_cvr_file(jurisdiction_id: str, emit_progress):
+def process_cvr_file(
+    jurisdiction_id: str,
+    jurisdiction_admin_email: str,
+    support_user_email: Optional[str],
+    emit_progress,
+):
     jurisdiction = Jurisdiction.query.get(jurisdiction_id)
 
     def process() -> None:
@@ -419,10 +424,14 @@ def process_cvr_file(jurisdiction_id: str, emit_progress):
         raise Exception("Could not parse CVR file") from exc
     finally:
         session = Session(db_engine)
+        base = activity_base(jurisdiction.election)
+        base.user_type = UserType.JURISDICTION_ADMIN
+        base.user_key = jurisdiction_admin_email
+        base.support_user_email = support_user_email
         record_activity(
             UploadFile(
                 timestamp=jurisdiction.cvr_file.uploaded_at,
-                base=activity_base(jurisdiction.election),
+                base=base,
                 jurisdiction_id=jurisdiction.id,
                 jurisdiction_name=jurisdiction.name,
                 file_type="cvrs",
@@ -458,7 +467,12 @@ def save_cvr_file(cvr, jurisdiction: Jurisdiction):
         uploaded_at=datetime.now(timezone.utc),
     )
     jurisdiction.cvr_file.task = create_background_task(
-        process_cvr_file, dict(jurisdiction_id=jurisdiction.id)
+        process_cvr_file,
+        dict(
+            jurisdiction_id=jurisdiction.id,
+            jurisdiction_admin_email=get_loggedin_user(session)[1],
+            support_user_email=get_support_user(session),
+        ),
     )
 
 

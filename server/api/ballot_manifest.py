@@ -1,7 +1,8 @@
+from typing import Optional
 import uuid
 import logging
 from datetime import datetime
-from flask import request, jsonify, Request
+from flask import request, jsonify, Request, session
 from werkzeug.exceptions import BadRequest, NotFound
 from sqlalchemy import func
 from sqlalchemy.orm import Session
@@ -9,7 +10,7 @@ from sqlalchemy.orm import Session
 from . import api
 from ..database import db_session, engine
 from ..models import *  # pylint: disable=wildcard-import
-from ..auth import restrict_access, UserType
+from ..auth import restrict_access, UserType, get_loggedin_user, get_support_user
 from ..worker.tasks import (
     background_task,
     create_background_task,
@@ -75,7 +76,11 @@ def hybrid_jurisdiction_total_ballots(jurisdiction: Jurisdiction) -> HybridPair:
 
 
 @background_task
-def process_ballot_manifest_file(jurisdiction_id: str):
+def process_ballot_manifest_file(
+    jurisdiction_id: str,
+    jurisdiction_admin_email: str,
+    support_user_email: Optional[str],
+):
     jurisdiction = Jurisdiction.query.get(jurisdiction_id)
 
     def process() -> None:
@@ -133,7 +138,12 @@ def process_ballot_manifest_file(jurisdiction_id: str):
         if jurisdiction.cvr_file:
             clear_cvr_data(jurisdiction)
             jurisdiction.cvr_file.task = create_background_task(
-                process_cvr_file, dict(jurisdiction_id=jurisdiction.id)
+                process_cvr_file,
+                dict(
+                    jurisdiction_id=jurisdiction.id,
+                    jurisdiction_admin_email=jurisdiction_admin_email,
+                    support_user_email=support_user_email,
+                ),
             )
 
         # If batch tallies file already uploaded, try reprocessing it, since it
@@ -141,7 +151,12 @@ def process_ballot_manifest_file(jurisdiction_id: str):
         if jurisdiction.batch_tallies_file:
             clear_batch_tallies_data(jurisdiction)
             jurisdiction.batch_tallies_file.task = create_background_task(
-                process_batch_tallies_file, dict(jurisdiction_id=jurisdiction.id)
+                process_batch_tallies_file,
+                dict(
+                    jurisdiction_id=jurisdiction.id,
+                    jurisdiction_admin_email=jurisdiction_admin_email,
+                    support_user_email=support_user_email,
+                ),
             )
 
     error = None
@@ -152,10 +167,14 @@ def process_ballot_manifest_file(jurisdiction_id: str):
         raise exc
     finally:
         session = Session(engine)
+        base = activity_base(jurisdiction.election)
+        base.user_type = UserType.JURISDICTION_ADMIN
+        base.user_key = jurisdiction_admin_email
+        base.support_user_email = support_user_email
         record_activity(
             UploadFile(
                 timestamp=jurisdiction.manifest_file.uploaded_at,
-                base=activity_base(jurisdiction.election),
+                base=base,
                 jurisdiction_id=jurisdiction.id,
                 jurisdiction_name=jurisdiction.name,
                 file_type="ballot_manifest",
@@ -183,7 +202,12 @@ def save_ballot_manifest_file(manifest, jurisdiction: Jurisdiction):
         uploaded_at=datetime.now(timezone.utc),
     )
     jurisdiction.manifest_file.task = create_background_task(
-        process_ballot_manifest_file, dict(jurisdiction_id=jurisdiction.id)
+        process_ballot_manifest_file,
+        dict(
+            jurisdiction_id=jurisdiction.id,
+            jurisdiction_admin_email=get_loggedin_user(session)[1],
+            support_user_email=get_support_user(session),
+        ),
     )
 
 
