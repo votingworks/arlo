@@ -2,6 +2,7 @@ import io
 import json
 import csv
 from flask.testing import FlaskClient
+from sqlalchemy import and_
 
 from ...models import *  # pylint: disable=wildcard-import
 from ..helpers import *  # pylint: disable=wildcard-import

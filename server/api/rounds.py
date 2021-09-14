@@ -13,7 +13,7 @@ from datetime import datetime
 from flask import jsonify, request
 from jsonschema import validate
 from werkzeug.exceptions import BadRequest, Conflict
-from sqlalchemy import and_
+from sqlalchemy import and_, func, not_, literal
 from sqlalchemy.orm import joinedload
 
 from . import api

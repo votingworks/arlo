@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
-import { toast } from 'react-toastify'
-import { api, poll } from '../utilities'
+import { api, useInterval } from '../utilities'
 import { IAuditSettings } from './useAuditSettings'
 
 export enum FileProcessingStatus {
@@ -20,6 +19,8 @@ export interface IFileInfo {
     startedAt: string | null
     completedAt: string | null
     error: string | null
+    workProgress?: number
+    workTotal?: number
   } | null
 }
 
@@ -92,21 +93,14 @@ const useCSV = (
     return false
   }
 
-  useEffect(() => {
-    const isFinishedProcessing = (fileInfo: IFileInfo) =>
-      !!(fileInfo.processing && fileInfo.processing.completedAt)
-
-    if (!(csv && csv.file) || isFinishedProcessing(csv)) return
-
-    const isComplete = async () => {
-      const fileInfo = await loadCSVFile(url, shouldFetch)
-      return !!fileInfo && isFinishedProcessing(fileInfo)
-    }
-    const onComplete = async () => {
+  const shouldPoll =
+    shouldFetch && csv && csv.processing && !csv.processing.completedAt
+  useInterval(
+    async () => {
       setCSV(await loadCSVFile(url, shouldFetch))
-    }
-    poll(isComplete, onComplete, err => toast.error(err.message))
-  }, [url, csv, shouldFetch])
+    },
+    shouldPoll ? 1000 : null
+  )
 
   return [csv, uploadCSV, deleteCSV]
 }

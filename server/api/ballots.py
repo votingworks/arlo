@@ -1,6 +1,6 @@
 import io, csv
 from typing import Optional
-from sqlalchemy import func, literal_column
+from sqlalchemy import func, literal_column, and_
 from sqlalchemy.orm import contains_eager, joinedload
 from sqlalchemy.dialects.postgresql import aggregate_order_by
 from flask import jsonify, request

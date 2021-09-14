@@ -49,6 +49,8 @@ def test_cvr_upload(
                 "startedAt": assert_is_date,
                 "completedAt": assert_is_date,
                 "error": None,
+                "workProgress": len(TEST_CVRS.splitlines()),
+                "workTotal": len(TEST_CVRS.splitlines()),
             },
         },
     )
@@ -92,6 +94,8 @@ def test_cvr_upload(
                 "startedAt": assert_is_date,
                 "completedAt": assert_is_date,
                 "error": None,
+                "workProgress": len(TEST_CVRS.splitlines()),
+                "workTotal": len(TEST_CVRS.splitlines()),
             },
             "numBallots": expected_num_cvr_ballots,
         },
@@ -156,6 +160,8 @@ def test_cvrs_counting_group(
                 "startedAt": assert_is_date,
                 "completedAt": assert_is_date,
                 "error": None,
+                "workProgress": len(COUNTING_GROUP_CVR.splitlines()),
+                "workTotal": len(COUNTING_GROUP_CVR.splitlines()),
             },
         },
     )
@@ -423,6 +429,8 @@ def test_cvrs_newlines(
                 "startedAt": assert_is_date,
                 "completedAt": assert_is_date,
                 "error": None,
+                "workProgress": len(NEWLINE_CVR.splitlines()),
+                "workTotal": len(NEWLINE_CVR.splitlines()),
             },
         },
     )
@@ -461,7 +469,7 @@ def test_invalid_cvrs(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
     invalid_cvrs = [
-        ("", "CVR file cannot be empty.",),
+        ("", "CVR file cannot be empty.", 0),
         (
             """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
 ,,,,,,,,"Contest 1 (Vote For=1)","Contest 1 (123)"
@@ -470,6 +478,7 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortio
 1,TABULATOR1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,0,1
 """,
             "Invalid contest name: Contest 1 (123). Contest names should have this format: Contest Name (Vote For=1).",
+            4,
         ),
         (
             """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
@@ -485,6 +494,7 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortio
                 " TABULATOR1, BATCH1. Please check your CVR file and ballot manifest thoroughly to make"
                 " sure these values match - there may be a similar inconsistency in other rows in the CVR file."
             ),
+            4,
         ),
         (
             """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
@@ -500,6 +510,7 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortio
                 " TABULATOR1, BATCH1. Please check your CVR file and ballot manifest thoroughly to make"
                 " sure these values match - there may be a similar inconsistency in other rows in the CVR file."
             ),
+            4,
         ),
         (
             """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
@@ -515,10 +526,11 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortio
                 " Please check your CVR file and ballot manifest thoroughly to make"
                 " sure these values match - there may be a similar inconsistency in other rows in the CVR file."
             ),
+            4,
         ),
     ]
 
-    for invalid_cvr, expected_error in invalid_cvrs:
+    for invalid_cvr, expected_error, progress in invalid_cvrs:
         rv = client.put(
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
             data={"cvrs": (io.BytesIO(invalid_cvr.encode()), "cvrs.csv",)},
@@ -537,6 +549,8 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortio
                     "startedAt": assert_is_date,
                     "completedAt": assert_is_date,
                     "error": expected_error,
+                    "workProgress": progress,
+                    "workTotal": len(invalid_cvr.splitlines()),
                 },
             },
         )
@@ -589,6 +603,8 @@ def test_cvr_reprocess_after_manifest_reupload(
                 "startedAt": assert_is_date,
                 "completedAt": assert_is_date,
                 "error": "Invalid TabulatorNum/BatchId for row with CvrNumber 7: TABULATOR2, BATCH1. The TabulatorNum and BatchId fields in the CVR file must match the Tabulator and Batch Name fields in the ballot manifest. The closest match we found in the ballot manifest was: TABULATOR2, BATCH2. Please check your CVR file and ballot manifest thoroughly to make sure these values match - there may be a similar inconsistency in other rows in the CVR file.",
+                "workProgress": 4,
+                "workTotal": len(TEST_CVRS.splitlines()),
             },
         },
     )
@@ -632,6 +648,8 @@ def test_cvr_reprocess_after_manifest_reupload(
                 "startedAt": assert_is_date,
                 "completedAt": assert_is_date,
                 "error": None,
+                "workProgress": len(TEST_CVRS.splitlines()),
+                "workTotal": len(TEST_CVRS.splitlines()),
             },
         },
     )

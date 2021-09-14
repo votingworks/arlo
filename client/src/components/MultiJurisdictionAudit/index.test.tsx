@@ -558,6 +558,7 @@ describe('JA setup', () => {
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
       jaApiCalls.getCVRSfile(cvrsMocks.empty),
       jaApiCalls.putCVRs,
+      jaApiCalls.getCVRSfile(cvrsMocks.processing),
       jaApiCalls.getCVRSfile(cvrsMocks.processed),
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -577,6 +578,9 @@ describe('JA setup', () => {
       )
 
       userEvent.click(cvrsButton)
+
+      await screen.findByText('Processing...')
+
       await screen.findByText('Uploaded at 11/18/2020, 9:39:14 PM.')
     })
   })

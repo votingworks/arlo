@@ -400,6 +400,18 @@ export const cvrsMocks: { [key: string]: ICvrFileInfo } = {
     processing: null,
     numBallots: null,
   },
+  processing: {
+    file: { name: 'cvrs.csv', uploadedAt: '2020-11-18T21:39:05.765+00:00' },
+    processing: {
+      status: FileProcessingStatus.PROCESSING,
+      startedAt: '2020-11-18T21:39:05.765+00:00',
+      completedAt: null,
+      error: null,
+      workProgress: 3,
+      workTotal: 14,
+    },
+    numBallots: 10,
+  },
   processed: {
     file: { name: 'cvrs.csv', uploadedAt: '2020-11-18T21:39:05.765+00:00' },
     processing: {
@@ -407,6 +419,8 @@ export const cvrsMocks: { [key: string]: ICvrFileInfo } = {
       startedAt: '2020-11-18T21:39:05.765+00:00',
       completedAt: '2020-11-18T21:39:14.574+00:00',
       error: null,
+      workProgress: 14,
+      workTotal: 14,
     },
     numBallots: 10,
   },

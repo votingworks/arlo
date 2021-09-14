@@ -2,7 +2,13 @@
 import React, { useState } from 'react'
 import { Formik, FormikProps } from 'formik'
 import styled from 'styled-components'
-import { HTMLSelect, FileInput, H4 } from '@blueprintjs/core'
+import {
+  HTMLSelect,
+  FileInput,
+  H4,
+  ProgressBar,
+  Intent,
+} from '@blueprintjs/core'
 import FormWrapper from '../../Atoms/Form/FormWrapper'
 import FormButton from '../../Atoms/Form/FormButton'
 import schema from './schema'
@@ -109,6 +115,27 @@ const CSVFile = ({
                   />
                   {errors.csv && touched.csv && (
                     <ErrorLabel>{errors.csv}</ErrorLabel>
+                  )}
+                  {isProcessing && (
+                    <div
+                      style={{
+                        display: 'flex',
+                        marginTop: '15px',
+                        alignItems: 'center',
+                        width: '300px',
+                      }}
+                    >
+                      <span style={{ marginRight: '5px' }}>Processing...</span>
+                      {processing!.workTotal && (
+                        <ProgressBar
+                          stripes={false}
+                          intent={Intent.PRIMARY}
+                          value={
+                            processing!.workProgress! / processing!.workTotal
+                          }
+                        />
+                      )}
+                    </div>
                   )}
                 </FormSection>
 

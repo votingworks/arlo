@@ -2,6 +2,7 @@ from datetime import datetime, timezone
 from typing import List, Optional
 from flask import jsonify, request
 from werkzeug.exceptions import BadRequest, Conflict
+from sqlalchemy import func
 
 from . import api
 from ..database import db_session
