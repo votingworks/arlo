@@ -57,7 +57,6 @@ describe('Ballot', () => {
   })
 
   it('switches audit and review views', async () => {
-    jest.setTimeout(10000)
     const { container, getByText } = render(
       <Router history={history}>
         <Ballot
@@ -103,7 +102,6 @@ describe('Ballot', () => {
   const buttonLabels = ['Blank vote', 'Not on Ballot']
   buttonLabels.forEach(buttonLabel => {
     it(`selects ${buttonLabel}`, async () => {
-      jest.setTimeout(10000)
       const { container, getByLabelText } = render(
         <Router history={history}>
           <Ballot
@@ -141,7 +139,6 @@ describe('Ballot', () => {
   })
 
   it('toggles and submits comment', async () => {
-    jest.setTimeout(15000)
     const { getByText, getByRole } = render(
       <Router history={history}>
         <Ballot

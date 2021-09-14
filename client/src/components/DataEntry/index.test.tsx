@@ -189,7 +189,6 @@ describe('DataEntry', () => {
     })
 
     it('renders board table with no audited ballots', async () => {
-      jest.setTimeout(10000)
       const expectedCalls = [
         apiCalls.getAuditBoard,
         apiCalls.getAuditBoard,
@@ -291,7 +290,6 @@ describe('DataEntry', () => {
     })
 
     it('submits ballot', async () => {
-      jest.setTimeout(15000)
       const expectedCalls = [
         apiCalls.getAuditBoard,
         apiCalls.getAuditBoard,
@@ -339,7 +337,6 @@ describe('DataEntry', () => {
     })
 
     it('audits ballots', async () => {
-      jest.setTimeout(15000)
       const expectedCalls = [
         apiCalls.getAuditBoard,
         apiCalls.getAuditBoard,
@@ -413,7 +410,6 @@ describe('DataEntry', () => {
     })
 
     it('deselects choices', async () => {
-      jest.setTimeout(15000)
       const expectedCalls = [
         apiCalls.getAuditBoard,
         apiCalls.getAuditBoard,

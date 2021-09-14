@@ -599,7 +599,6 @@ describe('Progress screen', () => {
   })
 
   it('shows the detail modal with JA file download buttons after the audit starts', async () => {
-    jest.setTimeout(10000)
     const expectedCalls = [
       aaApiCalls.getMapData,
       jaApiCalls.getAuditBoards(auditBoardMocks.unfinished),
