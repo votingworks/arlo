@@ -1,3 +1,4 @@
+import io
 from typing import List
 from unittest.mock import MagicMock, patch, Mock
 from flask.testing import FlaskClient
@@ -279,6 +280,149 @@ def test_list_activities_logins(
                     "auditName": "Test Audit test_list_activities_logins",
                     "auditType": "BALLOT_POLLING",
                 },
+                "user": {
+                    "key": DEFAULT_AA_EMAIL,
+                    "type": "audit_admin",
+                    "supportUser": None,
+                },
+            },
+        ],
+    )
+
+
+def test_file_upload_errors(
+    client: FlaskClient, org_id: str, election_id: str, jurisdiction_ids: List[str],
+):
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/contest",
+        [
+            {
+                "id": str(uuid.uuid4()),
+                "name": "Contest 1",
+                "isTargeted": True,
+                "choices": [
+                    {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 5000},
+                    {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 2500},
+                    {"id": str(uuid.uuid4()), "name": "candidate 3", "numVotes": 2500},
+                ],
+                "numWinners": 1,
+                "votesAllowed": 2,
+                "totalBallotsCast": 10000,
+                "jurisdictionIds": jurisdiction_ids[:2],
+            },
+        ],
+    )
+    assert_ok(rv)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
+        data={"manifest": (io.BytesIO(b"invalid"), "manifest.csv")},
+    )
+    assert_ok(rv)
+
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
+        data={
+            "manifest": (
+                io.BytesIO(b"Batch Name,Number of Ballots\n" b"A,1"),
+                "manifest.csv",
+            )
+        },
+    )
+    assert_ok(rv)
+
+    election = Election.query.get(election_id)
+    election.audit_type = AuditType.BATCH_COMPARISON
+    db_session.commit()
+
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
+        data={"batchTallies": (io.BytesIO(b"invalid"), "tallies.csv")},
+    )
+    assert rv.status_code == 200
+
+    election = Election.query.get(election_id)
+    election.audit_type = AuditType.BALLOT_COMPARISON
+    db_session.commit()
+
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
+        data={"cvrs": (io.BytesIO(b""), "cvrs.csv")},
+    )
+    assert_ok(rv)
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/organizations/{org_id}/activities")
+    activities = json.loads(rv.data)
+
+    expected_activity: JSONDict = {
+        "activityName": "UploadFile",
+        "election": {
+            "auditName": "Test Audit test_file_upload_errors",
+            "auditType": "BALLOT_POLLING",
+            "id": election_id,
+        },
+        "id": assert_is_id,
+        "info": {
+            "error": None,
+            "file_type": "ballot_manifest",
+            "jurisdiction_id": jurisdiction_ids[0],
+            "jurisdiction_name": "J1",
+        },
+        "timestamp": assert_is_date,
+        "user": {
+            "key": default_ja_email(election_id),
+            "supportUser": None,
+            "type": "jurisdiction_admin",
+        },
+    }
+    compare_json(
+        activities,
+        [
+            {
+                **expected_activity,
+                "election": {
+                    **expected_activity["election"],
+                    "auditType": "BALLOT_COMPARISON",
+                },
+                "info": {
+                    **expected_activity["info"],
+                    "file_type": "cvrs",
+                    "error": "CVR file cannot be empty.",
+                },
+            },
+            {
+                **expected_activity,
+                "election": {
+                    **expected_activity["election"],
+                    "auditType": "BATCH_COMPARISON",
+                },
+                "info": {
+                    **expected_activity["info"],
+                    "file_type": "batch_tallies",
+                    "error": "Missing required columns: Batch Name, candidate 1, candidate 2, candidate 3.",
+                },
+            },
+            expected_activity,
+            {
+                **expected_activity,
+                "info": {
+                    **expected_activity["info"],
+                    "error": "Missing required columns: Batch Name, Number of Ballots.",
+                },
+            },
+            {
+                **expected_activity,
+                "activityName": "CreateAudit",
+                "election": {
+                    "id": election_id,
+                    "auditName": "Test Audit test_file_upload_errors",
+                    "auditType": "BALLOT_POLLING",
+                },
+                "info": {},
                 "user": {
                     "key": DEFAULT_AA_EMAIL,
                     "type": "audit_admin",
