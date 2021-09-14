@@ -177,8 +177,9 @@ exports[`Home screen redirects to audit screen if only one election exists for J
                   Select a CSV...
                 </span>
               </label>
-            </div>
-            <div>
+              <div
+                style="display: flex; margin-top: 15px; margin-bottom: 10px; align-items: center; width: 300px;"
+              />
               <button
                 class="bp3-button bp3-intent-primary sc-gZMcBi eZVGYn"
                 type="submit"

@@ -3039,8 +3039,9 @@ exports[`Setup renders Participants stage 1`] = `
               Select a CSV...
             </span>
           </label>
-        </div>
-        <div>
+          <div
+            style="display: flex; margin-top: 15px; margin-bottom: 10px; align-items: center; width: 300px;"
+          />
           <button
             class="bp3-button bp3-intent-primary sc-bxivhb WkpPV"
             type="submit"
@@ -3124,8 +3125,9 @@ exports[`Setup renders Participants stage with locked next stage 1`] = `
               Select a CSV...
             </span>
           </label>
-        </div>
-        <div>
+          <div
+            style="display: flex; margin-top: 15px; margin-bottom: 10px; align-items: center; width: 300px;"
+          />
           <button
             class="bp3-button bp3-intent-primary sc-bxivhb WkpPV"
             type="submit"
@@ -3211,8 +3213,9 @@ exports[`Setup renders Participants stage with processing next stage 1`] = `
               Select a CSV...
             </span>
           </label>
-        </div>
-        <div>
+          <div
+            style="display: flex; margin-top: 15px; margin-bottom: 10px; align-items: center; width: 300px;"
+          />
           <button
             class="bp3-button bp3-intent-primary sc-bxivhb WkpPV"
             type="submit"

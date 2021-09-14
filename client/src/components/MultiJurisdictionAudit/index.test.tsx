@@ -57,6 +57,8 @@ jest.mock('./useSetupMenuItems/getRoundStatus')
 getJurisdictionFileStatusMock.mockReturnValue('PROCESSED')
 getRoundStatusMock.mockReturnValue(false)
 
+jest.mock('axios')
+
 afterEach(() => {
   paramsMock.mockReturnValue({
     electionId: '1',
@@ -527,6 +529,7 @@ describe('JA setup', () => {
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
       jaApiCalls.getBatchTalliesFile(talliesMocks.processed),
       jaApiCalls.putManifest,
+      jaApiCalls.getBallotManifestFile(manifestMocks.processing),
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
       jaApiCalls.getBatchTalliesFile(talliesMocks.errored),
     ]
@@ -546,7 +549,7 @@ describe('JA setup', () => {
       userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
 
       await screen.findByText(/Uploaded/)
-      screen.getByText('Invalid CSV')
+      await screen.findByText('Invalid CSV')
     })
   })
 
@@ -579,13 +582,15 @@ describe('JA setup', () => {
 
       userEvent.click(cvrsButton)
 
+      await screen.findByText('Uploading...')
+
       await screen.findByText('Processing...')
 
       await screen.findByText('Uploaded at 11/18/2020, 9:39:14 PM.')
     })
   })
 
-  it('displays errors after reprocessing batch tallies', async () => {
+  it('displays errors after reprocessing CVRs', async () => {
     const expectedCalls = [
       jaApiCalls.getUser,
       jaApiCalls.getSettings(auditSettings.ballotComparisonAll),
@@ -593,6 +598,7 @@ describe('JA setup', () => {
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
       jaApiCalls.getCVRSfile(cvrsMocks.processed),
       jaApiCalls.putManifest,
+      jaApiCalls.getBallotManifestFile(manifestMocks.processing),
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
       jaApiCalls.getCVRSfile(cvrsMocks.errored),
     ]
@@ -612,7 +618,7 @@ describe('JA setup', () => {
       userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
 
       await screen.findByText(/Uploaded/)
-      screen.getByText('Invalid CSV')
+      await screen.findByText('Invalid CSV')
     })
   })
 
@@ -664,7 +670,6 @@ describe('JA setup', () => {
       jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
       jaApiCalls.putManifest,
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
-      jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()

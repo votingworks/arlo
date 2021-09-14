@@ -13,6 +13,8 @@ import { IFileInfo, FileProcessingStatus } from '../../useCSV'
 const { nextStage } = relativeStages('participants')
 const refreshMock = jest.fn()
 
+jest.mock('axios')
+
 const renderParticipants = () =>
   renderWithRouter(
     <Route path="/election/:electionId/setup">
@@ -27,6 +29,18 @@ const renderParticipants = () =>
 
 const fileMocks = {
   empty: { file: null, processing: null },
+  processing: {
+    file: {
+      name: 'file name',
+      uploadedAt: '2020-12-03T23:10:14.024+00:00',
+    },
+    processing: {
+      status: FileProcessingStatus.PROCESSING,
+      error: null,
+      startedAt: '2020-12-03T23:10:14.024+00:00',
+      completedAt: null,
+    },
+  },
   processed: {
     file: {
       name: 'file name',
@@ -342,6 +356,7 @@ describe('Audit Setup > Participants', () => {
       apiCalls.getJurisdictionsFile(fileMocks.processed),
       apiCalls.getStandardizedContestsFile(fileMocks.processed),
       apiCalls.putJurisdictionsFile(jurisdictionErrorFile),
+      apiCalls.getJurisdictionsFile(fileMocks.processing),
       apiCalls.getJurisdictionsFile(fileMocks.processed),
       apiCalls.getStandardizedContestsFile(fileMocks.errored),
     ]
@@ -361,7 +376,7 @@ describe('Audit Setup > Participants', () => {
       userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
 
       await screen.findByText(/Uploaded/)
-      screen.getByText('something went wrong')
+      await screen.findByText('something went wrong')
     })
   })
 })

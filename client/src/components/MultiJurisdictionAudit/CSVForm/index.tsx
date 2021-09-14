@@ -46,7 +46,7 @@ const CSVFile = ({
   sampleFileLink,
   enabled,
 }: IProps) => {
-  const { file, processing } = csvFile
+  const { file, processing, upload } = csvFile
   const isProcessing = !!(processing && !processing.completedAt)
   const [isEditing, setIsEditing] = useState<boolean>(!file || isProcessing)
 
@@ -116,30 +116,47 @@ const CSVFile = ({
                   {errors.csv && touched.csv && (
                     <ErrorLabel>{errors.csv}</ErrorLabel>
                   )}
-                  {isProcessing && (
-                    <div
-                      style={{
-                        display: 'flex',
-                        marginTop: '15px',
-                        alignItems: 'center',
-                        width: '300px',
-                      }}
-                    >
-                      <span style={{ marginRight: '5px' }}>Processing...</span>
-                      {processing!.workTotal && (
-                        <ProgressBar
-                          stripes={false}
-                          intent={Intent.PRIMARY}
-                          value={
-                            processing!.workProgress! / processing!.workTotal
-                          }
-                        />
+                  <div
+                    style={{
+                      display: 'flex',
+                      marginTop: '15px',
+                      marginBottom: '10px',
+                      alignItems: 'center',
+                      width: '300px',
+                    }}
+                  >
+                    {isProcessing && (
+                      <>
+                        <span style={{ marginRight: '5px' }}>
+                          Processing...
+                        </span>
+                        {processing!.workTotal && (
+                          <ProgressBar
+                            stripes={false}
+                            intent={Intent.PRIMARY}
+                            value={
+                              processing!.workProgress! / processing!.workTotal
+                            }
+                          />
+                        )}
+                      </>
+                    )}
+                    {upload &&
+                      // Only show upload progress for large files (over 1 MB),
+                      // otherwise it will just flash on the screen
+                      upload.file.size >= 1000 * 1000 && (
+                        <>
+                          <span style={{ marginRight: '5px' }}>
+                            Uploading...
+                          </span>
+                          <ProgressBar
+                            stripes={false}
+                            intent={Intent.PRIMARY}
+                            value={upload.progress}
+                          />
+                        </>
                       )}
-                    </div>
-                  )}
-                </FormSection>
-
-                <div>
+                  </div>
                   <FormButton
                     type="submit"
                     intent="primary"
@@ -149,7 +166,7 @@ const CSVFile = ({
                   >
                     Upload File
                   </FormButton>
-                </div>
+                </FormSection>
               </>
             ) : (
               <>
