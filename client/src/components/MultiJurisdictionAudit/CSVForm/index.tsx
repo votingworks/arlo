@@ -11,6 +11,7 @@ import FormSection, {
   FormSectionDescription,
 } from '../../Atoms/Form/FormSection'
 import { FileProcessingStatus, IFileInfo } from '../useCSV'
+import AsyncButton from '../../Atoms/AsyncButton'
 
 export const Select = styled(HTMLSelect)`
   margin-top: 5px;
@@ -135,38 +136,36 @@ const CSVFile = ({
                   {processing &&
                     processing.status === FileProcessingStatus.PROCESSED && (
                       <SuccessLabel>
-                        Upload successfully completed at{' '}
+                        Uploaded at{' '}
                         {new Date(`${processing.completedAt}`).toLocaleString()}
                         .
                       </SuccessLabel>
                     )}
-                </FormSection>
-                <div>
-                  {/* We give these buttons a key to make sure React doesnt
+                  <div>
+                    {/* We give these buttons a key to make sure React doesnt
                     reuse the submit button for one of them. */}
-                  <FormButton
-                    key="replace"
-                    onClick={() => {
-                      setFieldValue('csv', null)
-                      setIsEditing(true)
-                    }}
-                    disabled={!enabled}
-                  >
-                    Replace File
-                  </FormButton>
-                  {deleteCSVFile && (
                     <FormButton
-                      key="delete"
-                      onClick={async () => {
-                        await deleteCSVFile()
+                      key="replace"
+                      onClick={() => {
+                        setFieldValue('csv', null)
                         setIsEditing(true)
                       }}
                       disabled={!enabled}
                     >
-                      Delete File
+                      Replace File
                     </FormButton>
-                  )}
-                </div>
+                    {deleteCSVFile && (
+                      <AsyncButton
+                        key="delete"
+                        onClick={deleteCSVFile}
+                        disabled={!enabled}
+                        style={{ marginLeft: '5px' }}
+                      >
+                        Delete File
+                      </AsyncButton>
+                    )}
+                  </div>
+                </FormSection>
               </>
             )}
           </FormWrapper>

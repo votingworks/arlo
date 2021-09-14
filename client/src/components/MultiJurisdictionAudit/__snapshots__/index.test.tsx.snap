@@ -243,23 +243,23 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
               <p
                 class="sc-iwsKbI cBoYPA"
               >
-                Upload successfully completed at
+                Uploaded at
                  
                 12/4/2020, 2:32:15 AM
                 .
               </p>
-            </div>
-            <div>
-              <button
-                class="bp3-button sc-gzVnrw kdzzfK"
-                type="button"
-              >
-                <span
-                  class="bp3-button-text"
+              <div>
+                <button
+                  class="bp3-button sc-gzVnrw kdzzfK"
+                  type="button"
                 >
-                  Replace File
-                </span>
-              </button>
+                  <span
+                    class="bp3-button-text"
+                  >
+                    Replace File
+                  </span>
+                </button>
+              </div>
             </div>
           </div>
         </form>

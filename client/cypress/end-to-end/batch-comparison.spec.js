@@ -30,7 +30,7 @@ describe('Batch Comparison', () => {
       }
     )
     cy.findByText('Upload File').click()
-    cy.contains('Upload successfully completed')
+    cy.contains('Uploaded')
 
     cy.get('button[type="submit"]')
       .should('not.have.class', 'bp3-disabled')
@@ -88,7 +88,7 @@ describe('Batch Comparison', () => {
     cy.findAllByText('Upload File').spread((firstButton, secondButton) => {
       firstButton.click()
     })
-    cy.contains('Upload successfully completed')
+    cy.contains('Uploaded')
 
     // upload invalid batch tallies
     cy.fixture(
@@ -123,7 +123,7 @@ describe('Batch Comparison', () => {
         })
     })
     cy.findAllByText('Upload File').click()
-    cy.findAllByText(/Upload successfully completed/).should('have.length', 2)
+    cy.findAllByText(/Uploaded/).should('have.length', 2)
     cy.logout(jurisdictionAdmin)
     cy.loginAuditAdmin(auditAdmin)
     cy.findByText(`TestAudit${id}`).click()

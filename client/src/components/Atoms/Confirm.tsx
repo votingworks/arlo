@@ -1,5 +1,6 @@
-import React, { useState, ReactNode, useRef, useEffect } from 'react'
+import React, { useState, ReactNode } from 'react'
 import { Dialog, Classes, Button, Intent } from '@blueprintjs/core'
+import { useIsMounted } from '../utilities'
 
 export interface IConfirmOptions {
   title: ReactNode
@@ -8,20 +9,6 @@ export interface IConfirmOptions {
   yesButtonIntent?: Intent
   noButtonLabel?: string
   onYesClick: () => Promise<void>
-}
-
-// From https://usehooks-typescript.com/react-hook/use-is-mounted
-function useIsMounted() {
-  const isMounted = useRef(false)
-
-  useEffect(() => {
-    isMounted.current = true
-    return () => {
-      isMounted.current = false
-    }
-  }, [])
-
-  return () => isMounted.current
 }
 
 export const useConfirm = () => {

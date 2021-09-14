@@ -36,7 +36,7 @@ describe('Ballot Polling', () => {
     cy.findAllByText('Upload File').spread((firstButton, secondButton) => {
       firstButton.click()
     })
-    cy.contains('Upload successfully completed')
+    cy.contains('Uploaded')
 
     cy.wait(100) // gets stuck in an infinite loop without a 100ms wait here
     cy.findByText('Next').click()
@@ -71,7 +71,7 @@ describe('Ballot Polling', () => {
       }
     )
     cy.findByText('Upload File').click()
-    cy.contains('Upload successfully completed')
+    cy.contains('Uploaded')
     cy.logout(jurisdictionAdmin)
     cy.loginAuditAdmin(auditAdmin)
     cy.findByText(`TestAudit${id}`).click()
@@ -126,7 +126,7 @@ describe('Ballot Polling', () => {
     cy.findAllByText('Upload File').spread((firstButton, secondButton) => {
       firstButton.click()
     })
-    cy.contains('Upload successfully completed')
+    cy.contains('Uploaded')
 
     cy.get('button[type="submit"]')
       .should('not.have.class', 'bp3-disabled')
@@ -171,7 +171,7 @@ describe('Ballot Polling', () => {
       }
     )
     cy.findByText('Upload File').click()
-    cy.contains('Upload successfully completed')
+    cy.contains('Uploaded')
     cy.logout(jurisdictionAdmin)
     cy.loginAuditAdmin(auditAdmin)
     cy.findByText(`TestAudit${id}`).click()

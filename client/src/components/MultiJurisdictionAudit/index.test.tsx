@@ -221,7 +221,7 @@ describe('AA setup flow', () => {
       )
 
       userEvent.click(jurisdictionButton)
-      await screen.findByText(/Upload successfully completed/)
+      await screen.findByText(/Uploaded/)
     })
   })
 
@@ -291,7 +291,7 @@ describe('AA setup flow', () => {
       )
 
       // check file upload of jurisdiction
-      await screen.findByText(/Upload successfully completed/)
+      await screen.findByText(/Uploaded/)
       const standardizedContestInput = screen.getByLabelText('Select a CSV...')
       const standardizedContestButton = screen.getByRole('button', {
         name: 'Upload File',
@@ -307,7 +307,7 @@ describe('AA setup flow', () => {
       )
 
       userEvent.click(standardizedContestButton)
-      await screen.findByText(/Upload successfully completed/)
+      await screen.findByText(/Uploaded/)
     })
   })
 
@@ -463,9 +463,7 @@ describe('JA setup', () => {
       )
 
       userEvent.click(manifestButton)
-      await screen.findByText(
-        'Upload successfully completed at 6/8/2020, 9:39:14 PM.'
-      )
+      await screen.findByText('Uploaded at 6/8/2020, 9:39:14 PM.')
     })
   })
 
@@ -482,9 +480,7 @@ describe('JA setup', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
-      await screen.findByText(
-        'Upload successfully completed at 6/8/2020, 9:39:14 PM.'
-      )
+      await screen.findByText('Uploaded at 6/8/2020, 9:39:14 PM.')
 
       const deleteButton = await screen.findByText('Delete File')
       userEvent.click(deleteButton)
@@ -519,9 +515,7 @@ describe('JA setup', () => {
       )
 
       userEvent.click(talliesButton)
-      await screen.findByText(
-        'Upload successfully completed at 7/8/2020, 9:39:14 PM.'
-      )
+      await screen.findByText('Uploaded at 7/8/2020, 9:39:14 PM.')
     })
   })
 
@@ -539,9 +533,7 @@ describe('JA setup', () => {
     await withMockFetch(expectedCalls, async () => {
       renderView()
       await screen.findByText('Audit Source Data')
-      expect(screen.getAllByText(/Upload successfully completed/)).toHaveLength(
-        2
-      )
+      expect(screen.getAllByText(/Uploaded/)).toHaveLength(2)
 
       // Upload a new manifest
       userEvent.click(
@@ -553,7 +545,7 @@ describe('JA setup', () => {
       )
       userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
 
-      await screen.findByText(/Upload successfully completed/)
+      await screen.findByText(/Uploaded/)
       screen.getByText('Invalid CSV')
     })
   })
@@ -585,9 +577,7 @@ describe('JA setup', () => {
       )
 
       userEvent.click(cvrsButton)
-      await screen.findByText(
-        'Upload successfully completed at 11/18/2020, 9:39:14 PM.'
-      )
+      await screen.findByText('Uploaded at 11/18/2020, 9:39:14 PM.')
     })
   })
 
@@ -605,9 +595,7 @@ describe('JA setup', () => {
     await withMockFetch(expectedCalls, async () => {
       renderView()
       await screen.findByText('Audit Source Data')
-      expect(screen.getAllByText(/Upload successfully completed/)).toHaveLength(
-        2
-      )
+      expect(screen.getAllByText(/Uploaded/)).toHaveLength(2)
 
       // Upload a new manifest
       userEvent.click(
@@ -619,7 +607,7 @@ describe('JA setup', () => {
       )
       userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
 
-      await screen.findByText(/Upload successfully completed/)
+      await screen.findByText(/Uploaded/)
       screen.getByText('Invalid CSV')
     })
   })

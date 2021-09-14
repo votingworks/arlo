@@ -1,12 +1,15 @@
-import React, { useState } from 'react'
+import React, { useState, CSSProperties } from 'react'
 import { IButtonProps, Button } from '@blueprintjs/core'
+import { useIsMounted } from '../utilities'
 
 interface IAsyncButtonProps extends IButtonProps {
   onClick: () => Promise<unknown>
+  style?: CSSProperties
 }
 
 const AsyncButton: React.FC<IAsyncButtonProps> = (props: IAsyncButtonProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const isMounted = useIsMounted()
   return (
     <Button
       {...props}
@@ -19,7 +22,7 @@ const AsyncButton: React.FC<IAsyncButtonProps> = (props: IAsyncButtonProps) => {
           // Errors should be handled within onClick
           console.error(e) // eslint-disable-line no-console
         } finally {
-          setIsSubmitting(false)
+          if (isMounted()) setIsSubmitting(false)
         }
       }}
     />

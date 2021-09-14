@@ -247,3 +247,17 @@ export const areArraysEqualSets = (a1: unknown[], a2: unknown[]): boolean => {
 
   return true
 }
+
+// From https://usehooks-typescript.com/react-hook/use-is-mounted
+export const useIsMounted = () => {
+  const isMounted = useRef(false)
+
+  useEffect(() => {
+    isMounted.current = true
+    return () => {
+      isMounted.current = false
+    }
+  }, [])
+
+  return () => isMounted.current
+}

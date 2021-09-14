@@ -52,7 +52,7 @@ describe('Ballot Comparison Test Cases', () => {
     cy.findAllByText('Upload File').spread((firstButton, secondButton) => {
       firstButton.click()
     })
-    cy.contains('Upload successfully completed')
+    cy.contains('Uploaded')
 
     // upload invalid standardized contests file
     cy.fixture(
@@ -85,7 +85,7 @@ describe('Ballot Comparison Test Cases', () => {
       }
     )
     cy.findAllByText('Upload File').click()
-    cy.findAllByText(/Upload successfully completed/).should('have.length', 2)
+    cy.findAllByText(/Uploaded/).should('have.length', 2)
     cy.get('button[type="submit"]')
       .should('not.have.class', 'bp3-disabled')
       .click()
@@ -154,7 +154,7 @@ describe('Ballot Comparison Test Cases', () => {
     cy.findAllByText('Upload File').spread((firstButton, secondButton) => {
       firstButton.click()
     })
-    cy.contains('Upload successfully completed')
+    cy.contains('Uploaded')
 
     // upload invalid cvr
     cy.fixture('CSVs/cvr/ballot_comparison_cvr_col_error.csv').then(
@@ -188,7 +188,7 @@ describe('Ballot Comparison Test Cases', () => {
         })
     })
     cy.findAllByText('Upload File').click()
-    cy.findAllByText(/Upload successfully completed/).should('have.length', 2)
+    cy.findAllByText(/Uploaded/).should('have.length', 2)
 
     cy.logout(jurisdictionAdmin)
     cy.loginAuditAdmin(auditAdmin)
@@ -238,7 +238,9 @@ describe('Ballot Comparison Test Cases', () => {
       cy.findByText('Audit First Ballot').click()
 
       // submit empty ballot review
-      cy.findByRole('button', { name: 'Submit Selections' }).should('be.disabled')
+      cy.findByRole('button', { name: 'Submit Selections' }).should(
+        'be.disabled'
+      )
       // cy.findByText('Confirm Selections').click()
       // cy.findAndCloseToast('Must include an interpretation for each contest.')
       cy.get('input[type="checkbox"]')
@@ -260,7 +262,7 @@ describe('Ballot Comparison Test Cases', () => {
         cy.findByText('Audit Next Ballot').click()
       }
       // since the first ballot is already audited
-      if(index < (list.length - 1)) {
+      if (index < list.length - 1) {
         cy.get('input[type="checkbox"]')
           .first()
           .click({ force: true })
@@ -272,9 +274,12 @@ describe('Ballot Comparison Test Cases', () => {
     cy.contains('Ballots for Audit Board #1')
 
     // test Re-Audit button
-    cy.findAllByText('Re-Audit').first().click()
-    cy.get('input[type="checkbox"]').eq(1)
-        .click({ force: true })
+    cy.findAllByText('Re-Audit')
+      .first()
+      .click()
+    cy.get('input[type="checkbox"]')
+      .eq(1)
+      .click({ force: true })
     cy.findByRole('button', { name: 'Submit Selections' }).click()
     cy.findByText('Confirm Selections').click()
     cy.findByText('Change Selections').should('not.exist')
@@ -282,7 +287,9 @@ describe('Ballot Comparison Test Cases', () => {
 
     cy.findByText(/Not Audited/).should('have.length', 1)
     cy.contains('Ballots for Audit Board #1')
-    cy.findAllByText('Submit Audited Ballots').eq(1).click({ force: true })
+    cy.findAllByText('Submit Audited Ballots')
+      .eq(1)
+      .click({ force: true })
 
     cy.contains('Audit Board #1: Board Member Sign-off')
 
