@@ -379,6 +379,12 @@ def sampled_ballot_interpretations_to_cvrs(
 # To reclaim space in the database, at the end of the audit we can delete any
 # CvrBallots that don't correspond to a sampled ballot.
 def delete_unsampled_cvrs(election: Election):
+    election_batches = (
+        Batch.query.join(Jurisdiction)
+        .filter_by(election_id=election.id)
+        .with_entities(Batch.id)
+        .subquery()
+    )
     sampled_ballots = (
         SampledBallot.query.join(Batch)
         .join(Jurisdiction)
@@ -386,9 +392,15 @@ def delete_unsampled_cvrs(election: Election):
         .with_entities(SampledBallot.batch_id, SampledBallot.ballot_position)
         .subquery()
     )
-    CvrBallot.query.filter(
-        tuple_(CvrBallot.batch_id, CvrBallot.ballot_position).notin_(sampled_ballots)
-    ).delete(synchronize_session=False)
+    return (
+        CvrBallot.query.filter(CvrBallot.batch_id.in_(election_batches))
+        .filter(
+            tuple_(CvrBallot.batch_id, CvrBallot.ballot_position).notin_(
+                sampled_ballots
+            )
+        )
+        .delete(synchronize_session=False)
+    )
 
 
 def hybrid_contest_strata(
