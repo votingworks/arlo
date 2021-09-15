@@ -13,7 +13,7 @@ from datetime import datetime
 from flask import jsonify, request
 from jsonschema import validate
 from werkzeug.exceptions import BadRequest, Conflict
-from sqlalchemy import and_, func, not_, literal
+from sqlalchemy import and_, func, not_, literal, tuple_
 from sqlalchemy.orm import joinedload
 
 from . import api
@@ -376,6 +376,21 @@ def sampled_ballot_interpretations_to_cvrs(
     return cvrs
 
 
+# To reclaim space in the database, at the end of the audit we can delete any
+# CvrBallots that don't correspond to a sampled ballot.
+def delete_unsampled_cvrs(election: Election):
+    sampled_ballots = (
+        SampledBallot.query.join(Batch)
+        .join(Jurisdiction)
+        .filter_by(election_id=election.id)
+        .with_entities(SampledBallot.batch_id, SampledBallot.ballot_position)
+        .subquery()
+    )
+    CvrBallot.query.filter(
+        tuple_(CvrBallot.batch_id, CvrBallot.ballot_position).notin_(sampled_ballots)
+    ).delete(synchronize_session=False)
+
+
 def hybrid_contest_strata(
     contest: Contest,
 ) -> Tuple[suite.BallotPollingStratum, suite.BallotComparisonStratum]:
@@ -491,12 +506,20 @@ def end_round(election: Election, round: Round):
     round.ended_at = datetime.now(timezone.utc)
 
     db_session.flush()  # Ensure round contest results are queryable by is_audit_complete
+    audit_complete = is_audit_complete(round)
+
+    if audit_complete and election.audit_type in [
+        AuditType.BALLOT_COMPARISON,
+        AuditType.HYBRID,
+    ]:
+        delete_unsampled_cvrs(election)
+
     record_activity(
         EndRound(
             timestamp=round.ended_at,
             base=activity_base(election),
             round_num=round.round_num,
-            is_audit_complete=is_audit_complete(round),
+            is_audit_complete=audit_complete,
         )
     )
 

@@ -943,3 +943,162 @@ def test_ballot_comparison_cvr_choice_names_dont_match(
             },
         },
     )
+
+
+def test_ballot_comparison_delete_unused_cvr_ballots(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    election_settings,  # pylint: disable=unused-argument
+    manifests,  # pylint: disable=unused-argument
+    snapshot,
+):
+    # Here, we want a successful audit, so we add back in the missing CVR line
+    cvrs = TEST_CVRS + "15,TABULATOR2,BATCH2,3,2-2-3,12345,CITY,,,1,0,1"
+    print(cvrs)
+    # JAs upload CVRs
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    for jurisdiction_id in jurisdiction_ids[:2]:
+        rv = client.put(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/cvrs",
+            data={"cvrs": (io.BytesIO(cvrs.encode()), "cvrs.csv",)},
+        )
+        assert_ok(rv)
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+
+    # AA uploads standardized contests file
+    rv = client.put(
+        f"/api/election/{election_id}/standardized-contests/file",
+        data={
+            "standardized-contests": (
+                io.BytesIO(
+                    b"Contest Name,Jurisdictions\n"
+                    b'Contest 1,"J1,J2"\n'
+                    b'Contest 2,"J1,J2"\n'
+                    b"Contest 3,J2\n"
+                ),
+                "standardized-contests.csv",
+            )
+        },
+    )
+    assert_ok(rv)
+
+    # AA selects a contest to target from the standardized contest list
+    rv = client.get(f"/api/election/{election_id}/standardized-contests")
+    standardized_contests = json.loads(rv.data)
+
+    target_contest = standardized_contests[0]
+    opportunistic_contest = standardized_contests[1]
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/contest",
+        [
+            {
+                "id": str(uuid.uuid4()),
+                "name": target_contest["name"],
+                "numWinners": 1,
+                "jurisdictionIds": target_contest["jurisdictionIds"],
+                "isTargeted": True,
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "name": opportunistic_contest["name"],
+                "numWinners": 1,
+                "jurisdictionIds": opportunistic_contest["jurisdictionIds"],
+                "isTargeted": False,
+            },
+        ],
+    )
+    assert_ok(rv)
+
+    # AA selects a sample size and launches the audit
+    rv = client.get(f"/api/election/{election_id}/contest")
+    contests = json.loads(rv.data)["contests"]
+    target_contest_id = contests[0]["id"]
+    opportunistic_contest_id = contests[1]["id"]
+
+    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    sample_size_options = json.loads(rv.data)["sampleSizes"]
+    assert len(sample_size_options) == 1
+    sample_size = sample_size_options[target_contest_id][0]
+
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {"roundNum": 1, "sampleSizes": {target_contest_id: sample_size}},
+    )
+    assert_ok(rv)
+
+    rv = client.get(f"/api/election/{election_id}/round",)
+    round_1_id = json.loads(rv.data)["rounds"][0]["id"]
+
+    # JAs create audit boards
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    for jurisdiction_id in target_contest["jurisdictionIds"]:
+        rv = post_json(
+            client,
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_1_id}/audit-board",
+            [{"name": "Audit Board #1"}],
+        )
+        assert_ok(rv)
+
+    # Audit boards audit all the ballots correctly.
+    # Tabulator, Batch, Ballot, Choice 1-1, Choice 1-2, Choice 2-1, Choice 2-2, Choice 2-3
+    audit_results = {
+        ("J1", "TABULATOR1", "BATCH1", 1): ("0,1,1,1,0", (None, None)),
+        ("J1", "TABULATOR1", "BATCH1", 2): ("1,0,1,0,1", (None, None)),
+        ("J1", "TABULATOR1", "BATCH2", 2): ("0,1,1,1,0", (None, None)),
+        ("J1", "TABULATOR1", "BATCH2", 3): ("1,0,1,0,1", (None, None)),
+        ("J1", "TABULATOR2", "BATCH1", 2): ("1,0,1,0,1", (None, None)),
+        ("J1", "TABULATOR2", "BATCH2", 1): ("1,0,1,0,1", (None, None)),
+        ("J1", "TABULATOR2", "BATCH2", 2): ("1,1,1,1,1", (None, None)),
+        ("J1", "TABULATOR2", "BATCH2", 3): (",,1,0,1", (None, None)),
+        ("J1", "TABULATOR2", "BATCH2", 4): (",,1,0,1", (None, None)),
+        ("J1", "TABULATOR2", "BATCH2", 5): (",,1,1,0", (None, None)),
+        ("J1", "TABULATOR2", "BATCH2", 6): (",,1,0,1", (None, None)),
+        ("J2", "TABULATOR1", "BATCH1", 1): ("0,1,1,1,0", (None, None)),
+        ("J2", "TABULATOR1", "BATCH1", 2): ("1,0,1,0,1", (None, None)),
+        ("J2", "TABULATOR1", "BATCH1", 3): ("0,1,1,1,0", (None, None)),
+        ("J2", "TABULATOR1", "BATCH2", 1): ("1,0,1,0,1", (None, None)),
+        ("J2", "TABULATOR1", "BATCH2", 3): ("1,0,1,0,1", (None, None)),
+        ("J2", "TABULATOR2", "BATCH1", 1): ("0,1,1,1,0", (None, None)),
+        ("J2", "TABULATOR2", "BATCH1", 2): ("1,0,1,0,1", (None, None)),
+        ("J2", "TABULATOR2", "BATCH2", 1): ("1,0,1,0,1", (None, None)),
+        ("J2", "TABULATOR2", "BATCH2", 2): ("1,1,1,1,1", (None, None)),
+        ("J2", "TABULATOR2", "BATCH2", 3): (",,1,0,1", (None, None)),
+        ("J2", "TABULATOR2", "BATCH2", 4): (",,1,0,1", (None, None)),
+        ("J2", "TABULATOR2", "BATCH2", 5): (",,1,1,0", (None, None)),
+        ("J2", "TABULATOR2", "BATCH2", 6): (",,1,0,1", (None, None)),
+    }
+    audit_all_ballots(
+        round_1_id, audit_results, target_contest_id, opportunistic_contest_id
+    )
+
+    # Check the audit report
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/report")
+    assert_match_report(rv.data, snapshot)
+    check_discrepancies(rv.data, audit_results)
+
+    num_sampled_ballots = (
+        SampledBallot.query.join(Batch)
+        .join(Jurisdiction)
+        .filter_by(election_id=election_id)
+        .count()
+    )
+    num_cvr_ballots = (
+        CvrBallot.query.join(Batch)
+        .join(Jurisdiction)
+        .filter_by(election_id=election_id)
+        .count()
+    )
+    # Check that we deleted all unused CvrBallots to save space in the db.
+    # As long as the audit report was correctly generated, we know that the
+    # sampled CvrBallots didn't get deleted.
+    assert num_sampled_ballots < 2 * (len(cvrs.splitlines()) - 4)
+    assert num_cvr_ballots == num_sampled_ballots

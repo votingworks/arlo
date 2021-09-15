@@ -845,3 +845,120 @@ def test_hybrid_invalid_sample_size(
         assert json.loads(rv.data) == {
             "errors": [{"errorType": "Bad Request", "message": expected_error}]
         }
+
+
+def test_hybrid_delete_unused_cvrs(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    contest_ids: List[str],  # pylint: disable=unused-argument
+    election_settings,  # pylint: disable=unused-argument
+    manifests,  # pylint: disable=unused-argument
+    snapshot,
+):
+    # Here, we want a successful audit, so we add back in the missing CVR line
+    cvrs = TEST_CVRS + "15,TABULATOR2,BATCH2,3,2-2-3,12345,CITY,,,1,0,1"
+    # JAs upload CVRs
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    for jurisdiction_id in jurisdiction_ids[:2]:
+        rv = client.put(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/cvrs",
+            data={"cvrs": (io.BytesIO(cvrs.encode()), "cvrs.csv",)},
+        )
+        assert_ok(rv)
+
+    # AA selects a sample size and launches the audit
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    sample_sizes = json.loads(rv.data)["sampleSizes"]
+
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {
+            "roundNum": 1,
+            "sampleSizes": {
+                contest_id: sample_sizes[0]
+                for contest_id, sample_sizes in sample_sizes.items()
+            },
+        },
+    )
+    assert_ok(rv)
+
+    rv = client.get(f"/api/election/{election_id}/round",)
+    round_1_id = json.loads(rv.data)["rounds"][0]["id"]
+
+    # JAs create audit boards
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    for jurisdiction_id in jurisdiction_ids[:2]:
+        rv = post_json(
+            client,
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_1_id}/audit-board",
+            [{"name": "Audit Board #1"}],
+        )
+        assert_ok(rv)
+
+    # Audit boards audit all the ballots correctly.
+    # Tabulator, Batch, Ballot, Choice 1-1, Choice 1-2, Choice 2-1, Choice 2-2, Choice 2-3
+    audit_results = {
+        # CVR ballots
+        # We create fake audit results for them based on the CVR
+        ("J1", "TABULATOR1", "BATCH1", 1): ("0,1,1,1,0", (None, None)),
+        ("J1", "TABULATOR1", "BATCH2", 2): ("0,1,1,1,0", (None, None)),
+        ("J1", "TABULATOR1", "BATCH2", 3): ("1,0,1,0,1", (None, None)),
+        ("J1", "TABULATOR2", "BATCH2", 2): ("1,1,1,1,1", (None, None)),
+        ("J1", "TABULATOR2", "BATCH2", 3): (",,1,0,1", (None, None)),
+        ("J1", "TABULATOR2", "BATCH2", 4): (",,1,0,1", (None, None)),
+        ("J2", "TABULATOR1", "BATCH1", 3): ("0,1,1,1,0", (None, None)),
+        ("J2", "TABULATOR1", "BATCH2", 1): ("1,0,1,0,1", (None, None)),
+        ("J2", "TABULATOR2", "BATCH1", 1): ("0,1,1,1,0", (None, None)),
+        ("J2", "TABULATOR2", "BATCH2", 1): ("1,0,1,0,1", (None, None)),
+        ("J2", "TABULATOR2", "BATCH2", 2): ("1,1,1,1,1", (None, None)),
+        ("J2", "TABULATOR2", "BATCH2", 3): (",,1,0,1", (None, None)),
+        # Non-CVR ballots
+        # We create fake audit results for them based on the reported margin,
+        # like in ballot polling
+        ("J1", "TABULATOR3", "BATCH1", 1): ("1,0,1,0,0", (None, None)),
+        ("J1", "TABULATOR3", "BATCH1", 2): ("1,0,1,0,0", (None, None)),
+        ("J1", "TABULATOR3", "BATCH1", 3): ("1,0,1,0,0", (None, None)),
+        ("J1", "TABULATOR3", "BATCH1", 5): ("1,0,1,0,0", (None, None)),
+        ("J1", "TABULATOR3", "BATCH1", 10): ("1,0,0,1,0", (None, None)),
+        ("J2", "TABULATOR3", "BATCH1", 1): ("1,0,,,", (None, None)),
+        ("J2", "TABULATOR3", "BATCH1", 5): ("1,0,,,", (None, None)),
+        ("J2", "TABULATOR3", "BATCH1", 10): ("0,1,,,", (None, None)),
+    }
+
+    target_contest_id, opportunistic_contest_id = contest_ids
+
+    audit_all_ballots(
+        round_1_id, audit_results, target_contest_id, opportunistic_contest_id
+    )
+
+    # Check the audit report
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/report")
+    assert_match_report(rv.data, snapshot)
+    check_discrepancies(rv.data, audit_results)
+
+    num_sampled_ballots = (
+        SampledBallot.query.join(Batch)
+        .filter_by(has_cvrs=True)
+        .join(Jurisdiction)
+        .filter_by(election_id=election_id)
+        .count()
+    )
+    num_cvr_ballots = (
+        CvrBallot.query.join(Batch)
+        .join(Jurisdiction)
+        .filter_by(election_id=election_id)
+        .count()
+    )
+    # Check that we deleted all unused CvrBallots to save space in the db.
+    # As long as the audit report was correctly generated, we know that the
+    # sampled CvrBallots didn't get deleted.
+    assert num_sampled_ballots < 2 * (len(cvrs.splitlines()) - 4)
+    assert num_cvr_ballots == num_sampled_ballots
