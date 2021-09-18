@@ -82,7 +82,7 @@ Ongoing development is planned to support:
 
 - Additional election types (proportional contests, RCV elections, etc.)
 
-- More efficient statitstical methods
+- More efficient statistical methods
 
 ## Developer resources
 
