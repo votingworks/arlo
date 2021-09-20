@@ -1,12 +1,10 @@
 import React from 'react'
-import { screen, waitFor } from '@testing-library/react'
-import { QueryClientProvider } from 'react-query'
+import { screen, waitFor, render } from '@testing-library/react'
+import { QueryClientProvider, QueryClient } from 'react-query'
 import userEvent from '@testing-library/user-event'
-import { aaApiCalls } from './_mocks'
-import { withMockFetch, renderWithRouter } from '../testUtilities'
+import { aaApiCalls, mockOrganizations } from './_mocks'
+import { withMockFetch } from '../testUtilities'
 import ActivityLog from './ActivityLog'
-import AuthDataProvider from '../UserContext'
-import { PrivateRoute, queryClient } from '../../App'
 import * as utilities from '../utilities'
 
 const mockElection = {
@@ -197,17 +195,22 @@ const apiCalls = {
 }
 
 const renderActivityLog = () =>
-  renderWithRouter(
-    <QueryClientProvider client={queryClient}>
-      <AuthDataProvider>
-        <PrivateRoute userType="audit_admin" component={ActivityLog} />
-      </AuthDataProvider>
+  render(
+    <QueryClientProvider
+      client={
+        new QueryClient({ defaultOptions: { queries: { retry: false } } })
+      }
+    >
+      <ActivityLog />
     </QueryClientProvider>
   )
 
 describe('Activity Log', () => {
   it('shows a table of activity for the org', async () => {
-    const expectedCalls = [aaApiCalls.getUser, apiCalls.getActivities]
+    const expectedCalls = [
+      aaApiCalls.getOrganizations(mockOrganizations.oneOrgNoAudits),
+      apiCalls.getActivities,
+    ]
     await withMockFetch(expectedCalls, async () => {
       renderActivityLog()
       await screen.findByRole('heading', { name: 'Activity Log' })
@@ -220,7 +223,7 @@ describe('Activity Log', () => {
 
   it('has a dropdown for audit admins with multiple orgs', async () => {
     const expectedCalls = [
-      aaApiCalls.getUserMultipleOrgs,
+      aaApiCalls.getOrganizations(mockOrganizations.twoOrgs),
       apiCalls.getActivities,
       { url: '/api/organizations/org-id-2/activities', response: [] },
     ]
@@ -253,7 +256,7 @@ describe('Activity Log', () => {
       .mockImplementation()
 
     const expectedCalls = [
-      aaApiCalls.getUserMultipleOrgs,
+      aaApiCalls.getOrganizations(mockOrganizations.twoOrgs),
       apiCalls.getActivities,
     ]
     await withMockFetch(expectedCalls, async () => {

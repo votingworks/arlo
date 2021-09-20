@@ -1,12 +1,12 @@
 import uuid
 from datetime import datetime, timezone
-from flask import jsonify, request
-from werkzeug.exceptions import Conflict
+from flask import jsonify, request, session
+from werkzeug.exceptions import Conflict, Forbidden
 
 from . import api
 from ..models import *  # pylint: disable=wildcard-import
 from ..database import db_session
-from ..auth import check_access, UserType, restrict_access
+from ..auth import check_access, UserType, restrict_access, get_loggedin_user
 from ..util.jsonschema import JSONDict, validate
 from ..activity_log import (
     CreateAudit,
@@ -107,3 +107,31 @@ def delete_election(election: Election):
 
     db_session.commit()
     return jsonify(status="ok")
+
+
+@api.route("/organizations", methods=["GET"])
+def list_organizations_and_elections():
+    user_type, user_key = get_loggedin_user(session)
+    if user_type != UserType.AUDIT_ADMIN:
+        raise Forbidden(f"Access forbidden for user type {user_type}")
+
+    user = User.query.filter_by(email=user_key).one()
+    return jsonify(
+        [
+            {
+                "id": org.id,
+                "name": org.name,
+                "elections": [
+                    {
+                        "id": election.id,
+                        "auditName": election.audit_name,
+                        "electionName": election.election_name,
+                        "state": election.state,
+                    }
+                    for election in org.elections
+                    if election.deleted_at is None
+                ],
+            }
+            for org in user.organizations
+        ]
+    )

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useQuery } from 'react-query'
 import { HTMLSelect, H3 } from '@blueprintjs/core'
-import { useAuthDataContext, IAuditAdmin } from '../UserContext'
+import { IOrganization } from '../UserContext'
 import { Wrapper, Inner } from '../Atoms/Wrapper'
 import { StyledTable, DownloadCSVButton } from '../Atoms/Table'
 import { fetchApi } from '../SupportTools/support-api'
@@ -67,16 +67,26 @@ const prettyAction = (activity: IActivity) => {
 }
 
 const ActivityLog = () => {
-  const auth = useAuthDataContext()
-  const { user } = auth! as { user: IAuditAdmin }
-  const [organization, setOrganization] = useState(user.organizations[0])
+  const organizations = useQuery<IOrganization[]>('orgs', () =>
+    fetchApi('/api/organizations')
+  )
+  if (!organizations.isSuccess) return null
+  return <ActivityLogOrgsLoaded organizations={organizations.data} />
+}
+
+const ActivityLogOrgsLoaded = ({
+  organizations,
+}: {
+  organizations: IOrganization[]
+}) => {
+  const [organization, setOrganization] = useState(organizations[0])
   const activities = useQuery(['orgs', organization.id, 'activities'], () =>
     fetchApi(`/api/organizations/${organization.id}/activities`)
   )
 
   if (!activities.isSuccess) return null
 
-  const showOrgSelect = user.organizations.length > 1
+  const showOrgSelect = organizations.length > 1
 
   return (
     <Wrapper>
@@ -101,13 +111,13 @@ const ActivityLog = () => {
                     name="organizationId"
                     onChange={e =>
                       setOrganization(
-                        user.organizations.find(
+                        organizations.find(
                           ({ id }) => id === e.currentTarget.value
                         )!
                       )
                     }
                     value={organization.id}
-                    options={user.organizations.map(({ id, name }) => ({
+                    options={organizations.map(({ id, name }) => ({
                       label: name,
                       value: id,
                     }))}

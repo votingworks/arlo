@@ -1,5 +1,5 @@
 import React from 'react'
-import { screen, within } from '@testing-library/react'
+import { screen, within, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import Header from './Header'
 import AuthDataProvider from './UserContext'
@@ -24,6 +24,11 @@ describe('Header', () => {
     const expectedCalls = [apiCalls.unauthenticatedUser]
     await withMockFetch(expectedCalls, async () => {
       renderHeader('/')
+      // Since the header renders the exact same thing when loading the user
+      // data vs when there is no authenticated user, we wait to make sure the
+      // api request completes by hackily checking to see when the expected
+      // calls are consumed.
+      await waitFor(() => expectedCalls.length === 0)
 
       // Arlo logo
       const arloLogo = screen.getAllByRole('link', {
@@ -88,7 +93,7 @@ describe('Header', () => {
   })
 
   it('shows navigation buttons when authenticated on audit screens', async () => {
-    const expectedCalls = [aaApiCalls.getUserWithAudit]
+    const expectedCalls = [aaApiCalls.getUser]
     await withMockFetch(expectedCalls, async () => {
       renderHeader('/election/1')
 

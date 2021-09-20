@@ -12,6 +12,7 @@ import jurisdictionFile, {
 } from './AASetup/Participants/_mocks'
 import { IBatch } from './RoundManagement/useBatchResults'
 import mockJSON from './Progress/us-states-counties'
+import { IOrganization } from '../UserContext'
 
 const jurisdictionFormData: FormData = new FormData()
 jurisdictionFormData.append(
@@ -232,15 +233,44 @@ export const jaApiCalls = {
   },
 }
 
-const aaUser = {
-  type: 'audit_admin',
-  name: 'Joe',
-  email: 'auditadmin@email.org',
-  jurisdictions: [],
-  organizations: [
+export const mockOrganizations = {
+  oneOrgNoAudits: [
     {
       id: 'org-id',
       name: 'State of California',
+      elections: [],
+    },
+  ],
+  oneOrgOneAudit: [
+    {
+      id: 'org-id',
+      name: 'State of California',
+      elections: [
+        {
+          id: '1',
+          auditName: 'November Presidential Election 2020',
+          electionName: '',
+          state: 'CA',
+        },
+      ],
+    },
+  ],
+  twoOrgs: [
+    {
+      id: 'org-id',
+      name: 'State of California',
+      elections: [
+        {
+          id: '1',
+          auditName: 'November Presidential Election 2020',
+          electionName: '',
+          state: 'CA',
+        },
+      ],
+    },
+    {
+      id: 'org-id-2',
+      name: 'State of Georgia',
       elections: [],
     },
   ],
@@ -250,61 +280,17 @@ export const aaApiCalls = {
   getUser: {
     url: '/api/me',
     response: {
-      user: aaUser,
-      supportUser: null,
-    },
-  },
-  getUserWithAudit: {
-    url: '/api/me',
-    response: {
       user: {
-        ...aaUser,
-        organizations: [
-          {
-            id: 'org-id',
-            name: 'State of California',
-            elections: [
-              {
-                id: '1',
-                auditName: 'November Presidential Election 2020',
-                electionName: '',
-                state: 'CA',
-              },
-            ],
-          },
-        ],
+        type: 'audit_admin',
+        email: 'auditadmin@email.org',
       },
       supportUser: null,
     },
   },
-  getUserMultipleOrgs: {
-    url: '/api/me',
-    response: {
-      user: {
-        ...aaUser,
-        organizations: [
-          {
-            id: 'org-id',
-            name: 'State of California',
-            elections: [
-              {
-                id: '1',
-                auditName: 'November Presidential Election 2020',
-                electionName: '',
-                state: 'CA',
-              },
-            ],
-          },
-          {
-            id: 'org-id-2',
-            name: 'State of Georgia',
-            elections: [],
-          },
-        ],
-      },
-      supportUser: null,
-    },
-  },
+  getOrganizations: (organizations: IOrganization[]) => ({
+    url: '/api/organizations',
+    response: organizations,
+  }),
   postNewAudit: (body: {}) => ({
     url: '/api/election',
     options: {
@@ -484,7 +470,7 @@ export const supportApiCalls = {
   getUserImpersonatingAA: {
     url: '/api/me',
     response: {
-      user: aaUser,
+      user: aaApiCalls.getUser.response.user,
       supportUser: { email: 'support@example.com' },
     },
   },
