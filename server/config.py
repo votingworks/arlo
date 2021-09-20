@@ -38,19 +38,15 @@ def setup_flask_config() -> Tuple[str, bool]:
 FLASK_ENV, FLASK_DEBUG = setup_flask_config()
 
 
-DEVELOPMENT_DATABASE_URL = "postgresql://arlo:arlo@localhost:5432/arlo"
-TEST_DATABASE_URL = "postgresql://arlo:arlo@localhost:5432/arlotest"
-
-
 def read_database_url_config() -> str:
     environment_database_url = os.environ.get("DATABASE_URL", None)
     if environment_database_url:
         return environment_database_url
 
     if FLASK_ENV == "development":
-        return DEVELOPMENT_DATABASE_URL
+        return "postgresql://arlo:arlo@localhost:5432/arlo"
     elif FLASK_ENV == "test":
-        return TEST_DATABASE_URL
+        return "postgresql://arlo:arlo@localhost:5432/arlotest"
     else:
         raise Exception("Missing DATABASE_URL env var")
 
