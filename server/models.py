@@ -316,7 +316,10 @@ class User(BaseModel):
     external_id = Column(String(200), unique=True)
 
     organizations = relationship(
-        "Organization", secondary="audit_administration", uselist=True
+        "Organization",
+        secondary="audit_administration",
+        uselist=True,
+        order_by="Organization.name",
     )
     jurisdictions = relationship(
         "Jurisdiction", secondary="jurisdiction_administration", uselist=True

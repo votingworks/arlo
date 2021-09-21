@@ -88,8 +88,8 @@ def test_support_delete_organization(client: FlaskClient):
     rv = client.get(f"/api/support/organizations/{org_id}")
     assert rv.status_code == 404
 
-    rv = client.get("/api/me")
-    assert json.loads(rv.data)["user"]["organizations"] == []
+    rv = client.get("/api/organizations")
+    assert json.loads(rv.data) == []
 
     assert Election.query.get(election_id) is None
 
