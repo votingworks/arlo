@@ -82,41 +82,52 @@ if __name__ == "__main__":
 
     print("Writing CSV...")
 
+    contest_choice_pairs = [
+        (contest_name, choice_name)
+        for contest_name, choices in contest_choices.items()
+        for choice_name in choices
+    ]
+
     with open(output_csv_path, "w") as output_file:
-        headers = [
-            "CvrGuid",
-            "BatchNumber",
-            "BatchSequence",
-            "SheetNumber",
-            "PrecinctSplit",
-        ] + [
-            f"{contest_name};{choice_name}"
-            for contest_name, choices in contest_choices.items()
-            for choice_name in choices
+
+        writer = csv.writer(output_file)
+        writer.writerow(["Election Name", "0.00.0.00"])
+
+        contest_headers = ["", "", "", "", ""] + [
+            f"{contest_name} (Vote For=1)" for contest_name, _ in contest_choice_pairs
         ]
+        writer.writerow(contest_headers)
 
-        writer = csv.DictWriter(output_file, fieldnames=headers)
-        writer.writeheader()
+        choice_headers = ["", "", "", "", ""] + [
+            choice_name for _, choice_name in contest_choice_pairs
+        ]
+        writer.writerow(choice_headers)
 
-        # Flatten contest choice votes into field names
-        # Fill in missing contest choices with 0s
-        for cvr in cvrs:
-            flat_cvr = {
-                "CvrGuid": cvr["CvrGuid"],
-                "BatchNumber": cvr["BatchNumber"],
-                "BatchSequence": cvr["BatchSequence"],
-                "SheetNumber": cvr["SheetNumber"],
-                "PrecinctSplit": cvr["PrecinctSplit"],
-            }
+        headers = [
+            "CvrNumber",
+            "TabulatorNum",
+            "BatchId",
+            "RecordId",
+            "ImprintedId",
+        ] + ["NP" for _ in contest_choice_pairs]
+        writer.writerow(headers)
 
-            for contest_name, choices in contest_choices.items():
-                for choice_name in choices:
-                    if contest_name not in cvr["Contests"]:
-                        vote = None
-                    elif choice_name not in cvr["Contests"][contest_name]:
-                        vote = 0
-                    else:
-                        vote = cvr["Contests"][contest_name][choice_name]
-                    flat_cvr[f"{contest_name};{choice_name}"] = vote
+        for i, cvr in enumerate(cvrs):
+            row = [
+                i,
+                1,
+                cvr["BatchNumber"],
+                cvr["BatchSequence"],
+                cvr["CvrGuid"],
+            ]
 
-            writer.writerow(flat_cvr)
+            # Fill in missing contest choices with 0s
+            for contest_name, choice_name in contest_choice_pairs:
+                if contest_name not in cvr["Contests"]:
+                    row.append("")
+                elif choice_name not in cvr["Contests"][contest_name]:
+                    row.append(0)
+                else:
+                    row.append(cvr["Contests"][contest_name][choice_name])
+
+            writer.writerow(row)
