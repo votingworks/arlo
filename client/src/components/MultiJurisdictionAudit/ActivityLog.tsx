@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useQuery } from 'react-query'
 import { HTMLSelect, H3 } from '@blueprintjs/core'
-import { IOrganization } from '../UserContext'
+import { IOrganization, useAuthDataContext, IAuditAdmin } from '../UserContext'
 import { Wrapper, Inner } from '../Atoms/Wrapper'
 import { StyledTable, DownloadCSVButton } from '../Atoms/Table'
 import { fetchApi } from '../SupportTools/support-api'
@@ -67,8 +67,12 @@ const prettyAction = (activity: IActivity) => {
 }
 
 const ActivityLog = () => {
-  const organizations = useQuery<IOrganization[]>('orgs', () =>
-    fetchApi('/api/organizations')
+  const auth = useAuthDataContext()
+  const user = auth && (auth.user as IAuditAdmin)
+  const organizations = useQuery<IOrganization[]>(
+    'orgs',
+    () => fetchApi(`/api/audit_admins/${user!.id}/organizations`),
+    { enabled: !!user }
   )
   if (!organizations.isSuccess) return null
   return <ActivityLogOrgsLoaded organizations={organizations.data} />

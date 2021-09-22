@@ -600,9 +600,10 @@ def test_audit_board_not_found(client: FlaskClient,):
 def test_auth_me_audit_admin(client: FlaskClient, aa_email: str):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, aa_email)
 
+    user = User.query.filter_by(email=aa_email).one()
     rv = client.get("/api/me")
     assert json.loads(rv.data) == {
-        "user": {"type": "audit_admin", "email": aa_email},
+        "user": {"type": "audit_admin", "email": aa_email, "id": user.id},
         "supportUser": None,
     }
 

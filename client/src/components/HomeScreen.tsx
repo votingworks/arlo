@@ -21,6 +21,7 @@ import {
   IJurisdictionAdmin,
   IElection,
   IOrganization,
+  IAuditAdmin,
 } from './UserContext'
 import { parseApiError, addCSRFToken } from './utilities'
 import LinkButton from './Atoms/LinkButton'
@@ -47,7 +48,7 @@ const HomeScreen: React.FC = () => {
       return (
         <Wrapper>
           <Inner>
-            <AuditAdminHomeScreen />
+            <AuditAdminHomeScreen user={user} />
           </Inner>
         </Wrapper>
       )
@@ -240,10 +241,10 @@ const LoginScreen: React.FC = () => {
   )
 }
 
-const AuditAdminHomeScreen = () => {
+const AuditAdminHomeScreen = ({ user }: { user: IAuditAdmin }) => {
   const queryClient = useQueryClient()
   const organizations = useQuery<IOrganization[]>('orgs', () =>
-    fetchApi(`/api/organizations`)
+    fetchApi(`/api/audit_admins/${user.id}/organizations`)
   )
   const deleteElection = useMutation(
     ({ electionId }: { electionId: string }) =>

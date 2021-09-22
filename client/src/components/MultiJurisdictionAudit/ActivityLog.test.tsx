@@ -6,6 +6,7 @@ import { aaApiCalls, mockOrganizations } from './_mocks'
 import { withMockFetch } from '../testUtilities'
 import ActivityLog from './ActivityLog'
 import * as utilities from '../utilities'
+import AuthDataProvider from '../UserContext'
 
 const mockElection = {
   id: 'election-id-1',
@@ -196,18 +197,21 @@ const apiCalls = {
 
 const renderActivityLog = () =>
   render(
-    <QueryClientProvider
-      client={
-        new QueryClient({ defaultOptions: { queries: { retry: false } } })
-      }
-    >
-      <ActivityLog />
-    </QueryClientProvider>
+    <AuthDataProvider>
+      <QueryClientProvider
+        client={
+          new QueryClient({ defaultOptions: { queries: { retry: false } } })
+        }
+      >
+        <ActivityLog />
+      </QueryClientProvider>
+    </AuthDataProvider>
   )
 
 describe('Activity Log', () => {
   it('shows a table of activity for the org', async () => {
     const expectedCalls = [
+      aaApiCalls.getUser,
       aaApiCalls.getOrganizations(mockOrganizations.oneOrgNoAudits),
       apiCalls.getActivities,
     ]
@@ -223,6 +227,7 @@ describe('Activity Log', () => {
 
   it('has a dropdown for audit admins with multiple orgs', async () => {
     const expectedCalls = [
+      aaApiCalls.getUser,
       aaApiCalls.getOrganizations(mockOrganizations.twoOrgs),
       apiCalls.getActivities,
       { url: '/api/organizations/org-id-2/activities', response: [] },
@@ -256,6 +261,7 @@ describe('Activity Log', () => {
       .mockImplementation()
 
     const expectedCalls = [
+      aaApiCalls.getUser,
       aaApiCalls.getOrganizations(mockOrganizations.twoOrgs),
       apiCalls.getActivities,
     ]

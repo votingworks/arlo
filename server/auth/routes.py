@@ -82,7 +82,7 @@ def auth_me():
     user = None
     if user_type == UserType.AUDIT_ADMIN:
         db_user = User.query.filter_by(email=user_key).one()
-        user = dict(type=user_type, email=db_user.email,)
+        user = dict(type=user_type, email=db_user.email, id=db_user.id)
     if user_type == UserType.JURISDICTION_ADMIN:
         db_user = User.query.filter_by(email=user_key).one()
         user = dict(

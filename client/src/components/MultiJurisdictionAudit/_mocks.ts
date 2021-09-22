@@ -6,7 +6,8 @@ import { IBallot } from './RoundManagement/useBallots'
 import { IAuditBoard } from './useAuditBoards'
 import { IRound } from './useRoundsAuditAdmin'
 import { IAuditSettings } from './useAuditSettings'
-import jurisdictionFile, {
+import {
+  jurisdictionFile,
   jurisdictionErrorFile,
   standardizedContestsFile,
 } from './AASetup/Participants/_mocks'
@@ -283,12 +284,13 @@ export const aaApiCalls = {
       user: {
         type: 'audit_admin',
         email: 'auditadmin@email.org',
+        id: 'audit-admin-1-id',
       },
       supportUser: null,
     },
   },
   getOrganizations: (organizations: IOrganization[]) => ({
-    url: '/api/organizations',
+    url: '/api/audit_admins/audit-admin-1-id/organizations',
     response: organizations,
   }),
   postNewAudit: (body: {}) => ({
