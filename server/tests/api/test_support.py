@@ -64,7 +64,7 @@ def test_support_get_organization(client: FlaskClient, org_id: str, election_id:
 
 def test_support_delete_organization(client: FlaskClient):
     set_support_user(client, SUPPORT_EMAIL)
-    org_id, _ = create_org_and_admin("Test Delete Org", "admin-delete@example.com")
+    org_id, aa_id = create_org_and_admin("Test Delete Org", "admin-delete@example.com")
     set_logged_in_user(client, UserType.AUDIT_ADMIN, "admin-delete@example.com")
     election_id = create_election(client, organization_id=org_id)
 
@@ -88,7 +88,7 @@ def test_support_delete_organization(client: FlaskClient):
     rv = client.get(f"/api/support/organizations/{org_id}")
     assert rv.status_code == 404
 
-    rv = client.get("/api/organizations")
+    rv = client.get(f"/api/audit_admins/{aa_id}/organizations")
     assert json.loads(rv.data) == []
 
     assert Election.query.get(election_id) is None

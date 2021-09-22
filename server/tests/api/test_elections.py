@@ -311,7 +311,8 @@ def test_delete_election(
     assert_ok(rv)
 
     # Should not show up in any API responses
-    rv = client.get("/api/organizations")
+    aa_user = User.query.filter_by(email=DEFAULT_AA_EMAIL).one()
+    rv = client.get(f"/api/audit_admins/{aa_user.id}/organizations")
     resp = json.loads(rv.data)
     assert all(
         election["id"] != election_id
@@ -357,10 +358,10 @@ def test_delete_election(
 def test_list_organizations(client: FlaskClient):
     aa_email = "list_orgs_email@example.gov"
     set_logged_in_user(client, UserType.AUDIT_ADMIN, aa_email)
-    org_id, _ = create_org_and_admin("Test Org List", aa_email)
+    org_id, aa_id = create_org_and_admin("Test Org List", aa_email)
     election_id = create_election(client, "Test Audit Org List", organization_id=org_id)
     org_id_2, _ = create_org_and_admin("Test Org List 2", aa_email)
-    rv = client.get("/api/organizations")
+    rv = client.get(f"/api/audit_admins/{aa_id}/organizations")
     assert json.loads(rv.data) == [
         {
             "name": "Test Org List",
@@ -378,13 +379,26 @@ def test_list_organizations(client: FlaskClient):
     ]
 
 
-def test_list_organizations_not_authorized(client: FlaskClient, election_id: str):
+def test_list_organizations_not_authorized(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+):
+    aa_user = User.query.filter_by(email=DEFAULT_AA_EMAIL).one()
     clear_logged_in_user(client)
-    rv = client.get("/api/organizations")
+    rv = client.get(f"/api/audit_admins/{aa_user.id}/organizations")
     assert rv.status_code == 403
 
+    ja_user = User.query.filter_by(email=default_ja_email(election_id)).one()
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = client.get("/api/organizations")
+    rv = client.get(f"/api/audit_admins/{ja_user.id}/organizations")
+    assert rv.status_code == 403
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get("/api/audit_admins/not-a-real-id/organizations")
+    assert rv.status_code == 403
+
+    rv = client.get(f"/api/audit_admins/{ja_user.id}/organizations")
     assert rv.status_code == 403

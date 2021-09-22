@@ -109,13 +109,13 @@ def delete_election(election: Election):
     return jsonify(status="ok")
 
 
-@api.route("/organizations", methods=["GET"])
-def list_organizations_and_elections():
+@api.route("/audit_admins/<audit_admin_id>/organizations", methods=["GET"])
+def list_organizations_and_elections(audit_admin_id: str):
     user_type, user_key = get_loggedin_user(session)
-    if user_type != UserType.AUDIT_ADMIN:
-        raise Forbidden(f"Access forbidden for user type {user_type}")
+    user = User.query.get(audit_admin_id)
+    if user is None or user.email != user_key or user_type != UserType.AUDIT_ADMIN:
+        raise Forbidden()
 
-    user = User.query.filter_by(email=user_key).one()
     return jsonify(
         [
             {
