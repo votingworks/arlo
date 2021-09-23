@@ -1,4 +1,5 @@
 # pylint: disable=stop-iteration-return
+import sys
 from collections import defaultdict
 from enum import Enum
 from typing import List, Iterator, Dict, Any, NamedTuple, Tuple
@@ -327,6 +328,7 @@ def decode_csv_file(file: FileStorage) -> str:
 
     try:
         file_bytes = file.read()
+        print("bytes", sys.getsizeof(file_bytes))
         return str(file_bytes.decode("utf-8-sig"))
     except UnicodeDecodeError as err:
         try:

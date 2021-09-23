@@ -1,3 +1,7 @@
+from guppy import hpy
+
+h = hpy()
+import sys
 import uuid
 import io
 import tempfile
@@ -459,21 +463,27 @@ def validate_cvr_upload(
 # We save the CVR file, and bgcompute finds it and processes it in
 # the background.
 def save_cvr_file(cvr, jurisdiction: Jurisdiction):
+    print("before decode", h.heap())
+    print(sys.getsizeof(cvr))
     cvr_string = decode_csv_file(cvr)
+    print("after decode", h.heap())
+    print(sys.getsizeof(cvr_string))
+
     jurisdiction.cvr_file = File(
         id=str(uuid.uuid4()),
         name=cvr.filename,
         contents=cvr_string,
         uploaded_at=datetime.now(timezone.utc),
     )
-    jurisdiction.cvr_file.task = create_background_task(
-        process_cvr_file,
-        dict(
-            jurisdiction_id=jurisdiction.id,
-            jurisdiction_admin_email=get_loggedin_user(session)[1],
-            support_user_email=get_support_user(session),
-        ),
-    )
+    print("after file create", h.heap())
+    # jurisdiction.cvr_file.task = create_background_task(
+    #     process_cvr_file,
+    #     dict(
+    #         jurisdiction_id=jurisdiction.id,
+    #         jurisdiction_admin_email=get_loggedin_user(session)[1],
+    #         support_user_email=get_support_user(session),
+    #     ),
+    # )
 
 
 def clear_cvr_data(jurisdiction: Jurisdiction):
@@ -487,6 +497,9 @@ def clear_cvr_data(jurisdiction: Jurisdiction):
     jurisdiction.cvr_contests_metadata = None
 
 
+print("baseline", h.heap())
+
+
 @api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/cvrs", methods=["PUT"],
 )
@@ -496,8 +509,10 @@ def upload_cvrs(
 ):
     validate_cvr_upload(request, election, jurisdiction)
     clear_cvr_data(jurisdiction)
+    print("before save", h.heap())
     save_cvr_file(request.files["cvrs"], jurisdiction)
     db_session.commit()
+    print("after commit", h.heap())
     return jsonify(status="ok")
 
 
