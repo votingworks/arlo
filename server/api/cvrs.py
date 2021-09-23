@@ -469,12 +469,21 @@ def save_cvr_file(cvr, jurisdiction: Jurisdiction):
     print("after decode", h.heap())
     print(sys.getsizeof(cvr_string))
 
-    jurisdiction.cvr_file = File(
-        id=str(uuid.uuid4()),
-        name=cvr.filename,
-        contents=cvr_string,
-        uploaded_at=datetime.now(timezone.utc),
+    db_engine.execute(
+        File.__table__.insert(),  # pylint: disable=no-member
+        dict(
+            id=str(uuid.uuid4()),
+            name=cvr.filename,
+            contents=cvr_string,
+            uploaded_at=datetime.now(timezone.utc),
+        ),
     )
+    # jurisdiction.cvr_file = File(
+    #     id=str(uuid.uuid4()),
+    #     name=cvr.filename,
+    #     contents=cvr_string,
+    #     uploaded_at=datetime.now(timezone.utc),
+    # )
     print("after file create", h.heap())
     # jurisdiction.cvr_file.task = create_background_task(
     #     process_cvr_file,
