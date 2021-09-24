@@ -153,9 +153,19 @@ def sample_size_options(
                 "2-over": discrepancy_counter[2],
             }
 
-            sample_size = supersimple.get_sample_sizes(
+            # Since this computation comptues the total stopping size, We need
+            # to subtract the number of samples drawn already to get to a round
+            # size
+            sampled_so_far = sum(rounds.round_sizes(contest).values())
+
+            stopping_size = supersimple.get_sample_sizes(
                 election.risk_limit, contest_for_sampler, discrepancy_counts
             )
+            sample_size = stopping_size - sampled_so_far
+
+            if sample_size < 1:
+                raise ValueError('Audit should have already finished!')
+
             return {
                 "supersimple": {"key": "supersimple", "size": sample_size, "prob": None}
             }
