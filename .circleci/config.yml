@@ -160,13 +160,9 @@ jobs:
 
       - run:
           name: test client
+          # Try tests twice in case one flakes and fails
           command: |
-            make test-client
-      - run:
-          name: test client second attempt
-          command: |
-            make test-client
-          when: on_fail
+            make test-client || make test-client
 
   cypress:
     executor: arlo
@@ -185,13 +181,9 @@ jobs:
       - create-data-model
       - run:
           name: cypress
+          # Try tests twice in case one flakes and fails
           command: |
-            ./client/run-cypress-tests.sh
-      - run:
-          name: cypress second attempt
-          command: |
-            ./client/run-cypress-tests.sh
-          when: on_fail
+            ./client/run-cypress-tests.sh || ./client/run-cypress-tests.sh
       - store_artifacts:
           path: client/cypress/screenshots
       - store_artifacts:
