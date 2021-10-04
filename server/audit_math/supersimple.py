@@ -207,7 +207,7 @@ def get_sample_sizes(
         r1 = (r1 * n0).quantize(Decimal(1), ROUND_CEILING)
         s1 = (s1 * n0).quantize(Decimal(1), ROUND_CEILING)
 
-        stopping_size = int(nMin(alpha, contest, r1, r2, s1, s2))
+        stopping_size = min(int(nMin(alpha, contest, r1, r2, s1, s2)), contest.ballots)
 
     return max(stopping_size - int(num_sampled), 0)
 

@@ -596,7 +596,7 @@ o1_stopping_size = {
     "Contest C": 51,
     "Contest D": 57,
     "Contest E": 7,
-    "Contest F": 16,
+    "Contest F": 15,  # nMin yields 16, but contest only has 15 total votes
     "Two-winner Contest": 38,
 }
 

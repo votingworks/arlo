@@ -20,6 +20,7 @@ TABULATOR3,BATCH1,1,,0.029052899542529576,N,Audit Board #1
 TABULATOR3,BATCH1,2,,0.078395302081543460,N,Audit Board #1
 TABULATOR3,BATCH1,3,,0.041030221525069793,N,Audit Board #1
 TABULATOR3,BATCH1,5,,0.072664791498577026,N,Audit Board #1
+TABULATOR3,BATCH1,9,,0.293674693309260219,N,Audit Board #1
 TABULATOR3,BATCH1,10,,0.199742518299743122,N,Audit Board #1
 """
 
@@ -31,7 +32,7 @@ Test Org test_hybrid_two_rounds,Test Election,CA\r
 \r
 ######## CONTESTS ########\r
 Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes,Total Ballots Cast: CVR,Total Ballots Cast: Non-CVR,Tabulated Votes: CVR,Tabulated Votes: Non-CVR\r
-Contest 1,Targeted,1,1,50,Choice 1-1: 30; Choice 1-2: 10,30,20,Choice 1-1: 12; Choice 1-2: 8,Choice 1-1: 18; Choice 1-2: 2\r
+Contest 1,Targeted,1,1,50,Choice 1-1: 30; Choice 1-2: 10,30,20,Choice 1-1: 14; Choice 1-2: 6,Choice 1-1: 16; Choice 1-2: 4\r
 Contest 2,Opportunistic,2,2,25,Choice 2-1: 20; Choice 2-2: 8; Choice 2-3: 10,15,10,Choice 2-1: 13; Choice 2-2: 6; Choice 2-3: 7,Choice 2-1: 7; Choice 2-2: 2; Choice 2-3: 3\r
 \r
 ######## AUDIT SETTINGS ########\r
@@ -45,8 +46,8 @@ J2,Audit Board #1,,,,\r
 \r
 ######## ROUNDS ########\r
 Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes,Audited Votes: CVR,Audited Votes: Non CVR\r
-1,Contest 1,Targeted,22,No,0.7747175905,DATETIME,DATETIME,Choice 1-1: 13; Choice 1-2: 6,Choice 1-1: 6; Choice 1-2: 5,Choice 1-1: 7; Choice 1-2: 1\r
-1,Contest 2,Opportunistic,,No,1.0,DATETIME,DATETIME,Choice 2-1: 9; Choice 2-2: 5; Choice 2-3: 3,Choice 2-1: 5; Choice 2-2: 4; Choice 2-3: 3,Choice 2-1: 4; Choice 2-2: 1; Choice 2-3: 0\r
+1,Contest 1,Targeted,23,No,0.4278843891,DATETIME,DATETIME,Choice 1-1: 14; Choice 1-2: 6,Choice 1-1: 6; Choice 1-2: 5,Choice 1-1: 8; Choice 1-2: 1\r
+1,Contest 2,Opportunistic,,No,1.0,DATETIME,DATETIME,Choice 2-1: 10; Choice 2-2: 5; Choice 2-3: 3,Choice 2-1: 5; Choice 2-2: 4; Choice 2-3: 3,Choice 2-1: 5; Choice 2-2: 1; Choice 2-3: 0\r
 \r
 ######## SAMPLED BALLOTS ########\r
 Jurisdiction Name,Tabulator,Batch Name,Ballot Position,Imprinted ID,Ticket Numbers: Contest 1,Audited?,Audit Result: Contest 1,CVR Result: Contest 1,Discrepancy: Contest 1,Audit Result: Contest 2,CVR Result: Contest 2,Discrepancy: Contest 2\r
@@ -60,10 +61,11 @@ J1,TABULATOR3,BATCH1,1,,Round 1: 0.029052899542529576,AUDITED,Choice 1-1,,,Choic
 J1,TABULATOR3,BATCH1,2,,Round 1: 0.078395302081543460,AUDITED,Choice 1-1,,,Choice 2-1,,\r
 J1,TABULATOR3,BATCH1,3,,Round 1: 0.041030221525069793,AUDITED,Choice 1-1,,,Choice 2-1,,\r
 J1,TABULATOR3,BATCH1,5,,Round 1: 0.072664791498577026,AUDITED,Choice 1-1,,,Choice 2-1,,\r
+J1,TABULATOR3,BATCH1,9,,Round 1: 0.293674693309260219,AUDITED,Choice 1-1,,,Choice 2-1,,\r
 J1,TABULATOR3,BATCH1,10,,Round 1: 0.199742518299743122,AUDITED,Choice 1-1,,,Choice 2-2,,\r
 J2,TABULATOR1,BATCH1,3,1-1-3,Round 1: 0.242392535590495322,AUDITED,Choice 1-2,Choice 1-2,,"Choice 2-1, Choice 2-2",,\r
 J2,TABULATOR1,BATCH2,1,1-2-1,Round 1: 0.200269401620671924,AUDITED,Choice 1-1,Choice 1-1,,"Choice 2-1, Choice 2-3",,\r
-J2,TABULATOR2,BATCH1,1,2-1-1,Round 1: 0.174827909206366766,NOT_FOUND,,Choice 1-2,2,,,\r
+J2,TABULATOR2,BATCH1,1,2-1-1,Round 1: 0.174827909206366766,NOT_FOUND,,Choice 1-1,2,,,\r
 J2,TABULATOR2,BATCH2,1,2-2-1,Round 1: 0.185417954749015145,AUDITED,Choice 1-1,Choice 1-1,,"Choice 2-1, Choice 2-3",,\r
 J2,TABULATOR2,BATCH2,2,2-2-2,"Round 1: 0.252054739518646128, 0.297145021317217438",AUDITED,"Choice 1-1, Choice 1-2","Choice 1-1, Choice 1-2",,"Choice 2-1, Choice 2-2, Choice 2-3",,\r
 J2,TABULATOR2,BATCH2,3,2-2-4,Round 1: 0.179114059650472941,AUDITED,CONTEST_NOT_ON_BALLOT,,,"Choice 2-1, Choice 2-3",,\r
@@ -73,5 +75,5 @@ J2,TABULATOR3,BATCH1,10,,Round 1: 0.087764767095634400,AUDITED,Choice 1-2,,,CONT
 """
 
 snapshots["test_sample_size 1"] = [
-    {"key": "suite", "prob": None, "size": 22, "sizeCvr": 14, "sizeNonCvr": 8}
+    {"key": "suite", "prob": None, "size": 23, "sizeCvr": 14, "sizeNonCvr": 9}
 ]
