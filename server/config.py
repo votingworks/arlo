@@ -5,7 +5,7 @@ from datetime import timedelta
 
 def read_env_var(name: str, default=None, env_defaults=None):
     value = os.environ.get(name, (env_defaults or {}).get(FLASK_ENV, default))
-    if value is None or value == "":
+    if value is None:
         raise Exception(f"Missing env var: {name}")
     return value
 
@@ -64,16 +64,28 @@ HTTP_ORIGIN = read_env_var(
 )
 
 # Support user login config
-SUPPORT_AUTH0_BASE_URL = read_env_var("ARLO_SUPPORT_AUTH0_BASE_URL")
-SUPPORT_AUTH0_CLIENT_ID = read_env_var("ARLO_SUPPORT_AUTH0_CLIENT_ID")
-SUPPORT_AUTH0_CLIENT_SECRET = read_env_var("ARLO_SUPPORT_AUTH0_CLIENT_SECRET")
+SUPPORT_AUTH0_BASE_URL = read_env_var(
+    "ARLO_SUPPORT_AUTH0_BASE_URL", env_defaults=dict(test="")
+)
+SUPPORT_AUTH0_CLIENT_ID = read_env_var(
+    "ARLO_SUPPORT_AUTH0_CLIENT_ID", env_defaults=dict(test="")
+)
+SUPPORT_AUTH0_CLIENT_SECRET = read_env_var(
+    "ARLO_SUPPORT_AUTH0_CLIENT_SECRET", env_defaults=dict(test="")
+)
 # Required email domain for support users
 SUPPORT_EMAIL_DOMAIN = read_env_var("ARLO_SUPPORT_EMAIL_DOMAIN", default="voting.works")
 
 # Audit admin OAuth login config
-AUDITADMIN_AUTH0_BASE_URL = read_env_var("ARLO_AUDITADMIN_AUTH0_BASE_URL")
-AUDITADMIN_AUTH0_CLIENT_ID = read_env_var("ARLO_AUDITADMIN_AUTH0_CLIENT_ID")
-AUDITADMIN_AUTH0_CLIENT_SECRET = read_env_var("ARLO_AUDITADMIN_AUTH0_CLIENT_SECRET")
+AUDITADMIN_AUTH0_BASE_URL = read_env_var(
+    "ARLO_AUDITADMIN_AUTH0_BASE_URL", env_defaults=dict(test="")
+)
+AUDITADMIN_AUTH0_CLIENT_ID = read_env_var(
+    "ARLO_AUDITADMIN_AUTH0_CLIENT_ID", env_defaults=dict(test="")
+)
+AUDITADMIN_AUTH0_CLIENT_SECRET = read_env_var(
+    "ARLO_AUDITADMIN_AUTH0_CLIENT_SECRET", env_defaults=dict(test="")
+)
 
 # Jurisdiction admin login code email config
 SMTP_HOST = read_env_var("ARLO_SMTP_HOST", dict(test="test-smtp-host"))
