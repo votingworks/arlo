@@ -96,7 +96,7 @@ LOGIN_CODE_LIFETIME = timedelta(minutes=15)
 
 
 # Configure round size growth from ARLO_MINERVA_MULTIPLE (a float) if given, otherwise 1.5
-MINERVA_MULTIPLE = read_env_var("ARLO_MINERVA_MULTIPLE", default="1.5")
+MINERVA_MULTIPLE = float(read_env_var("ARLO_MINERVA_MULTIPLE", default=1.5))
 
 SENTRY_DSN = os.environ.get("SENTRY_DSN")
 
