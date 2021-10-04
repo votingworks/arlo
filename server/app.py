@@ -8,7 +8,6 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from .config import (
     SESSION_SECRET,
     FLASK_ENV,
-    DEVELOPMENT_ENVS,
     HTTP_ORIGIN,
     STATIC_FOLDER,
 )
@@ -18,7 +17,7 @@ from .auth import auth
 from .auth.routes import oauth
 from .sentry import configure_sentry
 
-if FLASK_ENV not in DEVELOPMENT_ENVS:
+if FLASK_ENV not in ["development", "test"]:
     # Restrict which hosts we trust when not in dev/test. This works by causing
     # anything accessing the request URL (i.e. `request.url` or similar) to
     # throw an exception if it doesn't match one of the values in this list.
