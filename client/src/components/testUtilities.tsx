@@ -109,9 +109,14 @@ export const withMockFetch = async (
   const requestsLeft = [...requests]
   const mockFetch = jest.fn(async (url: string, options: RequestInit = {}) => {
     const [expectedRequest] = requestsLeft.splice(0, 1)
+    if (!expectedRequest) {
+      // eslint-disable-next-line no-console
+      console.error('Unexpected extra fetch request:\n', { url, options })
+      return new Response(JSON.stringify(null))
+    }
+
     const expectedOptions = expectedRequest.options || {}
     if (
-      expectedRequest &&
       expectedRequest.url === url &&
       expectedOptions.method === options.method &&
       equal(expectedOptions.headers, options.headers) &&
@@ -125,19 +130,14 @@ export const withMockFetch = async (
         : new Response(JSON.stringify(expectedRequest.response))
     }
 
-    if (expectedRequest) {
-      const requestIndex = requests.length - requestsLeft.length - 1
-      // eslint-disable-next-line no-console
-      console.error(
-        `Expected fetch request (${requestIndex}):\n`,
-        expectedRequest,
-        '\nActual fetch request:\n',
-        { url, options }
-      )
-    } else {
-      // eslint-disable-next-line no-console
-      console.error('Unexpected extra fetch request:\n', { url, options })
-    }
+    const requestIndex = requests.length - requestsLeft.length - 1
+    // eslint-disable-next-line no-console
+    console.error(
+      `Expected fetch request (${requestIndex}):\n`,
+      expectedRequest,
+      '\nActual fetch request:\n',
+      { url, options }
+    )
     return new Response(JSON.stringify(null))
   })
 
@@ -146,7 +146,9 @@ export const withMockFetch = async (
 
   // Also mock axios, since we use that in some cases
   // To enable axios mock, the test file must have jest.mock('axios') at the top
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   if ('mockImplementation' in (axios as any).default) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ;(axios as any).mockImplementation(
       async (
         url: string,

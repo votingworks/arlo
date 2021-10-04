@@ -8,11 +8,11 @@ import {
   auditSettings,
   manifestMocks,
   talliesMocks,
-  cvrsMocks,
 } from './components/MultiJurisdictionAudit/useSetupMenuItems/_mocks'
 import {
   jaApiCalls,
   aaApiCalls,
+  mockOrganizations,
 } from './components/MultiJurisdictionAudit/_mocks'
 
 jest.unmock('react-toastify')
@@ -56,7 +56,10 @@ describe('App', () => {
     })
 
     it('renders aa logged in properly', async () => {
-      const expectedCalls = [aaApiCalls.getUser, aaApiCalls.getUser]
+      const expectedCalls = [
+        aaApiCalls.getUser,
+        aaApiCalls.getOrganizations(mockOrganizations.oneOrgNoAudits),
+      ]
       await withMockFetch(expectedCalls, async () => {
         const { container } = renderView('/')
         expect(
@@ -99,7 +102,10 @@ describe('App', () => {
     })
 
     it('renders aa logged in properly', async () => {
-      const expectedCalls = [aaApiCalls.getUser, aaApiCalls.getUser]
+      const expectedCalls = [
+        aaApiCalls.getUser,
+        aaApiCalls.getOrganizations(mockOrganizations.oneOrgNoAudits),
+      ]
       await withMockFetch(expectedCalls, async () => {
         const { container } = renderView(
           '/election/1/audit-board/audit-board-1'
@@ -160,7 +166,10 @@ describe('App', () => {
     })
 
     it('renders aa logged in properly', async () => {
-      const expectedCalls = [aaApiCalls.getUser, aaApiCalls.getUser]
+      const expectedCalls = [
+        aaApiCalls.getUser,
+        aaApiCalls.getOrganizations(mockOrganizations.oneOrgNoAudits),
+      ]
       await withMockFetch(expectedCalls, async () => {
         const { container } = renderView(
           '/election/1/jurisdiction/jurisdiction-id-1'

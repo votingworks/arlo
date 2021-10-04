@@ -48,8 +48,7 @@ export interface IAuditAdmin {
   type: 'audit_admin'
   name: string
   email: string
-  organizations: IOrganization[]
-  jurisdictions: []
+  id: string
 }
 
 export interface IJurisdictionAdmin {

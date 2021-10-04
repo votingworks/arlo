@@ -2,7 +2,7 @@ import React from 'react'
 import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ToastContainer } from 'react-toastify'
-import { QueryClientProvider } from 'react-query'
+import { QueryClientProvider, QueryClient } from 'react-query'
 import { withMockFetch, renderWithRouter } from '../testUtilities'
 import SupportTools from './SupportTools'
 import AuthDataProvider from '../UserContext'
@@ -163,9 +163,20 @@ const serverError = (
   error: { status: 500, statusText: 'Server Error' },
 })
 
+const queryClientOptions = queryClient.getDefaultOptions()
+
 const renderRoute = (route: string) =>
   renderWithRouter(
-    <QueryClientProvider client={queryClient}>
+    <QueryClientProvider
+      client={
+        new QueryClient({
+          defaultOptions: {
+            ...queryClientOptions,
+            queries: { ...queryClientOptions.queries, retry: false },
+          },
+        })
+      }
+    >
       <AuthDataProvider>
         <SupportTools />
         <ToastContainer />

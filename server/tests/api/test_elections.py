@@ -310,12 +310,13 @@ def test_delete_election(
     rv = client.delete(f"/api/election/{election_id}")
     assert_ok(rv)
 
-    # Should not show up in /me
-    rv = client.get("/api/me")
+    # Should not show up in any API responses
+    aa_user = User.query.filter_by(email=DEFAULT_AA_EMAIL).one()
+    rv = client.get(f"/api/audit_admins/{aa_user.id}/organizations")
     resp = json.loads(rv.data)
     assert all(
         election["id"] != election_id
-        for organization in resp["user"]["organizations"]
+        for organization in resp
         for election in organization["elections"]
     )
 
@@ -352,3 +353,52 @@ def test_delete_election(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots"
     )
     assert rv.status_code == 404
+
+
+def test_list_organizations(client: FlaskClient):
+    aa_email = "list_orgs_email@example.gov"
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, aa_email)
+    org_id, aa_id = create_org_and_admin("Test Org List", aa_email)
+    election_id = create_election(client, "Test Audit Org List", organization_id=org_id)
+    org_id_2, _ = create_org_and_admin("Test Org List 2", aa_email)
+    rv = client.get(f"/api/audit_admins/{aa_id}/organizations")
+    assert json.loads(rv.data) == [
+        {
+            "name": "Test Org List",
+            "id": org_id,
+            "elections": [
+                {
+                    "id": election_id,
+                    "auditName": "Test Audit Org List",
+                    "electionName": None,
+                    "state": None,
+                }
+            ],
+        },
+        {"name": "Test Org List 2", "id": org_id_2, "elections": []},
+    ]
+
+
+def test_list_organizations_not_authorized(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+):
+    aa_user = User.query.filter_by(email=DEFAULT_AA_EMAIL).one()
+    clear_logged_in_user(client)
+    rv = client.get(f"/api/audit_admins/{aa_user.id}/organizations")
+    assert rv.status_code == 403
+
+    ja_user = User.query.filter_by(email=default_ja_email(election_id)).one()
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.get(f"/api/audit_admins/{ja_user.id}/organizations")
+    assert rv.status_code == 403
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get("/api/audit_admins/not-a-real-id/organizations")
+    assert rv.status_code == 403
+
+    rv = client.get(f"/api/audit_admins/{ja_user.id}/organizations")
+    assert rv.status_code == 403

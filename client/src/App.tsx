@@ -3,7 +3,7 @@ import { Route, RouteProps, Switch, Redirect } from 'react-router-dom'
 import './App.css'
 import styled from 'styled-components'
 import { ToastContainer, toast } from 'react-toastify'
-import { QueryClient, QueryClientProvider } from 'react-query'
+import { QueryClient, QueryClientProvider, DefaultOptions } from 'react-query'
 import { ReactQueryDevtools } from 'react-query/devtools'
 import Header from './components/Header'
 import { Wrapper } from './components/Atoms/Wrapper'
@@ -20,17 +20,28 @@ import AuthDataProvider, {
 } from './components/UserContext'
 import SupportTools from './components/SupportTools'
 import ActivityLog from './components/MultiJurisdictionAudit/ActivityLog'
+import { ApiError } from './components/SupportTools/support-api'
 
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      // Turn off query retries in test so we can mock effectively
-      retry: ['development', 'production'].includes(
-        (window as any)._arlo_flask_env // eslint-disable-line @typescript-eslint/no-explicit-any
-      ),
-      onError: error => toast.error((error as Error).message),
+      retry: (failureCount, error: ApiError) =>
+        // Turn off query retries in test so we can mock effectively
+        ['development', 'production'].includes(
+          (window as any)._arlo_flask_env // eslint-disable-line @typescript-eslint/no-explicit-any
+        ) &&
+        error.statusCode >= 500 && // Only retry server errors
+        failureCount < 3,
+      onError: (error: ApiError) => {
+        toast.error(error.message)
+      },
     },
-  },
+    mutations: {
+      onError: (error: ApiError) => {
+        toast.error(error.message)
+      },
+    },
+  } as DefaultOptions,
 })
 
 const Main = styled.div`

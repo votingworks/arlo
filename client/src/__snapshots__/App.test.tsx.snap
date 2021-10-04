@@ -153,21 +153,17 @@ exports[`App / renders aa logged in properly 1`] = `
         class="sc-bwzfXH jiphYj"
       >
         <div
-          style="width: 50%;"
+          style="width: 50%; padding: 30px 30px 30px 0px;"
         >
-          <div
-            class="sc-cmthru ibpZkp"
-          >
-            <div>
-              <h2>
-                Audits - 
-                State of California
-              </h2>
-              <p>
-                You haven't created any audits yet for 
-                State of California
-              </p>
-            </div>
+          <div>
+            <h2>
+              Audits - 
+              State of California
+            </h2>
+            <p>
+              You haven't created any audits yet for 
+              State of California
+            </p>
           </div>
         </div>
         <div
@@ -637,21 +633,17 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders aa logged i
         class="sc-bwzfXH jiphYj"
       >
         <div
-          style="width: 50%;"
+          style="width: 50%; padding: 30px 30px 30px 0px;"
         >
-          <div
-            class="sc-cmthru ibpZkp"
-          >
-            <div>
-              <h2>
-                Audits - 
-                State of California
-              </h2>
-              <p>
-                You haven't created any audits yet for 
-                State of California
-              </p>
-            </div>
+          <div>
+            <h2>
+              Audits - 
+              State of California
+            </h2>
+            <p>
+              You haven't created any audits yet for 
+              State of California
+            </p>
           </div>
         </div>
         <div
@@ -1440,21 +1432,17 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders aa logge
         class="sc-bwzfXH jiphYj"
       >
         <div
-          style="width: 50%;"
+          style="width: 50%; padding: 30px 30px 30px 0px;"
         >
-          <div
-            class="sc-cmthru ibpZkp"
-          >
-            <div>
-              <h2>
-                Audits - 
-                State of California
-              </h2>
-              <p>
-                You haven't created any audits yet for 
-                State of California
-              </p>
-            </div>
+          <div>
+            <h2>
+              Audits - 
+              State of California
+            </h2>
+            <p>
+              You haven't created any audits yet for 
+              State of California
+            </p>
           </div>
         </div>
         <div

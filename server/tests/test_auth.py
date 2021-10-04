@@ -597,33 +597,13 @@ def test_audit_board_not_found(client: FlaskClient,):
 # Tests for /api/me
 
 
-def test_auth_me_audit_admin(
-    client: FlaskClient, election_id: str, org_id: str, aa_email: str
-):
+def test_auth_me_audit_admin(client: FlaskClient, aa_email: str):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, aa_email)
-    election = Election.query.get(election_id)
 
+    user = User.query.filter_by(email=aa_email).one()
     rv = client.get("/api/me")
     assert json.loads(rv.data) == {
-        "user": {
-            "type": "audit_admin",
-            "email": aa_email,
-            "organizations": [
-                {
-                    "name": "Test Org test_auth_me_audit_admin",
-                    "id": org_id,
-                    "elections": [
-                        {
-                            "id": election_id,
-                            "auditName": election.audit_name,
-                            "electionName": None,
-                            "state": None,
-                        }
-                    ],
-                }
-            ],
-            "jurisdictions": [],
-        },
+        "user": {"type": "audit_admin", "email": aa_email, "id": user.id},
         "supportUser": None,
     }
 
@@ -639,7 +619,6 @@ def test_auth_me_jurisdiction_admin(
         "user": {
             "type": UserType.JURISDICTION_ADMIN,
             "email": ja_email,
-            "organizations": [],
             "jurisdictions": [
                 {
                     "id": jurisdiction_id,

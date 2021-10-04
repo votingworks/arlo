@@ -7,6 +7,7 @@ import {
   aaApiCalls,
   jaApiCalls,
   apiCalls,
+  mockOrganizations,
 } from './MultiJurisdictionAudit/_mocks'
 import { auditSettings } from './MultiJurisdictionAudit/useSetupMenuItems/_mocks'
 
@@ -129,6 +130,9 @@ describe('Home screen', () => {
       )
       let toast = await screen.findByRole('alert')
       expect(toast).toHaveTextContent('Internal error')
+      userEvent.click(
+        within(toast.parentElement!).getByRole('button', { name: 'close' })
+      )
 
       // Navigate to form to submit code
       userEvent.click(
@@ -160,6 +164,9 @@ describe('Home screen', () => {
       )
       toast = await screen.findByRole('alert')
       expect(toast).toHaveTextContent('Internal error')
+      userEvent.click(
+        within(toast.parentElement!).getByRole('button', { name: 'close' })
+      )
 
       // Click back button to request a new code
       userEvent.click(
@@ -168,6 +175,10 @@ describe('Home screen', () => {
         })
       )
       screen.getByLabelText('Enter your email to log in:')
+
+      await waitFor(() =>
+        expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+      )
     })
   })
 
@@ -184,7 +195,7 @@ describe('Home screen', () => {
   it('shows a list of audits and create audit form for audit admins', async () => {
     const expectedCalls = [
       aaApiCalls.getUser,
-      aaApiCalls.getUser, // Extra call to load the list of audits
+      aaApiCalls.getOrganizations(mockOrganizations.oneOrgNoAudits),
       aaApiCalls.postNewAudit({
         organizationId: 'org-id',
         auditName: 'November Presidential Election 2020',
@@ -197,7 +208,7 @@ describe('Home screen', () => {
       ...setupScreenCalls,
       aaApiCalls.getSettings(auditSettings.blank),
       aaApiCalls.getJurisdictionFile,
-      aaApiCalls.getUserWithAudit,
+      aaApiCalls.getOrganizations(mockOrganizations.oneOrgOneAudit),
       ...setupScreenCalls,
       aaApiCalls.getJurisdictionFile,
       aaApiCalls.getRounds([]),
@@ -255,8 +266,8 @@ describe('Home screen', () => {
 
   it('shows a list of audits and create audit form for audit admins with multiple orgs', async () => {
     const expectedCalls = [
-      aaApiCalls.getUserMultipleOrgs,
-      aaApiCalls.getUserMultipleOrgs,
+      aaApiCalls.getUser,
+      aaApiCalls.getOrganizations(mockOrganizations.twoOrgs),
       aaApiCalls.postNewAudit({
         organizationId: 'org-id-2',
         auditName: 'Presidential Primary',
@@ -319,10 +330,10 @@ describe('Home screen', () => {
 
   it('deletes an audit', async () => {
     const expectedCalls = [
-      aaApiCalls.getUserWithAudit,
-      aaApiCalls.getUserWithAudit, // Extra call to load the list of audits
-      aaApiCalls.deleteAudit,
       aaApiCalls.getUser,
+      aaApiCalls.getOrganizations(mockOrganizations.oneOrgOneAudit),
+      aaApiCalls.deleteAudit,
+      aaApiCalls.getOrganizations(mockOrganizations.oneOrgNoAudits),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView('/')
@@ -352,8 +363,8 @@ describe('Home screen', () => {
 
   it('should not delete audit when cancelled', async () => {
     const expectedCalls = [
-      aaApiCalls.getUserWithAudit,
-      aaApiCalls.getUserWithAudit, // Extra call to load the list of audits
+      aaApiCalls.getUser,
+      aaApiCalls.getOrganizations(mockOrganizations.oneOrgOneAudit),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView('/')
@@ -384,7 +395,7 @@ describe('Home screen', () => {
   it('creates batch comparison audits', async () => {
     const expectedCalls = [
       aaApiCalls.getUser,
-      aaApiCalls.getUser, // Extra call to load the list of audits
+      aaApiCalls.getOrganizations(mockOrganizations.oneOrgOneAudit),
       aaApiCalls.postNewAudit({
         organizationId: 'org-id',
         auditName: 'November Presidential Election 2020',
@@ -422,7 +433,7 @@ describe('Home screen', () => {
   it('creates ballot comparison audits', async () => {
     const expectedCalls = [
       aaApiCalls.getUser,
-      aaApiCalls.getUser, // Extra call to load the list of audits
+      aaApiCalls.getOrganizations(mockOrganizations.oneOrgNoAudits),
       aaApiCalls.postNewAudit({
         organizationId: 'org-id',
         auditName: 'November Presidential Election 2020',
@@ -460,7 +471,7 @@ describe('Home screen', () => {
   it('creates hybrid audits', async () => {
     const expectedCalls = [
       aaApiCalls.getUser,
-      aaApiCalls.getUser, // Extra call to load the list of audits
+      aaApiCalls.getOrganizations(mockOrganizations.oneOrgNoAudits),
       aaApiCalls.postNewAudit({
         organizationId: 'org-id',
         auditName: 'November Presidential Election 2020',

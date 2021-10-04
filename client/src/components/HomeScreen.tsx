@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import {
   Card,
   RadioGroup,
@@ -15,13 +15,15 @@ import styled from 'styled-components'
 import { Formik, FormikProps, Field } from 'formik'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
+import { useQuery, useMutation, useQueryClient } from 'react-query'
 import {
   useAuthDataContext,
-  IAuditAdmin,
   IJurisdictionAdmin,
   IElection,
+  IOrganization,
+  IAuditAdmin,
 } from './UserContext'
-import { api, parseApiError, addCSRFToken } from './utilities'
+import { parseApiError, addCSRFToken } from './utilities'
 import LinkButton from './Atoms/LinkButton'
 import FormSection from './Atoms/Form/FormSection'
 import FormButton from './Atoms/Form/FormButton'
@@ -31,6 +33,7 @@ import { groupBy, sortBy } from '../utils/array'
 import { IAuditSettings } from './MultiJurisdictionAudit/useAuditSettings'
 import { useConfirm, Confirm } from './Atoms/Confirm'
 import { ErrorLabel } from './Atoms/Form/_helpers'
+import { fetchApi } from './SupportTools/support-api'
 
 const HomeScreen: React.FC = () => {
   const auth = useAuthDataContext()
@@ -45,12 +48,7 @@ const HomeScreen: React.FC = () => {
       return (
         <Wrapper>
           <Inner>
-            <div style={{ width: '50%' }}>
-              <ListAuditsAuditAdmin />
-            </div>
-            <div style={{ width: '50%' }}>
-              <CreateAudit user={user} />
-            </div>
+            <AuditAdminHomeScreen user={user} />
           </Inner>
         </Wrapper>
       )
@@ -243,31 +241,21 @@ const LoginScreen: React.FC = () => {
   )
 }
 
-const ListAuditsWrapper = styled.div`
-  padding: 30px 30px 30px 0;
-`
-
-const ListAuditsAuditAdmin: React.FC = () => {
-  // Normally, we would use useAuthDataContext to get the audit admin's metadata
-  // (including the list of audits). However, since this screen also is
-  // responsible for creating audits, we need to make sure the list of audits
-  // reloads when we create a new audit. So we load the user's data fresh every
-  // time this component renders. It's a bit hacky and inefficient, but this is
-  // the only screen that should have this issue. A better solution might be to
-  // decouple loading the list of audits from loading the user data.
-  const [user, setUser] = useState<IAuditAdmin | null>(null)
+const AuditAdminHomeScreen = ({ user }: { user: IAuditAdmin }) => {
+  const queryClient = useQueryClient()
+  const organizations = useQuery<IOrganization[]>('orgs', () =>
+    fetchApi(`/api/audit_admins/${user.id}/organizations`)
+  )
+  const deleteElection = useMutation(
+    ({ electionId }: { electionId: string }) =>
+      fetchApi(`/api/election/${electionId}`, {
+        method: 'DELETE',
+      }),
+    {
+      onSuccess: () => queryClient.invalidateQueries('orgs'),
+    }
+  )
   const { confirm, confirmProps } = useConfirm()
-
-  const loadUser = async () => {
-    const response = await api<{ user: IAuditAdmin }>('/me')
-    setUser(response && response.user)
-  }
-
-  useEffect(() => {
-    loadUser()
-  }, [])
-
-  if (!user) return null // Still loading
 
   const onClickDeleteAudit = (election: IElection) => {
     confirm({
@@ -282,53 +270,61 @@ const ListAuditsAuditAdmin: React.FC = () => {
       ),
       yesButtonLabel: 'Delete',
       yesButtonIntent: Intent.DANGER,
-      onYesClick: async () => {
-        await api(`/election/${election.id}`, { method: 'DELETE' })
-        await loadUser()
-      },
+      onYesClick: () => deleteElection.mutateAsync({ electionId: election.id }),
     })
   }
 
+  if (!organizations.isSuccess) return null
+
   return (
-    <ListAuditsWrapper>
-      {sortBy(user.organizations, o => o.name).map(organization => (
-        <div key={organization.id}>
-          <h2>Audits - {organization.name}</h2>
-          {organization.elections.length === 0 ? (
-            <p>
-              You haven&apos;t created any audits yet for {organization.name}
-            </p>
-          ) : (
-            sortBy(organization.elections, e => e.auditName).map(election => (
-              <ButtonGroup
-                key={election.id}
-                fill
-                large
-                style={{ marginBottom: '15px' }}
-              >
-                <LinkButton
-                  style={{ justifyContent: 'start' }}
-                  to={`/election/${election.id}`}
-                  intent="primary"
+    <>
+      <div style={{ width: '50%', padding: '30px 30px 30px 0' }}>
+        {sortBy(organizations.data, o => o.name).map(organization => (
+          <div key={organization.id}>
+            <h2>Audits - {organization.name}</h2>
+            {organization.elections.length === 0 ? (
+              <p>
+                You haven&apos;t created any audits yet for {organization.name}
+              </p>
+            ) : (
+              sortBy(organization.elections, e => e.auditName).map(election => (
+                <ButtonGroup
+                  key={election.id}
                   fill
+                  large
+                  style={{ marginBottom: '15px' }}
                 >
-                  {election.auditName}
-                </LinkButton>
-                <Button
-                  icon="trash"
-                  intent="primary"
-                  aria-label="Delete Audit"
-                  onClick={() => onClickDeleteAudit(election)}
-                />
-              </ButtonGroup>
-            ))
-          )}
-        </div>
-      ))}
-      <Confirm {...confirmProps} />
-    </ListAuditsWrapper>
+                  <LinkButton
+                    style={{ justifyContent: 'start' }}
+                    to={`/election/${election.id}`}
+                    intent="primary"
+                    fill
+                  >
+                    {election.auditName}
+                  </LinkButton>
+                  <Button
+                    icon="trash"
+                    intent="primary"
+                    aria-label="Delete Audit"
+                    onClick={() => onClickDeleteAudit(election)}
+                  />
+                </ButtonGroup>
+              ))
+            )}
+          </div>
+        ))}
+        <Confirm {...confirmProps} />
+      </div>
+      <div style={{ width: '50%' }}>
+        <CreateAudit organizations={organizations.data} />
+      </div>
+    </>
   )
 }
+
+const ListAuditsWrapper = styled.div`
+  padding: 30px 30px 30px 0;
+`
 
 const ListAuditsJurisdictionAdmin = ({
   user,
@@ -398,41 +394,29 @@ const WideField = styled(FormField)`
   width: 100%;
 `
 
-const CreateAudit = ({ user }: { user: IAuditAdmin }) => {
+const CreateAudit = ({ organizations }: { organizations: IOrganization[] }) => {
   const history = useHistory()
-  const [submitting, setSubmitting] = useState(false)
+  const createElection = useMutation<{ electionId: string }, unknown, IValues>(
+    (newAudit: IValues) =>
+      fetchApi('/api/election', {
+        method: 'POST',
+        body: JSON.stringify(newAudit),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+  )
 
-  const onSubmit = async ({
-    organizationId,
-    auditName,
-    auditType,
-    auditMathType,
-  }: IValues) => {
-    setSubmitting(true)
-    const response: { electionId: string } | null = await api('/election', {
-      method: 'POST',
-      body: JSON.stringify({
-        organizationId,
-        auditName,
-        auditType,
-        auditMathType,
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-    if (response) {
-      const { electionId } = response
-      history.push(`/election/${electionId}/setup`)
-    } else {
-      setSubmitting(false)
-    }
+  const onSubmit = async (newAudit: IValues) => {
+    const { electionId } = await createElection.mutateAsync(newAudit)
+    history.push(`/election/${electionId}/setup`)
   }
+
   return (
     <Formik
       onSubmit={onSubmit}
       initialValues={{
-        organizationId: user.organizations[0].id,
+        organizationId: organizations[0].id,
         auditName: '',
         auditType: 'BALLOT_POLLING',
         auditMathType: 'BRAVO',
@@ -440,6 +424,7 @@ const CreateAudit = ({ user }: { user: IAuditAdmin }) => {
     >
       {({
         handleSubmit,
+        isSubmitting,
         setFieldValue,
         setValues,
         values,
@@ -448,7 +433,7 @@ const CreateAudit = ({ user }: { user: IAuditAdmin }) => {
           <h2>New Audit</h2>
           <FormSection>
             {/* eslint-disable jsx-a11y/label-has-associated-control */}
-            {user.organizations.length > 1 && (
+            {organizations.length > 1 && (
               <label htmlFor="organizationId">
                 <p>Organization</p>
                 <HTMLSelect
@@ -458,7 +443,7 @@ const CreateAudit = ({ user }: { user: IAuditAdmin }) => {
                     setFieldValue('organizationId', e.currentTarget.value)
                   }
                   value={values.organizationId}
-                  options={user.organizations.map(({ id, name }) => ({
+                  options={organizations.map(({ id, name }) => ({
                     label: name,
                     value: id,
                   }))}
@@ -474,7 +459,7 @@ const CreateAudit = ({ user }: { user: IAuditAdmin }) => {
                 id="auditName"
                 name="auditName"
                 type="text"
-                disabled={submitting}
+                disabled={isSubmitting}
                 validate={(v: string) => (v ? undefined : 'Required')}
                 component={WideField}
               />
@@ -530,7 +515,7 @@ const CreateAudit = ({ user }: { user: IAuditAdmin }) => {
             fill
             large
             onClick={handleSubmit}
-            loading={submitting}
+            loading={isSubmitting}
           >
             Create Audit
           </FormButton>

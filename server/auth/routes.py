@@ -80,23 +80,14 @@ def serialize_election(election):
 def auth_me():
     user_type, user_key = get_loggedin_user(session)
     user = None
-    if user_type in [UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN]:
+    if user_type == UserType.AUDIT_ADMIN:
+        db_user = User.query.filter_by(email=user_key).one()
+        user = dict(type=user_type, email=db_user.email, id=db_user.id)
+    if user_type == UserType.JURISDICTION_ADMIN:
         db_user = User.query.filter_by(email=user_key).one()
         user = dict(
             type=user_type,
             email=db_user.email,
-            organizations=[
-                {
-                    "id": org.id,
-                    "name": org.name,
-                    "elections": [
-                        serialize_election(election)
-                        for election in org.elections
-                        if election.deleted_at is None
-                    ],
-                }
-                for org in db_user.organizations
-            ],
             jurisdictions=[
                 {
                     "id": jurisdiction.id,
