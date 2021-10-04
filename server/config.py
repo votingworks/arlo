@@ -22,6 +22,8 @@ FLASK_ENV = os.environ.get("FLASK_ENV", "production")
 FLASK_DEBUG = read_env_var(
     "FLASK_DEBUG", default=False, env_defaults=dict(development=True, test=True)
 )
+if "FLASK_DEBUG" not in os.environ:
+    os.environ["FLASK_DEBUG"] = str(FLASK_DEBUG)
 
 
 DATABASE_URL = read_env_var(
