@@ -89,16 +89,16 @@ def test_contest_vote_counts(
             {
                 "id": assert_is_id,
                 "name": "Choice 1-1",
-                "numVotes": 12 + 18,  # CVR + non-CVR
-                "numVotesCvr": 12,
-                "numVotesNonCvr": 18,
+                "numVotes": 14 + 16,  # CVR + non-CVR
+                "numVotesCvr": 14,
+                "numVotesNonCvr": 16,
             },
             {
                 "id": assert_is_id,
                 "name": "Choice 1-2",
-                "numVotes": 8 + 2,
-                "numVotesCvr": 8,
-                "numVotesNonCvr": 2,
+                "numVotes": 6 + 4,
+                "numVotesCvr": 6,
+                "numVotesNonCvr": 4,
             },
         ],
     )
@@ -457,6 +457,7 @@ def test_hybrid_two_rounds(
         ("J1", "TABULATOR3", "BATCH1", 2): ("1,0,1,0,0", (None, None)),
         ("J1", "TABULATOR3", "BATCH1", 3): ("1,0,1,0,0", (None, None)),
         ("J1", "TABULATOR3", "BATCH1", 5): ("1,0,1,0,0", (None, None)),
+        ("J1", "TABULATOR3", "BATCH1", 9): ("1,0,1,0,0", (None, None)),
         ("J1", "TABULATOR3", "BATCH1", 10): ("1,0,0,1,0", (None, None)),
         ("J2", "TABULATOR3", "BATCH1", 1): ("1,0,,,", (None, None)),
         ("J2", "TABULATOR3", "BATCH1", 5): ("1,0,,,", (None, None)),

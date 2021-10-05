@@ -199,15 +199,17 @@ def get_sample_sizes(
     )
 
     if denom >= 0:
-        return contest.ballots
+        stopping_size = contest.ballots
+    else:
+        n0 = math.ceil(alpha.ln() / denom)
 
-    n0 = math.ceil(alpha.ln() / denom)
+        # Round up one-vote differences.
+        r1 = (r1 * n0).quantize(Decimal(1), ROUND_CEILING)
+        s1 = (s1 * n0).quantize(Decimal(1), ROUND_CEILING)
 
-    # Round up one-vote differences.
-    r1 = (r1 * n0).quantize(Decimal(1), ROUND_CEILING)
-    s1 = (s1 * n0).quantize(Decimal(1), ROUND_CEILING)
+        stopping_size = min(int(nMin(alpha, contest, r1, r2, s1, s2)), contest.ballots)
 
-    return int(nMin(alpha, contest, r1, r2, s1, s2))
+    return max(stopping_size - int(num_sampled), 0)
 
 
 def compute_risk(

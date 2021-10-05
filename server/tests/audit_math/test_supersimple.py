@@ -312,9 +312,7 @@ def test_compute_risk(contests, cvrs):
         next_sample_size = supersimple.get_sample_sizes(
             RISK_LIMIT, contests[contest], to_sample
         )
-        assert (
-            next_sample_size == no_next_sample[contest]
-        ), "Number of ballots left to sample is not correct!"
+        assert next_sample_size == 0
 
         # Test one-vote overstatement
         sample_cvr[0] = {
@@ -358,7 +356,7 @@ def test_compute_risk(contests, cvrs):
             RISK_LIMIT, contests[contest], to_sample
         )
         assert (
-            next_sample_size == o1_next_sample[contest]
+            next_sample_size == o1_stopping_size[contest] - sample_size
         ), "Number of ballots left to sample is not correct in contest {}!".format(
             contest
         )
@@ -405,7 +403,7 @@ def test_compute_risk(contests, cvrs):
             RISK_LIMIT, contests[contest], to_sample
         )
         assert (
-            next_sample_size == o2_next_sample[contest]
+            next_sample_size == o2_stopping_size[contest] - sample_size
         ), "Number of ballots left to sample is not correct in contest {}!".format(
             contest
         )
@@ -591,27 +589,18 @@ true_sample_sizes = {
     "Two-winner Contest": 27,
 }
 
-no_next_sample = {
-    "Contest A": 24,
-    "Contest B": 48,
-    "Contest C": 32,
-    "Contest D": 36,
-    "Contest E": 5,
-    "Contest F": 12,
-    "Two-winner Contest": 24,
-}
 
-o1_next_sample = {
+o1_stopping_size = {
     "Contest A": 38,
     "Contest B": 76,
     "Contest C": 51,
     "Contest D": 57,
     "Contest E": 7,
-    "Contest F": 16,
+    "Contest F": 15,  # nMin yields 16, but contest only has 15 total votes
     "Two-winner Contest": 38,
 }
 
-o2_next_sample = {
+o2_stopping_size = {
     "Contest A": 100000,
     "Contest B": 60000,
     "Contest C": 36000,
