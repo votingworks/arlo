@@ -175,7 +175,12 @@ jobs:
           name: install
           command: |
             make install
-
+      # In order to install noauth, we install dev python deps, since the
+      # install command above only installs prod deps
+      - run:
+          name: install noauth
+          command: |
+            poetry install
       - install-chrome
       - create-data-model
       - run:
