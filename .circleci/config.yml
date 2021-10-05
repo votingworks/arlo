@@ -174,8 +174,11 @@ jobs:
       - run:
           name: install
           command: |
-            poetry install
             make install
+      - run:
+          name: install noauth
+          command: |
+            poetry install
       - install-chrome
       - create-data-model
       - run:
