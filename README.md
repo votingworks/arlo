@@ -90,18 +90,9 @@ Here are some troubleshooting steps for issues we've run into when installing Ar
 - You may need to create `arlo` and `arlo-test` databases manually [via postgres](https://www.postgresql.org/docs/9.0/sql-createdatabase.html).
 - If you run into the error `fe_sendauth: no password supplied` when running `make dev-environment`, it means there's no password set for the default postgres user. You can change the postgres authentication method to not require a password by editing `/etc/postgresql/10/main/pg_hba.conf` and changing `md5` to `trust` for both the IPv4 and IPv6 local connections settings, and then restart postgres via `sudo systemctl restart postgresql`.
 
-#### Installing nOAuth
-
-Arlo has three user types: audit administrators, jurisdiction managers, and support users. Audit admins and support users are both authenticated via OAuth. Our OAuth identity provider of choice is Auth0, but Arlo is (mostly) agnostic to this choice. More on how we use Auth0 in [docs/auth.md](docs/auth.md).
-
-For ease of development, we have created [nOAuth](https://github.com/votingworks/nOAuth), a pass-through OAuth identity provider. We recommend installing and running nOAuth locally when developing Arlo.
-
-- Clone the nOAuth repository from https://github.com/votingworks/nOAuth
-- Follow the setup instructions in the nOAuth README
-
 ### Configuration
 
-Arlo is configured mostly through environment variables. More details, including default values, can be found in [server/config.py](server/config.py).
+Arlo is configured mostly through environment variables. Below are the basic env variables needed to get Arlo up and running. More details, including default values, can be found in [server/config.py](server/config.py).
 
 - `FLASK_ENV`: [environment](https://flask.palletsprojects.com/en/1.1.x/config/#environment-and-debug-features) for the Flask server
 - `DATABASE_URL`: PostgreSQL database url, e.g. postgresql://localhost:5342/arlo.
@@ -112,9 +103,13 @@ Arlo is configured mostly through environment variables. More details, including
 - `ARLO_AUDITADMIN_AUTH0_BASE_URL`, `ARLO_AUDITADMIN_AUTH0_CLIENT_ID`, `ARLO_AUDITADMIN_AUTH0_CLIENT_SECRET`: base url, client id, and client secret for the OAuth identity provider used for audit admins.
 - `ARLO_SMTP_HOST`, `ARLO_SMTP_PORT`, `ARLO_SMTP_USERNAME`, `ARLO_SMTP_PASSWORD`: SMTP configuration for sending jurisdiction admin login code emails (we use [Mailgun](https://www.mailgun.com/))
 
-For local development, you'll need to configure an OAuth identity provider for support user and audit admin logins (see [Installing nOAuth](#installing-noauth) above), and an SMTP email provider for jurisdiction admin logins. You can also log in as audit admins/jurisdiction admins via the support user interface, which is often the quickest way to log in during local development.
+Arlo has three user types: audit administrators, jurisdiction managers, and support users. Audit admins and support users are both authenticated via OAuth. Our OAuth identity provider of choice is Auth0, but Arlo is (mostly) agnostic to this choice. More on how we use Auth0 in [docs/auth.md](docs/auth.md).
 
-For example, if you're running `nOAuth` on port 8080, then you'll need to set `ARLO_SUPPORT_AUTH0_BASE_URL=http://localhost:8080` and `ARLO_AUDITADMIN_AUTH0_BASE_URL=http://localhost:8080`.
+For ease of development, we have created [nOAuth](https://github.com/votingworks/nOAuth), a pass-through OAuth identity provider. nOAuth is installed as a dependency of Arlo, and is configured to run alongside the Arlo dev server (see [Running Arlo](#running-arlo)).
+
+For jurisdiction admin logins, you'll need to configure Arlo to point to an SMTP email provider.
+
+However, you can also log in as audit admins/jurisdiction admins via the support user interface, which is often the quickest way to log in during local development.
 
 ### Database configuration
 
@@ -124,7 +119,7 @@ Arlo's database schema is encoded by a series of migrations. When pulling in new
 
 ### Running Arlo
 
-To run a local dev server: `./run-dev.sh`
+To run a local dev server: `./run-dev.sh`. This will also run the Arlo background worker and a local nOAuth server.
 
 ### Creating organizations and audit administrators
 
