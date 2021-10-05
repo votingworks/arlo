@@ -231,6 +231,11 @@ class Election(BaseModel):
     __table_args__ = (UniqueConstraint("organization_id", "audit_name"),)
 
 
+class CvrFileType(str, enum.Enum):
+    DOMINION = "DOMINION"
+    CLEARBALLOT = "CLEARBALLOT"
+
+
 # these are typically counties
 class Jurisdiction(BaseModel):
     id = Column(String(200), primary_key=True)
@@ -278,6 +283,7 @@ class Jurisdiction(BaseModel):
         single_parent=True,
         cascade="all, delete-orphan",
     )
+    cvr_file_type = Column(Enum(CvrFileType))
     cvr_contests_metadata = Column(JSON)
 
     # Sometimes contest names in a jurisdiction's CVR don't match the contest

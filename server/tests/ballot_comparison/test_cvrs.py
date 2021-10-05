@@ -30,7 +30,10 @@ def test_cvr_upload(
     )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={"cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",)},
+        data={
+            "cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",),
+            "cvr_file_type": "DOMINION",
+        },
     )
     assert_ok(rv)
 
@@ -40,6 +43,9 @@ def test_cvr_upload(
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
     )
+
+    expected_num_cvr_ballots = len(TEST_CVRS.splitlines()) - 4
+
     compare_json(
         json.loads(rv.data),
         {
@@ -49,13 +55,11 @@ def test_cvr_upload(
                 "startedAt": assert_is_date,
                 "completedAt": assert_is_date,
                 "error": None,
-                "workProgress": len(TEST_CVRS.splitlines()),
-                "workTotal": len(TEST_CVRS.splitlines()),
+                "workProgress": expected_num_cvr_ballots,
+                "workTotal": expected_num_cvr_ballots,
             },
         },
     )
-
-    expected_num_cvr_ballots = len(TEST_CVRS.splitlines()) - 4
 
     cvr_ballots = (
         CvrBallot.query.join(Batch)
@@ -94,8 +98,8 @@ def test_cvr_upload(
                 "startedAt": assert_is_date,
                 "completedAt": assert_is_date,
                 "error": None,
-                "workProgress": len(TEST_CVRS.splitlines()),
-                "workTotal": len(TEST_CVRS.splitlines()),
+                "workProgress": expected_num_cvr_ballots,
+                "workTotal": expected_num_cvr_ballots,
             },
             "numBallots": expected_num_cvr_ballots,
         },
@@ -144,13 +148,19 @@ def test_cvrs_counting_group(
     )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={"cvrs": (io.BytesIO(COUNTING_GROUP_CVR.encode()), "cvrs.csv",)},
+        data={
+            "cvrs": (io.BytesIO(COUNTING_GROUP_CVR.encode()), "cvrs.csv",),
+            "cvr_file_type": "DOMINION",
+        },
     )
     assert_ok(rv)
 
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
     )
+
+    expected_num_cvr_ballots = 15
+
     compare_json(
         json.loads(rv.data),
         {
@@ -160,8 +170,8 @@ def test_cvrs_counting_group(
                 "startedAt": assert_is_date,
                 "completedAt": assert_is_date,
                 "error": None,
-                "workProgress": len(COUNTING_GROUP_CVR.splitlines()),
-                "workTotal": len(COUNTING_GROUP_CVR.splitlines()),
+                "workProgress": expected_num_cvr_ballots,
+                "workTotal": expected_num_cvr_ballots,
             },
         },
     )
@@ -172,7 +182,7 @@ def test_cvrs_counting_group(
         .order_by(CvrBallot.imprinted_id)
         .all()
     )
-    assert len(cvr_ballots) == 15
+    assert len(cvr_ballots) == expected_num_cvr_ballots
     snapshot.assert_match(
         [
             dict(
@@ -201,7 +211,10 @@ def test_cvrs_replace(
     )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={"cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",)},
+        data={
+            "cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",),
+            "cvr_file_type": "DOMINION",
+        },
     )
     assert_ok(rv)
 
@@ -213,7 +226,8 @@ def test_cvrs_replace(
             "cvrs": (
                 io.BytesIO("\n".join(TEST_CVRS.splitlines()[:-2]).encode()),
                 "cvrs.csv",
-            )
+            ),
+            "cvr_file_type": "DOMINION",
         },
     )
     assert_ok(rv)
@@ -243,7 +257,10 @@ def test_cvrs_clear(
     )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={"cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",)},
+        data={
+            "cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",),
+            "cvr_file_type": "DOMINION",
+        },
     )
     assert_ok(rv)
 
@@ -312,7 +329,10 @@ def test_cvrs_upload_bad_csv(
     )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={"cvrs": (io.BytesIO(b"not a CSV file"), "random.txt")},
+        data={
+            "cvrs": (io.BytesIO(b"not a CSV file"), "random.txt"),
+            "cvr_file_type": "DOMINION",
+        },
     )
     assert rv.status_code == 400
     assert json.loads(rv.data) == {
@@ -413,13 +433,19 @@ def test_cvrs_newlines(
     )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={"cvrs": (io.BytesIO(NEWLINE_CVR.encode()), "cvrs.csv",)},
+        data={
+            "cvrs": (io.BytesIO(NEWLINE_CVR.encode()), "cvrs.csv",),
+            "cvr_file_type": "DOMINION",
+        },
     )
     assert_ok(rv)
 
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
     )
+
+    expected_num_cvr_ballots = 15
+
     compare_json(
         json.loads(rv.data),
         {
@@ -429,8 +455,8 @@ def test_cvrs_newlines(
                 "startedAt": assert_is_date,
                 "completedAt": assert_is_date,
                 "error": None,
-                "workProgress": len(NEWLINE_CVR.splitlines()),
-                "workTotal": len(NEWLINE_CVR.splitlines()),
+                "workProgress": expected_num_cvr_ballots + 2,
+                "workTotal": expected_num_cvr_ballots + 2,
             },
         },
     )
@@ -441,7 +467,7 @@ def test_cvrs_newlines(
         .order_by(CvrBallot.imprinted_id)
         .all()
     )
-    assert len(cvr_ballots) == 15
+    assert len(cvr_ballots) == expected_num_cvr_ballots
     snapshot.assert_match(
         [
             dict(
@@ -469,7 +495,7 @@ def test_invalid_cvrs(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
     invalid_cvrs = [
-        ("", "CVR file cannot be empty.", 0),
+        ("", "CVR file cannot be empty."),
         (
             """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
 ,,,,,,,,"Contest 1 (Vote For=1)","Contest 1 (123)"
@@ -478,7 +504,6 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortio
 1,TABULATOR1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,0,1
 """,
             "Invalid contest name: Contest 1 (123). Contest names should have this format: Contest Name (Vote For=1).",
-            4,
         ),
         (
             """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
@@ -494,7 +519,6 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortio
                 " TABULATOR1, BATCH1. Please check your CVR file and ballot manifest thoroughly to make"
                 " sure these values match - there may be a similar inconsistency in other rows in the CVR file."
             ),
-            4,
         ),
         (
             """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
@@ -510,7 +534,6 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortio
                 " TABULATOR1, BATCH1. Please check your CVR file and ballot manifest thoroughly to make"
                 " sure these values match - there may be a similar inconsistency in other rows in the CVR file."
             ),
-            4,
         ),
         (
             """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
@@ -526,14 +549,16 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortio
                 " Please check your CVR file and ballot manifest thoroughly to make"
                 " sure these values match - there may be a similar inconsistency in other rows in the CVR file."
             ),
-            4,
         ),
     ]
 
-    for invalid_cvr, expected_error, progress in invalid_cvrs:
+    for invalid_cvr, expected_error in invalid_cvrs:
         rv = client.put(
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-            data={"cvrs": (io.BytesIO(invalid_cvr.encode()), "cvrs.csv",)},
+            data={
+                "cvrs": (io.BytesIO(invalid_cvr.encode()), "cvrs.csv",),
+                "cvr_file_type": "DOMINION",
+            },
         )
         assert_ok(rv)
 
@@ -549,8 +574,8 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortio
                     "startedAt": assert_is_date,
                     "completedAt": assert_is_date,
                     "error": expected_error,
-                    "workProgress": progress,
-                    "workTotal": len(invalid_cvr.splitlines()),
+                    "workProgress": 0,
+                    "workTotal": len(invalid_cvr.splitlines()) - 4,
                 },
             },
         )
@@ -603,8 +628,8 @@ def test_cvr_reprocess_after_manifest_reupload(
                 "startedAt": assert_is_date,
                 "completedAt": assert_is_date,
                 "error": "Invalid TabulatorNum/BatchId for row with CvrNumber 7: TABULATOR2, BATCH1. The TabulatorNum and BatchId fields in the CVR file must match the Tabulator and Batch Name fields in the ballot manifest. The closest match we found in the ballot manifest was: TABULATOR2, BATCH2. Please check your CVR file and ballot manifest thoroughly to make sure these values match - there may be a similar inconsistency in other rows in the CVR file.",
-                "workProgress": 4,
-                "workTotal": len(TEST_CVRS.splitlines()),
+                "workProgress": 0,
+                "workTotal": len(TEST_CVRS.splitlines()) - 4,
             },
         },
     )
@@ -639,6 +664,7 @@ def test_cvr_reprocess_after_manifest_reupload(
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
     )
+    expected_num_cvr_ballots = len(TEST_CVRS.splitlines()) - 4
     compare_json(
         json.loads(rv.data),
         {
@@ -648,8 +674,8 @@ def test_cvr_reprocess_after_manifest_reupload(
                 "startedAt": assert_is_date,
                 "completedAt": assert_is_date,
                 "error": None,
-                "workProgress": len(TEST_CVRS.splitlines()),
-                "workTotal": len(TEST_CVRS.splitlines()),
+                "workProgress": expected_num_cvr_ballots,
+                "workTotal": expected_num_cvr_ballots,
             },
         },
     )
@@ -658,6 +684,6 @@ def test_cvr_reprocess_after_manifest_reupload(
         CvrBallot.query.join(Batch)
         .filter_by(jurisdiction_id=jurisdiction_ids[0])
         .count()
-        == len(TEST_CVRS.splitlines()) - 4
+        == expected_num_cvr_ballots
     )
     assert Jurisdiction.query.get(jurisdiction_ids[0]).cvr_contests_metadata is not None
