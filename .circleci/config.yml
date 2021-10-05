@@ -174,8 +174,8 @@ jobs:
       - run:
           name: install
           command: |
+            poetry install
             make install
-
       - install-chrome
       - create-data-model
       - run:
