@@ -25,7 +25,6 @@ from ..worker.tasks import (
 from ..util.file import serialize_file, serialize_file_processing
 from ..util.csv_download import csv_response
 from ..util.csv_parse import decode_csv_file
-from ..util.group_by import group_by
 from ..util.jsonschema import JSONDict
 from ..audit_math.suite import HybridPair
 from ..activity_log.activity_log import UploadFile, activity_base, record_activity
@@ -194,11 +193,11 @@ def parse_clearballot_cvrs(
     contests_metadata: JSONDict = defaultdict(lambda: dict(choices=dict()))
     for column, header in enumerate(headers[first_contest_column:]):
         # TODO what happens if there's a colon in a contest name?
-        match = re.match("^.*:(.*):Vote For (\d+):(.*):.*$", header)
+        match = re.match(r"^.*:(.*):Vote For (\d+):(.*):.*$", header)
         if not match:
             raise UserError(f"Invalid contest header: {header}")
-        [contest_name, votes_allowed, choice_name] = match
-        contests_metadata[contest_name]["votes_allowed"] = votes_allowed
+        [contest_name, votes_allowed, choice_name] = match.groups()
+        contests_metadata[contest_name]["votes_allowed"] = int(votes_allowed)
         contests_metadata[contest_name]["choices"][choice_name] = dict(
             # Store the column index of this contest choice so we can parse
             # interpretations later
@@ -227,14 +226,37 @@ def parse_clearballot_cvrs(
         interpretations = row[first_contest_column:]
 
         db_batch = batches_by_key.get((scan_computer_name, box_id))
-        if not db_batch:
-            raise UserError("TODO")
+        if db_batch:
+            return CvrBallot(
+                batch=db_batch,
+                record_id=int(box_position),
+                imprinted_id=ballot_id,
+                interpretations=",".join(interpretations),
+            )
 
-        return CvrBallot(
-            batch=db_batch,
-            record_id=box_position,
-            imprinted_id=ballot_id,
-            interpretations=",".join(interpretations),
+        close_matches = difflib.get_close_matches(
+            str((scan_computer_name, box_id)),
+            (str(batch_key) for batch_key in batches_by_key),
+            n=1,
+        )
+        closest_match = ast.literal_eval(close_matches[0]) if close_matches else None
+        raise UserError(
+            "Invalid ScanComputerName/BoxID for row with"
+            f" RowNumber {row_number}: {scan_computer_name}, {box_id}."
+            " The ScanComputerName and BoxID fields in the CVR file"
+            " must match the Tabulator and Batch Name fields in the"
+            " ballot manifest."
+            + (
+                (
+                    " The closest match we found in the ballot manifest was:"
+                    f" {closest_match[0]}, {closest_match[1]}."
+                )
+                if closest_match
+                else ""
+            )
+            + " Please check your CVR file and ballot manifest thoroughly"
+            " to make sure these values match - there may be a similar"
+            " inconsistency in other rows in the CVR file."
         )
 
     return contests_metadata, (parse_cvr_row(row) for row in cvrs)
@@ -305,7 +327,7 @@ def parse_dominion_cvrs(
         if db_batch:
             return CvrBallot(
                 batch=db_batch,
-                record_id=record_id,
+                record_id=int(record_id),
                 imprinted_id=imprinted_id,
                 interpretations=",".join(interpretations),
             )
@@ -348,7 +370,8 @@ def process_cvr_file(
     jurisdiction = Jurisdiction.query.get(jurisdiction_id)
 
     def process() -> None:
-        total_lines = len(jurisdiction.cvr_file.contents.splitlines()) - 4
+        header_lines = 4 if jurisdiction.cvr_file_type == CvrFileType.DOMINION else 1
+        total_lines = len(jurisdiction.cvr_file.contents.splitlines()) - header_lines
         emit_progress(0, total_lines)
 
         if jurisdiction.cvr_file.contents == "":

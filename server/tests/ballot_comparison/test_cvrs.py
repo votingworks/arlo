@@ -7,7 +7,7 @@ from ..helpers import *  # pylint: disable=wildcard-import
 from .conftest import TEST_CVRS
 
 
-def test_cvr_upload(
+def test_dominion_cvr_upload(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
@@ -687,3 +687,89 @@ def test_cvr_reprocess_after_manifest_reupload(
         == expected_num_cvr_ballots
     )
     assert Jurisdiction.query.get(jurisdiction_ids[0]).cvr_contests_metadata is not None
+
+
+CLEARBALLOT_CVR = """RowNumber,BoxID,BoxPosition,BallotID,PrecinctID,BallotStyleID,PrecinctStyleName,ScanComputerName,Status,Remade,Choice_1_1:Contest 1:Vote For 1:Choice 1-1:Non-Partisan,Choice_210_1:Contest 1:Vote For 1:Choice 1-2:Non-Partisan,Choice_34_1:Contest 2:Vote For 2:Choice 2-1:Non-Partisan,Choice_4_1:Contest 2:Vote For 2:Choice 2-2:Non-Partisan,Choice_173_1:Contest 2:Vote For 2:Choice 2-3:Non-Partisan
+1,BATCH1,1,1-1-1,p,bs,ps,TABULATOR1,s,r,0,1,1,1,0
+2,BATCH1,2,1-1-2,p,bs,ps,TABULATOR1,s,r,1,0,1,0,1
+3,BATCH1,3,1-1-3,p,bs,ps,TABULATOR1,s,r,0,1,1,1,0
+4,BATCH1,1,1-2-1,p,bs,ps,TABULATOR2,s,r,1,0,1,0,1
+5,BATCH1,2,1-2-2,p,bs,ps,TABULATOR2,s,r,0,1,1,1,0
+6,BATCH1,3,1-2-3,p,bs,ps,TABULATOR2,s,r,1,0,1,0,1
+7,BATCH2,1,2-1-1,p,bs,ps,TABULATOR1,s,r,1,0,1,1,0
+8,BATCH2,2,2-1-2,p,bs,ps,TABULATOR1,s,r,1,0,1,0,1
+9,BATCH2,3,2-1-3,p,bs,ps,TABULATOR1,s,r,1,0,1,1,0
+10,BATCH2,1,2-2-1,p,bs,ps,TABULATOR2,s,r,1,0,1,0,1
+11,BATCH2,2,2-2-2,p,bs,ps,TABULATOR2,s,r,1,1,1,1,1
+12,BATCH2,4,2-2-4,p,bs,ps,TABULATOR2,s,r,,,1,0,1
+13,BATCH2,5,2-2-5,p,bs,ps,TABULATOR2,s,r,,,1,1,0
+14,BATCH2,6,2-2-6,p,bs,ps,TABULATOR2,s,r,,,1,0,1
+"""
+
+
+def test_clearballot_cvr_upload(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    manifests,  # pylint: disable=unused-argument
+    snapshot,
+):
+    # Upload CVRs
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
+        data={
+            "cvrs": (io.BytesIO(CLEARBALLOT_CVR.encode()), "cvrs.csv",),
+            "cvr_file_type": "CLEARBALLOT",
+        },
+    )
+    assert_ok(rv)
+
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
+    )
+
+    expected_num_cvr_ballots = len(CLEARBALLOT_CVR.splitlines()) - 1
+
+    compare_json(
+        json.loads(rv.data),
+        {
+            "file": {"name": "cvrs.csv", "uploadedAt": assert_is_date,},
+            "processing": {
+                "status": ProcessingStatus.PROCESSED,
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": None,
+                "workProgress": expected_num_cvr_ballots,
+                "workTotal": expected_num_cvr_ballots,
+            },
+        },
+    )
+
+    cvr_ballots = (
+        CvrBallot.query.join(Batch)
+        .filter_by(jurisdiction_id=jurisdiction_ids[0])
+        .order_by(CvrBallot.imprinted_id)
+        .all()
+    )
+    assert len(cvr_ballots) == expected_num_cvr_ballots
+    snapshot.assert_match(
+        [
+            dict(
+                batch_name=cvr.batch.name,
+                tabulator=cvr.batch.tabulator,
+                ballot_position=cvr.ballot_position,
+                imprinted_id=cvr.imprinted_id,
+                interpretations=cvr.interpretations,
+            )
+            for cvr in cvr_ballots
+        ]
+    )
+    snapshot.assert_match(
+        Jurisdiction.query.get(jurisdiction_ids[0]).cvr_contests_metadata
+    )
