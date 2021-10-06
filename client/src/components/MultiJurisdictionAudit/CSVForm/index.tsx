@@ -105,18 +105,17 @@ const CSVFile = ({
             </FormSection>
             {showCvrFileType && (
               <div>
-                <label htmlFor="cvrFileType" style={{ marginRight: '5px' }}>
-                  CVR File Type:
+                <label>
+                  <span style={{ marginRight: '5px' }}>CVR File Type:</span>
+                  <HTMLSelect
+                    value={values.cvrFileType}
+                    disabled={!enabled || !(isEditing || !file)}
+                    onChange={e => setFieldValue('cvrFileType', e.target.value)}
+                  >
+                    <option value={CvrFileType.DOMINION}>Dominion</option>
+                    <option value={CvrFileType.CLEARBALLOT}>ClearBallot</option>
+                  </HTMLSelect>
                 </label>
-                <HTMLSelect
-                  name="cvrFileType"
-                  value={values.cvrFileType}
-                  disabled={!enabled || !(isEditing || !file)}
-                  onChange={e => setFieldValue('cvrFileType', e.target.value)}
-                >
-                  <option value={CvrFileType.DOMINION}>Dominion</option>
-                  <option value={CvrFileType.CLEARBALLOT}>ClearBallot</option>
-                </HTMLSelect>
               </div>
             )}
             {isEditing || !file || isProcessing ? (
