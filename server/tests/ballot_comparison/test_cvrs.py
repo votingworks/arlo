@@ -49,7 +49,11 @@ def test_dominion_cvr_upload(
     compare_json(
         json.loads(rv.data),
         {
-            "file": {"name": "cvrs.csv", "uploadedAt": assert_is_date,},
+            "file": {
+                "name": "cvrs.csv",
+                "uploadedAt": assert_is_date,
+                "cvrFileType": "DOMINION",
+            },
             "processing": {
                 "status": ProcessingStatus.PROCESSED,
                 "startedAt": assert_is_date,
@@ -92,7 +96,11 @@ def test_dominion_cvr_upload(
     compare_json(
         jurisdictions[0]["cvrs"],
         {
-            "file": {"name": "cvrs.csv", "uploadedAt": assert_is_date,},
+            "file": {
+                "name": "cvrs.csv",
+                "uploadedAt": assert_is_date,
+                "cvrFileType": "DOMINION",
+            },
             "processing": {
                 "status": "PROCESSED",
                 "startedAt": assert_is_date,
@@ -164,7 +172,11 @@ def test_cvrs_counting_group(
     compare_json(
         json.loads(rv.data),
         {
-            "file": {"name": "cvrs.csv", "uploadedAt": assert_is_date,},
+            "file": {
+                "name": "cvrs.csv",
+                "uploadedAt": assert_is_date,
+                "cvrFileType": "DOMINION",
+            },
             "processing": {
                 "status": ProcessingStatus.PROCESSED,
                 "startedAt": assert_is_date,
@@ -449,7 +461,11 @@ def test_cvrs_newlines(
     compare_json(
         json.loads(rv.data),
         {
-            "file": {"name": "cvrs.csv", "uploadedAt": assert_is_date,},
+            "file": {
+                "name": "cvrs.csv",
+                "uploadedAt": assert_is_date,
+                "cvrFileType": "DOMINION",
+            },
             "processing": {
                 "status": ProcessingStatus.PROCESSED,
                 "startedAt": assert_is_date,
@@ -495,7 +511,7 @@ def test_invalid_cvrs(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
     invalid_cvrs = [
-        ("", "CVR file cannot be empty."),
+        ("", "CVR file cannot be empty.", "DOMINION"),
         (
             """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
 ,,,,,,,,"Contest 1 (Vote For=1)","Contest 1 (123)"
@@ -504,6 +520,7 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortio
 1,TABULATOR1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,0,1
 """,
             "Invalid contest name: Contest 1 (123). Contest names should have this format: Contest Name (Vote For=1).",
+            "DOMINION",
         ),
         (
             """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
@@ -519,6 +536,7 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortio
                 " TABULATOR1, BATCH1. Please check your CVR file and ballot manifest thoroughly to make"
                 " sure these values match - there may be a similar inconsistency in other rows in the CVR file."
             ),
+            "DOMINION",
         ),
         (
             """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
@@ -534,6 +552,7 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortio
                 " TABULATOR1, BATCH1. Please check your CVR file and ballot manifest thoroughly to make"
                 " sure these values match - there may be a similar inconsistency in other rows in the CVR file."
             ),
+            "DOMINION",
         ),
         (
             """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
@@ -549,15 +568,29 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortio
                 " Please check your CVR file and ballot manifest thoroughly to make"
                 " sure these values match - there may be a similar inconsistency in other rows in the CVR file."
             ),
+            "DOMINION",
+        ),
+        (
+            """RowNumber,BoxID,BoxPosition,BallotID,PrecinctID,BallotStyleID,PrecinctStyleName,ScanComputerName,Status,Remade,Choice_1_1:Contest 1:Vote For 1:Choice 1-1:Non-Partisan,Choice_210_1:Contest 1:Vote For 1:Choice 1-2:Non-Partisan,Choice_34_1:Contest 2:Vote For 2:Choice 2-1:Non-Partisan,Choice_4_1:Contest 2:Vote For 2:Choice 2-2:Non-Partisan,Choice_173_1:Contest 2:Vote For 2:Choice 2-3:Non-Partisan
+1,BATCH1,1,1-1-1,p,bs,ps,TABULATO1,s,r,0,1,1,1,0
+""",
+            (
+                "Invalid ScanComputerName/BoxID for row with RowNumber 1: TABULATO1, BATCH1."
+                " The ScanComputerName and BoxID fields in the CVR file must match the Tabulator and Batch Name"
+                " fields in the ballot manifest. The closest match we found in the ballot manifest was:"
+                " TABULATOR1, BATCH1. Please check your CVR file and ballot manifest thoroughly to make"
+                " sure these values match - there may be a similar inconsistency in other rows in the CVR file."
+            ),
+            "CLEARBALLOT",
         ),
     ]
 
-    for invalid_cvr, expected_error in invalid_cvrs:
+    for invalid_cvr, expected_error, cvr_file_type in invalid_cvrs:
         rv = client.put(
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
             data={
                 "cvrs": (io.BytesIO(invalid_cvr.encode()), "cvrs.csv",),
-                "cvrFileType": "DOMINION",
+                "cvrFileType": cvr_file_type,
             },
         )
         assert_ok(rv)
@@ -568,14 +601,19 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortio
         compare_json(
             json.loads(rv.data),
             {
-                "file": {"name": "cvrs.csv", "uploadedAt": assert_is_date,},
+                "file": {
+                    "name": "cvrs.csv",
+                    "uploadedAt": assert_is_date,
+                    "cvrFileType": cvr_file_type,
+                },
                 "processing": {
                     "status": ProcessingStatus.ERRORED,
                     "startedAt": assert_is_date,
                     "completedAt": assert_is_date,
                     "error": expected_error,
                     "workProgress": 0,
-                    "workTotal": len(invalid_cvr.splitlines()) - 4,
+                    "workTotal": len(invalid_cvr.splitlines())
+                    - (4 if cvr_file_type == "DOMINION" else 1),
                 },
             },
         )
@@ -622,7 +660,11 @@ def test_cvr_reprocess_after_manifest_reupload(
     compare_json(
         json.loads(rv.data),
         {
-            "file": {"name": "cvrs.csv", "uploadedAt": assert_is_date,},
+            "file": {
+                "name": "cvrs.csv",
+                "uploadedAt": assert_is_date,
+                "cvrFileType": "DOMINION",
+            },
             "processing": {
                 "status": ProcessingStatus.ERRORED,
                 "startedAt": assert_is_date,
@@ -668,7 +710,11 @@ def test_cvr_reprocess_after_manifest_reupload(
     compare_json(
         json.loads(rv.data),
         {
-            "file": {"name": "cvrs.csv", "uploadedAt": assert_is_date,},
+            "file": {
+                "name": "cvrs.csv",
+                "uploadedAt": assert_is_date,
+                "cvrFileType": "DOMINION",
+            },
             "processing": {
                 "status": ProcessingStatus.PROCESSED,
                 "startedAt": assert_is_date,
@@ -739,7 +785,11 @@ def test_clearballot_cvr_upload(
     compare_json(
         json.loads(rv.data),
         {
-            "file": {"name": "cvrs.csv", "uploadedAt": assert_is_date,},
+            "file": {
+                "name": "cvrs.csv",
+                "uploadedAt": assert_is_date,
+                "cvrFileType": "CLEARBALLOT",
+            },
             "processing": {
                 "status": ProcessingStatus.PROCESSED,
                 "startedAt": assert_is_date,

@@ -141,6 +141,7 @@ def serialize_jurisdiction(
         }
 
     if election.audit_type in [AuditType.BALLOT_COMPARISON, AuditType.HYBRID]:
+        file = serialize_file(jurisdiction.cvr_file)
         processing = serialize_file_processing(jurisdiction.cvr_file)
         num_cvr_ballots = (
             CvrBallot.query.join(Batch)
@@ -150,7 +151,7 @@ def serialize_jurisdiction(
             else None
         )
         json_jurisdiction["cvrs"] = {
-            "file": serialize_file(jurisdiction.cvr_file),
+            "file": file and dict(file, cvrFileType=jurisdiction.cvr_file_type),
             "processing": processing,
             "numBallots": num_cvr_ballots,
         }

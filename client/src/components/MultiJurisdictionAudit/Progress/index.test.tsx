@@ -273,14 +273,17 @@ describe('Progress screen', () => {
       const rows = screen.getAllByRole('row')
       // Jurisdiction 1 - manifest success, no CVR
       const row1 = within(rows[1]).getAllByRole('cell')
+      expect(row1[1]).toHaveTextContent('1/2 files uploaded')
       expect(row1[2]).toHaveTextContent('2,117')
       expect(row1[3]).toBeEmpty()
       // Jurisdiction 2 - manifest success, CVR success
       const row2 = within(rows[2]).getAllByRole('cell')
+      expect(row2[1]).toHaveTextContent('2/2 files uploaded')
       expect(row2[2]).toHaveTextContent('2,117')
       expect(row2[3]).toHaveTextContent('10')
       // Jurisdiction 3 - manifest success, no CVR
       const row3 = within(rows[3]).getAllByRole('cell')
+      expect(row3[1]).toHaveTextContent('1/2 files uploaded')
       expect(row3[2]).toHaveTextContent('2,117')
       expect(row3[3]).toBeEmpty()
 
@@ -289,6 +292,35 @@ describe('Progress screen', () => {
       expect(footers[1]).toHaveTextContent('1/3 complete')
       expect(footers[2]).toHaveTextContent('6,351')
       expect(footers[3]).toHaveTextContent('10')
+
+      // Shows manifest and cvrs in the modal
+      userEvent.click(screen.getByText('2/2 files uploaded'))
+      const modal = screen
+        .getByRole('heading', { name: 'Jurisdiction 2' })
+        .closest('div.bp3-dialog')! as HTMLElement
+      within(modal).getByRole('heading', {
+        name: 'Jurisdiction Files',
+      })
+      const manifestCard = within(modal)
+        .getByRole('heading', {
+          name: 'Ballot Manifest',
+        })
+        .closest('div')!
+      within(manifestCard).getByText('Uploaded')
+      const cvrsCard = within(modal)
+        .getByRole('heading', {
+          name: 'Cast Vote Records (CVR)',
+        })
+        .closest('div')!
+      within(cvrsCard).getByText('Uploaded')
+      const cvrsLink = within(cvrsCard).getByRole('link', {
+        name: 'cvrs.csv',
+      })
+      expect(cvrsLink).toHaveAttribute(
+        'href',
+        '/api/election/1/jurisdiction/jurisdiction-id-2/cvrs/csv'
+      )
+      within(cvrsCard).getByText('(ClearBallot)')
     })
   })
 
