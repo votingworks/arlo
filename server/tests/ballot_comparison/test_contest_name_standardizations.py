@@ -226,7 +226,7 @@ def test_standardize_contest_names_cvr_change(
                 io.BytesIO(TEST_CVRS.replace("Contest 1", "Contest A").encode()),
                 "cvrs.csv",
             ),
-            "cvr_file_type": "DOMINION",
+            "cvrFileType": "DOMINION",
         },
     )
     assert_ok(rv)

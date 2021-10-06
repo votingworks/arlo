@@ -92,7 +92,7 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,PrecinctPortion,BallotType,R
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
         data={
             "cvrs": (io.BytesIO(j1_cvr.encode()), "cvrs.csv",),
-            "cvr_file_type": "DOMINION",
+            "cvrFileType": "DOMINION",
         },
     )
     assert_ok(rv)
@@ -115,7 +115,7 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,PrecinctPortion,BallotType,R
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/cvrs",
         data={
             "cvrs": (io.BytesIO(j2_cvr.encode()), "cvrs.csv",),
-            "cvr_file_type": "DOMINION",
+            "cvrFileType": "DOMINION",
         },
     )
     assert_ok(rv)

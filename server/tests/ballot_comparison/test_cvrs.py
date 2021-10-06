@@ -32,7 +32,7 @@ def test_dominion_cvr_upload(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
         data={
             "cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",),
-            "cvr_file_type": "DOMINION",
+            "cvrFileType": "DOMINION",
         },
     )
     assert_ok(rv)
@@ -150,7 +150,7 @@ def test_cvrs_counting_group(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
         data={
             "cvrs": (io.BytesIO(COUNTING_GROUP_CVR.encode()), "cvrs.csv",),
-            "cvr_file_type": "DOMINION",
+            "cvrFileType": "DOMINION",
         },
     )
     assert_ok(rv)
@@ -213,7 +213,7 @@ def test_cvrs_replace(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
         data={
             "cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",),
-            "cvr_file_type": "DOMINION",
+            "cvrFileType": "DOMINION",
         },
     )
     assert_ok(rv)
@@ -227,7 +227,7 @@ def test_cvrs_replace(
                 io.BytesIO("\n".join(TEST_CVRS.splitlines()[:-2]).encode()),
                 "cvrs.csv",
             ),
-            "cvr_file_type": "DOMINION",
+            "cvrFileType": "DOMINION",
         },
     )
     assert_ok(rv)
@@ -259,7 +259,7 @@ def test_cvrs_clear(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
         data={
             "cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",),
-            "cvr_file_type": "DOMINION",
+            "cvrFileType": "DOMINION",
         },
     )
     assert_ok(rv)
@@ -331,7 +331,7 @@ def test_cvrs_upload_bad_csv(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
         data={
             "cvrs": (io.BytesIO(b"not a CSV file"), "random.txt"),
-            "cvr_file_type": "DOMINION",
+            "cvrFileType": "DOMINION",
         },
     )
     assert rv.status_code == 400
@@ -435,7 +435,7 @@ def test_cvrs_newlines(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
         data={
             "cvrs": (io.BytesIO(NEWLINE_CVR.encode()), "cvrs.csv",),
-            "cvr_file_type": "DOMINION",
+            "cvrFileType": "DOMINION",
         },
     )
     assert_ok(rv)
@@ -557,7 +557,7 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortio
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
             data={
                 "cvrs": (io.BytesIO(invalid_cvr.encode()), "cvrs.csv",),
-                "cvr_file_type": "DOMINION",
+                "cvrFileType": "DOMINION",
             },
         )
         assert_ok(rv)
@@ -722,7 +722,7 @@ def test_clearballot_cvr_upload(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
         data={
             "cvrs": (io.BytesIO(CLEARBALLOT_CVR.encode()), "cvrs.csv",),
-            "cvr_file_type": "CLEARBALLOT",
+            "cvrFileType": "CLEARBALLOT",
         },
     )
     assert_ok(rv)

@@ -561,7 +561,7 @@ def validate_cvr_upload(
     if "cvrs" not in request.files:
         raise BadRequest("Missing required file parameter 'cvrs'")
 
-    if request.form.get("cvr_file_type") not in [
+    if request.form.get("cvrFileType") not in [
         cvr_file_type.value for cvr_file_type in CvrFileType
     ]:
         raise BadRequest("Invalid file type")
@@ -594,7 +594,7 @@ def upload_cvrs(
         contents=decode_csv_file(request.files["cvrs"]),
         uploaded_at=datetime.now(timezone.utc),
     )
-    jurisdiction.cvr_file_type = request.form["cvr_file_type"]
+    jurisdiction.cvr_file_type = request.form["cvrFileType"]
     jurisdiction.cvr_file.task = create_background_task(
         process_cvr_file,
         dict(
@@ -614,8 +614,9 @@ def upload_cvrs(
 def get_cvrs(
     election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
 ):
+    file = serialize_file(jurisdiction.cvr_file)
     return jsonify(
-        file=serialize_file(jurisdiction.cvr_file),
+        file=file and dict(file, cvrFileType=jurisdiction.cvr_file_type),
         processing=serialize_file_processing(jurisdiction.cvr_file),
     )
 

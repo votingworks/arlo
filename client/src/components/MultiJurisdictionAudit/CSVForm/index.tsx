@@ -16,7 +16,7 @@ import { ErrorLabel, SuccessLabel } from '../../Atoms/Form/_helpers'
 import FormSection, {
   FormSectionDescription,
 } from '../../Atoms/Form/FormSection'
-import { FileProcessingStatus, IFileInfo } from '../useCSV'
+import { FileProcessingStatus, IFileInfo, CvrFileType } from '../useCSV'
 import AsyncButton from '../../Atoms/AsyncButton'
 
 export const Select = styled(HTMLSelect)`
@@ -25,16 +25,18 @@ export const Select = styled(HTMLSelect)`
 
 interface IValues {
   csv: File | null
+  cvrFileType?: CvrFileType
 }
 
 interface IProps {
   csvFile: IFileInfo
-  uploadCSVFile: (csv: File) => Promise<boolean>
+  uploadCSVFile: (csv: File, cvrFileType?: CvrFileType) => Promise<boolean>
   deleteCSVFile?: () => Promise<boolean>
   title?: string
   description: string
   sampleFileLink: string
   enabled: boolean
+  showCvrFileType?: boolean
 }
 
 const CSVFile = ({
@@ -45,6 +47,7 @@ const CSVFile = ({
   description,
   sampleFileLink,
   enabled,
+  showCvrFileType,
 }: IProps) => {
   const { file, processing, upload } = csvFile
   const isProcessing = !!(processing && !processing.completedAt)
@@ -52,13 +55,20 @@ const CSVFile = ({
 
   return (
     <Formik
-      enableReinitialize
-      initialValues={{ csv: isProcessing ? new File([], file!.name) : null }}
+      initialValues={{
+        csv: isProcessing ? new File([], file!.name) : null,
+        cvrFileType: showCvrFileType
+          ? file
+            ? file.cvrFileType
+            : CvrFileType.DOMINION
+          : undefined,
+      }}
       validationSchema={schema}
+      validateOnChange={false}
       validateOnBlur={false}
       onSubmit={async (values: IValues) => {
         if (values.csv) {
-          await uploadCSVFile(values.csv)
+          await uploadCSVFile(values.csv, values.cvrFileType)
           setIsEditing(false)
         }
       }}
@@ -93,6 +103,22 @@ const CSVFile = ({
                 )}
               </FormSectionDescription>
             </FormSection>
+            {showCvrFileType && (
+              <div>
+                <label htmlFor="cvrFileType" style={{ marginRight: '5px' }}>
+                  CVR File Type:
+                </label>
+                <HTMLSelect
+                  name="cvrFileType"
+                  value={values.cvrFileType}
+                  disabled={!enabled || !(isEditing || !file)}
+                  onChange={e => setFieldValue('cvrFileType', e.target.value)}
+                >
+                  <option value={CvrFileType.DOMINION}>Dominion</option>
+                  <option value={CvrFileType.CLEARBALLOT}>ClearBallot</option>
+                </HTMLSelect>
+              </div>
+            )}
             {isEditing || !file || isProcessing ? (
               <>
                 <FormSection>

@@ -526,7 +526,7 @@ def test_hybrid_manifest_validation_too_many_votes(
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/cvrs",
             data={
                 "cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",),
-                "cvr_file_type": "DOMINION",
+                "cvrFileType": "DOMINION",
             },
         )
         assert_ok(rv)
@@ -617,7 +617,7 @@ def test_hybrid_manifest_validation_too_few_cvr_ballots(
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/cvrs",
             data={
                 "cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",),
-                "cvr_file_type": "DOMINION",
+                "cvrFileType": "DOMINION",
             },
         )
         assert_ok(rv)
@@ -690,7 +690,7 @@ def test_hybrid_manifest_validation_few_non_cvr_ballots(
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/cvrs",
             data={
                 "cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",),
-                "cvr_file_type": "DOMINION",
+                "cvrFileType": "DOMINION",
             },
         )
         assert_ok(rv)
@@ -748,7 +748,7 @@ def test_hybrid_filter_cvrs(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
         data={
             "cvrs": (io.BytesIO(cvr.encode()), "cvrs.csv",),
-            "cvr_file_type": "DOMINION",
+            "cvrFileType": "DOMINION",
         },
     )
     assert_ok(rv)
