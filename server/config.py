@@ -1,57 +1,38 @@
 import os
 import logging
-from typing import Tuple
 from datetime import timedelta
 
 
 def read_env_var(name: str, default=None, env_defaults=None):
     value = os.environ.get(name, (env_defaults or {}).get(FLASK_ENV, default))
-    if not value:
+    if value is None:
         raise Exception(f"Missing env var: {name}")
     return value
 
 
-DEVELOPMENT_ENVS = ("development", "test")
+# Configure Flask-specific environment variables.
+# We do this here because Flask attempts to set some of its application config
+# based on `FLASK_ENV` and `FLASK_DEBUG` environment variables, and that
+# happens _after_ initialization and initial configuration, when calling
+# `app.run(…)`. Therefore, we set them here to ensure they end up with the
+# right values.
+# Specifically, setting FLASK_ENV=test by itself means `app.debug` will remain
+# `False`, which isn't what we want.
+FLASK_ENV = os.environ.get("FLASK_ENV", "production")
+FLASK_DEBUG = read_env_var(
+    "FLASK_DEBUG", default=False, env_defaults=dict(development=True, test=True)
+)
+if "FLASK_DEBUG" not in os.environ:
+    os.environ["FLASK_DEBUG"] = str(FLASK_DEBUG)
 
 
-def setup_flask_config() -> Tuple[str, bool]:
-    """
-    Configure Flask-specific environment variables.
-
-    We do this here because Flask attempts to set some of its application config
-    based on `FLASK_ENV` and `FLASK_DEBUG` environment variables, and that
-    happens _after_ initialization and initial configuration, when calling
-    `app.run(…)`. Therefore, we set them here to ensure they end up with the
-    right values.
-
-    Specifically, setting FLASK_ENV=test by itself means `app.debug` will remain
-    `False`, which isn't what we want.
-    """
-    flask_env = os.environ.get("FLASK_ENV", "production")
-
-    if "FLASK_DEBUG" not in os.environ:
-        os.environ["FLASK_DEBUG"] = str(flask_env in DEVELOPMENT_ENVS)
-
-    return (flask_env, os.environ["FLASK_DEBUG"].lower() not in ("0", "no", "false"))
-
-
-FLASK_ENV, FLASK_DEBUG = setup_flask_config()
-
-
-def read_database_url_config() -> str:
-    environment_database_url = os.environ.get("DATABASE_URL", None)
-    if environment_database_url:
-        return environment_database_url
-
-    if FLASK_ENV == "development":
-        return "postgresql://arlo:arlo@localhost:5432/arlo"
-    elif FLASK_ENV == "test":
-        return "postgresql://arlo:arlo@localhost:5432/arlotest"
-    else:
-        raise Exception("Missing DATABASE_URL env var")
-
-
-DATABASE_URL = read_database_url_config()
+DATABASE_URL = read_env_var(
+    "DATABASE_URL",
+    env_defaults=dict(
+        development="postgresql://arlo:arlo@localhost:5432/arlo",
+        test="postgresql://arlo:arlo@localhost:5432/arlotest",
+    ),
+)
 
 STATIC_FOLDER = os.path.normpath(
     os.path.join(
@@ -59,23 +40,12 @@ STATIC_FOLDER = os.path.normpath(
     )
 )
 
-
-def read_session_secret() -> str:
-    session_secret = os.environ.get("ARLO_SESSION_SECRET", None)
-
-    if not session_secret:
-        if FLASK_ENV in DEVELOPMENT_ENVS:
-            # Allow omitting in development, use a fixed secret instead.
-            session_secret = f"arlo-{FLASK_ENV}-session-secret-v1"
-        else:
-            raise Exception(
-                "ARLO_SESSION_SECRET env var for managing sessions is missing"
-            )
-
-    return session_secret
-
-
-SESSION_SECRET = read_session_secret()
+SESSION_SECRET = read_env_var(
+    "ARLO_SESSION_SECRET",
+    env_defaults=dict(
+        development="arlo-dev-session-secret", test="arlo-test-session-secret"
+    ),
+)
 
 # Max time a session can be used after it's created
 SESSION_LIFETIME = timedelta(hours=8)
@@ -83,84 +53,58 @@ SESSION_LIFETIME = timedelta(hours=8)
 SESSION_INACTIVITY_TIMEOUT = timedelta(hours=1)
 
 
-def read_http_origin() -> str:
-    http_origin = os.environ.get("ARLO_HTTP_ORIGIN", None)
+HTTP_ORIGIN = read_env_var(
+    "ARLO_HTTP_ORIGIN",
+    env_defaults=dict(
+        development="http://localhost:3000",
+        test="http://localhost:3000",
+        # For Heroku Review Apps, we need to create the http origin based on the app name.
+        staging=f"https://{os.environ.get('HEROKU_APP_NAME')}.herokuapp.com",
+    ),
+)
 
-    if not http_origin:
-        if FLASK_ENV in DEVELOPMENT_ENVS:
-            http_origin = "http://localhost:3000"
-        # For Heroku Review Apps, which get created automatically for each pull
-        # request, we need to create the http origin based on the app name.
-        elif FLASK_ENV == "staging":
-            http_origin = f"https://{os.environ.get('HEROKU_APP_NAME')}.herokuapp.com"
-        else:
-            raise Exception(
-                "ARLO_HTTP_ORIGIN env var, e.g. https://arlo.example.com, is missing"
-            )
+# Support user login config
+SUPPORT_AUTH0_BASE_URL = read_env_var(
+    "ARLO_SUPPORT_AUTH0_BASE_URL", env_defaults=dict(test="")
+)
+SUPPORT_AUTH0_CLIENT_ID = read_env_var(
+    "ARLO_SUPPORT_AUTH0_CLIENT_ID", env_defaults=dict(test="")
+)
+SUPPORT_AUTH0_CLIENT_SECRET = read_env_var(
+    "ARLO_SUPPORT_AUTH0_CLIENT_SECRET", env_defaults=dict(test="")
+)
+# Required email domain for support users
+SUPPORT_EMAIL_DOMAIN = read_env_var("ARLO_SUPPORT_EMAIL_DOMAIN", default="voting.works")
 
-    return http_origin
+# Audit admin OAuth login config
+AUDITADMIN_AUTH0_BASE_URL = read_env_var(
+    "ARLO_AUDITADMIN_AUTH0_BASE_URL", env_defaults=dict(test="")
+)
+AUDITADMIN_AUTH0_CLIENT_ID = read_env_var(
+    "ARLO_AUDITADMIN_AUTH0_CLIENT_ID", env_defaults=dict(test="")
+)
+AUDITADMIN_AUTH0_CLIENT_SECRET = read_env_var(
+    "ARLO_AUDITADMIN_AUTH0_CLIENT_SECRET", env_defaults=dict(test="")
+)
 
-
-HTTP_ORIGIN = read_http_origin()
-
-
-def read_support_auth0_creds() -> Tuple[str, str, str, str]:
-    return (
-        os.environ.get("ARLO_SUPPORT_AUTH0_BASE_URL", ""),
-        os.environ.get("ARLO_SUPPORT_AUTH0_CLIENT_ID", ""),
-        os.environ.get("ARLO_SUPPORT_AUTH0_CLIENT_SECRET", ""),
-        os.environ.get("ARLO_SUPPORT_EMAIL_DOMAIN", "voting.works"),
-    )
-
-
-(
-    SUPPORT_AUTH0_BASE_URL,
-    SUPPORT_AUTH0_CLIENT_ID,
-    SUPPORT_AUTH0_CLIENT_SECRET,
-    SUPPORT_EMAIL_DOMAIN,
-) = read_support_auth0_creds()
-
-
-def read_auditadmin_auth0_creds() -> Tuple[str, str, str]:
-    return (
-        os.environ.get("ARLO_AUDITADMIN_AUTH0_BASE_URL", ""),
-        os.environ.get("ARLO_AUDITADMIN_AUTH0_CLIENT_ID", ""),
-        os.environ.get("ARLO_AUDITADMIN_AUTH0_CLIENT_SECRET", ""),
-    )
-
-
-(
-    AUDITADMIN_AUTH0_BASE_URL,
-    AUDITADMIN_AUTH0_CLIENT_ID,
-    AUDITADMIN_AUTH0_CLIENT_SECRET,
-) = read_auditadmin_auth0_creds()
-
+# Jurisdiction admin login code email config
+SMTP_HOST = read_env_var("ARLO_SMTP_HOST", dict(test="test-smtp-host"))
+SMTP_PORT = read_env_var("ARLO_SMTP_PORT", dict(development=587, test=587))
+SMTP_USERNAME = read_env_var("ARLO_SMTP_USERNAME", dict(test="test-smtp-username"))
+SMTP_PASSWORD = read_env_var("ARLO_SMTP_PASSWORD", dict(test="test-smtp-password"))
 LOGIN_CODE_LIFETIME = timedelta(minutes=15)
 
-SMTP_HOST = read_env_var("ARLO_SMTP_HOST", {"test": "test-smtp-host"})
-SMTP_PORT = read_env_var("ARLO_SMTP_PORT", {"test": 587, "dev": 587})
-SMTP_USERNAME = read_env_var("ARLO_SMTP_USERNAME", {"test": "test-smtp-username"})
-SMTP_PASSWORD = read_env_var("ARLO_SMTP_PASSWORD", {"test": "test-smtp-password"})
 
-
-def setup_minerva():
-    "Configure round size growth from $ARLO_MINERVA_MULTIPLE (a float) if given, otherwise 1.5"
-
-    arlo_minerva_multiple = os.environ.get("ARLO_MINERVA_MULTIPLE", "1.5")
-
-    return float(arlo_minerva_multiple)
-
-
-MINERVA_MULTIPLE = setup_minerva()
+# Configure round size growth from ARLO_MINERVA_MULTIPLE (a float) if given, otherwise 1.5
+MINERVA_MULTIPLE = float(read_env_var("ARLO_MINERVA_MULTIPLE", default=1.5))
 
 SENTRY_DSN = os.environ.get("SENTRY_DSN")
 
 SLACK_WEBHOOK_URL = os.environ.get("SLACK_WEBHOOK_URL")
 
 RUN_BACKGROUND_TASKS_IMMEDIATELY = bool(
-    os.environ.get("RUN_BACKGROUND_TASKS_IMMEDIATELY")
+    read_env_var("RUN_BACKGROUND_TASKS_IMMEDIATELY", default=False)
 )
-
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("arlo.config")
@@ -169,11 +113,7 @@ logger.info(f"{DATABASE_URL=}")
 logger.info(f"{HTTP_ORIGIN=}")
 logger.info(f"{FLASK_ENV=}")
 
-
-def filter_athena_messages(record):
-    "Filter out any logging messages from athena/audit.py, in preference to our tighter logging"
-
-    return not record.pathname.endswith("athena/audit.py")
-
-
-logging.getLogger().addFilter(filter_athena_messages)
+# Filter out any logging messages from athena/audit.py, in preference to our tighter logging
+logging.getLogger().addFilter(
+    lambda record: not record.pathname.endswith("athena/audit.py")
+)
