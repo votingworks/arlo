@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig } from 'axios'
+import axios, { AxiosRequestConfig, AxiosError } from 'axios'
 import React from 'react'
 import { createLocation, createMemoryHistory, MemoryHistory } from 'history'
 import { match as routerMatch, Router } from 'react-router-dom'
@@ -155,7 +155,16 @@ export const withMockFetch = async (
         { onUploadProgress, data, ...options }: AxiosRequestConfig
       ) => {
         if (onUploadProgress) onUploadProgress({ loaded: 1, total: 2 })
-        mockFetch(url, { ...options, body: data })
+        const response = await mockFetch(url, { ...options, body: data })
+        if (response.status >= 400) {
+          const error = new Error() as AxiosError
+          error.response = {
+            config: {},
+            ...response,
+            data: JSON.parse(await response.text()),
+          }
+          throw error
+        }
       }
     )
   }
@@ -173,11 +182,20 @@ export const withMockFetch = async (
   expect(actualRequests).toEqual(expectedRequests)
 }
 
+export const serverError = (
+  name: string,
+  apiCall: { url: string; options?: object }
+) => ({
+  ...apiCall,
+  response: {
+    errors: [
+      { errorType: 'Server Error', message: `something went wrong: ${name}` },
+    ],
+  },
+  error: { status: 500, statusText: 'Server Error' },
+})
+
 export const regexpEscape = (s: string) => {
   /* eslint-disable no-useless-escape */
   return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
-}
-
-export default {
-  routerTestProps,
 }

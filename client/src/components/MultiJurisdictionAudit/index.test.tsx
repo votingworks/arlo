@@ -6,6 +6,7 @@ import {
   Router as RegularRouter,
   useParams,
 } from 'react-router-dom'
+import { ToastContainer } from 'react-toastify'
 import {
   AuditAdminView,
   JurisdictionAdminView,
@@ -27,6 +28,7 @@ import {
   routerTestProps,
   withMockFetch,
   renderWithRouter,
+  serverError,
 } from '../testUtilities'
 import AuthDataProvider, { useAuthDataContext } from '../UserContext'
 import getJurisdictionFileStatus from './useSetupMenuItems/getJurisdictionFileStatus'
@@ -401,6 +403,7 @@ describe('JA setup', () => {
     renderWithRouter(
       <AuthDataProvider>
         <JurisdictionAdminViewWithAuth />
+        <ToastContainer />
       </AuthDataProvider>,
       {
         route: '/election/1/jurisdiction/jurisdiction-id-1/setup',
@@ -518,6 +521,25 @@ describe('JA setup', () => {
 
       userEvent.click(talliesButton)
       await screen.findByText('Uploaded at 7/8/2020, 9:39:14 PM.')
+    })
+  })
+
+  it('toasts error when uploading batch tallies', async () => {
+    const expectedCalls = [
+      jaApiCalls.getUser,
+      jaApiCalls.getSettings(auditSettings.batchComparisonAll),
+      jaApiCalls.getRounds([]),
+      jaApiCalls.getBallotManifestFile(manifestMocks.processed),
+      jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
+      serverError('putTallies', jaApiCalls.putTallies),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderView()
+      await screen.findByText('Audit Source Data')
+      userEvent.upload(screen.getByLabelText('Select a CSV...'), talliesFile)
+      userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
+      const toast = await screen.findByRole('alert')
+      expect(toast).toHaveTextContent('something went wrong: putTallies')
     })
   })
 

@@ -58,7 +58,10 @@ const putCSVFile = async (
     }) as AxiosRequestConfig)
     return true
   } catch (error) {
-    toast.error(error.message)
+    const { errors } = error.response.data
+    const message =
+      errors && errors.length ? errors[0].message : error.response.statusText
+    toast.error(message)
     return false
   }
 }
