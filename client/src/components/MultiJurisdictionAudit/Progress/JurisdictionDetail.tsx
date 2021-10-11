@@ -37,8 +37,8 @@ const FileStatusTag = ({
 
 const prettyCvrFileType = (cvrFileType: CvrFileType) =>
   ({
-    [CvrFileType.DOMINION]: 'Dominion',
-    [CvrFileType.CLEARBALLOT]: 'ClearBallot',
+    DOMINION: 'Dominion',
+    CLEARBALLOT: 'ClearBallot',
   }[cvrFileType])
 
 const StatusCard = styled(Card)`
