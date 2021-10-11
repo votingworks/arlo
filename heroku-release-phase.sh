@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+echo "Attempting to run migrations"
 if [[ $DATABASE_URL ]]; then
     alembic upgrade head
 else
