@@ -457,5 +457,8 @@ exports[`JA setup renders initial state 1`] = `
       </form>
     </div>
   </div>
+  <div
+    class="Toastify"
+  />
 </div>
 `;

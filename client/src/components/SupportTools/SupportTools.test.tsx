@@ -3,7 +3,7 @@ import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ToastContainer } from 'react-toastify'
 import { QueryClientProvider, QueryClient } from 'react-query'
-import { withMockFetch, renderWithRouter } from '../testUtilities'
+import { withMockFetch, renderWithRouter, serverError } from '../testUtilities'
 import SupportTools from './SupportTools'
 import AuthDataProvider from '../UserContext'
 import { supportApiCalls } from '../MultiJurisdictionAudit/_mocks'
@@ -149,19 +149,6 @@ const apiCalls = {
     response: { status: 'ok' },
   },
 }
-
-const serverError = (
-  name: string,
-  apiCall: { url: string; options?: object }
-) => ({
-  ...apiCall,
-  response: {
-    errors: [
-      { errorType: 'Server Error', message: `something went wrong: ${name}` },
-    ],
-  },
-  error: { status: 500, statusText: 'Server Error' },
-})
 
 const queryClientOptions = queryClient.getDefaultOptions()
 
