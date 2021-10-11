@@ -55,9 +55,11 @@ Cypress.Commands.add('loginJurisdictionAdmin', jaEmail => {
 
 Cypress.Commands.add('logout', email => {
   cy.intercept('/auth/logout').as('logout')
+  cy.intercept('/api/me').as('me')
   cy.findByText(email).click()
-  cy.findByText('Log out').click()
-  cy.wait(['@logout'])
+  cy.findByRole('link', { name: 'Log out' }).click()
+  cy.wait('@logout')
+  cy.wait('@me')
   cy.contains('Participating in an audit in your local jurisdiction?')
 })
 
