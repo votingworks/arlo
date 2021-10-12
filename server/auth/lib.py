@@ -46,13 +46,11 @@ def set_loggedin_user(
 def get_loggedin_user(session) -> Union[Tuple[UserType, str], Tuple[None, None]]:
     check_session_expiration(session)
     user = session.get(_USER, None)
-    print("get session user", user)
     return (user["type"], user["key"]) if user else (None, None)
 
 
 def clear_loggedin_user(session):
     session[_USER] = None
-    print("cleared session user")
 
 
 def check_session_expiration(session):
