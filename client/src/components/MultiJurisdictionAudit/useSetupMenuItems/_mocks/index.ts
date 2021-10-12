@@ -11,7 +11,7 @@ import {
 import { IAuditBoard } from '../../useAuditBoards'
 import { IRound } from '../../useRoundsAuditAdmin'
 import { IAuditSettings } from '../../useAuditSettings'
-import { FileProcessingStatus, IFileInfo } from '../../useCSV'
+import { FileProcessingStatus, IFileInfo, CvrFileType } from '../../useCSV'
 
 export const manifestFile = new File(
   [readFileSync(join(__dirname, './test_manifest.csv'), 'utf8')],
@@ -412,7 +412,11 @@ export const cvrsMocks: { [key: string]: ICvrFileInfo } = {
     numBallots: null,
   },
   processing: {
-    file: { name: 'cvrs.csv', uploadedAt: '2020-11-18T21:39:05.765+00:00' },
+    file: {
+      name: 'cvrs.csv',
+      uploadedAt: '2020-11-18T21:39:05.765+00:00',
+      cvrFileType: CvrFileType.CLEARBALLOT,
+    },
     processing: {
       status: FileProcessingStatus.PROCESSING,
       startedAt: '2020-11-18T21:39:05.765+00:00',
@@ -424,7 +428,11 @@ export const cvrsMocks: { [key: string]: ICvrFileInfo } = {
     numBallots: 10,
   },
   processed: {
-    file: { name: 'cvrs.csv', uploadedAt: '2020-11-18T21:39:05.765+00:00' },
+    file: {
+      name: 'cvrs.csv',
+      uploadedAt: '2020-11-18T21:39:05.765+00:00',
+      cvrFileType: CvrFileType.CLEARBALLOT,
+    },
     processing: {
       status: FileProcessingStatus.PROCESSED,
       startedAt: '2020-11-18T21:39:05.765+00:00',
@@ -439,6 +447,7 @@ export const cvrsMocks: { [key: string]: ICvrFileInfo } = {
     file: {
       name: 'cvrs.csv',
       uploadedAt: '2020-11-15T17:25:25.663592+00:00',
+      cvrFileType: CvrFileType.CLEARBALLOT,
     },
     processing: {
       completedAt: '2020-11-15T17:25:26.09915+00:00',

@@ -11,7 +11,7 @@ import {
 import styled from 'styled-components'
 import { Formik, FormikProps } from 'formik'
 import { IJurisdiction, JurisdictionRoundStatus } from '../useJurisdictions'
-import { FileProcessingStatus, IFileInfo } from '../useCSV'
+import { FileProcessingStatus, IFileInfo, CvrFileType } from '../useCSV'
 import { JAFileDownloadButtons } from '../RoundManagement'
 import { IRound } from '../useRoundsAuditAdmin'
 import useAuditBoards from '../useAuditBoards'
@@ -34,6 +34,12 @@ const FileStatusTag = ({
       return <StatusTag>No file uploaded</StatusTag>
   }
 }
+
+const prettyCvrFileType = (cvrFileType: CvrFileType) =>
+  ({
+    DOMINION: 'Dominion',
+    CLEARBALLOT: 'ClearBallot',
+  }[cvrFileType])
 
 const StatusCard = styled(Card)`
   &:not(:last-child) {
@@ -61,14 +67,19 @@ const FileStatusCard = ({
     <H6>{title}</H6>
     <FileStatusTag processing={fileInfo.processing} />
     {fileInfo.file && (
-      <a
-        className="download-link"
-        href={downloadUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        {fileInfo.file.name}
-      </a>
+      <>
+        <a
+          className="download-link"
+          href={downloadUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {fileInfo.file.name}
+        </a>
+        {fileInfo.file.cvrFileType && (
+          <span> ({prettyCvrFileType(fileInfo.file.cvrFileType)})</span>
+        )}
+      </>
     )}
     {fileInfo.processing && fileInfo.processing.error && (
       <p className="error">{fileInfo.processing.error}</p>

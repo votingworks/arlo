@@ -1,5 +1,11 @@
 import React from 'react'
-import { waitFor, fireEvent, render, screen } from '@testing-library/react'
+import {
+  waitFor,
+  fireEvent,
+  render,
+  screen,
+  within,
+} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {
   BrowserRouter as Router,
@@ -218,12 +224,6 @@ describe('AA setup flow', () => {
       await screen.findByText('You must upload a file')
 
       userEvent.upload(jurisdisctionInput, jurisdictionFile)
-      await waitFor(() =>
-        expect(
-          screen.queryByText('You must upload a file')
-        ).not.toBeInTheDocument()
-      )
-
       userEvent.click(jurisdictionButton)
       await screen.findByText(/Uploaded/)
     })
@@ -259,12 +259,6 @@ describe('AA setup flow', () => {
       await screen.findByText('You must upload a file')
 
       userEvent.upload(jurisdisctionInput, jurisdictionErrorFile)
-      await waitFor(() =>
-        expect(
-          screen.queryByText('You must upload a file')
-        ).not.toBeInTheDocument()
-      )
-
       userEvent.click(jurisdictionButton)
       await screen.findByText('Invalid CSV')
     })
@@ -304,12 +298,6 @@ describe('AA setup flow', () => {
       await screen.findByText('You must upload a file')
 
       userEvent.upload(standardizedContestInput, standardizedContestsFile)
-      await waitFor(() =>
-        expect(
-          screen.queryByText('You must upload a file')
-        ).not.toBeInTheDocument()
-      )
-
       userEvent.click(standardizedContestButton)
       await screen.findByText(/Uploaded/)
     })
@@ -461,12 +449,6 @@ describe('JA setup', () => {
       await screen.findByText('You must upload a file')
 
       userEvent.upload(manifestInput, manifestFile)
-      await waitFor(() =>
-        expect(
-          screen.queryByText('You must upload a file')
-        ).not.toBeInTheDocument()
-      )
-
       userEvent.click(manifestButton)
       await screen.findByText('Uploaded at 6/8/2020, 9:39:14 PM.')
     })
@@ -513,12 +495,6 @@ describe('JA setup', () => {
       await screen.findByText('You must upload a file')
 
       userEvent.upload(talliesInput, talliesFile)
-      await waitFor(() =>
-        expect(
-          screen.queryByText('You must upload a file')
-        ).not.toBeInTheDocument()
-      )
-
       userEvent.click(talliesButton)
       await screen.findByText('Uploaded at 7/8/2020, 9:39:14 PM.')
     })
@@ -589,6 +565,16 @@ describe('JA setup', () => {
     await withMockFetch(expectedCalls, async () => {
       renderView()
       await screen.findByText('Audit Source Data')
+      const fileTypeSelect = screen.getByLabelText(/CVR File Type:/)
+      within(fileTypeSelect).getByRole('option', {
+        name: 'Dominion',
+        selected: true,
+      })
+      userEvent.selectOptions(
+        fileTypeSelect,
+        screen.getByRole('option', { name: 'ClearBallot' })
+      )
+
       const cvrsInput = screen.getByLabelText('Select a CSV...')
       const cvrsButton = screen.getByRole('button', { name: 'Upload File' })
 
@@ -596,19 +582,40 @@ describe('JA setup', () => {
       await screen.findByText('You must upload a file')
 
       userEvent.upload(cvrsInput, cvrsFile)
-      await waitFor(() =>
-        expect(
-          screen.queryByText('You must upload a file')
-        ).not.toBeInTheDocument()
-      )
-
       userEvent.click(cvrsButton)
 
       await screen.findByText('Uploading...')
+      expect(fileTypeSelect).toBeDisabled()
 
       await screen.findByText('Processing...')
+      expect(fileTypeSelect).toBeDisabled()
 
       await screen.findByText('Uploaded at 11/18/2020, 9:39:14 PM.')
+      expect(fileTypeSelect).toBeDisabled()
+      within(fileTypeSelect).getByRole('option', {
+        name: 'ClearBallot',
+        selected: true,
+      })
+    })
+  })
+
+  it('after deleting CVRs, keeps last selected CVR file type ', async () => {
+    const expectedCalls = [
+      jaApiCalls.getUser,
+      jaApiCalls.getSettings(auditSettings.ballotComparisonAll),
+      jaApiCalls.getRounds([]),
+      jaApiCalls.getBallotManifestFile(manifestMocks.processed),
+      jaApiCalls.getCVRSfile(cvrsMocks.processed),
+      jaApiCalls.deleteCVRs,
+      jaApiCalls.getCVRSfile(cvrsMocks.empty),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderView()
+      await screen.findByText('Uploaded at 6/8/2020, 9:39:14 PM.')
+      screen.getByRole('option', { name: 'ClearBallot', selected: true })
+      userEvent.click(screen.getAllByRole('button', { name: 'Delete File' })[1])
+      await screen.findByText('Select a CSV...')
+      screen.getByRole('option', { name: 'ClearBallot', selected: true })
     })
   })
 
@@ -672,12 +679,6 @@ describe('JA setup', () => {
       await screen.findByText('You must upload a file')
 
       userEvent.upload(manifestInput, manifestFile)
-      await waitFor(() =>
-        expect(
-          screen.queryByText('You must upload a file')
-        ).not.toBeInTheDocument()
-      )
-
       userEvent.click(manifestButton)
       await screen.findByText('Invalid CSV')
     })
@@ -711,12 +712,6 @@ describe('JA setup', () => {
       await screen.findByText('You must upload a file')
 
       userEvent.upload(manifestInput, manifestFile)
-      await waitFor(() =>
-        expect(
-          screen.queryByText('You must upload a file')
-        ).not.toBeInTheDocument()
-      )
-
       userEvent.click(manifestButton)
       await screen.findByText('Current file:')
     })

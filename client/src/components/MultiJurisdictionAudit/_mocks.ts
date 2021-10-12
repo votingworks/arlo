@@ -42,6 +42,7 @@ const cvrsFormData: FormData = new FormData()
 // Make the mock CVR file large enough to trigger an "Uploading..." progress bar
 Object.defineProperty(cvrsFile, 'size', { value: 1000 * 1000 })
 cvrsFormData.append('cvrs', cvrsFile, cvrsFile.name)
+cvrsFormData.append('cvrFileType', 'CLEARBALLOT')
 
 export const apiCalls = {
   serverError: (
@@ -205,6 +206,11 @@ export const jaApiCalls = {
       method: 'PUT',
       body: cvrsFormData,
     },
+    response: { status: 'ok' },
+  },
+  deleteCVRs: {
+    url: '/api/election/1/jurisdiction/jurisdiction-id-1/cvrs',
+    options: { method: 'DELETE' },
     response: { status: 'ok' },
   },
   getAuditBoards: (auditBoards: IAuditBoard[]) => ({

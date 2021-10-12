@@ -11,10 +11,16 @@ export enum FileProcessingStatus {
   ERRORED = 'ERRORED',
 }
 
+export enum CvrFileType {
+  DOMINION = 'DOMINION',
+  CLEARBALLOT = 'CLEARBALLOT',
+}
+
 export interface IFileInfo {
   file: {
     name: string
     uploadedAt: string
+    cvrFileType?: CvrFileType
   } | null
   processing: {
     status: FileProcessingStatus
@@ -45,10 +51,12 @@ const putCSVFile = async (
   url: string,
   csv: File,
   formKey: string,
-  trackProgress: (progress: number) => void
+  trackProgress: (progress: number) => void,
+  cvrFileType?: CvrFileType
 ): Promise<boolean> => {
   const formData: FormData = new FormData()
   formData.append(formKey, csv, csv.name)
+  if (cvrFileType) formData.append('cvrFileType', cvrFileType)
   try {
     await axios(`/api${url}`, addCSRFToken({
       method: 'PUT',
@@ -107,12 +115,19 @@ const useCSV = (
     dependencyNotProcessing,
   ])
 
-  const uploadCSV = async (file: File): Promise<boolean> => {
+  const uploadCSV = async (
+    file: File,
+    cvrFileType?: CvrFileType
+  ): Promise<boolean> => {
     if (!shouldFetch) return false
     setUpload({ file, progress: 0 })
     if (
-      await putCSVFile(url, file, formKey, progress =>
-        setUpload({ file, progress })
+      await putCSVFile(
+        url,
+        file,
+        formKey,
+        progress => setUpload({ file, progress }),
+        cvrFileType
       )
     ) {
       setCSV(await loadCSVFile(url, shouldFetch))

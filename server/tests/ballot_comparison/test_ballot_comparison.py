@@ -130,7 +130,10 @@ def test_set_contest_metadata_on_manifest_and_cvr_upload(
 
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={"cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",)},
+        data={
+            "cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",),
+            "cvrFileType": "DOMINION",
+        },
     )
     assert_ok(rv)
 
@@ -142,7 +145,10 @@ def test_set_contest_metadata_on_manifest_and_cvr_upload(
 
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/cvrs",
-        data={"cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",)},
+        data={
+            "cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",),
+            "cvrFileType": "DOMINION",
+        },
     )
     assert_ok(rv)
 
@@ -181,7 +187,10 @@ def test_set_contest_metadata_on_manifest_and_cvr_upload(
     new_cvr = "\n".join(TEST_CVRS.splitlines()[:10])
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={"cvrs": (io.BytesIO(new_cvr.encode()), "cvrs.csv",)},
+        data={
+            "cvrs": (io.BytesIO(new_cvr.encode()), "cvrs.csv",),
+            "cvrFileType": "DOMINION",
+        },
     )
     assert_ok(rv)
 
@@ -910,7 +919,8 @@ def test_ballot_comparison_cvr_choice_names_dont_match(
             "cvrs": (
                 io.BytesIO(TEST_CVRS.replace("Choice 1-1", "Choice A").encode()),
                 "cvrs.csv",
-            )
+            ),
+            "cvrFileType": "DOMINION",
         },
     )
     assert_ok(rv)

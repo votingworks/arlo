@@ -319,6 +319,7 @@ export const JurisdictionAdminView: React.FC = () => {
                   tabulator(s), in order.`
               }
               sampleFileLink=""
+              showCvrFileType
             />
           )}
         </VerticalInner>
