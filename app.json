@@ -23,8 +23,5 @@
     }
   },
   "name": "arlo",
-  "scripts": {
-    "postdeploy": "heroku pg:backups:restore vx-arlo-staging:: -a $HEROKU_APP_NAME --confirm $HEROKU_APP_NAME"
-  },
   "stack": "heroku-18"
 }
