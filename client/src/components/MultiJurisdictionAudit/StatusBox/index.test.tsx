@@ -336,8 +336,8 @@ describe('StatusBox', () => {
             rounds={[]}
             auditBoards={[]}
             ballotManifest={{ file: null, processing: null }}
-            batchTallies={{ file: null, processing: null }}
-            cvrs={{ file: null, processing: null }}
+            batchTallies={null}
+            cvrs={null}
             auditType="BALLOT_POLLING"
             auditName="Test Audit"
             isAuditOnline
@@ -363,8 +363,8 @@ describe('StatusBox', () => {
               file: null,
               processing: fileProcessingMocks.processed,
             }}
-            batchTallies={{ file: null, processing: null }}
-            cvrs={{ file: null, processing: null }}
+            batchTallies={null}
+            cvrs={null}
             auditType="BALLOT_POLLING"
             auditName="Test Audit"
             isAuditOnline
@@ -386,8 +386,8 @@ describe('StatusBox', () => {
               file: null,
               processing: fileProcessingMocks.processed,
             }}
-            batchTallies={{ file: null, processing: null }}
-            cvrs={{ file: null, processing: null }}
+            batchTallies={null}
+            cvrs={null}
             auditType="BALLOT_POLLING"
             auditName="Test Audit"
             isAuditOnline
@@ -408,8 +408,8 @@ describe('StatusBox', () => {
               file: null,
               processing: fileProcessingMocks.processed,
             }}
-            batchTallies={{ file: null, processing: null }}
-            cvrs={{ file: null, processing: null }}
+            batchTallies={null}
+            cvrs={null}
             auditType="BALLOT_POLLING"
             auditName="Test Audit"
             isAuditOnline
@@ -430,8 +430,8 @@ describe('StatusBox', () => {
               file: null,
               processing: fileProcessingMocks.processed,
             }}
-            batchTallies={{ file: null, processing: null }}
-            cvrs={{ file: null, processing: null }}
+            batchTallies={null}
+            cvrs={null}
             auditType="BALLOT_POLLING"
             auditName="Test Audit"
             isAuditOnline
@@ -452,8 +452,8 @@ describe('StatusBox', () => {
               file: null,
               processing: fileProcessingMocks.processed,
             }}
-            batchTallies={{ file: null, processing: null }}
-            cvrs={{ file: null, processing: null }}
+            batchTallies={null}
+            cvrs={null}
             auditType="BALLOT_POLLING"
             auditName="Test Audit"
             isAuditOnline
@@ -475,8 +475,8 @@ describe('StatusBox', () => {
               file: null,
               processing: fileProcessingMocks.processed,
             }}
-            batchTallies={{ file: null, processing: null }}
-            cvrs={{ file: null, processing: null }}
+            batchTallies={null}
+            cvrs={null}
             auditType="BALLOT_POLLING"
             auditName="Test Audit"
             isAuditOnline={false}
@@ -502,8 +502,8 @@ describe('StatusBox', () => {
               file: null,
               processing: fileProcessingMocks.processed,
             }}
-            batchTallies={{ file: null, processing: null }}
-            cvrs={{ file: null, processing: null }}
+            batchTallies={null}
+            cvrs={null}
             auditType="BALLOT_POLLING"
             auditName="Test Audit"
             isAuditOnline
@@ -527,8 +527,8 @@ describe('StatusBox', () => {
               file: null,
               processing: fileProcessingMocks.processed,
             }}
-            batchTallies={{ file: null, processing: null }}
-            cvrs={{ file: null, processing: null }}
+            batchTallies={null}
+            cvrs={null}
             auditType="BALLOT_POLLING"
             auditName="Test Audit"
             isAuditOnline
@@ -563,7 +563,7 @@ describe('StatusBox', () => {
                 file: null,
                 processing: fileProcessingMocks.processed,
               }}
-              batchTallies={{ file: null, processing: null }}
+              batchTallies={null}
               cvrs={{ file: null, processing: null }}
               auditType={auditType}
               auditName="Test Audit"
@@ -585,7 +585,7 @@ describe('StatusBox', () => {
                 file: null,
                 processing: fileProcessingMocks.processed,
               }}
-              batchTallies={{ file: null, processing: null }}
+              batchTallies={null}
               cvrs={{
                 file: null,
                 processing: fileProcessingMocks.processed,
@@ -611,7 +611,7 @@ describe('StatusBox', () => {
                 file: null,
                 processing: fileProcessingMocks.processed,
               }}
-              batchTallies={{ file: null, processing: null }}
+              batchTallies={null}
               cvrs={{
                 file: null,
                 processing: fileProcessingMocks.errored,
@@ -638,7 +638,7 @@ describe('StatusBox', () => {
               processing: fileProcessingMocks.processed,
             }}
             batchTallies={{ file: null, processing: null }}
-            cvrs={{ file: null, processing: null }}
+            cvrs={null}
             auditType="BATCH_COMPARISON"
             auditName="Test Audit"
             isAuditOnline={false}
@@ -663,7 +663,7 @@ describe('StatusBox', () => {
               file: null,
               processing: fileProcessingMocks.processed,
             }}
-            cvrs={{ file: null, processing: null }}
+            cvrs={null}
             auditType="BATCH_COMPARISON"
             auditName="Test Audit"
             isAuditOnline={false}
@@ -689,7 +689,7 @@ describe('StatusBox', () => {
               file: null,
               processing: fileProcessingMocks.errored,
             }}
-            cvrs={{ file: null, processing: null }}
+            cvrs={null}
             auditType="BATCH_COMPARISON"
             auditName="Test Audit"
             isAuditOnline={false}
