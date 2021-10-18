@@ -173,6 +173,22 @@ def hybrid_contest_choice_vote_counts(
     }
 
 
+def get_header_indices(headers_row: List[str]) -> Dict[str, int]:
+    return {header: i for i, header in enumerate(headers_row)}
+
+
+def column_value(
+    row: List[str], header: str, row_number: int, header_indices: Dict[str, int]
+):
+    index = header_indices.get(header)
+    if index is None:
+        raise UserError(f"Missing required column {header}")
+    value = row[index] if index < len(row) else None
+    if value is None or value == "":
+        raise UserError(f"{header} is required. Missing {header} in row {row_number}.")
+    return value
+
+
 def parse_clearballot_cvrs(
     jurisdiction: Jurisdiction,
 ) -> Tuple[CVR_CONTESTS_METADATA, Iterable[CvrBallot]]:
@@ -210,19 +226,16 @@ def parse_clearballot_cvrs(
     batches_by_key = {
         (batch.tabulator, batch.name): batch for batch in jurisdiction.batches
     }
+    header_indices = get_header_indices(headers)
 
-    def parse_cvr_row(row: List[str]):
-        [
-            row_number,
-            box_id,
-            box_position,
-            ballot_id,
-            _precinct_id,
-            _ballot_style_id,
-            _precinct_style_name,
-            scan_computer_name,
-            *_,
-        ] = row[:first_contest_column]
+    def parse_cvr_row(row: List[str], row_index: int):
+        row_number = column_value(row, "RowNumber", row_index, header_indices)
+        box_id = column_value(row, "BoxID", row_number, header_indices)
+        box_position = column_value(row, "BoxPosition", row_number, header_indices)
+        ballot_id = column_value(row, "BallotID", row_number, header_indices)
+        scan_computer_name = column_value(
+            row, "ScanComputerName", row_number, header_indices
+        )
         interpretations = row[first_contest_column:]
 
         db_batch = batches_by_key.get((scan_computer_name, box_id))
@@ -259,7 +272,7 @@ def parse_clearballot_cvrs(
             " inconsistency in other rows in the CVR file."
         )
 
-    return contests_metadata, (parse_cvr_row(row) for row in cvrs)
+    return contests_metadata, (parse_cvr_row(row, i + 1) for i, row in enumerate(cvrs))
 
 
 def parse_dominion_cvrs(
@@ -275,7 +288,7 @@ def parse_dominion_cvrs(
     first_contest_column = next(c for c, value in enumerate(contest_row) if value != "")
     contest_headers = contest_row[first_contest_column:]
     contest_choices = next(cvrs)[first_contest_column:]
-    _headers_and_affiliations = next(cvrs)
+    headers_and_affiliations = next(cvrs)
 
     # Contest headers look like this: "Presidential Primary (Vote For=1)"
     # We want to parse: contest_name="Presidential Primary", votes_allowed=1
@@ -310,16 +323,14 @@ def parse_dominion_cvrs(
     batches_by_key = {
         (batch.tabulator, batch.name): batch for batch in jurisdiction.batches
     }
+    header_indices = get_header_indices(headers_and_affiliations[:first_contest_column])
 
-    def parse_cvr_row(row: List[str]):
-        [
-            cvr_number,
-            tabulator_number,
-            batch_id,
-            record_id,
-            imprinted_id,
-            *_,  # CountingGroup (maybe), PrecintPortion, BallotType
-        ] = row[:first_contest_column]
+    def parse_cvr_row(row: List[str], row_index: int):
+        cvr_number = column_value(row, "CvrNumber", row_index, header_indices)
+        tabulator_number = column_value(row, "TabulatorNum", cvr_number, header_indices)
+        batch_id = column_value(row, "BatchId", cvr_number, header_indices)
+        record_id = column_value(row, "RecordId", cvr_number, header_indices)
+        imprinted_id = column_value(row, "ImprintedId", cvr_number, header_indices)
         interpretations = row[first_contest_column:]
 
         db_batch = batches_by_key.get((tabulator_number, batch_id))
@@ -357,7 +368,7 @@ def parse_dominion_cvrs(
             " inconsistency in other rows in the CVR file."
         )
 
-    return contests_metadata, (parse_cvr_row(row) for row in cvrs)
+    return contests_metadata, (parse_cvr_row(row, i + 4) for i, row in enumerate(cvrs))
 
 
 @background_task
