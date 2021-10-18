@@ -208,7 +208,6 @@ def parse_clearballot_cvrs(
     # We want to parse: contest_name="Presidential Primary", votes_allowed=1, choice_name="Joe Schmo"
     contests_metadata: JSONDict = defaultdict(lambda: dict(choices=dict()))
     for column, header in enumerate(headers[first_contest_column:]):
-        # TODO what happens if there's a colon in a contest name?
         match = re.match(r"^.*:(.*):Vote For (\d+):(.*):.*$", header)
         if not match:
             raise UserError(f"Invalid contest header: {header}")
@@ -397,7 +396,7 @@ def process_cvr_file(
             else:
                 raise Exception(
                     f"Unsupported CVR file type: {jurisdiction.cvr_file_type}"
-                )
+                )  # pragma: no cover
 
         contests_metadata, cvr_ballots = parse_cvrs()
 
@@ -536,8 +535,7 @@ def process_cvr_file(
         error = str(exc) or str(exc.__class__.__name__)
         if isinstance(exc, UserError):
             raise exc
-        # Until we add validation/error handling to our CVR parsing, we'll just
-        # catch all errors and wrap them with a generic message.
+        # Catch all unexpected errors and wrap them with a generic message.
         raise Exception("Could not parse CVR file") from exc
     finally:
         session = Session(db_engine)
