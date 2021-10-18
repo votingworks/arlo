@@ -267,8 +267,8 @@ export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
 interface IJurisdictionAdminProps {
   rounds: IRound[]
   ballotManifest: IFileInfo
-  batchTallies: IFileInfo
-  cvrs: IFileInfo
+  batchTallies: IFileInfo | null
+  cvrs: IFileInfo | null
   auditBoards: IAuditBoard[]
   auditType: IAuditSettings['auditType']
   children?: ReactElement
@@ -295,9 +295,9 @@ export const JurisdictionAdminStatusBox = ({
   // Audit has not started
   if (!isAuditStarted(rounds)) {
     const files: IFileInfo['processing'][] = [ballotManifest.processing]
-    if (auditType === 'BATCH_COMPARISON') files.push(batchTallies.processing)
+    if (auditType === 'BATCH_COMPARISON') files.push(batchTallies!.processing)
     if (auditType === 'BALLOT_COMPARISON' || auditType === 'HYBRID')
-      files.push(cvrs.processing)
+      files.push(cvrs!.processing)
 
     const numComplete = files.filter(
       f => f && f.status === FileProcessingStatus.PROCESSED
