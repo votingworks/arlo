@@ -39,6 +39,7 @@ const Participants: React.FC<IProps> = ({ nextStage, refresh }: IProps) => {
     if (
       auditSettings &&
       jurisdictionsFile &&
+      isFileProcessed(jurisdictionsFile) &&
       (!(isBallotComparison || isHybrid) ||
         (standardizedContestsFile &&
           isFileProcessed(standardizedContestsFile))) &&
