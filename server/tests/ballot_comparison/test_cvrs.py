@@ -571,6 +571,106 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortio
             "DOMINION",
         ),
         (
+            """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
+,,,,,,,,"Contest 1 (Vote For=1)","Contest 1 (Vote For=1)"
+,,,,,,,,Choice 1-1,Choice 1-2
+TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM
+TABULATOR1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,0,1
+""",
+            "Missing required column CvrNumber",
+            "DOMINION",
+        ),
+        (
+            """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
+,,,,,,,,"Contest 1 (Vote For=1)","Contest 1 (Vote For=1)"
+,,,,,,,,Choice 1-1,Choice 1-2
+CvrNumber,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM
+1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,0,1
+""",
+            "Missing required column TabulatorNum",
+            "DOMINION",
+        ),
+        (
+            """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
+,,,,,,,,"Contest 1 (Vote For=1)","Contest 1 (Vote For=1)"
+,,,,,,,,Choice 1-1,Choice 1-2
+CvrNumber,TabulatorNum,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM
+1,TABULATOR1,1,1-1-1,Election Day,12345,COUNTY,0,1
+""",
+            "Missing required column BatchId",
+            "DOMINION",
+        ),
+        (
+            """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
+,,,,,,,,"Contest 1 (Vote For=1)","Contest 1 (Vote For=1)"
+,,,,,,,,Choice 1-1,Choice 1-2
+CvrNumber,TabulatorNum,BatchId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM
+1,TABULATOR1,BATCH1,1-1-1,Election Day,12345,COUNTY,0,1
+""",
+            "Missing required column RecordId",
+            "DOMINION",
+        ),
+        (
+            """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
+,,,,,,,,"Contest 1 (Vote For=1)","Contest 1 (Vote For=1)"
+,,,,,,,,Choice 1-1,Choice 1-2
+CvrNumber,TabulatorNum,BatchId,RecordId,CountingGroup,PrecinctPortion,BallotType,REP,DEM
+1,TABULATOR1,BATCH1,1,Election Day,12345,COUNTY,0,1
+""",
+            "Missing required column ImprintedId",
+            "DOMINION",
+        ),
+        (
+            """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
+,,,,,,,,"Contest 1 (Vote For=1)","Contest 1 (Vote For=1)"
+,,,,,,,,Choice 1-1,Choice 1-2
+CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM
+,TABULATOR1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,0,1
+""",
+            "CvrNumber is required. Missing CvrNumber in row 1.",
+            "DOMINION",
+        ),
+        (
+            """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
+,,,,,,,,"Contest 1 (Vote For=1)","Contest 1 (Vote For=1)"
+,,,,,,,,Choice 1-1,Choice 1-2
+CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM
+1,,BATCH1,1,1-1-1,Election Day,12345,COUNTY,0,1
+""",
+            "TabulatorNum is required. Missing TabulatorNum in row 1.",
+            "DOMINION",
+        ),
+        (
+            """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
+,,,,,,,,"Contest 1 (Vote For=1)","Contest 1 (Vote For=1)"
+,,,,,,,,Choice 1-1,Choice 1-2
+CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM
+1,TABULATOR1,,1,1-1-1,Election Day,12345,COUNTY,0,1
+""",
+            "BatchId is required. Missing BatchId in row 1.",
+            "DOMINION",
+        ),
+        (
+            """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
+,,,,,,,,"Contest 1 (Vote For=1)","Contest 1 (Vote For=1)"
+,,,,,,,,Choice 1-1,Choice 1-2
+CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM
+1,TABULATOR1,BATCH1,,1-1-1,Election Day,12345,COUNTY,0,1
+""",
+            "RecordId is required. Missing RecordId in row 1.",
+            "DOMINION",
+        ),
+        (
+            """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
+,,,,,,,,"Contest 1 (Vote For=1)","Contest 1 (Vote For=1)"
+,,,,,,,,Choice 1-1,Choice 1-2
+CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM
+1,TABULATOR1,BATCH1,1,,Election Day,12345,COUNTY,0,1
+""",
+            "ImprintedId is required. Missing ImprintedId in row 1.",
+            "DOMINION",
+        ),
+        (
             """RowNumber,BoxID,BoxPosition,BallotID,PrecinctID,BallotStyleID,PrecinctStyleName,ScanComputerName,Status,Remade,Choice_1_1:Contest 1:Vote For 1:Choice 1-1:Non-Partisan,Choice_210_1:Contest 1:Vote For 1:Choice 1-2:Non-Partisan,Choice_34_1:Contest 2:Vote For 2:Choice 2-1:Non-Partisan,Choice_4_1:Contest 2:Vote For 2:Choice 2-2:Non-Partisan,Choice_173_1:Contest 2:Vote For 2:Choice 2-3:Non-Partisan
 1,BATCH1,1,1-1-1,p,bs,ps,TABULATO1,s,r,0,1,1,1,0
 """,
@@ -581,6 +681,76 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortio
                 " TABULATOR1, BATCH1. Please check your CVR file and ballot manifest thoroughly to make"
                 " sure these values match - there may be a similar inconsistency in other rows in the CVR file."
             ),
+            "CLEARBALLOT",
+        ),
+        (
+            """BoxID,BoxPosition,BallotID,PrecinctID,BallotStyleID,PrecinctStyleName,ScanComputerName,Status,Remade,Choice_1_1:Contest 1:Vote For 1:Choice 1-1:Non-Partisan,Choice_210_1:Contest 1:Vote For 1:Choice 1-2:Non-Partisan,Choice_34_1:Contest 2:Vote For 2:Choice 2-1:Non-Partisan,Choice_4_1:Contest 2:Vote For 2:Choice 2-2:Non-Partisan,Choice_173_1:Contest 2:Vote For 2:Choice 2-3:Non-Partisan
+BATCH1,1,1-1-1,p,bs,ps,TABULATOR1,s,r,0,1,1,1,0
+""",
+            "Missing required column RowNumber",
+            "CLEARBALLOT",
+        ),
+        (
+            """RowNumber,BoxPosition,BallotID,PrecinctID,BallotStyleID,PrecinctStyleName,ScanComputerName,Status,Remade,Choice_1_1:Contest 1:Vote For 1:Choice 1-1:Non-Partisan,Choice_210_1:Contest 1:Vote For 1:Choice 1-2:Non-Partisan,Choice_34_1:Contest 2:Vote For 2:Choice 2-1:Non-Partisan,Choice_4_1:Contest 2:Vote For 2:Choice 2-2:Non-Partisan,Choice_173_1:Contest 2:Vote For 2:Choice 2-3:Non-Partisan
+1,1,1-1-1,p,bs,ps,TABULATOR1,s,r,0,1,1,1,0
+""",
+            "Missing required column BoxID",
+            "CLEARBALLOT",
+        ),
+        (
+            """RowNumber,BoxID,BallotID,PrecinctID,BallotStyleID,PrecinctStyleName,ScanComputerName,Status,Remade,Choice_1_1:Contest 1:Vote For 1:Choice 1-1:Non-Partisan,Choice_210_1:Contest 1:Vote For 1:Choice 1-2:Non-Partisan,Choice_34_1:Contest 2:Vote For 2:Choice 2-1:Non-Partisan,Choice_4_1:Contest 2:Vote For 2:Choice 2-2:Non-Partisan,Choice_173_1:Contest 2:Vote For 2:Choice 2-3:Non-Partisan
+1,BATCH1,1-1-1,p,bs,ps,TABULATOR1,s,r,0,1,1,1,0
+""",
+            "Missing required column BoxPosition",
+            "CLEARBALLOT",
+        ),
+        (
+            """RowNumber,BoxID,BoxPosition,PrecinctID,BallotStyleID,PrecinctStyleName,ScanComputerName,Status,Remade,Choice_1_1:Contest 1:Vote For 1:Choice 1-1:Non-Partisan,Choice_210_1:Contest 1:Vote For 1:Choice 1-2:Non-Partisan,Choice_34_1:Contest 2:Vote For 2:Choice 2-1:Non-Partisan,Choice_4_1:Contest 2:Vote For 2:Choice 2-2:Non-Partisan,Choice_173_1:Contest 2:Vote For 2:Choice 2-3:Non-Partisan
+1,BATCH1,1,p,bs,ps,TABULATOR1,s,r,0,1,1,1,0
+""",
+            "Missing required column BallotID",
+            "CLEARBALLOT",
+        ),
+        (
+            """RowNumber,BoxID,BoxPosition,BallotID,PrecinctID,BallotStyleID,PrecinctStyleName,Status,Remade,Choice_1_1:Contest 1:Vote For 1:Choice 1-1:Non-Partisan,Choice_210_1:Contest 1:Vote For 1:Choice 1-2:Non-Partisan,Choice_34_1:Contest 2:Vote For 2:Choice 2-1:Non-Partisan,Choice_4_1:Contest 2:Vote For 2:Choice 2-2:Non-Partisan,Choice_173_1:Contest 2:Vote For 2:Choice 2-3:Non-Partisan
+1,BATCH1,1,1-1-1,p,bs,ps,s,r,0,1,1,1,0
+""",
+            "Missing required column ScanComputerName",
+            "CLEARBALLOT",
+        ),
+        (
+            """RowNumber,BoxID,BoxPosition,BallotID,PrecinctID,BallotStyleID,PrecinctStyleName,ScanComputerName,Status,Remade,Choice_1_1:Contest 1:Vote For 1:Choice 1-1:Non-Partisan,Choice_210_1:Contest 1:Vote For 1:Choice 1-2:Non-Partisan,Choice_34_1:Contest 2:Vote For 2:Choice 2-1:Non-Partisan,Choice_4_1:Contest 2:Vote For 2:Choice 2-2:Non-Partisan,Choice_173_1:Contest 2:Vote For 2:Choice 2-3:Non-Partisan
+,BATCH1,1,1-1-1,p,bs,ps,TABULATOR1,s,r,0,1,1,1,0
+""",
+            "RowNumber is required. Missing RowNumber in row 1.",
+            "CLEARBALLOT",
+        ),
+        (
+            """RowNumber,BoxID,BoxPosition,BallotID,PrecinctID,BallotStyleID,PrecinctStyleName,ScanComputerName,Status,Remade,Choice_1_1:Contest 1:Vote For 1:Choice 1-1:Non-Partisan,Choice_210_1:Contest 1:Vote For 1:Choice 1-2:Non-Partisan,Choice_34_1:Contest 2:Vote For 2:Choice 2-1:Non-Partisan,Choice_4_1:Contest 2:Vote For 2:Choice 2-2:Non-Partisan,Choice_173_1:Contest 2:Vote For 2:Choice 2-3:Non-Partisan
+1,,1,1-1-1,p,bs,ps,TABULATOR1,s,r,0,1,1,1,0
+""",
+            "BoxID is required. Missing BoxID in row 1.",
+            "CLEARBALLOT",
+        ),
+        (
+            """RowNumber,BoxID,BoxPosition,BallotID,PrecinctID,BallotStyleID,PrecinctStyleName,ScanComputerName,Status,Remade,Choice_1_1:Contest 1:Vote For 1:Choice 1-1:Non-Partisan,Choice_210_1:Contest 1:Vote For 1:Choice 1-2:Non-Partisan,Choice_34_1:Contest 2:Vote For 2:Choice 2-1:Non-Partisan,Choice_4_1:Contest 2:Vote For 2:Choice 2-2:Non-Partisan,Choice_173_1:Contest 2:Vote For 2:Choice 2-3:Non-Partisan
+1,BATCH1,,1-1-1,p,bs,ps,TABULATOR1,s,r,0,1,1,1,0
+""",
+            "BoxPosition is required. Missing BoxPosition in row 1.",
+            "CLEARBALLOT",
+        ),
+        (
+            """RowNumber,BoxID,BoxPosition,BallotID,PrecinctID,BallotStyleID,PrecinctStyleName,ScanComputerName,Status,Remade,Choice_1_1:Contest 1:Vote For 1:Choice 1-1:Non-Partisan,Choice_210_1:Contest 1:Vote For 1:Choice 1-2:Non-Partisan,Choice_34_1:Contest 2:Vote For 2:Choice 2-1:Non-Partisan,Choice_4_1:Contest 2:Vote For 2:Choice 2-2:Non-Partisan,Choice_173_1:Contest 2:Vote For 2:Choice 2-3:Non-Partisan
+1,BATCH1,1,,p,bs,ps,TABULATOR1,s,r,0,1,1,1,0
+""",
+            "BallotID is required. Missing BallotID in row 1.",
+            "CLEARBALLOT",
+        ),
+        (
+            """RowNumber,BoxID,BoxPosition,BallotID,PrecinctID,BallotStyleID,PrecinctStyleName,ScanComputerName,Status,Remade,Choice_1_1:Contest 1:Vote For 1:Choice 1-1:Non-Partisan,Choice_210_1:Contest 1:Vote For 1:Choice 1-2:Non-Partisan,Choice_34_1:Contest 2:Vote For 2:Choice 2-1:Non-Partisan,Choice_4_1:Contest 2:Vote For 2:Choice 2-2:Non-Partisan,Choice_173_1:Contest 2:Vote For 2:Choice 2-3:Non-Partisan
+1,BATCH1,1,1-1-1,p,bs,ps,,s,r,0,1,1,1,0
+""",
+            "ScanComputerName is required. Missing ScanComputerName in row 1.",
             "CLEARBALLOT",
         ),
     ]

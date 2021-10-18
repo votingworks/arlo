@@ -229,7 +229,7 @@ def parse_clearballot_cvrs(
     header_indices = get_header_indices(headers)
 
     def parse_cvr_row(row: List[str], row_index: int):
-        row_number = column_value(row, "RowNumber", row_index, header_indices)
+        row_number = column_value(row, "RowNumber", row_index + 1, header_indices)
         box_id = column_value(row, "BoxID", row_number, header_indices)
         box_position = column_value(row, "BoxPosition", row_number, header_indices)
         ballot_id = column_value(row, "BallotID", row_number, header_indices)
@@ -272,7 +272,7 @@ def parse_clearballot_cvrs(
             " inconsistency in other rows in the CVR file."
         )
 
-    return contests_metadata, (parse_cvr_row(row, i + 1) for i, row in enumerate(cvrs))
+    return contests_metadata, (parse_cvr_row(row, i) for i, row in enumerate(cvrs))
 
 
 def parse_dominion_cvrs(
@@ -326,7 +326,7 @@ def parse_dominion_cvrs(
     header_indices = get_header_indices(headers_and_affiliations[:first_contest_column])
 
     def parse_cvr_row(row: List[str], row_index: int):
-        cvr_number = column_value(row, "CvrNumber", row_index, header_indices)
+        cvr_number = column_value(row, "CvrNumber", row_index + 1, header_indices)
         tabulator_number = column_value(row, "TabulatorNum", cvr_number, header_indices)
         batch_id = column_value(row, "BatchId", cvr_number, header_indices)
         record_id = column_value(row, "RecordId", cvr_number, header_indices)
@@ -368,7 +368,7 @@ def parse_dominion_cvrs(
             " inconsistency in other rows in the CVR file."
         )
 
-    return contests_metadata, (parse_cvr_row(row, i + 4) for i, row in enumerate(cvrs))
+    return contests_metadata, (parse_cvr_row(row, i) for i, row in enumerate(cvrs))
 
 
 @background_task
