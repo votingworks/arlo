@@ -208,12 +208,17 @@ export const JurisdictionAdminView: React.FC = () => {
     jurisdictionId,
     rounds
   )
+  const isBatchComparison =
+    auditSettings && auditSettings.auditType === 'BATCH_COMPARISON'
+  const isBallotComparison =
+    auditSettings && auditSettings.auditType === 'BALLOT_COMPARISON'
+  const isHybrid = auditSettings && auditSettings.auditType === 'HYBRID'
 
   if (
     !rounds ||
     !ballotManifest ||
-    !batchTallies ||
-    !cvrs ||
+    (isBatchComparison && !batchTallies) ||
+    ((isBallotComparison || isHybrid) && !cvrs) ||
     !auditBoards ||
     !auditSettings
   )
@@ -239,12 +244,10 @@ export const JurisdictionAdminView: React.FC = () => {
             uploadCSVFile={uploadBallotManifest}
             deleteCSVFile={deleteBallotManifest}
             title={
-              auditSettings.auditType === 'HYBRID'
-                ? 'Ballot Manifest (All ballots)'
-                : 'Ballot Manifest'
+              isHybrid ? 'Ballot Manifest (All ballots)' : 'Ballot Manifest'
             }
             description={
-              auditSettings.auditType === 'HYBRID'
+              isHybrid
                 ? `Click "Browse" to choose the appropriate Ballot
                   Manifest file from your computer. This file should be a
                   comma-separated list of all the ballot batches/containers used
@@ -270,9 +273,9 @@ export const JurisdictionAdminView: React.FC = () => {
             })(auditSettings.auditType)}
             enabled
           />
-          {auditSettings.auditType === 'BATCH_COMPARISON' && (
+          {isBatchComparison && (
             <CSVFile
-              csvFile={batchTallies}
+              csvFile={batchTallies!}
               enabled={
                 !!ballotManifest.processing &&
                 ballotManifest.processing.status ===
@@ -290,11 +293,9 @@ export const JurisdictionAdminView: React.FC = () => {
               sampleFileLink="/sample_candidate_totals_by_batch.csv"
             />
           )}
-          {['BALLOT_COMPARISON', 'HYBRID'].includes(
-            auditSettings.auditType
-          ) && (
+          {(isBallotComparison || isHybrid) && (
             <CSVFile
-              csvFile={cvrs}
+              csvFile={cvrs!}
               enabled={
                 !!ballotManifest.processing &&
                 ballotManifest.processing.status ===
@@ -303,12 +304,12 @@ export const JurisdictionAdminView: React.FC = () => {
               uploadCSVFile={uploadCVRS}
               deleteCSVFile={deleteCVRS}
               title={
-                auditSettings.auditType === 'HYBRID'
+                isHybrid
                   ? 'Cast Vote Records (CVR ballots only)'
                   : 'Cast Vote Records'
               }
               description={
-                auditSettings.auditType === 'HYBRID'
+                isHybrid
                   ? `Click "Browse" to choose the appropriate Cast Vote
                   Records (CVR) file from your computer. This file should be a
                   comma-separated list (.csv) of all the ballots centrally counted by your

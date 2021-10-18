@@ -41,11 +41,8 @@ interface IUpload {
 export const isFileProcessed = (file: IFileInfo): boolean =>
   !!file.processing && file.processing.status === FileProcessingStatus.PROCESSED
 
-const loadCSVFile = async (
-  url: string,
-  shouldFetch: boolean
-): Promise<IFileInfo | null> =>
-  shouldFetch ? api<IFileInfo>(url) : { file: null, processing: null }
+const loadCSVFile = async (url: string): Promise<IFileInfo | null> =>
+  api<IFileInfo>(url)
 
 const putCSVFile = async (
   url: string,
@@ -103,8 +100,9 @@ const useCSV = (
     dependencyFile.processing.completedAt !== null
   useEffect(() => {
     ;(async () => {
+      if (!shouldFetch) return
       if (!hasDependency || dependencyNotUploaded || dependencyNotProcessing) {
-        setCSV(await loadCSVFile(url, shouldFetch))
+        setCSV(await loadCSVFile(url))
       }
     })()
   }, [
@@ -130,7 +128,7 @@ const useCSV = (
         cvrFileType
       )
     ) {
-      setCSV(await loadCSVFile(url, shouldFetch))
+      setCSV(await loadCSVFile(url))
       setUpload(null)
       return true
     }
@@ -141,7 +139,7 @@ const useCSV = (
   const deleteCSV = async (): Promise<boolean> => {
     if (!shouldFetch) return false
     if (await deleteCSVFile(url)) {
-      setCSV(await loadCSVFile(url, shouldFetch))
+      setCSV(await loadCSVFile(url))
       return true
     }
     return false
@@ -151,7 +149,7 @@ const useCSV = (
     shouldFetch && csv && csv.processing && !csv.processing.completedAt
   useInterval(
     async () => {
-      setCSV(await loadCSVFile(url, shouldFetch))
+      setCSV(await loadCSVFile(url))
     },
     shouldPoll ? 1000 : null
   )

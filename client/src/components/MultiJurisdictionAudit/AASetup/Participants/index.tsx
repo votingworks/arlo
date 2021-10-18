@@ -29,28 +29,30 @@ const Participants: React.FC<IProps> = ({ nextStage, refresh }: IProps) => {
     uploadStandardizedContestsFile,
   ] = useStandardizedContestsFile(electionId, auditSettings, jurisdictionsFile)
 
+  const isBallotComparison =
+    auditSettings && auditSettings.auditType === 'BALLOT_COMPARISON'
+  const isHybrid = auditSettings && auditSettings.auditType === 'HYBRID'
+
   // Once the file uploads are complete, we need to notify the setupMenuItems to
   // refresh and unlock the next stage.
   useEffect(() => {
     if (
-      jurisdictionsFile &&
       auditSettings &&
-      standardizedContestsFile &&
-      isFileProcessed(jurisdictionsFile) &&
-      (auditSettings.auditType !== 'BALLOT_COMPARISON' ||
-        isFileProcessed(standardizedContestsFile)) &&
-      (auditSettings.auditType !== 'HYBRID' ||
-        isFileProcessed(standardizedContestsFile)) &&
+      jurisdictionsFile &&
+      (!(isBallotComparison || isHybrid) ||
+        (standardizedContestsFile &&
+          isFileProcessed(standardizedContestsFile))) &&
       nextStage.state === 'locked'
     )
       refresh()
   })
 
-  if (!auditSettings || !jurisdictionsFile || !standardizedContestsFile)
+  if (
+    !auditSettings ||
+    !jurisdictionsFile ||
+    ((isBallotComparison || isHybrid) && !standardizedContestsFile)
+  )
     return null // Still loading
-
-  const isBallotComparison = auditSettings.auditType === 'BALLOT_COMPARISON'
-  const isHybrid = auditSettings.auditType === 'HYBRID'
 
   return (
     <FormWrapper
@@ -74,7 +76,7 @@ const Participants: React.FC<IProps> = ({ nextStage, refresh }: IProps) => {
       />
       {(isBallotComparison || isHybrid) && (
         <CSVFile
-          csvFile={standardizedContestsFile}
+          csvFile={standardizedContestsFile!}
           uploadCSVFile={uploadStandardizedContestsFile}
           title="Standardized Contests"
           description='Click "Browse" to choose the appropriate file from your computer. This file should be a comma-separated list of all the contests on the ballot, the vote choices available in each, and the jurisdiction(s) where each contest appeared on the ballot.'
