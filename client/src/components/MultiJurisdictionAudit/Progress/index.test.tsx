@@ -862,7 +862,7 @@ describe('Progress screen', () => {
       const modal = screen
         .getByRole('heading', { name: 'Jurisdiction 1' })
         .closest('div.bp3-dialog')! as HTMLElement
-      await within(modal).findByText('No batches sampled')
+      await within(modal).findByText('No ballots sampled')
     })
   })
 

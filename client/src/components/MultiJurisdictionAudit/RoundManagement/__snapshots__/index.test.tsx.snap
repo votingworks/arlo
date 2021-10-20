@@ -15,8 +15,7 @@ exports[`RoundManagement renders audit setup with ballot audit 1`] = `
     <p
       class="sc-hMqMXs cTbGLd"
     >
-      Ballots
-       to audit: 
+      Ballots to audit: 
       27
     </p>
     <div
@@ -694,9 +693,11 @@ exports[`RoundManagement renders audit setup with batch audit 1`] = `
     <p
       class="sc-hMqMXs cTbGLd"
     >
-      Batches
-       to audit: 
+      Batches to audit: 
       3
+      <br />
+      Total ballots in batches: 
+      300
     </p>
     <div
       class="sc-dnqmqq jnbCEU"
@@ -1390,9 +1391,11 @@ exports[`RoundManagement renders links & data entry with batch audit 1`] = `
       <p
         class="sc-hMqMXs cTbGLd"
       >
-        Batches
-         to audit: 
+        Batches to audit: 
         3
+        <br />
+        Total ballots in batches: 
+        300
       </p>
       <div
         class="bp3-button-group bp3-vertical bp3-align-left"
@@ -1638,8 +1641,7 @@ exports[`RoundManagement renders links & data entry with offline ballot audit 1`
       <p
         class="sc-hMqMXs cTbGLd"
       >
-        Ballots
-         to audit: 
+        Ballots to audit: 
         27
       </p>
       <div
@@ -1889,8 +1891,7 @@ exports[`RoundManagement renders links & progress with online ballot audit 1`] =
       <p
         class="sc-hMqMXs cTbGLd"
       >
-        Ballots
-         to audit: 
+        Ballots to audit: 
         27
       </p>
       <div

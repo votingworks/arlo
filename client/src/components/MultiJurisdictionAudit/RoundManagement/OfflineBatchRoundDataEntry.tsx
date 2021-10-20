@@ -26,8 +26,7 @@ import useOfflineBatchResults, {
 } from './useOfflineBatchResults'
 import { testNumber } from '../../utilities'
 import CopyToClipboard from '../../Atoms/CopyToClipboard'
-
-const sum = (nums: number[]) => nums.reduce((a, b) => a + b, 0)
+import { sum } from '../../../utils/number'
 
 const OfflineBatchResultsForm = styled.form`
   table {

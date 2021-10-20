@@ -2,6 +2,7 @@ import React from 'react'
 import { ProgressBar, H4, Tag, Intent } from '@blueprintjs/core'
 import styled from 'styled-components'
 import { IAuditBoard } from '../useAuditBoards'
+import { sum } from '../../../utils/number'
 
 const MainBarWrapper = styled.div`
   margin-bottom: 30px;
@@ -27,7 +28,6 @@ const SmallBarWrapper = styled.div`
 
 const RoundProgress = ({ auditBoards }: { auditBoards: IAuditBoard[] }) => {
   if (!auditBoards.length) return null
-  const sum = (ns: number[]) => ns.reduce((a, b) => a + b)
   const auditedBallots = sum(
     auditBoards.map(ab => ab.currentRoundStatus.numAuditedBallots)
   )

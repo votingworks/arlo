@@ -22,6 +22,7 @@ import StatusTag from '../../Atoms/StatusTag'
 import { IAuditSettings } from '../useAuditSettings'
 import { FileProcessingStatus, IFileInfo } from '../useCSV'
 import Map from './ProgressMap'
+import { sum } from '../../../utils/number'
 
 const Wrapper = styled.div`
   flex-grow: 1;
@@ -39,8 +40,6 @@ const TableControls = styled.div`
 
 const formatNumber = ({ value }: { value: number | null }) =>
   value && value.toLocaleString()
-
-const sum = (nums: number[]) => nums.reduce((a, b) => a + b, 0)
 
 const totalFooter = <T extends object>(headerName: string) => (
   info: TableInstance<T>
