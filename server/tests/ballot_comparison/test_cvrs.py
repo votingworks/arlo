@@ -1,9 +1,15 @@
 import io, json
 from typing import List
+import pytest
+from flask import session
 from flask.testing import FlaskClient
 
+
+from ...app import app
 from ...models import *  # pylint: disable=wildcard-import
 from ..helpers import *  # pylint: disable=wildcard-import
+from ...api.cvrs import upload_cvrs
+from ...auth import lib as auth_lib
 from .conftest import TEST_CVRS
 
 
@@ -571,6 +577,116 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortio
             "DOMINION",
         ),
         (
+            """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
+,,,,,,,,"Contest 1 (Vote For=1)","Contest 1 (Vote For=1)"
+,,,,,,,,Choice 1-1,Choice 1-2
+TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM
+TABULATOR1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,0,1
+""",
+            "Missing required column CvrNumber",
+            "DOMINION",
+        ),
+        (
+            """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
+,,,,,,,,"Contest 1 (Vote For=1)","Contest 1 (Vote For=1)"
+,,,,,,,,Choice 1-1,Choice 1-2
+CvrNumber,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM
+1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,0,1
+""",
+            "Missing required column TabulatorNum",
+            "DOMINION",
+        ),
+        (
+            """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
+,,,,,,,,"Contest 1 (Vote For=1)","Contest 1 (Vote For=1)"
+,,,,,,,,Choice 1-1,Choice 1-2
+CvrNumber,TabulatorNum,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM
+1,TABULATOR1,1,1-1-1,Election Day,12345,COUNTY,0,1
+""",
+            "Missing required column BatchId",
+            "DOMINION",
+        ),
+        (
+            """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
+,,,,,,,,"Contest 1 (Vote For=1)","Contest 1 (Vote For=1)"
+,,,,,,,,Choice 1-1,Choice 1-2
+CvrNumber,TabulatorNum,BatchId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM
+1,TABULATOR1,BATCH1,1-1-1,Election Day,12345,COUNTY,0,1
+""",
+            "Missing required column RecordId",
+            "DOMINION",
+        ),
+        (
+            """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
+,,,,,,,,"Contest 1 (Vote For=1)","Contest 1 (Vote For=1)"
+,,,,,,,,Choice 1-1,Choice 1-2
+CvrNumber,TabulatorNum,BatchId,RecordId,CountingGroup,PrecinctPortion,BallotType,REP,DEM
+1,TABULATOR1,BATCH1,1,Election Day,12345,COUNTY,0,1
+""",
+            "Missing required column ImprintedId",
+            "DOMINION",
+        ),
+        (
+            """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
+,,,,,,,,"Contest 1 (Vote For=1)","Contest 1 (Vote For=1)"
+,,,,,,,,Choice 1-1,Choice 1-2
+CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM
+,TABULATOR1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,0,1
+""",
+            "CvrNumber is required. Missing CvrNumber in row 1.",
+            "DOMINION",
+        ),
+        (
+            """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
+,,,,,,,,"Contest 1 (Vote For=1)","Contest 1 (Vote For=1)"
+,,,,,,,,Choice 1-1,Choice 1-2
+CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM
+1,,BATCH1,1,1-1-1,Election Day,12345,COUNTY,0,1
+""",
+            "TabulatorNum is required. Missing TabulatorNum in row 1.",
+            "DOMINION",
+        ),
+        (
+            """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
+,,,,,,,,"Contest 1 (Vote For=1)","Contest 1 (Vote For=1)"
+,,,,,,,,Choice 1-1,Choice 1-2
+CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM
+1,TABULATOR1,,1,1-1-1,Election Day,12345,COUNTY,0,1
+""",
+            "BatchId is required. Missing BatchId in row 1.",
+            "DOMINION",
+        ),
+        (
+            """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
+,,,,,,,,"Contest 1 (Vote For=1)","Contest 1 (Vote For=1)"
+,,,,,,,,Choice 1-1,Choice 1-2
+CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM
+1,TABULATOR1,BATCH1,,1-1-1,Election Day,12345,COUNTY,0,1
+""",
+            "RecordId is required. Missing RecordId in row 1.",
+            "DOMINION",
+        ),
+        (
+            """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
+,,,,,,,,"Contest 1 (Vote For=1)","Contest 1 (Vote For=1)"
+,,,,,,,,Choice 1-1,Choice 1-2
+CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM
+1,TABULATOR1,BATCH1,1,,Election Day,12345,COUNTY,0,1
+""",
+            "ImprintedId is required. Missing ImprintedId in row 1.",
+            "DOMINION",
+        ),
+        (
+            """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
+,,,,,,,,"Contest 1 (Vote For=1)","Contest 1 (Vote Fo=1)"
+,,,,,,,,Choice 1-1,Choice 1-2
+CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM
+1,TABULATOR1,BATCH1,1,,Election Day,12345,COUNTY,0,1
+""",
+            "Invalid contest name: Contest 1 (Vote Fo=1). Contest names should have this format: Contest Name (Vote For=1).",
+            "DOMINION",
+        ),
+        (
             """RowNumber,BoxID,BoxPosition,BallotID,PrecinctID,BallotStyleID,PrecinctStyleName,ScanComputerName,Status,Remade,Choice_1_1:Contest 1:Vote For 1:Choice 1-1:Non-Partisan,Choice_210_1:Contest 1:Vote For 1:Choice 1-2:Non-Partisan,Choice_34_1:Contest 2:Vote For 2:Choice 2-1:Non-Partisan,Choice_4_1:Contest 2:Vote For 2:Choice 2-2:Non-Partisan,Choice_173_1:Contest 2:Vote For 2:Choice 2-3:Non-Partisan
 1,BATCH1,1,1-1-1,p,bs,ps,TABULATO1,s,r,0,1,1,1,0
 """,
@@ -581,6 +697,83 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortio
                 " TABULATOR1, BATCH1. Please check your CVR file and ballot manifest thoroughly to make"
                 " sure these values match - there may be a similar inconsistency in other rows in the CVR file."
             ),
+            "CLEARBALLOT",
+        ),
+        (
+            """BoxID,BoxPosition,BallotID,PrecinctID,BallotStyleID,PrecinctStyleName,ScanComputerName,Status,Remade,Choice_1_1:Contest 1:Vote For 1:Choice 1-1:Non-Partisan,Choice_210_1:Contest 1:Vote For 1:Choice 1-2:Non-Partisan,Choice_34_1:Contest 2:Vote For 2:Choice 2-1:Non-Partisan,Choice_4_1:Contest 2:Vote For 2:Choice 2-2:Non-Partisan,Choice_173_1:Contest 2:Vote For 2:Choice 2-3:Non-Partisan
+BATCH1,1,1-1-1,p,bs,ps,TABULATOR1,s,r,0,1,1,1,0
+""",
+            "Missing required column RowNumber",
+            "CLEARBALLOT",
+        ),
+        (
+            """RowNumber,BoxPosition,BallotID,PrecinctID,BallotStyleID,PrecinctStyleName,ScanComputerName,Status,Remade,Choice_1_1:Contest 1:Vote For 1:Choice 1-1:Non-Partisan,Choice_210_1:Contest 1:Vote For 1:Choice 1-2:Non-Partisan,Choice_34_1:Contest 2:Vote For 2:Choice 2-1:Non-Partisan,Choice_4_1:Contest 2:Vote For 2:Choice 2-2:Non-Partisan,Choice_173_1:Contest 2:Vote For 2:Choice 2-3:Non-Partisan
+1,1,1-1-1,p,bs,ps,TABULATOR1,s,r,0,1,1,1,0
+""",
+            "Missing required column BoxID",
+            "CLEARBALLOT",
+        ),
+        (
+            """RowNumber,BoxID,BallotID,PrecinctID,BallotStyleID,PrecinctStyleName,ScanComputerName,Status,Remade,Choice_1_1:Contest 1:Vote For 1:Choice 1-1:Non-Partisan,Choice_210_1:Contest 1:Vote For 1:Choice 1-2:Non-Partisan,Choice_34_1:Contest 2:Vote For 2:Choice 2-1:Non-Partisan,Choice_4_1:Contest 2:Vote For 2:Choice 2-2:Non-Partisan,Choice_173_1:Contest 2:Vote For 2:Choice 2-3:Non-Partisan
+1,BATCH1,1-1-1,p,bs,ps,TABULATOR1,s,r,0,1,1,1,0
+""",
+            "Missing required column BoxPosition",
+            "CLEARBALLOT",
+        ),
+        (
+            """RowNumber,BoxID,BoxPosition,PrecinctID,BallotStyleID,PrecinctStyleName,ScanComputerName,Status,Remade,Choice_1_1:Contest 1:Vote For 1:Choice 1-1:Non-Partisan,Choice_210_1:Contest 1:Vote For 1:Choice 1-2:Non-Partisan,Choice_34_1:Contest 2:Vote For 2:Choice 2-1:Non-Partisan,Choice_4_1:Contest 2:Vote For 2:Choice 2-2:Non-Partisan,Choice_173_1:Contest 2:Vote For 2:Choice 2-3:Non-Partisan
+1,BATCH1,1,p,bs,ps,TABULATOR1,s,r,0,1,1,1,0
+""",
+            "Missing required column BallotID",
+            "CLEARBALLOT",
+        ),
+        (
+            """RowNumber,BoxID,BoxPosition,BallotID,PrecinctID,BallotStyleID,PrecinctStyleName,Status,Remade,Choice_1_1:Contest 1:Vote For 1:Choice 1-1:Non-Partisan,Choice_210_1:Contest 1:Vote For 1:Choice 1-2:Non-Partisan,Choice_34_1:Contest 2:Vote For 2:Choice 2-1:Non-Partisan,Choice_4_1:Contest 2:Vote For 2:Choice 2-2:Non-Partisan,Choice_173_1:Contest 2:Vote For 2:Choice 2-3:Non-Partisan
+1,BATCH1,1,1-1-1,p,bs,ps,s,r,0,1,1,1,0
+""",
+            "Missing required column ScanComputerName",
+            "CLEARBALLOT",
+        ),
+        (
+            """RowNumber,BoxID,BoxPosition,BallotID,PrecinctID,BallotStyleID,PrecinctStyleName,ScanComputerName,Status,Remade,Choice_1_1:Contest 1:Vote For 1:Choice 1-1:Non-Partisan,Choice_210_1:Contest 1:Vote For 1:Choice 1-2:Non-Partisan,Choice_34_1:Contest 2:Vote For 2:Choice 2-1:Non-Partisan,Choice_4_1:Contest 2:Vote For 2:Choice 2-2:Non-Partisan,Choice_173_1:Contest 2:Vote For 2:Choice 2-3:Non-Partisan
+,BATCH1,1,1-1-1,p,bs,ps,TABULATOR1,s,r,0,1,1,1,0
+""",
+            "RowNumber is required. Missing RowNumber in row 1.",
+            "CLEARBALLOT",
+        ),
+        (
+            """RowNumber,BoxID,BoxPosition,BallotID,PrecinctID,BallotStyleID,PrecinctStyleName,ScanComputerName,Status,Remade,Choice_1_1:Contest 1:Vote For 1:Choice 1-1:Non-Partisan,Choice_210_1:Contest 1:Vote For 1:Choice 1-2:Non-Partisan,Choice_34_1:Contest 2:Vote For 2:Choice 2-1:Non-Partisan,Choice_4_1:Contest 2:Vote For 2:Choice 2-2:Non-Partisan,Choice_173_1:Contest 2:Vote For 2:Choice 2-3:Non-Partisan
+1,,1,1-1-1,p,bs,ps,TABULATOR1,s,r,0,1,1,1,0
+""",
+            "BoxID is required. Missing BoxID in row 1.",
+            "CLEARBALLOT",
+        ),
+        (
+            """RowNumber,BoxID,BoxPosition,BallotID,PrecinctID,BallotStyleID,PrecinctStyleName,ScanComputerName,Status,Remade,Choice_1_1:Contest 1:Vote For 1:Choice 1-1:Non-Partisan,Choice_210_1:Contest 1:Vote For 1:Choice 1-2:Non-Partisan,Choice_34_1:Contest 2:Vote For 2:Choice 2-1:Non-Partisan,Choice_4_1:Contest 2:Vote For 2:Choice 2-2:Non-Partisan,Choice_173_1:Contest 2:Vote For 2:Choice 2-3:Non-Partisan
+1,BATCH1,,1-1-1,p,bs,ps,TABULATOR1,s,r,0,1,1,1,0
+""",
+            "BoxPosition is required. Missing BoxPosition in row 1.",
+            "CLEARBALLOT",
+        ),
+        (
+            """RowNumber,BoxID,BoxPosition,BallotID,PrecinctID,BallotStyleID,PrecinctStyleName,ScanComputerName,Status,Remade,Choice_1_1:Contest 1:Vote For 1:Choice 1-1:Non-Partisan,Choice_210_1:Contest 1:Vote For 1:Choice 1-2:Non-Partisan,Choice_34_1:Contest 2:Vote For 2:Choice 2-1:Non-Partisan,Choice_4_1:Contest 2:Vote For 2:Choice 2-2:Non-Partisan,Choice_173_1:Contest 2:Vote For 2:Choice 2-3:Non-Partisan
+1,BATCH1,1,,p,bs,ps,TABULATOR1,s,r,0,1,1,1,0
+""",
+            "BallotID is required. Missing BallotID in row 1.",
+            "CLEARBALLOT",
+        ),
+        (
+            """RowNumber,BoxID,BoxPosition,BallotID,PrecinctID,BallotStyleID,PrecinctStyleName,ScanComputerName,Status,Remade,Choice_1_1:Contest 1:Vote For 1:Choice 1-1:Non-Partisan,Choice_210_1:Contest 1:Vote For 1:Choice 1-2:Non-Partisan,Choice_34_1:Contest 2:Vote For 2:Choice 2-1:Non-Partisan,Choice_4_1:Contest 2:Vote For 2:Choice 2-2:Non-Partisan,Choice_173_1:Contest 2:Vote For 2:Choice 2-3:Non-Partisan
+1,BATCH1,1,1-1-1,p,bs,ps,,s,r,0,1,1,1,0
+""",
+            "ScanComputerName is required. Missing ScanComputerName in row 1.",
+            "CLEARBALLOT",
+        ),
+        (
+            """RowNumber,BoxID,BoxPosition,BallotID,PrecinctID,BallotStyleID,PrecinctStyleName,ScanComputerName,Status,Remade,Choice_1_1:Contest 1:Vote For 1:Choice 1-1,Choice_210_1:Contest 1:Vote For 1:Choice 1-2:Non-Partisan,Choice_34_1:Contest 2:Vote For 2:Choice 2-1:Non-Partisan,Choice_4_1:Contest 2:Vote For 2:Choice 2-2:Non-Partisan,Choice_173_1:Contest 2:Vote For 2:Choice 2-3:Non-Partisan
+1,BATCH1,1,1-1-1,p,bs,ps,TABULATOR1,s,r,0,1,1,1,0
+""",
+            "Invalid contest header: Choice_1_1:Contest 1:Vote For 1:Choice 1-1",
             "CLEARBALLOT",
         ),
     ]
@@ -823,3 +1016,61 @@ def test_clearballot_cvr_upload(
     snapshot.assert_match(
         Jurisdiction.query.get(jurisdiction_ids[0]).cvr_contests_metadata
     )
+
+
+def test_cvrs_unexpected_error(
+    election_id: str,
+    jurisdiction_ids: List[str],
+    manifests,  # pylint: disable=unused-argument
+):
+    # Duplicate a row to simulate an unexpected error
+    cvrs = """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
+,,,,,,,,"Contest 1 (Vote For=1)","Contest 1 (Vote For=1)"
+,,,,,,,,Choice 1-1,Choice 1-2
+CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM
+1,TABULATOR1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,0,1
+1,TABULATOR1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,0,1
+"""
+    with app.test_request_context(
+        path=f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
+        data={
+            "cvrs": (io.BytesIO(cvrs.encode()), "cvrs.csv",),
+            "cvrFileType": "DOMINION",
+        },
+    ):
+        auth_lib.set_loggedin_user(
+            session, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+        )
+        with pytest.raises(Exception, match="Could not parse CVR file"):
+            # pylint: disable=unexpected-keyword-arg,no-value-for-parameter
+            upload_cvrs(election_id=election_id, jurisdiction_id=jurisdiction_ids[0])
+
+    cvr_ballots = (
+        CvrBallot.query.join(Batch)
+        .filter_by(jurisdiction_id=jurisdiction_ids[0])
+        .order_by(CvrBallot.imprinted_id)
+        .all()
+    )
+    assert len(cvr_ballots) == 0
+
+
+def test_cvr_invalid_file_type(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    manifests,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
+        data={
+            "cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",),
+            "cvrFileType": "WRONG",
+        },
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [{"errorType": "Bad Request", "message": "Invalid file type",}]
+    }

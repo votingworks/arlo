@@ -173,6 +173,22 @@ def hybrid_contest_choice_vote_counts(
     }
 
 
+def get_header_indices(headers_row: List[str]) -> Dict[str, int]:
+    return {header: i for i, header in enumerate(headers_row)}
+
+
+def column_value(
+    row: List[str], header: str, row_number: int, header_indices: Dict[str, int]
+):
+    index = header_indices.get(header)
+    if index is None:
+        raise UserError(f"Missing required column {header}")
+    value = row[index] if index < len(row) else None
+    if value is None or value == "":
+        raise UserError(f"{header} is required. Missing {header} in row {row_number}.")
+    return value
+
+
 def parse_clearballot_cvrs(
     jurisdiction: Jurisdiction,
 ) -> Tuple[CVR_CONTESTS_METADATA, Iterable[CvrBallot]]:
@@ -192,7 +208,6 @@ def parse_clearballot_cvrs(
     # We want to parse: contest_name="Presidential Primary", votes_allowed=1, choice_name="Joe Schmo"
     contests_metadata: JSONDict = defaultdict(lambda: dict(choices=dict()))
     for column, header in enumerate(headers[first_contest_column:]):
-        # TODO what happens if there's a colon in a contest name?
         match = re.match(r"^.*:(.*):Vote For (\d+):(.*):.*$", header)
         if not match:
             raise UserError(f"Invalid contest header: {header}")
@@ -210,19 +225,16 @@ def parse_clearballot_cvrs(
     batches_by_key = {
         (batch.tabulator, batch.name): batch for batch in jurisdiction.batches
     }
+    header_indices = get_header_indices(headers)
 
-    def parse_cvr_row(row: List[str]):
-        [
-            row_number,
-            box_id,
-            box_position,
-            ballot_id,
-            _precinct_id,
-            _ballot_style_id,
-            _precinct_style_name,
-            scan_computer_name,
-            *_,
-        ] = row[:first_contest_column]
+    def parse_cvr_row(row: List[str], row_index: int):
+        row_number = column_value(row, "RowNumber", row_index + 1, header_indices)
+        box_id = column_value(row, "BoxID", row_number, header_indices)
+        box_position = column_value(row, "BoxPosition", row_number, header_indices)
+        ballot_id = column_value(row, "BallotID", row_number, header_indices)
+        scan_computer_name = column_value(
+            row, "ScanComputerName", row_number, header_indices
+        )
         interpretations = row[first_contest_column:]
 
         db_batch = batches_by_key.get((scan_computer_name, box_id))
@@ -259,7 +271,7 @@ def parse_clearballot_cvrs(
             " inconsistency in other rows in the CVR file."
         )
 
-    return contests_metadata, (parse_cvr_row(row) for row in cvrs)
+    return contests_metadata, (parse_cvr_row(row, i) for i, row in enumerate(cvrs))
 
 
 def parse_dominion_cvrs(
@@ -275,7 +287,7 @@ def parse_dominion_cvrs(
     first_contest_column = next(c for c, value in enumerate(contest_row) if value != "")
     contest_headers = contest_row[first_contest_column:]
     contest_choices = next(cvrs)[first_contest_column:]
-    _headers_and_affiliations = next(cvrs)
+    headers_and_affiliations = next(cvrs)
 
     # Contest headers look like this: "Presidential Primary (Vote For=1)"
     # We want to parse: contest_name="Presidential Primary", votes_allowed=1
@@ -310,16 +322,14 @@ def parse_dominion_cvrs(
     batches_by_key = {
         (batch.tabulator, batch.name): batch for batch in jurisdiction.batches
     }
+    header_indices = get_header_indices(headers_and_affiliations[:first_contest_column])
 
-    def parse_cvr_row(row: List[str]):
-        [
-            cvr_number,
-            tabulator_number,
-            batch_id,
-            record_id,
-            imprinted_id,
-            *_,  # CountingGroup (maybe), PrecintPortion, BallotType
-        ] = row[:first_contest_column]
+    def parse_cvr_row(row: List[str], row_index: int):
+        cvr_number = column_value(row, "CvrNumber", row_index + 1, header_indices)
+        tabulator_number = column_value(row, "TabulatorNum", cvr_number, header_indices)
+        batch_id = column_value(row, "BatchId", cvr_number, header_indices)
+        record_id = column_value(row, "RecordId", cvr_number, header_indices)
+        imprinted_id = column_value(row, "ImprintedId", cvr_number, header_indices)
         interpretations = row[first_contest_column:]
 
         db_batch = batches_by_key.get((tabulator_number, batch_id))
@@ -357,7 +367,7 @@ def parse_dominion_cvrs(
             " inconsistency in other rows in the CVR file."
         )
 
-    return contests_metadata, (parse_cvr_row(row) for row in cvrs)
+    return contests_metadata, (parse_cvr_row(row, i) for i, row in enumerate(cvrs))
 
 
 @background_task
@@ -386,7 +396,7 @@ def process_cvr_file(
             else:
                 raise Exception(
                     f"Unsupported CVR file type: {jurisdiction.cvr_file_type}"
-                )
+                )  # pragma: no cover
 
         contests_metadata, cvr_ballots = parse_cvrs()
 
@@ -525,8 +535,7 @@ def process_cvr_file(
         error = str(exc) or str(exc.__class__.__name__)
         if isinstance(exc, UserError):
             raise exc
-        # Until we add validation/error handling to our CVR parsing, we'll just
-        # catch all errors and wrap them with a generic message.
+        # Catch all unexpected errors and wrap them with a generic message.
         raise Exception("Could not parse CVR file") from exc
     finally:
         session = Session(db_engine)
