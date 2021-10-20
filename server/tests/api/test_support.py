@@ -273,6 +273,41 @@ def test_support_create_audit_admin_already_admin(  # pylint: disable=invalid-na
     }
 
 
+def test_support_remove_audit_admin(client: FlaskClient):
+    set_support_user(client, SUPPORT_EMAIL)
+
+    aa_email = "admin-remove@example.com"
+    org_id_1, aa_id = create_org_and_admin("Test Remove Org 1", aa_email)
+    org_id_2, _ = create_org_and_admin("Test Remove Org 2", aa_email)
+    add_admin_to_org(org_id_1, DEFAULT_AA_EMAIL)
+
+    rv = client.delete(f"/api/support/organizations/{org_id_1}/audit-admins/{aa_id}")
+    assert_ok(rv)
+
+    rv = client.get(f"/api/support/organizations/{org_id_1}")
+    assert json.loads(rv.data)["auditAdmins"] == [{"email": DEFAULT_AA_EMAIL}]
+
+    rv = client.get(f"/api/support/organizations/{org_id_2}")
+    assert json.loads(rv.data)["auditAdmins"] == [{"email": aa_email}]
+
+
+def test_support_remove_audit_admin_invalid(client: FlaskClient, org_id: str):
+    set_support_user(client, SUPPORT_EMAIL)
+
+    _, aa_id = create_org_and_admin(
+        "Test Remove Org Invalid", "other-admin@example.com"
+    )
+
+    rv = client.delete(f"/api/support/organizations/{org_id}/audit-admins/{aa_id}")
+    assert rv.status_code == 400
+
+    rv = client.delete(f"/api/support/organizations/bad-org-id/audit-admins/{aa_id}")
+    assert rv.status_code == 404
+
+    rv = client.delete(f"/api/support/organizations/{org_id}/audit-admins/bad-user-id")
+    assert rv.status_code == 404
+
+
 def test_support_get_jurisdiction(
     client: FlaskClient,
     election_id: str,

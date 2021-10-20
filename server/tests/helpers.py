@@ -91,12 +91,18 @@ def create_org_and_admin(
         id=str(uuid.uuid4()), name=org_name or f"Test Org {datetime.now(timezone.utc)}"
     )
     db_session.add(org)
+    aa_id = add_admin_to_org(org.id, user_email)
+    db_session.commit()
+    return org.id, aa_id
+
+
+def add_admin_to_org(org_id: str, user_email: str):
     audit_admin = create_user(user_email)
     db_session.add(audit_admin)
-    admin = AuditAdministration(organization_id=org.id, user_id=audit_admin.id)
+    admin = AuditAdministration(organization_id=org_id, user_id=audit_admin.id)
     db_session.add(admin)
     db_session.commit()
-    return org.id, audit_admin.id
+    return audit_admin.id
 
 
 def create_jurisdiction_admin(jurisdiction_id: str, user_email: str) -> str:

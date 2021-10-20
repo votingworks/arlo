@@ -6,7 +6,7 @@ from flask import jsonify, request, session, redirect
 from auth0.v3.authentication import GetToken
 from auth0.v3.management import Auth0
 from auth0.v3.exceptions import Auth0Error
-from werkzeug.exceptions import Conflict
+from werkzeug.exceptions import BadRequest, Conflict
 
 from . import api
 from ..models import *  # pylint: disable=wildcard-import
@@ -210,6 +210,29 @@ def create_audit_admin(organization_id: str):
     auth0_user_id = auth0_create_audit_admin(audit_admin["email"])
     user.external_id = auth0_user_id
 
+    db_session.commit()
+
+    return jsonify(status="ok")
+
+
+@api.route(
+    "/support/organizations/<organization_id>/audit-admins/<audit_admin_id>",
+    methods=["DELETE"],
+)
+@restrict_access_support
+def remove_audit_admin_from_org(organization_id: str, audit_admin_id: str):
+    organization = get_or_404(Organization, organization_id)
+    user = get_or_404(User, audit_admin_id)
+    if not any(
+        organization.id == organization_id for organization in user.organizations
+    ):
+        return BadRequest("This user is not an audit admin for this organization")
+
+    user.organizations = [
+        organization
+        for organization in user.organizations
+        if organization.id != organization_id
+    ]
     db_session.commit()
 
     return jsonify(status="ok")
