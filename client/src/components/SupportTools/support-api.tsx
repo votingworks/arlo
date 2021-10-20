@@ -42,6 +42,7 @@ export interface IElectionBase {
 }
 
 export interface IAuditAdmin {
+  id: string
   email: string
 }
 
@@ -130,14 +131,8 @@ export const useDeleteOrganization = (organizationId: string) => {
   })
 }
 
-export const useCreateAuditAdmin = () => {
-  const postAuditAdmin = async ({
-    organizationId,
-    auditAdmin,
-  }: {
-    organizationId: string
-    auditAdmin: IAuditAdmin
-  }) =>
+export const useCreateAuditAdmin = (organizationId: string) => {
+  const postAuditAdmin = async (auditAdmin: IAuditAdmin) =>
     fetchApi(`/api/support/organizations/${organizationId}/audit-admins`, {
       method: 'POST',
       body: JSON.stringify(auditAdmin),
@@ -147,11 +142,23 @@ export const useCreateAuditAdmin = () => {
   const queryClient = useQueryClient()
 
   return useMutation(postAuditAdmin, {
-    onSuccess: (_data, variables) =>
-      queryClient.invalidateQueries([
-        'organizations',
-        variables.organizationId,
-      ]),
+    onSuccess: () =>
+      queryClient.invalidateQueries(['organizations', organizationId]),
+  })
+}
+
+export const useRemoveAuditAdmin = (organizationId: string) => {
+  const removeAuditAdmin = async ({ auditAdminId }: { auditAdminId: string }) =>
+    fetchApi(
+      `/api/support/organizations/${organizationId}/audit-admins/${auditAdminId}`,
+      { method: 'DELETE' }
+    )
+
+  const queryClient = useQueryClient()
+
+  return useMutation(removeAuditAdmin, {
+    onSuccess: () =>
+      queryClient.invalidateQueries(['organizations', organizationId]),
   })
 }
 

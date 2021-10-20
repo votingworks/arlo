@@ -58,8 +58,8 @@ const mockOrganization: IOrganization = {
     },
   ],
   auditAdmins: [
-    { email: 'audit-admin-1@example.org' },
-    { email: 'audit-admin-2@example.org' },
+    { id: 'audit-admin-1-id', email: 'audit-admin-1@example.org' },
+    { id: 'audit-admin-2-id', email: 'audit-admin-2@example.org' },
   ],
 }
 
@@ -139,6 +139,12 @@ const apiCalls = {
       }),
       headers: { 'Content-Type': 'application/json' },
     },
+    response: { status: 'ok' },
+  },
+  removeAuditAdmin: {
+    url:
+      '/api/support/organizations/organization-id-1/audit-admins/audit-admin-1-id',
+    options: { method: 'DELETE' },
     response: { status: 'ok' },
   },
   deleteAuditBoards: {
@@ -311,7 +317,7 @@ describe('Support Tools', () => {
         ...mockOrganization,
         auditAdmins: [
           ...mockOrganization.auditAdmins,
-          { email: 'audit-admin-3@example.org' },
+          { id: 'audit-admin-3-id', email: 'audit-admin-3@example.org' },
         ],
       }),
     ]
@@ -367,6 +373,74 @@ describe('Support Tools', () => {
       )
 
       await findAndCloseToast('something went wrong: postAuditAdmin')
+    })
+  })
+
+  it('org screen has a button to remove audit admin', async () => {
+    const expectedCalls = [
+      supportApiCalls.getUser,
+      apiCalls.getOrganization(mockOrganization),
+      apiCalls.removeAuditAdmin,
+      apiCalls.getOrganization({
+        ...mockOrganization,
+        auditAdmins: mockOrganization.auditAdmins.slice(1),
+      }),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderRoute('/support/orgs/organization-id-1')
+
+      await screen.findByRole('heading', { name: 'Organization 1' })
+
+      // Remove an admin
+      userEvent.click(
+        within(
+          screen.getByText('audit-admin-1@example.org').closest('tr')!
+        ).getByRole('button', { name: /Remove/ })
+      )
+
+      // Confirm dialog should open
+      const dialog = (await screen.findByRole('heading', {
+        name: /Confirm/,
+      })).closest('.bp3-dialog')! as HTMLElement
+      within(dialog).getByText(
+        'Are you sure you want to remove audit admin audit-admin-1@example.org from organization Organization 1?'
+      )
+      userEvent.click(within(dialog).getByRole('button', { name: 'Remove' }))
+
+      const toast = await screen.findByRole('alert')
+      expect(toast).toHaveTextContent(
+        'Removed audit admin audit-admin-1@example.org'
+      )
+      expect(
+        screen.queryByText('audit-admin-1@example.org')
+      ).not.toBeInTheDocument()
+    })
+  })
+
+  it('org screen handles error on remove audit admin', async () => {
+    const expectedCalls = [
+      supportApiCalls.getUser,
+      apiCalls.getOrganization(mockOrganization),
+      serverError('removeAuditAdmin', apiCalls.removeAuditAdmin),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderRoute('/support/orgs/organization-id-1')
+
+      await screen.findByRole('heading', { name: 'Organization 1' })
+      userEvent.click(
+        within(
+          screen.getByText('audit-admin-1@example.org').closest('tr')!
+        ).getByRole('button', { name: /Remove/ })
+      )
+
+      const dialog = (await screen.findByRole('heading', {
+        name: /Confirm/,
+      })).closest('.bp3-dialog')! as HTMLElement
+      userEvent.click(within(dialog).getByRole('button', { name: 'Remove' }))
+
+      const toast = await screen.findByRole('alert')
+      expect(toast).toHaveTextContent('something went wrong: removeAuditAdmin')
+      expect(dialog).toBeInTheDocument()
     })
   })
 

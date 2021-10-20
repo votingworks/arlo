@@ -57,7 +57,12 @@ def test_support_get_organization(client: FlaskClient, org_id: str, election_id:
                     "online": False,
                 }
             ],
-            "auditAdmins": [{"email": DEFAULT_AA_EMAIL}],
+            "auditAdmins": [
+                {
+                    "id": User.query.filter_by(email=DEFAULT_AA_EMAIL).one().id,
+                    "email": DEFAULT_AA_EMAIL,
+                }
+            ],
         },
     )
 
@@ -163,8 +168,14 @@ def test_support_create_audit_admin(  # pylint: disable=invalid-name
 
     rv = client.get(f"/api/support/organizations/{org_id}")
     assert json.loads(rv.data)["auditAdmins"] == [
-        {"email": DEFAULT_AA_EMAIL},
-        {"email": new_admin_email},
+        {
+            "id": User.query.filter_by(email=DEFAULT_AA_EMAIL).one().id,
+            "email": DEFAULT_AA_EMAIL,
+        },
+        {
+            "id": User.query.filter_by(email=new_admin_email).one().id,
+            "email": new_admin_email,
+        },
     ]
 
     user = User.query.filter_by(email=new_admin_email).one()
@@ -215,8 +226,14 @@ def test_support_create_audit_admin_already_in_auth0(  # pylint: disable=invalid
 
     rv = client.get(f"/api/support/organizations/{org_id}")
     assert json.loads(rv.data)["auditAdmins"] == [
-        {"email": DEFAULT_AA_EMAIL},
-        {"email": new_admin_email},
+        {
+            "id": User.query.filter_by(email=DEFAULT_AA_EMAIL).one().id,
+            "email": DEFAULT_AA_EMAIL,
+        },
+        {
+            "id": User.query.filter_by(email=new_admin_email).one().id,
+            "email": new_admin_email,
+        },
     ]
 
     user = User.query.filter_by(email=new_admin_email).one()
@@ -234,12 +251,17 @@ def test_support_create_audit_admin_already_exists(  # pylint: disable=invalid-n
     MockAuth0, MockGetToken, client: FlaskClient, org_id: str,
 ):
     # Start with an existing user that isn't already an audit admin for this org
-    user = create_user(email="already-exists@example.org")
+    user_id = create_user(email="already-exists@example.org").id
+    db_session.commit()
+    user = User.query.get(user_id)
 
     set_support_user(client, SUPPORT_EMAIL)
     rv = client.get(f"/api/support/organizations/{org_id}")
     assert json.loads(rv.data)["auditAdmins"] == [
-        {"email": DEFAULT_AA_EMAIL},
+        {
+            "id": User.query.filter_by(email=DEFAULT_AA_EMAIL).one().id,
+            "email": DEFAULT_AA_EMAIL,
+        },
     ]
 
     rv = post_json(
@@ -251,8 +273,11 @@ def test_support_create_audit_admin_already_exists(  # pylint: disable=invalid-n
 
     rv = client.get(f"/api/support/organizations/{org_id}")
     assert json.loads(rv.data)["auditAdmins"] == [
-        {"email": DEFAULT_AA_EMAIL},
-        {"email": user.email},
+        {
+            "id": User.query.filter_by(email=DEFAULT_AA_EMAIL).one().id,
+            "email": DEFAULT_AA_EMAIL,
+        },
+        {"id": user.id, "email": user.email},
     ]
 
 
@@ -285,10 +310,15 @@ def test_support_remove_audit_admin(client: FlaskClient):
     assert_ok(rv)
 
     rv = client.get(f"/api/support/organizations/{org_id_1}")
-    assert json.loads(rv.data)["auditAdmins"] == [{"email": DEFAULT_AA_EMAIL}]
+    assert json.loads(rv.data)["auditAdmins"] == [
+        {
+            "id": User.query.filter_by(email=DEFAULT_AA_EMAIL).one().id,
+            "email": DEFAULT_AA_EMAIL,
+        }
+    ]
 
     rv = client.get(f"/api/support/organizations/{org_id_2}")
-    assert json.loads(rv.data)["auditAdmins"] == [{"email": aa_email}]
+    assert json.loads(rv.data)["auditAdmins"] == [{"id": aa_id, "email": aa_email}]
 
 
 def test_support_remove_audit_admin_invalid(client: FlaskClient, org_id: str):

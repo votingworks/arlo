@@ -117,7 +117,7 @@ def get_organization(organization_id: str):
         ],
         auditAdmins=sorted(
             [
-                dict(email=admin.user.email)
+                dict(id=admin.user.id, email=admin.user.email)
                 for admin in organization.audit_administrations
             ],
             key=lambda admin: str(admin["email"]),
@@ -226,7 +226,7 @@ def remove_audit_admin_from_org(organization_id: str, audit_admin_id: str):
     if not any(
         organization.id == organization_id for organization in user.organizations
     ):
-        return BadRequest("This user is not an audit admin for this organization")
+        raise BadRequest("This user is not an audit admin for this organization")
 
     user.organizations = [
         organization
