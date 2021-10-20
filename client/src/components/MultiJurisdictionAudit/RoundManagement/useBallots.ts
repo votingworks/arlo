@@ -4,6 +4,7 @@ import { IAuditBoard } from '../useAuditBoards'
 import { BallotStatus, IBallotInterpretation } from '../../../types'
 import { IAuditSettings } from '../useAuditSettings'
 import { getBatches } from './useBatchResults'
+import { sum } from '../../../utils/number'
 
 export interface IBallot {
   id: string
@@ -43,27 +44,42 @@ const getBallotCount = async (
   return response && response.count
 }
 
-const useBallotOrBatchCount = (
+interface ISampleCount {
+  ballots: number
+  batches?: number
+}
+
+const useSampleCount = (
   electionId: string,
   jurisdictionId: string,
   roundId: string,
   auditType: IAuditSettings['auditType'] | null
-): number | null => {
-  const [count, setCount] = useState<number | null>(null)
+): ISampleCount | null => {
+  const [sampleCount, setSampleCount] = useState<ISampleCount | null>(null)
 
   useEffect(() => {
     ;(async () => {
       if (auditType === null) return
       if (auditType === 'BATCH_COMPARISON') {
         const batches = await getBatches(electionId, jurisdictionId, roundId)
-        setCount(batches && batches.length)
+        setSampleCount(
+          batches && {
+            batches: batches.length,
+            ballots: sum(batches.map(batch => batch.numBallots)),
+          }
+        )
       } else {
-        setCount(await getBallotCount(electionId, jurisdictionId, roundId))
+        const ballotCount = await getBallotCount(
+          electionId,
+          jurisdictionId,
+          roundId
+        )
+        setSampleCount(ballotCount !== null ? { ballots: ballotCount } : null)
       }
     })()
   }, [electionId, jurisdictionId, roundId, auditType])
 
-  return count
+  return sampleCount
 }
 
-export default useBallotOrBatchCount
+export default useSampleCount

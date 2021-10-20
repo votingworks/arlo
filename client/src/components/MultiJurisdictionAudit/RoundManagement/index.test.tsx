@@ -82,6 +82,8 @@ describe('RoundManagement', () => {
         createAuditBoards: jest.fn(),
       })
       await screen.findByText('Round 1 Audit Board Setup')
+      screen.getByText(/Batches to audit: 3/)
+      screen.getByText(/Total ballots in batches: 300/)
       expect(container).toMatchSnapshot()
     })
   })
@@ -99,6 +101,7 @@ describe('RoundManagement', () => {
         createAuditBoards: jest.fn(),
       })
       await screen.findByText('Round 1 Audit Board Setup')
+      screen.getByText('Ballots to audit: 27')
       expect(container).toMatchSnapshot()
     })
   })
@@ -209,7 +212,7 @@ describe('RoundManagement', () => {
         createAuditBoards: jest.fn(),
       })
       await screen.findByText(
-        'Your jurisdiction has not been assigned any batches to audit in this round.'
+        'Your jurisdiction has not been assigned any ballots to audit in this round.'
       )
     })
   })
