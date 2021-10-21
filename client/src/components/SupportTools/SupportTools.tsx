@@ -101,13 +101,8 @@ const Organizations = () => {
 
   if (!organizations.isSuccess) return null
 
-  const onSubmitCreateOrganization = async ({ name }: { name: string }) => {
-    try {
-      await createOrganization.mutateAsync({ name })
-      reset()
-    } catch (error) {
-      toast.error(error.message)
-    }
+  const onSubmitCreateOrganization = ({ name }: { name: string }) => {
+    createOrganization.mutate({ name }, { onSuccess: () => reset() })
   }
 
   return (
@@ -186,13 +181,11 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
 
   if (!organization.isSuccess) return null
 
-  const onSubmitCreateAuditAdmin = async (auditAdmin: IAuditAdmin) => {
-    try {
-      await createAuditAdmin.mutateAsync({ organizationId, auditAdmin })
-      resetCreateAdmin()
-    } catch (error) {
-      toast.error(error.message)
-    }
+  const onSubmitCreateAuditAdmin = (auditAdmin: IAuditAdmin) => {
+    createAuditAdmin.mutate(
+      { organizationId, auditAdmin },
+      { onSuccess: () => resetCreateAdmin() }
+    )
   }
 
   const { name, elections, auditAdmins } = organization.data
@@ -203,12 +196,8 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
       description: `Are you sure you want to delete organization ${name}?`,
       yesButtonLabel: 'Delete',
       onYesClick: async () => {
-        try {
-          await deleteOrganization.mutateAsync({})
-          toast.success(`Deleted organization ${name}`)
-        } catch (error) {
-          toast.error(error.message)
-        }
+        await deleteOrganization.mutateAsync()
+        toast.success(`Deleted organization ${name}`)
       },
     })
 
@@ -232,11 +221,7 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
       yesButtonLabel: 'Submit',
       // eslint-disable-next-line no-shadow
       onYesClick: handleSubmitRename(async ({ name }: { name: string }) => {
-        try {
-          await renameOrganization.mutateAsync({ name })
-        } catch (error) {
-          toast.error(error.message)
-        }
+        await renameOrganization.mutateAsync({ name })
       }),
     })
 
@@ -384,12 +369,8 @@ const Jurisdiction = ({ jurisdictionId }: { jurisdictionId: string }) => {
       description: `Are you sure you want to clear the audit boards for ${name}?`,
       yesButtonLabel: 'Clear audit boards',
       onYesClick: async () => {
-        try {
-          await clearAuditBoards.mutateAsync({ jurisdictionId })
-          toast.success(`Cleared audit boards for ${name}`)
-        } catch (error) {
-          toast.error(error.message)
-        }
+        await clearAuditBoards.mutateAsync({ jurisdictionId })
+        toast.success(`Cleared audit boards for ${name}`)
       },
     })
   }
@@ -400,15 +381,11 @@ const Jurisdiction = ({ jurisdictionId }: { jurisdictionId: string }) => {
       description: `Are you sure you want to reopen ${auditBoard.name}?`,
       yesButtonLabel: 'Reopen',
       onYesClick: async () => {
-        try {
-          await reopenAuditBoard.mutateAsync({
-            jurisdictionId,
-            auditBoardId: auditBoard.id,
-          })
-          toast.success(`Reopened ${auditBoard.name}`)
-        } catch (error) {
-          toast.error(error.message)
-        }
+        await reopenAuditBoard.mutateAsync({
+          jurisdictionId,
+          auditBoardId: auditBoard.id,
+        })
+        toast.success(`Reopened ${auditBoard.name}`)
       },
     })
   }
@@ -419,15 +396,10 @@ const Jurisdiction = ({ jurisdictionId }: { jurisdictionId: string }) => {
       description: `Are you sure you want to clear results for ${name}?`,
       yesButtonLabel: 'Clear results',
       onYesClick: async () => {
-        try {
-          await clearOfflineResults.mutateAsync({
-            jurisdictionId,
-          })
-          toast.success(`Cleared results for ${name}`)
-        } catch (error) {
-          toast.error(error.message)
-          throw error
-        }
+        await clearOfflineResults.mutateAsync({
+          jurisdictionId,
+        })
+        toast.success(`Cleared results for ${name}`)
       },
     })
   }
