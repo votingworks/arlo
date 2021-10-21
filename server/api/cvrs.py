@@ -462,15 +462,13 @@ def process_cvr_file(
 
             jurisdiction.cvr_contests_metadata = contests_metadata
 
-            # In order to use COPY, we have to bypass SQLAlchemy and use
-            # the underlying DBAPI (psycogp2). This means these commands
-            # will happen in a separate transaction from the surrounding
-            # context.
-            connection = db_engine.raw_connection()
+            # In order to use the COPY command, we have to get the raw psycopg2
+            # connection. Note that we use the underlying connection from the
+            # db_session, so the operation will occur within the same
+            # transaction.
+            cursor = db_session.connection().connection.cursor()
+            ballots_tempfile.seek(0)
             try:
-                cursor = connection.cursor()
-                cursor.execute("BEGIN")
-                ballots_tempfile.seek(0)
                 cursor.copy_expert(
                     """
                     COPY cvr_ballot (
@@ -487,14 +485,10 @@ def process_cvr_file(
                     """,
                     ballots_tempfile,
                 )
-                cursor.execute("COMMIT")
-                cursor.close()
-                connection.commit()
             except Exception as exc:
-                cursor.execute("ROLLBACK")
                 raise exc
             finally:
-                connection.close()
+                cursor.close()
 
         # Assign ballot_position for each CvrBallot by counting each ballot's
         # index within the batch in the CVR, ordering by record_id within the
@@ -539,6 +533,7 @@ def process_cvr_file(
         raise Exception("Could not parse CVR file") from exc
     finally:
         session = Session(db_engine)
+        jurisdiction = session.query(Jurisdiction).get(jurisdiction_id)
         base = activity_base(jurisdiction.election)
         base.user_type = UserType.JURISDICTION_ADMIN
         base.user_key = jurisdiction_admin_email
