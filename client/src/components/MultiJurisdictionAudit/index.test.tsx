@@ -421,57 +421,37 @@ describe('JA setup', () => {
     })
   })
 
-  it('submits ballot manifest', async () => {
+  it('submits ballot manifest and deletes it', async () => {
     const expectedCalls = [
       jaApiCalls.getUser,
-      jaApiCalls.getSettings(auditSettings.batchComparisonAll),
+      jaApiCalls.getSettings(auditSettings.all),
       jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile(manifestMocks.empty),
-      jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
       jaApiCalls.putManifest,
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
-      jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
+      jaApiCalls.deleteManifest,
+      jaApiCalls.getBallotManifestFile(manifestMocks.empty),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
       await screen.findByText('Audit Source Data')
-      const [manifestInput, talliesInput] = screen.getAllByLabelText(
-        'Select a CSV...'
-      )
-      const [manifestButton, talliesButton] = screen.getAllByRole('button', {
-        name: 'Upload File',
-      })
 
-      expect(talliesInput).toBeDisabled()
-      expect(talliesButton).toBeDisabled()
-
-      userEvent.click(manifestButton)
+      const uploadButton = screen.getByRole('button', { name: 'Upload File' })
+      userEvent.click(uploadButton)
       await screen.findByText('You must upload a file')
 
-      userEvent.upload(manifestInput, manifestFile)
-      userEvent.click(manifestButton)
-      await screen.findByText('Uploaded at 6/8/2020, 9:39:14 PM.')
-    })
-  })
-
-  it('deletes ballot manifest', async () => {
-    const expectedCalls = [
-      jaApiCalls.getUser,
-      jaApiCalls.getSettings(auditSettings.batchComparisonAll),
-      jaApiCalls.getRounds([]),
-      jaApiCalls.getBallotManifestFile(manifestMocks.processed),
-      jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
-      jaApiCalls.deleteManifest,
-      jaApiCalls.getBallotManifestFile(manifestMocks.empty),
-      jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
-    ]
-    await withMockFetch(expectedCalls, async () => {
-      renderView()
+      userEvent.upload(screen.getByLabelText('Select a CSV...'), manifestFile)
+      userEvent.click(uploadButton)
       await screen.findByText('Uploaded at 6/8/2020, 9:39:14 PM.')
 
-      const deleteButton = await screen.findByText('Delete File')
+      // We test delete after submit so that we can check that the input is
+      // cleared of the originally submitted file
+      const deleteButton = await screen.findByRole('button', {
+        name: 'Delete File',
+      })
       userEvent.click(deleteButton)
-      await screen.findByText('Select a CSV...')
+      await screen.findByRole('button', { name: 'Upload File' })
+      screen.getByLabelText('Select a CSV...')
     })
   })
 
