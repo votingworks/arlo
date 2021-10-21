@@ -209,14 +209,16 @@ export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
   if (!endedAt) {
     const numCompleted = jurisdictions.filter(
       ({ currentRoundStatus }) =>
-        currentRoundStatus!.status === JurisdictionRoundStatus.COMPLETE
+        currentRoundStatus &&
+        currentRoundStatus.status === JurisdictionRoundStatus.COMPLETE
     ).length
 
     const canUndoLaunch =
       roundNum === 1 &&
       jurisdictions.every(
         ({ currentRoundStatus }) =>
-          currentRoundStatus!.status !== JurisdictionRoundStatus.IN_PROGRESS
+          currentRoundStatus &&
+          currentRoundStatus.status !== JurisdictionRoundStatus.IN_PROGRESS
       )
 
     return (
