@@ -80,6 +80,12 @@ describe('Progress screen', () => {
       expect(footers[0]).toHaveTextContent('Total')
       expect(footers[1]).toHaveTextContent('1/3 complete')
       expect(footers[2]).toHaveTextContent('2,117')
+
+      expect(
+        screen.queryByRole('checkbox', {
+          name: 'Count unique sampled ballots',
+        })
+      ).not.toBeInTheDocument()
     })
   })
 
