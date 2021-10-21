@@ -41,6 +41,15 @@ def test_support_create_organization(client: FlaskClient):
     }
 
 
+def test_support_create_organization_invalid(client: FlaskClient):
+    set_support_user(client, SUPPORT_EMAIL)
+    rv = post_json(client, "/api/support/organizations", {"name": ""})
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [{"errorType": "Bad Request", "message": "'' is too short"}]
+    }
+
+
 def test_support_get_organization(client: FlaskClient, org_id: str, election_id: str):
     set_support_user(client, SUPPORT_EMAIL)
     rv = client.get(f"/api/support/organizations/{org_id}")

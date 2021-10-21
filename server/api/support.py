@@ -78,7 +78,7 @@ def list_organizations():
 
 ORGANIZATION_SCHEMA = {
     "type": "object",
-    "properties": {"name": {"type": "string"}},
+    "properties": {"name": {"type": "string", "minLength": 1}},
     "additionalProperties": False,
     "required": ["name"],
 }
