@@ -1,5 +1,5 @@
 import React from 'react'
-import { screen, within } from '@testing-library/react'
+import { screen, within, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ToastContainer } from 'react-toastify'
 import { QueryClientProvider, QueryClient } from 'react-query'
@@ -16,6 +16,18 @@ import {
   IJurisdiction,
 } from './support-api'
 import { queryClient } from '../../App'
+
+// It's important to close the toast after checking it so there's no rendering
+// happen after the test ends
+const findAndCloseToast = async (expectedContent: string) => {
+  const toastBody = await screen.findByRole('alert')
+  expect(toastBody).toHaveTextContent(expectedContent)
+  const toast = toastBody.closest('div.Toastify__toast')! as HTMLElement
+  userEvent.click(within(toast).getByRole('button', { name: 'close' }))
+  await waitFor(() =>
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+  )
+}
 
 const mockOrganizationBase: IOrganizationBase = {
   id: 'organization-id-1',
@@ -204,8 +216,7 @@ describe('Support Tools', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       renderRoute('/support')
-      const toast = await screen.findByRole('alert')
-      expect(toast).toHaveTextContent('something went wrong: getOrganizations')
+      await findAndCloseToast('something went wrong: getOrganizations')
     })
   })
 
@@ -254,8 +265,7 @@ describe('Support Tools', () => {
         screen.getByRole('button', { name: /Create Organization/ })
       )
 
-      const toast = await screen.findByRole('alert')
-      expect(toast).toHaveTextContent('something went wrong: postOrganization')
+      await findAndCloseToast('something went wrong: postOrganization')
     })
   })
 
@@ -288,8 +298,7 @@ describe('Support Tools', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       renderRoute('/support/orgs/organization-id-1')
-      const toast = await screen.findByRole('alert')
-      expect(toast).toHaveTextContent('something went wrong')
+      await findAndCloseToast('something went wrong: getOrganization')
     })
   })
 
@@ -357,8 +366,7 @@ describe('Support Tools', () => {
         screen.getByRole('button', { name: /Create Audit Admin/ })
       )
 
-      const toast = await screen.findByRole('alert')
-      expect(toast).toHaveTextContent('something went wrong: postAuditAdmin')
+      await findAndCloseToast('something went wrong: postAuditAdmin')
     })
   })
 
@@ -417,10 +425,7 @@ describe('Support Tools', () => {
       )
       userEvent.click(within(dialog).getByRole('button', { name: 'Submit' }))
 
-      const toast = await screen.findByRole('alert')
-      expect(toast).toHaveTextContent(
-        'something went wrong: renameOrganization'
-      )
+      await findAndCloseToast('something went wrong: renameOrganization')
       expect(dialog).toBeInTheDocument()
     })
   })
@@ -447,6 +452,8 @@ describe('Support Tools', () => {
         'Are you sure you want to delete organization Organization 1?'
       )
       userEvent.click(within(dialog).getByRole('button', { name: 'Delete' }))
+
+      await findAndCloseToast('Deleted organization Organization 1')
 
       await screen.findByRole('heading', { name: 'Organizations' })
       expect(history.location.pathname).toEqual('/support')
@@ -478,10 +485,7 @@ describe('Support Tools', () => {
       )
       userEvent.click(within(dialog).getByRole('button', { name: 'Delete' }))
 
-      const toast = await screen.findByRole('alert')
-      expect(toast).toHaveTextContent(
-        'something went wrong: deleteOrganization'
-      )
+      await findAndCloseToast('something went wrong: deleteOrganization')
       expect(history.location.pathname).toEqual(
         '/support/orgs/organization-id-1'
       )
@@ -518,8 +522,7 @@ describe('Support Tools', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       renderRoute('/support/audits/election-id-1')
-      const toast = await screen.findByRole('alert')
-      expect(toast).toHaveTextContent('something went wrong: getElection')
+      await findAndCloseToast('something went wrong: getElection')
     })
   })
 
@@ -572,8 +575,7 @@ describe('Support Tools', () => {
       )
       userEvent.click(within(dialog).getByRole('button', { name: 'Reopen' }))
 
-      const toast = await screen.findByRole('alert')
-      expect(toast).toHaveTextContent('Reopened Audit Board #1')
+      await findAndCloseToast('Reopened Audit Board #1')
 
       expect(
         within(screen.getByText('Audit Board #1').closest('tr')!).getByRole(
@@ -594,8 +596,7 @@ describe('Support Tools', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       renderRoute('/support/jurisdictions/jurisdiction-id-1')
-      const toast = await screen.findByRole('alert')
-      expect(toast).toHaveTextContent('something went wrong: getJurisdiction')
+      await findAndCloseToast('something went wrong: getJurisdiction')
     })
   })
 
@@ -622,8 +623,7 @@ describe('Support Tools', () => {
       })).closest('.bp3-dialog')! as HTMLElement
       userEvent.click(within(dialog).getByRole('button', { name: 'Reopen' }))
 
-      const toast = await screen.findByRole('alert')
-      expect(toast).toHaveTextContent('something went wrong: reopenAuditBoard')
+      await findAndCloseToast('something went wrong: reopenAuditBoard')
     })
   })
 
@@ -683,8 +683,7 @@ describe('Support Tools', () => {
         within(dialog).getByRole('button', { name: /Clear audit boards/ })
       )
 
-      const toast = await screen.findByRole('alert')
-      expect(toast).toHaveTextContent('Cleared audit boards for Jurisdiction 1')
+      await findAndCloseToast('Cleared audit boards for Jurisdiction 1')
 
       screen.getByText("The jurisdiction hasn't created audit boards yet.")
     })
@@ -716,8 +715,7 @@ describe('Support Tools', () => {
         within(dialog).getByRole('button', { name: /Clear audit boards/ })
       )
 
-      const toast = await screen.findByRole('alert')
-      expect(toast).toHaveTextContent('something went wrong: deleteAuditBoards')
+      await findAndCloseToast('something went wrong: deleteAuditBoards')
     })
   })
 
@@ -760,8 +758,7 @@ describe('Support Tools', () => {
         within(dialog).getByRole('button', { name: /Clear results/ })
       )
 
-      const toast = await screen.findByRole('alert')
-      expect(toast).toHaveTextContent('Cleared results for Jurisdiction 1')
+      await findAndCloseToast('Cleared results for Jurisdiction 1')
 
       screen.getByText('No results recorded yet.')
     })
@@ -795,10 +792,7 @@ describe('Support Tools', () => {
         within(dialog).getByRole('button', { name: /Clear results/ })
       )
 
-      const toast = await screen.findByRole('alert')
-      expect(toast).toHaveTextContent(
-        'something went wrong: deleteOfflineResults'
-      )
+      await findAndCloseToast('something went wrong: deleteOfflineResults')
     })
   })
 })

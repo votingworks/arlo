@@ -86,8 +86,7 @@ export const useCreateOrganization = () => {
 
   const queryClient = useQueryClient()
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return useMutation<any, Error, any>(postOrganization, {
+  return useMutation(postOrganization, {
     onSuccess: () => queryClient.invalidateQueries('organizations'),
   })
 }
@@ -107,8 +106,7 @@ export const useRenameOrganization = (organizationId: string) => {
 
   const queryClient = useQueryClient()
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return useMutation<any, Error, any>(renameOrganization, {
+  return useMutation(renameOrganization, {
     onSuccess: () =>
       queryClient.invalidateQueries(['organizations', organizationId]),
   })
@@ -123,8 +121,7 @@ export const useDeleteOrganization = (organizationId: string) => {
   const queryClient = useQueryClient()
   const history = useHistory()
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return useMutation<any, Error, any>(deleteOrganization, {
+  return useMutation(deleteOrganization, {
     onSuccess: () => {
       queryClient.removeQueries(['organizations', organizationId])
       queryClient.resetQueries('organizations')
@@ -149,8 +146,7 @@ export const useCreateAuditAdmin = () => {
 
   const queryClient = useQueryClient()
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return useMutation<any, Error, any>(postAuditAdmin, {
+  return useMutation(postAuditAdmin, {
     onSuccess: (_data, variables) =>
       queryClient.invalidateQueries([
         'organizations',
@@ -181,8 +177,7 @@ export const useClearAuditBoards = () => {
 
   const queryClient = useQueryClient()
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return useMutation<any, Error, any>(deleteAuditBoards, {
+  return useMutation(deleteAuditBoards, {
     onSuccess: (_data, variables) =>
       queryClient.invalidateQueries([
         'jurisdictions',
@@ -204,8 +199,7 @@ export const useReopenAuditBoard = () => {
 
   const queryClient = useQueryClient()
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return useMutation<any, Error, any>(reopenAuditBoard, {
+  return useMutation(reopenAuditBoard, {
     onSuccess: (_data, variables) =>
       queryClient.invalidateQueries([
         'jurisdictions',
@@ -226,8 +220,7 @@ export const useClearOfflineResults = () => {
 
   const queryClient = useQueryClient()
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return useMutation<any, Error, any>(clearOfflineResults, {
+  return useMutation(clearOfflineResults, {
     onSuccess: (_data, variables) =>
       queryClient.invalidateQueries([
         'jurisdictions',
