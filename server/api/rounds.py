@@ -503,17 +503,30 @@ def end_round(election: Election, round: Round):
 
 
 def is_round_complete(election: Election, round: Round) -> bool:
-    # For batch audits, check that all sampled batches have recorded results
+    # For batch audits, check that all jurisdictions with sampled batches this
+    # round have finalized batch results
     if election.audit_type == AuditType.BATCH_COMPARISON:
-        num_batches_without_results: int = (
-            Batch.query.join(SampledBatchDraw)
-            .filter_by(round_id=round.id)
-            .outerjoin(BatchResult)
-            .group_by(Batch.id)
-            .having(func.count(BatchResult.batch_id) == 0)
+        num_jurisdictions_not_finalized: int = (
+            Jurisdiction.query.filter_by(election_id=election.id)
+            .filter(
+                Jurisdiction.id.in_(
+                    SampledBatchDraw.query.filter_by(round_id=round.id)
+                    .join(Batch)
+                    .with_entities(Batch.jurisdiction_id)
+                    .subquery()
+                )
+            )
+            .filter(
+                Jurisdiction.id.notin_(
+                    BatchResultsFinalized.query.filter_by(round_id=round.id)
+                    .with_entities(BatchResultsFinalized.jurisdiction_id)
+                    .subquery()
+                )
+            )
+            .with_entities(Jurisdiction.id)
             .count()
         )
-        return num_batches_without_results == 0
+        return num_jurisdictions_not_finalized == 0
 
     # For online audits, check that all the audit boards are finished auditing
     if election.online:

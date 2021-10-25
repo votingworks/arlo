@@ -292,7 +292,7 @@ class Jurisdiction(BaseModel):
     # { contest_name: cvr_contest_name }
     contest_name_standardizations = Column(JSON)
 
-    # For ballot polling audits where offline batch results are recorded
+    # For ballot polling audits where offline batch results are recorded (currently only full hand counts)
     finalized_offline_batch_results_at = Column(UTCDateTime)
 
     batches = relationship(
@@ -826,6 +826,17 @@ class BatchResult(BaseModel):
     result = Column(Integer, nullable=False)
 
     __table_args__ = (PrimaryKeyConstraint("batch_id", "contest_choice_id"),)
+
+
+# Records when the jurisdiction finalizes their batch results for a round.
+class BatchResultsFinalized(BaseModel):
+    jurisdiction_id = Column(
+        String(200), ForeignKey("jurisdiction.id", ondelete="cascade"), nullable=False,
+    )
+    round_id = Column(
+        String(200), ForeignKey("round.id", ondelete="cascade"), nullable=False
+    )
+    __table_args__ = (PrimaryKeyConstraint("jurisdiction_id", "round_id"),)
 
 
 # Only used in ballot comparison audits, a CvrBallot stores one row from the

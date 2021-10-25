@@ -418,6 +418,13 @@ def batch_round_status(election: Election, round: Round) -> Dict[str, JSONDict]:
         .values(Batch.jurisdiction_id, func.count(Batch.id.distinct()))
     )
 
+    finalized_jurisdiction_ids = {
+        jurisdiction_id
+        for jurisdiction_id, in BatchResultsFinalized.query.filter_by(
+            round_id=round.id
+        ).values(BatchResultsFinalized.jurisdiction_id)
+    }
+
     def num_samples(jurisdiction_id: str) -> int:
         return sample_count_by_jurisdiction.get(jurisdiction_id, 0)
 
@@ -440,20 +447,20 @@ def batch_round_status(election: Election, round: Round) -> Dict[str, JSONDict]:
             return JurisdictionStatus.COMPLETE
         if jurisdiction_id not in jurisdictions_with_audit_boards:
             return JurisdictionStatus.NOT_STARTED
-        if num_samples_audited(jurisdiction_id) < num_samples(jurisdiction_id):
+        if jurisdiction_id not in finalized_jurisdiction_ids:
             return JurisdictionStatus.IN_PROGRESS
         else:
             return JurisdictionStatus.COMPLETE
 
     return {
-        j.id: {
-            "status": status(j.id),
-            "numSamples": num_samples(j.id),
-            "numSamplesAudited": num_samples_audited(j.id),
-            "numUnique": num_batches(j.id),
-            "numUniqueAudited": num_batches_audited(j.id),
+        jurisdiction.id: {
+            "status": status(jurisdiction.id),
+            "numSamples": num_samples(jurisdiction.id),
+            "numSamplesAudited": num_samples_audited(jurisdiction.id),
+            "numUnique": num_batches(jurisdiction.id),
+            "numUniqueAudited": num_batches_audited(jurisdiction.id),
         }
-        for j in election.jurisdictions
+        for jurisdiction in election.jurisdictions
     }
 
 
