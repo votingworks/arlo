@@ -33,7 +33,7 @@ const Wrapper = styled.div`
 
 const TableControls = styled.div`
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   margin-bottom: 0.5rem;
 `
@@ -322,12 +322,14 @@ const Progress: React.FC<IProps> = ({
             onChange={value => setFilter(value)}
           />
         </div>
-        <Switch
-          checked={isShowingUnique}
-          label={`Count unique sampled ${ballotsOrBatches.toLowerCase()}`}
-          onChange={() => setIsShowingUnique(!isShowingUnique)}
-          style={{ marginRight: '20px' }}
-        />
+        {round && (
+          <Switch
+            checked={isShowingUnique}
+            label={`Count unique sampled ${ballotsOrBatches.toLowerCase()}`}
+            onChange={() => setIsShowingUnique(!isShowingUnique)}
+            style={{ marginRight: '20px', marginBottom: 0 }}
+          />
+        )}
         <DownloadCSVButton
           tableId="progress-table"
           fileName={`audit-progress-${
