@@ -226,7 +226,10 @@ const CSVFile = ({
                     {deleteCSVFile && (
                       <AsyncButton
                         key="delete"
-                        onClick={deleteCSVFile}
+                        onClick={async () => {
+                          await deleteCSVFile()
+                          setFieldValue('csv', null)
+                        }}
                         disabled={!enabled}
                         style={{ marginLeft: '5px' }}
                       >
