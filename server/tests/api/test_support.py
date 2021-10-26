@@ -555,7 +555,6 @@ def test_support_reopen_audit_board(
     assert AuditBoard.query.get(audit_board.id).signed_off_at is None
 
 
-# See test_batch_comparison.py for batch comparison test case
 def test_support_clear_offline_results_ballot_polling(
     client: FlaskClient,
     election_id: str,
@@ -670,6 +669,43 @@ def test_support_clear_offline_results_ballot_polling(
             {
                 "errorType": "Conflict",
                 "message": "Can't clear results after round ends.",
+            }
+        ]
+    }
+
+
+def test_support_clear_offline_results_wrong_audit_type(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    election_settings,  # pylint: disable=unused-argument
+):
+    set_support_user(client, SUPPORT_EMAIL)
+
+    # Can't clear results if online
+    rv = client.delete(f"/api/support/jurisdictions/{jurisdiction_ids[0]}/results")
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Can only clear results for offline ballot polling audits.",
+            }
+        ]
+    }
+
+    # Can't clear results if not ballot polling
+    election = Election.query.get(election_id)
+    election.audit_type = AuditType.BATCH_COMPARISON
+    db_session.commit()
+
+    rv = client.delete(f"/api/support/jurisdictions/{jurisdiction_ids[0]}/results")
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Can only clear results for offline ballot polling audits.",
             }
         ]
     }

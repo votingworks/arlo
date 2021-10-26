@@ -25,7 +25,6 @@ from ..config import (
 from ..util.jsonschema import validate
 from ..util.isoformat import isoformat
 from .rounds import get_current_round
-from .batches import already_audited_batches
 
 AUTH0_DOMAIN = urlparse(AUDITADMIN_AUTH0_BASE_URL).hostname
 
@@ -347,29 +346,19 @@ def clear_offline_results(jurisdiction_id: str):
     jurisdiction = get_or_404(Jurisdiction, jurisdiction_id)
     round = get_current_round(jurisdiction.election)
 
+    if (
+        jurisdiction.election.audit_type != AuditType.BALLOT_POLLING
+        or jurisdiction.election.online
+    ):
+        raise Conflict("Can only clear results for offline ballot polling audits.")
     if not round:
         raise Conflict("Audit has not started.")
     if round.ended_at:
         raise Conflict("Can't clear results after round ends.")
 
-    if jurisdiction.election.audit_type == AuditType.BATCH_COMPARISON:
-        num_deleted = (
-            BatchResult.query.filter(
-                BatchResult.batch_id.in_(
-                    Batch.query.filter_by(jurisdiction_id=jurisdiction_id)
-                    .join(SampledBatchDraw)
-                    .filter_by(round_id=round.id)
-                    .with_entities(Batch.id)
-                    .subquery()
-                )
-            )
-            .filter(Batch.id.notin_(already_audited_batches(jurisdiction, round)))
-            .delete(synchronize_session=False)
-        )
-    else:
-        num_deleted = JurisdictionResult.query.filter_by(
-            jurisdiction_id=jurisdiction.id, round_id=round.id
-        ).delete(synchronize_session=False)
+    num_deleted = JurisdictionResult.query.filter_by(
+        jurisdiction_id=jurisdiction.id, round_id=round.id
+    ).delete(synchronize_session=False)
 
     if num_deleted == 0:
         raise Conflict("Jurisdiction doesn't have any results recorded.")
