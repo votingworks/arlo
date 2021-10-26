@@ -127,18 +127,21 @@ export const batchesMocks: {
         name: 'Batch One',
         numBallots: 100,
         auditBoard: null,
+        results: null,
       },
       {
         id: 'batch-2',
         name: 'Batch Two',
         numBallots: 100,
         auditBoard: null,
+        results: null,
       },
       {
         id: 'batch-3',
         name: 'Batch Three',
         numBallots: 100,
         auditBoard: null,
+        results: null,
       },
     ],
   },
@@ -152,6 +155,8 @@ export const batchesMocks: {
           id: 'ab-1',
           name: 'Audit Board One',
         },
+        // TODO
+        results: null,
       },
       {
         id: 'batch-2',
@@ -161,6 +166,8 @@ export const batchesMocks: {
           id: 'ab-1',
           name: 'Audit Board One',
         },
+        // TODO
+        results: null,
       },
       {
         id: 'batch-3',
@@ -170,6 +177,8 @@ export const batchesMocks: {
           id: 'ab-1',
           name: 'Audit Board One',
         },
+        // TODO
+        results: null,
       },
     ],
   },
