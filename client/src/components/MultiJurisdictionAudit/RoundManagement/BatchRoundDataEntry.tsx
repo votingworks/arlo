@@ -15,25 +15,25 @@ const ResultsTable = styled(HTMLTable).attrs({
 })`
   position: relative;
   width: 100%;
+  border: 1px solid ${Colors.LIGHT_GRAY1};
   table-layout: fixed;
   border-collapse: separate;
 
-  // th {
-  //   position: sticky;
-  //   top: 0;
-  //   z-index: 1;
-  //   border-bottom: 1px solid ${Colors.GRAY2};
-  //   background: ${Colors.WHITE};
-  // }
+  thead {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: ${Colors.WHITE};
+    box-shadow: 0px 1px 0px ${Colors.GRAY4};
+  }
 
   thead tr th {
-    box-shadow: none !important;
     vertical-align: bottom;
+    overflow-x: hidden;
   }
 
   tr td {
     vertical-align: middle;
-    word-wrap: break-word;
   }
 
   /* Exclude edit buttons from copy/paste */
@@ -42,26 +42,6 @@ const ResultsTable = styled(HTMLTable).attrs({
     -moz-user-select: none; /* stylelint-disable-line property-no-vendor-prefix */
     -webkit-user-select: none; /* stylelint-disable-line property-no-vendor-prefix */
     user-select: none;
-  }
-`
-
-const AngledTH = styled.th`
-  /* Something you can count on */
-  height: 140px;
-  white-space: nowrap;
-  position: relative;
-
-  > div {
-    // /* Magic Numbers */ translate(25px, 51px)
-    transform: rotate(315deg);
-    width: 0px;
-    position: absolute;
-    right: 10px;
-    bottom: 0px;
-  }
-  > div > span {
-    border-bottom: 1px solid #ccc;
-    padding: 5px 10px;
   }
 `
 
@@ -182,19 +162,17 @@ const BatchRoundDataEntry = ({ round }: { round: IRound }) => {
       <ResultsTable id="results-table">
         <thead>
           <tr>
-            <th>Batch Name</th>
+            <th
+              style={{
+                width: `${25 - Math.min(contest.choices.length, 10) * 1.5}%`,
+              }}
+            >
+              Batch Name
+            </th>
             {contest.choices.map(choice => (
-              <AngledTH key={`th-${choice.id}`}>
-                <div>
-                  <span>{choice.name}</span>
-                </div>
-              </AngledTH>
+              <th key={`th-${choice.id}`}>{choice.name}</th>
             ))}
-            <AngledTH style={totalStyle}>
-              <div>
-                <span>Total Votes in Batch</span>
-              </div>
-            </AngledTH>
+            <th style={totalStyle}>Batch Total Votes</th>
             <th style={{ width: '120px' }}>Actions</th>
           </tr>
         </thead>
@@ -212,7 +190,7 @@ const BatchRoundDataEntry = ({ round }: { round: IRound }) => {
               />
             ) : (
               <tr key={batch.id}>
-                <th>{batch.name}</th>
+                <td>{batch.name}</td>
                 {contest.choices.map(choice => (
                   <ChoiceTD key={`${batch.name}-${choice.id}`}>
                     {batch.results && batch.results[choice.id].toLocaleString()}
@@ -235,7 +213,7 @@ const BatchRoundDataEntry = ({ round }: { round: IRound }) => {
             )
           )}
           <tr>
-            <td style={totalStyle}>Total Votes</td>
+            <td style={totalStyle}>Choice Total Votes</td>
             {contest.choices.map(choice => (
               <td style={totalStyle} key={`total-${choice.id}`}>
                 {total(choice.id).toLocaleString()}
