@@ -1,8 +1,9 @@
+/* eslint-disable jsx-a11y/no-autofocus */
 import React, { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { HTMLTable, Colors, Button, Classes, Callout } from '@blueprintjs/core'
 import { useForm } from 'react-hook-form'
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 import { toast } from 'react-toastify'
 import useContestsJurisdictionAdmin from './useContestsJurisdictionAdmin'
 import {
@@ -55,11 +56,22 @@ const ResultsTable = styled(HTMLTable).attrs({
 
 const ChoiceTD = styled.td`
   width: 100px;
-  min-width: 50px;
   vertical-align: middle;
 `
 
-const totalStyle = { color: Colors.BLUE3, fontWeight: 600 }
+const totalsStyle = css`
+  &&& {
+    color: ${Colors.BLUE3};
+    font-weight: 600;
+  }
+`
+
+const TotalsTD = styled.td`
+  ${totalsStyle} /* stylelint-disable-line value-keyword-case */
+`
+const TotalsTH = styled.th`
+  ${totalsStyle} /* stylelint-disable-line value-keyword-case */
+`
 
 const BatchResultsForm = ({
   electionId,
@@ -81,7 +93,7 @@ const BatchResultsForm = ({
     jurisdictionId,
     roundId
   )
-  const { register, handleSubmit, watch, formState } = useForm<{
+  const { register, handleSubmit, watch, formState, errors } = useForm<{
     [choiceId: string]: number
   }>({
     defaultValues:
@@ -99,7 +111,7 @@ const BatchResultsForm = ({
   return (
     <tr key={batch.id}>
       <td>{batch.name}</td>
-      {contest.choices.map(choice => (
+      {contest.choices.map((choice, i) => (
         <ChoiceTD key={`${batch.name}-${choice.id}`}>
           <input
             className={Classes.INPUT}
@@ -108,14 +120,19 @@ const BatchResultsForm = ({
             ref={register({
               valueAsNumber: true,
               min: 0,
+              required: true,
             })}
-            style={{ width: '100%' }}
+            style={{
+              width: '100%',
+              border: errors[choice.id] ? '1px solid red' : 'inherit',
+            }}
+            autoFocus={i === 0}
           />
         </ChoiceTD>
       ))}
-      <td style={totalStyle}>
+      <TotalsTD>
         {sum(Object.values(watch()).filter(n => n)).toLocaleString()}
-      </td>
+      </TotalsTD>
       <td style={{ paddingRight: 0 }}>
         <Button
           intent="primary"
@@ -132,6 +149,7 @@ const BatchResultsForm = ({
           icon="cross"
           onClick={closeForm}
           loading={formState.isSubmitting}
+          aria-label="Cancel"
         />
       </td>
     </tr>
@@ -199,9 +217,9 @@ const BatchRoundDataEntry = ({ round }: { round: IRound }) => {
     <div>
       <div>
         <p>
-          When you have examined all the ballots assigned to you, enter the
+          When you have examined all of the ballots assigned to you, enter the
           number of votes recorded for each candidate/choice from the audited
-          ballots.
+          ballots in each batch.
         </p>
         {resultsFinalizedAt && (
           <Callout
@@ -226,7 +244,7 @@ const BatchRoundDataEntry = ({ round }: { round: IRound }) => {
             {contest.choices.map(choice => (
               <th key={`th-${choice.id}`}>{choice.name}</th>
             ))}
-            <th style={totalStyle}>Batch Total Votes</th>
+            <TotalsTH>Batch Total Votes</TotalsTH>
             <th style={{ width: '120px' }}>Actions</th>
           </tr>
         </thead>
@@ -250,10 +268,10 @@ const BatchRoundDataEntry = ({ round }: { round: IRound }) => {
                     {batch.results && batch.results[choice.id].toLocaleString()}
                   </ChoiceTD>
                 ))}
-                <td style={totalStyle}>
+                <TotalsTD>
                   {batch.results &&
                     sum(Object.values(batch.results)).toLocaleString()}
-                </td>
+                </TotalsTD>
                 <td>
                   <Button
                     icon="edit"
@@ -267,17 +285,17 @@ const BatchRoundDataEntry = ({ round }: { round: IRound }) => {
             )
           )}
           <tr>
-            <td style={totalStyle}>Choice Total Votes</td>
+            <TotalsTD>Choice Total Votes</TotalsTD>
             {contest.choices.map(choice => (
-              <td style={totalStyle} key={`total-${choice.id}`}>
+              <TotalsTD key={`total-${choice.id}`}>
                 {total(choice.id).toLocaleString()}
-              </td>
+              </TotalsTD>
             ))}
-            <td style={totalStyle}>
+            <TotalsTD>
               {sum(
                 contest.choices.map(choice => total(choice.id))
               ).toLocaleString()}
-            </td>
+            </TotalsTD>
             <td />
           </tr>
         </tbody>
