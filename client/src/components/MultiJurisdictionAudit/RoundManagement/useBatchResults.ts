@@ -18,7 +18,7 @@ export interface IBatch {
 
 interface IBatches {
   batches: IBatch[]
-  finalizedResultsAt: string
+  resultsFinalizedAt: string
 }
 
 export const useBatches = (
@@ -56,6 +56,24 @@ export const useRecordBatchResults = (
   const queryClient = useQueryClient()
 
   return useMutation(putBatchResults, {
+    onSuccess: () => queryClient.invalidateQueries('batches'),
+  })
+}
+
+export const useFinalizeBatchResults = (
+  electionId: string,
+  jurisdictionId: string,
+  roundId: string
+) => {
+  const finalizeBatchResults = async () =>
+    fetchApi(
+      `/api/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/batches/finalize`,
+      { method: 'POST' }
+    )
+
+  const queryClient = useQueryClient()
+
+  return useMutation(finalizeBatchResults, {
     onSuccess: () => queryClient.invalidateQueries('batches'),
   })
 }

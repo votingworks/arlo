@@ -1,21 +1,29 @@
 import React, { useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { HTMLTable, Colors, Button, Classes } from '@blueprintjs/core'
+import { HTMLTable, Colors, Button, Classes, Callout } from '@blueprintjs/core'
 import { useForm } from 'react-hook-form'
 import styled from 'styled-components'
+import { toast } from 'react-toastify'
 import useContestsJurisdictionAdmin from './useContestsJurisdictionAdmin'
-import { useBatches, IBatch, useRecordBatchResults } from './useBatchResults'
+import {
+  useBatches,
+  IBatch,
+  useRecordBatchResults,
+  useFinalizeBatchResults,
+} from './useBatchResults'
 import { IRound } from '../useRoundsAuditAdmin'
 import { sum } from '../../../utils/number'
 import { IContest } from '../../../types'
+import CopyToClipboard from '../../Atoms/CopyToClipboard'
+import { useConfirm, Confirm } from '../../Atoms/Confirm'
 
 const ResultsTable = styled(HTMLTable).attrs({
   striped: true,
   bordered: true,
 })`
   position: relative;
-  width: 100%;
   border: 1px solid ${Colors.LIGHT_GRAY1};
+  width: 100%;
   table-layout: fixed;
   border-collapse: separate;
 
@@ -23,13 +31,13 @@ const ResultsTable = styled(HTMLTable).attrs({
     position: sticky;
     top: 0;
     z-index: 1;
+    box-shadow: 0 1px 0 ${Colors.GRAY4};
     background: ${Colors.WHITE};
-    box-shadow: 0px 1px 0px ${Colors.GRAY4};
   }
 
   thead tr th {
-    vertical-align: bottom;
     overflow-x: hidden;
+    vertical-align: bottom;
   }
 
   tr td {
@@ -47,8 +55,8 @@ const ResultsTable = styled(HTMLTable).attrs({
 
 const ChoiceTD = styled.td`
   width: 100px;
-  vertical-align: middle;
   min-width: 50px;
+  vertical-align: middle;
 `
 
 const totalStyle = { color: Colors.BLUE3, fontWeight: 600 }
@@ -100,7 +108,6 @@ const BatchResultsForm = ({
             ref={register({
               valueAsNumber: true,
               min: 0,
-              max: Number.MAX_SAFE_INTEGER,
             })}
             style={{ width: '100%' }}
           />
@@ -139,12 +146,18 @@ const BatchRoundDataEntry = ({ round }: { round: IRound }) => {
   const contests = useContestsJurisdictionAdmin(electionId, jurisdictionId)
   const batchesResp = useBatches(electionId, jurisdictionId, round.id)
   const [editingBatch, setEditingBatch] = useState<IBatch['id'] | null>(null)
+  const finalizeResults = useFinalizeBatchResults(
+    electionId,
+    jurisdictionId,
+    round.id
+  )
+  const { confirm, confirmProps } = useConfirm()
 
   if (!contests || !batchesResp.isSuccess) return null
 
   // Batch comparison audits only support a single contest
   const [contest] = contests
-  const { batches } = batchesResp.data
+  const { batches, resultsFinalizedAt } = batchesResp.data
 
   const total = (choiceId: string) =>
     sum(
@@ -153,12 +166,53 @@ const BatchRoundDataEntry = ({ round }: { round: IRound }) => {
         .map(batch => batch.results![choiceId])
     )
 
+  const onClickFinalize = () => {
+    if (batches.some(batch => batch.results === null)) {
+      toast.error('Please enter results for all batches before finalizing.')
+    } else {
+      confirm({
+        title: 'Are you sure you want to finalize your results?',
+        description: (
+          <>
+            <p>
+              You should only finalize your results once you have finished
+              auditing every batch of ballots and have entered the results for
+              each batch on this page.
+            </p>
+            <p>
+              <strong>
+                Before finalizing your results, check the results you have
+                entered into Arlo page against the tally sheets.
+              </strong>
+            </p>
+          </>
+        ),
+        yesButtonLabel: 'Confirm',
+        onYesClick: async () => {
+          await finalizeResults.mutateAsync()
+        },
+      })
+    }
+  }
+
   return (
     <div>
-      <p>
-        When you have examined all the ballots assigned to you, enter the number
-        of votes recorded for each candidate/choice from the audited ballots.
-      </p>
+      <div>
+        <p>
+          When you have examined all the ballots assigned to you, enter the
+          number of votes recorded for each candidate/choice from the audited
+          ballots.
+        </p>
+        {resultsFinalizedAt && (
+          <Callout
+            icon="tick-circle"
+            intent="success"
+            style={{ margin: '20px 0 20px 0' }}
+          >
+            Results finalized
+          </Callout>
+        )}
+      </div>
       <ResultsTable id="results-table">
         <thead>
           <tr>
@@ -203,7 +257,7 @@ const BatchRoundDataEntry = ({ round }: { round: IRound }) => {
                 <td>
                   <Button
                     icon="edit"
-                    disabled={editingBatch !== null}
+                    disabled={editingBatch !== null || !!resultsFinalizedAt}
                     onClick={() => setEditingBatch(batch.id)}
                   >
                     Edit
@@ -228,6 +282,25 @@ const BatchRoundDataEntry = ({ round }: { round: IRound }) => {
           </tr>
         </tbody>
       </ResultsTable>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          marginTop: '20px',
+        }}
+      >
+        <CopyToClipboard
+          getText={() => document.getElementById('results-table')!.outerHTML}
+        />
+        <Button
+          intent="primary"
+          onClick={onClickFinalize}
+          disabled={!!resultsFinalizedAt}
+        >
+          Finalize Results
+        </Button>
+        <Confirm {...confirmProps} />
+      </div>
     </div>
   )
 }
