@@ -32,7 +32,6 @@ from ..config import (
     SUPPORT_AUTH0_BASE_URL,
     SUPPORT_AUTH0_CLIENT_ID,
     SUPPORT_AUTH0_CLIENT_SECRET,
-    SUPPORT_EMAIL_DOMAIN,
     AUDITADMIN_AUTH0_BASE_URL,
     AUDITADMIN_AUTH0_CLIENT_ID,
     AUDITADMIN_AUTH0_CLIENT_SECRET,
@@ -147,11 +146,11 @@ def support_login_callback():
     resp = auth0_sa.get("userinfo")
     userinfo = resp.json()
 
-    # we rely on the auth0 auth here, but check against a single approved domain.
+    # We rely on Auth0 here, but check against a list of approved domains.
     if (
         userinfo
         and userinfo["email"]
-        and userinfo["email"].split("@")[-1] == SUPPORT_EMAIL_DOMAIN
+        and userinfo["email"].split("@")[-1] in config.SUPPORT_EMAIL_DOMAINS
     ):
         set_support_user(session, userinfo["email"])
         return redirect("/support")
