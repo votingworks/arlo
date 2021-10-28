@@ -117,6 +117,44 @@ snapshots["test_slack_worker_message_format 12"] = {
     "blocks": [
         {
             "text": {
+                "text": "*Finalized batch results for Test Jurisdiction*",
+                "type": "mrkdwn",
+            },
+            "type": "section",
+        },
+        {
+            "elements": [
+                {
+                    "text": ":flag-us: <http://localhost:3000/support/orgs/test_org_id|Test Org>",
+                    "type": "mrkdwn",
+                },
+                {
+                    "text": ":classical_building: <http://localhost:3000/support/orgs/test_jurisdiction_id|Test Jurisdiction> ",
+                    "type": "mrkdwn",
+                },
+                {
+                    "text": ":microscope: <http://localhost:3000/support/audits/test_election_id|Test Audit> (Hybrid)",
+                    "type": "mrkdwn",
+                },
+                {
+                    "text": ":clock3: <!date^1621449073^{date_short}, {time_secs}|2021-05-19T18:31:13.576657+00:00>",
+                    "type": "mrkdwn",
+                },
+                {
+                    "text": ":technologist: Jurisdiction admin test_user@example.com",
+                    "type": "mrkdwn",
+                },
+            ],
+            "type": "context",
+        },
+    ],
+    "text": "Finalized batch results for Test Jurisdiction",
+}
+
+snapshots["test_slack_worker_message_format 13"] = {
+    "blocks": [
+        {
+            "text": {
                 "text": "*Audit Board #1 in Test Jurisdiction signed off*",
                 "type": "mrkdwn",
             },

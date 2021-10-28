@@ -228,6 +228,17 @@ def test_slack_worker_message_format(snapshot):
         )
     )
 
+    snapshot.assert_match(
+        slack_worker.slack_message(
+            activity_log.FinalizeBatchResults(
+                timestamp,
+                base,
+                jurisdiction_id="test_jurisdiction_id",
+                jurisdiction_name="Test Jurisdiction",
+            )
+        )
+    )
+
     base.user_type = "audit_board"
     snapshot.assert_match(
         slack_worker.slack_message(
