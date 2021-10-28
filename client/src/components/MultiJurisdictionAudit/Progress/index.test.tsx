@@ -12,6 +12,7 @@ import { withMockFetch } from '../../testUtilities'
 import { jaApiCalls, aaApiCalls } from '../_mocks'
 import { dummyBallots } from '../../DataEntry/_mocks'
 import * as utilities from '../../utilities'
+import { batchesMocks } from '../RoundManagement/_mocks'
 
 jest.mock('react-router', () => ({
   useParams: jest.fn().mockReturnValue({ electionId: '1' }),
@@ -847,7 +848,7 @@ describe('Progress screen', () => {
     const expectedCalls = [
       aaApiCalls.getMapData,
       jaApiCalls.getAuditBoards(auditBoardMocks.unfinished),
-      jaApiCalls.getBatches([]),
+      jaApiCalls.getBatches({ batches: [], resultsFinalizedAt: null }),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = render(
@@ -869,6 +870,43 @@ describe('Progress screen', () => {
         .getByRole('heading', { name: 'Jurisdiction 1' })
         .closest('div.bp3-dialog')! as HTMLElement
       await within(modal).findByText('No ballots sampled')
+    })
+  })
+
+  it('shows a button to unfinalize batch results', async () => {
+    const expectedCalls = [
+      aaApiCalls.getMapData,
+      jaApiCalls.getAuditBoards(auditBoardMocks.single),
+      jaApiCalls.getBatches(batchesMocks.complete),
+      jaApiCalls.unfinalizeBatchResults,
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      render(
+        <Progress
+          jurisdictions={jurisdictionMocks.allComplete}
+          auditSettings={auditSettings.batchComparisonAll}
+          round={roundMocks.singleIncomplete[0]}
+        />
+      )
+
+      userEvent.click(
+        await screen.findByRole('button', { name: 'Jurisdiction 1' })
+      )
+      const modal = screen
+        .getByRole('heading', { name: 'Jurisdiction 1' })
+        .closest('div.bp3-dialog')! as HTMLElement
+      await within(modal).findByText('Results finalized')
+
+      Object.defineProperty(window, 'location', {
+        writable: true,
+        value: { reload: jest.fn() },
+      })
+      userEvent.click(
+        within(modal).getByRole('button', { name: 'Unfinalize Results' })
+      )
+      await waitFor(() => {
+        expect(window.location.reload).toHaveBeenCalled()
+      })
     })
   })
 

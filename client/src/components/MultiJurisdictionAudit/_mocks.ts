@@ -11,7 +11,7 @@ import {
   jurisdictionErrorFile,
   standardizedContestsFile,
 } from './AASetup/Participants/_mocks'
-import { IBatch } from './RoundManagement/useBatchResults'
+import { IBatches } from './RoundManagement/useBatchResults'
 import mockJSON from './Progress/us-states-counties'
 import { IOrganization } from '../UserContext'
 
@@ -227,10 +227,16 @@ export const jaApiCalls = {
       '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/ballots?count=true',
     response: { count: ballots.length },
   }),
-  getBatches: (batches: IBatch[]) => ({
+  getBatches: (batches: IBatches) => ({
     url: '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/batches',
-    response: { batches },
+    response: batches,
   }),
+  unfinalizeBatchResults: {
+    url:
+      '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/batches/finalize',
+    options: { method: 'DELETE' },
+    response: { status: 'ok' },
+  },
   deleteManifest: {
     url: '/api/election/1/jurisdiction/jurisdiction-id-1/ballot-manifest',
     options: {

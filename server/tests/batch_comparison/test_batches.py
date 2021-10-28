@@ -374,7 +374,7 @@ def test_record_batch_results_invalid(
     assert rv.status_code == 404
 
 
-def test_record_batch_results_after_finalize(
+def test_unfinalize_batch_results(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
@@ -401,12 +401,30 @@ def test_record_batch_results_after_finalize(
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/{batch['id']}/results",
             {choice_id: 0 for choice_id in choice_ids},
         )
+        assert_ok(rv)
 
+    # Can't unfinalize before finalizing
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.delete(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/finalize",
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {"errorType": "Conflict", "message": "Results have not been finalized",}
+        ]
+    }
+
+    # Finalize
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = post_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/finalize",
     )
 
+    # Can't record more results after finalizing
     rv = put_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/{batches[0]['id']}/results",
@@ -427,6 +445,68 @@ def test_record_batch_results_after_finalize(
     assert json.loads(rv.data) == {
         "errors": [
             {"errorType": "Conflict", "message": "Results have already been finalized",}
+        ]
+    }
+
+    # Unfinalize
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.delete(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/finalize",
+    )
+    assert_ok(rv)
+
+    # Now can record results
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/{batches[0]['id']}/results",
+        {choice_id: 0 for choice_id in choice_ids},
+    )
+    assert_ok(rv)
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/finalize",
+    )
+    assert_ok(rv)
+
+    # Finish the round
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/audit-board",
+        [{"name": "Audit Board #1"}],
+    )
+    assert_ok(rv)
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/batches"
+    )
+    batches = json.loads(rv.data)["batches"]
+    for batch in batches:
+        rv = put_json(
+            client,
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/batches/{batch['id']}/results",
+            {choice_id: 0 for choice_id in choice_ids},
+        )
+        assert_ok(rv)
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/batches/finalize",
+    )
+    assert_ok(rv)
+
+    # Can't unfinalize after round ends
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.delete(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/finalize",
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Results cannot be unfinalized after the audit round ends",
+            }
         ]
     }
 

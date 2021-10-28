@@ -19,6 +19,7 @@ import StatusTag from '../../Atoms/StatusTag'
 import { api } from '../../utilities'
 import { IAuditSettings } from '../useAuditSettings'
 import useSampleCount from '../RoundManagement/useBallots'
+import AsyncButton from '../../Atoms/AsyncButton'
 
 const FileStatusTag = ({
   processing,
@@ -142,7 +143,7 @@ const JurisdictionDetail = ({
   </Dialog>
 )
 
-const unfinalizeResults = async (
+const unfinalizeOfflineBatchResults = async (
   electionId: string,
   jurisdictionId: string,
   roundId: string
@@ -152,6 +153,16 @@ const unfinalizeResults = async (
     { method: 'DELETE' }
   ))
 }
+
+const unfinalizeBatchResults = async (
+  electionId: string,
+  jurisdictionId: string,
+  roundId: string
+) =>
+  !!(await api(
+    `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/batches/finalize`,
+    { method: 'DELETE' }
+  ))
 
 const RoundStatusSection = ({
   electionId,
@@ -184,7 +195,11 @@ const RoundStatusSection = ({
             initialValues={{}}
             onSubmit={async () => {
               if (
-                await unfinalizeResults(electionId, jurisdiction.id, round.id)
+                await unfinalizeOfflineBatchResults(
+                  electionId,
+                  jurisdiction.id,
+                  round.id
+                )
               )
                 // Hack: for now just reload the whole page here instead of
                 // properly refreshing the state from the server, since the
@@ -215,7 +230,31 @@ const RoundStatusSection = ({
 
     if (sampleCount.ballots === 0) return <p>No ballots sampled</p>
     if (jurisdictionStatus === JurisdictionRoundStatus.COMPLETE)
-      return <p>Data entry complete</p>
+      if (auditSettings.auditType === 'BATCH_COMPARISON')
+        return (
+          <div>
+            <p>Results finalized</p>
+            <AsyncButton
+              onClick={async () => {
+                if (
+                  await unfinalizeBatchResults(
+                    electionId,
+                    jurisdiction.id,
+                    round.id
+                  )
+                )
+                  // Hack: for now just reload the whole page here instead of
+                  // properly refreshing the state from the server, since the
+                  // state is way high up in the component hierarchy
+                  window.location.reload()
+              }}
+              intent="danger"
+            >
+              Unfinalize Results
+            </AsyncButton>
+          </div>
+        )
+      else return <p>Data entry complete</p>
     if (auditBoards.length === 0)
       return <p>Waiting for jurisdiction to set up audit boards</p>
     return (

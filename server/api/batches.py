@@ -245,3 +245,28 @@ def finalize_batch_results(
     db_session.commit()
 
     return jsonify(status="ok")
+
+
+@api.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/batches/finalize",
+    methods=["DELETE"],
+)
+@restrict_access([UserType.AUDIT_ADMIN])
+def unfinalize_batch_results(
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
+    round: Round,
+):
+    results_finalized = BatchResultsFinalized.query.filter_by(
+        jurisdiction_id=jurisdiction.id, round_id=round.id
+    ).one_or_none()
+    if results_finalized is None:
+        raise Conflict("Results have not been finalized")
+
+    if round.ended_at is not None:
+        raise Conflict("Results cannot be unfinalized after the audit round ends")
+
+    db_session.delete(results_finalized)
+    db_session.commit()
+
+    return jsonify(status="ok")
