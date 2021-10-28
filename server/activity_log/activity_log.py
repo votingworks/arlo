@@ -78,6 +78,11 @@ class RecordResults(JurisdictionActivity):
 
 
 @dataclass
+class FinalizeBatchResults(JurisdictionActivity):
+    pass
+
+
+@dataclass
 class AuditBoardSignOff(JurisdictionActivity):
     audit_board_name: str
 

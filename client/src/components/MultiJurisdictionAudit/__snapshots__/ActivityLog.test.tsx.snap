@@ -28,7 +28,7 @@ exports[`Activity Log shows a table of activity for the org 1`] = `
   <tbody>
     <tr>
       <td>
-        8/31/2021, 11:05:49 PM
+        8/31/2021, 11:06:49 PM
       </td>
       <td>
         admin@example.gov
@@ -43,7 +43,7 @@ exports[`Activity Log shows a table of activity for the org 1`] = `
     </tr>
     <tr>
       <td>
-        8/31/2021, 11:04:49 PM
+        8/31/2021, 11:05:49 PM
       </td>
       <td />
       <td>
@@ -56,11 +56,28 @@ exports[`Activity Log shows a table of activity for the org 1`] = `
     </tr>
     <tr>
       <td>
-        8/31/2021, 11:03:49 PM
+        8/31/2021, 11:04:49 PM
       </td>
       <td />
       <td>
         Audit Board #1 signed off
+      </td>
+      <td>
+        Test Audit
+      </td>
+      <td>
+        Jurisdiction 1
+      </td>
+    </tr>
+    <tr>
+      <td>
+        8/31/2021, 11:03:49 PM
+      </td>
+      <td>
+        admin@example.gov
+      </td>
+      <td>
+        Finalized results
       </td>
       <td>
         Test Audit

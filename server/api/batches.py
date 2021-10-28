@@ -1,3 +1,4 @@
+from datetime import datetime
 import io, csv
 from flask import jsonify, request
 from werkzeug.exceptions import BadRequest, Conflict
@@ -12,12 +13,11 @@ from .rounds import is_round_complete, end_round, get_current_round
 from ..util.csv_download import csv_response, jurisdiction_timestamp_name
 from ..util.jsonschema import JSONDict, validate
 from ..util.isoformat import isoformat
-
-# from ..activity_log.activity_log import (
-#     FinalizeBatchResults,
-#     activity_base,
-#     record_activity,
-# )
+from ..activity_log.activity_log import (
+    FinalizeBatchResults,
+    activity_base,
+    record_activity,
+)
 
 
 def already_audited_batches(jurisdiction: Jurisdiction, round: Round) -> Query:
@@ -230,15 +230,14 @@ def finalize_batch_results(
         BatchResultsFinalized(jurisdiction_id=jurisdiction.id, round_id=round.id)
     )
 
-    # TODO
-    # record_activity(
-    #     FinalizeBatchResults(
-    #         timestamp=datetime.now(timezone.utc),
-    #         base=activity_base(election),
-    #         jurisdiction_id=jurisdiction.id,
-    #         jurisdiction_name=jurisdiction.name,
-    #     )
-    # )
+    record_activity(
+        FinalizeBatchResults(
+            timestamp=datetime.now(timezone.utc),
+            base=activity_base(election),
+            jurisdiction_id=jurisdiction.id,
+            jurisdiction_name=jurisdiction.name,
+        )
+    )
 
     if is_round_complete(election, round):
         end_round(election, round)
