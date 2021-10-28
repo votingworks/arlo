@@ -1,4 +1,4 @@
-import { IBatch } from './useBatchResults'
+import { IBatches } from './useBatchResults'
 import { IRound } from '../useRoundsAuditAdmin'
 import { FileProcessingStatus } from '../useCSV'
 import {
@@ -118,7 +118,7 @@ export const batchResultsMocks: {
 }
 
 export const batchesMocks: {
-  [key in 'emptyInitial' | 'complete']: { batches: IBatch[] }
+  [key in 'emptyInitial' | 'complete']: IBatches
 } = {
   emptyInitial: {
     batches: [
@@ -144,6 +144,7 @@ export const batchesMocks: {
         results: null,
       },
     ],
+    resultsFinalizedAt: null,
   },
   complete: {
     batches: [
@@ -155,8 +156,10 @@ export const batchesMocks: {
           id: 'ab-1',
           name: 'Audit Board One',
         },
-        // TODO
-        results: null,
+        results: {
+          'choice-id-1': 1,
+          'choice-id-2': 2,
+        },
       },
       {
         id: 'batch-2',
@@ -166,8 +169,10 @@ export const batchesMocks: {
           id: 'ab-1',
           name: 'Audit Board One',
         },
-        // TODO
-        results: null,
+        results: {
+          'choice-id-1': 0,
+          'choice-id-2': 10,
+        },
       },
       {
         id: 'batch-3',
@@ -177,10 +182,13 @@ export const batchesMocks: {
           id: 'ab-1',
           name: 'Audit Board One',
         },
-        // TODO
-        results: null,
+        results: {
+          'choice-id-1': 2000,
+          'choice-id-2': 20,
+        },
       },
     ],
+    resultsFinalizedAt: '2020-09-14T17:35:19.482Z',
   },
 }
 

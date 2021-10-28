@@ -3,7 +3,8 @@ import React from 'react'
 import { createLocation, createMemoryHistory, MemoryHistory } from 'history'
 import { match as routerMatch, Router } from 'react-router-dom'
 import equal from 'fast-deep-equal'
-import { render } from '@testing-library/react'
+import { render, screen, within, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 
 type MatchParameter<Params> = { [K in keyof Params]?: string }
 
@@ -198,4 +199,16 @@ export const serverError = (
 export const regexpEscape = (s: string) => {
   /* eslint-disable no-useless-escape */
   return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
+}
+
+// It's important to close the toast after checking it so there's no rendering
+// happen after the test ends
+export const findAndCloseToast = async (expectedContent: string) => {
+  const toastBody = await screen.findByRole('alert')
+  expect(toastBody).toHaveTextContent(expectedContent)
+  const toast = toastBody.closest('div.Toastify__toast')! as HTMLElement
+  userEvent.click(within(toast).getByRole('button', { name: 'close' }))
+  await waitFor(() =>
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+  )
 }

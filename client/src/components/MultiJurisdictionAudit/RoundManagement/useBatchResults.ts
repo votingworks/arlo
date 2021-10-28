@@ -16,9 +16,9 @@ export interface IBatch {
   results: IBatchResults | null
 }
 
-interface IBatches {
+export interface IBatches {
   batches: IBatch[]
-  resultsFinalizedAt: string
+  resultsFinalizedAt: string | null
 }
 
 export const useBatches = (
