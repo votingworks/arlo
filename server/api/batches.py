@@ -12,7 +12,12 @@ from .rounds import is_round_complete, end_round, get_current_round
 from ..util.csv_download import csv_response, jurisdiction_timestamp_name
 from ..util.jsonschema import JSONDict, validate
 from ..util.isoformat import isoformat
-from ..activity_log.activity_log import RecordResults, activity_base, record_activity
+
+# from ..activity_log.activity_log import (
+#     FinalizeBatchResults,
+#     activity_base,
+#     record_activity,
+# )
 
 
 def already_audited_batches(jurisdiction: Jurisdiction, round: Round) -> Query:
