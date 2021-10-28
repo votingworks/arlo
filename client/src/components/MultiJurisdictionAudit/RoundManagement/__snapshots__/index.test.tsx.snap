@@ -3,7 +3,7 @@
 exports[`RoundManagement renders audit setup with ballot audit 1`] = `
 <div>
   <div
-    class="sc-bdVaJa sc-jKJlTe jVScyC"
+    class="sc-bdVaJa sc-hMqMXs iTuCyI"
   >
     <h3
       class="bp3-heading"
@@ -13,7 +13,7 @@ exports[`RoundManagement renders audit setup with ballot audit 1`] = `
        Audit Board Setup
     </h3>
     <p
-      class="sc-hMqMXs cTbGLd"
+      class="sc-kkGfuU dKbdCb"
     >
       Ballots to audit: 
       27
@@ -681,7 +681,7 @@ exports[`RoundManagement renders audit setup with ballot audit 1`] = `
 exports[`RoundManagement renders audit setup with batch audit 1`] = `
 <div>
   <div
-    class="sc-bdVaJa sc-jKJlTe jVScyC"
+    class="sc-bdVaJa sc-hMqMXs iTuCyI"
   >
     <h3
       class="bp3-heading"
@@ -691,7 +691,7 @@ exports[`RoundManagement renders audit setup with batch audit 1`] = `
        Audit Board Setup
     </h3>
     <p
-      class="sc-hMqMXs cTbGLd"
+      class="sc-kkGfuU dKbdCb"
     >
       Batches to audit: 
       3
@@ -1362,7 +1362,7 @@ exports[`RoundManagement renders audit setup with batch audit 1`] = `
 exports[`RoundManagement renders complete view 1`] = `
 <div>
   <div
-    class="sc-bdVaJa sc-jKJlTe jVScyC"
+    class="sc-bdVaJa sc-hMqMXs iTuCyI"
   >
     <h2
       class="bp3-heading"
@@ -1376,7 +1376,7 @@ exports[`RoundManagement renders complete view 1`] = `
 exports[`RoundManagement renders links & data entry with batch audit 1`] = `
 <div>
   <div
-    class="sc-bdVaJa sc-jKJlTe jVScyC"
+    class="sc-bdVaJa sc-hMqMXs iTuCyI"
   >
     <h3
       class="bp3-heading"
@@ -1386,10 +1386,10 @@ exports[`RoundManagement renders links & data entry with batch audit 1`] = `
        Data Entry
     </h3>
     <div
-      class="sc-eNQAEJ fzEGuC"
+      class="sc-kEYyzF cevZxn"
     >
       <p
-        class="sc-hMqMXs cTbGLd"
+        class="sc-kkGfuU dKbdCb"
       >
         Batches to audit: 
         3
@@ -1436,188 +1436,249 @@ exports[`RoundManagement renders links & data entry with batch audit 1`] = `
       </div>
     </div>
     <div
-      class="sc-eNQAEJ fzEGuC"
+      class="sc-kEYyzF cevZxn"
     >
-      <form>
-        <p>
-          When you have examined all the ballots assigned to you, enter the number of votes recorded for each candidate/choice from the audited ballots.
-        </p>
-        <div
-          class="bp3-card bp3-elevation-2 sc-jTzLTM kZeJjn"
-        >
-          <h5
-            class="bp3-heading"
-          >
-            Batch: Batch One, Contest: Contest 1
-          </h5>
-          <label
-            class="sc-kpOJdX fZDKze"
-            for="results[batch-1][choice-id-1]"
-          >
-            Votes for 
-            Choice One
-            :
-            <div
-              class="sc-fjdhpX hpEPln"
-            >
-              <div
-                class="bp3-input-group sc-jzJRlG lpfNbV"
-              >
-                <input
-                  class="bp3-input"
-                  id="results[batch-1][choice-id-1]"
-                  name="results[batch-1][choice-id-1]"
-                  style="padding-right: 10px;"
-                  value=""
-                />
-              </div>
-            </div>
-          </label>
-          <label
-            class="sc-kpOJdX fZDKze"
-            for="results[batch-1][choice-id-2]"
-          >
-            Votes for 
-            Choice Two
-            :
-            <div
-              class="sc-fjdhpX hpEPln"
-            >
-              <div
-                class="bp3-input-group sc-jzJRlG lpfNbV"
-              >
-                <input
-                  class="bp3-input"
-                  id="results[batch-1][choice-id-2]"
-                  name="results[batch-1][choice-id-2]"
-                  style="padding-right: 10px;"
-                  value=""
-                />
-              </div>
-            </div>
-          </label>
+      <div>
+        <div>
+          <p>
+            When you have examined all of the ballots assigned to you, enter the number of votes recorded for each candidate/choice from the audited ballots in each batch.
+          </p>
         </div>
+        <table
+          class="bp3-html-table bp3-html-table-bordered bp3-html-table-striped sc-kGXeez iWSbXH"
+          id="results-table"
+        >
+          <thead>
+            <tr>
+              <th
+                style="width: 22%;"
+              >
+                Batch Name
+              </th>
+              <th>
+                Choice One
+              </th>
+              <th>
+                Choice Two
+              </th>
+              <th
+                class="sc-ckVGcZ KNzTg"
+              >
+                Batch Total Votes
+              </th>
+              <th
+                style="width: 120px;"
+              >
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                Batch One
+              </td>
+              <td
+                class="sc-kpOJdX eEsVOq"
+              />
+              <td
+                class="sc-kpOJdX eEsVOq"
+              />
+              <td
+                class="sc-dxgOiQ jbKbAU"
+              />
+              <td>
+                <button
+                  class="bp3-button"
+                  type="button"
+                >
+                  <span
+                    class="bp3-icon bp3-icon-edit"
+                    icon="edit"
+                  >
+                    <svg
+                      data-icon="edit"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      width="16"
+                    >
+                      <desc>
+                        edit
+                      </desc>
+                      <path
+                        d="M3.25 10.26l2.47 2.47 6.69-6.69-2.46-2.48-6.7 6.7zM.99 14.99l3.86-1.39-2.46-2.44-1.4 3.83zm12.25-14c-.48 0-.92.2-1.24.51l-1.44 1.44 2.47 2.47 1.44-1.44c.32-.32.51-.75.51-1.24.01-.95-.77-1.74-1.74-1.74z"
+                        fill-rule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                  <span
+                    class="bp3-button-text"
+                  >
+                    Edit
+                  </span>
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Batch Two
+              </td>
+              <td
+                class="sc-kpOJdX eEsVOq"
+              />
+              <td
+                class="sc-kpOJdX eEsVOq"
+              />
+              <td
+                class="sc-dxgOiQ jbKbAU"
+              />
+              <td>
+                <button
+                  class="bp3-button"
+                  type="button"
+                >
+                  <span
+                    class="bp3-icon bp3-icon-edit"
+                    icon="edit"
+                  >
+                    <svg
+                      data-icon="edit"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      width="16"
+                    >
+                      <desc>
+                        edit
+                      </desc>
+                      <path
+                        d="M3.25 10.26l2.47 2.47 6.69-6.69-2.46-2.48-6.7 6.7zM.99 14.99l3.86-1.39-2.46-2.44-1.4 3.83zm12.25-14c-.48 0-.92.2-1.24.51l-1.44 1.44 2.47 2.47 1.44-1.44c.32-.32.51-.75.51-1.24.01-.95-.77-1.74-1.74-1.74z"
+                        fill-rule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                  <span
+                    class="bp3-button-text"
+                  >
+                    Edit
+                  </span>
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Batch Three
+              </td>
+              <td
+                class="sc-kpOJdX eEsVOq"
+              />
+              <td
+                class="sc-kpOJdX eEsVOq"
+              />
+              <td
+                class="sc-dxgOiQ jbKbAU"
+              />
+              <td>
+                <button
+                  class="bp3-button"
+                  type="button"
+                >
+                  <span
+                    class="bp3-icon bp3-icon-edit"
+                    icon="edit"
+                  >
+                    <svg
+                      data-icon="edit"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      width="16"
+                    >
+                      <desc>
+                        edit
+                      </desc>
+                      <path
+                        d="M3.25 10.26l2.47 2.47 6.69-6.69-2.46-2.48-6.7 6.7zM.99 14.99l3.86-1.39-2.46-2.44-1.4 3.83zm12.25-14c-.48 0-.92.2-1.24.51l-1.44 1.44 2.47 2.47 1.44-1.44c.32-.32.51-.75.51-1.24.01-.95-.77-1.74-1.74-1.74z"
+                        fill-rule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                  <span
+                    class="bp3-button-text"
+                  >
+                    Edit
+                  </span>
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <td
+                class="sc-dxgOiQ jbKbAU"
+              >
+                Choice Total Votes
+              </td>
+              <td
+                class="sc-dxgOiQ jbKbAU"
+              >
+                0
+              </td>
+              <td
+                class="sc-dxgOiQ jbKbAU"
+              >
+                0
+              </td>
+              <td
+                class="sc-dxgOiQ jbKbAU"
+              >
+                0
+              </td>
+              <td />
+            </tr>
+          </tbody>
+        </table>
         <div
-          class="bp3-card bp3-elevation-2 sc-jTzLTM kZeJjn"
+          style="display: flex; justify-content: space-between; margin-top: 20px;"
         >
-          <h5
-            class="bp3-heading"
+          <button
+            class="bp3-button"
+            style="width: 160px;"
+            type="button"
           >
-            Batch: Batch Two, Contest: Contest 1
-          </h5>
-          <label
-            class="sc-kpOJdX fZDKze"
-            for="results[batch-2][choice-id-1]"
-          >
-            Votes for 
-            Choice One
-            :
-            <div
-              class="sc-fjdhpX hpEPln"
+            <span
+              class="bp3-icon bp3-icon-clipboard"
+              icon="clipboard"
             >
-              <div
-                class="bp3-input-group sc-jzJRlG lpfNbV"
+              <svg
+                data-icon="clipboard"
+                height="16"
+                viewBox="0 0 16 16"
+                width="16"
               >
-                <input
-                  class="bp3-input"
-                  id="results[batch-2][choice-id-1]"
-                  name="results[batch-2][choice-id-1]"
-                  style="padding-right: 10px;"
-                  value=""
+                <desc>
+                  clipboard
+                </desc>
+                <path
+                  d="M11 2c0-.55-.45-1-1-1h.22C9.88.4 9.24 0 8.5 0S7.12.4 6.78 1H7c-.55 0-1 .45-1 1v1h5V2zm2 0h-1v2H5V2H4c-.55 0-1 .45-1 1v12c0 .55.45 1 1 1h9c.55 0 1-.45 1-1V3c0-.55-.45-1-1-1z"
+                  fill-rule="evenodd"
                 />
-              </div>
-            </div>
-          </label>
-          <label
-            class="sc-kpOJdX fZDKze"
-            for="results[batch-2][choice-id-2]"
-          >
-            Votes for 
-            Choice Two
-            :
-            <div
-              class="sc-fjdhpX hpEPln"
+              </svg>
+            </span>
+            <span
+              class="bp3-button-text"
             >
-              <div
-                class="bp3-input-group sc-jzJRlG lpfNbV"
-              >
-                <input
-                  class="bp3-input"
-                  id="results[batch-2][choice-id-2]"
-                  name="results[batch-2][choice-id-2]"
-                  style="padding-right: 10px;"
-                  value=""
-                />
-              </div>
-            </div>
-          </label>
+              Copy to clipboard
+            </span>
+          </button>
+          <button
+            class="bp3-button bp3-intent-primary"
+            type="button"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Finalize Results
+            </span>
+          </button>
         </div>
-        <div
-          class="bp3-card bp3-elevation-2 sc-jTzLTM kZeJjn"
-        >
-          <h5
-            class="bp3-heading"
-          >
-            Batch: Batch Three, Contest: Contest 1
-          </h5>
-          <label
-            class="sc-kpOJdX fZDKze"
-            for="results[batch-3][choice-id-1]"
-          >
-            Votes for 
-            Choice One
-            :
-            <div
-              class="sc-fjdhpX hpEPln"
-            >
-              <div
-                class="bp3-input-group sc-jzJRlG lpfNbV"
-              >
-                <input
-                  class="bp3-input"
-                  id="results[batch-3][choice-id-1]"
-                  name="results[batch-3][choice-id-1]"
-                  style="padding-right: 10px;"
-                  value=""
-                />
-              </div>
-            </div>
-          </label>
-          <label
-            class="sc-kpOJdX fZDKze"
-            for="results[batch-3][choice-id-2]"
-          >
-            Votes for 
-            Choice Two
-            :
-            <div
-              class="sc-fjdhpX hpEPln"
-            >
-              <div
-                class="bp3-input-group sc-jzJRlG lpfNbV"
-              >
-                <input
-                  class="bp3-input"
-                  id="results[batch-3][choice-id-2]"
-                  name="results[batch-3][choice-id-2]"
-                  style="padding-right: 10px;"
-                  value=""
-                />
-              </div>
-            </div>
-          </label>
-        </div>
-        <button
-          class="bp3-button bp3-intent-primary sc-kGXeez fuuyeD sc-EHOje gmpgQN"
-          type="submit"
-        >
-          <span
-            class="bp3-button-text"
-          >
-            Submit Data for Round 1
-          </span>
-        </button>
-      </form>
+      </div>
     </div>
   </div>
 </div>
@@ -1626,7 +1687,7 @@ exports[`RoundManagement renders links & data entry with batch audit 1`] = `
 exports[`RoundManagement renders links & data entry with offline ballot audit 1`] = `
 <div>
   <div
-    class="sc-bdVaJa sc-jKJlTe jVScyC"
+    class="sc-bdVaJa sc-hMqMXs iTuCyI"
   >
     <h3
       class="bp3-heading"
@@ -1636,10 +1697,10 @@ exports[`RoundManagement renders links & data entry with offline ballot audit 1`
        Data Entry
     </h3>
     <div
-      class="sc-eNQAEJ fzEGuC"
+      class="sc-kEYyzF cevZxn"
     >
       <p
-        class="sc-hMqMXs cTbGLd"
+        class="sc-kkGfuU dKbdCb"
       >
         Ballots to audit: 
         27
@@ -1741,7 +1802,7 @@ exports[`RoundManagement renders links & data entry with offline ballot audit 1`
       </div>
     </div>
     <div
-      class="sc-eNQAEJ fzEGuC"
+      class="sc-kEYyzF cevZxn"
     >
       <form>
         <p>
@@ -1876,7 +1937,7 @@ exports[`RoundManagement renders links & data entry with offline ballot audit 1`
 exports[`RoundManagement renders links & progress with online ballot audit 1`] = `
 <div>
   <div
-    class="sc-bdVaJa sc-jKJlTe jVScyC"
+    class="sc-bdVaJa sc-hMqMXs iTuCyI"
   >
     <h3
       class="bp3-heading"
@@ -1886,10 +1947,10 @@ exports[`RoundManagement renders links & progress with online ballot audit 1`] =
        Data Entry
     </h3>
     <div
-      class="sc-eNQAEJ fzEGuC"
+      class="sc-kEYyzF cevZxn"
     >
       <p
-        class="sc-hMqMXs cTbGLd"
+        class="sc-kkGfuU dKbdCb"
       >
         Ballots to audit: 
         27
@@ -2034,7 +2095,7 @@ exports[`RoundManagement renders links & progress with online ballot audit 1`] =
       </div>
     </div>
     <div
-      class="sc-eNQAEJ fzEGuC"
+      class="sc-kEYyzF cevZxn"
     >
       <div
         class="sc-gZMcBi cPjbpf"
