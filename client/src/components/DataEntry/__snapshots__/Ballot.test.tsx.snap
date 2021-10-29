@@ -66,7 +66,19 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
                 <h5
                   class="bp3-heading sc-iwsKbI krynZG"
                 >
-                  batch
+                  Tabulator
+                </h5>
+                <h4
+                  class="bp3-heading sc-hSdWYo hdYogx"
+                >
+                  11
+                </h4>
+              </div>
+              <div>
+                <h5
+                  class="bp3-heading sc-iwsKbI krynZG"
+                >
+                  Batch
                 </h5>
                 <h4
                   class="bp3-heading sc-hSdWYo hdYogx"
@@ -78,24 +90,12 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
                 <h5
                   class="bp3-heading sc-iwsKbI krynZG"
                 >
-                  position
+                  Ballot Number
                 </h5>
                 <h4
                   class="bp3-heading sc-hSdWYo hdYogx"
                 >
                   313
-                </h4>
-              </div>
-              <div>
-                <h5
-                  class="bp3-heading sc-iwsKbI krynZG"
-                >
-                  tabulator
-                </h5>
-                <h4
-                  class="bp3-heading sc-hSdWYo hdYogx"
-                >
-                  11
                 </h4>
               </div>
               <div>
@@ -364,7 +364,19 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
                 <h5
                   class="bp3-heading sc-iwsKbI krynZG"
                 >
-                  batch
+                  Tabulator
+                </h5>
+                <h4
+                  class="bp3-heading sc-hSdWYo hdYogx"
+                >
+                  11
+                </h4>
+              </div>
+              <div>
+                <h5
+                  class="bp3-heading sc-iwsKbI krynZG"
+                >
+                  Batch
                 </h5>
                 <h4
                   class="bp3-heading sc-hSdWYo hdYogx"
@@ -376,24 +388,12 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
                 <h5
                   class="bp3-heading sc-iwsKbI krynZG"
                 >
-                  position
+                  Ballot Number
                 </h5>
                 <h4
                   class="bp3-heading sc-hSdWYo hdYogx"
                 >
                   2112
-                </h4>
-              </div>
-              <div>
-                <h5
-                  class="bp3-heading sc-iwsKbI krynZG"
-                >
-                  tabulator
-                </h5>
-                <h4
-                  class="bp3-heading sc-hSdWYo hdYogx"
-                >
-                  11
                 </h4>
               </div>
               <div>
@@ -662,7 +662,19 @@ exports[`Ballot selects Blank vote 1`] = `
                 <h5
                   class="bp3-heading sc-iwsKbI krynZG"
                 >
-                  batch
+                  Tabulator
+                </h5>
+                <h4
+                  class="bp3-heading sc-hSdWYo hdYogx"
+                >
+                  11
+                </h4>
+              </div>
+              <div>
+                <h5
+                  class="bp3-heading sc-iwsKbI krynZG"
+                >
+                  Batch
                 </h5>
                 <h4
                   class="bp3-heading sc-hSdWYo hdYogx"
@@ -674,24 +686,12 @@ exports[`Ballot selects Blank vote 1`] = `
                 <h5
                   class="bp3-heading sc-iwsKbI krynZG"
                 >
-                  position
+                  Ballot Number
                 </h5>
                 <h4
                   class="bp3-heading sc-hSdWYo hdYogx"
                 >
                   2112
-                </h4>
-              </div>
-              <div>
-                <h5
-                  class="bp3-heading sc-iwsKbI krynZG"
-                >
-                  tabulator
-                </h5>
-                <h4
-                  class="bp3-heading sc-hSdWYo hdYogx"
-                >
-                  11
                 </h4>
               </div>
               <div>
@@ -958,7 +958,19 @@ exports[`Ballot selects Not on Ballot 1`] = `
                 <h5
                   class="bp3-heading sc-iwsKbI krynZG"
                 >
-                  batch
+                  Tabulator
+                </h5>
+                <h4
+                  class="bp3-heading sc-hSdWYo hdYogx"
+                >
+                  11
+                </h4>
+              </div>
+              <div>
+                <h5
+                  class="bp3-heading sc-iwsKbI krynZG"
+                >
+                  Batch
                 </h5>
                 <h4
                   class="bp3-heading sc-hSdWYo hdYogx"
@@ -970,24 +982,12 @@ exports[`Ballot selects Not on Ballot 1`] = `
                 <h5
                   class="bp3-heading sc-iwsKbI krynZG"
                 >
-                  position
+                  Ballot Number
                 </h5>
                 <h4
                   class="bp3-heading sc-hSdWYo hdYogx"
                 >
                   2112
-                </h4>
-              </div>
-              <div>
-                <h5
-                  class="bp3-heading sc-iwsKbI krynZG"
-                >
-                  tabulator
-                </h5>
-                <h4
-                  class="bp3-heading sc-hSdWYo hdYogx"
-                >
-                  11
                 </h4>
               </div>
               <div>
@@ -1254,7 +1254,19 @@ exports[`Ballot switches audit and review views 1`] = `
                 <h5
                   class="bp3-heading sc-iwsKbI krynZG"
                 >
-                  batch
+                  Tabulator
+                </h5>
+                <h4
+                  class="bp3-heading sc-hSdWYo hdYogx"
+                >
+                  11
+                </h4>
+              </div>
+              <div>
+                <h5
+                  class="bp3-heading sc-iwsKbI krynZG"
+                >
+                  Batch
                 </h5>
                 <h4
                   class="bp3-heading sc-hSdWYo hdYogx"
@@ -1266,24 +1278,12 @@ exports[`Ballot switches audit and review views 1`] = `
                 <h5
                   class="bp3-heading sc-iwsKbI krynZG"
                 >
-                  position
+                  Ballot Number
                 </h5>
                 <h4
                   class="bp3-heading sc-hSdWYo hdYogx"
                 >
                   2112
-                </h4>
-              </div>
-              <div>
-                <h5
-                  class="bp3-heading sc-iwsKbI krynZG"
-                >
-                  tabulator
-                </h5>
-                <h4
-                  class="bp3-heading sc-hSdWYo hdYogx"
-                >
-                  11
                 </h4>
               </div>
               <div>
