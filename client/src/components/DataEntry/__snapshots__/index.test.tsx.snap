@@ -120,7 +120,19 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                   <h5
                     class="bp3-heading sc-cMljjf iZEeRq"
                   >
-                    batch
+                    Tabulator
+                  </h5>
+                  <h4
+                    class="bp3-heading sc-caSCKo kGcQaF"
+                  >
+                    11
+                  </h4>
+                </div>
+                <div>
+                  <h5
+                    class="bp3-heading sc-cMljjf iZEeRq"
+                  >
+                    Batch
                   </h5>
                   <h4
                     class="bp3-heading sc-caSCKo kGcQaF"
@@ -132,24 +144,12 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                   <h5
                     class="bp3-heading sc-cMljjf iZEeRq"
                   >
-                    position
+                    Ballot Number
                   </h5>
                   <h4
                     class="bp3-heading sc-caSCKo kGcQaF"
                   >
                     2112
-                  </h4>
-                </div>
-                <div>
-                  <h5
-                    class="bp3-heading sc-cMljjf iZEeRq"
-                  >
-                    tabulator
-                  </h5>
-                  <h4
-                    class="bp3-heading sc-caSCKo kGcQaF"
-                  >
-                    11
                   </h4>
                 </div>
                 <div>
@@ -657,7 +657,7 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                       colspan="1"
                       role="columnheader"
                       style="cursor: pointer;"
-                      title="Position"
+                      title="Ballot Number"
                     >
                       <div
                         style="display: flex; align-items: center; padding-right: 15px;"
@@ -665,7 +665,7 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                         <span
                           style="margin-right: 5px;"
                         >
-                          Position
+                          Ballot Number
                         </span>
                         <span>
                           <span
@@ -2940,7 +2940,7 @@ exports[`DataEntry ballot interaction renders board table with no audited ballot
                       colspan="1"
                       role="columnheader"
                       style="cursor: pointer;"
-                      title="Position"
+                      title="Ballot Number"
                     >
                       <div
                         style="display: flex; align-items: center; padding-right: 15px;"
@@ -2948,7 +2948,7 @@ exports[`DataEntry ballot interaction renders board table with no audited ballot
                         <span
                           style="margin-right: 5px;"
                         >
-                          Position
+                          Ballot Number
                         </span>
                         <span>
                           <span
@@ -4808,7 +4808,7 @@ exports[`DataEntry ballot interaction renders board table with no ballots 1`] = 
                       colspan="1"
                       role="columnheader"
                       style="cursor: pointer;"
-                      title="Position"
+                      title="Ballot Number"
                     >
                       <div
                         style="display: flex; align-items: center; padding-right: 15px;"
@@ -4816,7 +4816,7 @@ exports[`DataEntry ballot interaction renders board table with no ballots 1`] = 
                         <span
                           style="margin-right: 5px;"
                         >
-                          Position
+                          Ballot Number
                         </span>
                         <span>
                           <span
@@ -5171,7 +5171,7 @@ exports[`DataEntry member form submits, goes to ballot table, and header shows m
                       colspan="1"
                       role="columnheader"
                       style="cursor: pointer;"
-                      title="Position"
+                      title="Ballot Number"
                     >
                       <div
                         style="display: flex; align-items: center; padding-right: 15px;"
@@ -5179,7 +5179,7 @@ exports[`DataEntry member form submits, goes to ballot table, and header shows m
                         <span
                           style="margin-right: 5px;"
                         >
-                          Position
+                          Ballot Number
                         </span>
                         <span>
                           <span

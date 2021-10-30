@@ -141,7 +141,7 @@ const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
       ),
     },
     {
-      Header: 'Position',
+      Header: 'Ballot Number',
       accessor: ballot => (
         <TableColumn
           style={ballot.status !== BallotStatus.NOT_AUDITED ? grayColor : {}}

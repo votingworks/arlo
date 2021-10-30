@@ -158,7 +158,7 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
                     colspan="1"
                     role="columnheader"
                     style="cursor: pointer;"
-                    title="Position"
+                    title="Ballot Number"
                   >
                     <div
                       style="display: flex; align-items: center; padding-right: 15px;"
@@ -166,7 +166,7 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
                       <span
                         style="margin-right: 5px;"
                       >
-                        Position
+                        Ballot Number
                       </span>
                       <span>
                         <span
@@ -777,7 +777,7 @@ exports[`BoardTable renders container and no tabulator columns 1`] = `
                     colspan="1"
                     role="columnheader"
                     style="cursor: pointer;"
-                    title="Position"
+                    title="Ballot Number"
                   >
                     <div
                       style="display: flex; align-items: center; padding-right: 15px;"
@@ -785,7 +785,7 @@ exports[`BoardTable renders container and no tabulator columns 1`] = `
                       <span
                         style="margin-right: 5px;"
                       >
-                        Position
+                        Ballot Number
                       </span>
                       <span>
                         <span
@@ -1199,7 +1199,7 @@ exports[`BoardTable renders container and tabulator columns 1`] = `
                     colspan="1"
                     role="columnheader"
                     style="cursor: pointer;"
-                    title="Position"
+                    title="Ballot Number"
                   >
                     <div
                       style="display: flex; align-items: center; padding-right: 15px;"
@@ -1207,7 +1207,7 @@ exports[`BoardTable renders container and tabulator columns 1`] = `
                       <span
                         style="margin-right: 5px;"
                       >
-                        Position
+                        Ballot Number
                       </span>
                       <span>
                         <span
@@ -1557,7 +1557,7 @@ exports[`BoardTable renders no container and no tabulator columns 1`] = `
                     colspan="1"
                     role="columnheader"
                     style="cursor: pointer;"
-                    title="Position"
+                    title="Ballot Number"
                   >
                     <div
                       style="display: flex; align-items: center; padding-right: 15px;"
@@ -1565,7 +1565,7 @@ exports[`BoardTable renders no container and no tabulator columns 1`] = `
                       <span
                         style="margin-right: 5px;"
                       >
-                        Position
+                        Ballot Number
                       </span>
                       <span>
                         <span
@@ -1932,7 +1932,7 @@ exports[`BoardTable renders tabulator and no container columns 1`] = `
                     colspan="1"
                     role="columnheader"
                     style="cursor: pointer;"
-                    title="Position"
+                    title="Ballot Number"
                   >
                     <div
                       style="display: flex; align-items: center; padding-right: 15px;"
@@ -1940,7 +1940,7 @@ exports[`BoardTable renders tabulator and no container columns 1`] = `
                       <span
                         style="margin-right: 5px;"
                       >
-                        Position
+                        Ballot Number
                       </span>
                       <span>
                         <span
@@ -2317,7 +2317,7 @@ exports[`BoardTable shows audit first ballot button when no ballots are audited 
                     colspan="1"
                     role="columnheader"
                     style="cursor: pointer;"
-                    title="Position"
+                    title="Ballot Number"
                   >
                     <div
                       style="display: flex; align-items: center; padding-right: 15px;"
@@ -2325,7 +2325,7 @@ exports[`BoardTable shows audit first ballot button when no ballots are audited 
                       <span
                         style="margin-right: 5px;"
                       >
-                        Position
+                        Ballot Number
                       </span>
                       <span>
                         <span
@@ -4165,7 +4165,7 @@ exports[`BoardTable shows audit next ballot button when some are remaining to au
                     colspan="1"
                     role="columnheader"
                     style="cursor: pointer;"
-                    title="Position"
+                    title="Ballot Number"
                   >
                     <div
                       style="display: flex; align-items: center; padding-right: 15px;"
@@ -4173,7 +4173,7 @@ exports[`BoardTable shows audit next ballot button when some are remaining to au
                       <span
                         style="margin-right: 5px;"
                       >
-                        Position
+                        Ballot Number
                       </span>
                       <span>
                         <span

@@ -245,29 +245,29 @@ const Ballot: React.FC<IProps> = ({
               </TopRow>
               <FlushDivider />
               <BallotMainRow>
-                <div>
-                  <SubTitle>batch</SubTitle>
-                  <BallotRowValue>{ballot.batch.name}</BallotRowValue>
-                </div>
-                <div>
-                  <SubTitle>position</SubTitle>
-                  <BallotRowValue>{ballot.position}</BallotRowValue>
-                </div>
                 {ballot.batch.container && (
                   <div>
-                    <SubTitle>container</SubTitle>
+                    <SubTitle>Container</SubTitle>
                     <BallotRowValue>{ballot.batch.container}</BallotRowValue>
                   </div>
                 )}
                 {ballot.batch.tabulator && (
                   <div>
-                    <SubTitle>tabulator</SubTitle>
+                    <SubTitle>Tabulator</SubTitle>
                     <BallotRowValue>{ballot.batch.tabulator}</BallotRowValue>
                   </div>
                 )}
+                <div>
+                  <SubTitle>Batch</SubTitle>
+                  <BallotRowValue>{ballot.batch.name}</BallotRowValue>
+                </div>
+                <div>
+                  <SubTitle>Ballot Number</SubTitle>
+                  <BallotRowValue>{ballot.position}</BallotRowValue>
+                </div>
                 {ballot.imprintedId !== undefined && (
                   <div>
-                    <SubTitle>imprint</SubTitle>
+                    <SubTitle>Imprinted ID</SubTitle>
                     <BallotRowValue>{ballot.imprintedId}</BallotRowValue>
                   </div>
                 )}
