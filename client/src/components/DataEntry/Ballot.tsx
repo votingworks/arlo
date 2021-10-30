@@ -247,7 +247,7 @@ const Ballot: React.FC<IProps> = ({
               <BallotMainRow>
                 {ballot.batch.container && (
                   <div>
-                    <SubTitle>cCntainer</SubTitle>
+                    <SubTitle>Container</SubTitle>
                     <BallotRowValue>{ballot.batch.container}</BallotRowValue>
                   </div>
                 )}
