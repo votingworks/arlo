@@ -245,7 +245,7 @@ describe('Audit Setup > Contests', () => {
 
     fireEvent.click(getByText('Save & Next'), { bubbles: true })
     await waitFor(() => {
-      expect(apiMock).toHaveBeenCalledTimes(4)
+      expect(apiMock).toHaveBeenCalledTimes(5)
       expect(apiMock.mock.calls[3][0]).toBe('/election/1/contest')
       expect(apiMock.mock.calls[3][1]).toMatchObject({
         method: 'PUT',
@@ -513,13 +513,6 @@ describe('Audit Setup > Contests', () => {
         ).toMatchObject(
           regexify(numberifyContest(contestMocks.filledTargeted.contests[0]))
         )
-        // expect(
-        //   JSON.parse(apiMock.mock.calls[3][1]!.body as string)[0]
-        // ).toMatchObject(
-        //   regexify(
-        //     numberifyContest(contestMocks.filledOpportunistic.contests[0])
-        //   )
-        // )
       }
       expect(nextStage.activate).toHaveBeenCalledTimes(1)
     })
@@ -552,7 +545,7 @@ describe('Audit Setup > Contests', () => {
 
     fireEvent.click(getByText('Save & Next'), { bubbles: true })
     await waitFor(() => {
-      expect(apiMock).toHaveBeenCalledTimes(4)
+      expect(apiMock).toHaveBeenCalledTimes(5)
       expect(apiMock.mock.calls[3][0]).toBe('/election/1/contest')
       expect(apiMock.mock.calls[3][1]).toMatchObject({
         method: 'PUT',

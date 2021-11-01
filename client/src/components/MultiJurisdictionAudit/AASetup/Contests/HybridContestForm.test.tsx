@@ -10,7 +10,7 @@ import {
 import relativeStages from '../_mocks'
 import Contests from '.'
 import { aaApiCalls } from '../../_mocks'
-import { IContest, INewContest } from '../../useContestsBallotComparison'
+import { IContestNumbered } from '../../useContests'
 
 const hybridContestsInputMocks = {
   inputs: [
@@ -96,11 +96,11 @@ const apiCalls = {
       { name: 'Contest 3', jurisdictionIds: ['jurisdiction-id-2'] },
     ],
   },
-  getContests: (contests: IContest[]) => ({
+  getContests: (contests: Omit<IContestNumbered, 'totalBallotsCast'>[]) => ({
     url: '/api/election/1/contest',
     response: { contests },
   }),
-  putContests: (contests: INewContest[]) => ({
+  putContests: (contests: Omit<IContestNumbered, 'totalBallotsCast'>[]) => ({
     url: '/api/election/1/contest',
     options: {
       method: 'PUT',
@@ -143,7 +143,7 @@ describe('Audit Setup > Contests (Hybrid)', () => {
   }
 
   // created function to generate new IDs
-  const newContest = () => {
+  const newContests = () => {
     return [
       {
         id: getID(),
@@ -182,11 +182,13 @@ describe('Audit Setup > Contests (Hybrid)', () => {
   })
 
   it('is able to submit form successfully', async () => {
+    const contests = newContests()
     const expectedCalls = [
       apiCalls.getContests([]),
       aaApiCalls.getJurisdictions,
       apiCalls.getStandardizedContests,
-      apiCalls.submitContests(newContest()),
+      apiCalls.submitContests(contests),
+      apiCalls.getContests(contests),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { getByLabelText } = render()
@@ -209,11 +211,13 @@ describe('Audit Setup > Contests (Hybrid)', () => {
   })
 
   it('Check Jurisdiction selection is hidden for hybrid', async () => {
+    const contests = newContests()
     const expectedCalls = [
       apiCalls.getContests([]),
       aaApiCalls.getJurisdictions,
       apiCalls.getStandardizedContests,
-      apiCalls.submitContests(newContest()),
+      apiCalls.submitContests(contests),
+      apiCalls.getContests(contests),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { getByLabelText } = render()
