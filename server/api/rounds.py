@@ -35,6 +35,7 @@ from ..audit_math import (
 from .cvrs import hybrid_contest_choice_vote_counts, cvr_contests_metadata
 from .ballot_manifest import hybrid_contest_total_ballots
 from ..worker.tasks import (
+    UserError,
     background_task,
     create_background_task,
     serialize_background_task,
@@ -664,7 +665,7 @@ def draw_sample(round_id: str, election_id: str):
     # draw a sample. Instead, we force an offline audit.
     if sampled_all_ballots(round, election):
         if len(contest_sample_sizes) > 1:
-            raise Conflict(
+            raise UserError(
                 "Cannot sample all ballots when there are multiple targeted contests."
             )
         election.online = False

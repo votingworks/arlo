@@ -940,3 +940,70 @@ def test_offline_batch_results_unfinalize(
             }
         ]
     }
+
+
+def test_all_ballots_multiple_targeted_contests(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    election_settings,  # pylint: disable=unused-argument
+    manifests,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    contests = [
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Contest 1",
+            "isTargeted": True,
+            "choices": [
+                {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 1000000,},
+                {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 999000,},
+                {"id": str(uuid.uuid4()), "name": "candidate 3", "numVotes": 1000,},
+            ],
+            "totalBallotsCast": 2000000,
+            "numWinners": 1,
+            "votesAllowed": 1,
+            "jurisdictionIds": jurisdiction_ids[:2],
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Contest 2",
+            "isTargeted": True,
+            "choices": [
+                {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 1000000,},
+                {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 999000,},
+                {"id": str(uuid.uuid4()), "name": "candidate 3", "numVotes": 1000,},
+            ],
+            "totalBallotsCast": 2000000,
+            "numWinners": 1,
+            "votesAllowed": 1,
+            "jurisdictionIds": jurisdiction_ids[:2],
+        },
+    ]
+    rv = put_json(client, f"/api/election/{election_id}/contest", contests)
+    assert_ok(rv)
+
+    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    sample_sizes = json.loads(rv.data)["sampleSizes"]
+    selected_sample_sizes = {
+        contest_id: contest_sample_sizes[0]
+        for contest_id, contest_sample_sizes in sample_sizes.items()
+    }
+
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {"roundNum": 1, "sampleSizes": selected_sample_sizes},
+    )
+    assert_ok(rv)
+
+    rv = client.get(f"/api/election/{election_id}/round")
+    compare_json(
+        json.loads(rv.data)["rounds"][0]["drawSampleTask"],
+        {
+            "status": "ERRORED",
+            "startedAt": assert_is_date,
+            "completedAt": assert_is_date,
+            "error": "Cannot sample all ballots when there are multiple targeted contests.",
+        },
+    )
