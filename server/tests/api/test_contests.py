@@ -89,7 +89,7 @@ def test_contests_create_get_update_multiple(
     client: FlaskClient,
     election_id: str,
     json_contests: List[JSONDict],
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
 ):
     rv = put_json(client, f"/api/election/{election_id}/contest", json_contests)
     assert_ok(rv)
@@ -100,7 +100,7 @@ def test_contests_create_get_update_multiple(
 
     json_contests[0]["name"] = "Changed name"
     json_contests[1]["totalBallotsCast"] = 600
-    json_contests[2]["jurisdictionIds"] = jurisdiction_ids[1:]
+    json_contests = json_contests[:2]
 
     rv = put_json(client, f"/api/election/{election_id}/contest", json_contests)
     assert_ok(rv)
