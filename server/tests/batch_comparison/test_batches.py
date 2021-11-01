@@ -419,6 +419,17 @@ def test_record_batch_results_after_finalize(
         ]
     }
 
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/finalize",
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {"errorType": "Conflict", "message": "Results have already been finalized",}
+        ]
+    }
+
 
 def test_record_batch_results_bad_round(
     client: FlaskClient,

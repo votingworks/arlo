@@ -204,6 +204,14 @@ def finalize_batch_results(
     jurisdiction: Jurisdiction,
     round: Round,
 ):
+    if (
+        BatchResultsFinalized.query.filter_by(
+            jurisdiction_id=jurisdiction.id, round_id=round.id
+        ).one_or_none()
+        is not None
+    ):
+        raise Conflict("Results have already been finalized")
+
     num_batches_without_results = (
         Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
         .join(SampledBatchDraw)
@@ -218,9 +226,6 @@ def finalize_batch_results(
             "Cannot finalize batch results until all batches have audit results recorded."
         )
 
-    BatchResultsFinalized.query.filter_by(
-        jurisdiction_id=jurisdiction.id, round_id=round.id
-    ).delete()
     db_session.add(
         BatchResultsFinalized(jurisdiction_id=jurisdiction.id, round_id=round.id)
     )
