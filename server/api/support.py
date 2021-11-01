@@ -189,7 +189,7 @@ def create_audit_admin(organization_id: str):
     audit_admin = request.get_json()
     validate(audit_admin, AUDIT_ADMIN_SCHEMA)
 
-    user = User.query.filter_by(email=audit_admin["email"]).one_or_none()
+    user = User.query.filter_by(email=audit_admin["email"].lower()).one_or_none()
     if not user:
         user = User(
             id=str(uuid.uuid4()),
