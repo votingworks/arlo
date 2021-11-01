@@ -157,6 +157,17 @@ const apiCalls = {
       },
       {
         id: nextId(),
+        activityName: 'FinalizeBatchResults',
+        timestamp: nextTimestamp(),
+        election: mockElection,
+        user: mockJurisdictionAdmin,
+        info: {
+          jurisdiction_id: 'jurisdiction-id-1', // eslint-disable-line @typescript-eslint/camelcase
+          jurisdiction_name: 'Jurisdiction 1', // eslint-disable-line @typescript-eslint/camelcase
+        },
+      },
+      {
+        id: nextId(),
         activityName: 'AuditBoardSignOff',
         timestamp: nextTimestamp(),
         election: mockElection,
@@ -277,9 +288,10 @@ describe('Activity Log', () => {
       expect(fileBlob.type).toEqual('text/csv')
       expect(await new Response(fileBlob).text()).toMatchInlineSnapshot(`
         "\\"Timestamp\\",\\"User\\",\\"Action\\",\\"Audit\\",\\"Jurisdiction\\"
-        \\"8/31/2021, 11:05:49 PM\\",\\"admin@example.gov\\",\\"Deleted audit\\",\\"Test Audit\\",\\"\\"
-        \\"8/31/2021, 11:04:49 PM\\",\\"\\",\\"Ended round 1\\",\\"Test Audit\\",\\"\\"
-        \\"8/31/2021, 11:03:49 PM\\",\\"\\",\\"Audit Board #1 signed off\\",\\"Test Audit\\",\\"Jurisdiction 1\\"
+        \\"8/31/2021, 11:06:49 PM\\",\\"admin@example.gov\\",\\"Deleted audit\\",\\"Test Audit\\",\\"\\"
+        \\"8/31/2021, 11:05:49 PM\\",\\"\\",\\"Ended round 1\\",\\"Test Audit\\",\\"\\"
+        \\"8/31/2021, 11:04:49 PM\\",\\"\\",\\"Audit Board #1 signed off\\",\\"Test Audit\\",\\"Jurisdiction 1\\"
+        \\"8/31/2021, 11:03:49 PM\\",\\"admin@example.gov\\",\\"Finalized results\\",\\"Test Audit\\",\\"Jurisdiction 1\\"
         \\"8/31/2021, 11:02:49 PM\\",\\"admin@example.gov\\",\\"Recorded results\\",\\"Test Audit\\",\\"Jurisdiction 1\\"
         \\"8/31/2021, 11:01:49 PM\\",\\"admin@example.gov\\",\\"Created audit boards\\",\\"Test Audit\\",\\"Jurisdiction 1\\"
         \\"8/31/2021, 11:00:49 PM\\",\\"support@example.gov\\",\\"Started round 1\\",\\"Test Audit\\",\\"\\"

@@ -57,61 +57,21 @@ snapshots["test_batch_comparison_round_1 2"] = {
 
 snapshots["test_batch_comparison_round_2 1"] = {
     "numSamples": 4,
-    "numSamplesAudited": 4,
-    "numUnique": 3,
-    "numUniqueAudited": 3,
-    "status": "COMPLETE",
-}
-
-snapshots["test_batch_comparison_round_2 2"] = {
-    "numSamples": 2,
-    "numSamplesAudited": 0,
-    "numUnique": 1,
-    "numUniqueAudited": 0,
-    "status": "NOT_STARTED",
-}
-
-snapshots["test_batch_comparison_round_2 3"] = {
-    "numSamples": 4,
-    "numSamplesAudited": 4,
-    "numUnique": 3,
-    "numUniqueAudited": 3,
-    "status": "COMPLETE",
-}
-
-snapshots["test_batch_comparison_round_2 4"] = {
-    "numSamples": 2,
     "numSamplesAudited": 2,
-    "numUnique": 1,
+    "numUnique": 3,
     "numUniqueAudited": 1,
-    "status": "COMPLETE",
-}
-
-snapshots["test_batch_comparison_round_2 5"] = {
-    "numSamples": 3,
-    "numSamplesAudited": 0,
-    "numUnique": 2,
-    "numUniqueAudited": 0,
-    "status": "NOT_STARTED",
-}
-
-snapshots["test_batch_comparison_round_2 6"] = {
-    "numSamples": 2,
-    "numSamplesAudited": 0,
-    "numUnique": 1,
-    "numUniqueAudited": 0,
-    "status": "NOT_STARTED",
+    "status": "IN_PROGRESS",
 }
 
 snapshots[
-    "test_batch_comparison_round_2 7"
+    "test_batch_comparison_round_2 10"
 ] = """Batch Name,Container,Tabulator,Audit Board
 Batch 3,,,Audit Board #1
 Batch 4,,,Audit Board #2
 """
 
 snapshots[
-    "test_batch_comparison_round_2 8"
+    "test_batch_comparison_round_2 11"
 ] = """######## ELECTION INFO ########\r
 Organization,Election Name,State\r
 Test Org test_batch_comparison_round_2,Test Election,CA\r
@@ -149,7 +109,7 @@ J2,Batch 4,"Round 2: 0.608147659546583410, 0.868820918994249069",No,,candidate 1
 """
 
 snapshots[
-    "test_batch_comparison_round_2 9"
+    "test_batch_comparison_round_2 12"
 ] = """######## SAMPLED BATCHES ########\r
 Jurisdiction Name,Batch Name,Ticket Numbers,Audited?,Audit Results,Reported Results,Discrepancy\r
 J1,Batch 1,"Round 1: 0.720194360819624066, 0.777128466487428756",Yes,candidate 1: 400; candidate 2: 50; candidate 3: 40,candidate 1: 500; candidate 2: 250; candidate 3: 250,0\r
@@ -158,6 +118,70 @@ J1,Batch 8,Round 1: 0.9723790677174592551,Yes,candidate 1: 100; candidate 2: 50;
 J1,Batch 3,Round 2: 0.753710009967479876,No,,candidate 1: 500; candidate 2: 250; candidate 3: 250,\r
 J1,Batch 4,"Round 2: 0.9553762217707628661, 0.9782132493451071914",No,,candidate 1: 500; candidate 2: 250; candidate 3: 250,\r
 """
+
+snapshots["test_batch_comparison_round_2 2"] = {
+    "numSamples": 4,
+    "numSamplesAudited": 3,
+    "numUnique": 3,
+    "numUniqueAudited": 2,
+    "status": "IN_PROGRESS",
+}
+
+snapshots["test_batch_comparison_round_2 3"] = {
+    "numSamples": 4,
+    "numSamplesAudited": 4,
+    "numUnique": 3,
+    "numUniqueAudited": 3,
+    "status": "IN_PROGRESS",
+}
+
+snapshots["test_batch_comparison_round_2 4"] = {
+    "numSamples": 4,
+    "numSamplesAudited": 4,
+    "numUnique": 3,
+    "numUniqueAudited": 3,
+    "status": "COMPLETE",
+}
+
+snapshots["test_batch_comparison_round_2 5"] = {
+    "numSamples": 2,
+    "numSamplesAudited": 0,
+    "numUnique": 1,
+    "numUniqueAudited": 0,
+    "status": "NOT_STARTED",
+}
+
+snapshots["test_batch_comparison_round_2 6"] = {
+    "numSamples": 4,
+    "numSamplesAudited": 4,
+    "numUnique": 3,
+    "numUniqueAudited": 3,
+    "status": "COMPLETE",
+}
+
+snapshots["test_batch_comparison_round_2 7"] = {
+    "numSamples": 2,
+    "numSamplesAudited": 2,
+    "numUnique": 1,
+    "numUniqueAudited": 1,
+    "status": "COMPLETE",
+}
+
+snapshots["test_batch_comparison_round_2 8"] = {
+    "numSamples": 3,
+    "numSamplesAudited": 0,
+    "numUnique": 2,
+    "numUniqueAudited": 0,
+    "status": "NOT_STARTED",
+}
+
+snapshots["test_batch_comparison_round_2 9"] = {
+    "numSamples": 2,
+    "numSamplesAudited": 0,
+    "numUnique": 1,
+    "numUniqueAudited": 0,
+    "status": "NOT_STARTED",
+}
 
 snapshots["test_batch_comparison_sample_size 1"] = [
     {"key": "macro", "prob": None, "size": 6}

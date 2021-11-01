@@ -3,8 +3,8 @@ import { api } from '../../utilities'
 import { IAuditBoard } from '../useAuditBoards'
 import { BallotStatus, IBallotInterpretation } from '../../../types'
 import { IAuditSettings } from '../useAuditSettings'
-import { getBatches } from './useBatchResults'
 import { sum } from '../../../utils/number'
+import { IBatch } from './useBatchResults'
 
 export interface IBallot {
   id: string
@@ -31,6 +31,17 @@ export const getBallots = async (
     `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/ballots`
   )
   return response && response.ballots
+}
+
+export const getBatches = async (
+  electionId: string,
+  jurisdictionId: string,
+  roundId: string
+) => {
+  const response = await api<{ batches: IBatch[] }>(
+    `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/batches`
+  )
+  return response && response.batches
 }
 
 const getBallotCount = async (

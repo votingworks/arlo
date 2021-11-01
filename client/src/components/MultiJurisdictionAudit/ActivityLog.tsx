@@ -50,6 +50,8 @@ const prettyAction = (activity: IActivity) => {
       return 'Created audit boards'
     case 'RecordResults':
       return 'Recorded results'
+    case 'FinalizeBatchResults':
+      return 'Finalized results'
     case 'AuditBoardSignOff':
       return `${activity.info.audit_board_name} signed off`
     case 'JurisdictionAdminLogin':

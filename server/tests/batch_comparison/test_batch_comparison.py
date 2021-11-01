@@ -5,7 +5,6 @@ from flask.testing import FlaskClient
 from ...models import *  # pylint: disable=wildcard-import
 from ..helpers import *  # pylint: disable=wildcard-import
 from ...util.group_by import group_by
-from ..api.test_support import SUPPORT_EMAIL
 
 
 def test_batch_comparison_only_one_contest_allowed(
@@ -288,14 +287,34 @@ def test_batch_comparison_round_2(
         batches[2]["id"]: {choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 40,},
     }
 
-    rv = put_json(
+    for batch_id, results in batch_results.items():
+        set_logged_in_user(
+            client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+        )
+        rv = put_json(
+            client,
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/{batch_id}/results",
+            results,
+        )
+        assert_ok(rv)
+
+        # Check jurisdiction status after recording results
+        set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+        rv = client.get(f"/api/election/{election_id}/jurisdiction")
+        jurisdictions = json.loads(rv.data)["jurisdictions"]
+        snapshot.assert_match(jurisdictions[0]["currentRoundStatus"])
+
+    # Finalize the results
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = post_json(
         client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/results",
-        batch_results,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/finalize",
     )
     assert_ok(rv)
 
-    # Check jurisdiction status after recording results
+    # Check jurisdiction status after finalizing results
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
@@ -317,16 +336,18 @@ def test_batch_comparison_round_2(
     )
     assert rv.status_code == 200
     batches = json.loads(rv.data)["batches"]
-
-    # Record results for the second jurisdiction
-    batch_results = {
-        batches[0]["id"]: {choice_ids[0]: 100, choice_ids[1]: 100, choice_ids[2]: 40,}
-    }
+    assert len(batches) == 1
 
     rv = put_json(
         client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/batches/results",
-        batch_results,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/batches/{batches[0]['id']}/results",
+        {choice_ids[0]: 100, choice_ids[1]: 100, choice_ids[2]: 40,},
+    )
+    assert_ok(rv)
+
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/batches/finalize",
     )
     assert_ok(rv)
 
@@ -465,10 +486,17 @@ def test_batch_comparison_batches_sampled_multiple_times(
         batches[2]["id"]: {choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 50,},
     }
 
-    rv = put_json(
+    for batch_id, results in batch_results.items():
+        rv = put_json(
+            client,
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/{batch_id}/results",
+            results,
+        )
+        assert_ok(rv)
+
+    rv = post_json(
         client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/results",
-        batch_results,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/finalize",
     )
     assert_ok(rv)
 
@@ -494,10 +522,17 @@ def test_batch_comparison_batches_sampled_multiple_times(
         batches[0]["id"]: {choice_ids[0]: 500, choice_ids[1]: 250, choice_ids[2]: 250,}
     }
 
-    rv = put_json(
+    for batch_id, results in batch_results.items():
+        rv = put_json(
+            client,
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/batches/{batch_id}/results",
+            results,
+        )
+        assert_ok(rv)
+
+    rv = post_json(
         client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/batches/results",
-        batch_results,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/batches/finalize",
     )
     assert_ok(rv)
 
@@ -576,74 +611,75 @@ def test_batch_comparison_undo_start_round_1(
     )
 
 
-def test_support_clear_offline_results_batch_comparison(
-    client: FlaskClient,
-    election_id: str,
-    jurisdiction_ids: List[str],
-    round_1_id: str,
-    audit_board_round_1_ids: List[str],  # pylint: disable=unused-argument
-):
-    set_support_user(client, SUPPORT_EMAIL)
-    rv = client.get(f"/api/support/jurisdictions/{jurisdiction_ids[0]}")
-    assert json.loads(rv.data)["recordedResultsAt"] is None
+# TODO remove feature
+# def test_support_clear_offline_results_batch_comparison(
+#     client: FlaskClient,
+#     election_id: str,
+#     jurisdiction_ids: List[str],
+#     round_1_id: str,
+#     audit_board_round_1_ids: List[str],  # pylint: disable=unused-argument
+# ):
+#     set_support_user(client, SUPPORT_EMAIL)
+#     rv = client.get(f"/api/support/jurisdictions/{jurisdiction_ids[0]}")
+#     assert json.loads(rv.data)["recordedResultsAt"] is None
 
-    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.get(f"/api/election/{election_id}/contest")
-    assert rv.status_code == 200
-    contests = json.loads(rv.data)["contests"]
+#     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+#     rv = client.get(f"/api/election/{election_id}/contest")
+#     assert rv.status_code == 200
+#     contests = json.loads(rv.data)["contests"]
 
-    set_logged_in_user(
-        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
-    )
-    rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches"
-    )
-    assert rv.status_code == 200
-    batches = json.loads(rv.data)["batches"]
+#     set_logged_in_user(
+#         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+#     )
+#     rv = client.get(
+#         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches"
+#     )
+#     assert rv.status_code == 200
+#     batches = json.loads(rv.data)["batches"]
 
-    # Record some batch results
-    choice_ids = [choice["id"] for choice in contests[0]["choices"]]
-    batch_results = {
-        batches[0]["id"]: {choice_ids[0]: 400, choice_ids[1]: 50, choice_ids[2]: 40,},
-        batches[1]["id"]: {choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 40,},
-        batches[2]["id"]: {choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 40,},
-    }
+#     # Record some batch results
+#     choice_ids = [choice["id"] for choice in contests[0]["choices"]]
+#     batch_results = {
+#         batches[0]["id"]: {choice_ids[0]: 400, choice_ids[1]: 50, choice_ids[2]: 40,},
+#         batches[1]["id"]: {choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 40,},
+#         batches[2]["id"]: {choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 40,},
+#     }
 
-    rv = put_json(
-        client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/results",
-        batch_results,
-    )
-    assert_ok(rv)
+#     rv = put_json(
+#         client,
+#         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/results",
+#         batch_results,
+#     )
+#     assert_ok(rv)
 
-    rv = client.get(f"/api/support/jurisdictions/{jurisdiction_ids[0]}")
-    assert_is_date(json.loads(rv.data)["recordedResultsAt"])
+#     rv = client.get(f"/api/support/jurisdictions/{jurisdiction_ids[0]}")
+#     assert_is_date(json.loads(rv.data)["recordedResultsAt"])
 
-    # Clear results
-    rv = client.delete(f"/api/support/jurisdictions/{jurisdiction_ids[0]}/results")
-    assert_ok(rv)
+#     # Clear results
+#     rv = client.delete(f"/api/support/jurisdictions/{jurisdiction_ids[0]}/results")
+#     assert_ok(rv)
 
-    rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/results"
-    )
-    assert rv.status_code == 200
-    assert json.loads(rv.data) == {
-        batches[0]["id"]: {
-            choice_ids[0]: None,
-            choice_ids[1]: None,
-            choice_ids[2]: None,
-        },
-        batches[1]["id"]: {
-            choice_ids[0]: None,
-            choice_ids[1]: None,
-            choice_ids[2]: None,
-        },
-        batches[2]["id"]: {
-            choice_ids[0]: None,
-            choice_ids[1]: None,
-            choice_ids[2]: None,
-        },
-    }
+#     rv = client.get(
+#         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/results"
+#     )
+#     assert rv.status_code == 200
+#     assert json.loads(rv.data) == {
+#         batches[0]["id"]: {
+#             choice_ids[0]: None,
+#             choice_ids[1]: None,
+#             choice_ids[2]: None,
+#         },
+#         batches[1]["id"]: {
+#             choice_ids[0]: None,
+#             choice_ids[1]: None,
+#             choice_ids[2]: None,
+#         },
+#         batches[2]["id"]: {
+#             choice_ids[0]: None,
+#             choice_ids[1]: None,
+#             choice_ids[2]: None,
+#         },
+#     }
 
-    rv = client.get(f"/api/support/jurisdictions/{jurisdiction_ids[0]}")
-    assert json.loads(rv.data)["recordedResultsAt"] is None
+#     rv = client.get(f"/api/support/jurisdictions/{jurisdiction_ids[0]}")
+#     assert json.loads(rv.data)["recordedResultsAt"] is None

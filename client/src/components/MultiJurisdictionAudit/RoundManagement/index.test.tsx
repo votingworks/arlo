@@ -1,6 +1,7 @@
 import React from 'react'
 import { screen } from '@testing-library/react'
 import { Route } from 'react-router-dom'
+import { QueryClientProvider } from 'react-query'
 import { renderWithRouter, withMockFetch } from '../../testUtilities'
 import RoundManagement, { IRoundManagementProps } from './index'
 import {
@@ -22,15 +23,18 @@ import { jaApiCalls } from '../_mocks'
 import AuthDataProvider from '../../UserContext'
 import { IAuditSettings } from '../useAuditSettings'
 import { IOfflineBatchResults } from './useOfflineBatchResults'
+import { queryClient } from '../../../App'
 
 const renderView = (props: IRoundManagementProps) =>
   renderWithRouter(
     <Route
       path="/election/:electionId/jurisdiction/:jurisdictionId"
       render={routeProps => (
-        <AuthDataProvider>
-          <RoundManagement {...routeProps} {...props} />
-        </AuthDataProvider>
+        <QueryClientProvider client={queryClient}>
+          <AuthDataProvider>
+            <RoundManagement {...routeProps} {...props} />
+          </AuthDataProvider>
+        </QueryClientProvider>
       )}
     />,
     {
@@ -46,11 +50,6 @@ const apiCalls = {
   }),
   getJAContests: (response: { contests: IContest[] }) => ({
     url: `/api/election/1/jurisdiction/jurisdiction-id-1/contest`,
-    response,
-  }),
-  getBatchResults: (response: INullResultValues) => ({
-    url:
-      '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/batches/results',
     response,
   }),
   getResults: (response: INullResultValues) => ({
@@ -168,7 +167,6 @@ describe('RoundManagement', () => {
       apiCalls.getBatches(batchesMocks.emptyInitial),
       apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
       apiCalls.getBatches(batchesMocks.emptyInitial),
-      apiCalls.getBatchResults(batchResultsMocks.empty),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderView({

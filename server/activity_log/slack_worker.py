@@ -254,6 +254,30 @@ def slack_message(activity: activity_log.Activity):
             ],
         )
 
+    if isinstance(activity, activity_log.FinalizeBatchResults):
+        return dict(
+            text=f"Finalized batch results for {activity.jurisdiction_name}",
+            blocks=[
+                dict(
+                    type="section",
+                    text=dict(
+                        type="mrkdwn",
+                        text=f"*Finalized batch results for {activity.jurisdiction_name}*",
+                    ),
+                ),
+                dict(
+                    type="context",
+                    elements=[
+                        org_context,
+                        jurisdiction_context,
+                        audit_context,
+                        time_context,
+                        user_context,
+                    ],
+                ),
+            ],
+        )
+
     if isinstance(activity, activity_log.AuditBoardSignOff):
         return dict(
             text=f"{activity.audit_board_name} in {activity.jurisdiction_name} signed off",

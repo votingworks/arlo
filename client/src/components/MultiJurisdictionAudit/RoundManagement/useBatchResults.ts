@@ -1,11 +1,8 @@
-import { useEffect, useState } from 'react'
-import { toast } from 'react-toastify'
-import { api } from '../../utilities'
+import { useQuery, useMutation, useQueryClient } from 'react-query'
+import { fetchApi } from '../../SupportTools/support-api'
 
-export interface IResultValues {
-  [batchId: string]: {
-    [choiceId: string]: number | string
-  }
+export interface IBatchResults {
+  [choiceId: string]: number
 }
 
 export interface IBatch {
@@ -16,97 +13,67 @@ export interface IBatch {
     id: string
     name: string
   }
+  results: IBatchResults | null
 }
 
-const stringifyPossibleNull = (v: string | number | null) => (v ? `${v}` : '')
-
-const reformatResults = (r: IResultValues, numberify = true): IResultValues => {
-  return Object.keys(r).reduce(
-    (a, batchId) => ({
-      ...a,
-      [batchId]: Object.keys(r[batchId]).reduce(
-        (b, choiceId) => ({
-          ...b,
-          [choiceId]: numberify
-            ? Number(r[batchId][choiceId])
-            : stringifyPossibleNull(r[batchId][choiceId]),
-        }),
-        {}
-      ),
-    }),
-    {}
-  )
+export interface IBatches {
+  batches: IBatch[]
+  resultsFinalizedAt: string | null
 }
 
-const numberifyResults = (r: IResultValues): IResultValues => reformatResults(r)
-
-const getResults = async (
+export const useBatches = (
   electionId: string,
   jurisdictionId: string,
   roundId: string
-): Promise<IResultValues | null> => {
-  const response = await api<IResultValues>(
-    `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/batches/results`
+) =>
+  useQuery<IBatches>('batches', () =>
+    fetchApi(
+      `/api/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/batches`
+    )
   )
-  if (!response) return null
-  return reformatResults(response, false)
-}
 
-export const getBatches = async (
+export const useRecordBatchResults = (
   electionId: string,
   jurisdictionId: string,
   roundId: string
-): Promise<IBatch[] | null> => {
-  const response = await api<{ batches: IBatch[] }>(
-    `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/batches`
-  )
-  if (!response) return null
-  return response.batches
+) => {
+  const putBatchResults = async ({
+    batchId,
+    results,
+  }: {
+    batchId: string
+    results: IBatchResults
+  }) =>
+    fetchApi(
+      `/api/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/batches/${batchId}/results`,
+      {
+        method: 'PUT',
+        body: JSON.stringify(results),
+        headers: { 'Content-Type': 'application/json' },
+      }
+    )
+
+  const queryClient = useQueryClient()
+
+  return useMutation(putBatchResults, {
+    onSuccess: () => queryClient.invalidateQueries('batches'),
+  })
 }
 
-const useBatchResults = (
+export const useFinalizeBatchResults = (
   electionId: string,
   jurisdictionId: string,
   roundId: string
-): [
-  IResultValues | null,
-  IBatch[] | null,
-  (arg0: IResultValues) => Promise<boolean>
-] => {
-  const [results, setResults] = useState<IResultValues | null>(null)
-  const [batches, setBatches] = useState<IBatch[] | null>(null)
+) => {
+  const finalizeBatchResults = async () =>
+    fetchApi(
+      `/api/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/batches/finalize`,
+      { method: 'POST' }
+    )
 
-  const updateResults = async (newResults: IResultValues): Promise<boolean> => {
-    try {
-      await api(
-        `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/batches/results`,
-        {
-          method: 'PUT',
-          // stringify and numberify the contests (all number values are handled as strings clientside, but are required as numbers serverside)
-          body: JSON.stringify(numberifyResults(newResults)),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      )
-    } catch (err) /* istanbul ignore next */ {
-      // TODO move toasting into api
-      toast.error(err.message)
-      return false
-    }
-    setResults(newResults)
-    return true
-  }
+  const queryClient = useQueryClient()
 
-  useEffect(() => {
-    ;(async () => {
-      const newBatches = await getBatches(electionId, jurisdictionId, roundId)
-      const newResults = await getResults(electionId, jurisdictionId, roundId)
-      setBatches(newBatches)
-      setResults(newResults)
-    })()
-  }, [electionId, jurisdictionId, roundId])
-  return [results, batches, updateResults]
+  return useMutation(finalizeBatchResults, {
+    onSuccess: () => queryClient.invalidateQueries('batches'),
+  })
 }
-
-export default useBatchResults

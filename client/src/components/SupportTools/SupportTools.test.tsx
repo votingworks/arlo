@@ -3,7 +3,12 @@ import { screen, within, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ToastContainer } from 'react-toastify'
 import { QueryClientProvider, QueryClient } from 'react-query'
-import { withMockFetch, renderWithRouter, serverError } from '../testUtilities'
+import {
+  withMockFetch,
+  renderWithRouter,
+  serverError,
+  findAndCloseToast,
+} from '../testUtilities'
 import SupportTools from './SupportTools'
 import AuthDataProvider from '../UserContext'
 import { supportApiCalls } from '../MultiJurisdictionAudit/_mocks'
@@ -16,18 +21,6 @@ import {
   IJurisdiction,
 } from './support-api'
 import { queryClient } from '../../App'
-
-// It's important to close the toast after checking it so there's no rendering
-// happen after the test ends
-const findAndCloseToast = async (expectedContent: string) => {
-  const toastBody = await screen.findByRole('alert')
-  expect(toastBody).toHaveTextContent(expectedContent)
-  const toast = toastBody.closest('div.Toastify__toast')! as HTMLElement
-  userEvent.click(within(toast).getByRole('button', { name: 'close' }))
-  await waitFor(() =>
-    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
-  )
-}
 
 const mockOrganizationBase: IOrganizationBase = {
   id: 'organization-id-1',
