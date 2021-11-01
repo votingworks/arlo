@@ -73,8 +73,10 @@ SUPPORT_AUTH0_CLIENT_ID = read_env_var(
 SUPPORT_AUTH0_CLIENT_SECRET = read_env_var(
     "ARLO_SUPPORT_AUTH0_CLIENT_SECRET", env_defaults=dict(test="")
 )
-# Required email domain for support users
-SUPPORT_EMAIL_DOMAIN = read_env_var("ARLO_SUPPORT_EMAIL_DOMAIN", default="voting.works")
+# Required email domain(s) for support users (comma-separated string)
+SUPPORT_EMAIL_DOMAINS = read_env_var(
+    "ARLO_SUPPORT_EMAIL_DOMAIN", default="voting.works"
+).split(",")
 
 # Audit admin OAuth login config
 AUDITADMIN_AUTH0_BASE_URL = read_env_var(

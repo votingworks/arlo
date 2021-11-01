@@ -158,6 +158,23 @@ def test_support_callback_rejected(
                 assert auth0_sa.get.called
 
 
+def test_support_callback_multiple_allowed_domains(
+    client: FlaskClient, org_id: str,  # pylint: disable=unused-argument
+):
+    config.SUPPORT_EMAIL_DOMAINS = ["voting.works", "example.gov"]
+    with patch.object(auth0_sa, "authorize_access_token", return_value=None):
+        mock_response = Mock()
+        mock_response.json = MagicMock(return_value={"email": "sa@example.gov"})
+        with patch.object(auth0_sa, "get", return_value=mock_response):
+            rv = client.get("/auth/support/callback?code=foobar")
+            assert rv.status_code == 302
+            assert urlparse(rv.location).path == "/support"
+
+            with client.session_transaction() as session:  # type: ignore
+                assert session["_support_user"] == "sa@example.gov"
+    config.SUPPORT_EMAIL_DOMAINS = ["voting.works"]
+
+
 def test_auditadmin_start(client: FlaskClient):
     rv = client.get("/auth/auditadmin/start")
     check_redirect_contains_redirect_uri(rv, "/auth/auditadmin/callback")
