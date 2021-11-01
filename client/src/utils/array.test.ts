@@ -1,4 +1,11 @@
-import { groupBy, sortBy, hashBy, replaceAtIndex, range } from './array'
+import {
+  groupBy,
+  sortBy,
+  hashBy,
+  replaceAtIndex,
+  range,
+  partition,
+} from './array'
 
 test('groupBy', () => {
   expect(groupBy([], () => '')).toEqual({})
@@ -56,4 +63,15 @@ test('range', () => {
   expect(range(1, 3)).toEqual([1, 2, 3])
   expect(range(1, 5)).toEqual([1, 2, 3, 4, 5])
   expect(range(3, 5)).toEqual([3, 4, 5])
+})
+
+test('partition', () => {
+  expect(partition([], () => true)).toEqual([[], []])
+  expect(partition([1], () => true)).toEqual([[1], []])
+  expect(partition([1], () => false)).toEqual([[], [1]])
+  expect(partition([1, 2], () => true)).toEqual([[1, 2], []])
+  expect(partition([1, 2], () => false)).toEqual([[], [1, 2]])
+  expect(partition([1, 2, 3, 4], x => x % 2 === 0)).toEqual([[2, 4], [1, 3]])
+  expect(partition([1, 2, 3, 4], x => x % 2 === 1)).toEqual([[1, 3], [2, 4]])
+  expect(partition([1, 2, 3], x => x > 1)).toEqual([[2, 3], [1]])
 })

@@ -453,7 +453,7 @@ describe('Audit Setup > Contests', () => {
     })
   })
 
-  it('handles submission when there is a pre-existing contest', async () => {
+  it('sends all contests to server (both targeted and opportunistic) even though form only edits one set at a time', async () => {
     apiMock
       .mockImplementationOnce(
         generateApiMock(contestMocks.filledOpportunistic, {
@@ -512,6 +512,13 @@ describe('Audit Setup > Contests', () => {
           JSON.parse(apiMock.mock.calls[3][1]!.body as string)[0]
         ).toMatchObject(
           regexify(numberifyContest(contestMocks.filledTargeted.contests[0]))
+        )
+        expect(
+          JSON.parse(apiMock.mock.calls[3][1]!.body as string)[1]
+        ).toMatchObject(
+          regexify(
+            numberifyContest(contestMocks.filledOpportunistic.contests[0])
+          )
         )
       }
       expect(nextStage.activate).toHaveBeenCalledTimes(1)
