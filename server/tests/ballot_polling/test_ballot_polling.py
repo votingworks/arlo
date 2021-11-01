@@ -17,7 +17,11 @@ def test_not_found_ballots(
     opportunistic_contest = Contest.query.get(contest_ids[1])
 
     # First, audit all ballots for the winner and see what the p-value is
-    ballot_draws = SampledBallotDraw.query.filter_by(round_id=round_1_id).all()
+    ballot_draws = (
+        SampledBallotDraw.query.filter_by(round_id=round_1_id)
+        .order_by(SampledBallotDraw.ticket_number)
+        .all()
+    )
     for i, draw in enumerate(ballot_draws):
         audit_ballot(
             draw.sampled_ballot,
