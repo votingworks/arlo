@@ -8,8 +8,8 @@ from ..auth import restrict_access, UserType
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
 from ..util.jsonschema import validate, JSONDict
-from . import cvrs
-from . import ballot_manifest
+from . import cvrs  # pylint: disable=cyclic-import
+from . import ballot_manifest  # pylint: disable=cyclic-import
 
 
 CONTEST_CHOICE_SCHEMA = {
