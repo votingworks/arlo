@@ -260,7 +260,8 @@ def test_support_create_audit_admin_already_exists(  # pylint: disable=invalid-n
     MockAuth0, MockGetToken, client: FlaskClient, org_id: str,
 ):
     # Start with an existing user that isn't already an audit admin for this org
-    user_id = create_user(email="already-exists@example.org").id
+    aa_email = "Already-exists@example.org"  # Test case-insensitivity
+    user_id = create_user(email=aa_email).id
     db_session.commit()
     user = User.query.get(user_id)
 
@@ -276,7 +277,7 @@ def test_support_create_audit_admin_already_exists(  # pylint: disable=invalid-n
     rv = post_json(
         client,
         f"/api/support/organizations/{org_id}/audit-admins",
-        {"email": user.email},
+        {"email": aa_email},
     )
     assert_ok(rv)
 
