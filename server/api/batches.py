@@ -257,16 +257,16 @@ def unfinalize_batch_results(
     jurisdiction: Jurisdiction,
     round: Round,
 ):
-    results_finalized = BatchResultsFinalized.query.filter_by(
-        jurisdiction_id=jurisdiction.id, round_id=round.id
-    ).one_or_none()
-    if results_finalized is None:
-        raise Conflict("Results have not been finalized")
-
+    round = Round.query.with_for_update().get(round.id)
     if round.ended_at is not None:
         raise Conflict("Results cannot be unfinalized after the audit round ends")
 
-    db_session.delete(results_finalized)
+    num_deleted = BatchResultsFinalized.query.filter_by(
+        jurisdiction_id=jurisdiction.id, round_id=round.id
+    ).delete()
+    if num_deleted == 0:
+        raise Conflict("Results have not been finalized")
+
     db_session.commit()
 
     return jsonify(status="ok")

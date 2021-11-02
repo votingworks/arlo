@@ -437,6 +437,7 @@ def test_unfinalize_batch_results(
         ]
     }
 
+    # Can't finalize again after finalizing
     rv = post_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/finalize",
