@@ -288,8 +288,8 @@ def compute_risk(
     if 0 < p < alpha:
         result = True
 
-    if len(sample_cvr) >= N:
-        # We've done a full hand recount
+    # Special case if the sample size equals all the ballots (i.e. a full hand tally)
+    if sum(ballot["times_sampled"] for ballot in sample_cvr.values()) >= N:
         return 0, True
 
     return min(float(p), 1.0), result
