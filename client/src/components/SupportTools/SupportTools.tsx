@@ -458,7 +458,7 @@ const Jurisdiction = ({ jurisdictionId }: { jurisdictionId: string }) => {
               </Table>
             </>
           )}
-          {!election.online && (
+          {election.auditType === 'BALLOT_POLLING' && !election.online && (
             <>
               <H3>Offline Results</H3>
               {recordedResultsAt ? (
