@@ -16,6 +16,7 @@ from sqlalchemy.orm import Session
 from . import api
 from ..database import db_session, engine as db_engine
 from ..models import *  # pylint: disable=wildcard-import
+from . import contests
 from ..auth import restrict_access, UserType, get_loggedin_user, get_support_user
 from ..worker.tasks import (
     UserError,
@@ -516,9 +517,7 @@ def process_cvr_file(
             )
         )
 
-        if jurisdiction.election.audit_type == AuditType.BALLOT_COMPARISON:
-            for contest in jurisdiction.election.contests:
-                set_contest_metadata_from_cvrs(contest)
+        contests.set_contest_metadata(jurisdiction.election)
 
         emit_progress(total_lines, total_lines)
 

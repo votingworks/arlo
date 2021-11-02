@@ -15,6 +15,7 @@ from ..database import db_session
 from ..auth import restrict_access, UserType
 from .rounds import get_current_round, sampled_all_ballots
 from .ballot_manifest import hybrid_jurisdiction_total_ballots
+from .contests import set_contest_metadata
 from .standardized_contests import process_standardized_contests_file
 from ..worker.tasks import (
     background_task,
@@ -94,6 +95,8 @@ def process_jurisdictions_file(election_id: str):
     Jurisdiction.query.filter(Jurisdiction.id.in_(unmanaged_admin_ids)).delete(
         synchronize_session="fetch"
     )
+
+    set_contest_metadata(election)
 
     # If standardized contests file already uploaded, try reprocessing the
     # standardized contests file as well, since it depends on jurisdiction names.
