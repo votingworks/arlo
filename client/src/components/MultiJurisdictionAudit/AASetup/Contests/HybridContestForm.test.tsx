@@ -10,7 +10,7 @@ import {
 import relativeStages from '../_mocks'
 import Contests from '.'
 import { aaApiCalls } from '../../_mocks'
-import { IContest, INewContest } from '../../useContestsBallotComparison'
+import { IContestNumbered } from '../../useContests'
 
 const hybridContestsInputMocks = {
   inputs: [
@@ -96,11 +96,11 @@ const apiCalls = {
       { name: 'Contest 3', jurisdictionIds: ['jurisdiction-id-2'] },
     ],
   },
-  getContests: (contests: IContest[]) => ({
+  getContests: (contests: Omit<IContestNumbered, 'totalBallotsCast'>[]) => ({
     url: '/api/election/1/contest',
     response: { contests },
   }),
-  putContests: (contests: INewContest[]) => ({
+  putContests: (contests: Omit<IContestNumbered, 'totalBallotsCast'>[]) => ({
     url: '/api/election/1/contest',
     options: {
       method: 'PUT',
@@ -120,14 +120,6 @@ const apiCalls = {
   }),
 }
 
-jest.mock('uuidv4', () => {
-  let id = 0
-  return () => {
-    id += 1
-    return id.toString()
-  }
-})
-
 function typeInto(input: Element, value: string): void {
   // TODO: do more, like `focusIn`, `focusOut`, `input`, etc?
   fireEvent.focus(input)
@@ -135,38 +127,52 @@ function typeInto(input: Element, value: string): void {
   fireEvent.blur(input)
 }
 
-describe('Audit Setup > Contests (Hybrid)', () => {
-  let id = 0
-  const getID = () => {
-    id += 1
-    return id.toString()
-  }
+const mockUuid = jest.fn()
+jest.mock('uuidv4', () => () => mockUuid())
 
-  // created function to generate new IDs
-  const newContest = () => {
-    return [
+describe('Audit Setup > Contests (Hybrid)', () => {
+  let getID: () => string
+  beforeEach(() => {
+    // uuidMock and getID should be in sync so we can generate test data that
+    // matches the UUIDs assigned when making new contests
+    mockUuid.mockImplementation(
+      (() => {
+        let id = 0
+        return () => {
+          id += 1
+          return id.toString()
+        }
+      })()
+    )
+    getID = (() => {
+      let id = 0
+      return () => {
+        id += 1
+        return id.toString()
+      }
+    })()
+  })
+
+  const newContest = () => ({
+    id: getID(),
+    name: 'Contest 1.\'"',
+    isTargeted: true,
+    numWinners: 1,
+    votesAllowed: 1,
+    jurisdictionIds: ['jurisdiction-id-1', 'jurisdiction-id-2'],
+    choices: [
       {
         id: getID(),
-        name: 'Contest 1.\'"',
-        isTargeted: true,
-        numWinners: 1,
-        votesAllowed: 1,
-        jurisdictionIds: ['jurisdiction-id-1', 'jurisdiction-id-2'],
-        choices: [
-          {
-            id: getID(),
-            name: 'Choice One',
-            numVotes: 10,
-          },
-          {
-            id: getID(),
-            name: 'Choice Two',
-            numVotes: 20,
-          },
-        ],
+        name: 'Choice One',
+        numVotes: 10,
       },
-    ]
-  }
+      {
+        id: getID(),
+        name: 'Choice Two',
+        numVotes: 20,
+      },
+    ],
+  })
 
   it('Audit Setup > Contests', async () => {
     const expectedCalls = [
@@ -182,11 +188,13 @@ describe('Audit Setup > Contests (Hybrid)', () => {
   })
 
   it('is able to submit form successfully', async () => {
+    const contests = [newContest()]
     const expectedCalls = [
       apiCalls.getContests([]),
       aaApiCalls.getJurisdictions,
       apiCalls.getStandardizedContests,
-      apiCalls.submitContests(newContest()),
+      apiCalls.submitContests(contests),
+      apiCalls.getContests(contests),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { getByLabelText } = render()
@@ -208,12 +216,45 @@ describe('Audit Setup > Contests (Hybrid)', () => {
     })
   })
 
-  it('Check Jurisdiction selection is hidden for hybrid', async () => {
+  it('removes a contest', async () => {
+    const contests = [
+      newContest(),
+      {
+        ...newContest(),
+        name: 'Contest 2',
+        jurisdictionIds: ['jurisdiction-id-1'],
+      },
+      { ...newContest(), name: 'Contest 3', isTargeted: false },
+    ]
+    const expectedCalls = [
+      apiCalls.getContests(contests),
+      aaApiCalls.getJurisdictions,
+      apiCalls.getStandardizedContests,
+      apiCalls.submitContests(contests.slice(1)),
+      apiCalls.getContests(contests.slice(1)),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      render()
+      await screen.findByRole('heading', { name: 'Target Contests' })
+      userEvent.click(screen.getByRole('button', { name: 'Remove Contest 1' }))
+      await waitFor(() =>
+        expect(
+          screen.queryByRole('heading', { name: 'Contest 1' })
+        ).not.toBeInTheDocument()
+      )
+      userEvent.click(screen.getByRole('button', { name: 'Save & Next' }))
+      await waitFor(() => expect(nextStage.activate).toHaveBeenCalled())
+    })
+  })
+
+  it('hides jurisdiction selection for hybrid', async () => {
+    const contests = [newContest()]
     const expectedCalls = [
       apiCalls.getContests([]),
       aaApiCalls.getJurisdictions,
       apiCalls.getStandardizedContests,
-      apiCalls.submitContests(newContest()),
+      apiCalls.submitContests(contests),
+      apiCalls.getContests(contests),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { getByLabelText } = render()

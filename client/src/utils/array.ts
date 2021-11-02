@@ -42,3 +42,10 @@ export function replaceAtIndex<T>(arr: T[], index: number, newElement: T): T[] {
 export function range(start: number, stop: number) {
   return [...Array(stop - start + 1)].map((_, i) => start + i)
 }
+
+export function partition<T>(
+  arr: T[],
+  condition: (elt: T) => boolean
+): [T[], T[]] {
+  return [arr.filter(condition), arr.filter(x => !condition(x))]
+}

@@ -31,6 +31,7 @@ import { isObjectEmpty } from '../../../../utils/objects'
 import { IAuditSettings } from '../../useAuditSettings'
 import useStandardizedContests from '../../useStandardizedContests'
 import { ErrorLabel } from '../../../Atoms/Form/_helpers'
+import { partition } from '../../../../utils/array'
 
 const Select = styled(HTMLSelect)`
   margin-top: 5px;
@@ -86,13 +87,16 @@ const ContestForm: React.FC<IProps> = ({
 
   if ((isHybrid && !standardizedContests) || !jurisdictions || !contests)
     return null // Still loading
-  const filteredContests = contests.filter(c => c.isTargeted === isTargeted)
+  const [formContests, restContests] = partition(
+    contests,
+    c => c.isTargeted === isTargeted
+  )
 
   /* istanbul ignore next */
   if (isBatch && !isTargeted && nextStage.activate) nextStage.activate() // skip to next stage if on opportunistic contests screen and during a batch audit (until batch audits support multiple contests)
 
   const initialValues = {
-    contests: filteredContests.length ? filteredContests : contestValues,
+    contests: formContests.length ? formContests : contestValues,
   }
 
   const isOpportunisticFormClean = (
@@ -110,7 +114,7 @@ const ContestForm: React.FC<IProps> = ({
   }
 
   const submit = async (values: { contests: IContest[] }) => {
-    const finalContests = isHybrid
+    const contestsToUpdate = isHybrid
       ? values.contests.map(contest => ({
           ...contest,
           jurisdictionIds: standardizedContests!.find(
@@ -118,9 +122,7 @@ const ContestForm: React.FC<IProps> = ({
           )!.jurisdictionIds,
         }))
       : values.contests
-    const response = await updateContests(finalContests)
-    // TEST TODO
-    /* istanbul ignore next */
+    const response = await updateContests(contestsToUpdate.concat(restContests))
     if (!response) return
     goToNextStage()
   }

@@ -54,27 +54,11 @@ const useContests = (
 
   const updateContests = async (newContests: IContest[]): Promise<boolean> => {
     if (!contests) return false
-    const updatedContests: IContest[] = contests.reduce((a: IContest[], c) => {
-      const matchingContest = newContests.findIndex(v => v.id === c.id)
-      // replace old contest with new contest that has the same id, then remove it from newContests
-      if (matchingContest > -1) {
-        a.push(newContests[matchingContest])
-        newContests.splice(matchingContest, 1)
-      } else {
-        a.push(c)
-      }
-      return a
-    }, [])
-    const mergedContests = [
-      ...updatedContests,
-      // merge in all the new contests that weren't found by id
-      ...newContests,
-    ]
     const response = await api(`/election/${electionId}/contest`, {
       method: 'PUT',
       // stringify and numberify the contests (all number values are handled as strings clientside, but are required as numbers serverside)
       body: JSON.stringify(
-        mergedContests
+        newContests
           .map(c => numberifyContest(c))
           // Remove totalBallotsCast unless this is a ballot polling audit
           .map(({ totalBallotsCast, ...c }) =>
@@ -86,7 +70,7 @@ const useContests = (
       },
     })
     if (!response) return false
-    setContests(mergedContests)
+    setContests(await getContests(electionId))
     return true
   }
 
