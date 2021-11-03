@@ -494,7 +494,7 @@ describe('Audit Setup > Review & Launch', () => {
       userEvent.click(confirmLaunchButton)
       await waitFor(() => {
         expect(startNextRoundMock).toHaveBeenCalledWith({
-          'contest-id': { key: 'asn', size: 46, prob: 0.54 },
+          'contest-id': { key: 'asn', size: 20, prob: 0.54 },
         })
         expect(refreshMock).toHaveBeenCalled()
       })
@@ -540,7 +540,7 @@ describe('Audit Setup > Review & Launch', () => {
     await withMockFetch(expectedCalls, async () => {
       renderView()
       const newSampleSize = await screen.findByText(
-        '67 samples (70% chance of reaching risk limit and completing the audit in one round)'
+        '21 samples (70% chance of reaching risk limit and completing the audit in one round)'
       )
       userEvent.click(newSampleSize)
       const launchButton = await screen.findByText('Launch Audit')
@@ -550,7 +550,7 @@ describe('Audit Setup > Review & Launch', () => {
       userEvent.click(confirmLaunchButton)
       await waitFor(() => {
         expect(startNextRoundMock).toHaveBeenCalledWith({
-          'contest-id': { key: '0.7', size: 67, prob: 0.7 },
+          'contest-id': { key: '0.7', size: 21, prob: 0.7 },
         })
         expect(refreshMock).toHaveBeenCalled()
       })
@@ -719,16 +719,16 @@ describe('Audit Setup > Review & Launch', () => {
       expect(options).toHaveLength(5)
       options.forEach(option => expect(option).toBeDisabled())
       expect(options[0].closest('label')).toHaveTextContent(
-        'BRAVO Average Sample Number: 46 samples (54% chance of reaching risk limit and completing the audit in one round)'
+        'BRAVO Average Sample Number: 20 samples (54% chance of reaching risk limit and completing the audit in one round)'
       )
       expect(options[1].closest('label')).toHaveTextContent(
-        '67 samples (70% chance of reaching risk limit and completing the audit in one round)'
+        '21 samples (70% chance of reaching risk limit and completing the audit in one round)'
       )
       expect(options[2].closest('label')).toHaveTextContent(
-        '88 samples (50% chance of reaching risk limit and completing the audit in one round)'
+        '22 samples (50% chance of reaching risk limit and completing the audit in one round)'
       )
       expect(options[3].closest('label')).toHaveTextContent(
-        '125 samples (90% chance of reaching risk limit and completing the audit in one round)'
+        '31 samples (90% chance of reaching risk limit and completing the audit in one round)'
       )
       expect(options[4].closest('label')).toHaveTextContent(
         'Enter your own sample size (not recommended)'
@@ -883,6 +883,140 @@ describe('Audit Setup > Review & Launch', () => {
       })).closest('div.bp3-dialog') as HTMLElement
       userEvent.click(screen.getByRole('button', { name: 'Cancel' }))
       await waitFor(() => expect(dialog).not.toBeInTheDocument())
+    })
+  })
+
+  it('in ballot polling, shows a warning when selected sample size is a full hand tally', async () => {
+    const expectedCalls = [
+      apiCalls.getSettings(auditSettings.all),
+      apiCalls.getJurisdictions({
+        jurisdictions: jurisdictionMocks.allManifests,
+      }),
+      apiCalls.getJurisdictionFile,
+      apiCalls.getContests(contestMocks.filledTargeted),
+      apiCalls.getSampleSizeOptions(sampleSizeMock),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderView()
+      await screen.findByText(/Choose the initial sample size/)
+      // Default option is not a full hand tally
+      expect(
+        screen.queryByText(
+          'The currently selected sample size for this contest requires a full hand tally.'
+        )
+      ).not.toBeInTheDocument()
+
+      // Select an option that requires a full hand tally
+      userEvent.click(screen.getByLabelText(/90%/))
+      const warning = (await screen.findByText(
+        'The currently selected sample size for this contest requires a full hand tally.'
+      )).closest('.bp3-callout') as HTMLElement
+      expect(warning).toHaveClass('bp3-intent-warning')
+    })
+  })
+
+  it('in ballot polling, shows an error when one of multiple target contests is a full hand tally', async () => {
+    const expectedCalls = [
+      apiCalls.getSettings(auditSettings.all),
+      apiCalls.getJurisdictions({
+        jurisdictions: jurisdictionMocks.allManifests,
+      }),
+      apiCalls.getJurisdictionFile,
+      apiCalls.getContests({
+        contests: [
+          contestMocks.filledTargeted.contests[0],
+          {
+            ...contestMocks.filledTargeted.contests[0],
+            name: 'Contest 2',
+            id: 'contest-id-2',
+          },
+        ],
+      }),
+      apiCalls.getSampleSizeOptions({
+        ...sampleSizeMock,
+        sampleSizes: {
+          ...sampleSizeMock.sampleSizes,
+          'contest-id-2': sampleSizeMock.sampleSizes['contest-id'],
+        },
+      }),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderView()
+      const sampleSizeForm = (await screen.findByText(
+        /Choose the initial sample size/
+      )).closest('form')!
+      const contest1Card = within(sampleSizeForm)
+        .getByRole('heading', { name: 'Contest Name' })
+        .closest('div')!
+
+      // Select an option that requires a full hand tally
+      userEvent.click(within(contest1Card).getByLabelText(/90%/))
+      const callout = (await within(contest1Card).findByText(
+        'The currently selected sample size for this contest requires a full hand tally.'
+      )).closest('.bp3-callout') as HTMLElement
+      within(callout).getByText(
+        'Arlo supports running a full hand tally for audits with one target contest.' +
+          ' Either remove this contest and audit it separately, or remove the other target contests.'
+      )
+      expect(callout).toHaveClass('bp3-intent-danger')
+    })
+  })
+
+  it('shows a warning when custom sample size is a full hand tally', async () => {
+    const expectedCalls = [
+      apiCalls.getSettings(auditSettings.all),
+      apiCalls.getJurisdictions({
+        jurisdictions: jurisdictionMocks.allManifests,
+      }),
+      apiCalls.getJurisdictionFile,
+      apiCalls.getContests(contestMocks.filledTargeted),
+      apiCalls.getSampleSizeOptions(sampleSizeMock),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderView()
+      await screen.findByText(/Choose the initial sample size/)
+
+      // Type a custom sample size that is a full hand tally
+      userEvent.click(screen.getByLabelText(/Enter your own sample size/))
+      userEvent.type(screen.getByRole('spinbutton'), '30')
+      const warning = (await screen.findByText(
+        'The currently selected sample size for this contest requires a full hand tally.'
+      )).closest('.bp3-callout') as HTMLElement
+      expect(warning).toHaveClass('bp3-intent-warning')
+
+      // Change to a smaller sample size
+      userEvent.type(screen.getByRole('spinbutton'), '{backspace}{backspace}2')
+      await waitFor(() =>
+        expect(
+          screen.queryByText(
+            'The currently selected sample size for this contest requires a full hand tally.'
+          )
+        ).not.toBeInTheDocument()
+      )
+    })
+  })
+
+  it('in a non-ballot-polling audit, shows an error when sample size is a full hand tally', async () => {
+    const expectedCalls = [
+      apiCalls.getSettings(auditSettings.batchComparisonAll),
+      apiCalls.getJurisdictions({
+        jurisdictions: jurisdictionMocks.allManifestsAllTallies,
+      }),
+      apiCalls.getJurisdictionFile,
+      apiCalls.getContests(contestMocks.filledTargeted),
+      apiCalls.getSampleSizeOptions(sampleSizeMock),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderView()
+      await screen.findByText(/Choose the initial sample size/)
+      userEvent.click(screen.getByLabelText(/90%/))
+      const warning = (await screen.findByText(
+        'The currently selected sample size for this contest requires a full hand tally.'
+      )).closest('.bp3-callout') as HTMLElement
+      expect(warning).toHaveClass('bp3-intent-danger')
+      within(warning).getByText(
+        'To use Arlo for a full hand tally, recreate this audit using the ballot polling audit type.'
+      )
     })
   })
 })

@@ -49,10 +49,10 @@ export const settingsMock: {
 export const sampleSizeMock = {
   sampleSizes: {
     'contest-id': [
-      { prob: 0.54, size: 46, key: 'asn' },
-      { prob: 0.7, size: 67, key: '0.7' },
-      { prob: 0.5, size: 88, key: '0.5' },
-      { prob: 0.9, size: 125, key: '0.9' },
+      { prob: 0.54, size: 20, key: 'asn' },
+      { prob: 0.7, size: 21, key: '0.7' },
+      { prob: 0.5, size: 22, key: '0.5' },
+      { prob: 0.9, size: 31, key: '0.9' },
     ],
   },
   selected: null,

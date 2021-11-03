@@ -443,6 +443,14 @@ const Review: React.FC<IProps> = ({
         }: {
           sampleSizes: IFormOptions
         }) => {
+          // Compute total sample size for hybrid audit custom option
+          if (auditType === 'HYBRID')
+            // eslint-disable-next-line no-param-reassign
+            sampleSizes = mapValues(sampleSizes, option => ({
+              ...option,
+              size: option.sizeCvr! + option.sizeNonCvr!,
+            }))
+
           if (await startNextRound(sampleSizes)) {
             refresh()
             history.push(`/election/${electionId}/progress`)
@@ -491,7 +499,7 @@ const Review: React.FC<IProps> = ({
                                     ? 'warning'
                                     : 'danger'
                                 }
-                                style={{ marginBottom: '10px' }}
+                                style={{ marginBottom: '15px' }}
                               >
                                 <div>
                                   The currently selected sample size for this

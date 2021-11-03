@@ -876,10 +876,7 @@ def create_round_schema(audit_type: AuditType):
                                 {
                                     "sizeCvr": {"type": "integer"},
                                     "sizeNonCvr": {"type": "integer"},
-                                    # We ignore size in hybrid audits
-                                    "size": {
-                                        "anyOf": [{"type": "integer"}, {"type": "null"}]
-                                    },
+                                    "size": {"type": "integer"},
                                 }
                                 if audit_type == AuditType.HYBRID
                                 else {"size": {"type": "integer"}}
@@ -887,7 +884,7 @@ def create_round_schema(audit_type: AuditType):
                         },
                         "additionalProperties": False,
                         "required": (
-                            ["sizeCvr", "sizeNonCvr", "key", "prob"]
+                            ["sizeCvr", "sizeNonCvr", "size", "key", "prob"]
                             if audit_type == AuditType.HYBRID
                             else ["size", "key", "prob"]
                         ),
@@ -951,16 +948,6 @@ def validate_sample_size(round: dict, election: Election):
                 f"Invalid sample size key for contest {contest.name}: {sample_size['key']}"
             )
 
-        if sample_size["size"] == full_hand_tally_size:
-            if election.audit_type != AuditType.BALLOT_POLLING:
-                raise BadRequest(
-                    "To use Arlo for a full hand tally, use the ballot polling audit type."
-                )
-            if len(targeted_contests) > 1:
-                raise BadRequest(
-                    "For a full hand tally, use only one targeted contest."
-                )
-
         if sample_size["key"] == "custom":
             if election.audit_type == AuditType.HYBRID:
                 total_ballots = hybrid_contest_total_ballots(contest)
@@ -985,6 +972,15 @@ def validate_sample_size(round: dict, election: Election):
                     f"Sample size for contest {contest.name} must be less than or equal to:"
                     f" {full_hand_tally_size} (the total number of {ballots_or_batches} in the contest)"
                 )
+
+        print(full_hand_tally_size)
+        if sample_size["size"] >= full_hand_tally_size:
+            if election.audit_type != AuditType.BALLOT_POLLING:
+                raise BadRequest(
+                    "For a full hand tally, use the ballot polling audit type."
+                )
+            if len(targeted_contests) > 1:
+                raise BadRequest("For a full hand tally, use only one target contest.")
 
 
 @api.route("/election/<election_id>/round", methods=["POST"])
