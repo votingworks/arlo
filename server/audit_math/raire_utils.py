@@ -3,7 +3,7 @@ from .sampler_contest import CVR, Contest, CVRS
 import sys
 import numpy as np
 
-from typing import Type, Callable, Dict, List
+from typing import Type, Callable, Dict, List, Any
 
 CB = Dict[str, int]
 CBS = List[CB]
@@ -18,8 +18,8 @@ def index_of(cand: str, list_of_cand : list):
         list_of_cand : list - List of candidate identifiers
 
     Output:
-        Index (starting at 0) of 'cand' in 'list_of_cand', and -1 if 
-        'cand' is not in 'list_of_cand'.       
+        Index (starting at 0) of 'cand' in 'list_of_cand', and -1 if
+        'cand' is not in 'list_of_cand'.
     '''
     for i in range(len(list_of_cand)):
         if list_of_cand[i] == cand:
@@ -31,12 +31,12 @@ def ranking(cand: str, ballot: CB):
     '''
     Input:
         cand : string  -   identifier for candidate
-        ballot : CB    -   mapping between candidate name and their 
+        ballot : CB    -   mapping between candidate name and their
                            position in the ranking for a relevant contest
                            on a given ballot.
 
     Output:
-        Returns the position of candidate 'cand' in the ranking of the 
+        Returns the position of candidate 'cand' in the ranking of the
         given ballot 'ballot'. Returns -1 if 'cand' is not preferenced on the
         ballot.
     '''
@@ -51,15 +51,15 @@ def vote_for_cand(cand: str, eliminated: list, ballot: CB):
     Input:
         cand : string       -   identifier for candidate
         eliminated : list   -   identifiers of eliminated candidates
-        ballot : CB         -   mapping between candidate name and their 
+        ballot : CB         -   mapping between candidate name and their
                                 position in the ranking for a relevant contest
                                 on a given ballot.
     Output:
         Returns 1 if the given 'ballot' is a vote for the given candidate 'cand'
         in the context where candidates in 'eliminated' have been eliminated.
-        Otherwise, return 0 as the 'ballot' is not a vote for 'cand'.  
+        Otherwise, return 0 as the 'ballot' is not a vote for 'cand'.
     '''
-    
+
     # If 'cand' is not in the set of candidates assumed still standing,
     # 'cand' does not get this vote.
     if cand in eliminated: return 0
@@ -69,10 +69,10 @@ def vote_for_cand(cand: str, eliminated: list, ballot: CB):
     if c_idx == -1: return 0
 
     for alt_c,a_idx in ballot.items():
-        if alt_c == cand: 
+        if alt_c == cand:
             continue
 
-        if alt_c in eliminated: 
+        if alt_c in eliminated:
             continue
 
         if (a_idx != 0 and a_idx != "not present") and a_idx < c_idx:
@@ -86,13 +86,13 @@ class RaireAssertion:
         """
         Initializes a RAIRE assertion involving a comparison between
         the tallies of a candidate labelled 'winner' and a candidate
-        labelled 'loser'. This assertion 'asserts' that the tally of 
+        labelled 'loser'. This assertion 'asserts' that the tally of
         the winner is larger than the tally of the loser in some context.
 
         Each assertion will have an estimated 'difficulty' related to
         the anticipated number of ballot checks required to audit it.
 
-        Each assertion will have a margin defined as the difference in 
+        Each assertion will have a margin defined as the difference in
         tallies ascribed to 'winner' and 'loser'
         """
 
@@ -107,16 +107,17 @@ class RaireAssertion:
         self.margin = -1
         self.difficulty = np.inf
 
-        self.rules_out = None
+        self.rules_out: List[Any] = []
+        self.eliminated: List = []
 
     def is_vote_for_winner(self, cvr: CVR):
         """
         Input:
             cvr - cast vote record
- 
+
         Output:
-            Returns 1 if the given cvr represents a vote for the assertions 
-            winner, and 0 otherwise. 
+            Returns 1 if the given cvr represents a vote for the assertions
+            winner, and 0 otherwise.
         """
         pass
 
@@ -124,10 +125,10 @@ class RaireAssertion:
         """
         Input:
             cvr - cast vote record
- 
+
         Output:
-            Returns 1 if the given cvr represents a vote for the assertions 
-            loser, and 0 otherwise. 
+            Returns 1 if the given cvr represents a vote for the assertions
+            loser, and 0 otherwise.
         """
         pass
 
@@ -136,7 +137,7 @@ class RaireAssertion:
         Returns true if this assertion 'subsumes' the input assertion 'other'.
         An assertion 'A' subsumes assertion 'B' if the alternate outcomes
         ruled out by 'B' is a subset of those ruled out by 'A'. If we include
-        'A' in an audit, we don't need to include 'B'. 
+        'A' in an audit, we don't need to include 'B'.
 
         Input:
         other : RaireAssertion   - Assertion 'B'
@@ -159,19 +160,19 @@ class RaireAssertion:
 
     def __gt__(self, other):
         return self.difficulty < other.difficulty
-    
+
     def display(self, stream=sys.stdout):
         print(self.to_str(), file=stream)
-    
+
     def to_str(self):
         pass
-        
+
 
 class NEBAssertion(RaireAssertion):
     """
     A Not-Eliminated-Before (NEB) assertion between a candidate 'winner' and
-    a candidate 'loser' compares the minimum possible tally 'winner' could 
-    have (their first preference tally) with the maximum possible tally 
+    a candidate 'loser' compares the minimum possible tally 'winner' could
+    have (their first preference tally) with the maximum possible tally
     candidate 'loser' could have while 'winner' is still standing.
 
     We give 'winner' only those votes that rank 'winner' first.
@@ -181,7 +182,7 @@ class NEBAssertion(RaireAssertion):
 
     This assertion "asserts" that the tally of 'winner' is larger than the
     tally of the 'loser'. This means that 'winner' could never be eliminated
-    prior to 'loser'.  
+    prior to 'loser'.
     """
 
     def __init__(self, contest: str, winner: str, loser: str):
@@ -192,17 +193,17 @@ class NEBAssertion(RaireAssertion):
             return 0
 
         return 1 if ranking(self.winner, cvr[self.contest]) == 1 else 0
-    
+
     def is_vote_for_loser(self, cvr: CVR):
         if not self.contest in cvr:
             return 0
 
         w_idx = ranking(self.winner, cvr[self.contest])
         l_idx = ranking(self.loser, cvr[self.contest])
-        
+
         return 1 if l_idx != -1 and (w_idx == -1 or (w_idx != -1 and \
             l_idx < w_idx)) else 0
-        
+
     def same_as(self, other : Type[RaireAssertion]):
         return self.contest == other.contest and self.winner == other.winner\
             and self.loser == other.loser
@@ -214,7 +215,7 @@ class NEBAssertion(RaireAssertion):
         - Both assertions have the same winner & loser
         - 'other' rules out an outcome with the tail 'Tail' and either the
           winner of this NEBAssertion assertion appears before the loser in
-          'Tail' or the loser appears and the winner does not. 
+          'Tail' or the loser appears and the winner does not.
         '''
         if type(other) == NEBAssertion:
             return False
@@ -222,15 +223,15 @@ class NEBAssertion(RaireAssertion):
         if self.winner == other.winner and self.loser == other.loser:
             return True
 
-        if other.rules_out != None:                      
+        if other.rules_out:
             # If self.winner appears before self.loser in the list
-            # 'other.rules_out', or self.loser appears and self.winner does 
+            # 'other.rules_out', or self.loser appears and self.winner does
             # not, then this assertion subsumes 'other'.
             idx_winner = index_of(self.winner, other.rules_out)
             idx_loser = index_of(self.loser, other.rules_out)
 
             if idx_winner < idx_loser:
-                return True 
+                return True
 
         return False
 
@@ -244,7 +245,7 @@ class NENAssertion(RaireAssertion):
     """
     A Not-Eliminated-Next (NEN) assertion between a candidate 'winner' and
     a candidate 'loser' compares the tally of the two candidates in the
-    context where a given set of candidates have been eliminated. 
+    context where a given set of candidates have been eliminated.
 
     We give 'winner' all votes in which they are preferenced first AFTER
     the candidates in 'eliminated' are removed from the ranking.
@@ -254,7 +255,7 @@ class NENAssertion(RaireAssertion):
 
     This assertion "asserts" that the tally of the 'winner' in this context,
     where the specified candidates have been eliminated, is larger than that
-    of 'loser'. 
+    of 'loser'.
     """
 
     def __init__(self, contest: str, winner: str, loser: str, eliminated: list):
@@ -267,7 +268,7 @@ class NENAssertion(RaireAssertion):
             return 0
 
         return vote_for_cand(self.winner, self.eliminated, cvr[self.contest])
-        
+
     def is_vote_for_loser(self, cvr: CVR):
         if not self.contest in cvr:
             return 0
@@ -282,9 +283,9 @@ class NENAssertion(RaireAssertion):
 
     def subsumes(self, other : Type[RaireAssertion]):
         '''
-        An NENAssertion 'A' subsumes an assertion 'other' if 'other' is 
+        An NENAssertion 'A' subsumes an assertion 'other' if 'other' is
         not an NEBAssertion, they have the same winner, and rule out
-        Tail sequences that contain same set of candidates. 
+        Tail sequences that contain same set of candidates.
         '''
 
         if type(other) == NEBAssertion:
@@ -295,7 +296,7 @@ class NENAssertion(RaireAssertion):
             return True
 
         return False
-    
+
     def to_str(self):
         result = "NEN,Winner,{},Loser,{},Eliminated".format(self.winner,
             self.loser)
@@ -304,11 +305,11 @@ class NENAssertion(RaireAssertion):
             result += ",{}".format(cand)
 
         return result
-            
+
 
 class RaireNode:
     def __init__(self, tail):
-        # Tail of an "imagined" elimination sequence representing the 
+        # Tail of an "imagined" elimination sequence representing the
         # outcome of an IRV election. The last candidate in the tail is
         # the "imagined" winner of the election.
         self.tail = tail # List of str (candidate identifiers)
@@ -338,7 +339,7 @@ class RaireNode:
 
         Input:
         node: RaireNode     -  Potential ancestor
-        
+
         Output:
         Returns True if the input 'node' is an ancestor of this node, and
         False otherwise.
@@ -375,7 +376,7 @@ class RaireFrontier:
         self.nodes = []
 
 
-    def replace_descendents(self, node: Type[RaireNode], log: bool, 
+    def replace_descendents(self, node: RaireNode, log: bool,
         stream=sys.stdout):
         '''
         Remove all descendents of the input 'node' from the frontier, and
@@ -387,7 +388,7 @@ class RaireFrontier:
 
         if log:
             print("Replacing descendents of ", file=stream, end='')
-            node.display(stream=stream)
+            node.display(stream)
 
         for i in range(len(self.nodes)):
             node_at_i = self.nodes[i]
@@ -399,19 +400,19 @@ class RaireFrontier:
         for i in reversed(descendents):
             if log:
                 print("Removing node: ", file=stream, end='')
-                self.nodes[i].display(stream=stream)
+                self.nodes[i].display(stream)
 
             del self.nodes[i]
 
-        self.insert_node(node) 
+        self.insert_node(node)
 
 
-    def insert_node(self, node: Type[RaireNode]):
+    def insert_node(self, node: RaireNode):
         '''
         Insert given node into the frontier in the right position. Nodes
         that are not associated with an "invalidating" assertion are placed
         at the front of the frontier. After these nodes, nodes in frontier
-        are ordered from most difficult to invalidate to easiest to 
+        are ordered from most difficult to invalidate to easiest to
         invalidate. Leaf nodes -- nodes whose "tail" contains all candidates
         -- are placed at the end of the frontier.
 
@@ -431,11 +432,11 @@ class RaireFrontier:
                 n_est = self.nodes[i].estimate
 
                 if n_est <= node.estimate:
-                    break 
+                    break
 
                 i += 1
 
-            self.nodes.insert(i, node)   
+            self.nodes.insert(i, node)
 
 
     def display(self, stream=sys.stdout):
@@ -444,7 +445,7 @@ class RaireFrontier:
 
 
 def find_best_audit(contest : Contest, ballots: CBS, neb_matrix, \
-    node: Type[RaireNode], asn_func: Callable) :
+    node: RaireNode, asn_func: Callable) :
     '''
     Input:
     node: RaireNode    -  A node in the tree of alternate election outcomes.
@@ -455,17 +456,17 @@ def find_best_audit(contest : Contest, ballots: CBS, neb_matrix, \
 
     ballots: CBS       -  Details of reported ballots for this contest.
 
-    neb_matrix         -  |Candidates| x |Candidates| dictionary where 
+    neb_matrix         -  |Candidates| x |Candidates| dictionary where
                           neb_matrix[c1][c2] returns a NEBAssertion stating
                           that c1 cannot be eliminated before c2 (if one
                           exists) and None otherwise.
 
-    asn_func: Callable -  Function that takes an assertion margin and 
+    asn_func: Callable -  Function that takes an assertion margin and
                           returns an estimate of how "difficult" it will
                           be to audit that assertion.
 
     Output:
-    Finds the least cost assertion that can be used to rule out all election 
+    Finds the least cost assertion that can be used to rule out all election
     outcomes that end with the sequence node.tail, and assigns that assertion
     to node.best_assertion. If no such assertion can be found, node.assertion
     will equal None after this function is called.
@@ -479,8 +480,8 @@ def find_best_audit(contest : Contest, ballots: CBS, neb_matrix, \
     # We first consider if we can invalidate this outcome by showing that
     # 'first_in_tail' can not-be-eliminated-before a candidate that
     # appears later in tail.
-    for later_cand in node.tail[1:]: 
-        # Can we show that the candidate 'later_cand' must come before 
+    for later_cand in node.tail[1:]:
+        # Can we show that the candidate 'later_cand' must come before
         # candidate 'first_in_tail' in the elimination sequence?
         neb = neb_matrix[first_in_tail][later_cand]
 
@@ -489,7 +490,7 @@ def find_best_audit(contest : Contest, ballots: CBS, neb_matrix, \
 
             best_asrtn = neb
 
-    # We now look at whether there is a candidate not mentioned in 
+    # We now look at whether there is a candidate not mentioned in
     # 'tail' (this means they are assumed to be eliminated at some prior
     # point in the elimination sequence), that can not-be-eliminated-before
     # 'first_in_tail'.
@@ -497,13 +498,13 @@ def find_best_audit(contest : Contest, ballots: CBS, neb_matrix, \
         if cand in node.tail: continue
 
         neb = neb_matrix[cand][first_in_tail]
-        
+
         if neb != None and (best_asrtn is None or neb.difficulty < \
             best_asrtn.difficulty):
 
             best_asrtn = neb
 
-    # We now consider whether we can find a better NEN assertion. We 
+    # We now consider whether we can find a better NEN assertion. We
     # want to show that at the point where all the candidates in 'tail'
     # remain, 'first_in_tail' is not the candidate with the least number
     # of votes. This means that 'first_in_tail' should not be eliminated next.
@@ -529,7 +530,7 @@ def find_best_audit(contest : Contest, ballots: CBS, neb_matrix, \
             estimate = asn_func(margin)
 
             if best_asrtn is None or estimate < best_asrtn.difficulty:
-                nen = NENAssertion(contest, first_in_tail, later_cand, \
+                nen = NENAssertion(str(contest), first_in_tail, later_cand, \
                     eliminated)
 
                 nen.rules_out = node.tail
@@ -542,11 +543,11 @@ def find_best_audit(contest : Contest, ballots: CBS, neb_matrix, \
 
     node.best_assertion = best_asrtn
 
-    if best_asrtn != None:
+    if best_asrtn:
         node.estimate = best_asrtn.difficulty
 
 
-def perform_dive(node: Type[RaireNode], contest : Contest, ballots : CBS, \
+def perform_dive(node: RaireNode, contest : Contest, ballots : CBS, \
     neb_matrix, asn_func: Callable):
     '''
     Input:
@@ -557,19 +558,19 @@ def perform_dive(node: Type[RaireNode], contest : Contest, ballots : CBS, \
 
     ballots: CBS       -  Details of reported ballots for this contest.
 
-    neb_matrix         -  |Candidates| x |Candidates| dictionary where 
+    neb_matrix         -  |Candidates| x |Candidates| dictionary where
                           neb_matrix[c1][c2] returns a NEBAssertion stating
                           that c1 cannot be eliminated before c2 (if one
                           exists) and None otherwise.
 
-    asn_func: Callable -  Function that takes an assertion margin and 
+    asn_func: Callable -  Function that takes an assertion margin and
                           returns an estimate of how "difficult" it will
                           be to audit that assertion.
 
     Output:
-    Returns the difficulty estimate of the least-difficult-to-audit 
+    Returns the difficulty estimate of the least-difficult-to-audit
     assertion that can be used to rule out at least one of the branches
-    starting at the input 'node'.  
+    starting at the input 'node'.
     '''
 
     ncands = len(contest.candidates)
@@ -580,7 +581,7 @@ def perform_dive(node: Type[RaireNode], contest : Contest, ballots : CBS, \
     newn = RaireNode([next_cand] + node.tail)
     newn.expandable = False if len(newn.tail) == ncands else True
 
-    # Assign a 'best ancestor' to the new node. 
+    # Assign a 'best ancestor' to the new node.
     newn.best_ancestor = node.best_ancestor if \
         node.best_ancestor != None and node.best_ancestor.estimate <= \
         node.estimate else node

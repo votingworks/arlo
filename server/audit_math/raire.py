@@ -2,7 +2,7 @@ from .sampler_contest import Contest, CVRS, SAMPLECVRS, CVR
 from .raire_utils import NENAssertion, NEBAssertion, RaireAssertion, \
     RaireFrontier, RaireNode, find_best_audit, perform_dive
 
-from typing import Callable
+from typing import Callable, Dict, Optional, List
 import numpy as np
 
 import sys
@@ -43,45 +43,46 @@ def compute_raire_assertions(
 
         stream         - stream to which logging statements should
                          be printed.
-        
+
         agap           - allowed gap between the lower and upper bound
                          on expected audit difficulty. Once these bounds
                          converge (to within 'agap') algorithm can stop
                          and return  audit configuration found. Generally,
-                         keep this at 0 unless the algorithm is not 
+                         keep this at 0 unless the algorithm is not
                          terminating in a reasonable time. Then set it to
                          as small a value as possible, and increase, until
                          the algorithm terminates. For some instances, the
-                         difference between the lower and upper bound on 
+                         difference between the lower and upper bound on
                          expected audit difficulty gets to a point where it
-                         is quite small, but doesn't converge. 
+                         is quite small, but doesn't converge.
 
     Outputs:
         A list of RaireAssertions to be audited. If this collection of
         assertions is found to hold, then all alternate outcomes, in which
-        an alternate candidate to 'winner' wins, can be ruled out. 
+        an alternate candidate to 'winner' wins, can be ruled out.
     """
 
     ncands = len(contest.candidates)
 
     # First look at all of the NEB assertions that could be formed for
     # this contest. We will refer to this matrix when examining the best
-    # way to prune branches of the "alternate outcome space". 
-    nebs = {c : { d : None for d in contest.candidates} 
-        for c in contest.candidates} 
+    # way to prune branches of the "alternate outcome space".
+    nebs: Dict[str, Dict[str, Optional[NEBAssertion]]] = {c : { d : None for d in contest.candidates}
+        for c in contest.candidates}
 
     for c in contest.candidates:
         for d in contest.candidates:
-            if c == d: 
+            if c == d:
                 continue
 
-            asrn = NEBAssertion(contest.name, c, d)
-            
-            tally_c = 0
-            tally_d = 0
+            asrn: NEBAssertion = NEBAssertion(contest.name, c, d)
+
+            tally_c: int = 0
+            tally_d: int = 0
             for _,r in cvrs.items():
-                tally_c += asrn.is_vote_for_winner(r)
-                tally_d += asrn.is_vote_for_loser(r)
+                if r:
+                    tally_c += asrn.is_vote_for_winner(r)
+                    tally_d += asrn.is_vote_for_loser(r)
 
             if tally_c > tally_d:
                 asrn.margin = tally_c - tally_d
@@ -93,26 +94,25 @@ def compute_raire_assertions(
                 nebs[c][d] = asrn
 
 
-    # The RAIRE algorithm progressively searches through the space of 
+    # The RAIRE algorithm progressively searches through the space of
     # alternate election outcomes, viewing this space as a tree. We store
-    # the current leaves of this tree, at any point in the search, in a 
+    # the current leaves of this tree, at any point in the search, in a
     # list called 'frontier'. Each leaf is a (potentially) partial election
     # outcome, describing the tail of the elimination sequence and eventual
     # winner. All candidates not mentioned in this tail are assumed to have
-    # already been eliminated. 
+    # already been eliminated.
 
-    ballots = [blt[contest.name] for _,blt in cvrs.items() 
-        if contest.name in blt]
+    ballots: List[Dict[str, int]] = [blt[contest.name] for _,blt in cvrs.items() if blt and contest.name in blt]
 
-    # This is a running lowerbound on the overall difficulty of the 
-    # election audit. 
+    # This is a running lowerbound on the overall difficulty of the
+    # election audit.
     lowerbound = -10
 
-    # Construct initial frontier. 
+    # Construct initial frontier.
     frontier = RaireFrontier()
 
     # Our frontier initially has a node for each alternate election outcome
-    # tail of size two. The last candidate in the tail is the ultimate winner. 
+    # tail of size two. The last candidate in the tail is the ultimate winner.
     for c in contest.candidates:
         if c == winner: continue
 
@@ -141,7 +141,7 @@ def compute_raire_assertions(
         print("Initial Frontier", file=stream)
         frontier.display(stream=stream)
         print("===============================================", file=stream)
-    
+
 
     # -------------------- Find Assertions -----------------------------------
     while not audit_not_possible:
@@ -150,7 +150,7 @@ def compute_raire_assertions(
 
         if agap > 0 and lowerbound > 0 and max_on_frontier-lowerbound <= agap:
             # We can rule out all branches of the tree with assertions that
-            # have a difficulty that is <= lowerbound. 
+            # have a difficulty that is <= lowerbound.
             break
 
         to_expand = frontier.nodes[0]
@@ -178,7 +178,7 @@ def compute_raire_assertions(
         # decendents -- and find the least cost assertion to rule out the
         # branch of the alternate outcomes tree that ends in that leaf. We
         # know that this assertion will be part of the audit, as we have
-        # to rule out all branches. 
+        # to rule out all branches.
         dive_lb = perform_dive(to_expand, contest, ballots, nebs, asn_func)
 
         if dive_lb == np.inf:
@@ -191,7 +191,7 @@ def compute_raire_assertions(
             break
 
         if log:
-            print("Diving LB {}, Current LB {}".format(dive_lb, 
+            print("Diving LB {}, Current LB {}".format(dive_lb,
                 lowerbound), file=stream)
 
         # We can use our new knowledge of the "best" way to rule out
@@ -216,7 +216,7 @@ def compute_raire_assertions(
             print("  Expanding node ", file=stream, end='')
             to_expand.display(stream=stream)
 
-        # Find children of current node, and find the best assertions that 
+        # Find children of current node, and find the best assertions that
         # could be used to prune those nodes from the tree of alternate
         # outcomes.
         for c in contest.candidates:
@@ -224,7 +224,7 @@ def compute_raire_assertions(
                 newn = RaireNode([c] + to_expand.tail)
                 newn.expandable = False if len(newn.tail) == ncands else True
 
-                # Assign a 'best ancestor' to the new node. 
+                # Assign a 'best ancestor' to the new node.
                 newn.best_ancestor = to_expand.best_ancestor if \
                     to_expand.best_ancestor != None and \
                     to_expand.best_ancestor.estimate <= to_expand.estimate \
@@ -269,24 +269,24 @@ def compute_raire_assertions(
                         else:
                             print("    Cannot be disproved", file=stream)
 
-            if audit_not_possible: break    
+            if audit_not_possible: break
 
-        
+
         if log:
             print("Size of frontier {}, current lower bound {}".format(
                 len(frontier.nodes), lowerbound))
 
-        if audit_not_possible: break 
+        if audit_not_possible: break
 
     # If a full recount is required, return empty list.
-    if audit_not_possible: 
+    if audit_not_possible:
         if log:
             print("AUDIT NOT POSSIBLE", file=stream)
 
         return []
 
     # ------------------------------------------------------------------------
-    assertions = []
+    assertions: List[RaireAssertion] = []
 
     # Some assertions will be used to rule out multiple branches of our
     # alternate outcome tree. Form a list of all these assertions, without
@@ -302,7 +302,7 @@ def compute_raire_assertions(
             assertions.append(node.best_assertion)
 
     # Assertions will be sorted in order of greatest to least difficulty.
-    sorted_assertions = sorted(assertions)    
+    sorted_assertions = sorted(assertions)
     len_assertions = len(sorted_assertions)
 
     final_audit = []
@@ -311,18 +311,18 @@ def compute_raire_assertions(
     # that says "Candidate A cannot be eliminated before candidate B" will
     # subsume all NEN assertions that say A is not eliminated next when B
     # is still standing. What this means is that if the NEB assertion holds,
-    # the NEN assertion will hold, so there is no need to check both of them.  
+    # the NEN assertion will hold, so there is no need to check both of them.
     for i in range(len_assertions):
         assrtn_i = sorted_assertions[i]
 
         subsumed = False
         for j in range(len_assertions):
 
-            if i == j: 
+            if i == j:
                 continue
 
             assrtn_j = sorted_assertions[j]
-            
+
             if assrtn_j.subsumes(assrtn_i):
                 subsumed = True
 
@@ -331,7 +331,7 @@ def compute_raire_assertions(
                     print("{} SUBSUMES {}".format(assrtn_j.to_str(),
                         assrtn_i.to_str()), file=stream)
                     print("", file=stream)
-                    
+
                 break
 
         if not subsumed:
@@ -343,5 +343,5 @@ def compute_raire_assertions(
         for assertion in final_audit:
             assertion.display(stream=stream)
         print("===============================================", file=stream)
-        
-    return final_audit  
+
+    return final_audit
