@@ -1,6 +1,13 @@
+# Set path so we can find poetry after install
+PATH := $(PATH):$(HOME)/.local/bin
+
 deps:
-	sudo apt install python3.8 python3-pip nodejs libpython3.8-dev libpq-dev graphicsmagick
-	python3.8 -m pip install poetry
+	sudo apt install python3.8 python3-virtualenv libpython3.8-dev libpq-dev graphicsmagick
+	# Install node: https://github.com/nodesource/distributions/blob/master/README.md#deb		
+	curl -fsSL https://deb.nodesource.com/setup_12.x | sudo -E bash -
+	sudo apt-get install -y nodejs
+	# Install poetry: https://python-poetry.org/docs/master/#osx--linux--bashonwindows-install-instructions 
+	curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python3.8 -	
 	sudo npm install -g yarn
 	sudo apt install postgresql
 
