@@ -783,6 +783,14 @@ def test_ballot_comparison_sample_size_validation(
             {contest_id: {"key": "custom", "size": 3000, "prob": None}},
             "Sample size for contest Contest 2 must be less than or equal to: 30 (the total number of ballots in the contest)",
         ),
+        (
+            {contest_id: {"key": "custom", "size": 30, "prob": None}},
+            "For a full hand tally, use the ballot polling audit type.",
+        ),
+        (
+            {contest_id: {"key": "supersimple", "size": 31, "prob": None}},
+            "For a full hand tally, use the ballot polling audit type.",
+        ),
     ]
     for bad_sample_size, expected_error in bad_sample_sizes:
         rv = post_json(

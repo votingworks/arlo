@@ -35,7 +35,6 @@ from ..audit_math import (
 from .cvrs import hybrid_contest_choice_vote_counts, cvr_contests_metadata
 from .ballot_manifest import hybrid_contest_total_ballots
 from ..worker.tasks import (
-    UserError,
     background_task,
     create_background_task,
     serialize_background_task,
@@ -677,10 +676,6 @@ def draw_sample(round_id: str, election_id: str):
     # Special case: if we are sampling all ballots, we don't need to actually
     # draw a sample. Instead, we force an offline audit.
     if sampled_all_ballots(round, election):
-        if len(contest_sample_sizes) > 1:
-            raise UserError(
-                "Cannot sample all ballots when there are multiple targeted contests."
-            )
         election.online = False
         return
 
@@ -934,11 +929,7 @@ def validate_sample_size(round: dict, election: Election):
 
     for contest in targeted_contests:
         sample_size = round["sampleSizes"][contest.id]
-        total_batches = sum(
-            jurisdiction.manifest_num_batches or 0
-            for jurisdiction in contest.jurisdictions
-        )
-        valid_keys, max_sample_size = {
+        valid_keys, full_hand_tally_size = {
             AuditType.BALLOT_POLLING: (
                 ["asn", "0.9", "0.8", "0.7", "custom", "all-ballots"],
                 contest.total_ballots_cast,
@@ -947,7 +938,13 @@ def validate_sample_size(round: dict, election: Election):
                 ["supersimple", "custom"],
                 contest.total_ballots_cast,
             ),
-            AuditType.BATCH_COMPARISON: (["macro", "custom"], total_batches),
+            AuditType.BATCH_COMPARISON: (
+                ["macro", "custom"],
+                sum(
+                    jurisdiction.manifest_num_batches or 0
+                    for jurisdiction in contest.jurisdictions
+                ),
+            ),
             AuditType.HYBRID: (["suite", "custom"], contest.total_ballots_cast),
         }[AuditType(election.audit_type)]
 
@@ -970,7 +967,7 @@ def validate_sample_size(round: dict, election: Election):
                         f" {total_ballots.non_cvr} (the total number of non-CVR ballots in the contest)"
                     )
 
-            elif sample_size["size"] > max_sample_size:
+            elif sample_size["size"] > full_hand_tally_size:
                 ballots_or_batches = (
                     "batches"
                     if election.audit_type == AuditType.BATCH_COMPARISON
@@ -978,8 +975,21 @@ def validate_sample_size(round: dict, election: Election):
                 )
                 raise BadRequest(
                     f"Sample size for contest {contest.name} must be less than or equal to:"
-                    f" {max_sample_size} (the total number of {ballots_or_batches} in the contest)"
+                    f" {full_hand_tally_size} (the total number of {ballots_or_batches} in the contest)"
                 )
+
+        size = (
+            sample_size["sizeCvr"] + sample_size["sizeNonCvr"]
+            if election.audit_type == AuditType.HYBRID
+            else sample_size["size"]
+        )
+        if size >= full_hand_tally_size:
+            if election.audit_type != AuditType.BALLOT_POLLING:
+                raise BadRequest(
+                    "For a full hand tally, use the ballot polling audit type."
+                )
+            if len(targeted_contests) > 1:
+                raise BadRequest("For a full hand tally, use only one target contest.")
 
 
 @api.route("/election/<election_id>/round", methods=["POST"])

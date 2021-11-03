@@ -383,14 +383,13 @@ def test_standardize_contest_names_after_audit_starts(
     rv = put_json(client, f"/api/election/{election_id}/contest", contests)
     assert_ok(rv)
 
-    rv = client.get(f"/api/election/{election_id}/sample-sizes")
-    assert rv.status_code == 200
-    sample_sizes = json.loads(rv.data)["sampleSizes"]
-
     rv = post_json(
         client,
         f"/api/election/{election_id}/round",
-        {"roundNum": 1, "sampleSizes": {contest_id: sample_sizes[contest_id][0]}},
+        {
+            "roundNum": 1,
+            "sampleSizes": {contest_id: {"size": 1, "key": "custom", "prob": None}},
+        },
     )
     assert_ok(rv)
 

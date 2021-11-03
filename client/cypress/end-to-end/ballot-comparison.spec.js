@@ -17,7 +17,6 @@ describe('Ballot Comparison Test Cases', () => {
     cy.get('input[value="BALLOT_COMPARISON"]').check({ force: true })
     cy.findByText('Create Audit').click()
     cy.contains('Audit Setup')
-    cy.viewport(1000, 2000)
 
     // upload invalid jurisdiction filesheet
     cy.fixture(

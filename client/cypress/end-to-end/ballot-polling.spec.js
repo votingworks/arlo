@@ -17,7 +17,6 @@ describe('Ballot Polling', () => {
     cy.get('input[value="BALLOT_POLLING"]').check({ force: true })
     cy.get('input[value="BRAVO"]').check({ force: true })
     cy.findByText('Create Audit').click()
-    cy.viewport(1000, 2000)
     cy.contains('Audit Setup')
   })
 

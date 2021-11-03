@@ -847,6 +847,26 @@ def test_hybrid_invalid_sample_size(
             },
             "Non-CVR sample size for contest Contest 1 must be less than or equal to: 20 (the total number of non-CVR ballots in the contest)",
         ),
+        (
+            {
+                "key": "custom",
+                "size": None,
+                "sizeCvr": 30,
+                "sizeNonCvr": 20,
+                "prob": None,
+            },
+            "For a full hand tally, use the ballot polling audit type.",
+        ),
+        (
+            {
+                "key": "suite",
+                "size": None,
+                "sizeCvr": 31,
+                "sizeNonCvr": 21,
+                "prob": None,
+            },
+            "For a full hand tally, use the ballot polling audit type.",
+        ),
     ]
     for invalid_sample_size, expected_error in invalid_sample_sizes:
         rv = post_json(
