@@ -191,7 +191,7 @@ def test_multiple_targeted_contests_two_rounds(
 def test_multiple_targeted_contests_full_hand_tally_error(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
+    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
     contest_ids: List[str],
     election_settings,  # pylint: disable=unused-argument
     manifests,  # pylint: disable=unused-argument
@@ -217,4 +217,3 @@ def test_multiple_targeted_contests_full_hand_tally_error(
             }
         ]
     }
-

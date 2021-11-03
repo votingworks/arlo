@@ -156,7 +156,7 @@ def test_batch_comparison_round_1(
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
 
     # Use an artificially large sample size in order to have enough samples to work with
-    sample_size = 15
+    sample_size = 14
     rv = post_json(
         client,
         f"/api/election/{election_id}/round",
@@ -433,6 +433,14 @@ def test_batch_comparison_custom_sample_size_validation(
             {contest_id: {"key": "custom", "size": 25, "prob": None}},
             "Sample size for contest Contest 1 must be less than or equal to: 15 (the total number of batches in the contest)",
         ),
+        (
+            {contest_id: {"key": "custom", "size": 15, "prob": None}},
+            "For a full hand tally, use the ballot polling audit type.",
+        ),
+        (
+            {contest_id: {"key": "macro", "size": 16, "prob": None}},
+            "For a full hand tally, use the ballot polling audit type.",
+        ),
     ]
     for bad_sample_size, expected_error in bad_sample_sizes:
         rv = post_json(
@@ -548,49 +556,52 @@ def test_batch_comparison_batches_sampled_multiple_times(
     assert_match_report(rv.data, snapshot)
 
 
-def test_batch_comparison_sample_all_batches(
-    client: FlaskClient,
-    election_id: str,
-    jurisdiction_ids: List[str],
-    contest_id: str,
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-    batch_tallies,  # pylint: disable=unused-argument
-):
-    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-
-    sample_size = (
-        Batch.query.join(Jurisdiction).filter_by(election_id=election_id).count()
-    )
-    rv = post_json(
-        client,
-        f"/api/election/{election_id}/round",
-        {
-            "roundNum": 1,
-            "sampleSizes": {
-                contest_id: {"key": "custom", "size": sample_size, "prob": None}
-            },
-        },
-    )
-    assert_ok(rv)
-
-    rv = client.get(f"/api/election/{election_id}/round")
-    rounds = json.loads(rv.data)["rounds"]
-    round_1_id = rounds[0]["id"]
-
-    set_logged_in_user(
-        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
-    )
-    all_batches = []
-    for jurisdiction_id in jurisdiction_ids[:2]:
-        rv = client.get(
-            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_1_id}/batches"
-        )
-        assert rv.status_code == 200
-        all_batches += json.loads(rv.data)["batches"]
-
-    # Every batch should get sampled exactly once
-    assert len(all_batches) == sample_size
+# TODO this test no longer applies, since we don't allow batch comparison full
+# hand tallies But the logic it tests is still there, so leaving the test as a
+# reminder to either remove the logic or find a different way to test it.
+# def test_batch_comparison_sample_all_batches(
+#     client: FlaskClient,
+#     election_id: str,
+#     jurisdiction_ids: List[str],
+#     contest_id: str,
+#     election_settings,  # pylint: disable=unused-argument
+#     manifests,  # pylint: disable=unused-argument
+#     batch_tallies,  # pylint: disable=unused-argument
+# ):
+#     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+#
+#     sample_size = (
+#         Batch.query.join(Jurisdiction).filter_by(election_id=election_id).count() - 1
+#     )
+#     rv = post_json(
+#         client,
+#         f"/api/election/{election_id}/round",
+#         {
+#             "roundNum": 1,
+#             "sampleSizes": {
+#                 contest_id: {"key": "custom", "size": sample_size, "prob": None}
+#             },
+#         },
+#     )
+#     assert_ok(rv)
+#
+#     rv = client.get(f"/api/election/{election_id}/round")
+#     rounds = json.loads(rv.data)["rounds"]
+#     round_1_id = rounds[0]["id"]
+#
+#     set_logged_in_user(
+#         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+#     )
+#     all_batches = []
+#     for jurisdiction_id in jurisdiction_ids[:2]:
+#         rv = client.get(
+#             f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_1_id}/batches"
+#         )
+#         assert rv.status_code == 200
+#         all_batches += json.loads(rv.data)["batches"]
+#
+#     # Every batch should get sampled exactly once
+#     assert len(all_batches) == sample_size
 
 
 def test_batch_comparison_undo_start_round_1(

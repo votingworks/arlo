@@ -876,7 +876,10 @@ def create_round_schema(audit_type: AuditType):
                                 {
                                     "sizeCvr": {"type": "integer"},
                                     "sizeNonCvr": {"type": "integer"},
-                                    "size": {"type": "integer"},
+                                    # We ignore size in hybrid audits
+                                    "size": {
+                                        "anyOf": [{"type": "integer"}, {"type": "null"}]
+                                    },
                                 }
                                 if audit_type == AuditType.HYBRID
                                 else {"size": {"type": "integer"}}
@@ -884,7 +887,7 @@ def create_round_schema(audit_type: AuditType):
                         },
                         "additionalProperties": False,
                         "required": (
-                            ["sizeCvr", "sizeNonCvr", "size", "key", "prob"]
+                            ["sizeCvr", "sizeNonCvr", "key", "prob"]
                             if audit_type == AuditType.HYBRID
                             else ["size", "key", "prob"]
                         ),
@@ -926,10 +929,6 @@ def validate_sample_size(round: dict, election: Election):
 
     for contest in targeted_contests:
         sample_size = round["sampleSizes"][contest.id]
-        total_batches = sum(
-            jurisdiction.manifest_num_batches or 0
-            for jurisdiction in contest.jurisdictions
-        )
         valid_keys, full_hand_tally_size = {
             AuditType.BALLOT_POLLING: (
                 ["asn", "0.9", "0.8", "0.7", "custom", "all-ballots"],
@@ -939,7 +938,13 @@ def validate_sample_size(round: dict, election: Election):
                 ["supersimple", "custom"],
                 contest.total_ballots_cast,
             ),
-            AuditType.BATCH_COMPARISON: (["macro", "custom"], total_batches),
+            AuditType.BATCH_COMPARISON: (
+                ["macro", "custom"],
+                sum(
+                    jurisdiction.manifest_num_batches or 0
+                    for jurisdiction in contest.jurisdictions
+                ),
+            ),
             AuditType.HYBRID: (["suite", "custom"], contest.total_ballots_cast),
         }[AuditType(election.audit_type)]
 
@@ -973,8 +978,12 @@ def validate_sample_size(round: dict, election: Election):
                     f" {full_hand_tally_size} (the total number of {ballots_or_batches} in the contest)"
                 )
 
-        print(full_hand_tally_size)
-        if sample_size["size"] >= full_hand_tally_size:
+        size = (
+            sample_size["sizeCvr"] + sample_size["sizeNonCvr"]
+            if election.audit_type == AuditType.HYBRID
+            else sample_size["size"]
+        )
+        if size >= full_hand_tally_size:
             if election.audit_type != AuditType.BALLOT_POLLING:
                 raise BadRequest(
                     "For a full hand tally, use the ballot polling audit type."

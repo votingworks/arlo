@@ -7,27 +7,29 @@ from snapshottest import Snapshot
 
 snapshots = Snapshot()
 
-snapshots['test_multiple_targeted_contests_two_rounds 1'] = {
-    'Contest 1 - candidate 1': 134,
-    'Contest 1 - candidate 2': 57,
-    'Contest 2 - No': 0,
-    'Contest 2 - Yes': 0,
-    'Contest 3 - candidate 1': 0,
-    'Contest 3 - candidate 2': 0,
-    'Contest 3 - candidate 3': 0
+snapshots["test_multiple_targeted_contests_two_rounds 1"] = {
+    "Contest 1 - candidate 1": 134,
+    "Contest 1 - candidate 2": 57,
+    "Contest 2 - No": 0,
+    "Contest 2 - Yes": 0,
+    "Contest 3 - candidate 1": 0,
+    "Contest 3 - candidate 2": 0,
+    "Contest 3 - candidate 3": 0,
 }
 
-snapshots['test_multiple_targeted_contests_two_rounds 2'] = 1468
+snapshots["test_multiple_targeted_contests_two_rounds 2"] = 1468
 
-snapshots['test_multiple_targeted_contests_two_rounds 3'] = {
-    'Contest 2 - No': 274,
-    'Contest 2 - Yes': 618,
-    'Contest 3 - candidate 1': 0,
-    'Contest 3 - candidate 2': 0,
-    'Contest 3 - candidate 3': 0
+snapshots["test_multiple_targeted_contests_two_rounds 3"] = {
+    "Contest 2 - No": 274,
+    "Contest 2 - Yes": 618,
+    "Contest 3 - candidate 1": 0,
+    "Contest 3 - candidate 2": 0,
+    "Contest 3 - candidate 3": 0,
 }
 
-snapshots['test_multiple_targeted_contests_two_rounds 4'] = '''######## ELECTION INFO ########\r
+snapshots[
+    "test_multiple_targeted_contests_two_rounds 4"
+] = """######## ELECTION INFO ########\r
 Organization,Election Name,State\r
 Test Org test_multiple_targeted_contests_two_rounds,Test Election,CA\r
 \r
@@ -867,76 +869,46 @@ J2,4,33,,"Round 2: 0.645957026837959167, 0.749970553418768825, 0.768957293915907
 J2,4,35,,"Round 2: 0.745828693482564144, 0.857294668222687755",AUDITED,,Yes,CONTEST_NOT_ON_BALLOT\r
 J2,4,36,,"Round 2: 0.440457507671624297, 0.479328420140133052, 0.547187529222214134, 0.617266640783850567, 0.748164329555728576, 0.759599884889842480",AUDITED,,Yes,CONTEST_NOT_ON_BALLOT\r
 J2,4,39,,"Round 2: 0.571100455616858238, 0.580185259410881409",AUDITED,,Yes,CONTEST_NOT_ON_BALLOT\r
-'''
+"""
 
-snapshots['test_sample_size_round_1 1'] = {
-    'Contest 1': [
-        {
-            'key': 'asn',
-            'prob': 0.52,
-            'size': 191
-        },
-        {
-            'key': '0.7',
-            'prob': 0.7,
-            'size': 295
-        },
-        {
-            'key': '0.8',
-            'prob': 0.8,
-            'size': 391
-        },
-        {
-            'key': '0.9',
-            'prob': 0.9,
-            'size': 562
-        }
+snapshots["test_sample_size_round_1 1"] = {
+    "Contest 1": [
+        {"key": "asn", "prob": 0.52, "size": 191},
+        {"key": "0.7", "prob": 0.7, "size": 295},
+        {"key": "0.8", "prob": 0.8, "size": 391},
+        {"key": "0.9", "prob": 0.9, "size": 562},
     ],
-    'Contest 2': [
-        {
-            'key': 'asn',
-            'prob': 0.51,
-            'size': 485
-        },
-        {
-            'key': '0.7',
-            'prob': 0.7,
-            'size': 770
-        },
-        {
-            'key': '0.8',
-            'prob': 0.8,
-            'size': 1018
-        },
-        {
-            'key': '0.9',
-            'prob': 0.9,
-            'size': 1468
-        }
-    ]
+    "Contest 2": [
+        {"key": "asn", "prob": 0.51, "size": 485},
+        {"key": "0.7", "prob": 0.7, "size": 770},
+        {"key": "0.8", "prob": 0.8, "size": 1018},
+        {"key": "0.9", "prob": 0.9, "size": 1468},
+    ],
 }
 
-snapshots['test_two_rounds 1'] = {
-    'Contest 1 - candidate 1': 134,
-    'Contest 1 - candidate 2': 57,
-    'Contest 2 - No': 0,
-    'Contest 2 - Yes': 0,
-    'Contest 3 - candidate 1': 0,
-    'Contest 3 - candidate 2': 0,
-    'Contest 3 - candidate 3': 0
+snapshots["test_two_rounds 1"] = {
+    "Contest 1 - candidate 1": 134,
+    "Contest 1 - candidate 2": 57,
+    "Contest 2 - No": 0,
+    "Contest 2 - Yes": 0,
+    "Contest 3 - candidate 1": 0,
+    "Contest 3 - candidate 2": 0,
+    "Contest 3 - candidate 3": 0,
 }
 
-snapshots['test_two_rounds 2'] = 1468
+snapshots["test_two_rounds 2"] = 1468
 
-snapshots['test_two_rounds 3'] = {
-    'Contest 2 - No': 274,
-    'Contest 2 - Yes': 618,
-    'Contest 3 - candidate 1': 0,
-    'Contest 3 - candidate 2': 0,
-    'Contest 3 - candidate 3': 0
+snapshots["test_two_rounds 3"] = {
+    "Contest 2 - No": 274,
+    "Contest 2 - Yes": 618,
+    "Contest 3 - candidate 1": 0,
+    "Contest 3 - candidate 2": 0,
+    "Contest 3 - candidate 3": 0,
 }
 
-snapshots['test_two_rounds 4'] = '''######## ELECTION INFO ########\r
+snapshots[
+    "test_two_rounds 4"
+] = """######## ELECTION INFO ########\r
 Organization,Election Name,State\r
 Test Org test_two_rounds,Test Election,CA\r
 \r
@@ -1776,4 +1748,4 @@ J2,4,33,,"Round 2: 0.645957026837959167, 0.749970553418768825, 0.768957293915907
 J2,4,35,,"Round 2: 0.745828693482564144, 0.857294668222687755",AUDITED,,Yes,CONTEST_NOT_ON_BALLOT\r
 J2,4,36,,"Round 2: 0.440457507671624297, 0.479328420140133052, 0.547187529222214134, 0.617266640783850567, 0.748164329555728576, 0.759599884889842480",AUDITED,,Yes,CONTEST_NOT_ON_BALLOT\r
 J2,4,39,,"Round 2: 0.571100455616858238, 0.580185259410881409",AUDITED,,Yes,CONTEST_NOT_ON_BALLOT\r
-'''
+"""
