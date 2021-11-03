@@ -15,7 +15,6 @@ describe('Batch Comparison', () => {
     cy.get('input[name=auditName]').type(`TestAudit${id}`)
     cy.get('input[value="BATCH_COMPARISON"]').check({ force: true })
     cy.findByText('Create Audit').click()
-    cy.viewport(1000, 2000)
     cy.contains('Audit Setup')
 
     cy.fixture('CSVs/jurisdiction/sample_jurisdiction_filesheet.csv').then(
@@ -38,9 +37,9 @@ describe('Batch Comparison', () => {
     cy.findAllByText('Target Contests').should('have.length', 2)
     cy.get('input[name="contests[0].name"]').type('Contest')
     cy.findByLabelText('Name of Candidate/Choice 1').type('Vader')
-    cy.findByLabelText('Votes for Candidate/Choice 1').type('2700')
+    cy.findByLabelText('Votes for Candidate/Choice 1').type('9400')
     cy.findByLabelText('Name of Candidate/Choice 2').type('Palpatine')
-    cy.findByLabelText('Votes for Candidate/Choice 2').type('2620')
+    cy.findByLabelText('Votes for Candidate/Choice 2').type('1240')
     cy.findByText('Select Jurisdictions').click()
     cy.findByLabelText('Death Star').check({ force: true })
     cy.findByText('Save & Next').click()
@@ -148,9 +147,9 @@ describe('Batch Comparison', () => {
       .eq(2)
       .contains('Palpatine')
 
-    const auditBatch = (batchIndex, { vader, palpatine }) => {
-      cy.findAllByRole('row')
-        .eq(batchIndex)
+    const auditBatch = (batchName, { vader, palpatine }) => {
+      cy.findByText(batchName)
+        .closest('tr')
         .findByRole('button', { name: /Edit/ })
         .click()
       cy.findAllByRole('spinbutton')
@@ -165,11 +164,9 @@ describe('Batch Comparison', () => {
         .should('not.exist')
     }
 
-    auditBatch(1, { vader: 90, palpatine: 10 })
-    auditBatch(2, { vader: 10, palpatine: 10 })
-    auditBatch(3, { vader: 600, palpatine: 400 })
-    auditBatch(4, { vader: 1000, palpatine: 200 })
-    auditBatch(5, { vader: 1000, palpatine: 2000 })
+    auditBatch('Batch 3', { vader: 600, palpatine: 400 })
+    auditBatch('Batch 5', { vader: 3000, palpatine: 0 })
+    auditBatch('Batch 10', { vader: 3000, palpatine: 0 })
 
     cy.findByRole('button', { name: /Finalize Results/ }).click()
     cy.findByRole('button', { name: /Confirm/ }).click()
