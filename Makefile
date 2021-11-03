@@ -3,7 +3,7 @@ deps:
 	curl -fsSL https://deb.nodesource.com/setup_12.x | sudo -E bash -
 	sudo apt-get install -y nodejs
 	curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python3.8 -	
-	export PATH="${PATH}:~/.local/bin/"
+	export PATH="${PATH}:${HOME}/.local/bin/"
 	sudo npm install -g yarn
 	sudo apt install postgresql
 
