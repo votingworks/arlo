@@ -931,8 +931,8 @@ python-versions = "*"
 
 [metadata]
 lock-version = "1.1"
-python-versions = "^3.8.12"
-content-hash = "86e311a8bc517a2183791748dcfa73c38098c166e14952ef208fdd3cbf82c26f"
+python-versions = "^3.8"
+content-hash = "7c94ff2595ed437449bd5b59305d8be8c66ed93c93d994583baa873d3ed0a9fa"
 
 [metadata.files]
 alembic = [

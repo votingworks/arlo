@@ -5,7 +5,7 @@ description = ""
 authors = []
 
 [tool.poetry.dependencies]
-python = "^3.8.12"
+python = "^3.8"
 alembic = "^1.4.3"
 Authlib = "^0.15.4"
 chardet = "^3.0.4"
