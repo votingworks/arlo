@@ -461,6 +461,44 @@ def test_tied_contest():
     assert res
 
 
+def test_supersimple_full_hand_tally():
+    # Simulate a sample drawn with replacement where the sample size is equal to
+    # the total ballots cast but the number of unique ballots drawn is less
+    contest = Contest(
+        "Full Hand Tally",
+        {
+            "choice_1": 5,
+            "choice_2": 4,
+            "ballots": 10,
+            "numWinners": 1,
+            "votesAllowed": 1,
+        },
+    )
+    cvr = {
+        1: {"choice_1": 1, "choice_2": 0},
+        2: {"choice_1": 1, "choice_2": 0},
+        3: {"choice_1": 1, "choice_2": 0},
+        4: {"choice_1": 1, "choice_2": 0},
+        5: {"choice_1": 1, "choice_2": 0},
+        6: {"choice_1": 0, "choice_2": 1},
+        7: {"choice_1": 0, "choice_2": 1},
+        8: {"choice_1": 0, "choice_2": 1},
+        9: {"choice_1": 0, "choice_2": 1},
+        10: {"choice_1": 0, "choice_2": 0},
+    }
+    sample_cvr = {
+        1: {"times_sampled": 2, "cvr": {"choice_1": 1, "choice_2": 0}},
+        2: {"times_sampled": 2, "cvr": {"choice_1": 1, "choice_2": 0}},
+        6: {"times_sampled": 2, "cvr": {"choice_1": 0, "choice_2": 1}},
+        7: {"times_sampled": 2, "cvr": {"choice_1": 0, "choice_2": 1}},
+        8: {"times_sampled": 2, "cvr": {"choice_1": 0, "choice_2": 1}},
+    }
+    p, res = supersimple.compute_risk(RISK_LIMIT, contest, cvr, sample_cvr)
+
+    assert p == 0
+    assert res is True
+
+
 def test_snapshot_test():
     contest_data = {
         "winner": 16,
