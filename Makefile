@@ -2,7 +2,7 @@
 PATH := $(PATH):$(HOME)/.local/bin
 
 deps:
-	sudo apt install python3.8 libpython3.8-dev libpq-dev graphicsmagick
+	sudo apt install python3.8 python3-virtualenv libpython3.8-dev libpq-dev graphicsmagick
 	# Install node: https://github.com/nodesource/distributions/blob/master/README.md#deb		
 	curl -fsSL https://deb.nodesource.com/setup_12.x | sudo -E bash -
 	sudo apt-get install -y nodejs
