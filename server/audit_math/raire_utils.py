@@ -21,7 +21,7 @@ def index_of(cand: str, list_of_cand: list):
         Index (starting at 0) of 'cand' in 'list_of_cand', and -1 if
         'cand' is not in 'list_of_cand'.
     """
-    for i, other in enumerate(len(list_of_cand)):
+    for i, other in enumerate(list_of_cand):
         if other == cand:
             return i
 
@@ -218,7 +218,7 @@ class NEBAssertion(RaireAssertion):
           winner of this NEBAssertion assertion appears before the loser in
           'Tail' or the loser appears and the winner does not.
         """
-        if isinstance(other) == NEBAssertion:
+        if isinstance(other, NEBAssertion):
             return False
 
         if self.winner == other.winner and self.loser == other.loser:
@@ -289,7 +289,7 @@ class NENAssertion(RaireAssertion):
         Tail sequences that contain same set of candidates.
         """
 
-        if isinstance(other) == NEBAssertion:
+        if isinstance(other, NEBAssertion):
             return False
 
         if self.winner == other.winner and set(self.rules_out) == set(other.rules_out):
