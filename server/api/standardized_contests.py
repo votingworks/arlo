@@ -8,6 +8,7 @@ from . import api
 from ..auth import restrict_access, UserType
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
+from .contests import set_contest_metadata
 from ..worker.tasks import (
     UserError,
     background_task,
@@ -89,6 +90,8 @@ def process_standardized_contests_file(election_id: str):
             contest.jurisdictions = Jurisdiction.query.filter(
                 Jurisdiction.id.in_(standardized_contest["jurisdictionIds"])
             ).all()
+
+    set_contest_metadata(election)
 
 
 def validate_standardized_contests_upload(request: Request, election: Election):
