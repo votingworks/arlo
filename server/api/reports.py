@@ -402,18 +402,18 @@ def round_rows(election: Election):
     return rows
 
 
-def offline_batch_result_rows(election: Election, jurisdiction: Jurisdiction = None):
-    rows = [heading("BATCH RESULTS")]
+def full_hand_tally_result_rows(election: Election, jurisdiction: Jurisdiction = None):
+    rows = [heading("FULL HAND TALLY BATCH RESULTS")]
 
     results_query = (
-        OfflineBatchResult.query.join(Jurisdiction)
+        FullHandTallyBatchResult.query.join(Jurisdiction)
         .filter_by(election_id=election.id)
-        .order_by(Jurisdiction.name, OfflineBatchResult.batch_name)
+        .order_by(Jurisdiction.name, FullHandTallyBatchResult.batch_name)
     )
     if jurisdiction:
         results_query = results_query.filter(Jurisdiction.id == jurisdiction.id)
     results = list(
-        results_query.with_entities(Jurisdiction.name, OfflineBatchResult).all()
+        results_query.with_entities(Jurisdiction.name, FullHandTallyBatchResult).all()
     )
 
     # For now, we only support one contest
@@ -446,7 +446,7 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
     # Special case: if we sampled all ballots, don't show this section
     rounds = list(election.rounds)
     if len(rounds) > 0 and sampled_all_ballots(rounds[0], election):
-        return offline_batch_result_rows(election, jurisdiction)
+        return full_hand_tally_result_rows(election, jurisdiction)
 
     rows = [heading("SAMPLED BALLOTS")]
 

@@ -15,7 +15,7 @@ snapshots["test_all_ballots_audit 1"] = {
 
 snapshots[
     "test_all_ballots_audit 2"
-] = """######## BATCH RESULTS ########\r
+] = """######## FULL HAND TALLY BATCH RESULTS ########\r
 Jurisdiction Name,Batch Name,Batch Type,candidate 1,candidate 2,candidate 3\r
 J1,Batch One,Provisional,125000,124875,125\r
 J1,Batch Three,Election Day,125000,124875,125\r
@@ -40,7 +40,7 @@ Test Audit test_all_ballots_audit,BALLOT_POLLING,BRAVO,10%,1234567890,No\r
 Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes\r
 1,Contest 1,Targeted,2000000,Yes,0,DATETIME,DATETIME,candidate 1: 1000000; candidate 2: 999000; candidate 3: 1000\r
 \r
-######## BATCH RESULTS ########\r
+######## FULL HAND TALLY BATCH RESULTS ########\r
 Jurisdiction Name,Batch Name,Batch Type,candidate 1,candidate 2,candidate 3\r
 J1,Batch One,Provisional,125000,124875,125\r
 J1,Batch Three,Election Day,125000,124875,125\r

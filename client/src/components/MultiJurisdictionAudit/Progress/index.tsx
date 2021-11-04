@@ -275,7 +275,7 @@ const Progress: React.FC<IProps> = ({
         Footer: totalFooter(`${ballotsOrBatches} Remaining`),
       }
     )
-    // Special column for offline batch results (full hand tally)
+    // Special column for full hand tally
     if (
       jurisdictions[0].currentRoundStatus &&
       jurisdictions[0].currentRoundStatus.numBatchesAudited !== undefined
