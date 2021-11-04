@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { api } from '../../utilities'
 
-export interface IOfflineBatchResult {
+export interface IFullHandTallyBatchResult {
   batchName: string
   batchType:
     | 'Absentee By Mail'
@@ -15,18 +15,18 @@ export interface IOfflineBatchResult {
   }
 }
 
-export interface IOfflineBatchResults {
+export interface IFullHandTallyBatchResults {
   finalizedAt: string
-  results: IOfflineBatchResult[]
+  results: IFullHandTallyBatchResult[]
 }
 
 const getResults = async (
   electionId: string,
   jurisdictionId: string,
   roundId: string
-): Promise<IOfflineBatchResults | null> => {
+): Promise<IFullHandTallyBatchResults | null> => {
   return api(
-    `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/results/batch`
+    `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/full-hand-tally/batch`
   )
 }
 
@@ -34,10 +34,10 @@ const postResult = async (
   electionId: string,
   jurisdictionId: string,
   roundId: string,
-  newResult: IOfflineBatchResult
+  newResult: IFullHandTallyBatchResult
 ): Promise<boolean> => {
   return !!(await api(
-    `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/results/batch/`,
+    `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/full-hand-tally/batch/`,
     {
       method: 'POST',
       body: JSON.stringify(newResult),
@@ -53,10 +53,10 @@ const putResult = async (
   jurisdictionId: string,
   roundId: string,
   batchName: string,
-  newResult: IOfflineBatchResult
+  newResult: IFullHandTallyBatchResult
 ): Promise<boolean> => {
   return !!(await api(
-    `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/results/batch/${encodeURIComponent(
+    `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/full-hand-tally/batch/${encodeURIComponent(
       batchName
     )}`,
     {
@@ -76,7 +76,7 @@ const deleteResult = async (
   batchName: string
 ): Promise<boolean> => {
   return !!(await api(
-    `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/results/batch/${encodeURIComponent(
+    `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/full-hand-tally/batch/${encodeURIComponent(
       batchName
     )}`,
     {
@@ -91,28 +91,30 @@ const postFinalizeResults = async (
   roundId: string
 ): Promise<boolean> => {
   return !!(await api(
-    `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/results/batch/finalize`,
+    `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/full-hand-tally/finalize`,
     {
       method: 'POST',
     }
   ))
 }
 
-const useOfflineBatchResults = (
+const useFullHandTallyResults = (
   electionId: string,
   jurisdictionId: string,
   roundId: string
 ): [
-  IOfflineBatchResults | null,
-  (newResult: IOfflineBatchResult) => Promise<boolean>,
-  (batchName: string, newResult: IOfflineBatchResult) => Promise<boolean>,
+  IFullHandTallyBatchResults | null,
+  (newResult: IFullHandTallyBatchResult) => Promise<boolean>,
+  (batchName: string, newResult: IFullHandTallyBatchResult) => Promise<boolean>,
   (batchName: string) => Promise<boolean>,
   () => Promise<boolean>
 ] => {
-  const [results, setResults] = useState<IOfflineBatchResults | null>(null)
+  const [results, setResults] = useState<IFullHandTallyBatchResults | null>(
+    null
+  )
 
   const addResult = async (
-    newResult: IOfflineBatchResult
+    newResult: IFullHandTallyBatchResult
   ): Promise<boolean> => {
     const success = await postResult(
       electionId,
@@ -127,7 +129,7 @@ const useOfflineBatchResults = (
 
   const updateResult = async (
     batchName: string,
-    newResult: IOfflineBatchResult
+    newResult: IFullHandTallyBatchResult
   ): Promise<boolean> => {
     const success = await putResult(
       electionId,
@@ -179,4 +181,4 @@ const useOfflineBatchResults = (
   return [results, addResult, updateResult, removeResult, finalizeResults]
 }
 
-export default useOfflineBatchResults
+export default useFullHandTallyResults

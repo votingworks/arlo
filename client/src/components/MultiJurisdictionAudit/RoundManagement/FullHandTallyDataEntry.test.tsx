@@ -4,18 +4,18 @@ import userEvent from '@testing-library/user-event'
 import { useParams } from 'react-router-dom'
 import { contestMocks } from '../useSetupMenuItems/_mocks'
 import {
-  offlineBatchMocks,
-  offlineBatchResultsMocks,
+  fullHandTallyBatchResultMock,
+  fullHandTallyBatchResultsMock,
   roundMocks,
 } from './_mocks'
 import { renderWithRouter, withMockFetch } from '../../testUtilities'
 import { IContest } from '../../../types'
 import { IBatch } from './useBatchResults'
-import OfflineBatchRoundDataEntry from './OfflineBatchRoundDataEntry'
 import {
-  IOfflineBatchResult,
-  IOfflineBatchResults,
-} from './useOfflineBatchResults'
+  IFullHandTallyBatchResult,
+  IFullHandTallyBatchResults,
+} from './useFullHandTallyResults'
+import FullHandTallyDataEntry from './FullHandTallyDataEntry'
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'), // use actual for all non-hook parts
@@ -37,12 +37,12 @@ const apiCalls = {
     url: '/api/election/1/jurisdiction/1/round/round-1/batches',
     response,
   }),
-  getResults: (response: IOfflineBatchResults) => ({
-    url: '/api/election/1/jurisdiction/1/round/round-1/results/batch',
+  getResults: (response: IFullHandTallyBatchResults) => ({
+    url: '/api/election/1/jurisdiction/1/round/round-1/full-hand-tally/batch',
     response,
   }),
-  postResults: (results: IOfflineBatchResult) => ({
-    url: '/api/election/1/jurisdiction/1/round/round-1/results/batch/',
+  postResults: (results: IFullHandTallyBatchResult) => ({
+    url: '/api/election/1/jurisdiction/1/round/round-1/full-hand-tally/batch/',
     options: {
       method: 'POST',
       body: JSON.stringify(results),
@@ -52,8 +52,11 @@ const apiCalls = {
     },
     response: { status: 'ok' },
   }),
-  putResults: (results: IOfflineBatchResult, previousBatchName: string) => ({
-    url: `/api/election/1/jurisdiction/1/round/round-1/results/batch/${previousBatchName}`,
+  putResults: (
+    results: IFullHandTallyBatchResult,
+    previousBatchName: string
+  ) => ({
+    url: `/api/election/1/jurisdiction/1/round/round-1/full-hand-tally/batch/${previousBatchName}`,
     options: {
       method: 'PUT',
       body: JSON.stringify(results),
@@ -64,14 +67,15 @@ const apiCalls = {
     response: { status: 'ok' },
   }),
   deleteResults: (batchName: string) => ({
-    url: `/api/election/1/jurisdiction/1/round/round-1/results/batch/${batchName}`,
+    url: `/api/election/1/jurisdiction/1/round/round-1/full-hand-tally/batch/${batchName}`,
     options: {
       method: 'DELETE',
     },
     response: { status: 'ok' },
   }),
   finalizeResults: {
-    url: '/api/election/1/jurisdiction/1/round/round-1/results/batch/finalize',
+    url:
+      '/api/election/1/jurisdiction/1/round/round-1/full-hand-tally/finalize',
     options: {
       method: 'POST',
     },
@@ -79,15 +83,15 @@ const apiCalls = {
   },
 }
 
-describe('offline batch round data entry', () => {
+describe('full hand tally data entry', () => {
   it('renders', async () => {
     const expectedCalls = [
       apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
-      apiCalls.getResults(offlineBatchMocks.empty),
+      apiCalls.getResults(fullHandTallyBatchResultMock.empty),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderWithRouter(
-        <OfflineBatchRoundDataEntry
+        <FullHandTallyDataEntry
           round={roundMocks.sampledAllBallotsIncomplete}
         />,
         {
@@ -102,11 +106,11 @@ describe('offline batch round data entry', () => {
   it('validation error for blank submission', async () => {
     const expectedCalls = [
       apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
-      apiCalls.getResults(offlineBatchMocks.empty),
+      apiCalls.getResults(fullHandTallyBatchResultMock.empty),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderWithRouter(
-        <OfflineBatchRoundDataEntry
+        <FullHandTallyDataEntry
           round={roundMocks.sampledAllBallotsIncomplete}
         />,
         {
@@ -132,16 +136,16 @@ describe('offline batch round data entry', () => {
     })
   })
 
-  it('submits offline batch', async () => {
+  it('submits full hand tally batch result', async () => {
     const expectedCalls = [
       apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
-      apiCalls.getResults(offlineBatchMocks.empty),
-      apiCalls.postResults(offlineBatchResultsMocks.complete),
-      apiCalls.getResults(offlineBatchMocks.complete),
+      apiCalls.getResults(fullHandTallyBatchResultMock.empty),
+      apiCalls.postResults(fullHandTallyBatchResultsMock.complete),
+      apiCalls.getResults(fullHandTallyBatchResultMock.complete),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderWithRouter(
-        <OfflineBatchRoundDataEntry
+        <FullHandTallyDataEntry
           round={roundMocks.sampledAllBallotsIncomplete}
         />,
         {
@@ -179,14 +183,14 @@ describe('offline batch round data entry', () => {
     })
   })
 
-  it('renders with offline batches', async () => {
+  it('renders with full hand tally results', async () => {
     const expectedCalls = [
       apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
-      apiCalls.getResults(offlineBatchMocks.complete),
+      apiCalls.getResults(fullHandTallyBatchResultMock.complete),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderWithRouter(
-        <OfflineBatchRoundDataEntry
+        <FullHandTallyDataEntry
           round={roundMocks.sampledAllBallotsIncomplete}
         />,
         {
@@ -202,11 +206,13 @@ describe('offline batch round data entry', () => {
   it('renders with proper totals', async () => {
     const expectedCalls = [
       apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
-      apiCalls.getResults(offlineBatchMocks.completeWithMultipleBatch),
+      apiCalls.getResults(
+        fullHandTallyBatchResultMock.completeWithMultipleBatch
+      ),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderWithRouter(
-        <OfflineBatchRoundDataEntry
+        <FullHandTallyDataEntry
           round={roundMocks.sampledAllBallotsIncomplete}
         />,
         {
@@ -226,16 +232,16 @@ describe('offline batch round data entry', () => {
     })
   })
 
-  it('edits offline batch', async () => {
+  it('edits full hand tally batch result', async () => {
     const expectedCalls = [
       apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
-      apiCalls.getResults(offlineBatchMocks.complete),
-      apiCalls.putResults(offlineBatchResultsMocks.updated, 'Batch1'),
-      apiCalls.getResults(offlineBatchMocks.updated),
+      apiCalls.getResults(fullHandTallyBatchResultMock.complete),
+      apiCalls.putResults(fullHandTallyBatchResultsMock.updated, 'Batch1'),
+      apiCalls.getResults(fullHandTallyBatchResultMock.updated),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderWithRouter(
-        <OfflineBatchRoundDataEntry
+        <FullHandTallyDataEntry
           round={roundMocks.sampledAllBallotsIncomplete}
         />,
         {
@@ -263,16 +269,16 @@ describe('offline batch round data entry', () => {
     })
   })
 
-  it('deletes offline batch', async () => {
+  it('deletes full hand tally batch result', async () => {
     const expectedCalls = [
       apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
-      apiCalls.getResults(offlineBatchMocks.complete),
-      apiCalls.deleteResults(offlineBatchResultsMocks.complete.batchName),
-      apiCalls.getResults(offlineBatchMocks.empty),
+      apiCalls.getResults(fullHandTallyBatchResultMock.complete),
+      apiCalls.deleteResults(fullHandTallyBatchResultsMock.complete.batchName),
+      apiCalls.getResults(fullHandTallyBatchResultMock.empty),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderWithRouter(
-        <OfflineBatchRoundDataEntry
+        <FullHandTallyDataEntry
           round={roundMocks.sampledAllBallotsIncomplete}
         />,
         {
@@ -297,16 +303,16 @@ describe('offline batch round data entry', () => {
     })
   })
 
-  it('finalizes offline batches', async () => {
+  it('finalizes full hand tally results', async () => {
     const expectedCalls = [
       apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
-      apiCalls.getResults(offlineBatchMocks.complete),
+      apiCalls.getResults(fullHandTallyBatchResultMock.complete),
       apiCalls.finalizeResults,
-      apiCalls.getResults(offlineBatchMocks.finalized),
+      apiCalls.getResults(fullHandTallyBatchResultMock.finalized),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderWithRouter(
-        <OfflineBatchRoundDataEntry
+        <FullHandTallyDataEntry
           round={roundMocks.sampledAllBallotsIncomplete}
         />,
         {
