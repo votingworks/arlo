@@ -1,4 +1,3 @@
-# import pytest
 import numpy as np
 
 from server.audit_math.sampler_contest import Contest
@@ -155,15 +154,22 @@ def test_simple_contest():
     assert nen3.is_vote_for_loser(cvr1) == 0
 
 
-def test_san_francisco_2007():
-    input_file = RAIRE_INPUT_DIR + "SpecialCases/SanFran_2007.raire"
-    output_file = RAIRE_OUTPUT_DIR + "SpecialCases/SanFran_2007.raire.out"
-    agap = 0.00001
-    run_test(input_file, output_file, agap)
+# def test_san_francisco_2007():
+#    input_file = RAIRE_INPUT_DIR + "SpecialCases/SanFran_2007.raire"
+#    output_file = RAIRE_OUTPUT_DIR + "SpecialCases/SanFran_2007.raire.out"
+#    agap = 0.00001
+#    run_test(input_file, output_file, agap)
 
 
 def test_aspen_wrong_winner():
     input_file = RAIRE_INPUT_DIR + "SpecialCases/Aspen_2009_wrong_winner.raire"
     output_file = RAIRE_OUTPUT_DIR + "SpecialCases/Aspen_2009_wrong_winner.raire.out"
+    agap = 0
+    run_test(input_file, output_file, agap)
+
+
+def test_berkeley_2010():
+    input_file = RAIRE_INPUT_DIR + "Berkeley_2010.raire"
+    output_file = RAIRE_OUTPUT_DIR + "Berkeley_2010.raire.out"
     agap = 0
     run_test(input_file, output_file, agap)
