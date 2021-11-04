@@ -377,18 +377,12 @@ class RaireFrontier:
     def __init__(self):
         self.nodes = []
 
-    def replace_descendents(self, node: RaireNode, log: bool, stream=sys.stdout):
+    def replace_descendents(self, node: RaireNode):
         """
         Remove all descendents of the input 'node' from the frontier, and
         insert 'node' to the frontier in the appropriate position.
-
-        If 'log' is true, print logging statements to given 'stream'.
         """
         descendents = []
-
-        if log:
-            print("Replacing descendents of ", file=stream, end="")
-            node.display(stream)
 
         for i in range(len(self.nodes)):
             node_at_i = self.nodes[i]
@@ -398,10 +392,6 @@ class RaireFrontier:
                 descendents.append(i)
 
         for i in reversed(descendents):
-            if log:
-                print("Removing node: ", file=stream, end="")
-                self.nodes[i].display(stream)
-
             del self.nodes[i]
 
         self.insert_node(node)

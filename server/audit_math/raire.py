@@ -1,6 +1,5 @@
 from typing import Callable, Dict, Optional, List
 
-import sys
 import numpy as np
 
 from .sampler_contest import Contest, CVRS
@@ -15,13 +14,7 @@ from .raire_utils import (
 
 
 def compute_raire_assertions(
-    contest: Contest,
-    cvrs: CVRS,
-    winner: str,
-    asn_func: Callable,
-    log: bool,
-    stream=sys.stdout,
-    agap=0,
+    contest: Contest, cvrs: CVRS, winner: str, asn_func: Callable, agap=0,
 ) -> list:
 
     """
@@ -48,12 +41,6 @@ def compute_raire_assertions(
                          returns an estimate of how difficult a
                          RAIRE assertion with that margin will be
                          to audit.
-
-        log            - flag indicating if logging statements should
-                         be printed during the algorithm.
-
-        stream         - stream to which logging statements should
-                         be printed.
 
         agap           - allowed gap between the lower and upper bound
                          on expected audit difficulty. Once these bounds
@@ -138,27 +125,12 @@ def compute_raire_assertions(
             newn.expandable = ncands > 2
 
             find_best_audit(contest, ballots, nebs, newn, asn_func)
-
-            if log:
-                print("TESTED ", file=stream, end="")
-                newn.display(stream=stream)
-                if newn.best_assertion:
-                    print("   Best audit ", file=stream, end="")
-                    newn.best_assertion.display(stream=stream)
-
             frontier.insert_node(newn)
 
     # Flag to keep track of whether a full manual recount will be required
     audit_not_possible = False
 
-    if log:
-        print("===============================================", file=stream)
-        print("Initial Frontier", file=stream)
-        frontier.display(stream=stream)
-        print("===============================================", file=stream)
-
     # -------------------- Find Assertions -----------------------------------
-    # pylint: disable=too-many-nested-blocks
     while not audit_not_possible:
         # Check whether we can stop searching for assertions.
         max_on_frontier = max([node.estimate for node in frontier.nodes])
@@ -177,7 +149,7 @@ def compute_raire_assertions(
         frontier.nodes.pop(0)
 
         if to_expand.best_ancestor and to_expand.best_ancestor.estimate <= lowerbound:
-            frontier.replace_descendents(to_expand.best_ancestor, log, stream=stream)
+            frontier.replace_descendents(to_expand.best_ancestor)
 
             continue
 
@@ -198,14 +170,7 @@ def compute_raire_assertions(
             # The particular branch we dived along cannot be ruled out
             # with an assertion.
             audit_not_possible = True
-            if log:
-                print("Diving finds that audit is not possible", file=stream)
             break
-
-        if log:
-            print(
-                "Diving LB {}, Current LB {}".format(dive_lb, lowerbound), file=stream
-            )
 
         # We can use our new knowledge of the "best" way to rule out
         # the branch to update our "lowerbound" on the overall "difficulty"
@@ -213,7 +178,7 @@ def compute_raire_assertions(
         lowerbound = max(lowerbound, dive_lb)
 
         if to_expand.best_ancestor and to_expand.best_ancestor.estimate <= lowerbound:
-            frontier.replace_descendents(to_expand.best_ancestor, log, stream=stream)
+            frontier.replace_descendents(to_expand.best_ancestor)
 
             continue
 
@@ -222,10 +187,6 @@ def compute_raire_assertions(
             frontier.insert_node(to_expand)
             continue
         # --------------------------------------------------------------------
-
-        if log:
-            print("  Expanding node ", file=stream, end="")
-            to_expand.display(stream=stream)
 
         # Find children of current node, and find the best assertions that
         # could be used to prune those nodes from the tree of alternate
@@ -245,10 +206,6 @@ def compute_raire_assertions(
 
                 find_best_audit(contest, ballots, nebs, newn, asn_func)
 
-                if log:
-                    print("TESTED ", file=stream, end="")
-                    newn.display(stream=stream)
-
                 if not newn.expandable:
                     # 'newn' is a leaf.
                     if (
@@ -258,50 +215,27 @@ def compute_raire_assertions(
 
                         audit_not_possible = True
 
-                        if log:
-                            print("Found branch that cannot be pruned.", file=stream)
                         break
 
                     if newn.best_ancestor.estimate <= newn.estimate:
                         lowerbound = max(lowerbound, newn.best_ancestor.estimate)
-                        frontier.replace_descendents(
-                            newn.best_ancestor, log, stream=stream
-                        )
+                        frontier.replace_descendents(newn.best_ancestor)
 
                     else:
                         lowerbound = max(lowerbound, newn.estimate)
                         frontier.insert_node(newn)
 
-                        if log:
-                            print("    Best audit ", file=stream, end="")
-                            newn.best_assertion.display(stream=stream)
                 else:
                     frontier.insert_node(newn)
-                    if log:
-                        if newn.best_assertion:
-                            print("    Best audit ", file=stream, end="")
-                            newn.best_assertion.display(stream=stream)
-                        else:
-                            print("    Cannot be disproved", file=stream)
 
             if audit_not_possible:
                 break
-
-        if log:
-            print(
-                "Size of frontier {}, current lower bound {}".format(
-                    len(frontier.nodes), lowerbound
-                )
-            )
 
         if audit_not_possible:
             break
 
     # If a full recount is required, return empty list.
     if audit_not_possible:
-        if log:
-            print("AUDIT NOT POSSIBLE", file=stream)
-
         return []
 
     # ------------------------------------------------------------------------
@@ -345,24 +279,9 @@ def compute_raire_assertions(
             if assrtn_j.subsumes(assrtn_i):
                 subsumed = True
 
-                if log:
-                    print("", file=stream)
-                    print(
-                        "{} SUBSUMES {}".format(assrtn_j.to_str(), assrtn_i.to_str()),
-                        file=stream,
-                    )
-                    print("", file=stream)
-
                 break
 
         if not subsumed:
             final_audit.append(assrtn_i)
-
-    if log:
-        print("===============================================", file=stream)
-        print("ASSERTIONS:", file=stream)
-        for assertion in final_audit:
-            assertion.display(stream=stream)
-        print("===============================================", file=stream)
 
     return final_audit
