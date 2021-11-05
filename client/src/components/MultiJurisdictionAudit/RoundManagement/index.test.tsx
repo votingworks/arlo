@@ -225,7 +225,7 @@ describe('RoundManagement', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView({
-        round: roundMocks.sampledAllBallotsIncomplete,
+        round: roundMocks.fullHandTallyIncomplete,
         auditBoards: auditBoardMocks.unfinished,
         createAuditBoards: jest.fn(),
       })

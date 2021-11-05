@@ -581,8 +581,14 @@ const Review: React.FC<IProps> = ({
                                       }
                                       onValueChange={(value: number) =>
                                         setFieldValue(
-                                          `sampleSizes[${contest.id}].sizeCvr`,
-                                          value
+                                          `sampleSizes[${contest.id}]`,
+                                          {
+                                            ...currentOption,
+                                            sizeCvr: value,
+                                            size:
+                                              (currentOption.sizeNonCvr || 0) +
+                                              value,
+                                          }
                                         )
                                       }
                                       type="number"
@@ -609,8 +615,14 @@ const Review: React.FC<IProps> = ({
                                       }
                                       onValueChange={(value: number) =>
                                         setFieldValue(
-                                          `sampleSizes[${contest.id}].sizeNonCvr`,
-                                          value
+                                          `sampleSizes[${contest.id}]`,
+                                          {
+                                            ...currentOption,
+                                            sizeNonCvr: value,
+                                            size:
+                                              (currentOption.sizeCvr || 0) +
+                                              value,
+                                          }
                                         )
                                       }
                                       type="number"

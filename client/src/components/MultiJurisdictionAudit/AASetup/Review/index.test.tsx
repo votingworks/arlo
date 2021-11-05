@@ -377,7 +377,7 @@ describe('Audit Setup > Review & Launch', () => {
             key: 'custom',
             sizeCvr: 10,
             sizeNonCvr: 20,
-            size: null,
+            size: 30,
             prob: null,
           },
         })

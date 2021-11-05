@@ -782,7 +782,7 @@ def test_hybrid_custom_sample_size(
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     sample_size = {
         "key": "custom",
-        "size": None,
+        "size": 10,
         "sizeCvr": 2,
         "sizeNonCvr": 8,
         "prob": None,
@@ -828,9 +828,13 @@ def test_hybrid_invalid_sample_size(
             "'sizeNonCvr' is a required property",
         ),
         (
+            {"key": "custom", "sizeCvr": 2, "sizeNonCvr": 2, "prob": None},
+            "'size' is a required property",
+        ),
+        (
             {
                 "key": "custom",
-                "size": None,
+                "size": 50,
                 "sizeCvr": 40,
                 "sizeNonCvr": 10,
                 "prob": None,
@@ -840,7 +844,7 @@ def test_hybrid_invalid_sample_size(
         (
             {
                 "key": "custom",
-                "size": None,
+                "size": 50,
                 "sizeCvr": 20,
                 "sizeNonCvr": 30,
                 "prob": None,
@@ -850,7 +854,7 @@ def test_hybrid_invalid_sample_size(
         (
             {
                 "key": "custom",
-                "size": None,
+                "size": 50,
                 "sizeCvr": 30,
                 "sizeNonCvr": 20,
                 "prob": None,
@@ -860,7 +864,7 @@ def test_hybrid_invalid_sample_size(
         (
             {
                 "key": "suite",
-                "size": None,
+                "size": 52,
                 "sizeCvr": 31,
                 "sizeNonCvr": 21,
                 "prob": None,

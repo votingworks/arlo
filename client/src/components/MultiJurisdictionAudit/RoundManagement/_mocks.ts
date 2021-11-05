@@ -13,7 +13,7 @@ export interface INullResultValues {
 }
 
 export const roundMocks: {
-  [key in 'incomplete' | 'complete' | 'sampledAllBallotsIncomplete']: IRound
+  [key in 'incomplete' | 'complete' | 'fullHandTallyIncomplete']: IRound
 } = {
   incomplete: {
     id: 'round-1',
@@ -21,7 +21,7 @@ export const roundMocks: {
     startedAt: '2020-09-14T17:35:19.482Z',
     endedAt: null,
     isAuditComplete: false,
-    sampledAllBallots: false,
+    isFullHandTally: false,
     drawSampleTask: {
       status: FileProcessingStatus.PROCESSED,
       startedAt: '2020-09-14T17:35:19.482Z',
@@ -35,7 +35,7 @@ export const roundMocks: {
     startedAt: '2020-09-14T17:35:19.482Z',
     endedAt: '2020-09-14T17:35:19.482Z',
     isAuditComplete: true,
-    sampledAllBallots: false,
+    isFullHandTally: false,
     drawSampleTask: {
       status: FileProcessingStatus.PROCESSED,
       startedAt: '2020-09-14T17:35:19.482Z',
@@ -43,13 +43,13 @@ export const roundMocks: {
       error: null,
     },
   },
-  sampledAllBallotsIncomplete: {
+  fullHandTallyIncomplete: {
     id: 'round-1',
     roundNum: 1,
     startedAt: '2020-09-14T17:35:19.482Z',
     endedAt: null,
     isAuditComplete: false,
-    sampledAllBallots: true,
+    isFullHandTally: true,
     drawSampleTask: {
       status: FileProcessingStatus.PROCESSED,
       startedAt: '2020-09-14T17:35:19.482Z',
