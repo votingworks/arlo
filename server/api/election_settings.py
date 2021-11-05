@@ -68,6 +68,20 @@ def get_jurisdiction_election_settings(
     return jsonify(serialize_election_settings(election))
 
 
+@api.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/audit-board/<audit_board_id>/settings",
+    methods=["GET"],
+)
+@restrict_access([UserType.AUDIT_BOARD])
+def get_audit_board_election_settings(
+    election: Election,
+    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    round: Round,  # pylint: disable=unused-argument
+    audit_board: AuditBoard,  # pylint: disable=unused-argument
+):
+    return jsonify(serialize_election_settings(election))
+
+
 def validate_election_settings(settings: JSONDict, election: Election):
     if len(list(election.rounds)) > 0:
         raise Conflict("Cannot update settings after audit has started.")

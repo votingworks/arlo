@@ -11,6 +11,7 @@ import Ballot from './Ballot'
 import SignOff from './SignOff'
 import { Wrapper, Inner } from '../Atoms/Wrapper'
 import { IBallot } from '../MultiJurisdictionAudit/RoundManagement/useBallots'
+import { IAuditSettings } from '../MultiJurisdictionAudit/useAuditSettings'
 import { IAuditBoard, IAuditBoardMember } from '../UserContext'
 
 const PaddedInner = styled(Inner)`
@@ -20,6 +21,18 @@ const PaddedInner = styled(Inner)`
 const loadAuditBoard = async (): Promise<IAuditBoard | null> => {
   const response = await api<{ user: IAuditBoard }>(`/me`)
   return response && response.user
+}
+
+const loadAuditSettings = async (
+  electionId: string,
+  jurisdictionId: string,
+  roundId: string,
+  auditBoardId: string
+): Promise<IAuditSettings | null> => {
+  const response = await api<IAuditSettings | null>(
+    `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/audit-board/${auditBoardId}/settings`
+  )
+  return response
 }
 
 const loadContests = async (
@@ -127,6 +140,9 @@ const DataEntry: React.FC = () => {
   const [auditBoard, setAuditBoard] = useState<IAuditBoard | null>(null)
   const [contests, setContests] = useState<IContest[] | null>(null)
   const [ballots, setBallots] = useState<IBallot[] | null>(null)
+  const [auditSettings, setAuditSettings] = useState<IAuditSettings | null>(
+    null
+  )
 
   useEffect(() => {
     ;(async () => {
@@ -142,6 +158,9 @@ const DataEntry: React.FC = () => {
         const { jurisdictionId, roundId, id } = auditBoard
         setContests(await loadContests(electionId, jurisdictionId, roundId, id))
         setBallots(await loadBallots(electionId, jurisdictionId, roundId, id))
+        setAuditSettings(
+          await loadAuditSettings(electionId, jurisdictionId, roundId, id)
+        )
       }
     })()
   }, [electionId, auditBoard])
@@ -178,7 +197,7 @@ const DataEntry: React.FC = () => {
     )
   }
 
-  if (!auditBoard || !ballots || !contests) return null // Still loading
+  if (!auditBoard || !ballots || !contests || !auditSettings) return null // Still loading
 
   const url = `/election/${electionId}/audit-board/${auditBoardId}`
 
@@ -299,6 +318,7 @@ const DataEntry: React.FC = () => {
               previousBallot={previousBallot(batchId, Number(ballotPosition))}
               nextBallot={nextBallot(batchId, Number(ballotPosition))}
               submitBallot={submitBallot}
+              auditSettings={auditSettings}
               contests={contests}
               batchId={batchId}
               ballotPosition={Number(ballotPosition)}

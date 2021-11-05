@@ -8,8 +8,8 @@ const Block = styled.label`
   &.bp3-control.bp3-checkbox {
     display: inline-block;
     position: relative;
+    margin-top: 3px;
     margin-right: 20px;
-    margin-bottom: 10px;
     padding-left: 0;
 
     .checkbox-text {

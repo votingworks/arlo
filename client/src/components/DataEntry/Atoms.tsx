@@ -87,17 +87,40 @@ export const BlockCheckboxes = styled.div`
 export const LeftCheckboxes = styled.div`
   display: flex;
   flex-direction: column;
-  width: 50%;
+  width: 70%;
   @media only screen and (max-width: 767px) {
     width: 100%;
   }
 `
 
 export const RightCheckboxes = styled.div`
-  width: 25%;
+  width: 29%;
   @media only screen and (max-width: 767px) {
     margin-top: 20px;
     width: 100%;
+  }
+`
+
+export const CheckSelectCombo = styled.div`
+  display: flex;
+  margin-bottom: 10px;
+  width: 100%;
+  @media only screen and (max-width: 912px) {
+    flex-direction: column;
+    & > :first-child,
+    & > :last-child {
+      width: 100% !important;
+    }
+  }
+  & > :first-child {
+    width: 100% !important;
+  }
+  & > :last-child {
+    width: 43%;
+    button {
+      border: 1px solid #a7b6c2;
+      border-radius: 10px;
+    }
   }
 `
 

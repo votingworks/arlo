@@ -189,7 +189,7 @@ export const dummyBallots: { ballots: IBallot[] } = {
         {
           contestId: contest.id,
           interpretation: Interpretation.VOTE,
-          choiceIds: [contest.choices[0].id],
+          choiceIds: [{ id: contest.choices[0].id }],
           comment: 'Good ballot',
         },
       ],
@@ -552,7 +552,7 @@ export const dummyBallotsMultipage: { ballots: IBallot[] } = {
         {
           contestId: contest.id,
           interpretation: Interpretation.VOTE,
-          choiceIds: [contest.choices[0].id],
+          choiceIds: [{ id: contest.choices[0].id }],
           comment: 'Good ballot',
         },
       ],
@@ -993,7 +993,7 @@ export const dummyBallotsNotAudited: { ballots: IBallot[] } = {
         {
           contestId: contest.id,
           interpretation: Interpretation.VOTE,
-          choiceIds: [contest.choices[0].id],
+          choiceIds: [{ id: contest.choices[0].id }],
           comment: 'Good ballot',
         },
       ],

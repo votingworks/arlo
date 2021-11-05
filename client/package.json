@@ -70,6 +70,7 @@
   },
   "dependencies": {
     "@blueprintjs/core": "^3.20.0",
+    "@blueprintjs/select": "^3.18.10",
     "@blueprintjs/table": "^3.8.1",
     "@sentry/react": "^5.27.3",
     "@sentry/tracing": "^5.27.3",

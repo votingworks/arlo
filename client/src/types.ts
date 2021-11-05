@@ -34,10 +34,15 @@ export enum Interpretation {
   CONTEST_NOT_ON_BALLOT = 'CONTEST_NOT_ON_BALLOT',
 }
 
+interface Choice {
+  id: string
+  rank?: number
+}
+
 export interface IBallotInterpretation {
   contestId: string
   interpretation: Interpretation | null
-  choiceIds: string[]
+  choiceIds: Choice[]
   comment: string | null
 }
 

@@ -14,6 +14,7 @@ import {
 import { FlushDivider, SubTitle } from './Atoms'
 import { Inner } from '../Atoms/Wrapper'
 import { IBallot } from '../MultiJurisdictionAudit/RoundManagement/useBallots'
+import { IAuditSettings } from '../MultiJurisdictionAudit/useAuditSettings'
 import { hashBy } from '../../utils/array'
 import { useConfirm, Confirm } from '../Atoms/Confirm'
 
@@ -109,6 +110,7 @@ interface IProps {
   ballotPosition: number
   ballots: IBallot[]
   contests: IContestApi[]
+  auditSettings: IAuditSettings
   previousBallot: () => void
   nextBallot: () => void
   submitBallot: (
@@ -131,6 +133,7 @@ const Ballot: React.FC<IProps> = ({
   ballotPosition,
   ballots,
   contests,
+  auditSettings,
   previousBallot,
   nextBallot,
   submitBallot,
@@ -153,8 +156,16 @@ const Ballot: React.FC<IProps> = ({
     switch (interpretation) {
       case Interpretation.VOTE:
         return contest.choices.map(choice =>
-          choiceIds.includes(choice.id) ? (
-            <h3 key={choice.id}>{choice.name}</h3>
+          choiceIds.filter(choiceId => choiceId.id === choice.id).length > 0 ? (
+            <h3 key={choice.id}>
+              {choice.name}
+              {choiceIds.filter(choiceId => choiceId.id === choice.id)[0].rank
+                ? ` (Choice ${
+                    choiceIds.filter(choiceId => choiceId.id === choice.id)[0]
+                      .rank
+                  })`
+                : ''}
+            </h3>
           ) : null
         )
       case Interpretation.BLANK:
@@ -285,6 +296,7 @@ const Ballot: React.FC<IProps> = ({
               <div>
                 <BallotAudit
                   contests={contests}
+                  auditSettings={auditSettings}
                   interpretations={interpretations}
                   setInterpretations={setInterpretations}
                   confirmSelections={confirmSelections}

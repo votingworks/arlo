@@ -12,7 +12,13 @@ export interface IAuditSettings {
     | 'BATCH_COMPARISON'
     | 'BALLOT_COMPARISON'
     | 'HYBRID'
-  auditMathType: 'BRAVO' | 'MINERVA' | 'SUPERSIMPLE' | 'MACRO' | 'SUITE'
+  auditMathType:
+    | 'BRAVO'
+    | 'MINERVA'
+    | 'SUPERSIMPLE'
+    | 'MACRO'
+    | 'SUITE'
+    | 'RAIRE'
   auditName: string
 }
 
