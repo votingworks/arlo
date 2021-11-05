@@ -245,19 +245,6 @@ const Map = ({
     svgElement.attr('width', width).attr('height', height)
 
     svgElement
-      .append('path')
-      .datum(usState)
-      .attr('class', 'outline')
-      .attr('d', path)
-      .attr('id', 'single-state')
-
-    svgElement
-      .append('clipPath')
-      .attr('id', 'clip-state')
-      .append('use')
-      .attr('xlink:href', '#single-state')
-
-    svgElement
       .selectAll('path')
       .data(usCounties)
       .enter()
@@ -281,6 +268,19 @@ const Map = ({
       .on('mouseout', () => {
         select('#tooltip').style('display', 'none')
       })
+
+    svgElement
+      .append('path')
+      .datum(usState)
+      .attr('class', 'outline')
+      .attr('d', path)
+      .attr('id', 'single-state')
+
+    svgElement
+      .append('clipPath')
+      .attr('id', 'clip-state')
+      .append('use')
+      .attr('xlink:href', '#single-state')
   }
 
   return (
