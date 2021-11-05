@@ -1,31 +1,11 @@
+from __future__ import annotations
 from typing import Type, Callable, Dict, List, Any
-import sys
 import numpy as np
 
 from .sampler_contest import CVR, Contest
 
 CB = Dict[str, int]
 CBS = List[CB]
-
-
-def index_of(cand: str, list_of_cand: list):
-    """
-    Returns position of given candidate 'cand' in the list of candidates
-    'list_of_cand'. Returns -1 if 'cand' is not in the given list.
-
-    Input:
-        cand : string       - Identifier of candidate we are looking for
-        list_of_cand : list - List of candidate identifiers
-
-    Output:
-        Index (starting at 0) of 'cand' in 'list_of_cand', and -1 if
-        'cand' is not in 'list_of_cand'.
-    """
-    for i, other in enumerate(list_of_cand):
-        if other == cand:
-            return i
-
-    return -1
 
 
 def ranking(cand: str, ballot: CB):
@@ -48,7 +28,7 @@ def ranking(cand: str, ballot: CB):
     return -1 if rank in (0, "not present") else rank
 
 
-def vote_for_cand(cand: str, eliminated: list, ballot: CB):
+def vote_for_cand(cand: str, eliminated: List[str], ballot: CB):
     """
     Input:
         cand : string       -   identifier for candidate
@@ -161,11 +141,8 @@ class RaireAssertion:
     def __gt__(self, other):
         return self.difficulty < other.difficulty
 
-    def display(self, stream=sys.stdout):
-        print(self.to_str(), file=stream)
-
-    def to_str(self):
-        pass
+    def __repr__(self):
+        return f"{self.contest} {self.winner} {self.loser} {self.difficulty}"
 
 
 class NEBAssertion(RaireAssertion):
@@ -228,15 +205,23 @@ class NEBAssertion(RaireAssertion):
             # If self.winner appears before self.loser in the list
             # 'other.rules_out', or self.loser appears and self.winner does
             # not, then this assertion subsumes 'other'.
-            idx_winner = index_of(self.winner, other.rules_out)
-            idx_loser = index_of(self.loser, other.rules_out)
+            idx_winner = (
+                other.rules_out.index(self.winner)
+                if self.winner in other.rules_out
+                else -1
+            )
+            idx_loser = (
+                other.rules_out.index(self.loser)
+                if self.loser in other.rules_out
+                else -1
+            )
 
             if idx_winner < idx_loser:
                 return True
 
         return False
 
-    def to_str(self):
+    def __repr__(self):
         return "NEB,Winner,{},Loser,{},Eliminated".format(self.winner, self.loser)
 
 
@@ -282,7 +267,7 @@ class NENAssertion(RaireAssertion):
             and self.eliminated == other.eliminated
         )
 
-    def subsumes(self, other: Type[RaireAssertion]):
+    def subsumes(self, other: RaireAssertion):
         """
         An NENAssertion 'A' subsumes an assertion 'other' if 'other' is
         not an NEBAssertion, they have the same winner, and rule out
@@ -297,30 +282,29 @@ class NENAssertion(RaireAssertion):
 
         return False
 
-    def to_str(self):
-        result = "NEN,Winner,{},Loser,{},Eliminated".format(self.winner, self.loser)
-
-        for cand in self.eliminated:
-            result += ",{}".format(cand)
-
-        return result
+    def __repr__(self):
+        return f"NEN,Winner,{self.winner},Loser,{self.loser},Eliminated," + ",".join(
+            self.eliminated
+        )
 
 
+# RaireNode = TypeVar('RaireNode')
 class RaireNode:
-    def __init__(self, tail):
+
+    # Lowest cost assertion that, if true, can rule out any election
+    # outcome that *ends* with the given tail.
+    best_assertion: RaireAssertion
+
+    # An "ancestor" of this node is a node whose tail equals the latter
+    # part of self.tail (i.e., if self.tail is ["A", "B", "C"], the node
+    # will have an ancestor with tail ["B", "C"].
+    best_ancestor: RaireNode
+
+    def __init__(self, tail: List[str]):
         # Tail of an "imagined" elimination sequence representing the
         # outcome of an IRV election. The last candidate in the tail is
         # the "imagined" winner of the election.
         self.tail = tail  # List of str (candidate identifiers)
-
-        # Lowest cost assertion that, if true, can rule out any election
-        # outcome that *ends* with the given tail.
-        self.best_assertion = None
-
-        # An "ancestor" of this node is a node whose tail equals the latter
-        # part of self.tail (i.e., if self.tail is ["A", "B", "C"], the node
-        # will have an ancestor with tail ["B", "C"].
-        self.best_ancestor = None
 
         # If there are candidates not mentioned in self.tail, this node
         # is not a leaf and it can be expanded.
@@ -351,50 +335,16 @@ class RaireNode:
 
         return self.tail[len1 - len2 :] == node.tail
 
-    def display(self, stream=sys.stdout):
-        print("{} | ".format(self.tail[0]), file=stream, end="")
-
-        for i in range(1, len(self.tail)):
-            print("{} ".format(self.tail[i]), file=stream, end="")
-
-        print("[{}]".format(self.estimate), file=stream, end="")
-
-        if self.best_ancestor:
-            print(
-                " (Best Ancestor {} | ".format(self.best_ancestor.tail[0]),
-                file=stream,
-                end="",
-            )
-
-            for i in range(1, len(self.best_ancestor.tail)):
-                print("{} ".format(self.best_ancestor.tail[i]), file=stream, end="")
-            print("[{}])".format(self.best_ancestor.estimate), file=stream, end="")
-
-        print("")
+    def __repr__(self):
+        return f"tail: {self.tail}\n\
+                \testimate: {self.estimate}\n\
+                \tbest_ancestor: {self.best_ancestor}\n\
+                \tbest_assertion: {self.best_assertion}"
 
 
 class RaireFrontier:
     def __init__(self):
         self.nodes = []
-
-    def replace_descendents(self, node: RaireNode):
-        """
-        Remove all descendents of the input 'node' from the frontier, and
-        insert 'node' to the frontier in the appropriate position.
-        """
-        descendents = []
-
-        for i in range(len(self.nodes)):
-            node_at_i = self.nodes[i]
-
-            # Is node_at_i a descendent of the given node?
-            if node_at_i.is_descendent_of(node):
-                descendents.append(i)
-
-        for i in reversed(descendents):
-            del self.nodes[i]
-
-        self.insert_node(node)
 
     def insert_node(self, node: RaireNode):
         """
@@ -427,9 +377,24 @@ class RaireFrontier:
 
             self.nodes.insert(i, node)
 
-    def display(self, stream=sys.stdout):
-        for node in self.nodes:
-            node.display(stream=stream)
+    def replace_descendents(self, node: RaireNode):
+        """
+        Remove all descendents of the input 'node' from the frontier, and
+        insert 'node' to the frontier in the appropriate position.
+        """
+        descendents = []
+
+        for i in range(len(self.nodes)):
+            node_at_i = self.nodes[i]
+
+            # Is node_at_i a descendent of the given node?
+            if node_at_i.is_descendent_of(node):
+                descendents.append(i)
+
+        for i in reversed(descendents):
+            del self.nodes[i]
+
+        self.insert_node(node)
 
 
 def find_best_audit(
@@ -463,7 +428,7 @@ def find_best_audit(
 
     first_in_tail = node.tail[0]
 
-    best_asrtn = None
+    best_asrtn: RaireAssertion
 
     # We first consider if we can invalidate this outcome by showing that
     # 'first_in_tail' can not-be-eliminated-before a candidate that
@@ -571,11 +536,10 @@ def perform_dive(
     newn.expandable = not len(newn.tail) == ncands
 
     # Assign a 'best ancestor' to the new node.
-    newn.best_ancestor = (
-        node.best_ancestor
-        if node.best_ancestor and node.best_ancestor.estimate <= node.estimate
-        else node
-    )
+    if node.best_ancestor and node.best_ancestor.estimate <= node.estimate:
+        newn.best_ancestor = node.best_ancestor
+    else:
+        newn.best_ancestor = node
 
     find_best_audit(contest, ballots, neb_matrix, newn, asn_func)
 

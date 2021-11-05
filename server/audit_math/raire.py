@@ -106,7 +106,7 @@ def compute_raire_assertions(
 
     # This is a running lowerbound on the overall difficulty of the
     # election audit.
-    lowerbound = -10
+    lowerbound = -10.0
 
     # Construct initial frontier.
     frontier = RaireFrontier()

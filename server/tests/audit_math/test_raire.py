@@ -111,7 +111,7 @@ def run_test(input_file, output_file, agap):
 
             asrtns = []
             for assertion in audit:
-                asrtns.append(assertion.to_str())
+                asrtns.append(str(assertion))
 
             sorted_asrtns = sorted(asrtns)
             result[contest] = sorted_asrtns
