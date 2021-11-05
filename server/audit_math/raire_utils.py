@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Type, Callable, Dict, List, Any
+from typing import Type, Callable, Dict, List, Any, Optional
 import numpy as np
 
 from .sampler_contest import CVR, Contest
@@ -288,18 +288,7 @@ class NENAssertion(RaireAssertion):
         )
 
 
-# RaireNode = TypeVar('RaireNode')
 class RaireNode:
-
-    # Lowest cost assertion that, if true, can rule out any election
-    # outcome that *ends* with the given tail.
-    best_assertion: RaireAssertion
-
-    # An "ancestor" of this node is a node whose tail equals the latter
-    # part of self.tail (i.e., if self.tail is ["A", "B", "C"], the node
-    # will have an ancestor with tail ["B", "C"].
-    best_ancestor: RaireNode
-
     def __init__(self, tail: List[str]):
         # Tail of an "imagined" elimination sequence representing the
         # outcome of an IRV election. The last candidate in the tail is
@@ -313,6 +302,12 @@ class RaireNode:
         # Estimate of difficulty of ruling out the outcome this node
         # represents.
         self.estimate = np.inf
+
+        # Lowest cost assertion that, if true, can rule out any election
+        # outcome that *ends* with the given tail.
+        self.best_assertion: Optional[RaireAssertion] = None
+
+        self.best_ancestor: Optional[RaireNode] = None
 
     def is_descendent_of(self, node):
         """
@@ -427,8 +422,7 @@ def find_best_audit(
     """
 
     first_in_tail = node.tail[0]
-
-    best_asrtn: RaireAssertion
+    best_asrtn = None
 
     # We first consider if we can invalidate this outcome by showing that
     # 'first_in_tail' can not-be-eliminated-before a candidate that
@@ -439,7 +433,6 @@ def find_best_audit(
         neb = neb_matrix[first_in_tail][later_cand]
 
         if neb and (best_asrtn is None or neb.difficulty < best_asrtn.difficulty):
-
             best_asrtn = neb
 
     # We now look at whether there is a candidate not mentioned in

@@ -150,7 +150,6 @@ def compute_raire_assertions(
 
         if to_expand.best_ancestor and to_expand.best_ancestor.estimate <= lowerbound:
             frontier.replace_descendents(to_expand.best_ancestor)
-
             continue
 
         if to_expand.estimate <= lowerbound:
@@ -210,6 +209,7 @@ def compute_raire_assertions(
                     # 'newn' is a leaf.
                     if (
                         newn.estimate == np.inf
+                        and newn.best_ancestor
                         and newn.best_ancestor.estimate == np.inf
                     ):
 
@@ -217,7 +217,10 @@ def compute_raire_assertions(
 
                         break
 
-                    if newn.best_ancestor.estimate <= newn.estimate:
+                    if (
+                        newn.best_ancestor
+                        and newn.best_ancestor.estimate <= newn.estimate
+                    ):
                         lowerbound = max(lowerbound, newn.best_ancestor.estimate)
                         frontier.replace_descendents(newn.best_ancestor)
 

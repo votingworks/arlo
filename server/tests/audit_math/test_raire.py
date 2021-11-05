@@ -159,5 +159,6 @@ def test_aspen_wrong_winner():
 def test_berkeley_2010():
     input_file = RAIRE_INPUT_DIR + "Berkeley_2010.raire"
     output_file = RAIRE_OUTPUT_DIR + "Berkeley_2010.raire.out"
-    agap = 0
+    # TODO: figure out why this keeps it from going on forever
+    agap = 0  # 0.00001
     run_test(input_file, output_file, agap)
