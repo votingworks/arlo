@@ -2,7 +2,7 @@ from typing import Callable, Dict, Optional, List
 
 import numpy as np
 
-from .sampler_contest import Contest, CVRS
+from .sampler_contest import Contest, CVR
 from .raire_utils import (
     NEBAssertion,
     RaireAssertion,
@@ -14,7 +14,7 @@ from .raire_utils import (
 
 
 def compute_raire_assertions(
-    contest: Contest, cvrs: CVRS, winner: str, asn_func: Callable, agap=0,
+    contest: Contest, cvrs: List[CVR], winner: str, asn_func: Callable, agap=0,
 ) -> list:
 
     """
@@ -78,7 +78,7 @@ def compute_raire_assertions(
 
             tally_cand: int = 0
             tally_other: int = 0
-            for _, cvr in cvrs.items():
+            for cvr in cvrs:
                 if cvr:
                     tally_cand += asrn.is_vote_for_winner(cvr)
                     tally_other += asrn.is_vote_for_loser(cvr)
@@ -100,10 +100,6 @@ def compute_raire_assertions(
     # winner. All candidates not mentioned in this tail are assumed to have
     # already been eliminated.
 
-    ballots: List[Dict[str, int]] = [
-        blt[contest.name] for _, blt in cvrs.items() if blt and contest.name in blt
-    ]
-
     # This is a running lowerbound on the overall difficulty of the
     # election audit.
     lowerbound = -10.0
@@ -124,7 +120,7 @@ def compute_raire_assertions(
             newn = RaireNode([other, cand])
             newn.expandable = ncands > 2
 
-            find_best_audit(contest, ballots, nebs, newn, asn_func)
+            find_best_audit(contest, cvrs, nebs, newn, asn_func)
             frontier.insert_node(newn)
 
     # Flag to keep track of whether a full manual recount will be required
@@ -163,7 +159,7 @@ def compute_raire_assertions(
         # branch of the alternate outcomes tree that ends in that leaf. We
         # know that this assertion will be part of the audit, as we have
         # to rule out all branches.
-        dive_lb = perform_dive(to_expand, contest, ballots, nebs, asn_func)
+        dive_lb = perform_dive(to_expand, contest, cvrs, nebs, asn_func)
 
         if dive_lb == np.inf:
             # The particular branch we dived along cannot be ruled out
@@ -203,7 +199,7 @@ def compute_raire_assertions(
                     else to_expand
                 )
 
-                find_best_audit(contest, ballots, nebs, newn, asn_func)
+                find_best_audit(contest, cvrs, nebs, newn, asn_func)
 
                 if not newn.expandable:
                     # 'newn' is a leaf.

@@ -4,11 +4,9 @@ import numpy as np
 
 from .sampler_contest import CVR, Contest
 
-CB = Dict[str, int]
-CBS = List[CB]
 
 
-def ranking(cand: str, ballot: CB):
+def ranking(cand: str, ballot: Dict[str, int]):
     """
     Input:
         cand : string  -   identifier for candidate
@@ -28,7 +26,7 @@ def ranking(cand: str, ballot: CB):
     return -1 if rank in (0, "not present") else rank
 
 
-def vote_for_cand(cand: str, eliminated: List[str], ballot: CB):
+def vote_for_cand(cand: str, eliminated: List[str], ballot: Dict[str, int]):
     """
     Input:
         cand : string       -   identifier for candidate
@@ -128,7 +126,7 @@ class RaireAssertion:
         Returns true if this assertion subsumes assertion 'other'.
         """
 
-    def same_as(self, other):
+    def __eq__(self, other):
         """
         Returns True if this assertion is equal to 'other' (i.e., they
         are the same assertion), and False otherwise.
@@ -179,13 +177,6 @@ class NEBAssertion(RaireAssertion):
             1 if l_idx != -1 and (w_idx == -1 or (w_idx != -1 and l_idx < w_idx)) else 0
         )
 
-    def same_as(self, other: Type[RaireAssertion]):
-        return (
-            self.contest == other.contest
-            and self.winner == other.winner
-            and self.loser == other.loser
-        )
-
     def subsumes(self, other: Type[RaireAssertion]):
         """
         An NEBAssertion 'A' subsumes an assertion 'other' if:
@@ -221,6 +212,14 @@ class NEBAssertion(RaireAssertion):
 
         return False
 
+    def __eq__(self, other):
+        return (
+            isinstance(other, NEBAssertion)
+            and self.contest == other.contest
+            and self.winner == other.winner
+            and self.loser == other.loser
+        )
+
     def __repr__(self):
         return "NEB,Winner,{},Loser,{},Eliminated".format(self.winner, self.loser)
 
@@ -242,7 +241,7 @@ class NENAssertion(RaireAssertion):
     of 'loser'.
     """
 
-    def __init__(self, contest: str, winner: str, loser: str, eliminated: list):
+    def __init__(self, contest: str, winner: str, loser: str, eliminated: List[str]):
         super().__init__(contest, winner, loser)
 
         self.eliminated = eliminated
@@ -259,14 +258,6 @@ class NENAssertion(RaireAssertion):
 
         return vote_for_cand(self.loser, self.eliminated, cvr[self.contest])
 
-    def same_as(self, other: Type[RaireAssertion]):
-        return (
-            self.contest == other.contest
-            and self.winner == other.winner
-            and self.loser == other.loser
-            and self.eliminated == other.eliminated
-        )
-
     def subsumes(self, other: RaireAssertion):
         """
         An NENAssertion 'A' subsumes an assertion 'other' if 'other' is
@@ -281,6 +272,16 @@ class NENAssertion(RaireAssertion):
             return True
 
         return False
+
+    def __eq__(self, other):
+        return (
+            isinstance(other, NENAssertion)
+            and self.contest == other.contest
+            and self.winner == other.winner
+            and self.loser == other.loser
+            and self.eliminated == other.eliminated
+        )
+
 
     def __repr__(self):
         return f"NEN,Winner,{self.winner},Loser,{self.loser},Eliminated," + ",".join(
@@ -331,10 +332,7 @@ class RaireNode:
         return self.tail[len1 - len2 :] == node.tail
 
     def __repr__(self):
-        return f"tail: {self.tail}\n\
-                \testimate: {self.estimate}\n\
-                \tbest_ancestor: {self.best_ancestor}\n\
-                \tbest_assertion: {self.best_assertion}"
+        return f"tail: {self.tail}\nestimate: {self.estimate}\nbest_assertion: {self.best_assertion}\nbest_ancestor:\n\n{self.best_ancestor}"
 
 
 class RaireFrontier:
@@ -393,22 +391,23 @@ class RaireFrontier:
 
 
 def find_best_audit(
-    contest: Contest, ballots: CBS, neb_matrix, node: RaireNode, asn_func: Callable
+    contest: Contest, ballots: List[CVR], neb_matrix, node: RaireNode, asn_func: Callable
 ):
     """
     Input:
-    node: RaireNode    -  A node in the tree of alternate election outcomes.
-                          The node represents an election outcome that ends
-                          in the sequence node.tail.
 
     contest: Contest   -  Contest being audited.
 
-    ballots: CBS       -  Details of reported ballots for this contest.
+    ballots: CVR       -  Details of reported ballots for this contest.
 
     neb_matrix         -  |Candidates| x |Candidates| dictionary where
                           neb_matrix[c1][c2] returns a NEBAssertion stating
                           that c1 cannot be eliminated before c2 (if one
                           exists) and None otherwise.
+
+    node: RaireNode    -  A node in the tree of alternate election outcomes.
+                          The node represents an election outcome that ends
+                          in the sequence node.tail.
 
     asn_func: Callable -  Function that takes an assertion margin and
                           returns an estimate of how "difficult" it will
@@ -435,36 +434,33 @@ def find_best_audit(
         if neb and (best_asrtn is None or neb.difficulty < best_asrtn.difficulty):
             best_asrtn = neb
 
+
+    # 'eliminated' is the list of candidates that are not mentioned in 'tail'.
+    eliminated = [c for c in contest.candidates if not c in node.tail]
+
     # We now look at whether there is a candidate not mentioned in
     # 'tail' (this means they are assumed to be eliminated at some prior
     # point in the elimination sequence), that can not-be-eliminated-before
     # 'first_in_tail'.
-    for cand in contest.candidates:
-        if cand in node.tail:
-            continue
-
+    for cand in eliminated:
         neb = neb_matrix[cand][first_in_tail]
 
         if neb and (best_asrtn is None or neb.difficulty < best_asrtn.difficulty):
-
             best_asrtn = neb
 
     # We now consider whether we can find a better NEN assertion. We
     # want to show that at the point where all the candidates in 'tail'
     # remain, 'first_in_tail' is not the candidate with the least number
     # of votes. This means that 'first_in_tail' should not be eliminated next.
-
-    # 'eliminated' is the list of candidates that are not mentioned in 'tail'.
-    eliminated = [c for c in contest.candidates if not c in node.tail]
-
     # Tally of the candidate 'first_in_tail'
+
     tally_first_in_tail = sum(
-        [vote_for_cand(first_in_tail, eliminated, blt) for blt in ballots]
+        [vote_for_cand(first_in_tail, eliminated, blt[contest.name]) for blt in ballots]
     )
 
     for later_cand in node.tail[1:]:
         tally_later_cand = sum(
-            [vote_for_cand(later_cand, eliminated, blt) for blt in ballots]
+            [vote_for_cand(later_cand, eliminated, blt[contest.name]) for blt in ballots]
         )
 
         margin = tally_first_in_tail - tally_later_cand
@@ -477,7 +473,7 @@ def find_best_audit(
             estimate = asn_func(margin)
 
             if best_asrtn is None or estimate < best_asrtn.difficulty:
-                nen = NENAssertion(str(contest), first_in_tail, later_cand, eliminated)
+                nen = NENAssertion(contest.name, first_in_tail, later_cand, eliminated)
 
                 nen.rules_out = node.tail
                 nen.difficulty = estimate
@@ -494,7 +490,7 @@ def find_best_audit(
 
 
 def perform_dive(
-    node: RaireNode, contest: Contest, ballots: CBS, neb_matrix, asn_func: Callable
+    node: RaireNode, contest: Contest, ballots: List[CVR], neb_matrix, asn_func: Callable
 ):
     """
     Input:
@@ -503,7 +499,7 @@ def perform_dive(
 
     contest: Contest   -  Contest being audited.
 
-    ballots: CBS       -  Details of reported ballots for this contest.
+    ballots: CVR      -  Details of reported ballots for this contest.
 
     neb_matrix         -  |Candidates| x |Candidates| dictionary where
                           neb_matrix[c1][c2] returns a NEBAssertion stating
@@ -535,7 +531,6 @@ def perform_dive(
         newn.best_ancestor = node
 
     find_best_audit(contest, ballots, neb_matrix, newn, asn_func)
-
     if not newn.expandable:
         if newn.estimate == np.inf and newn.best_ancestor.estimate == np.inf:
             # Audit is not possible: We have found a leaf and cannot
