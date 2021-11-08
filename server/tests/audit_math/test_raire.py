@@ -1,8 +1,13 @@
 import numpy as np
+import pytest
 
 from server.audit_math.sampler_contest import Contest
 from server.audit_math.raire import compute_raire_assertions
 from server.audit_math.raire_utils import NEBAssertion, NENAssertion
+from server.tests.audit_math.test_raire_utils import (
+    make_nen_assertion,
+    make_neb_assertion,
+)
 
 RAIRE_INPUT_DIR = "server/tests/audit_math/RaireData/Input/"
 RAIRE_OUTPUT_DIR = "server/tests/audit_math/RaireData/Output/"
@@ -145,16 +150,70 @@ def test_simple_contest():
     assert nen3.is_vote_for_loser(cvr1) == 0
 
 
-def test_aspen_wrong_winner():
-    input_file = RAIRE_INPUT_DIR + "SpecialCases/Aspen_2009_wrong_winner.raire"
-    output_file = RAIRE_OUTPUT_DIR + "SpecialCases/Aspen_2009_wrong_winner.raire.out"
-    agap = 0
-    run_test(input_file, output_file, agap)
+@pytest.fixture
+def contest():
+    yield Contest(
+        "Contest A",
+        {
+            "winner": 50000,
+            "loser": 30000,
+            "loser2": 20000,
+            "ballots": 100000,
+            "numWinners": 1,
+            "votesAllowed": 1,
+        },
+    )
 
 
-def test_berkeley_2010():
-    input_file = RAIRE_INPUT_DIR + "Berkeley_2010.raire"
-    output_file = RAIRE_OUTPUT_DIR + "Berkeley_2010.raire.out"
-    # TODO: figure out why this keeps it from going on forever
-    agap = 0  # 0.00001
-    run_test(input_file, output_file, agap)
+@pytest.fixture
+def ballots():
+    ballots = []
+    for _ in range(25000):
+        ballots.append({"Contest A": {"winner": 1, "loser": 2, "loser2": 3}})
+    for _ in range(25000):
+        ballots.append({"Contest A": {"winner": 1, "loser": 3, "loser2": 2}})
+    for _ in range(30000):
+        ballots.append({"Contest A": {"winner": 2, "loser": 1, "loser2": 3}})
+    for _ in range(20000):
+        ballots.append({"Contest A": {"winner": 2, "loser": 3, "loser2": 1}})
+
+    yield ballots
+
+
+@pytest.fixture
+def asn_func():
+    yield lambda m: 1 / m if m > 0 else np.inf
+
+
+def test_raire(contest, ballots, asn_func):
+    res = compute_raire_assertions(contest, ballots, "winner", asn_func)
+
+    expected = []
+
+    # we expect to show that winner is not eliminated before loser2
+    expected.append(
+        make_neb_assertion(contest, ballots, asn_func, "winner", "loser2", [])
+    )
+
+    # we expect loser to be eliminated next
+    expected.append(
+        make_nen_assertion(contest, ballots, asn_func, "winner", "loser", ["loser2"])
+    )
+
+    # sort by difficuly
+    expected = sorted(expected)
+
+    assert res == expected
+
+
+# def test_aspen_wrong_winner():
+#    input_file = RAIRE_INPUT_DIR + "SpecialCases/Aspen_2009_wrong_winner.raire"
+#    output_file = RAIRE_OUTPUT_DIR + "SpecialCases/Aspen_2009_wrong_winner.raire.out"
+#    agap = 0
+#    run_test(input_file, output_file, agap)
+#
+# def test_berkeley_2010():
+#    input_file = RAIRE_INPUT_DIR + "Berkeley_2010.raire"
+#    output_file = RAIRE_OUTPUT_DIR + "Berkeley_2010.raire.out"
+#    agap = 0
+#    run_test(input_file, output_file, agap)
