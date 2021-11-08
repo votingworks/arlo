@@ -25,7 +25,7 @@ import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
 import H2Title from '../../../Atoms/H2Title'
 import useAuditSettings from '../../useAuditSettings'
 import useContests from '../../useContests'
-import useJurisdictions from '../../useJurisdictions'
+import useJurisdictions, { IJurisdiction } from '../../useJurisdictions'
 import { testNumber } from '../../../utilities'
 import FormSection, {
   FormSectionDescription,
@@ -48,6 +48,8 @@ import { ErrorLabel } from '../../../Atoms/Form/_helpers'
 import useContestNameStandardizations, {
   IContestNameStandardizations,
 } from '../../useContestNameStandardizations'
+import { IContest } from '../../../../types'
+import { sum } from '../../../../utils/number'
 
 const percentFormatter = new Intl.NumberFormat(undefined, {
   style: 'percent',
@@ -127,10 +129,6 @@ const Review: React.FC<IProps> = ({
     contests.some(c => c.jurisdictionIds.includes(id))
   )
 
-  const jurisdictionIdToName = Object.fromEntries(
-    jurisdictions.map(({ id, name }) => [id, name])
-  )
-
   const cvrsUploaded =
     !['BALLOT_COMPARISON', 'HYBRID'].includes(auditSettings.auditType) ||
     allCvrsUploaded(participatingJurisdictions)
@@ -139,23 +137,14 @@ const Review: React.FC<IProps> = ({
     isFileProcessed(j.ballotManifest)
   ).length
 
-  const validateCustomSampleSize = (totalBallotsCast: string) => {
-    if (auditType === 'BATCH_COMPARISON') {
-      const totalBatches = participatingJurisdictions.reduce(
-        (a, { ballotManifest: { numBatches } }) =>
-          numBatches !== null ? a + numBatches : a,
-        0
-      )
-      return testNumber(
-        totalBatches,
-        `Must be less than or equal to: ${totalBatches} (the total number of batches in the contest)`
-      )
-    }
-    return testNumber(
-      Number(totalBallotsCast),
-      `Must be less than or equal to: ${totalBallotsCast} (the total number of ballots in the contest)`
+  const jurisdictionsById = Object.fromEntries(
+    jurisdictions.map(jurisdiction => [jurisdiction.id, jurisdiction])
+  )
+
+  const contestJurisdictions = (contest: IContest) =>
+    contest.jurisdictionIds.map(
+      jurisdictionId => jurisdictionsById[jurisdictionId]
     )
-  }
 
   return (
     <div>
@@ -269,7 +258,7 @@ const Review: React.FC<IProps> = ({
             onClose={() => setIsStandardizationsDialogOpen(false)}
             standardizations={standardizations}
             updateStandardizations={updateStandardizations}
-            jurisdictionIdToName={jurisdictionIdToName}
+            jurisdictionsById={jurisdictionsById}
           />
           <br />
         </>
@@ -377,9 +366,9 @@ const Review: React.FC<IProps> = ({
                   </tr>
                 </thead>
                 <tbody>
-                  {contest.jurisdictionIds.map(jurisdictionId => (
-                    <tr key={jurisdictionId}>
-                      <td>{jurisdictionIdToName[jurisdictionId]}</td>
+                  {contestJurisdictions(contest).map(jurisdiction => (
+                    <tr key={jurisdiction.id}>
+                      <td>{jurisdiction.name}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -477,13 +466,22 @@ const Review: React.FC<IProps> = ({
                   </FormSectionDescription>
                   {targetedContests.map(contest => {
                     const currentOption = values.sampleSizes[contest.id]
+                    const fullHandTallySize =
+                      auditType === 'BATCH_COMPARISON'
+                        ? sum(
+                            contestJurisdictions(contest).map(
+                              jurisdiction =>
+                                jurisdiction.ballotManifest.numBatches || 0
+                            )
+                          )
+                        : Number(contest.totalBallotsCast)
+
                     return (
                       <Card key={contest.id}>
                         <FormSectionDescription>
                           <H5>{contest.name}</H5>
                           {currentOption.size &&
-                            currentOption.size >=
-                              Number(contest.totalBallotsCast) && (
+                            currentOption.size >= fullHandTallySize && (
                               <Callout
                                 intent={
                                   auditType === 'BALLOT_POLLING' &&
@@ -648,8 +646,13 @@ const Review: React.FC<IProps> = ({
                                   )
                                 }
                                 type="number"
-                                validate={validateCustomSampleSize(
-                                  contest.totalBallotsCast
+                                validate={testNumber(
+                                  fullHandTallySize,
+                                  `Must be less than or equal to ${fullHandTallySize} (the total number of ${
+                                    auditType === 'BATCH_COMPARISON'
+                                      ? 'batches'
+                                      : 'ballots'
+                                  } in the contest)`
                                 )}
                                 disabled={locked}
                               />
@@ -702,7 +705,7 @@ interface IStandardizeContestNamesDialogProps {
   updateStandardizations: (
     standardizations: IContestNameStandardizations['standardizations']
   ) => Promise<boolean>
-  jurisdictionIdToName: { [jurisdictionId: string]: string }
+  jurisdictionsById: { [id: string]: IJurisdiction }
 }
 
 const StandardizeContestsTable = styled(HTMLTable)`
@@ -726,7 +729,7 @@ const StandardizeContestNamesDialog = ({
   onClose,
   standardizations,
   updateStandardizations,
-  jurisdictionIdToName,
+  jurisdictionsById,
 }: IStandardizeContestNamesDialogProps) => (
   <Dialog
     isOpen={isOpen}
@@ -764,7 +767,7 @@ const StandardizeContestNamesDialog = ({
                       Object.entries(jurisdictionStandardizations).map(
                         ([contestName, standardizedCvrContestName]) => (
                           <tr key={jurisdictionId + contestName}>
-                            <td>{jurisdictionIdToName[jurisdictionId]}</td>
+                            <td>{jurisdictionsById[jurisdictionId].name}</td>
                             <td>{contestName}</td>
                             <td>
                               <HTMLSelect
