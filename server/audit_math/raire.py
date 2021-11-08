@@ -246,7 +246,7 @@ def compute_raire_assertions(
     for node in frontier.nodes:
         skip = False
         for assrtn in assertions:
-            if node.best_assertion.same_as(assrtn):
+            if node.best_assertion == assrtn:
                 skip = True
                 break
 

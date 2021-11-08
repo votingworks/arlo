@@ -74,14 +74,13 @@ def run_test(input_file, output_file, agap):
             contests[cid] = cands
             winners[cid] = toks[-1]
 
-        cvrs = {}
+        cvrs = []
         result = {}
 
         for line in range(ncontests + 1, len(lines)):
             toks = lines[line].strip().split(",")
 
             cid = toks[0]
-            bid = toks[1]
             prefs = toks[2:]
 
             if prefs != []:
@@ -97,10 +96,7 @@ def run_test(input_file, output_file, agap):
                 else:
                     ballot[contest] = 0
 
-            if not bid in cvrs:
-                cvrs[bid] = {cid: ballot}
-            else:
-                cvrs[bid][cid] = ballot
+            cvrs.append({cid: ballot})
 
         for contest, votes in contests.items():
             con = Contest(contest, votes)

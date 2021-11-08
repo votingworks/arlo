@@ -5,7 +5,6 @@ import numpy as np
 from .sampler_contest import CVR, Contest
 
 
-
 def ranking(cand: str, ballot: Dict[str, int]):
     """
     Input:
@@ -282,7 +281,6 @@ class NENAssertion(RaireAssertion):
             and self.eliminated == other.eliminated
         )
 
-
     def __repr__(self):
         return f"NEN,Winner,{self.winner},Loser,{self.loser},Eliminated," + ",".join(
             self.eliminated
@@ -391,7 +389,11 @@ class RaireFrontier:
 
 
 def find_best_audit(
-    contest: Contest, ballots: List[CVR], neb_matrix, node: RaireNode, asn_func: Callable
+    contest: Contest,
+    ballots: List[CVR],
+    neb_matrix,
+    node: RaireNode,
+    asn_func: Callable,
 ):
     """
     Input:
@@ -434,7 +436,6 @@ def find_best_audit(
         if neb and (best_asrtn is None or neb.difficulty < best_asrtn.difficulty):
             best_asrtn = neb
 
-
     # 'eliminated' is the list of candidates that are not mentioned in 'tail'.
     eliminated = [c for c in contest.candidates if not c in node.tail]
 
@@ -455,12 +456,20 @@ def find_best_audit(
     # Tally of the candidate 'first_in_tail'
 
     tally_first_in_tail = sum(
-        [vote_for_cand(first_in_tail, eliminated, blt[contest.name]) for blt in ballots]
+        [
+            vote_for_cand(first_in_tail, eliminated, blt[contest.name])
+            for blt in ballots
+            if contest.name in blt
+        ]
     )
 
     for later_cand in node.tail[1:]:
         tally_later_cand = sum(
-            [vote_for_cand(later_cand, eliminated, blt[contest.name]) for blt in ballots]
+            [
+                vote_for_cand(later_cand, eliminated, blt[contest.name])
+                for blt in ballots
+                if contest.name in blt
+            ]
         )
 
         margin = tally_first_in_tail - tally_later_cand
@@ -490,7 +499,11 @@ def find_best_audit(
 
 
 def perform_dive(
-    node: RaireNode, contest: Contest, ballots: List[CVR], neb_matrix, asn_func: Callable
+    node: RaireNode,
+    contest: Contest,
+    ballots: List[CVR],
+    neb_matrix,
+    asn_func: Callable,
 ):
     """
     Input:
