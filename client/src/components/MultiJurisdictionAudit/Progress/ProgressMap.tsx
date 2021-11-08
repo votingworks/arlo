@@ -160,6 +160,7 @@ const Map = ({
             return 'success'
           case JurisdictionProgressStatus.UPLOADS_FAILED:
             return 'danger'
+          case JurisdictionProgressStatus.UPLOADS_IN_PROGRESS:
           case JurisdictionProgressStatus.AUDIT_IN_PROGRESS:
             return 'progress'
           case JurisdictionProgressStatus.UPLOADS_NOT_STARTED:
@@ -326,6 +327,9 @@ const Map = ({
               </MapLabelsRow>
               <MapLabelsRow>
                 <MapLabelsBoxes className="danger" /> File upload failed
+              </MapLabelsRow>
+              <MapLabelsRow>
+                <MapLabelsBoxes className="progress" /> Uploads in progress
               </MapLabelsRow>
               <MapLabelsRow>
                 <MapLabelsBoxes className="gray" /> No files uploaded

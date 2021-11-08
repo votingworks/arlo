@@ -91,12 +91,7 @@ const Progress: React.FC<IProps> = ({
       Header: 'Status',
       // eslint-disable-next-line react/display-name
       accessor: jurisdiction => {
-        const {
-          currentRoundStatus,
-          ballotManifest,
-          batchTallies,
-          cvrs,
-        } = jurisdiction
+        const { ballotManifest, batchTallies, cvrs } = jurisdiction
 
         const Status = (props: Omit<ITagProps, 'minimal'>) => (
           <StatusTag
@@ -113,6 +108,7 @@ const Progress: React.FC<IProps> = ({
         const numComplete = files.filter(
           f => f && f.status === FileProcessingStatus.PROCESSED
         ).length
+        const filesUploadedText = `${numComplete}/${files.length} files uploaded`
 
         const jurisdictionStatus = getJurisdictionStatus(jurisdiction)
         switch (jurisdictionStatus) {
@@ -121,7 +117,7 @@ const Progress: React.FC<IProps> = ({
               <Status intent="success">
                 {auditType === 'BALLOT_POLLING'
                   ? 'Manifest uploaded'
-                  : `${numComplete}/${files.length} files uploaded`}
+                  : filesUploadedText}
               </Status>
             )
           case JurisdictionProgressStatus.UPLOADS_FAILED:
@@ -132,22 +128,22 @@ const Progress: React.FC<IProps> = ({
                   : 'Upload failed'}
               </Status>
             )
-          case JurisdictionProgressStatus.AUDIT_IN_PROGRESS:
-            return <Status intent="warning">In progress</Status>
+          case JurisdictionProgressStatus.UPLOADS_IN_PROGRESS:
+            return <Status intent="warning">{filesUploadedText}</Status>
           case JurisdictionProgressStatus.UPLOADS_NOT_STARTED:
             return (
               <Status>
-                {currentRoundStatus
-                  ? 'Not started'
-                  : auditType === 'BALLOT_POLLING'
+                {auditType === 'BALLOT_POLLING'
                   ? 'No manifest uploaded'
-                  : `${numComplete}/${files.length} files uploaded`}
+                  : filesUploadedText}
               </Status>
             )
+          case JurisdictionProgressStatus.AUDIT_IN_PROGRESS:
+            return <Status intent="warning">In progress</Status>
           case JurisdictionProgressStatus.AUDIT_COMPLETE:
             return <Status intent="success">Complete</Status>
           case JurisdictionProgressStatus.AUDIT_NOT_STARTED:
-            return <Status intent="success">Not started</Status>
+            return <Status>Not started</Status>
           default:
             return null
         }
