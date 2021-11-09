@@ -188,7 +188,7 @@ const RoundStatusSection = ({
     const jurisdictionStatus =
       jurisdiction.currentRoundStatus && jurisdiction.currentRoundStatus.status
 
-    if (round.sampledAllBallots) {
+    if (round.isFullHandTally) {
       if (jurisdictionStatus === JurisdictionRoundStatus.COMPLETE)
         return (
           <Formik

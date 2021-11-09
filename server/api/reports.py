@@ -17,8 +17,8 @@ from ..util.group_by import group_by
 from ..audit_math import supersimple, sampler_contest, macro
 from ..api.rounds import (
     cvrs_for_contest,
+    is_full_hand_tally,
     sampled_ballot_interpretations_to_cvrs,
-    sampled_all_ballots,
     samples_not_found_by_round,
 )
 from ..api.ballot_manifest import hybrid_contest_total_ballots
@@ -445,7 +445,7 @@ def full_hand_tally_result_rows(election: Election, jurisdiction: Jurisdiction =
 def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
     # Special case: if we sampled all ballots, don't show this section
     rounds = list(election.rounds)
-    if len(rounds) > 0 and sampled_all_ballots(rounds[0], election):
+    if len(rounds) > 0 and is_full_hand_tally(rounds[0], election):
         return full_hand_tally_result_rows(election, jurisdiction)
 
     rows = [heading("SAMPLED BALLOTS")]

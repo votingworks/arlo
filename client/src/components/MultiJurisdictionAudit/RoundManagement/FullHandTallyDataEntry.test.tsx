@@ -91,9 +91,7 @@ describe('full hand tally data entry', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderWithRouter(
-        <FullHandTallyDataEntry
-          round={roundMocks.sampledAllBallotsIncomplete}
-        />,
+        <FullHandTallyDataEntry round={roundMocks.fullHandTallyIncomplete} />,
         {
           route: '/election/1/jurisdiction/1',
         }
@@ -110,9 +108,7 @@ describe('full hand tally data entry', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderWithRouter(
-        <FullHandTallyDataEntry
-          round={roundMocks.sampledAllBallotsIncomplete}
-        />,
+        <FullHandTallyDataEntry round={roundMocks.fullHandTallyIncomplete} />,
         {
           route: '/election/1/jurisdiction/1',
         }
@@ -145,9 +141,7 @@ describe('full hand tally data entry', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderWithRouter(
-        <FullHandTallyDataEntry
-          round={roundMocks.sampledAllBallotsIncomplete}
-        />,
+        <FullHandTallyDataEntry round={roundMocks.fullHandTallyIncomplete} />,
         {
           route: '/election/1/jurisdiction/1',
         }
@@ -190,9 +184,7 @@ describe('full hand tally data entry', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderWithRouter(
-        <FullHandTallyDataEntry
-          round={roundMocks.sampledAllBallotsIncomplete}
-        />,
+        <FullHandTallyDataEntry round={roundMocks.fullHandTallyIncomplete} />,
         {
           route: '/election/1/jurisdiction/1',
         }
@@ -212,9 +204,7 @@ describe('full hand tally data entry', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderWithRouter(
-        <FullHandTallyDataEntry
-          round={roundMocks.sampledAllBallotsIncomplete}
-        />,
+        <FullHandTallyDataEntry round={roundMocks.fullHandTallyIncomplete} />,
         {
           route: '/election/1/jurisdiction/1',
         }
@@ -241,9 +231,7 @@ describe('full hand tally data entry', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderWithRouter(
-        <FullHandTallyDataEntry
-          round={roundMocks.sampledAllBallotsIncomplete}
-        />,
+        <FullHandTallyDataEntry round={roundMocks.fullHandTallyIncomplete} />,
         {
           route: '/election/1/jurisdiction/1',
         }
@@ -278,9 +266,7 @@ describe('full hand tally data entry', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderWithRouter(
-        <FullHandTallyDataEntry
-          round={roundMocks.sampledAllBallotsIncomplete}
-        />,
+        <FullHandTallyDataEntry round={roundMocks.fullHandTallyIncomplete} />,
         {
           route: '/election/1/jurisdiction/1',
         }
@@ -312,9 +298,7 @@ describe('full hand tally data entry', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderWithRouter(
-        <FullHandTallyDataEntry
-          round={roundMocks.sampledAllBallotsIncomplete}
-        />,
+        <FullHandTallyDataEntry round={roundMocks.fullHandTallyIncomplete} />,
         {
           route: '/election/1/jurisdiction/1',
         }
