@@ -63,7 +63,7 @@ def test_support_get_organization(client: FlaskClient, org_id: str, election_id:
                     "id": election_id,
                     "auditName": "Test Audit test_support_get_organization",
                     "auditType": "BALLOT_POLLING",
-                    "online": False,
+                    "online": True,
                 }
             ],
             "auditAdmins": [
@@ -140,7 +140,7 @@ def test_support_get_election(
             "id": election_id,
             "auditName": "Test Audit test_support_get_election",
             "auditType": "BALLOT_POLLING",
-            "online": False,
+            "online": True,
             "jurisdictions": [
                 {"id": jurisdiction_ids[0], "name": "J1",},
                 {"id": jurisdiction_ids[1], "name": "J2",},

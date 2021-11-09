@@ -66,7 +66,7 @@ def test_create_election(client: FlaskClient, org_id: str):
     assert election_id, response
     election = Election.query.get(election_id)
     assert election.organization_id == org_id
-    assert election.online is False
+    assert election.online is True
 
 
 def test_create_election_new_batch_comparison_audit(client: FlaskClient, org_id: str):
