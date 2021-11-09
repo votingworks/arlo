@@ -21,6 +21,7 @@ export const roundMocks: {
     startedAt: '2020-09-14T17:35:19.482Z',
     endedAt: null,
     isAuditComplete: false,
+    needsFullHandTally: false,
     isFullHandTally: false,
     drawSampleTask: {
       status: FileProcessingStatus.PROCESSED,
@@ -34,6 +35,7 @@ export const roundMocks: {
     roundNum: 1,
     startedAt: '2020-09-14T17:35:19.482Z',
     endedAt: '2020-09-14T17:35:19.482Z',
+    needsFullHandTally: false,
     isAuditComplete: true,
     isFullHandTally: false,
     drawSampleTask: {
@@ -49,6 +51,7 @@ export const roundMocks: {
     startedAt: '2020-09-14T17:35:19.482Z',
     endedAt: null,
     isAuditComplete: false,
+    needsFullHandTally: true,
     isFullHandTally: true,
     drawSampleTask: {
       status: FileProcessingStatus.PROCESSED,

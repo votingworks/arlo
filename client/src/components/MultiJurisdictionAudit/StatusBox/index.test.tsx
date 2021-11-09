@@ -326,6 +326,27 @@ describe('StatusBox', () => {
         expect(downloadReportButton).toBeEnabled()
       })
     })
+
+    it('shows a message when a full hand tally is required', () => {
+      render(
+        <Router>
+          <AuditAdminStatusBox
+            rounds={[
+              { ...roundMocks.singleIncomplete[0], needsFullHandTally: true },
+            ]}
+            startNextRound={jest.fn()}
+            undoRoundStart={jest.fn()}
+            jurisdictions={jurisdictionMocks.noneStarted}
+            contests={contestMocks.filledTargeted.contests}
+            auditSettings={auditSettings.all}
+          />
+        </Router>
+      )
+      screen.getByText('Full hand tally required')
+      screen.getByText(
+        'One or more target contests require a full hand tally to complete the audit.'
+      )
+    })
   })
 
   describe('JurisdictionAdminStatusBox', () => {
@@ -698,6 +719,30 @@ describe('StatusBox', () => {
       )
       screen.getByText('The audit has not started.')
       screen.getByText('1/2 files successfully uploaded.')
+    })
+
+    it(`shows a message for full hand tally mode`, () => {
+      render(
+        <Router>
+          <JurisdictionAdminStatusBox
+            rounds={[
+              { ...roundMocks.singleIncomplete[0], isFullHandTally: true },
+            ]}
+            auditBoards={auditBoardMocks.unfinished}
+            ballotManifest={{
+              file: null,
+              processing: fileProcessingMocks.processed,
+            }}
+            batchTallies={null}
+            cvrs={null}
+            auditType="BALLOT_POLLING"
+            auditName="Test Audit"
+            isAuditOnline
+          />
+        </Router>
+      )
+      screen.getByText('Round 1 of the audit is in progress.')
+      screen.getByText('Auditing ballots.')
     })
   })
 })
