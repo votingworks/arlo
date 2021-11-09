@@ -46,21 +46,39 @@ export const settingsMock: {
   },
 }
 
+const taskCompleteMock = {
+  status: FileProcessingStatus.PROCESSED,
+  startedAt: '2019-07-18T16:34:07.000+00:00',
+  completedAt: '2019-07-18T16:35:07.000+00:00',
+  error: null,
+}
+
 export const sampleSizeMock = {
-  sampleSizes: {
-    'contest-id': [
-      { prob: 0.54, size: 20, key: 'asn' },
-      { prob: 0.7, size: 21, key: '0.7' },
-      { prob: 0.5, size: 22, key: '0.5' },
-      { prob: 0.9, size: 31, key: '0.9' },
-    ],
+  batchComparison: {
+    sampleSizes: {
+      'contest-id': [{ prob: null, size: 4, key: 'macro' }],
+    },
+    selected: null,
+    task: taskCompleteMock,
   },
-  selected: null,
-  task: {
-    status: FileProcessingStatus.PROCESSED,
-    startedAt: '2019-07-18T16:34:07.000+00:00',
-    completedAt: '2019-07-18T16:35:07.000+00:00',
-    error: null,
+  ballotComparison: {
+    sampleSizes: {
+      'contest-id': [{ prob: null, size: 15, key: 'supersimple' }],
+    },
+    selected: null,
+    task: taskCompleteMock,
+  },
+  ballotPolling: {
+    sampleSizes: {
+      'contest-id': [
+        { prob: 0.54, size: 20, key: 'asn' },
+        { prob: 0.7, size: 21, key: '0.7' },
+        { prob: 0.5, size: 22, key: '0.5' },
+        { prob: 0.9, size: 31, key: '0.9' },
+      ],
+    },
+    selected: null,
+    task: taskCompleteMock,
   },
 }
 
