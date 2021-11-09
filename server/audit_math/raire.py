@@ -13,6 +13,178 @@ from .raire_utils import (
 )
 
 
+def make_neb_matrix(
+        contest, cvrs: List[Dict[str, int]], asn_func
+) -> Dict[str, Dict[str, Optional[RaireAssertion]]]:
+    """
+    Builds the NEB matrix for use by find_best_audit.
+
+    Input:
+        contest     - the contest being audited
+        cvrs        - a list of CVRS to be audited
+        asn_func    - the asn function to find assertion difficulty
+    Output:
+        neb_matrix  - a dict of dicts mapping candidate pairs to assertions
+    """
+    print(cvrs[0])
+    nebs = {c: {d: None for d in contest.candidates} for c in contest.candidates}
+
+    for cand in contest.candidates:
+        for other in contest.candidates:
+            if cand == other:
+                continue
+
+            asrn: NEBAssertion = NEBAssertion(contest.name, cand, other)
+
+            tally_cand: int = 0
+            tally_other: int = 0
+            for cvr in cvrs:
+                if cvr:
+                    tally_cand += asrn.is_vote_for_winner(cvr)
+                    tally_other += asrn.is_vote_for_loser(cvr)
+
+            if tally_cand > tally_other:
+                asrn.margin = tally_cand - tally_other
+                asrn.difficulty = asn_func(asrn.margin)
+
+                asrn.votes_for_winner = tally_cand
+                asrn.votes_for_loser = tally_other
+
+                nebs[cand][other] = asrn
+
+    return nebs
+
+def make_frontier(contest, cvrs, winner, nebs, asn_func) -> RaireFrontier:
+    """
+    Constructs the frontier for the search for the best audit
+
+    """
+    frontier = RaireFrontier()
+
+    # Our frontier initially has a node for each alternate election outcome
+    # tail of size two. The last candidate in the tail is the ultimate winner.
+    for cand in contest.candidates:
+        if cand == winner:
+            continue
+
+        for other in contest.candidates:
+            if cand == other:
+                continue
+
+            newn = RaireNode([other, cand])
+            newn.expandable =  len(contest.candidates) > 2
+
+            find_best_audit(contest, cvrs, nebs, newn, asn_func)
+            frontier.insert_node(newn)
+
+    return frontier
+
+def find_assertions(contest, cvrs, nebs, asn_func, frontier, lowerbound, agap):
+    """
+    Find the best assertions for frontier, and mutate frontier accordingly.
+
+    """
+    audit_possible = True
+    while audit_possible:
+        # Check whether we can stop searching for assertions.
+        max_on_frontier = max([node.estimate for node in frontier.nodes])
+
+        if agap > 0 and lowerbound > 0 and max_on_frontier - lowerbound <= agap:
+            # We can rule out all branches of the tree with assertions that
+            # have a difficulty that is <= lowerbound.
+            return True
+
+        to_expand = frontier.nodes[0]
+
+        # We can also stop searching if all nodes on our frontier are leaves.
+        if not to_expand.expandable:
+            return True
+
+        frontier.nodes.pop(0)
+
+        if to_expand.best_ancestor and to_expand.best_ancestor.estimate <= lowerbound:
+            frontier.replace_descendents(to_expand.best_ancestor)
+            continue
+
+        if to_expand.estimate <= lowerbound:
+            to_expand.expandable = False
+            frontier.insert_node(to_expand)
+            continue
+
+        # --------------------------------------------------------------------
+        # "Dive" straight from "to_expand" down to a leaf -- one of its
+        # decendents -- and find the least cost assertion to rule out the
+        # branch of the alternate outcomes tree that ends in that leaf. We
+        # know that this assertion will be part of the audit, as we have
+        # to rule out all branches.
+        dive_lb = perform_dive(to_expand, contest, cvrs, nebs, asn_func)
+
+        if dive_lb == np.inf:
+            # The particular branch we dived along cannot be ruled out
+            # with an assertion.
+            return False
+
+        # We can use our new knowledge of the "best" way to rule out
+        # the branch to update our "lowerbound" on the overall "difficulty"
+        # of the eventual audit.
+        lowerbound = max(lowerbound, dive_lb)
+
+        if to_expand.best_ancestor and to_expand.best_ancestor.estimate <= lowerbound:
+            frontier.replace_descendents(to_expand.best_ancestor)
+            continue
+
+        if to_expand.estimate <= lowerbound:
+            to_expand.expandable = False
+            frontier.insert_node(to_expand)
+            continue
+        # --------------------------------------------------------------------
+
+        # Find children of current node, and find the best assertions that
+        # could be used to prune those nodes from the tree of alternate
+        # outcomes.
+        for cand in contest.candidates:
+            if not cand in to_expand.tail:
+                newn = RaireNode([cand] + to_expand.tail)
+                newn.expandable = not len(newn.tail) == len(contest.candidates)
+
+                # Assign a 'best ancestor' to the new node.
+                newn.best_ancestor = (
+                    to_expand.best_ancestor
+                    if to_expand.best_ancestor
+                    and to_expand.best_ancestor.estimate <= to_expand.estimate
+                    else to_expand
+                )
+
+                find_best_audit(contest, cvrs, nebs, newn, asn_func)
+
+                if not newn.expandable:
+                    # 'newn' is a leaf.
+                    if (
+                        newn.estimate == np.inf
+                        and newn.best_ancestor
+                        and newn.best_ancestor.estimate == np.inf
+                    ):
+                        return False
+
+                    if (
+                        newn.best_ancestor
+                        and newn.best_ancestor.estimate <= newn.estimate
+                    ):
+                        lowerbound = max(lowerbound, newn.best_ancestor.estimate)
+                        frontier.replace_descendents(newn.best_ancestor)
+
+                    else:
+                        lowerbound = max(lowerbound, newn.estimate)
+                        frontier.insert_node(newn)
+
+                else:
+                    frontier.insert_node(newn)
+
+    # Return whether or not we think the audit is possible, after mutating
+    # frontier.
+    return audit_possible
+
+
 def compute_raire_assertions(
     contest: Contest, cvrs: List[CVR], winner: str, asn_func: Callable, agap=0,
 ) -> list:
@@ -60,37 +232,14 @@ def compute_raire_assertions(
         an alternate candidate to 'winner' wins, can be ruled out.
     """
 
-    ncands = len(contest.candidates)
+    print(cvrs[0])
 
     # First look at all of the NEB assertions that could be formed for
     # this contest. We will refer to this matrix when examining the best
     # way to prune branches of the "alternate outcome space".
-    nebs: Dict[str, Dict[str, Optional[NEBAssertion]]] = {
-        c: {d: None for d in contest.candidates} for c in contest.candidates
-    }
-
-    for cand in contest.candidates:
-        for other in contest.candidates:
-            if cand == other:
-                continue
-
-            asrn: NEBAssertion = NEBAssertion(contest.name, cand, other)
-
-            tally_cand: int = 0
-            tally_other: int = 0
-            for cvr in cvrs:
-                if cvr:
-                    tally_cand += asrn.is_vote_for_winner(cvr)
-                    tally_other += asrn.is_vote_for_loser(cvr)
-
-            if tally_cand > tally_other:
-                asrn.margin = tally_cand - tally_other
-                asrn.difficulty = asn_func(asrn.margin)
-
-                asrn.votes_for_winner = tally_cand
-                asrn.votes_for_loser = tally_other
-
-                nebs[cand][other] = asrn
+    nebs: Dict[str, Dict[str, Optional[NEBAssertion]]] = make_neb_matrix(
+        contest, cvrs, asn_func
+    )
 
     # The RAIRE algorithm progressively searches through the space of
     # alternate election outcomes, viewing this space as a tree. We store
@@ -100,143 +249,17 @@ def compute_raire_assertions(
     # winner. All candidates not mentioned in this tail are assumed to have
     # already been eliminated.
 
+    # Construct initial frontier.
+    frontier = make_frontier(contest, cvrs, "winner", nebs, asn_func)
+
     # This is a running lowerbound on the overall difficulty of the
     # election audit.
     lowerbound = -10.0
 
-    # Construct initial frontier.
-    frontier = RaireFrontier()
-
-    # Our frontier initially has a node for each alternate election outcome
-    # tail of size two. The last candidate in the tail is the ultimate winner.
-    for cand in contest.candidates:
-        if cand == winner:
-            continue
-
-        for other in contest.candidates:
-            if cand == other:
-                continue
-
-            newn = RaireNode([other, cand])
-            newn.expandable = ncands > 2
-
-            find_best_audit(contest, cvrs, nebs, newn, asn_func)
-            frontier.insert_node(newn)
-
-    # Flag to keep track of whether a full manual recount will be required
-    audit_not_possible = False
-
     # -------------------- Find Assertions -----------------------------------
-    while not audit_not_possible:
-        # Check whether we can stop searching for assertions.
-        max_on_frontier = max([node.estimate for node in frontier.nodes])
-
-        if agap > 0 and lowerbound > 0 and max_on_frontier - lowerbound <= agap:
-            # We can rule out all branches of the tree with assertions that
-            # have a difficulty that is <= lowerbound.
-            break
-
-        to_expand = frontier.nodes[0]
-
-        # We can also stop searching if all nodes on our frontier are leaves.
-        if not to_expand.expandable:
-            break
-
-        frontier.nodes.pop(0)
-
-        if to_expand.best_ancestor and to_expand.best_ancestor.estimate <= lowerbound:
-            frontier.replace_descendents(to_expand.best_ancestor)
-            continue
-
-        if to_expand.estimate <= lowerbound:
-            to_expand.expandable = False
-            frontier.insert_node(to_expand)
-            continue
-
-        # --------------------------------------------------------------------
-        # "Dive" straight from "to_expand" down to a leaf -- one of its
-        # decendents -- and find the least cost assertion to rule out the
-        # branch of the alternate outcomes tree that ends in that leaf. We
-        # know that this assertion will be part of the audit, as we have
-        # to rule out all branches.
-        dive_lb = perform_dive(to_expand, contest, cvrs, nebs, asn_func)
-
-        if dive_lb == np.inf:
-            # The particular branch we dived along cannot be ruled out
-            # with an assertion.
-            audit_not_possible = True
-            break
-
-        # We can use our new knowledge of the "best" way to rule out
-        # the branch to update our "lowerbound" on the overall "difficulty"
-        # of the eventual audit.
-        lowerbound = max(lowerbound, dive_lb)
-
-        if to_expand.best_ancestor and to_expand.best_ancestor.estimate <= lowerbound:
-            frontier.replace_descendents(to_expand.best_ancestor)
-
-            continue
-
-        if to_expand.estimate <= lowerbound:
-            to_expand.expandable = False
-            frontier.insert_node(to_expand)
-            continue
-        # --------------------------------------------------------------------
-
-        # Find children of current node, and find the best assertions that
-        # could be used to prune those nodes from the tree of alternate
-        # outcomes.
-        for cand in contest.candidates:
-            if not cand in to_expand.tail:
-                newn = RaireNode([cand] + to_expand.tail)
-                newn.expandable = not len(newn.tail) == ncands
-
-                # Assign a 'best ancestor' to the new node.
-                newn.best_ancestor = (
-                    to_expand.best_ancestor
-                    if to_expand.best_ancestor
-                    and to_expand.best_ancestor.estimate <= to_expand.estimate
-                    else to_expand
-                )
-
-                find_best_audit(contest, cvrs, nebs, newn, asn_func)
-
-                if not newn.expandable:
-                    # 'newn' is a leaf.
-                    if (
-                        newn.estimate == np.inf
-                        and newn.best_ancestor
-                        and newn.best_ancestor.estimate == np.inf
-                    ):
-
-                        audit_not_possible = True
-
-                        break
-
-                    if (
-                        newn.best_ancestor
-                        and newn.best_ancestor.estimate <= newn.estimate
-                    ):
-                        lowerbound = max(lowerbound, newn.best_ancestor.estimate)
-                        frontier.replace_descendents(newn.best_ancestor)
-
-                    else:
-                        lowerbound = max(lowerbound, newn.estimate)
-                        frontier.insert_node(newn)
-
-                else:
-                    frontier.insert_node(newn)
-
-            if audit_not_possible:
-                break
-
-        if audit_not_possible:
-            break
-
-    # If a full recount is required, return empty list.
-    if audit_not_possible:
+    if not find_assertions(contest, cvrs, nebs, asn_func, frontier, lowerbound, agap):
+        # If the audit isn't possible, we need a full recount
         return []
-
     # ------------------------------------------------------------------------
     assertions: List[RaireAssertion] = []
 
@@ -252,6 +275,7 @@ def compute_raire_assertions(
 
         if not skip:
             assertions.append(node.best_assertion)
+
 
     # Assertions will be sorted in order of greatest to least difficulty.
     sorted_assertions = sorted(assertions)

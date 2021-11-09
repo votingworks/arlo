@@ -5,6 +5,7 @@ import numpy as np
 from .sampler_contest import CVR, Contest
 
 
+# TODO Rationalize teh typing.
 def ranking(cand: str, ballot: Dict[str, int]):
     """
     Input:
@@ -38,7 +39,6 @@ def vote_for_cand(cand: str, eliminated: List[str], ballot: Dict[str, int]):
         in the context where candidates in 'eliminated' have been eliminated.
         Otherwise, return 0 as the 'ballot' is not a vote for 'cand'.
     """
-
     # If 'cand' is not in the set of candidates assumed still standing,
     # 'cand' does not get this vote.
     if cand in eliminated:
@@ -159,18 +159,12 @@ class NEBAssertion(RaireAssertion):
     prior to 'loser'.
     """
 
-    def is_vote_for_winner(self, cvr: CVR):
-        if not self.contest in cvr:
-            return 0
+    def is_vote_for_winner(self, cvr: Dict[str, int]):
+        return 1 if ranking(self.winner, cvr) == 1 else 0
 
-        return 1 if ranking(self.winner, cvr[self.contest]) == 1 else 0
-
-    def is_vote_for_loser(self, cvr: CVR):
-        if not self.contest in cvr:
-            return 0
-
-        w_idx = ranking(self.winner, cvr[self.contest])
-        l_idx = ranking(self.loser, cvr[self.contest])
+    def is_vote_for_loser(self, cvr: Dict[str, int]):
+        w_idx = ranking(self.winner, cvr)
+        l_idx = ranking(self.loser, cvr)
 
         return (
             1 if l_idx != -1 and (w_idx == -1 or (w_idx != -1 and l_idx < w_idx)) else 0
@@ -245,17 +239,11 @@ class NENAssertion(RaireAssertion):
 
         self.eliminated = eliminated
 
-    def is_vote_for_winner(self, cvr: CVR):
-        if not self.contest in cvr:
-            return 0
+    def is_vote_for_winner(self, cvr: Dict[str, int]):
+        return vote_for_cand(self.winner, self.eliminated, cvr)
 
-        return vote_for_cand(self.winner, self.eliminated, cvr[self.contest])
-
-    def is_vote_for_loser(self, cvr: CVR):
-        if not self.contest in cvr:
-            return 0
-
-        return vote_for_cand(self.loser, self.eliminated, cvr[self.contest])
+    def is_vote_for_loser(self, cvr: Dict[str, int]):
+        return vote_for_cand(self.loser, self.eliminated, cvr)
 
     def subsumes(self, other: RaireAssertion):
         """
@@ -329,6 +317,15 @@ class RaireNode:
 
         return self.tail[len1 - len2 :] == node.tail
 
+    def __eq__(self, other):
+        return (
+            self.estimate == other.estimate \
+            and self.best_assertion == other.best_assertion \
+            and self.best_ancestor == other.best_ancestor \
+            and self.tail == other.tail \
+        )
+
+
     def __repr__(self):
         return f"tail: {self.tail}\nestimate: {self.estimate}\nbest_assertion: {self.best_assertion}\nbest_ancestor:\n\n{self.best_ancestor}"
 
@@ -387,10 +384,13 @@ class RaireFrontier:
 
         self.insert_node(node)
 
+    def __eq__(self, other):
+        return self.nodes == other.nodes
+
 
 def find_best_audit(
     contest: Contest,
-    ballots: List[CVR],
+    ballots: List[Dict[str, int]],
     neb_matrix,
     node: RaireNode,
     asn_func: Callable,
@@ -457,18 +457,16 @@ def find_best_audit(
 
     tally_first_in_tail = sum(
         [
-            vote_for_cand(first_in_tail, eliminated, blt[contest.name])
+            vote_for_cand(first_in_tail, eliminated, blt)
             for blt in ballots
-            if contest.name in blt
         ]
     )
 
     for later_cand in node.tail[1:]:
         tally_later_cand = sum(
             [
-                vote_for_cand(later_cand, eliminated, blt[contest.name])
+                vote_for_cand(later_cand, eliminated, blt)
                 for blt in ballots
-                if contest.name in blt
             ]
         )
 
