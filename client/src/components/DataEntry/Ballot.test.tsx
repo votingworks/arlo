@@ -11,6 +11,7 @@ import { Router } from 'react-router-dom'
 import { createMemoryHistory } from 'history'
 import Ballot from './Ballot'
 import { contest, dummyBallots } from './_mocks'
+import { findAndCloseToast } from '../testUtilities'
 
 const history = createMemoryHistory()
 
@@ -87,7 +88,6 @@ describe('Ballot', () => {
     userEvent.click(
       within(dialog).getByRole('button', { name: 'Change Selections' })
     )
-
     await waitFor(() => {
       expect(dialog).not.toBeInTheDocument()
     })
@@ -223,6 +223,8 @@ describe('Ballot', () => {
     userEvent.click(
       within(dialog).getByRole('button', { name: 'Confirm Selections' })
     )
+
+    // await findAndCloseToast('Success! Now showing the next ballot to audit.') // should work but doesn't
 
     await waitFor(() => {
       expect(dialog).not.toBeInTheDocument()
