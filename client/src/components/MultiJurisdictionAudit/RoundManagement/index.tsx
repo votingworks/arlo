@@ -18,10 +18,10 @@ import useAuditSettingsJurisdictionAdmin from './useAuditSettingsJurisdictionAdm
 import BatchRoundDataEntry from './BatchRoundDataEntry'
 import { useAuthDataContext, IJurisdictionAdmin } from '../../UserContext'
 import { IRound } from '../useRoundsAuditAdmin'
-import OfflineBatchRoundDataEntry from './OfflineBatchRoundDataEntry'
 import { IAuditSettings } from '../useAuditSettings'
 import AsyncButton from '../../Atoms/AsyncButton'
 import useSampleCount from './useBallots'
+import FullHandTallyDataEntry from './FullHandTallyDataEntry'
 
 const PaddedWrapper = styled(Wrapper)`
   flex-direction: column;
@@ -148,7 +148,7 @@ const RoundManagement = ({
         ) : auditSettings.online ? (
           <RoundProgress auditBoards={auditBoards} />
         ) : round.sampledAllBallots ? (
-          <OfflineBatchRoundDataEntry round={round} />
+          <FullHandTallyDataEntry round={round} />
         ) : (
           <RoundDataEntry round={round} />
         )}

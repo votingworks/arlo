@@ -143,13 +143,13 @@ const JurisdictionDetail = ({
   </Dialog>
 )
 
-const unfinalizeOfflineBatchResults = async (
+const unfinalizeFullHandTallyResults = async (
   electionId: string,
   jurisdictionId: string,
   roundId: string
 ): Promise<boolean> => {
   return !!(await api(
-    `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/results/batch/finalize`,
+    `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/full-hand-tally/finalize`,
     { method: 'DELETE' }
   ))
 }
@@ -195,7 +195,7 @@ const RoundStatusSection = ({
             initialValues={{}}
             onSubmit={async () => {
               if (
-                await unfinalizeOfflineBatchResults(
+                await unfinalizeFullHandTallyResults(
                   electionId,
                   jurisdiction.id,
                   round.id

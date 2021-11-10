@@ -292,8 +292,7 @@ class Jurisdiction(BaseModel):
     # { contest_name: cvr_contest_name }
     contest_name_standardizations = Column(JSON)
 
-    # For ballot polling audits where offline batch results are recorded (currently only full hand counts)
-    finalized_offline_batch_results_at = Column(UTCDateTime)
+    finalized_full_hand_tally_results_at = Column(UTCDateTime)
 
     batches = relationship(
         "Batch", back_populates="jurisdiction", uselist=True, passive_deletes=True
@@ -746,10 +745,10 @@ class RoundContestResult(BaseModel):
     result = Column(Integer, nullable=False)
 
 
-# In an offline ballot polling audit, records the audited vote count for one
+# In a full hand tally, records the audited vote count for one
 # batch for one contest choice. Note that we don't require the batch name to
 # match any of the batches in the ballot manifest.
-class OfflineBatchResult(BaseModel):
+class FullHandTallyBatchResult(BaseModel):
     jurisdiction_id = Column(
         String(200), ForeignKey("jurisdiction.id", ondelete="cascade"), nullable=False,
     )

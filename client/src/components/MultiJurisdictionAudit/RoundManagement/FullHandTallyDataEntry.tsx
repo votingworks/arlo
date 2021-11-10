@@ -21,14 +21,14 @@ import {
 import styled from 'styled-components'
 import useContestsJurisdictionAdmin from './useContestsJurisdictionAdmin'
 import { IRound } from '../useRoundsAuditAdmin'
-import useOfflineBatchResults, {
-  IOfflineBatchResult,
-} from './useOfflineBatchResults'
 import { testNumber } from '../../utilities'
 import CopyToClipboard from '../../Atoms/CopyToClipboard'
 import { sum } from '../../../utils/number'
+import useFullHandTallyResults, {
+  IFullHandTallyBatchResult,
+} from './useFullHandTallyResults'
 
-const OfflineBatchResultsForm = styled.form`
+const FullHandTallyResultsForm = styled.form`
   table {
     position: relative;
     border: 1px solid ${Colors.LIGHT_GRAY1};
@@ -105,7 +105,7 @@ interface IProps {
   round: IRound
 }
 
-const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
+const FullHandTallyDataEntry = ({ round }: IProps) => {
   const { electionId, jurisdictionId } = useParams<{
     electionId: string
     jurisdictionId: string
@@ -117,7 +117,7 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
     updateResult,
     removeResult,
     finalizeResults,
-  ] = useOfflineBatchResults(electionId, jurisdictionId, round.id)
+  ] = useFullHandTallyResults(electionId, jurisdictionId, round.id)
   const [isConfirmOpen, setIsConfirmOpen] = useState(false)
 
   if (!contests || !batchResults) return null
@@ -130,14 +130,14 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
   const total = (choiceId: string) =>
     sum(results.map(batch => batch.choiceResults[choiceId]))
 
-  const emptyBatch = (): IOfflineBatchResult => ({
+  const emptyBatch = (): IFullHandTallyBatchResult => ({
     batchName: '',
     batchType: '',
     choiceResults: {},
   })
 
   interface FormValues {
-    editingBatch: IOfflineBatchResult | null
+    editingBatch: IFullHandTallyBatchResult | null
     editingBatchIndex: number | null
   }
 
@@ -183,7 +183,7 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
           handleReset,
         } = props
         return (
-          <OfflineBatchResultsForm>
+          <FullHandTallyResultsForm>
             <div style={{ width: '510px', marginBottom: '20px' }}>
               <p>
                 When you have examined all the ballots assigned to you, enter
@@ -470,11 +470,11 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
                 </div>
               </div>
             </Dialog>
-          </OfflineBatchResultsForm>
+          </FullHandTallyResultsForm>
         )
       }}
     </Formik>
   )
 }
 
-export default OfflineBatchRoundDataEntry
+export default FullHandTallyDataEntry

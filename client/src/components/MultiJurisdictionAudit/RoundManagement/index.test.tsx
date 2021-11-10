@@ -9,7 +9,7 @@ import {
   batchesMocks,
   batchResultsMocks,
   INullResultValues,
-  offlineBatchMocks,
+  fullHandTallyBatchResultMock,
 } from './_mocks'
 import { dummyBallots } from '../../DataEntry/_mocks'
 import {
@@ -22,8 +22,8 @@ import { IBatch } from './useBatchResults'
 import { jaApiCalls } from '../_mocks'
 import AuthDataProvider from '../../UserContext'
 import { IAuditSettings } from '../useAuditSettings'
-import { IOfflineBatchResults } from './useOfflineBatchResults'
 import { queryClient } from '../../../App'
+import { IFullHandTallyBatchResults } from './useFullHandTallyResults'
 
 const renderView = (props: IRoundManagementProps) =>
   renderWithRouter(
@@ -60,9 +60,9 @@ const apiCalls = {
     url: '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/batches',
     response,
   }),
-  getOfflineBatchResults: (response: IOfflineBatchResults) => ({
+  getFullHandTallyBatchResults: (response: IFullHandTallyBatchResults) => ({
     url:
-      '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/results/batch',
+      '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/full-hand-tally/batch',
     response,
   }),
 }
@@ -215,13 +215,13 @@ describe('RoundManagement', () => {
     })
   })
 
-  it('shows offline batch results data entry when all ballots sampled', async () => {
+  it('shows full hand tally data entry when all ballots sampled', async () => {
     const expectedCalls = [
       apiCalls.getSettings(auditSettings.offlineAll),
       jaApiCalls.getUser,
       apiCalls.getBallotCount,
       apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
-      apiCalls.getOfflineBatchResults(offlineBatchMocks.empty),
+      apiCalls.getFullHandTallyBatchResults(fullHandTallyBatchResultMock.empty),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView({
