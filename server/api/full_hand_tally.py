@@ -10,7 +10,7 @@ from . import api
 from ..auth import restrict_access, UserType
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
-from .rounds import get_current_round, sampled_all_ballots
+from .rounds import get_current_round, is_full_hand_tally
 from ..util.jsonschema import JSONDict, validate
 from ..util.isoformat import isoformat
 
@@ -59,7 +59,7 @@ def validate_full_hand_tally_batch_result_request(
     if not any(c.id == contest.id for c in jurisdiction.contests):
         raise Conflict("Jurisdiction not in contest universe")
 
-    if not sampled_all_ballots(round, election):
+    if not is_full_hand_tally(round, election):
         raise Conflict("Full hand tally only supported if all ballots are sampled")
 
     if jurisdiction.finalized_full_hand_tally_results_at is not None:

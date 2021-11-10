@@ -567,9 +567,9 @@ def is_round_complete(election: Election, round: Round) -> bool:
     # jurisdiction that had ballots sampled
     else:
         num_jurisdictions_without_results: int
-        # Special case: if we sampled all ballots, we just check every
+        # Special case: if we are in a full hand tally, we just check every
         # jurisdiction in the targeted contest's universe
-        if sampled_all_ballots(round, election):
+        if is_full_hand_tally(round, election):
             num_jurisdictions_without_results = (
                 Contest.query.filter_by(election_id=election.id, is_targeted=True)
                 .join(Contest.jurisdictions)
@@ -614,7 +614,7 @@ def is_round_complete(election: Election, round: Round) -> bool:
         return num_jurisdictions_without_results == 0
 
 
-def sampled_all_ballots(round: Round, election: Election):
+def is_full_hand_tally(round: Round, election: Election):
     return election.audit_type == AuditType.BALLOT_POLLING and any(
         typing_cast(JSONDict, round_contest.sample_size)["size"]
         >= round_contest.contest.total_ballots_cast
@@ -673,9 +673,9 @@ def draw_sample(round_id: str, election_id: str):
         if round_contest.sample_size
     ]
 
-    # Special case: if we are sampling all ballots, we don't need to actually
+    # Special case: if we are in a full hand tally, we don't need to actually
     # draw a sample. Instead, we force an offline audit.
-    if sampled_all_ballots(round, election):
+    if is_full_hand_tally(round, election):
         election.online = False
         return
 
@@ -1057,7 +1057,7 @@ def serialize_round(round: Round) -> dict:
         "startedAt": isoformat(round.created_at),
         "endedAt": isoformat(round.ended_at),
         "isAuditComplete": is_audit_complete(round),
-        "sampledAllBallots": sampled_all_ballots(round, round.election),
+        "isFullHandTally": is_full_hand_tally(round, round.election),
         "drawSampleTask": serialize_background_task(round.draw_sample_task),
     }
 

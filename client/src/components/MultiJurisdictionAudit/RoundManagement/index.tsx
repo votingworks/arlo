@@ -80,7 +80,7 @@ const RoundManagement = ({
     )
   }
 
-  if (sampleCount.ballots === 0 && !round.sampledAllBallots) {
+  if (sampleCount.ballots === 0 && !round.isFullHandTally) {
     return (
       <PaddedWrapper>
         <StrongP>
@@ -92,7 +92,7 @@ const RoundManagement = ({
   }
 
   const samplesToAudit = (() => {
-    if (round.sampledAllBallots)
+    if (round.isFullHandTally)
       return (
         <StrongP>
           Please audit all of the ballots in your jurisdiction (
@@ -127,7 +127,7 @@ const RoundManagement = ({
   return (
     <PaddedWrapper>
       <H3>Round {roundNum} Data Entry</H3>
-      {round.sampledAllBallots ? (
+      {round.isFullHandTally ? (
         samplesToAudit
       ) : (
         <SpacedDiv>
@@ -147,7 +147,7 @@ const RoundManagement = ({
           <BatchRoundDataEntry round={round} />
         ) : auditSettings.online ? (
           <RoundProgress auditBoards={auditBoards} />
-        ) : round.sampledAllBallots ? (
+        ) : round.isFullHandTally ? (
           <FullHandTallyDataEntry round={round} />
         ) : (
           <RoundDataEntry round={round} />

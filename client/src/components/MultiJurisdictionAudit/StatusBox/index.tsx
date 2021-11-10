@@ -334,7 +334,7 @@ export const JurisdictionAdminStatusBox = ({
     )
   }
 
-  const { roundNum, isAuditComplete, sampledAllBallots } = rounds[
+  const { roundNum, isAuditComplete, isFullHandTally } = rounds[
     rounds.length - 1
   ]
   const inProgressHeadline = `Round ${roundNum} of the audit is in progress.`
@@ -353,7 +353,7 @@ export const JurisdictionAdminStatusBox = ({
 
   // Round in progress, audit boards set up
   if (!isAuditComplete) {
-    if (sampledAllBallots)
+    if (isFullHandTally)
       return (
         <StatusBox
           headline={inProgressHeadline}
