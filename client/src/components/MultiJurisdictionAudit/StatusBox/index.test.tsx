@@ -342,6 +342,8 @@ describe('StatusBox', () => {
           />
         </Router>
       )
+      screen.getByText('Round 1 of the audit is in progress')
+      screen.getByText('1 of 3 jurisdictions have completed Round 1')
       screen.getByText('Full hand tally required')
       screen.getByText(
         'One or more target contests require a full hand tally to complete the audit.'

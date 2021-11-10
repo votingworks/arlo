@@ -211,21 +211,6 @@ export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
     isFullHandTally,
   } = rounds[rounds.length - 1]
 
-  // Special case: when a sample size has been drawn that requires a full hand
-  // tally but the audit isn't in full hand tally mode (e.g. in a second round)
-  if (needsFullHandTally && !isFullHandTally)
-    return (
-      <StatusBox
-        headline="Full hand tally required"
-        details={[
-          'One or more target contests require a full hand tally to complete the audit.',
-        ]}
-        auditName={auditSettings.auditName}
-      >
-        {children}
-      </StatusBox>
-    )
-
   // Round in progress
   if (!endedAt) {
     const numCompleted = jurisdictions.filter(
@@ -253,7 +238,20 @@ export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
         buttonLabel={canUndoLaunch ? 'Undo Audit Launch' : undefined}
         onButtonClick={canUndoLaunch ? undoRoundStart : undefined}
       >
-        {children}
+        <>
+          {/* Special case: when a sample size has been drawn that requires a full hand tally
+     but the audit isn't in full hand tally mode (e.g. in a second round) */}
+          {needsFullHandTally && !isFullHandTally && (
+            <Callout intent="warning" style={{ marginTop: '15px' }}>
+              <strong>Full hand tally required</strong>
+              <p>
+                One or more target contests require a full hand tally to
+                complete the audit.
+              </p>
+            </Callout>
+          )}
+          {children}
+        </>
       </StatusBox>
     )
   }
