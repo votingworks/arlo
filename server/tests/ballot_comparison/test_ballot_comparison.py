@@ -847,11 +847,11 @@ def test_ballot_comparison_sample_size_validation(
         ),
         (
             {contest_id: {"key": "custom", "size": 30, "prob": None}},
-            "For a full hand tally, use the ballot polling audit type.",
+            "For a full hand tally, use the ballot polling or batch comparison audit type.",
         ),
         (
             {contest_id: {"key": "supersimple", "size": 31, "prob": None}},
-            "For a full hand tally, use the ballot polling audit type.",
+            "For a full hand tally, use the ballot polling or batch comparison audit type.",
         ),
     ]
     for bad_sample_size, expected_error in bad_sample_sizes:
