@@ -130,6 +130,7 @@ def test_all_ballots_audit(
             "startedAt": assert_is_date,
             "endedAt": None,
             "isAuditComplete": None,
+            "needsFullHandTally": True,
             "isFullHandTally": True,
             "drawSampleTask": {
                 "status": "PROCESSED",

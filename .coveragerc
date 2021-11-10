@@ -7,7 +7,7 @@ omit =
     scripts/*
 
 [report]
-fail_under = 99.5
+fail_under = 99.6
 precision = 2
 skip_covered = true
 show_missing = true

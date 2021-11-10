@@ -162,6 +162,7 @@ export const roundMocks: {
       isAuditComplete: false,
       startedAt: '2019-07-18T16:34:07.000+00:00',
       id: 'round-1',
+      needsFullHandTally: false,
       isFullHandTally: false,
       drawSampleTask: {
         status: FileProcessingStatus.PROCESSED,
@@ -178,6 +179,7 @@ export const roundMocks: {
       isAuditComplete: false,
       startedAt: '2019-07-18T16:34:07.000+00:00',
       id: 'round-1',
+      needsFullHandTally: false,
       isFullHandTally: false,
       drawSampleTask: {
         status: FileProcessingStatus.PROCESSED,
@@ -192,6 +194,7 @@ export const roundMocks: {
       isAuditComplete: false,
       startedAt: '2019-07-18T16:34:07.000+00:00',
       id: 'round-2',
+      needsFullHandTally: false,
       isFullHandTally: false,
       drawSampleTask: {
         status: FileProcessingStatus.PROCESSED,
@@ -208,6 +211,7 @@ export const roundMocks: {
       isAuditComplete: true,
       startedAt: '2019-07-18T16:34:07.000+00:00',
       id: 'round-1',
+      needsFullHandTally: false,
       isFullHandTally: false,
       drawSampleTask: {
         status: FileProcessingStatus.PROCESSED,
@@ -224,6 +228,7 @@ export const roundMocks: {
       isAuditComplete: false,
       startedAt: '2019-07-18T16:34:07.000+00:00',
       id: 'round-1',
+      needsFullHandTally: false,
       isFullHandTally: false,
       drawSampleTask: {
         status: FileProcessingStatus.PROCESSED,
@@ -240,6 +245,7 @@ export const roundMocks: {
       isAuditComplete: false,
       startedAt: '2019-07-18T16:34:07.000+00:00',
       id: 'round-1',
+      needsFullHandTally: false,
       isFullHandTally: false,
       drawSampleTask: {
         status: FileProcessingStatus.PROCESSING,
@@ -256,6 +262,7 @@ export const roundMocks: {
       isAuditComplete: false,
       startedAt: '2019-07-18T16:34:07.000+00:00',
       id: 'round-1',
+      needsFullHandTally: false,
       isFullHandTally: false,
       drawSampleTask: {
         status: FileProcessingStatus.ERRORED,
