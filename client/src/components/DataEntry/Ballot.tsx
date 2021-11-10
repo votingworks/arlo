@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { H3, H4, Button, Colors, OL } from '@blueprintjs/core'
 import styled from 'styled-components'
 import { Redirect } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import LinkButton from '../Atoms/LinkButton'
 import BallotAudit from './BallotAudit'
 import {
@@ -192,6 +193,7 @@ const Ballot: React.FC<IProps> = ({
             ({ interpretation }) => interpretation !== null
           )
         )
+        toast.success('Success! Now showing the next ballot to audit.')
         nextBallot()
       },
       yesButtonLabel: 'Confirm Selections',
