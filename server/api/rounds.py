@@ -612,7 +612,7 @@ def is_round_complete(election: Election, round: Round) -> bool:
         return num_jurisdictions_without_results == 0
 
 
-# Calculates how the sample size threshold to trigger a full hand tally in each
+# Calculates the sample size threshold to trigger a full hand tally in each
 # targeted contest
 def full_hand_tally_sizes(election: Election):
     contests_query = Contest.query.filter_by(election_id=election.id, is_targeted=True)
