@@ -2,7 +2,7 @@ from typing import Callable, Dict, Optional, List
 
 import numpy as np
 
-from .sampler_contest import Contest, CVR
+from .sampler_contest import Contest, CVR, CVRS
 from .raire_utils import (
     NEBAssertion,
     RaireAssertion,
@@ -13,9 +13,10 @@ from .raire_utils import (
 )
 
 
-def make_neb_matrix(
-        contest, cvrs: List[Dict[str, int]], asn_func
-) -> Dict[str, Dict[str, Optional[RaireAssertion]]]:
+NEBMatrix = Dict[str, Dict[str, Optional[NEBAssertion]]]
+
+
+def make_neb_matrix(contest: Contest, cvrs: CVRS, asn_func) -> NEBMatrix:
     """
     Builds the NEB matrix for use by find_best_audit.
 
@@ -26,8 +27,9 @@ def make_neb_matrix(
     Output:
         neb_matrix  - a dict of dicts mapping candidate pairs to assertions
     """
-    print(cvrs[0])
-    nebs = {c: {d: None for d in contest.candidates} for c in contest.candidates}
+    nebs: NEBMatrix = {
+        c: {d: None for d in contest.candidates} for c in contest.candidates
+    }
 
     for cand in contest.candidates:
         for other in contest.candidates:
@@ -38,10 +40,10 @@ def make_neb_matrix(
 
             tally_cand: int = 0
             tally_other: int = 0
-            for cvr in cvrs:
-                if cvr:
-                    tally_cand += asrn.is_vote_for_winner(cvr)
-                    tally_other += asrn.is_vote_for_loser(cvr)
+            for _,cvr in cvrs.items():
+                assert cvr # for type checker
+                tally_cand += asrn.is_vote_for_winner(cvr)
+                tally_other += asrn.is_vote_for_loser(cvr)
 
             if tally_cand > tally_other:
                 asrn.margin = tally_cand - tally_other
@@ -54,7 +56,10 @@ def make_neb_matrix(
 
     return nebs
 
-def make_frontier(contest, cvrs, winner, nebs, asn_func) -> RaireFrontier:
+
+def make_frontier(
+    contest: Contest, cvrs: List[Dict[str, int]], winner: str, nebs: NEBMatrix, asn_func
+) -> RaireFrontier:
     """
     Constructs the frontier for the search for the best audit
 
@@ -72,14 +77,27 @@ def make_frontier(contest, cvrs, winner, nebs, asn_func) -> RaireFrontier:
                 continue
 
             newn = RaireNode([other, cand])
-            newn.expandable =  len(contest.candidates) > 2
+            newn.expandable = len(contest.candidates) > 2
 
+            if cand == '380' and other == '378':
+                print(f"before find_best_audit:\n{newn}")
             find_best_audit(contest, cvrs, nebs, newn, asn_func)
             frontier.insert_node(newn)
+            if cand == '380' and other == '378':
+                print(f"After find_best_audit {newn}")
 
     return frontier
 
-def find_assertions(contest, cvrs, nebs, asn_func, frontier, lowerbound, agap):
+
+def find_assertions(
+    contest: Contest,
+    ballots: List[Dict[str, int]],
+    nebs: NEBMatrix,
+    asn_func,
+    frontier: RaireFrontier,
+    lowerbound: float,
+    agap: float,
+):
     """
     Find the best assertions for frontier, and mutate frontier accordingly.
 
@@ -95,6 +113,7 @@ def find_assertions(contest, cvrs, nebs, asn_func, frontier, lowerbound, agap):
             return True
 
         to_expand = frontier.nodes[0]
+        print(to_expand)
 
         # We can also stop searching if all nodes on our frontier are leaves.
         if not to_expand.expandable:
@@ -117,9 +136,10 @@ def find_assertions(contest, cvrs, nebs, asn_func, frontier, lowerbound, agap):
         # branch of the alternate outcomes tree that ends in that leaf. We
         # know that this assertion will be part of the audit, as we have
         # to rule out all branches.
-        dive_lb = perform_dive(to_expand, contest, cvrs, nebs, asn_func)
+        dive_lb = perform_dive(to_expand, contest, ballots, nebs, asn_func)
 
         if dive_lb == np.inf:
+            print('inf dive')
             # The particular branch we dived along cannot be ruled out
             # with an assertion.
             return False
@@ -155,7 +175,7 @@ def find_assertions(contest, cvrs, nebs, asn_func, frontier, lowerbound, agap):
                     else to_expand
                 )
 
-                find_best_audit(contest, cvrs, nebs, newn, asn_func)
+                find_best_audit(contest, ballots, nebs, newn, asn_func)
 
                 if not newn.expandable:
                     # 'newn' is a leaf.
@@ -186,8 +206,12 @@ def find_assertions(contest, cvrs, nebs, asn_func, frontier, lowerbound, agap):
 
 
 def compute_raire_assertions(
-    contest: Contest, cvrs: List[CVR], winner: str, asn_func: Callable, agap=0,
-) -> list:
+    contest: Contest,
+    cvrs: CVRS,
+    winner: str,
+    asn_func: Callable,
+    agap: float = 0.0,
+) -> List[RaireAssertion]:
 
     """
 
@@ -231,9 +255,6 @@ def compute_raire_assertions(
         assertions is found to hold, then all alternate outcomes, in which
         an alternate candidate to 'winner' wins, can be ruled out.
     """
-
-    print(cvrs[0])
-
     # First look at all of the NEB assertions that could be formed for
     # this contest. We will refer to this matrix when examining the best
     # way to prune branches of the "alternate outcome space".
@@ -250,15 +271,20 @@ def compute_raire_assertions(
     # already been eliminated.
 
     # Construct initial frontier.
-    frontier = make_frontier(contest, cvrs, "winner", nebs, asn_func)
+    ballots = [blt[contest.name] for _,blt in cvrs.items() if blt and contest.name in blt]
+    frontier = make_frontier(contest, ballots, "winner", nebs, asn_func)
+    print(f"top of the frontier: {frontier.nodes[0]}")
+
 
     # This is a running lowerbound on the overall difficulty of the
     # election audit.
     lowerbound = -10.0
 
     # -------------------- Find Assertions -----------------------------------
-    if not find_assertions(contest, cvrs, nebs, asn_func, frontier, lowerbound, agap):
+    if not find_assertions(contest, ballots, nebs, asn_func, frontier, lowerbound, agap):
         # If the audit isn't possible, we need a full recount
+        print(f'here {contest.name}')
+        print('===================================================')
         return []
     # ------------------------------------------------------------------------
     assertions: List[RaireAssertion] = []
@@ -275,7 +301,6 @@ def compute_raire_assertions(
 
         if not skip:
             assertions.append(node.best_assertion)
-
 
     # Assertions will be sorted in order of greatest to least difficulty.
     sorted_assertions = sorted(assertions)

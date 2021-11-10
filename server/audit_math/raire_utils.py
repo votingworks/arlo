@@ -5,12 +5,11 @@ import numpy as np
 from .sampler_contest import CVR, Contest
 
 
-# TODO Rationalize teh typing.
 def ranking(cand: str, ballot: Dict[str, int]):
     """
     Input:
         cand : string  -   identifier for candidate
-        ballot : CB    -   mapping between candidate name and their
+        ballot :       -   mapping between candidate name and their
                            position in the ranking for a relevant contest
                            on a given ballot.
 
@@ -159,12 +158,14 @@ class NEBAssertion(RaireAssertion):
     prior to 'loser'.
     """
 
-    def is_vote_for_winner(self, cvr: Dict[str, int]):
-        return 1 if ranking(self.winner, cvr) == 1 else 0
+    def is_vote_for_winner(self, cvr: CVR):
+        return 1 if self.contest in cvr and ranking(self.winner, cvr[self.contest]) == 1 else 0
 
-    def is_vote_for_loser(self, cvr: Dict[str, int]):
-        w_idx = ranking(self.winner, cvr)
-        l_idx = ranking(self.loser, cvr)
+    def is_vote_for_loser(self, cvr: CVR):
+        if self.contest not in cvr:
+            return 0
+        w_idx = ranking(self.winner, cvr[self.contest])
+        l_idx = ranking(self.loser, cvr[self.contest])
 
         return (
             1 if l_idx != -1 and (w_idx == -1 or (w_idx != -1 and l_idx < w_idx)) else 0
@@ -239,11 +240,17 @@ class NENAssertion(RaireAssertion):
 
         self.eliminated = eliminated
 
-    def is_vote_for_winner(self, cvr: Dict[str, int]):
-        return vote_for_cand(self.winner, self.eliminated, cvr)
+    def is_vote_for_winner(self, cvr: CVR):
+        if not self.contest in cvr:
+            return 0
 
-    def is_vote_for_loser(self, cvr: Dict[str, int]):
-        return vote_for_cand(self.loser, self.eliminated, cvr)
+        return vote_for_cand(self.winner, self.eliminated, cvr[self.contest])
+
+    def is_vote_for_loser(self, cvr: CVR):
+        if not self.contest in cvr:
+            return 0
+
+        return vote_for_cand(self.loser, self.eliminated, cvr[self.contest])
 
     def subsumes(self, other: RaireAssertion):
         """
@@ -319,12 +326,11 @@ class RaireNode:
 
     def __eq__(self, other):
         return (
-            self.estimate == other.estimate \
-            and self.best_assertion == other.best_assertion \
-            and self.best_ancestor == other.best_ancestor \
-            and self.tail == other.tail \
+            self.estimate == other.estimate
+            and self.best_assertion == other.best_assertion
+            and self.best_ancestor == other.best_ancestor
+            and self.tail == other.tail
         )
-
 
     def __repr__(self):
         return f"tail: {self.tail}\nestimate: {self.estimate}\nbest_assertion: {self.best_assertion}\nbest_ancestor:\n\n{self.best_ancestor}"
@@ -389,18 +395,14 @@ class RaireFrontier:
 
 
 def find_best_audit(
-    contest: Contest,
-    ballots: List[Dict[str, int]],
-    neb_matrix,
-    node: RaireNode,
-    asn_func: Callable,
+    contest: Contest, ballots: List[Dict[str, int]], neb_matrix, node: RaireNode, asn_func: Callable,
 ):
     """
     Input:
 
     contest: Contest   -  Contest being audited.
 
-    ballots: CVR       -  Details of reported ballots for this contest.
+    cvrs: list of CVRs -  Details of reported ballots for this contest.
 
     neb_matrix         -  |Candidates| x |Candidates| dictionary where
                           neb_matrix[c1][c2] returns a NEBAssertion stating
@@ -432,6 +434,7 @@ def find_best_audit(
         # Can we show that the candidate 'later_cand' must come before
         # candidate 'first_in_tail' in the elimination sequence?
         neb = neb_matrix[first_in_tail][later_cand]
+        print(neb)
 
         if neb and (best_asrtn is None or neb.difficulty < best_asrtn.difficulty):
             best_asrtn = neb
@@ -454,20 +457,16 @@ def find_best_audit(
     # remain, 'first_in_tail' is not the candidate with the least number
     # of votes. This means that 'first_in_tail' should not be eliminated next.
     # Tally of the candidate 'first_in_tail'
+    if first_in_tail == '378' and node.tail[1] == '380':
+        print(f"finding best audit: {neb}")
 
     tally_first_in_tail = sum(
-        [
-            vote_for_cand(first_in_tail, eliminated, blt)
-            for blt in ballots
-        ]
+        [vote_for_cand(first_in_tail, eliminated, blt) for blt in ballots]
     )
 
     for later_cand in node.tail[1:]:
         tally_later_cand = sum(
-            [
-                vote_for_cand(later_cand, eliminated, blt)
-                for blt in ballots
-            ]
+            [vote_for_cand(later_cand, eliminated, blt) for blt in ballots]
         )
 
         margin = tally_first_in_tail - tally_later_cand
@@ -497,11 +496,7 @@ def find_best_audit(
 
 
 def perform_dive(
-    node: RaireNode,
-    contest: Contest,
-    ballots: List[CVR],
-    neb_matrix,
-    asn_func: Callable,
+    node: RaireNode, contest: Contest, ballots: List[Dict[str, int]], neb_matrix, asn_func: Callable,
 ):
     """
     Input:
@@ -510,7 +505,7 @@ def perform_dive(
 
     contest: Contest   -  Contest being audited.
 
-    ballots: CVR      -  Details of reported ballots for this contest.
+    cvrs: List of CVR  -  Details of reported ballots for this contest.
 
     neb_matrix         -  |Candidates| x |Candidates| dictionary where
                           neb_matrix[c1][c2] returns a NEBAssertion stating
@@ -531,6 +526,7 @@ def perform_dive(
 
     rem_cands = [c for c in contest.candidates if not c in node.tail]
     next_cand = rem_cands[0]
+    print(next_cand)
 
     newn = RaireNode([next_cand] + node.tail)
     newn.expandable = not len(newn.tail) == ncands
@@ -541,6 +537,7 @@ def perform_dive(
     else:
         newn.best_ancestor = node
 
+    print(f"dive newn: {newn}")
     find_best_audit(contest, ballots, neb_matrix, newn, asn_func)
     if not newn.expandable:
         if newn.estimate == np.inf and newn.best_ancestor.estimate == np.inf:

@@ -1,8 +1,8 @@
-from typing import List, Any, Dict
+from typing import List, Any, Dict, Generator
 import pytest
 import numpy as np
 
-from server.audit_math.sampler_contest import Contest
+from server.audit_math.sampler_contest import Contest, CVR
 
 import server.audit_math.raire_utils as raire_utils
 
@@ -105,17 +105,18 @@ def test_nebassertion():
     contest = "Contest A"
 
     asrtn_1 = raire_utils.NEBAssertion(contest, "winner", "loser")
-    cvr = {}
+    cvr = {contest: {}}
 
     assert asrtn_1.is_vote_for_winner(cvr) == 0
     assert asrtn_1.is_vote_for_loser(cvr) == 0
 
-    cvr = {"Contest A": {"winner": 1, "loser": 2}}
+    cvr = {contest: {"winner": 1, "loser": 2}}
     assert asrtn_1.is_vote_for_winner(cvr) == 1
     assert asrtn_1.is_vote_for_loser(cvr) == 0
 
     # pylint: disable=comparison-with-itself
     assert asrtn_1 == asrtn_1
+
 
 def test_simple_contest():
     cvr1 = {"test_con": {"Ann": 1, "Sally": 3, "Bob": 2, "Mike": 4}}
@@ -145,6 +146,7 @@ def test_simple_contest():
 
     assert nen3.is_vote_for_winner(cvr1) == 1
     assert nen3.is_vote_for_loser(cvr1) == 0
+
 
 def test_nebassertion_subsumes():
     contest = "Contest A"
@@ -180,7 +182,7 @@ def test_neb_repr():
 def test_nenassertion_is_vote_for():
     contest = "Contest A"
     asrtn_1 = raire_utils.NENAssertion(contest, "winner", "loser", [])
-    cvr = {}
+    cvr = {contest: {}}
 
     assert asrtn_1.is_vote_for_winner(cvr) == 0
     assert asrtn_1.is_vote_for_loser(cvr) == 0
@@ -360,7 +362,7 @@ def make_nen_assertion(contest, ballots, asn_func, winner, loser, eliminated):
 
 
 @pytest.fixture
-def contest():
+def contest() -> Generator[Contest, None, None]:
     yield Contest(
         "Contest A",
         {
@@ -375,7 +377,7 @@ def contest():
 
 
 @pytest.fixture
-def ballots():
+def ballots() -> Generator[List[CVR], None, None]:
     ballots = []
     for _ in range(25000):
         ballots.append({"Contest A": {"winner": 1, "loser": 2, "loser2": 3}})
