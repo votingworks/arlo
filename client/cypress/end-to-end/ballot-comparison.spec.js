@@ -247,6 +247,7 @@ describe('Ballot Comparison Test Cases', () => {
         .click({ force: true })
       cy.findByRole('button', { name: 'Submit Selections' }).click()
       cy.findByText('Confirm Selections').click()
+      cy.findByText('Success! Now showing the next ballot to audit.')
       cy.findByText('Change Selections').should('not.exist')
       cy.findByText(/All Ballots/).click({ force: true })
     })
@@ -258,7 +259,7 @@ describe('Ballot Comparison Test Cases', () => {
       // iterate through exactly the number of ballots available to avoid conditions
       if (index == 0) {
         // button name when some ballots are audited
-        cy.findByText('Audit Next Ballot').click()
+        cy.findByText('Audit Next Ballot').click({ force: true })
       }
       // since the first ballot is already audited
       if (index < list.length - 1) {
