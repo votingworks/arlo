@@ -876,10 +876,7 @@ def create_round_schema(audit_type: AuditType):
                                 {
                                     "sizeCvr": {"type": "integer"},
                                     "sizeNonCvr": {"type": "integer"},
-                                    # We ignore size in hybrid audits
-                                    "size": {
-                                        "anyOf": [{"type": "integer"}, {"type": "null"}]
-                                    },
+                                    "size": {"type": "integer"},
                                 }
                                 if audit_type == AuditType.HYBRID
                                 else {"size": {"type": "integer"}}
@@ -887,7 +884,7 @@ def create_round_schema(audit_type: AuditType):
                         },
                         "additionalProperties": False,
                         "required": (
-                            ["sizeCvr", "sizeNonCvr", "key", "prob"]
+                            ["sizeCvr", "sizeNonCvr", "size", "key", "prob"]
                             if audit_type == AuditType.HYBRID
                             else ["size", "key", "prob"]
                         ),
@@ -956,6 +953,10 @@ def validate_sample_size(round: dict, election: Election):
         if sample_size["key"] == "custom":
             if election.audit_type == AuditType.HYBRID:
                 total_ballots = hybrid_contest_total_ballots(contest)
+                assert (
+                    sample_size["sizeCvr"] + sample_size["sizeNonCvr"]
+                    == sample_size["size"]
+                )
                 if sample_size["sizeCvr"] > total_ballots.cvr:
                     raise BadRequest(
                         f"CVR sample size for contest {contest.name} must be less than or equal to:"
@@ -978,12 +979,7 @@ def validate_sample_size(round: dict, election: Election):
                     f" {full_hand_tally_size} (the total number of {ballots_or_batches} in the contest)"
                 )
 
-        size = (
-            sample_size["sizeCvr"] + sample_size["sizeNonCvr"]
-            if election.audit_type == AuditType.HYBRID
-            else sample_size["size"]
-        )
-        if size >= full_hand_tally_size:
+        if sample_size["size"] >= full_hand_tally_size:
             if election.audit_type != AuditType.BALLOT_POLLING:
                 raise BadRequest(
                     "For a full hand tally, use the ballot polling audit type."
