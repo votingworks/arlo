@@ -6,6 +6,7 @@ import {
   screen,
   within,
 } from '@testing-library/react'
+import { ToastContainer } from 'react-toastify'
 import userEvent from '@testing-library/user-event'
 import { Router } from 'react-router-dom'
 import { createMemoryHistory } from 'history'
@@ -205,6 +206,7 @@ describe('Ballot', () => {
           batchId="batch-id-1"
           ballotPosition={2112}
         />
+        <ToastContainer />
       </Router>
     )
 
@@ -224,7 +226,7 @@ describe('Ballot', () => {
       within(dialog).getByRole('button', { name: 'Confirm Selections' })
     )
 
-    // await findAndCloseToast('Success! Now showing the next ballot to audit.') // should work but doesn't
+    await findAndCloseToast('Success! Now showing the next ballot to audit.')
 
     await waitFor(() => {
       expect(dialog).not.toBeInTheDocument()
