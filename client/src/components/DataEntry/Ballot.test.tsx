@@ -6,11 +6,13 @@ import {
   screen,
   within,
 } from '@testing-library/react'
+import { ToastContainer } from 'react-toastify'
 import userEvent from '@testing-library/user-event'
 import { Router } from 'react-router-dom'
 import { createMemoryHistory } from 'history'
 import Ballot from './Ballot'
 import { contest, dummyBallots } from './_mocks'
+import { findAndCloseToast } from '../testUtilities'
 
 const history = createMemoryHistory()
 
@@ -87,7 +89,6 @@ describe('Ballot', () => {
     userEvent.click(
       within(dialog).getByRole('button', { name: 'Change Selections' })
     )
-
     await waitFor(() => {
       expect(dialog).not.toBeInTheDocument()
     })
@@ -205,6 +206,7 @@ describe('Ballot', () => {
           batchId="batch-id-1"
           ballotPosition={2112}
         />
+        <ToastContainer />
       </Router>
     )
 
@@ -223,6 +225,8 @@ describe('Ballot', () => {
     userEvent.click(
       within(dialog).getByRole('button', { name: 'Confirm Selections' })
     )
+
+    await findAndCloseToast('Success! Now showing the next ballot to audit.')
 
     await waitFor(() => {
       expect(dialog).not.toBeInTheDocument()
