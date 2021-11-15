@@ -393,6 +393,9 @@ class RaireFrontier:
     def __eq__(self, other):
         return self.nodes == other.nodes
 
+    def __repr__(self):
+        return str(self.nodes)
+
 
 def find_best_audit(
     contest: Contest, ballots: List[Dict[str, int]], neb_matrix, node: RaireNode, asn_func: Callable,
@@ -434,7 +437,6 @@ def find_best_audit(
         # Can we show that the candidate 'later_cand' must come before
         # candidate 'first_in_tail' in the elimination sequence?
         neb = neb_matrix[first_in_tail][later_cand]
-        print(neb)
 
         if neb and (best_asrtn is None or neb.difficulty < best_asrtn.difficulty):
             best_asrtn = neb
@@ -457,9 +459,6 @@ def find_best_audit(
     # remain, 'first_in_tail' is not the candidate with the least number
     # of votes. This means that 'first_in_tail' should not be eliminated next.
     # Tally of the candidate 'first_in_tail'
-    if first_in_tail == '378' and node.tail[1] == '380':
-        print(f"finding best audit: {neb}")
-
     tally_first_in_tail = sum(
         [vote_for_cand(first_in_tail, eliminated, blt) for blt in ballots]
     )
@@ -526,7 +525,6 @@ def perform_dive(
 
     rem_cands = [c for c in contest.candidates if not c in node.tail]
     next_cand = rem_cands[0]
-    print(next_cand)
 
     newn = RaireNode([next_cand] + node.tail)
     newn.expandable = not len(newn.tail) == ncands
@@ -537,7 +535,7 @@ def perform_dive(
     else:
         newn.best_ancestor = node
 
-    print(f"dive newn: {newn}")
+
     find_best_audit(contest, ballots, neb_matrix, newn, asn_func)
     if not newn.expandable:
         if newn.estimate == np.inf and newn.best_ancestor.estimate == np.inf:

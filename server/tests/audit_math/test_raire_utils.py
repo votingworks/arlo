@@ -330,7 +330,7 @@ def test_find_best_audit_simple():
     assert tree.estimate == expected.difficulty
 
 
-def make_neb_assertion(contest, ballots, asn_func, winner, loser, eliminated):
+def make_neb_assertion(contest, ballots: List[Dict[str, int]], asn_func, winner, loser, eliminated):
     assertion = raire_utils.NEBAssertion(contest.name, winner, loser)
     assertion.eliminated = eliminated
     assertion.votes_for_winner = sum(
@@ -346,7 +346,7 @@ def make_neb_assertion(contest, ballots, asn_func, winner, loser, eliminated):
     return assertion
 
 
-def make_nen_assertion(contest, ballots, asn_func, winner, loser, eliminated):
+def make_nen_assertion(contest, ballots: List[Dict[str, int]], asn_func, winner, loser, eliminated):
     assertion = raire_utils.NENAssertion(contest.name, winner, loser, eliminated)
     assertion.votes_for_winner = sum(
         [assertion.is_vote_for_winner(ballot) for ballot in ballots]
@@ -377,16 +377,16 @@ def contest() -> Generator[Contest, None, None]:
 
 
 @pytest.fixture
-def ballots() -> Generator[List[CVR], None, None]:
+def ballots() -> Generator[List[Dict[str, int]], None, None]:
     ballots = []
     for _ in range(25000):
-        ballots.append({"Contest A": {"winner": 1, "loser": 2, "loser2": 3}})
+        ballots.append({"winner": 1, "loser": 2, "loser2": 3})
     for _ in range(25000):
-        ballots.append({"Contest A": {"winner": 1, "loser": 3, "loser2": 2}})
+        ballots.append({"winner": 1, "loser": 3, "loser2": 2})
     for _ in range(30000):
-        ballots.append({"Contest A": {"winner": 2, "loser": 1, "loser2": 3}})
+        ballots.append({"winner": 2, "loser": 1, "loser2": 3})
     for _ in range(20000):
-        ballots.append({"Contest A": {"winner": 2, "loser": 3, "loser2": 1}})
+        ballots.append({"winner": 2, "loser": 3, "loser2": 1})
 
     yield ballots
 
@@ -489,14 +489,14 @@ def test_find_best_with_wrong_elimination(contest, ballots, asn_func):
 
     raire_utils.find_best_audit(contest, ballots, neb_matrix, tree, asn_func)
 
-    # this is the lowest cost assertion to refute
-    # it says that winner cannot be eliminated next, meaning that the hypothesis that
-    # loser actually won cannot be shown
-    expected = raire_utils.NEBAssertion(contest.name, "winner", "loser")
+    # Because this audit is impossible, all assertions have inifinite difficulty.
+    # This means it will just pick the first assertion as the "best" one
+    expected = loser2_neb_loser
     expected.eliminated = ["winner"]
 
     # check that we get expected best assertion
     assert tree.best_assertion == expected
+    assert tree.best_assertion.difficulty == np.inf
 
 
 def test_perform_dive_impossible(contest, ballots, asn_func):
@@ -564,7 +564,7 @@ def test_perform_dive_possible(contest, ballots, asn_func):
         "loser2": {"loser": loser2_neb_loser, "winner": loser2_neb_winner,},
     }
 
-    tree = raire_utils.RaireNode(["loser"])
+    tree = raire_utils.RaireNode(["winner"])
 
     result = raire_utils.perform_dive(tree, contest, ballots, neb_matrix, asn_func)
     expected = make_nen_assertion(

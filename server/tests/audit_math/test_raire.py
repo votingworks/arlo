@@ -1,9 +1,9 @@
 import numpy as np
 import pytest
 from itertools import product
-from typing import Generator, List
+from typing import Generator, List, Dict
 
-from server.audit_math.sampler_contest import Contest, CVR
+from server.audit_math.sampler_contest import Contest, CVR, CVRS
 from server.audit_math.raire import (
     NEBMatrix,
     compute_raire_assertions,
@@ -42,18 +42,33 @@ def contest() -> Generator[Contest, None, None]:
     )
 
 @pytest.fixture
-def ballots() -> Generator[List[CVR], None, None]:
+def cvrs() -> Generator[CVRS, None, None]:
+    cvrs: CVRS = {}
+    for i in range(25000):
+        cvrs[f"Ballot {i}"] = {"Contest A": {"winner": 1, "loser": 2, "loser2": 3}}
+    for i in range(25000, 50000):
+        cvrs[f"Ballot {i}"] = {"Contest A": {"winner": 1, "loser": 3, "loser2": 2}}
+    for i in range(50000, 80000):
+        cvrs[f"Ballot {i}"] = {"Contest A": {"winner": 2, "loser": 1, "loser2": 3}}
+    for i in range(80000, 100000):
+        cvrs[f"Ballot {i}"] = {"Contest A": {"winner": 2, "loser": 3, "loser2": 1}}
+
+    yield cvrs
+
+@pytest.fixture
+def ballots() -> Generator[List[Dict[str, int]], None, None]:
     ballots = []
     for _ in range(25000):
-        ballots.append({"Contest A": {"winner": 1, "loser": 2, "loser2": 3}})
+        ballots.append({"winner": 1, "loser": 2, "loser2": 3})
     for _ in range(25000):
-        ballots.append({"Contest A": {"winner": 1, "loser": 3, "loser2": 2}})
+        ballots.append({"winner": 1, "loser": 3, "loser2": 2})
     for _ in range(30000):
-        ballots.append({"Contest A": {"winner": 2, "loser": 1, "loser2": 3}})
+        ballots.append({"winner": 2, "loser": 1, "loser2": 3})
     for _ in range(20000):
-        ballots.append({"Contest A": {"winner": 2, "loser": 3, "loser2": 1}})
+        ballots.append({"winner": 2, "loser": 3, "loser2": 1})
 
     yield ballots
+
 
 # TODO does this really need to be a fixture?
 @pytest.fixture
@@ -61,7 +76,7 @@ def asn_func():
     yield lambda m: 1 / m if m > 0 else np.inf
 
 
-def test_make_neb_matrix(contest, ballots, asn_func):
+def test_make_neb_matrix(contest, ballots, cvrs, asn_func):
     expected: NEBMatrix = {
         c: {
             d: make_neb_assertion(contest, ballots, asn_func, c, d, [])
@@ -76,11 +91,11 @@ def test_make_neb_matrix(contest, ballots, asn_func):
             if (cand, other) not in expected_pairs:
                 expected[cand][other] = None
 
-    assert make_neb_matrix(contest, ballots, asn_func) == expected
+    assert make_neb_matrix(contest, cvrs, asn_func) == expected
 
 
-def test_make_raire_frontier(contest, ballots, asn_func):
-    nebs = make_neb_matrix(contest, ballots, asn_func)
+def test_make_raire_frontier(contest, cvrs, ballots, asn_func):
+    nebs = make_neb_matrix(contest, cvrs, asn_func)
     expected = RaireFrontier()
 
     # enumerate all possible nodes
@@ -100,10 +115,10 @@ def test_make_raire_frontier(contest, ballots, asn_func):
     assert expected == make_frontier(contest, ballots, "winner", nebs, asn_func)
 
 
-def test_find_assertions_too_good_ancestor(contest, ballots, asn_func):
+def test_find_assertions_too_good_ancestor(contest, cvrs, asn_func):
 
-    nebs = make_neb_matrix(contest, ballots, asn_func)
-    frontier = make_frontier(contest, ballots, "winner", nebs, asn_func)
+    nebs = make_neb_matrix(contest, cvrs, asn_func)
+    frontier = make_frontier(contest, cvrs, "winner", nebs, asn_func)
 
     # Create a fake best ancestor
     newn = RaireNode(["loser"])
@@ -115,19 +130,19 @@ def test_find_assertions_too_good_ancestor(contest, ballots, asn_func):
 
     lowerbound = -10.0
 
-    find_assertions(contest, ballots, nebs, asn_func, frontier, lowerbound, 0)
+    find_assertions(contest, cvrs, nebs, asn_func, frontier, lowerbound, 0)
 
     # Check that our fake ancestor is the best assertiont
     assert frontier.nodes[0].best_assertion == newn.best_assertion
 
     # Do the same thing, but with an agap and a fake lowerbound
-    find_assertions(contest, ballots, nebs, asn_func, frontier, 0.00000001, 0.001)
+    find_assertions(contest, cvrs, nebs, asn_func, frontier, 0.00000001, 0.001)
     assert frontier.nodes[0].best_assertion == newn.best_assertion
 
 
-def test_find_assertions_infinite_to_expand(contest, ballots, asn_func):
-    nebs = make_neb_matrix(contest, ballots, asn_func)
-    frontier = make_frontier(contest, ballots, "winner", nebs, asn_func)
+def test_find_assertions_infinite_to_expand(contest, cvrs, asn_func):
+    nebs = make_neb_matrix(contest, cvrs, asn_func)
+    frontier = make_frontier(contest, cvrs, "winner", nebs, asn_func)
 
     lowerbound = -10.0
 
@@ -141,13 +156,13 @@ def test_find_assertions_infinite_to_expand(contest, ballots, asn_func):
     frontier.nodes.insert(0, newn)
 
     assert not find_assertions(
-        contest, ballots, nebs, asn_func, frontier, lowerbound, 0
+        contest, cvrs, nebs, asn_func, frontier, lowerbound, 0
     )
 
 
-def test_find_assertions_fake_ancestor(contest, ballots, asn_func):
-    nebs = make_neb_matrix(contest, ballots, asn_func)
-    frontier = make_frontier(contest, ballots, "winner", nebs, asn_func)
+def test_find_assertions_fake_ancestor(contest, cvrs, asn_func):
+    nebs = make_neb_matrix(contest, cvrs, asn_func)
+    frontier = make_frontier(contest, cvrs, "winner", nebs, asn_func)
 
     lowerbound = -10.0
 
@@ -160,23 +175,23 @@ def test_find_assertions_fake_ancestor(contest, ballots, asn_func):
 
     frontier.nodes[0].best_ancestor = newn
 
-    assert find_assertions(contest, ballots, nebs, asn_func, frontier, lowerbound, 0)
+    assert find_assertions(contest, cvrs, nebs, asn_func, frontier, lowerbound, 0)
 
 
-def test_find_assertions_infinite_branch(contest, ballots, asn_func):
+def test_find_assertions_infinite_branch(contest, cvrs, asn_func):
     # Fake neb_matrix into showing all assertions but one as infinite
-    nebs = make_neb_matrix(contest, ballots, asn_func)
+    nebs = make_neb_matrix(contest, cvrs, asn_func)
     nebs["loser"]["winner"] = make_neb_assertion(
-        contest, ballots, asn_func, "loser", "winner", []
+        contest, cvrs, asn_func, "loser", "winner", []
     )
     nebs["loser"]["winner"].difficulty = 0.0000001
 
     nebs["winner"]["loser2"] = make_neb_assertion(
-        contest, ballots, asn_func, "winner", "loser2", []
+        contest, cvrs, asn_func, "winner", "loser2", []
     )
     nebs["winner"]["loser2"].difficulty = np.inf
 
-    frontier = make_frontier(contest, ballots, "winner", nebs, asn_func)
+    frontier = make_frontier(contest, cvrs, "winner", nebs, asn_func)
 
     lowerbound = -10.0
 
@@ -190,13 +205,13 @@ def test_find_assertions_infinite_branch(contest, ballots, asn_func):
     frontier.nodes.insert(0, newn)
 
     assert not find_assertions(
-        contest, ballots, nebs, asn_func, frontier, lowerbound, 0
+        contest, cvrs, nebs, asn_func, frontier, lowerbound, 0
     )
 
 
-def test_find_assertions_many_children(contest, ballots, asn_func):
-    nebs = make_neb_matrix(contest, ballots, asn_func)
-    frontier = make_frontier(contest, ballots, "winner", nebs, asn_func)
+def test_find_assertions_many_children(contest, cvrs, asn_func):
+    nebs = make_neb_matrix(contest, cvrs, asn_func)
+    frontier = make_frontier(contest, cvrs, "winner", nebs, asn_func)
 
     lowerbound = -10.0
 
@@ -208,7 +223,7 @@ def test_find_assertions_many_children(contest, ballots, asn_func):
     newn.expandable = True
 
     frontier.nodes.insert(0, newn)
-    assert find_assertions(contest, ballots, nebs, asn_func, frontier, lowerbound, 0)
+    assert find_assertions(contest, cvrs, nebs, asn_func, frontier, lowerbound, 0)
 
 
 def compare_result(path, contests):
@@ -327,19 +342,19 @@ def run_test(input_file, output_file, agap):
         compare_result(output_file, result)
 
 
-def test_raire(contest, ballots, asn_func):
-    res = compute_raire_assertions(contest, ballots, "winner", asn_func)
+def test_raire(contest, cvrs, asn_func):
+    res = compute_raire_assertions(contest, cvrs, "winner", asn_func)
 
     expected = []
 
     # we expect to show that winner is not eliminated before loser2
     expected.append(
-        make_neb_assertion(contest, ballots, asn_func, "winner", "loser2", [])
+        make_neb_assertion(contest, cvrs, asn_func, "winner", "loser2", [])
     )
 
     # we expect loser to be eliminated next
     expected.append(
-        make_nen_assertion(contest, ballots, asn_func, "winner", "loser", ["loser2"])
+        make_nen_assertion(contest, cvrs, asn_func, "winner", "loser", ["loser2"])
     )
 
     # sort by difficuly
@@ -350,7 +365,7 @@ def test_raire(contest, ballots, asn_func):
     # Use a small agap
 
     res = compute_raire_assertions(
-        contest, ballots, "winner", asn_func, agap=0.00000001
+        contest, cvrs, "winner", asn_func, agap=0.00000001
     )
     assert res == expected
 
@@ -368,12 +383,13 @@ def test_raire_recount(asn_func):
     )
 
     ballots = []
+    cvrs = {}
+    for i in range(50000):
+        cvrs[i] = {"Contest A": {"winner": 1, "loser": 2}}
     for _ in range(50000):
-        ballots.append({"Contest A": {"winner": 1, "loser": 2}})
-    for _ in range(50000):
-        ballots.append({"Contest A": {"winner": 2, "loser": 1}})
+        cvrs[i] = {"Contest A": {"winner": 2, "loser": 1}}
 
-    res = compute_raire_assertions(contest, ballots, "winner", asn_func)
+    res = compute_raire_assertions(contest, cvrs, "winner", asn_func)
 
     # assert res == []
 
@@ -388,5 +404,12 @@ def test_aspen_wrong_winner():
 def test_berkeley_2010():
     input_file = RAIRE_INPUT_DIR + "Berkeley_2010.raire"
     output_file = RAIRE_OUTPUT_DIR + "Berkeley_2010.raire.out"
-    agap = 0.00001
+    #agap = 0.00001
+    agap = 0
     run_test(input_file, output_file, agap)
+
+#"def test_sf_2007():
+#    input_file = RAIRE_INPUT_DIR + "SpecialCases/SanFran_2007.raire"
+#    output_file = RAIRE_OUTPUT_DIR + "SpecialCases/SanFran_2007.raire.out"
+#    agap = 0.00001
+#    run_test(input_file, output_file, agap)

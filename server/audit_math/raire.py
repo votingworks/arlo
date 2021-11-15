@@ -58,7 +58,7 @@ def make_neb_matrix(contest: Contest, cvrs: CVRS, asn_func) -> NEBMatrix:
 
 
 def make_frontier(
-    contest: Contest, cvrs: List[Dict[str, int]], winner: str, nebs: NEBMatrix, asn_func
+    contest: Contest, ballots: List[Dict[str, int]], winner: str, nebs: NEBMatrix, asn_func
 ) -> RaireFrontier:
     """
     Constructs the frontier for the search for the best audit
@@ -79,12 +79,8 @@ def make_frontier(
             newn = RaireNode([other, cand])
             newn.expandable = len(contest.candidates) > 2
 
-            if cand == '380' and other == '378':
-                print(f"before find_best_audit:\n{newn}")
-            find_best_audit(contest, cvrs, nebs, newn, asn_func)
+            find_best_audit(contest, ballots, nebs, newn, asn_func)
             frontier.insert_node(newn)
-            if cand == '380' and other == '378':
-                print(f"After find_best_audit {newn}")
 
     return frontier
 
@@ -113,7 +109,6 @@ def find_assertions(
             return True
 
         to_expand = frontier.nodes[0]
-        print(to_expand)
 
         # We can also stop searching if all nodes on our frontier are leaves.
         if not to_expand.expandable:
@@ -139,7 +134,6 @@ def find_assertions(
         dive_lb = perform_dive(to_expand, contest, ballots, nebs, asn_func)
 
         if dive_lb == np.inf:
-            print('inf dive')
             # The particular branch we dived along cannot be ruled out
             # with an assertion.
             return False
@@ -272,9 +266,7 @@ def compute_raire_assertions(
 
     # Construct initial frontier.
     ballots = [blt[contest.name] for _,blt in cvrs.items() if blt and contest.name in blt]
-    frontier = make_frontier(contest, ballots, "winner", nebs, asn_func)
-    print(f"top of the frontier: {frontier.nodes[0]}")
-
+    frontier = make_frontier(contest, ballots, winner, nebs, asn_func)
 
     # This is a running lowerbound on the overall difficulty of the
     # election audit.
@@ -283,8 +275,6 @@ def compute_raire_assertions(
     # -------------------- Find Assertions -----------------------------------
     if not find_assertions(contest, ballots, nebs, asn_func, frontier, lowerbound, agap):
         # If the audit isn't possible, we need a full recount
-        print(f'here {contest.name}')
-        print('===================================================')
         return []
     # ------------------------------------------------------------------------
     assertions: List[RaireAssertion] = []
