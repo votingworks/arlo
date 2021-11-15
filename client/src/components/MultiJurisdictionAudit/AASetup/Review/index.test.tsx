@@ -142,7 +142,7 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
-      apiCalls.getSampleSizeOptions(sampleSizeMock),
+      apiCalls.getSampleSizeOptions(sampleSizeMock.ballotPolling),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderView()
@@ -159,7 +159,7 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
-      apiCalls.getSampleSizeOptions(sampleSizeMock),
+      apiCalls.getSampleSizeOptions(sampleSizeMock.ballotPolling),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderView()
@@ -176,7 +176,7 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
-      apiCalls.getSampleSizeOptions(sampleSizeMock),
+      apiCalls.getSampleSizeOptions(sampleSizeMock.ballotPolling),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderView()
@@ -209,7 +209,7 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
-      apiCalls.getSampleSizeOptions(sampleSizeMock),
+      apiCalls.getSampleSizeOptions(sampleSizeMock.batchComparison),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderView()
@@ -228,7 +228,7 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedAndOpportunistic),
-      apiCalls.getSampleSizeOptions(sampleSizeMock),
+      apiCalls.getSampleSizeOptions(sampleSizeMock.ballotPolling),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderView()
@@ -245,7 +245,7 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedAndOpportunistic),
-      apiCalls.getSampleSizeOptions(sampleSizeMock),
+      apiCalls.getSampleSizeOptions(sampleSizeMock.ballotPolling),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
@@ -313,7 +313,7 @@ describe('Audit Setup > Review & Launch', () => {
         cvrContestNames: {},
       }),
       apiCalls.getSampleSizeOptions({
-        ...sampleSizeMock,
+        ...sampleSizeMock.ballotPolling,
         sampleSizes: {
           'contest-id': [
             { key: 'suite', size: 10, sizeCvr: 3, sizeNonCvr: 7, prob: null },
@@ -400,10 +400,10 @@ describe('Audit Setup > Review & Launch', () => {
         cvrContestNames: {},
       }),
       apiCalls.getSampleSizeOptions({
-        ...sampleSizeMock,
+        ...sampleSizeMock.ballotPolling,
         sampleSizes: null,
         task: {
-          ...sampleSizeMock.task,
+          ...sampleSizeMock.ballotPolling.task,
           status: FileProcessingStatus.ERRORED,
           error: 'sample sizes error',
         },
@@ -482,7 +482,7 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
-      apiCalls.getSampleSizeOptions(sampleSizeMock),
+      apiCalls.getSampleSizeOptions(sampleSizeMock.ballotPolling),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
@@ -509,7 +509,7 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
-      apiCalls.getSampleSizeOptions(sampleSizeMock),
+      apiCalls.getSampleSizeOptions(sampleSizeMock.ballotPolling),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
@@ -535,7 +535,7 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
-      apiCalls.getSampleSizeOptions(sampleSizeMock),
+      apiCalls.getSampleSizeOptions(sampleSizeMock.ballotPolling),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
@@ -565,7 +565,7 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
-      apiCalls.getSampleSizeOptions(sampleSizeMock),
+      apiCalls.getSampleSizeOptions(sampleSizeMock.ballotPolling),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
@@ -577,14 +577,14 @@ describe('Audit Setup > Review & Launch', () => {
       fireEvent.change(customSampleSizeInput, { target: { value: '40' } }) // userEvent has a problem with this field due to the lack of an explicit value field: https://github.com/testing-library/user-event/issues/356
       fireEvent.blur(customSampleSizeInput)
       await screen.findByText(
-        'Must be less than or equal to: 30 (the total number of ballots in the contest)'
+        'Must be less than or equal to 30 (the total number of ballots in the contest)'
       )
       userEvent.clear(customSampleSizeInput)
       fireEvent.change(customSampleSizeInput, { target: { value: '5' } })
       await waitFor(() =>
         expect(
           screen.queryByText(
-            'Must be less than or equal to: 30 (the total number of ballots in the contest)'
+            'Must be less than or equal to 30 (the total number of ballots in the contest)'
           )
         ).toBeNull()
       )
@@ -643,7 +643,7 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
-      apiCalls.getSampleSizeOptions(sampleSizeMock),
+      apiCalls.getSampleSizeOptions(sampleSizeMock.batchComparison),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderView()
@@ -659,7 +659,7 @@ describe('Audit Setup > Review & Launch', () => {
       fireEvent.change(customSampleSizeInput, { target: { value: '40' } }) // userEvent has a problem with this field due to the lack of an explicit value field: https://github.com/testing-library/user-event/issues/356
       fireEvent.blur(customSampleSizeInput)
       await screen.findByText(
-        'Must be less than or equal to: 20 (the total number of batches in the contest)'
+        'Must be less than or equal to 20 (the total number of batches in the contest)'
       )
     })
   })
@@ -677,7 +677,7 @@ describe('Audit Setup > Review & Launch', () => {
         standardizations: {},
         cvrContestNames: {},
       }),
-      apiCalls.getSampleSizeOptions(sampleSizeMock),
+      apiCalls.getSampleSizeOptions(sampleSizeMock.ballotComparison),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderView()
@@ -693,7 +693,7 @@ describe('Audit Setup > Review & Launch', () => {
       fireEvent.change(customSampleSizeInput, { target: { value: '50' } }) // userEvent has a problem with this field due to the lack of an explicit value field: https://github.com/testing-library/user-event/issues/356
       fireEvent.blur(customSampleSizeInput)
       await screen.findByText(
-        'Must be less than or equal to: 30 (the total number of ballots in the contest)'
+        'Must be less than or equal to 30 (the total number of ballots in the contest)'
       )
     })
   })
@@ -707,7 +707,7 @@ describe('Audit Setup > Review & Launch', () => {
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
       apiCalls.getSampleSizeOptions({
-        ...sampleSizeMock,
+        ...sampleSizeMock.ballotPolling,
         selected: { 'contest-id': { key: 'custom', size: 100, prob: null } },
       }),
     ]
@@ -796,7 +796,7 @@ describe('Audit Setup > Review & Launch', () => {
         },
         cvrContestNames,
       }),
-      apiCalls.getSampleSizeOptions(sampleSizeMock),
+      apiCalls.getSampleSizeOptions(sampleSizeMock.ballotComparison),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
@@ -894,7 +894,7 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargeted),
-      apiCalls.getSampleSizeOptions(sampleSizeMock),
+      apiCalls.getSampleSizeOptions(sampleSizeMock.ballotPolling),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
@@ -933,10 +933,11 @@ describe('Audit Setup > Review & Launch', () => {
         ],
       }),
       apiCalls.getSampleSizeOptions({
-        ...sampleSizeMock,
+        ...sampleSizeMock.ballotPolling,
         sampleSizes: {
-          ...sampleSizeMock.sampleSizes,
-          'contest-id-2': sampleSizeMock.sampleSizes['contest-id'],
+          ...sampleSizeMock.ballotPolling.sampleSizes,
+          'contest-id-2':
+            sampleSizeMock.ballotPolling.sampleSizes['contest-id'],
         },
       }),
     ]
@@ -970,7 +971,7 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargeted),
-      apiCalls.getSampleSizeOptions(sampleSizeMock),
+      apiCalls.getSampleSizeOptions(sampleSizeMock.ballotPolling),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
@@ -996,7 +997,37 @@ describe('Audit Setup > Review & Launch', () => {
     })
   })
 
-  it('in a non-ballot-polling audit, shows an error when sample size is a full hand tally', async () => {
+  it('in a ballot comparison audit, shows an error when sample size is a full hand tally', async () => {
+    const expectedCalls = [
+      apiCalls.getSettings(auditSettings.ballotComparisonAll),
+      apiCalls.getJurisdictions({
+        jurisdictions: jurisdictionMocks.allManifestsWithCVRs,
+      }),
+      apiCalls.getJurisdictionFile,
+      apiCalls.getContests(contestMocks.filledTargeted),
+      apiCalls.getStandardizedContestsFile,
+      apiCalls.getStandardizations({
+        standardizations: {},
+        cvrContestNames: {},
+      }),
+      apiCalls.getSampleSizeOptions(sampleSizeMock.ballotComparison),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderView()
+      await screen.findByText(/Choose the initial sample size/)
+      userEvent.click(screen.getByLabelText(/Enter your own sample size/))
+      userEvent.type(screen.getByRole('spinbutton'), '30')
+      const warning = (await screen.findByText(
+        'The currently selected sample size for this contest requires a full hand tally.'
+      )).closest('.bp3-callout') as HTMLElement
+      expect(warning).toHaveClass('bp3-intent-danger')
+      within(warning).getByText(
+        'To use Arlo for a full hand tally, recreate this audit using the ballot polling audit type.'
+      )
+    })
+  })
+
+  it('in a batch comparison audit, shows an error when sample size is a full hand tally', async () => {
     const expectedCalls = [
       apiCalls.getSettings(auditSettings.batchComparisonAll),
       apiCalls.getJurisdictions({
@@ -1004,12 +1035,13 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargeted),
-      apiCalls.getSampleSizeOptions(sampleSizeMock),
+      apiCalls.getSampleSizeOptions(sampleSizeMock.ballotPolling),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
       await screen.findByText(/Choose the initial sample size/)
-      userEvent.click(screen.getByLabelText(/90%/))
+      userEvent.click(screen.getByLabelText(/Enter your own sample size/))
+      userEvent.type(screen.getByRole('spinbutton'), '20')
       const warning = (await screen.findByText(
         'The currently selected sample size for this contest requires a full hand tally.'
       )).closest('.bp3-callout') as HTMLElement
