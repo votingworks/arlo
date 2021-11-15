@@ -859,7 +859,7 @@ def test_hybrid_invalid_sample_size(
                 "sizeNonCvr": 20,
                 "prob": None,
             },
-            "For a full hand tally, use the ballot polling audit type.",
+            "For a full hand tally, use the ballot polling or batch comparison audit type.",
         ),
         (
             {
@@ -869,7 +869,7 @@ def test_hybrid_invalid_sample_size(
                 "sizeNonCvr": 21,
                 "prob": None,
             },
-            "For a full hand tally, use the ballot polling audit type.",
+            "For a full hand tally, use the ballot polling or batch comparison audit type.",
         ),
     ]
     for invalid_sample_size, expected_error in invalid_sample_sizes:

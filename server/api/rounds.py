@@ -1008,9 +1008,12 @@ def validate_sample_size(round: dict, election: Election):
                 )
 
         if sample_size["size"] >= full_hand_tally_size[contest.id]:
-            if election.audit_type != AuditType.BALLOT_POLLING:
+            if election.audit_type not in [
+                AuditType.BALLOT_POLLING,
+                AuditType.BATCH_COMPARISON,
+            ]:
                 raise BadRequest(
-                    "For a full hand tally, use the ballot polling audit type."
+                    "For a full hand tally, use the ballot polling or batch comparison audit type."
                 )
             if len(targeted_contests) > 1:
                 raise BadRequest("For a full hand tally, use only one target contest.")

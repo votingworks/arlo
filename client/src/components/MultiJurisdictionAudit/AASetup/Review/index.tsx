@@ -484,7 +484,8 @@ const Review: React.FC<IProps> = ({
                             currentOption.size >= fullHandTallySize && (
                               <Callout
                                 intent={
-                                  auditType === 'BALLOT_POLLING' &&
+                                  (auditType === 'BALLOT_POLLING' ||
+                                    auditType === 'BATCH_COMPARISON') &&
                                   targetedContests.length === 1
                                     ? 'warning'
                                     : 'danger'
@@ -495,11 +496,14 @@ const Review: React.FC<IProps> = ({
                                   The currently selected sample size for this
                                   contest requires a full hand tally.
                                 </div>
-                                {auditType !== 'BALLOT_POLLING' && (
+                                {!(
+                                  auditType === 'BALLOT_POLLING' ||
+                                  auditType === 'BATCH_COMPARISON'
+                                ) && (
                                   <div>
                                     To use Arlo for a full hand tally, recreate
-                                    this audit using the ballot polling audit
-                                    type.
+                                    this audit using the ballot polling or batch
+                                    comparison audit type.
                                   </div>
                                 )}
                                 {auditType === 'BALLOT_POLLING' &&

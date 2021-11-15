@@ -1022,12 +1022,12 @@ describe('Audit Setup > Review & Launch', () => {
       )).closest('.bp3-callout') as HTMLElement
       expect(warning).toHaveClass('bp3-intent-danger')
       within(warning).getByText(
-        'To use Arlo for a full hand tally, recreate this audit using the ballot polling audit type.'
+        'To use Arlo for a full hand tally, recreate this audit using the ballot polling or batch comparison audit type.'
       )
     })
   })
 
-  it('in a batch comparison audit, shows an error when sample size is a full hand tally', async () => {
+  it('in a batch comparison audit, shows a warning when sample size is a full hand tally', async () => {
     const expectedCalls = [
       apiCalls.getSettings(auditSettings.batchComparisonAll),
       apiCalls.getJurisdictions({
@@ -1045,10 +1045,7 @@ describe('Audit Setup > Review & Launch', () => {
       const warning = (await screen.findByText(
         'The currently selected sample size for this contest requires a full hand tally.'
       )).closest('.bp3-callout') as HTMLElement
-      expect(warning).toHaveClass('bp3-intent-danger')
-      within(warning).getByText(
-        'To use Arlo for a full hand tally, recreate this audit using the ballot polling audit type.'
-      )
+      expect(warning).toHaveClass('bp3-intent-warning')
     })
   })
 })
