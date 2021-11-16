@@ -159,7 +159,11 @@ class NEBAssertion(RaireAssertion):
     """
 
     def is_vote_for_winner(self, cvr: CVR):
-        return 1 if self.contest in cvr and ranking(self.winner, cvr[self.contest]) == 1 else 0
+        return (
+            1
+            if self.contest in cvr and ranking(self.winner, cvr[self.contest]) == 1
+            else 0
+        )
 
     def is_vote_for_loser(self, cvr: CVR):
         if self.contest not in cvr:
@@ -398,7 +402,11 @@ class RaireFrontier:
 
 
 def find_best_audit(
-    contest: Contest, ballots: List[Dict[str, int]], neb_matrix, node: RaireNode, asn_func: Callable,
+    contest: Contest,
+    ballots: List[Dict[str, int]],
+    neb_matrix,
+    node: RaireNode,
+    asn_func: Callable,
 ):
     """
     Input:
@@ -495,7 +503,11 @@ def find_best_audit(
 
 
 def perform_dive(
-    node: RaireNode, contest: Contest, ballots: List[Dict[str, int]], neb_matrix, asn_func: Callable,
+    node: RaireNode,
+    contest: Contest,
+    ballots: List[Dict[str, int]],
+    neb_matrix,
+    asn_func: Callable,
 ):
     """
     Input:
@@ -534,7 +546,6 @@ def perform_dive(
         newn.best_ancestor = node.best_ancestor
     else:
         newn.best_ancestor = node
-
 
     find_best_audit(contest, ballots, neb_matrix, newn, asn_func)
     if not newn.expandable:
