@@ -2,7 +2,7 @@ from typing import Callable, Dict, Optional, List
 
 import numpy as np
 
-from .sampler_contest import Contest, CVR, CVRS
+from .sampler_contest import Contest, CVRS
 from .raire_utils import (
     NEBAssertion,
     RaireAssertion,
@@ -40,8 +40,8 @@ def make_neb_matrix(contest: Contest, cvrs: CVRS, asn_func) -> NEBMatrix:
 
             tally_cand: int = 0
             tally_other: int = 0
-            for _,cvr in cvrs.items():
-                assert cvr # for type checker
+            for _, cvr in cvrs.items():
+                assert cvr  # for type checker
                 tally_cand += asrn.is_vote_for_winner(cvr)
                 tally_other += asrn.is_vote_for_loser(cvr)
 
@@ -58,7 +58,11 @@ def make_neb_matrix(contest: Contest, cvrs: CVRS, asn_func) -> NEBMatrix:
 
 
 def make_frontier(
-    contest: Contest, ballots: List[Dict[str, int]], winner: str, nebs: NEBMatrix, asn_func
+    contest: Contest,
+    ballots: List[Dict[str, int]],
+    winner: str,
+    nebs: NEBMatrix,
+    asn_func,
 ) -> RaireFrontier:
     """
     Constructs the frontier for the search for the best audit
@@ -200,11 +204,7 @@ def find_assertions(
 
 
 def compute_raire_assertions(
-    contest: Contest,
-    cvrs: CVRS,
-    winner: str,
-    asn_func: Callable,
-    agap: float = 0.0,
+    contest: Contest, cvrs: CVRS, winner: str, asn_func: Callable, agap: float = 0.0,
 ) -> List[RaireAssertion]:
 
     """
@@ -265,7 +265,9 @@ def compute_raire_assertions(
     # already been eliminated.
 
     # Construct initial frontier.
-    ballots = [blt[contest.name] for _,blt in cvrs.items() if blt and contest.name in blt]
+    ballots = [
+        blt[contest.name] for _, blt in cvrs.items() if blt and contest.name in blt
+    ]
     frontier = make_frontier(contest, ballots, winner, nebs, asn_func)
 
     # This is a running lowerbound on the overall difficulty of the
@@ -273,7 +275,9 @@ def compute_raire_assertions(
     lowerbound = -10.0
 
     # -------------------- Find Assertions -----------------------------------
-    if not find_assertions(contest, ballots, nebs, asn_func, frontier, lowerbound, agap):
+    if not find_assertions(
+        contest, ballots, nebs, asn_func, frontier, lowerbound, agap
+    ):
         # If the audit isn't possible, we need a full recount
         return []
     # ------------------------------------------------------------------------

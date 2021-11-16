@@ -1,9 +1,8 @@
-import numpy as np
-import pytest
-from itertools import product
 from typing import Generator, List, Dict
+import pytest
+import numpy as np
 
-from server.audit_math.sampler_contest import Contest, CVR, CVRS
+from server.audit_math.sampler_contest import Contest, CVRS
 from server.audit_math.raire import (
     NEBMatrix,
     compute_raire_assertions,
@@ -12,8 +11,6 @@ from server.audit_math.raire import (
     find_assertions,
 )
 from server.audit_math.raire_utils import (
-    NEBAssertion,
-    NENAssertion,
     find_best_audit,
     RaireFrontier,
     RaireNode,
@@ -41,6 +38,7 @@ def contest() -> Generator[Contest, None, None]:
         },
     )
 
+
 @pytest.fixture
 def cvrs() -> Generator[CVRS, None, None]:
     cvrs: CVRS = {}
@@ -54,6 +52,7 @@ def cvrs() -> Generator[CVRS, None, None]:
         cvrs[f"Ballot {i}"] = {"Contest A": {"winner": 2, "loser": 3, "loser2": 1}}
 
     yield cvrs
+
 
 @pytest.fixture
 def ballots() -> Generator[List[Dict[str, int]], None, None]:
@@ -155,9 +154,7 @@ def test_find_assertions_infinite_to_expand(contest, cvrs, asn_func):
 
     frontier.nodes.insert(0, newn)
 
-    assert not find_assertions(
-        contest, cvrs, nebs, asn_func, frontier, lowerbound, 0
-    )
+    assert not find_assertions(contest, cvrs, nebs, asn_func, frontier, lowerbound, 0)
 
 
 def test_find_assertions_fake_ancestor(contest, cvrs, asn_func):
@@ -204,9 +201,7 @@ def test_find_assertions_infinite_branch(contest, cvrs, asn_func):
 
     frontier.nodes.insert(0, newn)
 
-    assert not find_assertions(
-        contest, cvrs, nebs, asn_func, frontier, lowerbound, 0
-    )
+    assert not find_assertions(contest, cvrs, nebs, asn_func, frontier, lowerbound, 0)
 
 
 def test_find_assertions_many_children(contest, cvrs, asn_func):
@@ -295,8 +290,8 @@ def run_test(input_file, output_file, agap):
 
         cvrs = {}
 
-        for l in range(ncontests + 1, len(lines)):
-            toks = lines[l].strip().split(",")
+        for line in range(ncontests + 1, len(lines)):
+            toks = lines[line].strip().split(",")
 
             cid = toks[0]
             bid = toks[1]
@@ -308,12 +303,12 @@ def run_test(input_file, output_file, agap):
             contests[cid]["ballots"] += 1
 
             ballot = {}
-            for c in contests[cid]:
-                if c in prefs:
-                    idx = prefs.index(c) + 1
-                    ballot[c] = idx
+            for cand in contests[cid]:
+                if cand in prefs:
+                    idx = prefs.index(cand) + 1
+                    ballot[cand] = idx
                 else:
-                    ballot[c] = 0
+                    ballot[cand] = 0
 
             if not bid in cvrs:
                 cvrs[bid] = {cid: ballot}
@@ -323,13 +318,8 @@ def run_test(input_file, output_file, agap):
         for contest, votes in contests.items():
             con = Contest(contest, votes)
 
-
             audit = compute_raire_assertions(
-                con,
-                cvrs,
-                winners[contest],
-                lambda m: 1 / m if m > 0 else np.inf,
-                agap,
+                con, cvrs, winners[contest], lambda m: 1 / m if m > 0 else np.inf, agap,
             )
 
             asrtns = []
@@ -348,9 +338,7 @@ def test_raire(contest, cvrs, asn_func):
     expected = []
 
     # we expect to show that winner is not eliminated before loser2
-    expected.append(
-        make_neb_assertion(contest, cvrs, asn_func, "winner", "loser2", [])
-    )
+    expected.append(make_neb_assertion(contest, cvrs, asn_func, "winner", "loser2", []))
 
     # we expect loser to be eliminated next
     expected.append(
@@ -364,9 +352,7 @@ def test_raire(contest, cvrs, asn_func):
 
     # Use a small agap
 
-    res = compute_raire_assertions(
-        contest, cvrs, "winner", asn_func, agap=0.00000001
-    )
+    res = compute_raire_assertions(contest, cvrs, "winner", asn_func, agap=0.00000001)
     assert res == expected
 
 
@@ -382,7 +368,6 @@ def test_raire_recount(asn_func):
         },
     )
 
-    ballots = []
     cvrs = {}
     for i in range(50000):
         cvrs[i] = {"Contest A": {"winner": 1, "loser": 2}}
@@ -391,7 +376,7 @@ def test_raire_recount(asn_func):
 
     res = compute_raire_assertions(contest, cvrs, "winner", asn_func)
 
-    # assert res == []
+    assert res == []
 
 
 def test_aspen_wrong_winner():
@@ -404,11 +389,12 @@ def test_aspen_wrong_winner():
 def test_berkeley_2010():
     input_file = RAIRE_INPUT_DIR + "Berkeley_2010.raire"
     output_file = RAIRE_OUTPUT_DIR + "Berkeley_2010.raire.out"
-    #agap = 0.00001
+    # agap = 0.00001
     agap = 0
     run_test(input_file, output_file, agap)
 
-#"def test_sf_2007():
+
+# "def test_sf_2007():
 #    input_file = RAIRE_INPUT_DIR + "SpecialCases/SanFran_2007.raire"
 #    output_file = RAIRE_OUTPUT_DIR + "SpecialCases/SanFran_2007.raire.out"
 #    agap = 0.00001

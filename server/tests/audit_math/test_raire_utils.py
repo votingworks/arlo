@@ -2,7 +2,7 @@ from typing import List, Any, Dict, Generator
 import pytest
 import numpy as np
 
-from server.audit_math.sampler_contest import Contest, CVR
+from server.audit_math.sampler_contest import Contest, CVRS
 
 import server.audit_math.raire_utils as raire_utils
 
@@ -330,14 +330,16 @@ def test_find_best_audit_simple():
     assert tree.estimate == expected.difficulty
 
 
-def make_neb_assertion(contest, ballots: List[Dict[str, int]], asn_func, winner, loser, eliminated):
+def make_neb_assertion(contest, cvrs: CVRS, asn_func, winner, loser, eliminated):
     assertion = raire_utils.NEBAssertion(contest.name, winner, loser)
     assertion.eliminated = eliminated
     assertion.votes_for_winner = sum(
-        [assertion.is_vote_for_winner(ballot) for ballot in ballots]
+        [
+            assertion.is_vote_for_winner(cvr) for _, cvr in cvrs.items() if cvr
+        ]  # if is for the type checker
     )
     assertion.votes_for_loser = sum(
-        [assertion.is_vote_for_loser(ballot) for ballot in ballots]
+        [assertion.is_vote_for_loser(cvr) for _, cvr in cvrs.items() if cvr]
     )
 
     assertion.margin = assertion.votes_for_winner - assertion.votes_for_loser
@@ -346,13 +348,13 @@ def make_neb_assertion(contest, ballots: List[Dict[str, int]], asn_func, winner,
     return assertion
 
 
-def make_nen_assertion(contest, ballots: List[Dict[str, int]], asn_func, winner, loser, eliminated):
+def make_nen_assertion(contest, cvrs: CVRS, asn_func, winner, loser, eliminated):
     assertion = raire_utils.NENAssertion(contest.name, winner, loser, eliminated)
     assertion.votes_for_winner = sum(
-        [assertion.is_vote_for_winner(ballot) for ballot in ballots]
+        [assertion.is_vote_for_winner(cvr) for _, cvr in cvrs.items() if cvr]
     )
     assertion.votes_for_loser = sum(
-        [assertion.is_vote_for_loser(ballot) for ballot in ballots]
+        [assertion.is_vote_for_loser(cvr) for _, cvr in cvrs.items() if cvr]
     )
 
     assertion.margin = assertion.votes_for_winner - assertion.votes_for_loser
