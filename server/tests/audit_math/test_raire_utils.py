@@ -117,6 +117,10 @@ def test_nebassertion():
     # pylint: disable=comparison-with-itself
     assert asrtn_1 == asrtn_1
 
+    cvr = {"Contest B": {"winner": 1, "loser": 2}}
+    assert not asrtn_1.is_vote_for_winner(cvr)
+    assert not asrtn_1.is_vote_for_loser(cvr)
+
 
 def test_simple_contest():
     cvr1 = {"test_con": {"Ann": 1, "Sally": 3, "Bob": 2, "Mike": 4}}
@@ -194,6 +198,10 @@ def test_nenassertion_is_vote_for():
     # pylint: disable=comparison-with-itself
     assert asrtn_1 == asrtn_1
 
+    cvr = {"Contest B": {"winner": 1, "loser": 2}}
+    assert not asrtn_1.is_vote_for_winner(cvr)
+    assert not asrtn_1.is_vote_for_loser(cvr)
+
 
 def test_nenassertion_subsumes():
     contest = "Contest A"
@@ -228,6 +236,10 @@ def test_raire_node_descendents():
     child = raire_utils.RaireNode(["c", "b", "a"])
     assert child.is_descendent_of(parent)
     assert not child.is_descendent_of(not_child)
+
+    assert child != parent
+    other = raire_utils.RaireNode(["b", "a"])
+    assert other == parent
 
 
 def test_raire_node_repr():
@@ -291,6 +303,13 @@ def test_raire_frontier():
 
     frontier.replace_descendents(node3)
     assert frontier.nodes == [node3, node3]
+
+    other = raire_utils.RaireFrontier()
+    other.insert_node(node3)
+    other.insert_node(node3)
+    assert other == frontier
+
+    assert str(other) == str([node3, node3])
 
 
 def test_find_best_audit_simple():
@@ -379,6 +398,21 @@ def contest() -> Generator[Contest, None, None]:
 
 
 @pytest.fixture
+def cvrs() -> Generator[CVRS, None, None]:
+    cvrs: CVRS = {}
+    for i in range(25000):
+        cvrs[f"Ballot {i}"] = {"Contest A": {"winner": 1, "loser": 2, "loser2": 3}}
+    for i in range(25000, 50000):
+        cvrs[f"Ballot {i}"] = {"Contest A": {"winner": 1, "loser": 3, "loser2": 2}}
+    for i in range(50000, 80000):
+        cvrs[f"Ballot {i}"] = {"Contest A": {"winner": 2, "loser": 1, "loser2": 3}}
+    for i in range(80000, 100000):
+        cvrs[f"Ballot {i}"] = {"Contest A": {"winner": 2, "loser": 3, "loser2": 1}}
+
+    yield cvrs
+
+
+@pytest.fixture
 def ballots() -> Generator[List[Dict[str, int]], None, None]:
     ballots = []
     for _ in range(25000):
@@ -398,26 +432,26 @@ def asn_func():
     yield lambda m: 1 / m if m > 0 else np.inf
 
 
-def test_find_best_audit_complex(contest, ballots, asn_func):
+def test_find_best_audit_complex(contest, cvrs, ballots, asn_func):
     winner_neb_loser = make_neb_assertion(
-        contest, ballots, asn_func, "winner", "loser", []
+        contest, cvrs, asn_func, "winner", "loser", []
     )
     winner_neb_loser2 = make_neb_assertion(
-        contest, ballots, asn_func, "winner", "loser2", []
+        contest, cvrs, asn_func, "winner", "loser2", []
     )
 
     loser_neb_loser2 = make_neb_assertion(
-        contest, ballots, asn_func, "loser", "loser2", []
+        contest, cvrs, asn_func, "loser", "loser2", []
     )
     loser_neb_winner = make_neb_assertion(
-        contest, ballots, asn_func, "loser", "winner", []
+        contest, cvrs, asn_func, "loser", "winner", []
     )
 
     loser2_neb_loser = make_neb_assertion(
-        contest, ballots, asn_func, "loser2", "loser", []
+        contest, cvrs, asn_func, "loser2", "loser", []
     )
     loser2_neb_winner = make_neb_assertion(
-        contest, ballots, asn_func, "loser2", "winner", []
+        contest, cvrs, asn_func, "loser2", "winner", []
     )
 
     neb_matrix = {
@@ -438,15 +472,15 @@ def test_find_best_audit_complex(contest, ballots, asn_func):
     assert tree.best_assertion == expected
 
 
-def test_find_best_with_eliminated(contest, ballots, asn_func):
+def test_find_best_with_eliminated(contest, cvrs, ballots, asn_func):
     winner_neb_loser = make_neb_assertion(
-        contest, ballots, asn_func, "winner", "loser", ["loser2"]
+        contest, cvrs, asn_func, "winner", "loser", ["loser2"]
     )
     loser_neb_winner = make_neb_assertion(
-        contest, ballots, asn_func, "loser", "winner", ["loser2"]
+        contest, cvrs, asn_func, "loser", "winner", ["loser2"]
     )
     loser2_neb_winner = make_neb_assertion(
-        contest, ballots, asn_func, "loser2", "winner", ["loser2"]
+        contest, cvrs, asn_func, "loser2", "winner", ["loser2"]
     )
 
     neb_matrix = {
@@ -468,17 +502,17 @@ def test_find_best_with_eliminated(contest, ballots, asn_func):
     assert tree.best_assertion == expected
 
 
-def test_find_best_with_wrong_elimination(contest, ballots, asn_func):
+def test_find_best_with_wrong_elimination(contest, cvrs, ballots, asn_func):
 
     # Now check that an accidentally eliminated candidate doesn't work
     winner_neb_loser = make_neb_assertion(
-        contest, ballots, asn_func, "winner", "loser", ["winner"]
+        contest, cvrs, asn_func, "winner", "loser", ["winner"]
     )
     loser_neb_loser2 = make_neb_assertion(
-        contest, ballots, asn_func, "loser", "loser2", ["winner"]
+        contest, cvrs, asn_func, "loser", "loser2", ["winner"]
     )
     loser2_neb_loser = make_neb_assertion(
-        contest, ballots, asn_func, "loser2", "loser", ["winner"]
+        contest, cvrs, asn_func, "loser2", "loser", ["winner"]
     )
 
     neb_matrix = {
@@ -491,36 +525,33 @@ def test_find_best_with_wrong_elimination(contest, ballots, asn_func):
 
     raire_utils.find_best_audit(contest, ballots, neb_matrix, tree, asn_func)
 
-    # Because this audit is impossible, all assertions have inifinite difficulty.
-    # This means it will just pick the first assertion as the "best" one
-    expected = loser2_neb_loser
+    expected = winner_neb_loser
     expected.eliminated = ["winner"]
 
     # check that we get expected best assertion
     assert tree.best_assertion == expected
-    assert tree.best_assertion.difficulty == np.inf
 
 
-def test_perform_dive_impossible(contest, ballots, asn_func):
+def test_perform_dive_impossible(contest, cvrs, ballots, asn_func):
     winner_neb_loser = make_neb_assertion(
-        contest, ballots, asn_func, "winner", "loser", ["loser2"]
+        contest, cvrs, asn_func, "winner", "loser", ["loser2"]
     )
     winner_neb_loser2 = make_neb_assertion(
-        contest, ballots, asn_func, "winner", "loser2", ["loser2"]
+        contest, cvrs, asn_func, "winner", "loser2", ["loser2"]
     )
 
     loser_neb_loser2 = make_neb_assertion(
-        contest, ballots, asn_func, "loser", "loser2", ["loser2"]
+        contest, cvrs, asn_func, "loser", "loser2", ["loser2"]
     )
     loser_neb_winner = make_neb_assertion(
-        contest, ballots, asn_func, "loser", "winner", ["loser2"]
+        contest, cvrs, asn_func, "loser", "winner", ["loser2"]
     )
 
     loser2_neb_loser = make_neb_assertion(
-        contest, ballots, asn_func, "loser2", "loser", ["loser2"]
+        contest, cvrs, asn_func, "loser2", "loser", ["loser2"]
     )
     loser2_neb_winner = make_neb_assertion(
-        contest, ballots, asn_func, "loser2", "winner", ["loser2"]
+        contest, cvrs, asn_func, "loser2", "winner", ["loser2"]
     )
 
     neb_matrix = {
@@ -538,26 +569,26 @@ def test_perform_dive_impossible(contest, ballots, asn_func):
     assert result == expected
 
 
-def test_perform_dive_possible(contest, ballots, asn_func):
+def test_perform_dive_possible(contest, cvrs, ballots, asn_func):
     winner_neb_loser = make_neb_assertion(
-        contest, ballots, asn_func, "winner", "loser", ["loser2"]
+        contest, cvrs, asn_func, "winner", "loser", ["loser2"]
     )
     winner_neb_loser2 = make_neb_assertion(
-        contest, ballots, asn_func, "winner", "loser2", ["loser2"]
+        contest, cvrs, asn_func, "winner", "loser2", ["loser2"]
     )
 
     loser_neb_loser2 = make_neb_assertion(
-        contest, ballots, asn_func, "loser", "loser2", ["loser2"]
+        contest, cvrs, asn_func, "loser", "loser2", ["loser2"]
     )
     loser_neb_winner = make_neb_assertion(
-        contest, ballots, asn_func, "loser", "winner", ["loser2"]
+        contest, cvrs, asn_func, "loser", "winner", ["loser2"]
     )
 
     loser2_neb_loser = make_neb_assertion(
-        contest, ballots, asn_func, "loser2", "loser", ["loser2"]
+        contest, cvrs, asn_func, "loser2", "loser", ["loser2"]
     )
     loser2_neb_winner = make_neb_assertion(
-        contest, ballots, asn_func, "loser2", "winner", ["loser2"]
+        contest, cvrs, asn_func, "loser2", "winner", ["loser2"]
     )
 
     neb_matrix = {
@@ -566,11 +597,11 @@ def test_perform_dive_possible(contest, ballots, asn_func):
         "loser2": {"loser": loser2_neb_loser, "winner": loser2_neb_winner,},
     }
 
-    tree = raire_utils.RaireNode(["winner"])
+    tree = raire_utils.RaireNode(["loser"])
 
     result = raire_utils.perform_dive(tree, contest, ballots, neb_matrix, asn_func)
     expected = make_nen_assertion(
-        contest, ballots, asn_func, "winner", "loser", ["loser2"]
+        contest, cvrs, asn_func, "winner", "loser", ["loser2"]
     )
 
     assert result == expected.difficulty

@@ -15,10 +15,7 @@ from server.audit_math.raire_utils import (
     RaireFrontier,
     RaireNode,
 )
-from server.tests.audit_math.test_raire_utils import (
-    make_nen_assertion,
-    make_neb_assertion,
-)
+from server.tests.audit_math.test_raire_utils import make_neb_assertion
 
 RAIRE_INPUT_DIR = "server/tests/audit_math/RaireData/Input/"
 RAIRE_OUTPUT_DIR = "server/tests/audit_math/RaireData/Output/"
@@ -75,10 +72,10 @@ def asn_func():
     yield lambda m: 1 / m if m > 0 else np.inf
 
 
-def test_make_neb_matrix(contest, ballots, cvrs, asn_func):
+def test_make_neb_matrix(contest, cvrs, asn_func):
     expected: NEBMatrix = {
         c: {
-            d: make_neb_assertion(contest, ballots, asn_func, c, d, [])
+            d: make_neb_assertion(contest, cvrs, asn_func, c, d, [])
             for d in contest.candidates
         }
         for c in contest.candidates
@@ -340,9 +337,9 @@ def test_raire(contest, cvrs, asn_func):
     # we expect to show that winner is not eliminated before loser2
     expected.append(make_neb_assertion(contest, cvrs, asn_func, "winner", "loser2", []))
 
-    # we expect loser to be eliminated next
+    # we then expect to show that the winner is not eliminated before loser
     expected.append(
-        make_nen_assertion(contest, cvrs, asn_func, "winner", "loser", ["loser2"])
+        make_neb_assertion(contest, cvrs, asn_func, "winner", "loser", ["loser2"])
     )
 
     # sort by difficuly
@@ -371,12 +368,13 @@ def test_raire_recount(asn_func):
     cvrs = {}
     for i in range(50000):
         cvrs[i] = {"Contest A": {"winner": 1, "loser": 2}}
-    for _ in range(50000):
+    for i in range(50000, 100000):
         cvrs[i] = {"Contest A": {"winner": 2, "loser": 1}}
 
     res = compute_raire_assertions(contest, cvrs, "winner", asn_func)
 
     assert res == []
+    # assert res == [None]
 
 
 def test_aspen_wrong_winner():

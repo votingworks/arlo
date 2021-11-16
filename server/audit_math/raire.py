@@ -184,23 +184,12 @@ def find_assertions(
                     ):
                         return False
 
-                    if (
-                        newn.best_ancestor
-                        and newn.best_ancestor.estimate <= newn.estimate
-                    ):
+                    # This is for the type checker...
+                    if newn.best_ancestor:
                         lowerbound = max(lowerbound, newn.best_ancestor.estimate)
                         frontier.replace_descendents(newn.best_ancestor)
-
-                    else:
-                        lowerbound = max(lowerbound, newn.estimate)
-                        frontier.insert_node(newn)
-
                 else:
                     frontier.insert_node(newn)
-
-    # Return whether or not we think the audit is possible, after mutating
-    # frontier.
-    return audit_possible
 
 
 def compute_raire_assertions(
@@ -295,7 +284,6 @@ def compute_raire_assertions(
 
         if not skip:
             assertions.append(node.best_assertion)
-
     # Assertions will be sorted in order of greatest to least difficulty.
     sorted_assertions = sorted(assertions)
     len_assertions = len(sorted_assertions)
@@ -323,7 +311,8 @@ def compute_raire_assertions(
 
                 break
 
-        if not subsumed:
+        # Ignore "None" assertions
+        if assrtn_i and not subsumed:
             final_audit.append(assrtn_i)
 
     return final_audit
