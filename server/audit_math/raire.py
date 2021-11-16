@@ -163,7 +163,7 @@ def find_assertions(
         for cand in contest.candidates:
             if not cand in to_expand.tail:
                 newn = RaireNode([cand] + to_expand.tail)
-                newn.expandable = not len(newn.tail) == len(contest.candidates)
+                newn.expandable = len(newn.tail) < len(contest.candidates)
 
                 # Assign a 'best ancestor' to the new node.
                 newn.best_ancestor = (
