@@ -2,6 +2,7 @@
 from collections import defaultdict
 from enum import Enum
 from typing import (
+    IO,
     BinaryIO,
     Iterable,
     List,
@@ -84,7 +85,7 @@ def validate_csv_mimetype(file: FileStorage) -> None:
         raise BadRequest(INVALID_CSV_ERROR)
 
 
-def read_chunks(file: BinaryIO, chunk_size: int) -> Iterable[bytes]:
+def read_chunks(file: IO[bytes], chunk_size: int) -> Iterable[bytes]:
     while True:
         chunk = file.read(chunk_size)
         if not chunk:
@@ -92,7 +93,7 @@ def read_chunks(file: BinaryIO, chunk_size: int) -> Iterable[bytes]:
         yield chunk
 
 
-def decode_csv(file: BinaryIO) -> TextIO:
+def decode_csv(file: IO[bytes]) -> TextIO:
     detector = chardet.UniversalDetector()
     for i, chunk in enumerate(read_chunks(file, 64)):
         detector.feed(chunk)
@@ -108,7 +109,7 @@ def decode_csv(file: BinaryIO) -> TextIO:
     return io.TextIOWrapper(file, encoding=encoding, newline=None)
 
 
-def validate_not_empty(file: BinaryIO):
+def validate_not_empty(file: IO[bytes]):
     if file.read(1) == b"":
         raise CSVParseError("CSV cannot be empty.")
     file.seek(0)

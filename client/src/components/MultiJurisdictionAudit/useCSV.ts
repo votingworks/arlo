@@ -14,6 +14,7 @@ export enum FileProcessingStatus {
 export enum CvrFileType {
   DOMINION = 'DOMINION',
   CLEARBALLOT = 'CLEARBALLOT',
+  ESS = 'ESS',
 }
 
 export interface IFileInfo {
@@ -34,7 +35,7 @@ export interface IFileInfo {
 }
 
 interface IUpload {
-  file: File
+  file: File | File[]
   progress: number
 }
 
@@ -46,13 +47,14 @@ const loadCSVFile = async (url: string): Promise<IFileInfo | null> =>
 
 const putCSVFile = async (
   url: string,
-  csv: File,
+  file: File | File[],
   formKey: string,
   trackProgress: (progress: number) => void,
   cvrFileType?: CvrFileType
 ): Promise<boolean> => {
   const formData: FormData = new FormData()
-  formData.append(formKey, csv, csv.name)
+  const files = file instanceof File ? [file] : file
+  for (const f of files) formData.append(formKey, f, f.name)
   if (cvrFileType) formData.append('cvrFileType', cvrFileType)
   try {
     await axios(`/api${url}`, addCSRFToken({
@@ -83,7 +85,7 @@ const useCSV = (
   dependencyFile?: IFileInfo | null
 ): [
   IFileInfo | null,
-  (csv: File) => Promise<boolean>,
+  (csv: File | File[]) => Promise<boolean>,
   () => Promise<boolean>
 ] => {
   const [csv, setCSV] = useState<IFileInfo | null>(null)
@@ -114,7 +116,7 @@ const useCSV = (
   ])
 
   const uploadCSV = async (
-    file: File,
+    file: File | File[],
     cvrFileType?: CvrFileType
   ): Promise<boolean> => {
     if (!shouldFetch) return false
@@ -159,7 +161,7 @@ const useCSV = (
 
 export const useJurisdictionsFile = (
   electionId: string
-): [IFileInfo | null, (csv: File) => Promise<boolean>] => {
+): [IFileInfo | null, (csv: File | File[]) => Promise<boolean>] => {
   const [csv, uploadCSV] = useCSV(
     `/election/${electionId}/jurisdiction/file`,
     'jurisdictions'
@@ -172,7 +174,7 @@ export const useStandardizedContestsFile = (
   electionId: string,
   auditSettings: IAuditSettings | null,
   jurisdictionsFile?: IFileInfo | null
-): [IFileInfo | null, (csv: File) => Promise<boolean>] => {
+): [IFileInfo | null, (csv: File | File[]) => Promise<boolean>] => {
   const [csv, uploadCSV] = useCSV(
     `/election/${electionId}/standardized-contests/file`,
     'standardized-contests',

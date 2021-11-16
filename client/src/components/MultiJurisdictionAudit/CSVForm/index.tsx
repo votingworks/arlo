@@ -24,13 +24,16 @@ export const Select = styled(HTMLSelect)`
 `
 
 interface IValues {
-  csv: File | null
+  csv: File | File[] | null
   cvrFileType?: CvrFileType
 }
 
 interface IProps {
   csvFile: IFileInfo
-  uploadCSVFile: (csv: File, cvrFileType?: CvrFileType) => Promise<boolean>
+  uploadCSVFile: (
+    csv: File | File[],
+    cvrFileType?: CvrFileType
+  ) => Promise<boolean>
   deleteCSVFile?: () => Promise<boolean>
   title?: string
   description: string
@@ -114,6 +117,7 @@ const CSVFile = ({
                   >
                     <option value={CvrFileType.DOMINION}>Dominion</option>
                     <option value={CvrFileType.CLEARBALLOT}>ClearBallot</option>
+                    <option value={CvrFileType.ESS}>ES&amp;S</option>
                   </HTMLSelect>
                 </label>
               </div>
@@ -125,16 +129,27 @@ const CSVFile = ({
                     inputProps={{
                       accept: '.csv',
                       name: 'csv',
+                      multiple: values.cvrFileType === CvrFileType.ESS,
                     }}
-                    onInputChange={e =>
-                      setFieldValue(
-                        'csv',
-                        (e.currentTarget.files && e.currentTarget.files[0]) ||
-                          undefined
-                      )
-                    }
+                    onInputChange={e => {
+                      const { files } = e.currentTarget
+                      if (values.cvrFileType === CvrFileType.ESS) {
+                        setFieldValue(
+                          'csv',
+                          files && files.length > 0 ? files : undefined
+                        )
+                      } else {
+                        setFieldValue('csv', (files && files[0]) || undefined)
+                      }
+                    }}
                     hasSelection={!!values.csv}
-                    text={values.csv ? values.csv.name : 'Select a CSV...'}
+                    text={
+                      values.csv
+                        ? values.csv instanceof File
+                          ? values.csv.name
+                          : `${values.csv.length} files selected`
+                        : 'Select a CSV...'
+                    }
                     onBlur={handleBlur}
                     disabled={isSubmitting || isProcessing || !enabled}
                   />
@@ -169,6 +184,7 @@ const CSVFile = ({
                     {upload &&
                       // Only show upload progress for large files (over 1 MB),
                       // otherwise it will just flash on the screen
+                      upload.file instanceof File &&
                       upload.file.size >= 1000 * 1000 && (
                         <>
                           <span style={{ marginRight: '5px' }}>
