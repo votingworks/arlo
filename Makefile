@@ -49,10 +49,18 @@ test-client:
 	yarn --cwd client test
 
 test-server:
-	poetry run pytest -n auto
+	poetry run pytest -n auto --ignore=server/tests/extra
 
 test-server-coverage:
-	poetry run pytest -n auto --cov=.
+	poetry run pytest -n auto --cov=. --ignore=server/tests/extra
+
+# This runs all tests. If you have the extra files repo included, it runs those as well.
+test-server-extra: 
+	poetry run pytest -n auto 
+
+test-server-extra-coverage:
+	poetry run pytest -n auto --cov=. 
+
 
 run-dev:
 	./run-dev.sh
