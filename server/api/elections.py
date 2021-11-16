@@ -67,7 +67,7 @@ def create_election():
     validate_new_election(election)
 
     online = {
-        AuditType.BALLOT_POLLING: False,
+        AuditType.BALLOT_POLLING: True,
         AuditType.BATCH_COMPARISON: False,
         AuditType.BALLOT_COMPARISON: True,
         AuditType.HYBRID: True,

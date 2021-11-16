@@ -17,7 +17,6 @@ describe('Ballot Comparison Test Cases', () => {
     cy.get('input[value="BALLOT_COMPARISON"]').check({ force: true })
     cy.findByText('Create Audit').click()
     cy.contains('Audit Setup')
-    cy.viewport(1000, 2000)
 
     // upload invalid jurisdiction filesheet
     cy.fixture(
@@ -249,7 +248,7 @@ describe('Ballot Comparison Test Cases', () => {
       cy.findByRole('button', { name: 'Submit Selections' }).click()
       cy.findByText('Confirm Selections').click()
       cy.findByText('Change Selections').should('not.exist')
-      cy.findByText(/All Ballots/).click({ force: true })
+      cy.findByText(/All Ballots/).click()
     })
 
     cy.contains('Ballots for Audit Board #1')
@@ -259,7 +258,7 @@ describe('Ballot Comparison Test Cases', () => {
       // iterate through exactly the number of ballots available to avoid conditions
       if (index == 0) {
         // button name when some ballots are audited
-        cy.findByText('Audit Next Ballot').click()
+        cy.findByText('Audit Next Ballot').click({ force: true })
       }
       // since the first ballot is already audited
       if (index < list.length - 1) {
@@ -268,6 +267,7 @@ describe('Ballot Comparison Test Cases', () => {
           .click({ force: true })
         cy.findByRole('button', { name: 'Submit Selections' }).click()
         cy.findByText('Confirm Selections').click()
+        cy.findAndCloseToast('Success! Now showing the next ballot to audit.')
         cy.findByText('Change Selections').should('not.exist')
       }
     })
@@ -283,6 +283,7 @@ describe('Ballot Comparison Test Cases', () => {
     cy.findByRole('button', { name: 'Submit Selections' }).click()
     cy.findByText('Confirm Selections').click()
     cy.findByText('Change Selections').should('not.exist')
+    cy.findAndCloseToast('Success! Now showing the next ballot to audit.')
     cy.findByText(/All Ballots/).click({ force: true })
 
     cy.findByText(/Not Audited/).should('have.length', 1)

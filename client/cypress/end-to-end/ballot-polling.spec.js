@@ -17,7 +17,6 @@ describe('Ballot Polling', () => {
     cy.get('input[value="BALLOT_POLLING"]').check({ force: true })
     cy.get('input[value="BRAVO"]').check({ force: true })
     cy.findByText('Create Audit').click()
-    cy.viewport(1000, 2000)
     cy.contains('Audit Setup')
   })
 
@@ -53,6 +52,7 @@ describe('Ballot Polling', () => {
     cy.findByText('Save & Next').click()
     cy.get('#state').select('AL')
     cy.get('input[name=electionName]').type(`Test Election`)
+    cy.findByLabelText('Offline').check({ force: true })
     cy.get('#risk-limit').select('10')
     cy.get('input[name=randomSeed]').type('543210')
     cy.findByText('Save & Next').click()
@@ -142,7 +142,6 @@ describe('Ballot Polling', () => {
     cy.findByText('Save & Next').click()
     cy.findAllByText('Opportunistic Contests').should('have.length', 2)
     cy.findByText('Save & Next').click()
-    cy.get('input[value=online]').click({ force: true })
     cy.findByRole('combobox', {
       name: /Choose your state from the options below/,
     }).select('AL')

@@ -6,7 +6,6 @@ from typing import (
     List,
     Tuple,
     Dict,
-    cast as typing_cast,
     TypedDict,
 )
 from datetime import datetime
@@ -23,7 +22,6 @@ from ..auth import restrict_access, UserType
 from . import sample_sizes as sample_sizes_module
 from ..util.isoformat import isoformat
 from ..util.group_by import group_by
-from ..util.jsonschema import JSONDict
 from ..audit_math import (
     sampler,
     ballot_polling,
@@ -35,7 +33,6 @@ from ..audit_math import (
 from .cvrs import hybrid_contest_choice_vote_counts, cvr_contests_metadata
 from .ballot_manifest import hybrid_contest_total_ballots
 from ..worker.tasks import (
-    UserError,
     background_task,
     create_background_task,
     serialize_background_task,
@@ -568,9 +565,9 @@ def is_round_complete(election: Election, round: Round) -> bool:
     # jurisdiction that had ballots sampled
     else:
         num_jurisdictions_without_results: int
-        # Special case: if we sampled all ballots, we just check every
+        # Special case: if we are in a full hand tally, we just check every
         # jurisdiction in the targeted contest's universe
-        if sampled_all_ballots(round, election):
+        if is_full_hand_tally(round, election):
             num_jurisdictions_without_results = (
                 Contest.query.filter_by(election_id=election.id, is_targeted=True)
                 .join(Contest.jurisdictions)
@@ -615,14 +612,52 @@ def is_round_complete(election: Election, round: Round) -> bool:
         return num_jurisdictions_without_results == 0
 
 
-def sampled_all_ballots(round: Round, election: Election):
-    return election.audit_type == AuditType.BALLOT_POLLING and any(
-        typing_cast(JSONDict, round_contest.sample_size)["size"]
-        >= round_contest.contest.total_ballots_cast
-        for round_contest in round.round_contests
-        if round_contest.sample_size is not None
-        # total_ballots_cast can't be None here, but typechecker needs this
-        and round_contest.contest.total_ballots_cast is not None
+# Calculates the sample size threshold to trigger a full hand tally in each
+# targeted contest
+def full_hand_tally_sizes(election: Election):
+    contests_query = Contest.query.filter_by(election_id=election.id, is_targeted=True)
+    if election.audit_type == AuditType.BATCH_COMPARISON:
+        return dict(
+            contests_query.join(Contest.jurisdictions)
+            .group_by(Contest.id)
+            .values(
+                Contest.id,
+                func.coalesce(func.sum(Jurisdiction.manifest_num_batches), 0),
+            )
+        )
+    return dict(contests_query.values(Contest.id, Contest.total_ballots_cast))
+
+
+# Returns True if the sample size for any targeted contest in the given round
+# requires a full hand tally
+def needs_full_hand_tally(round: Round, election: Election) -> bool:
+    full_hand_tally_size = full_hand_tally_sizes(election)
+    cumulative_sample_sizes = dict(
+        RoundContest.query.join(Round)
+        .filter_by(election_id=round.election_id)
+        .filter(Round.round_num <= round.round_num)
+        .join(RoundContest.contest)
+        .filter_by(is_targeted=True)
+        .group_by(RoundContest.contest_id)
+        .values(
+            RoundContest.contest_id,
+            func.sum(RoundContest.sample_size["size"].as_integer()),
+        )
+    )
+    return any(
+        size >= full_hand_tally_size[contest_id]
+        for contest_id, size in cumulative_sample_sizes.items()
+    )
+
+
+# Returns True if Arlo is in full hand tally mode, which is only triggered
+# in the first round of ballot polling audits when the sample size requires a
+# full hand tally
+def is_full_hand_tally(round: Round, election: Election):
+    return (
+        election.audit_type == AuditType.BALLOT_POLLING
+        and round.round_num == 1
+        and needs_full_hand_tally(round, election)
     )
 
 
@@ -674,13 +709,9 @@ def draw_sample(round_id: str, election_id: str):
         if round_contest.sample_size
     ]
 
-    # Special case: if we are sampling all ballots, we don't need to actually
+    # Special case: if we are in a full hand tally, we don't need to actually
     # draw a sample. Instead, we force an offline audit.
-    if sampled_all_ballots(round, election):
-        if len(contest_sample_sizes) > 1:
-            raise UserError(
-                "Cannot sample all ballots when there are multiple targeted contests."
-            )
+    if is_full_hand_tally(round, election):
         election.online = False
         return
 
@@ -881,10 +912,7 @@ def create_round_schema(audit_type: AuditType):
                                 {
                                     "sizeCvr": {"type": "integer"},
                                     "sizeNonCvr": {"type": "integer"},
-                                    # We ignore size in hybrid audits
-                                    "size": {
-                                        "anyOf": [{"type": "integer"}, {"type": "null"}]
-                                    },
+                                    "size": {"type": "integer"},
                                 }
                                 if audit_type == AuditType.HYBRID
                                 else {"size": {"type": "integer"}}
@@ -892,7 +920,7 @@ def create_round_schema(audit_type: AuditType):
                         },
                         "additionalProperties": False,
                         "required": (
-                            ["sizeCvr", "sizeNonCvr", "key", "prob"]
+                            ["sizeCvr", "sizeNonCvr", "size", "key", "prob"]
                             if audit_type == AuditType.HYBRID
                             else ["size", "key", "prob"]
                         ),
@@ -932,23 +960,17 @@ def validate_sample_size(round: dict, election: Election):
     if set(round["sampleSizes"].keys()) != {c.id for c in targeted_contests}:
         raise BadRequest("Sample sizes provided do not match targeted contest ids")
 
+    full_hand_tally_size = full_hand_tally_sizes(election)
+
     for contest in targeted_contests:
         sample_size = round["sampleSizes"][contest.id]
-        total_batches = sum(
-            jurisdiction.manifest_num_batches or 0
-            for jurisdiction in contest.jurisdictions
-        )
-        valid_keys, max_sample_size = {
+        valid_keys = {
             AuditType.BALLOT_POLLING: (
-                ["asn", "0.9", "0.8", "0.7", "custom", "all-ballots"],
-                contest.total_ballots_cast,
+                ["asn", "0.9", "0.8", "0.7", "custom", "all-ballots"]
             ),
-            AuditType.BALLOT_COMPARISON: (
-                ["supersimple", "custom"],
-                contest.total_ballots_cast,
-            ),
-            AuditType.BATCH_COMPARISON: (["macro", "custom"], total_batches),
-            AuditType.HYBRID: (["suite", "custom"], contest.total_ballots_cast),
+            AuditType.BALLOT_COMPARISON: ["supersimple", "custom"],
+            AuditType.BATCH_COMPARISON: ["macro", "custom"],
+            AuditType.HYBRID: ["suite", "custom"],
         }[AuditType(election.audit_type)]
 
         if sample_size["key"] not in valid_keys:
@@ -959,6 +981,10 @@ def validate_sample_size(round: dict, election: Election):
         if sample_size["key"] == "custom":
             if election.audit_type == AuditType.HYBRID:
                 total_ballots = hybrid_contest_total_ballots(contest)
+                assert (
+                    sample_size["sizeCvr"] + sample_size["sizeNonCvr"]
+                    == sample_size["size"]
+                )
                 if sample_size["sizeCvr"] > total_ballots.cvr:
                     raise BadRequest(
                         f"CVR sample size for contest {contest.name} must be less than or equal to:"
@@ -970,7 +996,7 @@ def validate_sample_size(round: dict, election: Election):
                         f" {total_ballots.non_cvr} (the total number of non-CVR ballots in the contest)"
                     )
 
-            elif sample_size["size"] > max_sample_size:
+            elif sample_size["size"] > full_hand_tally_size[contest.id]:
                 ballots_or_batches = (
                     "batches"
                     if election.audit_type == AuditType.BATCH_COMPARISON
@@ -978,8 +1004,19 @@ def validate_sample_size(round: dict, election: Election):
                 )
                 raise BadRequest(
                     f"Sample size for contest {contest.name} must be less than or equal to:"
-                    f" {max_sample_size} (the total number of {ballots_or_batches} in the contest)"
+                    f" {full_hand_tally_size[contest.id]} (the total number of {ballots_or_batches} in the contest)"
                 )
+
+        if sample_size["size"] >= full_hand_tally_size[contest.id]:
+            if election.audit_type not in [
+                AuditType.BALLOT_POLLING,
+                AuditType.BATCH_COMPARISON,
+            ]:
+                raise BadRequest(
+                    "For a full hand tally, use the ballot polling or batch comparison audit type."
+                )
+            if len(targeted_contests) > 1:
+                raise BadRequest("For a full hand tally, use only one target contest.")
 
 
 @api.route("/election/<election_id>/round", methods=["POST"])
@@ -1047,7 +1084,8 @@ def serialize_round(round: Round) -> dict:
         "startedAt": isoformat(round.created_at),
         "endedAt": isoformat(round.ended_at),
         "isAuditComplete": is_audit_complete(round),
-        "sampledAllBallots": sampled_all_ballots(round, round.election),
+        "needsFullHandTally": needs_full_hand_tally(round, round.election),
+        "isFullHandTally": is_full_hand_tally(round, round.election),
         "drawSampleTask": serialize_background_task(round.draw_sample_task),
     }
 

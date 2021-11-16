@@ -782,7 +782,7 @@ def test_hybrid_custom_sample_size(
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     sample_size = {
         "key": "custom",
-        "size": None,
+        "size": 10,
         "sizeCvr": 2,
         "sizeNonCvr": 8,
         "prob": None,
@@ -828,9 +828,13 @@ def test_hybrid_invalid_sample_size(
             "'sizeNonCvr' is a required property",
         ),
         (
+            {"key": "custom", "sizeCvr": 2, "sizeNonCvr": 2, "prob": None},
+            "'size' is a required property",
+        ),
+        (
             {
                 "key": "custom",
-                "size": None,
+                "size": 50,
                 "sizeCvr": 40,
                 "sizeNonCvr": 10,
                 "prob": None,
@@ -840,12 +844,32 @@ def test_hybrid_invalid_sample_size(
         (
             {
                 "key": "custom",
-                "size": None,
+                "size": 50,
                 "sizeCvr": 20,
                 "sizeNonCvr": 30,
                 "prob": None,
             },
             "Non-CVR sample size for contest Contest 1 must be less than or equal to: 20 (the total number of non-CVR ballots in the contest)",
+        ),
+        (
+            {
+                "key": "custom",
+                "size": 50,
+                "sizeCvr": 30,
+                "sizeNonCvr": 20,
+                "prob": None,
+            },
+            "For a full hand tally, use the ballot polling or batch comparison audit type.",
+        ),
+        (
+            {
+                "key": "suite",
+                "size": 52,
+                "sizeCvr": 31,
+                "sizeNonCvr": 21,
+                "prob": None,
+            },
+            "For a full hand tally, use the ballot polling or batch comparison audit type.",
         ),
     ]
     for invalid_sample_size, expected_error in invalid_sample_sizes:

@@ -10,7 +10,8 @@ export interface IRound {
   startedAt: string
   endedAt: string | null
   isAuditComplete: boolean
-  sampledAllBallots: boolean
+  needsFullHandTally: boolean
+  isFullHandTally: boolean
   drawSampleTask: {
     status: FileProcessingStatus
     startedAt: string | null

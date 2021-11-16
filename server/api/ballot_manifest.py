@@ -19,7 +19,8 @@ from ..util.file import serialize_file, serialize_file_processing
 from ..util.csv_download import csv_response
 from ..util.csv_parse import decode_csv_file, parse_csv, CSVValueType, CSVColumnType
 from ..audit_math.suite import HybridPair
-from .cvrs import clear_cvr_data, process_cvr_file
+from . import contests
+from . import cvrs
 from .batch_tallies import (
     clear_batch_tallies_data,
     process_batch_tallies_file,
@@ -129,16 +130,14 @@ def process_ballot_manifest_file(
         jurisdiction.manifest_num_ballots = num_ballots
         jurisdiction.manifest_num_batches = num_batches
 
-        if jurisdiction.election.audit_type != AuditType.BALLOT_POLLING:
-            for contest in jurisdiction.contests:
-                set_total_ballots_from_manifests(contest)
+        contests.set_contest_metadata(jurisdiction.election)
 
         # If CVR file already uploaded, try reprocessing it, since it depends on
         # batch names from the manifest
         if jurisdiction.cvr_file:
-            clear_cvr_data(jurisdiction)
+            cvrs.clear_cvr_data(jurisdiction)
             jurisdiction.cvr_file.task = create_background_task(
-                process_cvr_file,
+                cvrs.process_cvr_file,
                 dict(
                     jurisdiction_id=jurisdiction.id,
                     jurisdiction_admin_email=jurisdiction_admin_email,

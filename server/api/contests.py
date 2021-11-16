@@ -8,8 +8,8 @@ from ..auth import restrict_access, UserType
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
 from ..util.jsonschema import validate, JSONDict
-from .cvrs import hybrid_contest_choice_vote_counts, set_contest_metadata_from_cvrs
-from .ballot_manifest import set_total_ballots_from_manifests
+from . import cvrs  # pylint: disable=cyclic-import
+from . import ballot_manifest  # pylint: disable=cyclic-import
 
 
 CONTEST_CHOICE_SCHEMA = {
@@ -86,7 +86,7 @@ def serialize_contest(contest: Contest) -> JSONDict:
         for choice in contest.choices
     ]
     if contest.election.audit_type == AuditType.HYBRID:
-        vote_counts = hybrid_contest_choice_vote_counts(contest)
+        vote_counts = cvrs.hybrid_contest_choice_vote_counts(contest)
         for choice in choices:
             choice["numVotesCvr"] = vote_counts and vote_counts[str(choice["id"])].cvr
             choice["numVotesNonCvr"] = (
@@ -183,6 +183,18 @@ def validate_contests(contests: List[JSONDict], election: Election):
                 )
 
 
+# In various audit types, we set different pieces of contest metadata from
+# different underlying data sources (e.g. manifest or CVR files). Whenever a
+# contest changes or when those data sources change, we need to recompute the
+# metadata.
+def set_contest_metadata(election: Election):
+    for contest in election.contests:
+        if election.audit_type != AuditType.BALLOT_POLLING:
+            ballot_manifest.set_total_ballots_from_manifests(contest)
+        if election.audit_type == AuditType.BALLOT_COMPARISON:
+            cvrs.set_contest_metadata_from_cvrs(contest)
+
+
 @api.route("/election/<election_id>/contest", methods=["PUT"])
 @restrict_access([UserType.AUDIT_ADMIN])
 def create_or_update_all_contests(election: Election):
@@ -190,19 +202,11 @@ def create_or_update_all_contests(election: Election):
     validate_contests(json_contests, election)
 
     Contest.query.filter_by(election_id=election.id).delete()
-
-    contests = [
+    election.contests = [
         deserialize_contest(json_contest, election.id) for json_contest in json_contests
     ]
-    db_session.add_all(contests)
 
-    if election.audit_type != AuditType.BALLOT_POLLING:
-        for contest in contests:
-            set_total_ballots_from_manifests(contest)
-
-    if election.audit_type == AuditType.BALLOT_COMPARISON:
-        for contest in contests:
-            set_contest_metadata_from_cvrs(contest)
+    set_contest_metadata(election)
 
     db_session.commit()
 
@@ -274,8 +278,7 @@ def put_contest_name_standardizations(election: Election):
             jurisdiction.id
         )
 
-    for contest in election.contests:
-        set_contest_metadata_from_cvrs(contest)
+    set_contest_metadata(election)
 
     db_session.commit()
 

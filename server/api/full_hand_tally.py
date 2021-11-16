@@ -10,7 +10,7 @@ from . import api
 from ..auth import restrict_access, UserType
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
-from .rounds import get_current_round, sampled_all_ballots
+from .rounds import get_current_round, is_full_hand_tally
 from ..util.jsonschema import JSONDict, validate
 from ..util.isoformat import isoformat
 
@@ -23,7 +23,7 @@ class BatchType(str, enum.Enum):
     OTHER = "Other"
 
 
-OFFLINE_BATCH_RESULT_SCHEMA = {
+FULL_HAND_TALLY_BATCH_RESULT_SCHEMA = {
     "type": "object",
     "properties": {
         "batchName": {"type": "string", "minLength": 1, "maxLength": 200},
@@ -47,11 +47,11 @@ OFFLINE_BATCH_RESULT_SCHEMA = {
 }
 
 
-def validate_offline_batch_result_request(
+def validate_full_hand_tally_batch_result_request(
     election: Election, jurisdiction: Jurisdiction, round: Round,
 ):
     if len(list(election.contests)) > 1:
-        raise Conflict("Offline batch results only supported for single contest audits")
+        raise Conflict("Full hand tally only supported for single contest audits")
 
     # We only support one contest for now
     contest = list(election.contests)[0]
@@ -59,12 +59,10 @@ def validate_offline_batch_result_request(
     if not any(c.id == contest.id for c in jurisdiction.contests):
         raise Conflict("Jurisdiction not in contest universe")
 
-    if not sampled_all_ballots(round, election):
-        raise Conflict(
-            "Offline batch results only supported if all ballots are sampled"
-        )
+    if not is_full_hand_tally(round, election):
+        raise Conflict("Full hand tally only supported if all ballots are sampled")
 
-    if jurisdiction.finalized_offline_batch_results_at is not None:
+    if jurisdiction.finalized_full_hand_tally_results_at is not None:
         raise Conflict("Results have already been finalized")
 
     current_round = get_current_round(election)
@@ -78,15 +76,15 @@ def validate_offline_batch_result_request(
         raise Conflict("Must set up audit boards before recording results")
 
 
-def validate_offline_batch_result(
+def validate_full_hand_tally_batch_result(
     election: Election,
     jurisdiction: Jurisdiction,
     round: Round,
     batch_result: JSONDict,
 ):
-    validate_offline_batch_result_request(election, jurisdiction, round)
+    validate_full_hand_tally_batch_result_request(election, jurisdiction, round)
 
-    validate(batch_result, OFFLINE_BATCH_RESULT_SCHEMA)
+    validate(batch_result, FULL_HAND_TALLY_BATCH_RESULT_SCHEMA)
 
     # We only support one contest for now
     contest = list(election.contests)[0]
@@ -96,33 +94,23 @@ def validate_offline_batch_result(
         raise BadRequest(f"Invalid choice ids for batch {batch_result['batchName']}")
 
 
-def load_offline_batch_results(jurisdiction: Jurisdiction) -> List[OfflineBatchResult]:
-    return list(
-        OfflineBatchResult.query.filter_by(jurisdiction_id=jurisdiction.id)
-        .order_by(OfflineBatchResult.created_at)
-        .all()
-    )
-
-
-def serialize_offline_batch_results(
-    offline_batch_results: List[OfflineBatchResult], contest: Contest
+def serialize_full_hand_tally_batch_results(
+    results: List[FullHandTallyBatchResult], contest: Contest
 ) -> List[JSONDict]:
     # We want to display batches in the order the user created them. Dict keys
     # are ordered, so we use a dict to dedupe the batch names while preserving
-    # order. (Assumes offline_batch_results is already ordered by created_at)
+    # order. (Assumes results is already ordered by created_at)
     ordered_batches = list(
-        dict.fromkeys(
-            (result.batch_name, result.batch_type) for result in offline_batch_results
-        )
+        dict.fromkeys((result.batch_name, result.batch_type) for result in results)
     )
 
     results_by_batch: JSONDict = defaultdict(
         lambda: {choice.id: None for choice in contest.choices}
     )
-    for result in offline_batch_results:
+    for result in results:
         results_by_batch[result.batch_name][result.contest_choice_id] = result.result
 
-    results = [
+    json_results = [
         {
             "batchName": batch_name,
             "batchType": batch_type,
@@ -130,45 +118,30 @@ def serialize_offline_batch_results(
         }
         for batch_name, batch_type in ordered_batches
     ]
-    return results
+    return json_results
 
 
 @api.route(
-    "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/results/batch",
-    methods=["PUT"],
-)
-@restrict_access([UserType.JURISDICTION_ADMIN])
-def record_offline_batch_results(
-    election: Election,  # pylint: disable=unused-argument
-    jurisdiction: Jurisdiction,
-    round: Round,
-):
-    raise Conflict(
-        "Arlo has been updated. Please refresh your browser for the latest version."
-    )
-
-
-@api.route(
-    "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/results/batch/",
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/full-hand-tally/batch/",
     methods=["POST"],
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
-def add_offline_batch_result(
+def add_full_hand_tally_batch_result(
     election: Election,  # pylint: disable=unused-argument
     jurisdiction: Jurisdiction,
     round: Round,
 ):
     batch_result = request.get_json()
-    validate_offline_batch_result(election, jurisdiction, round, batch_result)
+    validate_full_hand_tally_batch_result(election, jurisdiction, round, batch_result)
 
-    if OfflineBatchResult.query.filter_by(
+    if FullHandTallyBatchResult.query.filter_by(
         jurisdiction_id=jurisdiction.id, batch_name=batch_result["batchName"]
     ).first():
         raise Conflict("Batch names must be unique")
 
     for contest_choice_id, result in batch_result["choiceResults"].items():
         db_session.add(
-            OfflineBatchResult(
+            FullHandTallyBatchResult(
                 jurisdiction_id=jurisdiction.id,
                 batch_name=batch_result["batchName"],
                 batch_type=batch_result["batchType"],
@@ -183,29 +156,29 @@ def add_offline_batch_result(
 
 
 @api.route(
-    "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/results/batch/<path:batch_name>",
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/full-hand-tally/batch/<path:batch_name>",
     methods=["PUT"],
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
-def update_offline_batch_result(
+def update_full_hand_tally_batch_result(
     election: Election,  # pylint: disable=unused-argument
     jurisdiction: Jurisdiction,
     round: Round,
     batch_name: str,
 ):
     batch_result = request.get_json()
-    validate_offline_batch_result(election, jurisdiction, round, batch_result)
+    validate_full_hand_tally_batch_result(election, jurisdiction, round, batch_result)
 
     if (
         batch_name != batch_result["batchName"]
-        and OfflineBatchResult.query.filter_by(
+        and FullHandTallyBatchResult.query.filter_by(
             jurisdiction_id=jurisdiction.id, batch_name=batch_result["batchName"]
         ).first()
     ):
         raise Conflict("Batch names must be unique")
 
     for contest_choice_id, result in batch_result["choiceResults"].items():
-        new_batch_result = OfflineBatchResult.query.filter_by(
+        new_batch_result = FullHandTallyBatchResult.query.filter_by(
             jurisdiction_id=jurisdiction.id,
             batch_name=batch_name,
             contest_choice_id=contest_choice_id,
@@ -226,19 +199,19 @@ def update_offline_batch_result(
 # We use the `path:` converter for the batch_name parameter because it's
 # URI-encoded and we want to decode it with support for slashes
 @api.route(
-    "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/results/batch/<path:batch_name>",
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/full-hand-tally/batch/<path:batch_name>",
     methods=["DELETE"],
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
-def delete_offline_batch_result(
+def delete_full_hand_tally_batch_result(
     election: Election,  # pylint: disable=unused-argument
     jurisdiction: Jurisdiction,
     round: Round,  # pylint: disable=unused-argument
     batch_name: str,
 ):
-    validate_offline_batch_result_request(election, jurisdiction, round)
+    validate_full_hand_tally_batch_result_request(election, jurisdiction, round)
 
-    OfflineBatchResult.query.filter_by(
+    FullHandTallyBatchResult.query.filter_by(
         jurisdiction_id=jurisdiction.id, batch_name=batch_name
     ).delete()
 
@@ -248,22 +221,23 @@ def delete_offline_batch_result(
 
 
 @api.route(
-    "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/results/batch/finalize",
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/full-hand-tally/finalize",
     methods=["POST"],
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
-def finalize_offline_batch_results(
+def finalize_full_hand_tally_batch_results(
     election: Election,  # pylint: disable=unused-argument
     jurisdiction: Jurisdiction,
     round: Round,
 ):
-    jurisdiction.finalized_offline_batch_results_at = datetime.now(timezone.utc)
+    jurisdiction.finalized_full_hand_tally_results_at = datetime.now(timezone.utc)
 
     sum_results_by_choice = (
-        OfflineBatchResult.query.filter_by(jurisdiction_id=jurisdiction.id)
-        .group_by(OfflineBatchResult.contest_choice_id)
+        FullHandTallyBatchResult.query.filter_by(jurisdiction_id=jurisdiction.id)
+        .group_by(FullHandTallyBatchResult.contest_choice_id)
         .values(
-            OfflineBatchResult.contest_choice_id, func.sum(OfflineBatchResult.result)
+            FullHandTallyBatchResult.contest_choice_id,
+            func.sum(FullHandTallyBatchResult.result),
         )
     )
 
@@ -287,22 +261,22 @@ def finalize_offline_batch_results(
 
 
 @api.route(
-    "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/results/batch/finalize",
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/full-hand-tally/finalize",
     methods=["DELETE"],
 )
 @restrict_access([UserType.AUDIT_ADMIN])
-def unfinalize_offline_batch_results(
+def unfinalize_full_hand_tally_batch_results(
     election: Election,  # pylint: disable=unused-argument
     jurisdiction: Jurisdiction,
     round: Round,
 ):
-    if jurisdiction.finalized_offline_batch_results_at is None:
+    if jurisdiction.finalized_full_hand_tally_results_at is None:
         raise Conflict("Results have not been finalized")
 
     if round.ended_at is not None:
         raise Conflict("Results cannot be unfinalized after the audit round ends")
 
-    jurisdiction.finalized_offline_batch_results_at = None
+    jurisdiction.finalized_full_hand_tally_results_at = None
 
     JurisdictionResult.query.filter_by(
         round_id=round.id, jurisdiction_id=jurisdiction.id,
@@ -314,11 +288,11 @@ def unfinalize_offline_batch_results(
 
 
 @api.route(
-    "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/results/batch",
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/full-hand-tally/batch",
     methods=["GET"],
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
-def get_offline_batch_results(
+def get_full_hand_tally_batch_results(
     election: Election,  # pylint: disable=unused-argument
     jurisdiction: Jurisdiction,
     round: Round,  # pylint: disable=unused-argument
@@ -326,11 +300,15 @@ def get_offline_batch_results(
     # We only support one contest for now
     contest = list(election.contests)[0]
 
+    results = list(
+        FullHandTallyBatchResult.query.filter_by(jurisdiction_id=jurisdiction.id)
+        .order_by(FullHandTallyBatchResult.created_at)
+        .all()
+    )
+
     return jsonify(
         {
-            "finalizedAt": isoformat(jurisdiction.finalized_offline_batch_results_at),
-            "results": serialize_offline_batch_results(
-                load_offline_batch_results(jurisdiction), contest
-            ),
+            "finalizedAt": isoformat(jurisdiction.finalized_full_hand_tally_results_at),
+            "results": serialize_full_hand_tally_batch_results(results, contest),
         }
     )

@@ -130,7 +130,8 @@ def test_all_ballots_audit(
             "startedAt": assert_is_date,
             "endedAt": None,
             "isAuditComplete": None,
-            "sampledAllBallots": True,
+            "needsFullHandTally": True,
+            "isFullHandTally": True,
             "drawSampleTask": {
                 "status": "PROCESSED",
                 "startedAt": assert_is_date,
@@ -176,13 +177,13 @@ def test_all_ballots_audit(
 
     rv = post_json(
         client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/results/batch/",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/full-hand-tally/batch/",
         jurisdiction_1_results,
     )
     assert_ok(rv)
 
     rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/results/batch",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/full-hand-tally/batch",
     )
     assert rv.status_code == 200
     assert json.loads(rv.data) == {
@@ -201,13 +202,13 @@ def test_all_ballots_audit(
 
     rv = put_json(
         client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/results/batch/{urllib.parse.quote('Batch/Zero')}",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/full-hand-tally/batch/{urllib.parse.quote('Batch/Zero')}",
         jurisdiction_1_results,
     )
     assert_ok(rv)
 
     rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/results/batch",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/full-hand-tally/batch",
     )
     assert rv.status_code == 200
     assert json.loads(rv.data) == {
@@ -267,27 +268,27 @@ def test_all_ballots_audit(
 
     rv = post_json(
         client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/results/batch/",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/full-hand-tally/batch/",
         next_jurisdiction_1_results_a,
     )
     assert_ok(rv)
 
     rv = post_json(
         client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/results/batch/",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/full-hand-tally/batch/",
         next_jurisdiction_1_results_b,
     )
     assert_ok(rv)
 
     rv = post_json(
         client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/results/batch/",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/full-hand-tally/batch/",
         next_jurisdiction_1_results_c,
     )
     assert_ok(rv)
 
     rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/results/batch",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/full-hand-tally/batch",
     )
     assert rv.status_code == 200
     assert json.loads(rv.data) == {
@@ -298,11 +299,11 @@ def test_all_ballots_audit(
     # Delete a result
     updated_jurisdiction_1_results = updated_jurisdiction_1_results[:-1]
     rv = client.delete(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/results/batch/{urllib.parse.quote('Batch/Bogus')}"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/full-hand-tally/batch/{urllib.parse.quote('Batch/Bogus')}"
     )
     assert_ok(rv)
     rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/results/batch",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/full-hand-tally/batch",
     )
     assert rv.status_code == 200
     assert json.loads(rv.data) == {
@@ -312,13 +313,13 @@ def test_all_ballots_audit(
 
     rv = post_json(
         client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/results/batch/finalize",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/full-hand-tally/finalize",
     )
     assert_ok(rv)
 
     # Finalize the results
     rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/results/batch",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/full-hand-tally/batch",
     )
     assert rv.status_code == 200
     compare_json(
@@ -392,13 +393,13 @@ def test_all_ballots_audit(
     for result in jurisdiction_2_results:
         rv = post_json(
             client,
-            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_id}/results/batch/",
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_id}/full-hand-tally/batch/",
             result,
         )
         assert_ok(rv)
 
     rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_id}/results/batch",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_id}/full-hand-tally/batch",
     )
     assert rv.status_code == 200
     assert json.loads(rv.data) == {
@@ -408,12 +409,12 @@ def test_all_ballots_audit(
 
     rv = post_json(
         client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_id}/results/batch/finalize",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_id}/full-hand-tally/finalize",
     )
     assert_ok(rv)
 
     rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_id}/results/batch",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_id}/full-hand-tally/batch",
     )
     assert rv.status_code == 200
     compare_json(
@@ -452,7 +453,7 @@ def test_all_ballots_audit(
     assert_match_report(rv.data, snapshot)
 
 
-def test_offline_batch_results_validation(
+def test_full_hand_tally_results_validation(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],  # pylint: disable=unused-argument
@@ -563,7 +564,7 @@ def test_offline_batch_results_validation(
     for invalid_result, expected_message in invalid_results:
         rv = post_json(
             client,
-            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch/",
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/full-hand-tally/batch/",
             invalid_result,
         )
         assert rv.status_code == 400
@@ -574,7 +575,7 @@ def test_offline_batch_results_validation(
         if invalid_result.get("batchName"):
             rv = put_json(
                 client,
-                f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch/{invalid_result['batchName']}",
+                f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/full-hand-tally/batch/{invalid_result['batchName']}",
                 invalid_result,
             )
             assert rv.status_code == 400
@@ -585,7 +586,7 @@ def test_offline_batch_results_validation(
     # No duplicate batch names
     rv = post_json(
         client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch/",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/full-hand-tally/batch/",
         {
             "batchName": "Batch 1",
             "batchType": "Provisional",
@@ -598,7 +599,7 @@ def test_offline_batch_results_validation(
 
     rv = post_json(
         client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch/",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/full-hand-tally/batch/",
         {
             "batchName": "Batch 1",
             "batchType": "Election Day",
@@ -615,7 +616,7 @@ def test_offline_batch_results_validation(
     # No renaming to another batch's name
     rv = post_json(
         client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch/",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/full-hand-tally/batch/",
         {
             "batchName": "Batch 2",
             "batchType": "Provisional",
@@ -628,7 +629,7 @@ def test_offline_batch_results_validation(
 
     rv = put_json(
         client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch/Batch 2",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/full-hand-tally/batch/Batch 2",
         {
             "batchName": "Batch 1",
             "batchType": "Provisional",
@@ -645,7 +646,7 @@ def test_offline_batch_results_validation(
     # Can't edit a batch that doesn't exist
     rv = put_json(
         client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch/not a real batch",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/full-hand-tally/batch/not a real batch",
         {
             "batchName": "Batch 3",
             "batchType": "Election Day",
@@ -661,19 +662,19 @@ def test_offline_batch_results_validation(
 
     # Special case: deleting a batch that doesn't exist is ok (maybe somebody else already deleted it)
     rv = client.delete(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch/not a real batch",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/full-hand-tally/batch/not a real batch",
     )
     assert_ok(rv)
 
     # Can't edit a batch that's been deleted
     rv = client.delete(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch/Batch 1",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/full-hand-tally/batch/Batch 1",
     )
     assert_ok(rv)
 
     rv = put_json(
         client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch/Batch 1",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/full-hand-tally/batch/Batch 1",
         {
             "batchName": "Batch 1",
             "batchType": "Provisional",
@@ -690,13 +691,13 @@ def test_offline_batch_results_validation(
     # Can't add/edit/delete results after finalizing
     rv = post_json(
         client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch/finalize",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/full-hand-tally/finalize",
     )
     assert_ok(rv)
 
     rv = post_json(
         client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch/",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/full-hand-tally/batch/",
         [
             {
                 "batchName": "Batch 1",
@@ -717,7 +718,7 @@ def test_offline_batch_results_validation(
 
     rv = put_json(
         client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch/Batch 1",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/full-hand-tally/batch/Batch 1",
         [
             {
                 "batchName": "Batch 1",
@@ -737,7 +738,7 @@ def test_offline_batch_results_validation(
     }
 
     rv = client.delete(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch/Batch 1",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/full-hand-tally/batch/Batch 1",
     )
     assert rv.status_code == 409
     assert json.loads(rv.data) == {
@@ -747,52 +748,7 @@ def test_offline_batch_results_validation(
     }
 
 
-def test_offline_batch_results_old_endpoint(
-    client: FlaskClient,
-    election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    round_1_id: str,
-):
-    set_logged_in_user(
-        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
-    )
-    rv = post_json(
-        client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
-        [{"name": "Audit Board #1"}, {"name": "Audit Board #2"}],
-    )
-
-    rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/contest"
-    )
-    contest = json.loads(rv.data)["contests"][0]
-
-    rv = put_json(
-        client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch",
-        [
-            {
-                "batchName": "Batch 1",
-                "batchType": "Provisional",
-                "choiceResults": {
-                    choice["id"]: choice["numVotes"] / 4
-                    for choice in contest["choices"]
-                },
-            }
-        ],
-    )
-    assert rv.status_code == 409
-    assert json.loads(rv.data) == {
-        "errors": [
-            {
-                "errorType": "Conflict",
-                "message": "Arlo has been updated. Please refresh your browser for the latest version.",
-            }
-        ]
-    }
-
-
-def test_offline_batch_results_unfinalize(
+def test_full_hand_tally_results_unfinalize(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],  # pylint: disable=unused-argument
@@ -815,7 +771,7 @@ def test_offline_batch_results_unfinalize(
     # JA uploads results
     rv = post_json(
         client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch/",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/full-hand-tally/batch/",
         {
             "batchName": "Batch 1",
             "batchType": "Provisional",
@@ -829,7 +785,7 @@ def test_offline_batch_results_unfinalize(
     # AA tries to unfinalize the results before they have been finalized
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.delete(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch/finalize"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/full-hand-tally/finalize"
     )
     assert rv.status_code == 409
     assert json.loads(rv.data) == {
@@ -844,19 +800,19 @@ def test_offline_batch_results_unfinalize(
     )
     rv = post_json(
         client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch/finalize",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/full-hand-tally/finalize",
     )
     assert_ok(rv)
 
     rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/full-hand-tally/batch"
     )
     assert_is_date(json.loads(rv.data)["finalizedAt"])
 
     # AA unfinalizes the results
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.delete(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch/finalize"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/full-hand-tally/finalize"
     )
     assert_ok(rv)
 
@@ -864,14 +820,14 @@ def test_offline_batch_results_unfinalize(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
     rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/full-hand-tally/batch"
     )
     assert json.loads(rv.data)["finalizedAt"] is None
 
     # JA updates the results
     rv = post_json(
         client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch/",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/full-hand-tally/batch/",
         {
             "batchName": "Batch 2",
             "batchType": "Election Day",
@@ -885,12 +841,12 @@ def test_offline_batch_results_unfinalize(
     # JA refinalizes the results
     rv = post_json(
         client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch/finalize",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/full-hand-tally/finalize",
     )
     assert_ok(rv)
 
     rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/full-hand-tally/batch"
     )
     assert_is_date(json.loads(rv.data)["finalizedAt"])
 
@@ -902,7 +858,7 @@ def test_offline_batch_results_unfinalize(
     )
     rv = post_json(
         client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/results/batch/",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/full-hand-tally/batch/",
         {
             "batchName": "Batch 1",
             "batchType": "Election Day",
@@ -915,7 +871,7 @@ def test_offline_batch_results_unfinalize(
 
     rv = post_json(
         client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/results/batch/finalize",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/full-hand-tally/finalize",
     )
     assert_ok(rv)
 
@@ -929,7 +885,7 @@ def test_offline_batch_results_unfinalize(
     # AA tries to unfinalize results but can't
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.delete(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results/batch/finalize"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/full-hand-tally/finalize"
     )
     assert rv.status_code == 409
     assert json.loads(rv.data) == {
@@ -940,70 +896,3 @@ def test_offline_batch_results_unfinalize(
             }
         ]
     }
-
-
-def test_all_ballots_multiple_targeted_contests(
-    client: FlaskClient,
-    election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-):
-    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    contests = [
-        {
-            "id": str(uuid.uuid4()),
-            "name": "Contest 1",
-            "isTargeted": True,
-            "choices": [
-                {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 1000000,},
-                {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 999000,},
-                {"id": str(uuid.uuid4()), "name": "candidate 3", "numVotes": 1000,},
-            ],
-            "totalBallotsCast": 2000000,
-            "numWinners": 1,
-            "votesAllowed": 1,
-            "jurisdictionIds": jurisdiction_ids[:2],
-        },
-        {
-            "id": str(uuid.uuid4()),
-            "name": "Contest 2",
-            "isTargeted": True,
-            "choices": [
-                {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 1000000,},
-                {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 999000,},
-                {"id": str(uuid.uuid4()), "name": "candidate 3", "numVotes": 1000,},
-            ],
-            "totalBallotsCast": 2000000,
-            "numWinners": 1,
-            "votesAllowed": 1,
-            "jurisdictionIds": jurisdiction_ids[:2],
-        },
-    ]
-    rv = put_json(client, f"/api/election/{election_id}/contest", contests)
-    assert_ok(rv)
-
-    rv = client.get(f"/api/election/{election_id}/sample-sizes")
-    sample_sizes = json.loads(rv.data)["sampleSizes"]
-    selected_sample_sizes = {
-        contest_id: contest_sample_sizes[0]
-        for contest_id, contest_sample_sizes in sample_sizes.items()
-    }
-
-    rv = post_json(
-        client,
-        f"/api/election/{election_id}/round",
-        {"roundNum": 1, "sampleSizes": selected_sample_sizes},
-    )
-    assert_ok(rv)
-
-    rv = client.get(f"/api/election/{election_id}/round")
-    compare_json(
-        json.loads(rv.data)["rounds"][0]["drawSampleTask"],
-        {
-            "status": "ERRORED",
-            "startedAt": assert_is_date,
-            "completedAt": assert_is_date,
-            "error": "Cannot sample all ballots when there are multiple targeted contests.",
-        },
-    )

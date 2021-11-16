@@ -1,6 +1,11 @@
 Batch Name,Vader,Palpatine
-1,90,10
-2,10,10
-3,600,400
-4,1000,200
-5,1000,2000
+Batch 1,90,10
+Batch 2,10,10
+Batch 3,600,400
+Batch 4,1000,200
+Batch 5,3000,0
+Batch 6,90,10
+Batch 7,10,10
+Batch 8,600,400
+Batch 9,1000,200
+Batch 10,3000,0

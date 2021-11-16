@@ -477,12 +477,17 @@ def test_standardized_contests_parse_all(
 
 
 def test_reupload_standardized_contests_after_contests_selected(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str],
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    manifests,  # pylint: disable=unused-argument
+    cvrs,  # pylint: disable=unused-argument
 ):
     # Upload standardized contests
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     standardized_contests_file = (
         "Contest Name,Jurisdictions\n"
-        "Contest 1,all\n"
+        "Contest 1,J1\n"
         'Contest 2,"J1, J3"\n'
         "Contest 3,J2 \n"
     )
@@ -523,9 +528,41 @@ def test_reupload_standardized_contests_after_contests_selected(
     )
     assert_ok(rv)
 
+    rv = client.get(f"/api/election/{election_id}/contest")
+    compare_json(
+        json.loads(rv.data),
+        {
+            "contests": [
+                {
+                    "id": contest_1_id,
+                    "name": "Contest 1",
+                    "isTargeted": True,
+                    "numWinners": 1,
+                    "totalBallotsCast": 15,
+                    "votesAllowed": 1,
+                    "choices": [
+                        {"id": assert_is_id, "name": "Choice 1-1", "numVotes": 7},
+                        {"id": assert_is_id, "name": "Choice 1-2", "numVotes": 3},
+                    ],
+                    "jurisdictionIds": [jurisdiction_ids[0]],
+                },
+                {
+                    "id": contest_2_id,
+                    "name": "Contest 2",
+                    "isTargeted": False,
+                    "numWinners": 1,
+                    "totalBallotsCast": None,
+                    "votesAllowed": None,
+                    "choices": [],
+                    "jurisdictionIds": [jurisdiction_ids[0], jurisdiction_ids[2]],
+                },
+            ]
+        },
+    )
+
     # Change standardized contests
     standardized_contests_file = (
-        "Contest Name,Jurisdictions\n" + "Contest 1,J1\n" + "Contest 3,J2 \n"
+        "Contest Name,Jurisdictions\n" + 'Contest 1,"J1,J2"\n' + "Contest 3,J2 \n"
     )
     rv = client.put(
         f"/api/election/{election_id}/standardized-contests/file",
@@ -538,19 +575,25 @@ def test_reupload_standardized_contests_after_contests_selected(
     )
     assert_ok(rv)
 
-    # Contests should be updated (Contest 2 deleted, Contest 1 universe changed)
+    # Contests should be updated (Contest 2 deleted, Contest 1 universe and metadata changed)
     rv = client.get(f"/api/election/{election_id}/contest")
-    assert json.loads(rv.data) == {
-        "contests": [
-            {
-                "id": contest_1_id,
-                "name": "Contest 1",
-                "isTargeted": True,
-                "numWinners": 1,
-                "totalBallotsCast": None,
-                "votesAllowed": None,
-                "choices": [],
-                "jurisdictionIds": jurisdiction_ids[:1],
-            }
-        ]
-    }
+    compare_json(
+        json.loads(rv.data),
+        {
+            "contests": [
+                {
+                    "id": contest_1_id,
+                    "name": "Contest 1",
+                    "isTargeted": True,
+                    "numWinners": 1,
+                    "totalBallotsCast": 30,
+                    "votesAllowed": 1,
+                    "choices": [
+                        {"id": assert_is_id, "name": "Choice 1-1", "numVotes": 14},
+                        {"id": assert_is_id, "name": "Choice 1-2", "numVotes": 6},
+                    ],
+                    "jurisdictionIds": jurisdiction_ids[:2],
+                }
+            ]
+        },
+    )

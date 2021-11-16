@@ -25,7 +25,7 @@ import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
 import H2Title from '../../../Atoms/H2Title'
 import useAuditSettings from '../../useAuditSettings'
 import useContests from '../../useContests'
-import useJurisdictions from '../../useJurisdictions'
+import useJurisdictions, { IJurisdiction } from '../../useJurisdictions'
 import { testNumber } from '../../../utilities'
 import FormSection, {
   FormSectionDescription,
@@ -48,6 +48,8 @@ import { ErrorLabel } from '../../../Atoms/Form/_helpers'
 import useContestNameStandardizations, {
   IContestNameStandardizations,
 } from '../../useContestNameStandardizations'
+import { IContest } from '../../../../types'
+import { sum } from '../../../../utils/number'
 
 const percentFormatter = new Intl.NumberFormat(undefined, {
   style: 'percent',
@@ -127,10 +129,6 @@ const Review: React.FC<IProps> = ({
     contests.some(c => c.jurisdictionIds.includes(id))
   )
 
-  const jurisdictionIdToName = Object.fromEntries(
-    jurisdictions.map(({ id, name }) => [id, name])
-  )
-
   const cvrsUploaded =
     !['BALLOT_COMPARISON', 'HYBRID'].includes(auditSettings.auditType) ||
     allCvrsUploaded(participatingJurisdictions)
@@ -139,23 +137,14 @@ const Review: React.FC<IProps> = ({
     isFileProcessed(j.ballotManifest)
   ).length
 
-  const validateCustomSampleSize = (totalBallotsCast: string) => {
-    if (auditType === 'BATCH_COMPARISON') {
-      const totalBatches = participatingJurisdictions.reduce(
-        (a, { ballotManifest: { numBatches } }) =>
-          numBatches !== null ? a + numBatches : a,
-        0
-      )
-      return testNumber(
-        totalBatches,
-        `Must be less than or equal to: ${totalBatches} (the total number of batches in the contest)`
-      )
-    }
-    return testNumber(
-      Number(totalBallotsCast),
-      `Must be less than or equal to: ${totalBallotsCast} (the total number of ballots in the contest)`
+  const jurisdictionsById = Object.fromEntries(
+    jurisdictions.map(jurisdiction => [jurisdiction.id, jurisdiction])
+  )
+
+  const contestJurisdictions = (contest: IContest) =>
+    contest.jurisdictionIds.map(
+      jurisdictionId => jurisdictionsById[jurisdictionId]
     )
-  }
 
   return (
     <div>
@@ -269,7 +258,7 @@ const Review: React.FC<IProps> = ({
             onClose={() => setIsStandardizationsDialogOpen(false)}
             standardizations={standardizations}
             updateStandardizations={updateStandardizations}
-            jurisdictionIdToName={jurisdictionIdToName}
+            jurisdictionsById={jurisdictionsById}
           />
           <br />
         </>
@@ -377,9 +366,9 @@ const Review: React.FC<IProps> = ({
                   </tr>
                 </thead>
                 <tbody>
-                  {contest.jurisdictionIds.map(jurisdictionId => (
-                    <tr key={jurisdictionId}>
-                      <td>{jurisdictionIdToName[jurisdictionId]}</td>
+                  {contestJurisdictions(contest).map(jurisdiction => (
+                    <tr key={jurisdiction.id}>
+                      <td>{jurisdiction.name}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -451,6 +440,8 @@ const Review: React.FC<IProps> = ({
           }
         }
 
+        const targetedContests = contests.filter(contest => contest.isTargeted)
+
         return (
           <Formik
             initialValues={{
@@ -473,145 +464,207 @@ const Review: React.FC<IProps> = ({
                     Choose the initial sample size for each contest you would
                     like to use for Round 1 of the audit from the options below.
                   </FormSectionDescription>
-                  {contests
-                    .filter(contest => contest.isTargeted)
-                    .map(contest => {
-                      const currentOption = values.sampleSizes[contest.id]
-                      return (
-                        <Card key={contest.id}>
-                          <FormSectionDescription>
-                            <H5>{contest.name}</H5>
-                            <RadioGroup
-                              name={`sampleSizes[${contest.id}]`}
-                              onChange={e => {
-                                const selectedOption = sampleSizeOptions![
-                                  contest.id
-                                ].find(c => c.key === e.currentTarget.value)
-                                setFieldValue(
-                                  `sampleSizes[${contest.id}]`,
-                                  selectedOption
+                  {targetedContests.map(contest => {
+                    const currentOption = values.sampleSizes[contest.id]
+                    const fullHandTallySize =
+                      auditType === 'BATCH_COMPARISON'
+                        ? sum(
+                            contestJurisdictions(contest).map(
+                              jurisdiction =>
+                                jurisdiction.ballotManifest.numBatches || 0
+                            )
+                          )
+                        : Number(contest.totalBallotsCast)
+
+                    return (
+                      <Card key={contest.id}>
+                        <FormSectionDescription>
+                          <H5>{contest.name}</H5>
+                          {currentOption.size &&
+                            currentOption.size >= fullHandTallySize && (
+                              <Callout
+                                intent={
+                                  (auditType === 'BALLOT_POLLING' ||
+                                    auditType === 'BATCH_COMPARISON') &&
+                                  targetedContests.length === 1
+                                    ? 'warning'
+                                    : 'danger'
+                                }
+                                style={{ marginBottom: '15px' }}
+                              >
+                                <div>
+                                  The currently selected sample size for this
+                                  contest requires a full hand tally.
+                                </div>
+                                {!(
+                                  auditType === 'BALLOT_POLLING' ||
+                                  auditType === 'BATCH_COMPARISON'
+                                ) && (
+                                  <div>
+                                    To use Arlo for a full hand tally, recreate
+                                    this audit using the ballot polling or batch
+                                    comparison audit type.
+                                  </div>
+                                )}
+                                {auditType === 'BALLOT_POLLING' &&
+                                  targetedContests.length > 1 && (
+                                    <div>
+                                      Arlo supports running a full hand tally
+                                      for audits with one target contest. Either
+                                      remove this contest and audit it
+                                      separately, or remove the other target
+                                      contests.
+                                    </div>
+                                  )}
+                              </Callout>
+                            )}
+                          <RadioGroup
+                            name={`sampleSizes[${contest.id}]`}
+                            onChange={e => {
+                              const selectedOption = sampleSizeOptions![
+                                contest.id
+                              ].find(c => c.key === e.currentTarget.value)
+                              setFieldValue(
+                                `sampleSizes[${contest.id}]`,
+                                selectedOption
+                              )
+                            }}
+                            selectedValue={getIn(
+                              values,
+                              `sampleSizes[${contest.id}][key]`
+                            )}
+                            disabled={locked}
+                          >
+                            {sampleSizeOptions![contest.id].map(
+                              (option: ISampleSizeOption) => {
+                                return option.key === 'custom' ? (
+                                  <Radio value="custom" key={option.key}>
+                                    Enter your own sample size (not recommended)
+                                  </Radio>
+                                ) : (
+                                  <Radio value={option.key} key={option.key}>
+                                    {option.key === 'all-ballots' &&
+                                      'All ballots: '}
+                                    {option.key === 'asn'
+                                      ? 'BRAVO Average Sample Number: '
+                                      : ''}
+                                    {`${Number(
+                                      option.size
+                                    ).toLocaleString()} samples`}
+                                    {option.prob
+                                      ? ` (${percentFormatter.format(
+                                          option.prob
+                                        )} chance of reaching risk limit and completing the audit in one round)`
+                                      : ''}
+                                    {option.key === 'all-ballots' &&
+                                      ' (recommended for this contest due to the small margin of victory)'}
+                                    {option.key === 'suite' &&
+                                      ` (${option.sizeCvr!.toLocaleString()} CVR ballots and ${option.sizeNonCvr!.toLocaleString()} non-CVR ballots)`}
+                                  </Radio>
                                 )
-                              }}
-                              selectedValue={getIn(
-                                values,
-                                `sampleSizes[${contest.id}][key]`
-                              )}
-                              disabled={locked}
-                            >
-                              {sampleSizeOptions![contest.id].map(
-                                (option: ISampleSizeOption) => {
-                                  return option.key === 'custom' ? (
-                                    <Radio value="custom" key={option.key}>
-                                      Enter your own sample size (not
-                                      recommended)
-                                    </Radio>
-                                  ) : (
-                                    <Radio value={option.key} key={option.key}>
-                                      {option.key === 'all-ballots' &&
-                                        'All ballots: '}
-                                      {option.key === 'asn'
-                                        ? 'BRAVO Average Sample Number: '
-                                        : ''}
-                                      {`${Number(
-                                        option.size
-                                      ).toLocaleString()} samples`}
-                                      {option.prob
-                                        ? ` (${percentFormatter.format(
-                                            option.prob
-                                          )} chance of reaching risk limit and completing the audit in one round)`
-                                        : ''}
-                                      {option.key === 'all-ballots' &&
-                                        ' (recommended for this contest due to the small margin of victory)'}
-                                      {option.key === 'suite' &&
-                                        ` (${option.sizeCvr!.toLocaleString()} CVR ballots and ${option.sizeNonCvr!.toLocaleString()} non-CVR ballots)`}
-                                    </Radio>
+                              }
+                            )}
+                          </RadioGroup>
+                          {currentOption &&
+                            currentOption.key === 'custom' &&
+                            (auditType === 'HYBRID' ? (
+                              <>
+                                <div>
+                                  {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+                                  <label>
+                                    CVR ballots:
+                                    <Field
+                                      component={FormField}
+                                      name={`sampleSizes[${contest.id}].sizeCvr`}
+                                      value={
+                                        currentOption.sizeCvr === null
+                                          ? undefined
+                                          : currentOption.sizeCvr
+                                      }
+                                      onValueChange={(value: number) =>
+                                        setFieldValue(
+                                          `sampleSizes[${contest.id}]`,
+                                          {
+                                            ...currentOption,
+                                            sizeCvr: value,
+                                            size:
+                                              (currentOption.sizeNonCvr || 0) +
+                                              value,
+                                          }
+                                        )
+                                      }
+                                      type="number"
+                                      // We rely on backend validation in this
+                                      // case, since we don't have the total
+                                      // CVR/non-CVR ballots loaded in the
+                                      // frontend
+                                      validate={testNumber()}
+                                      disabled={locked}
+                                    />
+                                  </label>
+                                </div>
+                                <div style={{ marginTop: '10px' }}>
+                                  {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+                                  <label style={{ marginTop: '5px' }}>
+                                    Non-CVR ballots:
+                                    <Field
+                                      component={FormField}
+                                      name={`sampleSizes[${contest.id}].sizeNonCvr`}
+                                      value={
+                                        currentOption.sizeNonCvr === null
+                                          ? undefined
+                                          : currentOption.sizeNonCvr
+                                      }
+                                      onValueChange={(value: number) =>
+                                        setFieldValue(
+                                          `sampleSizes[${contest.id}]`,
+                                          {
+                                            ...currentOption,
+                                            sizeNonCvr: value,
+                                            size:
+                                              (currentOption.sizeCvr || 0) +
+                                              value,
+                                          }
+                                        )
+                                      }
+                                      type="number"
+                                      validate={testNumber()}
+                                      disabled={locked}
+                                    />
+                                  </label>
+                                </div>
+                              </>
+                            ) : (
+                              <Field
+                                component={FormField}
+                                name={`sampleSizes[${contest.id}].size`}
+                                value={
+                                  currentOption.size === null
+                                    ? undefined
+                                    : currentOption.size
+                                }
+                                onValueChange={(value: number) =>
+                                  setFieldValue(
+                                    `sampleSizes[${contest.id}].size`,
+                                    value
                                   )
                                 }
-                              )}
-                            </RadioGroup>
-                            {currentOption &&
-                              currentOption.key === 'custom' &&
-                              (auditType === 'HYBRID' ? (
-                                <>
-                                  <div>
-                                    {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                                    <label>
-                                      CVR ballots:
-                                      <Field
-                                        component={FormField}
-                                        name={`sampleSizes[${contest.id}].sizeCvr`}
-                                        value={
-                                          currentOption.sizeCvr === null
-                                            ? undefined
-                                            : currentOption.sizeCvr
-                                        }
-                                        onValueChange={(value: number) =>
-                                          setFieldValue(
-                                            `sampleSizes[${contest.id}].sizeCvr`,
-                                            value
-                                          )
-                                        }
-                                        type="number"
-                                        // We rely on backend validation in this
-                                        // case, since we don't have the total
-                                        // CVR/non-CVR ballots loaded in the
-                                        // frontend
-                                        validate={testNumber()}
-                                        disabled={locked}
-                                      />
-                                    </label>
-                                  </div>
-                                  <div style={{ marginTop: '10px' }}>
-                                    {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                                    <label style={{ marginTop: '5px' }}>
-                                      Non-CVR ballots:
-                                      <Field
-                                        component={FormField}
-                                        name={`sampleSizes[${contest.id}].sizeNonCvr`}
-                                        value={
-                                          currentOption.sizeNonCvr === null
-                                            ? undefined
-                                            : currentOption.sizeNonCvr
-                                        }
-                                        onValueChange={(value: number) =>
-                                          setFieldValue(
-                                            `sampleSizes[${contest.id}].sizeNonCvr`,
-                                            value
-                                          )
-                                        }
-                                        type="number"
-                                        validate={testNumber()}
-                                        disabled={locked}
-                                      />
-                                    </label>
-                                  </div>
-                                </>
-                              ) : (
-                                <Field
-                                  component={FormField}
-                                  name={`sampleSizes[${contest.id}].size`}
-                                  value={
-                                    currentOption.size === null
-                                      ? undefined
-                                      : currentOption.size
-                                  }
-                                  onValueChange={(value: number) =>
-                                    setFieldValue(
-                                      `sampleSizes[${contest.id}].size`,
-                                      value
-                                    )
-                                  }
-                                  type="number"
-                                  validate={validateCustomSampleSize(
-                                    contest.totalBallotsCast
-                                  )}
-                                  disabled={locked}
-                                />
-                              ))}
-                          </FormSectionDescription>
-                        </Card>
-                      )
-                    })}
+                                type="number"
+                                validate={testNumber(
+                                  fullHandTallySize,
+                                  `Must be less than or equal to ${fullHandTallySize} (the total number of ${
+                                    auditType === 'BATCH_COMPARISON'
+                                      ? 'batches'
+                                      : 'ballots'
+                                  } in the contest)`
+                                )}
+                                disabled={locked}
+                              />
+                            ))}
+                        </FormSectionDescription>
+                      </Card>
+                    )
+                  })}
                 </FormSection>
                 <ConfirmLaunch
                   isOpen={isConfirmDialogOpen}
@@ -656,7 +709,7 @@ interface IStandardizeContestNamesDialogProps {
   updateStandardizations: (
     standardizations: IContestNameStandardizations['standardizations']
   ) => Promise<boolean>
-  jurisdictionIdToName: { [jurisdictionId: string]: string }
+  jurisdictionsById: { [id: string]: IJurisdiction }
 }
 
 const StandardizeContestsTable = styled(HTMLTable)`
@@ -680,7 +733,7 @@ const StandardizeContestNamesDialog = ({
   onClose,
   standardizations,
   updateStandardizations,
-  jurisdictionIdToName,
+  jurisdictionsById,
 }: IStandardizeContestNamesDialogProps) => (
   <Dialog
     isOpen={isOpen}
@@ -718,7 +771,7 @@ const StandardizeContestNamesDialog = ({
                       Object.entries(jurisdictionStandardizations).map(
                         ([contestName, standardizedCvrContestName]) => (
                           <tr key={jurisdictionId + contestName}>
-                            <td>{jurisdictionIdToName[jurisdictionId]}</td>
+                            <td>{jurisdictionsById[jurisdictionId].name}</td>
                             <td>{contestName}</td>
                             <td>
                               <HTMLSelect

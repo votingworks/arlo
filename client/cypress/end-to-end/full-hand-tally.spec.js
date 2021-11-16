@@ -2,7 +2,7 @@ import 'cypress-file-upload'
 
 before(() => cy.exec('./cypress/seed-test-db.sh'))
 
-describe('Offline Batch Data Entry', () => {
+describe('Full Hand Tally Data Entry', () => {
   const auditAdmin = 'audit-admin-cypress@example.com'
   const jurisdictionAdmin = 'wtarkin@empire.gov'
   const uuid = () => Cypress._.random(0, 1e6)
@@ -16,7 +16,6 @@ describe('Offline Batch Data Entry', () => {
     cy.get('input[value="BALLOT_POLLING"]').check({ force: true })
     cy.get('input[value="BRAVO"]').check({ force: true })
     cy.findByText('Create Audit').click()
-    cy.viewport(1000, 2000)
     cy.contains('Audit Setup')
   })
 

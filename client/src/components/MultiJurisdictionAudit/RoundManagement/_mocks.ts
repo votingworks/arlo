@@ -2,9 +2,9 @@ import { IBatches } from './useBatchResults'
 import { IRound } from '../useRoundsAuditAdmin'
 import { FileProcessingStatus } from '../useCSV'
 import {
-  IOfflineBatchResult,
-  IOfflineBatchResults,
-} from './useOfflineBatchResults'
+  IFullHandTallyBatchResults,
+  IFullHandTallyBatchResult,
+} from './useFullHandTallyResults'
 
 export interface INullResultValues {
   [contestId: string]: {
@@ -13,7 +13,7 @@ export interface INullResultValues {
 }
 
 export const roundMocks: {
-  [key in 'incomplete' | 'complete' | 'sampledAllBallotsIncomplete']: IRound
+  [key in 'incomplete' | 'complete' | 'fullHandTallyIncomplete']: IRound
 } = {
   incomplete: {
     id: 'round-1',
@@ -21,7 +21,8 @@ export const roundMocks: {
     startedAt: '2020-09-14T17:35:19.482Z',
     endedAt: null,
     isAuditComplete: false,
-    sampledAllBallots: false,
+    needsFullHandTally: false,
+    isFullHandTally: false,
     drawSampleTask: {
       status: FileProcessingStatus.PROCESSED,
       startedAt: '2020-09-14T17:35:19.482Z',
@@ -34,8 +35,9 @@ export const roundMocks: {
     roundNum: 1,
     startedAt: '2020-09-14T17:35:19.482Z',
     endedAt: '2020-09-14T17:35:19.482Z',
+    needsFullHandTally: false,
     isAuditComplete: true,
-    sampledAllBallots: false,
+    isFullHandTally: false,
     drawSampleTask: {
       status: FileProcessingStatus.PROCESSED,
       startedAt: '2020-09-14T17:35:19.482Z',
@@ -43,13 +45,14 @@ export const roundMocks: {
       error: null,
     },
   },
-  sampledAllBallotsIncomplete: {
+  fullHandTallyIncomplete: {
     id: 'round-1',
     roundNum: 1,
     startedAt: '2020-09-14T17:35:19.482Z',
     endedAt: null,
     isAuditComplete: false,
-    sampledAllBallots: true,
+    needsFullHandTally: true,
+    isFullHandTally: true,
     drawSampleTask: {
       status: FileProcessingStatus.PROCESSED,
       startedAt: '2020-09-14T17:35:19.482Z',
@@ -192,13 +195,13 @@ export const batchesMocks: {
   },
 }
 
-export const offlineBatchMocks: {
+export const fullHandTallyBatchResultMock: {
   [key in
     | 'empty'
     | 'complete'
     | 'updated'
     | 'finalized'
-    | 'completeWithMultipleBatch']: IOfflineBatchResults
+    | 'completeWithMultipleBatch']: IFullHandTallyBatchResults
 } = {
   empty: {
     finalizedAt: '',
@@ -266,8 +269,8 @@ export const offlineBatchMocks: {
   },
 }
 
-export const offlineBatchResultsMocks: {
-  [key in 'empty' | 'complete' | 'updated']: IOfflineBatchResult
+export const fullHandTallyBatchResultsMock: {
+  [key in 'empty' | 'complete' | 'updated']: IFullHandTallyBatchResult
 } = {
   empty: {
     batchName: '',

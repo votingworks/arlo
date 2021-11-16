@@ -119,7 +119,7 @@ describe('timers', () => {
       aaApiCalls.getContests,
       ...loadEach,
       aaApiCalls.getSampleSizes,
-      { ...aaApiCalls.getSampleSizes, response: sampleSizeMock },
+      { ...aaApiCalls.getSampleSizes, response: sampleSizeMock.ballotPolling },
     ]
     await withMockFetch(expectedCalls, async () => {
       renderWithRoute('/election/1/setup', <AuditAdminViewWithAuth />)

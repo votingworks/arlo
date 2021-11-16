@@ -162,7 +162,8 @@ export const roundMocks: {
       isAuditComplete: false,
       startedAt: '2019-07-18T16:34:07.000+00:00',
       id: 'round-1',
-      sampledAllBallots: false,
+      needsFullHandTally: false,
+      isFullHandTally: false,
       drawSampleTask: {
         status: FileProcessingStatus.PROCESSED,
         startedAt: '2020-09-14T17:35:19.482Z',
@@ -178,7 +179,8 @@ export const roundMocks: {
       isAuditComplete: false,
       startedAt: '2019-07-18T16:34:07.000+00:00',
       id: 'round-1',
-      sampledAllBallots: false,
+      needsFullHandTally: false,
+      isFullHandTally: false,
       drawSampleTask: {
         status: FileProcessingStatus.PROCESSED,
         startedAt: '2019-07-18T16:34:07.000+00:00',
@@ -192,7 +194,8 @@ export const roundMocks: {
       isAuditComplete: false,
       startedAt: '2019-07-18T16:34:07.000+00:00',
       id: 'round-2',
-      sampledAllBallots: false,
+      needsFullHandTally: false,
+      isFullHandTally: false,
       drawSampleTask: {
         status: FileProcessingStatus.PROCESSED,
         startedAt: '2019-07-18T16:34:07.000+00:00',
@@ -208,7 +211,8 @@ export const roundMocks: {
       isAuditComplete: true,
       startedAt: '2019-07-18T16:34:07.000+00:00',
       id: 'round-1',
-      sampledAllBallots: false,
+      needsFullHandTally: false,
+      isFullHandTally: false,
       drawSampleTask: {
         status: FileProcessingStatus.PROCESSED,
         startedAt: '2019-07-18T16:34:07.000+00:00',
@@ -224,7 +228,8 @@ export const roundMocks: {
       isAuditComplete: false,
       startedAt: '2019-07-18T16:34:07.000+00:00',
       id: 'round-1',
-      sampledAllBallots: false,
+      needsFullHandTally: false,
+      isFullHandTally: false,
       drawSampleTask: {
         status: FileProcessingStatus.PROCESSED,
         startedAt: '2020-09-14T17:35:19.482Z',
@@ -240,7 +245,8 @@ export const roundMocks: {
       isAuditComplete: false,
       startedAt: '2019-07-18T16:34:07.000+00:00',
       id: 'round-1',
-      sampledAllBallots: false,
+      needsFullHandTally: false,
+      isFullHandTally: false,
       drawSampleTask: {
         status: FileProcessingStatus.PROCESSING,
         startedAt: '2020-09-14T17:35:19.482Z',
@@ -256,7 +262,8 @@ export const roundMocks: {
       isAuditComplete: false,
       startedAt: '2019-07-18T16:34:07.000+00:00',
       id: 'round-1',
-      sampledAllBallots: false,
+      needsFullHandTally: false,
+      isFullHandTally: false,
       drawSampleTask: {
         status: FileProcessingStatus.ERRORED,
         startedAt: '2020-09-14T17:35:19.482Z',

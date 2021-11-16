@@ -74,7 +74,7 @@ def test_sample_size_round_1(
     )
 
 
-def test_two_rounds(
+def test_multiple_targeted_contests_two_rounds(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
@@ -186,3 +186,34 @@ def test_two_rounds(
 
     rv = client.get(f"/api/election/{election_id}/report")
     assert_match_report(rv.data, snapshot)
+
+
+def test_multiple_targeted_contests_full_hand_tally_error(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    contest_ids: List[str],
+    election_settings,  # pylint: disable=unused-argument
+    manifests,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {
+            "roundNum": 1,
+            "sampleSizes": {
+                contest_ids[0]: {"size": 1601, "key": "asn", "prob": None},
+                contest_ids[1]: {"size": 100, "key": "asn", "prob": None},
+            },
+        },
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Bad Request",
+                "message": "For a full hand tally, use only one target contest.",
+            }
+        ]
+    }

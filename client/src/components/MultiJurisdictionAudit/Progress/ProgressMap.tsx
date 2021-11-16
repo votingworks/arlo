@@ -160,6 +160,7 @@ const Map = ({
             return 'success'
           case JurisdictionProgressStatus.UPLOADS_FAILED:
             return 'danger'
+          case JurisdictionProgressStatus.UPLOADS_IN_PROGRESS:
           case JurisdictionProgressStatus.AUDIT_IN_PROGRESS:
             return 'progress'
           case JurisdictionProgressStatus.UPLOADS_NOT_STARTED:
@@ -245,19 +246,6 @@ const Map = ({
     svgElement.attr('width', width).attr('height', height)
 
     svgElement
-      .append('path')
-      .datum(usState)
-      .attr('class', 'outline')
-      .attr('d', path)
-      .attr('id', 'single-state')
-
-    svgElement
-      .append('clipPath')
-      .attr('id', 'clip-state')
-      .append('use')
-      .attr('xlink:href', '#single-state')
-
-    svgElement
       .selectAll('path')
       .data(usCounties)
       .enter()
@@ -281,6 +269,19 @@ const Map = ({
       .on('mouseout', () => {
         select('#tooltip').style('display', 'none')
       })
+
+    svgElement
+      .append('path')
+      .datum(usState)
+      .attr('class', 'outline')
+      .attr('d', path)
+      .attr('id', 'single-state')
+
+    svgElement
+      .append('clipPath')
+      .attr('id', 'clip-state')
+      .append('use')
+      .attr('xlink:href', '#single-state')
   }
 
   return (
@@ -326,6 +327,9 @@ const Map = ({
               </MapLabelsRow>
               <MapLabelsRow>
                 <MapLabelsBoxes className="danger" /> File upload failed
+              </MapLabelsRow>
+              <MapLabelsRow>
+                <MapLabelsBoxes className="progress" /> Uploads in progress
               </MapLabelsRow>
               <MapLabelsRow>
                 <MapLabelsBoxes className="gray" /> No files uploaded

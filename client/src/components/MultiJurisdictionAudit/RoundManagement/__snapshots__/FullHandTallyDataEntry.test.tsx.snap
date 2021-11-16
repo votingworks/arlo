@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`offline batch round data entry deletes offline batch 1`] = `
+exports[`full hand tally data entry deletes full hand tally batch result 1`] = `
 <div>
   <form
     class="sc-bdVaJa hazmWT"
@@ -156,7 +156,7 @@ exports[`offline batch round data entry deletes offline batch 1`] = `
 </div>
 `;
 
-exports[`offline batch round data entry edits offline batch 1`] = `
+exports[`full hand tally data entry edits full hand tally batch result 1`] = `
 <div>
   <form
     class="sc-bdVaJa hazmWT"
@@ -357,7 +357,7 @@ exports[`offline batch round data entry edits offline batch 1`] = `
 </div>
 `;
 
-exports[`offline batch round data entry finalizes offline batches 1`] = `
+exports[`full hand tally data entry finalizes full hand tally results 1`] = `
 <div>
   <form
     class="sc-bdVaJa hazmWT"
@@ -590,7 +590,7 @@ exports[`offline batch round data entry finalizes offline batches 1`] = `
 </div>
 `;
 
-exports[`offline batch round data entry renders 1`] = `
+exports[`full hand tally data entry renders 1`] = `
 <div>
   <form
     class="sc-bdVaJa hazmWT"
@@ -746,7 +746,7 @@ exports[`offline batch round data entry renders 1`] = `
 </div>
 `;
 
-exports[`offline batch round data entry renders with offline batches 1`] = `
+exports[`full hand tally data entry renders with full hand tally results 1`] = `
 <div>
   <form
     class="sc-bdVaJa hazmWT"
@@ -947,7 +947,7 @@ exports[`offline batch round data entry renders with offline batches 1`] = `
 </div>
 `;
 
-exports[`offline batch round data entry renders with proper totals 1`] = `
+exports[`full hand tally data entry renders with proper totals 1`] = `
 <div>
   <form
     class="sc-bdVaJa hazmWT"
@@ -1200,7 +1200,7 @@ exports[`offline batch round data entry renders with proper totals 1`] = `
 </div>
 `;
 
-exports[`offline batch round data entry submits offline batch 1`] = `
+exports[`full hand tally data entry submits full hand tally batch result 1`] = `
 <div>
   <form
     class="sc-bdVaJa hazmWT"
@@ -1401,7 +1401,7 @@ exports[`offline batch round data entry submits offline batch 1`] = `
 </div>
 `;
 
-exports[`offline batch round data entry validation error for blank submission 1`] = `
+exports[`full hand tally data entry validation error for blank submission 1`] = `
 <div>
   <form
     class="sc-bdVaJa hazmWT"

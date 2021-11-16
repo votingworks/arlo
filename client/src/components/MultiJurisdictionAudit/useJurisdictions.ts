@@ -26,6 +26,7 @@ export enum JurisdictionRoundStatus {
 
 export enum JurisdictionProgressStatus {
   UPLOADS_NOT_STARTED = 'UPLOADS_NOT_STARTED',
+  UPLOADS_IN_PROGRESS = 'UPLOADS_IN_PROGRESS',
   UPLOADS_COMPLETE = 'UPLOADS_COMPLETE',
   UPLOADS_FAILED = 'UPLOADS_FAILED',
   AUDIT_NOT_STARTED = 'AUDIT_NOT_STARTED',
@@ -86,8 +87,12 @@ export const getJurisdictionStatus = (jurisdiction: IJurisdiction) => {
     if (numComplete === files.length) {
       return JurisdictionProgressStatus.UPLOADS_COMPLETE
     }
+    if (numComplete > 0) {
+      return JurisdictionProgressStatus.UPLOADS_IN_PROGRESS
+    }
     return JurisdictionProgressStatus.UPLOADS_NOT_STARTED
   }
+
   if (currentRoundStatus.status === JurisdictionRoundStatus.COMPLETE) {
     return JurisdictionProgressStatus.AUDIT_COMPLETE
   }

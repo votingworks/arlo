@@ -156,7 +156,7 @@ def test_batch_comparison_round_1(
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
 
     # Use an artificially large sample size in order to have enough samples to work with
-    sample_size = 15
+    sample_size = 14
     rv = post_json(
         client,
         f"/api/election/{election_id}/round",
@@ -181,7 +181,8 @@ def test_batch_comparison_round_1(
                 "startedAt": assert_is_date,
                 "endedAt": None,
                 "isAuditComplete": None,
-                "sampledAllBallots": False,
+                "needsFullHandTally": False,
+                "isFullHandTally": False,
                 "drawSampleTask": {
                     "status": "PROCESSED",
                     "startedAt": assert_is_date,

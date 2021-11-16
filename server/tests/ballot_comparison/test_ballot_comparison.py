@@ -209,6 +209,68 @@ def test_set_contest_metadata_on_manifest_and_cvr_upload(
     )
 
 
+def test_set_contest_metadata_on_jurisdiction_change(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    manifests,  # pylint: disable=unused-argument
+    cvrs,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    contest_id = str(uuid.uuid4())
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/contest",
+        [
+            {
+                "id": contest_id,
+                "name": "Contest 2",
+                "numWinners": 1,
+                "jurisdictionIds": jurisdiction_ids[:2],
+                "isTargeted": True,
+            }
+        ],
+    )
+    assert_ok(rv)
+
+    # Contest metadata is set
+    rv = client.get(f"/api/election/{election_id}/contest")
+    original_contest = json.loads(rv.data)["contests"][0]
+    assert original_contest["totalBallotsCast"] is not None
+    assert original_contest["votesAllowed"] is not None
+    assert original_contest["choices"] != []
+
+    # Upload new jurisdictions, removing J1
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/file",
+        data={
+            "jurisdictions": (
+                io.BytesIO(
+                    (
+                        "Jurisdiction,Admin Email\n"
+                        f"J2,{default_ja_email(election_id)}\n"
+                        f"J3,j3-{election_id}@example.com\n"
+                    ).encode()
+                ),
+                "jurisdictions.csv",
+            )
+        },
+    )
+    assert_ok(rv)
+
+    # Contest universe and metadata changes
+    rv = client.get(f"/api/election/{election_id}/contest")
+    contest = json.loads(rv.data)["contests"][0]
+    assert contest["jurisdictionIds"] == [jurisdiction_ids[1]]
+    assert contest["totalBallotsCast"] == original_contest["totalBallotsCast"] / 2
+    assert contest["votesAllowed"] == original_contest["votesAllowed"]
+    assert (
+        contest["choices"][0]["numVotes"]
+        == original_contest["choices"][0]["numVotes"] / 2
+    )
+
+
 def test_require_cvr_uploads(
     client: FlaskClient,
     election_id: str,
@@ -782,6 +844,14 @@ def test_ballot_comparison_sample_size_validation(
         (
             {contest_id: {"key": "custom", "size": 3000, "prob": None}},
             "Sample size for contest Contest 2 must be less than or equal to: 30 (the total number of ballots in the contest)",
+        ),
+        (
+            {contest_id: {"key": "custom", "size": 30, "prob": None}},
+            "For a full hand tally, use the ballot polling or batch comparison audit type.",
+        ),
+        (
+            {contest_id: {"key": "supersimple", "size": 31, "prob": None}},
+            "For a full hand tally, use the ballot polling or batch comparison audit type.",
         ),
     ]
     for bad_sample_size, expected_error in bad_sample_sizes:

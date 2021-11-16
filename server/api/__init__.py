@@ -18,7 +18,7 @@ from . import audit_boards
 from . import ballots
 from . import batches
 from . import offline_results
-from . import offline_batch_results
+from . import full_hand_tally
 from . import reports
 from . import activity
 from . import support

@@ -10,7 +10,7 @@ def test_settings_get_empty(client: FlaskClient, election_id: str):
     assert rv.status_code == 200
     assert json.loads(rv.data) == {
         "electionName": None,
-        "online": False,
+        "online": True,
         "randomSeed": None,
         "riskLimit": None,
         "state": None,
@@ -32,7 +32,7 @@ def test_jurisdiction_settings_get_empty(
     assert rv.status_code == 200
     assert json.loads(rv.data) == {
         "electionName": None,
-        "online": False,
+        "online": True,
         "randomSeed": None,
         "riskLimit": None,
         "state": None,

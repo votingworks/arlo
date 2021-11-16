@@ -13,8 +13,9 @@ from . import api
 from ..models import *  # pylint: disable=wildcard-import
 from ..database import db_session
 from ..auth import restrict_access, UserType
-from .rounds import get_current_round, sampled_all_ballots
+from .rounds import get_current_round, is_full_hand_tally
 from .ballot_manifest import hybrid_jurisdiction_total_ballots
+from .contests import set_contest_metadata
 from .standardized_contests import process_standardized_contests_file
 from ..worker.tasks import (
     background_task,
@@ -94,6 +95,8 @@ def process_jurisdictions_file(election_id: str):
     Jurisdiction.query.filter(Jurisdiction.id.in_(unmanaged_admin_ids)).delete(
         synchronize_session="fetch"
     )
+
+    set_contest_metadata(election)
 
     # If standardized contests file already uploaded, try reprocessing the
     # standardized contests file as well, since it depends on jurisdiction names.
@@ -264,30 +267,30 @@ def ballot_round_status(election: Election, round: Round) -> Dict[str, JSONDict]
         else {}
     )
 
-    did_sample_all_ballots = sampled_all_ballots(round, election)
+    full_hand_tally = is_full_hand_tally(round, election)
 
     # Special case: if we sampled all ballots, provide progress reports based
-    # on the offline batch results
-    jurisdiction_offline_batch_result_totals = (
+    # on the full hand tally results
+    jurisdiction_full_hand_tally_result_totals = (
         dict(
-            OfflineBatchResult.query.join(Jurisdiction)
+            FullHandTallyBatchResult.query.join(Jurisdiction)
             .filter_by(election_id=election.id)
             .group_by(Jurisdiction.id)
-            .values(Jurisdiction.id, func.sum(OfflineBatchResult.result))
+            .values(Jurisdiction.id, func.sum(FullHandTallyBatchResult.result))
         )
-        if did_sample_all_ballots
+        if full_hand_tally
         else {}
     )
 
     def num_samples(jurisdiction: Jurisdiction) -> int:
         # Special case: if we sampled all ballots, we know the number of
         # ballots from the manifest
-        if did_sample_all_ballots:
+        if full_hand_tally:
             return jurisdiction.manifest_num_ballots or 0
         return sample_count_by_jurisdiction.get(jurisdiction.id, 0)
 
     def num_ballots(jurisdiction: Jurisdiction) -> int:
-        if did_sample_all_ballots:
+        if full_hand_tally:
             return jurisdiction.manifest_num_ballots or 0
         return ballot_count_by_jurisdiction.get(jurisdiction.id, 0)
 
@@ -313,8 +316,8 @@ def ballot_round_status(election: Election, round: Round) -> Dict[str, JSONDict]
             )
             if num_not_signed_off > 0:
                 return JurisdictionStatus.IN_PROGRESS
-        elif did_sample_all_ballots:
-            if jurisdiction.finalized_offline_batch_results_at is None:
+        elif full_hand_tally:
+            if jurisdiction.finalized_full_hand_tally_results_at is None:
                 return JurisdictionStatus.IN_PROGRESS
         else:
             if jurisdiction.id not in jurisdictions_with_offline_results_recorded:
@@ -325,8 +328,8 @@ def ballot_round_status(election: Election, round: Round) -> Dict[str, JSONDict]
     def num_samples_audited(jurisdiction: Jurisdiction) -> int:
         if election.online:
             return audited_sample_count_by_jurisdiction.get(jurisdiction.id, 0)
-        elif did_sample_all_ballots:
-            return jurisdiction_offline_batch_result_totals.get(jurisdiction.id, 0)
+        elif full_hand_tally:
+            return jurisdiction_full_hand_tally_result_totals.get(jurisdiction.id, 0)
         else:
             return (
                 num_samples(jurisdiction)
@@ -337,8 +340,8 @@ def ballot_round_status(election: Election, round: Round) -> Dict[str, JSONDict]
     def num_ballots_audited(jurisdiction: Jurisdiction) -> int:
         if election.online:
             return audited_ballot_count_by_jurisdiction.get(jurisdiction.id, 0)
-        elif did_sample_all_ballots:
-            return jurisdiction_offline_batch_result_totals.get(jurisdiction.id, 0)
+        elif full_hand_tally:
+            return jurisdiction_full_hand_tally_result_totals.get(jurisdiction.id, 0)
         else:
             return (
                 num_ballots(jurisdiction)
@@ -357,15 +360,16 @@ def ballot_round_status(election: Election, round: Round) -> Dict[str, JSONDict]
         for jurisdiction in election.jurisdictions
     }
 
-    # Special case: when all ballots sampled, also add a count of batches
+    # Special case: when we're in a full hand tally, also add a count of batches
     # submitted.
-    if did_sample_all_ballots:
+    if full_hand_tally:
         num_batches_by_jurisdiction = dict(
-            OfflineBatchResult.query.join(Jurisdiction)
+            FullHandTallyBatchResult.query.join(Jurisdiction)
             .filter_by(election_id=election.id)
             .group_by(Jurisdiction.id)
             .values(
-                Jurisdiction.id, func.count(OfflineBatchResult.batch_name.distinct())
+                Jurisdiction.id,
+                func.count(FullHandTallyBatchResult.batch_name.distinct()),
             )
         )
         for jurisdiction_id in statuses:
