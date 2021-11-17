@@ -174,11 +174,11 @@ class NEBAssertion(RaireAssertion):
     def subsumes(self, other: Type[RaireAssertion]):
         """
         An NEBAssertion 'A' subsumes an assertion 'other' if:
-        - 'other' is not an NEBAssertion
-        - Both assertions have the same winner & loser
-        - 'other' rules out an outcome with the tail 'Tail' and either the
-          winner of this NEBAssertion assertion appears before the loser in
-          'Tail' or the loser appears and the winner does not.
+        - 'other' is not an NEBAssertion and one of the following is true:
+            - Both assertions have the same winner & loser
+            - 'other' rules out an outcome with the tail 'Tail' and either the
+              winner of this NEBAssertion assertion appears before the loser in
+              'Tail' or the loser appears and the winner does not.
         """
         if isinstance(other, NEBAssertion):
             return False
