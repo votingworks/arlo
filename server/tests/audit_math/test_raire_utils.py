@@ -121,6 +121,9 @@ def test_nebassertion():
     assert not asrtn_1.is_vote_for_winner(cvr)
     assert not asrtn_1.is_vote_for_loser(cvr)
 
+    # checking hashability
+    assert list(set([asrtn_1])) == [asrtn_1]
+
 
 def test_simple_contest():
     cvr1 = {"test_con": {"Ann": 1, "Sally": 3, "Bob": 2, "Mike": 4}}
@@ -222,6 +225,12 @@ def test_nen_repr():
     expected = "NEN,Winner,winner,Loser,loser,Eliminated,"
     asrtn_1 = raire_utils.NENAssertion("Contest A", "winner", "loser", [])
     assert str(asrtn_1) == expected
+
+
+def test_nen_hash():
+    asrtn_1 = raire_utils.NENAssertion("Contest A", "winner", "loser", [])
+    # checking hashability
+    assert list(set([asrtn_1])) == [asrtn_1]
 
 
 def test_raire_node_descendents():
