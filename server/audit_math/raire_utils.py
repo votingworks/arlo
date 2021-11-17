@@ -25,7 +25,9 @@ def ranking(cand: str, ballot: Dict[str, int]) -> int:
     return -1 if not rank else rank
 
 
-def vote_for_cand(cand: str, eliminated: List[str], ballot: Dict[str, int]) -> Literal[0, 1]:
+def vote_for_cand(
+    cand: str, eliminated: List[str], ballot: Dict[str, int]
+) -> Literal[0, 1]:
     """
     Input:
         cand : string       -   identifier for candidate
@@ -167,9 +169,7 @@ class NEBAssertion(RaireAssertion):
         w_idx = ranking(self.winner, cvr[self.contest])
         l_idx = ranking(self.loser, cvr[self.contest])
 
-        return (
-            1 if l_idx != -1 and (w_idx == -1 or l_idx < w_idx) else 0
-        )
+        return 1 if l_idx != -1 and (w_idx == -1 or l_idx < w_idx) else 0
 
     def subsumes(self, other: Type[RaireAssertion]):
         """
@@ -391,9 +391,12 @@ class RaireFrontier:
             if node_at_i.is_descendent_of(node):
                 descendents.append(i)
 
-        self.nodes = [other_node for other_node in self.nodes if not other_node.is_descendent_of(node)]
+        self.nodes = [
+            other_node
+            for other_node in self.nodes
+            if not other_node.is_descendent_of(node)
+        ]
         self.insert_node(node)
-
 
     def __eq__(self, other):
         return self.nodes == other.nodes

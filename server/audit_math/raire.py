@@ -269,8 +269,13 @@ def compute_raire_assertions(
     # Some assertions will be used to rule out multiple branches of our
     # alternate outcome tree. Form a list of all these assertions, without
     # duplicates.
-    assertions: List[RaireAssertion] = list(set(node.best_assertion for node in frontier.nodes if node.best_assertion is not None))
-
+    assertions: List[RaireAssertion] = list(
+        set(
+            node.best_assertion
+            for node in frontier.nodes
+            if node.best_assertion is not None
+        )
+    )
 
     final_audit = []
 
@@ -280,12 +285,16 @@ def compute_raire_assertions(
     # subsume all NEN assertions that say A is not eliminated next when B
     # is still standing. What this means is that if the NEB assertion holds,
     # the NEN assertion will hold, so there is no need to check both of them.
-    final_audit = list(sorted(
-          assertion for assertion in assertions
+    final_audit = list(
+        sorted(
+            assertion
+            for assertion in assertions
             if not any(
-                    other_assertion.subsumes(assertion)
-                        for other_assertion in assertions if other_assertion != assertion
-                          )
-            ))
+                other_assertion.subsumes(assertion)
+                for other_assertion in assertions
+                if other_assertion != assertion
+            )
+        )
+    )
 
     return final_audit
