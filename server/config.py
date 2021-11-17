@@ -1,13 +1,25 @@
 import os
 import logging
 from datetime import timedelta
+from typing import Dict
 
 
-def read_env_var(name: str, default=None, env_defaults=None):
+def read_env_var(
+    name: str, default: str = None, env_defaults: Dict[str, str] = None,
+) -> str:
     value = os.environ.get(name, (env_defaults or {}).get(FLASK_ENV, default))
     if value is None:
         raise Exception(f"Missing env var: {name}")
     return value
+
+
+def parse_bool(value: str) -> bool:
+    if value.lower() in ["true", "yes", "1"]:
+        return True
+    elif value.lower() in ["false", "no", "0"]:
+        return False
+    else:
+        raise Exception(f"Invalid boolean value: {value}")
 
 
 # Configure Flask-specific environment variables.
@@ -20,10 +32,10 @@ def read_env_var(name: str, default=None, env_defaults=None):
 # `False`, which isn't what we want.
 FLASK_ENV = os.environ.get("FLASK_ENV", "production")
 FLASK_DEBUG = read_env_var(
-    "FLASK_DEBUG", default=False, env_defaults=dict(development=True, test=True)
+    "FLASK_DEBUG", default="False", env_defaults=dict(development="True", test="True")
 )
 if "FLASK_DEBUG" not in os.environ:
-    os.environ["FLASK_DEBUG"] = str(FLASK_DEBUG)
+    os.environ["FLASK_DEBUG"] = str(parse_bool(FLASK_DEBUG))
 
 
 DATABASE_URL = read_env_var(
@@ -90,22 +102,28 @@ AUDITADMIN_AUTH0_CLIENT_SECRET = read_env_var(
 )
 
 # Jurisdiction admin login code email config
-SMTP_HOST = read_env_var("ARLO_SMTP_HOST", dict(test="test-smtp-host"))
-SMTP_PORT = read_env_var("ARLO_SMTP_PORT", dict(development=587, test=587))
-SMTP_USERNAME = read_env_var("ARLO_SMTP_USERNAME", dict(test="test-smtp-username"))
-SMTP_PASSWORD = read_env_var("ARLO_SMTP_PASSWORD", dict(test="test-smtp-password"))
+SMTP_HOST = read_env_var("ARLO_SMTP_HOST", env_defaults=dict(test="test-smtp-host"))
+SMTP_PORT = int(
+    read_env_var("ARLO_SMTP_PORT", env_defaults=dict(development="587", test="587"))
+)
+SMTP_USERNAME = read_env_var(
+    "ARLO_SMTP_USERNAME", env_defaults=dict(test="test-smtp-username")
+)
+SMTP_PASSWORD = read_env_var(
+    "ARLO_SMTP_PASSWORD", env_defaults=dict(test="test-smtp-password")
+)
 LOGIN_CODE_LIFETIME = timedelta(minutes=15)
 
 
 # Configure round size growth from ARLO_MINERVA_MULTIPLE (a float) if given, otherwise 1.5
-MINERVA_MULTIPLE = float(read_env_var("ARLO_MINERVA_MULTIPLE", default=1.5))
+MINERVA_MULTIPLE = float(read_env_var("ARLO_MINERVA_MULTIPLE", default="1.5"))
 
 SENTRY_DSN = os.environ.get("SENTRY_DSN")
 
 SLACK_WEBHOOK_URL = os.environ.get("SLACK_WEBHOOK_URL")
 
-RUN_BACKGROUND_TASKS_IMMEDIATELY = bool(
-    read_env_var("RUN_BACKGROUND_TASKS_IMMEDIATELY", default=False)
+RUN_BACKGROUND_TASKS_IMMEDIATELY = parse_bool(
+    read_env_var("RUN_BACKGROUND_TASKS_IMMEDIATELY", default="False")
 )
 
 logging.basicConfig(level=logging.INFO)
