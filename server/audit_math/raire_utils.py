@@ -1,11 +1,11 @@
 from __future__ import annotations
-from typing import Type, Callable, Dict, List, Any, Optional
+from typing import Type, Callable, Dict, List, Any, Optional, Literal
 import numpy as np
 
 from .sampler_contest import CVR, Contest
 
 
-def ranking(cand: str, ballot: Dict[str, int]):
+def ranking(cand: str, ballot: Dict[str, int]) -> int:
     """
     Input:
         cand : string  -   identifier for candidate
@@ -22,10 +22,10 @@ def ranking(cand: str, ballot: Dict[str, int]):
         return -1
 
     rank = ballot[cand]
-    return -1 if rank in (0, "not present") else rank
+    return -1 if not rank else rank
 
 
-def vote_for_cand(cand: str, eliminated: List[str], ballot: Dict[str, int]):
+def vote_for_cand(cand: str, eliminated: List[str], ballot: Dict[str, int]) -> Literal[0, 1]:
     """
     Input:
         cand : string       -   identifier for candidate
@@ -55,7 +55,7 @@ def vote_for_cand(cand: str, eliminated: List[str], ballot: Dict[str, int]):
         if alt_c in eliminated:
             continue
 
-        if a_idx not in (0, "not present") and a_idx < c_idx:
+        if a_idx and a_idx < c_idx:
             return 0
 
     return 1
@@ -81,10 +81,6 @@ class RaireAssertion:
         self.winner = winner
         self.loser = loser
 
-        self.votes_for_winner = 0
-        self.votes_for_loser = 0
-
-        self.margin = -1
         self.difficulty = np.inf
 
         self.rules_out: List[Any] = []
@@ -172,7 +168,7 @@ class NEBAssertion(RaireAssertion):
         l_idx = ranking(self.loser, cvr[self.contest])
 
         return (
-            1 if l_idx != -1 and (w_idx == -1 or (w_idx != -1 and l_idx < w_idx)) else 0
+            1 if l_idx != -1 and (w_idx == -1 or l_idx < w_idx) else 0
         )
 
     def subsumes(self, other: Type[RaireAssertion]):
@@ -217,6 +213,9 @@ class NEBAssertion(RaireAssertion):
             and self.winner == other.winner
             and self.loser == other.loser
         )
+
+    def __hash__(self) -> int:
+        return hash((self.contest, self.winner, self.loser))
 
     def __repr__(self):
         return "NEB,Winner,{},Loser,{},Eliminated".format(self.winner, self.loser)
@@ -279,6 +278,9 @@ class NENAssertion(RaireAssertion):
             and self.loser == other.loser
             and self.eliminated == other.eliminated
         )
+
+    def __hash__(self) -> int:
+        return hash((self.contest, self.winner, self.loser, tuple(self.eliminated)))
 
     def __repr__(self):
         return f"NEN,Winner,{self.winner},Loser,{self.loser},Eliminated," + ",".join(
@@ -389,10 +391,9 @@ class RaireFrontier:
             if node_at_i.is_descendent_of(node):
                 descendents.append(i)
 
-        for i in reversed(descendents):
-            del self.nodes[i]
-
+        self.nodes = [other_node for other_node in self.nodes if not other_node.is_descendent_of(node)]
         self.insert_node(node)
+
 
     def __eq__(self, other):
         return self.nodes == other.nodes
@@ -491,9 +492,6 @@ def find_best_audit(
                 nen.rules_out = node.tail
                 nen.difficulty = estimate
 
-                nen.votes_for_winner = tally_first_in_tail
-                nen.votes_for_loser = tally_later_cand
-
                 best_asrtn = nen
 
     node.best_assertion = best_asrtn
@@ -533,13 +531,11 @@ def perform_dive(
     starting at the input 'node'.
     """
 
-    ncands = len(contest.candidates)
-
     rem_cands = [c for c in contest.candidates if not c in node.tail]
     next_cand = rem_cands[0]
 
     newn = RaireNode([next_cand] + node.tail)
-    newn.expandable = not len(newn.tail) == ncands
+    newn.expandable = len(newn.tail) < len(contest.candidates)
 
     # Assign a 'best ancestor' to the new node.
     if node.best_ancestor and node.best_ancestor.estimate <= node.estimate:

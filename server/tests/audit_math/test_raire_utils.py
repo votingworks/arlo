@@ -1,4 +1,4 @@
-from typing import List, Any, Dict, Generator
+from typing import List, Any, Dict
 import pytest
 import numpy as np
 
@@ -24,10 +24,11 @@ def test_ranking():
         "B": 2,
         "C": 3,
         "D": 0,
-        "E": "not present",
     }
 
     assert raire_utils.ranking("A", ballot) == 1
+    assert raire_utils.ranking("B", ballot) == 2
+    assert raire_utils.ranking("C", ballot) == 3
     assert raire_utils.ranking("D", ballot) == -1
     assert raire_utils.ranking("E", ballot) == -1
 
@@ -38,7 +39,6 @@ def test_vote_for_candidate():
         "B": 2,
         "C": 3,
         "D": 0,
-        "E": "not present",
     }
 
     assert raire_utils.vote_for_cand("A", [], ballot)
@@ -81,7 +81,7 @@ def test_raire_assertion_comparator():
     ), f"__gt__ failed! {asrtn_1.difficulty} {asrtn_2.difficulty}"
     assert (
         asrtn_1 < asrtn_2
-    ), f"__ls__ failed! {asrtn_1.difficulty} {asrtn_2.difficulty}"
+    ), f"__lt__ failed! {asrtn_1.difficulty} {asrtn_2.difficulty}"
 
 
 def test_raire_assertion_to_str():
@@ -105,7 +105,7 @@ def test_nebassertion():
     contest = "Contest A"
 
     asrtn_1 = raire_utils.NEBAssertion(contest, "winner", "loser")
-    cvr = {contest: {}}
+    cvr = {}
 
     assert asrtn_1.is_vote_for_winner(cvr) == 0
     assert asrtn_1.is_vote_for_loser(cvr) == 0
@@ -186,7 +186,7 @@ def test_neb_repr():
 def test_nenassertion_is_vote_for():
     contest = "Contest A"
     asrtn_1 = raire_utils.NENAssertion(contest, "winner", "loser", [])
-    cvr = {contest: {}}
+    cvr = {}
 
     assert asrtn_1.is_vote_for_winner(cvr) == 0
     assert asrtn_1.is_vote_for_loser(cvr) == 0
@@ -352,39 +352,41 @@ def test_find_best_audit_simple():
 def make_neb_assertion(contest, cvrs: CVRS, asn_func, winner, loser, eliminated):
     assertion = raire_utils.NEBAssertion(contest.name, winner, loser)
     assertion.eliminated = eliminated
-    assertion.votes_for_winner = sum(
+    votes_for_winner = sum(
         [
             assertion.is_vote_for_winner(cvr) for _, cvr in cvrs.items() if cvr
         ]  # if is for the type checker
     )
-    assertion.votes_for_loser = sum(
+    votes_for_loser = sum(
         [assertion.is_vote_for_loser(cvr) for _, cvr in cvrs.items() if cvr]
     )
 
-    assertion.margin = assertion.votes_for_winner - assertion.votes_for_loser
-    assertion.difficulty = asn_func(assertion.margin)
+    margin = votes_for_winner - votes_for_loser
+    assertion.difficulty = asn_func(margin)
 
     return assertion
 
 
 def make_nen_assertion(contest, cvrs: CVRS, asn_func, winner, loser, eliminated):
     assertion = raire_utils.NENAssertion(contest.name, winner, loser, eliminated)
-    assertion.votes_for_winner = sum(
-        [assertion.is_vote_for_winner(cvr) for _, cvr in cvrs.items() if cvr]
+    votes_for_winner = sum(
+        [
+            assertion.is_vote_for_winner(cvr) for _, cvr in cvrs.items() if cvr
+        ]  # if is for the type checker
     )
-    assertion.votes_for_loser = sum(
+    votes_for_loser = sum(
         [assertion.is_vote_for_loser(cvr) for _, cvr in cvrs.items() if cvr]
     )
 
-    assertion.margin = assertion.votes_for_winner - assertion.votes_for_loser
-    assertion.difficulty = asn_func(assertion.margin)
+    margin = votes_for_winner - votes_for_loser
+    assertion.difficulty = asn_func(margin)
 
     return assertion
 
 
 @pytest.fixture
-def contest() -> Generator[Contest, None, None]:
-    yield Contest(
+def contest() -> Contest:
+    return Contest(
         "Contest A",
         {
             "winner": 50000,
@@ -398,7 +400,7 @@ def contest() -> Generator[Contest, None, None]:
 
 
 @pytest.fixture
-def cvrs() -> Generator[CVRS, None, None]:
+def cvrs() -> CVRS:
     cvrs: CVRS = {}
     for i in range(25000):
         cvrs[f"Ballot {i}"] = {"Contest A": {"winner": 1, "loser": 2, "loser2": 3}}
@@ -409,11 +411,11 @@ def cvrs() -> Generator[CVRS, None, None]:
     for i in range(80000, 100000):
         cvrs[f"Ballot {i}"] = {"Contest A": {"winner": 2, "loser": 3, "loser2": 1}}
 
-    yield cvrs
+    return cvrs
 
 
 @pytest.fixture
-def ballots() -> Generator[List[Dict[str, int]], None, None]:
+def ballots() -> List[Dict[str, int]]:
     ballots = []
     for _ in range(25000):
         ballots.append({"winner": 1, "loser": 2, "loser2": 3})
@@ -424,15 +426,13 @@ def ballots() -> Generator[List[Dict[str, int]], None, None]:
     for _ in range(20000):
         ballots.append({"winner": 2, "loser": 3, "loser2": 1})
 
-    yield ballots
+    return ballots
 
 
-@pytest.fixture
-def asn_func():
-    yield lambda m: 1 / m if m > 0 else np.inf
+asn_func = lambda m: 1 / m if m > 0 else np.inf
 
 
-def test_find_best_audit_complex(contest, cvrs, ballots, asn_func):
+def test_find_best_audit_complex(contest, cvrs, ballots):
     winner_neb_loser = make_neb_assertion(
         contest, cvrs, asn_func, "winner", "loser", []
     )
@@ -472,7 +472,7 @@ def test_find_best_audit_complex(contest, cvrs, ballots, asn_func):
     assert tree.best_assertion == expected
 
 
-def test_find_best_with_eliminated(contest, cvrs, ballots, asn_func):
+def test_find_best_with_eliminated(contest, cvrs, ballots):
     winner_neb_loser = make_neb_assertion(
         contest, cvrs, asn_func, "winner", "loser", ["loser2"]
     )
@@ -502,7 +502,7 @@ def test_find_best_with_eliminated(contest, cvrs, ballots, asn_func):
     assert tree.best_assertion == expected
 
 
-def test_find_best_with_wrong_elimination(contest, cvrs, ballots, asn_func):
+def test_find_best_with_wrong_elimination(contest, cvrs, ballots):
 
     # Now check that an accidentally eliminated candidate doesn't work
     winner_neb_loser = make_neb_assertion(
@@ -532,7 +532,7 @@ def test_find_best_with_wrong_elimination(contest, cvrs, ballots, asn_func):
     assert tree.best_assertion == expected
 
 
-def test_perform_dive_impossible(contest, cvrs, ballots, asn_func):
+def test_perform_dive_impossible(contest, cvrs, ballots):
     winner_neb_loser = make_neb_assertion(
         contest, cvrs, asn_func, "winner", "loser", ["loser2"]
     )
@@ -569,7 +569,7 @@ def test_perform_dive_impossible(contest, cvrs, ballots, asn_func):
     assert result == expected
 
 
-def test_perform_dive_possible(contest, cvrs, ballots, asn_func):
+def test_perform_dive_possible(contest, cvrs, ballots):
     winner_neb_loser = make_neb_assertion(
         contest, cvrs, asn_func, "winner", "loser", ["loser2"]
     )

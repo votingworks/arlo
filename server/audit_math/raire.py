@@ -41,16 +41,13 @@ def make_neb_matrix(contest: Contest, cvrs: CVRS, asn_func) -> NEBMatrix:
             tally_cand: int = 0
             tally_other: int = 0
             for _, cvr in cvrs.items():
-                assert cvr  # for type checker
+                assert cvr is not None  # for type checker
                 tally_cand += asrn.is_vote_for_winner(cvr)
                 tally_other += asrn.is_vote_for_loser(cvr)
 
             if tally_cand > tally_other:
-                asrn.margin = tally_cand - tally_other
-                asrn.difficulty = asn_func(asrn.margin)
-
-                asrn.votes_for_winner = tally_cand
-                asrn.votes_for_loser = tally_other
+                margin = tally_cand - tally_other
+                asrn.difficulty = asn_func(margin)
 
                 nebs[cand][other] = asrn
 
@@ -172,6 +169,8 @@ def find_assertions(
                     and to_expand.best_ancestor.estimate <= to_expand.estimate
                     else to_expand
                 )
+                # This is for the type checker...
+                assert newn.best_ancestor
 
                 find_best_audit(contest, ballots, nebs, newn, asn_func)
 
@@ -179,15 +178,12 @@ def find_assertions(
                     # 'newn' is a leaf.
                     if (
                         newn.estimate == np.inf
-                        and newn.best_ancestor
                         and newn.best_ancestor.estimate == np.inf
                     ):
                         return False
 
-                    # This is for the type checker...
-                    if newn.best_ancestor:
-                        lowerbound = max(lowerbound, newn.best_ancestor.estimate)
-                        frontier.replace_descendents(newn.best_ancestor)
+                    lowerbound = max(lowerbound, newn.best_ancestor.estimate)
+                    frontier.replace_descendents(newn.best_ancestor)
                 else:
                     frontier.insert_node(newn)
 
@@ -270,49 +266,26 @@ def compute_raire_assertions(
         # If the audit isn't possible, we need a full recount
         return []
     # ------------------------------------------------------------------------
-    assertions: List[RaireAssertion] = []
-
     # Some assertions will be used to rule out multiple branches of our
     # alternate outcome tree. Form a list of all these assertions, without
     # duplicates.
-    for node in frontier.nodes:
-        skip = False
-        for assrtn in assertions:
-            if node.best_assertion == assrtn:
-                skip = True
-                break
+    assertions: List[RaireAssertion] = list(set(node.best_assertion for node in frontier.nodes if node.best_assertion is not None))
 
-        if not skip:
-            assertions.append(node.best_assertion)
-    # Assertions will be sorted in order of greatest to least difficulty.
-    sorted_assertions = sorted(assertions)
-    len_assertions = len(sorted_assertions)
 
     final_audit = []
 
+    # Assertions will be sorted in order of greatest to least difficulty.
     # Some assertions will "subsume" others. For example, an assertion
     # that says "Candidate A cannot be eliminated before candidate B" will
     # subsume all NEN assertions that say A is not eliminated next when B
     # is still standing. What this means is that if the NEB assertion holds,
     # the NEN assertion will hold, so there is no need to check both of them.
-    for i in range(len_assertions):
-        assrtn_i = sorted_assertions[i]
-
-        subsumed = False
-        for j in range(len_assertions):
-
-            if i == j:
-                continue
-
-            assrtn_j = sorted_assertions[j]
-
-            if assrtn_j.subsumes(assrtn_i):
-                subsumed = True
-
-                break
-
-        # Ignore "None" assertions
-        if assrtn_i and not subsumed:
-            final_audit.append(assrtn_i)
+    final_audit = list(sorted(
+          assertion for assertion in assertions
+            if not any(
+                    other_assertion.subsumes(assertion)
+                        for other_assertion in assertions if other_assertion != assertion
+                          )
+            ))
 
     return final_audit
