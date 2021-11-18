@@ -305,7 +305,7 @@ class RaireNode:
 
         self.best_ancestor: Optional[RaireNode] = None
 
-    def is_descendent_of(self, node) -> bool:
+    def is_descendent_of(self, node: RaireNode) -> bool:
         """
         Determines if the given 'node' is an ancestor of this node in a
         tree of possible election outcomes. A node with a tail equal to
@@ -324,9 +324,7 @@ class RaireNode:
         if len1 <= len2:
             return False
 
-        # More typechecker shenanigans
-        ret_val = bool(self.tail[len1 - len2 :] == node.tail)
-        return ret_val
+        return self.tail[len1 - len2 :] == node.tail
 
     def __eq__(self, other):
         return (
