@@ -1,10 +1,14 @@
-from typing import List, Any, Dict
+from typing import List, Any, Dict, Callable
 import pytest
 import numpy as np
 
 from server.audit_math.sampler_contest import Contest, CVRS
 
 import server.audit_math.raire_utils as raire_utils
+from server.audit_math.raire_utils import NEBAssertion, NENAssertion
+
+# TODO: update this type def
+AsnFunc = Callable
 
 
 def test_ranking_not_on_ballots():
@@ -15,7 +19,7 @@ def test_ranking_not_on_ballots():
         "C": 3,
     }
 
-    assert raire_utils.ranking(cand, ballot) == -1
+    assert raire_utils.ranking(cand, ballot) == 0
 
 
 def test_ranking():
@@ -29,8 +33,8 @@ def test_ranking():
     assert raire_utils.ranking("A", ballot) == 1
     assert raire_utils.ranking("B", ballot) == 2
     assert raire_utils.ranking("C", ballot) == 3
-    assert raire_utils.ranking("D", ballot) == -1
-    assert raire_utils.ranking("E", ballot) == -1
+    assert raire_utils.ranking("D", ballot) == 0
+    assert raire_utils.ranking("E", ballot) == 0
 
 
 def test_vote_for_candidate():
@@ -358,7 +362,14 @@ def test_find_best_audit_simple():
     assert tree.estimate == expected.difficulty
 
 
-def make_neb_assertion(contest, cvrs: CVRS, asn_func, winner, loser, eliminated):
+def make_neb_assertion(
+    contest: Contest,
+    cvrs: CVRS,
+    asn_func: AsnFunc,
+    winner: str,
+    loser: str,
+    eliminated: List[str],
+) -> NEBAssertion:
     assertion = raire_utils.NEBAssertion(contest.name, winner, loser)
     assertion.eliminated = eliminated
     votes_for_winner = sum(
@@ -376,7 +387,14 @@ def make_neb_assertion(contest, cvrs: CVRS, asn_func, winner, loser, eliminated)
     return assertion
 
 
-def make_nen_assertion(contest, cvrs: CVRS, asn_func, winner, loser, eliminated):
+def make_nen_assertion(
+    contest: Contest,
+    cvrs: CVRS,
+    asn_func: AsnFunc,
+    winner: str,
+    loser: str,
+    eliminated: List[str],
+) -> NENAssertion:
     assertion = raire_utils.NENAssertion(contest.name, winner, loser, eliminated)
     votes_for_winner = sum(
         [

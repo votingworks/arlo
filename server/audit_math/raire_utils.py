@@ -18,11 +18,7 @@ def ranking(cand: str, ballot: Dict[str, int]) -> int:
         given ballot 'ballot'. Returns -1 if 'cand' is not preferenced on the
         ballot.
     """
-    if not cand in ballot:
-        return -1
-
-    rank = ballot[cand]
-    return -1 if not rank else rank
+    return ballot.get(cand, 0)
 
 
 def vote_for_cand(
@@ -47,7 +43,7 @@ def vote_for_cand(
 
     # If 'cand' does not appear on the ballot, they do not get this vote.
     c_idx = ranking(cand, ballot)
-    if c_idx == -1:
+    if not c_idx:
         return 0
 
     for alt_c, a_idx in ballot.items():
@@ -156,22 +152,22 @@ class NEBAssertion(RaireAssertion):
     prior to 'loser'.
     """
 
-    def is_vote_for_winner(self, cvr: CVR):
+    def is_vote_for_winner(self, cvr: CVR) -> Literal[0, 1]:
         return (
             1
             if self.contest in cvr and ranking(self.winner, cvr[self.contest]) == 1
             else 0
         )
 
-    def is_vote_for_loser(self, cvr: CVR):
+    def is_vote_for_loser(self, cvr: CVR) -> Literal[0, 1]:
         if self.contest not in cvr:
             return 0
         w_idx = ranking(self.winner, cvr[self.contest])
         l_idx = ranking(self.loser, cvr[self.contest])
 
-        return 1 if l_idx != -1 and (w_idx == -1 or l_idx < w_idx) else 0
+        return 1 if l_idx and (not w_idx or l_idx < w_idx) else 0
 
-    def subsumes(self, other: Type[RaireAssertion]):
+    def subsumes(self, other: Type[RaireAssertion]) -> bool:
         """
         An NEBAssertion 'A' subsumes an assertion 'other' if:
         - 'other' is not an NEBAssertion and one of the following is true:
@@ -206,7 +202,7 @@ class NEBAssertion(RaireAssertion):
 
         return False
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         return (
             isinstance(other, NEBAssertion)
             and self.contest == other.contest
@@ -217,7 +213,7 @@ class NEBAssertion(RaireAssertion):
     def __hash__(self) -> int:
         return hash((self.contest, self.winner, self.loser))
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "NEB,Winner,{},Loser,{},Eliminated".format(self.winner, self.loser)
 
 
@@ -243,19 +239,19 @@ class NENAssertion(RaireAssertion):
 
         self.eliminated = eliminated
 
-    def is_vote_for_winner(self, cvr: CVR):
+    def is_vote_for_winner(self, cvr: CVR) -> Literal[0, 1]:
         if not self.contest in cvr:
             return 0
 
         return vote_for_cand(self.winner, self.eliminated, cvr[self.contest])
 
-    def is_vote_for_loser(self, cvr: CVR):
+    def is_vote_for_loser(self, cvr: CVR) -> Literal[0, 1]:
         if not self.contest in cvr:
             return 0
 
         return vote_for_cand(self.loser, self.eliminated, cvr[self.contest])
 
-    def subsumes(self, other: RaireAssertion):
+    def subsumes(self, other: RaireAssertion) -> bool:
         """
         An NENAssertion 'A' subsumes an assertion 'other' if 'other' is
         not an NEBAssertion, they have the same winner, and rule out
@@ -270,7 +266,7 @@ class NENAssertion(RaireAssertion):
 
         return False
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         return (
             isinstance(other, NENAssertion)
             and self.contest == other.contest
@@ -282,7 +278,7 @@ class NENAssertion(RaireAssertion):
     def __hash__(self) -> int:
         return hash((self.contest, self.winner, self.loser, tuple(self.eliminated)))
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"NEN,Winner,{self.winner},Loser,{self.loser},Eliminated," + ",".join(
             self.eliminated
         )
@@ -309,7 +305,7 @@ class RaireNode:
 
         self.best_ancestor: Optional[RaireNode] = None
 
-    def is_descendent_of(self, node):
+    def is_descendent_of(self, node) -> bool:
         """
         Determines if the given 'node' is an ancestor of this node in a
         tree of possible election outcomes. A node with a tail equal to
@@ -328,7 +324,9 @@ class RaireNode:
         if len1 <= len2:
             return False
 
-        return self.tail[len1 - len2 :] == node.tail
+        # More typechecker shenanigans
+        ret_val = bool(self.tail[len1 - len2 :] == node.tail)
+        return ret_val
 
     def __eq__(self, other):
         return (
@@ -382,14 +380,6 @@ class RaireFrontier:
         Remove all descendents of the input 'node' from the frontier, and
         insert 'node' to the frontier in the appropriate position.
         """
-        descendents = []
-
-        for i in range(len(self.nodes)):
-            node_at_i = self.nodes[i]
-
-            # Is node_at_i a descendent of the given node?
-            if node_at_i.is_descendent_of(node):
-                descendents.append(i)
 
         self.nodes = [
             other_node

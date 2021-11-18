@@ -90,11 +90,11 @@ def find_assertions(
     contest: Contest,
     ballots: List[Dict[str, int]],
     nebs: NEBMatrix,
-    asn_func,
+    asn_func: Callable,
     frontier: RaireFrontier,
     lowerbound: float,
     agap: float,
-):
+) -> bool:
     """
     Find the best assertions for frontier, and mutate frontier accordingly.
 
@@ -186,6 +186,7 @@ def find_assertions(
                     frontier.replace_descendents(newn.best_ancestor)
                 else:
                     frontier.insert_node(newn)
+    return False
 
 
 def compute_raire_assertions(
@@ -276,8 +277,6 @@ def compute_raire_assertions(
             if node.best_assertion is not None
         )
     )
-
-    final_audit = []
 
     # Assertions will be sorted in order of greatest to least difficulty.
     # Some assertions will "subsume" others. For example, an assertion

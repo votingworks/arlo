@@ -14,11 +14,15 @@ from server.audit_math.raire_utils import (
     find_best_audit,
     RaireFrontier,
     RaireNode,
+    NEBAssertion,
+    RaireAssertion,
 )
 from server.tests.audit_math.test_raire_utils import make_neb_assertion
 
 RAIRE_INPUT_DIR = "server/tests/audit_math/raire_data/input/"
 RAIRE_OUTPUT_DIR = "server/tests/audit_math/raire_data/output/"
+
+BallotList = List[Dict[str, int]]
 
 
 @pytest.fixture
@@ -69,7 +73,7 @@ def ballots() -> List[Dict[str, int]]:
 asn_func = lambda m: 1 / m if m > 0 else np.inf
 
 
-def test_make_neb_matrix(contest, cvrs):
+def test_make_neb_matrix(contest: Contest, cvrs: CVRS):
     expected: NEBMatrix = {
         c: {
             d: make_neb_assertion(contest, cvrs, asn_func, c, d, [])
@@ -87,7 +91,7 @@ def test_make_neb_matrix(contest, cvrs):
     assert make_neb_matrix(contest, cvrs, asn_func) == expected
 
 
-def test_make_raire_frontier(contest, cvrs, ballots):
+def test_make_raire_frontier(contest: Contest, cvrs: CVRS, ballots: BallotList):
     nebs = make_neb_matrix(contest, cvrs, asn_func)
     expected = RaireFrontier()
 
@@ -108,10 +112,12 @@ def test_make_raire_frontier(contest, cvrs, ballots):
     assert expected == make_frontier(contest, ballots, "winner", nebs, asn_func)
 
 
-def test_find_assertions_too_good_ancestor(contest, cvrs):
+def test_find_assertions_too_good_ancestor(
+    contest: Contest, ballots: BallotList, cvrs: CVRS
+):
 
     nebs = make_neb_matrix(contest, cvrs, asn_func)
-    frontier = make_frontier(contest, cvrs, "winner", nebs, asn_func)
+    frontier = make_frontier(contest, ballots, "winner", nebs, asn_func)
 
     # Create a fake best ancestor
     newn = RaireNode(["loser"])
@@ -123,19 +129,21 @@ def test_find_assertions_too_good_ancestor(contest, cvrs):
 
     lowerbound = -10.0
 
-    find_assertions(contest, cvrs, nebs, asn_func, frontier, lowerbound, 0)
+    find_assertions(contest, ballots, nebs, asn_func, frontier, lowerbound, 0)
 
     # Check that our fake ancestor is the best assertion
     assert frontier.nodes[0].best_assertion == newn.best_assertion
 
     # Do the same thing, but with an agap and a fake lowerbound
-    find_assertions(contest, cvrs, nebs, asn_func, frontier, 0.00000001, 0.001)
+    find_assertions(contest, ballots, nebs, asn_func, frontier, 0.00000001, 0.001)
     assert frontier.nodes[0].best_assertion == newn.best_assertion
 
 
-def test_find_assertions_infinite_to_expand(contest, cvrs):
+def test_find_assertions_infinite_to_expand(
+    contest: Contest, ballots: BallotList, cvrs: CVRS
+):
     nebs = make_neb_matrix(contest, cvrs, asn_func)
-    frontier = make_frontier(contest, cvrs, "winner", nebs, asn_func)
+    frontier = make_frontier(contest, ballots, "winner", nebs, asn_func)
 
     lowerbound = -10.0
 
@@ -148,12 +156,16 @@ def test_find_assertions_infinite_to_expand(contest, cvrs):
 
     frontier.nodes.insert(0, newn)
 
-    assert not find_assertions(contest, cvrs, nebs, asn_func, frontier, lowerbound, 0)
+    assert not find_assertions(
+        contest, ballots, nebs, asn_func, frontier, lowerbound, 0
+    )
 
 
-def test_find_assertions_fake_ancestor(contest, cvrs):
+def test_find_assertions_fake_ancestor(
+    contest: Contest, ballots: BallotList, cvrs: CVRS
+):
     nebs = make_neb_matrix(contest, cvrs, asn_func)
-    frontier = make_frontier(contest, cvrs, "winner", nebs, asn_func)
+    frontier = make_frontier(contest, ballots, "winner", nebs, asn_func)
 
     lowerbound = -10.0
 
@@ -166,23 +178,27 @@ def test_find_assertions_fake_ancestor(contest, cvrs):
 
     frontier.nodes[0].best_ancestor = newn
 
-    assert find_assertions(contest, cvrs, nebs, asn_func, frontier, lowerbound, 0)
+    assert find_assertions(contest, ballots, nebs, asn_func, frontier, lowerbound, 0)
 
 
-def test_find_assertions_infinite_branch(contest, cvrs):
+def test_find_assertions_infinite_branch(
+    contest: Contest, ballots: BallotList, cvrs: CVRS
+):
     # Fake neb_matrix into showing all assertions but one as infinite
     nebs = make_neb_matrix(contest, cvrs, asn_func)
     nebs["loser"]["winner"] = make_neb_assertion(
         contest, cvrs, asn_func, "loser", "winner", []
     )
+    assert isinstance(nebs["loser"]["winner"], NEBAssertion)
     nebs["loser"]["winner"].difficulty = 0.0000001
 
     nebs["winner"]["loser2"] = make_neb_assertion(
         contest, cvrs, asn_func, "winner", "loser2", []
     )
+    assert isinstance(nebs["winner"]["loser2"], NEBAssertion)
     nebs["winner"]["loser2"].difficulty = np.inf
 
-    frontier = make_frontier(contest, cvrs, "winner", nebs, asn_func)
+    frontier = make_frontier(contest, ballots, "winner", nebs, asn_func)
 
     lowerbound = -10.0
 
@@ -195,12 +211,16 @@ def test_find_assertions_infinite_branch(contest, cvrs):
 
     frontier.nodes.insert(0, newn)
 
-    assert not find_assertions(contest, cvrs, nebs, asn_func, frontier, lowerbound, 0)
+    assert not find_assertions(
+        contest, ballots, nebs, asn_func, frontier, lowerbound, 0
+    )
 
 
-def test_find_assertions_many_children(contest, cvrs):
+def test_find_assertions_many_children(
+    contest: Contest, ballots: BallotList, cvrs: CVRS
+):
     nebs = make_neb_matrix(contest, cvrs, asn_func)
-    frontier = make_frontier(contest, cvrs, "winner", nebs, asn_func)
+    frontier = make_frontier(contest, ballots, "winner", nebs, asn_func)
 
     lowerbound = -10.0
 
@@ -212,30 +232,32 @@ def test_find_assertions_many_children(contest, cvrs):
     newn.expandable = True
 
     frontier.nodes.insert(0, newn)
-    assert find_assertions(contest, cvrs, nebs, asn_func, frontier, lowerbound, 0)
+    assert find_assertions(contest, ballots, nebs, asn_func, frontier, lowerbound, 0)
 
 
-def compare_result(path, contests):
-    expected = {}
+def compare_result(path: str, contests: Dict[str, List[str]]):
+    expected: Dict[str, List[str]] = {}
 
     with open(path, "r") as exp:
         lines = exp.readlines()
 
         reading_contest = None
 
-        contest = []
+        contest_list: List[str] = []
         for line in lines:
             if line.startswith("CONTEST"):
                 if reading_contest:
-                    sorted_contest = sorted(contest)
+                    sorted_contest = sorted(contest_list)
                     expected[reading_contest] = sorted_contest
-                    contest = []
+                    contest_list = []
 
                 reading_contest = line.split()[1].strip()
             else:
-                contest.append(line.strip())
+                contest_list.append(line.strip())
 
-        expected[reading_contest] = sorted(contest)
+        # For the type checker
+        assert isinstance(reading_contest, str)
+        expected[reading_contest] = sorted(contest_list)
 
     assert len(expected) == len(contests), "Number of contests wrong for {}".format(
         path
@@ -246,17 +268,17 @@ def compare_result(path, contests):
 
         casrtns = contests[contest]
 
-        assert len(asrtns) == len(casrtns), print(
-            "Number of assertions different for {}, contest {}".format(path, contest)
+        assert len(asrtns) == len(
+            casrtns
+        ), "Number of assertions different for {}, contest {}".format(path, contest)
+
+        assert asrtns == casrtns, "Assertions differ for {}, contest {}".format(
+            path, contest
         )
 
-        assert asrtns == casrtns, print(
-            "Assertions differ for {}, contest {}".format(path, contest)
-        )
 
-
-def run_test(input_file, output_file, agap):
-    result = {}
+def run_test(input_file: str, output_file: str, agap: float):
+    result: Dict[str, List[str]] = {}
     # Load test contest
     with open(input_file, "r") as data:
         lines = data.readlines()
@@ -269,8 +291,8 @@ def run_test(input_file, output_file, agap):
         for i in range(ncontests):
             toks = lines[1 + i].strip().split(",")
 
-            cid = toks[1]
-            ncands = int(toks[2])
+            cid: str = toks[1]
+            ncands: int = int(toks[2])
 
             # Initialize the contest object with dummy info for now
             cands = {"ballots": 0, "numWinners": 1, "votesAllowed": 1}
@@ -281,21 +303,21 @@ def run_test(input_file, output_file, agap):
             contests[cid] = cands
             winners[cid] = toks[-1]
 
-        cvrs = {}
+        cvrs: CVRS = {}
 
         for line in range(ncontests + 1, len(lines)):
             toks = lines[line].strip().split(",")
 
             cid = toks[0]
-            bid = toks[1]
-            prefs = toks[2:]
+            bid: str = toks[1]
+            prefs: List[str] = toks[2:]
 
             if prefs != []:
                 contests[cid][prefs[0]] += 1
 
             contests[cid]["ballots"] += 1
 
-            ballot = {}
+            ballot: Dict[str, int] = {}
             for cand in contests[cid]:
                 if cand in prefs:
                     idx = prefs.index(cand) + 1
@@ -303,29 +325,28 @@ def run_test(input_file, output_file, agap):
                 else:
                     ballot[cand] = 0
 
-            if not bid in cvrs:
-                cvrs[bid] = {cid: ballot}
+            if bid in cvrs:
+                cvr = cvrs[bid]
+                assert cvr is not None
+                cvr[cid] = ballot
             else:
-                cvrs[bid][cid] = ballot
+                cvrs[bid] = {cid: ballot}
 
         for contest, votes in contests.items():
             con = Contest(contest, votes)
 
-            audit = compute_raire_assertions(
+            audit: List[RaireAssertion] = compute_raire_assertions(
                 con, cvrs, winners[contest], lambda m: 1 / m if m > 0 else np.inf, agap,
             )
 
-            asrtns = []
-            for assertion in audit:
-                asrtns.append(str(assertion))
-
+            asrtns: List[str] = [str(assertion) for assertion in audit]
             sorted_asrtns = sorted(asrtns)
             result[contest] = sorted_asrtns
 
         compare_result(output_file, result)
 
 
-def test_raire(contest, cvrs):
+def test_raire(contest: Contest, cvrs: CVRS):
     res = compute_raire_assertions(contest, cvrs, "winner", asn_func)
 
     expected = []
