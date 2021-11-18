@@ -7,6 +7,7 @@ from flask import request, jsonify, Request, session
 from werkzeug.exceptions import BadRequest, NotFound
 from sqlalchemy import func
 from sqlalchemy.orm import Session
+import boto3
 
 from . import api
 from ..database import db_session, engine
@@ -203,13 +204,24 @@ def validate_ballot_manifest_upload(request: Request):
 
 
 def save_ballot_manifest_file(manifest, jurisdiction: Jurisdiction):
-    manifest_string = decode_csv_file(manifest)
+    # manifest_string = decode_csv_file(manifest)
     jurisdiction.manifest_file = File(
         id=str(uuid.uuid4()),
         name=manifest.filename,
-        contents=manifest_string,
+        contents="",
         uploaded_at=datetime.now(timezone.utc),
     )
+
+    AWS_ACCESS_KEY_ID = None  # TODO: load from config
+    AWS_SECRET_ACCESS_KEY = None  # TODO: load from config
+
+    s3 = boto3.client(
+        "s3",
+        aws_access_key_id=AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+    )
+    s3.upload_fileobj(manifest, "dev-arlo-file-uploads", "manifest.csv")
+
     jurisdiction.manifest_file.task = create_background_task(
         process_ballot_manifest_file,
         dict(

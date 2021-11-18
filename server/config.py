@@ -114,6 +114,11 @@ SMTP_PASSWORD = read_env_var(
 )
 LOGIN_CODE_LIFETIME = timedelta(minutes=15)
 
+# Where to store user-uploaded files - can either be a local file system path or an s3 url
+FILE_UPLOAD_STORAGE_PATH = read_env_var(
+    "ARLO_FILE_UPLOAD_STORAGE_PATH",
+    env_defaults=dict(development="/tmp/arlo", test="/tmp/arlo-test"),
+)
 
 # Configure round size growth from ARLO_MINERVA_MULTIPLE (a float) if given, otherwise 1.5
 MINERVA_MULTIPLE = float(read_env_var("ARLO_MINERVA_MULTIPLE", default="1.5"))
