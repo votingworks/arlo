@@ -387,6 +387,16 @@ export const talliesMocks: { [key: string]: IBatchTalliesFileInfo } = {
     processing: null,
     numBallots: null,
   },
+  processing: {
+    file: { name: 'tallies.csv', uploadedAt: '2020-07-08T21:39:05.765+00:00' },
+    processing: {
+      status: FileProcessingStatus.PROCESSING,
+      startedAt: '2020-07-08T21:39:05.765+00:00',
+      completedAt: null,
+      error: null,
+    },
+    numBallots: null,
+  },
   processed: {
     file: { name: 'tallies.csv', uploadedAt: '2020-07-08T21:39:05.765+00:00' },
     processing: {
