@@ -115,7 +115,7 @@ describe('full hand tally data entry', () => {
       )
       await screen.findByText('No batches added. Add your first batch below.')
       const addButton = screen.getByRole('button', { name: /Add batch/ })
-      await userEvent.click(addButton)
+      userEvent.click(addButton)
 
       const dialog = (await screen.findByRole('heading', {
         name: /Add Batch/,

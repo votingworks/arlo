@@ -55,7 +55,7 @@ export const auditSettings: {
   blankBallotComparison: {
     state: null,
     electionName: null,
-    online: null,
+    online: true,
     randomSeed: null,
     riskLimit: null,
     auditType: 'BALLOT_COMPARISON',

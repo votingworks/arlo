@@ -350,6 +350,38 @@ describe('Audit Setup > Participants', () => {
     })
   })
 
+  it('displays errors on replacing standardized contests with invalid upload', async () => {
+    const contestsFile = new File([], 'contests file')
+    const expectedCalls = [
+      aaApiCalls.getSettings(auditSettings.blankBallotComparison),
+      apiCalls.getJurisdictionsFile(fileMocks.processed),
+      apiCalls.getStandardizedContestsFile(fileMocks.processed),
+      apiCalls.putStandardizedContestsFile(contestsFile),
+      apiCalls.getStandardizedContestsFile(fileMocks.processing),
+      apiCalls.getStandardizedContestsFile(fileMocks.errored),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderParticipants()
+      expect(await screen.findAllByText(/Uploaded/)).toHaveLength(2)
+
+      // Replace & upload errored standardized contests
+      userEvent.click(
+        screen.getAllByRole('button', {
+          name: 'Replace File',
+        })[1]
+      )
+      userEvent.upload(
+        await screen.findByLabelText('Select a CSV...'),
+        contestsFile
+      )
+      await waitFor(() => {
+        userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
+      })
+      await screen.findByText(/Uploaded/)
+      await screen.findByText('something went wrong')
+    })
+  })
+
   it('displays errors after reprocessing standardized contests', async () => {
     const expectedCalls = [
       aaApiCalls.getSettings(auditSettings.blankBallotComparison),
@@ -362,7 +394,6 @@ describe('Audit Setup > Participants', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       renderParticipants()
-
       expect(await screen.findAllByText(/Uploaded/)).toHaveLength(2)
 
       // Upload a new jurisdictions file
@@ -373,7 +404,9 @@ describe('Audit Setup > Participants', () => {
         screen.getByLabelText('Select a CSV...'),
         jurisdictionErrorFile
       )
-      userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
+      await waitFor(() => {
+        userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
+      })
 
       await screen.findByText(/Uploaded/)
       await screen.findByText('something went wrong')

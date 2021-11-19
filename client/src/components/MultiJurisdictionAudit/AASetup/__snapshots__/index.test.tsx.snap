@@ -3361,15 +3361,17 @@ exports[`Setup renders Review & Launch stage 1`] = `
       >
         <h5
           class="bp3-heading"
-        />
+        >
+          Contest Name
+        </h5>
         <span
-          class="bp3-tag bp3-intent-primary"
+          class="bp3-tag bp3-intent-success"
           style="margin-left: 10px; flex-shrink: 0;"
         >
           <span
             class="bp3-text-overflow-ellipsis bp3-fill"
           >
-            Opportunistic Contest
+            Target Contest
           </span>
         </span>
       </div>
@@ -3384,7 +3386,7 @@ exports[`Setup renders Review & Launch stage 1`] = `
         vote
          allowed -
          
-        0
+        30
          total ballots cast
       </p>
       <div
@@ -3407,12 +3409,20 @@ exports[`Setup renders Review & Launch stage 1`] = `
             </thead>
             <tbody>
               <tr>
-                <td />
-                <td />
+                <td>
+                  Choice One
+                </td>
+                <td>
+                  10
+                </td>
               </tr>
               <tr>
-                <td />
-                <td />
+                <td>
+                  Choice Two
+                </td>
+                <td>
+                  20
+                </td>
               </tr>
             </tbody>
           </table>
@@ -3428,14 +3438,25 @@ exports[`Setup renders Review & Launch stage 1`] = `
               <tr>
                 <th>
                   Contest universe: 
-                  0
+                  2
                   /
                   3
                    jurisdictions
                 </th>
               </tr>
             </thead>
-            <tbody />
+            <tbody>
+              <tr>
+                <td>
+                  Jurisdiction 1
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  Jurisdiction 2
+                </td>
+              </tr>
+            </tbody>
           </table>
         </div>
       </div>
@@ -3446,15 +3467,41 @@ exports[`Setup renders Review & Launch stage 1`] = `
     >
       Sample Size
     </h4>
-    <p>
-      All jurisdiction files must be uploaded and all audit settings must be configured in order to calculate the sample size.
-       
-      <a
-        href="/election/1/progress"
+    <div
+      style="display: flex;"
+    >
+      <div
+        class="bp3-spinner"
       >
-        View jurisdiction upload progress.
-      </a>
-    </p>
+        <div
+          class="bp3-spinner-animation"
+        >
+          <svg
+            height="20"
+            stroke-width="16.00"
+            viewBox="-3.00 -3.00 106.00 106.00"
+            width="20"
+          >
+            <path
+              class="bp3-spinner-track"
+              d="M 50,50 m 0,-45 a 45,45 0 1 1 0,90 a 45,45 0 1 1 0,-90"
+            />
+            <path
+              class="bp3-spinner-head"
+              d="M 50,50 m 0,-45 a 45,45 0 1 1 0,90 a 45,45 0 1 1 0,-90"
+              pathLength="280"
+              stroke-dasharray="280 280"
+              stroke-dashoffset="210"
+            />
+          </svg>
+        </div>
+      </div>
+      <span
+        style="margin-left: 10px;"
+      >
+        Loading sample size options...
+      </span>
+    </div>
     <div
       class="sc-bdVaJa kcYonD"
     >
@@ -3599,15 +3646,17 @@ exports[`Setup renders Review & Launch stage with locked next stage 1`] = `
       >
         <h5
           class="bp3-heading"
-        />
+        >
+          Contest Name
+        </h5>
         <span
-          class="bp3-tag bp3-intent-primary"
+          class="bp3-tag bp3-intent-success"
           style="margin-left: 10px; flex-shrink: 0;"
         >
           <span
             class="bp3-text-overflow-ellipsis bp3-fill"
           >
-            Opportunistic Contest
+            Target Contest
           </span>
         </span>
       </div>
@@ -3622,7 +3671,7 @@ exports[`Setup renders Review & Launch stage with locked next stage 1`] = `
         vote
          allowed -
          
-        0
+        30
          total ballots cast
       </p>
       <div
@@ -3645,12 +3694,20 @@ exports[`Setup renders Review & Launch stage with locked next stage 1`] = `
             </thead>
             <tbody>
               <tr>
-                <td />
-                <td />
+                <td>
+                  Choice One
+                </td>
+                <td>
+                  10
+                </td>
               </tr>
               <tr>
-                <td />
-                <td />
+                <td>
+                  Choice Two
+                </td>
+                <td>
+                  20
+                </td>
               </tr>
             </tbody>
           </table>
@@ -3666,14 +3723,25 @@ exports[`Setup renders Review & Launch stage with locked next stage 1`] = `
               <tr>
                 <th>
                   Contest universe: 
-                  0
+                  2
                   /
                   3
                    jurisdictions
                 </th>
               </tr>
             </thead>
-            <tbody />
+            <tbody>
+              <tr>
+                <td>
+                  Jurisdiction 1
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  Jurisdiction 2
+                </td>
+              </tr>
+            </tbody>
           </table>
         </div>
       </div>
@@ -3684,15 +3752,41 @@ exports[`Setup renders Review & Launch stage with locked next stage 1`] = `
     >
       Sample Size
     </h4>
-    <p>
-      All jurisdiction files must be uploaded and all audit settings must be configured in order to calculate the sample size.
-       
-      <a
-        href="/election/1/progress"
+    <div
+      style="display: flex;"
+    >
+      <div
+        class="bp3-spinner"
       >
-        View jurisdiction upload progress.
-      </a>
-    </p>
+        <div
+          class="bp3-spinner-animation"
+        >
+          <svg
+            height="20"
+            stroke-width="16.00"
+            viewBox="-3.00 -3.00 106.00 106.00"
+            width="20"
+          >
+            <path
+              class="bp3-spinner-track"
+              d="M 50,50 m 0,-45 a 45,45 0 1 1 0,90 a 45,45 0 1 1 0,-90"
+            />
+            <path
+              class="bp3-spinner-head"
+              d="M 50,50 m 0,-45 a 45,45 0 1 1 0,90 a 45,45 0 1 1 0,-90"
+              pathLength="280"
+              stroke-dasharray="280 280"
+              stroke-dashoffset="210"
+            />
+          </svg>
+        </div>
+      </div>
+      <span
+        style="margin-left: 10px;"
+      >
+        Loading sample size options...
+      </span>
+    </div>
     <div
       class="sc-bdVaJa kcYonD"
     >
@@ -3837,15 +3931,17 @@ exports[`Setup renders Review & Launch stage with processing next stage 1`] = `
       >
         <h5
           class="bp3-heading"
-        />
+        >
+          Contest Name
+        </h5>
         <span
-          class="bp3-tag bp3-intent-primary"
+          class="bp3-tag bp3-intent-success"
           style="margin-left: 10px; flex-shrink: 0;"
         >
           <span
             class="bp3-text-overflow-ellipsis bp3-fill"
           >
-            Opportunistic Contest
+            Target Contest
           </span>
         </span>
       </div>
@@ -3860,7 +3956,7 @@ exports[`Setup renders Review & Launch stage with processing next stage 1`] = `
         vote
          allowed -
          
-        0
+        30
          total ballots cast
       </p>
       <div
@@ -3883,12 +3979,20 @@ exports[`Setup renders Review & Launch stage with processing next stage 1`] = `
             </thead>
             <tbody>
               <tr>
-                <td />
-                <td />
+                <td>
+                  Choice One
+                </td>
+                <td>
+                  10
+                </td>
               </tr>
               <tr>
-                <td />
-                <td />
+                <td>
+                  Choice Two
+                </td>
+                <td>
+                  20
+                </td>
               </tr>
             </tbody>
           </table>
@@ -3904,14 +4008,25 @@ exports[`Setup renders Review & Launch stage with processing next stage 1`] = `
               <tr>
                 <th>
                   Contest universe: 
-                  0
+                  2
                   /
                   3
                    jurisdictions
                 </th>
               </tr>
             </thead>
-            <tbody />
+            <tbody>
+              <tr>
+                <td>
+                  Jurisdiction 1
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  Jurisdiction 2
+                </td>
+              </tr>
+            </tbody>
           </table>
         </div>
       </div>
@@ -3922,15 +4037,41 @@ exports[`Setup renders Review & Launch stage with processing next stage 1`] = `
     >
       Sample Size
     </h4>
-    <p>
-      All jurisdiction files must be uploaded and all audit settings must be configured in order to calculate the sample size.
-       
-      <a
-        href="/election/1/progress"
+    <div
+      style="display: flex;"
+    >
+      <div
+        class="bp3-spinner"
       >
-        View jurisdiction upload progress.
-      </a>
-    </p>
+        <div
+          class="bp3-spinner-animation"
+        >
+          <svg
+            height="20"
+            stroke-width="16.00"
+            viewBox="-3.00 -3.00 106.00 106.00"
+            width="20"
+          >
+            <path
+              class="bp3-spinner-track"
+              d="M 50,50 m 0,-45 a 45,45 0 1 1 0,90 a 45,45 0 1 1 0,-90"
+            />
+            <path
+              class="bp3-spinner-head"
+              d="M 50,50 m 0,-45 a 45,45 0 1 1 0,90 a 45,45 0 1 1 0,-90"
+              pathLength="280"
+              stroke-dasharray="280 280"
+              stroke-dashoffset="210"
+            />
+          </svg>
+        </div>
+      </div>
+      <span
+        style="margin-left: 10px;"
+      >
+        Loading sample size options...
+      </span>
+    </div>
     <div
       class="sc-bdVaJa kcYonD"
     >

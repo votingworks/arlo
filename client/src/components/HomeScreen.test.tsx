@@ -235,10 +235,7 @@ describe('Home screen', () => {
       await within(auditNameInput.closest('label')!).findByText('Required')
 
       // Create a new audit
-      await userEvent.type(
-        auditNameInput,
-        'November Presidential Election 2020'
-      )
+      userEvent.type(auditNameInput, 'November Presidential Election 2020')
       expect(
         screen.getByRole('radio', { name: 'Ballot Polling' })
       ).toBeChecked()
@@ -312,7 +309,7 @@ describe('Home screen', () => {
       ])
 
       // Create a new audit
-      await userEvent.type(
+      userEvent.type(
         screen.getByRole('textbox', { name: 'Audit name' }),
         'Presidential Primary'
       )
@@ -420,7 +417,7 @@ describe('Home screen', () => {
       })
 
       // Create a new audit
-      await userEvent.type(
+      userEvent.type(
         screen.getByRole('textbox', { name: 'Audit name' }),
         'November Presidential Election 2020'
       )
@@ -458,7 +455,7 @@ describe('Home screen', () => {
       })
 
       // Create a new audit
-      await userEvent.type(
+      userEvent.type(
         screen.getByRole('textbox', { name: 'Audit name' }),
         'November Presidential Election 2020'
       )
@@ -496,7 +493,7 @@ describe('Home screen', () => {
       })
 
       // Create a new audit
-      await userEvent.type(
+      userEvent.type(
         screen.getByRole('textbox', { name: 'Audit name' }),
         'November Presidential Election 2020'
       )
