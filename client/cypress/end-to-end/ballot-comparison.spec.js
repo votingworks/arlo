@@ -189,6 +189,7 @@ describe('Ballot Comparison Test Cases', () => {
     cy.findAllByText('Upload File').click()
     cy.findAllByText(/Uploaded/).should('have.length', 2)
 
+    // switch back to audit admin and launch audit
     cy.logout(jurisdictionAdmin)
     cy.loginAuditAdmin(auditAdmin)
     cy.findByText(`TestAudit${id}`).click()
@@ -203,7 +204,10 @@ describe('Ballot Comparison Test Cases', () => {
     cy.findAllByText('Launch Audit').spread((firstButton, secondButton) => {
       secondButton.click()
     })
+    // verify completion of launch
     cy.findByRole('heading', { name: 'Audit Progress' })
+
+    // switch back to jurisdiction admin to create audit boards
     cy.logout(auditAdmin)
     cy.loginJurisdictionAdmin(jurisdictionAdmin)
     cy.contains('Number of Audit Boards')
@@ -221,6 +225,7 @@ describe('Ballot Comparison Test Cases', () => {
         })
       }
       board_credentials_url = urlify(content.text)
+      // enter audit board member info
       cy.visit(board_credentials_url[0])
       cy.findAllByText('Audit Board Member')
         .eq(0)
@@ -236,18 +241,21 @@ describe('Ballot Comparison Test Cases', () => {
       // button name when no ballots are audited
       cy.findByText('Audit First Ballot').click()
 
-      // submit empty ballot review
+      // attempt to submit empty ballot review
       cy.findByRole('button', { name: 'Submit Selections' }).should(
         'be.disabled'
       )
-      // cy.findByText('Confirm Selections').click()
-      // cy.findAndCloseToast('Must include an interpretation for each contest.')
+      cy.findByText('Confirm Selections').click()
+      cy.findAndCloseToast('Must include an interpretation for each contest.')
+
+      // submit a proper ballot review
       cy.get('input[type="checkbox"]')
         .first()
         .click({ force: true })
       cy.findByRole('button', { name: 'Submit Selections' }).click()
       cy.findByText('Confirm Selections').click()
       cy.findByText('Change Selections').should('not.exist')
+      // go back to the main screen
       cy.findByText(/All Ballots/).click()
     })
 
@@ -288,6 +296,7 @@ describe('Ballot Comparison Test Cases', () => {
 
     cy.findByText(/Not Audited/).should('have.length', 1)
     cy.contains('Ballots for Audit Board #1')
+    // submit ballots
     cy.findAllByText('Submit Audited Ballots')
       .eq(1)
       .click({ force: true })
