@@ -10,6 +10,8 @@ import useContests from '../useContests'
 import useAuditSettings from '../useAuditSettings'
 import useJurisdictions from '../useJurisdictions'
 
+// TODO update to withMockFetch instead of apiMock
+
 const apiMock: jest.SpyInstance<
   ReturnType<typeof utilities.api>,
   Parameters<typeof utilities.api>

@@ -13,6 +13,8 @@ import { IJurisdiction } from '../../useJurisdictions'
 import { IContest } from '../../../../types'
 import { jurisdictionMocks } from '../../useSetupMenuItems/_mocks'
 
+// TODO update to withMockFetch instead of apiMock
+
 const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
 const apiMock: jest.SpyInstance<
   ReturnType<typeof utilities.api>,

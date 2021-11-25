@@ -3,6 +3,8 @@ import getJurisdictionFileStatus, {
 } from './getJurisdictionFileStatus'
 import * as utilities from '../../utilities'
 
+// TODO update to withMockFetch instead of apiMock
+
 const apiMock: jest.SpyInstance<
   ReturnType<typeof utilities.api>,
   Parameters<typeof utilities.api>

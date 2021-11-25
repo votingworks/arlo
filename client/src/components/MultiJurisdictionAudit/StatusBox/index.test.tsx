@@ -14,6 +14,8 @@ import { contestMocks } from '../AASetup/Contests/_mocks'
 import * as utilities from '../../utilities'
 import { IAuditSettings } from '../useAuditSettings'
 
+// TODO update to withMockFetch instead of apiMock
+
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'), // use actual for all non-hook parts
   useRouteMatch: jest.fn(),
