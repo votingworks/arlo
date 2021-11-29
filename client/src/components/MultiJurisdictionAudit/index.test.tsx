@@ -525,9 +525,7 @@ describe('JA setup', () => {
         await screen.findByLabelText('Select a CSV...'),
         talliesFile
       )
-      await waitFor(() => {
-        userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
-      })
+      userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
       await screen.findByText(/Uploaded/)
       await screen.findByText('Invalid CSV')
     })
@@ -558,9 +556,7 @@ describe('JA setup', () => {
         await screen.findByLabelText('Select a CSV...'),
         manifestFile
       )
-      await waitFor(() => {
-        userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
-      })
+      userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
       await screen.findByText(/Uploaded/)
       await screen.findByText('Invalid CSV')
     })
@@ -660,9 +656,7 @@ describe('JA setup', () => {
         await screen.findByLabelText('Select a CSV...'),
         cvrsFile
       )
-      await waitFor(() => {
-        userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
-      })
+      userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
       await screen.findByText(/Uploaded/)
       await screen.findByText('Invalid CSV')
     })
@@ -693,9 +687,7 @@ describe('JA setup', () => {
         await screen.findByLabelText('Select a CSV...'),
         manifestFile
       )
-      await waitFor(() => {
-        userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
-      })
+      userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
       await screen.findByText(/Uploaded/)
       await screen.findByText('Invalid CSV')
     })
