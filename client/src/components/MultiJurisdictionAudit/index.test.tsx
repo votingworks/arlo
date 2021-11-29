@@ -507,7 +507,6 @@ describe('JA setup', () => {
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
       jaApiCalls.getBatchTalliesFile(talliesMocks.processed),
       jaApiCalls.putTallies,
-      jaApiCalls.getBatchTalliesFile(talliesMocks.processing),
       jaApiCalls.getBatchTalliesFile(talliesMocks.errored),
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -526,7 +525,6 @@ describe('JA setup', () => {
         talliesFile
       )
       userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
-      await screen.findByText(/Uploaded/)
       await screen.findByText('Invalid CSV')
     })
   })
@@ -638,7 +636,6 @@ describe('JA setup', () => {
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
       jaApiCalls.getCVRSfile(cvrsMocks.processed),
       jaApiCalls.putCVRs,
-      jaApiCalls.getCVRSfile(cvrsMocks.processing),
       jaApiCalls.getCVRSfile(cvrsMocks.errored),
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -657,12 +654,11 @@ describe('JA setup', () => {
         cvrsFile
       )
       userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
-      await screen.findByText(/Uploaded/)
       await screen.findByText('Invalid CSV')
     })
   })
 
-  it('displays errors after reprocessing CVRs on replacing Manifest', async () => {
+  it('displays errors after reprocessing CVRs on replacing manifest', async () => {
     const expectedCalls = [
       jaApiCalls.getUser,
       jaApiCalls.getSettings(auditSettings.ballotComparisonAll),
