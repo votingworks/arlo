@@ -374,9 +374,7 @@ describe('Audit Setup > Participants', () => {
         await screen.findByLabelText('Select a CSV...'),
         contestsFile
       )
-      await waitFor(() => {
-        userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
-      })
+      userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
       await screen.findByText(/Uploaded/)
       await screen.findByText('something went wrong')
     })
@@ -404,9 +402,7 @@ describe('Audit Setup > Participants', () => {
         screen.getByLabelText('Select a CSV...'),
         jurisdictionErrorFile
       )
-      await waitFor(() => {
-        userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
-      })
+      userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
 
       await screen.findByText(/Uploaded/)
       await screen.findByText('something went wrong')
