@@ -20,9 +20,9 @@ describe('BoardTable', () => {
         />
       </StaticRouter>
     )
-    await screen.findByText('Ballots for Audit Board #1')
+    screen.getByText('Ballots for Audit Board #1')
     expect(screen.getByRole('button', { name: 'Audit First Ballot' }))
-    await screen.findByText('0 of 27 ballots have been audited.')
+    screen.getByText('0 of 27 ballots have been audited.')
 
     expect(
       screen.getByRole('button', {
@@ -43,10 +43,10 @@ describe('BoardTable', () => {
         />
       </StaticRouter>
     )
-    await screen.findByText('Ballots for Audit Board #1')
+    screen.getByText('Ballots for Audit Board #1')
 
     expect(screen.getByRole('button', { name: 'Audit Next Ballot' }))
-    await screen.findByText('18 of 27 ballots have been audited.')
+    screen.getByText('18 of 27 ballots have been audited.')
     expect(
       screen.getByRole('button', {
         name: 'Submit Audited Ballots',
@@ -66,7 +66,7 @@ describe('BoardTable', () => {
         />
       </StaticRouter>
     )
-    await screen.findByText('Ballots for Audit Board #1')
+    screen.getByText('Ballots for Audit Board #1')
 
     screen.getByText('Not Found')
     const submitBallotsBtn = screen.getAllByText('Submit Audited Ballots')
@@ -87,7 +87,7 @@ describe('BoardTable', () => {
         />
       </StaticRouter>
     )
-    await screen.findByText('Ballots for Audit Board #1')
+    screen.getByText('Ballots for Audit Board #1')
 
     const submitBallotsBtn = screen.getAllByText('Submit Audited Ballots')
     expect(submitBallotsBtn.length).toBe(2)
@@ -107,7 +107,7 @@ describe('BoardTable', () => {
         />
       </StaticRouter>
     )
-    await screen.findByText('Ballots for Audit Board #1')
+    screen.getByText('Ballots for Audit Board #1')
 
     const submitBallotsBtn = screen.getAllByText('Submit Audited Ballots')
     expect(submitBallotsBtn.length).toBe(2)
@@ -127,7 +127,7 @@ describe('BoardTable', () => {
         />
       </StaticRouter>
     )
-    await screen.findByText('Ballots for Audit Board #1')
+    screen.getByText('Ballots for Audit Board #1')
 
     const submitBallotsBtn = screen.getAllByText('Submit Audited Ballots')
     expect(submitBallotsBtn.length).toBe(2)
@@ -147,7 +147,7 @@ describe('BoardTable', () => {
         />
       </StaticRouter>
     )
-    await screen.findByText('Ballots for Audit Board #1')
+    screen.getByText('Ballots for Audit Board #1')
 
     const submitBallotsBtn = screen.getAllByText('Submit Audited Ballots')
     expect(submitBallotsBtn.length).toBe(2)

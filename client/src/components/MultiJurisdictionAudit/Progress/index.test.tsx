@@ -493,12 +493,12 @@ describe('Progress screen', () => {
       const filter = screen.getByPlaceholderText(
         'Filter by jurisdiction name...'
       )
-      await userEvent.type(filter, '1')
+      userEvent.type(filter, '1')
       expect(screen.getAllByRole('row')).toHaveLength(1 + 2) // includes headers and footers
       screen.getByRole('cell', { name: 'Jurisdiction 1' })
 
       userEvent.clear(filter)
-      await userEvent.type(filter, 'Jurisdiction')
+      userEvent.type(filter, 'Jurisdiction')
       expect(screen.getAllByRole('row')).toHaveLength(
         jurisdictionMocks.oneManifest.length + 2
       )

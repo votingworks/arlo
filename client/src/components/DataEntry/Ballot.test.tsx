@@ -122,9 +122,7 @@ describe('Ballot', () => {
       fireEvent.click(getByLabelText(buttonLabel), {
         bubbles: true,
       })
-      userEvent.click(
-        await screen.findByRole('button', { name: 'Submit Selections' })
-      )
+      userEvent.click(screen.getByRole('button', { name: 'Submit Selections' }))
 
       const dialog = (await screen.findByRole('heading', {
         name: /Confirm the Ballot Selections/,

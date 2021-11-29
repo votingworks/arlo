@@ -124,7 +124,7 @@ describe('Setup', () => {
         />
       </MemoryRouter>
     )
-    screen.getByText('Target Contests')
+    await screen.findByText('Target Contests')
     expect(container).toMatchSnapshot()
   })
 
@@ -140,7 +140,7 @@ describe('Setup', () => {
         />
       </MemoryRouter>
     )
-    screen.getByText('Target Contests')
+    await screen.findByText('Target Contests')
     expect(container).toMatchSnapshot()
   })
 
@@ -156,7 +156,7 @@ describe('Setup', () => {
         />
       </MemoryRouter>
     )
-    screen.getByText('Target Contests')
+    await screen.findByText('Target Contests')
     expect(container).toMatchSnapshot()
   })
 
@@ -176,7 +176,7 @@ describe('Setup', () => {
         />
       </MemoryRouter>
     )
-    screen.getByText('Opportunistic Contests')
+    await screen.findByText('Opportunistic Contests')
     expect(container).toMatchSnapshot()
   })
 
@@ -198,7 +198,7 @@ describe('Setup', () => {
         />
       </MemoryRouter>
     )
-    screen.getByText('Opportunistic Contests')
+    await screen.findByText('Opportunistic Contests')
     expect(container).toMatchSnapshot()
   })
 
@@ -220,7 +220,7 @@ describe('Setup', () => {
         />
       </MemoryRouter>
     )
-    screen.getByText('Opportunistic Contests')
+    await screen.findByText('Opportunistic Contests')
     expect(container).toMatchSnapshot()
   })
 
@@ -270,6 +270,10 @@ describe('Setup', () => {
   })
 
   it('renders Review & Launch stage', async () => {
+    useContestsMock.mockImplementation(() => [
+      contestMocks.filledTargetedWithJurisdictionId.contests,
+      jest.fn(),
+    ])
     const { container } = render(
       <MemoryRouter>
         <Setup
@@ -282,7 +286,7 @@ describe('Setup', () => {
       </MemoryRouter>
     )
     await waitFor(() => expect(apiMock).toHaveBeenCalled())
-    screen.getByText('Review & Launch')
+    await screen.findByText('Review & Launch')
     expect(container).toMatchSnapshot()
   })
 
@@ -299,7 +303,7 @@ describe('Setup', () => {
       </MemoryRouter>
     )
     await waitFor(() => expect(apiMock).toHaveBeenCalled())
-    screen.getByText('Review & Launch')
+    await screen.findByText('Review & Launch')
     expect(container).toMatchSnapshot()
   })
 
@@ -316,7 +320,7 @@ describe('Setup', () => {
       </MemoryRouter>
     )
     await waitFor(() => expect(apiMock).toHaveBeenCalled())
-    screen.getByText('Review & Launch')
+    await screen.findByText('Review & Launch')
     expect(container).toMatchSnapshot()
   })
 })
