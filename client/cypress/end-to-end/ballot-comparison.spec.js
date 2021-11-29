@@ -116,6 +116,7 @@ describe('Ballot Comparison Test Cases', () => {
       'Enter the random characters to seed the pseudo-random number generator.'
     ).type('543210')
     cy.findByText('Save & Next').click()
+    cy.findByRole('heading', { name: 'Review & Launch' })
     cy.logout(auditAdmin)
     cy.loginJurisdictionAdmin(jurisdictionAdmin)
 
@@ -245,8 +246,6 @@ describe('Ballot Comparison Test Cases', () => {
       cy.findByRole('button', { name: 'Submit Selections' }).should(
         'be.disabled'
       )
-      cy.findByText('Confirm Selections').click()
-      cy.findAndCloseToast('Must include an interpretation for each contest.')
 
       // submit a proper ballot review
       cy.get('input[type="checkbox"]')
