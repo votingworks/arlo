@@ -7,7 +7,7 @@ from flask import request, jsonify, Request, session
 from werkzeug.exceptions import BadRequest, NotFound
 from sqlalchemy import func
 from sqlalchemy.orm import Session
-import boto3
+
 
 from . import api
 from ..database import db_session, engine
@@ -17,7 +17,13 @@ from ..worker.tasks import (
     background_task,
     create_background_task,
 )
-from ..util.file import serialize_file, serialize_file_processing
+from ..util.file import (
+    retrieve_file,
+    serialize_file,
+    serialize_file_processing,
+    store_file,
+    timestamp_filename,
+)
 from ..util.csv_download import csv_response
 from ..util.csv_parse import (
     CSVValueType,
@@ -117,26 +123,25 @@ def process_ballot_manifest_file(
             CSVColumnType(CVR, CSVValueType.YES_NO, required=use_cvr),
         ]
 
-        # Temporarily wrap file contents in a buffer so we can "stream" it until
-        # we have actual file streaming from storage
-        manifest_file = io.BytesIO(jurisdiction.manifest_file.contents.encode("utf-8"))
-        manifest_csv = parse_csv(manifest_file, columns)
+        with retrieve_file(jurisdiction.manifest_file.storage_path) as manifest_file:
+            manifest_csv = parse_csv(manifest_file, columns)
 
-        num_batches = 0
-        num_ballots = 0
-        for row in manifest_csv:
-            batch = Batch(
-                id=str(uuid.uuid4()),
-                name=row[BATCH_NAME],
-                jurisdiction_id=jurisdiction.id,
-                num_ballots=row[NUMBER_OF_BALLOTS],
-                container=row.get(CONTAINER, None),
-                tabulator=row.get(TABULATOR, None),
-                has_cvrs=row.get(CVR, None),
-            )
-            db_session.add(batch)
-            num_batches += 1
-            num_ballots += batch.num_ballots
+            num_batches = 0
+            num_ballots = 0
+            for row in manifest_csv:
+                print(row)
+                batch = Batch(
+                    id=str(uuid.uuid4()),
+                    name=row[BATCH_NAME],
+                    jurisdiction_id=jurisdiction.id,
+                    num_ballots=row[NUMBER_OF_BALLOTS],
+                    container=row.get(CONTAINER, None),
+                    tabulator=row.get(TABULATOR, None),
+                    has_cvrs=row.get(CVR, None),
+                )
+                db_session.add(batch)
+                num_batches += 1
+                num_ballots += batch.num_ballots
 
         jurisdiction.manifest_num_ballots = num_ballots
         jurisdiction.manifest_num_batches = num_batches
@@ -204,24 +209,19 @@ def validate_ballot_manifest_upload(request: Request):
 
 
 def save_ballot_manifest_file(manifest, jurisdiction: Jurisdiction):
-    # manifest_string = decode_csv_file(manifest)
+    storage_path = store_file(
+        manifest,
+        f"audits/{jurisdiction.election_id}/jurisdictions/{jurisdiction.id}/"
+        + timestamp_filename("manifest", "csv"),
+    )
+
     jurisdiction.manifest_file = File(
         id=str(uuid.uuid4()),
         name=manifest.filename,
         contents="",
+        storage_path=storage_path,
         uploaded_at=datetime.now(timezone.utc),
     )
-
-    AWS_ACCESS_KEY_ID = None  # TODO: load from config
-    AWS_SECRET_ACCESS_KEY = None  # TODO: load from config
-
-    s3 = boto3.client(
-        "s3",
-        aws_access_key_id=AWS_ACCESS_KEY_ID,
-        aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-    )
-    s3.upload_fileobj(manifest, "dev-arlo-file-uploads", "manifest.csv")
-
     jurisdiction.manifest_file.task = create_background_task(
         process_ballot_manifest_file,
         dict(
