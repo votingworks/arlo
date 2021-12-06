@@ -365,17 +365,21 @@ def test_compute_risk(contests, batches):
         }
         times_sampled["Batch {}".format(i)] = 1
 
+    expected_ps = {
+        "Contest A": 0.2203594749103411,
+        "Contest B": 0.052098684819243714,
+        "Contest C": 0.006529467240262369,
+    }
+
     for contest in contests:
         computed_p, result = macro.compute_risk(
             RISK_LIMIT, contests[contest], batches, sample, times_sampled
         )
 
-        expected_p = 0.247688222
+        delta = abs(expected_ps[contest] - computed_p)
 
-        delta = abs(expected_p - computed_p)
-
-        assert delta < 10 ** -2, "Incorrect p-value: Got {}, expected {}".format(
-            computed_p, expected_p
+        assert delta < 10 ** -2, "{} Incorrect p-value: Got {}, expected {}".format(
+            contest, computed_p, expected_ps[contest]
         )
 
         assert result, "Audit did not terminate but should have"
@@ -393,12 +397,10 @@ def test_compute_risk(contests, batches):
             RISK_LIMIT, contests[contest], batches, sample, times_sampled
         )
 
-        expected_p = 0.247688222
-
-        delta = abs(expected_p - computed_p)
+        delta = abs(expected_ps[contest] - computed_p)
 
         assert delta < 10 ** -2, "Incorrect p-value: Got {}, expected {}".format(
-            computed_p, expected_p
+            computed_p, expected_ps[contest]
         )
 
         assert result, "Audit did not terminate but should have"

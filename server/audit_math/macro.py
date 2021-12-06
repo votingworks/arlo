@@ -282,12 +282,18 @@ def compute_risk(
     if len(sample_results) == len(reported_results):
         return 0, True
 
+    low_p = Decimal(1.0)
     p = Decimal(1.0)
 
     # Computing U without the sample preserves conservative-ness
     U = compute_U(reported_results, {}, contest)
 
     for batch in sample_results:
+
+        # If this batch doesn't contain the contest we care about, ignore it.
+        if contest.name not in reported_results[batch]:
+            continue
+
         error = compute_error(reported_results[batch], sample_results[batch], contest)
         e_p = error["weighted_error"] if error else Decimal(0)
 
@@ -304,7 +310,8 @@ def compute_risk(
         else:
             p *= ((1 - 1 / U) / (1 - taint)) ** times_sampled[batch]
 
-        if p <= alpha:
-            return float(p), True
+        # Make sure we're returning the lowest p-value in the sequence
+        if p <= low_p:
+            low_p = p
 
-    return min(float(p), 1.0), p <= alpha
+    return min(float(low_p), 1.0), low_p <= alpha
