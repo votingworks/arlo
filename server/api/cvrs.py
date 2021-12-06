@@ -13,6 +13,8 @@ from werkzeug.exceptions import BadRequest, NotFound, Conflict
 from sqlalchemy import func, and_
 from sqlalchemy.orm import Session
 
+from server.util.csv_parse import decode_csv_file
+
 from . import api
 from ..database import db_session, engine as db_engine
 from ..models import *  # pylint: disable=wildcard-import
@@ -25,7 +27,7 @@ from ..worker.tasks import (
 )
 from ..util.file import serialize_file, serialize_file_processing
 from ..util.csv_download import csv_response
-from ..util.csv_parse import decode_csv_file
+from ..util.csv_parse import decode_csv_file, validate_csv_mimetype
 from ..util.jsonschema import JSONDict
 from ..audit_math.suite import HybridPair
 from ..activity_log.activity_log import UploadFile, activity_base, record_activity
@@ -563,6 +565,8 @@ def validate_cvr_upload(
 
     if "cvrs" not in request.files:
         raise BadRequest("Missing required file parameter 'cvrs'")
+
+    validate_csv_mimetype(request.files["cvrs"])
 
     if request.form.get("cvrFileType") not in [
         cvr_file_type.value for cvr_file_type in CvrFileType

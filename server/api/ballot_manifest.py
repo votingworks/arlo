@@ -1,3 +1,4 @@
+import io
 from typing import Optional
 import uuid
 import logging
@@ -17,7 +18,13 @@ from ..worker.tasks import (
 )
 from ..util.file import serialize_file, serialize_file_processing
 from ..util.csv_download import csv_response
-from ..util.csv_parse import decode_csv_file, parse_csv, CSVValueType, CSVColumnType
+from ..util.csv_parse import (
+    CSVValueType,
+    CSVColumnType,
+    decode_csv_file,
+    parse_csv,
+    validate_csv_mimetype,
+)
 from ..audit_math.suite import HybridPair
 from . import contests
 from . import cvrs
@@ -109,11 +116,15 @@ def process_ballot_manifest_file(
             CSVColumnType(CVR, CSVValueType.YES_NO, required=use_cvr),
         ]
 
-        manifest_csv = parse_csv(jurisdiction.manifest_file.contents, columns)
+        # Temporarily wrap file contents in a buffer so we can "stream" it until
+        # we have actual file streaming from storage
+        manifest_file = io.BytesIO(jurisdiction.manifest_file.contents.encode("utf-8"))
+        manifest_csv = parse_csv(manifest_file, columns)
 
         num_batches = 0
         num_ballots = 0
         for row in manifest_csv:
+            print(row)
             batch = Batch(
                 id=str(uuid.uuid4()),
                 name=row[BATCH_NAME],
@@ -189,9 +200,10 @@ def validate_ballot_manifest_upload(request: Request):
     if "manifest" not in request.files:
         raise BadRequest("Missing required file parameter 'manifest'")
 
+    print(request.files["manifest"].content_type)
+    validate_csv_mimetype(request.files["manifest"])
 
-# We save the ballot manifest file, and bgcompute finds it and processes it in
-# the background.
+
 def save_ballot_manifest_file(manifest, jurisdiction: Jurisdiction):
     manifest_string = decode_csv_file(manifest)
     jurisdiction.manifest_file = File(
