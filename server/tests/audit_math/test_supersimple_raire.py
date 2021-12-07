@@ -429,6 +429,24 @@ def test_fptp(contests, cvrs, assertions):
             contest
         )
 
+def test_sfda_2019():
+    """
+    This test case is based on data found in the SHANGRLA repository:
+    https://github.com/pbstark/SHANGRLA/tree/main/Code/Data
+    """
+    expected_p = 0.13530010921921345
+
+    contest = Contest('SFDA19', {
+        "ballots": 293555,
+        "numWinners": 1,
+        "votesAllowed": 1,
+
+    })
+    contest.winners = ["15"]
+
+
+
+
 
 ss_contests = {
     "Contest A": {
