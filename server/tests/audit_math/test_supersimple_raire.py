@@ -47,6 +47,13 @@ def cvrs():
         if i < 10000:
             cvr[i]["Contest E"] = {"winner": 1, "loser": 2}
 
+        if i < 300:
+            cvr[i]["Two-winner Contest"] = {"winner1": 0, "winner2": 1, "loser": 0}
+        elif 300 < i < 900:
+            cvr[i]["Two-winner Contest"] = {"winner1": 1, "winner2": 0, "loser": 0}
+        elif i < 1000:
+            cvr[i]["Two-winner Contest"] = {"winner1": 0, "winner2": 0, "loser": 1}
+
     yield cvr
 
 
@@ -64,9 +71,22 @@ def contests():
 def assertions(contests, cvrs):
     assertions = {}
     for contest in contests:
-        assertions[contest] = make_neb_assertion(
-            contests[contest], cvrs, asn_func, "winner", "loser", []
-        )
+        if contest == "Two-winner Contest":
+            assertions[contest] = [
+                make_neb_assertion(
+                    contests[contest], cvrs, asn_func, "winner2", "loser", []
+                ),
+                make_neb_assertion(
+                    contests[contest], cvrs, asn_func, "winner1", "loser", []
+                ),
+            ]
+
+        else:
+            assertions[contest] = [
+                make_neb_assertion(
+                    contests[contest], cvrs, asn_func, "winner", "loser", []
+                )
+            ]
     return assertions
 
 
@@ -82,15 +102,17 @@ def test_find_no_discrepancies(contests, cvrs, assertions):
                 "Contest C": {"winner": 1, "loser": 2},
                 "Contest D": {"winner": 1, "loser": 2},
                 "Contest E": {"winner": 1, "loser": 2},
+                "Two-winner Contest": {"winner1": 0, "winner2": 1, "loser": 0},
             },
         }
     }
 
     for contest in contests:
-        discrepancies = supersimple_raire.compute_discrepancies(
-            contests[contest], cvrs, sample_cvr, assertions[contest]
-        )
-        assert not discrepancies
+        for assertion in assertions[contest]:
+            discrepancies = supersimple_raire.compute_discrepancies(
+                contests[contest], cvrs, sample_cvr, assertion
+            )
+            assert not discrepancies
 
 
 def test_find_one_discrepancy(contests, cvrs, assertions):
@@ -105,20 +127,22 @@ def test_find_one_discrepancy(contests, cvrs, assertions):
                 "Contest C": {"winner": 1, "loser": 2},
                 "Contest D": {"winner": 1, "loser": 2},
                 "Contest E": {"winner": 1, "loser": 2},
+                "Two-winner Contest": {"winner1": 0, "winner2": 1, "loser": 0},
             },
         }
     }
 
     for contest in contests:
-        discrepancies = supersimple_raire.compute_discrepancies(
-            contests[contest], cvrs, sample_cvr, assertions[contest]
-        )
+        for assertion in assertions[contest]:
+            discrepancies = supersimple_raire.compute_discrepancies(
+                contests[contest], cvrs, sample_cvr, assertion
+            )
 
-        if contest == "Contest A":
-            assert discrepancies[0]["counted_as"] == 1
-            assert discrepancies[0]["weighted_error"] == Decimal(1) / Decimal(20000)
-        else:
-            assert not discrepancies
+            if contest == "Contest A":
+                assert discrepancies[0]["counted_as"] == 1
+                assert discrepancies[0]["weighted_error"] == Decimal(1) / Decimal(20000)
+            else:
+                assert not discrepancies
 
 
 def test_negative_discrepancies(contests, cvrs, assertions):
@@ -135,7 +159,7 @@ def test_negative_discrepancies(contests, cvrs, assertions):
     }
 
     discrepancies = supersimple_raire.compute_discrepancies(
-        contests["Contest A"], cvrs, sample_cvr, assertions["Contest A"]
+        contests["Contest A"], cvrs, sample_cvr, assertions["Contest A"][0]
     )
 
     assert discrepancies
@@ -158,7 +182,7 @@ def test_two_vote_overstatement_discrepancies(contests, cvrs, assertions):
 
     contest = "Contest A"
     discrepancies = supersimple_raire.compute_discrepancies(
-        contests[contest], cvrs, sample_cvr, assertions[contest]
+        contests[contest], cvrs, sample_cvr, assertions[contest][0]
     )
 
     assert discrepancies
@@ -181,7 +205,7 @@ def test_race_not_in_cvr_discrepancy(contests, cvrs, assertions):
     }
 
     discrepancies = supersimple_raire.compute_discrepancies(
-        contests["Contest F"], cvrs, sample_cvr, assertions["Contest F"]
+        contests["Contest F"], cvrs, sample_cvr, assertions["Contest F"][0]
     )
 
     assert discrepancies
@@ -199,12 +223,13 @@ def test_race_not_in_sample_discrepancy(contests, cvrs, assertions):
                 "Contest B": {"winner": 1, "loser": 2},
                 "Contest C": {"winner": 1, "loser": 2},
                 "Contest E": {"winner": 1, "loser": 2},
+                "Two-winner Contest": {"winner1": 0, "winner2": 1, "loser": 0},
             },
         }
     }
 
     discrepancies = supersimple_raire.compute_discrepancies(
-        contests["Contest D"], cvrs, sample_cvr, assertions["Contest D"]
+        contests["Contest D"], cvrs, sample_cvr, assertions["Contest D"][0]
     )
 
     assert discrepancies
@@ -216,7 +241,7 @@ def test_ballot_not_found_discrepancy(contests, cvrs, assertions):
     sample_cvr = {0: {"times_sampled": 1, "cvr": None}}
 
     discrepancies = supersimple_raire.compute_discrepancies(
-        contests["Contest D"], cvrs, sample_cvr, assertions["Contest D"]
+        contests["Contest D"], cvrs, sample_cvr, assertions["Contest D"][0]
     )
 
     assert discrepancies
@@ -231,7 +256,7 @@ def test_ballot_not_in_cvr(contests, assertions):
     }
 
     discrepancies = supersimple_raire.compute_discrepancies(
-        contests["Contest D"], cvrs, sample_cvr, assertions["Contest D"]
+        contests["Contest D"], cvrs, sample_cvr, assertions["Contest D"][0]
     )
 
     assert discrepancies
@@ -244,7 +269,7 @@ def test_ballot_not_in_cvr_and_not_found(contests, assertions):
     sample_cvr = {0: {"times_sampled": 1, "cvr": None}}
 
     discrepancies = supersimple_raire.compute_discrepancies(
-        contests["Contest D"], cvrs, sample_cvr, assertions["Contest D"]
+        contests["Contest D"], cvrs, sample_cvr, assertions["Contest D"][0]
     )
 
     assert discrepancies
@@ -259,13 +284,13 @@ def test_fptp(contests, cvrs, assertions):
     for contest in contests:
 
         computed_assertions = compute_raire_assertions(
-            contests[contest], cvrs, "winner", asn_func, 0
+            contests[contest], cvrs, asn_func, 0
         )
 
         if contest == "Contest F":
             assert not computed_assertions
         else:
-            expected_assertions = [assertions[contest]]
+            expected_assertions = assertions[contest]
             assert computed_assertions == expected_assertions, f"Failed for {contest}"
 
         sample_cvr = {}
@@ -281,6 +306,7 @@ def test_fptp(contests, cvrs, assertions):
                     "Contest C": {"winner": 1, "loser": 2},
                     "Contest D": {"winner": 1, "loser": 2},
                     "Contest E": {"winner": 1, "loser": 2},
+                    "Two-winner Contest": {"winner1": 0, "winner2": 1, "loser": 0},
                 },
             }
 
@@ -321,6 +347,7 @@ def test_fptp(contests, cvrs, assertions):
                 "Contest C": {"winner": 0, "loser": 0},
                 "Contest D": {"winner": 0, "loser": 0},
                 "Contest E": {"winner": 0, "loser": 0},
+                "Two-winner Contest": {"winner1": 0, "winner2": 0, "loser": 0},
             },
         }
 
@@ -336,7 +363,7 @@ def test_fptp(contests, cvrs, assertions):
         ), "Incorrect p-value. Expected {}, got {} in contest {}".format(
             expected_p, p_value, contest
         )
-        if contest in ["Contest E"]:
+        if contest in ["Contest E", "Two-winner Contest"]:
             assert finished, "Audit should have finished but didn't"
         else:
             assert not finished, "Audit shouldn't have finished but did!"
@@ -367,6 +394,7 @@ def test_fptp(contests, cvrs, assertions):
                 "Contest C": {"winner": 0, "loser": 1},
                 "Contest D": {"winner": 0, "loser": 1},
                 "Contest E": {"winner": 0, "loser": 1},
+                "Two-winner Contest": {"winner1": 0, "winner2": 0, "loser": 1},
             },
         }
 
@@ -445,6 +473,14 @@ ss_contests = {
         "numWinners": 1,
         "votesAllowed": 1,
     },
+    "Two-winner Contest": {
+        "winner1": 600,
+        "winner2": 300,
+        "loser": 100,
+        "ballots": 1000,
+        "numWinners": 2,
+        "votesAllowed": 1,
+    },
 }
 
 expected_p_values = {
@@ -455,6 +491,7 @@ expected_p_values = {
         "Contest D": 0.07048,
         "Contest E": 0.01950,
         "Contest F": 0.0,  # Full recount
+        "Two-winner Contest": 0.06508,
     },
     "one_vote_over": {
         "Contest A": 0.12534,
@@ -463,6 +500,7 @@ expected_p_values = {
         "Contest D": 0.13585,
         "Contest E": 0.03758,
         "Contest F": 0.0,  # Full recount
+        "Two-winner Contest": 0.08059,
     },
     "two_vote_over": {
         "Contest A": 1.0,
@@ -471,6 +509,7 @@ expected_p_values = {
         "Contest D": 1.0,
         "Contest E": 0.51877,
         "Contest F": 0.0,  # Full recount
+        "Two-winner Contest": 0.10581,
     },
 }
 
@@ -481,6 +520,7 @@ o1_stopping_size = {
     "Contest D": 57,
     "Contest E": 7,
     "Contest F": 15,  # nMin yields 16, but contest only has 15 total votes
+    "Two-winner Contest": 38,
 }
 
 o2_stopping_size = {
@@ -490,4 +530,5 @@ o2_stopping_size = {
     "Contest D": 15000,
     "Contest E": 6,
     "Contest F": 15,
+    "Two-winner Contest": 1000,
 }

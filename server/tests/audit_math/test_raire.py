@@ -109,7 +109,7 @@ def test_make_raire_frontier(contest: Contest, cvrs: CVRS, ballots: BallotList):
         find_best_audit(contest, ballots, nebs, node, asn_func)
         expected.insert_node(node)
 
-    assert expected == make_frontier(contest, ballots, "winner", nebs, asn_func)
+    assert expected == make_frontier(contest, ballots, nebs, asn_func)
 
 
 def test_find_assertions_too_good_ancestor(
@@ -117,7 +117,7 @@ def test_find_assertions_too_good_ancestor(
 ):
 
     nebs = make_neb_matrix(contest, cvrs, asn_func)
-    frontier = make_frontier(contest, ballots, "winner", nebs, asn_func)
+    frontier = make_frontier(contest, ballots, nebs, asn_func)
 
     # Create a fake best ancestor
     newn = RaireNode(["loser"])
@@ -143,7 +143,7 @@ def test_find_assertions_infinite_to_expand(
     contest: Contest, ballots: BallotList, cvrs: CVRS
 ):
     nebs = make_neb_matrix(contest, cvrs, asn_func)
-    frontier = make_frontier(contest, ballots, "winner", nebs, asn_func)
+    frontier = make_frontier(contest, ballots, nebs, asn_func)
 
     lowerbound = -10.0
 
@@ -165,7 +165,7 @@ def test_find_assertions_fake_ancestor(
     contest: Contest, ballots: BallotList, cvrs: CVRS
 ):
     nebs = make_neb_matrix(contest, cvrs, asn_func)
-    frontier = make_frontier(contest, ballots, "winner", nebs, asn_func)
+    frontier = make_frontier(contest, ballots, nebs, asn_func)
 
     lowerbound = -10.0
 
@@ -198,7 +198,7 @@ def test_find_assertions_infinite_branch(
     assert isinstance(nebs["winner"]["loser2"], NEBAssertion)
     nebs["winner"]["loser2"].difficulty = np.inf
 
-    frontier = make_frontier(contest, ballots, "winner", nebs, asn_func)
+    frontier = make_frontier(contest, ballots, nebs, asn_func)
 
     lowerbound = -10.0
 
@@ -220,7 +220,7 @@ def test_find_assertions_many_children(
     contest: Contest, ballots: BallotList, cvrs: CVRS
 ):
     nebs = make_neb_matrix(contest, cvrs, asn_func)
-    frontier = make_frontier(contest, ballots, "winner", nebs, asn_func)
+    frontier = make_frontier(contest, ballots, nebs, asn_func)
 
     lowerbound = -10.0
 
@@ -334,9 +334,13 @@ def run_test(input_file: str, output_file: str, agap: float):
 
         for contest, votes in contests.items():
             con = Contest(contest, votes)
+            # Override contest's winners since it's computed only using the first round results
+            real_winners = {}
+            real_winners[winners[contest]] = con.candidates[winners[contest]]
+            con.winners = real_winners
 
             audit: List[RaireAssertion] = compute_raire_assertions(
-                con, cvrs, winners[contest], lambda m: 1 / m if m > 0 else np.inf, agap,
+                con, cvrs, lambda m: 1 / m if m > 0 else np.inf, agap,
             )
 
             asrtns: List[str] = [str(assertion) for assertion in audit]
@@ -347,7 +351,7 @@ def run_test(input_file: str, output_file: str, agap: float):
 
 
 def test_raire(contest: Contest, cvrs: CVRS):
-    res = compute_raire_assertions(contest, cvrs, "winner", asn_func)
+    res = compute_raire_assertions(contest, cvrs, asn_func)
 
     expected = []
 
@@ -366,7 +370,7 @@ def test_raire(contest: Contest, cvrs: CVRS):
 
     # Use a small agap
 
-    res = compute_raire_assertions(contest, cvrs, "winner", asn_func, agap=0.00000001)
+    res = compute_raire_assertions(contest, cvrs, asn_func, agap=0.00000001)
     assert res == expected
 
 
@@ -388,7 +392,7 @@ def test_raire_recount():
     for i in range(50000, 100000):
         cvrs[i] = {"Contest A": {"winner": 2, "loser": 1}}
 
-    res = compute_raire_assertions(contest, cvrs, "winner", asn_func)
+    res = compute_raire_assertions(contest, cvrs, asn_func)
 
     assert res == []
 
