@@ -91,13 +91,13 @@ def decode_csv(file: BinaryIO) -> TextIO:
 
 
 # TODO remove this once we decode all CSV files using decode_csv
-def decode_csv_file(file: FileStorage) -> str:  # pragma: no cover
+def decode_csv_file(file: FileStorage) -> str:
     try:
         contents = file.read()
         if contents == b"":
             return ""
         return decode_csv(io.BytesIO(contents)).read()
-    except CSVParseError as err:
+    except CSVParseError as err:  # pragma: no cover
         raise BadRequest(INVALID_CSV_ERROR) from err
 
 

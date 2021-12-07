@@ -5,7 +5,6 @@ from werkzeug.datastructures import FileStorage
 
 from ...api.jurisdictions import JURISDICTIONS_COLUMNS
 from ...util.csv_parse import (
-    decode_csv,
     parse_csv as parse_csv_binary,
     decode_csv_file,
     CSVParseError,
@@ -907,12 +906,7 @@ def test_validate_csv_mimetype():
         "text/plain",
     ]:
         with pytest.raises(BadRequest) as error:
-            validate_csv_mimetype(
-                FileStorage(
-                    b"",
-                    content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                )
-            )
+            validate_csv_mimetype(FileStorage(b"", content_type=invalid_mimetype,))
             assert error.value.description == (
                 "Please submit a valid CSV."
                 " If you are working with an Excel spreadsheet,"
