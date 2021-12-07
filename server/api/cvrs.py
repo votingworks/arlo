@@ -181,6 +181,16 @@ def hybrid_contest_choice_vote_counts(
     }
 
 
+def csv_reader_for_cvr(file_contents: str) -> CSVIterator:
+    # Temporarily wrap file contents in a buffer so we can "stream" it until
+    # we have actual file streaming from storage
+    cvr_file = io.BytesIO(file_contents.encode("utf-8"))
+    validate_not_empty(cvr_file)
+    text_file = decode_csv(cvr_file)
+    validate_comma_delimited(text_file)
+    return csv.reader(text_file, delimiter=",")
+
+
 def get_header_indices(headers_row: List[str]) -> Dict[str, int]:
     return {header: i for i, header in enumerate(headers_row)}
 
@@ -278,16 +288,6 @@ def parse_clearballot_cvrs(
         )
 
     return contests_metadata, (parse_cvr_row(row, i) for i, row in enumerate(cvrs))
-
-
-def csv_reader_for_cvr(file_contents: str) -> CSVIterator:
-    # Temporarily wrap file contents in a buffer so we can "stream" it until
-    # we have actual file streaming from storage
-    cvr_file = io.BytesIO(file_contents.encode("utf-8"))
-    validate_not_empty(cvr_file)
-    text_file = decode_csv(cvr_file)
-    validate_comma_delimited(text_file)
-    return csv.reader(text_file, delimiter=",")
 
 
 def parse_dominion_cvrs(

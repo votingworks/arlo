@@ -91,7 +91,7 @@ def decode_csv(file: BinaryIO) -> TextIO:
 
 
 # TODO remove this once we decode all CSV files using decode_csv
-def decode_csv_file(file: FileStorage) -> str:
+def decode_csv_file(file: FileStorage) -> str:  # pragma: no cover
     try:
         contents = file.read()
         if contents == b"":
