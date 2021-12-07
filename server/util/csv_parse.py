@@ -93,7 +93,10 @@ def decode_csv(file: BinaryIO) -> TextIO:
 # TODO remove this once we decode all CSV files using decode_csv
 def decode_csv_file(file: FileStorage) -> str:
     try:
-        return decode_csv(io.BytesIO(file.read())).read()
+        contents = file.read()
+        if contents == b"":
+            return ""
+        return decode_csv(io.BytesIO(contents)).read()
     except CSVParseError as err:
         raise BadRequest(INVALID_CSV_ERROR) from err
 
@@ -354,4 +357,3 @@ def convert_rows_to_dicts(csv: CSVIterator) -> CSVDictIterator:
 
 def pluralize(word: str, num: int) -> str:
     return word if num == 1 else f"{word}s"
-

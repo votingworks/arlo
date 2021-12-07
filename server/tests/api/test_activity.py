@@ -347,7 +347,10 @@ def test_file_upload_errors(
 
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={"cvrs": (io.BytesIO(b""), "cvrs.csv"), "cvrFileType": "DOMINION"},
+        data={
+            "cvrs": (io.BytesIO(b"bad,\ndominion,\nfile,\nheaders,"), "cvrs.csv"),
+            "cvrFileType": "DOMINION",
+        },
     )
     assert_ok(rv)
 
@@ -388,7 +391,7 @@ def test_file_upload_errors(
                 "info": {
                     **expected_activity["info"],
                     "file_type": "cvrs",
-                    "error": "CVR file cannot be empty.",
+                    "error": "Invalid contest name: dominion. Contest names should have this format: Contest Name (Vote For=1).",
                 },
             },
             {

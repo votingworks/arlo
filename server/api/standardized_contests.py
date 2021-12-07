@@ -1,3 +1,4 @@
+import io
 import uuid
 import re
 from datetime import datetime
@@ -14,7 +15,13 @@ from ..worker.tasks import (
     background_task,
     create_background_task,
 )
-from ..util.csv_parse import decode_csv_file, parse_csv, CSVColumnType, CSVValueType
+from ..util.csv_parse import (
+    decode_csv_file,
+    parse_csv,
+    CSVColumnType,
+    CSVValueType,
+    validate_csv_mimetype,
+)
 from ..util.csv_download import csv_response
 from ..util.file import serialize_file, serialize_file_processing
 
@@ -30,8 +37,13 @@ STANDARDIZED_CONTEST_COLUMNS = [
 @background_task
 def process_standardized_contests_file(election_id: str):
     election = Election.query.get(election_id)
+    # Temporarily wrap file contents in a buffer so we can "stream" it until
+    # we have actual file streaming from storage
+    standardized_contests_file = io.BytesIO(
+        election.standardized_contests_file.contents.encode("utf-8")
+    )
     standardized_contests_csv = parse_csv(
-        election.standardized_contests_file.contents, STANDARDIZED_CONTEST_COLUMNS
+        standardized_contests_file, STANDARDIZED_CONTEST_COLUMNS
     )
 
     standardized_contests = []
@@ -105,6 +117,8 @@ def validate_standardized_contests_upload(request: Request, election: Election):
 
     if "standardized-contests" not in request.files:
         raise BadRequest("Missing required file parameter 'standardized-contests'")
+
+    validate_csv_mimetype(request.files["standardized-contests"])
 
 
 @api.route("/election/<election_id>/standardized-contests/file", methods=["PUT"])

@@ -1,3 +1,4 @@
+import io
 import logging
 from typing import Dict, List, Optional, Mapping, cast as typing_cast
 import enum
@@ -23,7 +24,13 @@ from ..worker.tasks import (
 )
 from ..util.file import serialize_file, serialize_file_processing
 from ..util.jsonschema import JSONDict
-from ..util.csv_parse import CSVColumnType, CSVValueType, decode_csv_file, parse_csv
+from ..util.csv_parse import (
+    CSVColumnType,
+    CSVValueType,
+    decode_csv_file,
+    parse_csv,
+    validate_csv_mimetype,
+)
 from ..util.csv_download import csv_response
 
 logger = logging.getLogger("arlo")
@@ -40,9 +47,12 @@ JURISDICTIONS_COLUMNS = [
 @background_task
 def process_jurisdictions_file(election_id: str):
     election = Election.query.get(election_id)
-    jurisdictions_csv = parse_csv(
-        election.jurisdictions_file.contents, JURISDICTIONS_COLUMNS
+    # Temporarily wrap file contents in a buffer so we can "stream" it until
+    # we have actual file streaming from storage
+    jurisdictions_file = io.BytesIO(
+        election.jurisdictions_file.contents.encode("utf-8")
     )
+    jurisdictions_csv = parse_csv(jurisdictions_file, JURISDICTIONS_COLUMNS)
 
     # Clear existing admins.
     JurisdictionAdministration.query.filter(
@@ -523,6 +533,8 @@ def update_jurisdictions_file(election: Election):
 
     if "jurisdictions" not in request.files:
         raise BadRequest("Missing required file parameter 'jurisdictions'")
+
+    validate_csv_mimetype(request.files["jurisdictions"])
 
     jurisdictions_file = request.files["jurisdictions"]
     election.jurisdictions_file = File(

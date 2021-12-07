@@ -124,7 +124,6 @@ def process_ballot_manifest_file(
         num_batches = 0
         num_ballots = 0
         for row in manifest_csv:
-            print(row)
             batch = Batch(
                 id=str(uuid.uuid4()),
                 name=row[BATCH_NAME],
@@ -200,7 +199,6 @@ def validate_ballot_manifest_upload(request: Request):
     if "manifest" not in request.files:
         raise BadRequest("Missing required file parameter 'manifest'")
 
-    print(request.files["manifest"].content_type)
     validate_csv_mimetype(request.files["manifest"])
 
 
