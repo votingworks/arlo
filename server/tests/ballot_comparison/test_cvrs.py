@@ -29,6 +29,7 @@ def test_dominion_cvr_upload(
         jurisdictions[0]["cvrs"],
         {"file": None, "processing": None, "numBallots": None,},
     )
+    manifest_num_ballots = jurisdictions[0]["ballotManifest"]["numBallots"]
 
     # Upload CVRs
     set_logged_in_user(
@@ -49,9 +50,6 @@ def test_dominion_cvr_upload(
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
     )
-
-    expected_num_cvr_ballots = len(TEST_CVRS.splitlines()) - 4
-
     compare_json(
         json.loads(rv.data),
         {
@@ -65,8 +63,8 @@ def test_dominion_cvr_upload(
                 "startedAt": assert_is_date,
                 "completedAt": assert_is_date,
                 "error": None,
-                "workProgress": expected_num_cvr_ballots,
-                "workTotal": expected_num_cvr_ballots,
+                "workProgress": manifest_num_ballots,
+                "workTotal": manifest_num_ballots,
             },
         },
     )
@@ -77,7 +75,7 @@ def test_dominion_cvr_upload(
         .order_by(CvrBallot.imprinted_id)
         .all()
     )
-    assert len(cvr_ballots) == expected_num_cvr_ballots
+    assert len(cvr_ballots) == manifest_num_ballots - 1
     snapshot.assert_match(
         [
             dict(
@@ -112,10 +110,10 @@ def test_dominion_cvr_upload(
                 "startedAt": assert_is_date,
                 "completedAt": assert_is_date,
                 "error": None,
-                "workProgress": expected_num_cvr_ballots,
-                "workTotal": expected_num_cvr_ballots,
+                "workProgress": manifest_num_ballots,
+                "workTotal": manifest_num_ballots,
             },
-            "numBallots": expected_num_cvr_ballots,
+            "numBallots": manifest_num_ballots - 1,
         },
     )
 
@@ -169,12 +167,17 @@ def test_cvrs_counting_group(
     )
     assert_ok(rv)
 
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    manifest_num_ballots = jurisdictions[0]["ballotManifest"]["numBallots"]
+
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
     )
-
-    expected_num_cvr_ballots = 15
-
     compare_json(
         json.loads(rv.data),
         {
@@ -188,8 +191,8 @@ def test_cvrs_counting_group(
                 "startedAt": assert_is_date,
                 "completedAt": assert_is_date,
                 "error": None,
-                "workProgress": expected_num_cvr_ballots,
-                "workTotal": expected_num_cvr_ballots,
+                "workProgress": manifest_num_ballots,
+                "workTotal": manifest_num_ballots,
             },
         },
     )
@@ -200,7 +203,7 @@ def test_cvrs_counting_group(
         .order_by(CvrBallot.imprinted_id)
         .all()
     )
-    assert len(cvr_ballots) == expected_num_cvr_ballots
+    assert len(cvr_ballots) == manifest_num_ballots
     snapshot.assert_match(
         [
             dict(
@@ -458,12 +461,17 @@ def test_cvrs_newlines(
     )
     assert_ok(rv)
 
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    manifest_num_ballots = jurisdictions[0]["ballotManifest"]["numBallots"]
+
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
     )
-
-    expected_num_cvr_ballots = 15
-
     compare_json(
         json.loads(rv.data),
         {
@@ -477,8 +485,8 @@ def test_cvrs_newlines(
                 "startedAt": assert_is_date,
                 "completedAt": assert_is_date,
                 "error": None,
-                "workProgress": expected_num_cvr_ballots + 2,
-                "workTotal": expected_num_cvr_ballots + 2,
+                "workProgress": manifest_num_ballots,
+                "workTotal": manifest_num_ballots,
             },
         },
     )
@@ -489,7 +497,7 @@ def test_cvrs_newlines(
         .order_by(CvrBallot.imprinted_id)
         .all()
     )
-    assert len(cvr_ballots) == expected_num_cvr_ballots
+    assert len(cvr_ballots) == manifest_num_ballots
     snapshot.assert_match(
         [
             dict(
@@ -513,11 +521,16 @@ def test_invalid_cvrs(
     jurisdiction_ids: List[str],
     manifests,  # pylint: disable=unused-argument
 ):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    manifest_num_ballots = jurisdictions[0]["ballotManifest"]["numBallots"]
+
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
     invalid_cvrs = [
-        ("", "CVR file cannot be empty.", "DOMINION"),
+        ("", "CSV cannot be empty.", "DOMINION"),
         (
             """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
 ,,,,,,,,"Contest 1 (Vote For=1)","Contest 1 (123)"
@@ -805,8 +818,7 @@ BATCH1,1,1-1-1,p,bs,ps,TABULATOR1,s,r,0,1,1,1,0
                     "completedAt": assert_is_date,
                     "error": expected_error,
                     "workProgress": 0,
-                    "workTotal": len(invalid_cvr.splitlines())
-                    - (4 if cvr_file_type == "DOMINION" else 1),
+                    "workTotal": manifest_num_ballots,
                 },
             },
         )
@@ -846,7 +858,15 @@ def test_cvr_reprocess_after_manifest_reupload(
     )
     assert_ok(rv)
 
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    manifest_num_ballots = jurisdictions[0]["ballotManifest"]["numBallots"]
+
     # Error should be recorded for CVRs
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
     )
@@ -864,7 +884,7 @@ def test_cvr_reprocess_after_manifest_reupload(
                 "completedAt": assert_is_date,
                 "error": "Invalid TabulatorNum/BatchId for row with CvrNumber 7: TABULATOR2, BATCH1. The TabulatorNum and BatchId fields in the CVR file must match the Tabulator and Batch Name fields in the ballot manifest. The closest match we found in the ballot manifest was: TABULATOR2, BATCH2. Please check your CVR file and ballot manifest thoroughly to make sure these values match - there may be a similar inconsistency in other rows in the CVR file.",
                 "workProgress": 0,
-                "workTotal": len(TEST_CVRS.splitlines()) - 4,
+                "workTotal": manifest_num_ballots,
             },
         },
     )
@@ -895,11 +915,18 @@ def test_cvr_reprocess_after_manifest_reupload(
     )
     assert_ok(rv)
 
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    manifest_num_ballots = jurisdictions[0]["ballotManifest"]["numBallots"]
+
     # CVRs should be fixed
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
     )
-    expected_num_cvr_ballots = len(TEST_CVRS.splitlines()) - 4
     compare_json(
         json.loads(rv.data),
         {
@@ -913,8 +940,8 @@ def test_cvr_reprocess_after_manifest_reupload(
                 "startedAt": assert_is_date,
                 "completedAt": assert_is_date,
                 "error": None,
-                "workProgress": expected_num_cvr_ballots,
-                "workTotal": expected_num_cvr_ballots,
+                "workProgress": manifest_num_ballots,
+                "workTotal": manifest_num_ballots,
             },
         },
     )
@@ -923,7 +950,7 @@ def test_cvr_reprocess_after_manifest_reupload(
         CvrBallot.query.join(Batch)
         .filter_by(jurisdiction_id=jurisdiction_ids[0])
         .count()
-        == expected_num_cvr_ballots
+        == manifest_num_ballots - 1
     )
     assert Jurisdiction.query.get(jurisdiction_ids[0]).cvr_contests_metadata is not None
 
@@ -966,15 +993,17 @@ def test_clearballot_cvr_upload(
     )
     assert_ok(rv)
 
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    manifest_num_ballots = jurisdictions[0]["ballotManifest"]["numBallots"]
+
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
     )
-
-    expected_num_cvr_ballots = len(CLEARBALLOT_CVR.splitlines()) - 1
-
     compare_json(
         json.loads(rv.data),
         {
@@ -988,8 +1017,8 @@ def test_clearballot_cvr_upload(
                 "startedAt": assert_is_date,
                 "completedAt": assert_is_date,
                 "error": None,
-                "workProgress": expected_num_cvr_ballots,
-                "workTotal": expected_num_cvr_ballots,
+                "workProgress": manifest_num_ballots,
+                "workTotal": manifest_num_ballots,
             },
         },
     )
@@ -1000,7 +1029,7 @@ def test_clearballot_cvr_upload(
         .order_by(CvrBallot.imprinted_id)
         .all()
     )
-    assert len(cvr_ballots) == expected_num_cvr_ballots
+    assert len(cvr_ballots) == manifest_num_ballots - 1
     snapshot.assert_match(
         [
             dict(

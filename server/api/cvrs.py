@@ -25,7 +25,14 @@ from ..worker.tasks import (
 )
 from ..util.file import serialize_file, serialize_file_processing
 from ..util.csv_download import csv_response
-from ..util.csv_parse import decode_csv_file
+from ..util.csv_parse import (
+    CSVIterator,
+    decode_csv,
+    decode_csv_file,
+    validate_comma_delimited,
+    validate_csv_mimetype,
+    validate_not_empty,
+)
 from ..util.jsonschema import JSONDict
 from ..audit_math.suite import HybridPair
 from ..activity_log.activity_log import UploadFile, activity_base, record_activity
@@ -174,6 +181,16 @@ def hybrid_contest_choice_vote_counts(
     }
 
 
+def csv_reader_for_cvr(file_contents: str) -> CSVIterator:
+    # Temporarily wrap file contents in a buffer so we can "stream" it until
+    # we have actual file streaming from storage
+    cvr_file = io.BytesIO(file_contents.encode("utf-8"))
+    validate_not_empty(cvr_file)
+    text_file = decode_csv(cvr_file)
+    validate_comma_delimited(text_file)
+    return csv.reader(text_file, delimiter=",")
+
+
 def get_header_indices(headers_row: List[str]) -> Dict[str, int]:
     return {header: i for i, header in enumerate(headers_row)}
 
@@ -193,9 +210,7 @@ def column_value(
 def parse_clearballot_cvrs(
     jurisdiction: Jurisdiction,
 ) -> Tuple[CVR_CONTESTS_METADATA, Iterable[CvrBallot]]:
-    cvrs = csv.reader(
-        io.StringIO(jurisdiction.cvr_file.contents, newline=None), delimiter=","
-    )
+    cvrs = csv_reader_for_cvr(jurisdiction.cvr_file.contents)
     headers = next(cvrs)
     first_contest_column = next(
         i for i, header in enumerate(headers) if header.startswith("Choice_")
@@ -278,9 +293,7 @@ def parse_clearballot_cvrs(
 def parse_dominion_cvrs(
     jurisdiction: Jurisdiction,
 ) -> Tuple[CVR_CONTESTS_METADATA, Iterable[CvrBallot]]:
-    cvrs = csv.reader(
-        io.StringIO(jurisdiction.cvr_file.contents, newline=None), delimiter=","
-    )
+    cvrs = csv_reader_for_cvr(jurisdiction.cvr_file.contents)
 
     # Parse out all the initial metadata
     _election_name = next(cvrs)[0]
@@ -381,12 +394,11 @@ def process_cvr_file(
     jurisdiction = Jurisdiction.query.get(jurisdiction_id)
 
     def process() -> None:
-        header_lines = 4 if jurisdiction.cvr_file_type == CvrFileType.DOMINION else 1
-        total_lines = len(jurisdiction.cvr_file.contents.splitlines()) - header_lines
-        emit_progress(0, total_lines)
-
-        if jurisdiction.cvr_file.contents == "":
-            raise UserError("CVR file cannot be empty.")
+        # Ideally, the CVR should have the same number of ballots as the
+        # manifest, so we can use that as an approximation of the file parsing
+        # progress since we're streaming the file and don't know the size up front.
+        total_records = jurisdiction.manifest_num_ballots
+        emit_progress(0, total_records)
 
         # Parse ballot rows and contest metadata
         def parse_cvrs():
@@ -408,7 +420,7 @@ def process_cvr_file(
             ballots_csv = csv.writer(ballots_tempfile)
             for i, cvr_ballot in enumerate(cvr_ballots):
                 if i % 1000 == 0:
-                    emit_progress(i, total_lines)
+                    emit_progress(i, total_records)
                 # For hybrid audits, skip any batches that were marked as not
                 # having CVRs in the manifest
                 if (
@@ -519,7 +531,7 @@ def process_cvr_file(
 
         contests.set_contest_metadata(jurisdiction.election)
 
-        emit_progress(total_lines, total_lines)
+        emit_progress(total_records, total_records)
 
     error = None
     try:
@@ -563,6 +575,8 @@ def validate_cvr_upload(
 
     if "cvrs" not in request.files:
         raise BadRequest("Missing required file parameter 'cvrs'")
+
+    validate_csv_mimetype(request.files["cvrs"])
 
     if request.form.get("cvrFileType") not in [
         cvr_file_type.value for cvr_file_type in CvrFileType

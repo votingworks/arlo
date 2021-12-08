@@ -1,7 +1,17 @@
 # pylint: disable=stop-iteration-return
 from collections import defaultdict
 from enum import Enum
-from typing import List, Iterator, Dict, Any, NamedTuple, Tuple
+from typing import (
+    BinaryIO,
+    Iterable,
+    List,
+    Iterator,
+    Dict,
+    Any,
+    NamedTuple,
+    TextIO,
+    Tuple,
+)
 import csv as py_csv
 import io, re, locale, chardet
 from werkzeug.exceptions import BadRequest
@@ -36,14 +46,21 @@ CSVRow = List[str]
 CSVIterator = Iterator[CSVRow]
 CSVDictIterator = Iterator[Dict[str, Any]]
 
+INVALID_CSV_ERROR = (
+    "Please submit a valid CSV."
+    " If you are working with an Excel spreadsheet,"
+    " make sure you export it as a .csv file before uploading"
+)
+
+
 # Robust CSV parsing
 # "Be conservative in what you do, be liberal in what you accept from others"
 # https://en.wikipedia.org/wiki/Robustness_principle
-def parse_csv(csv_string: str, columns: List[CSVColumnType]) -> CSVDictIterator:
-    validate_is_csv(csv_string)
-    csv: CSVIterator = py_csv.reader(
-        io.StringIO(csv_string, newline=None), delimiter=","
-    )
+def parse_csv(file: BinaryIO, columns: List[CSVColumnType]) -> CSVDictIterator:
+    validate_not_empty(file)
+    text_file = decode_csv(file)
+    validate_comma_delimited(text_file)
+    csv: CSVIterator = py_csv.reader(text_file, delimiter=",")
     csv = strip_whitespace(csv)
     csv = reject_no_rows(csv)
     csv = skip_empty_trailing_columns(csv)
@@ -61,14 +78,60 @@ def parse_csv(csv_string: str, columns: List[CSVColumnType]) -> CSVDictIterator:
     return dict_csv
 
 
-def validate_is_csv(csv: str):
-    lines = csv.splitlines()
-    if len(lines) == 0:
+def validate_csv_mimetype(file: FileStorage) -> None:
+    # In Windows, CSVs have mimetype application/vnd.ms-excel
+    if file.mimetype not in ["text/csv", "application/vnd.ms-excel"]:
+        raise BadRequest(INVALID_CSV_ERROR)
+
+
+def read_chunks(file: BinaryIO, chunk_size: int) -> Iterable[bytes]:
+    while True:
+        chunk = file.read(chunk_size)
+        if not chunk:
+            break
+        yield chunk
+
+
+def decode_csv(file: BinaryIO) -> TextIO:
+    detector = chardet.UniversalDetector()
+    for i, chunk in enumerate(read_chunks(file, 64)):
+        detector.feed(chunk)
+        if detector.done or i > 500:
+            break
+    detector.close()
+    if not detector.result["encoding"]:
+        raise CSVParseError(INVALID_CSV_ERROR)
+    encoding = detector.result["encoding"]
+    if encoding == "ascii":
+        encoding = "utf-8"
+    file.seek(0)
+    return io.TextIOWrapper(file, encoding=encoding, newline=None)
+
+
+# TODO remove this once we decode all CSV files using decode_csv
+def decode_csv_file(file: FileStorage) -> str:
+    try:
+        contents = file.read()
+        if contents == b"":
+            return ""
+        return decode_csv(io.BytesIO(contents)).read()
+    except CSVParseError as err:  # pragma: no cover
+        raise BadRequest(INVALID_CSV_ERROR) from err
+
+
+def validate_not_empty(file: BinaryIO):
+    if file.read(1) == b"":
         raise CSVParseError("CSV cannot be empty.")
+    file.seek(0)
+
+
+def validate_comma_delimited(file: TextIO):
+    line = file.readline()
+    file.seek(0)
 
     dialect = None
     try:
-        dialect = py_csv.Sniffer().sniff(lines[0])
+        dialect = py_csv.Sniffer().sniff(line)
         if dialect.delimiter == "," or dialect.delimiter == "i":
             return
     except Exception:
@@ -313,26 +376,3 @@ def convert_rows_to_dicts(csv: CSVIterator) -> CSVDictIterator:
 
 def pluralize(word: str, num: int) -> str:
     return word if num == 1 else f"{word}s"
-
-
-def decode_csv_file(file: FileStorage) -> str:
-    user_error = BadRequest(
-        "Please submit a valid CSV."
-        " If you are working with an Excel spreadsheet,"
-        " make sure you export it as a .csv file before uploading"
-    )
-    # In Windows, CSVs have mimetype application/vnd.ms-excel
-    if file.mimetype not in ["text/csv", "application/vnd.ms-excel"]:
-        raise user_error
-
-    try:
-        file_bytes = file.read()
-        return str(file_bytes.decode("utf-8-sig"))
-    except UnicodeDecodeError as err:
-        try:
-            detect_result = chardet.detect(file_bytes)
-            if not detect_result["encoding"]:
-                raise user_error from err
-            return str(file_bytes.decode(detect_result["encoding"]))
-        except Exception:
-            raise user_error from err

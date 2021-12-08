@@ -1,4 +1,5 @@
 from datetime import datetime
+import io
 from typing import Optional
 import uuid
 from flask import request, jsonify, Request, session
@@ -16,7 +17,13 @@ from ..worker.tasks import (
 )
 from ..util.file import serialize_file, serialize_file_processing
 from ..util.csv_download import csv_response
-from ..util.csv_parse import decode_csv_file, parse_csv, CSVValueType, CSVColumnType
+from ..util.csv_parse import (
+    decode_csv_file,
+    parse_csv,
+    CSVValueType,
+    CSVColumnType,
+    validate_csv_mimetype,
+)
 from ..activity_log.activity_log import UploadFile, activity_base, record_activity
 
 BATCH_NAME = "Batch Name"
@@ -41,9 +48,12 @@ def process_batch_tallies_file(
             for choice in contest.choices
         ]
 
-        batch_tallies_csv = list(
-            parse_csv(jurisdiction.batch_tallies_file.contents, columns)
+        # Temporarily wrap file contents in a buffer so we can "stream" it until
+        # we have actual file streaming from storage
+        batch_tallies_file = io.BytesIO(
+            jurisdiction.batch_tallies_file.contents.encode("utf-8")
         )
+        batch_tallies_csv = list(parse_csv(batch_tallies_file, columns))
 
         # Validate that the batch names match the ballot manifest
         jurisdiction_batch_names = {batch.name for batch in jurisdiction.batches}
@@ -138,6 +148,8 @@ def validate_batch_tallies_upload(
 
     if "batchTallies" not in request.files:
         raise BadRequest("Missing required file parameter 'batchTallies'")
+
+    validate_csv_mimetype(request.files["batchTallies"])
 
 
 def clear_batch_tallies_data(jurisdiction: Jurisdiction):
