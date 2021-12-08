@@ -1,13 +1,15 @@
 # pylint: disable=invalid-name
 from decimal import Decimal
 import pytest
+import json
 import numpy as np
 
 from ...audit_math import supersimple
-from ...audit_math.sampler_contest import Contest
+from ...audit_math.sampler_contest import Contest, SAMPLECVRS
 from ...audit_math.raire import compute_raire_assertions
 
 from .test_raire_utils import make_neb_assertion
+from .test_raire import parse_raire_input
 from ...audit_math import supersimple_raire
 
 seed = "12345678901234567890abcdefghijklmnopqrstuvwxyz😊"
@@ -429,6 +431,22 @@ def test_fptp(contests, cvrs, assertions):
             contest
         )
 
+def parse_shangrla_sample(input_file: str) -> SAMPLECVRS:
+    cvrs = {}
+    with open(input_file, 'r') as datafile:
+        sample_data = json.load(datafile)
+        ballots = sample_data['ballots']
+
+        for ballot in ballots:
+            cvrs[ballot["id"]] = {
+                 "cvr": ballot["votes"],
+                 "times_sampled": 1,
+            }
+
+    return cvrs
+
+
+
 def test_sfda_2019():
     """
     This test case is based on data found in the SHANGRLA repository:
@@ -436,13 +454,27 @@ def test_sfda_2019():
     """
     expected_p = 0.13530010921921345
 
-    contest = Contest('SFDA19', {
-        "ballots": 293555,
-        "numWinners": 1,
-        "votesAllowed": 1,
+    contests, cvrs, winners = parse_raire_input('server/tests/audit_math/raire_data/sfda19/SFDA2019_PrelimReport12VBMJustDASheets.raire')
 
-    })
-    contest.winners = ["15"]
+    contest = Contest('339', contests['339'])
+
+    contest.winners = {"15": contest.candidates["15"]}
+
+    sample_cvr = parse_shangrla_sample('server/tests/audit_math/raire_data/sfda19/mvr_prepilot_test.json')
+
+    computed_assertions = compute_raire_assertions(
+            contest, cvrs, asn_func, 0
+    )
+
+
+    p_value, finished = supersimple_raire.compute_risk(
+        RISK_LIMIT, contest, cvrs, sample_cvr, computed_assertions
+    )
+
+    diff = abs(p_value - expected_p)
+
+    assert diff < 10**-4, f"Got unexpected p-value {p_value}, expected {expected_p}"
+    assert not finished
 
 
 

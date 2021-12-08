@@ -276,17 +276,16 @@ def compare_result(path: str, contests: Dict[str, List[str]]):
             path, contest
         )
 
-
-def run_test(input_file: str, output_file: str, agap: float):
-    result: Dict[str, List[str]] = {}
+def parse_raire_input(input_file: str):
+    contests = {}
+    winners = {}
+    cvrs: CVRS = {}
     # Load test contest
     with open(input_file, "r") as data:
         lines = data.readlines()
 
         ncontests = int(lines[0])
 
-        contests = {}
-        winners = {}
 
         for i in range(ncontests):
             toks = lines[1 + i].strip().split(",")
@@ -303,8 +302,6 @@ def run_test(input_file: str, output_file: str, agap: float):
             contests[cid] = cands
             winners[cid] = toks[-1]
 
-        cvrs: CVRS = {}
-
         for line in range(ncontests + 1, len(lines)):
             toks = lines[line].strip().split(",")
 
@@ -312,7 +309,7 @@ def run_test(input_file: str, output_file: str, agap: float):
             bid: str = toks[1]
             prefs: List[str] = toks[2:]
 
-            if prefs != []:
+            if prefs != [] and prefs != ['']:
                 contests[cid][prefs[0]] += 1
 
             contests[cid]["ballots"] += 1
@@ -332,22 +329,29 @@ def run_test(input_file: str, output_file: str, agap: float):
             else:
                 cvrs[bid] = {cid: ballot}
 
-        for contest, votes in contests.items():
-            con = Contest(contest, votes)
-            # Override contest's winners since it's computed only using the first round results
-            real_winners = {}
-            real_winners[winners[contest]] = con.candidates[winners[contest]]
-            con.winners = real_winners
+    return contests, cvrs, winners
 
-            audit: List[RaireAssertion] = compute_raire_assertions(
-                con, cvrs, lambda m: 1 / m if m > 0 else np.inf, agap,
-            )
+def run_test(input_file: str, output_file: str, agap: float):
+    result: Dict[str, List[str]] = {}
 
-            asrtns: List[str] = [str(assertion) for assertion in audit]
-            sorted_asrtns = sorted(asrtns)
-            result[contest] = sorted_asrtns
+    contests, cvrs, winners = parse_raire_input(input_file)
 
-        compare_result(output_file, result)
+    for contest, votes in contests.items():
+        con = Contest(contest, votes)
+        # Override contest's winners since it's computed only using the first round results
+        real_winners = {}
+        real_winners[winners[contest]] = con.candidates[winners[contest]]
+        con.winners = real_winners
+
+        audit: List[RaireAssertion] = compute_raire_assertions(
+            con, cvrs, lambda m: 1 / m if m > 0 else np.inf, agap,
+        )
+
+        asrtns: List[str] = [str(assertion) for assertion in audit]
+        sorted_asrtns = sorted(asrtns)
+        result[contest] = sorted_asrtns
+
+    compare_result(output_file, result)
 
 
 def test_raire(contest: Contest, cvrs: CVRS):
