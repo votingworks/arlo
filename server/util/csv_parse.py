@@ -1,7 +1,17 @@
 # pylint: disable=stop-iteration-return
 from collections import defaultdict
 from enum import Enum
-from typing import BinaryIO, List, Iterator, Dict, Any, NamedTuple, TextIO, Tuple
+from typing import (
+    BinaryIO,
+    Iterable,
+    List,
+    Iterator,
+    Dict,
+    Any,
+    NamedTuple,
+    TextIO,
+    Tuple,
+)
 import csv as py_csv
 import io, re, locale, chardet
 from werkzeug.exceptions import BadRequest
@@ -74,10 +84,18 @@ def validate_csv_mimetype(file: FileStorage) -> None:
         raise BadRequest(INVALID_CSV_ERROR)
 
 
+def read_chunks(file: BinaryIO, chunk_size: int) -> Iterable[bytes]:
+    while True:
+        chunk = file.read(chunk_size)
+        if not chunk:
+            break
+        yield chunk
+
+
 def decode_csv(file: BinaryIO) -> TextIO:
     detector = chardet.UniversalDetector()
-    for i, line in enumerate(file.readlines()):
-        detector.feed(line)
+    for i, chunk in enumerate(read_chunks(file, 64)):
+        detector.feed(chunk)
         if detector.done or i > 500:
             break
     detector.close()
