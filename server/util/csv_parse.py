@@ -122,6 +122,7 @@ def decode_csv_file(file: FileStorage) -> str:
 def validate_not_empty(file: BinaryIO):
     if file.read(1) == b"":
         raise CSVParseError("CSV cannot be empty.")
+    file.seek(0)
 
 
 def validate_comma_delimited(file: TextIO):
