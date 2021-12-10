@@ -1,8 +1,7 @@
 import uuid
-import io
 import tempfile
 import csv
-from typing import Dict, Iterable, List, Optional, Tuple, TypedDict
+from typing import BinaryIO, Dict, Iterable, List, Optional, Tuple, TypedDict
 from collections import defaultdict
 import re
 import difflib
@@ -13,7 +12,6 @@ from werkzeug.exceptions import BadRequest, NotFound, Conflict
 from sqlalchemy import func, and_
 from sqlalchemy.orm import Session
 
-from server.util.csv_parse import decode_csv_file
 
 from . import api
 from ..database import db_session, engine as db_engine
@@ -25,12 +23,17 @@ from ..worker.tasks import (
     background_task,
     create_background_task,
 )
-from ..util.file import serialize_file, serialize_file_processing
+from ..util.file import (
+    retrieve_file_contents,
+    serialize_file,
+    serialize_file_processing,
+    store_file,
+    timestamp_filename,
+)
 from ..util.csv_download import csv_response
 from ..util.csv_parse import (
     CSVIterator,
     decode_csv,
-    decode_csv_file,
     validate_comma_delimited,
     validate_csv_mimetype,
     validate_not_empty,
@@ -183,10 +186,7 @@ def hybrid_contest_choice_vote_counts(
     }
 
 
-def csv_reader_for_cvr(file_contents: str) -> CSVIterator:
-    # Temporarily wrap file contents in a buffer so we can "stream" it until
-    # we have actual file streaming from storage
-    cvr_file = io.BytesIO(file_contents.encode("utf-8"))
+def csv_reader_for_cvr(cvr_file: BinaryIO) -> CSVIterator:
     validate_not_empty(cvr_file)
     text_file = decode_csv(cvr_file)
     validate_comma_delimited(text_file)
@@ -212,7 +212,8 @@ def column_value(
 def parse_clearballot_cvrs(
     jurisdiction: Jurisdiction,
 ) -> Tuple[CVR_CONTESTS_METADATA, Iterable[CvrBallot]]:
-    cvrs = csv_reader_for_cvr(jurisdiction.cvr_file.contents)
+    cvr_file = retrieve_file_contents(jurisdiction.cvr_file)
+    cvrs = csv_reader_for_cvr(cvr_file)
     headers = next(cvrs)
     first_contest_column = next(
         i for i, header in enumerate(headers) if header.startswith("Choice_")
@@ -235,9 +236,9 @@ def parse_clearballot_cvrs(
             # Store the column index of this contest choice so we can parse
             # interpretations later
             column=column,
-            num_votes=0,  # Will be counted below
+            num_votes=0,  # Will be counted while parsing rows
         )
-        # Will be counted below
+        # Will be counted while parsing rows
         contests_metadata[contest_name]["total_ballots_cast"] = 0
 
     batches_by_key = {
@@ -245,57 +246,63 @@ def parse_clearballot_cvrs(
     }
     header_indices = get_header_indices(headers)
 
-    def parse_cvr_row(row: List[str], row_index: int):
-        row_number = column_value(row, "RowNumber", row_index + 1, header_indices)
-        box_id = column_value(row, "BoxID", row_number, header_indices)
-        box_position = column_value(row, "BoxPosition", row_number, header_indices)
-        ballot_id = column_value(row, "BallotID", row_number, header_indices)
-        scan_computer_name = column_value(
-            row, "ScanComputerName", row_number, header_indices
-        )
-        interpretations = row[first_contest_column:]
-
-        db_batch = batches_by_key.get((scan_computer_name, box_id))
-        if db_batch:
-            return CvrBallot(
-                batch=db_batch,
-                record_id=int(box_position),
-                imprinted_id=ballot_id,
-                interpretations=",".join(interpretations),
+    def parse_cvr_rows() -> Iterable[CvrBallot]:
+        for row_index, row in enumerate(cvrs):
+            row_number = column_value(row, "RowNumber", row_index + 1, header_indices)
+            box_id = column_value(row, "BoxID", row_number, header_indices)
+            box_position = column_value(row, "BoxPosition", row_number, header_indices)
+            ballot_id = column_value(row, "BallotID", row_number, header_indices)
+            scan_computer_name = column_value(
+                row, "ScanComputerName", row_number, header_indices
             )
+            interpretations = row[first_contest_column:]
 
-        close_matches = difflib.get_close_matches(
-            str((scan_computer_name, box_id)),
-            (str(batch_key) for batch_key in batches_by_key),
-            n=1,
-        )
-        closest_match = ast.literal_eval(close_matches[0]) if close_matches else None
-        raise UserError(
-            "Invalid ScanComputerName/BoxID for row with"
-            f" RowNumber {row_number}: {scan_computer_name}, {box_id}."
-            " The ScanComputerName and BoxID fields in the CVR file"
-            " must match the Tabulator and Batch Name fields in the"
-            " ballot manifest."
-            + (
-                (
-                    " The closest match we found in the ballot manifest was:"
-                    f" {closest_match[0]}, {closest_match[1]}."
+            db_batch = batches_by_key.get((scan_computer_name, box_id))
+            if db_batch:
+                yield CvrBallot(
+                    batch=db_batch,
+                    record_id=int(box_position),
+                    imprinted_id=ballot_id,
+                    interpretations=",".join(interpretations),
                 )
-                if closest_match
-                else ""
-            )
-            + " Please check your CVR file and ballot manifest thoroughly"
-            " to make sure these values match - there may be a similar"
-            " inconsistency in other rows in the CVR file."
-        )
+            else:
+                close_matches = difflib.get_close_matches(
+                    str((scan_computer_name, box_id)),
+                    (str(batch_key) for batch_key in batches_by_key),
+                    n=1,
+                )
+                closest_match = (
+                    ast.literal_eval(close_matches[0]) if close_matches else None
+                )
+                raise UserError(
+                    "Invalid ScanComputerName/BoxID for row with"
+                    f" RowNumber {row_number}: {scan_computer_name}, {box_id}."
+                    " The ScanComputerName and BoxID fields in the CVR file"
+                    " must match the Tabulator and Batch Name fields in the"
+                    " ballot manifest."
+                    + (
+                        (
+                            " The closest match we found in the ballot manifest was:"
+                            f" {closest_match[0]}, {closest_match[1]}."
+                        )
+                        if closest_match
+                        else ""
+                    )
+                    + " Please check your CVR file and ballot manifest thoroughly"
+                    " to make sure these values match - there may be a similar"
+                    " inconsistency in other rows in the CVR file."
+                )
 
-    return contests_metadata, (parse_cvr_row(row, i) for i, row in enumerate(cvrs))
+        cvr_file.close()
+
+    return contests_metadata, parse_cvr_rows()
 
 
 def parse_dominion_cvrs(
     jurisdiction: Jurisdiction,
 ) -> Tuple[CVR_CONTESTS_METADATA, Iterable[CvrBallot]]:
-    cvrs = csv_reader_for_cvr(jurisdiction.cvr_file.contents)
+    cvr_file = retrieve_file_contents(jurisdiction.cvr_file)
+    cvrs = csv_reader_for_cvr(cvr_file)
 
     # Parse out all the initial metadata
     _election_name = next(cvrs)[0]
@@ -330,9 +337,9 @@ def parse_dominion_cvrs(
             # Store the column index of this contest choice so we can parse
             # interpretations later
             column=column,
-            num_votes=0,  # Will be counted below
+            num_votes=0,  # Will be counted while parsing rows
         )
-        # Will be counted below
+        # Will be counted while parsing rows
         contests_metadata[contest_name]["total_ballots_cast"] = 0
 
     batches_by_key = {
@@ -340,50 +347,57 @@ def parse_dominion_cvrs(
     }
     header_indices = get_header_indices(headers_and_affiliations[:first_contest_column])
 
-    def parse_cvr_row(row: List[str], row_index: int):
-        cvr_number = column_value(row, "CvrNumber", row_index + 1, header_indices)
-        tabulator_number = column_value(row, "TabulatorNum", cvr_number, header_indices)
-        batch_id = column_value(row, "BatchId", cvr_number, header_indices)
-        record_id = column_value(row, "RecordId", cvr_number, header_indices)
-        imprinted_id = column_value(row, "ImprintedId", cvr_number, header_indices)
-        interpretations = row[first_contest_column:]
-
-        db_batch = batches_by_key.get((tabulator_number, batch_id))
-
-        if db_batch:
-            return CvrBallot(
-                batch=db_batch,
-                record_id=int(record_id),
-                imprinted_id=imprinted_id,
-                interpretations=",".join(interpretations),
+    def parse_cvr_rows() -> Iterable[CvrBallot]:
+        for row_index, row in enumerate(cvrs):
+            cvr_number = column_value(row, "CvrNumber", row_index + 1, header_indices)
+            tabulator_number = column_value(
+                row, "TabulatorNum", cvr_number, header_indices
             )
+            batch_id = column_value(row, "BatchId", cvr_number, header_indices)
+            record_id = column_value(row, "RecordId", cvr_number, header_indices)
+            imprinted_id = column_value(row, "ImprintedId", cvr_number, header_indices)
+            interpretations = row[first_contest_column:]
 
-        close_matches = difflib.get_close_matches(
-            str((tabulator_number, batch_id)),
-            (str(batch_key) for batch_key in batches_by_key),
-            n=1,
-        )
-        closest_match = ast.literal_eval(close_matches[0]) if close_matches else None
-        raise UserError(
-            "Invalid TabulatorNum/BatchId for row with"
-            f" CvrNumber {cvr_number}: {tabulator_number}, {batch_id}."
-            " The TabulatorNum and BatchId fields in the CVR file"
-            " must match the Tabulator and Batch Name fields in the"
-            " ballot manifest."
-            + (
-                (
-                    " The closest match we found in the ballot manifest was:"
-                    f" {closest_match[0]}, {closest_match[1]}."
+            db_batch = batches_by_key.get((tabulator_number, batch_id))
+
+            if db_batch:
+                yield CvrBallot(
+                    batch=db_batch,
+                    record_id=int(record_id),
+                    imprinted_id=imprinted_id,
+                    interpretations=",".join(interpretations),
                 )
-                if closest_match
-                else ""
-            )
-            + " Please check your CVR file and ballot manifest thoroughly"
-            " to make sure these values match - there may be a similar"
-            " inconsistency in other rows in the CVR file."
-        )
+            else:
+                close_matches = difflib.get_close_matches(
+                    str((tabulator_number, batch_id)),
+                    (str(batch_key) for batch_key in batches_by_key),
+                    n=1,
+                )
+                closest_match = (
+                    ast.literal_eval(close_matches[0]) if close_matches else None
+                )
+                raise UserError(
+                    "Invalid TabulatorNum/BatchId for row with"
+                    f" CvrNumber {cvr_number}: {tabulator_number}, {batch_id}."
+                    " The TabulatorNum and BatchId fields in the CVR file"
+                    " must match the Tabulator and Batch Name fields in the"
+                    " ballot manifest."
+                    + (
+                        (
+                            " The closest match we found in the ballot manifest was:"
+                            f" {closest_match[0]}, {closest_match[1]}."
+                        )
+                        if closest_match
+                        else ""
+                    )
+                    + " Please check your CVR file and ballot manifest thoroughly"
+                    " to make sure these values match - there may be a similar"
+                    " inconsistency in other rows in the CVR file."
+                )
 
-    return contests_metadata, (parse_cvr_row(row, i) for i, row in enumerate(cvrs))
+        cvr_file.close()
+
+    return contests_metadata, parse_cvr_rows()
 
 
 @background_task
@@ -607,10 +621,16 @@ def upload_cvrs(
     validate_cvr_upload(request, election, jurisdiction)
     clear_cvr_data(jurisdiction)
 
+    storage_path = store_file(
+        request.files["cvrs"],
+        f"audits/{election.id}/jurisdictions/{jurisdiction.id}/"
+        + timestamp_filename("cvrs", "csv"),
+    )
     jurisdiction.cvr_file = File(
         id=str(uuid.uuid4()),
         name=request.files["cvrs"].filename,
-        contents=decode_csv_file(request.files["cvrs"]),
+        contents="",
+        storage_path=storage_path,
         uploaded_at=datetime.now(timezone.utc),
     )
     jurisdiction.cvr_file_type = request.form["cvrFileType"]
@@ -651,7 +671,7 @@ def download_cvr_file(
         return NotFound()
 
     return csv_response(
-        io.StringIO(jurisdiction.cvr_file.contents), jurisdiction.cvr_file.name
+        retrieve_file_contents(jurisdiction.cvr_file), jurisdiction.cvr_file.name
     )
 
 

@@ -1,5 +1,5 @@
 import io, csv
-from typing import Dict, List, Optional, Tuple, cast as typing_cast
+from typing import Dict, Iterable, List, Optional, Tuple, cast as typing_cast
 from collections import defaultdict, Counter
 from sqlalchemy import func, and_
 from sqlalchemy.dialects.postgresql import aggregate_order_by
@@ -737,6 +737,15 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
         )
 
     return rows
+
+
+def csv_generator(rows: Iterable[List[str]]) -> Iterable[str]:
+    class DummyWriter:
+        def write(self, line):
+            return line
+
+    writer = csv.writer(DummyWriter())
+    return (writer.writerow(row) for row in rows)
 
 
 @api.route("/election/<election_id>/report", methods=["GET"])

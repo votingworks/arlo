@@ -23,7 +23,11 @@ from ..util.csv_parse import (
     validate_csv_mimetype,
 )
 from ..util.csv_download import csv_response
-from ..util.file import serialize_file, serialize_file_processing
+from ..util.file import (
+    retrieve_file_contents,
+    serialize_file,
+    serialize_file_processing,
+)
 
 CONTEST_NAME = "Contest Name"
 JURISDICTIONS = "Jurisdictions"
@@ -164,6 +168,6 @@ def download_standardized_contests_file(election: Election):
         return NotFound()
 
     return csv_response(
-        io.StringIO(election.standardized_contests_file.contents),
+        retrieve_file_contents(election.standardized_contests_file),
         election.standardized_contests_file.name,
     )

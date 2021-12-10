@@ -1,11 +1,9 @@
 from datetime import datetime
 import io
-import contextlib
 from os import path
 import os
-from typing import BinaryIO, Generator, Optional
+from typing import BinaryIO, Optional
 from urllib.parse import urlparse
-from sqlalchemy.sql.sqltypes import Binary
 from werkzeug.datastructures import FileStorage
 
 import boto3
@@ -57,7 +55,6 @@ print(s3)
 def store_file(file: FileStorage, storage_path: str) -> str:
     assert not path.isabs(storage_path)
     full_path = path.join(FILE_UPLOAD_STORAGE_PATH, storage_path)
-    print(full_path)
     if s3:
         bucket_name = urlparse(FILE_UPLOAD_STORAGE_PATH).netloc
         s3.upload_fileobj(file, bucket_name, storage_path)
@@ -67,23 +64,24 @@ def store_file(file: FileStorage, storage_path: str) -> str:
     return full_path
 
 
-@contextlib.contextmanager
-def retrieve_file(storage_path: str):
-    print(storage_path)
-    file: Optional[BinaryIO] = None
-    try:
-        if s3:
-            assert storage_path.startswith("s3://")
-            parsed_path = urlparse(storage_path)
-            bucket_name = parsed_path.netloc
-            key = parsed_path.path[1:]
-            file = io.BytesIO()
-            s3.download_fileobj(bucket_name, key, file)
-            file.seek(0)
-        else:
-            file = open(storage_path, "rb")
-        yield file
-    finally:
-        if file:
-            file.close()
+def retrieve_file_contents(file: File) -> BinaryIO:
+    # TODO remove backwards compatibility once File.contents is removed
+    return (
+        retrieve_file(file.storage_path)
+        if file.storage_path
+        else io.BytesIO(file.contents.encode("utf-8"))
+    )
 
+
+def retrieve_file(storage_path: str) -> BinaryIO:
+    if s3:
+        assert storage_path.startswith("s3://")
+        parsed_path = urlparse(storage_path)
+        bucket_name = parsed_path.netloc
+        key = parsed_path.path[1:]
+        file = io.BytesIO()
+        s3.download_fileobj(bucket_name, key, file)
+        file.seek(0)
+        return file
+    else:
+        return open(storage_path, "rb")

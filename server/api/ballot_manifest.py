@@ -1,4 +1,3 @@
-import io
 from typing import Optional
 import uuid
 import logging
@@ -18,7 +17,7 @@ from ..worker.tasks import (
     create_background_task,
 )
 from ..util.file import (
-    retrieve_file,
+    retrieve_file_contents,
     serialize_file,
     serialize_file_processing,
     store_file,
@@ -28,7 +27,6 @@ from ..util.csv_download import csv_response
 from ..util.csv_parse import (
     CSVValueType,
     CSVColumnType,
-    decode_csv_file,
     parse_csv,
     validate_csv_mimetype,
 )
@@ -123,25 +121,26 @@ def process_ballot_manifest_file(
             CSVColumnType(CVR, CSVValueType.YES_NO, required=use_cvr),
         ]
 
-        with retrieve_file(jurisdiction.manifest_file.storage_path) as manifest_file:
-            manifest_csv = parse_csv(manifest_file, columns)
+        manifest_file = retrieve_file_contents(jurisdiction.manifest_file)
+        manifest_csv = parse_csv(manifest_file, columns)
 
-            num_batches = 0
-            num_ballots = 0
-            for row in manifest_csv:
-                print(row)
-                batch = Batch(
-                    id=str(uuid.uuid4()),
-                    name=row[BATCH_NAME],
-                    jurisdiction_id=jurisdiction.id,
-                    num_ballots=row[NUMBER_OF_BALLOTS],
-                    container=row.get(CONTAINER, None),
-                    tabulator=row.get(TABULATOR, None),
-                    has_cvrs=row.get(CVR, None),
-                )
-                db_session.add(batch)
-                num_batches += 1
-                num_ballots += batch.num_ballots
+        num_batches = 0
+        num_ballots = 0
+        for row in manifest_csv:
+            batch = Batch(
+                id=str(uuid.uuid4()),
+                name=row[BATCH_NAME],
+                jurisdiction_id=jurisdiction.id,
+                num_ballots=row[NUMBER_OF_BALLOTS],
+                container=row.get(CONTAINER, None),
+                tabulator=row.get(TABULATOR, None),
+                has_cvrs=row.get(CVR, None),
+            )
+            db_session.add(batch)
+            num_batches += 1
+            num_ballots += batch.num_ballots
+
+        manifest_file.close()
 
         jurisdiction.manifest_num_ballots = num_ballots
         jurisdiction.manifest_num_batches = num_batches
@@ -214,7 +213,6 @@ def save_ballot_manifest_file(manifest, jurisdiction: Jurisdiction):
         f"audits/{jurisdiction.election_id}/jurisdictions/{jurisdiction.id}/"
         + timestamp_filename("manifest", "csv"),
     )
-
     jurisdiction.manifest_file = File(
         id=str(uuid.uuid4()),
         name=manifest.filename,
@@ -282,7 +280,7 @@ def download_ballot_manifest_file(
         return NotFound()
 
     return csv_response(
-        io.StringIO(jurisdiction.manifest_file.contents),
+        retrieve_file_contents(jurisdiction.manifest_file),
         jurisdiction.manifest_file.name,
     )
 

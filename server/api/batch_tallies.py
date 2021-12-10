@@ -15,7 +15,11 @@ from ..worker.tasks import (
     background_task,
     create_background_task,
 )
-from ..util.file import serialize_file, serialize_file_processing
+from ..util.file import (
+    retrieve_file_contents,
+    serialize_file,
+    serialize_file_processing,
+)
 from ..util.csv_download import csv_response
 from ..util.csv_parse import (
     decode_csv_file,
@@ -214,7 +218,7 @@ def download_batch_tallies_file(
         return NotFound()
 
     return csv_response(
-        io.StringIO(jurisdiction.batch_tallies_file.contents),
+        retrieve_file_contents(jurisdiction.batch_tallies_file),
         jurisdiction.batch_tallies_file.name,
     )
 

@@ -22,7 +22,11 @@ from ..worker.tasks import (
     background_task,
     create_background_task,
 )
-from ..util.file import serialize_file, serialize_file_processing
+from ..util.file import (
+    retrieve_file_contents,
+    serialize_file,
+    serialize_file_processing,
+)
 from ..util.jsonschema import JSONDict
 from ..util.csv_parse import (
     CSVColumnType,
@@ -517,7 +521,7 @@ def download_jurisdictions_file(election: Election):
         return NotFound()
 
     return csv_response(
-        io.StringIO(election.jurisdictions_file.contents),
+        retrieve_file_contents(election.jurisdictions_file),
         election.jurisdictions_file.name,
     )
 
