@@ -34,7 +34,7 @@ def serialize_file_processing(file: Optional[File]) -> Optional[JSONDict]:
 
 
 def timestamp_filename(prefix: str, extension: str) -> str:
-    return f"{prefix}-{isoformat(datetime.now(timezone.utc))}.{extension}"
+    return f"{prefix}_{isoformat(datetime.now(timezone.utc))}.{extension}"
 
 
 s3 = (

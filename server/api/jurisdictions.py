@@ -1,4 +1,3 @@
-import io
 import logging
 from typing import Dict, List, Optional, Mapping, cast as typing_cast
 import enum
@@ -26,12 +25,13 @@ from ..util.file import (
     retrieve_file_contents,
     serialize_file,
     serialize_file_processing,
+    store_file,
+    timestamp_filename,
 )
 from ..util.jsonschema import JSONDict
 from ..util.csv_parse import (
     CSVColumnType,
     CSVValueType,
-    decode_csv_file,
     parse_csv,
     validate_csv_mimetype,
 )
@@ -51,11 +51,7 @@ JURISDICTIONS_COLUMNS = [
 @background_task
 def process_jurisdictions_file(election_id: str):
     election = Election.query.get(election_id)
-    # Temporarily wrap file contents in a buffer so we can "stream" it until
-    # we have actual file streaming from storage
-    jurisdictions_file = io.BytesIO(
-        election.jurisdictions_file.contents.encode("utf-8")
-    )
+    jurisdictions_file = retrieve_file_contents(election.jurisdictions_file)
     jurisdictions_csv = parse_csv(jurisdictions_file, JURISDICTIONS_COLUMNS)
 
     # Clear existing admins.
@@ -94,6 +90,8 @@ def process_jurisdictions_file(election_id: str):
         admin = JurisdictionAdministration(jurisdiction=jurisdiction, user=user)
         db_session.add(admin)
         new_admins.append(admin)
+
+    jurisdictions_file.close()
 
     # Delete unmanaged jurisdictions.
     unmanaged_admin_id_records = (
@@ -542,10 +540,16 @@ def update_jurisdictions_file(election: Election):
     validate_csv_mimetype(request.files["jurisdictions"])
 
     jurisdictions_file = request.files["jurisdictions"]
+    storage_path = store_file(
+        jurisdictions_file,
+        f"audits/{election.id}/"
+        + timestamp_filename("participating_jurisdictions", "csv"),
+    )
     election.jurisdictions_file = File(
         id=str(uuid.uuid4()),
         name=jurisdictions_file.filename,
-        contents=decode_csv_file(jurisdictions_file),
+        contents="",
+        storage_path=storage_path,
         uploaded_at=datetime.datetime.now(timezone.utc),
     )
     election.jurisdictions_file.task = create_background_task(
