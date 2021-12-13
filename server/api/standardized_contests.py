@@ -164,6 +164,6 @@ def download_standardized_contests_file(election: Election):
         return NotFound()
 
     return csv_response(
-        election.standardized_contests_file.contents,
+        io.StringIO(election.standardized_contests_file.contents),
         election.standardized_contests_file.name,
     )

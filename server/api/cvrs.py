@@ -648,7 +648,9 @@ def download_cvr_file(
     if not jurisdiction.cvr_file:
         return NotFound()
 
-    return csv_response(jurisdiction.cvr_file.contents, jurisdiction.cvr_file.name)
+    return csv_response(
+        io.StringIO(jurisdiction.cvr_file.contents), jurisdiction.cvr_file.name
+    )
 
 
 @api.route(

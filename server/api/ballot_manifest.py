@@ -270,7 +270,8 @@ def download_ballot_manifest_file(
         return NotFound()
 
     return csv_response(
-        jurisdiction.manifest_file.contents, jurisdiction.manifest_file.name
+        io.StringIO(jurisdiction.manifest_file.contents),
+        jurisdiction.manifest_file.name,
     )
 
 

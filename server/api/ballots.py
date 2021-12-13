@@ -1,5 +1,5 @@
 import io, csv
-from typing import Optional
+from typing import Optional, TextIO
 from sqlalchemy import func, literal_column, and_
 from sqlalchemy.orm import contains_eager, joinedload
 from sqlalchemy.dialects.postgresql import aggregate_order_by
@@ -14,7 +14,7 @@ from ..util.csv_download import csv_response, jurisdiction_timestamp_name
 from ..util.jsonschema import JSONDict, validate
 
 
-def ballot_retrieval_list(jurisdiction: Jurisdiction, round: Round) -> str:
+def ballot_retrieval_list(jurisdiction: Jurisdiction, round: Round) -> TextIO:
     previous_ballots = set(
         SampledBallotDraw.query.join(Round)
         .filter(Round.round_num < round.round_num)
@@ -111,7 +111,8 @@ def ballot_retrieval_list(jurisdiction: Jurisdiction, round: Round) -> str:
             [value for value, should_show in values_to_show if should_show]
         )
 
-    return csv_io.getvalue()
+    csv_io.seek(0)
+    return csv_io
 
 
 @api.route(
