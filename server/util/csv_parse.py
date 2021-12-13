@@ -112,7 +112,7 @@ def decode_csv(file: BinaryIO) -> TextIO:
 def decode_csv_file(file: FileStorage) -> str:
     try:
         contents = file.read()
-        if contents == b"":
+        if contents == b"":  # pragma: no cover
             return ""
         return decode_csv(io.BytesIO(contents)).read()
     except CSVParseError as err:  # pragma: no cover
