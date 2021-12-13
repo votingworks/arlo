@@ -7,7 +7,6 @@ from werkzeug.exceptions import BadRequest, NotFound
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
-
 from . import api
 from ..database import db_session, engine
 from ..models import *  # pylint: disable=wildcard-import

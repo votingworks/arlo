@@ -57,7 +57,6 @@ def get_batch_retrieval_list(
     csv_io = io.StringIO()
     retrieval_list_writer = csv.writer(csv_io)
     retrieval_list_writer.writerows(retrieval_list_rows)
-    csv_io.seek(0)
 
     csv_io.seek(0)
     return csv_response(
