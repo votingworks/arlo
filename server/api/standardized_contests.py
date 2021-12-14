@@ -1,4 +1,3 @@
-import io
 import uuid
 import re
 from datetime import datetime
@@ -16,14 +15,19 @@ from ..worker.tasks import (
     create_background_task,
 )
 from ..util.csv_parse import (
-    decode_csv_file,
     parse_csv,
     CSVColumnType,
     CSVValueType,
     validate_csv_mimetype,
 )
 from ..util.csv_download import csv_response
-from ..util.file import serialize_file, serialize_file_processing
+from ..util.file import (
+    retrieve_file_contents,
+    serialize_file,
+    serialize_file_processing,
+    store_file,
+    timestamp_filename,
+)
 
 CONTEST_NAME = "Contest Name"
 JURISDICTIONS = "Jurisdictions"
@@ -39,8 +43,8 @@ def process_standardized_contests_file(election_id: str):
     election = Election.query.get(election_id)
     # Temporarily wrap file contents in a buffer so we can "stream" it until
     # we have actual file streaming from storage
-    standardized_contests_file = io.BytesIO(
-        election.standardized_contests_file.contents.encode("utf-8")
+    standardized_contests_file = retrieve_file_contents(
+        election.standardized_contests_file
     )
     standardized_contests_csv = parse_csv(
         standardized_contests_file, STANDARDIZED_CONTEST_COLUMNS
@@ -82,6 +86,8 @@ def process_standardized_contests_file(election_id: str):
                 jurisdictionIds=[jurisdiction.id for jurisdiction in jurisdictions],
             )
         )
+
+    standardized_contests_file.close()
 
     election.standardized_contests = standardized_contests
 
@@ -128,10 +134,15 @@ def upload_standardized_contests_file(election: Election):
 
     election.standardized_contests = None
     file = request.files["standardized-contests"]
+    storage_path = store_file(
+        file,
+        f"audits/{election.id}/" + timestamp_filename("standardized_contests", "csv"),
+    )
     election.standardized_contests_file = File(
         id=str(uuid.uuid4()),
         name=file.filename,
-        contents=decode_csv_file(file),
+        contents="",
+        storage_path=storage_path,
         uploaded_at=datetime.now(timezone.utc),
     )
     election.standardized_contests_file.task = create_background_task(
@@ -164,6 +175,6 @@ def download_standardized_contests_file(election: Election):
         return NotFound()
 
     return csv_response(
-        io.StringIO(election.standardized_contests_file.contents),
+        retrieve_file_contents(election.standardized_contests_file),
         election.standardized_contests_file.name,
     )

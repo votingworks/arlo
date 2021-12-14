@@ -1,5 +1,4 @@
 from datetime import datetime
-import io
 from typing import Optional
 import uuid
 from flask import request, jsonify, Request, session
@@ -15,10 +14,15 @@ from ..worker.tasks import (
     background_task,
     create_background_task,
 )
-from ..util.file import serialize_file, serialize_file_processing
+from ..util.file import (
+    retrieve_file_contents,
+    serialize_file,
+    serialize_file_processing,
+    store_file,
+    timestamp_filename,
+)
 from ..util.csv_download import csv_response
 from ..util.csv_parse import (
-    decode_csv_file,
     parse_csv,
     CSVValueType,
     CSVColumnType,
@@ -48,12 +52,9 @@ def process_batch_tallies_file(
             for choice in contest.choices
         ]
 
-        # Temporarily wrap file contents in a buffer so we can "stream" it until
-        # we have actual file streaming from storage
-        batch_tallies_file = io.BytesIO(
-            jurisdiction.batch_tallies_file.contents.encode("utf-8")
-        )
+        batch_tallies_file = retrieve_file_contents(jurisdiction.batch_tallies_file)
         batch_tallies_csv = list(parse_csv(batch_tallies_file, columns))
+        batch_tallies_file.close()
 
         # Validate that the batch names match the ballot manifest
         jurisdiction_batch_names = {batch.name for batch in jurisdiction.batches}
@@ -169,10 +170,16 @@ def upload_batch_tallies(
     clear_batch_tallies_data(jurisdiction)
 
     batch_tallies = request.files["batchTallies"]
+    storage_path = store_file(
+        batch_tallies,
+        f"audits/{jurisdiction.election_id}/jurisdictions/{jurisdiction.id}/"
+        + timestamp_filename("batch_tallies", "csv"),
+    )
     jurisdiction.batch_tallies_file = File(
         id=str(uuid.uuid4()),
         name=batch_tallies.filename,
-        contents=decode_csv_file(batch_tallies),
+        contents="",
+        storage_path=storage_path,
         uploaded_at=datetime.now(timezone.utc),
     )
     jurisdiction.batch_tallies_file.task = create_background_task(
@@ -214,7 +221,7 @@ def download_batch_tallies_file(
         return NotFound()
 
     return csv_response(
-        io.StringIO(jurisdiction.batch_tallies_file.contents),
+        retrieve_file_contents(jurisdiction.batch_tallies_file),
         jurisdiction.batch_tallies_file.name,
     )
 

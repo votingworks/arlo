@@ -1,4 +1,3 @@
-import io
 from typing import Optional
 import uuid
 import logging
@@ -16,12 +15,17 @@ from ..worker.tasks import (
     background_task,
     create_background_task,
 )
-from ..util.file import serialize_file, serialize_file_processing
+from ..util.file import (
+    retrieve_file_contents,
+    serialize_file,
+    serialize_file_processing,
+    store_file,
+    timestamp_filename,
+)
 from ..util.csv_download import csv_response
 from ..util.csv_parse import (
     CSVValueType,
     CSVColumnType,
-    decode_csv_file,
     parse_csv,
     validate_csv_mimetype,
 )
@@ -116,9 +120,7 @@ def process_ballot_manifest_file(
             CSVColumnType(CVR, CSVValueType.YES_NO, required=use_cvr),
         ]
 
-        # Temporarily wrap file contents in a buffer so we can "stream" it until
-        # we have actual file streaming from storage
-        manifest_file = io.BytesIO(jurisdiction.manifest_file.contents.encode("utf-8"))
+        manifest_file = retrieve_file_contents(jurisdiction.manifest_file)
         manifest_csv = parse_csv(manifest_file, columns)
 
         num_batches = 0
@@ -136,6 +138,8 @@ def process_ballot_manifest_file(
             db_session.add(batch)
             num_batches += 1
             num_ballots += batch.num_ballots
+
+        manifest_file.close()
 
         jurisdiction.manifest_num_ballots = num_ballots
         jurisdiction.manifest_num_batches = num_batches
@@ -203,11 +207,16 @@ def validate_ballot_manifest_upload(request: Request):
 
 
 def save_ballot_manifest_file(manifest, jurisdiction: Jurisdiction):
-    manifest_string = decode_csv_file(manifest)
+    storage_path = store_file(
+        manifest,
+        f"audits/{jurisdiction.election_id}/jurisdictions/{jurisdiction.id}/"
+        + timestamp_filename("manifest", "csv"),
+    )
     jurisdiction.manifest_file = File(
         id=str(uuid.uuid4()),
         name=manifest.filename,
-        contents=manifest_string,
+        contents="",
+        storage_path=storage_path,
         uploaded_at=datetime.now(timezone.utc),
     )
     jurisdiction.manifest_file.task = create_background_task(
@@ -270,7 +279,7 @@ def download_ballot_manifest_file(
         return NotFound()
 
     return csv_response(
-        io.StringIO(jurisdiction.manifest_file.contents),
+        retrieve_file_contents(jurisdiction.manifest_file),
         jurisdiction.manifest_file.name,
     )
 
