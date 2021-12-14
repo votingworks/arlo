@@ -517,7 +517,8 @@ def download_jurisdictions_file(election: Election):
         return NotFound()
 
     return csv_response(
-        election.jurisdictions_file.contents, election.jurisdictions_file.name
+        io.StringIO(election.jurisdictions_file.contents),
+        election.jurisdictions_file.name,
     )
 
 

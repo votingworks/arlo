@@ -214,7 +214,8 @@ def download_batch_tallies_file(
         return NotFound()
 
     return csv_response(
-        jurisdiction.batch_tallies_file.contents, jurisdiction.batch_tallies_file.name
+        io.StringIO(jurisdiction.batch_tallies_file.contents),
+        jurisdiction.batch_tallies_file.name,
     )
 
 
