@@ -15,7 +15,7 @@ from ..worker.tasks import (
     create_background_task,
 )
 from ..util.file import (
-    retrieve_file_contents,
+    retrieve_file,
     serialize_file,
     serialize_file_processing,
     store_file,
@@ -52,7 +52,7 @@ def process_batch_tallies_file(
             for choice in contest.choices
         ]
 
-        batch_tallies_file = retrieve_file_contents(jurisdiction.batch_tallies_file)
+        batch_tallies_file = retrieve_file(jurisdiction.batch_tallies_file)
         batch_tallies_csv = list(parse_csv(batch_tallies_file, columns))
         batch_tallies_file.close()
 
@@ -178,7 +178,6 @@ def upload_batch_tallies(
     jurisdiction.batch_tallies_file = File(
         id=str(uuid.uuid4()),
         name=batch_tallies.filename,
-        contents="",
         storage_path=storage_path,
         uploaded_at=datetime.now(timezone.utc),
     )
@@ -221,7 +220,7 @@ def download_batch_tallies_file(
         return NotFound()
 
     return csv_response(
-        retrieve_file_contents(jurisdiction.batch_tallies_file),
+        retrieve_file(jurisdiction.batch_tallies_file.storage_path),
         jurisdiction.batch_tallies_file.name,
     )
 

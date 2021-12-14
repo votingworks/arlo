@@ -22,7 +22,7 @@ from ..util.csv_parse import (
 )
 from ..util.csv_download import csv_response
 from ..util.file import (
-    retrieve_file_contents,
+    retrieve_file,
     serialize_file,
     serialize_file_processing,
     store_file,
@@ -43,9 +43,7 @@ def process_standardized_contests_file(election_id: str):
     election = Election.query.get(election_id)
     # Temporarily wrap file contents in a buffer so we can "stream" it until
     # we have actual file streaming from storage
-    standardized_contests_file = retrieve_file_contents(
-        election.standardized_contests_file
-    )
+    standardized_contests_file = retrieve_file(election.standardized_contests_file)
     standardized_contests_csv = parse_csv(
         standardized_contests_file, STANDARDIZED_CONTEST_COLUMNS
     )
@@ -141,7 +139,6 @@ def upload_standardized_contests_file(election: Election):
     election.standardized_contests_file = File(
         id=str(uuid.uuid4()),
         name=file.filename,
-        contents="",
         storage_path=storage_path,
         uploaded_at=datetime.now(timezone.utc),
     )
@@ -175,6 +172,6 @@ def download_standardized_contests_file(election: Election):
         return NotFound()
 
     return csv_response(
-        retrieve_file_contents(election.standardized_contests_file),
+        retrieve_file(election.standardized_contests_file.storage_path),
         election.standardized_contests_file.name,
     )

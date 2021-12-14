@@ -868,9 +868,7 @@ class CvrBallot(Base):
 class File(BaseModel):
     id = Column(String(200), primary_key=True)
     name = Column(String(250), nullable=False)
-    # TODO after migrating, remove contents and make storage_path non-nullable
-    contents = deferred(Column(Text, nullable=False))
-    storage_path = Column(String(250))
+    storage_path = Column(String(250), nullable=False)
     uploaded_at = Column(UTCDateTime, nullable=False)
 
     task_id = Column(String(200), ForeignKey("background_task.id"))
