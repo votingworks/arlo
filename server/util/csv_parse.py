@@ -108,17 +108,6 @@ def decode_csv(file: BinaryIO) -> TextIO:
     return io.TextIOWrapper(file, encoding=encoding, newline=None)
 
 
-# TODO remove this once we decode all CSV files using decode_csv
-def decode_csv_file(file: FileStorage) -> str:
-    try:
-        contents = file.read()
-        if contents == b"":  # pragma: no cover
-            return ""
-        return decode_csv(io.BytesIO(contents)).read()
-    except CSVParseError as err:  # pragma: no cover
-        raise BadRequest(INVALID_CSV_ERROR) from err
-
-
 def validate_not_empty(file: BinaryIO):
     if file.read(1) == b"":
         raise CSVParseError("CSV cannot be empty.")

@@ -1,4 +1,4 @@
-from typing import Union, List
+from typing import BinaryIO, Union, List
 import os, io, pytest
 from werkzeug.exceptions import BadRequest
 from werkzeug.datastructures import FileStorage
@@ -6,7 +6,6 @@ from werkzeug.datastructures import FileStorage
 from ...api.jurisdictions import JURISDICTIONS_COLUMNS
 from ...util.csv_parse import (
     parse_csv as parse_csv_binary,
-    decode_csv_file,
     CSVParseError,
     CSVColumnType,
     CSVValueType,
@@ -871,9 +870,7 @@ City of Petersburg #1,203,,
         BALLOT_MANIFEST_COLUMNS,
     ),
     (
-        io.FileIO(
-            os.path.join(os.path.dirname(__file__), "windows1252-encoded.csv")
-        ).read(),
+        io.FileIO(os.path.join(os.path.dirname(__file__), "windows1252-encoded.csv")),
         245,
         BALLOT_MANIFEST_COLUMNS,
     ),
@@ -881,10 +878,10 @@ City of Petersburg #1,203,,
 
 
 def test_parse_csv_real_world_examples():
-    def do_parse(csv: Union[str, bytes], columns: List[CSVColumnType]) -> list:
-        if isinstance(csv, bytes):
-            csv = decode_csv_file(FileStorage(io.BytesIO(csv), content_type="text/csv"))
-        return list(parse_csv(csv, columns))
+    def do_parse(csv: Union[str, BinaryIO], columns: List[CSVColumnType]) -> list:
+        if isinstance(csv, str):
+            return list(parse_csv(csv, columns))
+        return list(parse_csv_binary(csv, columns))
 
     for (csv, expected_error, columns) in REAL_WORLD_REJECTED_CSVS:
         with pytest.raises(CSVParseError) as error:
