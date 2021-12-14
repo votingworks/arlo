@@ -2,16 +2,21 @@
 import io
 from server.models import *  # pylint: disable=wildcard-import
 from server.database import db_session
-from server.util.file import store_file, timestamp_filename
+from server.util.file import retrieve_file, store_file, timestamp_filename
 
 
 def migrate_file(file, path):
+    contents = file.contents.encode("utf-8")
     if not file.storage_path:
-        storage_path = store_file(io.BytesIO(file.contents.encode("utf-8")), path)
+        storage_path = store_file(io.BytesIO(contents), path)
         file.storage_path = storage_path
+        stored_file = retrieve_file(file.storage_path)
+        assert stored_file.read() == contents
         return storage_path
     else:
         print("Already migrated")
+        stored_file = retrieve_file(file.storage_path)
+        assert stored_file.read() == contents
         return None
 
 
