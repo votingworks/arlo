@@ -120,7 +120,7 @@ def process_ballot_manifest_file(
             CSVColumnType(CVR, CSVValueType.YES_NO, required=use_cvr),
         ]
 
-        manifest_file = retrieve_file(jurisdiction.manifest_file)
+        manifest_file = retrieve_file(jurisdiction.manifest_file.storage_path)
         manifest_csv = parse_csv(manifest_file, columns)
 
         num_batches = 0

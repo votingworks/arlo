@@ -52,7 +52,7 @@ def process_batch_tallies_file(
             for choice in contest.choices
         ]
 
-        batch_tallies_file = retrieve_file(jurisdiction.batch_tallies_file)
+        batch_tallies_file = retrieve_file(jurisdiction.batch_tallies_file.storage_path)
         batch_tallies_csv = list(parse_csv(batch_tallies_file, columns))
         batch_tallies_file.close()
 

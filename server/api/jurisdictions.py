@@ -51,7 +51,7 @@ JURISDICTIONS_COLUMNS = [
 @background_task
 def process_jurisdictions_file(election_id: str):
     election = Election.query.get(election_id)
-    jurisdictions_file = retrieve_file(election.jurisdictions_file)
+    jurisdictions_file = retrieve_file(election.jurisdictions_file.storage_path)
     jurisdictions_csv = parse_csv(jurisdictions_file, JURISDICTIONS_COLUMNS)
 
     # Clear existing admins.

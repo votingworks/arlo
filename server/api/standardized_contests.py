@@ -41,9 +41,9 @@ STANDARDIZED_CONTEST_COLUMNS = [
 @background_task
 def process_standardized_contests_file(election_id: str):
     election = Election.query.get(election_id)
-    # Temporarily wrap file contents in a buffer so we can "stream" it until
-    # we have actual file streaming from storage
-    standardized_contests_file = retrieve_file(election.standardized_contests_file)
+    standardized_contests_file = retrieve_file(
+        election.standardized_contests_file.storage_path
+    )
     standardized_contests_csv = parse_csv(
         standardized_contests_file, STANDARDIZED_CONTEST_COLUMNS
     )
