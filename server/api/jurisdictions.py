@@ -22,7 +22,7 @@ from ..worker.tasks import (
     create_background_task,
 )
 from ..util.file import (
-    retrieve_file_contents,
+    retrieve_file,
     serialize_file,
     serialize_file_processing,
     store_file,
@@ -51,7 +51,7 @@ JURISDICTIONS_COLUMNS = [
 @background_task
 def process_jurisdictions_file(election_id: str):
     election = Election.query.get(election_id)
-    jurisdictions_file = retrieve_file_contents(election.jurisdictions_file)
+    jurisdictions_file = retrieve_file(election.jurisdictions_file.storage_path)
     jurisdictions_csv = parse_csv(jurisdictions_file, JURISDICTIONS_COLUMNS)
 
     # Clear existing admins.
@@ -519,7 +519,7 @@ def download_jurisdictions_file(election: Election):
         return NotFound()
 
     return csv_response(
-        retrieve_file_contents(election.jurisdictions_file),
+        retrieve_file(election.jurisdictions_file.storage_path),
         election.jurisdictions_file.name,
     )
 
@@ -548,7 +548,6 @@ def update_jurisdictions_file(election: Election):
     election.jurisdictions_file = File(
         id=str(uuid.uuid4()),
         name=jurisdictions_file.filename,
-        contents="",
         storage_path=storage_path,
         uploaded_at=datetime.datetime.now(timezone.utc),
     )

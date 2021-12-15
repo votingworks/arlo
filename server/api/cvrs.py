@@ -1,7 +1,16 @@
 import uuid
 import tempfile
 import csv
-from typing import BinaryIO, Dict, Iterable, List, Optional, Tuple, TypedDict
+from typing import (
+    BinaryIO,
+    Dict,
+    Iterable,
+    List,
+    Optional,
+    Tuple,
+    TypedDict,
+    cast as typing_cast,
+)
 from collections import defaultdict
 import re
 import difflib
@@ -23,7 +32,7 @@ from ..worker.tasks import (
     create_background_task,
 )
 from ..util.file import (
-    retrieve_file_contents,
+    retrieve_file,
     serialize_file,
     serialize_file_processing,
     store_file,
@@ -211,7 +220,7 @@ def column_value(
 def parse_clearballot_cvrs(
     jurisdiction: Jurisdiction,
 ) -> Tuple[CVR_CONTESTS_METADATA, Iterable[CvrBallot]]:
-    cvr_file = retrieve_file_contents(jurisdiction.cvr_file)
+    cvr_file = retrieve_file(jurisdiction.cvr_file.storage_path)
     cvrs = csv_reader_for_cvr(cvr_file)
     headers = next(cvrs)
     first_contest_column = next(
@@ -300,7 +309,7 @@ def parse_clearballot_cvrs(
 def parse_dominion_cvrs(
     jurisdiction: Jurisdiction,
 ) -> Tuple[CVR_CONTESTS_METADATA, Iterable[CvrBallot]]:
-    cvr_file = retrieve_file_contents(jurisdiction.cvr_file)
+    cvr_file = retrieve_file(jurisdiction.cvr_file.storage_path)
     cvrs = csv_reader_for_cvr(cvr_file)
 
     # Parse out all the initial metadata
@@ -628,7 +637,6 @@ def upload_cvrs(
     jurisdiction.cvr_file = File(
         id=str(uuid.uuid4()),
         name=request.files["cvrs"].filename,
-        contents="",
         storage_path=storage_path,
         uploaded_at=datetime.now(timezone.utc),
     )
@@ -670,7 +678,7 @@ def download_cvr_file(
         return NotFound()
 
     return csv_response(
-        retrieve_file_contents(jurisdiction.cvr_file), jurisdiction.cvr_file.name
+        retrieve_file(jurisdiction.cvr_file.storage_path), jurisdiction.cvr_file.name
     )
 
 

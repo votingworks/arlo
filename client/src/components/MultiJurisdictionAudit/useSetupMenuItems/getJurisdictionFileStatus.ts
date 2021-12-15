@@ -10,7 +10,6 @@ export enum FileProcessingStatus {
 
 export interface IJurisdictionsFileResponse {
   file: {
-    contents: null | string
     name: string
     uploadedAt: string
   } | null

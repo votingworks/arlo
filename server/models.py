@@ -1,5 +1,5 @@
 import enum
-from typing import Type, TypeVar, cast as typing_cast
+from typing import Type
 from datetime import datetime as dt, timezone
 from werkzeug.exceptions import NotFound
 import sqlalchemy
@@ -20,22 +20,10 @@ from sqlalchemy import (
     UniqueConstraint,
     PrimaryKeyConstraint,
 )
-from sqlalchemy.orm import (
-    relationship,
-    backref,
-    validates,
-    deferred as sa_deferred,
-)
+from sqlalchemy.orm import relationship, backref, validates
 from sqlalchemy.types import TypeDecorator
 from sqlalchemy.dialects import postgresql
 from .database import Base  # pylint: disable=cyclic-import
-
-C = TypeVar("C")  # pylint: disable=invalid-name
-
-# Workaround to make sqlalchemy.orm.deferred have the right type
-def deferred(col: C) -> C:
-    return typing_cast(C, sa_deferred(col))
-
 
 # Define a custom function to sort mixed text/number strings
 # From https://stackoverflow.com/a/20667107/1472662
@@ -868,9 +856,7 @@ class CvrBallot(Base):
 class File(BaseModel):
     id = Column(String(200), primary_key=True)
     name = Column(String(250), nullable=False)
-    # TODO after migrating, remove contents and make storage_path non-nullable
-    contents = deferred(Column(Text, nullable=False))
-    storage_path = Column(String(250))
+    storage_path = Column(String(250), nullable=False)
     uploaded_at = Column(UTCDateTime, nullable=False)
 
     task_id = Column(String(200), ForeignKey("background_task.id"))

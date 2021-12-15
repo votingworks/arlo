@@ -57,15 +57,6 @@ def store_file(file: FileStorage, storage_path: str) -> str:
     return full_path
 
 
-def retrieve_file_contents(file: File) -> BinaryIO:
-    # TODO remove backwards compatibility once File.contents is removed
-    return (
-        retrieve_file(file.storage_path)
-        if file.storage_path
-        else io.BytesIO(file.contents.encode("utf-8"))
-    )
-
-
 def retrieve_file(storage_path: str) -> BinaryIO:
     if config.FILE_UPLOAD_STORAGE_PATH.startswith("s3://"):
         assert storage_path.startswith("s3://")

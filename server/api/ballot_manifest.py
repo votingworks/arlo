@@ -16,7 +16,7 @@ from ..worker.tasks import (
     create_background_task,
 )
 from ..util.file import (
-    retrieve_file_contents,
+    retrieve_file,
     serialize_file,
     serialize_file_processing,
     store_file,
@@ -120,7 +120,7 @@ def process_ballot_manifest_file(
             CSVColumnType(CVR, CSVValueType.YES_NO, required=use_cvr),
         ]
 
-        manifest_file = retrieve_file_contents(jurisdiction.manifest_file)
+        manifest_file = retrieve_file(jurisdiction.manifest_file.storage_path)
         manifest_csv = parse_csv(manifest_file, columns)
 
         num_batches = 0
@@ -215,7 +215,6 @@ def save_ballot_manifest_file(manifest, jurisdiction: Jurisdiction):
     jurisdiction.manifest_file = File(
         id=str(uuid.uuid4()),
         name=manifest.filename,
-        contents="",
         storage_path=storage_path,
         uploaded_at=datetime.now(timezone.utc),
     )
@@ -279,7 +278,7 @@ def download_ballot_manifest_file(
         return NotFound()
 
     return csv_response(
-        retrieve_file_contents(jurisdiction.manifest_file),
+        retrieve_file(jurisdiction.manifest_file.storage_path),
         jurisdiction.manifest_file.name,
     )
 
