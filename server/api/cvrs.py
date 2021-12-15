@@ -1,7 +1,16 @@
 import uuid
 import tempfile
 import csv
-from typing import BinaryIO, Dict, Iterable, List, Optional, Tuple, TypedDict
+from typing import (
+    BinaryIO,
+    Dict,
+    Iterable,
+    List,
+    Optional,
+    Tuple,
+    TypedDict,
+    cast as typing_cast,
+)
 from collections import defaultdict
 import re
 import difflib
