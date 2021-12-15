@@ -15,8 +15,9 @@ def migrate_file(file, path):
         return storage_path
     else:
         print("Already migrated")
-        stored_file = retrieve_file(file.storage_path)
-        assert stored_file.read() == contents
+        if len(contents) > 0:
+            stored_file = retrieve_file(file.storage_path)
+            assert stored_file.read() == contents
         return None
 
 
