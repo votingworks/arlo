@@ -2,5 +2,6 @@
   "baseUrl": "http://localhost:3000",
   "integrationFolder": "cypress/end-to-end",
   "viewportWidth": 1000,
-  "viewportHeight": 1000
+  "viewportHeight": 1000,
+  "defaultCommandTimeout": 10000
 }
