@@ -541,7 +541,7 @@ def update_jurisdictions_file(election: Election):
 
     jurisdictions_file = request.files["jurisdictions"]
     storage_path = store_file(
-        jurisdictions_file,
+        jurisdictions_file.stream,
         f"audits/{election.id}/"
         + timestamp_filename("participating_jurisdictions", "csv"),
     )

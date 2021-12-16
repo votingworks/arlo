@@ -15,7 +15,7 @@ def test_file_storage_s3(mock_boto_client):
     original_file_upload_storage_path = config.FILE_UPLOAD_STORAGE_PATH
     config.FILE_UPLOAD_STORAGE_PATH = "s3://test_bucket"
 
-    file = FileStorage(io.BytesIO(b"test file contents"))
+    file = io.BytesIO(b"test file contents")
     store_file(file, "test_dir/test_file.csv")
     mock_boto_client.assert_called_once_with(
         "s3",
@@ -47,7 +47,7 @@ def test_file_storage_local_file():
     original_file_upload_storage_path = config.FILE_UPLOAD_STORAGE_PATH
     config.FILE_UPLOAD_STORAGE_PATH = tempfile.TemporaryDirectory().name
 
-    file = FileStorage(io.BytesIO(b"test file contents"))
+    file = io.BytesIO(b"test file contents")
     path = f"test_dir/{datetime.now(timezone.utc).timestamp()}/test_file.csv"
     storage_path = store_file(file, path)
 

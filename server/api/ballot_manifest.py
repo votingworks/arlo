@@ -208,7 +208,7 @@ def validate_ballot_manifest_upload(request: Request):
 
 def save_ballot_manifest_file(manifest, jurisdiction: Jurisdiction):
     storage_path = store_file(
-        manifest,
+        manifest.stream,
         f"audits/{jurisdiction.election_id}/jurisdictions/{jurisdiction.id}/"
         + timestamp_filename("manifest", "csv"),
     )
