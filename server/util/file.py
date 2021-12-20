@@ -5,10 +5,7 @@ from os import path
 import os
 from typing import BinaryIO, Optional
 from urllib.parse import urlparse
-from werkzeug.datastructures import FileStorage
-
 import boto3
-
 
 from .. import config
 from ..models import *  # pylint: disable=wildcard-import
