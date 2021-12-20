@@ -2,7 +2,6 @@ from datetime import datetime, timezone
 import tempfile
 import io
 from unittest.mock import patch
-from werkzeug.datastructures import FileStorage
 
 from ...util.file import retrieve_file, store_file
 from ... import config
