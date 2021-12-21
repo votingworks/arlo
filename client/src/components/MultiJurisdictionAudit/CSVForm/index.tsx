@@ -133,7 +133,7 @@ const CSVFile = ({
                       const { files } = e.currentTarget
                       setFieldValue(
                         'csv',
-                        files && files.length > 0 ? [...files] : null
+                        files && files.length > 0 ? Array.from(files) : null
                       )
                     }}
                     hasSelection={!!values.csv}

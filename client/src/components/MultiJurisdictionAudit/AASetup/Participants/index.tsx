@@ -65,7 +65,7 @@ const Participants: React.FC<IProps> = ({ nextStage, refresh }: IProps) => {
     >
       <CSVFile
         csvFile={jurisdictionsFile}
-        uploadCSVFile={uploadJurisdictionsFile}
+        uploadCSVFiles={uploadJurisdictionsFile}
         title={
           isBallotComparison || isHybrid
             ? 'Participating Jurisdictions'
@@ -78,7 +78,7 @@ const Participants: React.FC<IProps> = ({ nextStage, refresh }: IProps) => {
       {(isBallotComparison || isHybrid) && (
         <CSVFile
           csvFile={standardizedContestsFile!}
-          uploadCSVFile={uploadStandardizedContestsFile}
+          uploadCSVFiles={uploadStandardizedContestsFile}
           title="Standardized Contests"
           description='Click "Browse" to choose the appropriate file from your computer. This file should be a comma-separated list of all the contests on the ballot, the vote choices available in each, and the jurisdiction(s) where each contest appeared on the ballot.'
           sampleFileLink="/sample_standardized_contests.csv"
