@@ -213,7 +213,7 @@ def column_value(
         raise UserError(f"Missing required column {header}")
     value = row[index] if index < len(row) else None
     if value is None or value == "":
-        raise UserError(f"{header} is required. Missing {header} in row {row_number}.")
+        raise UserError(f"Missing required column {header} in row {row_number}.")
     return value
 
 
