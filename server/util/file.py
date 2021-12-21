@@ -1,13 +1,11 @@
 from datetime import datetime
+import shutil
 import io
 from os import path
 import os
 from typing import BinaryIO, Optional
 from urllib.parse import urlparse
-from werkzeug.datastructures import FileStorage
-
 import boto3
-
 
 from .. import config
 from ..models import *  # pylint: disable=wildcard-import
@@ -45,7 +43,7 @@ def s3():  # pylint: disable=invalid-name
     )
 
 
-def store_file(file: FileStorage, storage_path: str) -> str:
+def store_file(file: BinaryIO, storage_path: str) -> str:
     assert not path.isabs(storage_path)
     full_path = path.join(config.FILE_UPLOAD_STORAGE_PATH, storage_path)
     if config.FILE_UPLOAD_STORAGE_PATH.startswith("s3://"):
@@ -53,7 +51,8 @@ def store_file(file: FileStorage, storage_path: str) -> str:
         s3().upload_fileobj(file, bucket_name, storage_path)
     else:
         os.makedirs(os.path.dirname(full_path), exist_ok=True)
-        file.save(full_path)
+        with open(full_path, "wb") as system_file:
+            shutil.copyfileobj(file, system_file)
     return full_path
 
 

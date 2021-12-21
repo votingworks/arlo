@@ -133,7 +133,7 @@ def upload_standardized_contests_file(election: Election):
     election.standardized_contests = None
     file = request.files["standardized-contests"]
     storage_path = store_file(
-        file,
+        file.stream,
         f"audits/{election.id}/" + timestamp_filename("standardized_contests", "csv"),
     )
     election.standardized_contests_file = File(

@@ -630,7 +630,7 @@ def upload_cvrs(
     clear_cvr_data(jurisdiction)
 
     storage_path = store_file(
-        request.files["cvrs"],
+        request.files["cvrs"].stream,
         f"audits/{election.id}/jurisdictions/{jurisdiction.id}/"
         + timestamp_filename("cvrs", "csv"),
     )

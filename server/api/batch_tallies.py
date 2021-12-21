@@ -171,7 +171,7 @@ def upload_batch_tallies(
 
     batch_tallies = request.files["batchTallies"]
     storage_path = store_file(
-        batch_tallies,
+        batch_tallies.stream,
         f"audits/{jurisdiction.election_id}/jurisdictions/{jurisdiction.id}/"
         + timestamp_filename("batch_tallies", "csv"),
     )
