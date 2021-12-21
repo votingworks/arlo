@@ -35,7 +35,7 @@ export interface IFileInfo {
 }
 
 interface IUpload {
-  file: File | File[]
+  files: File[]
   progress: number
 }
 
@@ -45,15 +45,14 @@ export const isFileProcessed = (file: IFileInfo): boolean =>
 const loadCSVFile = async (url: string): Promise<IFileInfo | null> =>
   api<IFileInfo>(url)
 
-const putCSVFile = async (
+const putCSVFiles = async (
   url: string,
-  file: File | File[],
+  files: File[],
   formKey: string,
   trackProgress: (progress: number) => void,
   cvrFileType?: CvrFileType
 ): Promise<boolean> => {
   const formData: FormData = new FormData()
-  const files = file instanceof File ? [file] : file
   for (const f of files) formData.append(formKey, f, f.name)
   if (cvrFileType) formData.append('cvrFileType', cvrFileType)
   try {
@@ -85,7 +84,7 @@ const useCSV = (
   dependencyFile?: IFileInfo | null
 ): [
   IFileInfo | null,
-  (csv: File | File[]) => Promise<boolean>,
+  (csv: File[]) => Promise<boolean>,
   () => Promise<boolean>
 ] => {
   const [csv, setCSV] = useState<IFileInfo | null>(null)
@@ -115,18 +114,18 @@ const useCSV = (
     dependencyNotProcessing,
   ])
 
-  const uploadCSV = async (
-    file: File | File[],
+  const uploadCSVs = async (
+    files: File[],
     cvrFileType?: CvrFileType
   ): Promise<boolean> => {
     if (!shouldFetch) return false
-    setUpload({ file, progress: 0 })
+    setUpload({ files, progress: 0 })
     if (
-      await putCSVFile(
+      await putCSVFiles(
         url,
-        file,
+        files,
         formKey,
-        progress => setUpload({ file, progress }),
+        progress => setUpload({ files, progress }),
         cvrFileType
       )
     ) {
@@ -156,12 +155,12 @@ const useCSV = (
     shouldPoll ? 1000 : null
   )
 
-  return [csv && { ...csv, upload }, uploadCSV, deleteCSV]
+  return [csv && { ...csv, upload }, uploadCSVs, deleteCSV]
 }
 
 export const useJurisdictionsFile = (
   electionId: string
-): [IFileInfo | null, (csv: File | File[]) => Promise<boolean>] => {
+): [IFileInfo | null, (csv: File[]) => Promise<boolean>] => {
   const [csv, uploadCSV] = useCSV(
     `/election/${electionId}/jurisdiction/file`,
     'jurisdictions'
@@ -174,7 +173,7 @@ export const useStandardizedContestsFile = (
   electionId: string,
   auditSettings: IAuditSettings | null,
   jurisdictionsFile?: IFileInfo | null
-): [IFileInfo | null, (csv: File | File[]) => Promise<boolean>] => {
+): [IFileInfo | null, (csv: File[]) => Promise<boolean>] => {
   const [csv, uploadCSV] = useCSV(
     `/election/${electionId}/standardized-contests/file`,
     'standardized-contests',

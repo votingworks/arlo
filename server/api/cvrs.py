@@ -502,6 +502,8 @@ def parse_ess_cvrs(
         tabulator_regex = re.compile(r"^(\d{4})(\d{6})$")
 
         for row_index, row in enumerate(ballots_csv):
+            if row[0].startswith("Total"):
+                continue
             cvr_number = column_value(
                 row, "Cast Vote Record", row_index + 1, header_indices
             )
@@ -902,7 +904,7 @@ def upload_cvrs(
     clear_cvr_data(jurisdiction)
 
     if request.form["cvrFileType"] == CvrFileType.ESS:
-        file_name = "cvr_files.zip"
+        file_name = "cvr-files.zip"
         zip_file = zip_files(
             {file.filename: file.stream for file in request.files.getlist("cvrs")}
         )

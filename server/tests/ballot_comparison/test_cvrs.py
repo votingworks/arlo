@@ -1077,6 +1077,7 @@ Cast Vote Record,Batch,Ballot Status,Original Ballot Exception,Remaining Ballot 
 5,BATCH1,Not Reviewed,,,,N,Election Day,0002003172,p
 6,BATCH1,Not Reviewed,,,,N,Election Day,0002003173,p
 7,BATCH2,Not Reviewed,,,,N,Election Day,0001000415,p
+Total : 7,,,,,,,,,
 """
 
 ESS_BALLOTS_2 = """Ballots,,,,,,,,,
@@ -1092,6 +1093,7 @@ Cast Vote Record,Batch,Ballot Status,Original Ballot Exception,Remaining Ballot 
 12,BATCH2,Not Reviewed,,,,N,Election Day,0002000173,p
 13,BATCH2,Not Reviewed,,,,N,Election Day,0002000174,p
 15,BATCH2,Not Reviewed,,,,N,Election Day,0002000175,p
+Total : 7,,,,,,,,,
 """
 
 
@@ -1155,7 +1157,7 @@ def test_ess_cvr_upload(
         json.loads(rv.data),
         {
             "file": {
-                "name": "cvr_files.zip",
+                "name": "cvr-files.zip",
                 "uploadedAt": assert_is_date,
                 "cvrFileType": "ESS",
             },
@@ -1247,7 +1249,7 @@ def test_ess_cvr_invalid(
                         # Simulate leading zeros getting stripped from the tabulator column
                         replace_line(
                             ESS_BALLOTS_2,
-                            -1,
+                            -2,
                             "15,BATCH2,Not Reviewed,,,,N,Election Day,2000175,p",
                         ).encode()
                     ),
@@ -1264,7 +1266,7 @@ def test_ess_cvr_invalid(
                     io.BytesIO(
                         replace_line(
                             ESS_BALLOTS_2,
-                            -1,
+                            -2,
                             "15,BATCH2,Not Reviewed,,,,N,Election Day,0003000175,p",
                         ).encode()
                     ),
@@ -1296,7 +1298,7 @@ def test_ess_cvr_invalid(
                 (io.BytesIO(ESS_BALLOTS_1.encode()), "ess_ballots_1.csv",),
                 (io.BytesIO(ESS_CVR.encode()), "ess_cvr.csv",),
                 (
-                    io.BytesIO(remove_line(ESS_BALLOTS_2, -1).encode()),
+                    io.BytesIO(remove_line(ESS_BALLOTS_2, -2).encode()),
                     "ess_ballots_2.csv",
                 ),
             ],
@@ -1369,7 +1371,7 @@ def test_ess_cvr_invalid(
             json.loads(rv.data),
             {
                 "file": {
-                    "name": "cvr_files.zip",
+                    "name": "cvr-files.zip",
                     "uploadedAt": assert_is_date,
                     "cvrFileType": "ESS",
                 },
