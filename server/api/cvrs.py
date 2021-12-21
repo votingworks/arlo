@@ -211,13 +211,17 @@ def get_header_indices(headers_row: List[str]) -> Dict[str, int]:
 
 
 def column_value(
-    row: List[str], header: str, row_number: int, header_indices: Dict[str, int]
+    row: List[str],
+    header: str,
+    row_number: int,
+    header_indices: Dict[str, int],
+    required: bool = True,
 ):
     index = header_indices.get(header)
     if index is None:
         raise UserError(f"Missing required column {header}")
     value = row[index] if index < len(row) else None
-    if value is None or value == "":
+    if required and (value is None or value == ""):
         raise UserError(f"Missing required column {header} in row {row_number}.")
     return value
 
@@ -443,19 +447,26 @@ def parse_ess_cvrs(
     files = unzip_files(zip_file)
     zip_file.close()
 
-    def decode_file(file: IO[bytes]) -> TextIO:
-        validate_not_empty(file)
-        return decode_csv(file)
+    def decode_file(file: IO[bytes], name: str) -> TextIO:
+        try:
+            validate_not_empty(file)
+            return decode_csv(file)
+        except UserError as error:
+            raise UserError(f"{name}: {error}") from error
 
-    text_files = [decode_file(file) for file in files.values()]
+    text_files = {name: decode_file(file, name) for name, file in files.items()}
 
     def is_ballots_file(file: TextIO):
         first_line = file.readline()
         file.seek(0)
         return first_line.startswith("Ballots")
 
-    ballots_files = [file for file in text_files if is_ballots_file(file)]
-    cvr_files = [file for file in text_files if not is_ballots_file(file)]
+    ballots_files = {
+        name: file for name, file in text_files.items() if is_ballots_file(file)
+    }
+    cvr_files = {
+        name: file for name, file in text_files.items() if not is_ballots_file(file)
+    }
 
     if len(ballots_files) == 0:
         raise UserError(
@@ -469,6 +480,8 @@ def parse_ess_cvrs(
         raise UserError(
             "Could not detect which files contain the list of ballots and which contains the CVR results. Please ensure you have one file with the cast vote records for each ballot and at least one file containing the list of tabulated ballots and their corresponding CVR identifiers."
         )
+
+    [(cvr_file_name, cvr_file)] = cvr_files.items()
 
     batches_by_key = {
         (batch.tabulator, batch.name): batch for batch in jurisdiction.batches
@@ -542,11 +555,14 @@ def parse_ess_cvrs(
                 )
 
     def parse_all_ballots() -> Iterable[CvrBallot]:
-        for ballots_file in ballots_files:
-            validate_comma_delimited(ballots_file)
-            ballots_csv = csv.reader(ballots_file, delimiter=",")
-            yield from parse_ballots_csv(ballots_csv)
-            ballots_file.close()
+        for name, ballots_file in ballots_files.items():
+            try:
+                validate_comma_delimited(ballots_file)
+                ballots_csv = csv.reader(ballots_file, delimiter=",")
+                yield from parse_ballots_csv(ballots_csv)
+                ballots_file.close()
+            except UserError as error:
+                raise UserError(f"{name}: {error}") from error
 
     def parse_contest_metadata(cvr_csv: CSVIterator) -> CVR_CONTESTS_METADATA:
         headers = next(cvr_csv)
@@ -563,7 +579,7 @@ def parse_ess_cvrs(
         for row_index, row in enumerate(cvr_csv):
             for contest_name in contest_names:
                 choice_name = column_value(
-                    row, contest_name, row_index + 1, header_indices
+                    row, contest_name, row_index + 1, header_indices, required=False
                 )
                 if choice_name:
                     contest_choices[contest_name].add(choice_name)
@@ -574,7 +590,9 @@ def parse_ess_cvrs(
             for contest_name, choices in contest_choices.items()
             for contest_choice in sorted(choices)
         ]
-        contest_choice_columns = dict(zip(contest_choice_pairs, itertools.count()))
+        contest_choice_columns = {
+            choice: column for column, choice in enumerate(contest_choice_pairs)
+        }
 
         return {
             contest_name: dict(
@@ -595,62 +613,69 @@ def parse_ess_cvrs(
     def parse_interpretations(
         cvr_csv: CSVIterator, contests_metadata: CVR_CONTESTS_METADATA
     ) -> Iterable[Tuple[str, str]]:  # (CVR number, interpretations)
-        # pylint: disable=stop-iteration-return
-        headers = next(cvr_csv)
-        header_indices = get_header_indices(headers)
+        try:
+            # pylint: disable=stop-iteration-return
+            headers = next(cvr_csv)
+            header_indices = get_header_indices(headers)
 
-        max_interpretation_column = max(
-            choice_metadata["column"]
-            for contest_metadata in contests_metadata.values()
-            for choice_metadata in contest_metadata["choices"].values()
-        )
-
-        for row_index, row in enumerate(cvr_csv):
-            cvr_number = column_value(
-                row, "Cast Vote Record", row_index + 1, header_indices
+            max_interpretation_column = max(
+                choice_metadata["column"]
+                for contest_metadata in contests_metadata.values()
+                for choice_metadata in contest_metadata["choices"].values()
             )
-            interpretations = ["" for _ in range(max_interpretation_column + 1)]
-            for contest_name, contest_metadata in contests_metadata.items():
-                recorded_choice = column_value(
-                    row, contest_name, cvr_number, header_indices
+
+            for row_index, row in enumerate(cvr_csv):
+                cvr_number = column_value(
+                    row, "Cast Vote Record", row_index + 1, header_indices
                 )
-                if recorded_choice:
-                    for choice_name, choice_metadata in contest_metadata[
-                        "choices"
-                    ].items():
-                        if choice_name == recorded_choice:
-                            interpretations[choice_metadata["column"]] = "1"
-                        else:
-                            interpretations[choice_metadata["column"]] = "0"
+                interpretations = ["" for _ in range(max_interpretation_column + 1)]
+                for contest_name, contest_metadata in contests_metadata.items():
+                    recorded_choice = column_value(
+                        row, contest_name, cvr_number, header_indices, required=False
+                    )
+                    if recorded_choice:
+                        for choice_name, choice_metadata in contest_metadata[
+                            "choices"
+                        ].items():
+                            if choice_name == recorded_choice:
+                                interpretations[choice_metadata["column"]] = "1"
+                            else:
+                                interpretations[choice_metadata["column"]] = "0"
 
-            yield (cvr_number, ",".join(interpretations))
+                yield (cvr_number, ",".join(interpretations))
 
-    [cvr_file] = cvr_files
-    validate_comma_delimited(cvr_file)
-    cvr_csv = csv.reader(cvr_file, delimiter=",")
-    contests_metadata = parse_contest_metadata(cvr_csv)
+        except UserError as error:
+            raise UserError(f"{cvr_file_name}: {error}") from error
 
-    def join_ballots_to_interpretations():
-        cvr_file.seek(0)
-        for cvr_ballot, cvr_interpretations in itertools.zip_longest(
-            parse_all_ballots(), parse_interpretations(cvr_csv, contests_metadata)
-        ):
-            mismatch_error = UserError(
-                "Mismatch between CVR file and ballots files."
-                " Make sure the Cast Vote Record column in the CVR file and"
-                " the ballots file match and include exactly the same set of ballots."
-            )
-            if cvr_interpretations is None or cvr_ballot is None:
-                raise mismatch_error
-            (cvr_number, interpretations) = cvr_interpretations
-            if cvr_ballot.imprinted_id != cvr_number:
-                raise mismatch_error
-            cvr_ballot.interpretations = interpretations
-            yield cvr_ballot
+    try:
+        validate_comma_delimited(cvr_file)
+        cvr_csv = csv.reader(cvr_file, delimiter=",")
+        contests_metadata = parse_contest_metadata(cvr_csv)
 
-        cvr_file.close()
+        def join_ballots_to_interpretations():
+            cvr_file.seek(0)
+            for cvr_ballot, cvr_interpretations in itertools.zip_longest(
+                parse_all_ballots(), parse_interpretations(cvr_csv, contests_metadata)
+            ):
+                mismatch_error = UserError(
+                    "Mismatch between CVR file and ballots files."
+                    " Make sure the Cast Vote Record column in the CVR file and"
+                    " the ballots file match and include exactly the same set of ballots."
+                )
+                if cvr_interpretations is None or cvr_ballot is None:
+                    raise mismatch_error
+                (cvr_number, interpretations) = cvr_interpretations
+                if cvr_ballot.imprinted_id != cvr_number:
+                    raise mismatch_error
+                cvr_ballot.interpretations = interpretations
+                yield cvr_ballot
 
-    return contests_metadata, join_ballots_to_interpretations()
+            cvr_file.close()
+
+        return contests_metadata, join_ballots_to_interpretations()
+
+    except UserError as error:
+        raise UserError(f"{cvr_file_name}: {error}") from error
 
 
 @background_task
