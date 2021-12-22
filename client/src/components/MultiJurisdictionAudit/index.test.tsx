@@ -534,17 +534,15 @@ describe('JA setup', () => {
       jaApiCalls.getUser,
       jaApiCalls.getSettings(auditSettings.batchComparisonAll),
       jaApiCalls.getRounds([]),
-      jaApiCalls.getBallotManifestFile(manifestMocks.processed),
+      jaApiCalls.getBallotManifestFile(manifestMocks.empty),
       jaApiCalls.getBatchTalliesFile(talliesMocks.processed),
       jaApiCalls.putManifest,
-      jaApiCalls.getBallotManifestFile(manifestMocks.processing),
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
       jaApiCalls.getBatchTalliesFile(talliesMocks.errored),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
       await screen.findByText('Audit Source Data')
-      expect(screen.getAllByText(/Uploaded/)).toHaveLength(2)
 
       // Upload a new manifest
       userEvent.click(
@@ -663,17 +661,15 @@ describe('JA setup', () => {
       jaApiCalls.getUser,
       jaApiCalls.getSettings(auditSettings.ballotComparisonAll),
       jaApiCalls.getRounds([]),
-      jaApiCalls.getBallotManifestFile(manifestMocks.processed),
+      jaApiCalls.getBallotManifestFile(manifestMocks.empty),
       jaApiCalls.getCVRSfile(cvrsMocks.processed),
       jaApiCalls.putManifest,
-      jaApiCalls.getBallotManifestFile(manifestMocks.processing),
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
       jaApiCalls.getCVRSfile(cvrsMocks.errored),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
       await screen.findByText('Audit Source Data')
-      expect(screen.getAllByText(/Uploaded/)).toHaveLength(2)
 
       // Upload a new manifest
       userEvent.click(
