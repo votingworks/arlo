@@ -378,7 +378,19 @@ def parse_dominion_cvrs(
             )
             batch_id = column_value(row, "BatchId", cvr_number, header_indices)
             record_id = column_value(row, "RecordId", cvr_number, header_indices)
-            imprinted_id = column_value(row, "ImprintedId", cvr_number, header_indices)
+
+            # When parsing ImprintedId, fall back to UniqueVotingIdentifer
+            # (but only if that column is present in the CVR at all)
+            imprinted_id = column_value(
+                row,
+                "ImprintedId",
+                cvr_number,
+                header_indices,
+                required="UniqueVotingIdentifier" not in header_indices,
+            ) or column_value(
+                row, "UniqueVotingIdentifier", cvr_number, header_indices,
+            )
+
             interpretations = row[first_contest_column:]
 
             db_batch = batches_by_key.get((tabulator_number, batch_id))
