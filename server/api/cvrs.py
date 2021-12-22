@@ -219,7 +219,9 @@ def column_value(
 ):
     index = header_indices.get(header)
     if index is None:
-        raise UserError(f"Missing required column {header}")
+        if required:
+            raise UserError(f"Missing required column {header}")
+        return None
     value = row[index] if index < len(row) else None
     if required and (value is None or value == ""):
         raise UserError(f"Missing required column {header} in row {row_number}.")
