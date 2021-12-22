@@ -529,7 +529,7 @@ describe('JA setup', () => {
     })
   })
 
-  it('displays errors after reprocessing batch tallies on replacing Manifest', async () => {
+  it('displays errors after reprocessing batch tallies on replacing manifest', async () => {
     const expectedCalls = [
       jaApiCalls.getUser,
       jaApiCalls.getSettings(auditSettings.batchComparisonAll),
@@ -653,6 +653,52 @@ describe('JA setup', () => {
       )
       userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
       await screen.findByText('Invalid CSV')
+    })
+  })
+
+  it('allows multiple CVR files to be uploaded for ES&S', async () => {
+    const cvrsFormData: FormData = new FormData()
+    const cvrsFile1 = new File(['test cvr data'], 'cvrs1.csv', {
+      type: 'text/csv',
+    })
+    const cvrsFile2 = new File(['test cvr data'], 'cvrs2.csv', {
+      type: 'text/csv',
+    })
+    // Make the combined CVR files large enough to trigger an "Uploading..." progress bar
+    Object.defineProperty(cvrsFile1, 'size', { value: 500 * 1000 })
+    Object.defineProperty(cvrsFile2, 'size', { value: 500 * 1000 })
+    cvrsFormData.append('cvrs', cvrsFile1, cvrsFile1.name)
+    cvrsFormData.append('cvrs', cvrsFile2, cvrsFile2.name)
+    cvrsFormData.append('cvrFileType', 'ESS')
+
+    const expectedCalls = [
+      jaApiCalls.getUser,
+      jaApiCalls.getSettings(auditSettings.ballotComparisonAll),
+      jaApiCalls.getRounds([]),
+      jaApiCalls.getBallotManifestFile(manifestMocks.processed),
+      jaApiCalls.getCVRSfile(cvrsMocks.empty),
+      {
+        ...jaApiCalls.putCVRs,
+        options: { ...jaApiCalls.putCVRs.options, body: cvrsFormData },
+      },
+      jaApiCalls.getCVRSfile(cvrsMocks.processed),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderView()
+      await screen.findByText('Audit Source Data')
+
+      userEvent.selectOptions(
+        screen.getByLabelText(/CVR File Type:/),
+        screen.getByRole('option', { name: 'ES&S' })
+      )
+
+      const fileSelect = screen.getByLabelText('Select a CSV...')
+      userEvent.upload(fileSelect, [cvrsFile1, cvrsFile2])
+      await screen.findByLabelText('2 files selected')
+      userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
+
+      await screen.findByText('Uploading...')
+      await screen.findByText('Uploaded at 11/18/2020, 9:39:14 PM.')
     })
   })
 
