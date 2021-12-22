@@ -588,6 +588,8 @@ def parse_ess_cvrs(
 
         return {
             contest_name: dict(
+                # Until we know how vote-for-n contests are serialized in the
+                # ES&S CVR, we assume vote-for-1
                 votes_allowed=1,
                 choices={
                     choice: dict(
