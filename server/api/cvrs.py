@@ -636,14 +636,16 @@ def parse_ess_cvrs(
 
             return ",".join(interpretations)
 
-        for row_index, row in enumerate(cvr_csv):
-            try:
+        try:
+            for row_index, row in enumerate(cvr_csv):
                 cvr_number = column_value(
                     row, "Cast Vote Record", row_index + 1, header_indices
                 )
                 yield (cvr_number, parse_row_interpretations(row, cvr_number))
-            except UserError as error:
-                raise UserError(f"{cvr_file_name}: {error}") from error
+        except UserError as error:
+            raise UserError(f"{cvr_file_name}: {error}") from error
+        finally:
+            cvr_file.close()
 
     def parse_and_concat_ballots_files(
         ballots_files: Dict[str, TextIO]
@@ -653,9 +655,10 @@ def parse_ess_cvrs(
                 validate_comma_delimited(ballots_file)
                 ballots_csv = csv.reader(ballots_file, delimiter=",")
                 yield from parse_ballots_csv(ballots_csv)
-                ballots_file.close()
             except UserError as error:
                 raise UserError(f"{name}: {error}") from error
+            finally:
+                ballots_file.close()
 
     def join_ballots_to_interpretations(
         all_ballots: Iterable[CvrBallot], all_interpretations: Iterable[Tuple[str, str]]
