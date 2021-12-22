@@ -148,7 +148,7 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortio
 """
 
 
-def test_dominion_cvrs_counting_group(
+def test_cvrs_counting_group(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
@@ -540,7 +540,7 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortio
 """
 
 
-def test_dominion_cvrs_newlines(
+def test_cvrs_newlines(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
