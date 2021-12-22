@@ -501,7 +501,9 @@ def parse_ess_cvrs(
         (batch.tabulator, batch.name): batch for batch in jurisdiction.batches
     }
 
-    def parse_ballots_csv(ballots_csv: CSVIterator) -> Iterable[CvrBallot]:
+    def parse_ballots_csv(
+        ballots_csv: CSVIterator,
+    ) -> Iterable[Tuple[str, CvrBallot]]:  # (CVR number, ballot)
         # Skip some metadata rows
         # pylint: disable=stop-iteration-return
         _ballots_header = next(ballots_csv)
@@ -537,10 +539,13 @@ def parse_ess_cvrs(
 
             db_batch = batches_by_key.get((tabulator_number, batch_name))
             if db_batch:
-                yield CvrBallot(
-                    batch=db_batch,
-                    record_id=int(ballot_number),
-                    imprinted_id=cvr_number,
+                yield (
+                    cvr_number,
+                    CvrBallot(
+                        batch=db_batch,
+                        record_id=int(ballot_number),
+                        imprinted_id=tabulator_cvr,
+                    ),
                 )
             else:
                 close_matches = difflib.get_close_matches(
@@ -661,7 +666,7 @@ def parse_ess_cvrs(
 
     def parse_and_concat_ballots_files(
         ballots_files: Dict[str, TextIO]
-    ) -> Iterable[CvrBallot]:
+    ) -> Iterable[Tuple[str, CvrBallot]]:
         for name, ballots_file in ballots_files.items():
             try:
                 validate_comma_delimited(ballots_file)
@@ -673,9 +678,10 @@ def parse_ess_cvrs(
                 ballots_file.close()
 
     def join_ballots_to_interpretations(
-        all_ballots: Iterable[CvrBallot], all_interpretations: Iterable[Tuple[str, str]]
+        all_ballots: Iterable[Tuple[str, CvrBallot]],
+        all_interpretations: Iterable[Tuple[str, str]],
     ) -> Iterable[CvrBallot]:
-        for ballot, interpretations in itertools.zip_longest(
+        for cvr_ballot, cvr_interpretations in itertools.zip_longest(
             all_ballots, all_interpretations
         ):
             mismatch_error = UserError(
@@ -683,12 +689,13 @@ def parse_ess_cvrs(
                 " Make sure the Cast Vote Record column in the CVR file and"
                 " the ballots file match and include exactly the same set of ballots."
             )
-            if interpretations is None or ballot is None:
+            if cvr_interpretations is None or cvr_ballot is None:
                 raise mismatch_error
-            (cvr_number, ballot_interpretations) = interpretations
-            if ballot.imprinted_id != cvr_number:
+            (ballot_cvr_number, ballot) = cvr_ballot
+            (interpretations_cvr_number, interpretations) = cvr_interpretations
+            if ballot_cvr_number != interpretations_cvr_number:
                 raise mismatch_error
-            ballot.interpretations = ballot_interpretations
+            ballot.interpretations = interpretations
             yield ballot
 
     ballots = parse_and_concat_ballots_files(ballots_files)
