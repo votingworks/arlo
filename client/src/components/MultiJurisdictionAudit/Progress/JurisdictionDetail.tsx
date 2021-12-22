@@ -40,6 +40,7 @@ const prettyCvrFileType = (cvrFileType: CvrFileType) =>
   ({
     DOMINION: 'Dominion',
     CLEARBALLOT: 'ClearBallot',
+    ESS: 'ES&S',
   }[cvrFileType])
 
 const StatusCard = styled(Card)`

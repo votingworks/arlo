@@ -1,10 +1,11 @@
 from datetime import datetime
 import shutil
 import io
-from os import path
 import os
-from typing import BinaryIO, Optional
+import tempfile
+from typing import IO, BinaryIO, Dict, Optional
 from urllib.parse import urlparse
+from zipfile import ZipFile
 import boto3
 
 from .. import config
@@ -43,9 +44,9 @@ def s3():  # pylint: disable=invalid-name
     )
 
 
-def store_file(file: BinaryIO, storage_path: str) -> str:
-    assert not path.isabs(storage_path)
-    full_path = path.join(config.FILE_UPLOAD_STORAGE_PATH, storage_path)
+def store_file(file: IO[bytes], storage_path: str) -> str:
+    assert not os.path.isabs(storage_path)
+    full_path = os.path.join(config.FILE_UPLOAD_STORAGE_PATH, storage_path)
     if config.FILE_UPLOAD_STORAGE_PATH.startswith("s3://"):
         bucket_name = urlparse(config.FILE_UPLOAD_STORAGE_PATH).netloc
         s3().upload_fileobj(file, bucket_name, storage_path)
@@ -68,3 +69,23 @@ def retrieve_file(storage_path: str) -> BinaryIO:
         return file
     else:
         return open(storage_path, "rb")
+
+
+def zip_files(files: Dict[str, BinaryIO]) -> IO[bytes]:
+    zip_file = tempfile.TemporaryFile()
+    with ZipFile(zip_file, "w") as zip_archive:
+        for file_name, contents_stream in files.items():
+            with zip_archive.open(file_name, "w") as archive_file:
+                shutil.copyfileobj(contents_stream, archive_file)
+    zip_file.seek(0)
+    return zip_file
+
+
+def unzip_files(zip_file: BinaryIO) -> Dict[str, IO[bytes]]:
+    extract_dir = tempfile.TemporaryDirectory()
+    with ZipFile(zip_file, "r") as zip_archive:
+        zip_archive.extractall(extract_dir.name)
+        return {
+            file_name: open(os.path.join(extract_dir.name, file_name), "rb")
+            for file_name in zip_archive.namelist()
+        }
