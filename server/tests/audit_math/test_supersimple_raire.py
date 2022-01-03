@@ -469,7 +469,7 @@ def test_synth_election():
     assert computed_assertions == expected_assertions
 
     # Now test with no discrepancies
-    expected_p = 0.027711754
+    expected_p = 0.038205645
     sample_cvrs = {}
     for i in range(expected_sample_size):
         sample_cvrs[i] = {"cvr": cvrs[i], "times_sampled": 1}
