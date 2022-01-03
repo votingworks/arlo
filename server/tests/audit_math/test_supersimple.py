@@ -23,17 +23,17 @@ def cvrs():
 
         if i < 30000:
             cvr[i]["Contest B"] = {"winner": 1, "loser": 0}
-        elif 30000 < i < 60000:
+        elif 30000 <= i < 60000:
             cvr[i]["Contest B"] = {"winner": 0, "loser": 1}
 
         if i < 18000:
             cvr[i]["Contest C"] = {"winner": 1, "loser": 0}
-        elif 18000 < i < 36000:
+        elif 18000 <= i < 36000:
             cvr[i]["Contest C"] = {"winner": 0, "loser": 1}
 
         if i < 8000:
             cvr[i]["Contest D"] = {"winner": 1, "loser": 0}
-        elif 8000 < i < 14000:
+        elif 8000 <= i < 14000:
             cvr[i]["Contest D"] = {"winner": 0, "loser": 1}
 
         if i < 10000:
@@ -41,7 +41,7 @@ def cvrs():
 
         if i < 300:
             cvr[i]["Two-winner Contest"] = {"winner1": 0, "winner2": 1, "loser": 0}
-        elif 300 < i < 900:
+        elif 300 <= i < 900:
             cvr[i]["Two-winner Contest"] = {"winner1": 1, "winner2": 0, "loser": 0}
         elif i < 1000:
             cvr[i]["Two-winner Contest"] = {"winner1": 0, "winner2": 0, "loser": 1}

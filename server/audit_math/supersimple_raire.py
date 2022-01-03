@@ -1,5 +1,4 @@
 # pylint: disable=invalid-name
-from itertools import product
 from decimal import Decimal
 from typing import Dict, Tuple, Optional, List
 
@@ -21,7 +20,7 @@ u2: Decimal = Decimal(0.0001)
 
 
 def compute_discrepancies(
-    contest: Contest, cvrs: CVRS, sample_cvr: SAMPLECVRS, assertion: RaireAssertion
+    cvrs: CVRS, sample_cvr: SAMPLECVRS, assertion: RaireAssertion
 ) -> Dict[str, Discrepancy]:
     """
     Iterates through a given sample and returns the discrepancies found.
@@ -57,44 +56,38 @@ def compute_discrepancies(
         discrepancies   - A mapping of ballot ids to their discrepancies. This
                           includes entries for ballots in the sample that have discrepancies
                           only.
-                    {
                         'ballot_id': {
                             'counted_as': -1, # The maximum value for a discrepancy
                             'weighted_error': -0.0033 # Weighted error used for p-value calculation
                         }
                     }
     """
+    v_w, v_l = 0, 0
+    for cvr in cvrs:
+        # Typechecker shenanigans
+        val = cvrs[cvr]
+        assert val is not None
+        v_w += assertion.is_vote_for_winner(val)
+        v_l += assertion.is_vote_for_loser(val)
+    V = v_w - v_l
+    print(V)
 
     discrepancies: Dict[str, Discrepancy] = {}
     for ballot, ballot_sample_cvr in sample_cvr.items():
-        ballot_discrepancies = []
-        for winner, loser in product(contest.winners, contest.losers):
-            ballot_discrepancy = discrepancy(
-                contest,
-                winner,
-                loser,
-                cvrs.get(ballot),
-                ballot_sample_cvr["cvr"],
-                assertion,
-            )
-            if ballot_discrepancy is not None:
-                ballot_discrepancies.append(ballot_discrepancy)
-
-        if len(ballot_discrepancies) > 0:
-            discrepancies[ballot] = max(
-                ballot_discrepancies, key=lambda d: d["counted_as"]
-            )
+        ballot_discrepancy = discrepancy(
+            cvrs.get(ballot), ballot_sample_cvr["cvr"], assertion, V,
+        )
+        if ballot_discrepancy is not None:
+            discrepancies[ballot] = ballot_discrepancy
 
     return discrepancies
 
 
 def discrepancy(
-    contest: Contest,
-    winner: str,
-    loser: str,
     reported: Optional[CVR],
     audited: Optional[CVR],
     assertion: RaireAssertion,
+    margin: int,
 ) -> Optional[Discrepancy]:
     # Special cases: if ballot wasn't in CVR or ballot can't be found by
     # audit board, count it as a two-vote overstatement
@@ -114,9 +107,8 @@ def discrepancy(
     if error == 0:
         return None
 
-    # V_wl here is defined as the first-round tallies for winner and loser
-    V_wl = contest.candidates[winner] - contest.candidates[loser]
-    weighted_error = Decimal(error) / Decimal(V_wl) if V_wl > 0 else Decimal("inf")
+    # TODO: this seems wrong - V_wl here is defined as the first-round tallies for winner and loser
+    weighted_error = Decimal(error) / Decimal(margin) if margin > 0 else Decimal("inf")
 
     return Discrepancy(counted_as=error, weighted_error=weighted_error)
 
@@ -165,18 +157,23 @@ def compute_risk(
     assert alpha < 1
 
     N = contest.ballots
-    V = Decimal(contest.diluted_margin * N)
     max_p = Decimal(0.0)
     result = False
     for assertion in assertions:
         p = Decimal(1.0)
 
-        if contest.diluted_margin == 0:
-            U = Decimal("inf")
-        else:
-            U = 2 * gamma / Decimal(contest.diluted_margin)
+        v_w, v_l = 0, 0
+        for cvr in cvrs:
+            # Typechecker shenanigans
+            val = cvrs[cvr]
+            assert val is not None
+            v_w += assertion.is_vote_for_winner(val)
+            v_l += assertion.is_vote_for_loser(val)
+        V = v_w - v_l
 
-        discrepancies = compute_discrepancies(contest, cvrs, sample_cvr, assertion)
+        margin = V / N
+
+        discrepancies = compute_discrepancies(cvrs, sample_cvr, assertion)
 
         for ballot in sample_cvr:
             if ballot in discrepancies:
@@ -186,8 +183,8 @@ def compute_risk(
             else:
                 e_r = Decimal(0)
 
-            if contest.diluted_margin:
-                U = 2 * gamma / Decimal(contest.diluted_margin)
+            if margin:
+                U = 2 * gamma / Decimal(margin)
                 denom = (2 * gamma) / V
                 p_b = (1 - 1 / U) / (1 - (e_r / denom))
             else:
