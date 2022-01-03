@@ -143,6 +143,45 @@ J2,TABULATOR1,BATCH2,3,1-2-3,Round 2: 0.556310137163677574,AUDITED,Choice 1-1,Ch
 J2,TABULATOR2,BATCH2,4,2-2-5,Round 2: 0.583133559190710795,AUDITED,CONTEST_NOT_ON_BALLOT,,,"Choice 2-1, Choice 2-2","Choice 2-1, Choice 2-2",\r
 """
 
+snapshots[
+    "test_ballot_comparison_union_choice_names 1"
+] = """######## ELECTION INFO ########\r
+Organization,Election Name,State\r
+Test Org test_ballot_comparison_union_choice_names,Test Election,CA\r
+\r
+######## CONTESTS ########\r
+Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes\r
+Contest 1,Targeted,1,1,30,Choice 1-1: 20; Choice 1-2: 6; overvote: 1; undervote: 1\r
+Contest 2,Opportunistic,1,1,30,Choice 2-1: 16; Choice 2-2: 6; overvote: 0; undervote: 0; Choice 2-3: 6\r
+\r
+######## AUDIT SETTINGS ########\r
+Audit Name,Audit Type,Audit Math Type,Risk Limit,Random Seed,Online Data Entry?\r
+Test Audit test_ballot_comparison_union_choice_names,BALLOT_COMPARISON,SUPERSIMPLE,10%,1234567890,Yes\r
+\r
+######## AUDIT BOARDS ########\r
+Jurisdiction Name,Audit Board Name,Member 1 Name,Member 1 Affiliation,Member 2 Name,Member 2 Affiliation\r
+J1,Audit Board #1,,,,\r
+J2,Audit Board #1,,,,\r
+\r
+######## ROUNDS ########\r
+Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes\r
+1,Contest 1,Targeted,12,Yes,0.047266213,DATETIME,DATETIME,Choice 1-1: 9; Choice 1-2: 3; overvote: 0; undervote: 0\r
+1,Contest 2,Opportunistic,,No,0.1740640692,DATETIME,DATETIME,Choice 2-1: 4; Choice 2-2: 2; overvote: 0; undervote: 0; Choice 2-3: 4\r
+\r
+######## SAMPLED BALLOTS ########\r
+Jurisdiction Name,Tabulator,Batch Name,Ballot Position,Imprinted ID,Ticket Numbers: Contest 1,Audited?,Audit Result: Contest 1,CVR Result: Contest 1,Discrepancy: Contest 1,Audit Result: Contest 2,CVR Result: Contest 2,Discrepancy: Contest 2\r
+J1,0001,BATCH1,1,0001013415,Round 1: 0.163888857982405419,AUDITED,Choice 1-2,Choice 1-2,,Choice 2-1,Choice 2-1,\r
+J1,0001,BATCH2,3,0001000417,"Round 1: 0.032225032864873362, 0.160129023760942294",AUDITED,Choice 1-2,Choice 1-2,,Choice 2-2,Choice 2-2,\r
+J1,0002,BATCH1,3,0002003173,Round 1: 0.184936923730251080,AUDITED,Choice 1-1,Choice 1-1,,Choice 2-1,Choice 2-1,\r
+J1,0002,BATCH2,5,0002000175,"Round 1: 0.128937575131137250, 0.240487859312182291",AUDITED,Choice 1-1,Choice 1-1,,Choice 2-2,Choice 2-2,\r
+J2,0001,BATCH1,1,0001013415,Round 1: 0.228946820159681463,AUDITED,Choice 1-1,Choice 1-1,,Choice 2-1,Choice 2-1,\r
+J2,0001,BATCH2,3,0001000417,Round 1: 0.269793733438455805,AUDITED,Choice 1-1,Choice 1-1,,Choice 2-3,Choice 2-3,\r
+J2,0002,BATCH1,3,0002003173,Round 1: 0.328294241227374952,AUDITED,Choice 1-1,Choice 1-1,,Choice 2-1,Choice 2-1,\r
+J2,0002,BATCH2,1,0002000171,Round 1: 0.390715133294243377,AUDITED,Choice 1-1,Choice 1-1,,Choice 2-3,Choice 2-3,\r
+J2,0002,BATCH2,2,0002000172,Round 1: 0.064290634474137509,AUDITED,Choice 1-1,Choice 1-1,,Choice 2-3,Choice 2-3,\r
+J2,0002,BATCH2,5,0002000175,Round 1: 0.212277542626930704,AUDITED,Choice 1-1,Choice 1-1,,Choice 2-3,Choice 2-3,\r
+"""
+
 snapshots["test_set_contest_metadata_on_contest_creation 1"] = {
     "choices": [
         {"name": "Choice 2-1", "num_votes": 26},

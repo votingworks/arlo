@@ -572,8 +572,11 @@ def parse_ess_cvrs(
         # Precinct, Ballot Style and the rest are contest names
         first_contest_column = 3
         contest_names = headers[first_contest_column:]
+        # Since "overvote" and "undervote" are treated like choices in ES&S
+        # CVRs, we want to make sure they are always part of the parsed choice
+        # list so that they always appear to audit boards.
         contest_choices: Dict[str, Set[str]] = {
-            contest_name: set() for contest_name in contest_names
+            contest_name: {"overvote", "undervote"} for contest_name in contest_names
         }
 
         header_indices = get_header_indices(headers)

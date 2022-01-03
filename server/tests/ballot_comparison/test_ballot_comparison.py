@@ -7,6 +7,10 @@ from sqlalchemy import and_
 from ...models import *  # pylint: disable=wildcard-import
 from ..helpers import *  # pylint: disable=wildcard-import
 from .conftest import TEST_CVRS
+from ..ballot_comparison.test_cvrs import (
+    ESS_BALLOTS_1,
+    ESS_BALLOTS_2,
+)
 
 
 def test_set_contest_metadata_on_contest_creation(
@@ -399,10 +403,13 @@ def test_contest_names_dont_match_cvr_contests(
 def audit_all_ballots(
     round_id: str, audit_results, target_contest_id, opportunistic_contest_id
 ):
-    choice_1_1, choice_1_2 = Contest.query.get(target_contest_id).choices
-    choice_2_1, choice_2_2, choice_2_3 = Contest.query.get(
-        opportunistic_contest_id
-    ).choices
+    choice_1_1, choice_1_2, *_ = sorted(
+        Contest.query.get(target_contest_id).choices, key=lambda choice: choice.name
+    )
+    choice_2_1, choice_2_2, choice_2_3, *_ = sorted(
+        Contest.query.get(opportunistic_contest_id).choices,
+        key=lambda choice: choice.name,
+    )
 
     def ballot_key(ballot: SampledBallot):
         return (
@@ -1016,3 +1023,169 @@ def test_ballot_comparison_multiple_targeted_contests_sample_size(
 #             },
 #         },
 #     )
+
+
+def test_ballot_comparison_union_choice_names(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    election_settings,  # pylint: disable=unused-argument
+    ess_manifests,  # pylint: disable=unused-argument
+    snapshot,
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+
+    # Upload CVRs that have some choice names missing across jurisdictions
+    J1_CVR = """Cast Vote Record,Precinct,Ballot Style,Contest 1,Contest 2
+1,p,bs,Choice 1-2,Choice 2-1
+2,p,bs,Choice 1-1,Choice 2-1
+3,p,bs,undervote,Choice 2-1
+4,p,bs,Choice 1-1,Choice 2-1
+5,p,bs,Choice 1-2,Choice 2-1
+6,p,bs,Choice 1-1,Choice 2-1
+7,p,bs,Choice 1-2,Choice 2-1
+8,p,bs,Choice 1-1,Choice 2-1
+9,p,bs,Choice 1-2,Choice 2-2
+10,p,bs,Choice 1-1,Choice 2-2
+11,p,bs,Choice 1-2,Choice 2-2
+12,p,bs,Choice 1-1,Choice 2-2
+13,p,bs,Choice 1-2,Choice 2-2
+15,p,bs,Choice 1-1,Choice 2-2
+"""
+    J2_CVR = """Cast Vote Record,Precinct,Ballot Style,Contest 1,Contest 2
+1,p,bs,Choice 1-1,Choice 2-1
+2,p,bs,Choice 1-1,Choice 2-1
+3,p,bs,overvote,Choice 2-1
+4,p,bs,Choice 1-1,Choice 2-1
+5,p,bs,Choice 1-1,Choice 2-1
+6,p,bs,Choice 1-1,Choice 2-1
+7,p,bs,Choice 1-1,Choice 2-1
+8,p,bs,Choice 1-1,Choice 2-1
+9,p,bs,Choice 1-1,Choice 2-3
+10,p,bs,Choice 1-1,Choice 2-3
+11,p,bs,Choice 1-1,Choice 2-3
+12,p,bs,Choice 1-1,Choice 2-3
+13,p,bs,Choice 1-1,Choice 2-3
+15,p,bs,Choice 1-1,Choice 2-3
+"""
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
+        data={
+            "cvrs": [
+                (io.BytesIO(ESS_BALLOTS_1.encode()), "ess_ballots_1.csv",),
+                (io.BytesIO(ESS_BALLOTS_2.encode()), "ess_ballots_2.csv",),
+                (io.BytesIO(J1_CVR.encode()), "ess_cvr.csv",),
+            ],
+            "cvrFileType": "ESS",
+        },
+    )
+    assert_ok(rv)
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/cvrs",
+        data={
+            "cvrs": [
+                (io.BytesIO(ESS_BALLOTS_1.encode()), "ess_ballots_1.csv",),
+                (io.BytesIO(ESS_BALLOTS_2.encode()), "ess_ballots_2.csv",),
+                (io.BytesIO(J2_CVR.encode()), "ess_cvr.csv",),
+            ],
+            "cvrFileType": "ESS",
+        },
+    )
+    assert_ok(rv)
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+
+    # AA selects contests
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/contest",
+        [
+            {
+                "id": str(uuid.uuid4()),
+                "name": "Contest 1",
+                "numWinners": 1,
+                "jurisdictionIds": jurisdiction_ids[:2],
+                "isTargeted": True,
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "name": "Contest 2",
+                "numWinners": 1,
+                "jurisdictionIds": jurisdiction_ids[:2],
+                "isTargeted": False,
+            },
+        ],
+    )
+    assert_ok(rv)
+
+    # AA selects a sample size and launches the audit
+    rv = client.get(f"/api/election/{election_id}/contest")
+    contests = json.loads(rv.data)["contests"]
+    target_contest, opportunistic_contest = contests
+
+    # Choices should be unioned across jurisdictions
+    compare_json(
+        target_contest["choices"],
+        [
+            {"id": assert_is_id, "name": "Choice 1-1", "numVotes": 20,},
+            {"id": assert_is_id, "name": "Choice 1-2", "numVotes": 6,},
+            {"id": assert_is_id, "name": "overvote", "numVotes": 1,},
+            {"id": assert_is_id, "name": "undervote", "numVotes": 1,},
+        ],
+    )
+
+    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    sample_size_options = json.loads(rv.data)["sampleSizes"]
+    assert len(sample_size_options) == 1
+    sample_size = sample_size_options[target_contest["id"]][0]
+
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {"roundNum": 1, "sampleSizes": {target_contest["id"]: sample_size}},
+    )
+    assert_ok(rv)
+
+    rv = client.get(f"/api/election/{election_id}/round",)
+    round_1_id = json.loads(rv.data)["rounds"][0]["id"]
+
+    # JAs create audit boards
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    for jurisdiction_id in target_contest["jurisdictionIds"]:
+        rv = post_json(
+            client,
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_1_id}/audit-board",
+            [{"name": "Audit Board #1"}],
+        )
+        assert_ok(rv)
+
+    # Audit boards audit all the ballots.
+    # Tabulator, Batch, Ballot, Choice 1-1, Choice 1-2, Choice 2-1, Choice 2-2, Choice 2-3
+    generate_audit_results(round_1_id)
+    audit_results = {
+        ("J1", "0001", "BATCH1", 1): ("0,1,1,0,0", (None, None)),
+        ("J1", "0001", "BATCH2", 3): ("0,1,0,1,0", (None, None)),
+        ("J1", "0002", "BATCH1", 3): ("1,0,1,0,0", (None, None)),
+        ("J1", "0002", "BATCH2", 5): ("1,0,0,1,0", (None, None)),
+        ("J2", "0001", "BATCH1", 1): ("1,0,1,0,0", (None, None)),
+        ("J2", "0001", "BATCH2", 3): ("1,0,0,0,1", (None, None)),
+        ("J2", "0002", "BATCH1", 3): ("1,0,1,0,0", (None, None)),
+        ("J2", "0002", "BATCH2", 1): ("1,0,0,0,1", (None, None)),
+        ("J2", "0002", "BATCH2", 2): ("1,0,0,0,1", (None, None)),
+        ("J2", "0002", "BATCH2", 5): ("1,0,0,0,1", (None, None)),
+    }
+
+    audit_all_ballots(
+        round_1_id, audit_results, target_contest["id"], opportunistic_contest["id"]
+    )
+
+    # Check the audit report
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/report")
+    assert_match_report(rv.data, snapshot)
+
+    check_discrepancies(rv.data, audit_results)
