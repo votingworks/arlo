@@ -17,6 +17,8 @@ import csv as py_csv
 import io, re, locale, chardet
 from werkzeug.exceptions import BadRequest
 from werkzeug.datastructures import FileStorage
+
+from .jsonschema import EMAIL_REGEX
 from ..worker.tasks import UserError
 
 locale.setlocale(locale.LC_ALL, "en_US.UTF-8")
@@ -39,9 +41,6 @@ class CSVColumnType(NamedTuple):
     required: bool = True
     unique: bool = False
 
-
-# https://emailregex.com/
-EMAIL_REGEX = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
 
 CSVRow = List[str]
 CSVIterator = Iterator[CSVRow]
