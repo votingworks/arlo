@@ -7,10 +7,9 @@ import numpy as np
 from ...audit_math import supersimple
 from ...audit_math.sampler_contest import Contest, SAMPLECVRS
 from ...audit_math.raire import compute_raire_assertions
-from ...audit_math.raire_utils import NEBAssertion, NENAssertion
+from ...audit_math.raire_utils import NEBAssertion
 
 from .test_raire_utils import make_neb_assertion
-from .test_raire import parse_raire_input
 from ...audit_math import supersimple_raire
 
 ALPHA = Decimal(0.1)
@@ -489,90 +488,71 @@ def test_synth_election():
     assert diff < 10 ** -4, f"Got unexpected p-value {p_value}, expected {expected_p}"
     assert finished
 
+    # Test with one two-vote discrepancy
+    sample_cvrs[0] = {
+        "cvr": {"synth": {"Alice": 2, "Bob": 1, "Charlie": 3}},
+        "times_sampled": 1,
+    }
 
-def test_sfda_2019():
-    """
-    This test case is based on data found in the SHANGRLA repository:
-    https://github.com/pbstark/SHANGRLA/tree/main/Code/Data
-
-    And the audit described here:
-    https://arxiv.org/pdf/2004.00235.pdf
-    """
-    # expected_p = 0.003
-    # expected_p = 0.95447
-    expected_p = 0.86042
-
-    contests, cvrs, _ = parse_raire_input(
-        "server/tests/audit_math/raire_data/sfda19/SFDA2019_PrelimReport12VBMJustDASheets.raire"
-    )
-
-    contest = Contest("339", contests["339"])
-
-    contest.winners = {"15": contest.candidates["15"]}
-
-    sample_cvr = parse_shangrla_sample(
-        "server/tests/audit_math/raire_data/sfda19/mvr_prepilot_test.json"
-    )
-
-    assert len(sample_cvr) == 200
-
-    expected_assertions = []
-    expected_assertions.append(NEBAssertion(contest.name, "15", "16"))
-    expected_assertions.append(NENAssertion(contest.name, "15", "18", ["16", "17"]))
-    expected_assertions.append(NENAssertion(contest.name, "18", "17", ["15", "16"]))
-    expected_assertions.append(NENAssertion(contest.name, "15", "17", ["16"]))
-    expected_assertions.append(NENAssertion(contest.name, "15", "17", ["16", "18"]))
-
-    computed_assertions = compute_raire_assertions(contest, cvrs, asn_func, 0)
-
-    assert computed_assertions == expected_assertions
-
+    expected_p = 1.0
     for assertion in computed_assertions:
         discrepancies = supersimple_raire.compute_discrepancies(
-            cvrs, sample_cvr, assertion
+            cvrs, sample_cvrs, assertion
         )
-        assert not discrepancies
+        assert len(discrepancies) == 1
+        if assertion == expected_assertions[0]:
+            assert discrepancies[0] == supersimple.Discrepancy(
+                counted_as=2, weighted_error=Decimal(2) / Decimal(275)
+            )
+        elif assertion == expected_assertions[1]:
+            # This is counted as a one-vote overstatement because of the way NEBAssertions count votes for the loser
+            # Note that the margin between Alice and Charlie is (600 firs place
+            # for A + 300 second place)  - (100 first place for C + 500 second place)
+            assert discrepancies[0] == supersimple.Discrepancy(
+                counted_as=1, weighted_error=Decimal(1) / Decimal(300)
+            )
 
     p_value, finished = supersimple_raire.compute_risk(
-        0.05, contest, cvrs, sample_cvr, computed_assertions
+        5, contest, cvrs, sample_cvrs, computed_assertions
     )
 
     diff = abs(p_value - expected_p)
-
-    # We don't expect this sample to finish because we're using Kaplan-Markov for
-    # our test statistic. Kaplan-Martingale is used in the above citation, and
-    # is more efficient, but we haven't implemented it yet.
 
     assert diff < 10 ** -4, f"Got unexpected p-value {p_value}, expected {expected_p}"
     assert not finished
 
-    # Now draw 225 more ballots with no discrepancies
-    cnt = 0
-    for ballot in cvrs:
-        if ballot not in sample_cvr:
-            sample_cvr[ballot] = {"cvr": cvrs[ballot], "times_sampled": 1}
-        else:
-            sample_cvr[ballot]["times_sampled"] += 1
-        cnt += 1
-        if cnt == 225:
-            break
+    # Test with a one-vote discrepancy
+    sample_cvrs[0] = {
+        "cvr": {"synth": {"Alice": 0, "Bob": 0, "Charlie": 0}},
+        "times_sampled": 1,
+    }
 
+    expected_p = 0.073643586
     for assertion in computed_assertions:
         discrepancies = supersimple_raire.compute_discrepancies(
-            cvrs, sample_cvr, assertion
+            cvrs, sample_cvrs, assertion
         )
-        assert not discrepancies
-
-    expected_p = 0.05
+        assert len(discrepancies) == 1
+        if assertion == expected_assertions[0]:
+            assert discrepancies[0] == supersimple.Discrepancy(
+                counted_as=1, weighted_error=Decimal(1) / Decimal(275)
+            )
+        elif assertion == expected_assertions[1]:
+            # This is counted as a one-vote overstatement because of the way NEBAssertions count votes for the loser
+            # Note that the margin between Alice and Charlie is (600 firs place
+            # for A + 300 second place)  - (100 first place for C + 500 second place)
+            assert discrepancies[0] == supersimple.Discrepancy(
+                counted_as=1, weighted_error=Decimal(1) / Decimal(300)
+            )
 
     p_value, finished = supersimple_raire.compute_risk(
-        0.05, contest, cvrs, sample_cvr, computed_assertions
+        5, contest, cvrs, sample_cvrs, computed_assertions
     )
 
     diff = abs(p_value - expected_p)
 
     assert diff < 10 ** -4, f"Got unexpected p-value {p_value}, expected {expected_p}"
-    assert finished
+    assert not finished
 
 
 ss_contests = {
