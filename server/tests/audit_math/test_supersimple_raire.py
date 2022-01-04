@@ -455,10 +455,7 @@ def test_synth_election():
         else:
             cvrs[i] = {"synth": {"Alice": 3, "Bob": 2, "Charlie": 1}}
 
-    expected_sample_size = 23
-    assert supersimple.get_sample_sizes(5, contest, {}) == expected_sample_size
-
-    # Now check that we get the right assertions
+    # check that we get the right assertions
     expected_assertions = []
     expected_assertions.append(NEBAssertion(contest.name, "Alice", "Bob"))
     expected_assertions.append(NEBAssertion(contest.name, "Alice", "Charlie"))
@@ -467,10 +464,17 @@ def test_synth_election():
 
     assert computed_assertions == expected_assertions
 
+    # Check sample sizes
+    expected_sample_size = 25
+    assert (
+        supersimple_raire.get_sample_sizes(5, contest, cvrs, {}, computed_assertions)
+        == expected_sample_size
+    )
+
     # Now test with no discrepancies
     expected_p = 0.038205645
     sample_cvrs = {}
-    for i in range(expected_sample_size):
+    for i in range(23):
         sample_cvrs[i] = {"cvr": cvrs[i], "times_sampled": 1}
 
     for assertion in computed_assertions:

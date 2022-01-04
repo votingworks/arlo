@@ -1,6 +1,7 @@
 # pylint: disable=invalid-name
-from decimal import Decimal
+from decimal import Decimal, ROUND_CEILING
 from typing import Dict, Tuple, Optional, List
+import math
 
 from .sampler_contest import Contest, CVRS, SAMPLECVRS, CVR
 
@@ -17,6 +18,29 @@ u1: Decimal = Decimal(0.001)
 # This sets the expected two-vote misstatements at 1 in 10000
 o2: Decimal = Decimal(0.0001)
 u2: Decimal = Decimal(0.0001)
+
+
+def nMin(
+    alpha: Decimal, margin: Decimal, o1: Decimal, o2: Decimal, u1: Decimal, u2: Decimal
+) -> Decimal:
+    """
+    Computes a sample size parameterized by expected under and overstatements
+    and the margin.
+    """
+    return (o1 + o2 + u1 + u2).max(
+        math.ceil(
+            -2
+            * gamma
+            * (
+                alpha.ln()
+                + o1 * (1 - 1 / (2 * gamma)).ln()
+                + o2 * (1 - 1 / gamma).ln()
+                + u1 * (1 + 1 / (2 * gamma)).ln()
+                + u2 * (1 + 1 / gamma).ln()
+            )
+            / Decimal(margin)
+        ),
+    )
 
 
 def compute_discrepancies(
@@ -62,15 +86,7 @@ def compute_discrepancies(
                         }
                     }
     """
-    v_w, v_l = 0, 0
-    for cvr in cvrs:
-        # Typechecker shenanigans
-        val = cvrs[cvr]
-        assert val is not None
-        v_w += assertion.is_vote_for_winner(val)
-        v_l += assertion.is_vote_for_loser(val)
-    V = v_w - v_l
-    print(V)
+    V = compute_margin_for_assertion(cvrs, assertion)
 
     discrepancies: Dict[str, Discrepancy] = {}
     for ballot, ballot_sample_cvr in sample_cvr.items():
@@ -87,7 +103,7 @@ def discrepancy(
     reported: Optional[CVR],
     audited: Optional[CVR],
     assertion: RaireAssertion,
-    margin: int,
+    margin: Decimal,
 ) -> Optional[Discrepancy]:
     # Special cases: if ballot wasn't in CVR or ballot can't be found by
     # audit board, count it as a two-vote overstatement
@@ -111,6 +127,99 @@ def discrepancy(
     weighted_error = Decimal(error) / Decimal(margin) if margin > 0 else Decimal("inf")
 
     return Discrepancy(counted_as=error, weighted_error=weighted_error)
+
+
+def get_sample_sizes(
+    risk_limit: int,
+    contest: Contest,
+    cvrs: CVRS,
+    sample_results: Optional[Dict[str, int]],
+    assertions: List[RaireAssertion],
+) -> int:
+    """
+    Computes initial sample sizes parameterized by likelihood that the
+    initial sample will confirm the election result, assuming no
+    discrepancies.
+
+    Inputs:
+        total_ballots  - the total number of ballots cast in the election
+        sample_results - if a sample has already been drawn, this will
+                         contain its results, of the form:
+                         {
+                            'sample_size': n,
+                            '1-under':     u1,
+                            '1-over':      o1,
+                            '2-under':     u2,
+                            '2-over':      o2,
+                         }
+
+    Outputs:
+        sample_size    - the sample size needed for this audit
+    """
+    alpha = Decimal(risk_limit) / 100
+    assert alpha < 1
+
+    stopping_size = 0
+
+    for assertion in assertions:
+        margin = compute_margin_for_assertion(cvrs, assertion) / contest.ballots
+        sample_results = sample_results or {}
+        obs_o1 = Decimal(sample_results.get("1-over", 0))
+        obs_o2 = Decimal(sample_results.get("2-over", 0))
+        # We want to be conservative, so we will ignore understatements (i.e. errors
+        # that favor the winner) which are negative.
+        obs_u1 = 0
+        obs_u2 = 0
+        num_sampled = Decimal(sample_results.get("sample_size", 0))
+
+        if num_sampled:
+            r1 = obs_o1 / num_sampled
+            r2 = obs_o2 / num_sampled
+            s1 = obs_u1 / num_sampled
+            s2 = obs_u2 / num_sampled
+        else:
+            r1 = o1
+            r2 = o2
+            s1 = u1
+            s2 = u2
+
+        denom = (
+            (1 - Decimal(margin) / (2 * gamma)).ln()
+            - r1 * (1 - 1 / (2 * gamma)).ln()
+            - r2 * (1 - 1 / gamma).ln()
+            - s1 * (1 + 1 / (2 * gamma)).ln()
+            - s2 * (1 + 1 / gamma).ln()
+        )
+
+        if denom >= 0:
+            asrtn_stopping_size = contest.ballots
+        else:
+            n0 = math.ceil(alpha.ln() / denom)
+
+            # Round up one-vote differences.
+            r1 = (r1 * n0).quantize(Decimal(1), ROUND_CEILING)
+            s1 = (s1 * n0).quantize(Decimal(1), ROUND_CEILING)
+
+            asrtn_stopping_size = min(
+                int(nMin(alpha, margin, r1, r2, s1, s2)), contest.ballots
+            )
+
+        stopping_size = max(asrtn_stopping_size - int(num_sampled), stopping_size)
+
+    return stopping_size
+
+
+def compute_margin_for_assertion(cvrs: CVRS, assertion: RaireAssertion) -> Decimal:
+    v_w, v_l = 0, 0
+    for cvr in cvrs:
+        # Typechecker shenanigans
+        val = cvrs[cvr]
+        assert val is not None
+        v_w += assertion.is_vote_for_winner(val)
+        v_l += assertion.is_vote_for_loser(val)
+    margin = Decimal(v_w) - Decimal(v_l)
+
+    return margin
 
 
 def compute_risk(
@@ -162,15 +271,7 @@ def compute_risk(
     for assertion in assertions:
         p = Decimal(1.0)
 
-        v_w, v_l = 0, 0
-        for cvr in cvrs:
-            # Typechecker shenanigans
-            val = cvrs[cvr]
-            assert val is not None
-            v_w += assertion.is_vote_for_winner(val)
-            v_l += assertion.is_vote_for_loser(val)
-        V = v_w - v_l
-
+        V = compute_margin_for_assertion(cvrs, assertion)
         margin = V / N
 
         discrepancies = compute_discrepancies(cvrs, sample_cvr, assertion)
