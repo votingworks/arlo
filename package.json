@@ -5,11 +5,6 @@
     "build": "yarn --cwd client install && yarn --cwd client build",
     "heroku-postbuild": "yarn build"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged && yarn --cwd client lint-staged && make typecheck-server"
-    }
-  },
   "lint-staged": {
     "*.+(css|graphql|json|less|md|mdx|sass|scss|yaml|yml)": [
       "prettier --write"
