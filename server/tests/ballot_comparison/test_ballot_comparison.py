@@ -404,11 +404,12 @@ def audit_all_ballots(
     round_id: str, audit_results, target_contest_id, opportunistic_contest_id
 ):
     choice_1_1, choice_1_2, *_ = sorted(
-        Contest.query.get(target_contest_id).choices, key=lambda choice: choice.name
+        Contest.query.get(target_contest_id).choices,
+        key=lambda choice: str(choice.name),
     )
     choice_2_1, choice_2_2, choice_2_3, *_ = sorted(
         Contest.query.get(opportunistic_contest_id).choices,
-        key=lambda choice: choice.name,
+        key=lambda choice: str(choice.name),
     )
 
     def ballot_key(ballot: SampledBallot):
@@ -1038,7 +1039,7 @@ def test_ballot_comparison_union_choice_names(
     )
 
     # Upload CVRs that have some choice names missing across jurisdictions
-    J1_CVR = """Cast Vote Record,Precinct,Ballot Style,Contest 1,Contest 2
+    j1_cvr = """Cast Vote Record,Precinct,Ballot Style,Contest 1,Contest 2
 1,p,bs,Choice 1-2,Choice 2-1
 2,p,bs,Choice 1-1,Choice 2-1
 3,p,bs,undervote,Choice 2-1
@@ -1054,7 +1055,7 @@ def test_ballot_comparison_union_choice_names(
 13,p,bs,Choice 1-2,Choice 2-2
 15,p,bs,Choice 1-1,Choice 2-2
 """
-    J2_CVR = """Cast Vote Record,Precinct,Ballot Style,Contest 1,Contest 2
+    j2_cvr = """Cast Vote Record,Precinct,Ballot Style,Contest 1,Contest 2
 1,p,bs,Choice 1-1,Choice 2-1
 2,p,bs,Choice 1-1,Choice 2-1
 3,p,bs,overvote,Choice 2-1
@@ -1076,7 +1077,7 @@ def test_ballot_comparison_union_choice_names(
             "cvrs": [
                 (io.BytesIO(ESS_BALLOTS_1.encode()), "ess_ballots_1.csv",),
                 (io.BytesIO(ESS_BALLOTS_2.encode()), "ess_ballots_2.csv",),
-                (io.BytesIO(J1_CVR.encode()), "ess_cvr.csv",),
+                (io.BytesIO(j1_cvr.encode()), "ess_cvr.csv",),
             ],
             "cvrFileType": "ESS",
         },
@@ -1088,7 +1089,7 @@ def test_ballot_comparison_union_choice_names(
             "cvrs": [
                 (io.BytesIO(ESS_BALLOTS_1.encode()), "ess_ballots_1.csv",),
                 (io.BytesIO(ESS_BALLOTS_2.encode()), "ess_ballots_2.csv",),
-                (io.BytesIO(J2_CVR.encode()), "ess_cvr.csv",),
+                (io.BytesIO(j2_cvr.encode()), "ess_cvr.csv",),
             ],
             "cvrFileType": "ESS",
         },

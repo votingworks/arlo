@@ -133,10 +133,11 @@ def cvr_contests_metadata(
 
 
 def set_contest_metadata_from_cvrs(contest: Contest):
-    if not are_uploaded_cvrs_valid(contest) or len(contest.jurisdictions) == 0:
+    if not are_uploaded_cvrs_valid(contest) or len(list(contest.jurisdictions)) == 0:
         return
 
-    first_jurisdiction_metadata = cvr_contests_metadata(contest.jurisdictions[0])
+    first_jurisdiction_metadata = cvr_contests_metadata(list(contest.jurisdictions)[0])
+    assert first_jurisdiction_metadata is not None
     contest.votes_allowed = first_jurisdiction_metadata[contest.name]["votes_allowed"]
 
     # ES&S/Hart CVRs may only have some of the contest choices in each
@@ -145,7 +146,7 @@ def set_contest_metadata_from_cvrs(contest: Contest):
     # choice names will be the same across jurisdictions. This is safe to do
     # because contest choice names are set by the state, so the same choice
     # should have the same name across jurisdictions.
-    choices = defaultdict(lambda: 0)
+    choices: Dict[str, int] = defaultdict(lambda: 0)
     for jurisdiction in contest.jurisdictions:
         metadata = cvr_contests_metadata(jurisdiction)
         assert metadata is not None
