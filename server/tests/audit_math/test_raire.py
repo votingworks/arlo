@@ -76,7 +76,7 @@ asn_func = lambda m: 1 / m if m > 0 else np.inf
 def test_make_neb_matrix(contest: Contest, cvrs: CVRS):
     expected: NEBMatrix = {
         c: {
-            d: make_neb_assertion(contest, cvrs, asn_func, c, d, [])
+            d: make_neb_assertion(contest, cvrs, asn_func, c, d, set())
             for d in contest.candidates
         }
         for c in contest.candidates
@@ -187,13 +187,13 @@ def test_find_assertions_infinite_branch(
     # Fake neb_matrix into showing all assertions but one as infinite
     nebs = make_neb_matrix(contest, cvrs, asn_func)
     nebs["loser"]["winner"] = make_neb_assertion(
-        contest, cvrs, asn_func, "loser", "winner", []
+        contest, cvrs, asn_func, "loser", "winner", set()
     )
     assert isinstance(nebs["loser"]["winner"], NEBAssertion)
     nebs["loser"]["winner"].difficulty = 0.0000001
 
     nebs["winner"]["loser2"] = make_neb_assertion(
-        contest, cvrs, asn_func, "winner", "loser2", []
+        contest, cvrs, asn_func, "winner", "loser2", set()
     )
     assert isinstance(nebs["winner"]["loser2"], NEBAssertion)
     nebs["winner"]["loser2"].difficulty = np.inf
@@ -276,6 +276,7 @@ def compare_result(path: str, contests: Dict[str, List[str]]):
             path, contest
         )
 
+
 def parse_raire_input(input_file: str):
     contests = {}
     winners = {}
@@ -285,7 +286,6 @@ def parse_raire_input(input_file: str):
         lines = data.readlines()
 
         ncontests = int(lines[0])
-
 
         for i in range(ncontests):
             toks = lines[1 + i].strip().split(",")
@@ -309,7 +309,7 @@ def parse_raire_input(input_file: str):
             bid: str = toks[1]
             prefs: List[str] = toks[2:]
 
-            if prefs != [] and prefs != ['']:
+            if prefs not in [[], [""]]:
                 contests[cid][prefs[0]] += 1
 
             contests[cid]["ballots"] += 1
@@ -330,6 +330,7 @@ def parse_raire_input(input_file: str):
                 cvrs[bid] = {cid: ballot}
 
     return contests, cvrs, winners
+
 
 def run_test(input_file: str, output_file: str, agap: float):
     result: Dict[str, List[str]] = {}
@@ -360,11 +361,13 @@ def test_raire(contest: Contest, cvrs: CVRS):
     expected = []
 
     # we expect to show that winner is not eliminated before loser2
-    expected.append(make_neb_assertion(contest, cvrs, asn_func, "winner", "loser2", []))
+    expected.append(
+        make_neb_assertion(contest, cvrs, asn_func, "winner", "loser2", set([]))
+    )
 
     # we then expect to show that the winner is not eliminated before loser
     expected.append(
-        make_neb_assertion(contest, cvrs, asn_func, "winner", "loser", ["loser2"])
+        make_neb_assertion(contest, cvrs, asn_func, "winner", "loser", set(["loser2"]))
     )
 
     # sort by difficulty
