@@ -83,27 +83,15 @@ def validate_uploaded_cvrs(contest: Contest):
                 f"Couldn't find contest {contest.name} in the CVR for jurisdiction {jurisdiction.name}"
             )
 
-        def choice_names(jurisdiction):
-            return set(
-                cvr_contests_metadata(jurisdiction)[contest.name]["choices"].keys()
-            )
-
-        first_jurisdiction = list(contest.jurisdictions)[0]
-        if choice_names(jurisdiction) != choice_names(first_jurisdiction):
-            raise UserError(
-                f"CVR choice names don't match for contest {contest.name}:\n"
-                f"{jurisdiction.name}: {', '.join(sorted(choice_names(jurisdiction)))}\n"
-                f"{first_jurisdiction.name}: {', '.join(sorted(choice_names(first_jurisdiction)))}"
-            )
-
-        # In hybrid audits specifically, we also need to check that the choice
-        # names match those entered by the audit admin.
-        if first_jurisdiction.election.audit_type == AuditType.HYBRID:
+        # In hybrid audits, we need to check that the choice names match those
+        # entered by the audit admin.
+        if contest.election.audit_type == AuditType.HYBRID:
             contest_choice_names = {choice.name for choice in contest.choices}
-            if choice_names(jurisdiction) != contest_choice_names:
+            cvr_choice_names = set(contests_metadata[contest.name]["choices"].keys())
+            if not cvr_choice_names.issubset(contest_choice_names):
                 raise UserError(
                     f"CVR choice names don't match for contest {contest.name}:\n"
-                    f"{jurisdiction.name}: {', '.join(sorted(choice_names(jurisdiction)))}\n"
+                    f"{jurisdiction.name}: {', '.join(sorted(cvr_choice_names))}\n"
                     f"Contest settings: {', '.join(sorted(contest_choice_names))}"
                 )
 
@@ -145,31 +133,35 @@ def cvr_contests_metadata(
 
 
 def set_contest_metadata_from_cvrs(contest: Contest):
-    if not are_uploaded_cvrs_valid(contest):
+    if not are_uploaded_cvrs_valid(contest) or len(list(contest.jurisdictions)) == 0:
         return
 
-    contest.choices = []
+    first_jurisdiction_metadata = cvr_contests_metadata(list(contest.jurisdictions)[0])
+    assert first_jurisdiction_metadata is not None
+    contest.votes_allowed = first_jurisdiction_metadata[contest.name]["votes_allowed"]
 
+    # ES&S/Hart CVRs may only have some of the contest choices in each
+    # jurisdiction, so we union choice names across jurisdictions, adding up the
+    # votes. In Dominion/ClearBallot CVRs, this should have no impact, since the
+    # choice names will be the same across jurisdictions. This is safe to do
+    # because contest choice names are set by the state, so the same choice
+    # should have the same name across jurisdictions.
+    choices: Dict[str, int] = defaultdict(lambda: 0)
     for jurisdiction in contest.jurisdictions:
         metadata = cvr_contests_metadata(jurisdiction)
         assert metadata is not None
-        contest_metadata = metadata[contest.name]
+        for choice_name, choice_metadata in metadata[contest.name]["choices"].items():
+            choices[choice_name] += choice_metadata["num_votes"]
 
-        if len(contest.choices) == 0:
-            contest.choices = [
-                ContestChoice(
-                    id=str(uuid.uuid4()),
-                    contest_id=contest.id,
-                    name=choice_name,
-                    num_votes=0,
-                )
-                for choice_name in contest_metadata["choices"]
-            ]
-
-        contest.votes_allowed = contest_metadata["votes_allowed"]
-        for choice_name, choice_metadata in contest_metadata["choices"].items():
-            choice = next(c for c in contest.choices if c.name == choice_name)
-            choice.num_votes += choice_metadata["num_votes"]
+    contest.choices = [
+        ContestChoice(
+            id=str(uuid.uuid4()),
+            contest_id=contest.id,
+            name=choice_name,
+            num_votes=num_votes,
+        )
+        for choice_name, num_votes in choices.items()
+    ]
 
 
 # For Hybrid audits, we need to compute the vote counts for the CVRs
@@ -581,8 +573,11 @@ def parse_ess_cvrs(
         # Precinct, Ballot Style and the rest are contest names
         first_contest_column = 3
         contest_names = headers[first_contest_column:]
+        # Since "overvote" and "undervote" are treated like choices in ES&S
+        # CVRs, we want to make sure they are always part of the parsed choice
+        # list so that they always appear to audit boards.
         contest_choices: Dict[str, Set[str]] = {
-            contest_name: set() for contest_name in contest_names
+            contest_name: {"overvote", "undervote"} for contest_name in contest_names
         }
 
         header_indices = get_header_indices(headers)

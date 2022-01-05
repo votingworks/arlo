@@ -265,8 +265,6 @@ def round_sizes(contest: Contest) -> Dict[int, int]:
 
 
 def cvrs_for_contest(contest: Contest) -> sampler_contest.CVRS:
-    choice_name_to_id = {choice.name: choice.id for choice in contest.choices}
-
     cvrs: sampler_contest.CVRS = {}
 
     for jurisdiction in contest.jurisdictions:
@@ -288,23 +286,34 @@ def cvrs_for_contest(contest: Contest) -> sampler_contest.CVRS:
         )
 
         for ballot_key, interpretations_str in interpretations_by_ballot:
-            ballot_cvr: sampler_contest.CVR = {contest.id: {}}
             # interpretations is the raw CVR string: 1,0,0,1,0,1,0. We need to
             # pick out the interpretation for each contest choice. We saved the
             # column index for each choice when we parsed the CVR.
             interpretations = interpretations_str.split(",")
-            for choice_name, choice_metadata in choices_metadata.items():
-                interpretation = interpretations[choice_metadata["column"]]
-                # If the interpretations are empty, it means the contest wasn't
-                # on the ballot, so we should skip this contest entirely for
-                # this ballot.
-                if interpretation == "":
-                    ballot_cvr = {}
-                else:
-                    choice_id = choice_name_to_id[choice_name]
-                    ballot_cvr[contest.id][choice_id] = int(interpretation)
+            choice_interpretations = {
+                choice_name: interpretations[choice_metadata["column"]]
+                for choice_name, choice_metadata in choices_metadata.items()
+            }
 
-            cvrs[ballot_key] = ballot_cvr
+            # If the interpretations are empty, it means the contest wasn't
+            # on the ballot, so we should skip this contest entirely for
+            # this ballot.
+            if all(
+                interpretation == ""
+                for interpretation in choice_interpretations.values()
+            ):
+                cvrs[ballot_key] = {}
+            else:
+                # Since some CVRs don't list every contest choice, we may not
+                # have an interpretation for a choice. In that case, we can
+                # assume that choice didn't get voted for, so we set its
+                # interpretation to 0.
+                cvrs[ballot_key] = {
+                    contest.id: {
+                        choice.id: int(choice_interpretations.get(choice.name, "0"))
+                        for choice in contest.choices
+                    }
+                }
 
     return cvrs
 
