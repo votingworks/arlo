@@ -1217,9 +1217,9 @@ def test_ess_cvr_upload(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
         data={
             "cvrs": [
-                (io.BytesIO(ESS_BALLOTS_1.encode()), "ess_ballots_1.csv",),
                 (io.BytesIO(ESS_CVR.encode()), "ess_cvr.csv",),
                 (io.BytesIO(ESS_BALLOTS_2.encode()), "ess_ballots_2.csv",),
+                (io.BytesIO(ESS_BALLOTS_1.encode()), "ess_ballots_1.csv",),
             ],
             "cvrFileType": "ESS",
         },
@@ -1365,6 +1365,13 @@ def test_ess_cvr_invalid(
                 (io.BytesIO(b""), "ess_cvr.csv",),
             ],
             "ess_cvr.csv: CSV cannot be empty.",
+        ),
+        (
+            [
+                (io.BytesIO(ESS_CVR.encode()), "ess_cvr.csv",),
+                (io.BytesIO(b"Ballots"), "ess_ballots_1.csv",),
+            ],
+            "ess_ballots_1.csv: Please submit a valid CSV file with columns separated by commas.",
         ),
         (
             [

@@ -7,11 +7,13 @@ from typing import (
     BinaryIO,
     Dict,
     Iterable,
+    Iterator,
     List,
     Optional,
     Set,
     TextIO,
     Tuple,
+    TypeVar,
     TypedDict,
     cast as typing_cast,
 )
@@ -54,6 +56,13 @@ from ..util.csv_parse import (
 )
 from ..audit_math.suite import HybridPair
 from ..activity_log.activity_log import UploadFile, activity_base, record_activity
+
+T = TypeVar("T")  # pylint: disable=invalid-name
+
+
+def peek(iterator: Iterator[T]) -> Tuple[T, Iterator[T]]:
+    first = next(iterator)
+    return first, itertools.chain([first], iterator)
 
 
 class CvrChoiceMetadata(TypedDict):
@@ -493,9 +502,12 @@ def parse_ess_cvrs(
         (batch.tabulator, batch.name): batch for batch in jurisdiction.batches
     }
 
-    def parse_ballots_csv(
-        ballots_csv: CSVIterator,
-    ) -> Iterable[Tuple[str, CvrBallot]]:  # (CVR number, ballot)
+    def parse_ballots_file(
+        ballots_file: TextIO,
+    ) -> Iterator[Tuple[str, CvrBallot]]:  # (CVR number, ballot)
+        validate_comma_delimited(ballots_file)
+        ballots_csv = csv.reader(ballots_file, delimiter=",")
+
         # Skip some metadata rows
         # pylint: disable=stop-iteration-return
         _ballots_header = next(ballots_csv)
@@ -620,7 +632,7 @@ def parse_ess_cvrs(
 
     def parse_interpretations(
         cvr_csv: CSVIterator, contests_metadata: CVR_CONTESTS_METADATA
-    ) -> Iterable[Tuple[str, str]]:  # (CVR number, interpretations)
+    ) -> Iterator[Tuple[str, str]]:  # (CVR number, interpretations)
         # pylint: disable=stop-iteration-return
         headers = next(cvr_csv)
         header_indices = get_header_indices(headers)
@@ -661,21 +673,36 @@ def parse_ess_cvrs(
 
     def parse_and_concat_ballots_files(
         ballots_files: Dict[str, TextIO]
-    ) -> Iterable[Tuple[str, CvrBallot]]:
-        for name, ballots_file in ballots_files.items():
+    ) -> Iterator[Tuple[str, CvrBallot]]:
+        # We need to concatenate the ballot files in order of CVR number (which
+        # is ordered within each file). So we parse each file into a stream of
+        # ballots, peek at the first ballot's CVR number, and then concatenate
+        # the streams in order of the first CVR number.
+        ballot_streams = []
+        for file_name, ballots_file in ballots_files.items():
             try:
-                validate_comma_delimited(ballots_file)
-                ballots_csv = csv.reader(ballots_file, delimiter=",")
-                yield from parse_ballots_csv(ballots_csv)
+                ballots = parse_ballots_file(ballots_file)
+                (first_cvr_number, _), ballots = peek(ballots)
+                ballot_streams.append(
+                    (first_cvr_number, ballots, file_name, ballots_file)
+                )
             except UserError as error:
-                raise UserError(f"{name}: {error}") from error
+                raise UserError(f"{file_name}: {error}") from error
+
+        for _, ballots, file_name, ballots_file in sorted(
+            ballot_streams, key=lambda stream_tuple: stream_tuple[0]  # first_cvr_number
+        ):
+            try:
+                yield from ballots
+            except UserError as error:
+                raise UserError(f"{file_name}: {error}") from error
             finally:
                 ballots_file.close()
 
     def join_ballots_to_interpretations(
-        all_ballots: Iterable[Tuple[str, CvrBallot]],
-        all_interpretations: Iterable[Tuple[str, str]],
-    ) -> Iterable[CvrBallot]:
+        all_ballots: Iterator[Tuple[str, CvrBallot]],
+        all_interpretations: Iterator[Tuple[str, str]],
+    ) -> Iterator[CvrBallot]:
         for cvr_ballot, cvr_interpretations in itertools.zip_longest(
             all_ballots, all_interpretations
         ):
