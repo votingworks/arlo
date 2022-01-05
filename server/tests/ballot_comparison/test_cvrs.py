@@ -1368,6 +1368,13 @@ def test_ess_cvr_invalid(
         ),
         (
             [
+                (io.BytesIO(ESS_CVR.encode()), "ess_cvr.csv",),
+                (io.BytesIO(b"Ballots"), "ess_ballots_1.csv",),
+            ],
+            "ess_ballots_1.csv: Please submit a valid CSV file with columns separated by commas.",
+        ),
+        (
+            [
                 (io.BytesIO(ESS_BALLOTS_1.encode()), "ess_ballots_1.csv",),
                 (io.BytesIO(ESS_CVR.encode()), "ess_cvr.csv",),
                 (
