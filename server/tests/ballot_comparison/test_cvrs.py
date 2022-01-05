@@ -1217,9 +1217,9 @@ def test_ess_cvr_upload(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
         data={
             "cvrs": [
-                (io.BytesIO(ESS_BALLOTS_1.encode()), "ess_ballots_1.csv",),
                 (io.BytesIO(ESS_CVR.encode()), "ess_cvr.csv",),
                 (io.BytesIO(ESS_BALLOTS_2.encode()), "ess_ballots_2.csv",),
+                (io.BytesIO(ESS_BALLOTS_1.encode()), "ess_ballots_1.csv",),
             ],
             "cvrFileType": "ESS",
         },
