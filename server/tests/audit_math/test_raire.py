@@ -275,25 +275,25 @@ def compare_result(path: str, contests: Dict[str, List[str]]):
 
         parsed_asrtns = set()
         for asrtn in asrtns:
-            a_type = asrtn.split(',')[0]
-            winner = asrtn.split(',')[2]
-            loser = asrtn.split(',')[4]
-            eliminated = set(asrtn.split('Eliminated,')[-1].split(','))
+            a_type = asrtn.split(",")[0]
+            winner = asrtn.split(",")[2]
+            loser = asrtn.split(",")[4]
+            eliminated = set(asrtn.split("Eliminated,")[-1].split(","))
 
             parsed_a: RaireAssertion
 
-            if a_type == 'NEB':
+            if a_type == "NEB":
                 parsed_a = NEBAssertion(contest, winner, loser)
-            elif a_type == 'NEN':
+            elif a_type == "NEN":
                 parsed_a = NENAssertion(contest, winner, loser, eliminated)
             else:
-                raise Exception(f'Unexpected assertion type: {a_type}')
+                raise Exception(f"Unexpected assertion type: {a_type}")
 
             parsed_asrtns.add(str(parsed_a))
 
-        assert set(parsed_asrtns) == casrtns, "Assertions differ for {}, contest {}".format(
-            path, contest
-        )
+        assert (
+            set(parsed_asrtns) == casrtns
+        ), "Assertions differ for {}, contest {}".format(path, contest)
 
 
 def parse_raire_input(input_file: str):

@@ -1007,6 +1007,7 @@ def test_raire_example_12():
     assert diff < 10 ** -4, f"Got unexpected p-value {p_value}, expected {expected_p}"
     assert not finished
 
+
 def test_raire_example_broken():
     # Election taken from the RAIRE paper (Example 12). "Alice" wins.
     contest = Contest(
@@ -1042,6 +1043,7 @@ def test_raire_example_broken():
 
     # check that we get the right assertions
     assert not compute_raire_assertions(contest, cvrs, asn_func, 0)
+
 
 ss_contests = {
     "Contest A": {
