@@ -355,14 +355,11 @@ def compute_risk(
             else:
                 e_r = Decimal(0)
 
-            if margin:
-                U = 2 * gamma / Decimal(margin)
-                denom = (2 * gamma) / V
-                p_b = (1 - 1 / U) / (1 - (e_r / denom))
-            else:
-                # If the contest is a tie, this step results in 1 - 1/(infinity)
-                # divided by 1 - e_r/infinity, i.e. 1
-                p_b = Decimal(1.0)
+            # Note that a tie is never possible in this part of the code, so
+            # margin will never be 0.
+            U = 2 * gamma / Decimal(margin)
+            denom = (2 * gamma) / V
+            p_b = (1 - 1 / U) / (1 - (e_r / denom))
 
             multiplicity = sample_cvr[ballot]["times_sampled"]
             p *= p_b ** multiplicity

@@ -1007,6 +1007,41 @@ def test_raire_example_12():
     assert diff < 10 ** -4, f"Got unexpected p-value {p_value}, expected {expected_p}"
     assert not finished
 
+def test_raire_example_broken():
+    # Election taken from the RAIRE paper (Example 12). "Alice" wins.
+    contest = Contest(
+        "synth",
+        {
+            "Alice": 10000,
+            "Bob": 6500,
+            "Charlie": 5500,
+            "Dara": 5000,
+            "ballots": 27000,
+            "numWinners": 1,
+            "votesAllowed": 1,
+        },
+    )
+
+    cvrs = {}
+
+    for i in range(27000):
+        if i < 5000:
+            cvrs[i] = {"synth": {"Alice": 1, "Bob": 2, "Charlie": 3, "Dara": 0}}
+        if 5000 <= i < 10000:
+            cvrs[i] = {"synth": {"Alice": 1, "Bob": 3, "Charlie": 2, "Dara": 0}}
+        elif 10000 <= i < 15000:
+            cvrs[i] = {"synth": {"Alice": 3, "Bob": 1, "Charlie": 2, "Dara": 0}}
+        elif 15000 <= i < 16500:
+            cvrs[i] = {"synth": {"Alice": 2, "Bob": 1, "Charlie": 3, "Dara": 0}}
+        elif 16500 <= i < 21500:
+            cvrs[i] = {"synth": {"Alice": 3, "Bob": 2, "Charlie": 1, "Dara": 0}}
+        elif 21500 <= i < 22000:
+            cvrs[i] = {"synth": {"Alice": 2, "Bob": 3, "Charlie": 1, "Dara": 0}}
+        else:
+            cvrs[i] = {"synth": {"Alice": 2, "Bob": 0, "Charlie": 0, "Dara": 1}}
+
+    # check that we get the right assertions
+    assert not compute_raire_assertions(contest, cvrs, asn_func, 0)
 
 ss_contests = {
     "Contest A": {
