@@ -1,14 +1,15 @@
-from typing import Union, List
+from typing import BinaryIO, Union, List
 import os, io, pytest
 from werkzeug.exceptions import BadRequest
 from werkzeug.datastructures import FileStorage
+
 from ...api.jurisdictions import JURISDICTIONS_COLUMNS
 from ...util.csv_parse import (
-    parse_csv,
-    decode_csv_file,
+    parse_csv as parse_csv_binary,
     CSVParseError,
     CSVColumnType,
     CSVValueType,
+    validate_csv_mimetype,
 )
 
 BALLOT_MANIFEST_COLUMNS = [
@@ -23,6 +24,12 @@ BALLOT_MANIFEST_COLUMNS_COMPOSITE_KEY = [
     CSVColumnType("Number of Ballots", CSVValueType.NUMBER),
     CSVColumnType("Tabulator", CSVValueType.TEXT, unique=True),
 ]
+
+
+# Quick wrapper function so we can write the tests with regular strings, not byte strings
+def parse_csv(csv_string: str, columns: List[CSVColumnType]):
+    return parse_csv_binary(io.BytesIO(csv_string.encode("utf-8")), columns)
+
 
 # Happy path
 def test_parse_csv_happy_path():
@@ -863,9 +870,7 @@ City of Petersburg #1,203,,
         BALLOT_MANIFEST_COLUMNS,
     ),
     (
-        io.FileIO(
-            os.path.join(os.path.dirname(__file__), "windows1252-encoded.csv")
-        ).read(),
+        io.FileIO(os.path.join(os.path.dirname(__file__), "windows1252-encoded.csv")),
         245,
         BALLOT_MANIFEST_COLUMNS,
     ),
@@ -873,10 +878,10 @@ City of Petersburg #1,203,,
 
 
 def test_parse_csv_real_world_examples():
-    def do_parse(csv: Union[str, bytes], columns: List[CSVColumnType]) -> list:
-        if isinstance(csv, bytes):
-            csv = decode_csv_file(FileStorage(io.BytesIO(csv), content_type="text/csv"))
-        return list(parse_csv(csv, columns))
+    def do_parse(csv: Union[str, BinaryIO], columns: List[CSVColumnType]) -> list:
+        if isinstance(csv, str):
+            return list(parse_csv(csv, columns))
+        return list(parse_csv_binary(csv, columns))
 
     for (csv, expected_error, columns) in REAL_WORLD_REJECTED_CSVS:
         with pytest.raises(CSVParseError) as error:
@@ -888,57 +893,57 @@ def test_parse_csv_real_world_examples():
         assert len(parsed) == expected_rows
 
 
-def test_decode_windows_csv_mimetype():
-    assert (
-        decode_csv_file(
-            FileStorage(io.BytesIO(b"a,b,c"), content_type="application/vnd.ms-excel")
-        )
-        == "a,b,c"
-    )
+def test_validate_csv_mimetype():
+    validate_csv_mimetype(FileStorage(b"", content_type="text/csv"))
+    validate_csv_mimetype(FileStorage(b"", content_type="application/vnd.ms-excel"))
+
+    for invalid_mimetype in [
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "application/pdf",
+        "text/plain",
+    ]:
+        with pytest.raises(BadRequest) as error:
+            validate_csv_mimetype(FileStorage(b"", content_type=invalid_mimetype,))
+            assert error.value.description == (
+                "Please submit a valid CSV."
+                " If you are working with an Excel spreadsheet,"
+                " make sure you export it as a .csv file before uploading"
+            )
 
 
-def test_decode_excel_file():
+def test_parse_csv_excel_file():
     excel_file_path = os.path.join(
         os.path.dirname(__file__), "test-ballot-manifest.xlsx"
     )
     with open(excel_file_path, "rb") as excel_file:
-        with pytest.raises(BadRequest) as error:
-            decode_csv_file(
-                FileStorage(
-                    excel_file,
-                    content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                )
-            )
-        assert error.value.description == (
+        with pytest.raises(CSVParseError) as error:
+            parse_csv_binary(excel_file, [])
+        assert str(error.value) == (
             "Please submit a valid CSV."
             " If you are working with an Excel spreadsheet,"
             " make sure you export it as a .csv file before uploading"
         )
 
 
-def test_decode_pdf_file():
-    with pytest.raises(BadRequest) as error:
-        decode_csv_file(
-            FileStorage(
-                io.BytesIO(
-                    b"%PDF-1.4\r%\xe2\xe3\xcf\xd3\r\n7222 0 obj\r<</Linearized 1/L 10747310/O 7225/E 11059/N 2320/T 10602748/H [ 616 3649]>>\rendobj\r    \r\nxref\r\n7222 16\r\n0000000016 00000 n\r\n0000004265 00000 n\r\n0000004349 00000 n\r\n0000004387 00000 n\r\n0000004657 00000 n\r\n0000004748 00000 n\r\n0000005220 00000 n\r\n0000005380 00000 n\r\n0000006551 00000 n\r\n0000007201 00000 n\r\n0000007850 00000 n\r\n0000008480 00000 n\r\n0000009139 00000 n\r\n0000009801 00000 n\r\n0000010446 00000 n\r\n0000000616 00000 n\r\n"
-                ),
-                content_type="application/pdf",
-            )
+def test_parse_csv_pdf_file():
+    with pytest.raises(CSVParseError) as error:
+        parse_csv_binary(
+            io.BytesIO(
+                b"%PDF-1.4\r%\xe2\xe3\xcf\xd3\r\n7222 0 obj\r<</Linearized 1/L 10747310/O 7225/E 11059/N 2320/T 10602748/H [ 616 3649]>>\rendobj\r    \r\nxref\r\n7222 16\r\n0000000016 00000 n\r\n0000004265 00000 n\r\n0000004349 00000 n\r\n0000004387 00000 n\r\n0000004657 00000 n\r\n0000004748 00000 n\r\n0000005220 00000 n\r\n0000005380 00000 n\r\n0000006551 00000 n\r\n0000007201 00000 n\r\n0000007850 00000 n\r\n0000008480 00000 n\r\n0000009139 00000 n\r\n0000009801 00000 n\r\n0000010446 00000 n\r\n0000000616 00000 n\r\n"
+            ),
+            [],
         )
-    assert error.value.description == (
-        "Please submit a valid CSV."
-        " If you are working with an Excel spreadsheet,"
-        " make sure you export it as a .csv file before uploading"
+    assert str(error.value) == (
+        "Please submit a valid CSV file with columns separated by commas."
     )
 
 
-def test_decode_cant_detect_encoding():
+def test_parse_csv_cant_detect_encoding():
     undetectable_file_path = os.path.join(os.path.dirname(__file__), "undetectable.pdf")
     with open(undetectable_file_path, "rb") as file:
-        with pytest.raises(BadRequest) as error:
-            decode_csv_file(FileStorage(file, content_type="text/csv",))
-    assert error.value.description == (
+        with pytest.raises(CSVParseError) as error:
+            parse_csv_binary(file, [])
+    assert str(error.value) == (
         "Please submit a valid CSV."
         " If you are working with an Excel spreadsheet,"
         " make sure you export it as a .csv file before uploading"

@@ -21,9 +21,20 @@ from ..worker.tasks import (
     background_task,
     create_background_task,
 )
-from ..util.file import serialize_file, serialize_file_processing
+from ..util.file import (
+    retrieve_file,
+    serialize_file,
+    serialize_file_processing,
+    store_file,
+    timestamp_filename,
+)
 from ..util.jsonschema import JSONDict
-from ..util.csv_parse import CSVColumnType, CSVValueType, decode_csv_file, parse_csv
+from ..util.csv_parse import (
+    CSVColumnType,
+    CSVValueType,
+    parse_csv,
+    validate_csv_mimetype,
+)
 from ..util.csv_download import csv_response
 
 logger = logging.getLogger("arlo")
@@ -40,9 +51,8 @@ JURISDICTIONS_COLUMNS = [
 @background_task
 def process_jurisdictions_file(election_id: str):
     election = Election.query.get(election_id)
-    jurisdictions_csv = parse_csv(
-        election.jurisdictions_file.contents, JURISDICTIONS_COLUMNS
-    )
+    jurisdictions_file = retrieve_file(election.jurisdictions_file.storage_path)
+    jurisdictions_csv = parse_csv(jurisdictions_file, JURISDICTIONS_COLUMNS)
 
     # Clear existing admins.
     JurisdictionAdministration.query.filter(
@@ -80,6 +90,8 @@ def process_jurisdictions_file(election_id: str):
         admin = JurisdictionAdministration(jurisdiction=jurisdiction, user=user)
         db_session.add(admin)
         new_admins.append(admin)
+
+    jurisdictions_file.close()
 
     # Delete unmanaged jurisdictions.
     unmanaged_admin_id_records = (
@@ -507,7 +519,8 @@ def download_jurisdictions_file(election: Election):
         return NotFound()
 
     return csv_response(
-        election.jurisdictions_file.contents, election.jurisdictions_file.name
+        retrieve_file(election.jurisdictions_file.storage_path),
+        election.jurisdictions_file.name,
     )
 
 
@@ -524,11 +537,18 @@ def update_jurisdictions_file(election: Election):
     if "jurisdictions" not in request.files:
         raise BadRequest("Missing required file parameter 'jurisdictions'")
 
+    validate_csv_mimetype(request.files["jurisdictions"])
+
     jurisdictions_file = request.files["jurisdictions"]
+    storage_path = store_file(
+        jurisdictions_file.stream,
+        f"audits/{election.id}/"
+        + timestamp_filename("participating_jurisdictions", "csv"),
+    )
     election.jurisdictions_file = File(
         id=str(uuid.uuid4()),
         name=jurisdictions_file.filename,
-        contents=decode_csv_file(jurisdictions_file),
+        storage_path=storage_path,
         uploaded_at=datetime.datetime.now(timezone.utc),
     )
     election.jurisdictions_file.task = create_background_task(

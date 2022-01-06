@@ -13,6 +13,8 @@ os.environ["FLASK_ENV"] = "test"
 # don't want tests to interfere with each other's background tasks when running
 # concurrently).
 os.environ["RUN_BACKGROUND_TASKS_IMMEDIATELY"] = "True"
+# Always use the local file system (not S3) for tests.
+os.environ["ARLO_FILE_UPLOAD_STORAGE_PATH"] = "/tmp/arlo-test"
 # pylint: disable=wrong-import-position
 
 from ..app import app

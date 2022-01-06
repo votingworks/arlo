@@ -77,13 +77,22 @@ HTTP_ORIGIN = read_env_var(
 
 # Support user login config
 SUPPORT_AUTH0_BASE_URL = read_env_var(
-    "ARLO_SUPPORT_AUTH0_BASE_URL", env_defaults=dict(test="")
+    "ARLO_SUPPORT_AUTH0_BASE_URL",
+    env_defaults=dict(
+        test="http://localhost:8080", development="http://localhost:8080"
+    ),
 )
 SUPPORT_AUTH0_CLIENT_ID = read_env_var(
-    "ARLO_SUPPORT_AUTH0_CLIENT_ID", env_defaults=dict(test="")
+    "ARLO_SUPPORT_AUTH0_CLIENT_ID",
+    env_defaults=dict(
+        test="test-support-client-id", development="dev-support-client-id"
+    ),
 )
 SUPPORT_AUTH0_CLIENT_SECRET = read_env_var(
-    "ARLO_SUPPORT_AUTH0_CLIENT_SECRET", env_defaults=dict(test="")
+    "ARLO_SUPPORT_AUTH0_CLIENT_SECRET",
+    env_defaults=dict(
+        test="test-support-client-secret", development="dev-support-client-secret"
+    ),
 )
 # Required email domain(s) for support users (comma-separated string)
 SUPPORT_EMAIL_DOMAINS = read_env_var(
@@ -92,28 +101,54 @@ SUPPORT_EMAIL_DOMAINS = read_env_var(
 
 # Audit admin OAuth login config
 AUDITADMIN_AUTH0_BASE_URL = read_env_var(
-    "ARLO_AUDITADMIN_AUTH0_BASE_URL", env_defaults=dict(test="")
+    "ARLO_AUDITADMIN_AUTH0_BASE_URL",
+    env_defaults=dict(
+        test="http://localhost:8080", development="http://localhost:8080"
+    ),
 )
 AUDITADMIN_AUTH0_CLIENT_ID = read_env_var(
-    "ARLO_AUDITADMIN_AUTH0_CLIENT_ID", env_defaults=dict(test="")
+    "ARLO_AUDITADMIN_AUTH0_CLIENT_ID",
+    env_defaults=dict(
+        test="test-auditadmin-client-id", development="dev-auditadmin-client-id"
+    ),
 )
 AUDITADMIN_AUTH0_CLIENT_SECRET = read_env_var(
-    "ARLO_AUDITADMIN_AUTH0_CLIENT_SECRET", env_defaults=dict(test="")
+    "ARLO_AUDITADMIN_AUTH0_CLIENT_SECRET",
+    env_defaults=dict(
+        test="test-auditadmin-client-secret", development="dev-auditadmin-client-secret"
+    ),
 )
 
 # Jurisdiction admin login code email config
-SMTP_HOST = read_env_var("ARLO_SMTP_HOST", env_defaults=dict(test="test-smtp-host"))
+SMTP_HOST = read_env_var(
+    "ARLO_SMTP_HOST",
+    env_defaults=dict(development="dev-smtp-host", test="test-smtp-host"),
+)
 SMTP_PORT = int(
     read_env_var("ARLO_SMTP_PORT", env_defaults=dict(development="587", test="587"))
 )
 SMTP_USERNAME = read_env_var(
-    "ARLO_SMTP_USERNAME", env_defaults=dict(test="test-smtp-username")
+    "ARLO_SMTP_USERNAME",
+    env_defaults=dict(development="dev-smtp-username", test="test-smtp-username"),
 )
 SMTP_PASSWORD = read_env_var(
-    "ARLO_SMTP_PASSWORD", env_defaults=dict(test="test-smtp-password")
+    "ARLO_SMTP_PASSWORD",
+    env_defaults=dict(development="dev-smtp-password", test="test-smtp-password"),
 )
 LOGIN_CODE_LIFETIME = timedelta(minutes=15)
 
+
+# Where to store user-uploaded files - can either be a local file system path or an S3 bucket url
+FILE_UPLOAD_STORAGE_PATH = read_env_var(
+    "ARLO_FILE_UPLOAD_STORAGE_PATH",
+    env_defaults=dict(development="/tmp/arlo", test="/tmp/arlo-test"),
+)
+# If using S3, AWS credentials are required as well
+AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY = (
+    (read_env_var("AWS_ACCESS_KEY_ID"), read_env_var("AWS_SECRET_ACCESS_KEY"))
+    if FILE_UPLOAD_STORAGE_PATH.startswith("s3://")
+    else (None, None)
+)
 
 # Configure round size growth from ARLO_MINERVA_MULTIPLE (a float) if given, otherwise 1.5
 MINERVA_MULTIPLE = float(read_env_var("ARLO_MINERVA_MULTIPLE", default="1.5"))

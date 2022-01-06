@@ -76,15 +76,14 @@ Before submitting a pull request, please review our [Contribution Guidelines](./
 
 #### Installing Arlo
 
-We recommend running Arlo on Ubuntu 18.0.4.
+We recommend running Arlo on Ubuntu 20.
 
 - Clone the Arlo repository from https://github.com/votingworks/arlo.
-- Install Node10. See https://joshtronic.com/2018/05/08/how-to-install-nodejs-10-on-ubuntu-1804-lts/
 - `make dev-environment` or, if you prefer, look at individual make tasks like `deps`, `initdevdb`, `install-development`, and `resetdb`
 
 Here are some troubleshooting steps for issues we've run into when installing Arlo before:
 
-- Postgres is best installed by grabbing `postgresql-server-dev-10` and `postgresql-client-10`.
+- Arlo expects the Postgresql server to use the UTC timezone. You may need to edit `/etc/postgresql/10/main/postgresql.conf` and set `timezone = UTC`.
 - `psycopg2` has known issues depending on your install (see, e.g., [here](https://github.com/psycopg/psycopg2/issues/674)). If you run into issues, switch `psycopg2` to `psycopg2-binary` in pyproject.toml
 - A password may have to be set in the `DATABASE_URL` env var depending on your install of postgres. To do this, change `postgresql://postgres@localhost:5432/arlo` to `postgresql://postgres:{PASSWORD}@localhost:5432/arlo`, replacing `{PASSWORD}` with the password.
 - You may need to create `arlo` and `arlo-test` databases manually [via postgres](https://www.postgresql.org/docs/9.0/sql-createdatabase.html).
@@ -102,6 +101,7 @@ Arlo is configured mostly through environment variables. Below are the basic env
 - `ARLO_SUPPORT_EMAIL_DOMAIN`: required email address domains for support users (comma-separated list)
 - `ARLO_AUDITADMIN_AUTH0_BASE_URL`, `ARLO_AUDITADMIN_AUTH0_CLIENT_ID`, `ARLO_AUDITADMIN_AUTH0_CLIENT_SECRET`: base url, client id, and client secret for the OAuth identity provider used for audit admins.
 - `ARLO_SMTP_HOST`, `ARLO_SMTP_PORT`, `ARLO_SMTP_USERNAME`, `ARLO_SMTP_PASSWORD`: SMTP configuration for sending jurisdiction admin login code emails (we use [Mailgun](https://www.mailgun.com/))
+- `ARLO_FILE_UPLOAD_STORAGE_PATH`: where Arlo should store files uploaded by users. This can either be a local filesystem path, or an [Amazon S3](https://aws.amazon.com/s3/) path of the form: `s3://bucket_name`. If using S3, two other env variables are required: `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`.
 
 Arlo has three user types: audit administrators, jurisdiction managers, and support users. Audit admins and support users are both authenticated via OAuth. Our OAuth identity provider of choice is Auth0, but Arlo is (mostly) agnostic to this choice. More on how we use Auth0 in [docs/auth.md](docs/auth.md).
 

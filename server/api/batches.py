@@ -58,8 +58,9 @@ def get_batch_retrieval_list(
     retrieval_list_writer = csv.writer(csv_io)
     retrieval_list_writer.writerows(retrieval_list_rows)
 
+    csv_io.seek(0)
     return csv_response(
-        csv_io.getvalue(),
+        csv_io,
         filename=f"batch-retrieval-{jurisdiction_timestamp_name(election, jurisdiction)}.csv",
     )
 

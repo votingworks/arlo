@@ -1,11 +1,22 @@
+import re
 from typing import Any, Dict, List, Union
 import jsonschema
 import jsonschema.validators
+
 
 # An approximation of a JSON object type, since mypy doesn't support
 # recursive types.
 JSONDict = Dict[str, Any]
 JSONSchema = JSONDict
+
+# https://emailregex.com/
+EMAIL_REGEX = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
+
+# The built-in checker for email just checks if there's an @ in the string
+jsonschema.draft7_format_checker.checkers["email"] = (
+    lambda value: EMAIL_REGEX.match(value) is not None,
+    (),
+)
 
 
 def validate(instance: Any, schema: JSONSchema):

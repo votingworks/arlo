@@ -14,9 +14,20 @@ from ..worker.tasks import (
     background_task,
     create_background_task,
 )
-from ..util.file import serialize_file, serialize_file_processing
+from ..util.file import (
+    retrieve_file,
+    serialize_file,
+    serialize_file_processing,
+    store_file,
+    timestamp_filename,
+)
 from ..util.csv_download import csv_response
-from ..util.csv_parse import decode_csv_file, parse_csv, CSVValueType, CSVColumnType
+from ..util.csv_parse import (
+    parse_csv,
+    CSVValueType,
+    CSVColumnType,
+    validate_csv_mimetype,
+)
 from ..activity_log.activity_log import UploadFile, activity_base, record_activity
 
 BATCH_NAME = "Batch Name"
@@ -41,9 +52,9 @@ def process_batch_tallies_file(
             for choice in contest.choices
         ]
 
-        batch_tallies_csv = list(
-            parse_csv(jurisdiction.batch_tallies_file.contents, columns)
-        )
+        batch_tallies_file = retrieve_file(jurisdiction.batch_tallies_file.storage_path)
+        batch_tallies_csv = list(parse_csv(batch_tallies_file, columns))
+        batch_tallies_file.close()
 
         # Validate that the batch names match the ballot manifest
         jurisdiction_batch_names = {batch.name for batch in jurisdiction.batches}
@@ -139,6 +150,8 @@ def validate_batch_tallies_upload(
     if "batchTallies" not in request.files:
         raise BadRequest("Missing required file parameter 'batchTallies'")
 
+    validate_csv_mimetype(request.files["batchTallies"])
+
 
 def clear_batch_tallies_data(jurisdiction: Jurisdiction):
     jurisdiction.batch_tallies = None
@@ -157,10 +170,15 @@ def upload_batch_tallies(
     clear_batch_tallies_data(jurisdiction)
 
     batch_tallies = request.files["batchTallies"]
+    storage_path = store_file(
+        batch_tallies.stream,
+        f"audits/{jurisdiction.election_id}/jurisdictions/{jurisdiction.id}/"
+        + timestamp_filename("batch_tallies", "csv"),
+    )
     jurisdiction.batch_tallies_file = File(
         id=str(uuid.uuid4()),
         name=batch_tallies.filename,
-        contents=decode_csv_file(batch_tallies),
+        storage_path=storage_path,
         uploaded_at=datetime.now(timezone.utc),
     )
     jurisdiction.batch_tallies_file.task = create_background_task(
@@ -202,7 +220,8 @@ def download_batch_tallies_file(
         return NotFound()
 
     return csv_response(
-        jurisdiction.batch_tallies_file.contents, jurisdiction.batch_tallies_file.name
+        retrieve_file(jurisdiction.batch_tallies_file.storage_path),
+        jurisdiction.batch_tallies_file.name,
     )
 
 
