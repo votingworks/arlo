@@ -1,5 +1,6 @@
 import re
 from datetime import datetime
+from typing import IO
 from flask import Response
 
 from ..models import *  # pylint: disable=wildcard-import
@@ -20,9 +21,9 @@ def jurisdiction_timestamp_name(election: Election, jurisdiction: Jurisdiction) 
     return f"{jurisdiction_name}-{election_name}-{now}"
 
 
-def csv_response(csv_text: str, filename: str) -> Response:
+def csv_response(csv_file: IO, filename: str) -> Response:
     return Response(
-        csv_text,
+        csv_file,
         mimetype="text/csv",
         headers={"Content-Disposition": f'attachment; filename="{filename}"'},
     )

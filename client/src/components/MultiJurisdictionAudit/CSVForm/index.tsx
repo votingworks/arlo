@@ -18,19 +18,20 @@ import FormSection, {
 } from '../../Atoms/Form/FormSection'
 import { FileProcessingStatus, IFileInfo, CvrFileType } from '../useCSV'
 import AsyncButton from '../../Atoms/AsyncButton'
+import { sum } from '../../../utils/number'
 
 export const Select = styled(HTMLSelect)`
   margin-top: 5px;
 `
 
 interface IValues {
-  csv: File | null
+  csv: File[] | null
   cvrFileType?: CvrFileType
 }
 
 interface IProps {
   csvFile: IFileInfo
-  uploadCSVFile: (csv: File, cvrFileType?: CvrFileType) => Promise<boolean>
+  uploadCSVFiles: (csvs: File[], cvrFileType?: CvrFileType) => Promise<boolean>
   deleteCSVFile?: () => Promise<boolean>
   title?: string
   description: string
@@ -41,7 +42,7 @@ interface IProps {
 
 const CSVFile = ({
   csvFile,
-  uploadCSVFile,
+  uploadCSVFiles,
   deleteCSVFile,
   title,
   description,
@@ -56,7 +57,7 @@ const CSVFile = ({
   return (
     <Formik
       initialValues={{
-        csv: isProcessing ? new File([], file!.name) : null,
+        csv: isProcessing ? [new File([], file!.name)] : null,
         cvrFileType: showCvrFileType
           ? file
             ? file.cvrFileType
@@ -68,7 +69,7 @@ const CSVFile = ({
       validateOnBlur={false}
       onSubmit={async (values: IValues) => {
         if (values.csv) {
-          await uploadCSVFile(values.csv, values.cvrFileType)
+          await uploadCSVFiles(values.csv, values.cvrFileType)
           setIsEditing(false)
         }
       }}
@@ -114,6 +115,7 @@ const CSVFile = ({
                   >
                     <option value={CvrFileType.DOMINION}>Dominion</option>
                     <option value={CvrFileType.CLEARBALLOT}>ClearBallot</option>
+                    <option value={CvrFileType.ESS}>ES&amp;S</option>
                   </HTMLSelect>
                 </label>
               </div>
@@ -125,16 +127,21 @@ const CSVFile = ({
                     inputProps={{
                       accept: '.csv',
                       name: 'csv',
+                      multiple: values.cvrFileType === CvrFileType.ESS,
                     }}
-                    onInputChange={e =>
+                    onInputChange={e => {
+                      const { files } = e.currentTarget
                       setFieldValue(
                         'csv',
-                        (e.currentTarget.files && e.currentTarget.files[0]) ||
-                          undefined
+                        files && files.length > 0 ? Array.from(files) : null
                       )
-                    }
+                    }}
                     hasSelection={!!values.csv}
-                    text={values.csv ? values.csv.name : 'Select a CSV...'}
+                    text={(() => {
+                      if (!values.csv) return 'Select a CSV...'
+                      if (values.csv.length === 1) return values.csv[0].name
+                      return `${values.csv.length} files selected`
+                    })()}
                     onBlur={handleBlur}
                     disabled={isSubmitting || isProcessing || !enabled}
                   />
@@ -167,9 +174,9 @@ const CSVFile = ({
                       </>
                     )}
                     {upload &&
-                      // Only show upload progress for large files (over 1 MB),
+                      // Only show upload progress for large sets of files (over 1 MB),
                       // otherwise it will just flash on the screen
-                      upload.file.size >= 1000 * 1000 && (
+                      sum(upload.files.map(f => f.size)) >= 1000 * 1000 && (
                         <>
                           <span style={{ marginRight: '5px' }}>
                             Uploading...

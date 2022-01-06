@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import Dict
+from typing import Dict, cast as typing_cast
 from collections import Counter, defaultdict
 from flask import jsonify
 

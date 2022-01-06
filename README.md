@@ -102,6 +102,7 @@ Arlo is configured mostly through environment variables. Below are the basic env
 - `ARLO_SUPPORT_EMAIL_DOMAIN`: required email address domains for support users (comma-separated list)
 - `ARLO_AUDITADMIN_AUTH0_BASE_URL`, `ARLO_AUDITADMIN_AUTH0_CLIENT_ID`, `ARLO_AUDITADMIN_AUTH0_CLIENT_SECRET`: base url, client id, and client secret for the OAuth identity provider used for audit admins.
 - `ARLO_SMTP_HOST`, `ARLO_SMTP_PORT`, `ARLO_SMTP_USERNAME`, `ARLO_SMTP_PASSWORD`: SMTP configuration for sending jurisdiction admin login code emails (we use [Mailgun](https://www.mailgun.com/))
+- `ARLO_FILE_UPLOAD_STORAGE_PATH`: where Arlo should store files uploaded by users. This can either be a local filesystem path, or an [Amazon S3](https://aws.amazon.com/s3/) path of the form: `s3://bucket_name`. If using S3, two other env variables are required: `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`.
 
 Arlo has three user types: audit administrators, jurisdiction managers, and support users. Audit admins and support users are both authenticated via OAuth. Our OAuth identity provider of choice is Auth0, but Arlo is (mostly) agnostic to this choice. More on how we use Auth0 in [docs/auth.md](docs/auth.md).
 

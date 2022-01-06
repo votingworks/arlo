@@ -86,21 +86,16 @@ const isEqualRequestBody = (
   body1?: BodyInit | null,
   body2?: BodyInit | null
 ) => {
-  const formDataToObject = (body?: BodyInit | null) =>
-    body instanceof FormData
-      ? Object.fromEntries(
-          [...body.entries()].map(([key, value]) => [
-            key,
-            value instanceof File
-              ? {
-                  name: value.name,
-                  type: value.type,
-                }
-              : value,
-          ])
-        )
-      : body
-  return equal(formDataToObject(body1), formDataToObject(body2))
+  const unpackFormData = (body?: BodyInit | null) => {
+    if (body instanceof FormData) {
+      return [...body.entries()].map(([key, value]) => [
+        key,
+        value instanceof File ? { name: value.name, type: value.type } : value,
+      ])
+    }
+    return body
+  }
+  return equal(unpackFormData(body1), unpackFormData(body2))
 }
 
 export const withMockFetch = async (

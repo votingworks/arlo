@@ -223,7 +223,11 @@ def parse_login_code_from_smtp(mock_smtp):
 
 @patch("smtplib.SMTP", autospec=True)
 def test_jurisdiction_admin_login(mock_smtp, client: FlaskClient, ja_email: str):
-    rv = post_json(client, "/auth/jurisdictionadmin/code", dict(email=ja_email))
+    rv = post_json(
+        client,
+        "/auth/jurisdictionadmin/code",
+        dict(email=ja_email.upper()),  # Login should not be case sensitive
+    )
     assert_ok(rv)
 
     mock_smtp.assert_called_once_with(host=config.SMTP_HOST, port=config.SMTP_PORT)

@@ -10,7 +10,6 @@ export enum FileProcessingStatus {
 
 export interface IContestFileResponse {
   file: {
-    contents: null | string
     name: string
     uploadedAt: string
   } | null

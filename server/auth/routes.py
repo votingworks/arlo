@@ -186,7 +186,7 @@ def is_code_expired(timestamp: datetime):
 def jurisdiction_admin_generate_code():
     body = request.get_json()
     user = (
-        User.query.filter_by(email=body.get("email"))
+        User.query.filter_by(email=body.get("email").lower())
         .join(JurisdictionAdministration)
         .one_or_none()
     )

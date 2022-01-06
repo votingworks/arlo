@@ -241,7 +241,7 @@ export const JurisdictionAdminView: React.FC = () => {
           <H2Title>Audit Source Data</H2Title>
           <CSVFile
             csvFile={ballotManifest}
-            uploadCSVFile={uploadBallotManifest}
+            uploadCSVFiles={uploadBallotManifest}
             deleteCSVFile={deleteBallotManifest}
             title={
               isHybrid ? 'Ballot Manifest (All ballots)' : 'Ballot Manifest'
@@ -281,7 +281,7 @@ export const JurisdictionAdminView: React.FC = () => {
                 ballotManifest.processing.status ===
                   FileProcessingStatus.PROCESSED
               }
-              uploadCSVFile={uploadBatchTallies}
+              uploadCSVFiles={uploadBatchTallies}
               deleteCSVFile={deleteBatchTallies}
               title="Candidate Totals by Batch"
               description='Click "Browse" to choose the appropriate Candidate
@@ -301,7 +301,7 @@ export const JurisdictionAdminView: React.FC = () => {
                 ballotManifest.processing.status ===
                   FileProcessingStatus.PROCESSED
               }
-              uploadCSVFile={uploadCVRS}
+              uploadCSVFiles={uploadCVRS}
               deleteCSVFile={deleteCVRS}
               title={
                 isHybrid
