@@ -5,7 +5,7 @@ import pytest
 import numpy as np
 
 from ...audit_math import supersimple
-from ...audit_math.sampler_contest import Contest, SAMPLECVRS
+from ...audit_math.sampler_contest import Contest, SAMPLECVRS, CVR
 from ...audit_math.raire import compute_raire_assertions
 from ...audit_math.raire_utils import NEBAssertion, NENAssertion
 
@@ -445,6 +445,70 @@ def test_get_sample_sizes_fptp(contests, cvrs, assertions):
         )
 
 
+def test_validate_cvr():
+
+    expected: CVR = {"contest": {"Alice": 1, "Bob": 2, "Charlie": 0}}
+
+    # Idempotent for correct cvrs
+    assert expected == supersimple_raire.validate_cvr(
+        {"contest": {"Alice": 1, "Bob": 2, "Charlie": 0}}
+    )
+
+    # Correctly fixes gaps
+    assert expected == supersimple_raire.validate_cvr(
+        {"contest": {"Alice": 2, "Bob": 4, "Charlie": 0}}
+    )
+
+
+def test_discrepancy_validation():
+
+    # No discrepancy
+    reported: CVR = {"contest": {"Alice": 1, "Bob": 2, "Charlie": 0}}
+    audited: CVR = {"contest": {"Alice": 1, "Bob": 2, "Charlie": 0}}
+
+    assertion = NEBAssertion("contest", "Alice", "Bob")
+    margin = Decimal(1000)
+
+    assert not supersimple_raire.discrepancy(reported, audited, assertion, margin)
+
+    # This should still be equivalent to reported
+    audited = {"contest": {"Alice": 1, "Bob": 2, "Charlie": 3}}
+
+    assert not supersimple_raire.discrepancy(reported, audited, assertion, margin)
+
+    # This should also still be equivalent to reported
+    audited = {"contest": {"Alice": 1, "Bob": 0, "Charlie": 0}}
+
+    assert not supersimple_raire.discrepancy(reported, audited, assertion, margin)
+
+    # So should this, since assertion only deals with Alice and Bob, and this
+    # overvote should make this CVR equiavlent to the prior auditd CVR.
+    audited = {"contest": {"Alice": 1, "Bob": 2, "Charlie": 2}}
+
+    assert not supersimple_raire.discrepancy(reported, audited, assertion, margin)
+
+    # This CVR is equivalent to a first-place vote for Bob, as Alice and Charlie are
+    # over-voted. Thus, it's a one-vote overstatement
+    audited = {"contest": {"Alice": 1, "Bob": 2, "Charlie": 1}}
+
+    expected = {"counted_as": 1, "weighted_error": 1 / margin}
+
+    assert (
+        supersimple_raire.discrepancy(reported, audited, assertion, margin) == expected
+    )
+
+    # Test decrementing
+    audited = {"contest": {"Alice": 2, "Bob": 3, "Charlie": 4}}
+
+    assert not supersimple_raire.discrepancy(reported, audited, assertion, margin)
+
+    # Test skipping
+    audited = {"contest": {"Alice": 1, "Bob": 3, "Charlie": 4}}
+    assertion = NEBAssertion("contest", "Bob", "Charlie")
+
+    assert not supersimple_raire.discrepancy(reported, audited, assertion, margin)
+
+
 def test_simple_irv_election():
     contest = Contest(
         "synth",
@@ -752,6 +816,133 @@ def test_raire_example_5():
     expected_assertions.append(NEBAssertion(contest.name, "Alice", "Charlie"))
     expected_assertions.append(NEBAssertion(contest.name, "Alice", "Dara"))
     expected_assertions.append(NEBAssertion(contest.name, "Alice", "Edmund"))
+
+    computed_assertions = compute_raire_assertions(contest, cvrs, asn_func, 0)
+
+    assert computed_assertions == expected_assertions
+
+    # Check sample sizes (computed with Stark's tool for the eventual
+    # two-candidate contest between Alice and Bob)
+    expected_sample_size = 50
+    assert (
+        supersimple_raire.get_sample_sizes(5, contest, cvrs, {}, computed_assertions)
+        == expected_sample_size
+    )
+
+    # Now test with no discrepancies
+    expected_p = 0.033583176
+    sample_cvrs = {}
+    for i in range(expected_sample_size):
+        sample_cvrs[i] = {"cvr": cvrs[i], "times_sampled": 1}
+
+    for assertion in computed_assertions:
+        discrepancies = supersimple_raire.compute_discrepancies(
+            cvrs, sample_cvrs, assertion
+        )
+        assert not discrepancies
+
+    p_value, finished = supersimple_raire.compute_risk(
+        5, contest, cvrs, sample_cvrs, computed_assertions
+    )
+
+    diff = abs(p_value - expected_p)
+
+    assert diff < 10 ** -4, f"Got unexpected p-value {p_value}, expected {expected_p}"
+    assert finished
+
+    # Test with one two-vote discrepancy
+    sample_cvrs[0] = {
+        "cvr": {"synth": {"Alice": 0, "Bob": 1, "Charlie": 0, "Dara": 0, "Edmund": 0}},
+        "times_sampled": 1,
+    }
+
+    expected_p = 0.893587672
+    for assertion in computed_assertions:
+        discrepancies = supersimple_raire.compute_discrepancies(
+            cvrs, sample_cvrs, assertion
+        )
+        assert len(discrepancies) == 1
+        if assertion == expected_assertions[0]:
+            assert discrepancies[0] == supersimple.Discrepancy(
+                counted_as=2, weighted_error=Decimal(2) / Decimal(3000)
+            )
+        elif assertion == expected_assertions[1]:
+            assert discrepancies[0] == supersimple.Discrepancy(
+                counted_as=1, weighted_error=Decimal(1) / Decimal(5000)
+            )
+        elif assertion == expected_assertions[2]:
+            assert discrepancies[0] == supersimple.Discrepancy(
+                counted_as=1, weighted_error=Decimal(1) / Decimal(9500)
+            )
+        elif assertion == expected_assertions[3]:
+            assert discrepancies[0] == supersimple.Discrepancy(
+                counted_as=1,
+                weighted_error=Decimal(1) / Decimal(9501),  # 26k for Alice, 10k for Bob
+            )
+
+    p_value, finished = supersimple_raire.compute_risk(
+        5, contest, cvrs, sample_cvrs, computed_assertions
+    )
+
+    diff = abs(p_value - expected_p)
+
+    assert diff < 10 ** -4, f"Got unexpected p-value {p_value}, expected {expected_p}"
+    assert not finished
+
+
+def test_raire_example_12():
+    # Election taken from the RAIRE paper (Example 12). "Alice" wins.
+    contest = Contest(
+        "synth",
+        {
+            "Alice": 10000,
+            "Bob": 6500,
+            "Charlie": 5500,
+            "Dara": 5000,
+            "ballots": 27000,
+            "numWinners": 1,
+            "votesAllowed": 1,
+        },
+    )
+
+    contest.winners = ["Alice"]
+
+    cvrs = {}
+
+    for i in range(27000):
+        if i < 5000:
+            cvrs[i] = {"synth": {"Alice": 1, "Bob": 2, "Charlie": 3, "Dara": 0}}
+        if 5000 <= i < 10000:
+            cvrs[i] = {"synth": {"Alice": 1, "Bob": 3, "Charlie": 2, "Dara": 0}}
+        elif 10000 <= i < 15000:
+            cvrs[i] = {"synth": {"Alice": 3, "Bob": 1, "Charlie": 2, "Dara": 0}}
+        elif 15000 <= i < 16500:
+            cvrs[i] = {"synth": {"Alice": 2, "Bob": 1, "Charlie": 3, "Dara": 0}}
+        elif 16500 <= i < 21500:
+            cvrs[i] = {"synth": {"Alice": 3, "Bob": 2, "Charlie": 1, "Dara": 0}}
+        elif 21500 <= i < 22000:
+            cvrs[i] = {"synth": {"Alice": 2, "Bob": 3, "Charlie": 1, "Dara": 0}}
+        else:
+            cvrs[i] = {"synth": {"Alice": 2, "Bob": 0, "Charlie": 0, "Dara": 1}}
+
+    # check that we get the right assertions
+    expected_assertions = []
+    expected_assertions.append(
+        NENAssertion(contest.name, "Alice", "Bob", set(["Dara", "Charlie"]))
+    )
+    expected_assertions.append(
+        NENAssertion(contest.name, "Alice", "Charlie", set(["Dara"]))
+    )
+    expected_assertions.append(
+        NENAssertion(contest.name, "Alice", "Charlie", set(["Bob", "Dara"]))
+    )
+    expected_assertions.append(NEBAssertion(contest.name, "Alice", "Dara"))
+    expected_assertions.append(
+        NENAssertion(contest.name, "Bob", "Dara", set(["Alice", "Charlie"]))
+    )
+    expected_assertions.append(
+        NENAssertion(contest.name, "Charlie", "Dara", set(["Alice", "Bob"]))
+    )
 
     computed_assertions = compute_raire_assertions(contest, cvrs, asn_func, 0)
 

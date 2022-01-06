@@ -99,6 +99,75 @@ def compute_discrepancies(
     return discrepancies
 
 
+def validate_cvr(cvr: CVR) -> CVR:
+    """
+    This function validates a CVR according to the following rules:
+        1. No candidates may have the same rank.
+        2. Ranks must begin at 1 and be consecutive.
+
+    CVRS that do not comply with this function will be fixed by the following
+    transformations:
+        1. Any candidates who share a rank will have their rank set to 0.
+           Additionally, all candidates with ranks lower than the duplicate rank
+           will have their rank set to 0.
+        2. If the highest rank is not 1, all ranks will be decremented until
+           the highest rank is 1. If other ranks are not consecutive, they
+           will be mapped accordingly. E.g., if a ballot is ranked 2, 4, 5, it
+           will be validated as 1, 2, 3.
+    """
+
+    output: CVR = {}
+    # First zero-out overvotes:
+    for contest in cvr:
+        highest = len(cvr[contest])
+        output[contest] = {}
+        for cand in cvr[contest]:
+            duplicate = False
+
+            # This means this candidate's ballot has already been exhausted.
+            if cand in output[contest]:
+                continue
+            for other in cvr[contest]:
+                if cand == other:
+                    continue
+
+                if cvr[contest][cand] == cvr[contest][other] and cvr[contest][cand]:
+                    duplicate = True
+
+            if duplicate:
+                output[contest][cand] = 0
+                # We also have to eliminate all candidates with a worse ranking
+                for other in cvr[contest]:
+                    if cvr[contest][other] >= cvr[contest][cand]:
+                        output[contest][other] = 0
+
+            else:
+                output[contest][cand] = cvr[contest][cand]
+
+            # Find highest rank
+            if output[contest][cand]:
+                highest = min(output[contest][cand], highest)
+
+    # Now decrement all non-zero ranks until highest is 1
+    for contest in output:
+        for _ in range(highest - 1):
+            for cand in output[contest]:
+                if output[contest][cand]:
+                    output[contest][cand] -= 1
+
+    # Now ensure ranks are consecutive:
+    for contest in output:
+        next_highest = 2
+        for cand, rank in sorted(output[contest].items(), key=lambda item: item[1]):
+            if rank <= 1:
+                continue
+            if rank > next_highest:
+                output[contest][cand] = next_highest
+                next_highest += 1
+
+    return output
+
+
 def discrepancy(
     reported: Optional[CVR],
     audited: Optional[CVR],
@@ -110,13 +179,15 @@ def discrepancy(
     if reported is None or audited is None:
         error = 2
     else:
+        reported_v = validate_cvr(reported)
+        audited_v = validate_cvr(audited)
         v_w, v_l = (
-            assertion.is_vote_for_winner(reported),
-            assertion.is_vote_for_loser(reported),
+            assertion.is_vote_for_winner(reported_v),
+            assertion.is_vote_for_loser(reported_v),
         )
         a_w, a_l = (
-            assertion.is_vote_for_winner(audited),
-            assertion.is_vote_for_loser(audited),
+            assertion.is_vote_for_winner(audited_v),
+            assertion.is_vote_for_loser(audited_v),
         )
         error = (v_w - a_w) - (v_l - a_l)
 
