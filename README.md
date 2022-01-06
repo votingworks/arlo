@@ -83,6 +83,7 @@ We recommend running Arlo on Ubuntu 20.
 
 Here are some troubleshooting steps for issues we've run into when installing Arlo before:
 
+- Arlo expects the Postgresql server to use the UTC timezone. You may need to edit `/etc/postgresql/10/main/postgresql.conf` and set `timezone = UTC`.
 - `psycopg2` has known issues depending on your install (see, e.g., [here](https://github.com/psycopg/psycopg2/issues/674)). If you run into issues, switch `psycopg2` to `psycopg2-binary` in pyproject.toml
 - A password may have to be set in the `DATABASE_URL` env var depending on your install of postgres. To do this, change `postgresql://postgres@localhost:5432/arlo` to `postgresql://postgres:{PASSWORD}@localhost:5432/arlo`, replacing `{PASSWORD}` with the password.
 - You may need to create `arlo` and `arlo-test` databases manually [via postgres](https://www.postgresql.org/docs/9.0/sql-createdatabase.html).
