@@ -152,7 +152,7 @@ Test Org test_ballot_comparison_union_choice_names,Test Election,CA\r
 ######## CONTESTS ########\r
 Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes\r
 Contest 1,Targeted,1,1,30,Choice 1-1: 20; Choice 1-2: 6; overvote: 1; undervote: 1\r
-Contest 2,Opportunistic,1,1,30,Choice 2-1: 16; Choice 2-2: 6; overvote: 0; undervote: 0; Choice 2-3: 6\r
+Contest 2,Opportunistic,1,1,30,Choice 2-1: 16; Choice 2-2: 6; Choice 2-3: 6; overvote: 0; undervote: 0\r
 \r
 ######## AUDIT SETTINGS ########\r
 Audit Name,Audit Type,Audit Math Type,Risk Limit,Random Seed,Online Data Entry?\r
@@ -166,7 +166,7 @@ J2,Audit Board #1,,,,\r
 ######## ROUNDS ########\r
 Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes\r
 1,Contest 1,Targeted,12,Yes,0.047266213,DATETIME,DATETIME,Choice 1-1: 9; Choice 1-2: 3; overvote: 0; undervote: 0\r
-1,Contest 2,Opportunistic,,No,0.1740640692,DATETIME,DATETIME,Choice 2-1: 4; Choice 2-2: 2; overvote: 0; undervote: 0; Choice 2-3: 4\r
+1,Contest 2,Opportunistic,,No,0.1740640692,DATETIME,DATETIME,Choice 2-1: 4; Choice 2-2: 2; Choice 2-3: 4; overvote: 0; undervote: 0\r
 \r
 ######## SAMPLED BALLOTS ########\r
 Jurisdiction Name,Tabulator,Batch Name,Ballot Position,Imprinted ID,Ticket Numbers: Contest 1,Audited?,Audit Result: Contest 1,CVR Result: Contest 1,Discrepancy: Contest 1,Audit Result: Contest 2,CVR Result: Contest 2,Discrepancy: Contest 2\r

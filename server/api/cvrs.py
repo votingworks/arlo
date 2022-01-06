@@ -169,7 +169,7 @@ def set_contest_metadata_from_cvrs(contest: Contest):
             name=choice_name,
             num_votes=num_votes,
         )
-        for choice_name, num_votes in choices.items()
+        for choice_name, num_votes in sorted(choices.items())
     ]
 
 
