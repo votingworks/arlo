@@ -1061,6 +1061,7 @@ def test_ballot_comparison_union_choice_names(
     rv = client.get(f"/api/election/{election_id}/contest")
     contests = json.loads(rv.data)["contests"]
     target_contest, opportunistic_contest = contests
+    print(target_contest["choices"])
 
     # Choices should be unioned across jurisdictions
     compare_json(
