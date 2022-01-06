@@ -397,16 +397,16 @@ def make_nen_assertion(
 ) -> NENAssertion:
     assertion = raire_utils.NENAssertion(contest.name, winner, loser, eliminated)
     votes_for_winner = sum(
-        [
-            assertion.is_vote_for_winner(cvr) for _, cvr in cvrs.items() if cvr
-        ]  # if is for the type checker
-    )
+        [assertion.is_vote_for_winner(cvr) for _, cvr in cvrs.items() if cvr]
+    )  # if is for the type checker
     votes_for_loser = sum(
         [assertion.is_vote_for_loser(cvr) for _, cvr in cvrs.items() if cvr]
     )
 
     margin = votes_for_winner - votes_for_loser
     assertion.difficulty = asn_func(margin)
+
+    assertion.rules_out = [winner, loser]
 
     return assertion
 
@@ -523,7 +523,9 @@ def test_find_best_with_eliminated(contest, cvrs, ballots):
     # this is the lowest cost assertion to refute
     # it says that winner cannot be eliminated next, meaning that the hypothesis that
     # loser actually won cannot be shown
-    expected = raire_utils.NENAssertion(contest.name, "winner", "loser", ["loser2"])
+    expected = make_nen_assertion(
+        contest, cvrs, asn_func, "winner", "loser", set(["loser2"])
+    )
 
     # check that we get expected best assertion
     assert tree.best_assertion == expected

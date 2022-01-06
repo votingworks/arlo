@@ -905,14 +905,12 @@ def test_raire_example_12():
         },
     )
 
-    contest.winners = ["Alice"]
-
     cvrs = {}
 
     for i in range(27000):
         if i < 5000:
             cvrs[i] = {"synth": {"Alice": 1, "Bob": 2, "Charlie": 3, "Dara": 0}}
-        if 5000 <= i < 10000:
+        elif 5000 <= i < 10000:
             cvrs[i] = {"synth": {"Alice": 1, "Bob": 3, "Charlie": 2, "Dara": 0}}
         elif 10000 <= i < 15000:
             cvrs[i] = {"synth": {"Alice": 3, "Bob": 1, "Charlie": 2, "Dara": 0}}
@@ -930,18 +928,12 @@ def test_raire_example_12():
     expected_assertions.append(
         NENAssertion(contest.name, "Alice", "Bob", set(["Dara", "Charlie"]))
     )
-    expected_assertions.append(
-        NENAssertion(contest.name, "Alice", "Charlie", set(["Dara"]))
-    )
+    expected_assertions.append(NEBAssertion(contest.name, "Alice", "Dara"))
     expected_assertions.append(
         NENAssertion(contest.name, "Alice", "Charlie", set(["Bob", "Dara"]))
     )
-    expected_assertions.append(NEBAssertion(contest.name, "Alice", "Dara"))
     expected_assertions.append(
-        NENAssertion(contest.name, "Bob", "Dara", set(["Alice", "Charlie"]))
-    )
-    expected_assertions.append(
-        NENAssertion(contest.name, "Charlie", "Dara", set(["Alice", "Bob"]))
+        NENAssertion(contest.name, "Alice", "Charlie", set(["Dara"]))
     )
 
     computed_assertions = compute_raire_assertions(contest, cvrs, asn_func, 0)
@@ -950,14 +942,14 @@ def test_raire_example_12():
 
     # Check sample sizes (computed with Stark's tool for the eventual
     # two-candidate contest between Alice and Bob)
-    expected_sample_size = 50
+    expected_sample_size = 46
     assert (
         supersimple_raire.get_sample_sizes(5, contest, cvrs, {}, computed_assertions)
         == expected_sample_size
     )
 
     # Now test with no discrepancies
-    expected_p = 0.033583176
+    expected_p = 0.033302856
     sample_cvrs = {}
     for i in range(expected_sample_size):
         sample_cvrs[i] = {"cvr": cvrs[i], "times_sampled": 1}
@@ -983,7 +975,7 @@ def test_raire_example_12():
         "times_sampled": 1,
     }
 
-    expected_p = 0.893587672
+    expected_p = 0.886128865
     for assertion in computed_assertions:
         discrepancies = supersimple_raire.compute_discrepancies(
             cvrs, sample_cvrs, assertion
@@ -991,7 +983,7 @@ def test_raire_example_12():
         assert len(discrepancies) == 1
         if assertion == expected_assertions[0]:
             assert discrepancies[0] == supersimple.Discrepancy(
-                counted_as=2, weighted_error=Decimal(2) / Decimal(3000)
+                counted_as=2, weighted_error=Decimal(2) / Decimal(4000)
             )
         elif assertion == expected_assertions[1]:
             assert discrepancies[0] == supersimple.Discrepancy(
@@ -999,12 +991,11 @@ def test_raire_example_12():
             )
         elif assertion == expected_assertions[2]:
             assert discrepancies[0] == supersimple.Discrepancy(
-                counted_as=1, weighted_error=Decimal(1) / Decimal(9500)
+                counted_as=1, weighted_error=Decimal(1) / Decimal(6000)
             )
         elif assertion == expected_assertions[3]:
             assert discrepancies[0] == supersimple.Discrepancy(
-                counted_as=1,
-                weighted_error=Decimal(1) / Decimal(9501),  # 26k for Alice, 10k for Bob
+                counted_as=1, weighted_error=Decimal(1) / Decimal(9500),
             )
 
     p_value, finished = supersimple_raire.compute_risk(

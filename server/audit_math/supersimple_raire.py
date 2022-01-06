@@ -370,7 +370,6 @@ def compute_risk(
         # Get the largest p-value across all assertions
         if p > max_p:
             max_p = p
-        print(f"{assertion} p-value: {p}")
 
     if 0 < max_p < alpha:
         result = True
