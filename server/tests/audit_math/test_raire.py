@@ -280,6 +280,8 @@ def compare_result(path: str, contests: Dict[str, List[str]]):
             loser = asrtn.split(',')[4]
             eliminated = set(asrtn.split('Eliminated,')[-1].split(','))
 
+            parsed_a: RaireAssertion
+
             if a_type == 'NEB':
                 parsed_a = NEBAssertion(contest, winner, loser)
             elif a_type == 'NEN':
