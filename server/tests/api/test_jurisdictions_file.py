@@ -65,21 +65,14 @@ def test_jurisdictions_file_metadata(client, election_id):
     rv = client.get(f"/api/election/{election_id}/jurisdiction/file")
     assert json.loads(rv.data) == {"file": None, "processing": None}
 
+    contents = "Jurisdiction,Admin Email\nJ1,ja@example.com"
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/file",
-        data={
-            "jurisdictions": (
-                io.BytesIO(b"Jurisdiction,Admin Email\n" b"J1,ja@example.com"),
-                "jurisdictions.csv",
-            )
-        },
+        data={"jurisdictions": (io.BytesIO(contents.encode()), "jurisdictions.csv")},
     )
     assert_ok(rv)
 
     election = Election.query.filter_by(id=election_id).one()
-    assert election.jurisdictions_file.contents == (
-        "Jurisdiction,Admin Email\n" "J1,ja@example.com"
-    )
     assert election.jurisdictions_file.name == "jurisdictions.csv"
     assert election.jurisdictions_file.uploaded_at
 
@@ -98,7 +91,7 @@ def test_jurisdictions_file_metadata(client, election_id):
     assert (
         rv.headers["Content-Disposition"] == 'attachment; filename="jurisdictions.csv"'
     )
-    assert rv.data.decode("utf-8") == election.jurisdictions_file.contents
+    assert rv.data.decode("utf-8") == contents
 
 
 def test_replace_jurisdictions_file(client, election_id):

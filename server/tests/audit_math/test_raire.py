@@ -404,6 +404,7 @@ def test_raire_recount():
     assert res == []
 
 
+@pytest.mark.skip("Makes test coverage very slow")
 def test_aspen_wrong_winner():
     input_file = RAIRE_INPUT_DIR + "SpecialCases/Aspen_2009_wrong_winner.raire"
     output_file = RAIRE_OUTPUT_DIR + "SpecialCases/Aspen_2009_wrong_winner.raire.out"

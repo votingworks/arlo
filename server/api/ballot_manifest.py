@@ -15,9 +15,20 @@ from ..worker.tasks import (
     background_task,
     create_background_task,
 )
-from ..util.file import serialize_file, serialize_file_processing
+from ..util.file import (
+    retrieve_file,
+    serialize_file,
+    serialize_file_processing,
+    store_file,
+    timestamp_filename,
+)
 from ..util.csv_download import csv_response
-from ..util.csv_parse import decode_csv_file, parse_csv, CSVValueType, CSVColumnType
+from ..util.csv_parse import (
+    CSVValueType,
+    CSVColumnType,
+    parse_csv,
+    validate_csv_mimetype,
+)
 from ..audit_math.suite import HybridPair
 from . import contests
 from . import cvrs
@@ -109,7 +120,8 @@ def process_ballot_manifest_file(
             CSVColumnType(CVR, CSVValueType.YES_NO, required=use_cvr),
         ]
 
-        manifest_csv = parse_csv(jurisdiction.manifest_file.contents, columns)
+        manifest_file = retrieve_file(jurisdiction.manifest_file.storage_path)
+        manifest_csv = parse_csv(manifest_file, columns)
 
         num_batches = 0
         num_ballots = 0
@@ -126,6 +138,8 @@ def process_ballot_manifest_file(
             db_session.add(batch)
             num_batches += 1
             num_ballots += batch.num_ballots
+
+        manifest_file.close()
 
         jurisdiction.manifest_num_ballots = num_ballots
         jurisdiction.manifest_num_batches = num_batches
@@ -189,15 +203,19 @@ def validate_ballot_manifest_upload(request: Request):
     if "manifest" not in request.files:
         raise BadRequest("Missing required file parameter 'manifest'")
 
+    validate_csv_mimetype(request.files["manifest"])
 
-# We save the ballot manifest file, and bgcompute finds it and processes it in
-# the background.
+
 def save_ballot_manifest_file(manifest, jurisdiction: Jurisdiction):
-    manifest_string = decode_csv_file(manifest)
+    storage_path = store_file(
+        manifest.stream,
+        f"audits/{jurisdiction.election_id}/jurisdictions/{jurisdiction.id}/"
+        + timestamp_filename("manifest", "csv"),
+    )
     jurisdiction.manifest_file = File(
         id=str(uuid.uuid4()),
         name=manifest.filename,
-        contents=manifest_string,
+        storage_path=storage_path,
         uploaded_at=datetime.now(timezone.utc),
     )
     jurisdiction.manifest_file.task = create_background_task(
@@ -260,7 +278,8 @@ def download_ballot_manifest_file(
         return NotFound()
 
     return csv_response(
-        jurisdiction.manifest_file.contents, jurisdiction.manifest_file.name
+        retrieve_file(jurisdiction.manifest_file.storage_path),
+        jurisdiction.manifest_file.name,
     )
 
 

@@ -308,6 +308,26 @@ def test_support_create_audit_admin_already_admin(  # pylint: disable=invalid-na
     }
 
 
+def test_support_create_audit_admin_invalid_email(
+    client: FlaskClient, org_id: str,
+):
+    set_support_user(client, SUPPORT_EMAIL)
+    rv = post_json(
+        client,
+        f"/api/support/organizations/{org_id}/audit-admins",
+        {"email": f"mailto:{DEFAULT_AA_EMAIL}"},
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Bad Request",
+                "message": "'mailto:admin@example.com' is not a 'email'",
+            }
+        ]
+    }
+
+
 def test_support_remove_audit_admin(client: FlaskClient):
     set_support_user(client, SUPPORT_EMAIL)
 

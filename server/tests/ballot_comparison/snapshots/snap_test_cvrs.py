@@ -384,6 +384,134 @@ snapshots["test_cvrs_newlines 2"] = {
     },
 }
 
+snapshots["test_dominion_cvr_unique_voting_identifier 1"] = [
+    {
+        "ballot_position": 1,
+        "batch_name": "BATCH1",
+        "imprinted_id": "1-1-1",
+        "interpretations": "0,1,1,1,0",
+        "tabulator": "TABULATOR1",
+    },
+    {
+        "ballot_position": 2,
+        "batch_name": "BATCH1",
+        "imprinted_id": "1-1-2",
+        "interpretations": "1,0,1,0,1",
+        "tabulator": "TABULATOR1",
+    },
+    {
+        "ballot_position": 3,
+        "batch_name": "BATCH1",
+        "imprinted_id": "1-1-3",
+        "interpretations": "0,1,1,1,0",
+        "tabulator": "TABULATOR1",
+    },
+    {
+        "ballot_position": 1,
+        "batch_name": "BATCH2",
+        "imprinted_id": "1-2-1",
+        "interpretations": "1,0,1,0,1",
+        "tabulator": "TABULATOR1",
+    },
+    {
+        "ballot_position": 2,
+        "batch_name": "BATCH2",
+        "imprinted_id": "1-2-2",
+        "interpretations": "0,1,1,1,0",
+        "tabulator": "TABULATOR1",
+    },
+    {
+        "ballot_position": 3,
+        "batch_name": "BATCH2",
+        "imprinted_id": "1-2-3",
+        "interpretations": "1,0,1,0,1",
+        "tabulator": "TABULATOR1",
+    },
+    {
+        "ballot_position": 1,
+        "batch_name": "BATCH1",
+        "imprinted_id": "2-1-1",
+        "interpretations": "0,1,1,1,0",
+        "tabulator": "TABULATOR2",
+    },
+    {
+        "ballot_position": 2,
+        "batch_name": "BATCH1",
+        "imprinted_id": "56_083-212",
+        "interpretations": "1,0,1,0,1",
+        "tabulator": "TABULATOR2",
+    },
+    {
+        "ballot_position": 3,
+        "batch_name": "BATCH1",
+        "imprinted_id": "56_083-213",
+        "interpretations": "1,0,1,1,0",
+        "tabulator": "TABULATOR2",
+    },
+    {
+        "ballot_position": 1,
+        "batch_name": "BATCH2",
+        "imprinted_id": "56_083-221",
+        "interpretations": "1,0,1,0,1",
+        "tabulator": "TABULATOR2",
+    },
+    {
+        "ballot_position": 2,
+        "batch_name": "BATCH2",
+        "imprinted_id": "56_083-222",
+        "interpretations": "1,1,1,1,0",
+        "tabulator": "TABULATOR2",
+    },
+    {
+        "ballot_position": 3,
+        "batch_name": "BATCH2",
+        "imprinted_id": "56_083-223",
+        "interpretations": "1,0,1,0,1",
+        "tabulator": "TABULATOR2",
+    },
+    {
+        "ballot_position": 4,
+        "batch_name": "BATCH2",
+        "imprinted_id": "56_083-224",
+        "interpretations": ",,1,0,1",
+        "tabulator": "TABULATOR2",
+    },
+    {
+        "ballot_position": 5,
+        "batch_name": "BATCH2",
+        "imprinted_id": "56_083-225",
+        "interpretations": ",,1,1,0",
+        "tabulator": "TABULATOR2",
+    },
+    {
+        "ballot_position": 6,
+        "batch_name": "BATCH2",
+        "imprinted_id": "56_083-226",
+        "interpretations": ",,1,0,1",
+        "tabulator": "TABULATOR2",
+    },
+]
+
+snapshots["test_dominion_cvr_unique_voting_identifier 2"] = {
+    "Contest 1": {
+        "choices": {
+            "Choice 1-1": {"column": 0, "num_votes": 7},
+            "Choice 1-2": {"column": 1, "num_votes": 4},
+        },
+        "total_ballots_cast": 12,
+        "votes_allowed": 1,
+    },
+    "Contest 2": {
+        "choices": {
+            "Choice 2-1": {"column": 2, "num_votes": 15},
+            "Choice 2-2": {"column": 3, "num_votes": 7},
+            "Choice 2-3": {"column": 4, "num_votes": 8},
+        },
+        "total_ballots_cast": 15,
+        "votes_allowed": 2,
+    },
+}
+
 snapshots["test_dominion_cvr_upload 1"] = [
     {
         "ballot_position": 1,
@@ -502,5 +630,130 @@ snapshots["test_dominion_cvr_upload 2"] = {
         },
         "total_ballots_cast": 14,
         "votes_allowed": 2,
+    },
+}
+
+snapshots["test_ess_cvr_upload 1"] = [
+    {
+        "ballot_position": 1,
+        "batch_name": "BATCH2",
+        "imprinted_id": "0001000415",
+        "interpretations": "0,1,0,0,1,0,0,0,0",
+        "tabulator": "0001",
+    },
+    {
+        "ballot_position": 2,
+        "batch_name": "BATCH2",
+        "imprinted_id": "0001000416",
+        "interpretations": "1,0,0,0,1,0,0,0,0",
+        "tabulator": "0001",
+    },
+    {
+        "ballot_position": 3,
+        "batch_name": "BATCH2",
+        "imprinted_id": "0001000417",
+        "interpretations": "0,1,0,0,0,1,0,0,0",
+        "tabulator": "0001",
+    },
+    {
+        "ballot_position": 1,
+        "batch_name": "BATCH1",
+        "imprinted_id": "0001013415",
+        "interpretations": "0,1,0,0,1,0,0,0,0",
+        "tabulator": "0001",
+    },
+    {
+        "ballot_position": 2,
+        "batch_name": "BATCH1",
+        "imprinted_id": "0001013416",
+        "interpretations": "1,0,0,0,1,0,0,0,0",
+        "tabulator": "0001",
+    },
+    {
+        "ballot_position": 3,
+        "batch_name": "BATCH1",
+        "imprinted_id": "0001013417",
+        "interpretations": "0,0,0,1,1,0,0,0,0",
+        "tabulator": "0001",
+    },
+    {
+        "ballot_position": 1,
+        "batch_name": "BATCH2",
+        "imprinted_id": "0002000171",
+        "interpretations": "1,0,0,0,0,1,0,0,0",
+        "tabulator": "0002",
+    },
+    {
+        "ballot_position": 2,
+        "batch_name": "BATCH2",
+        "imprinted_id": "0002000172",
+        "interpretations": "0,1,0,0,0,1,0,0,0",
+        "tabulator": "0002",
+    },
+    {
+        "ballot_position": 3,
+        "batch_name": "BATCH2",
+        "imprinted_id": "0002000173",
+        "interpretations": "1,0,0,0,0,1,0,0,0",
+        "tabulator": "0002",
+    },
+    {
+        "ballot_position": 4,
+        "batch_name": "BATCH2",
+        "imprinted_id": "0002000174",
+        "interpretations": "0,1,0,0,0,0,1,0,0",
+        "tabulator": "0002",
+    },
+    {
+        "ballot_position": 5,
+        "batch_name": "BATCH2",
+        "imprinted_id": "0002000175",
+        "interpretations": "1,0,0,0,0,0,1,0,0",
+        "tabulator": "0002",
+    },
+    {
+        "ballot_position": 1,
+        "batch_name": "BATCH1",
+        "imprinted_id": "0002003171",
+        "interpretations": "0,0,1,0,1,0,0,0,0",
+        "tabulator": "0002",
+    },
+    {
+        "ballot_position": 2,
+        "batch_name": "BATCH1",
+        "imprinted_id": "0002003172",
+        "interpretations": "0,1,0,0,1,0,0,0,0",
+        "tabulator": "0002",
+    },
+    {
+        "ballot_position": 3,
+        "batch_name": "BATCH1",
+        "imprinted_id": "0002003173",
+        "interpretations": "1,0,0,0,1,0,0,0,0",
+        "tabulator": "0002",
+    },
+]
+
+snapshots["test_ess_cvr_upload 2"] = {
+    "Contest 1": {
+        "choices": {
+            "Choice 1-1": {"column": 0, "num_votes": 6},
+            "Choice 1-2": {"column": 1, "num_votes": 6},
+            "overvote": {"column": 2, "num_votes": 1},
+            "undervote": {"column": 3, "num_votes": 1},
+        },
+        "total_ballots_cast": 14,
+        "votes_allowed": 1,
+    },
+    "Contest 2": {
+        "choices": {
+            "Choice 2-1": {"column": 4, "num_votes": 8},
+            "Choice 2-2": {"column": 5, "num_votes": 4},
+            "Choice 2-3": {"column": 6, "num_votes": 2},
+            "overvote": {"column": 7, "num_votes": 0},
+            "undervote": {"column": 8, "num_votes": 0},
+        },
+        "total_ballots_cast": 14,
+        "votes_allowed": 1,
     },
 }

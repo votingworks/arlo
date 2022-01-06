@@ -14,9 +14,20 @@ from ..worker.tasks import (
     background_task,
     create_background_task,
 )
-from ..util.csv_parse import decode_csv_file, parse_csv, CSVColumnType, CSVValueType
+from ..util.csv_parse import (
+    parse_csv,
+    CSVColumnType,
+    CSVValueType,
+    validate_csv_mimetype,
+)
 from ..util.csv_download import csv_response
-from ..util.file import serialize_file, serialize_file_processing
+from ..util.file import (
+    retrieve_file,
+    serialize_file,
+    serialize_file_processing,
+    store_file,
+    timestamp_filename,
+)
 
 CONTEST_NAME = "Contest Name"
 JURISDICTIONS = "Jurisdictions"
@@ -30,8 +41,11 @@ STANDARDIZED_CONTEST_COLUMNS = [
 @background_task
 def process_standardized_contests_file(election_id: str):
     election = Election.query.get(election_id)
+    standardized_contests_file = retrieve_file(
+        election.standardized_contests_file.storage_path
+    )
     standardized_contests_csv = parse_csv(
-        election.standardized_contests_file.contents, STANDARDIZED_CONTEST_COLUMNS
+        standardized_contests_file, STANDARDIZED_CONTEST_COLUMNS
     )
 
     standardized_contests = []
@@ -71,6 +85,8 @@ def process_standardized_contests_file(election_id: str):
             )
         )
 
+    standardized_contests_file.close()
+
     election.standardized_contests = standardized_contests
 
     # If any contests were already created based on an older version of the
@@ -106,6 +122,8 @@ def validate_standardized_contests_upload(request: Request, election: Election):
     if "standardized-contests" not in request.files:
         raise BadRequest("Missing required file parameter 'standardized-contests'")
 
+    validate_csv_mimetype(request.files["standardized-contests"])
+
 
 @api.route("/election/<election_id>/standardized-contests/file", methods=["PUT"])
 @restrict_access([UserType.AUDIT_ADMIN])
@@ -114,10 +132,14 @@ def upload_standardized_contests_file(election: Election):
 
     election.standardized_contests = None
     file = request.files["standardized-contests"]
+    storage_path = store_file(
+        file.stream,
+        f"audits/{election.id}/" + timestamp_filename("standardized_contests", "csv"),
+    )
     election.standardized_contests_file = File(
         id=str(uuid.uuid4()),
         name=file.filename,
-        contents=decode_csv_file(file),
+        storage_path=storage_path,
         uploaded_at=datetime.now(timezone.utc),
     )
     election.standardized_contests_file.task = create_background_task(
@@ -150,6 +172,6 @@ def download_standardized_contests_file(election: Election):
         return NotFound()
 
     return csv_response(
-        election.standardized_contests_file.contents,
+        retrieve_file(election.standardized_contests_file.storage_path),
         election.standardized_contests_file.name,
     )
