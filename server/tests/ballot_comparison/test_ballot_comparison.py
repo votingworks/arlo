@@ -1064,7 +1064,7 @@ def test_ballot_comparison_union_choice_names(
 
     # Choices should be unioned across jurisdictions
     compare_json(
-        sorted(target_contest["choices"], key=lambda c: c["name"]),
+        target_contest["choices"],
         [
             {"id": assert_is_id, "name": "Choice 1-1", "numVotes": 20,},
             {"id": assert_is_id, "name": "Choice 1-2", "numVotes": 6,},
