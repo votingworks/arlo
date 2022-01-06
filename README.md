@@ -76,15 +76,13 @@ Before submitting a pull request, please review our [Contribution Guidelines](./
 
 #### Installing Arlo
 
-We recommend running Arlo on Ubuntu 18.0.4.
+We recommend running Arlo on Ubuntu 20.
 
 - Clone the Arlo repository from https://github.com/votingworks/arlo.
-- Install Node10. See https://joshtronic.com/2018/05/08/how-to-install-nodejs-10-on-ubuntu-1804-lts/
 - `make dev-environment` or, if you prefer, look at individual make tasks like `deps`, `initdevdb`, `install-development`, and `resetdb`
 
 Here are some troubleshooting steps for issues we've run into when installing Arlo before:
 
-- Postgres is best installed by grabbing `postgresql-server-dev-10` and `postgresql-client-10`.
 - `psycopg2` has known issues depending on your install (see, e.g., [here](https://github.com/psycopg/psycopg2/issues/674)). If you run into issues, switch `psycopg2` to `psycopg2-binary` in pyproject.toml
 - A password may have to be set in the `DATABASE_URL` env var depending on your install of postgres. To do this, change `postgresql://postgres@localhost:5432/arlo` to `postgresql://postgres:{PASSWORD}@localhost:5432/arlo`, replacing `{PASSWORD}` with the password.
 - You may need to create `arlo` and `arlo-test` databases manually [via postgres](https://www.postgresql.org/docs/9.0/sql-createdatabase.html).
