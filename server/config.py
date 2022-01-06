@@ -78,15 +78,21 @@ HTTP_ORIGIN = read_env_var(
 # Support user login config
 SUPPORT_AUTH0_BASE_URL = read_env_var(
     "ARLO_SUPPORT_AUTH0_BASE_URL",
-    env_defaults=dict(test="", development="http://localhost:8080"),
+    env_defaults=dict(
+        test="http://localhost:8080", development="http://localhost:8080"
+    ),
 )
 SUPPORT_AUTH0_CLIENT_ID = read_env_var(
     "ARLO_SUPPORT_AUTH0_CLIENT_ID",
-    env_defaults=dict(test="", development="dev-support-client-id"),
+    env_defaults=dict(
+        test="test-support-client-id", development="dev-support-client-id"
+    ),
 )
 SUPPORT_AUTH0_CLIENT_SECRET = read_env_var(
     "ARLO_SUPPORT_AUTH0_CLIENT_SECRET",
-    env_defaults=dict(test="", development="dev-support-client-secret"),
+    env_defaults=dict(
+        test="test-support-client-secret", development="dev-support-client-secret"
+    ),
 )
 # Required email domain(s) for support users (comma-separated string)
 SUPPORT_EMAIL_DOMAINS = read_env_var(
@@ -96,15 +102,21 @@ SUPPORT_EMAIL_DOMAINS = read_env_var(
 # Audit admin OAuth login config
 AUDITADMIN_AUTH0_BASE_URL = read_env_var(
     "ARLO_AUDITADMIN_AUTH0_BASE_URL",
-    env_defaults=dict(test="", development="http://localhost:8080"),
+    env_defaults=dict(
+        test="http://localhost:8080", development="http://localhost:8080"
+    ),
 )
 AUDITADMIN_AUTH0_CLIENT_ID = read_env_var(
     "ARLO_AUDITADMIN_AUTH0_CLIENT_ID",
-    env_defaults=dict(test="", development="dev-auditadmin-client-id"),
+    env_defaults=dict(
+        test="test-auditadmin-client-id", development="dev-auditadmin-client-id"
+    ),
 )
 AUDITADMIN_AUTH0_CLIENT_SECRET = read_env_var(
     "ARLO_AUDITADMIN_AUTH0_CLIENT_SECRET",
-    env_defaults=dict(test="", development="dev-auditadmin-client-secret"),
+    env_defaults=dict(
+        test="test-auditadmin-client-secret", development="dev-auditadmin-client-secret"
+    ),
 )
 
 # Jurisdiction admin login code email config
