@@ -15,6 +15,7 @@ from server.audit_math.raire_utils import (
     RaireFrontier,
     RaireNode,
     NEBAssertion,
+    NENAssertion,
     RaireAssertion,
 )
 from server.tests.audit_math.test_raire_utils import make_neb_assertion
@@ -266,13 +267,29 @@ def compare_result(path: str, contests: Dict[str, List[str]]):
     for contest, asrtns in expected.items():
         assert contest in contests, "Incorrect contests for {}".format(path)
 
-        casrtns = contests[contest]
+        casrtns = set(contests[contest])
 
         assert len(asrtns) == len(
             casrtns
         ), "Number of assertions different for {}, contest {}".format(path, contest)
 
-        assert asrtns == casrtns, "Assertions differ for {}, contest {}".format(
+        parsed_asrtns = set()
+        for asrtn in asrtns:
+            a_type = asrtn.split(',')[0]
+            winner = asrtn.split(',')[2]
+            loser = asrtn.split(',')[4]
+            eliminated = set(asrtn.split('Eliminated,')[-1].split(','))
+
+            if a_type == 'NEB':
+                parsed_a = NEBAssertion(contest, winner, loser)
+            elif a_type == 'NEN':
+                parsed_a = NENAssertion(contest, winner, loser, eliminated)
+            else:
+                raise Exception(f'Unexpected assertion type: {a_type}')
+
+            parsed_asrtns.add(str(parsed_a))
+
+        assert set(parsed_asrtns) == casrtns, "Assertions differ for {}, contest {}".format(
             path, contest
         )
 
