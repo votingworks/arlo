@@ -87,6 +87,8 @@ def compute_discrepancies(
                     }
     """
     V = compute_margin_for_assertion(cvrs, assertion)
+    print(V)
+    print(assertion)
 
     discrepancies: Dict[str, Discrepancy] = {}
     for ballot, ballot_sample_cvr in sample_cvr.items():
@@ -99,9 +101,9 @@ def compute_discrepancies(
     return discrepancies
 
 
-def validate_cvr(cvr: CVR) -> CVR:
+def normalize_cvr(cvr: CVR) -> CVR:
     """
-    This function validates a CVR according to the following rules:
+    This function normalizes a CVR according to the following rules:
         1. No candidates may have the same rank.
         2. Ranks must begin at 1 and be consecutive.
 
@@ -113,57 +115,34 @@ def validate_cvr(cvr: CVR) -> CVR:
         2. If the highest rank is not 1, all ranks will be decremented until
            the highest rank is 1. If other ranks are not consecutive, they
            will be mapped accordingly. E.g., if a ballot is ranked 2, 4, 5, it
-           will be validated as 1, 2, 3.
+           will be normalized as 1, 2, 3.
     """
 
     output: CVR = {}
-    # First zero-out overvotes:
     for contest in cvr:
-        highest = len(cvr[contest])
         output[contest] = {}
-        for cand in cvr[contest]:
-            duplicate = False
 
-            # This means this candidate's ballot has already been exhausted.
-            if cand in output[contest]:
-                continue
-            for other in cvr[contest]:
-                if cand == other:
-                    continue
-
-                if cvr[contest][cand] == cvr[contest][other] and cvr[contest][cand]:
-                    duplicate = True
-
-            if duplicate:
-                output[contest][cand] = 0
-                # We also have to eliminate all candidates with a worse ranking
-                for other in cvr[contest]:
-                    if cvr[contest][other] >= cvr[contest][cand]:
-                        output[contest][other] = 0
-
+        # If there's an overvote (i.e. duplicate rank), zero it out (as well as any ranks below it)
+        non_zero_ranks = [rank for rank in cvr[contest].values() if rank != 0]
+        duplicate_ranks = {
+            rank for rank in non_zero_ranks if non_zero_ranks.count(rank) > 1
+        }
+        highest_duplicate_rank = min(duplicate_ranks) if duplicate_ranks else None
+        for candidate, rank in cvr[contest].items():
+            if highest_duplicate_rank and rank >= highest_duplicate_rank:
+                output[contest][candidate] = 0
             else:
-                output[contest][cand] = cvr[contest][cand]
+                output[contest][candidate] = rank
 
-            # Find highest rank
-            if output[contest][cand]:
-                highest = min(output[contest][cand], highest)
-
-    # Now decrement all non-zero ranks until highest is 1
-    for contest in output:
-        for _ in range(highest - 1):
-            for cand in output[contest]:
-                if output[contest][cand]:
-                    output[contest][cand] -= 1
-
-    # Now ensure ranks are consecutive:
-    for contest in output:
-        next_highest = 2
-        for cand, rank in sorted(output[contest].items(), key=lambda item: item[1]):
-            if rank <= 1:
-                continue
-            if rank > next_highest:
-                output[contest][cand] = next_highest
-                next_highest += 1
+        # Normalize ranks so that the highest rank is 1 and all ranks are consecutive
+        ranked_candidates = {
+            candidate: rank for candidate, rank in output[contest].items() if rank != 0
+        }
+        sorted_ranked_candidates = sorted(
+            ranked_candidates.items(), key=lambda pair: pair[1]
+        )
+        for i, (candidate, _) in enumerate(sorted_ranked_candidates):
+            output[contest][candidate] = i + 1
 
     return output
 
@@ -179,8 +158,8 @@ def discrepancy(
     if reported is None or audited is None:
         error = 2
     else:
-        reported_v = validate_cvr(reported)
-        audited_v = validate_cvr(audited)
+        reported_v = normalize_cvr(reported)
+        audited_v = normalize_cvr(audited)
         v_w, v_l = (
             assertion.is_vote_for_winner(reported_v),
             assertion.is_vote_for_loser(reported_v),
@@ -194,7 +173,6 @@ def discrepancy(
     if error == 0:
         return None
 
-    # TODO: this seems wrong - V_wl here is defined as the first-round tallies for winner and loser
     weighted_error = Decimal(error) / Decimal(margin) if margin > 0 else Decimal("inf")
 
     return Discrepancy(counted_as=error, weighted_error=weighted_error)
@@ -204,7 +182,7 @@ def get_sample_sizes(
     risk_limit: int,
     contest: Contest,
     cvrs: CVRS,
-    sample_results: Optional[Dict[str, int]],
+    sample_results: Optional[Dict[RaireAssertion, Dict[str, int]]],
     assertions: List[RaireAssertion],
 ) -> int:
     """
@@ -217,12 +195,16 @@ def get_sample_sizes(
         sample_results - if a sample has already been drawn, this will
                          contain its results, of the form:
                          {
-                            'sample_size': n,
-                            '1-under':     u1,
-                            '1-over':      o1,
-                            '2-under':     u2,
-                            '2-over':      o2,
+                            assertion: {
+                                'sample_size': n,
+                                '1-under':     u1,
+                                '1-over':      o1,
+                                '2-under':     u2,
+                                '2-over':      o2,
+                            },
+                            ...
                          }
+
 
     Outputs:
         sample_size    - the sample size needed for this audit
@@ -234,14 +216,18 @@ def get_sample_sizes(
 
     for assertion in assertions:
         margin = compute_margin_for_assertion(cvrs, assertion) / contest.ballots
-        sample_results = sample_results or {}
-        obs_o1 = Decimal(sample_results.get("1-over", 0))
-        obs_o2 = Decimal(sample_results.get("2-over", 0))
+        if not sample_results:
+            obs_o1 = Decimal(0)
+            obs_o2 = Decimal(0)
+            num_sampled = Decimal(0)
+        else:
+            obs_o1 = Decimal(sample_results[assertion].get("1-over", 0))
+            obs_o2 = Decimal(sample_results[assertion].get("2-over", 0))
+            num_sampled = Decimal(sample_results[assertion].get("sample_size", 0))
         # We want to be conservative, so we will ignore understatements (i.e. errors
         # that favor the winner) which are negative.
         obs_u1 = 0
         obs_u2 = 0
-        num_sampled = Decimal(sample_results.get("sample_size", 0))
 
         if num_sampled:
             r1 = obs_o1 / num_sampled
@@ -283,7 +269,8 @@ def get_sample_sizes(
 def compute_margin_for_assertion(cvrs: CVRS, assertion: RaireAssertion) -> Decimal:
     v_w, v_l = 0, 0
     for cvr in cvrs:
-        # Typechecker shenanigans
+        # Typechecker shenanigans. cvrs[cvr] can never be None since we're only
+        # computing this function on provided CVRs.
         val = cvrs[cvr]
         assert val is not None
         v_w += assertion.is_vote_for_winner(val)

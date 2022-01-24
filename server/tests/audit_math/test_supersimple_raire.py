@@ -172,10 +172,10 @@ def test_two_vote_overstatement_discrepancies(cvrs, assertions):
 def test_race_not_in_cvr_discrepancy(cvrs, assertions):
 
     sample_cvr = {
-        0: {
+        14000: {
             "times_sampled": 1,
             "cvr": {
-                "Contest F": {
+                "Contest D": {
                     "winner": 0,
                     "loser": 1,
                 },  # The audit board found a race not in the CVR
@@ -184,13 +184,12 @@ def test_race_not_in_cvr_discrepancy(cvrs, assertions):
     }
 
     discrepancies = supersimple_raire.compute_discrepancies(
-        cvrs, sample_cvr, assertions["Contest F"][0]
+        cvrs, sample_cvr, assertions["Contest D"][0]
     )
 
     assert discrepancies
-    assert discrepancies[0]["counted_as"] == 1
-    # Again, this should be impossible.
-    assert discrepancies[0]["weighted_error"] == Decimal("inf")
+    assert discrepancies[14000]["counted_as"] == 1
+    assert discrepancies[14000]["weighted_error"] == Decimal(1) / Decimal(2000)
 
 
 def test_race_not_in_sample_discrepancy(cvrs, assertions):
@@ -219,6 +218,7 @@ def test_race_not_in_sample_discrepancy(cvrs, assertions):
 def test_ballot_not_found_discrepancy(cvrs, assertions):
     sample_cvr = {0: {"times_sampled": 1, "cvr": None}}
 
+    print(assertions["Contest D"])
     discrepancies = supersimple_raire.compute_discrepancies(
         cvrs, sample_cvr, assertions["Contest D"][0]
     )
@@ -228,10 +228,9 @@ def test_ballot_not_found_discrepancy(cvrs, assertions):
     assert discrepancies[0]["weighted_error"] == Decimal(2) / Decimal(2000)
 
 
-def test_ballot_not_in_cvr(assertions):
-    cvrs = {}
+def test_ballot_not_in_cvr(cvrs, assertions):
     sample_cvr = {
-        0: {"times_sampled": 1, "cvr": {"Contest D": {"winner": 1, "loser": 2}}}
+        15000: {"times_sampled": 1, "cvr": {"Contest D": {"winner": 1, "loser": 2}}}
     }
 
     discrepancies = supersimple_raire.compute_discrepancies(
@@ -239,9 +238,8 @@ def test_ballot_not_in_cvr(assertions):
     )
 
     assert discrepancies
-    assert discrepancies[0]["counted_as"] == 2
-    # This should actually be impossible, unless we're already doing a recount.
-    assert discrepancies[0]["weighted_error"] == Decimal("inf")
+    assert discrepancies[15000]["counted_as"] == -1
+    assert discrepancies[15000]["weighted_error"] == Decimal(-1) / Decimal(2000)
 
 
 def test_ballot_not_in_cvr_and_not_found(assertions):
@@ -307,11 +305,14 @@ def test_fptp(contests, cvrs, assertions):
             assert finished, f"Audit of {contest} should have finished but didn't"
 
         to_sample = {
-            "sample_size": sample_size,
-            "1-under": 0,
-            "1-over": 0,
-            "2-under": 0,
-            "2-over": 0,
+            assertion: {
+                "sample_size": sample_size,
+                "1-under": 0,
+                "1-over": 0,
+                "2-under": 0,
+                "2-over": 0,
+            }
+            for assertion in assertions[contest]
         }
 
         next_sample_size = supersimple_raire.get_sample_sizes(
@@ -351,11 +352,14 @@ def test_fptp(contests, cvrs, assertions):
             ), f"Audit of {contest} shouldn't have finished but did {p_value}!"
 
         to_sample = {
-            "sample_size": sample_size,
-            "1-under": 0,
-            "1-over": 1,
-            "2-under": 0,
-            "2-over": 0,
+            assertion: {
+                "sample_size": sample_size,
+                "1-under": 0,
+                "1-over": 1,
+                "2-under": 0,
+                "2-over": 0,
+            }
+            for assertion in assertions[contest]
         }
 
         next_sample_size = supersimple_raire.get_sample_sizes(
@@ -395,11 +399,14 @@ def test_fptp(contests, cvrs, assertions):
             assert not finished, "Audit shouldn't have finished but did!"
 
         to_sample = {
-            "sample_size": sample_size,
-            "1-under": 0,
-            "1-over": 0,
-            "2-under": 0,
-            "2-over": 1,
+            assertion: {
+                "sample_size": sample_size,
+                "1-under": 0,
+                "1-over": 0,
+                "2-under": 0,
+                "2-over": 1,
+            }
+            for assertion in assertions[contest]
         }
 
         next_sample_size = supersimple_raire.get_sample_sizes(
@@ -445,17 +452,17 @@ def test_get_sample_sizes_fptp(contests, cvrs, assertions):
         )
 
 
-def test_validate_cvr():
+def test_normalize_cvr():
 
     expected: CVR = {"contest": {"Alice": 1, "Bob": 2, "Charlie": 0}}
 
     # Idempotent for correct cvrs
-    assert expected == supersimple_raire.validate_cvr(
+    assert expected == supersimple_raire.normalize_cvr(
         {"contest": {"Alice": 1, "Bob": 2, "Charlie": 0}}
     )
 
     # Correctly fixes gaps
-    assert expected == supersimple_raire.validate_cvr(
+    assert expected == supersimple_raire.normalize_cvr(
         {"contest": {"Alice": 2, "Bob": 4, "Charlie": 0}}
     )
 

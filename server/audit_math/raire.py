@@ -67,10 +67,10 @@ def make_frontier(
     # tail of size two. The last candidate in the tail is the ultimate winner.
     for cand in contest.candidates:
         if cand in contest.winners:
+            # We don't care about other winners
             continue
 
         for other in contest.candidates:
-            # We don't care about other winners
             if cand == other:
                 continue
 
