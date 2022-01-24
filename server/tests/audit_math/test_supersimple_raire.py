@@ -1017,7 +1017,6 @@ def test_raire_example_12():
     assert not finished
 
 
-@pytest.mark.skip(reason="Takes too long to run, doesn't impact coverage")
 def test_raire_example_broken():
     # Election taken from the RAIRE paper (Example 12). "Alice" wins.
     contest = Contest(
