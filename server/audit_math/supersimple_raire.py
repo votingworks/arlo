@@ -87,8 +87,6 @@ def compute_discrepancies(
                     }
     """
     V = compute_margin_for_assertion(cvrs, assertion)
-    print(V)
-    print(assertion)
 
     discrepancies: Dict[str, Discrepancy] = {}
     for ballot, ballot_sample_cvr in sample_cvr.items():

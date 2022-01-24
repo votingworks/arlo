@@ -218,7 +218,6 @@ def test_race_not_in_sample_discrepancy(cvrs, assertions):
 def test_ballot_not_found_discrepancy(cvrs, assertions):
     sample_cvr = {0: {"times_sampled": 1, "cvr": None}}
 
-    print(assertions["Contest D"])
     discrepancies = supersimple_raire.compute_discrepancies(
         cvrs, sample_cvr, assertions["Contest D"][0]
     )
