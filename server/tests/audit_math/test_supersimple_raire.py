@@ -648,6 +648,7 @@ def test_simple_irv_election():
     assert not finished
 
 
+@pytest.mark.skip(reason="Takes too long to run, doesn't impact coverage")
 def test_raire_example_1():
     # Election taken from the RAIRE paper (Example 1). "Dara" wins.
     contest = Contest(
@@ -768,6 +769,7 @@ def test_raire_example_1():
     assert not finished
 
 
+@pytest.mark.skip(reason="Takes too long to run, doesn't impact coverage")
 def test_raire_example_5():
     # Election taken from the RAIRE paper (Example 1). "Dara" wins.
     contest = Contest(
@@ -896,6 +898,7 @@ def test_raire_example_5():
     assert not finished
 
 
+@pytest.mark.skip(reason="Takes too long to run, doesn't impact coverage")
 def test_raire_example_12():
     # Election taken from the RAIRE paper (Example 12). "Alice" wins.
     contest = Contest(
@@ -1014,6 +1017,7 @@ def test_raire_example_12():
     assert not finished
 
 
+@pytest.mark.skip(reason="Takes too long to run, doesn't impact coverage")
 def test_raire_example_broken():
     # Election taken from the RAIRE paper (Example 12). "Alice" wins.
     contest = Contest(
