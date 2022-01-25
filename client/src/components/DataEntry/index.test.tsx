@@ -284,7 +284,7 @@ describe('DataEntry', () => {
         })
 
         expect(pushSpy.mock.calls[0][0]).toBe(
-          '/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/1789'
+          '/election/1/audit-board/audit-board-1/batch/batch-id-2/ballot/2112'
         )
       })
     })
@@ -329,10 +329,11 @@ describe('DataEntry', () => {
 
         await waitFor(() => {
           expect(dialog).not.toBeInTheDocument()
-          expect(history.location.pathname).toBe(
-            '/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/1789'
-          )
         })
+        // Should skip to the next unaudited ballot
+        expect(history.location.pathname).toBe(
+          '/election/1/audit-board/audit-board-1/batch/batch-id-2/ballot/2112'
+        )
       })
     })
 
@@ -362,19 +363,26 @@ describe('DataEntry', () => {
         apiCalls.getBallotsOneAudited,
       ]
       await withMockFetch(expectedCalls, async () => {
-        renderDataEntry()
+        const { history } = renderDataEntry()
 
         await screen.findByRole('heading', {
           name: 'Ballots for Audit Board #1',
         })
 
-        // Go to the first ballot
+        // Go to the first unaudited ballot
         userEvent.click(
           await screen.findByRole('button', { name: 'Audit Next Ballot' })
         )
         screen.getByRole('heading', {
           name: 'Audit Ballot Selections',
         })
+        // The first ballot in the list should be skipped, should see the second ballot
+        screen.getByText('0003-04-Precinct 19 (Jonesboro Fire Department)') // Batch Name
+        screen.getByText('11') // Tabulator
+        screen.getByText('2112') // Ballot number
+        expect(history.location.pathname).toBe(
+          '/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/2112'
+        )
 
         // Select some choices for each contest
         screen.getByRole('heading', { name: 'Contest 1' })
