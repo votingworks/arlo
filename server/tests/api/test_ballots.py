@@ -330,8 +330,10 @@ def test_ab_list_ballots_round_2(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
+    round_1_id: str,
+    audit_board_round_1_ids: List[str],
     round_2_id: str,
-    audit_board_round_2_ids: List[str],  # pylint: disable=unused-argument
+    audit_board_round_2_ids: List[str],
     snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_2_ids[0])
@@ -351,28 +353,50 @@ def test_ab_list_ballots_round_2(
                 "tabulator": None,
                 "container": None,
             },
-            "position": BALLOT_1_POSITION,
-            "status": "AUDITED",
-            "interpretations": [
-                {
-                    "choiceIds": [assert_is_id],
-                    "comment": None,
-                    "contestId": assert_is_id,
-                    "interpretation": "VOTE",
-                },
-                {
-                    "choiceIds": [],
-                    "comment": None,
-                    "contestId": assert_is_id,
-                    "interpretation": "CONTEST_NOT_ON_BALLOT",
-                },
-            ],
+            "position": 9,
+            "status": "NOT_AUDITED",
+            "interpretations": [],
             "auditBoard": {"id": assert_is_id, "name": "Audit Board #1"},
         },
     )
 
+    # Audit boards can't see ballots that were audited in previous rounds
     previously_audited_ballots = [b for b in ballots if b["status"] == "AUDITED"]
-    snapshot.assert_match(len(previously_audited_ballots))
+    assert previously_audited_ballots == []
+
+    # And can't re-audit any of those ballots
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/ballots"
+    )
+    ballots = json.loads(rv.data)["ballots"]
+    ballot = next(b for b in ballots if b["status"] == "AUDITED")
+
+    set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_2_ids[0])
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/audit-board/{audit_board_round_2_ids[0]}/ballots/{ballot['id']}",
+        {},
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Ballot was already audited in a previous round",
+            }
+        ]
+    }
+
+    set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_1_ids[0])
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots/{ballot['id']}",
+        {},
+    )
+    assert rv.status_code == 404
 
 
 def test_ab_audit_ballot_not_found(
