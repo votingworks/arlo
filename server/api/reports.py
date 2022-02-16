@@ -743,7 +743,7 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
 @api.route("/election/<election_id>/report", methods=["GET"])
 @restrict_access([UserType.AUDIT_ADMIN])
 def audit_admin_audit_report(election: Election):
-    if len(election.rounds) == 0:
+    if len(list(election.rounds)) == 0:
         raise Conflict("Cannot generate report until audit starts")
 
     row_sets = [
@@ -778,7 +778,7 @@ def audit_admin_audit_report(election: Election):
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def jursdiction_admin_audit_report(election: Election, jurisdiction: Jurisdiction):
-    if len(election.rounds) == 0:
+    if len(list(election.rounds)) == 0:
         raise Conflict("Cannot generate report until audit starts")
 
     csv_io = io.StringIO()
