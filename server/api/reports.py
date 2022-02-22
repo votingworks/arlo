@@ -3,6 +3,7 @@ from typing import Dict, List, Optional, Tuple, cast as typing_cast
 from collections import defaultdict, Counter
 from sqlalchemy import func, and_
 from sqlalchemy.dialects.postgresql import aggregate_order_by
+from werkzeug.exceptions import Conflict
 
 from . import api
 from ..models import *  # pylint: disable=wildcard-import
@@ -742,6 +743,9 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
 @api.route("/election/<election_id>/report", methods=["GET"])
 @restrict_access([UserType.AUDIT_ADMIN])
 def audit_admin_audit_report(election: Election):
+    if len(list(election.rounds)) == 0:
+        raise Conflict("Cannot generate report until audit starts")
+
     row_sets = [
         election_info_rows(election),
         contest_rows(election),
@@ -774,6 +778,9 @@ def audit_admin_audit_report(election: Election):
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def jursdiction_admin_audit_report(election: Election, jurisdiction: Jurisdiction):
+    if len(list(election.rounds)) == 0:
+        raise Conflict("Cannot generate report until audit starts")
+
     csv_io = io.StringIO()
     report = csv.writer(csv_io)
 
