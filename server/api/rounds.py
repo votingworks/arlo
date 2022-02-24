@@ -280,7 +280,7 @@ def round_sizes(contest: Contest) -> Dict[int, int]:
             .join(SampledBallot)
             .filter(SampledBallot.id.in_(contest_jurisdiction_ballots))
             .group_by(Round.id)
-            .values(Round.round_num, func.count(SampledBallot.id))
+            .values(Round.round_num, func.count(SampledBallot.id.distinct()))
         )
 
 
