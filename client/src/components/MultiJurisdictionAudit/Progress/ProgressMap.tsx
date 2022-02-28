@@ -13,7 +13,6 @@ import {
 } from '../useJurisdictions'
 import { IAuditSettings } from '../useAuditSettings'
 import { states } from '../AASetup/Settings/states'
-import { sortBy } from '../../../utils/array'
 import mapCountyCorrections from './map-county-corrections'
 
 interface IProps {
@@ -193,10 +192,9 @@ const Map = ({
       county => (county.id as string).slice(0, 2) === usState.id
     )
 
-    const counties = sortBy(stateCounties, county => county.properties!.name)
     const corrections = mapCountyCorrections[stateName] || {}
     const countyToJurisdiction = Object.fromEntries(
-      counties.map(county => {
+      stateCounties.map(county => {
         const countyName = (
           corrections[county.id!] || county.properties!.name
         ).toLowerCase()

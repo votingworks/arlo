@@ -812,7 +812,7 @@ export const jurisdictionMocks: { [key: string]: IJurisdiction[] } = {
       currentRoundStatus: null,
     },
   ],
-  oneUploadFailedWithAlabamaJurisdictions: [
+  uploadingWithAlabamaJurisdictions: [
     {
       id: 'jurisdiction-id-1',
       name: 'Jackson',
@@ -823,7 +823,7 @@ export const jurisdictionMocks: { [key: string]: IJurisdiction[] } = {
     {
       id: 'jurisdiction-id-2',
       name: 'Baldwin',
-      ballotManifest: manifestMocks.processed,
+      ballotManifest: manifestMocks.empty,
       batchTallies: talliesMocks.empty,
       currentRoundStatus: null,
     },
@@ -831,7 +831,7 @@ export const jurisdictionMocks: { [key: string]: IJurisdiction[] } = {
       id: 'jurisdiction-id-3',
       name: 'Geneva',
       ballotManifest: manifestMocks.processed,
-      batchTallies: talliesMocks.processed,
+      batchTallies: talliesMocks.empty,
       currentRoundStatus: null,
     },
   ],

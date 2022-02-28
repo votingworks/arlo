@@ -947,10 +947,8 @@ describe('Progress screen', () => {
     await withMockFetch(expectedCalls, async () => {
       const { container } = render(
         <Progress
-          jurisdictions={
-            jurisdictionMocks.oneUploadFailedWithAlabamaJurisdictions
-          }
-          auditSettings={auditSettings.all}
+          jurisdictions={jurisdictionMocks.uploadingWithAlabamaJurisdictions}
+          auditSettings={auditSettings.batchComparisonAll}
           round={null}
         />
       )
@@ -960,15 +958,15 @@ describe('Progress screen', () => {
       await waitFor(() => {
         expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
       })
-      expect(container.querySelectorAll('.county.success').length).toBe(1) // completed
-      expect(container.querySelectorAll('.county.progress').length).toBe(1) // in-progress
+      expect(container.querySelectorAll('.county.gray').length).toBe(1) // not started
+      expect(container.querySelectorAll('.county.progress').length).toBe(1) // in progress
       expect(container.querySelectorAll('.county.danger').length).toBe(1) // errored
 
       // Check that the county tooltip shows on hover
-      userEvent.hover(container.querySelector('.county.success')!)
+      userEvent.hover(container.querySelector('.county.progress')!)
       expect(container.querySelector('#tooltip')).toBeVisible()
       expect(container.querySelector('#tooltip')).toHaveTextContent('Geneva')
-      userEvent.unhover(container.querySelector('.county.success')!)
+      userEvent.unhover(container.querySelector('.county.progress')!)
       expect(container.querySelector('#tooltip')).not.toBeVisible()
     })
   })
