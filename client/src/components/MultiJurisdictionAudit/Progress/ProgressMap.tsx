@@ -139,8 +139,8 @@ const Map = ({
   const getJurisdictionStatusClass = (
     jurisdiction: IJurisdiction | undefined
   ) => {
-    if (!jurisdiction) return 'default'
-    const jurisdictionStatus = getJurisdictionStatus(jurisdiction)
+    const jurisdictionStatus =
+      jurisdiction && getJurisdictionStatus(jurisdiction)
     switch (jurisdictionStatus) {
       case JurisdictionProgressStatus.UPLOADS_COMPLETE:
       case JurisdictionProgressStatus.AUDIT_COMPLETE:
@@ -233,14 +233,13 @@ const Map = ({
         )
         return `county ${statusClass}`
       })
-      .on('mouseover', event => {
-        const county = event.toElement.__data__
-        const jurisdiction = countyToJurisdiction[county.id]
+      .on('mouseover', (event, county) => {
+        const jurisdiction = countyToJurisdiction[county.id!]
         select(tooltipContainer.current)
           .style('display', 'block')
           .style('left', `${event.offsetX + 10}px`)
           .style('top', `${event.offsetY}px`)
-          .html(jurisdiction ? jurisdiction.name : county.properties.name)
+          .html(jurisdiction ? jurisdiction.name : county.properties!.name)
       })
       .on('mouseout', () => {
         select('#tooltip').style('display', 'none')

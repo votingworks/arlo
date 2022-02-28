@@ -812,45 +812,27 @@ export const jurisdictionMocks: { [key: string]: IJurisdiction[] } = {
       currentRoundStatus: null,
     },
   ],
-  oneCompleteWithAlabamaJurisdictions: [
+  oneUploadFailedWithAlabamaJurisdictions: [
     {
       id: 'jurisdiction-id-1',
       name: 'Jackson',
-      ballotManifest: manifestMocks.processed,
+      ballotManifest: manifestMocks.errored,
       batchTallies: talliesMocks.processed,
-      currentRoundStatus: {
-        status: JurisdictionRoundStatus.IN_PROGRESS,
-        numUniqueAudited: 4,
-        numUnique: 10,
-        numSamplesAudited: 5,
-        numSamples: 11,
-      },
+      currentRoundStatus: null,
     },
     {
       id: 'jurisdiction-id-2',
       name: 'Baldwin',
       ballotManifest: manifestMocks.processed,
-      batchTallies: talliesMocks.processed,
-      currentRoundStatus: {
-        status: JurisdictionRoundStatus.NOT_STARTED,
-        numUniqueAudited: 0,
-        numUnique: 20,
-        numSamplesAudited: 0,
-        numSamples: 22,
-      },
+      batchTallies: talliesMocks.empty,
+      currentRoundStatus: null,
     },
     {
       id: 'jurisdiction-id-3',
       name: 'Geneva',
       ballotManifest: manifestMocks.processed,
       batchTallies: talliesMocks.processed,
-      currentRoundStatus: {
-        status: JurisdictionRoundStatus.COMPLETE,
-        numUniqueAudited: 30,
-        numUnique: 30,
-        numSamplesAudited: 31,
-        numSamples: 31,
-      },
+      currentRoundStatus: null,
     },
   ],
   allCompleteWithAlabamaJurisdictions: [
