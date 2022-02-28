@@ -12,7 +12,7 @@ import {
   standardizedContestsFile,
 } from './AASetup/Participants/_mocks'
 import { IBatches } from './RoundManagement/useBatchResults'
-import mockJSON from '../../../public/us-states-counties.json'
+import mapTopology from '../../../public/us-states-counties.json'
 import { IOrganization } from '../UserContext'
 
 const jurisdictionFormData: FormData = new FormData()
@@ -467,9 +467,8 @@ export const aaApiCalls = {
     response,
   }),
   getMapData: {
-    url: 'https://cdn.jsdelivr.net/npm/us-atlas@3/counties-10m.json',
-    // getting json as response to render the map properly
-    response: mockJSON,
+    url: '/us-states-counties.json',
+    response: mapTopology,
   },
 }
 
