@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import styled from 'styled-components'
 import { select, json, geoPath, geoAlbers } from 'd3'
 import { feature } from 'topojson-client'
@@ -6,16 +6,18 @@ import { feature } from 'topojson-client'
 // eslint-disable-next-line import/no-unresolved
 import { Topology } from 'topojson-specification'
 import { Colors, Spinner } from '@blueprintjs/core'
-import labelValueStates from '../AASetup/Settings/states'
 import {
   IJurisdiction,
   getJurisdictionStatus,
   JurisdictionProgressStatus,
 } from '../useJurisdictions'
 import { IAuditSettings } from '../useAuditSettings'
+import { states } from '../AASetup/Settings/states'
+import { sortBy } from '../../../utils/array'
+import mapCountyCorrections from './map-county-corrections'
 
 interface IProps {
-  stateName: string | null
+  stateAbbreviation: string
   jurisdictions: IJurisdiction[]
   isRoundStarted: boolean
   auditType: IAuditSettings['auditType']
@@ -121,11 +123,8 @@ const MapSpinner = styled(Spinner)`
   margin: 0 auto;
 `
 
-const convertCountyToJurisdiction = (countyName: string): string =>
-  countyName.toLowerCase().replace(/\s+county(\s+|$)/i, '')
-
 const Map = ({
-  stateName,
+  stateAbbreviation,
   jurisdictions,
   isRoundStarted,
   auditType,
@@ -137,64 +136,36 @@ const Map = ({
 
   const [jsonData, setJsonData] = useState<Topology | undefined>(undefined)
 
-  const getStateName = (abbr: string) => {
-    const filteredState = labelValueStates.find(
-      ({ value, label }) => value === abbr && label
-    )
-    return filteredState && filteredState.label
+  const getJurisdictionStatusClass = (
+    jurisdiction: IJurisdiction | undefined
+  ) => {
+    if (!jurisdiction) return 'default'
+    const jurisdictionStatus = getJurisdictionStatus(jurisdiction)
+    switch (jurisdictionStatus) {
+      case JurisdictionProgressStatus.UPLOADS_COMPLETE:
+      case JurisdictionProgressStatus.AUDIT_COMPLETE:
+        return 'success'
+      case JurisdictionProgressStatus.UPLOADS_FAILED:
+        return 'danger'
+      case JurisdictionProgressStatus.UPLOADS_IN_PROGRESS:
+      case JurisdictionProgressStatus.AUDIT_IN_PROGRESS:
+        return 'progress'
+      case JurisdictionProgressStatus.UPLOADS_NOT_STARTED:
+      case JurisdictionProgressStatus.AUDIT_NOT_STARTED:
+        return 'gray'
+      default:
+        return 'default'
+    }
   }
 
-  const getJurisdictionStatusClass = useCallback(
-    (countyName: string) => {
-      const filteredJurisdiction = jurisdictions.find(
-        ({ name }) =>
-          convertCountyToJurisdiction(name) ===
-          convertCountyToJurisdiction(countyName)
-      )
-
-      if (filteredJurisdiction) {
-        const jurisdictionStatus = getJurisdictionStatus(filteredJurisdiction)
-        switch (jurisdictionStatus) {
-          case JurisdictionProgressStatus.UPLOADS_COMPLETE:
-          case JurisdictionProgressStatus.AUDIT_COMPLETE:
-            return 'success'
-          case JurisdictionProgressStatus.UPLOADS_FAILED:
-            return 'danger'
-          case JurisdictionProgressStatus.UPLOADS_IN_PROGRESS:
-          case JurisdictionProgressStatus.AUDIT_IN_PROGRESS:
-            return 'progress'
-          case JurisdictionProgressStatus.UPLOADS_NOT_STARTED:
-          case JurisdictionProgressStatus.AUDIT_NOT_STARTED:
-            return 'gray'
-          default:
-            return 'default'
-        }
-      }
-      // incase of non-participant jurisdictions
-      return 'default'
-    },
-    [jurisdictions]
-  )
-
   useEffect(() => {
+    // Load topology data from a JSON file. This file is copied from:
+    // https://www.npmjs.com/package/us-atlas#counties-10m.json @ v3.0.0
     const loadMapData = async () => {
-      let respJsonData: Topology | undefined
-      try {
-        respJsonData = await json(
-          'https://cdn.jsdelivr.net/npm/us-atlas@3/counties-10m.json'
-        )
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error(`File Error: ${error}`)
-        // use local topojson file if CDN link fails to load
-        respJsonData = await json('/us-states-counties.json')
-      }
-      setJsonData(respJsonData)
+      setJsonData(await json('/us-states-counties.json'))
     }
     loadMapData()
   }, [])
-
-  let filteredCounties = []
 
   const projection = geoAlbers()
   const path = geoPath().projection(projection)
@@ -204,67 +175,72 @@ const Map = ({
 
     svgElement.selectAll('path').remove()
 
+    const stateName = states[stateAbbreviation]
     const usState = (feature(
       jsonData,
       jsonData.objects.states
-    ) as GeoJSON.FeatureCollection).features.filter(
-      d =>
-        d &&
-        d.properties &&
-        stateName &&
-        d.properties.name === getStateName(stateName)
-    )[0]
+    ) as GeoJSON.FeatureCollection).features.find(
+      state => state.properties!.name === stateName
+    )
+    if (!usState) throw new Error(`State topology not found: ${stateName}`)
 
-    // county ID's initial 2 characters are of state
-    // hence, just setting counties of audit state
-    const usCounties = (feature(
+    // Filter counties for this state. The county ID's initial 2 characters are
+    // the state's ID
+    const stateCounties = (feature(
       jsonData,
       jsonData.objects.counties
     ) as GeoJSON.FeatureCollection).features.filter(
-      d =>
-        d &&
-        d.id &&
-        usState &&
-        usState.id &&
-        d.id.toString().slice(0, 2) === usState.id.toString()
+      county => (county.id as string).slice(0, 2) === usState.id
     )
 
-    filteredCounties = Object.values(usCounties).filter(county =>
-      jurisdictions
-        .map(({ name }) => convertCountyToJurisdiction(name))
-        .includes(
-          county.properties &&
-            county.properties.name &&
-            convertCountyToJurisdiction(county.properties.name)
-        )
+    const counties = sortBy(stateCounties, county => county.properties!.name)
+    const corrections = mapCountyCorrections[stateName] || {}
+    const countyToJurisdiction = Object.fromEntries(
+      counties.map(county => {
+        const countyName = (
+          corrections[county.id!] || county.properties!.name
+        ).toLowerCase()
+        const matchingJurisdiction = jurisdictions.find(jurisdiction => {
+          const jursidictionName = jurisdiction.name.toLowerCase()
+          return (
+            jursidictionName === countyName ||
+            // Sometimes the jurisdiction name has "County" at the end, while
+            // the county name in the topology does not
+            jursidictionName === `${countyName} county`
+          )
+        })
+        return [county.id, matchingJurisdiction]
+      })
     )
 
-    if (filteredCounties.length / jurisdictions.length < 0.5) return null
+    const numMatchedJurisdictions = Object.values(countyToJurisdiction).filter(
+      j => j
+    ).length
+    if (numMatchedJurisdictions / jurisdictions.length < 0.5) return null
 
     projection.fitSize([width, height], usState)
-
     svgElement.attr('width', width).attr('height', height)
-
     svgElement
       .selectAll('path')
-      .data(usCounties)
+      .data(stateCounties)
       .enter()
       .append('path')
       .attr('d', path)
       .attr('clip-path', 'url(#clip-state)')
-      .attr('class', d => {
-        let statusClass = ''
-        if (d && d.properties) {
-          statusClass = getJurisdictionStatusClass(d.properties.name)
-        }
+      .attr('class', county => {
+        const statusClass = getJurisdictionStatusClass(
+          countyToJurisdiction[county.id!]
+        )
         return `county ${statusClass}`
       })
       .on('mouseover', event => {
+        const county = event.toElement.__data__
+        const jurisdiction = countyToJurisdiction[county.id]
         select(tooltipContainer.current)
           .style('display', 'block')
           .style('left', `${event.offsetX + 10}px`)
           .style('top', `${event.offsetY}px`)
-          .html(event.toElement.__data__.properties.name)
+          .html(jurisdiction ? jurisdiction.name : county.properties.name)
       })
       .on('mouseout', () => {
         select('#tooltip').style('display', 'none')

@@ -12,7 +12,7 @@ import {
   standardizedContestsFile,
 } from './AASetup/Participants/_mocks'
 import { IBatches } from './RoundManagement/useBatchResults'
-import mockJSON from './Progress/us-states-counties'
+import mockJSON from '../../../public/us-states-counties.json'
 import { IOrganization } from '../UserContext'
 
 const jurisdictionFormData: FormData = new FormData()
