@@ -32,13 +32,14 @@ describe('Header', () => {
 
       // Arlo logo
       const arloLogo = screen.getAllByRole('link', {
-        name: 'Arlo, by VotingWorks',
+        name: /Arlo, by VotingWorks/,
       })[0]
       expect(arloLogo).toHaveAttribute('href', '/')
       expect(within(arloLogo).getByRole('img')).toHaveAttribute(
         'src',
-        '/arlo.png'
+        '/votingworks-logo-circle.png'
       )
+      expect(arloLogo).toHaveTextContent('Arlo')
 
       expect(screen.queryByRole('button')).not.toBeInTheDocument()
     })
@@ -51,7 +52,7 @@ describe('Header', () => {
 
       // Arlo logo
       await screen.findByRole('link', {
-        name: 'Arlo, by VotingWorks',
+        name: /Arlo, by VotingWorks/,
       })
 
       // Navigation buttons
@@ -80,12 +81,12 @@ describe('Header', () => {
 
       // Arlo logo
       const arloLogo = await screen.findByRole('link', {
-        name: 'Arlo, by VotingWorks',
+        name: /Arlo, by VotingWorks/,
       })
       expect(arloLogo).toHaveAttribute('href', '/')
       expect(within(arloLogo).getByRole('img')).toHaveAttribute(
         'src',
-        '/arlo.png'
+        '/votingworks-logo-circle.png'
       )
 
       expect(screen.queryByRole('button')).not.toBeInTheDocument()
@@ -99,7 +100,7 @@ describe('Header', () => {
 
       // Arlo logo
       await screen.findByRole('link', {
-        name: 'Arlo, by VotingWorks',
+        name: /Arlo, by VotingWorks/,
       })
 
       // Navigation buttons
@@ -127,7 +128,7 @@ describe('Header', () => {
 
       // Arlo logo
       await screen.findByRole('link', {
-        name: 'Arlo, by VotingWorks',
+        name: /Arlo, by VotingWorks/,
       })
 
       // Jurisdiction name
@@ -169,7 +170,7 @@ describe('Header', () => {
       // No regular navbar
       expect(
         screen.queryByRole('link', {
-          name: 'Arlo, by VotingWorks',
+          name: /Arlo, by VotingWorks/,
         })
       ).not.toBeInTheDocument()
     })
@@ -199,7 +200,7 @@ describe('Header', () => {
 
       // Arlo logo
       screen.getByRole('link', {
-        name: 'Arlo, by VotingWorks',
+        name: /Arlo, by VotingWorks/,
       })
 
       // User's email
@@ -240,7 +241,7 @@ describe('Header', () => {
 
       // Arlo logo
       screen.getByRole('link', {
-        name: 'Arlo, by VotingWorks',
+        name: /Arlo, by VotingWorks/,
       })
 
       // User's email

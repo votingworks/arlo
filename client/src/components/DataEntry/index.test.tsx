@@ -142,9 +142,10 @@ describe('DataEntry', () => {
       await withMockFetch(expectedCalls, async () => {
         const { container } = renderDataEntry()
 
-        await screen.findByRole('link', {
-          name: 'Arlo, by VotingWorks',
+        const logo = await screen.findByRole('link', {
+          name: /Arlo, by VotingWorks/,
         })
+        expect(logo).toHaveTextContent('Arlo')
 
         // Audit board name
         expect(screen.getAllByText(/Audit Board #1/).length).toBe(3)

@@ -41,7 +41,7 @@ describe('Home screen', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView('/')
-      await screen.findByRole('img', { name: 'Arlo, by VotingWorks' })
+      await screen.findByRole('link', { name: /Arlo, by VotingWorks/ })
 
       // Link to audit admin login flow
       const aaLoginButton = screen.getByRole('link', {
@@ -108,7 +108,7 @@ describe('Home screen', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView('/')
-      await screen.findByRole('img', { name: 'Arlo, by VotingWorks' })
+      await screen.findByRole('link', { name: /Arlo, by VotingWorks/ })
 
       // Show user errors
       userEvent.type(

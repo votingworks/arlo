@@ -13,5 +13,5 @@ def test_index(client: FlaskClient):
 
 
 def test_static_logo(client: FlaskClient):
-    rv = client.get("/arlo.png")
+    rv = client.get("/votingworks-logo.png")
     assert rv.status_code == 200
