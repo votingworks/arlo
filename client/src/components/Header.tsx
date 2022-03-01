@@ -15,7 +15,7 @@ import {
   Icon,
 } from '@blueprintjs/core'
 import { Link, useRouteMatch, RouteComponentProps } from 'react-router-dom'
-import { useAuthDataContext } from './UserContext'
+import { useAuthDataContext, IAuditBoardMember } from './UserContext'
 import { Inner } from './Atoms/Wrapper'
 import LinkButton from './Atoms/LinkButton'
 
@@ -46,7 +46,6 @@ const Nav = styled(Navbar)`
   padding: 0;
   .bp3-navbar-heading img {
     height: 35px;
-    padding-top: 5px;
   }
 `
 
@@ -69,18 +68,21 @@ const InnerBar = styled(Inner)`
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  .logo-mobile {
-    display: none;
+  align-items: center;
+  a.title {
+    display: flex;
+    text-decoration: none;
+    color: ${Colors.DARK_GRAY2};
+    font-size: 1.1rem;
+    font-weight: bold;
+    img {
+      position: relative;
+      bottom: 2px;
+      margin-right: 7px;
+    }
   }
   @media only screen and (max-width: 767px) {
     justify-content: center;
-
-    .logo-desktop {
-      display: none;
-    }
-    .logo-mobile {
-      display: block;
-    }
   }
 `
 
@@ -136,17 +138,12 @@ const Header: React.FC<{}> = () => {
           <InnerBar>
             <NavbarGroup align={Alignment.LEFT}>
               <NavbarHeading>
-                <Link to="/">
+                <Link to="/" className="title">
                   <img
-                    src="/arlo.png"
+                    src="/votingworks-logo-circle.png"
                     alt="Arlo, by VotingWorks"
-                    className="logo-desktop"
                   />
-                  <img
-                    src="/arlo-mobile.png"
-                    alt="Arlo, by VotingWorks"
-                    className="logo-mobile"
-                  />
+                  <span>Arlo</span>
                 </Link>
               </NavbarHeading>
               {jurisdiction && (
@@ -210,6 +207,49 @@ const Header: React.FC<{}> = () => {
         </Nav>
       )}
     </>
+  )
+}
+
+interface IHeaderDataEntryProps {
+  boardName: string
+  members: IAuditBoardMember[]
+}
+
+export const HeaderDataEntry: React.FC<IHeaderDataEntryProps> = ({
+  boardName,
+  members,
+}: IHeaderDataEntryProps) => {
+  return (
+    <Nav>
+      <InnerBar>
+        <NavbarGroup align={Alignment.LEFT}>
+          <NavbarHeading>
+            <Link to="/" className="title">
+              <img
+                src="/votingworks-logo-circle.png"
+                alt="Arlo, by VotingWorks"
+              />
+              <span>Arlo</span>
+            </Link>
+          </NavbarHeading>
+          <NavbarHeading>
+            {boardName}
+            {members.length > 0 && (
+              <>
+                :{' '}
+                <strong>{members.map(member => member.name).join(', ')}</strong>
+              </>
+            )}
+          </NavbarHeading>
+        </NavbarGroup>
+        <NavbarGroup align={Alignment.RIGHT}>
+          <a href="/auth/logout">
+            {' '}
+            <span>Log out</span>{' '}
+          </a>
+        </NavbarGroup>
+      </InnerBar>
+    </Nav>
   )
 }
 

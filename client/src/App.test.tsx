@@ -44,92 +44,39 @@ describe('App', () => {
       })
     })
 
-    it('renders ja logged in properly', async () => {
+    it('renders jurisdiction list when logged in as JA', async () => {
       const expectedCalls = [jaApiCalls.getUser]
-      await withMockFetch(expectedCalls, async () => {
-        const { container } = renderView('/')
-        expect(
-          (await screen.findAllByAltText('Arlo, by VotingWorks')).length
-        ).toBe(2)
-        expect(container).toMatchSnapshot()
-      })
-    })
-
-    it('renders aa logged in properly', async () => {
-      const expectedCalls = [
-        aaApiCalls.getUser,
-        aaApiCalls.getOrganizations(mockOrganizations.oneOrgNoAudits),
-      ]
-      await withMockFetch(expectedCalls, async () => {
-        const { container } = renderView('/')
-        expect(
-          (await screen.findAllByAltText('Arlo, by VotingWorks')).length
-        ).toBe(2)
-        expect(container).toMatchSnapshot()
-      })
-    })
-
-    it('when logged in as an audit board, shows the login screen', async () => {
-      const expectedCalls = [apiMocks.abAuth, apiMocks.abAuth]
       await withMockFetch(expectedCalls, async () => {
         renderView('/')
-        await screen.findAllByText(/Audit Board #1/)
-      })
-    })
-  })
-
-  describe('/election/:electionId/audit-board/:auditBoardId', () => {
-    it('redirects to login screen when unauthenticated', async () => {
-      const expectedCalls = [apiMocks.failedAuth]
-      await withMockFetch(expectedCalls, async () => {
-        const { history } = renderView('/election/1/audit-board/audit-board-1')
-        await screen.findByRole('button', { name: 'Log in to your audit' })
-        expect(history.location.pathname).toEqual('/')
+        await screen.findByRole('heading', {
+          name: 'Jurisdictions - audit one',
+        })
       })
     })
 
-    it('renders ja logged in properly', async () => {
-      const expectedCalls = [jaApiCalls.getUser]
-      await withMockFetch(expectedCalls, async () => {
-        const { container } = renderView(
-          '/election/1/audit-board/audit-board-1'
-        )
-        expect(
-          (await screen.findAllByAltText('Arlo, by VotingWorks')).length
-        ).toBe(2)
-        expect(container).toMatchSnapshot()
-      })
-    })
-
-    it('renders aa logged in properly', async () => {
+    it('renders audit list when logged in as AA', async () => {
       const expectedCalls = [
         aaApiCalls.getUser,
         aaApiCalls.getOrganizations(mockOrganizations.oneOrgNoAudits),
       ]
       await withMockFetch(expectedCalls, async () => {
-        const { container } = renderView(
-          '/election/1/audit-board/audit-board-1'
-        )
-        expect(
-          (await screen.findAllByAltText('Arlo, by VotingWorks')).length
-        ).toBe(2)
-        expect(container).toMatchSnapshot()
+        renderView('/')
+        await screen.findByRole('heading', {
+          name: 'Audits - State of California',
+        })
       })
     })
 
-    it('renders ab logged in properly', async () => {
+    it('redirects to data entry flow when logged in as an audit board', async () => {
       const expectedCalls = [apiMocks.abAuth, apiMocks.abAuth]
       await withMockFetch(expectedCalls, async () => {
-        const { container } = render(
-          <MemoryRouter
-            initialEntries={['/election/1/audit-board/audit-board-1']}
-            initialIndex={0}
-          >
-            <App />
-          </MemoryRouter>
+        const { history } = renderView('/')
+        await screen.findByRole('heading', {
+          name: 'Audit Board #1: Member Sign-in',
+        })
+        expect(history.location.pathname).toEqual(
+          '/election/1/audit-board/audit-board-1'
         )
-        await screen.findByText('Audit Board #1: Member Sign-in')
-        expect(container).toMatchSnapshot()
       })
     })
   })
@@ -146,7 +93,7 @@ describe('App', () => {
       })
     })
 
-    it('renders ja logged in properly', async () => {
+    it('renders jurisdiction screen when logged in as JA', async () => {
       const expectedCalls = [
         jaApiCalls.getUser,
         jaApiCalls.getSettings(auditSettings.batchComparisonAll),
@@ -155,27 +102,85 @@ describe('App', () => {
         jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
       ]
       await withMockFetch(expectedCalls, async () => {
-        const { container } = renderView(
-          '/election/1/jurisdiction/jurisdiction-id-1'
-        )
-        expect(
-          (await screen.findAllByAltText('Arlo, by VotingWorks')).length
-        ).toBe(2)
-        expect(container).toMatchSnapshot()
+        renderView('/election/1/jurisdiction/jurisdiction-id-1')
+        await screen.findByText('Jurisdiction: Jurisdiction One')
       })
     })
 
-    it('renders aa logged in properly', async () => {
+    it('redirects to home when logged in as AA', async () => {
       const expectedCalls = [
         aaApiCalls.getUser,
         aaApiCalls.getOrganizations(mockOrganizations.oneOrgNoAudits),
       ]
       await withMockFetch(expectedCalls, async () => {
-        const { container } = renderView(
+        const { history } = renderView(
           '/election/1/jurisdiction/jurisdiction-id-1'
         )
-        await screen.findByText('New Audit')
-        expect(container).toMatchSnapshot()
+        await screen.findByRole('heading', {
+          name: 'Audits - State of California',
+        })
+        expect(history.location.pathname).toEqual('/')
+      })
+    })
+
+    it('redirects to data entry flow when logged in as an audit board', async () => {
+      const expectedCalls = [apiMocks.abAuth, apiMocks.abAuth]
+      await withMockFetch(expectedCalls, async () => {
+        const { history } = renderView(
+          '/election/1/jurisdiction/jurisdiction-id-1'
+        )
+        await screen.findByRole('heading', {
+          name: 'Audit Board #1: Member Sign-in',
+        })
+        expect(history.location.pathname).toEqual(
+          '/election/1/audit-board/audit-board-1'
+        )
+      })
+    })
+  })
+
+  describe('/election/:electionId/audit-board/:auditBoardId', () => {
+    it('redirects to login screen when unauthenticated', async () => {
+      const expectedCalls = [apiMocks.failedAuth]
+      await withMockFetch(expectedCalls, async () => {
+        const { history } = renderView('/election/1/audit-board/audit-board-1')
+        await screen.findByRole('button', { name: 'Log in to your audit' })
+        expect(history.location.pathname).toEqual('/')
+      })
+    })
+
+    it('redirects to home when logged in as JA', async () => {
+      const expectedCalls = [jaApiCalls.getUser]
+      await withMockFetch(expectedCalls, async () => {
+        const { history } = renderView('/election/1/audit-board/audit-board-1')
+        await screen.findByRole('heading', {
+          name: 'Jurisdictions - audit one',
+        })
+        expect(history.location.pathname).toEqual('/')
+      })
+    })
+
+    it('redirects to home when logged in as AA', async () => {
+      const expectedCalls = [
+        aaApiCalls.getUser,
+        aaApiCalls.getOrganizations(mockOrganizations.oneOrgNoAudits),
+      ]
+      await withMockFetch(expectedCalls, async () => {
+        const { history } = renderView('/election/1/audit-board/audit-board-1')
+        await screen.findByRole('heading', {
+          name: 'Audits - State of California',
+        })
+        expect(history.location.pathname).toEqual('/')
+      })
+    })
+
+    it('renders data entry flow when logged in as an audit board', async () => {
+      const expectedCalls = [apiMocks.abAuth, apiMocks.abAuth]
+      await withMockFetch(expectedCalls, async () => {
+        renderView('/election/1/audit-board/audit-board-1')
+        await screen.findByRole('heading', {
+          name: 'Audit Board #1: Member Sign-in',
+        })
       })
     })
   })

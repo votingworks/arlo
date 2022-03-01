@@ -9,6 +9,7 @@ import {
   Button,
   Intent,
   Classes,
+  H1,
 } from '@blueprintjs/core'
 import { useHistory, useLocation, Redirect } from 'react-router-dom'
 import styled from 'styled-components'
@@ -161,7 +162,16 @@ const LoginScreen: React.FC = () => {
 
   return (
     <LoginWrapper>
-      <img height="50px" src="/arlo.png" alt="Arlo, by VotingWorks" />
+      <H1 style={{ fontSize: '2.5rem', marginBottom: '20px' }}>Arlo</H1>
+      <div style={{ fontSize: '0.7rem' }}>
+        <strong>Risk Limiting Audits by</strong>{' '}
+        <img
+          style={{ position: 'relative', bottom: '-4px' }}
+          height="30px"
+          src="/votingworks-logo.png"
+          alt="Arlo, by VotingWorks"
+        />
+      </div>
       {query.get('error') && (
         <Callout intent="danger" style={{ margin: '20px 0 20px 0' }}>
           {query.get('message')}
