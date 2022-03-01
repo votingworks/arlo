@@ -4,11 +4,13 @@ from sqlalchemy import func, literal_column, and_
 from sqlalchemy.orm import contains_eager, joinedload
 from sqlalchemy.dialects.postgresql import aggregate_order_by
 from flask import jsonify, request
-from werkzeug.exceptions import BadRequest, NotFound
+from werkzeug.exceptions import BadRequest, NotFound, Conflict
+
 
 from . import api
 from ..auth import restrict_access, UserType
 from ..database import db_session
+from .rounds import get_current_round
 from ..models import *  # pylint: disable=wildcard-import
 from ..util.csv_download import csv_response, jurisdiction_timestamp_name
 from ..util.jsonschema import JSONDict, validate
@@ -248,8 +250,16 @@ def list_ballots_for_audit_board(
     round: Round,  # pylint: disable=unused-argument
     audit_board: AuditBoard,
 ):
+    previously_audited_ballots = (
+        SampledBallotDraw.query.join(Round)
+        .filter(Round.round_num < round.round_num)
+        .join(SampledBallot)
+        .with_entities(SampledBallot.id)
+        .subquery()
+    )
     ballots = (
         SampledBallot.query.filter_by(audit_board_id=audit_board.id)
+        .filter(SampledBallot.id.notin_(previously_audited_ballots))
         .join(Batch)
         .outerjoin(
             CvrBallot,
@@ -367,6 +377,10 @@ def audit_ballot(
     ).first()
     if not ballot:
         raise NotFound()
+    current_round = get_current_round(election)
+    assert current_round is not None  # Otherwise ballot would be not found above
+    if any(draw.round_id != current_round.id for draw in ballot.draws):
+        raise Conflict("Ballot was already audited in a previous round")
 
     ballot_audit = request.get_json()
     validate_audit_ballot(ballot_audit, jurisdiction)

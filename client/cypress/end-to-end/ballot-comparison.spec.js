@@ -254,6 +254,7 @@ describe('Ballot Comparison Test Cases', () => {
       cy.findByRole('button', { name: 'Submit Selections' }).click()
       cy.findByText('Confirm Selections').click()
       cy.findByText('Change Selections').should('not.exist')
+      cy.findAndCloseToast('Success! Now showing the next ballot to audit.')
       // go back to the main screen
       cy.findByText(/All Ballots/).click()
     })
@@ -291,7 +292,6 @@ describe('Ballot Comparison Test Cases', () => {
     cy.findByText('Confirm Selections').click()
     cy.findByText('Change Selections').should('not.exist')
     cy.findAndCloseToast('Success! Now showing the next ballot to audit.')
-    cy.findByText(/All Ballots/).click({ force: true })
 
     cy.findByText(/Not Audited/).should('have.length', 1)
     cy.contains('Ballots for Audit Board #1')

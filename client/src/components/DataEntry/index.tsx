@@ -183,13 +183,16 @@ const DataEntry: React.FC = () => {
   const url = `/election/${electionId}/audit-board/${auditBoardId}`
 
   const nextBallot = (batchId: string, ballot: number) => () => {
-    const ballotIx = ballots.findIndex(
+    const ballotIndex = ballots.findIndex(
       (b: IBallot) => b.batch.id === batchId && b.position === ballot
     )
-    /* istanbul ignore else */
-    if (ballotIx > -1 && ballots[ballotIx + 1]) {
-      const b = ballots[ballotIx + 1]
-      history.push(`${url}/batch/${b.batch.id}/ballot/${b.position}`)
+    const nextUnauditedBallot = ballots
+      .slice(ballotIndex + 1)
+      .find(b => b.status === BallotStatus.NOT_AUDITED)
+    if (nextUnauditedBallot) {
+      history.push(
+        `${url}/batch/${nextUnauditedBallot.batch.id}/ballot/${nextUnauditedBallot.position}`
+      )
     } else {
       /* istanbul ignore next */ // covered in end to end testing
       history.push(url)

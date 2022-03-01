@@ -13,7 +13,7 @@ import { parse as parseNumber } from '../../../../utils/number-schema'
 import FormField from '../../../Atoms/Form/FormField'
 import schema from './schema'
 import useAuditSettings, { IAuditSettings } from '../../useAuditSettings'
-import labelValueStates from './states'
+import { stateOptions } from './states'
 import { range } from '../../../../utils/array'
 
 const Select = styled(HTMLSelect)`
@@ -96,7 +96,7 @@ const Settings: React.FC<IProps> = ({
                     }
                     disabled={locked}
                     value={values.state}
-                    options={[{ value: '' }, ...labelValueStates]}
+                    options={[{ value: '' }, ...stateOptions]}
                   />
                   <ErrorMessage name="state" component={ErrorLabel} />
                 </div>

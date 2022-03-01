@@ -11,9 +11,7 @@ snapshots["test_ab_list_ballot_round_1 1"] = 46
 
 snapshots["test_ab_list_ballot_round_1 2"] = 30
 
-snapshots["test_ab_list_ballots_round_2 1"] = 122
-
-snapshots["test_ab_list_ballots_round_2 2"] = 16
+snapshots["test_ab_list_ballots_round_2 1"] = 106
 
 snapshots[
     "test_ballots_human_sort_order 1"

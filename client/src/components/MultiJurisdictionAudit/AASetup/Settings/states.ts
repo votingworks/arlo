@@ -1,4 +1,4 @@
-const states = {
+export const states: { [abbreviation: string]: string } = {
   AL: 'Alabama',
   AK: 'Alaska',
   AZ: 'Arizona',
@@ -52,7 +52,7 @@ const states = {
   WY: 'Wyoming',
 }
 
-export default Object.entries(states).map(([value, label]) => ({
+export const stateOptions = Object.entries(states).map(([value, label]) => ({
   value,
   label,
 }))

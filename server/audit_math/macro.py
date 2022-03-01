@@ -11,8 +11,10 @@ https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1443314 for the
 publication).
 """
 from decimal import Decimal, ROUND_CEILING
-from typing import Dict, Tuple, Any, TypedDict, Optional, List
+from typing import Dict, Tuple, TypeVar, TypedDict, Optional, List, cast
 from .sampler_contest import Contest
+
+BatchKey = TypeVar("BatchKey")
 
 
 class BatchError(TypedDict):
@@ -129,8 +131,8 @@ def compute_max_error(
 
 
 def compute_U(
-    reported_results: Dict[Tuple[Any, Any], Dict[str, Dict[str, int]]],
-    sample_results: Dict[Tuple[Any, Any], Dict[str, Dict[str, int]]],
+    reported_results: Dict[BatchKey, Dict[str, Dict[str, int]]],
+    sample_results: Dict[BatchKey, Dict[str, Dict[str, int]]],
     contest: Contest,
 ) -> Decimal:
     """
@@ -171,8 +173,8 @@ def compute_U(
 def get_sample_sizes(
     risk_limit: int,
     contest: Contest,
-    reported_results: Dict[Any, Dict[str, Dict[str, int]]],
-    sample_results: Dict[Any, Dict[str, Dict[str, int]]],
+    reported_results: Dict[BatchKey, Dict[str, Dict[str, int]]],
+    sample_results: Dict[BatchKey, Dict[str, Dict[str, int]]],
 ) -> int:
     """
     Computes initial sample sizes parameterized by likelihood that the
@@ -241,9 +243,9 @@ def get_sample_sizes(
 def compute_risk(
     risk_limit: int,
     contest: Contest,
-    reported_results: Dict[Any, Dict[str, Dict[str, int]]],
-    sample_results: Dict[Any, Dict[str, Dict[str, int]]],
-    times_sampled: Dict[Any, int],
+    reported_results: Dict[BatchKey, Dict[str, Dict[str, int]]],
+    sample_results: Dict[BatchKey, Dict[str, Dict[str, int]]],
+    sample_ticket_numbers: Dict[str, BatchKey],
 ) -> Tuple[float, bool]:
     """
     Computes the risk-value of <sample_results> based on results in <contest>.
@@ -264,11 +266,11 @@ def compute_risk(
                                }
                                ...
                            }
-        sample_results - if a sample has already been drawn, this will
-                         contain its results, of the same form as
-                         reported_results
-        times_sampled - a mapping from batch id to the number of times the batch
-                        was sampled
+        sample_results   - if a sample has already been drawn, this will
+                           contain its results, of the same form as
+                           reported_results
+        sample_ticket_numbers - a mapping from ticket numbers to the batch
+                           keys in sample_results
     Outputs:
         measurements    - the p-value of the hypotheses that the election
                           result is correct based on the sample for each
@@ -285,9 +287,14 @@ def compute_risk(
     p = Decimal(1.0)
 
     # Computing U without the sample preserves conservative-ness
-    U = compute_U(reported_results, {}, contest)
+    U = compute_U(reported_results, cast(Dict, {}), contest)
 
-    for batch in sample_results:
+    for _, batch in sorted(
+        sample_ticket_numbers.items(), key=lambda entry: entry[0]  # ticket_number
+    ):
+        if contest.name not in sample_results[batch]:
+            continue
+
         error = compute_error(reported_results[batch], sample_results[batch], contest)
         e_p = error["weighted_error"] if error else Decimal(0)
 
@@ -302,7 +309,7 @@ def compute_risk(
         if taint == 1:
             p = Decimal("inf")  # Our p-value blows up
         else:
-            p *= ((1 - 1 / U) / (1 - taint)) ** times_sampled[batch]
+            p *= (1 - 1 / U) / (1 - taint)
 
         if p <= alpha:
             return float(p), True
