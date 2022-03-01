@@ -6,7 +6,6 @@ import * as Sentry from '@sentry/react'
 import { Integrations } from '@sentry/tracing'
 import './index.css'
 import App from './App'
-import * as serviceWorker from './serviceWorker'
 
 Sentry.init({
   dsn: (window as any)._arlo_sentry_dsn, // eslint-disable-line @typescript-eslint/no-explicit-any
