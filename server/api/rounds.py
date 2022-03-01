@@ -241,17 +241,17 @@ def sampled_batch_results(election: Election,) -> BatchTallies:
     }
 
 
-def batches_times_sampled(election: Election) -> Dict[Tuple[str, str], int]:
-    sampled_batch_draw_counts = (
+def sampled_batches_by_ticket_number(election: Election) -> Dict[str, Tuple[str, str]]:
+    batches_by_ticket_number = (
         SampledBatchDraw.query.join(Batch)
         .join(Jurisdiction)
         .filter_by(election_id=election.id)
-        .group_by(Jurisdiction.name, Batch.name)
-        .values(Jurisdiction.name, Batch.name, func.count())
+        .order_by(SampledBatchDraw.ticket_number)
+        .values(SampledBatchDraw.ticket_number, Jurisdiction.name, Batch.name)
     )
     return {
-        (jurisdiction_name, batch_name): count
-        for jurisdiction_name, batch_name, count in sampled_batch_draw_counts
+        ticket_number: (jurisdiction_name, batch_name)
+        for ticket_number, jurisdiction_name, batch_name in batches_by_ticket_number
     }
 
 
@@ -489,7 +489,7 @@ def calculate_risk_measurements(election: Election, round: Round):
                 sampler_contest.from_db_contest(contest),
                 batch_tallies(election),
                 sampled_batch_results(election),
-                batches_times_sampled(election),
+                sampled_batches_by_ticket_number(election),
             )
         elif election.audit_type == AuditType.BALLOT_COMPARISON:
             p_value, is_complete = supersimple.compute_risk(

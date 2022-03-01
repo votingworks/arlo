@@ -113,7 +113,7 @@ def draw_ppeb_sample(
     int_seed = int(consistent_sampler.sha256_hex(seed), 16)  # type: ignore
     generator = default_rng(int_seed)
 
-    U = macro.compute_U(batch_results, {}, contest)
+    U = macro.compute_U(batch_results, cast(Dict, {}), contest)
 
     # This can only be the case if we've already recounted
     if U == 0:
