@@ -11,7 +11,7 @@ import {
 } from '../testUtilities'
 import SupportTools from './SupportTools'
 import AuthDataProvider from '../UserContext'
-import { supportApiCalls } from '../MultiJurisdictionAudit/_mocks'
+import { supportApiCalls } from '../_mocks'
 import {
   IOrganizationBase,
   IOrganization,

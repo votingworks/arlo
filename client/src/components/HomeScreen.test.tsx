@@ -3,13 +3,8 @@ import { screen, within, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { withMockFetch, renderWithRouter } from './testUtilities'
 import App from '../App'
-import {
-  aaApiCalls,
-  jaApiCalls,
-  apiCalls,
-  mockOrganizations,
-} from './MultiJurisdictionAudit/_mocks'
-import { auditSettings } from './MultiJurisdictionAudit/useSetupMenuItems/_mocks'
+import { aaApiCalls, apiCalls, mockOrganizations, jaApiCalls } from './_mocks'
+import { auditSettings } from './AuditAdmin/useSetupMenuItems/_mocks'
 
 const setupScreenCalls = [
   aaApiCalls.getRounds([]),

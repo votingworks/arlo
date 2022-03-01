@@ -1,0 +1,181 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`JA setup renders initial state 1`] = `
+<div>
+  <div
+    class="sc-bdVaJa bKocXA"
+  >
+    <div
+      class="bp3-callout sc-bxivhb dweKfW"
+    >
+      <div
+        class="sc-bwzfXH jiphYj"
+      >
+        <div
+          class="text"
+        >
+          <h3
+            class="bp3-heading sc-htpNat hodhlw"
+          >
+            Test Audit
+          </h3>
+          <h4
+            class="bp3-heading"
+          >
+            The audit has not started.
+          </h4>
+          <p>
+            0/2 files successfully uploaded.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div
+      class="sc-bwzfXH sc-jWBwVP cTVHuW"
+    >
+      <h2
+        class="bp3-heading sc-ifAKCX cmZyyF"
+      >
+        Audit Source Data
+      </h2>
+      <form>
+        <div
+          class="sc-EHOje bjGJmd"
+        >
+          <h2
+            class="bp3-heading sc-ifAKCX cmZyyF"
+          />
+          <div
+            class="sc-bZQynM bGsEQi"
+          >
+            <h4
+              class="bp3-heading"
+            >
+              Ballot Manifest
+            </h4>
+            <div
+              class="sc-gzVnrw kvvweo"
+            >
+              Click "Browse" to choose the appropriate Ballot
+                Manifest file from your computer. This file should be a
+                comma-separated list of all the ballot boxes/containers used
+                to store ballots for this particular election, plus a count of
+                how many ballot cards (individual pieces of paper) are stored
+                in each container.
+              <br />
+              <br />
+              <a
+                href="/sample_ballot_manifest.csv"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                (Click here to view a sample file in the correct format.)
+              </a>
+            </div>
+          </div>
+          <div
+            class="sc-bZQynM bGsEQi"
+          >
+            <label
+              class="bp3-file-input"
+            >
+              <input
+                accept=".csv"
+                name="csv"
+                type="file"
+              />
+              <span
+                class="bp3-file-upload-input"
+              >
+                Select a CSV...
+              </span>
+            </label>
+            <div
+              style="display: flex; margin-top: 15px; margin-bottom: 10px; align-items: center; width: 300px;"
+            />
+            <button
+              class="bp3-button bp3-intent-primary sc-gZMcBi eZVGYn"
+              type="submit"
+            >
+              <span
+                class="bp3-button-text"
+              >
+                Upload File
+              </span>
+            </button>
+          </div>
+        </div>
+      </form>
+      <form>
+        <div
+          class="sc-EHOje bjGJmd"
+        >
+          <h2
+            class="bp3-heading sc-ifAKCX cmZyyF"
+          />
+          <div
+            class="sc-bZQynM bGsEQi"
+          >
+            <h4
+              class="bp3-heading"
+            >
+              Candidate Totals by Batch
+            </h4>
+            <div
+              class="sc-gzVnrw kvvweo"
+            >
+              Click "Browse" to choose the appropriate Candidate Totals by Batch file from your computer. This file should be a comma-separated list of all the ballot boxes/containers used to store ballots for this particular election, plus a count of how many votes were counted for each candidate in each of those containers.
+              <br />
+              <br />
+              <a
+                href="/sample_candidate_totals_by_batch.csv"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                (Click here to view a sample file in the correct format.)
+              </a>
+            </div>
+          </div>
+          <div
+            class="sc-bZQynM bGsEQi"
+          >
+            <label
+              class="bp3-file-input bp3-disabled"
+            >
+              <input
+                accept=".csv"
+                disabled=""
+                name="csv"
+                type="file"
+              />
+              <span
+                class="bp3-file-upload-input"
+              >
+                Select a CSV...
+              </span>
+            </label>
+            <div
+              style="display: flex; margin-top: 15px; margin-bottom: 10px; align-items: center; width: 300px;"
+            />
+            <button
+              class="bp3-button bp3-disabled bp3-intent-primary sc-gZMcBi eZVGYn"
+              disabled=""
+              tabindex="-1"
+              type="submit"
+            >
+              <span
+                class="bp3-button-text"
+              >
+                Upload File
+              </span>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div
+    class="Toastify"
+  />
+</div>
+`;

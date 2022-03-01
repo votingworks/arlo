@@ -4,12 +4,7 @@ import userEvent from '@testing-library/user-event'
 import Header from './Header'
 import AuthDataProvider from './UserContext'
 import { renderWithRouter, withMockFetch } from './testUtilities'
-import {
-  aaApiCalls,
-  apiCalls,
-  jaApiCalls,
-  supportApiCalls,
-} from './MultiJurisdictionAudit/_mocks'
+import { aaApiCalls, apiCalls, jaApiCalls, supportApiCalls } from './_mocks'
 
 const renderHeader = (route: string) =>
   renderWithRouter(

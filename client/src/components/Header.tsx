@@ -210,15 +210,15 @@ const Header: React.FC<{}> = () => {
   )
 }
 
-interface IHeaderDataEntryProps {
+interface IHeaderAuditBoardProps {
   boardName: string
   members: IAuditBoardMember[]
 }
 
-export const HeaderDataEntry: React.FC<IHeaderDataEntryProps> = ({
+export const HeaderAuditBoard: React.FC<IHeaderAuditBoardProps> = ({
   boardName,
   members,
-}: IHeaderDataEntryProps) => {
+}: IHeaderAuditBoardProps) => {
   return (
     <Nav>
       <InnerBar>

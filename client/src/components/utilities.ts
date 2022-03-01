@@ -61,7 +61,10 @@ export const api = async <T>(
       console.error(error.responseText) // eslint-disable-line no-console
       throw error
     }
-    return response.json() as Promise<T>
+    const text = await response.text()
+    // console.log(endpoint, response.status, text)
+    return JSON.parse(text)
+    // return response.json() as Promise<T>
   } catch (err) {
     toast.error(
       err.errorType === 'Internal Server Error'
