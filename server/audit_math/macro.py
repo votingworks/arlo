@@ -288,7 +288,6 @@ def compute_risk(
 
     # Computing U without the sample preserves conservative-ness
     U = compute_U(reported_results, cast(Dict, {}), contest)
-    print("U", U)
 
     for _, batch in sorted(
         sample_ticket_numbers.items(), key=lambda entry: entry[0]  # ticket_number
