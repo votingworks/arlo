@@ -298,7 +298,7 @@ const Progress: React.FC<IProps> = ({
       <H2Title>Audit Progress</H2Title>
       {jurisdictions && auditSettings.state && (
         <Map
-          stateName={auditSettings.state}
+          stateAbbreviation={auditSettings.state}
           jurisdictions={jurisdictions}
           isRoundStarted={!!round}
           auditType={auditType}
