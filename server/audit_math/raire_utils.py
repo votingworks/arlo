@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Type, Callable, Dict, List, Any, Optional, Literal
+from typing import Type, Callable, Dict, List, Any, Optional, Literal, Set
 import numpy as np
 
 from .sampler_contest import CVR, Contest
@@ -22,7 +22,7 @@ def ranking(cand: str, ballot: Dict[str, int]) -> int:
 
 
 def vote_for_cand(
-    cand: str, eliminated: List[str], ballot: Dict[str, int]
+    cand: str, eliminated: Set[str], ballot: Dict[str, int]
 ) -> Literal[0, 1]:
     """
     Input:
@@ -82,7 +82,7 @@ class RaireAssertion:
         self.difficulty = np.inf
 
         self.rules_out: List[Any] = []
-        self.eliminated: List = []
+        self.eliminated: Set = set()
 
     def is_vote_for_winner(self, cvr: CVR):
         """
@@ -234,7 +234,7 @@ class NENAssertion(RaireAssertion):
     of 'loser'.
     """
 
-    def __init__(self, contest: str, winner: str, loser: str, eliminated: List[str]):
+    def __init__(self, contest: str, winner: str, loser: str, eliminated: Set[str]):
         super().__init__(contest, winner, loser)
 
         self.eliminated = eliminated
@@ -442,7 +442,7 @@ def find_best_audit(
             best_asrtn = neb
 
     # 'eliminated' is the list of candidates that are not mentioned in 'tail'.
-    eliminated = [c for c in contest.candidates if not c in node.tail]
+    eliminated = {c for c in contest.candidates if not c in node.tail}
 
     # We now look at whether there is a candidate not mentioned in
     # 'tail' (this means they are assumed to be eliminated at some prior

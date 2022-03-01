@@ -45,7 +45,7 @@ def make_neb_matrix(contest: Contest, cvrs: CVRS, asn_func) -> NEBMatrix:
                 tally_cand += asrn.is_vote_for_winner(cvr)
                 tally_other += asrn.is_vote_for_loser(cvr)
 
-            if tally_cand > tally_other:
+            if tally_cand > tally_other and other not in contest.winners:
                 margin = tally_cand - tally_other
                 asrn.difficulty = asn_func(margin)
 
@@ -55,11 +55,7 @@ def make_neb_matrix(contest: Contest, cvrs: CVRS, asn_func) -> NEBMatrix:
 
 
 def make_frontier(
-    contest: Contest,
-    ballots: List[Dict[str, int]],
-    winner: str,
-    nebs: NEBMatrix,
-    asn_func,
+    contest: Contest, ballots: List[Dict[str, int]], nebs: NEBMatrix, asn_func,
 ) -> RaireFrontier:
     """
     Constructs the frontier for the search for the best audit
@@ -70,7 +66,8 @@ def make_frontier(
     # Our frontier initially has a node for each alternate election outcome
     # tail of size two. The last candidate in the tail is the ultimate winner.
     for cand in contest.candidates:
-        if cand == winner:
+        if cand in contest.winners:
+            # We don't care about other winners
             continue
 
         for other in contest.candidates:
@@ -190,7 +187,7 @@ def find_assertions(
 
 
 def compute_raire_assertions(
-    contest: Contest, cvrs: CVRS, winner: str, asn_func: Callable, agap: float = 0.0,
+    contest: Contest, cvrs: CVRS, asn_func: Callable, agap: float = 0.0,
 ) -> List[RaireAssertion]:
 
     """
@@ -211,7 +208,6 @@ def compute_raire_assertions(
                     ...
                 }
 
-        winner         - reported winner of the contest
 
         asn_func       - function that takes a margin as input and
                          returns an estimate of how difficult a
@@ -254,7 +250,7 @@ def compute_raire_assertions(
     ballots = [
         blt[contest.name] for _, blt in cvrs.items() if blt and contest.name in blt
     ]
-    frontier = make_frontier(contest, ballots, winner, nebs, asn_func)
+    frontier = make_frontier(contest, ballots, nebs, asn_func)
 
     # This is a running lowerbound on the overall difficulty of the
     # election audit.

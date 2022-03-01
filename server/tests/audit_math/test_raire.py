@@ -15,6 +15,7 @@ from server.audit_math.raire_utils import (
     RaireFrontier,
     RaireNode,
     NEBAssertion,
+    NENAssertion,
     RaireAssertion,
 )
 from server.tests.audit_math.test_raire_utils import make_neb_assertion
@@ -76,7 +77,7 @@ asn_func = lambda m: 1 / m if m > 0 else np.inf
 def test_make_neb_matrix(contest: Contest, cvrs: CVRS):
     expected: NEBMatrix = {
         c: {
-            d: make_neb_assertion(contest, cvrs, asn_func, c, d, [])
+            d: make_neb_assertion(contest, cvrs, asn_func, c, d, set())
             for d in contest.candidates
         }
         for c in contest.candidates
@@ -109,7 +110,7 @@ def test_make_raire_frontier(contest: Contest, cvrs: CVRS, ballots: BallotList):
         find_best_audit(contest, ballots, nebs, node, asn_func)
         expected.insert_node(node)
 
-    assert expected == make_frontier(contest, ballots, "winner", nebs, asn_func)
+    assert expected == make_frontier(contest, ballots, nebs, asn_func)
 
 
 def test_find_assertions_too_good_ancestor(
@@ -117,7 +118,7 @@ def test_find_assertions_too_good_ancestor(
 ):
 
     nebs = make_neb_matrix(contest, cvrs, asn_func)
-    frontier = make_frontier(contest, ballots, "winner", nebs, asn_func)
+    frontier = make_frontier(contest, ballots, nebs, asn_func)
 
     # Create a fake best ancestor
     newn = RaireNode(["loser"])
@@ -143,7 +144,7 @@ def test_find_assertions_infinite_to_expand(
     contest: Contest, ballots: BallotList, cvrs: CVRS
 ):
     nebs = make_neb_matrix(contest, cvrs, asn_func)
-    frontier = make_frontier(contest, ballots, "winner", nebs, asn_func)
+    frontier = make_frontier(contest, ballots, nebs, asn_func)
 
     lowerbound = -10.0
 
@@ -165,7 +166,7 @@ def test_find_assertions_fake_ancestor(
     contest: Contest, ballots: BallotList, cvrs: CVRS
 ):
     nebs = make_neb_matrix(contest, cvrs, asn_func)
-    frontier = make_frontier(contest, ballots, "winner", nebs, asn_func)
+    frontier = make_frontier(contest, ballots, nebs, asn_func)
 
     lowerbound = -10.0
 
@@ -187,18 +188,18 @@ def test_find_assertions_infinite_branch(
     # Fake neb_matrix into showing all assertions but one as infinite
     nebs = make_neb_matrix(contest, cvrs, asn_func)
     nebs["loser"]["winner"] = make_neb_assertion(
-        contest, cvrs, asn_func, "loser", "winner", []
+        contest, cvrs, asn_func, "loser", "winner", set()
     )
     assert isinstance(nebs["loser"]["winner"], NEBAssertion)
     nebs["loser"]["winner"].difficulty = 0.0000001
 
     nebs["winner"]["loser2"] = make_neb_assertion(
-        contest, cvrs, asn_func, "winner", "loser2", []
+        contest, cvrs, asn_func, "winner", "loser2", set()
     )
     assert isinstance(nebs["winner"]["loser2"], NEBAssertion)
     nebs["winner"]["loser2"].difficulty = np.inf
 
-    frontier = make_frontier(contest, ballots, "winner", nebs, asn_func)
+    frontier = make_frontier(contest, ballots, nebs, asn_func)
 
     lowerbound = -10.0
 
@@ -220,7 +221,7 @@ def test_find_assertions_many_children(
     contest: Contest, ballots: BallotList, cvrs: CVRS
 ):
     nebs = make_neb_matrix(contest, cvrs, asn_func)
-    frontier = make_frontier(contest, ballots, "winner", nebs, asn_func)
+    frontier = make_frontier(contest, ballots, nebs, asn_func)
 
     lowerbound = -10.0
 
@@ -266,27 +267,44 @@ def compare_result(path: str, contests: Dict[str, List[str]]):
     for contest, asrtns in expected.items():
         assert contest in contests, "Incorrect contests for {}".format(path)
 
-        casrtns = contests[contest]
+        casrtns = set(contests[contest])
 
         assert len(asrtns) == len(
             casrtns
         ), "Number of assertions different for {}, contest {}".format(path, contest)
 
-        assert asrtns == casrtns, "Assertions differ for {}, contest {}".format(
-            path, contest
-        )
+        parsed_asrtns = set()
+        for asrtn in asrtns:
+            a_type = asrtn.split(",")[0]
+            winner = asrtn.split(",")[2]
+            loser = asrtn.split(",")[4]
+            eliminated = set(asrtn.split("Eliminated,")[-1].split(","))
+
+            parsed_a: RaireAssertion
+
+            if a_type == "NEB":
+                parsed_a = NEBAssertion(contest, winner, loser)
+            elif a_type == "NEN":
+                parsed_a = NENAssertion(contest, winner, loser, eliminated)
+            else:
+                raise Exception(f"Unexpected assertion type: {a_type}")
+
+            parsed_asrtns.add(str(parsed_a))
+
+        assert (
+            set(parsed_asrtns) == casrtns
+        ), "Assertions differ for {}, contest {}".format(path, contest)
 
 
-def run_test(input_file: str, output_file: str, agap: float):
-    result: Dict[str, List[str]] = {}
+def parse_raire_input(input_file: str):
+    contests = {}
+    winners = {}
+    cvrs: CVRS = {}
     # Load test contest
     with open(input_file, "r") as data:
         lines = data.readlines()
 
         ncontests = int(lines[0])
-
-        contests = {}
-        winners = {}
 
         for i in range(ncontests):
             toks = lines[1 + i].strip().split(",")
@@ -303,8 +321,6 @@ def run_test(input_file: str, output_file: str, agap: float):
             contests[cid] = cands
             winners[cid] = toks[-1]
 
-        cvrs: CVRS = {}
-
         for line in range(ncontests + 1, len(lines)):
             toks = lines[line].strip().split(",")
 
@@ -312,7 +328,7 @@ def run_test(input_file: str, output_file: str, agap: float):
             bid: str = toks[1]
             prefs: List[str] = toks[2:]
 
-            if prefs != []:
+            if prefs not in [[], [""]]:
                 contests[cid][prefs[0]] += 1
 
             contests[cid]["ballots"] += 1
@@ -332,31 +348,45 @@ def run_test(input_file: str, output_file: str, agap: float):
             else:
                 cvrs[bid] = {cid: ballot}
 
-        for contest, votes in contests.items():
-            con = Contest(contest, votes)
+    return contests, cvrs, winners
 
-            audit: List[RaireAssertion] = compute_raire_assertions(
-                con, cvrs, winners[contest], lambda m: 1 / m if m > 0 else np.inf, agap,
-            )
 
-            asrtns: List[str] = [str(assertion) for assertion in audit]
-            sorted_asrtns = sorted(asrtns)
-            result[contest] = sorted_asrtns
+def run_test(input_file: str, output_file: str, agap: float):
+    result: Dict[str, List[str]] = {}
 
-        compare_result(output_file, result)
+    contests, cvrs, winners = parse_raire_input(input_file)
+
+    for contest, votes in contests.items():
+        con = Contest(contest, votes)
+        # Override contest's winners since it's computed only using the first round results
+        real_winners = {}
+        real_winners[winners[contest]] = con.candidates[winners[contest]]
+        con.winners = real_winners
+
+        audit: List[RaireAssertion] = compute_raire_assertions(
+            con, cvrs, lambda m: 1 / m if m > 0 else np.inf, agap,
+        )
+
+        asrtns: List[str] = [str(assertion) for assertion in audit]
+        sorted_asrtns = sorted(asrtns)
+        result[contest] = sorted_asrtns
+
+    compare_result(output_file, result)
 
 
 def test_raire(contest: Contest, cvrs: CVRS):
-    res = compute_raire_assertions(contest, cvrs, "winner", asn_func)
+    res = compute_raire_assertions(contest, cvrs, asn_func)
 
     expected = []
 
     # we expect to show that winner is not eliminated before loser2
-    expected.append(make_neb_assertion(contest, cvrs, asn_func, "winner", "loser2", []))
+    expected.append(
+        make_neb_assertion(contest, cvrs, asn_func, "winner", "loser2", set([]))
+    )
 
     # we then expect to show that the winner is not eliminated before loser
     expected.append(
-        make_neb_assertion(contest, cvrs, asn_func, "winner", "loser", ["loser2"])
+        make_neb_assertion(contest, cvrs, asn_func, "winner", "loser", set(["loser2"]))
     )
 
     # sort by difficulty
@@ -366,7 +396,7 @@ def test_raire(contest: Contest, cvrs: CVRS):
 
     # Use a small agap
 
-    res = compute_raire_assertions(contest, cvrs, "winner", asn_func, agap=0.00000001)
+    res = compute_raire_assertions(contest, cvrs, asn_func, agap=0.00000001)
     assert res == expected
 
 
@@ -388,7 +418,7 @@ def test_raire_recount():
     for i in range(50000, 100000):
         cvrs[i] = {"Contest A": {"winner": 2, "loser": 1}}
 
-    res = compute_raire_assertions(contest, cvrs, "winner", asn_func)
+    res = compute_raire_assertions(contest, cvrs, asn_func)
 
     assert res == []
 
