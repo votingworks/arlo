@@ -420,14 +420,14 @@ def test_compute_risk_uses_sample_order(contests, batches) -> None:
         sample["Batch {}".format(i)] = {
             "Contest A": {"winner": 200, "loser": 180,},
         }
-        sample_ticket_numbers[str(i)] = "Batch {}".format(i)
+        sample_ticket_numbers[str(i).zfill(3)] = "Batch {}".format(i)
 
     # Draws with taint of 0.0952
     for i in range(100, 110):
         sample["Batch {}".format(i)] = {
             "Contest A": {"winner": 180, "loser": 200,},
         }
-        sample_ticket_numbers[str(i)] = "Batch {}".format(i)
+        sample_ticket_numbers[str(i).zfill(3)] = "Batch {}".format(i)
 
     # In the original sample order, we should reach the risk limit before
     # hitting the tainted draws
@@ -444,7 +444,7 @@ def test_compute_risk_uses_sample_order(contests, batches) -> None:
     # Now reorder the sample so the tainted draws come first - the taint should
     # be too large to ever hit the risk limit
     sample_ticket_numbers = {
-        str(len(sample_ticket_numbers) - i): batch
+        str(len(sample_ticket_numbers) - i).zfill(3): batch
         for i, batch in enumerate(sample_ticket_numbers.values())
     }
     computed_p, result = macro.compute_risk(
@@ -472,7 +472,7 @@ def test_tied_contest() -> None:
 
     batches = {}
     for i in range(100):
-        batches[i] = {
+        batches[str(i)] = {
             "Tied Contest": {
                 "winner": 500,
                 "loser": 500,
@@ -507,9 +507,9 @@ def test_tied_contest() -> None:
     assert not res
 
     # Now do a full hand recount
-    sampled_ticket_numbers = {str(i): batch for i, batch in enumerate(batches.keys())}
+    sample_ticket_numbers = {str(i): batch for i, batch in enumerate(batches.keys())}
     computed_p, res = macro.compute_risk(
-        RISK_LIMIT, contest, batches, batches, sampled_ticket_numbers
+        RISK_LIMIT, contest, batches, batches, sample_ticket_numbers
     )
 
     assert not computed_p
