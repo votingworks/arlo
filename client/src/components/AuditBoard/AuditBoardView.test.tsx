@@ -11,7 +11,7 @@ import {
 } from './_mocks'
 import AuthDataProvider, { useAuthDataContext } from '../UserContext'
 import AuditBoardView from './AuditBoardView'
-import { contestMocks } from '../AuditAdmin/useSetupMenuItems/_mocks';
+import { contestMocks } from '../AuditAdmin/useSetupMenuItems/_mocks'
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'), // use actual for all non-hook parts

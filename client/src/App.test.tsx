@@ -1,6 +1,5 @@
 import React from 'react'
-import { screen, render } from '@testing-library/react'
-import { MemoryRouter } from 'react-router-dom'
+import { screen } from '@testing-library/react'
 import App from './App'
 import { withMockFetch, renderWithRouter } from './components/testUtilities'
 import { dummyBoards } from './components/AuditBoard/_mocks'
