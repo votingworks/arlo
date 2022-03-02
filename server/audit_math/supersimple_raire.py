@@ -3,6 +3,10 @@ from decimal import Decimal, ROUND_CEILING
 from typing import Dict, Tuple, Optional, List
 import math
 
+import numpy as np
+
+from server.audit_math import raire
+
 from .sampler_contest import Contest, CVRS, SAMPLECVRS, CVR
 
 from .supersimple import Discrepancy
@@ -184,7 +188,7 @@ def get_sample_sizes(
     assertions: List[RaireAssertion],
 ) -> int:
     """
-    Computes initial sample sizes parameterized by likelihood that the
+    Computes initial sample size parameterized by likelihood that the
     initial sample will confirm the election result, assuming no
     discrepancies.
 
@@ -209,6 +213,9 @@ def get_sample_sizes(
     """
     alpha = Decimal(risk_limit) / 100
     assert alpha < 1
+
+    if len(assertions) == 0:
+        return contest.ballots
 
     stopping_size = 0
 
@@ -361,3 +368,11 @@ def compute_risk(
         return 0, True
 
     return min(float(max_p), 1.0), result
+
+
+def compute_raire_assertions(contest: Contest, cvrs: CVRS) -> List[RaireAssertion]:
+    """
+    Computes the RaireAssertions for the given contest.
+    """
+    asn_func = lambda m: 1 / m if m > 0 else np.inf
+    return raire.compute_raire_assertions(contest, cvrs, asn_func)

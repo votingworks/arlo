@@ -3,6 +3,8 @@ from typing import Dict, cast as typing_cast
 from collections import Counter, defaultdict
 from flask import jsonify
 
+from server.audit_math import raire, supersimple_raire
+
 from . import api
 from ..models import *  # pylint: disable=wildcard-import
 from ..database import db_session
@@ -134,31 +136,60 @@ def sample_size_options(
 
             contest_for_sampler = sampler_contest.from_db_contest(contest)
 
-            num_previous_samples = SampledBallotDraw.query.filter_by(
-                contest_id=contest.id
-            ).count()
-            discrepancies = supersimple.compute_discrepancies(
-                contest_for_sampler,
-                rounds.cvrs_for_contest(contest),
-                rounds.sampled_ballot_interpretations_to_cvrs(contest),
-            )
-            discrepancy_counter = Counter(
-                d["counted_as"] for d in discrepancies.values()
-            )
-            discrepancy_counts = {
-                "sample_size": num_previous_samples,
-                "1-under": discrepancy_counter[-1],
-                "1-over": discrepancy_counter[1],
-                "2-under": discrepancy_counter[-2],
-                "2-over": discrepancy_counter[2],
-            }
+            if election.audit_math_type == AuditMathType.SUPERSIMPLE:
+                num_previous_samples = SampledBallotDraw.query.filter_by(
+                    contest_id=contest.id
+                ).count()
+                discrepancies = supersimple.compute_discrepancies(
+                    contest_for_sampler,
+                    rounds.cvrs_for_contest(contest),
+                    rounds.sampled_ballot_interpretations_to_cvrs(contest),
+                )
+                discrepancy_counter = Counter(
+                    d["counted_as"] for d in discrepancies.values()
+                )
+                discrepancy_counts = {
+                    "sample_size": num_previous_samples,
+                    "1-under": discrepancy_counter[-1],
+                    "1-over": discrepancy_counter[1],
+                    "2-under": discrepancy_counter[-2],
+                    "2-over": discrepancy_counter[2],
+                }
 
-            sample_size = supersimple.get_sample_sizes(
-                election.risk_limit, contest_for_sampler, discrepancy_counts
-            )
-            return {
-                "supersimple": {"key": "supersimple", "size": sample_size, "prob": None}
-            }
+                sample_size = supersimple.get_sample_sizes(
+                    election.risk_limit, contest_for_sampler, discrepancy_counts
+                )
+                return {
+                    "supersimple": {
+                        "key": "supersimple",
+                        "size": sample_size,
+                        "prob": None,
+                    }
+                }
+
+            else:
+                assert election.audit_math_type == AuditMathType.RAIRE
+                cvrs = rounds.cvrs_for_contest(contest)
+                print("starting assertions", cvrs)
+                assertions = supersimple_raire.compute_raire_assertions(
+                    contest_for_sampler, cvrs,
+                )
+                print("got assertions", assertions)
+                sample_size = supersimple_raire.get_sample_sizes(
+                    election.risk_limit,
+                    contest_for_sampler,
+                    cvrs,
+                    None,  # TODO discrepancies by assertion for sample drawn so far
+                    assertions,
+                )
+                return {
+                    "raire": {
+                        "key": "raire",
+                        "size": sample_size,
+                        "prob": None,
+                        "assertions": assertions,
+                    }
+                }
 
         else:
             assert election.audit_type == AuditType.HYBRID

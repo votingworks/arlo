@@ -2,6 +2,8 @@ from __future__ import annotations
 from typing import Type, Callable, Dict, List, Any, Optional, Literal, Set
 import numpy as np
 
+from server.util.jsonschema import JSONDict
+
 from .sampler_contest import CVR, Contest
 
 
@@ -134,6 +136,13 @@ class RaireAssertion:
     def __repr__(self):
         return f"{self.contest} {self.winner} {self.loser} {self.difficulty}"
 
+    def __json__(self) -> JSONDict:
+        return {
+            "winner": self.winner,
+            "loser": self.loser,
+            "difficulty": self.difficulty,
+        }
+
 
 class NEBAssertion(RaireAssertion):
     """
@@ -216,6 +225,9 @@ class NEBAssertion(RaireAssertion):
     def __repr__(self) -> str:
         return "NEB,Winner,{},Loser,{},Eliminated".format(self.winner, self.loser)
 
+    def __json__(self) -> JSONDict:
+        return dict(super().__json__(), type="NEBAssertion")
+
 
 class NENAssertion(RaireAssertion):
     """
@@ -282,6 +294,9 @@ class NENAssertion(RaireAssertion):
         return f"NEN,Winner,{self.winner},Loser,{self.loser},Eliminated," + ",".join(
             self.eliminated
         )
+
+    def __json__(self) -> JSONDict:
+        return dict(super().__json__(), type="NENAssertion")
 
 
 class RaireNode:

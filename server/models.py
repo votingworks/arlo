@@ -125,6 +125,7 @@ class AuditMathType(str, enum.Enum):
     SUPERSIMPLE = "SUPERSIMPLE"
     MACRO = "MACRO"
     SUITE = "SUITE"
+    RAIRE = "RAIRE"
 
 
 # Election is a slight misnomer - this model represents an audit.

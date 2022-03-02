@@ -284,6 +284,7 @@ def round_sizes(contest: Contest) -> Dict[int, int]:
         )
 
 
+# TODO we need a version of this for RAIRE that pulls all CVRS, not just the sampled ones
 def cvrs_for_contest(contest: Contest) -> sampler_contest.CVRS:
     cvrs: sampler_contest.CVRS = {}
 

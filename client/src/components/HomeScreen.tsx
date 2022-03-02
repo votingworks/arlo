@@ -391,7 +391,7 @@ const CreateAuditWrapper = styled.div`
   padding: 30px;
 `
 
-const BallotPollingWrapper = styled.div`
+const AuditMathTypeWrapper = styled.div`
   margin: 20px 0;
   background-color: #ffffff;
   padding-top: 10px;
@@ -495,9 +495,9 @@ const CreateAudit = ({ organizations }: { organizations: IOrganization[] }) => {
               >
                 <Radio value="BALLOT_POLLING">Ballot Polling</Radio>
                 {values.auditType === 'BALLOT_POLLING' && (
-                  <BallotPollingWrapper>
+                  <AuditMathTypeWrapper>
                     <label htmlFor="auditMathType">
-                      <p>Ballot polling type</p>
+                      <p>Ballot Polling type</p>
                       <RadioGroup
                         name="auditMathType"
                         onChange={e =>
@@ -509,10 +509,27 @@ const CreateAudit = ({ organizations }: { organizations: IOrganization[] }) => {
                         <Radio value="MINERVA">Minerva (Not recommended)</Radio>
                       </RadioGroup>
                     </label>
-                  </BallotPollingWrapper>
+                  </AuditMathTypeWrapper>
                 )}
                 <Radio value="BATCH_COMPARISON">Batch Comparison</Radio>
                 <Radio value="BALLOT_COMPARISON">Ballot Comparison</Radio>
+                {values.auditType === 'BALLOT_COMPARISON' && (
+                  <AuditMathTypeWrapper>
+                    <label htmlFor="auditMathType">
+                      <p>Ballot Comparison type</p>
+                      <RadioGroup
+                        name="auditMathType"
+                        onChange={e =>
+                          setFieldValue('auditMathType', e.currentTarget.value)
+                        }
+                        selectedValue={values.auditMathType}
+                      >
+                        <Radio value="SUPERSIMPLE">Standard</Radio>
+                        <Radio value="RAIRE">RAIRE (Not recommended)</Radio>
+                      </RadioGroup>
+                    </label>
+                  </AuditMathTypeWrapper>
+                )}
                 <Radio value="HYBRID">
                   Hybrid (SUITE - Ballot Comparison &amp; Ballot Polling)
                 </Radio>
