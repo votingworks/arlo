@@ -519,11 +519,18 @@ def parse_ess_cvrs(
         headers = next(ballots_csv)
         header_indices = get_header_indices(headers)
 
+        ballots_csv = (row for row in ballots_csv if not row[0].startswith("Total"))
+
+        # The rows may not be in order, but we need them sorted in order to
+        # concatenate and merge the files. For now, sort them in memory, though
+        # we may need to change this if it becomes a memory bottleneck.
+        ballots_csv = sorted(
+            ballots_csv, key=lambda row: int(row[header_indices["Cast Vote Record"]])
+        )
+
         tabulator_regex = re.compile(r"^(\d{4})(\d{6})$")
 
         for row_index, row in enumerate(ballots_csv):
-            if row[0].startswith("Total"):
-                continue
             cvr_number = column_value(
                 row, "Cast Vote Record", row_index + 1, header_indices
             )
