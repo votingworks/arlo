@@ -445,7 +445,8 @@ def audit_all_ballots(
 
         if interpretation_str == "blank":
             audit_ballot(ballot, target_contest_id, Interpretation.BLANK)
-            audit_ballot(ballot, opportunistic_contest_id, Interpretation.BLANK)
+            if opportunistic_contest_id:
+                audit_ballot(ballot, opportunistic_contest_id, Interpretation.BLANK)
 
         else:
             (
@@ -509,10 +510,10 @@ def check_discrepancies(report_data, audit_results):
             and row["Batch Name"] == batch
             and row["Ballot Position"] == str(position)
         )
-        parse_discrepancy = lambda d: int(d) if d != "" else None
+        parse_discrepancy = lambda d: int(d) if d else None
         assert expected_discrepancies == (
-            parse_discrepancy(row["Discrepancy: Contest 1"]),
-            parse_discrepancy(row["Discrepancy: Contest 2"]),
+            parse_discrepancy(row.get("Discrepancy: Contest 1")),
+            parse_discrepancy(row.get("Discrepancy: Contest 2")),
         )
 
 

@@ -3,12 +3,12 @@ from typing import List
 from flask.testing import FlaskClient
 import pytest
 
-from server.tests.ballot_comparison.test_ballot_comparison import (
+from ..helpers import *  # pylint: disable=wildcard-import
+from .test_ballot_comparison import (
     audit_all_ballots,
+    check_discrepancies,
     generate_audit_results,
 )
-
-from ..helpers import *  # pylint: disable=wildcard-import
 
 TEST_CVRS = """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
 ,,,,,,,Contest 1 (Vote For=1),Contest 1 (Vote For=1),Contest 2 (Vote For=2),Contest 2 (Vote For=2),Contest 2 (Vote For=2)
@@ -117,14 +117,7 @@ def test_raire_ballot_comparison_two_rounds(
                 "jurisdictionIds": target_contest["jurisdictionIds"],
                 "isTargeted": True,
             },
-            # TODO make RAIRE support opportunistic contests
-            # {
-            #     "id": str(uuid.uuid4()),
-            #     "name": opportunistic_contest["name"],
-            #     "numWinners": 1,
-            #     "jurisdictionIds": opportunistic_contest["jurisdictionIds"],
-            #     "isTargeted": False,
-            # },
+            # TODO disallow opportunistic contests
         ],
     )
     assert_ok(rv)
@@ -139,7 +132,7 @@ def test_raire_ballot_comparison_two_rounds(
     sample_size_options = json.loads(rv.data)["sampleSizes"]
     assert len(sample_size_options) == 1
     sample_size = sample_size_options[target_contest_id][0]
-    snapshot.assert_match(sample_size)
+    snapshot.assert_match(sample_size["size"])
 
     rv = post_json(
         client,
@@ -170,17 +163,16 @@ def test_raire_ballot_comparison_two_rounds(
     # specify our audit results.
     # Tabulator, Batch, Ballot, Choice 1-1, Choice 1-2, Choice 2-1, Choice 2-2, Choice 2-3
     # We also specify the expected discrepancies.
-    generate_audit_results(round_1_id)
     audit_results = {
-        ("J1", "TABULATOR1", "BATCH1", 1): ("1,0,1,1,0", (None, None)),
+        ("J1", "TABULATOR1", "BATCH1", 1): ("0,1,1,1,0", (None, None)),
         ("J1", "TABULATOR1", "BATCH2", 2): ("0,1,1,1,0", (None, None)),
-        ("J1", "TABULATOR1", "BATCH2", 3): ("1,0,1,0,1", (None, None)),
+        ("J1", "TABULATOR1", "BATCH2", 3): ("1,1,1,0,1", (1, None),),  # CVR: 1,0,1,0,1
         ("J1", "TABULATOR2", "BATCH2", 2): ("1,1,1,1,1", (None, None)),
         ("J1", "TABULATOR2", "BATCH2", 3): ("1,0,1,0,1", (None, None)),
-        ("J1", "TABULATOR2", "BATCH2", 4): (",,1,0,1", (None, None)),
+        ("J1", "TABULATOR2", "BATCH2", 4): ("not found", (2, None)),  # CVR: ,,1,0,1
         ("J1", "TABULATOR2", "BATCH2", 5): (",,1,1,0", (None, None)),
         ("J1", "TABULATOR2", "BATCH2", 6): (",,1,0,1", (None, None)),
-        ("J2", "TABULATOR1", "BATCH1", 1): ("0,1,1,1,0", (None, None)),
+        ("J2", "TABULATOR1", "BATCH1", 1): ("blank", (-1, None)),  # CVR: 0,1,1,1,0
         ("J2", "TABULATOR1", "BATCH1", 2): ("1,0,1,0,1", (None, None)),
         ("J2", "TABULATOR1", "BATCH1", 3): ("0,1,1,1,0", (None, None)),
         ("J2", "TABULATOR1", "BATCH2", 1): ("1,0,1,0,1", (None, None)),
@@ -193,41 +185,32 @@ def test_raire_ballot_comparison_two_rounds(
         ("J2", "TABULATOR2", "BATCH2", 6): (",,1,0,1", (None, None)),
     }
 
-    audit_all_ballots(
-        round_1_id, audit_results, target_contest_id, None  # opportunistic_contest_id
-    )
+    audit_all_ballots(round_1_id, audit_results, target_contest_id, None)
 
     # Check the audit report
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/report")
     assert_match_report(rv.data, snapshot)
+    check_discrepancies(rv.data, audit_results)
 
-    # check_discrepancies(rv.data, audit_results)
+    # Start a second round
+    rv = post_json(client, f"/api/election/{election_id}/round", {"roundNum": 2},)
+    assert_ok(rv)
 
-    # # Start a second round
-    # rv = post_json(client, f"/api/election/{election_id}/round", {"roundNum": 2},)
-    # assert_ok(rv)
+    rv = client.get(f"/api/election/{election_id}/round",)
+    round_2_id = json.loads(rv.data)["rounds"][1]["id"]
 
-    # rv = client.get(f"/api/election/{election_id}/round",)
-    # round_2_id = json.loads(rv.data)["rounds"][1]["id"]
+    # For round 2, audit results should match the CVR exactly.
+    audit_results = {
+        ("J1", "TABULATOR1", "BATCH1", 2): ("1,0,1,0,1", (None, None)),
+        ("J1", "TABULATOR2", "BATCH1", 2): ("1,0,1,0,1", (None, None)),
+        ("J1", "TABULATOR2", "BATCH2", 1): ("1,0,1,0,1", (None, None)),
+        ("J2", "TABULATOR2", "BATCH1", 2): ("1,0,1,0,1", (None, None)),
+        ("J2", "TABULATOR2", "BATCH2", 4): (",,1,0,1", (None, None)),
+    }
 
-    # # Sample sizes endpoint should still return round 1 sample size
-    # rv = client.get(f"/api/election/{election_id}/sample-sizes")
-    # sample_size_options = json.loads(rv.data)["sampleSizes"]
-    # assert len(sample_size_options) == 1
-    # assert sample_size_options[target_contest_id][0] == sample_size
+    audit_all_ballots(round_2_id, audit_results, target_contest_id, None)
 
-    # # For round 2, audit results should match the CVR exactly.
-    # audit_results = {
-    #     ("J2", "TABULATOR1", "BATCH1", 2): ("1,0,1,0,1", (None, None)),
-    #     ("J2", "TABULATOR1", "BATCH2", 3): ("1,0,1,0,1", (None, None)),
-    #     ("J2", "TABULATOR2", "BATCH2", 4): (",,1,1,0", (None, None)),
-    # }
-
-    # audit_all_ballots(
-    #     round_2_id, audit_results, target_contest_id, opportunistic_contest_id
-    # )
-
-    # rv = client.get(f"/api/election/{election_id}/report")
-    # assert_match_report(rv.data, snapshot)
-    # check_discrepancies(rv.data, audit_results)
+    rv = client.get(f"/api/election/{election_id}/report")
+    assert_match_report(rv.data, snapshot)
+    check_discrepancies(rv.data, audit_results)

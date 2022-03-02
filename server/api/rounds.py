@@ -754,7 +754,11 @@ def draw_sample(round_id: str, election_id: str):
             elif audit_type == AuditType.BATCH_COMPARISON:
                 return options["macro"]
             elif audit_type == AuditType.BALLOT_COMPARISON:
-                return options["supersimple"]
+                if election.audit_math_type == AuditMathType.SUPERSIMPLE:
+                    return options["supersimple"]
+                else:
+                    assert election.audit_math_type == AuditMathType.RAIRE
+                    return options["raire"]
             else:
                 assert audit_type == AuditType.HYBRID
                 return options["suite"]
