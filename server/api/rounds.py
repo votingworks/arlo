@@ -27,6 +27,7 @@ from ..audit_math import (
     ballot_polling,
     macro,
     supersimple,
+    supersimple_raire,
     sampler_contest,
     suite,
 )
@@ -284,8 +285,9 @@ def round_sizes(contest: Contest) -> Dict[int, int]:
         )
 
 
-# TODO we need a version of this for RAIRE that pulls all CVRS, not just the sampled ones
-def cvrs_for_contest(contest: Contest) -> sampler_contest.CVRS:
+def cvrs_for_contest(
+    contest: Contest, only_sampled_ballots: bool = True
+) -> sampler_contest.CVRS:
     cvrs: sampler_contest.CVRS = {}
 
     for jurisdiction in contest.jurisdictions:
@@ -293,17 +295,34 @@ def cvrs_for_contest(contest: Contest) -> sampler_contest.CVRS:
         assert metadata is not None
         choices_metadata = metadata[contest.name]["choices"]
 
+        interpretations_query = CvrBallot.query.join(Batch).filter_by(
+            jurisdiction_id=jurisdiction.id
+        )
         interpretations_by_ballot = (
-            CvrBallot.query.join(Batch)
-            .filter_by(jurisdiction_id=jurisdiction.id)
-            .join(
+            interpretations_query.join(
                 SampledBallot,
                 and_(
                     CvrBallot.batch_id == SampledBallot.batch_id,
                     CvrBallot.ballot_position == SampledBallot.ballot_position,
                 ),
+            ).values(SampledBallot.id, CvrBallot.interpretations)
+            if only_sampled_ballots
+            # RAIRE uses all CVRs to compute contest margins, and also uses CVRs
+            # for sampled ballots to compute discrepancies, so we need to return
+            # all CVRs but still have a mapping to SampledBallots for the CVRs
+            # that correspond to ballots that got sampled. So we use
+            # SampledBallot.id as key when we can, and fall back to
+            # CvrBallot.imprinted_id.
+            else interpretations_query.outerjoin(
+                SampledBallot,
+                and_(
+                    CvrBallot.batch_id == SampledBallot.batch_id,
+                    CvrBallot.ballot_position == SampledBallot.ballot_position,
+                ),
+            ).values(
+                func.coalesce(SampledBallot.id, CvrBallot.imprinted_id),
+                CvrBallot.interpretations,
             )
-            .values(SampledBallot.id, CvrBallot.interpretations)
         )
 
         for ballot_key, interpretations_str in interpretations_by_ballot:
@@ -493,12 +512,26 @@ def calculate_risk_measurements(election: Election, round: Round):
                 sampled_batches_by_ticket_number(election),
             )
         elif election.audit_type == AuditType.BALLOT_COMPARISON:
-            p_value, is_complete = supersimple.compute_risk(
-                election.risk_limit,
-                sampler_contest.from_db_contest(contest),
-                cvrs_for_contest(contest),
-                sampled_ballot_interpretations_to_cvrs(contest),
-            )
+            if election.audit_math_type == AuditMathType.SUPERSIMPLE:
+                p_value, is_complete = supersimple.compute_risk(
+                    election.risk_limit,
+                    sampler_contest.from_db_contest(contest),
+                    cvrs_for_contest(contest),
+                    sampled_ballot_interpretations_to_cvrs(contest),
+                )
+            else:
+                assert election.audit_math_type == AuditMathType.RAIRE
+                assertions = [
+                    supersimple_raire.assertion_from_json(assertion_json)
+                    for assertion_json in round_contest.sample_size["assertions"]
+                ]
+                p_value, is_complete = supersimple_raire.compute_risk(
+                    election.risk_limit,
+                    sampler_contest.from_db_contest(contest),
+                    cvrs_for_contest(contest, only_sampled_ballots=False),
+                    sampled_ballot_interpretations_to_cvrs(contest),
+                    assertions,
+                )
         else:
             assert election.audit_type == AuditType.HYBRID
             non_cvr_stratum, cvr_stratum = hybrid_contest_strata(contest)
@@ -925,7 +958,7 @@ def sample_batches(
         db_session.add(sampled_batch_draw)
 
 
-def create_round_schema(audit_type: AuditType):
+def create_round_schema(audit_type: AuditType, audit_math_type: AuditMathType):
     return {
         "type": "object",
         "properties": {
@@ -945,6 +978,11 @@ def create_round_schema(audit_type: AuditType):
                                     "size": {"type": "integer"},
                                 }
                                 if audit_type == AuditType.HYBRID
+                                else {
+                                    "size": {"type": "integer"},
+                                    "assertions": {"type": "array"},
+                                }
+                                if audit_math_type == AuditMathType.RAIRE
                                 else {"size": {"type": "integer"}}
                             ),
                         },
@@ -952,6 +990,8 @@ def create_round_schema(audit_type: AuditType):
                         "required": (
                             ["sizeCvr", "sizeNonCvr", "size", "key", "prob"]
                             if audit_type == AuditType.HYBRID
+                            else ["size", "key", "prob", "assertions"]
+                            if audit_math_type == AuditMathType.RAIRE
                             else ["size", "key", "prob"]
                         ),
                     }
@@ -965,7 +1005,12 @@ def create_round_schema(audit_type: AuditType):
 
 # Raises if invalid
 def validate_round(round: dict, election: Election):
-    validate(round, create_round_schema(AuditType(election.audit_type)))
+    validate(
+        round,
+        create_round_schema(
+            AuditType(election.audit_type), AuditMathType(election.audit_math_type)
+        ),
+    )
 
     current_round = get_current_round(election)
     if current_round and not current_round.draw_sample_task.completed_at:
@@ -998,7 +1043,7 @@ def validate_sample_size(round: dict, election: Election):
             AuditType.BALLOT_POLLING: (
                 ["asn", "0.9", "0.8", "0.7", "custom", "all-ballots"]
             ),
-            AuditType.BALLOT_COMPARISON: ["supersimple", "custom"],
+            AuditType.BALLOT_COMPARISON: ["supersimple", "raire", "custom"],
             AuditType.BATCH_COMPARISON: ["macro", "custom"],
             AuditType.HYBRID: ["suite", "custom"],
         }[AuditType(election.audit_type)]

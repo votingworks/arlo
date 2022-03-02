@@ -6,11 +6,12 @@ import math
 import numpy as np
 
 from server.audit_math import raire
+from server.util.jsonschema import JSONDict
 
 from .sampler_contest import Contest, CVRS, SAMPLECVRS, CVR
 
 from .supersimple import Discrepancy
-from .raire_utils import RaireAssertion
+from .raire_utils import NEBAssertion, NENAssertion, RaireAssertion
 
 l: Decimal = Decimal(0.5)
 gamma: Decimal = Decimal(1.03905)  # This gamma is used in Stark's tool, AGI, and CORLA
@@ -376,3 +377,26 @@ def compute_raire_assertions(contest: Contest, cvrs: CVRS) -> List[RaireAssertio
     """
     asn_func = lambda m: 1 / m if m > 0 else np.inf
     return raire.compute_raire_assertions(contest, cvrs, asn_func)
+
+
+def assertion_to_json(assertion: RaireAssertion) -> JSONDict:
+    return dict(
+        contest=assertion.contest,
+        winner=assertion.winner,
+        loser=assertion.loser,
+        difficulty=assertion.difficulty,
+        rules_out=assertion.rules_out,
+        eliminated=list(assertion.eliminated),
+        class_name=assertion.__class__.__name__,
+    )
+
+
+def assertion_from_json(json: JSONDict) -> RaireAssertion:
+    AssertionClass = dict(NENAssertion=NENAssertion, NEBAssertion=NEBAssertion)[
+        json["class_name"]
+    ]
+    assertion = AssertionClass(json["contest"], json["winner"], json["loser"])
+    assertion.difficulty = json["difficulty"]
+    assertion.rules_out = json["rules_out"]
+    assertion.eliminated = set(json["eliminated"])
+    return assertion

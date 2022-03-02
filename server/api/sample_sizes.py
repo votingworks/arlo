@@ -169,7 +169,7 @@ def sample_size_options(
 
             else:
                 assert election.audit_math_type == AuditMathType.RAIRE
-                cvrs = rounds.cvrs_for_contest(contest)
+                cvrs = rounds.cvrs_for_contest(contest, only_sampled_ballots=False)
                 print("starting assertions", cvrs)
                 assertions = supersimple_raire.compute_raire_assertions(
                     contest_for_sampler, cvrs,
@@ -187,7 +187,10 @@ def sample_size_options(
                         "key": "raire",
                         "size": sample_size,
                         "prob": None,
-                        "assertions": assertions,
+                        "assertions": [
+                            supersimple_raire.assertion_to_json(assertion)
+                            for assertion in assertions
+                        ],
                     }
                 }
 
