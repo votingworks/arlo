@@ -173,11 +173,19 @@ def sample_size_options(
                 assertions = supersimple_raire.compute_raire_assertions(
                     contest_for_sampler, cvrs,
                 )
+                discrepancies = {
+                    assertion: supersimple_raire.compute_discrepancies(
+                        cvrs,
+                        rounds.sampled_ballot_interpretations_to_cvrs(contest),
+                        assertion,
+                    )
+                    for assertion in assertions
+                }
                 sample_size = supersimple_raire.get_sample_sizes(
                     election.risk_limit,
                     contest_for_sampler,
                     cvrs,
-                    None,  # TODO discrepancies by assertion for sample drawn so far
+                    discrepancies,
                     assertions,
                 )
                 return {
