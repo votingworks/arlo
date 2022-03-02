@@ -15,9 +15,10 @@ from ..util.csv_download import (
 )
 from ..util.isoformat import isoformat
 from ..util.group_by import group_by
-from ..audit_math import supersimple, sampler_contest, macro
+from ..audit_math import supersimple, supersimple_raire, sampler_contest, macro
 from ..api.rounds import (
     cvrs_for_contest,
+    get_current_round,
     is_full_hand_tally,
     sampled_ballot_interpretations_to_cvrs,
     samples_not_found_by_round,
@@ -599,17 +600,44 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
     )
 
     if show_cvrs:
-        cvrs_by_contest = {
-            contest.id: cvrs_for_contest(contest) for contest in election.contests
-        }
-        discrepancies_by_contest = {
-            contest.id: supersimple.compute_discrepancies(
-                sampler_contest.from_db_contest(contest),
-                cvrs_by_contest[contest.id],
-                sampled_ballot_interpretations_to_cvrs(contest),
-            )
-            for contest in election.contests
-        }
+        if election.audit_math_type == AuditMathType.SUPERSIMPLE:
+            cvrs_by_contest = {
+                contest.id: cvrs_for_contest(contest) for contest in election.contests
+            }
+            discrepancies_by_contest = {
+                contest.id: supersimple.compute_discrepancies(
+                    sampler_contest.from_db_contest(contest),
+                    cvrs_by_contest[contest.id],
+                    sampled_ballot_interpretations_to_cvrs(contest),
+                )
+                for contest in election.contests
+            }
+        else:
+            assert election.audit_math_type == AuditMathType.RAIRE
+            cvrs_by_contest = {
+                contest.id: cvrs_for_contest(contest, only_sampled_ballots=False)
+                for contest in election.contests
+            }
+            round = get_current_round(election)
+            assertions_by_contest = {
+                contest_id: [
+                    supersimple_raire.assertion_from_json(assertion)
+                    for assertion in sample_size["assertions"]
+                ]
+                for contest_id, sample_size in RoundContest.query.filter_by(
+                    round_id=round.id
+                ).values(RoundContest.contest_id, RoundContest.sample_size)
+            }
+            discrepancies_by_contest = {
+                contest.id: supersimple_raire.compute_risk(
+                    election.risk_limit,
+                    sampler_contest.from_db_contest(contest),
+                    cvrs_by_contest[contest.id],
+                    sampled_ballot_interpretations_to_cvrs(contest),
+                    assertions_by_contest[contest.id],
+                )[2]
+                for contest in election.contests
+            }
 
     for ballot in ballots:
         (

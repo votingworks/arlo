@@ -322,17 +322,18 @@ def compute_risk(
                 }
 
     Outputs:
-        measurements    - the p-value of the hypotheses that the election
-                          result is correct based on the sample, for each winner-loser pair.
+        p_value         - the max p-value of the hypotheses that the election
+                          result is correct based on the sample
         confirmed       - a boolean indicating whether the audit can stop
+        discrepancies   - the discrepancies that contributed to the p_value
+
     """
     alpha = Decimal(risk_limit) / 100
     assert alpha < 1
 
     N = contest.ballots
-    max_p = Decimal(0.0)
-    result = False
-    for assertion in assertions:
+
+    def compute_risk_for_assertion(assertion: RaireAssertion) -> Decimal:
         p = Decimal(1.0)
 
         V = compute_margin_for_assertion(cvrs, assertion)
@@ -357,18 +358,20 @@ def compute_risk(
             multiplicity = sample_cvr[ballot]["times_sampled"]
             p *= p_b ** multiplicity
 
-        # Get the largest p-value across all assertions
-        if p > max_p:
-            max_p = p
+        return p, discrepancies
 
-    if 0 < max_p < alpha:
-        result = True
+    max_p, max_p_discrepancies = max(
+        (compute_risk_for_assertion(assertion) for assertion in assertions),
+        key=lambda pair: pair[0],
+    )
+
+    confirmed = 0 < max_p < alpha
 
     # Special case if the sample size equals all the ballots (i.e. a full hand tally)
     if sum(ballot["times_sampled"] for ballot in sample_cvr.values()) >= N:
-        return 0, True
+        return 0, True, None
 
-    return min(float(max_p), 1.0), result
+    return min(float(max_p), 1.0), confirmed, max_p_discrepancies
 
 
 def compute_raire_assertions(contest: Contest, cvrs: CVRS) -> List[RaireAssertion]:

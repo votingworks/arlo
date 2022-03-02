@@ -525,7 +525,7 @@ def calculate_risk_measurements(election: Election, round: Round):
                     supersimple_raire.assertion_from_json(assertion_json)
                     for assertion_json in round_contest.sample_size["assertions"]
                 ]
-                p_value, is_complete = supersimple_raire.compute_risk(
+                p_value, is_complete, _ = supersimple_raire.compute_risk(
                     election.risk_limit,
                     sampler_contest.from_db_contest(contest),
                     cvrs_for_contest(contest, only_sampled_ballots=False),

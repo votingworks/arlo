@@ -407,10 +407,11 @@ def audit_all_ballots(
         Contest.query.get(target_contest_id).choices,
         key=lambda choice: str(choice.name),
     )
-    choice_2_1, choice_2_2, choice_2_3, *_ = sorted(
-        Contest.query.get(opportunistic_contest_id).choices,
-        key=lambda choice: str(choice.name),
-    )
+    if opportunistic_contest_id:
+        choice_2_1, choice_2_2, choice_2_3, *_ = sorted(
+            Contest.query.get(opportunistic_contest_id).choices,
+            key=lambda choice: str(choice.name),
+        )
 
     def ballot_key(ballot: SampledBallot):
         return (
@@ -469,21 +470,22 @@ def audit_all_ballots(
                 target_choices,
             )
 
-            opportunistic_choices = (
-                ([choice_2_1] if vote_choice_2_1 == "1" else [])
-                + ([choice_2_2] if vote_choice_2_2 == "1" else [])
-                + ([choice_2_3] if vote_choice_2_3 == "1" else [])
-            )
-            audit_ballot(
-                ballot,
-                opportunistic_contest_id,
-                (
-                    Interpretation.VOTE
-                    if vote_choice_2_1 != ""
-                    else Interpretation.CONTEST_NOT_ON_BALLOT
-                ),
-                opportunistic_choices,
-            )
+            if opportunistic_contest_id:
+                opportunistic_choices = (
+                    ([choice_2_1] if vote_choice_2_1 == "1" else [])
+                    + ([choice_2_2] if vote_choice_2_2 == "1" else [])
+                    + ([choice_2_3] if vote_choice_2_3 == "1" else [])
+                )
+                audit_ballot(
+                    ballot,
+                    opportunistic_contest_id,
+                    (
+                        Interpretation.VOTE
+                        if vote_choice_2_1 != ""
+                        else Interpretation.CONTEST_NOT_ON_BALLOT
+                    ),
+                    opportunistic_choices,
+                )
 
     end_round(round.election, round)
     db_session.commit()

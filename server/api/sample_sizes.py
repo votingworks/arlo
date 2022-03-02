@@ -170,11 +170,9 @@ def sample_size_options(
             else:
                 assert election.audit_math_type == AuditMathType.RAIRE
                 cvrs = rounds.cvrs_for_contest(contest, only_sampled_ballots=False)
-                print("starting assertions", cvrs)
                 assertions = supersimple_raire.compute_raire_assertions(
                     contest_for_sampler, cvrs,
                 )
-                print("got assertions", assertions)
                 sample_size = supersimple_raire.get_sample_sizes(
                     election.risk_limit,
                     contest_for_sampler,
