@@ -7,11 +7,6 @@ import { QueryClient, QueryClientProvider, DefaultOptions } from 'react-query'
 import { ReactQueryDevtools } from 'react-query/devtools'
 import Header from './components/Header'
 import { Wrapper } from './components/Atoms/Wrapper'
-import {
-  AuditAdminView,
-  JurisdictionAdminView,
-} from './components/MultiJurisdictionAudit'
-import DataEntry from './components/DataEntry'
 import HomeScreen from './components/HomeScreen'
 import 'react-toastify/dist/ReactToastify.css'
 import AuthDataProvider, {
@@ -19,8 +14,11 @@ import AuthDataProvider, {
   useAuthDataContext,
 } from './components/UserContext'
 import SupportTools from './components/SupportTools'
-import ActivityLog from './components/MultiJurisdictionAudit/ActivityLog'
 import { ApiError } from './components/SupportTools/support-api'
+import JurisdictionAdminView from './components/JurisdictionAdmin/JurisdictionAdminView'
+import AuditAdminView from './components/AuditAdmin/AuditAdminView'
+import ActivityLog from './components/AuditAdmin/ActivityLog'
+import AuditBoardView from './components/AuditBoard/AuditBoardView'
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -94,7 +92,7 @@ const App: React.FC = () => {
               <PrivateRoute
                 userType="audit_board"
                 path="/election/:electionId/audit-board/:auditBoardId"
-                component={DataEntry}
+                component={AuditBoardView}
               />
               <PrivateRoute
                 userType="jurisdiction_admin"

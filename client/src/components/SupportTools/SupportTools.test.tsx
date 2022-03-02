@@ -1,5 +1,5 @@
 import React from 'react'
-import { screen, within, waitFor } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ToastContainer } from 'react-toastify'
 import { QueryClientProvider, QueryClient } from 'react-query'
@@ -11,7 +11,7 @@ import {
 } from '../testUtilities'
 import SupportTools from './SupportTools'
 import AuthDataProvider from '../UserContext'
-import { supportApiCalls } from '../MultiJurisdictionAudit/_mocks'
+import { supportApiCalls } from '../_mocks'
 import {
   IOrganizationBase,
   IOrganization,

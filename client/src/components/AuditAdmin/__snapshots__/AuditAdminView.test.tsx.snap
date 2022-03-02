@@ -1,0 +1,284 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
+<div>
+  <div
+    class="sc-kEYyzF gOPOqs"
+  >
+    <div
+      class="bp3-callout sc-hSdWYo gMDgEE"
+    >
+      <div
+        class="sc-kkGfuU dREAhJ"
+      >
+        <div
+          class="text"
+        >
+          <h3
+            class="bp3-heading sc-iAyFgw fUjqOI"
+          >
+            Test Audit
+          </h3>
+          <h4
+            class="bp3-heading"
+          >
+            The audit has not started.
+          </h4>
+          <p>
+            Audit setup is complete.
+          </p>
+          <p>
+            0 of 2 jurisdictions have completed file uploads.
+          </p>
+          <span
+            class="bp3-tag sc-jWBwVP fvZRn"
+          >
+            <span
+              class="bp3-text-overflow-ellipsis bp3-fill"
+            >
+              Will refresh in 5 minutes
+            </span>
+          </span>
+        </div>
+      </div>
+    </div>
+    <div
+      class="sc-kkGfuU dREAhJ"
+    >
+      <div
+        class="sc-cvbbAY vOHMb"
+      >
+        <h2
+          class="bp3-heading sc-ifAKCX cmZyyF"
+        >
+          Audit Setup
+        </h2>
+        <ul
+          class="bp3-menu"
+        >
+          <li
+            class=""
+          >
+            <a
+              class="bp3-menu-item bp3-active bp3-intent-primary bp3-popover-dismiss"
+            >
+              <div
+                class="bp3-text-overflow-ellipsis bp3-fill"
+              >
+                Participants
+              </div>
+            </a>
+          </li>
+          <li
+            class="bp3-menu-divider"
+          />
+          <li
+            class=""
+          >
+            <a
+              class="bp3-menu-item bp3-disabled"
+              tabindex="-1"
+            >
+              <div
+                class="bp3-text-overflow-ellipsis bp3-fill"
+              >
+                Target Contests
+              </div>
+              <span
+                class="bp3-menu-item-label"
+              >
+                <div
+                  class="bp3-spinner"
+                >
+                  <div
+                    class="bp3-spinner-animation"
+                  >
+                    <svg
+                      height="20"
+                      stroke-width="16.00"
+                      viewBox="-3.00 -3.00 106.00 106.00"
+                      width="20"
+                    >
+                      <path
+                        class="bp3-spinner-track"
+                        d="M 50,50 m 0,-45 a 45,45 0 1 1 0,90 a 45,45 0 1 1 0,-90"
+                      />
+                      <path
+                        class="bp3-spinner-head"
+                        d="M 50,50 m 0,-45 a 45,45 0 1 1 0,90 a 45,45 0 1 1 0,-90"
+                        pathLength="280"
+                        stroke-dasharray="280 280"
+                        stroke-dashoffset="210"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              </span>
+            </a>
+          </li>
+          <li
+            class="bp3-menu-divider"
+          />
+          <li
+            class=""
+          >
+            <a
+              class="bp3-menu-item bp3-disabled"
+              tabindex="-1"
+            >
+              <div
+                class="bp3-text-overflow-ellipsis bp3-fill"
+              >
+                Opportunistic Contests
+              </div>
+              <span
+                class="bp3-menu-item-label"
+              >
+                <div
+                  class="bp3-spinner"
+                >
+                  <div
+                    class="bp3-spinner-animation"
+                  >
+                    <svg
+                      height="20"
+                      stroke-width="16.00"
+                      viewBox="-3.00 -3.00 106.00 106.00"
+                      width="20"
+                    >
+                      <path
+                        class="bp3-spinner-track"
+                        d="M 50,50 m 0,-45 a 45,45 0 1 1 0,90 a 45,45 0 1 1 0,-90"
+                      />
+                      <path
+                        class="bp3-spinner-head"
+                        d="M 50,50 m 0,-45 a 45,45 0 1 1 0,90 a 45,45 0 1 1 0,-90"
+                        pathLength="280"
+                        stroke-dasharray="280 280"
+                        stroke-dashoffset="210"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              </span>
+            </a>
+          </li>
+          <li
+            class="bp3-menu-divider"
+          />
+          <li
+            class=""
+          >
+            <a
+              class="bp3-menu-item bp3-popover-dismiss"
+            >
+              <div
+                class="bp3-text-overflow-ellipsis bp3-fill"
+              >
+                Audit Settings
+              </div>
+            </a>
+          </li>
+          <li
+            class="bp3-menu-divider"
+          />
+          <li
+            class=""
+          >
+            <a
+              class="bp3-menu-item bp3-popover-dismiss"
+            >
+              <div
+                class="bp3-text-overflow-ellipsis bp3-fill"
+              >
+                Review & Launch
+              </div>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div
+        class="sc-EHOje bjGJmd"
+      >
+        <h2
+          class="bp3-heading sc-ifAKCX cmZyyF"
+        >
+          Participants
+        </h2>
+        <form>
+          <div
+            class="sc-EHOje bjGJmd"
+          >
+            <h2
+              class="bp3-heading sc-ifAKCX cmZyyF"
+            />
+            <div
+              class="sc-bZQynM bGsEQi"
+            >
+              <div
+                class="sc-gzVnrw kvvweo"
+              >
+                Click "Browse" to choose the appropriate file from your computer. This file should be a comma-separated list of all the jurisdictions participating in the audit, plus email addresses for audit administrators in each participating jurisdiction.
+                <br />
+                <br />
+                <a
+                  href="/sample_jurisdiction_filesheet.csv"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  (Click here to view a sample file in the correct format.)
+                </a>
+              </div>
+            </div>
+            <div
+              class="sc-bZQynM bGsEQi"
+            >
+              <p>
+                <strong>
+                  Current file:
+                </strong>
+                 
+                file name
+              </p>
+              <p
+                class="sc-dnqmqq jvyRYy"
+              >
+                Uploaded at
+                 
+                12/4/2020, 2:32:15 AM
+                .
+              </p>
+              <div>
+                <button
+                  class="bp3-button sc-bxivhb WkpPV"
+                  type="button"
+                >
+                  <span
+                    class="bp3-button-text"
+                  >
+                    Replace File
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+        <div
+          class="sc-bdVaJa kcYonD"
+        >
+          <button
+            class="bp3-button bp3-intent-primary sc-bxivhb WkpPV"
+            type="submit"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Next
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

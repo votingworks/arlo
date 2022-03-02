@@ -1,0 +1,2153 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`RoundManagement renders audit setup with ballot audit 1`] = `
+<div>
+  <div
+    class="sc-bdVaJa sc-eNQAEJ iJPUZw"
+  >
+    <h3
+      class="bp3-heading"
+    >
+      Round 
+      1
+       Audit Board Setup
+    </h3>
+    <p
+      class="sc-kEYyzF fNqsmi"
+    >
+      Ballots to audit: 
+      27
+    </p>
+    <div
+      class="sc-dnqmqq jnbCEU"
+    >
+      <h4
+        class="bp3-heading"
+      >
+        Number of Audit Boards
+      </h4>
+      <p>
+        Select the appropriate number of audit boards based upon the personnel available and the number of ballots assigned to your jurisdiction for this round of the audit. You will have the opportunity to adjust the number of audit boards before the next round of the audit, if another round is required.
+      </p>
+      <div
+        class="sc-gzVnrw iZqYnV"
+      >
+        <div
+          class="bp3-html-select sc-iwsKbI iSMuWx sc-bZQynM dFcXvN"
+        >
+          <select
+            data-testid="numAuditBoards"
+            field="[object Object]"
+            form="[object Object]"
+            id="numAuditBoards"
+          >
+            <option>
+              1
+            </option>
+            <option>
+              2
+            </option>
+            <option>
+              3
+            </option>
+            <option>
+              4
+            </option>
+            <option>
+              5
+            </option>
+            <option>
+              6
+            </option>
+            <option>
+              7
+            </option>
+            <option>
+              8
+            </option>
+            <option>
+              9
+            </option>
+            <option>
+              10
+            </option>
+            <option>
+              11
+            </option>
+            <option>
+              12
+            </option>
+            <option>
+              13
+            </option>
+            <option>
+              14
+            </option>
+            <option>
+              15
+            </option>
+            <option>
+              16
+            </option>
+            <option>
+              17
+            </option>
+            <option>
+              18
+            </option>
+            <option>
+              19
+            </option>
+            <option>
+              20
+            </option>
+            <option>
+              21
+            </option>
+            <option>
+              22
+            </option>
+            <option>
+              23
+            </option>
+            <option>
+              24
+            </option>
+            <option>
+              25
+            </option>
+            <option>
+              26
+            </option>
+            <option>
+              27
+            </option>
+            <option>
+              28
+            </option>
+            <option>
+              29
+            </option>
+            <option>
+              30
+            </option>
+            <option>
+              31
+            </option>
+            <option>
+              32
+            </option>
+            <option>
+              33
+            </option>
+            <option>
+              34
+            </option>
+            <option>
+              35
+            </option>
+            <option>
+              36
+            </option>
+            <option>
+              37
+            </option>
+            <option>
+              38
+            </option>
+            <option>
+              39
+            </option>
+            <option>
+              40
+            </option>
+            <option>
+              41
+            </option>
+            <option>
+              42
+            </option>
+            <option>
+              43
+            </option>
+            <option>
+              44
+            </option>
+            <option>
+              45
+            </option>
+            <option>
+              46
+            </option>
+            <option>
+              47
+            </option>
+            <option>
+              48
+            </option>
+            <option>
+              49
+            </option>
+            <option>
+              50
+            </option>
+            <option>
+              51
+            </option>
+            <option>
+              52
+            </option>
+            <option>
+              53
+            </option>
+            <option>
+              54
+            </option>
+            <option>
+              55
+            </option>
+            <option>
+              56
+            </option>
+            <option>
+              57
+            </option>
+            <option>
+              58
+            </option>
+            <option>
+              59
+            </option>
+            <option>
+              60
+            </option>
+            <option>
+              61
+            </option>
+            <option>
+              62
+            </option>
+            <option>
+              63
+            </option>
+            <option>
+              64
+            </option>
+            <option>
+              65
+            </option>
+            <option>
+              66
+            </option>
+            <option>
+              67
+            </option>
+            <option>
+              68
+            </option>
+            <option>
+              69
+            </option>
+            <option>
+              70
+            </option>
+            <option>
+              71
+            </option>
+            <option>
+              72
+            </option>
+            <option>
+              73
+            </option>
+            <option>
+              74
+            </option>
+            <option>
+              75
+            </option>
+            <option>
+              76
+            </option>
+            <option>
+              77
+            </option>
+            <option>
+              78
+            </option>
+            <option>
+              79
+            </option>
+            <option>
+              80
+            </option>
+            <option>
+              81
+            </option>
+            <option>
+              82
+            </option>
+            <option>
+              83
+            </option>
+            <option>
+              84
+            </option>
+            <option>
+              85
+            </option>
+            <option>
+              86
+            </option>
+            <option>
+              87
+            </option>
+            <option>
+              88
+            </option>
+            <option>
+              89
+            </option>
+            <option>
+              90
+            </option>
+            <option>
+              91
+            </option>
+            <option>
+              92
+            </option>
+            <option>
+              93
+            </option>
+            <option>
+              94
+            </option>
+            <option>
+              95
+            </option>
+            <option>
+              96
+            </option>
+            <option>
+              97
+            </option>
+            <option>
+              98
+            </option>
+            <option>
+              99
+            </option>
+            <option>
+              100
+            </option>
+            <option>
+              101
+            </option>
+            <option>
+              102
+            </option>
+            <option>
+              103
+            </option>
+            <option>
+              104
+            </option>
+            <option>
+              105
+            </option>
+            <option>
+              106
+            </option>
+            <option>
+              107
+            </option>
+            <option>
+              108
+            </option>
+            <option>
+              109
+            </option>
+            <option>
+              110
+            </option>
+            <option>
+              111
+            </option>
+            <option>
+              112
+            </option>
+            <option>
+              113
+            </option>
+            <option>
+              114
+            </option>
+            <option>
+              115
+            </option>
+            <option>
+              116
+            </option>
+            <option>
+              117
+            </option>
+            <option>
+              118
+            </option>
+            <option>
+              119
+            </option>
+            <option>
+              120
+            </option>
+            <option>
+              121
+            </option>
+            <option>
+              122
+            </option>
+            <option>
+              123
+            </option>
+            <option>
+              124
+            </option>
+            <option>
+              125
+            </option>
+            <option>
+              126
+            </option>
+            <option>
+              127
+            </option>
+            <option>
+              128
+            </option>
+            <option>
+              129
+            </option>
+            <option>
+              130
+            </option>
+            <option>
+              131
+            </option>
+            <option>
+              132
+            </option>
+            <option>
+              133
+            </option>
+            <option>
+              134
+            </option>
+            <option>
+              135
+            </option>
+            <option>
+              136
+            </option>
+            <option>
+              137
+            </option>
+            <option>
+              138
+            </option>
+            <option>
+              139
+            </option>
+            <option>
+              140
+            </option>
+            <option>
+              141
+            </option>
+            <option>
+              142
+            </option>
+            <option>
+              143
+            </option>
+            <option>
+              144
+            </option>
+            <option>
+              145
+            </option>
+            <option>
+              146
+            </option>
+            <option>
+              147
+            </option>
+            <option>
+              148
+            </option>
+            <option>
+              149
+            </option>
+            <option>
+              150
+            </option>
+            <option>
+              151
+            </option>
+            <option>
+              152
+            </option>
+            <option>
+              153
+            </option>
+            <option>
+              154
+            </option>
+            <option>
+              155
+            </option>
+            <option>
+              156
+            </option>
+            <option>
+              157
+            </option>
+            <option>
+              158
+            </option>
+            <option>
+              159
+            </option>
+            <option>
+              160
+            </option>
+            <option>
+              161
+            </option>
+            <option>
+              162
+            </option>
+            <option>
+              163
+            </option>
+            <option>
+              164
+            </option>
+            <option>
+              165
+            </option>
+            <option>
+              166
+            </option>
+            <option>
+              167
+            </option>
+            <option>
+              168
+            </option>
+            <option>
+              169
+            </option>
+            <option>
+              170
+            </option>
+            <option>
+              171
+            </option>
+            <option>
+              172
+            </option>
+            <option>
+              173
+            </option>
+            <option>
+              174
+            </option>
+            <option>
+              175
+            </option>
+            <option>
+              176
+            </option>
+            <option>
+              177
+            </option>
+            <option>
+              178
+            </option>
+            <option>
+              179
+            </option>
+            <option>
+              180
+            </option>
+            <option>
+              181
+            </option>
+            <option>
+              182
+            </option>
+            <option>
+              183
+            </option>
+            <option>
+              184
+            </option>
+            <option>
+              185
+            </option>
+            <option>
+              186
+            </option>
+            <option>
+              187
+            </option>
+            <option>
+              188
+            </option>
+            <option>
+              189
+            </option>
+            <option>
+              190
+            </option>
+            <option>
+              191
+            </option>
+            <option>
+              192
+            </option>
+            <option>
+              193
+            </option>
+            <option>
+              194
+            </option>
+            <option>
+              195
+            </option>
+            <option>
+              196
+            </option>
+            <option>
+              197
+            </option>
+            <option>
+              198
+            </option>
+            <option>
+              199
+            </option>
+            <option>
+              200
+            </option>
+          </select>
+          <span
+            class="bp3-icon bp3-icon-double-caret-vertical"
+            icon="double-caret-vertical"
+          >
+            <svg
+              data-icon="double-caret-vertical"
+              height="16"
+              viewBox="0 0 16 16"
+              width="16"
+            >
+              <desc>
+                double-caret-vertical
+              </desc>
+              <path
+                d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </span>
+        </div>
+      </div>
+      <button
+        class="bp3-button bp3-intent-primary sc-EHOje gmpgQN"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Save & Next
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`RoundManagement renders audit setup with batch audit 1`] = `
+<div>
+  <div
+    class="sc-bdVaJa sc-eNQAEJ iJPUZw"
+  >
+    <h3
+      class="bp3-heading"
+    >
+      Round 
+      1
+       Audit Board Setup
+    </h3>
+    <p
+      class="sc-kEYyzF fNqsmi"
+    >
+      Batches to audit: 
+      3
+      <br />
+      Total ballots in batches: 
+      300
+    </p>
+    <div
+      class="sc-dnqmqq jnbCEU"
+    >
+      <h4
+        class="bp3-heading"
+      >
+        Number of Audit Boards
+      </h4>
+      <p>
+        Select the appropriate number of audit boards based upon the personnel available and the number of ballots assigned to your jurisdiction for this round of the audit. You will have the opportunity to adjust the number of audit boards before the next round of the audit, if another round is required.
+      </p>
+      <div
+        class="sc-gzVnrw iZqYnV"
+      >
+        <div
+          class="bp3-html-select sc-iwsKbI iSMuWx sc-bZQynM dFcXvN"
+        >
+          <select
+            data-testid="numAuditBoards"
+            field="[object Object]"
+            form="[object Object]"
+            id="numAuditBoards"
+          >
+            <option>
+              1
+            </option>
+            <option>
+              2
+            </option>
+            <option>
+              3
+            </option>
+            <option>
+              4
+            </option>
+            <option>
+              5
+            </option>
+            <option>
+              6
+            </option>
+            <option>
+              7
+            </option>
+            <option>
+              8
+            </option>
+            <option>
+              9
+            </option>
+            <option>
+              10
+            </option>
+            <option>
+              11
+            </option>
+            <option>
+              12
+            </option>
+            <option>
+              13
+            </option>
+            <option>
+              14
+            </option>
+            <option>
+              15
+            </option>
+            <option>
+              16
+            </option>
+            <option>
+              17
+            </option>
+            <option>
+              18
+            </option>
+            <option>
+              19
+            </option>
+            <option>
+              20
+            </option>
+            <option>
+              21
+            </option>
+            <option>
+              22
+            </option>
+            <option>
+              23
+            </option>
+            <option>
+              24
+            </option>
+            <option>
+              25
+            </option>
+            <option>
+              26
+            </option>
+            <option>
+              27
+            </option>
+            <option>
+              28
+            </option>
+            <option>
+              29
+            </option>
+            <option>
+              30
+            </option>
+            <option>
+              31
+            </option>
+            <option>
+              32
+            </option>
+            <option>
+              33
+            </option>
+            <option>
+              34
+            </option>
+            <option>
+              35
+            </option>
+            <option>
+              36
+            </option>
+            <option>
+              37
+            </option>
+            <option>
+              38
+            </option>
+            <option>
+              39
+            </option>
+            <option>
+              40
+            </option>
+            <option>
+              41
+            </option>
+            <option>
+              42
+            </option>
+            <option>
+              43
+            </option>
+            <option>
+              44
+            </option>
+            <option>
+              45
+            </option>
+            <option>
+              46
+            </option>
+            <option>
+              47
+            </option>
+            <option>
+              48
+            </option>
+            <option>
+              49
+            </option>
+            <option>
+              50
+            </option>
+            <option>
+              51
+            </option>
+            <option>
+              52
+            </option>
+            <option>
+              53
+            </option>
+            <option>
+              54
+            </option>
+            <option>
+              55
+            </option>
+            <option>
+              56
+            </option>
+            <option>
+              57
+            </option>
+            <option>
+              58
+            </option>
+            <option>
+              59
+            </option>
+            <option>
+              60
+            </option>
+            <option>
+              61
+            </option>
+            <option>
+              62
+            </option>
+            <option>
+              63
+            </option>
+            <option>
+              64
+            </option>
+            <option>
+              65
+            </option>
+            <option>
+              66
+            </option>
+            <option>
+              67
+            </option>
+            <option>
+              68
+            </option>
+            <option>
+              69
+            </option>
+            <option>
+              70
+            </option>
+            <option>
+              71
+            </option>
+            <option>
+              72
+            </option>
+            <option>
+              73
+            </option>
+            <option>
+              74
+            </option>
+            <option>
+              75
+            </option>
+            <option>
+              76
+            </option>
+            <option>
+              77
+            </option>
+            <option>
+              78
+            </option>
+            <option>
+              79
+            </option>
+            <option>
+              80
+            </option>
+            <option>
+              81
+            </option>
+            <option>
+              82
+            </option>
+            <option>
+              83
+            </option>
+            <option>
+              84
+            </option>
+            <option>
+              85
+            </option>
+            <option>
+              86
+            </option>
+            <option>
+              87
+            </option>
+            <option>
+              88
+            </option>
+            <option>
+              89
+            </option>
+            <option>
+              90
+            </option>
+            <option>
+              91
+            </option>
+            <option>
+              92
+            </option>
+            <option>
+              93
+            </option>
+            <option>
+              94
+            </option>
+            <option>
+              95
+            </option>
+            <option>
+              96
+            </option>
+            <option>
+              97
+            </option>
+            <option>
+              98
+            </option>
+            <option>
+              99
+            </option>
+            <option>
+              100
+            </option>
+            <option>
+              101
+            </option>
+            <option>
+              102
+            </option>
+            <option>
+              103
+            </option>
+            <option>
+              104
+            </option>
+            <option>
+              105
+            </option>
+            <option>
+              106
+            </option>
+            <option>
+              107
+            </option>
+            <option>
+              108
+            </option>
+            <option>
+              109
+            </option>
+            <option>
+              110
+            </option>
+            <option>
+              111
+            </option>
+            <option>
+              112
+            </option>
+            <option>
+              113
+            </option>
+            <option>
+              114
+            </option>
+            <option>
+              115
+            </option>
+            <option>
+              116
+            </option>
+            <option>
+              117
+            </option>
+            <option>
+              118
+            </option>
+            <option>
+              119
+            </option>
+            <option>
+              120
+            </option>
+            <option>
+              121
+            </option>
+            <option>
+              122
+            </option>
+            <option>
+              123
+            </option>
+            <option>
+              124
+            </option>
+            <option>
+              125
+            </option>
+            <option>
+              126
+            </option>
+            <option>
+              127
+            </option>
+            <option>
+              128
+            </option>
+            <option>
+              129
+            </option>
+            <option>
+              130
+            </option>
+            <option>
+              131
+            </option>
+            <option>
+              132
+            </option>
+            <option>
+              133
+            </option>
+            <option>
+              134
+            </option>
+            <option>
+              135
+            </option>
+            <option>
+              136
+            </option>
+            <option>
+              137
+            </option>
+            <option>
+              138
+            </option>
+            <option>
+              139
+            </option>
+            <option>
+              140
+            </option>
+            <option>
+              141
+            </option>
+            <option>
+              142
+            </option>
+            <option>
+              143
+            </option>
+            <option>
+              144
+            </option>
+            <option>
+              145
+            </option>
+            <option>
+              146
+            </option>
+            <option>
+              147
+            </option>
+            <option>
+              148
+            </option>
+            <option>
+              149
+            </option>
+            <option>
+              150
+            </option>
+            <option>
+              151
+            </option>
+            <option>
+              152
+            </option>
+            <option>
+              153
+            </option>
+            <option>
+              154
+            </option>
+            <option>
+              155
+            </option>
+            <option>
+              156
+            </option>
+            <option>
+              157
+            </option>
+            <option>
+              158
+            </option>
+            <option>
+              159
+            </option>
+            <option>
+              160
+            </option>
+            <option>
+              161
+            </option>
+            <option>
+              162
+            </option>
+            <option>
+              163
+            </option>
+            <option>
+              164
+            </option>
+            <option>
+              165
+            </option>
+            <option>
+              166
+            </option>
+            <option>
+              167
+            </option>
+            <option>
+              168
+            </option>
+            <option>
+              169
+            </option>
+            <option>
+              170
+            </option>
+            <option>
+              171
+            </option>
+            <option>
+              172
+            </option>
+            <option>
+              173
+            </option>
+            <option>
+              174
+            </option>
+            <option>
+              175
+            </option>
+            <option>
+              176
+            </option>
+            <option>
+              177
+            </option>
+            <option>
+              178
+            </option>
+            <option>
+              179
+            </option>
+            <option>
+              180
+            </option>
+            <option>
+              181
+            </option>
+            <option>
+              182
+            </option>
+            <option>
+              183
+            </option>
+            <option>
+              184
+            </option>
+            <option>
+              185
+            </option>
+            <option>
+              186
+            </option>
+            <option>
+              187
+            </option>
+            <option>
+              188
+            </option>
+            <option>
+              189
+            </option>
+            <option>
+              190
+            </option>
+            <option>
+              191
+            </option>
+            <option>
+              192
+            </option>
+            <option>
+              193
+            </option>
+            <option>
+              194
+            </option>
+            <option>
+              195
+            </option>
+            <option>
+              196
+            </option>
+            <option>
+              197
+            </option>
+            <option>
+              198
+            </option>
+            <option>
+              199
+            </option>
+            <option>
+              200
+            </option>
+          </select>
+          <span
+            class="bp3-icon bp3-icon-double-caret-vertical"
+            icon="double-caret-vertical"
+          >
+            <svg
+              data-icon="double-caret-vertical"
+              height="16"
+              viewBox="0 0 16 16"
+              width="16"
+            >
+              <desc>
+                double-caret-vertical
+              </desc>
+              <path
+                d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </span>
+        </div>
+      </div>
+      <button
+        class="bp3-button bp3-intent-primary sc-EHOje gmpgQN"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Save & Next
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`RoundManagement renders complete view 1`] = `
+<div>
+  <div
+    class="sc-bdVaJa sc-eNQAEJ iJPUZw"
+  >
+    <h2
+      class="bp3-heading"
+    >
+      Congratulations! Your Risk-Limiting Audit is now complete.
+    </h2>
+  </div>
+</div>
+`;
+
+exports[`RoundManagement renders links & data entry with batch audit 1`] = `
+<div>
+  <div
+    class="sc-bdVaJa sc-eNQAEJ iJPUZw"
+  >
+    <h3
+      class="bp3-heading"
+    >
+      Round 
+      1
+       Data Entry
+    </h3>
+    <div
+      class="sc-hMqMXs kBeHNE"
+    >
+      <p
+        class="sc-kEYyzF fNqsmi"
+      >
+        Batches to audit: 
+        3
+        <br />
+        Total ballots in batches: 
+        300
+      </p>
+      <div
+        class="bp3-button-group bp3-vertical bp3-align-left"
+      >
+        <button
+          class="bp3-button"
+          type="button"
+        >
+          <span
+            class="bp3-icon bp3-icon-th"
+            icon="th"
+          >
+            <svg
+              data-icon="th"
+              height="16"
+              viewBox="0 0 16 16"
+              width="16"
+            >
+              <desc>
+                th
+              </desc>
+              <path
+                d="M15 1H1c-.6 0-1 .5-1 1v12c0 .6.4 1 1 1h14c.6 0 1-.4 1-1V2c0-.5-.4-1-1-1zM6 13H2v-2h4v2zm0-3H2V8h4v2zm0-3H2V5h4v2zm8 6H7v-2h7v2zm0-3H7V8h7v2zm0-3H7V5h7v2z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </span>
+          <span
+            class="bp3-button-text"
+          >
+            Download Aggregated
+             
+            Batch
+             
+            Retrieval List
+          </span>
+        </button>
+      </div>
+    </div>
+    <div
+      class="sc-hMqMXs kBeHNE"
+    >
+      <div>
+        <div>
+          <p>
+            When you have examined all of the ballots assigned to you, enter the number of votes recorded for each candidate/choice from the audited ballots in each batch.
+          </p>
+        </div>
+        <table
+          class="bp3-html-table bp3-html-table-bordered bp3-html-table-striped sc-kgoBCf cRJctX"
+          id="results-table"
+        >
+          <thead>
+            <tr>
+              <th
+                style="width: 22%;"
+              >
+                Batch Name
+              </th>
+              <th>
+                Choice One
+              </th>
+              <th>
+                Choice Two
+              </th>
+              <th
+                class="sc-dxgOiQ jbKbAU"
+              >
+                Batch Total Votes
+              </th>
+              <th
+                style="width: 120px;"
+              >
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                Batch One
+              </td>
+              <td
+                class="sc-kGXeez eERvIN"
+              />
+              <td
+                class="sc-kGXeez eERvIN"
+              />
+              <td
+                class="sc-kpOJdX liIiec"
+              />
+              <td>
+                <button
+                  class="bp3-button"
+                  type="button"
+                >
+                  <span
+                    class="bp3-icon bp3-icon-edit"
+                    icon="edit"
+                  >
+                    <svg
+                      data-icon="edit"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      width="16"
+                    >
+                      <desc>
+                        edit
+                      </desc>
+                      <path
+                        d="M3.25 10.26l2.47 2.47 6.69-6.69-2.46-2.48-6.7 6.7zM.99 14.99l3.86-1.39-2.46-2.44-1.4 3.83zm12.25-14c-.48 0-.92.2-1.24.51l-1.44 1.44 2.47 2.47 1.44-1.44c.32-.32.51-.75.51-1.24.01-.95-.77-1.74-1.74-1.74z"
+                        fill-rule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                  <span
+                    class="bp3-button-text"
+                  >
+                    Edit
+                  </span>
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Batch Two
+              </td>
+              <td
+                class="sc-kGXeez eERvIN"
+              />
+              <td
+                class="sc-kGXeez eERvIN"
+              />
+              <td
+                class="sc-kpOJdX liIiec"
+              />
+              <td>
+                <button
+                  class="bp3-button"
+                  type="button"
+                >
+                  <span
+                    class="bp3-icon bp3-icon-edit"
+                    icon="edit"
+                  >
+                    <svg
+                      data-icon="edit"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      width="16"
+                    >
+                      <desc>
+                        edit
+                      </desc>
+                      <path
+                        d="M3.25 10.26l2.47 2.47 6.69-6.69-2.46-2.48-6.7 6.7zM.99 14.99l3.86-1.39-2.46-2.44-1.4 3.83zm12.25-14c-.48 0-.92.2-1.24.51l-1.44 1.44 2.47 2.47 1.44-1.44c.32-.32.51-.75.51-1.24.01-.95-.77-1.74-1.74-1.74z"
+                        fill-rule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                  <span
+                    class="bp3-button-text"
+                  >
+                    Edit
+                  </span>
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Batch Three
+              </td>
+              <td
+                class="sc-kGXeez eERvIN"
+              />
+              <td
+                class="sc-kGXeez eERvIN"
+              />
+              <td
+                class="sc-kpOJdX liIiec"
+              />
+              <td>
+                <button
+                  class="bp3-button"
+                  type="button"
+                >
+                  <span
+                    class="bp3-icon bp3-icon-edit"
+                    icon="edit"
+                  >
+                    <svg
+                      data-icon="edit"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      width="16"
+                    >
+                      <desc>
+                        edit
+                      </desc>
+                      <path
+                        d="M3.25 10.26l2.47 2.47 6.69-6.69-2.46-2.48-6.7 6.7zM.99 14.99l3.86-1.39-2.46-2.44-1.4 3.83zm12.25-14c-.48 0-.92.2-1.24.51l-1.44 1.44 2.47 2.47 1.44-1.44c.32-.32.51-.75.51-1.24.01-.95-.77-1.74-1.74-1.74z"
+                        fill-rule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                  <span
+                    class="bp3-button-text"
+                  >
+                    Edit
+                  </span>
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <td
+                class="sc-kpOJdX liIiec"
+              >
+                Choice Total Votes
+              </td>
+              <td
+                class="sc-kpOJdX liIiec"
+              >
+                0
+              </td>
+              <td
+                class="sc-kpOJdX liIiec"
+              >
+                0
+              </td>
+              <td
+                class="sc-kpOJdX liIiec"
+              >
+                0
+              </td>
+              <td />
+            </tr>
+          </tbody>
+        </table>
+        <div
+          style="display: flex; justify-content: space-between; margin-top: 20px;"
+        >
+          <button
+            class="bp3-button"
+            style="width: 160px;"
+            type="button"
+          >
+            <span
+              class="bp3-icon bp3-icon-clipboard"
+              icon="clipboard"
+            >
+              <svg
+                data-icon="clipboard"
+                height="16"
+                viewBox="0 0 16 16"
+                width="16"
+              >
+                <desc>
+                  clipboard
+                </desc>
+                <path
+                  d="M11 2c0-.55-.45-1-1-1h.22C9.88.4 9.24 0 8.5 0S7.12.4 6.78 1H7c-.55 0-1 .45-1 1v1h5V2zm2 0h-1v2H5V2H4c-.55 0-1 .45-1 1v12c0 .55.45 1 1 1h9c.55 0 1-.45 1-1V3c0-.55-.45-1-1-1z"
+                  fill-rule="evenodd"
+                />
+              </svg>
+            </span>
+            <span
+              class="bp3-button-text"
+            >
+              Copy to clipboard
+            </span>
+          </button>
+          <button
+            class="bp3-button bp3-intent-primary"
+            type="button"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Finalize Results
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`RoundManagement renders links & data entry with offline ballot audit 1`] = `
+<div>
+  <div
+    class="sc-bdVaJa sc-eNQAEJ iJPUZw"
+  >
+    <h3
+      class="bp3-heading"
+    >
+      Round 
+      1
+       Data Entry
+    </h3>
+    <div
+      class="sc-hMqMXs kBeHNE"
+    >
+      <p
+        class="sc-kEYyzF fNqsmi"
+      >
+        Ballots to audit: 
+        27
+      </p>
+      <div
+        class="bp3-button-group bp3-vertical bp3-align-left"
+      >
+        <button
+          class="bp3-button"
+          type="button"
+        >
+          <span
+            class="bp3-icon bp3-icon-th"
+            icon="th"
+          >
+            <svg
+              data-icon="th"
+              height="16"
+              viewBox="0 0 16 16"
+              width="16"
+            >
+              <desc>
+                th
+              </desc>
+              <path
+                d="M15 1H1c-.6 0-1 .5-1 1v12c0 .6.4 1 1 1h14c.6 0 1-.4 1-1V2c0-.5-.4-1-1-1zM6 13H2v-2h4v2zm0-3H2V8h4v2zm0-3H2V5h4v2zm8 6H7v-2h7v2zm0-3H7V8h7v2zm0-3H7V5h7v2z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </span>
+          <span
+            class="bp3-button-text"
+          >
+            Download Aggregated
+             
+            Ballot
+             
+            Retrieval List
+          </span>
+        </button>
+        <button
+          class="bp3-button"
+          type="button"
+        >
+          <span
+            class="bp3-icon bp3-icon-document"
+            icon="document"
+          >
+            <svg
+              data-icon="document"
+              height="16"
+              viewBox="0 0 16 16"
+              width="16"
+            >
+              <desc>
+                document
+              </desc>
+              <path
+                d="M9 0H3c-.55 0-1 .45-1 1v14c0 .55.45 1 1 1h10c.55 0 1-.45 1-1V5L9 0zm3 14H4V2h4v4h4v8z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </span>
+          <span
+            class="bp3-button-text"
+          >
+            Download Placeholder Sheets
+          </span>
+        </button>
+        <button
+          class="bp3-button"
+          type="button"
+        >
+          <span
+            class="bp3-icon bp3-icon-label"
+            icon="label"
+          >
+            <svg
+              data-icon="label"
+              height="16"
+              viewBox="0 0 16 16"
+              width="16"
+            >
+              <desc>
+                label
+              </desc>
+              <path
+                d="M11 2H1c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h14c.55 0 1-.45 1-1V7l-5-5zm3 10H2V4h8v2H3v1h7v1h4v4zm-3-5V4l3 3h-3zm-8 3h10V9H3v1z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </span>
+          <span
+            class="bp3-button-text"
+          >
+            Download Ballot Labels
+          </span>
+        </button>
+      </div>
+    </div>
+    <div
+      class="sc-hMqMXs kBeHNE"
+    >
+      <form>
+        <p>
+          When you have examined all the ballots assigned to you, enter the number of votes recorded for each candidate/choice from the audited ballots.
+        </p>
+        <div
+          class="bp3-card bp3-elevation-0"
+        >
+          <h5
+            class="bp3-heading"
+          >
+            Contest 1
+          </h5>
+          <label
+            class="sc-chPdSV izZSzF"
+            for="results[contest-id-1][choice-id-1]"
+          >
+            Votes for 
+            Choice One
+            :
+            <div
+              class="sc-jTzLTM gTHUJn"
+            >
+              <div
+                class="bp3-input-group sc-fjdhpX dmEgAR"
+              >
+                <input
+                  class="bp3-input"
+                  id="results[contest-id-1][choice-id-1]"
+                  name="results[contest-id-1][choice-id-1]"
+                  style="padding-right: 10px;"
+                  value=""
+                />
+              </div>
+            </div>
+          </label>
+          <label
+            class="sc-chPdSV izZSzF"
+            for="results[contest-id-1][choice-id-2]"
+          >
+            Votes for 
+            Choice Two
+            :
+            <div
+              class="sc-jTzLTM gTHUJn"
+            >
+              <div
+                class="bp3-input-group sc-fjdhpX dmEgAR"
+              >
+                <input
+                  class="bp3-input"
+                  id="results[contest-id-1][choice-id-2]"
+                  name="results[contest-id-1][choice-id-2]"
+                  style="padding-right: 10px;"
+                  value=""
+                />
+              </div>
+            </div>
+          </label>
+        </div>
+        <div
+          class="bp3-card bp3-elevation-0"
+        >
+          <h5
+            class="bp3-heading"
+          >
+            Contest 2
+          </h5>
+          <label
+            class="sc-chPdSV izZSzF"
+            for="results[contest-id-2][choice-id-3]"
+          >
+            Votes for 
+            Choice Three
+            :
+            <div
+              class="sc-jTzLTM gTHUJn"
+            >
+              <div
+                class="bp3-input-group sc-fjdhpX dmEgAR"
+              >
+                <input
+                  class="bp3-input"
+                  id="results[contest-id-2][choice-id-3]"
+                  name="results[contest-id-2][choice-id-3]"
+                  style="padding-right: 10px;"
+                  value=""
+                />
+              </div>
+            </div>
+          </label>
+          <label
+            class="sc-chPdSV izZSzF"
+            for="results[contest-id-2][choice-id-4]"
+          >
+            Votes for 
+            Choice Four
+            :
+            <div
+              class="sc-jTzLTM gTHUJn"
+            >
+              <div
+                class="bp3-input-group sc-fjdhpX dmEgAR"
+              >
+                <input
+                  class="bp3-input"
+                  id="results[contest-id-2][choice-id-4]"
+                  name="results[contest-id-2][choice-id-4]"
+                  style="padding-right: 10px;"
+                  value=""
+                />
+              </div>
+            </div>
+          </label>
+        </div>
+        <button
+          class="bp3-button bp3-intent-primary sc-kAzzGY cxWquR sc-EHOje gmpgQN"
+          type="submit"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Submit Data for Round 1
+          </span>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`RoundManagement renders links & progress with online ballot audit 1`] = `
+<div>
+  <div
+    class="sc-bdVaJa sc-eNQAEJ iJPUZw"
+  >
+    <h3
+      class="bp3-heading"
+    >
+      Round 
+      1
+       Data Entry
+    </h3>
+    <div
+      class="sc-hMqMXs kBeHNE"
+    >
+      <p
+        class="sc-kEYyzF fNqsmi"
+      >
+        Ballots to audit: 
+        27
+      </p>
+      <div
+        class="bp3-button-group bp3-vertical bp3-align-left"
+      >
+        <button
+          class="bp3-button"
+          type="button"
+        >
+          <span
+            class="bp3-icon bp3-icon-th"
+            icon="th"
+          >
+            <svg
+              data-icon="th"
+              height="16"
+              viewBox="0 0 16 16"
+              width="16"
+            >
+              <desc>
+                th
+              </desc>
+              <path
+                d="M15 1H1c-.6 0-1 .5-1 1v12c0 .6.4 1 1 1h14c.6 0 1-.4 1-1V2c0-.5-.4-1-1-1zM6 13H2v-2h4v2zm0-3H2V8h4v2zm0-3H2V5h4v2zm8 6H7v-2h7v2zm0-3H7V8h7v2zm0-3H7V5h7v2z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </span>
+          <span
+            class="bp3-button-text"
+          >
+            Download Aggregated
+             
+            Ballot
+             
+            Retrieval List
+          </span>
+        </button>
+        <button
+          class="bp3-button"
+          type="button"
+        >
+          <span
+            class="bp3-icon bp3-icon-document"
+            icon="document"
+          >
+            <svg
+              data-icon="document"
+              height="16"
+              viewBox="0 0 16 16"
+              width="16"
+            >
+              <desc>
+                document
+              </desc>
+              <path
+                d="M9 0H3c-.55 0-1 .45-1 1v14c0 .55.45 1 1 1h10c.55 0 1-.45 1-1V5L9 0zm3 14H4V2h4v4h4v8z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </span>
+          <span
+            class="bp3-button-text"
+          >
+            Download Placeholder Sheets
+          </span>
+        </button>
+        <button
+          class="bp3-button"
+          type="button"
+        >
+          <span
+            class="bp3-icon bp3-icon-label"
+            icon="label"
+          >
+            <svg
+              data-icon="label"
+              height="16"
+              viewBox="0 0 16 16"
+              width="16"
+            >
+              <desc>
+                label
+              </desc>
+              <path
+                d="M11 2H1c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h14c.55 0 1-.45 1-1V7l-5-5zm3 10H2V4h8v2H3v1h7v1h4v4zm-3-5V4l3 3h-3zm-8 3h10V9H3v1z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </span>
+          <span
+            class="bp3-button-text"
+          >
+            Download Ballot Labels
+          </span>
+        </button>
+        <button
+          class="bp3-button"
+          type="button"
+        >
+          <span
+            class="bp3-icon bp3-icon-key"
+            icon="key"
+          >
+            <svg
+              data-icon="key"
+              height="16"
+              viewBox="0 0 16 16"
+              width="16"
+            >
+              <desc>
+                key
+              </desc>
+              <path
+                d="M11 0C8.24 0 6 2.24 6 5c0 1.02.31 1.96.83 2.75L.29 14.29a1.003 1.003 0 001.42 1.42L3 14.41l1.29 1.29c.18.19.43.3.71.3s.53-.11.71-.29l2-2c.18-.18.29-.43.29-.71 0-.28-.11-.53-.29-.71L6.41 11l1.83-1.83c.8.52 1.74.83 2.76.83 2.76 0 5-2.24 5-5s-2.24-5-5-5zm0 8c-.23 0-.45-.03-.66-.08-.01 0-.02-.01-.03-.01-.21-.05-.41-.12-.6-.21a3.014 3.014 0 01-1.62-2c0-.01-.01-.02-.01-.03C8.03 5.45 8 5.23 8 5c0-1.66 1.34-3 3-3s3 1.34 3 3-1.34 3-3 3z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </span>
+          <span
+            class="bp3-button-text"
+          >
+            Download Audit Board Credentials
+          </span>
+        </button>
+        <div
+          class="sc-VigVT iyEYjY"
+          id="qr-root"
+        >
+          <span
+            id="qr-happy-rebel-base"
+          >
+            <canvas
+              height="200"
+              style="height: 200px; width: 200px;"
+              width="200"
+            />
+          </span>
+        </div>
+      </div>
+    </div>
+    <div
+      class="sc-hMqMXs kBeHNE"
+    >
+      <div
+        class="sc-gZMcBi cPjbpf"
+      >
+        <h4
+          class="bp3-heading"
+        >
+          Audit Board Progress
+        </h4>
+        <p>
+          0
+           of 
+          30
+           ballots audited
+           
+        </p>
+        <div
+          class="bp3-progress-bar bp3-no-stripes"
+        >
+          <div
+            class="bp3-progress-meter"
+            style="width: 0%;"
+          />
+        </div>
+      </div>
+      <div
+        class="sc-gqjmRU cknesl"
+      >
+        <div>
+          <span>
+            Audit Board #01: 0 of 30 ballots audited 
+          </span>
+          <span
+            class="bp3-tag"
+          >
+            <span
+              class="bp3-text-overflow-ellipsis bp3-fill"
+            >
+              Not started
+            </span>
+          </span>
+        </div>
+        <div
+          class="bp3-progress-bar bp3-no-stripes"
+        >
+          <div
+            class="bp3-progress-meter"
+            style="width: 0%;"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

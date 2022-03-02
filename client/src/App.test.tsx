@@ -1,19 +1,14 @@
 import React from 'react'
-import { screen, render } from '@testing-library/react'
-import { MemoryRouter } from 'react-router-dom'
+import { screen } from '@testing-library/react'
 import App from './App'
 import { withMockFetch, renderWithRouter } from './components/testUtilities'
-import { dummyBoards } from './components/DataEntry/_mocks'
+import { dummyBoards } from './components/AuditBoard/_mocks'
+import { jaApiCalls, aaApiCalls, mockOrganizations } from './components/_mocks'
 import {
   auditSettings,
   manifestMocks,
   talliesMocks,
-} from './components/MultiJurisdictionAudit/useSetupMenuItems/_mocks'
-import {
-  jaApiCalls,
-  aaApiCalls,
-  mockOrganizations,
-} from './components/MultiJurisdictionAudit/_mocks'
+} from './components/AuditAdmin/useSetupMenuItems/_mocks'
 
 jest.unmock('react-toastify')
 
