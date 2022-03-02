@@ -1172,19 +1172,21 @@ ESS_CVR = """Cast Vote Record,Precinct,Ballot Style,Contest 1,Contest 2
 15,p,bs,Choice 1-1,Choice 2-3
 """
 
+# ESS ballots files may or may not be ordered by Cast Vote Record, so here we
+# simulate one unordered and one ordered
 ESS_BALLOTS_1 = """Ballots,,,,,,,,,
 GEN2111,,,,,,,,,
 "Test County,Test State",,,,,,,,,
 "November 5, 2021",,,,,,,,,
 ,,,,,,,,,
 Cast Vote Record,Batch,Ballot Status,Original Ballot Exception,Remaining Ballot Exception,Write-in Type,Results Report,Reporting Group,Tabulator CVR,Precinct ID
+5,BATCH1,Not Reviewed,,,,N,Election Day,0002003172,p
+6,BATCH1,Not Reviewed,,,,N,Election Day,0002003173,p
+7,BATCH2,Not Reviewed,,,,N,Election Day,0001000415,p
 1,BATCH1,Not Reviewed,,,,N,Election Day,0001013415,p
 2,BATCH1,Not Reviewed,,,,N,Election Day,0001013416,p
 3,BATCH1,Not Reviewed,Undervote,,,N,Election Day,0001013417,p
 4,BATCH1,Not Reviewed,Overvote,,,N,Election Day,0002003171,p
-5,BATCH1,Not Reviewed,,,,N,Election Day,0002003172,p
-6,BATCH1,Not Reviewed,,,,N,Election Day,0002003173,p
-7,BATCH2,Not Reviewed,,,,N,Election Day,0001000415,p
 Total : 7,,,,,,,,,
 """
 
