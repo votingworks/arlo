@@ -113,6 +113,7 @@ def get_organization(organization_id: str):
                 auditName=election.audit_name,
                 auditType=election.audit_type,
                 online=election.online,
+                deletedAt=isoformat(election.deleted_at),
             )
             for election in organization.elections
         ],
@@ -165,7 +166,6 @@ def rename_organization(organization_id: str):
 def get_election(election_id: str):
     election = get_or_404(Election, election_id)
     return jsonify(
-        organizationId=election.organization_id,
         id=election.id,
         auditName=election.audit_name,
         auditType=election.audit_type,

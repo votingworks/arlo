@@ -147,6 +147,7 @@ def test_support_get_election(
                 {"id": jurisdiction_ids[1], "name": "J2",},
                 {"id": jurisdiction_ids[2], "name": "J3",},
             ],
+            "deletedAt": None,
         },
     )
 

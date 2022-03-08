@@ -659,7 +659,6 @@ class BallotInterpretation(BaseModel):
         primaryjoin="and_("
         + "ballot_interpretation.c.ballot_id == ballot_interpretation_contest_choice.c.ballot_id,"
         + "ballot_interpretation.c.contest_id == ballot_interpretation_contest_choice.c.contest_id)",
-        cascade="all, delete",
         order_by="ContestChoice.created_at",
     )
     comment = Column(Text)
