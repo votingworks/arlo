@@ -79,7 +79,7 @@ def delete_file(storage_path: str):
         key = parsed_path.path[1:]
         s3().delete_object(bucket_name, key)
     else:
-        return os.remove(storage_path)
+        os.remove(storage_path)
 
 
 def zip_files(files: Dict[str, BinaryIO]) -> IO[bytes]:

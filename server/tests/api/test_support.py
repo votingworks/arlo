@@ -154,7 +154,9 @@ def test_support_get_election(
 
 
 def test_support_permanently_delete_election(
-    client: FlaskClient, election_id: str, round_2_id: str
+    client: FlaskClient,
+    election_id: str,
+    round_2_id: str,  # pylint: disable=unused-argument
 ):
     election = Election.query.get(election_id)
     jurisdictions_file_path = election.jurisdictions_file.storage_path
