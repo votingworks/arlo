@@ -39,6 +39,7 @@ export interface IElectionBase {
     | 'BATCH_COMPARISON'
     | 'HYBRID'
   online: boolean
+  deletedAt: string
 }
 
 export interface IAuditAdmin {
@@ -166,6 +167,26 @@ export const useElection = (electionId: string) =>
   useQuery<IElection, Error>(['elections', electionId], () =>
     fetchApi(`/api/support/elections/${electionId}`)
   )
+
+export const useDeleteElection = () => {
+  const deleteElection = async ({
+    electionId,
+  }: {
+    electionId: string
+    organizationId: string
+  }) =>
+    fetchApi(`/api/support/elections/${electionId}`, {
+      method: 'DELETE',
+    })
+
+  const queryClient = useQueryClient()
+
+  return useMutation(deleteElection, {
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries(['organizations', variables.organizationId])
+    },
+  })
+}
 
 export const useJurisdiction = (jurisdictionId: string) =>
   useQuery<IJurisdiction, Error>(['jurisdictions', jurisdictionId], () =>
