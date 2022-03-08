@@ -32,6 +32,7 @@ const mockElectionBase: IElectionBase = {
   auditName: 'Audit 1',
   auditType: 'BALLOT_POLLING',
   online: true,
+  deletedAt: null,
 }
 
 const mockJurisdictionBase: IJurisdictionBase = {
@@ -48,6 +49,14 @@ const mockOrganization: IOrganization = {
       auditName: 'Audit 2',
       auditType: 'BALLOT_COMPARISON',
       online: false,
+      deletedAt: null,
+    },
+    {
+      id: 'election-id-3',
+      auditName: 'Audit 3',
+      auditType: 'BATCH_COMPARISON',
+      online: false,
+      deletedAt: '2022-03-08T21:03:35.487Z',
     },
   ],
   auditAdmins: [
@@ -116,6 +125,11 @@ const apiCalls = {
   },
   deleteOrganization: {
     url: '/api/support/organizations/organization-id-1',
+    options: { method: 'DELETE' },
+    response: { status: 'ok' },
+  },
+  deleteElection: {
+    url: '/api/support/elections/election-id-3',
     options: { method: 'DELETE' },
     response: { status: 'ok' },
   },
@@ -279,9 +293,14 @@ describe('Support Tools', () => {
 
       await screen.findByRole('heading', { name: 'Organization 1' })
 
+      screen.getByRole('heading', { name: 'Audits' })
       screen.getByRole('button', { name: 'Audit 2' })
-      userEvent.click(screen.getByRole('button', { name: 'Audit 1' }))
+      screen.getByRole('button', { name: 'Audit 1' })
 
+      screen.getByRole('heading', { name: 'Deleted Audits' })
+      screen.getByRole('row', { name: /Audit 3/ })
+
+      userEvent.click(screen.getByRole('button', { name: 'Audit 1' }))
       await screen.findByRole('heading', { name: 'Audit 1' })
       expect(history.location.pathname).toEqual('/support/audits/election-id-1')
     })
@@ -298,6 +317,70 @@ describe('Support Tools', () => {
     await withMockFetch(expectedCalls, async () => {
       renderRoute('/support/orgs/organization-id-1')
       await findAndCloseToast('something went wrong: getOrganization')
+    })
+  })
+
+  it('org screen has a button to permanently delete an audit', async () => {
+    const expectedCalls = [
+      supportApiCalls.getUser,
+      apiCalls.getOrganization(mockOrganization),
+      apiCalls.deleteElection,
+      apiCalls.getOrganization({
+        ...mockOrganization,
+        elections: mockOrganization.elections.filter(
+          e => e.auditName !== 'Audit 3'
+        ),
+      }),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderRoute('/support/orgs/organization-id-1')
+
+      await screen.findByRole('heading', { name: 'Organization 1' })
+
+      const auditRow = screen.getByRole('row', { name: /Audit 3/ })
+      userEvent.click(
+        within(auditRow).getByRole('button', {
+          name: /Permanently Delete/,
+        })
+      )
+
+      const dialog = (await screen.findByRole('heading', {
+        name: /Confirm/,
+      })).closest('.bp3-dialog')! as HTMLElement
+      within(dialog).getByText(
+        'Are you sure you want to permanently delete Audit 3?'
+      )
+      userEvent.click(within(dialog).getByRole('button', { name: 'Delete' }))
+
+      const toast = await screen.findByRole('alert')
+      expect(toast).toHaveTextContent('Deleted Audit 3')
+      expect(screen.queryByText('Audit 3')).not.toBeInTheDocument()
+    })
+  })
+
+  it('org screen handles error on delete audit', async () => {
+    const expectedCalls = [
+      supportApiCalls.getUser,
+      apiCalls.getOrganization(mockOrganization),
+      serverError('deleteElection', apiCalls.deleteElection),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderRoute('/support/orgs/organization-id-1')
+
+      await screen.findByRole('heading', { name: 'Organization 1' })
+
+      const auditRow = screen.getByRole('row', { name: /Audit 3/ })
+      userEvent.click(
+        within(auditRow).getByRole('button', {
+          name: /Permanently Delete/,
+        })
+      )
+      const dialog = (await screen.findByRole('heading', {
+        name: /Confirm/,
+      })).closest('.bp3-dialog')! as HTMLElement
+      userEvent.click(within(dialog).getByRole('button', { name: 'Delete' }))
+
+      await findAndCloseToast('something went wrong: deleteElection')
     })
   })
 
@@ -509,7 +592,7 @@ describe('Support Tools', () => {
 
       await screen.findByRole('heading', { name: 'Organization 1' })
 
-      userEvent.click(screen.getByRole('button', { name: /Delete/ }))
+      userEvent.click(screen.getByRole('button', { name: 'delete Delete' }))
 
       // Confirm dialog should open
       const dialog = (await screen.findByRole('heading', {
@@ -541,7 +624,7 @@ describe('Support Tools', () => {
 
       await screen.findByRole('heading', { name: 'Organization 1' })
 
-      userEvent.click(screen.getByRole('button', { name: /Delete/ }))
+      userEvent.click(screen.getByRole('button', { name: 'delete Delete' }))
 
       // Confirm dialog should open
       const dialog = (await screen.findByRole('heading', {

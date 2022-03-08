@@ -39,7 +39,7 @@ export interface IElectionBase {
     | 'BATCH_COMPARISON'
     | 'HYBRID'
   online: boolean
-  deletedAt: string
+  deletedAt: string | null
 }
 
 export interface IAuditAdmin {

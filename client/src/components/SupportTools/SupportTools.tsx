@@ -293,7 +293,7 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
           <Table striped>
             <tbody>
               {elections
-                .filter(election => !election.deletedAt)
+                .filter(election => election.deletedAt)
                 .map(election => (
                   <tr key={election.id}>
                     <td>{election.auditName}</td>
