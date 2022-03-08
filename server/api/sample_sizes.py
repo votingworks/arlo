@@ -135,29 +135,22 @@ def sample_size_options(
             validate_uploaded_cvrs(contest)
 
             contest_for_sampler = sampler_contest.from_db_contest(contest)
+            num_previous_samples = SampledBallotDraw.query.filter_by(
+                contest_id=contest.id
+            ).count()
 
             if election.audit_math_type == AuditMathType.SUPERSIMPLE:
-                num_previous_samples = SampledBallotDraw.query.filter_by(
-                    contest_id=contest.id
-                ).count()
                 discrepancies = supersimple.compute_discrepancies(
                     contest_for_sampler,
                     rounds.cvrs_for_contest(contest),
                     rounds.sampled_ballot_interpretations_to_cvrs(contest),
                 )
-                discrepancy_counter = Counter(
-                    d["counted_as"] for d in discrepancies.values()
-                )
-                discrepancy_counts = {
-                    "sample_size": num_previous_samples,
-                    "1-under": discrepancy_counter[-1],
-                    "1-over": discrepancy_counter[1],
-                    "2-under": discrepancy_counter[-2],
-                    "2-over": discrepancy_counter[2],
-                }
-
                 sample_size = supersimple.get_sample_sizes(
-                    election.risk_limit, contest_for_sampler, discrepancy_counts
+                    election.risk_limit,
+                    contest_for_sampler,
+                    supersimple.count_discrepancies(
+                        discrepancies, num_previous_samples
+                    ),
                 )
                 return {
                     "supersimple": {
@@ -173,11 +166,14 @@ def sample_size_options(
                 assertions = supersimple_raire.compute_raire_assertions(
                     contest_for_sampler, cvrs,
                 )
-                discrepancies = {
-                    assertion: supersimple_raire.compute_discrepancies(
-                        cvrs,
-                        rounds.sampled_ballot_interpretations_to_cvrs(contest),
-                        assertion,
+                assertion_discrepancies = {
+                    assertion: supersimple.count_discrepancies(
+                        supersimple_raire.compute_discrepancies(
+                            cvrs,
+                            rounds.sampled_ballot_interpretations_to_cvrs(contest),
+                            assertion,
+                        ),
+                        num_previous_samples,
                     )
                     for assertion in assertions
                 }
@@ -185,7 +181,7 @@ def sample_size_options(
                     election.risk_limit,
                     contest_for_sampler,
                     cvrs,
-                    discrepancies,
+                    assertion_discrepancies,
                     assertions,
                 )
                 return {

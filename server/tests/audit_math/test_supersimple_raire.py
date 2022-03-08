@@ -288,7 +288,7 @@ def test_fptp(contests, cvrs, assertions):
                 },
             }
 
-        p_value, finished = supersimple_raire.compute_risk(
+        p_value, finished, discrepancies = supersimple_raire.compute_risk(
             RISK_LIMIT, contests[contest], cvrs, sample_cvr, computed_assertions
         )
 
@@ -302,14 +302,15 @@ def test_fptp(contests, cvrs, assertions):
         )
         if contest != "Contest F":
             assert finished, f"Audit of {contest} should have finished but didn't"
+        assert discrepancies == {}
 
         to_sample = {
             assertion: {
                 "sample_size": sample_size,
-                "1-under": 0,
-                "1-over": 0,
-                "2-under": 0,
-                "2-over": 0,
+                "one_under": 0,
+                "one_over": 0,
+                "two_under": 0,
+                "two_over": 0,
             }
             for assertion in assertions[contest]
         }
@@ -331,7 +332,7 @@ def test_fptp(contests, cvrs, assertions):
             },
         }
 
-        p_value, finished = supersimple_raire.compute_risk(
+        p_value, finished, discrepancies = supersimple_raire.compute_risk(
             RISK_LIMIT, contests[contest], cvrs, sample_cvr, computed_assertions
         )
 
@@ -350,13 +351,19 @@ def test_fptp(contests, cvrs, assertions):
                 not finished
             ), f"Audit of {contest} shouldn't have finished but did {p_value}!"
 
+        if contest == "Contest F":
+            assert discrepancies == {}
+        else:
+            assert len(discrepancies) == 1
+            assert discrepancies[0]["counted_as"] == 1
+
         to_sample = {
             assertion: {
                 "sample_size": sample_size,
-                "1-under": 0,
-                "1-over": 1,
-                "2-under": 0,
-                "2-over": 0,
+                "one_under": 0,
+                "one_over": 1,
+                "two_under": 0,
+                "two_over": 0,
             }
             for assertion in assertions[contest]
         }
@@ -382,7 +389,7 @@ def test_fptp(contests, cvrs, assertions):
             },
         }
 
-        p_value, finished = supersimple_raire.compute_risk(
+        p_value, finished, discrepancies = supersimple_raire.compute_risk(
             RISK_LIMIT, contests[contest], cvrs, sample_cvr, computed_assertions
         )
         expected_p = expected_p_values["two_vote_over"][contest]
@@ -396,14 +403,18 @@ def test_fptp(contests, cvrs, assertions):
 
         if contest != "Contest F":
             assert not finished, "Audit shouldn't have finished but did!"
+            assert len(discrepancies) == 1
+            assert discrepancies[0]["counted_as"] == 2
+        else:
+            assert discrepancies == {}
 
         to_sample = {
             assertion: {
                 "sample_size": sample_size,
-                "1-under": 0,
-                "1-over": 0,
-                "2-under": 0,
-                "2-over": 1,
+                "one_under": 0,
+                "one_over": 0,
+                "two_under": 0,
+                "two_over": 1,
             }
             for assertion in assertions[contest]
         }
@@ -572,7 +583,7 @@ def test_simple_irv_election():
         )
         assert not discrepancies
 
-    p_value, finished = supersimple_raire.compute_risk(
+    p_value, finished, discrepancies = supersimple_raire.compute_risk(
         5, contest, cvrs, sample_cvrs, computed_assertions
     )
 
@@ -580,6 +591,7 @@ def test_simple_irv_election():
 
     assert diff < 10 ** -4, f"Got unexpected p-value {p_value}, expected {expected_p}"
     assert finished
+    assert discrepancies == {}
 
     # Test with one two-vote discrepancy
     sample_cvrs[0] = {
@@ -605,7 +617,7 @@ def test_simple_irv_election():
                 counted_as=1, weighted_error=Decimal(1) / Decimal(300)
             )
 
-    p_value, finished = supersimple_raire.compute_risk(
+    p_value, finished, discrepancies = supersimple_raire.compute_risk(
         5, contest, cvrs, sample_cvrs, computed_assertions
     )
 
@@ -613,6 +625,11 @@ def test_simple_irv_election():
 
     assert diff < 10 ** -4, f"Got unexpected p-value {p_value}, expected {expected_p}"
     assert not finished
+    assert discrepancies == {
+        0: supersimple.Discrepancy(
+            counted_as=2, weighted_error=Decimal(2) / Decimal(275)
+        )
+    }
 
     # Test with a one-vote discrepancy
     sample_cvrs[0] = {
@@ -638,7 +655,7 @@ def test_simple_irv_election():
                 counted_as=1, weighted_error=Decimal(1) / Decimal(300)
             )
 
-    p_value, finished = supersimple_raire.compute_risk(
+    p_value, finished, discrepancies = supersimple_raire.compute_risk(
         5, contest, cvrs, sample_cvrs, computed_assertions
     )
 
@@ -646,6 +663,11 @@ def test_simple_irv_election():
 
     assert diff < 10 ** -4, f"Got unexpected p-value {p_value}, expected {expected_p}"
     assert not finished
+    assert discrepancies == {
+        0: supersimple.Discrepancy(
+            counted_as=1, weighted_error=Decimal(1) / Decimal(275)
+        )
+    }
 
 
 @pytest.mark.skip(reason="Takes too long to run, doesn't impact coverage")
@@ -715,7 +737,7 @@ def test_raire_example_1():
         )
         assert not discrepancies
 
-    p_value, finished = supersimple_raire.compute_risk(
+    p_value, finished, _ = supersimple_raire.compute_risk(
         5, contest, cvrs, sample_cvrs, computed_assertions
     )
 
@@ -759,7 +781,7 @@ def test_raire_example_1():
                 / Decimal(16000),  # 26k for Alice, 10k for Bob
             )
 
-    p_value, finished = supersimple_raire.compute_risk(
+    p_value, finished, _ = supersimple_raire.compute_risk(
         5, contest, cvrs, sample_cvrs, computed_assertions
     )
 
@@ -849,7 +871,7 @@ def test_raire_example_5():
         )
         assert not discrepancies
 
-    p_value, finished = supersimple_raire.compute_risk(
+    p_value, finished, _ = supersimple_raire.compute_risk(
         5, contest, cvrs, sample_cvrs, computed_assertions
     )
 
@@ -888,7 +910,7 @@ def test_raire_example_5():
                 weighted_error=Decimal(1) / Decimal(9501),  # 26k for Alice, 10k for Bob
             )
 
-    p_value, finished = supersimple_raire.compute_risk(
+    p_value, finished, _ = supersimple_raire.compute_risk(
         5, contest, cvrs, sample_cvrs, computed_assertions
     )
 
@@ -969,7 +991,7 @@ def test_raire_example_12():
         )
         assert not discrepancies
 
-    p_value, finished = supersimple_raire.compute_risk(
+    p_value, finished, _ = supersimple_raire.compute_risk(
         5, contest, cvrs, sample_cvrs, computed_assertions
     )
 
@@ -1007,7 +1029,7 @@ def test_raire_example_12():
                 counted_as=1, weighted_error=Decimal(1) / Decimal(9500),
             )
 
-    p_value, finished = supersimple_raire.compute_risk(
+    p_value, finished, _ = supersimple_raire.compute_risk(
         5, contest, cvrs, sample_cvrs, computed_assertions
     )
 

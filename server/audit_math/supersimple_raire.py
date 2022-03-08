@@ -10,7 +10,7 @@ from server.util.jsonschema import JSONDict
 
 from .sampler_contest import Contest, CVRS, SAMPLECVRS, CVR
 
-from .supersimple import Discrepancy
+from .supersimple import Discrepancy, DiscrepancyCounts
 from .raire_utils import NEBAssertion, NENAssertion, RaireAssertion
 
 l: Decimal = Decimal(0.5)
@@ -185,7 +185,7 @@ def get_sample_sizes(
     risk_limit: int,
     contest: Contest,
     cvrs: CVRS,
-    sample_results: Optional[Dict[RaireAssertion, Dict[str, int]]],
+    sample_results: Optional[Dict[RaireAssertion, DiscrepancyCounts]],
     assertions: List[RaireAssertion],
 ) -> int:
     """
@@ -194,19 +194,31 @@ def get_sample_sizes(
     discrepancies.
 
     Inputs:
-        total_ballots  - the total number of ballots cast in the election
+        risk_limit - the risk limit for the election
+        contest - the contest being audited
+        cvrs - mapping of ballot_id to votes:
+                {
+                    'ballot_id': {
+                        'contest': {
+                            'candidate1': 1,
+                            'candidate2': 2,
+                            ...
+                        }
+                    ...
+                }
         sample_results - if a sample has already been drawn, this will
                          contain its results, of the form:
                          {
                             assertion: {
                                 'sample_size': n,
-                                '1-under':     u1,
-                                '1-over':      o1,
-                                '2-under':     u2,
-                                '2-over':      o2,
+                                'one_under':     u1,
+                                'one_over':      o1,
+                                'two_under':     u2,
+                                'two_over':      o2,
                             },
                             ...
                          }
+        assertions - the list of RaireAssertions to be used in the audit
 
 
     Outputs:
@@ -227,8 +239,8 @@ def get_sample_sizes(
             obs_o2 = Decimal(0)
             num_sampled = Decimal(0)
         else:
-            obs_o1 = Decimal(sample_results[assertion].get("1-over", 0))
-            obs_o2 = Decimal(sample_results[assertion].get("2-over", 0))
+            obs_o1 = Decimal(sample_results[assertion].get("one_over", 0))
+            obs_o2 = Decimal(sample_results[assertion].get("two_over", 0))
             num_sampled = Decimal(sample_results[assertion].get("sample_size", 0))
         # We want to be conservative, so we will ignore understatements (i.e. errors
         # that favor the winner) which are negative.
@@ -292,7 +304,7 @@ def compute_risk(
     cvrs: CVRS,
     sample_cvr: SAMPLECVRS,
     assertions: List[RaireAssertion],
-) -> Tuple[float, bool]:
+) -> Tuple[float, bool, Dict[str, Discrepancy]]:
     """
     Computes the risk-value of <sample_results> based on results in <contest>.
 
@@ -331,9 +343,13 @@ def compute_risk(
     alpha = Decimal(risk_limit) / 100
     assert alpha < 1
 
+    # If RAIRE returns no assertions, then it's a full recount.
+    if len(assertions) == 0:
+        return 0, True, {}
+
     N = contest.ballots
 
-    def compute_risk_for_assertion(assertion: RaireAssertion) -> Decimal:
+    def compute_risk_for_assertion(assertion: RaireAssertion):
         p = Decimal(1.0)
 
         V = compute_margin_for_assertion(cvrs, assertion)
@@ -398,7 +414,9 @@ def assertion_from_json(json: JSONDict) -> RaireAssertion:
     AssertionClass = dict(NENAssertion=NENAssertion, NEBAssertion=NEBAssertion)[
         json["class_name"]
     ]
-    assertion = AssertionClass(json["contest"], json["winner"], json["loser"])
+    assertion: RaireAssertion = AssertionClass(
+        json["contest"], json["winner"], json["loser"]
+    )
     assertion.difficulty = json["difficulty"]
     assertion.rules_out = json["rules_out"]
     assertion.eliminated = set(json["eliminated"])

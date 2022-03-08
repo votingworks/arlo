@@ -1,8 +1,9 @@
 # pylint: disable=invalid-name
+from collections import Counter
 import math
 from itertools import product
 from decimal import Decimal, ROUND_CEILING
-from typing import Dict, Tuple, TypedDict, Optional
+from typing import Dict, List, Tuple, TypedDict, Optional
 
 from .sampler_contest import Contest, CVRS, SAMPLECVRS, CVR
 
@@ -21,6 +22,14 @@ u2: Decimal = Decimal(0.0001)
 class Discrepancy(TypedDict):
     counted_as: int
     weighted_error: Decimal
+
+
+class DiscrepancyCounts(TypedDict):
+    sample_size: int
+    one_under: int
+    one_over: int
+    two_under: int
+    two_over: int
 
 
 def nMin(
@@ -109,6 +118,19 @@ def compute_discrepancies(
     return discrepancies
 
 
+def count_discrepancies(
+    discrepancies: Dict[str, Discrepancy], sample_size: int,
+) -> DiscrepancyCounts:
+    discrepancy_counter = Counter(d["counted_as"] for d in discrepancies.values())
+    return dict(
+        sample_size=sample_size,
+        one_under=discrepancy_counter[-1],
+        one_over=discrepancy_counter[1],
+        two_under=discrepancy_counter[-2],
+        two_over=discrepancy_counter[2],
+    )
+
+
 def discrepancy(
     contest: Contest,
     winner: str,
@@ -145,7 +167,7 @@ def discrepancy(
 
 
 def get_sample_sizes(
-    risk_limit: int, contest: Contest, sample_results: Optional[Dict[str, int]]
+    risk_limit: int, contest: Contest, sample_results: Optional[DiscrepancyCounts]
 ) -> int:
     """
     Computes initial sample sizes parameterized by likelihood that the
@@ -158,10 +180,10 @@ def get_sample_sizes(
                          contain its results, of the form:
                          {
                             'sample_size': n,
-                            '1-under':     u1,
-                            '1-over':      o1,
-                            '2-under':     u2,
-                            '2-over':      o2,
+                            'one_under':     u1,
+                            'one_over':      o1,
+                            'one_under':     u2,
+                            'one-over':      o2,
                          }
 
     Outputs:
@@ -170,14 +192,13 @@ def get_sample_sizes(
     alpha = Decimal(risk_limit) / 100
     assert alpha < 1
 
-    sample_results = sample_results or {}
-    obs_o1 = Decimal(sample_results.get("1-over", 0))
-    obs_o2 = Decimal(sample_results.get("2-over", 0))
+    obs_o1 = Decimal(sample_results["one_over"] if sample_results else 0)
+    obs_o2 = Decimal(sample_results["two_over"] if sample_results else 0)
     # We want to be conservative, so we will ignore understatements (i.e. errors
     # that favor the winner) which are negative.
     obs_u1 = 0
     obs_u2 = 0
-    num_sampled = Decimal(sample_results.get("sample_size", 0))
+    num_sampled = Decimal(sample_results["sample_size"] if sample_results else 0)
 
     if num_sampled:
         r1 = obs_o1 / num_sampled

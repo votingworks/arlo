@@ -303,10 +303,10 @@ def test_compute_risk(contests, cvrs):
 
         to_sample = {
             "sample_size": sample_size,
-            "1-under": 0,
-            "1-over": 0,
-            "2-under": 0,
-            "2-over": 0,
+            "one_under": 0,
+            "one_over": 0,
+            "two_under": 0,
+            "two_over": 0,
         }
 
         next_sample_size = supersimple.get_sample_sizes(
@@ -346,10 +346,10 @@ def test_compute_risk(contests, cvrs):
 
         to_sample = {
             "sample_size": sample_size,
-            "1-under": 0,
-            "1-over": 1,
-            "2-under": 0,
-            "2-over": 0,
+            "one_under": 0,
+            "one_over": 1,
+            "two_under": 0,
+            "two_over": 0,
         }
 
         next_sample_size = supersimple.get_sample_sizes(
@@ -393,10 +393,10 @@ def test_compute_risk(contests, cvrs):
 
         to_sample = {
             "sample_size": sample_size,
-            "1-under": 0,
-            "1-over": 0,
-            "2-under": 0,
-            "2-over": 1,
+            "one_under": 0,
+            "one_over": 0,
+            "two_under": 0,
+            "two_over": 1,
         }
 
         next_sample_size = supersimple.get_sample_sizes(
@@ -430,10 +430,10 @@ def test_tied_contest():
 
     sample_results = {
         "sample_size": 0,
-        "1-under": 0,
-        "1-over": 0,
-        "2-under": 0,
-        "2-over": 0,
+        "one_under": 0,
+        "one_over": 0,
+        "two_under": 0,
+        "two_over": 0,
     }
 
     sample_size = supersimple.get_sample_sizes(RISK_LIMIT, contest, sample_results)
@@ -520,10 +520,10 @@ def test_snapshot_test():
 
     sample_results = {
         "sample_size": 0,
-        "1-under": 0,
-        "1-over": 0,
-        "2-under": 0,
-        "2-over": 0,
+        "one_under": 0,
+        "one_over": 0,
+        "two_under": 0,
+        "two_over": 0,
     }
 
     _ = supersimple.get_sample_sizes(RISK_LIMIT, contest, sample_results)
@@ -576,10 +576,10 @@ def test_multiplicity():
 
     sample_results = {
         "sample_size": 0,
-        "1-under": 0,
-        "1-over": 0,
-        "2-under": 0,
-        "2-over": 0,
+        "one_under": 0,
+        "one_over": 0,
+        "two_under": 0,
+        "two_over": 0,
     }
 
     _ = supersimple.get_sample_sizes(RISK_LIMIT, contest, sample_results)
