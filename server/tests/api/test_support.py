@@ -65,6 +65,7 @@ def test_support_get_organization(client: FlaskClient, org_id: str, election_id:
                     "auditName": "Test Audit test_support_get_organization",
                     "auditType": "BALLOT_POLLING",
                     "online": True,
+                    "deletedAt": None,
                 }
             ],
             "auditAdmins": [
