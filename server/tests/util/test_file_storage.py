@@ -1,9 +1,10 @@
 from datetime import datetime, timezone
+import os.path
 import tempfile
 import io
 from unittest.mock import patch
 
-from ...util.file import retrieve_file, store_file
+from ...util.file import delete_file, retrieve_file, store_file
 from ... import config
 
 
@@ -39,6 +40,14 @@ def test_file_storage_s3(mock_boto_client):
     )
     assert retrieved_file.read() == b"test file contents"
 
+    delete_file("s3://test_bucket/test_dir/test_file.csv")
+    mock_boto_client.return_value.delete_object.assert_called_once()
+    assert mock_boto_client.return_value.delete_object.call_args[0][0] == "test_bucket"
+    assert (
+        mock_boto_client.return_value.delete_object.call_args[0][1]
+        == "test_dir/test_file.csv"
+    )
+
     config.FILE_UPLOAD_STORAGE_PATH = original_file_upload_storage_path
 
 
@@ -55,5 +64,8 @@ def test_file_storage_local_file():
 
     retrieved_file = retrieve_file(storage_path)
     assert retrieved_file.read() == b"test file contents"
+
+    delete_file(storage_path)
+    assert not os.path.exists(f"{config.FILE_UPLOAD_STORAGE_PATH}/{path}")
 
     config.FILE_UPLOAD_STORAGE_PATH = original_file_upload_storage_path
