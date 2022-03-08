@@ -8,6 +8,7 @@ from auth0.v3.management import Auth0
 from auth0.v3.exceptions import Auth0Error
 from werkzeug.exceptions import BadRequest, Conflict
 
+
 from . import api
 from ..models import *  # pylint: disable=wildcard-import
 from ..database import db_session
@@ -24,6 +25,7 @@ from ..config import (
 )
 from ..util.jsonschema import validate
 from ..util.isoformat import isoformat
+from ..util.file import delete_file
 from .rounds import get_current_round
 
 AUTH0_DOMAIN = urlparse(AUDITADMIN_AUTH0_BASE_URL).hostname
@@ -111,6 +113,7 @@ def get_organization(organization_id: str):
                 auditName=election.audit_name,
                 auditType=election.audit_type,
                 online=election.online,
+                deletedAt=isoformat(election.deleted_at),
             )
             for election in organization.elections
         ],
@@ -171,7 +174,37 @@ def get_election(election_id: str):
             dict(id=jurisdiction.id, name=jurisdiction.name,)
             for jurisdiction in election.jurisdictions
         ],
+        deletedAt=isoformat(election.deleted_at),
     )
+
+
+@api.route("/support/elections/<election_id>", methods=["DELETE"])
+def permanently_delete_election(election_id: str):
+    election = get_or_404(Election, election_id)
+
+    election_file_ids = [
+        election.jurisdictions_file_id,
+        election.standardized_contests_file_id,
+    ]
+    jurisdiction_file_ids = [
+        file_id
+        for jurisdiction in election.jurisdictions
+        for file_id in [
+            jurisdiction.manifest_file_id,
+            jurisdiction.cvr_file_id,
+            jurisdiction.batch_tallies_file_id,
+        ]
+    ]
+    all_file_ids = [
+        file_id for file_id in election_file_ids + jurisdiction_file_ids if file_id
+    ]
+    file_paths = File.query.filter(File.id.in_(all_file_ids)).values(File.storage_path)
+    for (file_path,) in file_paths:
+        delete_file(file_path)
+
+    db_session.delete(election)
+    db_session.commit()
+    return jsonify(status="ok")
 
 
 AUDIT_ADMIN_SCHEMA = {

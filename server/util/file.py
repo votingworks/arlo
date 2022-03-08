@@ -71,6 +71,17 @@ def retrieve_file(storage_path: str) -> BinaryIO:
         return open(storage_path, "rb")
 
 
+def delete_file(storage_path: str):
+    if config.FILE_UPLOAD_STORAGE_PATH.startswith("s3://"):
+        assert storage_path.startswith("s3://")
+        parsed_path = urlparse(storage_path)
+        bucket_name = parsed_path.netloc
+        key = parsed_path.path[1:]
+        s3().delete_object(bucket_name, key)
+    else:
+        os.remove(storage_path)
+
+
 def zip_files(files: Dict[str, BinaryIO]) -> IO[bytes]:
     zip_file = tempfile.TemporaryFile()
     with ZipFile(zip_file, "w") as zip_archive:

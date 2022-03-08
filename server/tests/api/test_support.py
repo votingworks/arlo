@@ -1,3 +1,4 @@
+import os.path
 from unittest.mock import Mock, patch
 from urllib.parse import urlparse
 from flask.testing import FlaskClient
@@ -64,6 +65,7 @@ def test_support_get_organization(client: FlaskClient, org_id: str, election_id:
                     "auditName": "Test Audit test_support_get_organization",
                     "auditType": "BALLOT_POLLING",
                     "online": True,
+                    "deletedAt": None,
                 }
             ],
             "auditAdmins": [
@@ -146,8 +148,34 @@ def test_support_get_election(
                 {"id": jurisdiction_ids[1], "name": "J2",},
                 {"id": jurisdiction_ids[2], "name": "J3",},
             ],
+            "deletedAt": None,
         },
     )
+
+
+def test_support_permanently_delete_election(
+    client: FlaskClient,
+    election_id: str,
+    round_2_id: str,  # pylint: disable=unused-argument
+):
+    election = Election.query.get(election_id)
+    jurisdictions_file_path = election.jurisdictions_file.storage_path
+    manifest_file_path = election.jurisdictions[0].manifest_file.storage_path
+
+    set_support_user(client, SUPPORT_EMAIL)
+    rv = client.delete(f"/api/support/elections/{election_id}")
+    assert_ok(rv)
+
+    rv = client.get(f"/api/support/elections/{election_id}")
+    assert rv.status_code == 404
+
+    assert not os.path.exists(jurisdictions_file_path)
+    assert not os.path.exists(manifest_file_path)
+
+    assert Election.query.get(election_id) is None
+    assert Jurisdiction.query.filter_by(election_id=election_id).count() == 0
+    assert Contest.query.filter_by(election_id=election_id).count() == 0
+    assert Round.query.filter_by(election_id=election_id).count() == 0
 
 
 @patch("server.api.support.GetToken")

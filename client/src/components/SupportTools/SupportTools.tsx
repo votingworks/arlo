@@ -35,6 +35,8 @@ import {
   useDeleteOrganization,
   useRenameOrganization,
   useRemoveAuditAdmin,
+  useDeleteElection,
+  IElectionBase,
 } from './support-api'
 import { useConfirm, Confirm } from '../Atoms/Confirm'
 
@@ -90,6 +92,7 @@ const ButtonList = styled(ButtonGroup).attrs({
       border-top: 1px solid ${Colors.LIGHT_GRAY3};
     }
   }
+  margin-bottom: 30px;
 `
 
 const Organizations = () => {
@@ -168,6 +171,7 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
   const removeAuditAdmin = useRemoveAuditAdmin(organizationId)
   const deleteOrganization = useDeleteOrganization(organizationId)
   const renameOrganization = useRenameOrganization(organizationId)
+  const deleteElection = useDeleteElection()
   const { confirm, confirmProps } = useConfirm()
 
   const {
@@ -235,6 +239,18 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
       }),
     })
 
+  const onClickPermanentlyDeleteAudit = ({ auditName, id }: IElectionBase) => {
+    confirm({
+      title: 'Confirm',
+      description: `Are you sure you want to permanently delete ${auditName}?`,
+      yesButtonLabel: 'Delete',
+      onYesClick: async () => {
+        await deleteElection.mutateAsync({ electionId: id, organizationId })
+        toast.success(`Deleted ${auditName}`)
+      },
+    })
+  }
+
   return (
     <div style={{ width: '100%' }}>
       <div style={{ display: 'flex', alignItems: 'baseline' }}>
@@ -261,16 +277,40 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
         <Column>
           <H3>Audits</H3>
           <ButtonList>
-            {elections.map(election => (
-              <LinkButton
-                key={election.id}
-                to={`/support/audits/${election.id}`}
-                intent={Intent.PRIMARY}
-              >
-                {election.auditName}
-              </LinkButton>
-            ))}
+            {elections
+              .filter(election => !election.deletedAt)
+              .map(election => (
+                <LinkButton
+                  key={election.id}
+                  to={`/support/audits/${election.id}`}
+                  intent={Intent.PRIMARY}
+                >
+                  {election.auditName}
+                </LinkButton>
+              ))}
           </ButtonList>
+          <H3>Deleted Audits</H3>
+          <Table striped>
+            <tbody>
+              {elections
+                .filter(election => election.deletedAt)
+                .map(election => (
+                  <tr key={election.id}>
+                    <td>{election.auditName}</td>
+                    <td>
+                      <Button
+                        icon="delete"
+                        intent={Intent.DANGER}
+                        onClick={() => onClickPermanentlyDeleteAudit(election)}
+                        minimal
+                      >
+                        Permanently Delete
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </Table>
         </Column>
         <Column>
           <H3>Audit Admins</H3>

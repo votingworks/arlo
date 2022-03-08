@@ -155,6 +155,7 @@ class Election(BaseModel):
         "Jurisdiction",
         back_populates="election",
         uselist=True,
+        cascade="all, delete-orphan",
         passive_deletes=True,
         order_by="Jurisdiction.name",
     )
@@ -170,6 +171,7 @@ class Election(BaseModel):
         "Round",
         back_populates="election",
         uselist=True,
+        cascade="all, delete-orphan",
         passive_deletes=True,
         order_by="Round.round_num",
     )
@@ -654,6 +656,9 @@ class BallotInterpretation(BaseModel):
         "ContestChoice",
         uselist=True,
         secondary="ballot_interpretation_contest_choice",
+        primaryjoin="and_("
+        + "ballot_interpretation.c.ballot_id == ballot_interpretation_contest_choice.c.ballot_id,"
+        + "ballot_interpretation.c.contest_id == ballot_interpretation_contest_choice.c.contest_id)",
         order_by="ContestChoice.created_at",
     )
     comment = Column(Text)
@@ -674,10 +679,12 @@ ballot_interpretation_contest_choice = Table(
     ForeignKeyConstraint(
         ["ballot_id", "contest_id"],
         ["ballot_interpretation.ballot_id", "ballot_interpretation.contest_id"],
+        ondelete="cascade",
     ),
     ForeignKeyConstraint(
         ["contest_choice_id", "contest_id"],
         ["contest_choice.id", "contest_choice.contest_id"],
+        ondelete="cascade",
     ),
 )
 
