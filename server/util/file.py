@@ -77,7 +77,7 @@ def delete_file(storage_path: str):
         parsed_path = urlparse(storage_path)
         bucket_name = parsed_path.netloc
         key = parsed_path.path[1:]
-        s3().delete_object(bucket_name, key)
+        s3().delete_object(Bucket=bucket_name, Key=key)
     else:
         os.remove(storage_path)
 
