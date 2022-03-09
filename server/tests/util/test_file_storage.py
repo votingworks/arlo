@@ -42,9 +42,12 @@ def test_file_storage_s3(mock_boto_client):
 
     delete_file("s3://test_bucket/test_dir/test_file.csv")
     mock_boto_client.return_value.delete_object.assert_called_once()
-    assert mock_boto_client.return_value.delete_object.call_args[0][0] == "test_bucket"
     assert (
-        mock_boto_client.return_value.delete_object.call_args[0][1]
+        mock_boto_client.return_value.delete_object.call_args.kwargs["Bucket"]
+        == "test_bucket"
+    )
+    assert (
+        mock_boto_client.return_value.delete_object.call_args.kwargs["Key"]
         == "test_dir/test_file.csv"
     )
 
