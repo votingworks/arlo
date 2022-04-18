@@ -1,7 +1,7 @@
 # pylint: disable=invalid-name
 import math
 from itertools import product
-from decimal import Decimal, ROUND_CEILING
+from decimal import Decimal, ROUND_CEILING, ROUND_HALF_UP
 from typing import Dict, Tuple, TypedDict, Optional
 
 from .sampler_contest import Contest, CVRS, SAMPLECVRS, CVR
@@ -10,12 +10,12 @@ l: Decimal = Decimal(0.5)
 gamma: Decimal = Decimal(1.03905)  # This gamma is used in Stark's tool, AGI, and CORLA
 
 # This sets the expected number of one-vote misstatements at 1 in 1000
-o1: Decimal = Decimal(0.001)
-u1: Decimal = Decimal(0.001)
+r1_default: Decimal = Decimal(0.001)
+s1_default: Decimal = Decimal(0.001)
 
 # This sets the expected two-vote misstatements at 1 in 10000
-o2: Decimal = Decimal(0.0001)
-u2: Decimal = Decimal(0.0001)
+r2_default: Decimal = Decimal(0.0001)
+s2_default: Decimal = Decimal(0.0001)
 
 
 class Discrepancy(TypedDict):
@@ -184,10 +184,10 @@ def get_sample_sizes(
         s1 = obs_u1 / num_sampled
         s2 = obs_u2 / num_sampled
     else:
-        r1 = o1
-        r2 = o2
-        s1 = u1
-        s2 = u2
+        r1 = r1_default
+        r2 = r2_default
+        s1 = s1_default
+        s2 = s2_default
 
     denom = (
         (1 - Decimal(contest.diluted_margin) / (2 * gamma)).ln()
@@ -202,11 +202,15 @@ def get_sample_sizes(
     else:
         n0 = math.ceil(alpha.ln() / denom)
 
-        # Round up one-vote differences.
-        r1 = (r1 * n0).quantize(Decimal(1), ROUND_CEILING)
-        s1 = (s1 * n0).quantize(Decimal(1), ROUND_CEILING)
+        # Round up one-vote discrepancies.
+        o1 = (r1 * n0).quantize(Decimal(1), ROUND_CEILING)
+        u1 = (s1 * n0).quantize(Decimal(1), ROUND_CEILING)
+        # Round normally two-vote discrepancies.
+        o2 = (r2 * n0).quantize(Decimal(1), ROUND_HALF_UP)
+        u2 = (s2 * n0).quantize(Decimal(1), ROUND_HALF_UP)
 
-        stopping_size = min(int(nMin(alpha, contest, r1, r2, s1, s2)), contest.ballots)
+        estimated_stopping_size = int(nMin(alpha, contest, o1, o2, u1, u2))
+        stopping_size = min(estimated_stopping_size, contest.ballots)
 
     return max(stopping_size - int(num_sampled), 0)
 
