@@ -917,10 +917,10 @@ def process_cvr_file(
 
         # Parse ballot rows and contest metadata
         def parse_cvrs():
-            if jurisdiction.cvr_file_type == CvrFileType.CLEARBALLOT:
-                return parse_clearballot_cvrs(jurisdiction)
-            elif jurisdiction.cvr_file_type == CvrFileType.DOMINION:
+            if jurisdiction.cvr_file_type == CvrFileType.DOMINION:
                 return parse_dominion_cvrs(jurisdiction)
+            elif jurisdiction.cvr_file_type == CvrFileType.CLEARBALLOT:
+                return parse_clearballot_cvrs(jurisdiction)
             elif jurisdiction.cvr_file_type == CvrFileType.ESS:
                 return parse_ess_cvrs(jurisdiction)
             elif jurisdiction.cvr_file_type == CvrFileType.HART:

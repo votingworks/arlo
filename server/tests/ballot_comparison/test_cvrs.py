@@ -1702,6 +1702,30 @@ def test_hart_cvr_invalid(
         )
 
 
+def test_hart_cvrs_invalid_zip_mimetype(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    manifests,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
+        data={
+            "cvrs": [(zip_hart_cvrs(HART_CVRS), "cvr-files.csv")],
+            "cvrFileType": "HART",
+        },
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {"message": "Please submit a ZIP file export.", "errorType": "Bad Request",}
+        ]
+    }
+
+
 def test_cvrs_unexpected_error(
     election_id: str,
     jurisdiction_ids: List[str],

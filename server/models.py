@@ -222,8 +222,8 @@ class Election(BaseModel):
 
 
 class CvrFileType(str, enum.Enum):
-    CLEARBALLOT = "CLEARBALLOT"
     DOMINION = "DOMINION"
+    CLEARBALLOT = "CLEARBALLOT"
     ESS = "ESS"
     HART = "HART"
 
