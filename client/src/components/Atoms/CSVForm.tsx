@@ -37,7 +37,7 @@ interface IProps {
   deleteCSVFile?: () => Promise<boolean>
   title?: string
   description: string
-  sampleFileLink: string
+  sampleFileLink?: string
   enabled: boolean
   showCvrFileType?: boolean
 }
@@ -118,6 +118,7 @@ const CSVFile = ({
                     <option value={CvrFileType.DOMINION}>Dominion</option>
                     <option value={CvrFileType.CLEARBALLOT}>ClearBallot</option>
                     <option value={CvrFileType.ESS}>ES&amp;S</option>
+                    <option value={CvrFileType.HART}>Hart</option>
                   </HTMLSelect>
                 </label>
               </div>
@@ -126,11 +127,15 @@ const CSVFile = ({
               <>
                 <FormSection>
                   <FileInput
-                    inputProps={{
-                      accept: '.csv',
-                      name: 'csv',
-                      multiple: values.cvrFileType === CvrFileType.ESS,
-                    }}
+                    inputProps={
+                      values.cvrFileType === CvrFileType.HART
+                        ? { accept: '.zip', name: 'zip' }
+                        : {
+                            accept: '.csv',
+                            name: 'csv',
+                            multiple: values.cvrFileType === CvrFileType.ESS,
+                          }
+                    }
                     onInputChange={e => {
                       const { files } = e.currentTarget
                       setFieldValue(

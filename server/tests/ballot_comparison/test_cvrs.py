@@ -1,5 +1,5 @@
 import io, json
-from typing import List
+from typing import BinaryIO, Dict, List
 import pytest
 from flask import session
 from flask.testing import FlaskClient
@@ -1552,11 +1552,13 @@ HART_CVRS = [
 
 
 def zip_hart_cvrs(cvrs: List[str]):
-    return io.BytesIO(
-        zip_files(
-            {f"cvr-{i}": io.BytesIO(cvr.encode()) for i, cvr in enumerate(cvrs)}
-        ).read()
-    )
+    files: Dict[str, BinaryIO] = {
+        f"cvr-{i}.xml": io.BytesIO(cvr.encode()) for i, cvr in enumerate(cvrs)
+    }
+    # There's usually a WriteIns directory in the zip file - simulate that to
+    # make sure it gets skipped
+    files["WriteIns"] = io.BytesIO()
+    return io.BytesIO(zip_files(files).read())
 
 
 def test_hart_cvr_upload(
@@ -1645,7 +1647,7 @@ def test_hart_cvr_invalid(
         (
             [build_hart_cvr("bad batch", "1", "1-1-1", "0,1,1,0,0")],
             (
-                "Error in file: cvr-0. Invalid BatchNumber: bad batch."
+                "Error in file: cvr-0.xml. Invalid BatchNumber: bad batch."
                 " The BatchNumber field in the CVR must match the Batch Name field in the ballot manifest."
                 " Please check your CVR files and ballot manifest thoroughly to make sure these values match"
                 " - there may be a similar inconsistency in other files in the CVR export."
@@ -1659,7 +1661,7 @@ def test_hart_cvr_invalid(
                 ),
             ],
             (
-                "Error in file: cvr-1. Arlo currently only supports Hart CVRs with SheetNumber 1. Got SheetNumber: 2."
+                "Error in file: cvr-1.xml. Arlo currently only supports Hart CVRs with SheetNumber 1. Got SheetNumber: 2."
             ),
         ),
     ]

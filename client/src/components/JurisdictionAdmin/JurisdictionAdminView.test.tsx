@@ -350,6 +350,44 @@ describe('JA setup', () => {
     })
   })
 
+  it('allows zip CVR files to be uploaded for ES&S', async () => {
+    const cvrsFormData: FormData = new FormData()
+    const cvrsZip = new File(['test cvr data'], 'cvrs.zip', {
+      type: 'application/zip',
+    })
+    cvrsFormData.append('cvrs', cvrsZip, cvrsZip.name)
+    cvrsFormData.append('cvrFileType', 'HART')
+
+    const expectedCalls = [
+      jaApiCalls.getUser,
+      jaApiCalls.getSettings(auditSettings.ballotComparisonAll),
+      jaApiCalls.getRounds([]),
+      jaApiCalls.getBallotManifestFile(manifestMocks.processed),
+      jaApiCalls.getCVRSfile(cvrsMocks.empty),
+      {
+        ...jaApiCalls.putCVRs,
+        options: { ...jaApiCalls.putCVRs.options, body: cvrsFormData },
+      },
+      jaApiCalls.getCVRSfile(cvrsMocks.processed),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderView()
+      await screen.findByText('Audit Source Data')
+
+      userEvent.selectOptions(
+        screen.getByLabelText(/CVR File Type:/),
+        screen.getByRole('option', { name: 'Hart' })
+      )
+
+      const fileSelect = screen.getByLabelText('Select a CSV...')
+      userEvent.upload(fileSelect, cvrsZip)
+      await screen.findByLabelText('cvrs.zip')
+      userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
+
+      await screen.findByText('Uploaded at 11/18/2020, 9:39:14 PM.')
+    })
+  })
+
   it('displays errors after reprocessing CVRs on replacing manifest', async () => {
     const expectedCalls = [
       jaApiCalls.getUser,

@@ -759,6 +759,9 @@ def parse_hart_cvrs(
     files = unzip_files(zip_file)
     zip_file.close()
 
+    # Remove excess files (e.g. WriteIn directory)
+    files = {name: file for name, file in files.items() if name.endswith(".xml")}
+
     namespace = "http://tempuri.org/CVRDesign.xsd"
 
     def find(xml: Union[ET.ElementTree, ET.Element], tag: str):
@@ -854,6 +857,7 @@ def parse_hart_cvrs(
             batch_number = find(cvr_xml, "BatchNumber").text
             batch_sequence = find(cvr_xml, "BatchSequence").text
             sheet_number = find(cvr_xml, "SheetNumber").text
+            file.close()
             if sheet_number != "1":
                 raise UserError(
                     f"Error in file: {file_name}."

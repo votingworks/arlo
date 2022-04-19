@@ -156,15 +156,13 @@ const JurisdictionAdminView: React.FC = () => {
               description={
                 isHybrid
                   ? `Click "Browse" to choose the appropriate Cast Vote
-                  Records (CVR) file from your computer. This file should be a
-                  comma-separated list (.csv) of all the ballots centrally counted by your
-                  tabulator(s), but should not include precinct-count ballots.`
+                  Records (CVR) file from your computer. This file should be an export
+                  of all the ballots centrally counted by your tabulator(s),
+                  but should not include precinct-count ballots.`
                   : `Click "Browse" to choose the appropriate Cast Vote
-                  Records (CVR) file from your computer. This file should be a
-                  comma-separated list (.csv) of all the ballots counted by your
-                  tabulator(s), in order.`
+                  Records (CVR) file from your computer. This file should be an export
+                  of all the ballots counted by your tabulator(s).`
               }
-              sampleFileLink=""
               showCvrFileType
             />
           )}
