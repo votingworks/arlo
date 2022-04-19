@@ -1481,9 +1481,24 @@ def test_ess_cvr_invalid(
 
 
 def build_hart_cvr(
-    batch_name: str, batch_sequence: str, cvr_guid: str, interpretations_string: str,
+    batch_name: str,
+    batch_sequence: str,
+    cvr_guid: str,
+    interpretations_string: str,
+    add_write_in: bool = False,
 ):
     def build_choice(choice_name: str):
+        if add_write_in:
+            return """
+                <Option>
+                    <WriteInData>
+                        <Text /><ImageId>fake-image-id</ImageId>
+                        <WriteInDataStatus>Unresolved</WriteInDataStatus>
+                    </WriteInData>
+                    <Id>fake-choice-id-write-in</Id>
+                    <Value>1</Value>
+                </Option>
+            """
         return f"""
             <Option>
                 <Name>{choice_name}</Name>
@@ -1547,7 +1562,7 @@ HART_CVRS = [
     build_hart_cvr("BATCH2", "5", "1-2-5", "1,1,1,1,1"),
     build_hart_cvr("BATCH2", "7", "1-2-7", ",,1,0,0"),
     build_hart_cvr("BATCH2", "8", "1-2-8", ",,1,0,0"),
-    build_hart_cvr("BATCH2", "9", "1-2-9", ",,1,0,0"),
+    build_hart_cvr("BATCH2", "9", "1-2-9", ",,1,0,0", add_write_in=True),
 ]
 
 
