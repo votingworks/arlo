@@ -1550,9 +1550,13 @@ HART_CVRS = [
     build_hart_cvr("BATCH2", "9", "1-2-9", ",,1,0,0"),
 ]
 
-HART_CVRS_ZIP = zip_files(
-    {f"cvr-{i}": io.BytesIO(cvr.encode()) for i, cvr in enumerate(HART_CVRS)}
-).read()
+
+def zip_hart_cvrs(cvrs: List[str]):
+    return io.BytesIO(
+        zip_files(
+            {f"cvr-{i}": io.BytesIO(cvr.encode()) for i, cvr in enumerate(cvrs)}
+        ).read()
+    )
 
 
 def test_hart_cvr_upload(
@@ -1566,7 +1570,7 @@ def test_hart_cvr_upload(
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
         data={
-            "cvrs": [(io.BytesIO(HART_CVRS_ZIP), "cvr-files.zip")],
+            "cvrs": [(zip_hart_cvrs(HART_CVRS), "cvr-files.zip")],
             "cvrFileType": "HART",
         },
     )
@@ -1624,6 +1628,76 @@ def test_hart_cvr_upload(
     snapshot.assert_match(
         Jurisdiction.query.get(jurisdiction_ids[0]).cvr_contests_metadata
     )
+
+
+def test_hart_cvr_invalid(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    manifests,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    manifest_num_ballots = jurisdictions[0]["ballotManifest"]["numBallots"]
+
+    invalid_cvrs = [
+        (
+            [build_hart_cvr("bad batch", "1", "1-1-1", "0,1,1,0,0")],
+            (
+                "Error in file: cvr-0. Invalid BatchNumber: bad batch."
+                " The BatchNumber field in the CVR must match the Batch Name field in the ballot manifest."
+                " Please check your CVR files and ballot manifest thoroughly to make sure these values match"
+                " - there may be a similar inconsistency in other files in the CVR export."
+            ),
+        ),
+        (
+            [
+                build_hart_cvr("BATCH1", "2", "1-1-2", "0,1,1,0,0"),
+                build_hart_cvr("BATCH1", "1", "1-1-1", "0,1,1,0,0").replace(
+                    "<SheetNumber>1</SheetNumber>", "<SheetNumber>2</SheetNumber>"
+                ),
+            ],
+            (
+                "Error in file: cvr-1. Arlo currently only supports Hart CVRs with SheetNumber 1. Got SheetNumber: 2."
+            ),
+        ),
+    ]
+
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    for invalid_cvr, expected_error in invalid_cvrs:
+        rv = client.put(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
+            data={
+                "cvrs": [(zip_hart_cvrs(invalid_cvr), "cvr-files.zip")],
+                "cvrFileType": "HART",
+            },
+        )
+        assert_ok(rv)
+
+        rv = client.get(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
+        )
+        compare_json(
+            json.loads(rv.data),
+            {
+                "file": {
+                    "name": "cvr-files.zip",
+                    "uploadedAt": assert_is_date,
+                    "cvrFileType": "HART",
+                },
+                "processing": {
+                    "status": ProcessingStatus.ERRORED,
+                    "startedAt": assert_is_date,
+                    "completedAt": assert_is_date,
+                    "error": expected_error,
+                    "workProgress": 0,
+                    "workTotal": manifest_num_ballots,
+                },
+            },
+        )
 
 
 def test_cvrs_unexpected_error(
