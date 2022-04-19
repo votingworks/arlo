@@ -2,7 +2,7 @@ import uuid
 import tempfile
 import csv
 import itertools
-from xml.etree import ElementTree
+from xml.etree import ElementTree as ET
 from typing import (
     IO,
     BinaryIO,
@@ -16,6 +16,7 @@ from typing import (
     Tuple,
     TypeVar,
     TypedDict,
+    Union,
     cast as typing_cast,
 )
 from collections import defaultdict
@@ -760,20 +761,21 @@ def parse_hart_cvrs(
 
     namespace = "http://tempuri.org/CVRDesign.xsd"
 
-    def find(xml, tag):
+    def find(xml: Union[ET.ElementTree, ET.Element], tag: str):
         return xml.find(f"{{{namespace}}}{tag}")
 
-    def findall(xml, tag):
+    def findall(xml: Union[ET.ElementTree, ET.Element], tag: str):
         return xml.findall(f"{{{namespace}}}{tag}")
 
-    def parse_contest_results(cvr_xml: ElementTree):
+    def parse_contest_results(cvr_xml: ET.ElementTree):
         # { contest_name: voted_for_choices }
         results = defaultdict(set)
         contests = findall(find(cvr_xml, "Contests"), "Contest")
         for contest in contests:
             contest_name = find(contest, "Name").text
             # From what we've seen so far with Hart CVRs, the only choices
-            # listed are the ones with votes (i.e. with "Value" = 1).
+            # listed are the ones with votes (i.e. with "Value" = 1), so if we
+            # see a choice, we can count it as a vote.
             choices = findall(find(contest, "Options"), "Option")
             for choice in choices:
                 if find(choice, "WriteInData"):
@@ -785,11 +787,12 @@ def parse_hart_cvrs(
         return results
 
     # Parse contests and choice names
+    # { contest_name: choice_names }
     contest_choices = defaultdict(set)
     for file in files.values():
-        cvr_xml = ElementTree.parse(file)
+        cvr_xml = ET.parse(file)
         for contest, choice_names in parse_contest_results(cvr_xml).items():
-            contest_choices[contest].add(choice_names)
+            contest_choices[contest].update(choice_names)
 
     # Assign each choice a column index in the interpretation string
     contest_choice_pairs = [
@@ -802,7 +805,7 @@ def parse_hart_cvrs(
     }
 
     # Build the starting contest metadata
-    contests_metadata = {
+    contests_metadata: CVR_CONTESTS_METADATA = {
         contest_name: dict(
             # Until we know how vote-for-n contests are serialized in the
             # Hart CVR, we assume vote-for-1
@@ -826,7 +829,7 @@ def parse_hart_cvrs(
         for choice_metadata in contest_metadata["choices"].values()
     )
 
-    def parse_interpretations(cvr_xml: ElementTree):
+    def parse_interpretations(cvr_xml: ET.ElementTree):
         interpretations = ["" for _ in range(max_interpretation_column + 1)]
         contest_results = parse_contest_results(cvr_xml)
         for contest_name, voted_for_choices in contest_results.items():
@@ -846,12 +849,12 @@ def parse_hart_cvrs(
 
         for file_name, file in files.items():
             file.seek(0)
-            cvr_xml = ElementTree.parse(file)
+            cvr_xml = ET.parse(file)
             cvr_guid = find(cvr_xml, "CvrGuid").text
             batch_number = find(cvr_xml, "BatchNumber").text
             batch_sequence = find(cvr_xml, "BatchSequence").text
             sheet_number = find(cvr_xml, "SheetNumber").text
-            if sheet_number != 1:
+            if sheet_number != "1":
                 raise UserError(
                     f"Error in file: {file_name}."
                     " Arlo currently only supports Hart CVRs with SheetNumber 1."
@@ -910,12 +913,14 @@ def process_cvr_file(
 
         # Parse ballot rows and contest metadata
         def parse_cvrs():
-            if jurisdiction.cvr_file_type == CvrFileType.DOMINION:
-                return parse_dominion_cvrs(jurisdiction)
-            elif jurisdiction.cvr_file_type == CvrFileType.CLEARBALLOT:
+            if jurisdiction.cvr_file_type == CvrFileType.CLEARBALLOT:
                 return parse_clearballot_cvrs(jurisdiction)
+            elif jurisdiction.cvr_file_type == CvrFileType.DOMINION:
+                return parse_dominion_cvrs(jurisdiction)
             elif jurisdiction.cvr_file_type == CvrFileType.ESS:
                 return parse_ess_cvrs(jurisdiction)
+            elif jurisdiction.cvr_file_type == CvrFileType.HART:
+                return parse_hart_cvrs(jurisdiction)
             else:
                 raise Exception(
                     f"Unsupported CVR file type: {jurisdiction.cvr_file_type}"
@@ -1086,12 +1091,16 @@ def validate_cvr_upload(
     if "cvrs" not in request.files:
         raise BadRequest("Missing required file parameter 'cvrs'")
 
-    validate_csv_mimetype(request.files["cvrs"])
-
-    if request.form.get("cvrFileType") not in [
-        cvr_file_type.value for cvr_file_type in CvrFileType
-    ]:
+    cvr_file_type = request.form.get("cvrFileType")
+    if cvr_file_type not in [cvr_file_type.value for cvr_file_type in CvrFileType]:
         raise BadRequest("Invalid file type")
+
+    file = request.files["cvrs"]
+    if cvr_file_type == CvrFileType.HART:
+        if file.mimetype != "application/zip":
+            raise BadRequest("Please submit a ZIP file export.")
+    else:
+        validate_csv_mimetype(request.files["cvrs"])
 
 
 def clear_cvr_data(jurisdiction: Jurisdiction):
@@ -1127,10 +1136,13 @@ def upload_cvrs(
         )
     else:
         file_name = request.files["cvrs"].filename
+        file_extension = (
+            "zip" if request.form["cvrFileType"] == CvrFileType.HART else "csv"
+        )
         storage_path = store_file(
             request.files["cvrs"].stream,
             f"audits/{election.id}/jurisdictions/{jurisdiction.id}/"
-            + timestamp_filename("cvrs", "csv"),
+            + timestamp_filename("cvrs", file_extension),
         )
 
     jurisdiction.cvr_file = File(
