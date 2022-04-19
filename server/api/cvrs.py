@@ -2,6 +2,7 @@ import uuid
 import tempfile
 import csv
 import itertools
+from xml.etree import ElementTree
 from typing import (
     IO,
     BinaryIO,
@@ -740,6 +741,155 @@ def parse_ess_cvrs(
         )
     except UserError as error:
         raise UserError(f"{cvr_file_name}: {error}") from error
+
+
+def parse_hart_cvrs(
+    jurisdiction: Jurisdiction,
+) -> Tuple[CVR_CONTESTS_METADATA, Iterable[CvrBallot]]:
+    # Hart CVRs consist of a zip file containing an individual XML file for each
+    # ballot's CVR. Our parsing steps:
+    # 1. Unzip the files
+    # 2. First, parse out the contest and choice names. We have to do this in
+    #    a separate pass since our storage scheme for interpretations requires
+    #    knowing all of the contest and choice names up front.
+    # 3. Next, parse out the interpretations.
+
+    zip_file = retrieve_file(jurisdiction.cvr_file.storage_path)
+    files = unzip_files(zip_file)
+    zip_file.close()
+
+    namespace = "http://tempuri.org/CVRDesign.xsd"
+
+    def find(xml, tag):
+        return xml.find(f"{{{namespace}}}{tag}")
+
+    def findall(xml, tag):
+        return xml.findall(f"{{{namespace}}}{tag}")
+
+    def parse_contest_results(cvr_xml: ElementTree):
+        # { contest_name: voted_for_choices }
+        results = defaultdict(set)
+        contests = findall(find(cvr_xml, "Contests"), "Contest")
+        for contest in contests:
+            contest_name = find(contest, "Name").text
+            # From what we've seen so far with Hart CVRs, the only choices
+            # listed are the ones with votes (i.e. with "Value" = 1).
+            choices = findall(find(contest, "Options"), "Option")
+            for choice in choices:
+                if find(choice, "WriteInData"):
+                    choice_name = "Write-In"
+                else:
+                    choice_name = find(choice, "Name").text
+                results[contest_name].add(choice_name)
+
+        return results
+
+    # Parse contests and choice names
+    contest_choices = defaultdict(set)
+    for file in files.values():
+        cvr_xml = ElementTree.parse(file)
+        for contest, choice_names in parse_contest_results(cvr_xml).items():
+            contest_choices[contest].add(choice_names)
+
+    # Assign each choice a column index in the interpretation string
+    contest_choice_pairs = [
+        (contest_name, contest_choice)
+        for contest_name, choices in contest_choices.items()
+        for contest_choice in sorted(choices)
+    ]
+    contest_choice_columns = {
+        choice: column for column, choice in enumerate(contest_choice_pairs)
+    }
+
+    # Build the starting contest metadata
+    contests_metadata = {
+        contest_name: dict(
+            # Until we know how vote-for-n contests are serialized in the
+            # Hart CVR, we assume vote-for-1
+            votes_allowed=1,
+            choices={
+                choice: dict(
+                    column=contest_choice_columns[(contest_name, choice)],
+                    num_votes=0,  # Will be counted while parsing rows
+                )
+                for choice in sorted(choices)
+            },
+            total_ballots_cast=0,  # Will be counted while parsing rows
+        )
+        for contest_name, choices in contest_choices.items()
+    }
+
+    # Parse interpretations, accumulating contest metadata totals
+    max_interpretation_column = max(
+        choice_metadata["column"]
+        for contest_metadata in contests_metadata.values()
+        for choice_metadata in contest_metadata["choices"].values()
+    )
+
+    def parse_interpretations(cvr_xml: ElementTree):
+        interpretations = ["" for _ in range(max_interpretation_column + 1)]
+        contest_results = parse_contest_results(cvr_xml)
+        for contest_name, voted_for_choices in contest_results.items():
+            contest_metadata = contests_metadata[contest_name]
+            for choice_name, choice_metadata in contest_metadata["choices"].items():
+                if choice_name in voted_for_choices:
+                    interpretations[choice_metadata["column"]] = "1"
+                else:
+                    interpretations[choice_metadata["column"]] = "0"
+
+        return ",".join(interpretations)
+
+    def parse_cvr_ballots():
+        # Only use the batch name as key for Hart, since they are unique across
+        # tabulators, and the CVR doesn't have a tabulator field.
+        batches_by_key = {batch.name: batch for batch in jurisdiction.batches}
+
+        for file_name, file in files.items():
+            file.seek(0)
+            cvr_xml = ElementTree.parse(file)
+            cvr_guid = find(cvr_xml, "CvrGuid").text
+            batch_number = find(cvr_xml, "BatchNumber").text
+            batch_sequence = find(cvr_xml, "BatchSequence").text
+            sheet_number = find(cvr_xml, "SheetNumber").text
+            if sheet_number != 1:
+                raise UserError(
+                    f"Error in file: {file_name}."
+                    " Arlo currently only supports Hart CVRs with SheetNumber 1."
+                    f" Got SheetNumber: {sheet_number}."
+                )
+
+            db_batch = batches_by_key.get(batch_number)
+            if db_batch:
+                yield CvrBallot(
+                    batch=db_batch,
+                    record_id=int(batch_sequence),
+                    imprinted_id=cvr_guid,
+                    interpretations=parse_interpretations(cvr_xml),
+                )
+            else:
+                close_matches = difflib.get_close_matches(
+                    batch_number, (batch_key for batch_key in batches_by_key), n=1,
+                )
+                closest_match = (
+                    ast.literal_eval(close_matches[0]) if close_matches else None
+                )
+                raise UserError(
+                    f"Error in file: {file_name}. Invalid BatchNumber: {batch_number}."
+                    " The BatchNumber field in the CVR must match the Batch Name field"
+                    " in the ballot manifest."
+                    + (
+                        (
+                            " The closest match we found in the ballot manifest was: {closest_match}."
+                        )
+                        if closest_match
+                        else ""
+                    )
+                    + " Please check your CVR files and ballot manifest thoroughly"
+                    " to make sure these values match - there may be a similar"
+                    " inconsistency in other files in the CVR export."
+                )
+
+    return contests_metadata, parse_cvr_ballots()
 
 
 @background_task
