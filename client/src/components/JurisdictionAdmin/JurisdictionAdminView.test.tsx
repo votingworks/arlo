@@ -350,7 +350,7 @@ describe('JA setup', () => {
     })
   })
 
-  it('allows zip CVR files to be uploaded for ES&S', async () => {
+  it('allows zip CVR files to be uploaded for Hart', async () => {
     const cvrsFormData: FormData = new FormData()
     const cvrsZip = new File(['test cvr data'], 'cvrs.zip', {
       type: 'application/zip',
