@@ -15,6 +15,7 @@
         "remotePort": 3000
       }
     ],
-    "python.formatting.provider": "black"
+    "python.formatting.provider": "black",
+    "typescript.tsdk": "client/node_modules/typescript/lib",
   }
 }

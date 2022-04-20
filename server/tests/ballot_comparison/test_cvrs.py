@@ -1,14 +1,14 @@
 import io, json
-from typing import List
+from typing import BinaryIO, Dict, List
 import pytest
 from flask import session
 from flask.testing import FlaskClient
-
 
 from ...app import app
 from ...models import *  # pylint: disable=wildcard-import
 from ..helpers import *  # pylint: disable=wildcard-import
 from ...api.cvrs import upload_cvrs
+from ...util.file import zip_files
 from ...auth import lib as auth_lib
 from .conftest import TEST_CVRS
 
@@ -1478,6 +1478,267 @@ def test_ess_cvr_invalid(
                 },
             },
         )
+
+
+def build_hart_cvr(
+    batch_name: str,
+    batch_sequence: str,
+    cvr_guid: str,
+    interpretations_string: str,
+    add_write_in: bool = False,
+):
+    def build_choice(choice_name: str):
+        if add_write_in:
+            return """
+                <Option>
+                    <WriteInData>
+                        <Text /><ImageId>fake-image-id</ImageId>
+                        <WriteInDataStatus>Unresolved</WriteInDataStatus>
+                    </WriteInData>
+                    <Id>fake-choice-id-write-in</Id>
+                    <Value>1</Value>
+                </Option>
+            """
+        return f"""
+            <Option>
+                <Name>{choice_name}</Name>
+                <Id>fake-choice-id-{choice_name}</Id>
+                <Value>1</Value>
+            </Option>
+            """
+
+    def build_contest(contest_name: str, choice_names: List[str]):
+        choices = "\n".join(build_choice(choice_name) for choice_name in choice_names)
+        return f"""
+            <Contest>
+                <Name>{contest_name}</Name>
+                <Id>fake-contest-id-{contest_name}</Id>
+                <Options>{choices}</Options>
+            </Contest>
+            """
+
+    interpretations = interpretations_string.split(",")
+    contests = "\n".join(
+        [
+            build_contest(
+                "Contest 1",
+                (["Choice 1-1"] if interpretations[0] == "1" else [])
+                + (["Choice 1-2"] if interpretations[1] == "1" else []),
+            ),
+            build_contest(
+                "Contest 2",
+                (["Choice 2-1"] if interpretations[2] == "1" else [])
+                + (["Choice 2-2"] if interpretations[3] == "1" else [])
+                + (["Choice 2-3"] if interpretations[4] == "1" else []),
+            ),
+        ]
+    )
+    return f"""<?xml version="1.0" encoding="utf-8"?>
+        <Cvr xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://tempuri.org/CVRDesign.xsd">
+            <Contests>{contests}</Contests>
+            <BatchSequence>{batch_sequence}</BatchSequence>
+            <SheetNumber>1</SheetNumber>
+            <PrecinctSplit>
+                <Name>100</Name>
+                <Id>fake-precinct-split-id</Id>
+            </PrecinctSplit>
+            <BatchNumber>{batch_name}</BatchNumber>
+            <CvrGuid>{cvr_guid}</CvrGuid>
+        </Cvr>
+        """
+
+
+HART_CVRS = [
+    build_hart_cvr("BATCH1", "1", "1-1-1", "0,1,1,0,0"),
+    build_hart_cvr("BATCH1", "2", "1-1-2", "1,0,1,0,0"),
+    build_hart_cvr("BATCH1", "3", "1-1-3", "0,1,1,0,0"),
+    build_hart_cvr("BATCH2", "1", "1-2-1", "1,0,1,0,0"),
+    build_hart_cvr("BATCH2", "2", "1-2-2", "0,1,0,1,0"),
+    build_hart_cvr("BATCH2", "3", "1-2-3", "1,0,0,0,1"),
+    build_hart_cvr("BATCH1", "4", "1-1-4", "1,0,0,1,0"),
+    build_hart_cvr("BATCH1", "5", "1-1-5", "1,0,0,0,1"),
+    build_hart_cvr("BATCH1", "6", "1-1-6", "1,0,0,1,0"),
+    build_hart_cvr("BATCH2", "4", "1-2-4", "1,0,0,0,1"),
+    build_hart_cvr("BATCH2", "5", "1-2-5", "1,1,1,1,1"),
+    build_hart_cvr("BATCH2", "7", "1-2-7", ",,1,0,0"),
+    build_hart_cvr("BATCH2", "8", "1-2-8", ",,1,0,0"),
+    build_hart_cvr("BATCH2", "9", "1-2-9", ",,1,0,0", add_write_in=True),
+]
+
+
+def zip_hart_cvrs(cvrs: List[str]):
+    files: Dict[str, BinaryIO] = {
+        f"cvr-{i}.xml": io.BytesIO(cvr.encode()) for i, cvr in enumerate(cvrs)
+    }
+    # There's usually a WriteIns directory in the zip file - simulate that to
+    # make sure it gets skipped
+    files["WriteIns"] = io.BytesIO()
+    return io.BytesIO(zip_files(files).read())
+
+
+def test_hart_cvr_upload(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    manifests,  # pylint: disable=unused-argument
+    snapshot,
+):
+    # Upload CVRs
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
+        data={
+            "cvrs": [(zip_hart_cvrs(HART_CVRS), "cvr-files.zip")],
+            "cvrFileType": "HART",
+        },
+    )
+    assert_ok(rv)
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    manifest_num_ballots = jurisdictions[0]["ballotManifest"]["numBallots"]
+
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
+    )
+    compare_json(
+        json.loads(rv.data),
+        {
+            "file": {
+                "name": "cvr-files.zip",
+                "uploadedAt": assert_is_date,
+                "cvrFileType": "HART",
+            },
+            "processing": {
+                "status": ProcessingStatus.PROCESSED,
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": None,
+                "workProgress": manifest_num_ballots,
+                "workTotal": manifest_num_ballots,
+            },
+        },
+    )
+
+    cvr_ballots = (
+        CvrBallot.query.join(Batch)
+        .filter_by(jurisdiction_id=jurisdiction_ids[0])
+        .order_by(CvrBallot.imprinted_id)
+        .all()
+    )
+    assert len(cvr_ballots) == manifest_num_ballots - 1
+    snapshot.assert_match(
+        [
+            dict(
+                batch_name=cvr.batch.name,
+                tabulator=cvr.batch.tabulator,
+                ballot_position=cvr.ballot_position,
+                imprinted_id=cvr.imprinted_id,
+                interpretations=cvr.interpretations,
+            )
+            for cvr in cvr_ballots
+        ]
+    )
+    snapshot.assert_match(
+        Jurisdiction.query.get(jurisdiction_ids[0]).cvr_contests_metadata
+    )
+
+
+def test_hart_cvr_invalid(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    manifests,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    manifest_num_ballots = jurisdictions[0]["ballotManifest"]["numBallots"]
+
+    invalid_cvrs = [
+        (
+            [build_hart_cvr("bad batch", "1", "1-1-1", "0,1,1,0,0")],
+            (
+                "Error in file: cvr-0.xml. Invalid BatchNumber: bad batch."
+                " The BatchNumber field in the CVR must match the Batch Name field in the ballot manifest."
+                " Please check your CVR files and ballot manifest thoroughly to make sure these values match"
+                " - there may be a similar inconsistency in other files in the CVR export."
+            ),
+        ),
+        (
+            [
+                build_hart_cvr("BATCH1", "2", "1-1-2", "0,1,1,0,0"),
+                build_hart_cvr("BATCH1", "1", "1-1-1", "0,1,1,0,0").replace(
+                    "<SheetNumber>1</SheetNumber>", "<SheetNumber>2</SheetNumber>"
+                ),
+            ],
+            (
+                "Error in file: cvr-1.xml. Arlo currently only supports Hart CVRs with SheetNumber 1. Got SheetNumber: 2."
+            ),
+        ),
+    ]
+
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    for invalid_cvr, expected_error in invalid_cvrs:
+        rv = client.put(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
+            data={
+                "cvrs": [(zip_hart_cvrs(invalid_cvr), "cvr-files.zip")],
+                "cvrFileType": "HART",
+            },
+        )
+        assert_ok(rv)
+
+        rv = client.get(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
+        )
+        compare_json(
+            json.loads(rv.data),
+            {
+                "file": {
+                    "name": "cvr-files.zip",
+                    "uploadedAt": assert_is_date,
+                    "cvrFileType": "HART",
+                },
+                "processing": {
+                    "status": ProcessingStatus.ERRORED,
+                    "startedAt": assert_is_date,
+                    "completedAt": assert_is_date,
+                    "error": expected_error,
+                    "workProgress": 0,
+                    "workTotal": manifest_num_ballots,
+                },
+            },
+        )
+
+
+def test_hart_cvrs_invalid_zip_mimetype(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    manifests,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
+        data={
+            "cvrs": [(zip_hart_cvrs(HART_CVRS), "cvr-files.csv")],
+            "cvrFileType": "HART",
+        },
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {"message": "Please submit a ZIP file export.", "errorType": "Bad Request",}
+        ]
+    }
 
 
 def test_cvrs_unexpected_error(

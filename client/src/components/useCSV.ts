@@ -15,6 +15,7 @@ export enum CvrFileType {
   DOMINION = 'DOMINION',
   CLEARBALLOT = 'CLEARBALLOT',
   ESS = 'ESS',
+  HART = 'HART',
 }
 
 export interface IFileInfo {

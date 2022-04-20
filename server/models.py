@@ -225,6 +225,7 @@ class CvrFileType(str, enum.Enum):
     DOMINION = "DOMINION"
     CLEARBALLOT = "CLEARBALLOT"
     ESS = "ESS"
+    HART = "HART"
 
 
 # these are typically counties
