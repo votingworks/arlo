@@ -1555,14 +1555,14 @@ HART_CVRS = [
     build_hart_cvr("BATCH2", "1", "1-2-1", "1,0,1,0,0"),
     build_hart_cvr("BATCH2", "2", "1-2-2", "0,1,0,1,0"),
     build_hart_cvr("BATCH2", "3", "1-2-3", "1,0,0,0,1"),
-    build_hart_cvr("BATCH1", "4", "1-1-4", "1,0,0,1,0"),
-    build_hart_cvr("BATCH1", "5", "1-1-5", "1,0,0,0,1"),
-    build_hart_cvr("BATCH1", "6", "1-1-6", "1,0,0,1,0"),
-    build_hart_cvr("BATCH2", "4", "1-2-4", "1,0,0,0,1"),
-    build_hart_cvr("BATCH2", "5", "1-2-5", "1,1,1,1,1"),
-    build_hart_cvr("BATCH2", "7", "1-2-7", ",,1,0,0"),
-    build_hart_cvr("BATCH2", "8", "1-2-8", ",,1,0,0"),
-    build_hart_cvr("BATCH2", "9", "1-2-9", ",,1,0,0", add_write_in=True),
+    build_hart_cvr("BATCH3", "1", "1-3-1", "1,0,0,1,0"),
+    build_hart_cvr("BATCH3", "2", "1-3-2", "1,0,0,0,1"),
+    build_hart_cvr("BATCH3", "3", "1-3-3", "1,0,0,1,0"),
+    build_hart_cvr("BATCH4", "1", "1-4-1", "1,0,0,0,1"),
+    build_hart_cvr("BATCH4", "2", "1-4-2", "1,1,1,1,1"),
+    build_hart_cvr("BATCH4", "4", "1-4-4", ",,1,0,0"),
+    build_hart_cvr("BATCH4", "5", "1-4-5", ",,1,0,0"),
+    build_hart_cvr("BATCH4", "6", "1-4-6", ",,1,0,0", add_write_in=True),
 ]
 
 
@@ -1580,7 +1580,7 @@ def test_hart_cvr_upload(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    manifests,  # pylint: disable=unused-argument
+    hart_manifests,  # pylint: disable=unused-argument
     snapshot,
 ):
     # Upload CVRs
@@ -1651,7 +1651,7 @@ def test_hart_cvr_invalid(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    manifests,  # pylint: disable=unused-argument
+    hart_manifests,  # pylint: disable=unused-argument
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
@@ -1717,11 +1717,58 @@ def test_hart_cvr_invalid(
         )
 
 
+def test_hart_cvr_duplicate_batches_in_manifest(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    # Use the regular manifests which have batches with the same name but diff tabulator
+    manifests,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    manifest_num_ballots = jurisdictions[0]["ballotManifest"]["numBallots"]
+
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
+        data={
+            "cvrs": [(zip_hart_cvrs(HART_CVRS), "cvr-files.zip")],
+            "cvrFileType": "HART",
+        },
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
+    )
+    compare_json(
+        json.loads(rv.data),
+        {
+            "file": {
+                "name": "cvr-files.zip",
+                "uploadedAt": assert_is_date,
+                "cvrFileType": "HART",
+            },
+            "processing": {
+                "status": ProcessingStatus.ERRORED,
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": "Batch names in ballot manifest must be unique. Found duplicate batch name: BATCH1.",
+                "workProgress": 0,
+                "workTotal": manifest_num_ballots,
+            },
+        },
+    )
+
+
 def test_hart_cvrs_invalid_zip_mimetype(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    manifests,  # pylint: disable=unused-argument
+    hart_manifests,  # pylint: disable=unused-argument
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)

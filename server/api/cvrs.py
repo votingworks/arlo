@@ -19,7 +19,7 @@ from typing import (
     Union,
     cast as typing_cast,
 )
-from collections import defaultdict
+from collections import Counter, defaultdict
 import re
 import difflib
 import ast
@@ -845,11 +845,26 @@ def parse_hart_cvrs(
 
         return ",".join(interpretations)
 
-    def parse_cvr_ballots():
-        # Only use the batch name as key for Hart, since they are unique across
-        # tabulators, and the CVR doesn't have a tabulator field.
-        batches_by_key = {batch.name: batch for batch in jurisdiction.batches}
+    # We only use the batch name as key for Hart, since they should be
+    # unique across tabulators, and the CVR doesn't have a tabulator field.
+    batches_by_key = {batch.name: batch for batch in jurisdiction.batches}
 
+    # That being said, we want to make sure that property holds. Ideally,
+    # we'd show that error message for the ballot manifest upload, but since
+    # we don't know that it's a Hart CVR until the cvr upload, we settle for
+    # showing that error here, since it's more a sanity check than something
+    # we expect to happen.
+    if len(batches_by_key.keys()) != len(list(jurisdiction.batches)):
+        batch_names_count = Counter(batch.name for batch in jurisdiction.batches)
+        duplicate_batch_name = next(
+            batch_name for batch_name, count in batch_names_count.items() if count > 1
+        )
+        raise UserError(
+            "Batch names in ballot manifest must be unique."
+            f" Found duplicate batch name: {duplicate_batch_name}."
+        )
+
+    def parse_cvr_ballots() -> Iterable[CvrBallot]:
         for file_name, file in files.items():
             file.seek(0)
             cvr_xml = ET.parse(file)
