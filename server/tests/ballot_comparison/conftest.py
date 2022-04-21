@@ -104,6 +104,30 @@ def ess_manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[
 
 
 @pytest.fixture
+def hart_manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]):
+    for jurisdiction_id in jurisdiction_ids[:2]:
+        set_logged_in_user(
+            client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+        )
+        rv = client.put(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/ballot-manifest",
+            data={
+                "manifest": (
+                    io.BytesIO(
+                        b"Tabulator,Batch Name,Number of Ballots\n"
+                        b"TABULATOR1,BATCH1,3\n"
+                        b"TABULATOR1,BATCH2,3\n"
+                        b"TABULATOR2,BATCH3,3\n"
+                        b"TABULATOR2,BATCH4,6"
+                    ),
+                    "manifest.csv",
+                )
+            },
+        )
+        assert_ok(rv)
+
+
+@pytest.fixture
 def cvrs(
     client: FlaskClient,
     election_id: str,
