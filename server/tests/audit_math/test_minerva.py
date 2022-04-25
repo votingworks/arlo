@@ -152,6 +152,22 @@ def test_get_sample_size_2win():
     }
 
 
+def test_collect_risks():
+    c3 = minerva.make_arlo_contest({"a": 600, "b": 400, "c": 100, "_undervote_": 100})
+    res = minerva.collect_risks(
+        0.1, c3, [120], minerva.make_sample_results(c3, [[56, 40, 3]])
+    )
+    assert res == {("winner", "loser"): approx(0.0933945799801079)}
+    res = minerva.collect_risks(
+        0.1, c3, [83], minerva.make_sample_results(c3, [[40, 40, 3]])
+    )
+    assert res == {("winner", "loser"): pytest.approx(0.5596434615209632)}
+    with pytest.raises(ValueError, match="Incorrect number of valid ballots entered"):
+        minerva.collect_risks(
+            0.1, c3, [82], minerva.make_sample_results(c3, [[40, 40, 3]])
+        )
+
+
 def test_compute_risk_delta():
     c = minerva.make_arlo_contest(
         {
@@ -205,9 +221,13 @@ def test_compute_risk_2win_2_2r():
 def test_compute_risk():
     c3 = minerva.make_arlo_contest({"a": 600, "b": 400, "c": 100, "_undervote_": 100})
     res = minerva.compute_risk(
-        10, c3, minerva.make_sample_results(c3, [[56, 40, 3]]), {1: 100}
+        10, c3, minerva.make_sample_results(c3, [[56, 40, 3]]), {1: 100, 2: 150}
     )
     assert res == ({("winner", "loser"): approx(0.0933945799801079)}, True)
+    res = minerva.compute_risk(
+        10, c3, minerva.make_sample_results(c3, [[40, 40, 3]]), {1: 100, 2: 150}
+    )
+    assert res == ({("winner", "loser"): approx(0.5596434615209632)}, False)
 
 
 def test_compute_risk_close_narrow():
