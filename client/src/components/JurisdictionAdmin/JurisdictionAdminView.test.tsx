@@ -88,7 +88,7 @@ describe('JA setup', () => {
       userEvent.click(uploadButton)
       await screen.findByText('You must upload a file')
 
-      userEvent.upload(screen.getByLabelText('Select a CSV...'), manifestFile)
+      userEvent.upload(screen.getByLabelText('Select a file...'), manifestFile)
       userEvent.click(uploadButton)
       await screen.findByText('Uploaded at 6/8/2020, 9:39:14 PM.')
 
@@ -99,7 +99,7 @@ describe('JA setup', () => {
       })
       userEvent.click(deleteButton)
       await screen.findByRole('button', { name: 'Upload File' })
-      screen.getByLabelText('Select a CSV...')
+      screen.getByLabelText('Select a file...')
     })
   })
 
@@ -116,7 +116,7 @@ describe('JA setup', () => {
     await withMockFetch(expectedCalls, async () => {
       renderView()
       await screen.findByText('Audit Source Data')
-      const talliesInput = screen.getByLabelText('Select a CSV...')
+      const talliesInput = screen.getByLabelText('Select a file...')
       const talliesButton = screen.getByRole('button', { name: 'Upload File' })
 
       userEvent.click(talliesButton)
@@ -140,7 +140,7 @@ describe('JA setup', () => {
     await withMockFetch(expectedCalls, async () => {
       renderView()
       await screen.findByText('Audit Source Data')
-      userEvent.upload(screen.getByLabelText('Select a CSV...'), talliesFile)
+      userEvent.upload(screen.getByLabelText('Select a file...'), talliesFile)
       userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
       const toast = await screen.findByRole('alert')
       expect(toast).toHaveTextContent('something went wrong: putTallies')
@@ -169,7 +169,7 @@ describe('JA setup', () => {
         })[1]
       )
       userEvent.upload(
-        await screen.findByLabelText('Select a CSV...'),
+        await screen.findByLabelText('Select a file...'),
         talliesFile
       )
       userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
@@ -197,7 +197,7 @@ describe('JA setup', () => {
         screen.getAllByRole('button', { name: 'Replace File' })[0]
       )
       userEvent.upload(
-        await screen.findByLabelText('Select a CSV...'),
+        await screen.findByLabelText('Select a file...'),
         manifestFile
       )
       userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
@@ -230,7 +230,7 @@ describe('JA setup', () => {
         screen.getByRole('option', { name: 'ClearBallot' })
       )
 
-      const cvrsInput = screen.getByLabelText('Select a CSV...')
+      const cvrsInput = screen.getByLabelText('Select a file...')
       const cvrsButton = screen.getByRole('button', { name: 'Upload File' })
 
       userEvent.click(cvrsButton)
@@ -269,7 +269,7 @@ describe('JA setup', () => {
       await screen.findByText('Uploaded at 6/8/2020, 9:39:14 PM.')
       screen.getByRole('option', { name: 'ClearBallot', selected: true })
       userEvent.click(screen.getAllByRole('button', { name: 'Delete File' })[1])
-      await screen.findByText('Select a CSV...')
+      await screen.findByText('Select a file...')
       screen.getByRole('option', { name: 'ClearBallot', selected: true })
     })
   })
@@ -296,7 +296,7 @@ describe('JA setup', () => {
         })[1]
       )
       userEvent.upload(
-        await screen.findByLabelText('Select a CSV...'),
+        await screen.findByLabelText('Select a file...'),
         cvrsFile
       )
       userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
@@ -340,7 +340,7 @@ describe('JA setup', () => {
         screen.getByRole('option', { name: 'ES&S' })
       )
 
-      const fileSelect = screen.getByLabelText('Select a CSV...')
+      const fileSelect = screen.getByLabelText('Select a file...')
       userEvent.upload(fileSelect, [cvrsFile1, cvrsFile2])
       await screen.findByLabelText('2 files selected')
       userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
@@ -379,7 +379,7 @@ describe('JA setup', () => {
         screen.getByRole('option', { name: 'Hart' })
       )
 
-      const fileSelect = screen.getByLabelText('Select a CSV...')
+      const fileSelect = screen.getByLabelText('Select a file...')
       userEvent.upload(fileSelect, cvrsZip)
       await screen.findByLabelText('cvrs.zip')
       userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
@@ -408,7 +408,7 @@ describe('JA setup', () => {
         screen.getAllByRole('button', { name: 'Replace File' })[0]
       )
       userEvent.upload(
-        await screen.findByLabelText('Select a CSV...'),
+        await screen.findByLabelText('Select a file...'),
         manifestFile
       )
       userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
@@ -432,7 +432,7 @@ describe('JA setup', () => {
       renderView()
       await screen.findByText('Audit Source Data')
       const [manifestInput, talliesInput] = screen.getAllByLabelText(
-        'Select a CSV...'
+        'Select a file...'
       )
       const [manifestButton, talliesButton] = screen.getAllByRole('button', {
         name: 'Upload File',
@@ -466,10 +466,10 @@ describe('JA setup', () => {
 
       const replaceButton = await screen.findByText('Replace File')
       userEvent.click(replaceButton)
-      const inputFiles = await screen.findAllByText('Select a CSV...')
+      const inputFiles = await screen.findAllByText('Select a file...')
       expect(inputFiles).toHaveLength(2)
 
-      const [manifestInput] = screen.getAllByLabelText('Select a CSV...')
+      const [manifestInput] = screen.getAllByLabelText('Select a file...')
       const [manifestButton] = screen.getAllByRole('button', {
         name: 'Upload File',
       })

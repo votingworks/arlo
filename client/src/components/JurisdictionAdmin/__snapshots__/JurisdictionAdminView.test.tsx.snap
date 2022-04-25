@@ -87,7 +87,7 @@ exports[`JA setup renders initial state 1`] = `
               <span
                 class="bp3-file-upload-input"
               >
-                Select a CSV...
+                Select a file...
               </span>
             </label>
             <div
@@ -151,7 +151,7 @@ exports[`JA setup renders initial state 1`] = `
               <span
                 class="bp3-file-upload-input"
               >
-                Select a CSV...
+                Select a file...
               </span>
             </label>
             <div

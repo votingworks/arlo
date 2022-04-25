@@ -141,7 +141,7 @@ describe('AA setup flow', () => {
 
       await waitFor(() => {
         expect(queryAllByText('Participants').length).toBe(2)
-        screen.getByLabelText('Select a CSV...')
+        screen.getByLabelText('Select a file...')
       })
     })
   })
@@ -194,7 +194,7 @@ describe('AA setup flow', () => {
       await waitFor(() => {
         expect(queryAllByText('Participants').length).toBe(2)
       })
-      const jurisdisctionInput = screen.getByLabelText('Select a CSV...')
+      const jurisdisctionInput = screen.getByLabelText('Select a file...')
       const jurisdictionButton = screen.getByRole('button', {
         name: 'Upload File',
       })
@@ -229,7 +229,7 @@ describe('AA setup flow', () => {
       await waitFor(() => {
         expect(queryAllByText('Participants').length).toBe(2)
       })
-      const jurisdisctionInput = screen.getByLabelText('Select a CSV...')
+      const jurisdisctionInput = screen.getByLabelText('Select a file...')
       const jurisdictionButton = screen.getByRole('button', {
         name: 'Upload File',
       })
@@ -268,7 +268,7 @@ describe('AA setup flow', () => {
 
       // check file upload of jurisdiction
       await screen.findByText(/Uploaded/)
-      const standardizedContestInput = screen.getByLabelText('Select a CSV...')
+      const standardizedContestInput = screen.getByLabelText('Select a file...')
       const standardizedContestButton = screen.getByRole('button', {
         name: 'Upload File',
       })
