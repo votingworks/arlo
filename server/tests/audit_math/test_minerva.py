@@ -137,7 +137,7 @@ def test_compute_risk_2r():
         minerva.make_sample_results(c, [[40, 40, 3], [70, 30, 10]]),
         {1: 83, 2: 200},
     )
-    assert res == (approx({("winner", "loser"): 0.006382031505998192}), True)
+    assert res == ({("winner", "loser"): approx(0.006382031505998192)}, True)
 
 
 def test_get_sample_size_2win():
@@ -166,7 +166,7 @@ def test_compute_risk_delta():
     res = minerva.compute_risk(
         10, c, minerva.make_sample_results(c, [[384, 276, 234, 1]]), {1: 923}
     )
-    assert res == ({("winner", "loser"): 0.039858047805999164}, True)
+    assert res == ({("winner", "loser"): approx(0.039858047805999164)}, True)
 
 
 def test_compute_risk_2win():
@@ -176,7 +176,7 @@ def test_compute_risk_2win():
     res = minerva.compute_risk(
         10, c, minerva.make_sample_results(c, [[40, 40, 18, 2]]), {1: 100}
     )
-    assert res == ({("winner", "loser"): 0.0064653703790821795}, True)
+    assert res == ({("winner", "loser"): approx(0.0064653703790821795)}, True)
 
 
 def test_compute_risk_2win_2():
@@ -186,7 +186,7 @@ def test_compute_risk_2win_2():
     res = minerva.compute_risk(
         10, c, minerva.make_sample_results(c, [[30, 30, 30, 10]]), {1: 100}
     )
-    assert res == ({("winner", "loser"): 0.552702598296842}, False)
+    assert res == ({("winner", "loser"): approx(0.552702598296842)}, False)
 
 
 def test_compute_risk_2win_2_2r():
@@ -199,7 +199,7 @@ def test_compute_risk_2win_2_2r():
         minerva.make_sample_results(c, [[30, 30, 30, 10], [50, 50, 25, 25]]),
         {1: 100, 2: 150},
     )
-    assert res == (approx({("winner", "loser"): 0.083535346859948}), True)
+    assert res == ({("winner", "loser"): approx(0.083535346859948)}, True)
 
 
 def test_compute_risk():
@@ -207,7 +207,7 @@ def test_compute_risk():
     res = minerva.compute_risk(
         10, c3, minerva.make_sample_results(c3, [[56, 40, 3]]), {1: 100}
     )
-    assert res == ({("winner", "loser"): 0.0933945799801079}, True)
+    assert res == ({("winner", "loser"): approx(0.0933945799801079)}, True)
 
 
 def test_compute_risk_close_narrow():
@@ -234,7 +234,7 @@ def test_compute_risk_close_narrow_2():
         minerva.make_sample_results(c, [[5100, 4990, 1], [5100, 4900, 0]]),
         {1: 10091, 2: 10000},
     )
-    assert res == (approx({("winner", "loser"): 0.03907953348498701}), True)
+    assert res == ({("winner", "loser"): approx(0.03907953348498701)}, True)
 
 
 @pytest.mark.skip(reason="Takes over a minute to run.")
