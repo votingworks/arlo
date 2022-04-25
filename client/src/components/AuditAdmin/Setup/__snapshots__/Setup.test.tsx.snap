@@ -3036,7 +3036,7 @@ exports[`Setup renders Participants stage 1`] = `
             <span
               class="bp3-file-upload-input"
             >
-              Select a CSV...
+              Select a file...
             </span>
           </label>
           <div
@@ -3122,7 +3122,7 @@ exports[`Setup renders Participants stage with locked next stage 1`] = `
             <span
               class="bp3-file-upload-input"
             >
-              Select a CSV...
+              Select a file...
             </span>
           </label>
           <div
@@ -3210,7 +3210,7 @@ exports[`Setup renders Participants stage with processing next stage 1`] = `
             <span
               class="bp3-file-upload-input"
             >
-              Select a CSV...
+              Select a file...
             </span>
           </label>
           <div

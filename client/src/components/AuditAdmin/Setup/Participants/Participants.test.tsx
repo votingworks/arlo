@@ -144,7 +144,7 @@ describe('Audit Setup > Participants', () => {
 
       // Upload a file
       userEvent.upload(
-        screen.getByLabelText('Select a CSV...'),
+        screen.getByLabelText('Select a file...'),
         jurisdictionFile
       )
       userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
@@ -158,7 +158,7 @@ describe('Audit Setup > Participants', () => {
 
       // Replace the file in the input
       userEvent.click(screen.getByRole('button', { name: 'Replace File' }))
-      userEvent.upload(screen.getByLabelText('Select a CSV...'), anotherFile)
+      userEvent.upload(screen.getByLabelText('Select a file...'), anotherFile)
       userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
       await screen.findByText('Current file:')
 
@@ -193,7 +193,7 @@ describe('Audit Setup > Participants', () => {
         // eslint-disable-next-line prefer-const
         jurisdictionsFileInput,
         standardizedContestsFileInput,
-      ] = screen.getAllByLabelText('Select a CSV...')
+      ] = screen.getAllByLabelText('Select a file...')
       let [
         // eslint-disable-next-line prefer-const
         jurisdictionsFileUploadButton,
@@ -210,7 +210,7 @@ describe('Audit Setup > Participants', () => {
       await screen.findByText('Current file:')
       screen.getByText('file name')
 
-      standardizedContestsFileInput = screen.getByLabelText('Select a CSV...')
+      standardizedContestsFileInput = screen.getByLabelText('Select a file...')
       standardizedContestsFileUploadButton = screen.getByRole('button', {
         name: 'Upload File',
       })
@@ -250,7 +250,7 @@ describe('Audit Setup > Participants', () => {
         // eslint-disable-next-line prefer-const
         jurisdictionsFileInput,
         standardizedContestsFileInput,
-      ] = screen.getAllByLabelText('Select a CSV...')
+      ] = screen.getAllByLabelText('Select a file...')
       let [
         // eslint-disable-next-line prefer-const
         jurisdictionsFileUploadButton,
@@ -267,7 +267,7 @@ describe('Audit Setup > Participants', () => {
       await screen.findByText('Current file:')
       screen.getByText('file name')
 
-      standardizedContestsFileInput = screen.getByLabelText('Select a CSV...')
+      standardizedContestsFileInput = screen.getByLabelText('Select a file...')
       standardizedContestsFileUploadButton = screen.getByRole('button', {
         name: 'Upload File',
       })
@@ -296,7 +296,7 @@ describe('Audit Setup > Participants', () => {
       screen.getByText('something went wrong')
 
       const standardizedContestsFileInput = screen.getByLabelText(
-        'Select a CSV...'
+        'Select a file...'
       )
       const standardizedContestsFileUploadButton = screen.getByRole('button', {
         name: 'Upload File',
@@ -320,7 +320,7 @@ describe('Audit Setup > Participants', () => {
       screen.getByText('something went wrong')
 
       const standardizedContestsFileInput = screen.getByLabelText(
-        'Select a CSV...'
+        'Select a file...'
       )
       const standardizedContestsFileUploadButton = screen.getByRole('button', {
         name: 'Upload File',
@@ -371,7 +371,7 @@ describe('Audit Setup > Participants', () => {
         })[1]
       )
       userEvent.upload(
-        await screen.findByLabelText('Select a CSV...'),
+        await screen.findByLabelText('Select a file...'),
         contestsFile
       )
       userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
@@ -399,7 +399,7 @@ describe('Audit Setup > Participants', () => {
         screen.getAllByRole('button', { name: 'Replace File' })[0]
       )
       userEvent.upload(
-        screen.getByLabelText('Select a CSV...'),
+        screen.getByLabelText('Select a file...'),
         jurisdictionErrorFile
       )
       userEvent.click(screen.getByRole('button', { name: 'Upload File' }))

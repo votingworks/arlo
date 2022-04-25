@@ -145,7 +145,7 @@ const CSVFile = ({
                     }}
                     hasSelection={!!values.csv}
                     text={(() => {
-                      if (!values.csv) return 'Select a CSV...'
+                      if (!values.csv) return 'Select a file...'
                       if (values.csv.length === 1) return values.csv[0].name
                       return `${values.csv.length} files selected`
                     })()}

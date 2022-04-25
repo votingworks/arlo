@@ -172,7 +172,7 @@ exports[`Home screen redirects to audit screen if only one election exists for J
                 <span
                   class="bp3-file-upload-input"
                 >
-                  Select a CSV...
+                  Select a file...
                 </span>
               </label>
               <div
