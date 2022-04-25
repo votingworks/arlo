@@ -210,7 +210,9 @@ describe('Audit Setup > Contests (Hybrid)', () => {
         typeInto(input, inputData.value)
         expect(input.value).toBe(inputData.value)
       })
-      expect(screen.queryByText('Total Ballots Cast')).not.toBeInTheDocument()
+      expect(
+        screen.queryByText('Total Ballot Cards Cast')
+      ).not.toBeInTheDocument()
       userEvent.click(screen.getByRole('button', { name: 'Save & Next' }))
       await waitFor(() => expect(nextStage.activate).toHaveBeenCalled())
     })
