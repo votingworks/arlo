@@ -153,7 +153,6 @@ def get_sample_sizes(
     discrepancies.
 
     Inputs:
-        total_ballots  - the total number of ballots cast in the election
         sample_results - if a sample has already been drawn, this will
                          contain its results, of the form:
                          {
