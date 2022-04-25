@@ -643,7 +643,7 @@ o2_stopping_size = {
     "Contest B": 60000,
     "Contest C": 36000,
     "Contest D": 15000,
-    "Contest E": 6,
+    "Contest E": 33,
     "Contest F": 15,
     "Two-winner Contest": 1000,
 }
