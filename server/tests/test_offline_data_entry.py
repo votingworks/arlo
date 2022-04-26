@@ -287,7 +287,19 @@ def test_offline_results_bad_round(
         assert_ok(rv)
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = post_json(client, f"/api/election/{election_id}/round", {"roundNum": 2})
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/2")
+    sample_size_options = json.loads(rv.data)["sampleSizes"]
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {
+            "roundNum": 2,
+            "sampleSizes": {
+                contest_id: options[0]
+                for contest_id, options in sample_size_options.items()
+            },
+        },
+    )
     assert_ok(rv)
 
     set_logged_in_user(

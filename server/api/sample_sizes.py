@@ -185,18 +185,10 @@ def sample_size_options(election: Election) -> Dict[str, Dict[str, SampleSizeOpt
                 }
             }
 
-    targeted_contests = Contest.query.filter_by(
-        election_id=election.id, is_targeted=True
-    )
-    targeted_contests_that_havent_met_risk_limit = (
-        targeted_contests.all()
-        if len(list(election.rounds)) == 0
-        else targeted_contests.join(RoundContest).filter_by(is_complete=False).all()
-    )
     try:
         return {
             contest.id: sample_sizes_for_contest(contest)
-            for contest in targeted_contests_that_havent_met_risk_limit
+            for contest in rounds.active_targeted_contests(election)
         }
     except ValueError as exc:
         raise UserError(exc) from exc

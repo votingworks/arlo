@@ -483,7 +483,17 @@ def test_hybrid_two_rounds(
     snapshot.assert_match(round_2_sample_sizes[contest_ids[0]])
 
     # Try to start a second round
-    rv = post_json(client, f"/api/election/{election_id}/round", {"roundNum": 2})
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {
+            "roundNum": 2,
+            "sampleSizes": {
+                contest_id: options[0]
+                for contest_id, options in round_2_sample_sizes.items()
+            },
+        },
+    )
     assert_ok(rv)
 
     rv = client.get(f"/api/election/{election_id}/round",)

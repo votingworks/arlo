@@ -119,7 +119,17 @@ def test_multi_winner_two_rounds(
     rv = client.get(f"/api/election/{election_id}/round")
     assert json.loads(rv.data)["rounds"][0]["isAuditComplete"] is False
 
-    rv = post_json(client, f"/api/election/{election_id}/round", {"roundNum": 2},)
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/2")
+    sample_size_options = json.loads(rv.data)["sampleSizes"]
+
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {
+            "roundNum": 2,
+            "sampleSizes": {contest_id: sample_size_options[contest_id][0]},
+        },
+    )
     assert_ok(rv)
 
     rv = client.get(f"/api/election/{election_id}/round")

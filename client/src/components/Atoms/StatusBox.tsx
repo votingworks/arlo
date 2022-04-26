@@ -12,10 +12,12 @@ import {
   IRound,
   drawSampleError,
   isAuditStarted,
+  ISampleSizes,
 } from '../AuditAdmin/useRoundsAuditAdmin'
 import { IAuditBoard } from '../useAuditBoards'
 import { IContest } from '../../types'
 import useSampleSizes from '../AuditAdmin/Setup/Review/useSampleSizes'
+import { mapValues } from '../../utils/objects'
 
 const SpacedH3 = styled(H3)`
   &.bp3-heading {
@@ -138,7 +140,7 @@ export const isSetupComplete = (
 
 interface IAuditAdminProps {
   rounds: IRound[]
-  startNextRound: () => Promise<boolean>
+  startNextRound: (sampleSizes: ISampleSizes) => Promise<boolean>
   undoRoundStart: () => Promise<boolean>
   jurisdictions: IJurisdiction[]
   contests: IContest[]
@@ -293,7 +295,7 @@ interface IAuditAdminAnotherRoundStatusBoxProps {
   auditSettings: IAuditSettings
   contests: IContest[]
   roundNum: number
-  startNextRound: () => Promise<boolean>
+  startNextRound: (sampleSizes: ISampleSizes) => Promise<boolean>
   children?: ReactElement
 }
 
@@ -306,6 +308,12 @@ const AuditAdminAnotherRoundStatusBox = ({
   children,
 }: IAuditAdminAnotherRoundStatusBoxProps) => {
   const sampleSizesResponse = useSampleSizes(electionId, roundNum + 1, true)
+  // The server should autoselect one option per contest, so we pick the first
+  // item in the options array
+  const sampleSizes =
+    sampleSizesResponse &&
+    sampleSizesResponse.sampleSizes &&
+    mapValues(sampleSizesResponse.sampleSizes, options => options[0])
   const ballotsOrBatches =
     auditSettings.auditType === 'BATCH_COMPARISON' ? 'batches' : 'ballots'
 
@@ -324,19 +332,16 @@ const AuditAdminAnotherRoundStatusBox = ({
           ]
         return [
           `Round ${roundNum + 1} Sample Sizes`,
-          ...Object.entries(sampleSizesResponse.sampleSizes!).map(
-            ([contestId, options]) => {
-              const [option] = options // Backend should autoselect one option
-              const contestName = contests.find(
-                contest => contest.id === contestId
-              )!.name
-              return `• ${contestName}: ${option.size} ${ballotsOrBatches}`
-            }
-          ),
+          ...Object.entries(sampleSizes!).map(([contestId, option]) => {
+            const contestName = contests.find(
+              contest => contest.id === contestId
+            )!.name
+            return `• ${contestName}: ${option.size} ${ballotsOrBatches}`
+          }),
         ]
       })()}
       buttonLabel={`Start Round ${roundNum + 1}`}
-      onButtonClick={startNextRound}
+      onButtonClick={() => startNextRound(sampleSizes!)}
       auditName={auditSettings.auditName}
     >
       {children}

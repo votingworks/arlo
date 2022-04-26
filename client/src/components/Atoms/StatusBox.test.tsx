@@ -267,6 +267,10 @@ describe('StatusBox', () => {
           screen.getByRole('button', { name: 'Start Round 2' })
         ).toBeDisabled()
         await waitFor(() => expect(startNextRoundMock).toHaveBeenCalledTimes(1))
+        expect(startNextRoundMock).toHaveBeenCalledWith({
+          'contest-id':
+            sampleSizeMock.ballotComparison.sampleSizes['contest-id'][0],
+        })
       })
     })
 

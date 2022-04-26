@@ -18,7 +18,6 @@ import Sidebar from '../Atoms/Sidebar'
 import { RefreshTag } from '../Atoms/RefreshTag'
 import Setup, { setupStages } from './Setup/Setup'
 import Progress from './Progress/Progress'
-import useSampleSizes from './Setup/Review/useSampleSizes'
 
 interface IParams {
   electionId: string

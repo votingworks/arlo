@@ -144,7 +144,21 @@ def test_multiple_targeted_contests_two_rounds(
         }
     )
 
-    rv = post_json(client, f"/api/election/{election_id}/round", {"roundNum": 2})
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/2")
+    sample_size_options = json.loads(rv.data)["sampleSizes"]
+    print(sample_size_options)
+
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {
+            "roundNum": 2,
+            "sampleSizes": {
+                contest_id: options[0]
+                for contest_id, options in sample_size_options.items()
+            },
+        },
+    )
     assert_ok(rv)
 
     rv = client.get(f"/api/election/{election_id}/round")

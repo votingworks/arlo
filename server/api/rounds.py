@@ -19,7 +19,6 @@ from . import api
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
 from ..auth import restrict_access, UserType
-from . import sample_sizes as sample_sizes_module
 from ..util.isoformat import isoformat
 from ..util.group_by import group_by
 from ..audit_math import (
@@ -55,6 +54,19 @@ def get_previous_round(election: Election, round: Round) -> Optional[Round]:
     if round.round_num == 1:
         return None
     return next(r for r in election.rounds if r.round_num == round.round_num - 1)
+
+
+# Returns a list of targeted contests that are still being audited (i.e. haven't
+# yet met the risk limit)
+def active_targeted_contests(election: Election) -> List[Contest]:
+    targeted_contests = Contest.query.filter_by(
+        election_id=election.id, is_targeted=True
+    )
+    return list(
+        targeted_contests.all()
+        if len(list(election.rounds)) == 0
+        else targeted_contests.join(RoundContest).filter_by(is_complete=False).all()
+    )
 
 
 def is_audit_complete(round: Round):
@@ -710,16 +722,6 @@ def draw_sample(round_id: str, election_id: str):
     round = Round.query.filter_by(id=round_id, election_id=election_id).one()
     election = round.election
 
-    # For rounds after the first round, automatically select a sample size
-    if round.round_num > 1:
-
-        sample_size_options = sample_sizes_module.sample_size_options(election)
-        for round_contest in round.round_contests:
-            if round_contest.contest_id in sample_size_options:
-                round_contest.sample_size = sample_sizes_module.autoselect_sample_size(
-                    sample_size_options[round_contest.contest_id], election.audit_type
-                )
-
     contest_sample_sizes = [
         (round_contest.contest, round_contest.sample_size)
         for round_contest in round.round_contests
@@ -946,7 +948,7 @@ def create_round_schema(audit_type: AuditType):
             },
         },
         "additionalProperties": False,
-        "required": ["roundNum"],
+        "required": ["roundNum", "sampleSizes"],
     }
 
 
@@ -967,13 +969,7 @@ def validate_round(round: dict, election: Election):
 
 
 def validate_sample_size(round: dict, election: Election):
-    targeted_contests = [
-        contest for contest in election.contests if contest.is_targeted
-    ]
-
-    if "sampleSizes" not in round:
-        raise BadRequest("Sample sizes are required for round 1")
-
+    targeted_contests = active_targeted_contests(election)
     if set(round["sampleSizes"].keys()) != {c.id for c in targeted_contests}:
         raise BadRequest("Sample sizes provided do not match targeted contest ids")
 
@@ -1049,10 +1045,7 @@ def create_round(election: Election):
 
     # For round 1, use the given sample size for each contest. In later rounds,
     # we'll select a sample size automatically when drawing the sample.
-    sample_sizes = {}
-    if json_round["roundNum"] == 1:
-        validate_sample_size(json_round, election)
-        sample_sizes = json_round["sampleSizes"]
+    validate_sample_size(json_round, election)
 
     # Figure out which contests still need auditing
     previous_round = get_previous_round(election, round)
@@ -1071,7 +1064,7 @@ def create_round(election: Election):
         RoundContest(
             round=round,
             contest=contest,
-            sample_size=sample_sizes.get(contest.id, None),
+            sample_size=json_round["sampleSizes"].get(contest.id, None),
         )
         for contest in contests_that_havent_met_risk_limit
     ]

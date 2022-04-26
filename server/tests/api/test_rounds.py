@@ -105,7 +105,20 @@ def test_rounds_create_two(
 ):
     run_audit_round(round_1_id, contest_ids[0], contest_ids, 0.5)
 
-    rv = post_json(client, f"/api/election/{election_id}/round", {"roundNum": 2},)
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/2")
+    sample_size_options = json.loads(rv.data)["sampleSizes"]
+
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {
+            "roundNum": 2,
+            "sampleSizes": {
+                contest_id: options[0]
+                for contest_id, options in sample_size_options.items()
+            },
+        },
+    )
     assert_ok(rv)
 
     expected_rounds = {
@@ -200,22 +213,16 @@ def test_rounds_create_before_previous_round_complete(
     client: FlaskClient,
     election_id: str,
     contest_ids: str,
-    manifests,  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
+    round_1_id: str,  # pylint: disable=unused-argument
 ):
     rv = post_json(
         client,
         f"/api/election/{election_id}/round",
         {
-            "roundNum": 1,
-            "sampleSizes": {
-                contest_ids[0]: {"key": "custom", "size": 10, "prob": None}
-            },
+            "roundNum": 2,
+            "sampleSizes": {contest_ids[0]: {"key": "0.9", "size": 10, "prob": 0.9}},
         },
     )
-    assert_ok(rv)
-
-    rv = post_json(client, f"/api/election/{election_id}/round", {"roundNum": 2},)
     assert rv.status_code == 409
     assert json.loads(rv.data) == {
         "errors": [
@@ -224,8 +231,19 @@ def test_rounds_create_before_previous_round_complete(
     }
 
 
-def test_rounds_wrong_number_too_big(client: FlaskClient, election_id: str):
-    rv = post_json(client, f"/api/election/{election_id}/round", {"roundNum": 2})
+def test_rounds_wrong_number_too_big(
+    client: FlaskClient, election_id: str, contest_ids: List[str]
+):
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {
+            "roundNum": 2,
+            "sampleSizes": {
+                contest_ids[0]: {"key": "custom", "size": 10, "prob": None}
+            },
+        },
+    )
     assert rv.status_code == 400
     assert json.loads(rv.data) == {
         "errors": [
@@ -279,7 +297,7 @@ def test_rounds_missing_sample_sizes(client: FlaskClient, election_id: str):
     assert json.loads(rv.data) == {
         "errors": [
             {
-                "message": "Sample sizes are required for round 1",
+                "message": "'sampleSizes' is a required property",
                 "errorType": "Bad Request",
             }
         ]
