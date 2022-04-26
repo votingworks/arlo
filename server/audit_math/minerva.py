@@ -177,15 +177,6 @@ def collect_risks(
 
     Outputs:
         risks - Mapping of (winner, loser) pairs to their risk levels
-
-    >>> c3 = make_arlo_contest({"a": 600, "b": 400, "c": 100, "_undervote_": 100})
-    >>> collect_risks(0.1, c3, [120], make_sample_results(c3, [[56, 40, 3]]))
-    {('winner', 'loser'): 0.0933945799801079}
-    >>> collect_risks(0.1, c3, [83], make_sample_results(c3, [[40, 40, 3]]))
-    {('winner', 'loser'): 0.5596434615209632}
-    >>> collect_risks(0.1, c3, [82], make_sample_results(c3, [[40, 40, 3]]))
-    Traceback (most recent call last):
-    ValueError: Incorrect number of valid ballots entered
     """
 
     logging.debug(
@@ -242,12 +233,6 @@ def compute_risk(
         measurements:   the p-value of the hypotheses that the election
                         result is correct based on the sample
         confirmed:      a boolean indicating whether the audit can stop
-
-    >>> c3 = make_arlo_contest({"a": 600, "b": 400, "c": 100, "_undervote_": 100})
-    >>> compute_risk(10, c3, make_sample_results(c3, [[56, 40, 3]]), {1: 100, 2: 150})
-    ({('winner', 'loser'): 0.0933945799801079}, True)
-    >>> compute_risk(10, c3, make_sample_results(c3, [[40, 40, 3]]), {1: 100, 2: 150})
-    ({('winner', 'loser'): 0.5596434615209632}, False)
     """
 
     alpha = risk_limit / 100
