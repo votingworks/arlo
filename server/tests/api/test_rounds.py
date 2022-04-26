@@ -33,7 +33,7 @@ def test_rounds_create_one(
     manifests,  # pylint: disable=unused-argument
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
     sample_size_options = json.loads(rv.data)["sampleSizes"]
     sample_size = sample_size_options[contest_ids[0]][0]
     rv = post_json(

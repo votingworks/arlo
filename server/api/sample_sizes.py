@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from typing import Dict, cast as typing_cast
 from collections import Counter, defaultdict
 from flask import jsonify
+from werkzeug.exceptions import BadRequest
 
 from . import api
 from ..models import *  # pylint: disable=wildcard-import
@@ -203,11 +204,13 @@ def sample_size_options(
 
 
 @background_task
-def first_round_sample_size_options(election_id: str):
-    sample_sizes = SampleSizeOptions.query.filter_by(
-        election_id=election_id, round_num=1
-    ).one()
+def next_round_sample_size_options(election_id: str):
     election = Election.query.get(election_id)
+    current_round = rounds.get_current_round(election)
+    next_round_num = current_round.round_num + 1 if current_round else 1
+    sample_sizes = SampleSizeOptions.query.filter_by(
+        election_id=election.id, round_num=next_round_num
+    ).one()
     sample_sizes.sample_size_options = sample_size_options(election)
 
 
@@ -220,16 +223,21 @@ def serialize_sample_size_options(sample_size_options):
     }
 
 
-@api.route("/election/<election_id>/sample-sizes", methods=["GET"])
+@api.route("/election/<election_id>/sample-sizes/<int:round_num>", methods=["GET"])
 @restrict_access([UserType.AUDIT_ADMIN])
-def get_sample_sizes(election: Election):
+def get_sample_sizes(election: Election, round_num: int):
+    current_round = rounds.get_current_round(election)
+    next_round_num = current_round.round_num + 1 if current_round else 1
+    if not 1 <= round_num <= next_round_num:
+        raise BadRequest("Invalid round number")
+
     sample_sizes = SampleSizeOptions.query.filter_by(
-        election_id=election.id, round_num=1,
+        election_id=election.id, round_num=round_num,
     ).one_or_none()
-    # If we've never queried sample sizes before for this audit, create a row in
+    # If we've never queried sample sizes before for this round, create a row in
     # the database to store them.
     if not sample_sizes:
-        sample_sizes = SampleSizeOptions(election_id=election.id, round_num=1)
+        sample_sizes = SampleSizeOptions(election_id=election.id, round_num=round_num)
         db_session.add(sample_sizes)
 
     # If we don't have sample sizes stored already, or we do but they expired,
@@ -244,13 +252,13 @@ def get_sample_sizes(election: Election):
             datetime.now(timezone.utc) - sample_sizes.task.completed_at
             > timedelta(seconds=5)
         )
-        # Don't need to recompute after the audit launches
-        and len(list(election.rounds)) == 0
     )
-    if not sample_sizes.task or existing_options_expired:
+    if round_num == next_round_num and (
+        not sample_sizes.task or existing_options_expired
+    ):
         sample_sizes.sample_size_options = None
         sample_sizes.task = create_background_task(
-            first_round_sample_size_options, dict(election_id=election.id)
+            next_round_sample_size_options, dict(election_id=election.id)
         )
 
         db_session.flush()  # Ensure we can read task.created_at
@@ -263,15 +271,15 @@ def get_sample_sizes(election: Election):
 
         db_session.commit()
 
-    # If we've already started the first round, return which sample size was
-    # selected for each contest so we can show the user
+    # If the round already started, return which sample size was selected for
+    # each contest so we can show the user
     selected_sample_sizes = (
         dict(
             RoundContest.query.join(Round)
-            .filter_by(election_id=election.id, round_num=1)
+            .filter_by(election_id=election.id, round_num=round_num)
             .values(RoundContest.contest_id, RoundContest.sample_size)
         )
-        if len(list(election.rounds)) > 0
+        if current_round and round_num < next_round_num
         else None
     )
 

@@ -66,7 +66,7 @@ def test_sample_size_round_1(
     snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
     sample_sizes = json.loads(rv.data)["sampleSizes"]
     contest_id_to_name = dict(Contest.query.values(Contest.id, Contest.name))
     snapshot.assert_match(
@@ -84,7 +84,7 @@ def test_multiple_targeted_contests_two_rounds(
     snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
     sample_sizes = json.loads(rv.data)["sampleSizes"]
     selected_sample_sizes = {
         contest_id: sizes[0] for contest_id, sizes in sample_sizes.items()

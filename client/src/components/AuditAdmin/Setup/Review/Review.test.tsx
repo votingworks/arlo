@@ -27,7 +27,7 @@ const apiCalls = {
     response,
   }),
   getSampleSizeOptions: (response: ISampleSizesResponse) => ({
-    url: '/api/election/1/sample-sizes',
+    url: '/api/election/1/sample-sizes/1',
     response,
   }),
   getRounds: {

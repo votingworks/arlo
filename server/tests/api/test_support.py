@@ -629,7 +629,7 @@ def test_support_clear_offline_results_ballot_polling(
 
     # Start the round
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
     sample_sizes = json.loads(rv.data)["sampleSizes"]
     rv = post_json(
         client,

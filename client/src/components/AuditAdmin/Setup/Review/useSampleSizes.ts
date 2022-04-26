@@ -32,12 +32,14 @@ export interface ISampleSizesResponse {
 }
 
 const getSampleSizeOptions = async (
-  electionId: string
+  electionId: string,
+  roundNumber: number
 ): Promise<ISampleSizesResponse | null> =>
-  api(`/election/${electionId}/sample-sizes`)
+  api(`/election/${electionId}/sample-sizes/${roundNumber}`)
 
 const useSampleSizes = (
   electionId: string,
+  roundNumber: number,
   shouldFetch: boolean
 ): ISampleSizesResponse | null => {
   const [
@@ -48,7 +50,7 @@ const useSampleSizes = (
   useEffect(() => {
     ;(async () => {
       const isComplete = async () => {
-        const response = await getSampleSizeOptions(electionId)
+        const response = await getSampleSizeOptions(electionId, roundNumber)
         if (response && response.task.completedAt !== null) {
           setSampleSizeOptions(response)
           return true
@@ -63,7 +65,7 @@ const useSampleSizes = (
           5 * 60 * 1000 // Time out loading sample sizes after 5 minutes
         )
     })()
-  }, [electionId, shouldFetch])
+  }, [electionId, roundNumber, shouldFetch])
 
   return sampleSizeOptions
 }

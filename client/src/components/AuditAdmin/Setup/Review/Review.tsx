@@ -113,7 +113,11 @@ const Review: React.FC<IProps> = ({
     !!auditSettings &&
     isSetupComplete(jurisdictions, contests, auditSettings)
   const shouldLoadSampleSizes = setupComplete && standardizationComplete
-  const sampleSizesResponse = useSampleSizes(electionId, shouldLoadSampleSizes)
+  const sampleSizesResponse = useSampleSizes(
+    electionId,
+    1,
+    shouldLoadSampleSizes
+  )
 
   if (!jurisdictions || !contests || !auditSettings) return null // Still loading
 
