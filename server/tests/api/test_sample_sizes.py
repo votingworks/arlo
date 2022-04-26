@@ -116,9 +116,11 @@ def test_sample_sizes_background(
     }
 
     # Simulate starting the task
-    election = Election.query.get(election_id)
     started_at = datetime.now(timezone.utc)
-    election.sample_size_options_task.started_at = started_at
+    sample_sizes = SampleSizeOptions.query.filter_by(
+        election_id=election_id, round_num=1
+    ).one()
+    sample_sizes.task.started_at = started_at
     db_session.commit()
 
     rv = client.get(f"/api/election/{election_id}/sample-sizes")
@@ -134,12 +136,14 @@ def test_sample_sizes_background(
     }
 
     # Simulate completing the task
-    election = Election.query.get(election_id)
-    election.sample_size_options = {
+    sample_sizes = SampleSizeOptions.query.filter_by(
+        election_id=election_id, round_num=1
+    ).one()
+    sample_sizes.sample_size_options = {
         contest_ids[0]: {"asn": {"key": "asn", "size": 1, "prob": 0.5}}
     }
     completed_at = datetime.now(timezone.utc)
-    election.sample_size_options_task.completed_at = completed_at
+    sample_sizes.task.completed_at = completed_at
     db_session.commit()
 
     rv = client.get(f"/api/election/{election_id}/sample-sizes")
@@ -156,9 +160,11 @@ def test_sample_sizes_background(
 
     # Simulate the results of the task expiring after five seconds
     # A new task should be started
-    election = Election.query.get(election_id)
+    sample_sizes = SampleSizeOptions.query.filter_by(
+        election_id=election_id, round_num=1
+    ).one()
     completed_at = datetime.now(timezone.utc) - timedelta(seconds=5)
-    election.sample_size_options_task.completed_at = completed_at
+    sample_sizes.task.completed_at = completed_at
     db_session.commit()
 
     rv = client.get(f"/api/election/{election_id}/sample-sizes")

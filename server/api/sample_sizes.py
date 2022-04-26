@@ -204,8 +204,11 @@ def sample_size_options(
 
 @background_task
 def first_round_sample_size_options(election_id: str):
+    sample_sizes = SampleSizeOptions.query.filter_by(
+        election_id=election_id, round_num=1
+    ).one()
     election = Election.query.get(election_id)
-    election.sample_size_options = sample_size_options(election)
+    sample_sizes.sample_size_options = sample_size_options(election)
 
 
 def serialize_sample_size_options(sample_size_options):
@@ -220,31 +223,40 @@ def serialize_sample_size_options(sample_size_options):
 @api.route("/election/<election_id>/sample-sizes", methods=["GET"])
 @restrict_access([UserType.AUDIT_ADMIN])
 def get_sample_sizes(election: Election):
+    sample_sizes = SampleSizeOptions.query.filter_by(
+        election_id=election.id, round_num=1,
+    ).one_or_none()
+    # If we've never queried sample sizes before for this audit, create a row in
+    # the database to store them.
+    if not sample_sizes:
+        sample_sizes = SampleSizeOptions(election_id=election.id, round_num=1)
+        db_session.add(sample_sizes)
+
     # If we don't have sample sizes stored already, or we do but they expired,
     # start a background task to compute sample size options. We invalidate
     # sample size options after 5 seconds because they depend on a lot of data
     # that might change (e.g. manifests, CVRs, contest settings, random seed),
     # so we want to recompute them whenever they are requested.
     existing_options_expired = (
-        election.sample_size_options_task
-        and election.sample_size_options_task.completed_at
+        sample_sizes.task
+        and sample_sizes.task.completed_at
         and (
-            datetime.now(timezone.utc) - election.sample_size_options_task.completed_at
+            datetime.now(timezone.utc) - sample_sizes.task.completed_at
             > timedelta(seconds=5)
         )
         # Don't need to recompute after the audit launches
         and len(list(election.rounds)) == 0
     )
-    if not election.sample_size_options_task or existing_options_expired:
-        election.sample_size_options = None
-        election.sample_size_options_task = create_background_task(
+    if not sample_sizes.task or existing_options_expired:
+        sample_sizes.sample_size_options = None
+        sample_sizes.task = create_background_task(
             first_round_sample_size_options, dict(election_id=election.id)
         )
 
         db_session.flush()  # Ensure we can read task.created_at
         activity_log.record_activity(
             activity_log.CalculateSampleSizes(
-                timestamp=election.sample_size_options_task.created_at,
+                timestamp=sample_sizes.task.created_at,
                 base=activity_log.activity_base(election),
             )
         )
@@ -264,7 +276,7 @@ def get_sample_sizes(election: Election):
     )
 
     return jsonify(
-        sampleSizes=serialize_sample_size_options(election.sample_size_options),
+        sampleSizes=serialize_sample_size_options(sample_sizes.sample_size_options),
         selected=selected_sample_sizes,
-        task=serialize_background_task(election.sample_size_options_task),
+        task=serialize_background_task(sample_sizes.task),
     )

@@ -122,8 +122,10 @@ def test_standardize_contest_names(
     }
 
     # Clear out the old error so we don't have to wait for it to expire
-    election = Election.query.get(election_id)
-    election.sample_size_options_task = None
+    sample_sizes = SampleSizeOptions.query.filter_by(
+        election_id=election_id, round_num=1
+    ).one()
+    sample_sizes.task = None
     db_session.commit()
 
     # Now sample sizes should work

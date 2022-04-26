@@ -204,16 +204,6 @@ class Election(BaseModel):
     )
     standardized_contests = Column(JSON)
 
-    # During audit setup, we compute sample size options for the first
-    # round of the audit in a background task and store the results here.
-    sample_size_options_task_id = Column(
-        String(200), ForeignKey("background_task.id", ondelete="set null")
-    )
-    sample_size_options_task = relationship(
-        "BackgroundTask", single_parent=True, cascade="all, delete-orphan"
-    )
-    sample_size_options = Column(JSON)
-
     # When a user deletes an audit, we keep it in the database just in case
     # they change their mind, but flag it so that we can restrict access
     deleted_at = Column(UTCDateTime)
@@ -530,6 +520,21 @@ class AuditBoard(BaseModel):
     )
 
     __table_args__ = (UniqueConstraint("jurisdiction_id", "round_id", "name"),)
+
+
+class SampleSizeOptions(BaseModel):
+    election_id = Column(
+        String(200), ForeignKey("election.id", ondelete="cascade"), nullable=False
+    )
+    round_num = Column(Integer, nullable=False)
+
+    task_id = Column(String(200), ForeignKey("background_task.id", ondelete="set null"))
+    task = relationship(
+        "BackgroundTask", single_parent=True, cascade="all, delete-orphan"
+    )
+    sample_size_options = Column(JSON)
+
+    __table_args__ = (PrimaryKeyConstraint("election_id", "round_num"),)
 
 
 class Round(BaseModel):
