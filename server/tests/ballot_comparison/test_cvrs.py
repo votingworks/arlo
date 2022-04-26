@@ -1787,6 +1787,22 @@ def test_hart_cvrs_invalid_zip_mimetype(
         ]
     }
 
+    # Make sure that the Windows zip mimetype does work
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
+        data={
+            "cvrs": [
+                (
+                    zip_hart_cvrs(HART_CVRS),
+                    "cvr-files.zip",
+                    "application/x-zip-compressed",
+                )
+            ],
+            "cvrFileType": "HART",
+        },
+    )
+    assert_ok(rv)
+
 
 def test_cvrs_unexpected_error(
     election_id: str,

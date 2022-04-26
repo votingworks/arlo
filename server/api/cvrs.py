@@ -1116,7 +1116,7 @@ def validate_cvr_upload(
 
     file = request.files["cvrs"]
     if cvr_file_type == CvrFileType.HART:
-        if file.mimetype != "application/zip":
+        if file.mimetype not in ["application/zip", "application/x-zip-compressed"]:
             raise BadRequest("Please submit a ZIP file export.")
     else:
         validate_csv_mimetype(request.files["cvrs"])
