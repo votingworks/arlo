@@ -15,6 +15,7 @@ from ..audit_math import (
     sampler_contest,
     suite,
 )
+from ..audit_math.ballot_polling import SampleSizeOption
 from . import rounds  # pylint: disable=cyclic-import
 from .cvrs import validate_uploaded_cvrs, hybrid_contest_choice_vote_counts
 from .ballot_manifest import hybrid_contest_total_ballots, all_manifests_uploaded
@@ -93,9 +94,7 @@ def validate_hybrid_manifests_and_cvrs(contest: Contest):
         )
 
 
-def sample_size_options(
-    election: Election,
-) -> Dict[str, Dict[str, ballot_polling.SampleSizeOption]]:
+def sample_size_options(election: Election) -> Dict[str, Dict[str, SampleSizeOption]]:
     if not election.contests:
         raise UserError("Cannot compute sample sizes until contests are set")
     if election.risk_limit is None:
@@ -214,6 +213,20 @@ def next_round_sample_size_options(election_id: str):
     sample_sizes.sample_size_options = sample_size_options(election)
 
 
+# In rounds other than the first round, we want to automatically select a sample
+# size from the generated options instead of letting the user pick.
+def autoselect_sample_size(options: Dict[str, SampleSizeOption], audit_type: AuditType):
+    if audit_type == AuditType.BALLOT_POLLING:
+        return options.get("0.9", options.get("asn"))
+    elif audit_type == AuditType.BATCH_COMPARISON:
+        return options["macro"]
+    elif audit_type == AuditType.BALLOT_COMPARISON:
+        return options["supersimple"]
+    else:
+        assert audit_type == AuditType.HYBRID
+        return options["suite"]
+
+
 def serialize_sample_size_options(sample_size_options):
     if sample_size_options is None:
         return None
@@ -283,8 +296,19 @@ def get_sample_sizes(election: Election, round_num: int):
         else None
     )
 
+    options = sample_sizes.sample_size_options and (
+        sample_sizes.sample_size_options
+        if round_num == 1
+        else {
+            contest_id: {
+                "_": autoselect_sample_size(options, AuditType(election.audit_type))
+            }
+            for contest_id, options in sample_sizes.sample_size_options.items()
+        }
+    )
+
     return jsonify(
-        sampleSizes=serialize_sample_size_options(sample_sizes.sample_size_options),
+        sampleSizes=serialize_sample_size_options(options),
         selected=selected_sample_sizes,
         task=serialize_background_task(sample_sizes.task),
     )

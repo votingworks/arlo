@@ -7,6 +7,10 @@ from snapshottest import Snapshot
 
 snapshots = Snapshot()
 
+snapshots["test_hybrid_sample_size 1"] = [
+    {"key": "suite", "prob": None, "size": 23, "sizeCvr": 14, "sizeNonCvr": 9}
+]
+
 snapshots[
     "test_hybrid_two_rounds 1"
 ] = """Tabulator,Batch Name,Ballot Number,Imprinted ID,Ticket Numbers,Already Audited,Audit Board
@@ -46,7 +50,7 @@ J2,Audit Board #1,,,,\r
 \r
 ######## ROUNDS ########\r
 Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes,Audited Votes: CVR,Audited Votes: Non CVR\r
-1,Contest 1,Targeted,23,No,0.4278843891,DATETIME,DATETIME,Choice 1-1: 14; Choice 1-2: 6,Choice 1-1: 6; Choice 1-2: 5,Choice 1-1: 8; Choice 1-2: 1\r
+1,Contest 1,Targeted,23,No,0.1394502521,DATETIME,DATETIME,Choice 1-1: 14; Choice 1-2: 8,Choice 1-1: 7; Choice 1-2: 6,Choice 1-1: 7; Choice 1-2: 2\r
 1,Contest 2,Opportunistic,,No,1.0,DATETIME,DATETIME,Choice 2-1: 10; Choice 2-2: 5; Choice 2-3: 3,Choice 2-1: 5; Choice 2-2: 4; Choice 2-3: 3,Choice 2-1: 5; Choice 2-2: 1; Choice 2-3: 0\r
 \r
 ######## SAMPLED BALLOTS ########\r
@@ -64,16 +68,16 @@ J1,TABULATOR3,BATCH1,5,,Round 1: 0.072664791498577026,AUDITED,Choice 1-1,,,Choic
 J1,TABULATOR3,BATCH1,9,,Round 1: 0.293674693309260219,AUDITED,Choice 1-1,,,Choice 2-1,,\r
 J1,TABULATOR3,BATCH1,10,,Round 1: 0.199742518299743122,AUDITED,Choice 1-1,,,Choice 2-2,,\r
 J2,TABULATOR1,BATCH1,3,1-1-3,Round 1: 0.242392535590495322,AUDITED,Choice 1-2,Choice 1-2,,"Choice 2-1, Choice 2-2",,\r
-J2,TABULATOR1,BATCH2,1,1-2-1,Round 1: 0.200269401620671924,AUDITED,Choice 1-1,Choice 1-1,,"Choice 2-1, Choice 2-3",,\r
-J2,TABULATOR2,BATCH1,1,2-1-1,Round 1: 0.174827909206366766,NOT_FOUND,,Choice 1-1,2,,,\r
+J2,TABULATOR1,BATCH2,1,1-2-1,Round 1: 0.200269401620671924,AUDITED,"Choice 1-1, Choice 1-2",Choice 1-1,1,"Choice 2-1, Choice 2-3",,\r
+J2,TABULATOR2,BATCH1,1,2-1-1,Round 1: 0.174827909206366766,AUDITED,Choice 1-1,Choice 1-1,,"Choice 2-1, Choice 2-2",,\r
 J2,TABULATOR2,BATCH2,1,2-2-1,Round 1: 0.185417954749015145,AUDITED,Choice 1-1,Choice 1-1,,"Choice 2-1, Choice 2-3",,\r
 J2,TABULATOR2,BATCH2,2,2-2-2,"Round 1: 0.252054739518646128, 0.297145021317217438",AUDITED,"Choice 1-1, Choice 1-2","Choice 1-1, Choice 1-2",,"Choice 2-1, Choice 2-2, Choice 2-3",,\r
 J2,TABULATOR2,BATCH2,3,2-2-4,Round 1: 0.179114059650472941,AUDITED,CONTEST_NOT_ON_BALLOT,,,"Choice 2-1, Choice 2-3",,\r
 J2,TABULATOR3,BATCH1,1,,Round 1: 0.052129356711674929,AUDITED,Choice 1-1,,,CONTEST_NOT_ON_BALLOT,,\r
-J2,TABULATOR3,BATCH1,5,,Round 1: 0.037027823153316024,AUDITED,Choice 1-1,,,CONTEST_NOT_ON_BALLOT,,\r
+J2,TABULATOR3,BATCH1,5,,Round 1: 0.037027823153316024,AUDITED,Choice 1-2,,,CONTEST_NOT_ON_BALLOT,,\r
 J2,TABULATOR3,BATCH1,10,,Round 1: 0.087764767095634400,AUDITED,Choice 1-2,,,CONTEST_NOT_ON_BALLOT,,\r
 """
 
-snapshots["test_sample_size 1"] = [
-    {"key": "suite", "prob": None, "size": 23, "sizeCvr": 14, "sizeNonCvr": 9}
+snapshots["test_hybrid_two_rounds 3"] = [
+    {"key": "suite", "prob": None, "size": 33, "sizeCvr": 20, "sizeNonCvr": 13}
 ]

@@ -31,10 +31,5 @@ snapshots["test_sample_sizes_round_2 2"] = {
 }
 
 snapshots["test_sample_sizes_round_2 3"] = {
-    "Contest 1": [
-        {"key": "asn", "prob": 0.51, "size": 250},
-        {"key": "0.7", "prob": 0.7, "size": 341},
-        {"key": "0.8", "prob": 0.8, "size": 415},
-        {"key": "0.9", "prob": 0.9, "size": 539},
-    ]
+    "Contest 1": [{"key": "0.9", "prob": 0.9, "size": 539}]
 }

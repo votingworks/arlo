@@ -94,7 +94,7 @@ def test_sample_sizes_round_2(
         },
     )
 
-    # Requesting round 2 sizes should return new sample sizes
+    # Requesting round 2 sizes should auto-select a sample size
     rv = client.get(f"/api/election/{election_id}/sample-sizes/2")
     response = json.loads(rv.data)
     snapshot.assert_match(

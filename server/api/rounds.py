@@ -713,23 +713,11 @@ def draw_sample(round_id: str, election_id: str):
     # For rounds after the first round, automatically select a sample size
     if round.round_num > 1:
 
-        def select_sample_size(options):
-            audit_type = AuditType(election.audit_type)
-            if audit_type == AuditType.BALLOT_POLLING:
-                return options.get("0.9", options.get("asn"))
-            elif audit_type == AuditType.BATCH_COMPARISON:
-                return options["macro"]
-            elif audit_type == AuditType.BALLOT_COMPARISON:
-                return options["supersimple"]
-            else:
-                assert audit_type == AuditType.HYBRID
-                return options["suite"]
-
         sample_size_options = sample_sizes_module.sample_size_options(election)
         for round_contest in round.round_contests:
             if round_contest.contest_id in sample_size_options:
-                round_contest.sample_size = select_sample_size(
-                    sample_size_options[round_contest.contest_id]
+                round_contest.sample_size = sample_sizes_module.autoselect_sample_size(
+                    sample_size_options[round_contest.contest_id], election.audit_type
                 )
 
     contest_sample_sizes = [
