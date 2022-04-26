@@ -309,11 +309,11 @@ const ContestForm: React.FC<IProps> = ({
                         />
                         {isBallotPolling && (
                           <FormSection
-                            label="Total Ballots Cast"
+                            label="Total Ballot Cards Cast"
                             description="Enter the overall number of ballot cards cast in jurisdictions containing this contest."
                           >
                             <label htmlFor={`contests[${i}].totalBallotsCast`}>
-                              Total Ballots for Contest{' '}
+                              Total Ballot Cards Cast for Contest{' '}
                               {/* istanbul ignore next */
                               values.contests.length > 1 ? i + 1 : ''}
                               <Field

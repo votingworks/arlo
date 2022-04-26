@@ -217,28 +217,28 @@ export const contestsInputMocks = {
     { key: 'Name of Candidate/Choice 2', value: 'Choice Two' },
     { key: 'Votes for Candidate/Choice 1', value: '10' },
     { key: 'Votes for Candidate/Choice 2', value: '20' },
-    { key: 'Total Ballots for Contest', value: '30' },
+    { key: 'Total Ballot Cards Cast for Contest', value: '30' },
   ],
   errorInputs: [
     { key: 'Contest Name', value: '', error: 'Required' },
     {
-      key: 'Total Ballots for Contest',
+      key: 'Total Ballot Cards Cast for Contest',
       value: '',
       error:
         'Must be greater than or equal to the sum of votes for each candidate/choice',
     },
     {
-      key: 'Total Ballots for Contest',
+      key: 'Total Ballot Cards Cast for Contest',
       value: 'test',
       error: 'Must be a number',
     },
     {
-      key: 'Total Ballots for Contest',
+      key: 'Total Ballot Cards Cast for Contest',
       value: '-1',
       error: 'Must be a positive number',
     },
     {
-      key: 'Total Ballots for Contest',
+      key: 'Total Ballot Cards Cast for Contest',
       value: '0.5',
       error: 'Must be an integer',
     },

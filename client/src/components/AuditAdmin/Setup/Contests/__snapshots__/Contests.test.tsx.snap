@@ -223,7 +223,7 @@ exports[`Audit Setup > Contests renders empty opportunistic state correctly 1`] 
           <h5
             class="bp3-heading"
           >
-            Total Ballots Cast
+            Total Ballot Cards Cast
           </h5>
           <div
             class="sc-bxivhb fbVQhV"
@@ -233,7 +233,7 @@ exports[`Audit Setup > Contests renders empty opportunistic state correctly 1`] 
           <label
             for="contests[0].totalBallotsCast"
           >
-            Total Ballots for Contest
+            Total Ballot Cards Cast for Contest
              
             
             <div
@@ -555,7 +555,7 @@ exports[`Audit Setup > Contests renders empty targeted state correctly 1`] = `
           <h5
             class="bp3-heading"
           >
-            Total Ballots Cast
+            Total Ballot Cards Cast
           </h5>
           <div
             class="sc-bxivhb fbVQhV"
@@ -565,7 +565,7 @@ exports[`Audit Setup > Contests renders empty targeted state correctly 1`] = `
           <label
             for="contests[0].totalBallotsCast"
           >
-            Total Ballots for Contest
+            Total Ballot Cards Cast for Contest
              
             
             <div
@@ -887,7 +887,7 @@ exports[`Audit Setup > Contests renders filled opportunistic state correctly 1`]
           <h5
             class="bp3-heading"
           >
-            Total Ballots Cast
+            Total Ballot Cards Cast
           </h5>
           <div
             class="sc-bxivhb fbVQhV"
@@ -897,7 +897,7 @@ exports[`Audit Setup > Contests renders filled opportunistic state correctly 1`]
           <label
             for="contests[0].totalBallotsCast"
           >
-            Total Ballots for Contest
+            Total Ballot Cards Cast for Contest
              
             
             <div
@@ -1219,7 +1219,7 @@ exports[`Audit Setup > Contests renders filled targeted state correctly 1`] = `
           <h5
             class="bp3-heading"
           >
-            Total Ballots Cast
+            Total Ballot Cards Cast
           </h5>
           <div
             class="sc-bxivhb fbVQhV"
@@ -1229,7 +1229,7 @@ exports[`Audit Setup > Contests renders filled targeted state correctly 1`] = `
           <label
             for="contests[0].totalBallotsCast"
           >
-            Total Ballots for Contest
+            Total Ballot Cards Cast for Contest
              
             
             <div

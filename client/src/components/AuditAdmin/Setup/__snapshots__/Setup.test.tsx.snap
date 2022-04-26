@@ -2207,7 +2207,7 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
           <h5
             class="bp3-heading"
           >
-            Total Ballots Cast
+            Total Ballot Cards Cast
           </h5>
           <div
             class="sc-gzVnrw kvvweo"
@@ -2217,7 +2217,7 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
           <label
             for="contests[0].totalBallotsCast"
           >
-            Total Ballots for Contest
+            Total Ballot Cards Cast for Contest
              
             
             <div
@@ -2541,7 +2541,7 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
           <h5
             class="bp3-heading"
           >
-            Total Ballots Cast
+            Total Ballot Cards Cast
           </h5>
           <div
             class="sc-gzVnrw kvvweo"
@@ -2551,7 +2551,7 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
           <label
             for="contests[0].totalBallotsCast"
           >
-            Total Ballots for Contest
+            Total Ballot Cards Cast for Contest
              
             
             <div
@@ -2876,7 +2876,7 @@ exports[`Setup renders Opportunistic Contests stage with processing next stage 1
           <h5
             class="bp3-heading"
           >
-            Total Ballots Cast
+            Total Ballot Cards Cast
           </h5>
           <div
             class="sc-gzVnrw kvvweo"
@@ -2886,7 +2886,7 @@ exports[`Setup renders Opportunistic Contests stage with processing next stage 1
           <label
             for="contests[0].totalBallotsCast"
           >
-            Total Ballots for Contest
+            Total Ballot Cards Cast for Contest
              
             
             <div
@@ -4325,7 +4325,7 @@ exports[`Setup renders Target Contests stage 1`] = `
           <h5
             class="bp3-heading"
           >
-            Total Ballots Cast
+            Total Ballot Cards Cast
           </h5>
           <div
             class="sc-gzVnrw kvvweo"
@@ -4335,7 +4335,7 @@ exports[`Setup renders Target Contests stage 1`] = `
           <label
             for="contests[0].totalBallotsCast"
           >
-            Total Ballots for Contest
+            Total Ballot Cards Cast for Contest
              
             
             <div
@@ -4659,7 +4659,7 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
           <h5
             class="bp3-heading"
           >
-            Total Ballots Cast
+            Total Ballot Cards Cast
           </h5>
           <div
             class="sc-gzVnrw kvvweo"
@@ -4669,7 +4669,7 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
           <label
             for="contests[0].totalBallotsCast"
           >
-            Total Ballots for Contest
+            Total Ballot Cards Cast for Contest
              
             
             <div
@@ -4994,7 +4994,7 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
           <h5
             class="bp3-heading"
           >
-            Total Ballots Cast
+            Total Ballot Cards Cast
           </h5>
           <div
             class="sc-gzVnrw kvvweo"
@@ -5004,7 +5004,7 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
           <label
             for="contests[0].totalBallotsCast"
           >
-            Total Ballots for Contest
+            Total Ballot Cards Cast for Contest
              
             
             <div

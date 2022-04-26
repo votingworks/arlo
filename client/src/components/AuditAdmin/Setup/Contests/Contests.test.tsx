@@ -396,9 +396,12 @@ describe('Audit Setup > Contests', () => {
       '40'
     )
 
-    const totalBallotInput = getByLabelText('Total Ballots for Contest', {
-      selector: 'input',
-    }) as HTMLInputElement
+    const totalBallotInput = getByLabelText(
+      'Total Ballot Cards Cast for Contest',
+      {
+        selector: 'input',
+      }
+    ) as HTMLInputElement
     typeInto(totalBallotInput, '30')
 
     await waitFor(() => {
@@ -441,9 +444,12 @@ describe('Audit Setup > Contests', () => {
       '40'
     )
 
-    const totalBallotInput = getByLabelText('Total Ballots for Contest', {
-      selector: 'input',
-    }) as HTMLInputElement
+    const totalBallotInput = getByLabelText(
+      'Total Ballot Cards Cast for Contest',
+      {
+        selector: 'input',
+      }
+    ) as HTMLInputElement
     typeInto(totalBallotInput, '30')
 
     await waitFor(() => {
