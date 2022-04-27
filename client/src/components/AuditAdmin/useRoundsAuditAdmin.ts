@@ -34,7 +34,7 @@ const getRounds = async (electionId: string): Promise<IRound[] | null> => {
 const postRound = async (
   electionId: string,
   roundNum: number,
-  sampleSizes?: ISampleSizes
+  sampleSizes: ISampleSizes
 ) => {
   const response = await api(`/election/${electionId}/round`, {
     method: 'POST',
@@ -70,12 +70,12 @@ const useRoundsAuditAdmin = (
   refreshId?: string
 ): [
   IRound[] | null,
-  (sampleSizes?: ISampleSizes) => Promise<boolean>,
+  (sampleSizes: ISampleSizes) => Promise<boolean>,
   () => Promise<boolean>
 ] => {
   const [rounds, setRounds] = useState<IRound[] | null>(null)
 
-  const startNextRound = async (sampleSizes?: ISampleSizes) => {
+  const startNextRound = async (sampleSizes: ISampleSizes) => {
     if (rounds === null)
       throw new Error('Cannot start next round until rounds are loaded')
     const nextRoundNum =

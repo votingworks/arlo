@@ -425,7 +425,7 @@ export const aaApiCalls = {
     response: { status: 'ok' },
   }),
   getSampleSizes: {
-    url: '/api/election/1/sample-sizes',
+    url: '/api/election/1/sample-sizes/1',
     response: {
       sampleSizes: null,
       selected: null,

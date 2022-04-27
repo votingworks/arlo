@@ -40,7 +40,7 @@ def test_multi_winner_sample_size(
     snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
     sample_size_options = json.loads(rv.data)["sampleSizes"]
     options = sample_size_options[contest_ids[0]]
     # We only expect the asn sample size option for multi-winner contests
@@ -100,7 +100,7 @@ def test_multi_winner_two_rounds(
     contest_id = contest_ids[0]
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
     sample_sizes = json.loads(rv.data)["sampleSizes"]
     selected_sample_sizes = {contest_id: sample_sizes[contest_id][0]}
 
@@ -119,7 +119,17 @@ def test_multi_winner_two_rounds(
     rv = client.get(f"/api/election/{election_id}/round")
     assert json.loads(rv.data)["rounds"][0]["isAuditComplete"] is False
 
-    rv = post_json(client, f"/api/election/{election_id}/round", {"roundNum": 2},)
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/2")
+    sample_size_options = json.loads(rv.data)["sampleSizes"]
+
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {
+            "roundNum": 2,
+            "sampleSizes": {contest_id: sample_size_options[contest_id][0]},
+        },
+    )
     assert_ok(rv)
 
     rv = client.get(f"/api/election/{election_id}/round")

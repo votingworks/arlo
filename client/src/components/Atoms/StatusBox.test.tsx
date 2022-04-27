@@ -11,8 +11,11 @@ import {
   auditBoardMocks,
 } from '../AuditAdmin/useSetupMenuItems/_mocks'
 import { contestMocks } from '../AuditAdmin/Setup/Contests/_mocks'
-import * as utilities from '../utilities'
 import { IAuditSettings } from '../useAuditSettings'
+import { withMockFetch } from '../testUtilities'
+import { aaApiCalls } from '../_mocks'
+import { sampleSizeMock } from '../AuditAdmin/Setup/Review/_mocks'
+import { FileProcessingStatus } from '../useCSV'
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'), // use actual for all non-hook parts
@@ -24,15 +27,6 @@ paramsMock.mockReturnValue({
   electionId: '1',
   jurisdictionId: '1',
   view: 'setup',
-})
-
-const apiMock: jest.SpyInstance<
-  ReturnType<typeof utilities.api>,
-  Parameters<typeof utilities.api>
-> = jest.spyOn(utilities, 'api').mockImplementation()
-
-afterEach(() => {
-  apiMock.mockClear()
 })
 
 const cvrAuditTypes: IAuditSettings['auditType'][] = [
@@ -236,48 +230,114 @@ describe('StatusBox', () => {
       expect(screen.queryByRole('button')).not.toBeInTheDocument()
     })
 
-    it('renders round complete, need another round state', () => {
-      render(
-        <Router>
-          <AuditAdminStatusBox
-            rounds={roundMocks.needAnother}
-            startNextRound={jest.fn()}
-            undoRoundStart={jest.fn()}
-            jurisdictions={jurisdictionMocks.allComplete}
-            contests={contestMocks.filledTargeted.contests}
-            auditSettings={auditSettings.all}
-          />
-        </Router>
-      )
-      screen.getByText(
-        'Round 1 of the audit is complete - another round is needed'
-      )
-      screen.getByText('When you are ready, start Round 2')
-      screen.getByText('Start Round 2')
+    it('renders round complete, need another round state', async () => {
+      const expectedCalls = [
+        {
+          ...aaApiCalls.getSampleSizes,
+          url: '/api/election/1/sample-sizes/2',
+          response: sampleSizeMock.ballotComparison,
+        },
+      ]
+      await withMockFetch(expectedCalls, async () => {
+        const startNextRoundMock = jest.fn()
+        render(
+          <Router>
+            <AuditAdminStatusBox
+              rounds={roundMocks.needAnother}
+              startNextRound={startNextRoundMock}
+              undoRoundStart={jest.fn()}
+              jurisdictions={jurisdictionMocks.allComplete}
+              contests={contestMocks.filledTargeted.contests}
+              auditSettings={auditSettings.ballotComparisonAll}
+            />
+          </Router>
+        )
+        screen.getByText(
+          'Round 1 of the audit is complete - another round is needed'
+        )
+        screen.getByText('Loading sample sizes...')
+        screen.getByRole('button', { name: 'Start Round 2' })
+        await screen.findByText('Round 2 Sample Sizes')
+        screen.getByText(/Contest Name: 15 ballots/)
+
+        fireEvent.click(screen.getByRole('button', { name: 'Start Round 2' }), {
+          bubbles: true,
+        })
+        expect(
+          screen.getByRole('button', { name: 'Start Round 2' })
+        ).toBeDisabled()
+        await waitFor(() => expect(startNextRoundMock).toHaveBeenCalledTimes(1))
+        expect(startNextRoundMock).toHaveBeenCalledWith({
+          'contest-id':
+            sampleSizeMock.ballotComparison.sampleSizes['contest-id'][0],
+        })
+      })
     })
 
-    it('creates the next round', async () => {
-      const startNextRoundMock = jest.fn()
-      render(
-        <Router>
-          <AuditAdminStatusBox
-            rounds={roundMocks.needAnother}
-            startNextRound={startNextRoundMock}
-            undoRoundStart={jest.fn()}
-            jurisdictions={jurisdictionMocks.allComplete}
-            contests={contestMocks.filledTargeted.contests}
-            auditSettings={auditSettings.all}
-          />
-        </Router>
-      )
-      fireEvent.click(screen.getByRole('button', { name: 'Start Round 2' }), {
-        bubbles: true,
+    it('renders round complete, need another round state for batch comparison audits', async () => {
+      const expectedCalls = [
+        {
+          ...aaApiCalls.getSampleSizes,
+          url: '/api/election/1/sample-sizes/2',
+          response: sampleSizeMock.batchComparison,
+        },
+      ]
+      await withMockFetch(expectedCalls, async () => {
+        const startNextRoundMock = jest.fn()
+        render(
+          <Router>
+            <AuditAdminStatusBox
+              rounds={roundMocks.needAnother}
+              startNextRound={startNextRoundMock}
+              undoRoundStart={jest.fn()}
+              jurisdictions={jurisdictionMocks.allComplete}
+              contests={contestMocks.filledTargeted.contests}
+              auditSettings={auditSettings.batchComparisonAll}
+            />
+          </Router>
+        )
+        screen.getByText(
+          'Round 1 of the audit is complete - another round is needed'
+        )
+        await screen.findByText('Round 2 Sample Sizes')
+        screen.getByText(/Contest Name: 4 batches/)
       })
+    })
 
-      expect(
-        screen.getByRole('button', { name: 'Start Round 2' })
-      ).toBeDisabled()
-      await waitFor(() => expect(startNextRoundMock).toHaveBeenCalledTimes(1))
+    it('handles sample size errors in need another round state', async () => {
+      const expectedCalls = [
+        {
+          ...aaApiCalls.getSampleSizes,
+          url: '/api/election/1/sample-sizes/2',
+          response: {
+            sampleSizes: null,
+            selected: null,
+            task: {
+              status: FileProcessingStatus.ERRORED,
+              startedAt: '2019-07-18T16:34:07.000+00:00',
+              completedAt: '2019-07-18T16:35:07.000+00:00',
+              error: 'something went wrong',
+            },
+          },
+        },
+      ]
+      await withMockFetch(expectedCalls, async () => {
+        render(
+          <Router>
+            <AuditAdminStatusBox
+              rounds={roundMocks.needAnother}
+              startNextRound={jest.fn()}
+              undoRoundStart={jest.fn()}
+              jurisdictions={jurisdictionMocks.allComplete}
+              contests={contestMocks.filledTargeted.contests}
+              auditSettings={auditSettings.ballotComparisonAll}
+            />
+          </Router>
+        )
+        await screen.findByText(
+          'Error computing sample sizes: something went wrong'
+        )
+      })
     })
 
     it('renders audit completion state', () => {

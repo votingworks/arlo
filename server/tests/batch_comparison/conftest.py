@@ -146,7 +146,7 @@ def round_1_id(
     batch_tallies,  # pylint: disable=unused-argument
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
     assert rv.status_code == 200
     sample_size_options = json.loads(rv.data)["sampleSizes"]
     sample_size = sample_size_options[contest_id][0]

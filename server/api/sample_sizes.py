@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from typing import Dict, cast as typing_cast
 from collections import Counter, defaultdict
 from flask import jsonify
+from werkzeug.exceptions import BadRequest
 
 from . import api
 from ..models import *  # pylint: disable=wildcard-import
@@ -14,6 +15,7 @@ from ..audit_math import (
     sampler_contest,
     suite,
 )
+from ..audit_math.ballot_polling import SampleSizeOption
 from . import rounds  # pylint: disable=cyclic-import
 from .cvrs import validate_uploaded_cvrs, hybrid_contest_choice_vote_counts
 from .ballot_manifest import hybrid_contest_total_ballots, all_manifests_uploaded
@@ -92,9 +94,7 @@ def validate_hybrid_manifests_and_cvrs(contest: Contest):
         )
 
 
-def sample_size_options(
-    election: Election,
-) -> Dict[str, Dict[str, ballot_polling.SampleSizeOption]]:
+def sample_size_options(election: Election) -> Dict[str, Dict[str, SampleSizeOption]]:
     if not election.contests:
         raise UserError("Cannot compute sample sizes until contests are set")
     if election.risk_limit is None:
@@ -185,30 +185,38 @@ def sample_size_options(
                 }
             }
 
-    targeted_contests = Contest.query.filter_by(
-        election_id=election.id, is_targeted=True
-    )
-    targeted_contests_that_havent_met_risk_limit = (
-        targeted_contests.all()
-        if len(list(election.rounds)) == 0
-        else targeted_contests.join(RoundContest).filter_by(is_complete=False).all()
-    )
     try:
         return {
             contest.id: sample_sizes_for_contest(contest)
-            for contest in targeted_contests_that_havent_met_risk_limit
+            for contest in rounds.active_targeted_contests(election)
         }
     except ValueError as exc:
         raise UserError(exc) from exc
 
 
 @background_task
-def first_round_sample_size_options(election_id: str):
-    sample_sizes = SampleSizeOptions.query.filter_by(
-        election_id=election_id, round_num=1
-    ).one()
+def next_round_sample_size_options(election_id: str):
     election = Election.query.get(election_id)
+    current_round = rounds.get_current_round(election)
+    next_round_num = current_round.round_num + 1 if current_round else 1
+    sample_sizes = SampleSizeOptions.query.filter_by(
+        election_id=election.id, round_num=next_round_num
+    ).one()
     sample_sizes.sample_size_options = sample_size_options(election)
+
+
+# In rounds other than the first round, we want to automatically select a sample
+# size from the generated options instead of letting the user pick.
+def autoselect_sample_size(options: Dict[str, SampleSizeOption], audit_type: AuditType):
+    if audit_type == AuditType.BALLOT_POLLING:
+        return options.get("0.9", options.get("asn"))
+    elif audit_type == AuditType.BATCH_COMPARISON:
+        return options["macro"]
+    elif audit_type == AuditType.BALLOT_COMPARISON:
+        return options["supersimple"]
+    else:
+        assert audit_type == AuditType.HYBRID
+        return options["suite"]
 
 
 def serialize_sample_size_options(sample_size_options):
@@ -220,16 +228,21 @@ def serialize_sample_size_options(sample_size_options):
     }
 
 
-@api.route("/election/<election_id>/sample-sizes", methods=["GET"])
+@api.route("/election/<election_id>/sample-sizes/<int:round_num>", methods=["GET"])
 @restrict_access([UserType.AUDIT_ADMIN])
-def get_sample_sizes(election: Election):
+def get_sample_sizes(election: Election, round_num: int):
+    current_round = rounds.get_current_round(election)
+    next_round_num = current_round.round_num + 1 if current_round else 1
+    if not 1 <= round_num <= next_round_num:
+        raise BadRequest("Invalid round number")
+
     sample_sizes = SampleSizeOptions.query.filter_by(
-        election_id=election.id, round_num=1,
+        election_id=election.id, round_num=round_num,
     ).one_or_none()
-    # If we've never queried sample sizes before for this audit, create a row in
+    # If we've never queried sample sizes before for this round, create a row in
     # the database to store them.
     if not sample_sizes:
-        sample_sizes = SampleSizeOptions(election_id=election.id, round_num=1)
+        sample_sizes = SampleSizeOptions(election_id=election.id, round_num=round_num)
         db_session.add(sample_sizes)
 
     # If we don't have sample sizes stored already, or we do but they expired,
@@ -244,13 +257,13 @@ def get_sample_sizes(election: Election):
             datetime.now(timezone.utc) - sample_sizes.task.completed_at
             > timedelta(seconds=5)
         )
-        # Don't need to recompute after the audit launches
-        and len(list(election.rounds)) == 0
     )
-    if not sample_sizes.task or existing_options_expired:
+    if round_num == next_round_num and (
+        not sample_sizes.task or existing_options_expired
+    ):
         sample_sizes.sample_size_options = None
         sample_sizes.task = create_background_task(
-            first_round_sample_size_options, dict(election_id=election.id)
+            next_round_sample_size_options, dict(election_id=election.id)
         )
 
         db_session.flush()  # Ensure we can read task.created_at
@@ -263,20 +276,31 @@ def get_sample_sizes(election: Election):
 
         db_session.commit()
 
-    # If we've already started the first round, return which sample size was
-    # selected for each contest so we can show the user
+    # If the round already started, return which sample size was selected for
+    # each contest so we can show the user
     selected_sample_sizes = (
         dict(
             RoundContest.query.join(Round)
-            .filter_by(election_id=election.id, round_num=1)
+            .filter_by(election_id=election.id, round_num=round_num)
             .values(RoundContest.contest_id, RoundContest.sample_size)
         )
-        if len(list(election.rounds)) > 0
+        if current_round and round_num < next_round_num
         else None
     )
 
+    options = sample_sizes.sample_size_options and (
+        sample_sizes.sample_size_options
+        if round_num == 1
+        else {
+            contest_id: {
+                "_": autoselect_sample_size(options, AuditType(election.audit_type))
+            }
+            for contest_id, options in sample_sizes.sample_size_options.items()
+        }
+    )
+
     return jsonify(
-        sampleSizes=serialize_sample_size_options(sample_sizes.sample_size_options),
+        sampleSizes=serialize_sample_size_options(options),
         selected=selected_sample_sizes,
         task=serialize_background_task(sample_sizes.task),
     )

@@ -80,7 +80,7 @@ def test_standardize_contest_names(
 
     # Try to get the sample sizes - should fail because we haven't standardized
     # all targeted contest names
-    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
     assert rv.status_code == 200
     compare_json(
         json.loads(rv.data),
@@ -129,7 +129,7 @@ def test_standardize_contest_names(
     db_session.commit()
 
     # Now sample sizes should work
-    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
     assert rv.status_code == 200
     response = json.loads(rv.data)
     assert response["task"]["status"] == "PROCESSED"
@@ -256,7 +256,7 @@ def test_standardize_contest_names_cvr_change(
 
     # Try to get the sample sizes - should fail because we haven't standardized
     # all targeted contest names
-    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
     assert rv.status_code == 200
     compare_json(
         json.loads(rv.data),
@@ -334,7 +334,7 @@ def test_standardize_contest_names_contest_change(
 
     # Try to get the sample sizes - should fail because we haven't standardized
     # all targeted contest names
-    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
     assert rv.status_code == 200
     compare_json(
         json.loads(rv.data),

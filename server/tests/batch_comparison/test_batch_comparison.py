@@ -61,7 +61,7 @@ def test_batch_comparison_sample_size(
     snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
     assert rv.status_code == 200
     sample_size_options = json.loads(rv.data)["sampleSizes"]
     assert len(sample_size_options) == 1
@@ -77,7 +77,7 @@ def test_batch_comparison_without_all_batch_tallies(
     manifests,  # pylint: disable=unused-argument
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
     assert rv.status_code == 200
     compare_json(
         json.loads(rv.data),
@@ -120,7 +120,7 @@ def test_batch_comparison_too_many_votes(
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     assert rv.status_code == 200
-    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
     compare_json(
         json.loads(rv.data),
         {
@@ -360,7 +360,19 @@ def test_batch_comparison_round_2(
     snapshot.assert_match(jurisdictions[1]["currentRoundStatus"])
 
     # Start a second round
-    rv = post_json(client, f"/api/election/{election_id}/round", {"roundNum": 2})
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/2")
+    sample_size_options = json.loads(rv.data)["sampleSizes"]
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {
+            "roundNum": 2,
+            "sampleSizes": {
+                contest_id: options[0]
+                for contest_id, options in sample_size_options.items()
+            },
+        },
+    )
     assert_ok(rv)
 
     rv = client.get(f"/api/election/{election_id}/round")

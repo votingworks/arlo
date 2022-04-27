@@ -153,7 +153,7 @@ def test_ballot_comparison_container_manifest(
     contests = json.loads(rv.data)["contests"]
     target_contest_id = contests[0]["id"]
 
-    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
     sample_size_options = json.loads(rv.data)["sampleSizes"]
     assert len(sample_size_options) == 1
     sample_size = sample_size_options[target_contest_id][0]

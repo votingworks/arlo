@@ -308,7 +308,7 @@ def test_jurisdictions_round_status_offline(
     rv = put_json(client, f"/api/election/{election_id}/settings", settings)
     assert_ok(rv)
 
-    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
     sample_size_options = json.loads(rv.data)["sampleSizes"]
     rv = post_json(
         client,

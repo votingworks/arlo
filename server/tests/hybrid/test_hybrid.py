@@ -135,7 +135,7 @@ def test_contest_vote_counts(
     assert jurisdictions[0]["cvrs"]["numBallots"] == len(TEST_CVRS.splitlines()) - 4
 
 
-def test_sample_size(
+def test_hybrid_sample_size(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],  # pylint: disable=unused-argument
@@ -146,7 +146,7 @@ def test_sample_size(
     snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
     sample_sizes = json.loads(rv.data)["sampleSizes"]
     assert len(sample_sizes) == 1
     snapshot.assert_match(sample_sizes[contest_ids[0]])
@@ -164,8 +164,8 @@ def test_sample_size(
     )
     assert_ok(rv)
 
-    # Sample sizes endpoint shoudl still return round 1 options after audit launch
-    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    # Sample sizes endpoint should still return round 1 options after audit launch
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
     assert json.loads(rv.data)["sampleSizes"] == sample_sizes
 
 
@@ -177,7 +177,7 @@ def test_sample_size_before_manifest(
     election_settings,  # pylint: disable=unused-argument
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
     assert rv.status_code == 200
     compare_json(
         json.loads(rv.data),
@@ -203,7 +203,7 @@ def test_sample_size_before_cvrs(
     manifests,  # pylint: disable=unused-argument
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
     assert rv.status_code == 200
     compare_json(
         json.loads(rv.data),
@@ -247,7 +247,7 @@ def test_contest_names_dont_match_cvrs(
     rv = put_json(client, f"/api/election/{election_id}/contest", contests)
     assert_ok(rv)
 
-    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
     assert rv.status_code == 200
     compare_json(
         json.loads(rv.data),
@@ -296,7 +296,7 @@ def test_contest_choices_dont_match_cvrs(
     rv = put_json(client, f"/api/election/{election_id}/contest", contests)
     assert_ok(rv)
 
-    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
     assert rv.status_code == 200
     compare_json(
         json.loads(rv.data),
@@ -329,7 +329,7 @@ def test_hybrid_two_rounds(
 ):
     # AA selects a sample size and launches the audit
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
     sample_sizes = json.loads(rv.data)["sampleSizes"]
 
     rv = post_json(
@@ -445,8 +445,8 @@ def test_hybrid_two_rounds(
         ("J1", "TABULATOR2", "BATCH2", 3): (",,1,0,1", (None, None)),
         ("J1", "TABULATOR2", "BATCH2", 4): (",,1,1,0", (None, None)),
         ("J2", "TABULATOR1", "BATCH1", 3): ("0,1,1,1,0", (None, None)),
-        ("J2", "TABULATOR1", "BATCH2", 1): ("1,0,1,0,1", (None, None)),
-        ("J2", "TABULATOR2", "BATCH1", 1): ("not found", (2, None)),  # CVR: 0,1,1,1,0
+        ("J2", "TABULATOR1", "BATCH2", 1): ("1,1,1,0,1", (1, None)),
+        ("J2", "TABULATOR2", "BATCH1", 1): ("1,0,1,1,0", (None, None)),
         ("J2", "TABULATOR2", "BATCH2", 1): ("1,0,1,0,1", (None, None)),
         ("J2", "TABULATOR2", "BATCH2", 2): ("1,1,1,1,1", (None, None)),
         ("J2", "TABULATOR2", "BATCH2", 3): (",,1,0,1", (None, None)),
@@ -460,7 +460,7 @@ def test_hybrid_two_rounds(
         ("J1", "TABULATOR3", "BATCH1", 9): ("1,0,1,0,0", (None, None)),
         ("J1", "TABULATOR3", "BATCH1", 10): ("1,0,0,1,0", (None, None)),
         ("J2", "TABULATOR3", "BATCH1", 1): ("1,0,,,", (None, None)),
-        ("J2", "TABULATOR3", "BATCH1", 5): ("1,0,,,", (None, None)),
+        ("J2", "TABULATOR3", "BATCH1", 5): ("0,1,,,", (None, None)),
         ("J2", "TABULATOR3", "BATCH1", 10): ("0,1,,,", (None, None)),
     }
 
@@ -476,22 +476,29 @@ def test_hybrid_two_rounds(
     assert_match_report(rv.data, snapshot)
     check_discrepancies(rv.data, audit_results)
 
+    # Get round two sample size
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/2")
+    round_2_sample_sizes = json.loads(rv.data)["sampleSizes"]
+    assert len(round_2_sample_sizes) == 1
+    snapshot.assert_match(round_2_sample_sizes[contest_ids[0]])
+
     # Try to start a second round
-    rv = post_json(client, f"/api/election/{election_id}/round", {"roundNum": 2})
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {
+            "roundNum": 2,
+            "sampleSizes": {
+                contest_id: options[0]
+                for contest_id, options in round_2_sample_sizes.items()
+            },
+        },
+    )
     assert_ok(rv)
 
     rv = client.get(f"/api/election/{election_id}/round",)
     round_2 = json.loads(rv.data)["rounds"][1]
-    assert round_2["drawSampleTask"]["status"] == "ERRORED"
-    assert (
-        round_2["drawSampleTask"]["error"] == "One or both strata need to be recounted."
-    )
-
-    # Sample sizes endpoint should still return round 1 sample size
-    rv = client.get(f"/api/election/{election_id}/sample-sizes")
-    sample_size_options = json.loads(rv.data)["sampleSizes"]
-    assert len(sample_size_options) == 1
-    assert sample_size_options[target_contest_id][0] == sample_size
+    assert round_2["drawSampleTask"]["status"] == "PROCESSED"
 
 
 def test_hybrid_manifest_validation_too_many_votes(
@@ -550,7 +557,7 @@ def test_hybrid_manifest_validation_too_many_votes(
     rv = put_json(client, f"/api/election/{election_id}/contest", contests)
     assert_ok(rv)
 
-    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
     assert rv.status_code == 200
     compare_json(
         json.loads(rv.data),
@@ -623,7 +630,7 @@ def test_hybrid_manifest_validation_too_few_cvr_ballots(
         assert_ok(rv)
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
     assert rv.status_code == 200
     compare_json(
         json.loads(rv.data),
@@ -696,7 +703,7 @@ def test_hybrid_manifest_validation_few_non_cvr_ballots(
         assert_ok(rv)
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
     assert rv.status_code == 200
     compare_json(
         json.loads(rv.data),

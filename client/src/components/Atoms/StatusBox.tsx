@@ -12,9 +12,12 @@ import {
   IRound,
   drawSampleError,
   isAuditStarted,
+  ISampleSizes,
 } from '../AuditAdmin/useRoundsAuditAdmin'
 import { IAuditBoard } from '../useAuditBoards'
 import { IContest } from '../../types'
+import useSampleSizes from '../AuditAdmin/Setup/Review/useSampleSizes'
+import { mapValues } from '../../utils/objects'
 
 const SpacedH3 = styled(H3)`
   &.bp3-heading {
@@ -137,7 +140,7 @@ export const isSetupComplete = (
 
 interface IAuditAdminProps {
   rounds: IRound[]
-  startNextRound: () => Promise<boolean>
+  startNextRound: (sampleSizes: ISampleSizes) => Promise<boolean>
   undoRoundStart: () => Promise<boolean>
   jurisdictions: IJurisdiction[]
   contests: IContest[]
@@ -263,15 +266,13 @@ export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
   // Round complete, need another round
   if (!isAuditComplete) {
     return (
-      <StatusBox
-        headline={`Round ${roundNum} of the audit is complete - another round is needed`}
-        details={[`When you are ready, start Round ${roundNum + 1}`]}
-        buttonLabel={`Start Round ${roundNum + 1}`}
-        onButtonClick={startNextRound}
-        auditName={auditSettings.auditName}
-      >
-        {children}
-      </StatusBox>
+      <AuditAdminAnotherRoundStatusBox
+        electionId={electionId}
+        auditSettings={auditSettings}
+        contests={contests}
+        roundNum={roundNum}
+        startNextRound={startNextRound}
+      />
     )
   }
 
@@ -282,6 +283,65 @@ export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
       details={[]}
       buttonLabel="Download Audit Report"
       onButtonClick={async () => downloadAuditAdminReport(electionId)}
+      auditName={auditSettings.auditName}
+    >
+      {children}
+    </StatusBox>
+  )
+}
+
+interface IAuditAdminAnotherRoundStatusBoxProps {
+  electionId: string
+  auditSettings: IAuditSettings
+  contests: IContest[]
+  roundNum: number
+  startNextRound: (sampleSizes: ISampleSizes) => Promise<boolean>
+  children?: ReactElement
+}
+
+const AuditAdminAnotherRoundStatusBox = ({
+  electionId,
+  auditSettings,
+  contests,
+  roundNum,
+  startNextRound,
+  children,
+}: IAuditAdminAnotherRoundStatusBoxProps) => {
+  const sampleSizesResponse = useSampleSizes(electionId, roundNum + 1, true)
+  // The server should autoselect one option per contest, so we pick the first
+  // item in the options array for each contest
+  const sampleSizes =
+    sampleSizesResponse &&
+    sampleSizesResponse.sampleSizes &&
+    mapValues(sampleSizesResponse.sampleSizes, options => options[0])
+  const ballotsOrBatches =
+    auditSettings.auditType === 'BATCH_COMPARISON' ? 'batches' : 'ballots'
+
+  return (
+    <StatusBox
+      headline={`Round ${roundNum} of the audit is complete - another round is needed`}
+      details={(() => {
+        if (
+          sampleSizesResponse === null ||
+          sampleSizesResponse.task.completedAt === null
+        )
+          return ['Loading sample sizes...']
+        if (sampleSizesResponse.task.error !== null)
+          return [
+            `Error computing sample sizes: ${sampleSizesResponse.task.error}`,
+          ]
+        return [
+          `Round ${roundNum + 1} Sample Sizes`,
+          ...Object.entries(sampleSizes!).map(([contestId, option]) => {
+            const contestName = contests.find(
+              contest => contest.id === contestId
+            )!.name
+            return `• ${contestName}: ${option.size} ${ballotsOrBatches}`
+          }),
+        ]
+      })()}
+      buttonLabel={`Start Round ${roundNum + 1}`}
+      onButtonClick={() => startNextRound(sampleSizes!)}
       auditName={auditSettings.auditName}
     >
       {children}

@@ -302,7 +302,7 @@ def test_require_cvr_uploads(
 
     # AA tries to select a sample size - should get an error because CVRs have
     # to be uploaded first
-    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
     assert rv.status_code == 200
     compare_json(
         json.loads(rv.data),
@@ -345,7 +345,7 @@ def test_require_manifest_uploads(
 
     # AA tries to select a sample size - should get an error because manifests have
     # to be uploaded first
-    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
     assert rv.status_code == 200
     compare_json(
         json.loads(rv.data),
@@ -383,7 +383,7 @@ def test_contest_names_dont_match_cvr_contests(
     rv = put_json(client, f"/api/election/{election_id}/contest", contests)
     assert_ok(rv)
 
-    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
     assert rv.status_code == 200
     compare_json(
         json.loads(rv.data),
@@ -576,7 +576,7 @@ def test_ballot_comparison_two_rounds(
     target_contest_id = contests[0]["id"]
     opportunistic_contest_id = contests[1]["id"]
 
-    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
     sample_size_options = json.loads(rv.data)["sampleSizes"]
     assert len(sample_size_options) == 1
     sample_size = sample_size_options[target_contest_id][0]
@@ -649,14 +649,26 @@ def test_ballot_comparison_two_rounds(
     check_discrepancies(rv.data, audit_results)
 
     # Start a second round
-    rv = post_json(client, f"/api/election/{election_id}/round", {"roundNum": 2},)
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/2")
+    sample_size_options = json.loads(rv.data)["sampleSizes"]
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {
+            "roundNum": 2,
+            "sampleSizes": {
+                contest_id: options[0]
+                for contest_id, options in sample_size_options.items()
+            },
+        },
+    )
     assert_ok(rv)
 
     rv = client.get(f"/api/election/{election_id}/round",)
     round_2_id = json.loads(rv.data)["rounds"][1]["id"]
 
     # Sample sizes endpoint should still return round 1 sample size
-    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
     sample_size_options = json.loads(rv.data)["sampleSizes"]
     assert len(sample_size_options) == 1
     assert sample_size_options[target_contest_id][0] == sample_size
@@ -909,7 +921,7 @@ def test_ballot_comparison_multiple_targeted_contests_sample_size(
     )
     assert_ok(rv)
 
-    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
     sample_size_options = json.loads(rv.data)["sampleSizes"]
 
     rv = post_json(
@@ -948,7 +960,19 @@ def test_ballot_comparison_multiple_targeted_contests_sample_size(
     end_round(round.election, round)
     db_session.commit()
 
-    rv = post_json(client, f"/api/election/{election_id}/round", {"roundNum": 2})
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/2")
+    sample_size_options = json.loads(rv.data)["sampleSizes"]
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {
+            "roundNum": 2,
+            "sampleSizes": {
+                contest_id: options[0]
+                for contest_id, options in sample_size_options.items()
+            },
+        },
+    )
     assert_ok(rv)
 
     rv = client.get(f"/api/election/{election_id}/round",)
@@ -1073,7 +1097,7 @@ def test_ballot_comparison_union_choice_names(
         ],
     )
 
-    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
     sample_size_options = json.loads(rv.data)["sampleSizes"]
     assert len(sample_size_options) == 1
     sample_size = sample_size_options[target_contest["id"]][0]
