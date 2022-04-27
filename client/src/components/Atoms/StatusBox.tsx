@@ -309,7 +309,7 @@ const AuditAdminAnotherRoundStatusBox = ({
 }: IAuditAdminAnotherRoundStatusBoxProps) => {
   const sampleSizesResponse = useSampleSizes(electionId, roundNum + 1, true)
   // The server should autoselect one option per contest, so we pick the first
-  // item in the options array
+  // item in the options array for each contest
   const sampleSizes =
     sampleSizesResponse &&
     sampleSizesResponse.sampleSizes &&
