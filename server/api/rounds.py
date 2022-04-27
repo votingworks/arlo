@@ -335,6 +335,21 @@ def cvrs_for_contest(contest: Contest) -> sampler_contest.CVRS:
                 for interpretation in choice_interpretations.values()
             ):
                 cvrs[ballot_key] = {}
+            # Special case for ES&S overvotes/undervotes
+            elif any(
+                interpretation == "o"
+                for interpretation in choice_interpretations.values()
+            ):
+                cvrs[ballot_key] = {
+                    contest.id: {choice.id: "o" for choice in contest.choices}
+                }
+            elif any(
+                interpretation == "u"
+                for interpretation in choice_interpretations.values()
+            ):
+                cvrs[ballot_key] = {
+                    contest.id: {choice.id: "u" for choice in contest.choices}
+                }
             else:
                 # Since some CVRs don't list every contest choice, we may not
                 # have an interpretation for a choice. In that case, we can

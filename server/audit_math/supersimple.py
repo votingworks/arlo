@@ -90,9 +90,30 @@ def compute_discrepancies(
                         }
                     }
     """
+    # TODO behavior is pretty much correct at this point, but code is messy
+    # Idea: when parsing the ES&S CVR, change overvote to all 1s and undervote
+    # to all 0s, then we can detect that case and handle it as long as we know
+    # the CVRs are ES&S - which might require passing a param to the audit math.
+    # This would ensure that all other code treats the interpretations normally.
+    # Downside is that we're being slightly less explicit.
+    # Another alternative is to not even have a special case and allow for -1
+    # discrepancies.
 
     discrepancies: Dict[str, Discrepancy] = {}
     for ballot, ballot_sample_cvr in sample_cvr.items():
+        if ballot_sample_cvr["cvr"]:
+            audited_votes = sum(ballot_sample_cvr["cvr"].get(contest.name, {}).values())
+            if (
+                "o" in cvrs.get(ballot, {}).get(contest.name, {}).values()
+                and audited_votes > 1
+            ):
+                continue
+            if (
+                "u" in cvrs.get(ballot, {}).get(contest.name, {}).values()
+                and audited_votes < 1
+            ):
+                continue
+
         ballot_discrepancies = []
         for winner, loser in product(contest.winners, contest.losers):
             ballot_discrepancy = discrepancy(
@@ -116,25 +137,36 @@ def discrepancy(
     reported: Optional[CVR],
     audited: Optional[CVR],
 ) -> Optional[Discrepancy]:
-    # Special cases: if ballot wasn't in CVR or ballot can't be found by
-    # audit board, count it as a two-vote overstatement
-    if reported is None or audited is None:
-        error = 2
-    else:
-        v_w, v_l = (
-            (reported[contest.name][winner], reported[contest.name][loser])
-            if contest.name in reported
-            # If contest wasn't on the ballot according to the CVR
-            else (0, 0)
-        )
-        a_w, a_l = (
-            (audited[contest.name][winner], audited[contest.name][loser])
-            if contest.name in audited
-            # If contest wasn't on the ballot according to the audit board
-            else (0, 0)
-        )
-        error = (v_w - a_w) - (v_l - a_l)
+    def calculate_error():
+        # Special cases: if ballot wasn't in CVR or ballot can't be found by
+        # audit board, count it as a two-vote overstatement
+        if reported is None or audited is None:
+            return 2
+        else:
+            v_w, v_l = (
+                (reported[contest.name][winner], reported[contest.name][loser])
+                if contest.name in reported
+                # If contest wasn't on the ballot according to the CVR
+                else (0, 0)
+            )
+            a_w, a_l = (
+                (audited[contest.name][winner], audited[contest.name][loser])
+                if contest.name in audited
+                # If contest wasn't on the ballot according to the audit board
+                else (0, 0)
+            )
 
+            # Special case for ES&S CVR overvotes and undervotes
+            if (v_w, v_l) == ("o", "o"):
+                v_w, v_l = (1, 1)
+            if (v_w, v_l) == ("u", "u"):
+                v_w, v_l = (0, 0)
+            # print(reported[contest.name])
+            # print(v_w, a_w, v_l, a_l)
+
+            return (v_w - a_w) - (v_l - a_l)
+
+    error = calculate_error()
     if error == 0:
         return None
 

@@ -136,6 +136,11 @@ def pretty_cvr_interpretation(
     if ballot_cvr is None or cvrs_by_choice is None:
         return ""
 
+    if any(interpretation == "o" for interpretation in cvrs_by_choice.values()):
+        return "Overvote"
+    if any(interpretation == "u" for interpretation in cvrs_by_choice.values()):
+        return "Undervote"
+
     choice_id_to_name = {choice.id: choice.name for choice in contest.choices}
     return ", ".join(
         choice_id_to_name[choice_id]

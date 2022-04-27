@@ -3,7 +3,7 @@ A Module containing the Contest class, which encapsulates useful info for RLA
 computations.
 """
 import operator
-from typing import Dict, Optional, TypedDict
+from typing import Dict, Literal, Optional, TypedDict, Union
 
 
 def from_db_contest(db_contest):
@@ -38,7 +38,7 @@ class Contest:
 
     candidates: Dict[str, int]  # Dict mapping candidates to their vote totals
     num_winners: int  # How many winners this contest had
-    votesAllowed: int  # How many voters are allowed in this contest
+    votes_allowed: int  # How many voters are allowed in this contest
     ballots: int  # The total number of ballots cast in this contest
     name: str  # The name of the contest
 
@@ -170,7 +170,8 @@ class Contest:
 
 # CVR: { contest_id: { choice_id: 0 | 1 }}
 # CVRS: { ballot_id: CVR }
-CVR = Dict[str, Dict[str, int]]
+ESS_OVERVOTE_OR_UNDERVOTE = Literal["o", "u"]  # pylint: disable=invalid-name
+CVR = Dict[str, Dict[str, Union[int, ESS_OVERVOTE_OR_UNDERVOTE]]]
 CVRS = Dict[str, Optional[CVR]]
 
 
