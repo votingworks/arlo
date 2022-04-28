@@ -61,19 +61,19 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
         class="sc-bxivhb hMnACT"
       >
         <div
-          class="sc-hzDkRC gVPzYn"
+          class="sc-fMiknA dSOusv"
         >
           <div
-            class="sc-jhAzac joyqzP"
+            class="sc-dVhcbM eppSxF"
           >
             <div
-              class="sc-fBuWsC bHPSMB"
+              class="sc-eqIVtm frkvBF"
             >
               <div
-                class="sc-caSCKo bNtiHN"
+                class="sc-gisBJw bOlyDI"
               >
                 <button
-                  class="bp3-button bp3-minimal sc-fAjcbJ kXjHwO"
+                  class="bp3-button bp3-minimal sc-caSCKo gfxreq"
                   href="/election/1/audit-board/audit-board-1"
                   type="button"
                 >
@@ -103,7 +103,7 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
                   </span>
                 </button>
                 <h3
-                  class="bp3-heading sc-bRBYWo jwWDGO"
+                  class="bp3-heading sc-fBuWsC WkuWb"
                 >
                   Audit Ballot Selections
                 </h3>
@@ -111,62 +111,62 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
               <div
                 class="bp3-divider sc-ckVGcZ dgQdnS"
               />
-              <div
-                class="sc-dVhcbM hsvMYv"
-              >
-                <div>
-                  <h5
-                    class="bp3-heading sc-jWBwVP bDsnAc"
-                  >
-                    Tabulator
-                  </h5>
-                  <h4
-                    class="bp3-heading sc-eqIVtm herKMF"
-                  >
-                    11
-                  </h4>
-                </div>
-                <div>
-                  <h5
-                    class="bp3-heading sc-jWBwVP bDsnAc"
-                  >
-                    Batch
-                  </h5>
-                  <h4
-                    class="bp3-heading sc-eqIVtm herKMF"
-                  >
-                    0003-04-Precinct 19 (Jonesboro Fire Department)
-                  </h4>
-                </div>
-                <div>
-                  <h5
-                    class="bp3-heading sc-jWBwVP bDsnAc"
-                  >
-                    Ballot Number
-                  </h5>
-                  <h4
-                    class="bp3-heading sc-eqIVtm herKMF"
-                  >
-                    2112
-                  </h4>
-                </div>
-                <div>
-                  <button
-                    class="bp3-button bp3-large bp3-intent-danger sc-gisBJw lnGrEx"
-                    type="button"
-                  >
-                    <span
-                      class="bp3-button-text"
-                    >
-                      Ballot Not Found
-                    </span>
-                  </button>
-                </div>
-              </div>
-              <div
-                class="bp3-divider sc-ckVGcZ dgQdnS"
-              />
               <div>
+                <div
+                  class="sc-gipzik ekuIFz"
+                >
+                  <div>
+                    <h5
+                      class="bp3-heading sc-jWBwVP bDsnAc"
+                    >
+                      Tabulator
+                    </h5>
+                    <h4
+                      class="bp3-heading sc-csuQGl kiBObf"
+                    >
+                      11
+                    </h4>
+                  </div>
+                  <div>
+                    <h5
+                      class="bp3-heading sc-jWBwVP bDsnAc"
+                    >
+                      Batch
+                    </h5>
+                    <h4
+                      class="bp3-heading sc-csuQGl kiBObf"
+                    >
+                      0003-04-Precinct 19 (Jonesboro Fire Department)
+                    </h4>
+                  </div>
+                  <div>
+                    <h5
+                      class="bp3-heading sc-jWBwVP bDsnAc"
+                    >
+                      Ballot Number
+                    </h5>
+                    <h4
+                      class="bp3-heading sc-csuQGl kiBObf"
+                    >
+                      2112
+                    </h4>
+                  </div>
+                  <div>
+                    <button
+                      class="bp3-button bp3-large bp3-intent-danger sc-Rmtcm iksoTS"
+                      type="button"
+                    >
+                      <span
+                        class="bp3-button-text"
+                      >
+                        Ballot Not Found
+                      </span>
+                    </button>
+                  </div>
+                </div>
+                <div
+                  class="bp3-divider sc-ckVGcZ dgQdnS"
+                />
                 <div
                   class="sc-jKJlTe brEhRC"
                 >
@@ -189,7 +189,7 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
                             class="sc-eHgmQL kYkRfs"
                           >
                             <h3
-                              class="bp3-heading sc-csuQGl iCtfTC"
+                              class="bp3-heading sc-hzDkRC BSXNx"
                             >
                               Contest 1
                             </h3>
@@ -262,7 +262,7 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
                               </span>
                             </label>
                             <div
-                              class="sc-gipzik jiTfxh sc-jAaTju bNEIBb"
+                              class="sc-bRBYWo fhNHFP sc-jAaTju bNEIBb"
                             >
                               <textarea
                                 class="bp3-input sc-gPEVay ildqic"
@@ -283,7 +283,7 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
                             class="sc-eHgmQL kYkRfs"
                           >
                             <h3
-                              class="bp3-heading sc-csuQGl iCtfTC"
+                              class="bp3-heading sc-hzDkRC BSXNx"
                             >
                               Contest 2
                             </h3>
@@ -356,7 +356,7 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
                               </span>
                             </label>
                             <div
-                              class="sc-gipzik jiTfxh sc-jAaTju bNEIBb"
+                              class="sc-bRBYWo fhNHFP sc-jAaTju bNEIBb"
                             >
                               <textarea
                                 class="bp3-input sc-gPEVay ildqic"
@@ -371,7 +371,7 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
                         class="sc-kEYyzF hgMwhC"
                       >
                         <button
-                          class="bp3-button bp3-disabled bp3-large bp3-intent-success sc-Rmtcm gwMGjf sc-dxgOiQ iagcVQ"
+                          class="bp3-button bp3-disabled bp3-large bp3-intent-success sc-jhAzac evJAVP sc-dxgOiQ iagcVQ"
                           disabled=""
                           tabindex="-1"
                           type="submit"
@@ -399,7 +399,7 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
               </div>
             </div>
             <div
-              class="sc-fMiknA cVdEgP"
+              class="sc-fAjcbJ fMLyib"
             >
               <h4
                 class="bp3-heading"
