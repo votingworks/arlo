@@ -1316,6 +1316,75 @@ def test_full_recount():
         assert not res
 
 
+def test_ess_misstatements():
+    contest = Contest(
+        "Two Losers",
+        {
+            "winner": 1000,
+            "loser1": 0,
+            "loser2": 500,
+            "ballots": 1500,
+            "numWinners": 1,
+            "votesAllowed": 1,
+        },
+    )
+    reported_results = {
+        "ballot-0": {"Two Losers": {"winner": "o", "loser1": "o", "loser2": "o"}},
+        "ballot-1": {"Two Losers": {"winner": "u", "loser1": "u", "loser2": "u"}},
+        "ballot-2": {"Two Losers": {"winner": "1", "loser1": "0", "loser2": "0"}},
+    }
+
+    # Correct results
+    audited_results = {
+        "ballot-0": {
+            "times_sampled": 1,
+            "cvr": {"Two Losers": {"winner": "1", "loser1": "0", "loser2": "1"}},
+        },
+        "ballot-1": {
+            "times_sampled": 1,
+            "cvr": {"Two Losers": {"winner": "0", "loser1": "0", "loser2": "0"}},
+        },
+        "ballot-2": {
+            "times_sampled": 1,
+            "cvr": {"Two Losers": {"winner": "1", "loser1": "0", "loser2": "0"}},
+        },
+    }
+    assert misstatements(contest, reported_results, audited_results) == {
+        ("winner", "loser1"): {"o1": 0, "o2": 0, "u1": 0, "u2": 0},
+        ("winner", "loser2"): {"o1": 0, "o2": 0, "u1": 0, "u2": 0},
+    }
+
+    # Overstatements
+    audited_results = {
+        "ballot-0": {
+            "times_sampled": 1,
+            "cvr": {"Two Losers": {"winner": "0", "loser1": "1", "loser2": "0"}},
+        },
+        "ballot-1": {
+            "times_sampled": 1,
+            "cvr": {"Two Losers": {"winner": "0", "loser1": "0", "loser2": "1"}},
+        },
+        "ballot-2": {
+            "times_sampled": 1,
+            "cvr": {"Two Losers": {"winner": "0", "loser1": "1", "loser2": "0"}},
+        },
+    }
+    assert misstatements(contest, reported_results, audited_results) == {
+        ("winner", "loser1"): {"o1": 1, "o2": 1, "u1": 0, "u2": 0},
+        ("winner", "loser2"): {"o1": 2, "o2": 0, "u1": 0, "u2": 0},
+    }
+
+    # Missing ballots/contests not on ballot
+    audited_results = {
+        "ballot-0": {"times_sampled": 1, "cvr": None,},
+        "ballot-1": {"times_sampled": 1, "cvr": {}},
+    }
+    assert misstatements(contest, reported_results, audited_results) == {
+        ("winner", "loser1"): {"o1": 0, "o2": 1, "u1": 0, "u2": 0},
+        ("winner", "loser2"): {"o1": 0, "o2": 1, "u1": 0, "u2": 0},
+    }
+
+
 expected_p_values = {
     "no_discrepancies": {
         "Contest A": 0.06507,

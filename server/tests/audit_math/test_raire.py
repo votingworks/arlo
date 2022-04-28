@@ -2,23 +2,24 @@ from typing import List, Dict
 import pytest
 import numpy as np
 
-from server.audit_math.sampler_contest import Contest, CVRS
-from server.audit_math.raire import (
+from ...audit_math.sampler_contest import Contest
+from ...audit_math.raire import (
     NEBMatrix,
     compute_raire_assertions,
     make_neb_matrix,
     make_frontier,
     find_assertions,
 )
-from server.audit_math.raire_utils import (
+from ...audit_math.raire_utils import (
     find_best_audit,
     RaireFrontier,
     RaireNode,
     NEBAssertion,
     NENAssertion,
     RaireAssertion,
+    CVRS,
 )
-from server.tests.audit_math.test_raire_utils import make_neb_assertion
+from .test_raire_utils import make_neb_assertion
 
 RAIRE_INPUT_DIR = "server/tests/audit_math/raire_data/input/"
 RAIRE_OUTPUT_DIR = "server/tests/audit_math/raire_data/output/"

@@ -3,10 +3,9 @@ from decimal import Decimal, ROUND_CEILING
 from typing import Dict, Tuple, Optional, List
 import math
 
-from .sampler_contest import Contest, CVRS, SAMPLECVRS, CVR
-
+from .sampler_contest import Contest
 from .supersimple import Discrepancy
-from .raire_utils import RaireAssertion
+from .raire_utils import RaireAssertion, CVR, CVRS, SAMPLECVRS
 
 l: Decimal = Decimal(0.5)
 gamma: Decimal = Decimal(1.03905)  # This gamma is used in Stark's tool, AGI, and CORLA

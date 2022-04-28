@@ -2,7 +2,7 @@
 import math
 from itertools import product
 from decimal import Decimal, ROUND_CEILING, ROUND_HALF_UP
-from typing import Dict, List, Tuple, TypedDict, Optional
+from typing import Dict, Tuple, TypedDict, Optional
 
 from .sampler_contest import Contest, CVRS, SAMPLECVRS, CVR
 
@@ -92,22 +92,14 @@ def compute_discrepancies(
     """
     discrepancies: Dict[str, Discrepancy] = {}
     for ballot, ballot_sample_cvr in sample_cvr.items():
-        reported, audited = cvrs.get(ballot), ballot_sample_cvr["cvr"]
-        # Special case for ES&S overvotes/undervotes
-        if (
-            reported
-            and contest.name in reported
-            and any(vote in ["o", "u"] for vote in reported[contest.name].values())
-            and audited
-        ):
-            paired_discrepancies = ess_ballot_discrepancies(contest, reported, audited)
-        else:
-            paired_discrepancies = [
-                discrepancy(contest, winner, loser, reported, audited)
-                for winner, loser in product(contest.winners, contest.losers)
-            ]
+        ballot_discrepancies = []
+        for winner, loser in product(contest.winners, contest.losers):
+            ballot_discrepancy = discrepancy(
+                contest, winner, loser, cvrs.get(ballot), ballot_sample_cvr["cvr"],
+            )
+            if ballot_discrepancy is not None:
+                ballot_discrepancies.append(ballot_discrepancy)
 
-        ballot_discrepancies = list(filter(None, paired_discrepancies))
         if len(ballot_discrepancies) > 0:
             discrepancies[ballot] = max(
                 ballot_discrepancies, key=lambda d: d["counted_as"]
@@ -123,17 +115,12 @@ def discrepancy(
     reported: Optional[CVR],
     audited: Optional[CVR],
 ) -> Optional[Discrepancy]:
-    # Special cases: if ballot wasn't in CVR or ballot can't be found by
-    # audit board, count it as a two-vote overstatement
-    if reported is None or audited is None:
-        error = 2
-    else:
-        v_w, v_l = (
-            (int(reported[contest.name][winner]), int(reported[contest.name][loser]))
-            if contest.name in reported
-            # If contest wasn't on the ballot according to the CVR
-            else (0, 0)
-        )
+    def compute_error():
+        # Special cases: if ballot wasn't in CVR or ballot can't be found by
+        # audit board, count it as a two-vote overstatement
+        if reported is None or audited is None:
+            return 2
+
         a_w, a_l = (
             (int(audited[contest.name][winner]), int(audited[contest.name][loser]))
             if contest.name in audited
@@ -141,8 +128,33 @@ def discrepancy(
             else (0, 0)
         )
 
-        error = (v_w - a_w) - (v_l - a_l)
+        # Special case for ES&S overvotes/undervotes.
+        has_overvote = "o" in reported.get(contest.name, {}).values()
+        has_undervote = "u" in reported.get(contest.name, {}).values()
+        audited_votes = sum(map(int, (audited.get(contest.name, {}).values())))
+        # If the audited result correctly identified overvote/undervote, return
+        # 0 error.  Otherwise, return an error using the standard formula, but
+        # substituting in the appropriate overvotes/undervotes.
+        if has_overvote:
+            if audited_votes > 1:
+                return 0
+            else:
+                return (1 - a_w) - (1 - a_l)
+        if has_undervote:
+            if audited_votes < 1:
+                return 0
+            else:
+                return (0 - a_w) - (0 - a_l)
 
+        v_w, v_l = (
+            (int(reported[contest.name][winner]), int(reported[contest.name][loser]))
+            if contest.name in reported
+            # If contest wasn't on the ballot according to the CVR
+            else (0, 0)
+        )
+        return (v_w - a_w) - (v_l - a_l)
+
+    error = compute_error()
     if error == 0:
         return None
 
@@ -150,34 +162,6 @@ def discrepancy(
     weighted_error = Decimal(error) / Decimal(V_wl) if V_wl > 0 else Decimal("inf")
 
     return Discrepancy(counted_as=error, weighted_error=weighted_error)
-
-
-def ess_ballot_discrepancies(
-    contest: Contest, reported: CVR, audited: CVR
-) -> List[Optional[Discrepancy]]:
-    # If we correctly audited an overvote/undervote, there should be no
-    # discrepancies for the entire ballot
-    audited_votes = sum(map(int, (audited.get(contest.name, {}).values())))
-    has_overvote = "o" in reported[contest.name].values()
-    has_undervote = "u" in reported[contest.name].values()
-    if has_overvote and audited_votes > 1:
-        return []
-    if has_undervote in reported[contest.name].values() and audited_votes < 1:
-        return []
-
-    # Otherwise, if the audited results don't match the reported
-    # overvote/undervote, compute a discrepancy as normal, assuming overvotes
-    # have votes for every candidate and undervotes for none.
-    reported = {
-        contest.name: {
-            choice_id: "1" if has_overvote else "0" if has_undervote else vote
-            for choice_id, vote in reported[contest.name].items()
-        }
-    }
-    return [
-        discrepancy(contest, winner, loser, reported, audited)
-        for winner, loser in product(contest.winners, contest.losers)
-    ]
 
 
 def get_sample_sizes(

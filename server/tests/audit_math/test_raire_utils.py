@@ -2,10 +2,9 @@ from typing import List, Any, Dict, Callable, Set
 import pytest
 import numpy as np
 
-from server.audit_math.sampler_contest import Contest, CVRS
-
-import server.audit_math.raire_utils as raire_utils
-from server.audit_math.raire_utils import NEBAssertion, NENAssertion
+from ...audit_math.sampler_contest import Contest
+from ...audit_math import raire_utils
+from ...audit_math.raire_utils import NEBAssertion, NENAssertion, CVRS
 
 # TODO: update this type def
 AsnFunc = Callable

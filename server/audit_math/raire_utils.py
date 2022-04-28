@@ -1,8 +1,27 @@
 from __future__ import annotations
-from typing import Type, Callable, Dict, List, Any, Optional, Literal, Set
+from typing import Type, Callable, Dict, List, Any, Optional, Literal, Set, TypedDict
 import numpy as np
 
-from .sampler_contest import CVR, Contest
+from .sampler_contest import Contest
+
+# Note: these types are slightly different from the Arlo CVR types defined in
+# sampler_contest.py, since they use ints to represent votes instead of strings.
+# Our RAIRE implementation currently doesn't support the special casing for ES&S
+# overvotes/undervotes that the other audit math does which requires string CVR
+# values. For now, it's simplest to just redefine the types here.
+
+# CVR: { contest_id: { choice_id: 0 | 1 }}
+# CVRS: { ballot_id: CVR }
+CVR = Dict[str, Dict[str, int]]
+CVRS = Dict[str, Optional[CVR]]
+
+
+class SampleCVR(TypedDict):
+    times_sampled: int
+    cvr: Optional[CVR]
+
+
+SAMPLECVRS = Dict[str, SampleCVR]
 
 
 def ranking(cand: str, ballot: Dict[str, int]) -> int:

@@ -2,7 +2,7 @@ from typing import Callable, Dict, Optional, List
 
 import numpy as np
 
-from .sampler_contest import Contest, CVRS
+from .sampler_contest import Contest
 from .raire_utils import (
     NEBAssertion,
     RaireAssertion,
@@ -10,6 +10,7 @@ from .raire_utils import (
     RaireNode,
     find_best_audit,
     perform_dive,
+    CVRS,
 )
 
 
