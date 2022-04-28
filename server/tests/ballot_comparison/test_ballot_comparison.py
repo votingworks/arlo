@@ -1129,7 +1129,7 @@ def test_ballot_comparison_ess(
 
     # Audit boards audit all the ballots.
     # Tabulator, Batch, Ballot, Choice 1-1, Choice 1-2, Choice 2-1, Choice 2-2, Choice 2-3
-    generate_audit_results(round_1_id)
+    # generate_audit_results(round_1_id)
     audit_results = {
         ("J1", "0001", "BATCH1", 1): ("1,0,1,0,0", (None, None)),
         ("J1", "0001", "BATCH2", 2): ("0,1,1,0,0", (None, None)),
