@@ -70,8 +70,6 @@ const SubmitButton = styled(FormButton)`
 interface IProps {
   ballot: IBallot
   contests: IContest[]
-  interpretations: IBallotInterpretation[]
-  setInterpretations: (interpretations: IBallotInterpretation[]) => void
   confirmSelections: (interpretations: IBallotInterpretation[]) => void
   submitBallotNotFound: () => void
   previousBallot: () => void
@@ -80,18 +78,21 @@ interface IProps {
 const BallotAudit: React.FC<IProps> = ({
   ballot,
   contests,
-  interpretations,
-  setInterpretations,
   confirmSelections,
   submitBallotNotFound,
   previousBallot,
 }: IProps) => {
+  const interpretations = contests.map(
+    contest =>
+      ballot.interpretations.find(i => i.contestId === contest.id) ||
+      constructEmptyInterpretation(contest)
+  )
+
   return (
     <Formik
       initialValues={{ interpretations }}
       enableReinitialize
       onSubmit={values => {
-        setInterpretations(values.interpretations)
         confirmSelections(values.interpretations)
       }}
     >
@@ -133,9 +134,6 @@ const BallotAudit: React.FC<IProps> = ({
               <div>
                 <NotFoundButton
                   onClick={() => {
-                    setInterpretations(
-                      contests.map(constructEmptyInterpretation)
-                    )
                     resetForm()
                     submitBallotNotFound()
                   }}
