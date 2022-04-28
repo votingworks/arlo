@@ -158,9 +158,11 @@ def ess_ballot_discrepancies(
     # If we correctly audited an overvote/undervote, there should be no
     # discrepancies for the entire ballot
     audited_votes = sum(map(int, (audited.get(contest.name, {}).values())))
-    if "o" in reported[contest.name].values() and audited_votes > 1:
+    has_overvote = "o" in reported[contest.name].values()
+    has_undervote = "u" in reported[contest.name].values()
+    if has_overvote and audited_votes > 1:
         return []
-    if "u" in reported[contest.name].values() and audited_votes < 1:
+    if has_undervote in reported[contest.name].values() and audited_votes < 1:
         return []
 
     # Otherwise, if the audited results don't match the reported
@@ -168,7 +170,7 @@ def ess_ballot_discrepancies(
     # have votes for every candidate and undervotes for none.
     reported = {
         contest.name: {
-            choice_id: "1" if vote == "o" else "0" if vote == "u" else vote
+            choice_id: "1" if has_overvote else "0" if has_undervote else vote
             for choice_id, vote in reported[contest.name].items()
         }
     }

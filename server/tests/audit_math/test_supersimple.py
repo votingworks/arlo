@@ -437,6 +437,33 @@ def test_ess_discrepancies(contests) -> None:
     discrepancies = supersimple.compute_discrepancies(contest, cvrs, sample_cvr)
     assert discrepancies == {}
 
+    # Partial overvotes/undervotes (in the case where one jurisdiction's CVR
+    # records an overvote/undervote, but there are other choices merged in from
+    # other jurisdictions' CVRs, those other choices would have a vote 0)
+    cvrs = {
+        "ballot-0": {"Two Losers": {"winner": "o", "loser1": "o", "loser2": "0"}},
+        "ballot-1": {"Two Losers": {"winner": "u", "loser1": "u", "loser2": "0"}},
+    }
+    sample_cvr = {
+        "ballot-0": {
+            "times_sampled": 1,
+            "cvr": {"Two Losers": {"winner": "0", "loser1": "0", "loser2": "1"}},
+        },
+        "ballot-1": {
+            "times_sampled": 1,
+            "cvr": {"Two Losers": {"winner": "0", "loser1": "0", "loser2": "1"}},
+        },
+    }
+    discrepancies = supersimple.compute_discrepancies(contest, cvrs, sample_cvr)
+    assert discrepancies == {
+        "ballot-0": supersimple.Discrepancy(
+            counted_as=1, weighted_error=Decimal(1) / Decimal(500)
+        ),
+        "ballot-1": supersimple.Discrepancy(
+            counted_as=1, weighted_error=Decimal(1) / Decimal(500)
+        ),
+    }
+
 
 def test_get_sample_sizes(contests):
     for contest in contests:
