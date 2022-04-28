@@ -144,6 +144,7 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
                           class="bp3-control bp3-checkbox sc-chPdSV gVsrQj"
                         >
                           <input
+                            checked=""
                             type="checkbox"
                           />
                           <span
