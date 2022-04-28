@@ -521,6 +521,7 @@ describe('AuditBoardView', () => {
           screen.getAllByRole('checkbox', { name: 'Blank vote' })[1]
         ).not.toBeChecked()
 
+        // Confirm
         const dialog = (await screen.findByRole('heading', {
           name: /Confirm the Ballot Selections/,
         })).closest('.bp3-dialog')! as HTMLElement
@@ -531,6 +532,72 @@ describe('AuditBoardView', () => {
 
         await waitFor(() => {
           expect(dialog).not.toBeInTheDocument()
+        })
+        await screen.findByText('Audit Ballot Selections')
+      })
+    })
+
+    it('clears all choices when "Ballot Not Found" is selected, even if previous choices were almost submitted', async () => {
+      const expectedCalls = [
+        apiCalls.getAuditBoard,
+        apiCalls.getAuditBoard,
+        apiCalls.getContests,
+        apiCalls.getBallotsInitial,
+        apiCalls.putAuditBallot('ballot-id-2', {
+          status: 'NOT_FOUND',
+          interpretations: [],
+        }),
+        apiCalls.getBallotsOneAudited,
+      ]
+      await withMockFetch(expectedCalls, async () => {
+        renderAuditBoardView()
+
+        userEvent.click(
+          await screen.findByRole('button', { name: 'Audit Next Ballot' })
+        )
+
+        // Make a selection for Contest 1
+        screen.getByRole('heading', { name: 'Contest 1' })
+        userEvent.click(screen.getByRole('checkbox', { name: 'Choice One' }))
+        expect(
+          screen.getByRole('checkbox', { name: 'Choice One' })
+        ).toBeChecked()
+
+        // Prepare to submit but don't confirm
+        userEvent.click(
+          screen.getByRole('button', { name: 'Submit Selections' })
+        )
+        const dialog1 = (await screen.findByRole('heading', {
+          name: /Confirm the Ballot Selections/,
+        })).closest('.bp3-dialog')! as HTMLElement
+        userEvent.click(
+          within(dialog1).getByRole('button', { name: 'Change Selections' })
+        )
+
+        await waitFor(() => {
+          expect(dialog1).not.toBeInTheDocument()
+        })
+        await screen.findByText('Audit Ballot Selections')
+
+        // Verify that all choices are cleared when "Ballot Not Found" is selected
+        userEvent.click(
+          screen.getByRole('button', { name: 'Ballot Not Found' })
+        )
+        expect(
+          screen.getByRole('checkbox', { name: 'Choice One' })
+        ).not.toBeChecked()
+
+        // Confirm
+        const dialog2 = (await screen.findByRole('heading', {
+          name: /Confirm the Ballot Selections/,
+        })).closest('.bp3-dialog')! as HTMLElement
+        within(dialog2).getByText('Ballot Not Found')
+        userEvent.click(
+          within(dialog2).getByRole('button', { name: 'Confirm Selections' })
+        )
+
+        await waitFor(() => {
+          expect(dialog2).not.toBeInTheDocument()
         })
         await screen.findByText('Audit Ballot Selections')
       })
