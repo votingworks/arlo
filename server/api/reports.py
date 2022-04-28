@@ -376,7 +376,7 @@ def round_rows(election: Election):
                 if choice_votes:
                     cvr_choice_votes.update(
                         {
-                            choice_id_to_name[choice_id]: count
+                            choice_id_to_name[choice_id]: int(count)
                             for choice_id, count in choice_votes.items()
                         }
                     )
