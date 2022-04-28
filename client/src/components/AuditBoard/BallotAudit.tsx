@@ -17,7 +17,6 @@ import { IBallotInterpretation, Interpretation, IContest } from '../../types'
 import { IBallot } from '../JurisdictionAdmin/useBallots'
 import FormField from '../Atoms/Form/FormField'
 import BlockCheckbox from './BlockCheckbox'
-import constructEmptyInterpretation from '../../utils/interpretations'
 
 const BallotMainRow = styled.div`
   display: flex;
@@ -66,6 +65,17 @@ const SubmitButton = styled(FormButton)`
     width: auto;
   }
 `
+
+function constructEmptyInterpretation(
+  contest: IContest
+): IBallotInterpretation {
+  return {
+    contestId: contest.id,
+    interpretation: null,
+    choiceIds: [],
+    comment: null,
+  }
+}
 
 interface IProps {
   ballot: IBallot
