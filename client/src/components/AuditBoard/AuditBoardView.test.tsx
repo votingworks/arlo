@@ -472,5 +472,68 @@ describe('AuditBoardView', () => {
         await screen.findByText('Audit Ballot Selections')
       })
     })
+
+    it('clears all choices when "Ballot Not Found" is selected', async () => {
+      const expectedCalls = [
+        apiCalls.getAuditBoard,
+        apiCalls.getAuditBoard,
+        apiCalls.getContests,
+        apiCalls.getBallotsInitial,
+        apiCalls.putAuditBallot('ballot-id-2', {
+          status: 'NOT_FOUND',
+          interpretations: [],
+        }),
+        apiCalls.getBallotsOneAudited,
+      ]
+      await withMockFetch(expectedCalls, async () => {
+        renderAuditBoardView()
+
+        userEvent.click(
+          await screen.findByRole('button', { name: 'Audit Next Ballot' })
+        )
+
+        // Make a selection for Contest 1
+        screen.getByRole('heading', { name: 'Contest 1' })
+        userEvent.click(screen.getByRole('checkbox', { name: 'Choice One' }))
+        expect(
+          screen.getByRole('checkbox', { name: 'Choice One' })
+        ).toBeChecked()
+
+        // Make a selection for Contest 2
+        screen.getByRole('heading', { name: 'Contest 2' })
+        userEvent.click(
+          screen.getAllByRole('checkbox', {
+            name: 'Blank vote',
+          })[1]
+        )
+        expect(
+          screen.getAllByRole('checkbox', { name: 'Blank vote' })[1]
+        ).toBeChecked()
+
+        // Verify that all choices are cleared when "Ballot Not Found" is selected
+        userEvent.click(
+          screen.getByRole('button', { name: 'Ballot Not Found' })
+        )
+        expect(
+          screen.getByRole('checkbox', { name: 'Choice One' })
+        ).not.toBeChecked()
+        expect(
+          screen.getAllByRole('checkbox', { name: 'Blank vote' })[1]
+        ).not.toBeChecked()
+
+        const dialog = (await screen.findByRole('heading', {
+          name: /Confirm the Ballot Selections/,
+        })).closest('.bp3-dialog')! as HTMLElement
+        within(dialog).getByText('Ballot Not Found')
+        userEvent.click(
+          within(dialog).getByRole('button', { name: 'Confirm Selections' })
+        )
+
+        await waitFor(() => {
+          expect(dialog).not.toBeInTheDocument()
+        })
+        await screen.findByText('Audit Ballot Selections')
+      })
+    })
   })
 })
