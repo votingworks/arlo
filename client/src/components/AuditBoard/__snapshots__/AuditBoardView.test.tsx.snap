@@ -111,290 +111,288 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
               <div
                 class="bp3-divider sc-ckVGcZ dgQdnS"
               />
-              <div>
-                <div
-                  class="sc-gipzik ekuIFz"
-                >
-                  <div>
-                    <h5
-                      class="bp3-heading sc-jWBwVP bDsnAc"
-                    >
-                      Tabulator
-                    </h5>
-                    <h4
-                      class="bp3-heading sc-csuQGl kiBObf"
-                    >
-                      11
-                    </h4>
-                  </div>
-                  <div>
-                    <h5
-                      class="bp3-heading sc-jWBwVP bDsnAc"
-                    >
-                      Batch
-                    </h5>
-                    <h4
-                      class="bp3-heading sc-csuQGl kiBObf"
-                    >
-                      0003-04-Precinct 19 (Jonesboro Fire Department)
-                    </h4>
-                  </div>
-                  <div>
-                    <h5
-                      class="bp3-heading sc-jWBwVP bDsnAc"
-                    >
-                      Ballot Number
-                    </h5>
-                    <h4
-                      class="bp3-heading sc-csuQGl kiBObf"
-                    >
-                      2112
-                    </h4>
-                  </div>
-                  <div>
-                    <button
-                      class="bp3-button bp3-large bp3-intent-danger sc-Rmtcm iksoTS"
-                      type="button"
-                    >
-                      <span
-                        class="bp3-button-text"
-                      >
-                        Ballot Not Found
-                      </span>
-                    </button>
-                  </div>
-                </div>
-                <div
-                  class="bp3-divider sc-ckVGcZ dgQdnS"
-                />
-                <div
-                  class="sc-jKJlTe brEhRC"
-                >
-                  <div
-                    class="ballot-main"
+              <div
+                class="sc-gipzik ekuIFz"
+              >
+                <div>
+                  <h5
+                    class="bp3-heading sc-jWBwVP bDsnAc"
                   >
-                    <h5
-                      class="bp3-heading sc-jWBwVP bDsnAc"
+                    Tabulator
+                  </h5>
+                  <h4
+                    class="bp3-heading sc-csuQGl kiBObf"
+                  >
+                    11
+                  </h4>
+                </div>
+                <div>
+                  <h5
+                    class="bp3-heading sc-jWBwVP bDsnAc"
+                  >
+                    Batch
+                  </h5>
+                  <h4
+                    class="bp3-heading sc-csuQGl kiBObf"
+                  >
+                    0003-04-Precinct 19 (Jonesboro Fire Department)
+                  </h4>
+                </div>
+                <div>
+                  <h5
+                    class="bp3-heading sc-jWBwVP bDsnAc"
+                  >
+                    Ballot Number
+                  </h5>
+                  <h4
+                    class="bp3-heading sc-csuQGl kiBObf"
+                  >
+                    2112
+                  </h4>
+                </div>
+                <div>
+                  <button
+                    class="bp3-button bp3-large bp3-intent-danger sc-Rmtcm iksoTS"
+                    type="button"
+                  >
+                    <span
+                      class="bp3-button-text"
                     >
-                      Ballot Contests
-                    </h5>
-                    <form>
+                      Ballot Not Found
+                    </span>
+                  </button>
+                </div>
+              </div>
+              <div
+                class="bp3-divider sc-ckVGcZ dgQdnS"
+              />
+              <div
+                class="sc-jKJlTe brEhRC"
+              >
+                <div
+                  class="ballot-main"
+                >
+                  <h5
+                    class="bp3-heading sc-jWBwVP bDsnAc"
+                  >
+                    Ballot Contests
+                  </h5>
+                  <form>
+                    <div
+                      class="sc-eNQAEJ iFCaEp"
+                    >
                       <div
-                        class="sc-eNQAEJ iFCaEp"
+                        class="sc-hSdWYo chGHYH"
                       >
                         <div
-                          class="sc-hSdWYo chGHYH"
+                          class="sc-eHgmQL kYkRfs"
                         >
-                          <div
-                            class="sc-eHgmQL kYkRfs"
+                          <h3
+                            class="bp3-heading sc-hzDkRC BSXNx"
                           >
-                            <h3
-                              class="bp3-heading sc-hzDkRC BSXNx"
-                            >
-                              Contest 1
-                            </h3>
-                            <label
-                              class="bp3-control bp3-checkbox sc-jlyJG dJELqb"
-                            >
-                              <input
-                                type="checkbox"
-                              />
-                              <span
-                                class="undefined bp3-control-indicator"
-                              >
-                                <span
-                                  class="checkbox-text"
-                                >
-                                  Choice One
-                                </span>
-                              </span>
-                            </label>
-                            <label
-                              class="bp3-control bp3-checkbox sc-jlyJG dJELqb"
-                            >
-                              <input
-                                type="checkbox"
-                              />
-                              <span
-                                class="undefined bp3-control-indicator"
-                              >
-                                <span
-                                  class="checkbox-text"
-                                >
-                                  Choice Two
-                                </span>
-                              </span>
-                            </label>
-                          </div>
-                          <div
-                            class="sc-cvbbAY ixevJx"
+                            Contest 1
+                          </h3>
+                          <label
+                            class="bp3-control bp3-checkbox sc-jlyJG dJELqb"
                           >
-                            <label
-                              class="bp3-control bp3-checkbox sc-jlyJG dJELqb"
+                            <input
+                              type="checkbox"
+                            />
+                            <span
+                              class="undefined bp3-control-indicator"
                             >
-                              <input
-                                type="checkbox"
-                              />
                               <span
-                                class="small bp3-control-indicator"
+                                class="checkbox-text"
                               >
-                                <span
-                                  class="checkbox-text"
-                                >
-                                  Blank vote
-                                </span>
+                                Choice One
                               </span>
-                            </label>
-                            <label
-                              class="bp3-control bp3-checkbox sc-jlyJG dJELqb"
+                            </span>
+                          </label>
+                          <label
+                            class="bp3-control bp3-checkbox sc-jlyJG dJELqb"
+                          >
+                            <input
+                              type="checkbox"
+                            />
+                            <span
+                              class="undefined bp3-control-indicator"
                             >
-                              <input
-                                type="checkbox"
-                              />
                               <span
-                                class="small bp3-control-indicator"
+                                class="checkbox-text"
                               >
-                                <span
-                                  class="checkbox-text"
-                                >
-                                  Not on Ballot
-                                </span>
+                                Choice Two
                               </span>
-                            </label>
-                            <div
-                              class="sc-bRBYWo fhNHFP sc-jAaTju bNEIBb"
+                            </span>
+                          </label>
+                        </div>
+                        <div
+                          class="sc-cvbbAY ixevJx"
+                        >
+                          <label
+                            class="bp3-control bp3-checkbox sc-jlyJG dJELqb"
+                          >
+                            <input
+                              type="checkbox"
+                            />
+                            <span
+                              class="small bp3-control-indicator"
                             >
-                              <textarea
-                                class="bp3-input sc-gPEVay ildqic"
-                                name="comment-Contest 1"
-                                placeholder="Add Note"
-                              />
-                            </div>
+                              <span
+                                class="checkbox-text"
+                              >
+                                Blank vote
+                              </span>
+                            </span>
+                          </label>
+                          <label
+                            class="bp3-control bp3-checkbox sc-jlyJG dJELqb"
+                          >
+                            <input
+                              type="checkbox"
+                            />
+                            <span
+                              class="small bp3-control-indicator"
+                            >
+                              <span
+                                class="checkbox-text"
+                              >
+                                Not on Ballot
+                              </span>
+                            </span>
+                          </label>
+                          <div
+                            class="sc-bRBYWo fhNHFP sc-jAaTju bNEIBb"
+                          >
+                            <textarea
+                              class="bp3-input sc-gPEVay ildqic"
+                              name="comment-Contest 1"
+                              placeholder="Add Note"
+                            />
                           </div>
                         </div>
                       </div>
+                    </div>
+                    <div
+                      class="sc-eNQAEJ iFCaEp"
+                    >
                       <div
-                        class="sc-eNQAEJ iFCaEp"
+                        class="sc-hSdWYo chGHYH"
                       >
                         <div
-                          class="sc-hSdWYo chGHYH"
+                          class="sc-eHgmQL kYkRfs"
                         >
-                          <div
-                            class="sc-eHgmQL kYkRfs"
+                          <h3
+                            class="bp3-heading sc-hzDkRC BSXNx"
                           >
-                            <h3
-                              class="bp3-heading sc-hzDkRC BSXNx"
-                            >
-                              Contest 2
-                            </h3>
-                            <label
-                              class="bp3-control bp3-checkbox sc-jlyJG dJELqb"
-                            >
-                              <input
-                                type="checkbox"
-                              />
-                              <span
-                                class="undefined bp3-control-indicator"
-                              >
-                                <span
-                                  class="checkbox-text"
-                                >
-                                  Choice Three
-                                </span>
-                              </span>
-                            </label>
-                            <label
-                              class="bp3-control bp3-checkbox sc-jlyJG dJELqb"
-                            >
-                              <input
-                                type="checkbox"
-                              />
-                              <span
-                                class="undefined bp3-control-indicator"
-                              >
-                                <span
-                                  class="checkbox-text"
-                                >
-                                  Choice Four
-                                </span>
-                              </span>
-                            </label>
-                          </div>
-                          <div
-                            class="sc-cvbbAY ixevJx"
+                            Contest 2
+                          </h3>
+                          <label
+                            class="bp3-control bp3-checkbox sc-jlyJG dJELqb"
                           >
-                            <label
-                              class="bp3-control bp3-checkbox sc-jlyJG dJELqb"
+                            <input
+                              type="checkbox"
+                            />
+                            <span
+                              class="undefined bp3-control-indicator"
                             >
-                              <input
-                                type="checkbox"
-                              />
                               <span
-                                class="small bp3-control-indicator"
+                                class="checkbox-text"
                               >
-                                <span
-                                  class="checkbox-text"
-                                >
-                                  Blank vote
-                                </span>
+                                Choice Three
                               </span>
-                            </label>
-                            <label
-                              class="bp3-control bp3-checkbox sc-jlyJG dJELqb"
+                            </span>
+                          </label>
+                          <label
+                            class="bp3-control bp3-checkbox sc-jlyJG dJELqb"
+                          >
+                            <input
+                              type="checkbox"
+                            />
+                            <span
+                              class="undefined bp3-control-indicator"
                             >
-                              <input
-                                type="checkbox"
-                              />
                               <span
-                                class="small bp3-control-indicator"
+                                class="checkbox-text"
                               >
-                                <span
-                                  class="checkbox-text"
-                                >
-                                  Not on Ballot
-                                </span>
+                                Choice Four
                               </span>
-                            </label>
-                            <div
-                              class="sc-bRBYWo fhNHFP sc-jAaTju bNEIBb"
+                            </span>
+                          </label>
+                        </div>
+                        <div
+                          class="sc-cvbbAY ixevJx"
+                        >
+                          <label
+                            class="bp3-control bp3-checkbox sc-jlyJG dJELqb"
+                          >
+                            <input
+                              type="checkbox"
+                            />
+                            <span
+                              class="small bp3-control-indicator"
                             >
-                              <textarea
-                                class="bp3-input sc-gPEVay ildqic"
-                                name="comment-Contest 2"
-                                placeholder="Add Note"
-                              />
-                            </div>
+                              <span
+                                class="checkbox-text"
+                              >
+                                Blank vote
+                              </span>
+                            </span>
+                          </label>
+                          <label
+                            class="bp3-control bp3-checkbox sc-jlyJG dJELqb"
+                          >
+                            <input
+                              type="checkbox"
+                            />
+                            <span
+                              class="small bp3-control-indicator"
+                            >
+                              <span
+                                class="checkbox-text"
+                              >
+                                Not on Ballot
+                              </span>
+                            </span>
+                          </label>
+                          <div
+                            class="sc-bRBYWo fhNHFP sc-jAaTju bNEIBb"
+                          >
+                            <textarea
+                              class="bp3-input sc-gPEVay ildqic"
+                              name="comment-Contest 2"
+                              placeholder="Add Note"
+                            />
                           </div>
                         </div>
                       </div>
-                      <div
-                        class="sc-kEYyzF hgMwhC"
+                    </div>
+                    <div
+                      class="sc-kEYyzF hgMwhC"
+                    >
+                      <button
+                        class="bp3-button bp3-disabled bp3-large bp3-intent-success sc-jhAzac evJAVP sc-dxgOiQ iagcVQ"
+                        disabled=""
+                        tabindex="-1"
+                        type="submit"
                       >
-                        <button
-                          class="bp3-button bp3-disabled bp3-large bp3-intent-success sc-jhAzac evJAVP sc-dxgOiQ iagcVQ"
-                          disabled=""
-                          tabindex="-1"
-                          type="submit"
+                        <span
+                          class="bp3-button-text"
                         >
-                          <span
-                            class="bp3-button-text"
-                          >
-                            Submit Selections
-                          </span>
-                        </button>
-                        <button
-                          class="bp3-button"
-                          type="button"
+                          Submit Selections
+                        </span>
+                      </button>
+                      <button
+                        class="bp3-button"
+                        type="button"
+                      >
+                        <span
+                          class="bp3-button-text"
                         >
-                          <span
-                            class="bp3-button-text"
-                          >
-                            Back
-                          </span>
-                        </button>
-                      </div>
-                    </form>
-                  </div>
+                          Back
+                        </span>
+                      </button>
+                    </div>
+                  </form>
                 </div>
               </div>
             </div>

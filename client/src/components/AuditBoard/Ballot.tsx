@@ -213,18 +213,16 @@ const Ballot: React.FC<IProps> = ({
                 <TopH3>Audit Ballot Selections</TopH3>
               </TopRow>
               <FlushDivider />
-              <div>
-                <BallotAudit
-                  ballot={ballot}
-                  contests={contests}
-                  interpretations={interpretations}
-                  setInterpretations={setInterpretations}
-                  confirmSelections={confirmSelections}
-                  submitBallotNotFound={submitBallotNotFound}
-                  previousBallot={previousBallot}
-                />
-                <Confirm {...confirmProps} />
-              </div>
+              <BallotAudit
+                ballot={ballot}
+                contests={contests}
+                interpretations={interpretations}
+                setInterpretations={setInterpretations}
+                confirmSelections={confirmSelections}
+                submitBallotNotFound={submitBallotNotFound}
+                previousBallot={previousBallot}
+              />
+              <Confirm {...confirmProps} />
             </BallotWrapper>
             <InstructionsWrapper>
               <H4>Instructions</H4>
