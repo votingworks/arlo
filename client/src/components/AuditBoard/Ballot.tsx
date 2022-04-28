@@ -144,7 +144,16 @@ const Ballot: React.FC<IProps> = ({
   const [interpretations, setInterpretations] = useState<
     IBallotInterpretation[]
   >(contests.map(emptyInterpretation))
+  const [
+    interpretationsInitializedAt,
+    setInterpretationsInitializedAt,
+  ] = useState<Date>(new Date())
   const { confirm, confirmProps } = useConfirm()
+
+  const resetInterpretations = () => {
+    setInterpretations(contests.map(emptyInterpretation))
+    setInterpretationsInitializedAt(new Date())
+  }
 
   const renderInterpretation = (
     { interpretation, choiceIds }: IBallotInterpretation,
@@ -202,6 +211,7 @@ const Ballot: React.FC<IProps> = ({
   }
 
   const submitNotFound = async () => {
+    resetInterpretations()
     confirm({
       title: 'Confirm the Ballot Selections',
       description: (
@@ -288,6 +298,7 @@ const Ballot: React.FC<IProps> = ({
                 <BallotAudit
                   contests={contests}
                   interpretations={interpretations}
+                  interpretationsInitializedAt={interpretationsInitializedAt}
                   setInterpretations={setInterpretations}
                   confirmSelections={confirmSelections}
                   previousBallot={previousBallot}

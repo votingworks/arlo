@@ -40,6 +40,7 @@ const SubmitButton = styled(FormButton)`
 interface IProps {
   contests: IContest[]
   interpretations: IBallotInterpretation[]
+  interpretationsInitializedAt: Date
   setInterpretations: (interpretations: IBallotInterpretation[]) => void
   previousBallot: () => void
   confirmSelections: (interpretations: IBallotInterpretation[]) => void
@@ -48,6 +49,7 @@ interface IProps {
 const BallotAudit: React.FC<IProps> = ({
   contests,
   interpretations,
+  interpretationsInitializedAt,
   setInterpretations,
   confirmSelections,
   previousBallot,
@@ -57,7 +59,14 @@ const BallotAudit: React.FC<IProps> = ({
       <div className="ballot-main">
         <SubTitle>Ballot Contests</SubTitle>
         <Formik
-          initialValues={{ interpretations }}
+          initialValues={{
+            interpretations,
+            // Formik only reinitializes if `enableReinitialize` is true and `initialValues`
+            // changes as determined by a deep equality check (reference changes don't trigger
+            // reinitialization). Changing `interpretationsInitializedAt` while leaving
+            // `interpretations` intact accordingly allows consumers to reset the form
+            interpretationsInitializedAt,
+          }}
           enableReinitialize
           onSubmit={values => {
             setInterpretations(values.interpretations)
