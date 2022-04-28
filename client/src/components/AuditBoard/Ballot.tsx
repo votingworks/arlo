@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import { H3, H4, Button, Colors, OL } from '@blueprintjs/core'
+import React from 'react'
+import { H3, H4, Colors, OL } from '@blueprintjs/core'
 import styled from 'styled-components'
 import { Redirect } from 'react-router-dom'
 import { toast } from 'react-toastify'
@@ -12,9 +12,8 @@ import {
   IContest,
   Interpretation,
 } from '../../types'
-import { FlushDivider, SubTitle } from './Atoms'
+import { FlushDivider } from './Atoms'
 import { Inner } from '../Atoms/Wrapper'
-import { hashBy } from '../../utils/array'
 import { useConfirm, Confirm } from '../Atoms/Confirm'
 import { IBallot } from '../JurisdictionAdmin/useBallots'
 
@@ -57,19 +56,6 @@ const InstructionsWrapper = styled.div`
   }
 `
 
-const BallotMainRow = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-`
-
-const BallotRowValue = styled(H4)`
-  margin-bottom: 0;
-  color: ${Colors.BLACK};
-`
-
 const SmallButton = styled(LinkButton)`
   border: 1px solid ${Colors.GRAY4};
   border-radius: 5px;
@@ -81,20 +67,6 @@ const TopRow = styled.div`
   display: flex;
   align-items: center;
   margin-bottom: 20px;
-`
-
-const NotFoundButton = styled(Button)`
-  border-radius: 5px;
-  width: 13.5em;
-  font-weight: 600;
-  &.bp3-button.bp3-large {
-    height: 2em;
-    min-height: auto;
-    font-size: 14px;
-  }
-  @media only screen and (max-width: 767px) {
-    width: auto;
-  }
 `
 
 const InstructionsList = styled(OL)`
@@ -119,13 +91,6 @@ interface IProps {
   ) => void
 }
 
-const emptyInterpretation = (contest: IContest) => ({
-  contestId: contest.id,
-  interpretation: null,
-  choiceIds: [],
-  comment: null,
-})
-
 const Ballot: React.FC<IProps> = ({
   home,
   batchId,
@@ -141,9 +106,6 @@ const Ballot: React.FC<IProps> = ({
   )
   const ballot = ballots[ballotIx]
 
-  const [interpretations, setInterpretations] = useState<
-    IBallotInterpretation[]
-  >(contests.map(emptyInterpretation))
   const { confirm, confirmProps } = useConfirm()
 
   const renderInterpretation = (
@@ -201,7 +163,7 @@ const Ballot: React.FC<IProps> = ({
     })
   }
 
-  const submitNotFound = async () => {
+  const confirmBallotNotFound = async () => {
     confirm({
       title: 'Confirm the Ballot Selections',
       description: (
@@ -218,19 +180,6 @@ const Ballot: React.FC<IProps> = ({
     })
   }
 
-  const contestsHash = hashBy(contests, c => c.id)
-  useEffect(() => {
-    if (ballot) {
-      setInterpretations(
-        contests.map(
-          contest =>
-            ballot.interpretations.find(i => i.contestId === contest.id) ||
-            emptyInterpretation(contest)
-        )
-      )
-    }
-  }, [ballot, contestsHash]) // eslint-disable-line react-hooks/exhaustive-deps
-
   return !ballot ? (
     <Redirect to={home} />
   ) : (
@@ -246,54 +195,14 @@ const Ballot: React.FC<IProps> = ({
                 <TopH3>Audit Ballot Selections</TopH3>
               </TopRow>
               <FlushDivider />
-              <BallotMainRow>
-                {ballot.batch.container && (
-                  <div>
-                    <SubTitle>Container</SubTitle>
-                    <BallotRowValue>{ballot.batch.container}</BallotRowValue>
-                  </div>
-                )}
-                {ballot.batch.tabulator && (
-                  <div>
-                    <SubTitle>Tabulator</SubTitle>
-                    <BallotRowValue>{ballot.batch.tabulator}</BallotRowValue>
-                  </div>
-                )}
-                <div>
-                  <SubTitle>Batch</SubTitle>
-                  <BallotRowValue>{ballot.batch.name}</BallotRowValue>
-                </div>
-                <div>
-                  <SubTitle>Ballot Number</SubTitle>
-                  <BallotRowValue>{ballot.position}</BallotRowValue>
-                </div>
-                {ballot.imprintedId !== undefined && (
-                  <div>
-                    <SubTitle>Imprinted ID</SubTitle>
-                    <BallotRowValue>{ballot.imprintedId}</BallotRowValue>
-                  </div>
-                )}
-                <div>
-                  <NotFoundButton
-                    onClick={submitNotFound}
-                    intent="danger"
-                    large
-                  >
-                    Ballot Not Found
-                  </NotFoundButton>
-                </div>
-              </BallotMainRow>
-              <FlushDivider />
-              <div>
-                <BallotAudit
-                  contests={contests}
-                  interpretations={interpretations}
-                  setInterpretations={setInterpretations}
-                  confirmSelections={confirmSelections}
-                  previousBallot={previousBallot}
-                />
-                <Confirm {...confirmProps} />
-              </div>
+              <BallotAudit
+                ballot={ballot}
+                contests={contests}
+                confirmSelections={confirmSelections}
+                confirmBallotNotFound={confirmBallotNotFound}
+                previousBallot={previousBallot}
+              />
+              <Confirm {...confirmProps} />
             </BallotWrapper>
             <InstructionsWrapper>
               <H4>Instructions</H4>
