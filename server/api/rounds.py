@@ -335,15 +335,16 @@ def cvrs_for_contest(contest: Contest) -> sampler_contest.CVRS:
                 for interpretation in choice_interpretations.values()
             ):
                 cvrs[ballot_key] = {}
-            # Special case for ES&S overvotes/undervotes
-            elif any(
+            # Special case for ES&S overvotes. Fill in "o" for every choice.
+            elif all(
                 interpretation == "o"
                 for interpretation in choice_interpretations.values()
             ):
                 cvrs[ballot_key] = {
                     contest.id: {choice.id: "o" for choice in contest.choices}
                 }
-            elif any(
+            # Special case for ES&S undervotes. Fill in "u" for every choice.
+            elif all(
                 interpretation == "u"
                 for interpretation in choice_interpretations.values()
             ):
@@ -351,13 +352,14 @@ def cvrs_for_contest(contest: Contest) -> sampler_contest.CVRS:
                     contest.id: {choice.id: "u" for choice in contest.choices}
                 }
             else:
-                # Since some CVRs don't list every contest choice, we may not
-                # have an interpretation for a choice. In that case, we can
-                # assume that choice didn't get voted for, so we set its
-                # interpretation to 0.
+                # Parse each choice's interpretation. We use the main list of
+                # contest choices since each jurisdiction's CVR may only record
+                # a subset of the choices (e.g. in ES&S/Hart). If there's a
+                # choice we don't have a CVR interpretation for, we can assume
+                # it didn't get voted for and set its interpretation to 0.
                 cvrs[ballot_key] = {
                     contest.id: {
-                        choice.id: int(choice_interpretations.get(choice.name, "0"))
+                        choice.id: choice_interpretations.get(choice.name, "0")
                         for choice in contest.choices
                     }
                 }
@@ -420,10 +422,12 @@ def sampled_ballot_interpretations_to_cvrs(
             if interpretation is None:  # Contest not on ballot
                 ballot_cvr = {}
             else:
-                ballot_cvr = {contest.id: {choice.id: 0 for choice in contest.choices}}
+                ballot_cvr = {
+                    contest.id: {choice.id: "0" for choice in contest.choices}
+                }
                 if interpretation.interpretation == Interpretation.VOTE:
                     for choice in interpretation.selected_choices:
-                        ballot_cvr[contest.id][choice.id] = 1
+                        ballot_cvr[contest.id][choice.id] = "1"
 
             cvrs[ballot.id] = {"times_sampled": times_sampled, "cvr": ballot_cvr}
 
