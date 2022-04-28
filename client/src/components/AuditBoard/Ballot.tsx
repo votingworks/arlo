@@ -108,9 +108,6 @@ const Ballot: React.FC<IProps> = ({
   )
   const ballot = ballots[ballotIx]
 
-  const [interpretations, setInterpretations] = useState<
-    IBallotInterpretation[]
-  >(contests.map(constructEmptyInterpretation))
   const { confirm, confirmProps } = useConfirm()
 
   const renderInterpretation = (
@@ -185,19 +182,6 @@ const Ballot: React.FC<IProps> = ({
     })
   }
 
-  const contestsHash = hashBy(contests, c => c.id)
-  useEffect(() => {
-    if (ballot) {
-      setInterpretations(
-        contests.map(
-          contest =>
-            ballot.interpretations.find(i => i.contestId === contest.id) ||
-            constructEmptyInterpretation(contest)
-        )
-      )
-    }
-  }, [ballot, contestsHash]) // eslint-disable-line react-hooks/exhaustive-deps
-
   return !ballot ? (
     <Redirect to={home} />
   ) : (
@@ -216,8 +200,6 @@ const Ballot: React.FC<IProps> = ({
               <BallotAudit
                 ballot={ballot}
                 contests={contests}
-                interpretations={interpretations}
-                setInterpretations={setInterpretations}
                 confirmSelections={confirmSelections}
                 submitBallotNotFound={submitBallotNotFound}
                 previousBallot={previousBallot}

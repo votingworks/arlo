@@ -17,7 +17,6 @@ import { IBallotInterpretation, Interpretation, IContest } from '../../types'
 import { IBallot } from '../JurisdictionAdmin/useBallots'
 import FormField from '../Atoms/Form/FormField'
 import BlockCheckbox from './BlockCheckbox'
-import constructEmptyInterpretation from '../../utils/interpretations'
 
 const BallotMainRow = styled.div`
   display: flex;
@@ -67,11 +66,20 @@ const SubmitButton = styled(FormButton)`
   }
 `
 
+function constructEmptyInterpretation(
+  contest: IContest
+): IBallotInterpretation {
+  return {
+    contestId: contest.id,
+    interpretation: null,
+    choiceIds: [],
+    comment: null,
+  }
+}
+
 interface IProps {
   ballot: IBallot
   contests: IContest[]
-  interpretations: IBallotInterpretation[]
-  setInterpretations: (interpretations: IBallotInterpretation[]) => void
   confirmSelections: (interpretations: IBallotInterpretation[]) => void
   submitBallotNotFound: () => void
   previousBallot: () => void
@@ -80,18 +88,21 @@ interface IProps {
 const BallotAudit: React.FC<IProps> = ({
   ballot,
   contests,
-  interpretations,
-  setInterpretations,
   confirmSelections,
   submitBallotNotFound,
   previousBallot,
 }: IProps) => {
+  const interpretations = contests.map(
+    contest =>
+      ballot.interpretations.find(i => i.contestId === contest.id) ||
+      constructEmptyInterpretation(contest)
+  )
+
   return (
     <Formik
       initialValues={{ interpretations }}
       enableReinitialize
       onSubmit={values => {
-        setInterpretations(values.interpretations)
         confirmSelections(values.interpretations)
       }}
     >
@@ -133,9 +144,6 @@ const BallotAudit: React.FC<IProps> = ({
               <div>
                 <NotFoundButton
                   onClick={() => {
-                    setInterpretations(
-                      contests.map(constructEmptyInterpretation)
-                    )
                     resetForm()
                     submitBallotNotFound()
                   }}
