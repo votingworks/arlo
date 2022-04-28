@@ -71,7 +71,7 @@ interface IProps {
   ballot: IBallot
   contests: IContest[]
   confirmSelections: (interpretations: IBallotInterpretation[]) => void
-  submitBallotNotFound: () => void
+  confirmBallotNotFound: () => void
   previousBallot: () => void
 }
 
@@ -79,7 +79,7 @@ const BallotAudit: React.FC<IProps> = ({
   ballot,
   contests,
   confirmSelections,
-  submitBallotNotFound,
+  confirmBallotNotFound,
   previousBallot,
 }: IProps) => {
   const interpretations = contests.map(
@@ -135,7 +135,7 @@ const BallotAudit: React.FC<IProps> = ({
                 <NotFoundButton
                   onClick={() => {
                     resetForm()
-                    submitBallotNotFound()
+                    confirmBallotNotFound()
                   }}
                   intent="danger"
                   large

@@ -163,7 +163,7 @@ const Ballot: React.FC<IProps> = ({
     })
   }
 
-  const submitBallotNotFound = async () => {
+  const confirmBallotNotFound = async () => {
     confirm({
       title: 'Confirm the Ballot Selections',
       description: (
@@ -199,7 +199,7 @@ const Ballot: React.FC<IProps> = ({
                 ballot={ballot}
                 contests={contests}
                 confirmSelections={confirmSelections}
-                submitBallotNotFound={submitBallotNotFound}
+                confirmBallotNotFound={confirmBallotNotFound}
                 previousBallot={previousBallot}
               />
               <Confirm {...confirmProps} />
