@@ -6,10 +6,10 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
     class="sc-htpNat cBZqYS"
   >
     <div
-      class="bp3-navbar sc-kgAjT dAgMgI"
+      class="bp3-navbar sc-ksYbfQ QHGZm"
     >
       <div
-        class="sc-bxivhb sc-ksYbfQ eaOcCd"
+        class="sc-bxivhb sc-frDJqD dfcocX"
       >
         <div
           class="bp3-navbar-group bp3-align-left"
@@ -240,7 +240,7 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
                               <span
                                 class="checkbox-text"
                               >
-                                Blank vote
+                                Blank Vote
                               </span>
                             </span>
                           </label>
@@ -334,7 +334,7 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
                               <span
                                 class="checkbox-text"
                               >
-                                Blank vote
+                                Blank Vote
                               </span>
                             </span>
                           </label>
@@ -451,10 +451,10 @@ exports[`AuditBoardView ballot interaction renders board table with ballots 1`] 
     class="sc-htpNat cBZqYS"
   >
     <div
-      class="bp3-navbar sc-kgAjT dAgMgI"
+      class="bp3-navbar sc-ksYbfQ QHGZm"
     >
       <div
-        class="sc-bxivhb sc-ksYbfQ eaOcCd"
+        class="sc-bxivhb sc-frDJqD dfcocX"
       >
         <div
           class="bp3-navbar-group bp3-align-left"
@@ -2732,10 +2732,10 @@ exports[`AuditBoardView ballot interaction renders board table with no audited b
     class="sc-htpNat cBZqYS"
   >
     <div
-      class="bp3-navbar sc-kgAjT dAgMgI"
+      class="bp3-navbar sc-ksYbfQ QHGZm"
     >
       <div
-        class="sc-bxivhb sc-ksYbfQ eaOcCd"
+        class="sc-bxivhb sc-frDJqD dfcocX"
       >
         <div
           class="bp3-navbar-group bp3-align-left"
@@ -4635,10 +4635,10 @@ exports[`AuditBoardView ballot interaction renders board table with no ballots 1
     class="sc-htpNat cBZqYS"
   >
     <div
-      class="bp3-navbar sc-kgAjT dAgMgI"
+      class="bp3-navbar sc-ksYbfQ QHGZm"
     >
       <div
-        class="sc-bxivhb sc-ksYbfQ eaOcCd"
+        class="sc-bxivhb sc-frDJqD dfcocX"
       >
         <div
           class="bp3-navbar-group bp3-align-left"
@@ -4959,10 +4959,10 @@ exports[`AuditBoardView member form submits, goes to ballot table, and header sh
     class="sc-htpNat cBZqYS"
   >
     <div
-      class="bp3-navbar sc-kgAjT dAgMgI"
+      class="bp3-navbar sc-ksYbfQ QHGZm"
     >
       <div
-        class="sc-bxivhb sc-ksYbfQ eaOcCd"
+        class="sc-bxivhb sc-frDJqD dfcocX"
       >
         <div
           class="bp3-navbar-group bp3-align-left"

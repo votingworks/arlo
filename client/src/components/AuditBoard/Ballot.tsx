@@ -75,6 +75,18 @@ const InstructionsList = styled(OL)`
   }
 `
 
+const ConfirmationModalTitle = styled.span`
+  display: inline-block;
+  margin-top: 10px;
+  margin-bottom: 10px;
+`
+
+const ConfirmationModalSubTitle = styled.span`
+  font-size: 16px;
+  font-weight: 400;
+  whitespace: normal; /* Allow long batch names to wrap */
+`
+
 interface IProps {
   home: string
   boardName: string
@@ -108,6 +120,10 @@ const Ballot: React.FC<IProps> = ({
 
   const { confirm, confirmProps } = useConfirm()
 
+  if (!ballot) {
+    return <Redirect to={home} />
+  }
+
   const renderInterpretation = (
     { interpretation, choiceIds }: IBallotInterpretation,
     contest: IContest
@@ -121,7 +137,7 @@ const Ballot: React.FC<IProps> = ({
           ) : null
         )
       case Interpretation.BLANK:
-        return <h3>Blank vote</h3>
+        return <h3>Blank Vote</h3>
       case Interpretation.CONTEST_NOT_ON_BALLOT:
         return <h3>Not on Ballot</h3>
       // case Interpretation.CANT_AGREE: (we do not support this case now)
@@ -130,9 +146,20 @@ const Ballot: React.FC<IProps> = ({
     }
   }
 
+  const confirmationModalTitle = (
+    <ConfirmationModalTitle>
+      Confirm the Ballot Selections
+      <br />
+      <ConfirmationModalSubTitle>
+        Batch <b>{ballot.batch.name}</b> · Ballot Number{' '}
+        <b>{ballot.position}</b>
+      </ConfirmationModalSubTitle>
+    </ConfirmationModalTitle>
+  )
+
   const confirmSelections = (newInterpretations: IBallotInterpretation[]) => {
     confirm({
-      title: 'Confirm the Ballot Selections',
+      title: confirmationModalTitle,
       description: (
         <>
           {contests.map((contest, i) => (
@@ -165,7 +192,7 @@ const Ballot: React.FC<IProps> = ({
 
   const confirmBallotNotFound = async () => {
     confirm({
-      title: 'Confirm the Ballot Selections',
+      title: confirmationModalTitle,
       description: (
         <div>
           <h3>Ballot Not Found</h3>
@@ -180,9 +207,7 @@ const Ballot: React.FC<IProps> = ({
     })
   }
 
-  return !ballot ? (
-    <Redirect to={home} />
-  ) : (
+  return (
     <div>
       <Inner>
         <Wrapper>

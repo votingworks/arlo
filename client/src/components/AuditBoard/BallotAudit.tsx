@@ -259,7 +259,7 @@ const BallotAuditContest = ({
           <BlockCheckbox
             handleChange={onCheckboxClick(Interpretation.BLANK)}
             checked={interpretation.interpretation === Interpretation.BLANK}
-            label="Blank vote"
+            label="Blank Vote"
             small
           />
           <BlockCheckbox
