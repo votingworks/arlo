@@ -100,7 +100,7 @@ describe('Ballot', () => {
     expect(container).toMatchSnapshot()
   })
 
-  const buttonLabels = ['Blank vote', 'Not on Ballot']
+  const buttonLabels = ['Blank Vote', 'Not on Ballot']
   buttonLabels.forEach(buttonLabel => {
     it(`selects ${buttonLabel}`, async () => {
       const { container, getByLabelText } = render(

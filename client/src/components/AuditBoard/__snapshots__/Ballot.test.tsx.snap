@@ -189,7 +189,7 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
                             <span
                               class="checkbox-text"
                             >
-                              Blank vote
+                              Blank Vote
                             </span>
                           </span>
                         </label>
@@ -485,7 +485,7 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
                             <span
                               class="checkbox-text"
                             >
-                              Blank vote
+                              Blank Vote
                             </span>
                           </span>
                         </label>
@@ -595,7 +595,7 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
 </div>
 `;
 
-exports[`Ballot selects Blank vote 1`] = `
+exports[`Ballot selects Blank Vote 1`] = `
 <div>
   <div>
     <div
@@ -781,7 +781,7 @@ exports[`Ballot selects Blank vote 1`] = `
                             <span
                               class="checkbox-text"
                             >
-                              Blank vote
+                              Blank Vote
                             </span>
                           </span>
                         </label>
@@ -1075,7 +1075,7 @@ exports[`Ballot selects Not on Ballot 1`] = `
                             <span
                               class="checkbox-text"
                             >
-                              Blank vote
+                              Blank Vote
                             </span>
                           </span>
                         </label>
@@ -1369,7 +1369,7 @@ exports[`Ballot switches audit and review views 1`] = `
                             <span
                               class="checkbox-text"
                             >
-                              Blank vote
+                              Blank Vote
                             </span>
                           </span>
                         </label>

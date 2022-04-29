@@ -507,11 +507,11 @@ describe('AuditBoardView', () => {
         screen.getByRole('heading', { name: 'Contest 2' })
         userEvent.click(
           screen.getAllByRole('checkbox', {
-            name: 'Blank vote',
+            name: 'Blank Vote',
           })[1]
         )
         expect(
-          screen.getAllByRole('checkbox', { name: 'Blank vote' })[1]
+          screen.getAllByRole('checkbox', { name: 'Blank Vote' })[1]
         ).toBeChecked()
 
         // Verify that all choices are cleared when "Ballot Not Found" is selected
@@ -522,7 +522,7 @@ describe('AuditBoardView', () => {
           screen.getByRole('checkbox', { name: 'Choice One' })
         ).not.toBeChecked()
         expect(
-          screen.getAllByRole('checkbox', { name: 'Blank vote' })[1]
+          screen.getAllByRole('checkbox', { name: 'Blank Vote' })[1]
         ).not.toBeChecked()
 
         // Confirm

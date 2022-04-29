@@ -137,7 +137,7 @@ const Ballot: React.FC<IProps> = ({
           ) : null
         )
       case Interpretation.BLANK:
-        return <h3>Blank vote</h3>
+        return <h3>Blank Vote</h3>
       case Interpretation.CONTEST_NOT_ON_BALLOT:
         return <h3>Not on Ballot</h3>
       // case Interpretation.CANT_AGREE: (we do not support this case now)

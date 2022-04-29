@@ -240,7 +240,7 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
                               <span
                                 class="checkbox-text"
                               >
-                                Blank vote
+                                Blank Vote
                               </span>
                             </span>
                           </label>
@@ -334,7 +334,7 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
                               <span
                                 class="checkbox-text"
                               >
-                                Blank vote
+                                Blank Vote
                               </span>
                             </span>
                           </label>
