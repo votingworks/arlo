@@ -272,7 +272,8 @@ describe('AuditBoardView', () => {
           })
         )
         const dialog = (await screen.findByRole('heading', {
-          name: /Confirm the Ballot Selections/,
+          name:
+            'Confirm the Ballot Selections Batch 0003-04-Precinct 19 (Jonesboro Fire Department) · Ballot Number 2112',
         })).closest('.bp3-dialog')! as HTMLElement
         expect(within(dialog).getAllByText('Ballot Not Found').length).toBe(1)
         userEvent.click(
@@ -320,7 +321,8 @@ describe('AuditBoardView', () => {
         )
 
         const dialog = (await screen.findByRole('heading', {
-          name: /Confirm the Ballot Selections/,
+          name:
+            'Confirm the Ballot Selections Batch 0003-04-Precinct 19 (Jonesboro Fire Department) · Ballot Number 2112',
         })).closest('.bp3-dialog')! as HTMLElement
         within(dialog).getByText('Contest 1')
         within(dialog).getByText('Choice One')
@@ -401,7 +403,8 @@ describe('AuditBoardView', () => {
         )
 
         const dialog = (await screen.findByRole('heading', {
-          name: /Confirm the Ballot Selections/,
+          name:
+            'Confirm the Ballot Selections Batch 0003-04-Precinct 19 (Jonesboro Fire Department) · Ballot Number 2112',
         })).closest('.bp3-dialog')! as HTMLElement
         within(dialog).getByText('Contest 1')
         within(dialog).getByText('Choice One')
@@ -457,7 +460,8 @@ describe('AuditBoardView', () => {
         )
 
         const dialog = (await screen.findByRole('heading', {
-          name: /Confirm the Ballot Selections/,
+          name:
+            'Confirm the Ballot Selections Batch 0003-04-Precinct 19 (Jonesboro Fire Department) · Ballot Number 2112',
         })).closest('.bp3-dialog')! as HTMLElement
         within(dialog).getByText('Contest 1')
         within(dialog).getByText('Choice Three')
@@ -523,7 +527,8 @@ describe('AuditBoardView', () => {
 
         // Confirm
         const dialog = (await screen.findByRole('heading', {
-          name: /Confirm the Ballot Selections/,
+          name:
+            'Confirm the Ballot Selections Batch 0003-04-Precinct 19 (Jonesboro Fire Department) · Ballot Number 2112',
         })).closest('.bp3-dialog')! as HTMLElement
         within(dialog).getByText('Ballot Not Found')
         userEvent.click(
@@ -568,7 +573,8 @@ describe('AuditBoardView', () => {
           screen.getByRole('button', { name: 'Submit Selections' })
         )
         const dialog1 = (await screen.findByRole('heading', {
-          name: /Confirm the Ballot Selections/,
+          name:
+            'Confirm the Ballot Selections Batch 0003-04-Precinct 19 (Jonesboro Fire Department) · Ballot Number 2112',
         })).closest('.bp3-dialog')! as HTMLElement
         userEvent.click(
           within(dialog1).getByRole('button', { name: 'Change Selections' })
@@ -589,7 +595,8 @@ describe('AuditBoardView', () => {
 
         // Confirm
         const dialog2 = (await screen.findByRole('heading', {
-          name: /Confirm the Ballot Selections/,
+          name:
+            'Confirm the Ballot Selections Batch 0003-04-Precinct 19 (Jonesboro Fire Department) · Ballot Number 2112',
         })).closest('.bp3-dialog')! as HTMLElement
         within(dialog2).getByText('Ballot Not Found')
         userEvent.click(
