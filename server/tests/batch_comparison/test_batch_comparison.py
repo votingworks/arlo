@@ -295,7 +295,7 @@ def test_batch_comparison_round_2(
         rv = put_json(
             client,
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/{batch_id}/results",
-            results,
+            [{"name": "Tally Sheet #1", "results": results}],
         )
         assert_ok(rv)
 
@@ -342,7 +342,12 @@ def test_batch_comparison_round_2(
     rv = put_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/batches/{batches[0]['id']}/results",
-        {choice_ids[0]: 100, choice_ids[1]: 100, choice_ids[2]: 40,},
+        [
+            {
+                "name": "Tally Sheet #1",
+                "results": {choice_ids[0]: 100, choice_ids[1]: 100, choice_ids[2]: 40,},
+            }
+        ],
     )
     assert_ok(rv)
 
@@ -503,7 +508,7 @@ def test_batch_comparison_batches_sampled_multiple_times(
         rv = put_json(
             client,
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/{batch_id}/results",
-            results,
+            [{"name": "Tally Sheet #1", "results": results}],
         )
         assert_ok(rv)
 
@@ -539,7 +544,7 @@ def test_batch_comparison_batches_sampled_multiple_times(
         rv = put_json(
             client,
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/batches/{batch_id}/results",
-            results,
+            [{"name": "Tally Sheet #1", "results": results}],
         )
         assert_ok(rv)
 

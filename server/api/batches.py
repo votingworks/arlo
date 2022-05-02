@@ -1,5 +1,7 @@
 from datetime import datetime
 import io, csv
+from typing import List
+import uuid
 from flask import jsonify, request
 from werkzeug.exceptions import BadRequest, Conflict
 from sqlalchemy.orm import Query, contains_eager
@@ -13,6 +15,7 @@ from .rounds import is_round_complete, end_round, get_current_round
 from ..util.csv_download import csv_response, jurisdiction_timestamp_name
 from ..util.jsonschema import JSONDict, validate
 from ..util.isoformat import isoformat
+from ..util.collections import find_first_duplicate
 from ..activity_log.activity_log import (
     FinalizeBatchResults,
     activity_base,
@@ -72,11 +75,16 @@ def serialize_batch(batch: Batch) -> JSONDict:
         "name": batch.name,
         "numBallots": batch.num_ballots,
         "auditBoard": audit_board and {"id": audit_board.id, "name": audit_board.name},
-        "results": (
-            {result.contest_choice_id: result.result for result in batch.results}
-            if len(list(batch.results)) > 0
-            else None
-        ),
+        "resultTallySheets": [
+            {
+                "name": tally_sheet.name,
+                "results": {
+                    result.contest_choice_id: result.result
+                    for result in tally_sheet.results
+                },
+            }
+            for tally_sheet in batch.result_tally_sheets
+        ],
     }
 
 
@@ -96,9 +104,14 @@ def list_batches_for_jurisdiction(
         .filter_by(round_id=round.id)
         .filter(Batch.id.notin_(already_audited_batches(jurisdiction, round)))
         .outerjoin(AuditBoard)
+        .outerjoin(BatchResultTallySheet)
         .outerjoin(BatchResult)
         .order_by(func.human_sort(AuditBoard.name), func.human_sort(Batch.name))
-        .options(contains_eager(Batch.results))
+        .options(
+            contains_eager(Batch.result_tally_sheets).contains_eager(
+                BatchResultTallySheet.results
+            )
+        )
         .all()
     )
     results_finalized = BatchResultsFinalized.query.filter_by(
@@ -114,9 +127,20 @@ def list_batches_for_jurisdiction(
     )
 
 
-BATCH_RESULTS_SCHEMA = {
-    "type": "object",
-    "patternProperties": {"^.*$": {"type": "integer", "minimum": 0}},
+BATCH_RESULT_TALLY_SHEETS_SCHEMA = {
+    "type": "array",
+    "items": {
+        "type": "object",
+        "properties": {
+            "name": {"type": "string", "minLength": 1},
+            "results": {
+                "type": "object",
+                "patternProperties": {"^.*$": {"type": "integer", "minimum": 0}},
+            },
+        },
+        "required": ["name", "results"],
+        "additionalProperties": False,
+    },
 }
 
 
@@ -125,7 +149,7 @@ def validate_batch_results(
     jurisdiction: Jurisdiction,
     round: Round,
     batch: Batch,
-    batch_results: JSONDict,
+    batch_results: List[JSONDict],
 ):
     current_round = get_current_round(election)
     if not current_round or round.id != current_round.id:
@@ -148,17 +172,28 @@ def validate_batch_results(
     if any(draw.round_id != current_round.id for draw in batch.draws):
         raise Conflict("Batch was already audited in a previous round")
 
-    validate(batch_results, BATCH_RESULTS_SCHEMA)
+    validate(batch_results, BATCH_RESULT_TALLY_SHEETS_SCHEMA)
 
     # We only support one contest for batch audits
     assert len(list(jurisdiction.contests)) == 1
     contest = list(jurisdiction.contests)[0]
     contest_choice_ids = {choice.id for choice in contest.choices}
 
-    if batch_results.keys() != contest_choice_ids:
-        raise BadRequest("Invalid choice ids")
+    for tally_sheet in batch_results:
+        if tally_sheet["results"].keys() != contest_choice_ids:
+            raise BadRequest("Invalid choice ids")
 
-    total_votes = sum(batch_results.values())
+    duplicate_tally_sheet_name = find_first_duplicate(
+        [tally_sheet["name"] for tally_sheet in batch_results]
+    )
+    if duplicate_tally_sheet_name:
+        raise BadRequest(
+            f"Tally sheet names must be unique. Found duplicate: {duplicate_tally_sheet_name}."
+        )
+
+    total_votes = sum(
+        sum(tally_sheet["results"].values()) for tally_sheet in batch_results
+    )
     assert contest.votes_allowed is not None
     allowed_votes = batch.num_ballots * contest.votes_allowed
     if total_votes > allowed_votes:
@@ -186,9 +221,17 @@ def record_batch_results(
     batch_results = request.get_json()
     validate_batch_results(election, jurisdiction, round, batch, batch_results)
 
-    batch.results = [
-        BatchResult(contest_choice_id=choice_id, result=result)
-        for choice_id, result in batch_results.items()
+    BatchResultTallySheet.query.filter_by(batch_id=batch.id).delete()
+    batch.result_tally_sheets = [
+        BatchResultTallySheet(
+            id=str(uuid.uuid4()),
+            name=tally_sheet["name"],
+            results=[
+                BatchResult(contest_choice_id=choice_id, result=result)
+                for choice_id, result in tally_sheet["results"].items()
+            ],
+        )
+        for tally_sheet in batch_results
     ]
     db_session.commit()
 
@@ -217,9 +260,9 @@ def finalize_batch_results(
         Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
         .join(SampledBatchDraw)
         .filter_by(round_id=round.id)
-        .outerjoin(BatchResult)
+        .outerjoin(BatchResultTallySheet)
         .group_by(Batch.id)
-        .having(func.count(BatchResult.batch_id) == 0)
+        .having(func.count(BatchResultTallySheet.batch_id) == 0)
         .count()
     )
     if num_batches_without_results > 0:

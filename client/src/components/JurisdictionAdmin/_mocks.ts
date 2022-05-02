@@ -130,21 +130,21 @@ export const batchesMocks: {
         name: 'Batch One',
         numBallots: 100,
         auditBoard: null,
-        results: null,
+        resultTallySheets: [],
       },
       {
         id: 'batch-2',
         name: 'Batch Two',
         numBallots: 100,
         auditBoard: null,
-        results: null,
+        resultTallySheets: [],
       },
       {
         id: 'batch-3',
         name: 'Batch Three',
         numBallots: 100,
         auditBoard: null,
-        results: null,
+        resultTallySheets: [],
       },
     ],
     resultsFinalizedAt: null,
@@ -159,10 +159,15 @@ export const batchesMocks: {
           id: 'ab-1',
           name: 'Audit Board One',
         },
-        results: {
-          'choice-id-1': 1,
-          'choice-id-2': 2,
-        },
+        resultTallySheets: [
+          {
+            name: 'Tally Sheet #1',
+            results: {
+              'choice-id-1': 1,
+              'choice-id-2': 2,
+            },
+          },
+        ],
       },
       {
         id: 'batch-2',
@@ -172,10 +177,15 @@ export const batchesMocks: {
           id: 'ab-1',
           name: 'Audit Board One',
         },
-        results: {
-          'choice-id-1': 0,
-          'choice-id-2': 10,
-        },
+        resultTallySheets: [
+          {
+            name: 'Tally Sheet #1',
+            results: {
+              'choice-id-1': 0,
+              'choice-id-2': 10,
+            },
+          },
+        ],
       },
       {
         id: 'batch-3',
@@ -185,10 +195,15 @@ export const batchesMocks: {
           id: 'ab-1',
           name: 'Audit Board One',
         },
-        results: {
-          'choice-id-1': 2000,
-          'choice-id-2': 20,
-        },
+        resultTallySheets: [
+          {
+            name: 'Tally Sheet #1',
+            results: {
+              'choice-id-1': 2000,
+              'choice-id-2': 20,
+            },
+          },
+        ],
       },
     ],
     resultsFinalizedAt: '2020-09-14T17:35:19.482Z',

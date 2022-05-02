@@ -411,9 +411,9 @@ def batch_round_status(election: Election, round: Round) -> Dict[str, JSONDict]:
     audited_sample_count_by_jurisdiction = dict(
         SampledBatchDraw.query.filter_by(round_id=round.id)
         .join(Batch)
-        .join(BatchResult)
+        .join(BatchResultTallySheet)
         .group_by(Batch.jurisdiction_id)
-        .having(func.count(BatchResult.batch_id) > 0)
+        .having(func.count(BatchResultTallySheet.id) > 0)
         .values(
             Batch.jurisdiction_id, func.count(SampledBatchDraw.ticket_number.distinct())
         )
@@ -428,9 +428,9 @@ def batch_round_status(election: Election, round: Round) -> Dict[str, JSONDict]:
     audited_batch_count_by_jurisdiction = dict(
         Batch.query.join(SampledBatchDraw)
         .filter_by(round_id=round.id)
-        .join(BatchResult)
+        .join(BatchResultTallySheet)
         .group_by(Batch.jurisdiction_id)
-        .having(func.count(BatchResult.batch_id) > 0)
+        .having(func.count(BatchResultTallySheet.id) > 0)
         .values(Batch.jurisdiction_id, func.count(Batch.id.distinct()))
     )
 

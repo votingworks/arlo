@@ -11,6 +11,7 @@ import {
   IBatch,
   useRecordBatchResults,
   useFinalizeBatchResults,
+  IBatchResults,
 } from './useBatchResults'
 import { sum } from '../../utils/number'
 import { IContest } from '../../types'
@@ -93,17 +94,22 @@ const BatchResultsForm = ({
     jurisdictionId,
     roundId
   )
-  const { register, handleSubmit, watch, formState, errors } = useForm<{
-    [choiceId: string]: number
-  }>({
+  const { register, handleSubmit, watch, formState, errors } = useForm<
+    IBatchResults
+  >({
     defaultValues:
-      batch.results ||
-      Object.fromEntries(contest.choices.map(c => [c.id, undefined])),
+      batch.resultTallySheets.length === 1
+        ? batch.resultTallySheets[0].results
+        : Object.fromEntries(contest.choices.map(c => [c.id, undefined])),
   })
 
-  const onSubmit = (results: { [choiceId: string]: number }) => {
+  const onSubmit = (results: IBatchResults) => {
+    const tallySheet = {
+      name: 'Tally Sheet #1',
+      results,
+    }
     recordBatchResults.mutate(
-      { batchId: batch.id, results },
+      { batchId: batch.id, resultTallySheets: [tallySheet] },
       { onSuccess: closeForm }
     )
   }
@@ -177,15 +183,20 @@ const BatchRoundDataEntry = ({ round }: { round: IRound }) => {
   const [contest] = contests
   const { batches, resultsFinalizedAt } = batchesResp.data
 
-  const total = (choiceId: string) =>
-    sum(
-      batches
-        .filter(batch => batch.results !== null)
-        .map(batch => batch.results![choiceId])
-    )
+  const batchChoiceVotes = (batch: IBatch, choiceId: string) =>
+    batch.resultTallySheets.length > 0
+      ? sum(
+          batch.resultTallySheets.map(
+            tallySheet => tallySheet.results[choiceId]
+          )
+        )
+      : undefined
+
+  const choiceTotal = (choiceId: string) =>
+    sum(batches.map(batch => batchChoiceVotes(batch, choiceId) || 0))
 
   const onClickFinalize = () => {
-    if (batches.some(batch => batch.results === null)) {
+    if (batches.some(batch => batch.resultTallySheets.length === 0)) {
       toast.error('Please enter results for all batches before finalizing.')
     } else {
       confirm({
@@ -263,14 +274,20 @@ const BatchRoundDataEntry = ({ round }: { round: IRound }) => {
             ) : (
               <tr key={batch.id}>
                 <td>{batch.name}</td>
-                {contest.choices.map(choice => (
-                  <ChoiceTD key={`${batch.name}-${choice.id}`}>
-                    {batch.results && batch.results[choice.id].toLocaleString()}
-                  </ChoiceTD>
-                ))}
+                {contest.choices.map(choice => {
+                  const choiceVotes = batchChoiceVotes(batch, choice.id)
+                  return (
+                    <ChoiceTD key={`${batch.name}-${choice.id}`}>
+                      {choiceVotes && choiceVotes.toLocaleString()}
+                    </ChoiceTD>
+                  )
+                })}
                 <TotalsTD>
-                  {batch.results &&
-                    sum(Object.values(batch.results)).toLocaleString()}
+                  {sum(
+                    contest.choices.map(
+                      choice => batchChoiceVotes(batch, choice.id) || 0
+                    )
+                  ).toLocaleString()}
                 </TotalsTD>
                 <td>
                   <Button
@@ -288,12 +305,12 @@ const BatchRoundDataEntry = ({ round }: { round: IRound }) => {
             <TotalsTD>Choice Total Votes</TotalsTD>
             {contest.choices.map(choice => (
               <TotalsTD key={`total-${choice.id}`}>
-                {total(choice.id).toLocaleString()}
+                {choiceTotal(choice.id).toLocaleString()}
               </TotalsTD>
             ))}
             <TotalsTD>
               {sum(
-                contest.choices.map(choice => total(choice.id))
+                contest.choices.map(choice => choiceTotal(choice.id))
               ).toLocaleString()}
             </TotalsTD>
             <td />

@@ -399,8 +399,11 @@ class Batch(BaseModel):
         cascade="all, delete-orphan",
         passive_deletes=True,
     )
-    results = relationship(
-        "BatchResult", uselist=True, cascade="all, delete-orphan", passive_deletes=True,
+    result_tally_sheets = relationship(
+        "BatchResultTallySheet",
+        uselist=True,
+        cascade="all, delete-orphan",
+        passive_deletes=True,
     )
 
     __table_args__ = (UniqueConstraint("jurisdiction_id", "tabulator", "name"),)
@@ -813,10 +816,30 @@ class SampledBatchDraw(BaseModel):
     __table_args__ = (PrimaryKeyConstraint("batch_id", "round_id", "ticket_number"),)
 
 
-# Records the audited vote count for one sampled batch for one contest choice.
-class BatchResult(BaseModel):
+# In a batch comparison audit, audit boards will record votes on tally sheets.
+# They may use one sheet for the whole batch, or split the batch up and use
+# multiple sheets.
+class BatchResultTallySheet(BaseModel):
+    id = Column(String(200), primary_key=True)
     batch_id = Column(
         String(200), ForeignKey("batch.id", ondelete="cascade"), nullable=False,
+    )
+    name = Column(String(200), nullable=False)
+
+    results = relationship(
+        "BatchResult", uselist=True, cascade="all, delete-orphan", passive_deletes=True,
+    )
+
+    __table_args__ = (UniqueConstraint("batch_id", "name"),)
+
+
+# Each tally sheet has an audited vote count (BatchResult) for each contest
+# choice.
+class BatchResult(BaseModel):
+    tally_sheet_id = Column(
+        String(200),
+        ForeignKey("batch_result_tally_sheet.id", ondelete="cascade"),
+        nullable=False,
     )
     contest_choice_id = Column(
         String(200),
@@ -826,7 +849,7 @@ class BatchResult(BaseModel):
 
     result = Column(Integer, nullable=False)
 
-    __table_args__ = (PrimaryKeyConstraint("batch_id", "contest_choice_id"),)
+    __table_args__ = (PrimaryKeyConstraint("tally_sheet_id", "contest_choice_id"),)
 
 
 # Records when the jurisdiction finalizes their batch results for a round.

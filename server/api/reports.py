@@ -662,22 +662,42 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
         .join(Round)
         .join(Jurisdiction)
         .filter_by(election_id=election.id)
-        .order_by(
-            Round.round_num,
-            Jurisdiction.name,
-            func.human_sort(Batch.name),
-            SampledBatchDraw.ticket_number,
-        )
     )
     if jurisdiction:
         batches_query = batches_query.filter(Jurisdiction.id == jurisdiction.id)
-    batches = batches_query.all()
+    batches = batches_query.order_by(
+        Round.round_num,
+        Jurisdiction.name,
+        func.human_sort(Batch.name),
+        SampledBatchDraw.ticket_number,
+    ).all()
 
     round_id_to_num = {round.id: round.round_num for round in election.rounds}
 
     # We only support one contest for batch audits
     assert len(list(election.contests)) == 1
     contest = list(election.contests)[0]
+
+    audit_result_tuples = (
+        BatchResultTallySheet.query.filter(
+            BatchResultTallySheet.batch_id.in_(
+                batches_query.with_entities(Batch.id).subquery()
+            )
+        )
+        .join(BatchResult)
+        .group_by(BatchResultTallySheet.batch_id, BatchResult.contest_choice_id)
+        .values(
+            BatchResultTallySheet.batch_id,
+            BatchResult.contest_choice_id,
+            func.sum(BatchResult.result),
+        )
+    )
+    audit_results_by_batch = {
+        batch_id: {choice_id: result for _, choice_id, result in choice_results}
+        for batch_id, choice_results in group_by(
+            audit_result_tuples, lambda tuple: tuple[0]
+        ).items()
+    }
 
     rows.append(
         [
@@ -698,26 +718,22 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
             for choice in contest.choices
         }
 
-        audit_results = {
-            choice: next(
-                (
-                    result.result
-                    for result in batch.results
-                    if result.contest_choice_id == choice.id
-                ),
-                0,
-            )
-            for choice in contest.choices
-        }
-
-        is_audited = len(batch.results) > 0
-
+        is_audited = batch.id in audit_results_by_batch
+        audit_results = (
+            {
+                choice.name: audit_results_by_batch[batch.id].get(choice.id, 0)
+                for choice in contest.choices
+            }
+            if is_audited
+            else None
+        )
         error = (
             macro.compute_error(
                 batch.jurisdiction.batch_tallies[batch.name],
                 {
                     contest.id: {
-                        choice.id: result for choice, result in audit_results.items()
+                        choice.id: audit_results_by_batch[batch.id].get(choice.id, 0)
+                        for choice in contest.choices
                     }
                 },
                 sampler_contest.from_db_contest(contest),
@@ -732,11 +748,7 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
                 batch.name,
                 pretty_batch_ticket_numbers(batch, round_id_to_num),
                 pretty_boolean(is_audited),
-                pretty_choice_votes(
-                    {choice.name: result for choice, result in audit_results.items()}
-                )
-                if is_audited
-                else "",
+                pretty_choice_votes(audit_results) if audit_results else "",
                 pretty_choice_votes(reported_results),
                 error["counted_as"] if error else "",
             ]
