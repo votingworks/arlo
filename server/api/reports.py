@@ -136,11 +136,16 @@ def pretty_cvr_interpretation(
     if ballot_cvr is None or cvrs_by_choice is None:
         return ""
 
+    if "o" in cvrs_by_choice.values():
+        return "Overvote"
+    if "u" in cvrs_by_choice.values():
+        return "Undervote"
+
     choice_id_to_name = {choice.id: choice.name for choice in contest.choices}
     return ", ".join(
         choice_id_to_name[choice_id]
         for choice_id, interpretation in cvrs_by_choice.items()
-        if interpretation == 1
+        if interpretation == "1"
     )
 
 
@@ -371,7 +376,7 @@ def round_rows(election: Election):
                 if choice_votes:
                     cvr_choice_votes.update(
                         {
-                            choice_id_to_name[choice_id]: count
+                            choice_id_to_name[choice_id]: int(count)
                             for choice_id, count in choice_votes.items()
                         }
                     )

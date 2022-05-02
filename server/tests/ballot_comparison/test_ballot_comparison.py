@@ -462,9 +462,11 @@ def audit_all_ballots(
                 ballot,
                 target_contest_id,
                 (
-                    Interpretation.VOTE
-                    if vote_choice_1_1 != ""
-                    else Interpretation.CONTEST_NOT_ON_BALLOT
+                    Interpretation.CONTEST_NOT_ON_BALLOT
+                    if vote_choice_1_1 == ""
+                    else Interpretation.BLANK
+                    if len(target_choices) == 0
+                    else Interpretation.VOTE
                 ),
                 target_choices,
             )
@@ -478,9 +480,11 @@ def audit_all_ballots(
                 ballot,
                 opportunistic_contest_id,
                 (
-                    Interpretation.VOTE
-                    if vote_choice_2_1 != ""
-                    else Interpretation.CONTEST_NOT_ON_BALLOT
+                    Interpretation.CONTEST_NOT_ON_BALLOT
+                    if vote_choice_2_1 == ""
+                    else Interpretation.BLANK
+                    if len(opportunistic_choices) == 0
+                    else Interpretation.VOTE
                 ),
                 opportunistic_choices,
             )
@@ -508,10 +512,10 @@ def check_discrepancies(report_data, audit_results):
             and row["Ballot Position"] == str(position)
         )
         parse_discrepancy = lambda d: int(d) if d != "" else None
-        assert expected_discrepancies == (
+        assert (
             parse_discrepancy(row["Discrepancy: Contest 1"]),
             parse_discrepancy(row["Discrepancy: Contest 2"]),
-        )
+        ) == expected_discrepancies, "Discrepancy mismatch for {}".format(ballot)
 
 
 def test_ballot_comparison_two_rounds(
@@ -986,7 +990,7 @@ def test_ballot_comparison_multiple_targeted_contests_sample_size(
     snapshot.assert_match(round_2_sample_sizes)
 
 
-def test_ballot_comparison_union_choice_names(
+def test_ballot_comparison_ess(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],  # pylint: disable=unused-argument
@@ -998,33 +1002,34 @@ def test_ballot_comparison_union_choice_names(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
 
-    # Upload CVRs that have some choice names missing across jurisdictions
+    # Upload CVRs that have some choice names missing across jurisdictions and
+    # enough overvotes/undervotes so that at least a few of each get sampled
     j1_cvr = """Cast Vote Record,Precinct,Ballot Style,Contest 1,Contest 2
-1,p,bs,Choice 1-2,Choice 2-1
-2,p,bs,Choice 1-1,Choice 2-1
-3,p,bs,undervote,Choice 2-1
-4,p,bs,Choice 1-1,Choice 2-1
-5,p,bs,Choice 1-2,Choice 2-1
-6,p,bs,Choice 1-1,Choice 2-1
-7,p,bs,Choice 1-2,Choice 2-1
-8,p,bs,Choice 1-1,Choice 2-1
-9,p,bs,Choice 1-2,Choice 2-2
-10,p,bs,Choice 1-1,Choice 2-2
-11,p,bs,Choice 1-2,Choice 2-2
-12,p,bs,Choice 1-1,Choice 2-2
-13,p,bs,Choice 1-2,Choice 2-2
-15,p,bs,Choice 1-1,Choice 2-2
+1,p,bs,Choice 1-1,Choice 2-1
+2,p,bs,Choice 1-2,Choice 2-1
+3,p,bs,Choice 1-1,Choice 2-1
+4,p,bs,Choice 1-2,Choice 2-1
+5,p,bs,undervote,undervote
+6,p,bs,Choice 1-2,Choice 2-1
+7,p,bs,Choice 1-1,Choice 2-1
+8,p,bs,Choice 1-2,Choice 2-1
+9,p,bs,undervote,undervote
+10,p,bs,undervote,undervote
+11,p,bs,Choice 1-1,Choice 2-2
+12,p,bs,Choice 1-2,Choice 2-2
+13,p,bs,Choice 1-1,Choice 2-2
+15,p,bs,Choice 1-2,Choice 2-2
 """
     j2_cvr = """Cast Vote Record,Precinct,Ballot Style,Contest 1,Contest 2
 1,p,bs,Choice 1-1,Choice 2-1
 2,p,bs,Choice 1-1,Choice 2-1
-3,p,bs,overvote,Choice 2-1
+3,p,bs,Choice 1-1,Choice 2-1
 4,p,bs,Choice 1-1,Choice 2-1
-5,p,bs,Choice 1-1,Choice 2-1
-6,p,bs,Choice 1-1,Choice 2-1
+5,p,bs,overvote,overvote
+6,p,bs,overvote,overvote
 7,p,bs,Choice 1-1,Choice 2-1
 8,p,bs,Choice 1-1,Choice 2-1
-9,p,bs,Choice 1-1,Choice 2-3
+9,p,bs,overvote,overvote
 10,p,bs,Choice 1-1,Choice 2-3
 11,p,bs,Choice 1-1,Choice 2-3
 12,p,bs,Choice 1-1,Choice 2-3
@@ -1090,10 +1095,8 @@ def test_ballot_comparison_union_choice_names(
     compare_json(
         target_contest["choices"],
         [
-            {"id": assert_is_id, "name": "Choice 1-1", "numVotes": 20,},
-            {"id": assert_is_id, "name": "Choice 1-2", "numVotes": 6,},
-            {"id": assert_is_id, "name": "overvote", "numVotes": 1,},
-            {"id": assert_is_id, "name": "undervote", "numVotes": 1,},
+            {"id": assert_is_id, "name": "Choice 1-1", "numVotes": 16},
+            {"id": assert_is_id, "name": "Choice 1-2", "numVotes": 6},
         ],
     )
 
@@ -1126,15 +1129,18 @@ def test_ballot_comparison_union_choice_names(
 
     # Audit boards audit all the ballots.
     # Tabulator, Batch, Ballot, Choice 1-1, Choice 1-2, Choice 2-1, Choice 2-2, Choice 2-3
-    generate_audit_results(round_1_id)
+    # generate_audit_results(round_1_id)
     audit_results = {
-        ("J1", "0001", "BATCH1", 1): ("0,1,1,0,0", (None, None)),
-        ("J1", "0001", "BATCH2", 3): ("0,1,0,1,0", (None, None)),
-        ("J1", "0002", "BATCH1", 3): ("1,0,1,0,0", (None, None)),
-        ("J1", "0002", "BATCH2", 5): ("1,0,0,1,0", (None, None)),
+        ("J1", "0001", "BATCH1", 1): ("1,0,1,0,0", (None, None)),
+        ("J1", "0001", "BATCH2", 2): ("0,1,1,0,0", (None, None)),
+        ("J1", "0001", "BATCH2", 3): ("0,0,0,0,0", (None, None)),  # CVR: u,u,u,u,u
+        ("J1", "0002", "BATCH1", 3): ("0,1,1,0,0", (None, None)),
+        ("J1", "0002", "BATCH2", 1): ("0,1,0,1,0", (1, 1)),  # CVR: u,u,u,u,u
+        ("J1", "0002", "BATCH2", 5): ("0,1,0,1,0", (None, None)),
         ("J2", "0001", "BATCH1", 1): ("1,0,1,0,0", (None, None)),
-        ("J2", "0001", "BATCH2", 3): ("1,0,0,0,1", (None, None)),
-        ("J2", "0002", "BATCH1", 3): ("1,0,1,0,0", (None, None)),
+        ("J2", "0001", "BATCH1", 3): ("1,0,1,0,0", (None, None)),
+        ("J2", "0001", "BATCH2", 3): ("1,1,1,0,1", (None, None)),  # CVR: o,o,o,o,o
+        ("J2", "0002", "BATCH1", 3): ("0,1,0,1,0", (1, 1)),  # CVR: o,o,o,o,o
         ("J2", "0002", "BATCH2", 1): ("1,0,0,0,1", (None, None)),
         ("J2", "0002", "BATCH2", 2): ("1,0,0,0,1", (None, None)),
         ("J2", "0002", "BATCH2", 5): ("1,0,0,0,1", (None, None)),

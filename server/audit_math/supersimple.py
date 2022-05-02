@@ -90,7 +90,6 @@ def compute_discrepancies(
                         }
                     }
     """
-
     discrepancies: Dict[str, Discrepancy] = {}
     for ballot, ballot_sample_cvr in sample_cvr.items():
         ballot_discrepancies = []
@@ -116,25 +115,46 @@ def discrepancy(
     reported: Optional[CVR],
     audited: Optional[CVR],
 ) -> Optional[Discrepancy]:
-    # Special cases: if ballot wasn't in CVR or ballot can't be found by
-    # audit board, count it as a two-vote overstatement
-    if reported is None or audited is None:
-        error = 2
-    else:
-        v_w, v_l = (
-            (reported[contest.name][winner], reported[contest.name][loser])
-            if contest.name in reported
-            # If contest wasn't on the ballot according to the CVR
-            else (0, 0)
-        )
+    def compute_error():
+        # Special cases: if ballot wasn't in CVR or ballot can't be found by
+        # audit board, count it as a two-vote overstatement
+        if reported is None or audited is None:
+            return 2
+
         a_w, a_l = (
-            (audited[contest.name][winner], audited[contest.name][loser])
+            (int(audited[contest.name][winner]), int(audited[contest.name][loser]))
             if contest.name in audited
             # If contest wasn't on the ballot according to the audit board
             else (0, 0)
         )
-        error = (v_w - a_w) - (v_l - a_l)
 
+        # Special case for ES&S overvotes/undervotes.
+        has_overvote = "o" in reported.get(contest.name, {}).values()
+        has_undervote = "u" in reported.get(contest.name, {}).values()
+        audited_votes = sum(map(int, (audited.get(contest.name, {}).values())))
+        # If the audited result correctly identified overvote/undervote, return
+        # 0 error.  Otherwise, return an error using the standard formula, but
+        # substituting in the appropriate overvotes/undervotes.
+        if has_overvote:
+            if audited_votes > 1:
+                return 0
+            else:
+                return (1 - a_w) - (1 - a_l)
+        if has_undervote:
+            if audited_votes < 1:
+                return 0
+            else:
+                return (0 - a_w) - (0 - a_l)
+
+        v_w, v_l = (
+            (int(reported[contest.name][winner]), int(reported[contest.name][loser]))
+            if contest.name in reported
+            # If contest wasn't on the ballot according to the CVR
+            else (0, 0)
+        )
+        return (v_w - a_w) - (v_l - a_l)
+
+    error = compute_error()
     if error == 0:
         return None
 

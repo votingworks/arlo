@@ -3,7 +3,7 @@ from decimal import Decimal
 import pytest
 
 from ...audit_math import supersimple
-from ...audit_math.sampler_contest import Contest
+from ...audit_math.sampler_contest import CVRS, SAMPLECVRS, Contest
 
 seed = "12345678901234567890abcdefghijklmnopqrstuvwxyz😊"
 ALPHA = Decimal(0.1)
@@ -15,36 +15,48 @@ def cvrs():
     cvr = {}
     for i in range(100000):
         if i < 60000:
-            contest_a_res = {"winner": 1, "loser": 0}
+            contest_a_res = {"winner": "1", "loser": "0"}
         else:
-            contest_a_res = {"winner": 0, "loser": 1}
+            contest_a_res = {"winner": "0", "loser": "1"}
 
-        cvr[i] = {"Contest A": contest_a_res}
+        cvr[f"ballot-{i}"] = {"Contest A": contest_a_res}
 
         if i < 30000:
-            cvr[i]["Contest B"] = {"winner": 1, "loser": 0}
+            cvr[f"ballot-{i}"]["Contest B"] = {"winner": "1", "loser": "0"}
         elif 30000 <= i < 60000:
-            cvr[i]["Contest B"] = {"winner": 0, "loser": 1}
+            cvr[f"ballot-{i}"]["Contest B"] = {"winner": "0", "loser": "1"}
 
         if i < 18000:
-            cvr[i]["Contest C"] = {"winner": 1, "loser": 0}
+            cvr[f"ballot-{i}"]["Contest C"] = {"winner": "1", "loser": "0"}
         elif 18000 <= i < 36000:
-            cvr[i]["Contest C"] = {"winner": 0, "loser": 1}
+            cvr[f"ballot-{i}"]["Contest C"] = {"winner": "0", "loser": "1"}
 
         if i < 8000:
-            cvr[i]["Contest D"] = {"winner": 1, "loser": 0}
+            cvr[f"ballot-{i}"]["Contest D"] = {"winner": "1", "loser": "0"}
         elif 8000 <= i < 14000:
-            cvr[i]["Contest D"] = {"winner": 0, "loser": 1}
+            cvr[f"ballot-{i}"]["Contest D"] = {"winner": "0", "loser": "1"}
 
         if i < 10000:
-            cvr[i]["Contest E"] = {"winner": 1, "loser": 0}
+            cvr[f"ballot-{i}"]["Contest E"] = {"winner": "1", "loser": "0"}
 
         if i < 300:
-            cvr[i]["Two-winner Contest"] = {"winner1": 0, "winner2": 1, "loser": 0}
+            cvr[f"ballot-{i}"]["Two-winner Contest"] = {
+                "winner1": "0",
+                "winner2": "1",
+                "loser": "0",
+            }
         elif 300 <= i < 900:
-            cvr[i]["Two-winner Contest"] = {"winner1": 1, "winner2": 0, "loser": 0}
+            cvr[f"ballot-{i}"]["Two-winner Contest"] = {
+                "winner1": "1",
+                "winner2": "0",
+                "loser": "0",
+            }
         elif i < 1000:
-            cvr[i]["Two-winner Contest"] = {"winner1": 0, "winner2": 0, "loser": 1}
+            cvr[f"ballot-{i}"]["Two-winner Contest"] = {
+                "winner1": "0",
+                "winner2": "0",
+                "loser": "1",
+            }
 
     yield cvr
 
@@ -73,15 +85,15 @@ def test_find_no_discrepancies(contests, cvrs):
 
     # Test no discrepancies
     sample_cvr = {
-        0: {
+        "ballot-0": {
             "times_sampled": 1,
             "cvr": {
-                "Contest A": {"winner": 1, "loser": 0},
-                "Contest B": {"winner": 1, "loser": 0},
-                "Contest C": {"winner": 1, "loser": 0},
-                "Contest D": {"winner": 1, "loser": 0},
-                "Contest E": {"winner": 1, "loser": 0},
-                "Two-winner Contest": {"winner1": 0, "winner2": 1, "loser": 0},
+                "Contest A": {"winner": "1", "loser": "0"},
+                "Contest B": {"winner": "1", "loser": "0"},
+                "Contest C": {"winner": "1", "loser": "0"},
+                "Contest D": {"winner": "1", "loser": "0"},
+                "Contest E": {"winner": "1", "loser": "0"},
+                "Two-winner Contest": {"winner1": "0", "winner2": "1", "loser": "0"},
             },
         }
     }
@@ -97,15 +109,15 @@ def test_find_one_discrepancy(contests, cvrs):
 
     # Test one discrepancy
     sample_cvr = {
-        0: {
+        "ballot-0": {
             "times_sampled": 1,
             "cvr": {
-                "Contest A": {"winner": 0, "loser": 0},
-                "Contest B": {"winner": 1, "loser": 0},
-                "Contest C": {"winner": 1, "loser": 0},
-                "Contest D": {"winner": 1, "loser": 0},
-                "Contest E": {"winner": 1, "loser": 0},
-                "Two-winner Contest": {"winner1": 0, "winner2": 0, "loser": 0},
+                "Contest A": {"winner": "0", "loser": "0"},
+                "Contest B": {"winner": "1", "loser": "0"},
+                "Contest C": {"winner": "1", "loser": "0"},
+                "Contest D": {"winner": "1", "loser": "0"},
+                "Contest E": {"winner": "1", "loser": "0"},
+                "Two-winner Contest": {"winner1": "0", "winner2": "0", "loser": "0"},
             },
         }
     }
@@ -115,11 +127,15 @@ def test_find_one_discrepancy(contests, cvrs):
             contests[contest], cvrs, sample_cvr
         )
         if contest == "Contest A":
-            assert discrepancies[0]["counted_as"] == 1
-            assert discrepancies[0]["weighted_error"] == Decimal(1) / Decimal(20000)
+            assert discrepancies["ballot-0"]["counted_as"] == 1
+            assert discrepancies["ballot-0"]["weighted_error"] == Decimal(1) / Decimal(
+                20000
+            )
         elif contest == "Two-winner Contest":
-            assert discrepancies[0]["counted_as"] == 1
-            assert discrepancies[0]["weighted_error"] == Decimal(1) / Decimal(200)
+            assert discrepancies["ballot-0"]["counted_as"] == 1
+            assert discrepancies["ballot-0"]["weighted_error"] == Decimal(1) / Decimal(
+                200
+            )
 
         else:
             assert not discrepancies
@@ -127,12 +143,12 @@ def test_find_one_discrepancy(contests, cvrs):
 
 def test_negative_discrepancies(contests, cvrs):
     sample_cvr = {
-        60000: {
+        "ballot-60000": {
             "times_sampled": 1,
             "cvr": {
                 "Contest A": {
-                    "winner": 1,
-                    "loser": 0,
+                    "winner": "1",
+                    "loser": "0",
                 },  # One of the reported loser ballots was actually a winner ballot
             },
         }
@@ -143,18 +159,20 @@ def test_negative_discrepancies(contests, cvrs):
     )
 
     assert discrepancies
-    assert discrepancies[60000]["counted_as"] == -2
-    assert discrepancies[60000]["weighted_error"] == Decimal(-2) / Decimal(20000)
+    assert discrepancies["ballot-60000"]["counted_as"] == -2
+    assert discrepancies["ballot-60000"]["weighted_error"] == Decimal(-2) / Decimal(
+        20000
+    )
 
 
 def test_two_vote_overstatement_discrepancies(contests, cvrs):
     sample_cvr = {
-        0: {
+        "ballot-0": {
             "times_sampled": 1,
             "cvr": {
                 "Contest A": {
-                    "winner": 0,
-                    "loser": 1,
+                    "winner": "0",
+                    "loser": "1",
                 },  # One of the reported winner ballots was actually a loser ballot
             },
         }
@@ -165,19 +183,19 @@ def test_two_vote_overstatement_discrepancies(contests, cvrs):
     )
 
     assert discrepancies
-    assert discrepancies[0]["counted_as"] == 2
-    assert discrepancies[0]["weighted_error"] == Decimal(2) / Decimal(20000)
+    assert discrepancies["ballot-0"]["counted_as"] == 2
+    assert discrepancies["ballot-0"]["weighted_error"] == Decimal(2) / Decimal(20000)
 
 
 def test_race_not_in_cvr_discrepancy(contests, cvrs):
 
     sample_cvr = {
-        0: {
+        "ballot-0": {
             "times_sampled": 1,
             "cvr": {
                 "Contest F": {
-                    "winner": 0,
-                    "loser": 1,
+                    "winner": "0",
+                    "loser": "1",
                 },  # The audit board found a race not in the CVR
             },
         }
@@ -188,20 +206,20 @@ def test_race_not_in_cvr_discrepancy(contests, cvrs):
     )
 
     assert discrepancies
-    assert discrepancies[0]["counted_as"] == 1
-    assert discrepancies[0]["weighted_error"] == Decimal(1) / Decimal(6)
+    assert discrepancies["ballot-0"]["counted_as"] == 1
+    assert discrepancies["ballot-0"]["weighted_error"] == Decimal(1) / Decimal(6)
 
 
 def test_race_not_in_sample_discrepancy(contests, cvrs):
 
     sample_cvr = {
-        0: {
+        "ballot-0": {
             "times_sampled": 1,
             "cvr": {
-                "Contest A": {"winner": 0, "loser": 0},
-                "Contest B": {"winner": 1, "loser": 0},
-                "Contest C": {"winner": 1, "loser": 0},
-                "Contest E": {"winner": 1, "loser": 0},
+                "Contest A": {"winner": "0", "loser": "0"},
+                "Contest B": {"winner": "1", "loser": "0"},
+                "Contest C": {"winner": "1", "loser": "0"},
+                "Contest E": {"winner": "1", "loser": "0"},
             },
         }
     }
@@ -211,26 +229,29 @@ def test_race_not_in_sample_discrepancy(contests, cvrs):
     )
 
     assert discrepancies
-    assert discrepancies[0]["counted_as"] == 1
-    assert discrepancies[0]["weighted_error"] == Decimal(1) / Decimal(2000)
+    assert discrepancies["ballot-0"]["counted_as"] == 1
+    assert discrepancies["ballot-0"]["weighted_error"] == Decimal(1) / Decimal(2000)
 
 
 def test_ballot_not_found_discrepancy(contests, cvrs):
-    sample_cvr = {0: {"times_sampled": 1, "cvr": None}}
+    sample_cvr = {"ballot-0": {"times_sampled": 1, "cvr": None}}
 
     discrepancies = supersimple.compute_discrepancies(
         contests["Contest D"], cvrs, sample_cvr
     )
 
     assert discrepancies
-    assert discrepancies[0]["counted_as"] == 2
-    assert discrepancies[0]["weighted_error"] == Decimal(2) / Decimal(2000)
+    assert discrepancies["ballot-0"]["counted_as"] == 2
+    assert discrepancies["ballot-0"]["weighted_error"] == Decimal(2) / Decimal(2000)
 
 
 def test_ballot_not_in_cvr(contests):
     cvrs = {}
     sample_cvr = {
-        0: {"times_sampled": 1, "cvr": {"Contest D": {"winner": 1, "loser": 0}}}
+        "ballot-0": {
+            "times_sampled": 1,
+            "cvr": {"Contest D": {"winner": "1", "loser": "0"}},
+        }
     }
 
     discrepancies = supersimple.compute_discrepancies(
@@ -238,21 +259,210 @@ def test_ballot_not_in_cvr(contests):
     )
 
     assert discrepancies
-    assert discrepancies[0]["counted_as"] == 2
-    assert discrepancies[0]["weighted_error"] == Decimal(2) / Decimal(2000)
+    assert discrepancies["ballot-0"]["counted_as"] == 2
+    assert discrepancies["ballot-0"]["weighted_error"] == Decimal(2) / Decimal(2000)
 
 
 def test_ballot_not_in_cvr_and_not_found(contests):
     cvrs = {}
-    sample_cvr = {0: {"times_sampled": 1, "cvr": None}}
+    sample_cvr = {"ballot-0": {"times_sampled": 1, "cvr": None}}
 
     discrepancies = supersimple.compute_discrepancies(
         contests["Contest D"], cvrs, sample_cvr
     )
 
     assert discrepancies
-    assert discrepancies[0]["counted_as"] == 2
-    assert discrepancies[0]["weighted_error"] == Decimal(2) / Decimal(2000)
+    assert discrepancies["ballot-0"]["counted_as"] == 2
+    assert discrepancies["ballot-0"]["weighted_error"] == Decimal(2) / Decimal(2000)
+
+
+def test_ess_discrepancies(contests) -> None:
+    cvrs: CVRS = {
+        "ballot-0": {"Contest A": {"winner": "o", "loser": "o"}},
+        "ballot-1": {"Contest A": {"winner": "u", "loser": "u"}},
+        "ballot-2": {"Contest A": {"winner": "1", "loser": "0"}},
+    }
+
+    # Correct auditing
+    sample_cvr: SAMPLECVRS = {
+        "ballot-0": {
+            "times_sampled": 1,
+            "cvr": {"Contest A": {"winner": "1", "loser": "1"}},
+        },
+        "ballot-1": {
+            "times_sampled": 1,
+            "cvr": {"Contest A": {"winner": "0", "loser": "0"}},
+        },
+        "ballot-2": {
+            "times_sampled": 1,
+            "cvr": {"Contest A": {"winner": "1", "loser": "0"}},
+        },
+    }
+    discrepancies = supersimple.compute_discrepancies(
+        contests["Contest A"], cvrs, sample_cvr
+    )
+    assert discrepancies == {}
+
+    # Votes for the loser
+    sample_cvr = {
+        "ballot-0": {
+            "times_sampled": 1,
+            "cvr": {"Contest A": {"winner": "0", "loser": "1"}},
+        },
+        "ballot-1": {
+            "times_sampled": 1,
+            "cvr": {"Contest A": {"winner": "0", "loser": "1"}},
+        },
+        "ballot-2": {
+            "times_sampled": 1,
+            "cvr": {"Contest A": {"winner": "0", "loser": "1"}},
+        },
+    }
+    discrepancies = supersimple.compute_discrepancies(
+        contests["Contest A"], cvrs, sample_cvr
+    )
+    assert discrepancies == {
+        "ballot-0": supersimple.Discrepancy(
+            counted_as=1, weighted_error=Decimal(1) / Decimal(20000)
+        ),
+        "ballot-1": supersimple.Discrepancy(
+            counted_as=1, weighted_error=Decimal(1) / Decimal(20000)
+        ),
+        "ballot-2": supersimple.Discrepancy(
+            counted_as=2, weighted_error=Decimal(1) / Decimal(10000)
+        ),
+    }
+
+    # Votes for the winner
+    sample_cvr = {
+        "ballot-0": {
+            "times_sampled": 1,
+            "cvr": {"Contest A": {"winner": "1", "loser": "0"}},
+        },
+        "ballot-1": {
+            "times_sampled": 1,
+            "cvr": {"Contest A": {"winner": "1", "loser": "0"}},
+        },
+        "ballot-2": {
+            "times_sampled": 1,
+            "cvr": {"Contest A": {"winner": "1", "loser": "0"}},
+        },
+    }
+    discrepancies = supersimple.compute_discrepancies(
+        contests["Contest A"], cvrs, sample_cvr
+    )
+    assert discrepancies == {
+        "ballot-0": supersimple.Discrepancy(
+            counted_as=-1, weighted_error=Decimal(-1) / Decimal(20000)
+        ),
+        "ballot-1": supersimple.Discrepancy(
+            counted_as=-1, weighted_error=Decimal(-1) / Decimal(20000)
+        ),
+    }
+
+    # Reversed overvotes/undervotes
+    sample_cvr = {
+        "ballot-0": {
+            "times_sampled": 1,
+            "cvr": {"Contest A": {"winner": "0", "loser": "0"}},
+        },
+        "ballot-1": {
+            "times_sampled": 1,
+            "cvr": {"Contest A": {"winner": "1", "loser": "1"}},
+        },
+        "ballot-2": {
+            "times_sampled": 1,
+            "cvr": {"Contest A": {"winner": "1", "loser": "0"}},
+        },
+    }
+    discrepancies = supersimple.compute_discrepancies(
+        contests["Contest A"], cvrs, sample_cvr
+    )
+    assert discrepancies == {}
+
+    # Missing ballots/contest not on ballot
+    cvrs = {
+        **cvrs,
+        "ballot-0": None,
+        "ballot-3": {},
+    }
+    sample_cvr = {
+        "ballot-0": {"times_sampled": 1, "cvr": {}},
+        "ballot-1": {"times_sampled": 1, "cvr": None},
+        "ballot-3": {"times_sampled": 1, "cvr": {}},
+    }
+    discrepancies = supersimple.compute_discrepancies(
+        contests["Contest A"], cvrs, sample_cvr
+    )
+    assert discrepancies == {
+        "ballot-0": supersimple.Discrepancy(
+            counted_as=2, weighted_error=Decimal(2) / Decimal(20000)
+        ),
+        "ballot-1": supersimple.Discrepancy(
+            counted_as=2, weighted_error=Decimal(2) / Decimal(20000)
+        ),
+    }
+
+    # More than two candidates
+    contest = Contest(
+        "Two Losers",
+        {
+            "winner": 1000,
+            "loser1": 0,
+            "loser2": 500,
+            "ballots": 1500,
+            "numWinners": 1,
+            "votesAllowed": 1,
+        },
+    )
+    cvrs = {
+        "ballot-0": {"Two Losers": {"winner": "o", "loser1": "o", "loser2": "o"}},
+        "ballot-1": {"Two Losers": {"winner": "u", "loser1": "u", "loser2": "u"}},
+        "ballot-2": {"Two Losers": {"winner": "1", "loser1": "0", "loser2": "0"}},
+    }
+    sample_cvr = {
+        "ballot-0": {
+            "times_sampled": 1,
+            "cvr": {"Two Losers": {"winner": "1", "loser1": "0", "loser2": "1"}},
+        },
+        "ballot-1": {
+            "times_sampled": 1,
+            "cvr": {"Two Losers": {"winner": "0", "loser1": "0", "loser2": "0"}},
+        },
+        "ballot-2": {
+            "times_sampled": 1,
+            "cvr": {"Two Losers": {"winner": "1", "loser1": "0", "loser2": "0"}},
+        },
+    }
+    discrepancies = supersimple.compute_discrepancies(contest, cvrs, sample_cvr)
+    assert discrepancies == {}
+
+    # Partial overvotes/undervotes (in the case where one jurisdiction's CVR
+    # records an overvote/undervote, but there are other choices merged in from
+    # other jurisdictions' CVRs, those other choices would have a vote 0)
+    cvrs = {
+        "ballot-0": {"Two Losers": {"winner": "o", "loser1": "o", "loser2": "0"}},
+        "ballot-1": {"Two Losers": {"winner": "u", "loser1": "u", "loser2": "0"}},
+    }
+    sample_cvr = {
+        "ballot-0": {
+            "times_sampled": 1,
+            "cvr": {"Two Losers": {"winner": "0", "loser1": "0", "loser2": "1"}},
+        },
+        "ballot-1": {
+            "times_sampled": 1,
+            "cvr": {"Two Losers": {"winner": "0", "loser1": "0", "loser2": "1"}},
+        },
+    }
+    discrepancies = supersimple.compute_discrepancies(contest, cvrs, sample_cvr)
+    assert discrepancies == {
+        "ballot-0": supersimple.Discrepancy(
+            counted_as=1, weighted_error=Decimal(1) / Decimal(500)
+        ),
+        "ballot-1": supersimple.Discrepancy(
+            counted_as=1, weighted_error=Decimal(1) / Decimal(500)
+        ),
+    }
 
 
 def test_get_sample_sizes(contests):
@@ -275,15 +485,19 @@ def test_compute_risk(contests, cvrs):
 
         # No discrepancies
         for i in range(sample_size):
-            sample_cvr[i] = {
+            sample_cvr[f"ballot-{i}"] = {
                 "times_sampled": 1,
                 "cvr": {
-                    "Contest A": {"winner": 1, "loser": 0},
-                    "Contest B": {"winner": 1, "loser": 0},
-                    "Contest C": {"winner": 1, "loser": 0},
-                    "Contest D": {"winner": 1, "loser": 0},
-                    "Contest E": {"winner": 1, "loser": 0},
-                    "Two-winner Contest": {"winner1": 0, "winner2": 1, "loser": 0},
+                    "Contest A": {"winner": "1", "loser": "0"},
+                    "Contest B": {"winner": "1", "loser": "0"},
+                    "Contest C": {"winner": "1", "loser": "0"},
+                    "Contest D": {"winner": "1", "loser": "0"},
+                    "Contest E": {"winner": "1", "loser": "0"},
+                    "Two-winner Contest": {
+                        "winner1": "0",
+                        "winner2": "1",
+                        "loser": "0",
+                    },
                 },
             }
 
@@ -303,10 +517,10 @@ def test_compute_risk(contests, cvrs):
 
         to_sample = {
             "sample_size": sample_size,
-            "1-under": 0,
-            "1-over": 0,
-            "2-under": 0,
-            "2-over": 0,
+            "1-under": "0",
+            "1-over": "0",
+            "2-under": "0",
+            "2-over": "0",
         }
 
         next_sample_size = supersimple.get_sample_sizes(
@@ -315,15 +529,15 @@ def test_compute_risk(contests, cvrs):
         assert next_sample_size == 0
 
         # Test one-vote overstatement
-        sample_cvr[0] = {
+        sample_cvr["ballot-0"] = {
             "times_sampled": 1,
             "cvr": {
-                "Contest A": {"winner": 0, "loser": 0},
-                "Contest B": {"winner": 0, "loser": 0},
-                "Contest C": {"winner": 0, "loser": 0},
-                "Contest D": {"winner": 0, "loser": 0},
-                "Contest E": {"winner": 0, "loser": 0},
-                "Two-winner Contest": {"winner1": 0, "winner2": 0, "loser": 0},
+                "Contest A": {"winner": "0", "loser": "0"},
+                "Contest B": {"winner": "0", "loser": "0"},
+                "Contest C": {"winner": "0", "loser": "0"},
+                "Contest D": {"winner": "0", "loser": "0"},
+                "Contest E": {"winner": "0", "loser": "0"},
+                "Two-winner Contest": {"winner1": "0", "winner2": "0", "loser": "0"},
             },
         }
 
@@ -346,10 +560,10 @@ def test_compute_risk(contests, cvrs):
 
         to_sample = {
             "sample_size": sample_size,
-            "1-under": 0,
-            "1-over": 1,
-            "2-under": 0,
-            "2-over": 0,
+            "1-under": "0",
+            "1-over": "1",
+            "2-under": "0",
+            "2-over": "0",
         }
 
         next_sample_size = supersimple.get_sample_sizes(
@@ -362,15 +576,15 @@ def test_compute_risk(contests, cvrs):
         )
 
         # Test two-vote overstatement
-        sample_cvr[0] = {
+        sample_cvr["ballot-0"] = {
             "times_sampled": 1,
             "cvr": {
-                "Contest A": {"winner": 0, "loser": 1},
-                "Contest B": {"winner": 0, "loser": 1},
-                "Contest C": {"winner": 0, "loser": 1},
-                "Contest D": {"winner": 0, "loser": 1},
-                "Contest E": {"winner": 0, "loser": 1},
-                "Two-winner Contest": {"winner1": 0, "winner2": 0, "loser": 1},
+                "Contest A": {"winner": "0", "loser": "1"},
+                "Contest B": {"winner": "0", "loser": "1"},
+                "Contest C": {"winner": "0", "loser": "1"},
+                "Contest D": {"winner": "0", "loser": "1"},
+                "Contest E": {"winner": "0", "loser": "1"},
+                "Two-winner Contest": {"winner1": "0", "winner2": "0", "loser": "1"},
             },
         }
 
@@ -393,10 +607,10 @@ def test_compute_risk(contests, cvrs):
 
         to_sample = {
             "sample_size": sample_size,
-            "1-under": 0,
-            "1-over": 0,
-            "2-under": 0,
-            "2-over": 1,
+            "1-under": "0",
+            "1-over": "0",
+            "2-under": "0",
+            "2-over": "1",
         }
 
         next_sample_size = supersimple.get_sample_sizes(
@@ -424,16 +638,16 @@ def test_tied_contest():
 
     for i in range(contest_data["ballots"]):
         if i < contest_data["ballots"] / 2:
-            cvr[i] = {"Tied Contest": {"winner": 1, "loser": 0}}
+            cvr[f"ballot-{i}"] = {"Tied Contest": {"winner": "1", "loser": "0"}}
         else:
-            cvr[i] = {"Tied Contest": {"winner": 0, "loser": 1}}
+            cvr[f"ballot-{i}"] = {"Tied Contest": {"winner": "0", "loser": "1"}}
 
     sample_results = {
-        "sample_size": 0,
-        "1-under": 0,
-        "1-over": 0,
-        "2-under": 0,
-        "2-over": 0,
+        "sample_size": "0",
+        "1-under": "0",
+        "1-over": "0",
+        "2-under": "0",
+        "2-over": "0",
     }
 
     sample_size = supersimple.get_sample_sizes(RISK_LIMIT, contest, sample_results)
@@ -441,7 +655,10 @@ def test_tied_contest():
     assert sample_size == contest_data["ballots"]
 
     sample_cvr = {
-        0: {"times_sampled": 1, "cvr": {"Tied Contest": {"winner": 1, "loser": 0}}}
+        "ballot-0": {
+            "times_sampled": 1,
+            "cvr": {"Tied Contest": {"winner": "1", "loser": "0"}},
+        }
     }
 
     # Ensure that anything short of a full recount doesn't finish
@@ -475,23 +692,23 @@ def test_supersimple_full_hand_tally():
         },
     )
     cvr = {
-        1: {"choice_1": 1, "choice_2": 0},
-        2: {"choice_1": 1, "choice_2": 0},
-        3: {"choice_1": 1, "choice_2": 0},
-        4: {"choice_1": 1, "choice_2": 0},
-        5: {"choice_1": 1, "choice_2": 0},
-        6: {"choice_1": 0, "choice_2": 1},
-        7: {"choice_1": 0, "choice_2": 1},
-        8: {"choice_1": 0, "choice_2": 1},
-        9: {"choice_1": 0, "choice_2": 1},
-        10: {"choice_1": 0, "choice_2": 0},
+        "ballot-1": {"choice_1": "1", "choice_2": "0"},
+        "ballot-2": {"choice_1": "1", "choice_2": "0"},
+        "ballot-3": {"choice_1": "1", "choice_2": "0"},
+        "ballot-4": {"choice_1": "1", "choice_2": "0"},
+        "ballot-5": {"choice_1": "1", "choice_2": "0"},
+        "ballot-6": {"choice_1": "0", "choice_2": "1"},
+        "ballot-7": {"choice_1": "0", "choice_2": "1"},
+        "ballot-8": {"choice_1": "0", "choice_2": "1"},
+        "ballot-9": {"choice_1": "0", "choice_2": "1"},
+        "ballot-10": {"choice_1": "0", "choice_2": "0"},
     }
     sample_cvr = {
-        1: {"times_sampled": 2, "cvr": {"choice_1": 1, "choice_2": 0}},
-        2: {"times_sampled": 2, "cvr": {"choice_1": 1, "choice_2": 0}},
-        6: {"times_sampled": 2, "cvr": {"choice_1": 0, "choice_2": 1}},
-        7: {"times_sampled": 2, "cvr": {"choice_1": 0, "choice_2": 1}},
-        8: {"times_sampled": 2, "cvr": {"choice_1": 0, "choice_2": 1}},
+        "ballot-1": {"times_sampled": 2, "cvr": {"choice_1": "1", "choice_2": "0"}},
+        "ballot-2": {"times_sampled": 2, "cvr": {"choice_1": "1", "choice_2": "0"}},
+        "ballot-6": {"times_sampled": 2, "cvr": {"choice_1": "0", "choice_2": "1"}},
+        "ballot-7": {"times_sampled": 2, "cvr": {"choice_1": "0", "choice_2": "1"}},
+        "ballot-8": {"times_sampled": 2, "cvr": {"choice_1": "0", "choice_2": "1"}},
     }
     p, res = supersimple.compute_risk(RISK_LIMIT, contest, cvr, sample_cvr)
 
@@ -514,27 +731,30 @@ def test_snapshot_test():
 
     for i in range(contest_data["ballots"]):
         if i < contest_data["winner"]:
-            cvr[i] = {"Jonah Test": {"winner": 1, "loser": 0}}
+            cvr[f"ballot-{i}"] = {"Jonah Test": {"winner": "1", "loser": "0"}}
         else:
-            cvr[i] = {"Jonah Test": {"winner": 0, "loser": 1}}
+            cvr[f"ballot-{i}"] = {"Jonah Test": {"winner": "0", "loser": "1"}}
 
     sample_results = {
-        "sample_size": 0,
-        "1-under": 0,
-        "1-over": 0,
-        "2-under": 0,
-        "2-over": 0,
+        "sample_size": "0",
+        "1-under": "0",
+        "1-over": "0",
+        "2-under": "0",
+        "2-over": "0",
     }
 
     _ = supersimple.get_sample_sizes(RISK_LIMIT, contest, sample_results)
 
     sample_cvr = {}
     for ballot in range(18):
-        sample_cvr[ballot] = {"times_sampled": 1, "cvr": cvr[ballot]}
+        sample_cvr[f"ballot-{ballot}"] = {
+            "times_sampled": 1,
+            "cvr": cvr[f"ballot-{ballot}"],
+        }
 
     # Two of our winning ballots were actually blank
-    sample_cvr[0]["cvr"]["Jonah Test"] = {"winner": 0, "loser": 0}
-    sample_cvr[1]["cvr"]["Jonah Test"] = {"winner": 0, "loser": 0}
+    sample_cvr["ballot-0"]["cvr"]["Jonah Test"] = {"winner": "0", "loser": "0"}
+    sample_cvr["ballot-1"]["cvr"]["Jonah Test"] = {"winner": "0", "loser": "0"}
 
     p, res = supersimple.compute_risk(RISK_LIMIT, contest, cvr, sample_cvr)
 
@@ -546,8 +766,8 @@ def test_snapshot_test():
     sample_cvr = {}
     for ballot in cvr:
         sample_cvr[ballot] = {"times_sampled": 1, "cvr": cvr[ballot]}
-    sample_cvr[0]["cvr"]["Jonah Test"] = {"winner": 0, "loser": 0}
-    sample_cvr[1]["cvr"]["Jonah Test"] = {"winner": 0, "loser": 0}
+    sample_cvr["ballot-0"]["cvr"]["Jonah Test"] = {"winner": "0", "loser": "0"}
+    sample_cvr["ballot-1"]["cvr"]["Jonah Test"] = {"winner": "0", "loser": "0"}
 
     p, res = supersimple.compute_risk(RISK_LIMIT, contest, cvr, sample_cvr)
 
@@ -570,26 +790,29 @@ def test_multiplicity():
 
     for i in range(contest_data["ballots"]):
         if i < contest_data["winner"]:
-            cvr[i] = {"Jonah Test": {"winner": 1, "loser": 0}}
+            cvr[f"ballot-{i}"] = {"Jonah Test": {"winner": "1", "loser": "0"}}
         else:
-            cvr[i] = {"Jonah Test": {"winner": 0, "loser": 1}}
+            cvr[f"ballot-{i}"] = {"Jonah Test": {"winner": "0", "loser": "1"}}
 
     sample_results = {
-        "sample_size": 0,
-        "1-under": 0,
-        "1-over": 0,
-        "2-under": 0,
-        "2-over": 0,
+        "sample_size": "0",
+        "1-under": "0",
+        "1-over": "0",
+        "2-under": "0",
+        "2-over": "0",
     }
 
     _ = supersimple.get_sample_sizes(RISK_LIMIT, contest, sample_results)
 
     sample_cvr = {}
     for ballot in range(18):
-        sample_cvr[ballot] = {"times_sampled": 1, "cvr": cvr[ballot]}
+        sample_cvr[f"ballot-{ballot}"] = {
+            "times_sampled": 1,
+            "cvr": cvr[f"ballot-{ballot}"],
+        }
     # Two of our winning ballots were actually blank
-    sample_cvr[0]["cvr"]["Jonah Test"] = {"winner": 0, "loser": 0}
-    sample_cvr[1]["cvr"]["Jonah Test"] = {"winner": 0, "loser": 0}
+    sample_cvr["ballot-0"]["cvr"]["Jonah Test"] = {"winner": "0", "loser": "0"}
+    sample_cvr["ballot-1"]["cvr"]["Jonah Test"] = {"winner": "0", "loser": "0"}
 
     p, res = supersimple.compute_risk(RISK_LIMIT, contest, cvr, sample_cvr)
 
@@ -598,8 +821,8 @@ def test_multiplicity():
     assert not res
 
     # now draw those same ballots again
-    for i in sample_cvr:
-        sample_cvr[i]["cvr"]["times_sampled"] = 2
+    for ballot in sample_cvr:
+        sample_cvr[ballot]["cvr"]["times_sampled"] = 2
 
     p, res = supersimple.compute_risk(RISK_LIMIT, contest, cvr, sample_cvr)
 

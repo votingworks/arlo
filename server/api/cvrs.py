@@ -11,7 +11,6 @@ from typing import (
     Iterator,
     List,
     Optional,
-    Set,
     TextIO,
     Tuple,
     TypeVar,
@@ -594,12 +593,8 @@ def parse_ess_cvrs(
         # Precinct, Ballot Style and the rest are contest names
         first_contest_column = 3
         contest_names = headers[first_contest_column:]
-        # Since "overvote" and "undervote" are treated like choices in ES&S
-        # CVRs, we want to make sure they are always part of the parsed choice
-        # list so that they always appear to audit boards.
-        contest_choices: Dict[str, Set[str]] = {
-            contest_name: {"overvote", "undervote"} for contest_name in contest_names
-        }
+        # { contest_name: choice_names }
+        contest_choices = defaultdict(set)
 
         header_indices = get_header_indices(headers)
 
@@ -608,7 +603,7 @@ def parse_ess_cvrs(
                 choice_name = column_value(
                     row, contest_name, row_index + 1, header_indices, required=False
                 )
-                if choice_name:
+                if choice_name and choice_name not in ["overvote", "undervote"]:
                     contest_choices[contest_name].add(choice_name)
 
         # Assign each choice a column index in the interpretation string
@@ -662,8 +657,12 @@ def parse_ess_cvrs(
                     for choice_name, choice_metadata in contest_metadata[
                         "choices"
                     ].items():
-                        if choice_name == recorded_choice:
+                        if recorded_choice == choice_name:
                             interpretations[choice_metadata["column"]] = "1"
+                        elif recorded_choice == "overvote":
+                            interpretations[choice_metadata["column"]] = "o"
+                        elif recorded_choice == "undervote":
+                            interpretations[choice_metadata["column"]] = "u"
                         else:
                             interpretations[choice_metadata["column"]] = "0"
 
@@ -983,6 +982,7 @@ def process_cvr_file(
                             "choices"
                         ].items()
                     }
+
                     # Skip contests not on ballot
                     if any(
                         interpretation == ""
@@ -990,6 +990,13 @@ def process_cvr_file(
                     ):
                         continue
                     contests_on_ballot.add(contest_name)
+
+                    # Skip ES&S overvotes/undervotes
+                    if any(
+                        interpretation in ["o", "u"]
+                        for interpretation in contest_interpretations.values()
+                    ):
+                        continue
 
                     # Skip overvotes
                     votes = sum(

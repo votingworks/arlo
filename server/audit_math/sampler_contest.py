@@ -38,7 +38,7 @@ class Contest:
 
     candidates: Dict[str, int]  # Dict mapping candidates to their vote totals
     num_winners: int  # How many winners this contest had
-    votesAllowed: int  # How many voters are allowed in this contest
+    votes_allowed: int  # How many voters are allowed in this contest
     ballots: int  # The total number of ballots cast in this contest
     name: str  # The name of the contest
 
@@ -168,9 +168,10 @@ class Contest:
         )
 
 
-# CVR: { contest_id: { choice_id: 0 | 1 }}
+# CVR: { contest_id: { choice_id: "0" | "1" | "o" | "u" }}
+# Note: "o" and "u" are special cases for ES&S CVR overvotes and undervotes
 # CVRS: { ballot_id: CVR }
-CVR = Dict[str, Dict[str, int]]
+CVR = Dict[str, Dict[str, str]]
 CVRS = Dict[str, Optional[CVR]]
 
 
