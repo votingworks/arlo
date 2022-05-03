@@ -14,7 +14,7 @@ from ..util.csv_download import (
     jurisdiction_timestamp_name,
 )
 from ..util.isoformat import isoformat
-from ..util.group_by import group_by
+from ..util.collections import group_by
 from ..audit_math import supersimple, sampler_contest, macro
 from ..api.rounds import (
     cvrs_for_contest,
