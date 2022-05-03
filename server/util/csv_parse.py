@@ -19,6 +19,7 @@ from werkzeug.exceptions import BadRequest
 from werkzeug.datastructures import FileStorage
 
 from .jsonschema import EMAIL_REGEX
+from .collections import find_first_duplicate
 from ..worker.tasks import UserError
 
 locale.setlocale(locale.LC_ALL, "en_US.UTF-8")
@@ -188,7 +189,7 @@ def validate_and_normalize_headers(
         for header in headers
     ]
 
-    if len(set(normalized_headers)) != len(normalized_headers):
+    if find_first_duplicate(normalized_headers):
         raise CSVParseError("Column headers must be unique.")
 
     allowed_headers = {c.name for c in columns}
