@@ -20,7 +20,7 @@ from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
 from ..auth import restrict_access, UserType
 from ..util.isoformat import isoformat
-from ..util.group_by import group_by
+from ..util.collections import group_by
 from ..audit_math import (
     sampler,
     ballot_polling,

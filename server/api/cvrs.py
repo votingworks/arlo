@@ -18,7 +18,7 @@ from typing import (
     Union,
     cast as typing_cast,
 )
-from collections import Counter, defaultdict
+from collections import defaultdict
 import re
 import difflib
 import ast
@@ -55,6 +55,7 @@ from ..util.csv_parse import (
     validate_csv_mimetype,
     validate_not_empty,
 )
+from ..util.collections import find_first_duplicate
 from ..audit_math.suite import HybridPair
 from ..activity_log.activity_log import UploadFile, activity_base, record_activity
 
@@ -853,11 +854,10 @@ def parse_hart_cvrs(
     # we don't know that it's a Hart CVR until the cvr upload, we settle for
     # showing that error here, since it's more a sanity check than something
     # we expect to happen.
-    if len(batches_by_key.keys()) != len(list(jurisdiction.batches)):
-        batch_names_count = Counter(batch.name for batch in jurisdiction.batches)
-        duplicate_batch_name = next(
-            batch_name for batch_name, count in batch_names_count.items() if count > 1
-        )
+    duplicate_batch_name = find_first_duplicate(
+        batch.name for batch in jurisdiction.batches
+    )
+    if duplicate_batch_name:
         raise UserError(
             "Batch names in ballot manifest must be unique."
             f" Found duplicate batch name: {duplicate_batch_name}."

@@ -15,6 +15,8 @@ from .rounds import get_current_round, is_round_complete, end_round
 from ..util.jsonschema import validate, JSONDict
 from ..util.binpacking import BalancedBucketList, Bucket
 from ..util.isoformat import isoformat
+from ..util.collections import find_first_duplicate
+
 from ..activity_log.activity_log import (
     AuditBoardSignOff,
     CreateAuditBoards,
@@ -49,7 +51,7 @@ def validate_audit_boards(
         audit_boards, {"type": "array", "items": CREATE_AUDIT_BOARD_REQUEST_SCHEMA}
     )
 
-    if len(set(ab["name"] for ab in audit_boards)) != len(audit_boards):
+    if find_first_duplicate(ab["name"] for ab in audit_boards):
         raise BadRequest("Audit board names must be unique")
 
 

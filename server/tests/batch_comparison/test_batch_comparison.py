@@ -4,7 +4,7 @@ from flask.testing import FlaskClient
 
 from ...models import *  # pylint: disable=wildcard-import
 from ..helpers import *  # pylint: disable=wildcard-import
-from ...util.group_by import group_by
+from ...util.collections import group_by
 
 
 def test_batch_comparison_only_one_contest_allowed(
