@@ -241,7 +241,7 @@ def clear_ballot_manifest_file(jurisdiction: Jurisdiction):
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/ballot-manifest",
     methods=["PUT"],
 )
-@restrict_access([UserType.JURISDICTION_ADMIN])
+@restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
 def upload_ballot_manifest(
     election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
@@ -256,7 +256,7 @@ def upload_ballot_manifest(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/ballot-manifest",
     methods=["GET"],
 )
-@restrict_access([UserType.JURISDICTION_ADMIN])
+@restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
 def get_ballot_manifest(
     election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
 ):
@@ -287,7 +287,7 @@ def download_ballot_manifest_file(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/ballot-manifest",
     methods=["DELETE"],
 )
-@restrict_access([UserType.JURISDICTION_ADMIN])
+@restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
 def clear_ballot_manifest(
     election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):

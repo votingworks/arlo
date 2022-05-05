@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
   Classes,
   Dialog,
@@ -20,6 +20,8 @@ import useAuditBoards from '../../useAuditBoards'
 import useSampleCount from '../../JurisdictionAdmin/useBallots'
 import AsyncButton from '../../Atoms/AsyncButton'
 import { JAFileDownloadButtons } from '../../JurisdictionAdmin/RoundManagement'
+import FileUpload from '../../Atoms/FileUpload'
+import { useBallotManifest, IFileUpload } from '../../useFileUpload'
 
 const FileStatusTag = ({
   processing,
@@ -59,17 +61,20 @@ const StatusCard = styled(Card)`
 
 const FileStatusCard = ({
   title,
+  fileUpload,
   fileInfo,
   downloadUrl,
 }: {
   title: string
+  fileUpload?: IFileUpload
   fileInfo: IFileInfo
   downloadUrl: string
-}) => (
-  <StatusCard>
-    <H6>{title}</H6>
-    <FileStatusTag processing={fileInfo.processing} />
-    {fileInfo.file && (
+}) => {
+  return (
+    <StatusCard>
+      <H6>{title}</H6>
+      {/* <FileStatusTag processing={fileInfo.processing} /> */}
+      {/* {fileInfo.file && (
       <>
         <a
           className="download-link"
@@ -86,9 +91,11 @@ const FileStatusCard = ({
     )}
     {fileInfo.processing && fileInfo.processing.error && (
       <p className="error">{fileInfo.processing.error}</p>
-    )}
-  </StatusCard>
-)
+    )} */}
+      {fileUpload && <FileUpload {...fileUpload} acceptFileType="csv" />}
+    </StatusCard>
+  )
+}
 
 const Section = styled.div`
   &:not(:last-child) {
@@ -108,42 +115,47 @@ const JurisdictionDetail = ({
   electionId: string
   round: IRound | null
   auditSettings: IAuditSettings
-}) => (
-  <Dialog onClose={handleClose} title={jurisdiction.name} isOpen>
-    <div className={Classes.DIALOG_BODY} style={{ marginBottom: 0 }}>
-      <Section>
-        <H5>Jurisdiction Files</H5>
-        <FileStatusCard
-          title="Ballot Manifest"
-          fileInfo={jurisdiction.ballotManifest}
-          downloadUrl={`/api/election/${electionId}/jurisdiction/${jurisdiction.id}/ballot-manifest/csv`}
-        />
-        {jurisdiction.batchTallies && (
+}) => {
+  const ballotManifestUpload = useBallotManifest(electionId, jurisdiction.id)
+
+  return (
+    <Dialog onClose={handleClose} title={jurisdiction.name} isOpen>
+      <div className={Classes.DIALOG_BODY} style={{ marginBottom: 0 }}>
+        <Section>
+          <H5>Jurisdiction Files</H5>
           <FileStatusCard
-            title="Candidate Totals by Batch"
-            fileInfo={jurisdiction.batchTallies}
-            downloadUrl={`/api/election/${electionId}/jurisdiction/${jurisdiction.id}/batch-tallies/csv`}
+            title="Ballot Manifest"
+            fileUpload={ballotManifestUpload}
+            fileInfo={jurisdiction.ballotManifest}
+            downloadUrl={`/api/election/${electionId}/jurisdiction/${jurisdiction.id}/ballot-manifest/csv`}
+          />
+          {jurisdiction.batchTallies && (
+            <FileStatusCard
+              title="Candidate Totals by Batch"
+              fileInfo={jurisdiction.batchTallies}
+              downloadUrl={`/api/election/${electionId}/jurisdiction/${jurisdiction.id}/batch-tallies/csv`}
+            />
+          )}
+          {jurisdiction.cvrs && (
+            <FileStatusCard
+              title="Cast Vote Records (CVR)"
+              fileInfo={jurisdiction.cvrs}
+              downloadUrl={`/api/election/${electionId}/jurisdiction/${jurisdiction.id}/cvrs/csv`}
+            />
+          )}
+        </Section>
+        {round && (
+          <RoundStatusSection
+            electionId={electionId}
+            jurisdiction={jurisdiction}
+            round={round}
+            auditSettings={auditSettings}
           />
         )}
-        {jurisdiction.cvrs && (
-          <FileStatusCard
-            title="Cast Vote Records (CVR)"
-            fileInfo={jurisdiction.cvrs}
-            downloadUrl={`/api/election/${electionId}/jurisdiction/${jurisdiction.id}/cvrs/csv`}
-          />
-        )}
-      </Section>
-      {round && (
-        <RoundStatusSection
-          electionId={electionId}
-          jurisdiction={jurisdiction}
-          round={round}
-          auditSettings={auditSettings}
-        />
-      )}
-    </div>
-  </Dialog>
-)
+      </div>
+    </Dialog>
+  )
+}
 
 const unfinalizeFullHandTallyResults = async (
   electionId: string,

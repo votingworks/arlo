@@ -2,8 +2,8 @@ import React, { useState } from 'react'
 import { FileInput, Button, Colors, ProgressBar } from '@blueprintjs/core'
 import { useForm } from 'react-hook-form'
 import styled from 'styled-components'
-import { IFileInfo } from '../useCSV'
 import StatusTag from './StatusTag'
+import { IFileUpload } from '../useFileUpload'
 
 const ErrorP = styled.p`
   margin-top: 10px;
@@ -12,10 +12,7 @@ const ErrorP = styled.p`
 
 const FileUploadForm = styled.form``
 
-interface IFileUploadProps {
-  uploadedFile: IFileInfo
-  uploadFiles: (files: File[]) => Promise<void>
-  deleteFile?: () => Promise<void>
+interface IFileUploadProps extends IFileUpload {
   acceptFileType: 'csv' | 'zip'
   allowMultipleFiles?: boolean
   disabled?: boolean
@@ -33,11 +30,22 @@ const FileUpload = ({
     files: FileList
   }>({ mode: 'onTouched' })
   const [isReplacing, setIsReplacing] = useState(false)
-  const { file, processing, upload } = uploadedFile
+
+  if (uploadedFile.isLoading) {
+    return null
+  }
+  if (!uploadedFile.isSuccess) {
+    return <ErrorP>Error loading file info</ErrorP>
+  }
+
+  const { file, processing, upload } = uploadedFile.data
 
   if (!upload && (!file || isReplacing)) {
-    const onSubmit = async ({ files }: { files: FileList }) => {
-      await uploadFiles(Array.from(files))
+    const onUpload = async ({ files }: { files: FileList }) => {
+      const formData = new FormData()
+      const formKey = 'manifest' // TODO - make this configurable
+      for (const f of files) formData.append(formKey, f, f.name)
+      await uploadFiles.mutateAsync(formData)
       setIsReplacing(false)
     }
 
@@ -45,7 +53,7 @@ const FileUpload = ({
     const numFiles = files ? files.length : 0
 
     return (
-      <FileUploadForm onSubmit={handleSubmit(onSubmit)}>
+      <FileUploadForm onSubmit={handleSubmit(onUpload)}>
         <p>
           <StatusTag>No file uploaded</StatusTag>
         </p>
@@ -129,7 +137,9 @@ const FileUpload = ({
 
   const { error } = processing
   return (
-    <FileUploadForm onSubmit={deleteFile && handleSubmit(deleteFile)}>
+    <FileUploadForm
+      onSubmit={deleteFile && handleSubmit(() => deleteFile.mutateAsync())}
+    >
       <p>
         {error ? (
           <StatusTag intent="danger">Upload Failed</StatusTag>

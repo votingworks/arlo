@@ -7,7 +7,7 @@ import useRoundsAuditAdmin, {
   isDrawSampleComplete,
   drawSampleError,
 } from './useRoundsAuditAdmin'
-import useJurisdictions from '../useJurisdictions'
+import { useJurisdictions } from '../useJurisdictions'
 import useContests from '../useContests'
 import useAuditSettings from '../useAuditSettings'
 import { ElementType } from '../../types'
@@ -32,7 +32,7 @@ const AuditAdminView: React.FC = () => {
     electionId,
     refreshId
   )
-  const jurisdictions = useJurisdictions(electionId, refreshId)
+  const jurisdictionsQuery = useJurisdictions(electionId) // TODO incorporate refresh
   const [contests] = useContests(electionId, undefined, refreshId)
   const [auditSettings] = useAuditSettings(electionId, refreshId)
 
@@ -59,7 +59,9 @@ const AuditAdminView: React.FC = () => {
     rounds !== null && isAuditStarted(rounds),
   ])
 
-  if (!jurisdictions || !contests || !rounds || !auditSettings) return null // Still loading
+  if (!jurisdictionsQuery.isSuccess || !contests || !rounds || !auditSettings)
+    return null // Still loading
+  const jurisdictions = jurisdictionsQuery.data
 
   // TODO support multiple contests in batch comparison audits
   const isBatch = auditSettings.auditType === 'BATCH_COMPARISON'
