@@ -45,7 +45,7 @@ def test_list_batches(
             "name": "Batch 1",
             "numBallots": 500,
             "auditBoard": None,
-            "results": None,
+            "resultTallySheets": [],
         },
     )
 
@@ -68,7 +68,7 @@ def test_list_batches(
             "name": "Batch 1",
             "numBallots": 500,
             "auditBoard": {"id": assert_is_id, "name": "Audit Board #1"},
-            "results": None,
+            "resultTallySheets": [],
         },
     )
 
@@ -152,7 +152,7 @@ def test_record_batch_results(
     assert len(batches) == J1_BATCHES_ROUND_1
     round_1_batch_ids = {batch["id"] for batch in batches}
     for batch in batches:
-        assert batch["results"] is None
+        assert batch["resultTallySheets"] == []
 
     results = {
         batches[0]["id"]: {choice_ids[0]: 400, choice_ids[1]: 50, choice_ids[2]: 40,},
@@ -163,7 +163,7 @@ def test_record_batch_results(
         rv = put_json(
             client,
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/{batch_id}/results",
-            result,
+            [{"name": "Tally Sheet #1", "results": result}],
         )
         assert_ok(rv)
 
@@ -173,7 +173,9 @@ def test_record_batch_results(
     resp = json.loads(rv.data)
     batches = resp["batches"]
     for batch in batches:
-        assert batch["results"] == results[batch["id"]]
+        assert batch["resultTallySheets"] == [
+            {"name": "Tally Sheet #1", "results": results[batch["id"]]}
+        ]
     assert resp["resultsFinalizedAt"] is None
 
     # Update results for one batch
@@ -185,7 +187,7 @@ def test_record_batch_results(
     rv = put_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/{batches[2]['id']}/results",
-        updated_batch_2_results,
+        [{"name": "Tally Sheet #1", "results": updated_batch_2_results}],
     )
     assert_ok(rv)
 
@@ -201,7 +203,9 @@ def test_record_batch_results(
     )
     resp = json.loads(rv.data)
     batches = resp["batches"]
-    assert batches[2]["results"] == updated_batch_2_results
+    assert batches[2]["resultTallySheets"] == [
+        {"name": "Tally Sheet #1", "results": updated_batch_2_results}
+    ]
     assert resp["resultsFinalizedAt"] is not None
 
     # Round shouldn't be over yet, since we haven't recorded results for all jurisdictions with sampled batches
@@ -225,13 +229,31 @@ def test_record_batch_results(
     batches = json.loads(rv.data)["batches"]
     assert len(batches) == J2_BATCHES_ROUND_1
 
+    # Use multiple tally sheets this time
     for batch in batches:
+        tally_sheets = [
+            {
+                "name": "Tally Sheet #1",
+                "results": {choice_ids[0]: 100, choice_ids[1]: 25, choice_ids[2]: 40,},
+            },
+            {
+                "name": "Tally Sheet #2",
+                "results": {choice_ids[0]: 300, choice_ids[1]: 25, choice_ids[2]: 0,},
+            },
+        ]
         rv = put_json(
             client,
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/batches/{batch['id']}/results",
-            {choice_ids[0]: 400, choice_ids[1]: 50, choice_ids[2]: 40},
+            tally_sheets,
         )
         assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/batches"
+    )
+    assert rv.status_code == 200
+    batches = json.loads(rv.data)["batches"]
+    assert batches[0]["resultTallySheets"] == tally_sheets
 
     # Finalize results
     rv = post_json(
@@ -350,20 +372,87 @@ def test_record_batch_results_invalid(
     choice_ids = [choice["id"] for choice in contests[0]["choices"]]
 
     invalid_results = [
-        ({}, "Invalid choice ids"),
-        ({"not-a-real-id": 0}, "Invalid choice ids"),
-        ({choice_id: 0 for choice_id in choice_ids[:1]}, "Invalid choice ids",),
+        ({}, "{} is not of type 'array'"),
+        ([{"name": "Tally Sheet #1", "results": None}], "None is not of type 'object'"),
+        ([{"name": "Tally Sheet #1", "results": {}}], "Invalid choice ids"),
         (
-            {choice_id: "not a number" for choice_id in choice_ids},
+            [{"name": "Tally Sheet #1", "results": {"not-a-real-id": 0}}],
+            "Invalid choice ids",
+        ),
+        (
+            [
+                {
+                    "name": "Tally Sheet #1",
+                    "results": {choice_id: 0 for choice_id in choice_ids[:1]},
+                }
+            ],
+            "Invalid choice ids",
+        ),
+        (
+            [
+                {
+                    "name": "Tally Sheet #1",
+                    "results": {choice_id: "not a number" for choice_id in choice_ids},
+                }
+            ],
             "'not a number' is not of type 'integer'",
         ),
         (
-            {choice_id: -1 for choice_id in choice_ids},
+            [
+                {
+                    "name": "Tally Sheet #1",
+                    "results": {choice_id: -1 for choice_id in choice_ids},
+                }
+            ],
             "-1 is less than the minimum of 0",
         ),
         (
-            {choice_id: 400 for choice_id in choice_ids},
+            [
+                {
+                    "name": "Tally Sheet #1",
+                    "results": {choice_id: 400 for choice_id in choice_ids},
+                }
+            ],
             "Total votes for batch Batch 1 should not exceed 1000 - the number of ballots in the batch (500) times the number of votes allowed (2).",
+        ),
+        (
+            [
+                {
+                    "name": "Tally Sheet #1",
+                    "results": {choice_id: 100 for choice_id in choice_ids},
+                },
+                {
+                    "name": "Tally Sheet #2",
+                    "results": {choice_id: 300 for choice_id in choice_ids},
+                },
+            ],
+            "Total votes for batch Batch 1 should not exceed 1000 - the number of ballots in the batch (500) times the number of votes allowed (2).",
+        ),
+        (
+            [
+                {
+                    "name": "Tally Sheet #1",
+                    "results": {choice_id: 1 for choice_id in choice_ids},
+                },
+                {
+                    "name": "Tally Sheet #1",
+                    "results": {choice_id: 3 for choice_id in choice_ids},
+                },
+            ],
+            "Tally sheet names must be unique. Found duplicate: Tally Sheet #1.",
+        ),
+        (
+            [{"results": {choice_id: 1 for choice_id in choice_ids}}],
+            "'name' is a required property",
+        ),
+        ([{"name": "Tally Sheet #1"}], "'results' is a required property",),
+        (
+            [{"name": "", "results": {choice_id: 1 for choice_id in choice_ids},}],
+            "'' is too short",
+        ),
+        (
+            [{"name": 1, "results": {choice_id: 1 for choice_id in choice_ids},}],
+            "1 is not of type 'string'",
         ),
     ]
 
@@ -411,7 +500,12 @@ def test_unfinalize_batch_results(
         rv = put_json(
             client,
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/{batch['id']}/results",
-            {choice_id: 0 for choice_id in choice_ids},
+            [
+                {
+                    "name": "Tally Sheet #1",
+                    "results": {choice_id: 0 for choice_id in choice_ids},
+                }
+            ],
         )
         assert_ok(rv)
 
@@ -475,7 +569,12 @@ def test_unfinalize_batch_results(
     rv = put_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/{batches[0]['id']}/results",
-        {choice_id: 0 for choice_id in choice_ids},
+        [
+            {
+                "name": "Tally Sheet #1",
+                "results": {choice_id: 0 for choice_id in choice_ids},
+            }
+        ],
     )
     assert_ok(rv)
     rv = post_json(
@@ -499,7 +598,12 @@ def test_unfinalize_batch_results(
         rv = put_json(
             client,
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/batches/{batch['id']}/results",
-            {choice_id: 0 for choice_id in choice_ids},
+            [
+                {
+                    "name": "Tally Sheet #1",
+                    "results": {choice_id: 0 for choice_id in choice_ids},
+                }
+            ],
         )
         assert_ok(rv)
     rv = post_json(
@@ -560,7 +664,12 @@ def test_record_batch_results_bad_round(
             rv = put_json(
                 client,
                 f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_1_id}/batches/{batch['id']}/results",
-                {choice_id: 0 for choice_id in choice_ids},
+                [
+                    {
+                        "name": "Tally Sheet #1",
+                        "results": {choice_id: 0 for choice_id in choice_ids},
+                    }
+                ],
             )
             assert_ok(rv)
         rv = post_json(
@@ -837,7 +946,7 @@ def test_finalize_batch_results_incomplete(
         rv = put_json(
             client,
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/{batch_id}/results",
-            result,
+            [{"name": "Tally Sheet #1", "results": result}],
         )
         assert_ok(rv)
 

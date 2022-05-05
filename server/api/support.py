@@ -281,7 +281,7 @@ def get_jurisdiction(jurisdiction_id: str):
 
     if jurisdiction.election.audit_type == AuditType.BATCH_COMPARISON:
         recorded_results_at = (
-            BatchResult.query.join(Batch)
+            BatchResultTallySheet.query.join(Batch)
             .filter_by(jurisdiction_id=jurisdiction_id)
             .join(SampledBatchDraw)
             .filter_by(round_id=round and round.id)

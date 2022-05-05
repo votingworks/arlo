@@ -89,9 +89,11 @@ def count_audited_votes(election: Election, round: Round):
         if election.audit_type == AuditType.BATCH_COMPARISON:
             vote_counts = dict(
                 BatchResult.query.filter(
-                    BatchResult.batch_id.in_(
-                        SampledBatchDraw.query.filter_by(round_id=round.id)
-                        .with_entities(SampledBatchDraw.batch_id)
+                    BatchResult.tally_sheet_id.in_(
+                        BatchResultTallySheet.query.join(Batch)
+                        .join(SampledBatchDraw)
+                        .filter_by(round_id=round.id)
+                        .with_entities(BatchResultTallySheet.id)
                         .subquery()
                     )
                 )
@@ -221,10 +223,11 @@ def sampled_batch_results(election: Election,) -> BatchTallies:
         .join(SampledBatchDraw)
         .join(Jurisdiction.contests)
         .join(ContestChoice)
+        .outerjoin(BatchResultTallySheet)
         .outerjoin(
             BatchResult,
             and_(
-                BatchResult.batch_id == Batch.id,
+                BatchResult.tally_sheet_id == BatchResultTallySheet.id,
                 BatchResult.contest_choice_id == ContestChoice.id,
             ),
         )

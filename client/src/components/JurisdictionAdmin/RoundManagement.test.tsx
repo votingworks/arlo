@@ -169,13 +169,13 @@ describe('RoundManagement', () => {
       apiCalls.getBatches(batchesMocks.emptyInitial),
     ]
     await withMockFetch(expectedCalls, async () => {
-      const { container } = renderView({
+      renderView({
         round: roundMocks.incomplete,
         auditBoards: auditBoardMocks.unfinished,
         createAuditBoards: jest.fn(),
       })
       await screen.findByText('Download Aggregated Batch Retrieval List')
-      expect(container).toMatchSnapshot()
+      screen.getByRole('table') // Tested in BatchRoundDataEntry.test.tsx
     })
   })
 

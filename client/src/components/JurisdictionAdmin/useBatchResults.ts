@@ -5,6 +5,11 @@ export interface IBatchResults {
   [choiceId: string]: number
 }
 
+export interface IBatchResultTallySheet {
+  name: string
+  results: IBatchResults
+}
+
 export interface IBatch {
   id: string
   name: string
@@ -13,7 +18,7 @@ export interface IBatch {
     id: string
     name: string
   }
-  results: IBatchResults | null
+  resultTallySheets: IBatchResultTallySheet[]
 }
 
 export interface IBatches {
@@ -39,16 +44,16 @@ export const useRecordBatchResults = (
 ) => {
   const putBatchResults = async ({
     batchId,
-    results,
+    resultTallySheets,
   }: {
     batchId: string
-    results: IBatchResults
+    resultTallySheets: IBatchResultTallySheet[]
   }) =>
     fetchApi(
       `/api/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/batches/${batchId}/results`,
       {
         method: 'PUT',
-        body: JSON.stringify(results),
+        body: JSON.stringify(resultTallySheets),
         headers: { 'Content-Type': 'application/json' },
       }
     )
