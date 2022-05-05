@@ -159,6 +159,7 @@ const BatchResultsForm = ({
               border: errors[choice.id] ? '1px solid red' : 'inherit',
             }}
             autoFocus={i === 0}
+            aria-label={choice.name}
           />
         </ChoiceTD>
       ))}
@@ -277,6 +278,7 @@ const BatchTallySheetsModal = ({
                           ? '1px solid red'
                           : 'inherit',
                     }}
+                    aria-label="Tally Sheet Label"
                   />
                 </ChoiceTD>
                 {contest.choices.map(choice => (
@@ -300,6 +302,7 @@ const BatchTallySheetsModal = ({
                             ? '1px solid red'
                             : 'inherit',
                       }}
+                      aria-label={choice.name}
                     />
                   </ChoiceTD>
                 ))}

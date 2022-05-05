@@ -345,7 +345,7 @@ describe('Batch comparison data entry', () => {
       userEvent.type(within(row2[1]).getByRole('spinbutton'), '3')
       userEvent.type(within(row2[2]).getByRole('spinbutton'), '4')
 
-      // Try saving
+      // Try saving without tally sheet label
       userEvent.click(screen.getByRole('button', { name: /Save/ }))
 
       // Should get a validation error
