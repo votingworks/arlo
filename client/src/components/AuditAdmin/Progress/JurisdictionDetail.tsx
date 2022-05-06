@@ -267,6 +267,7 @@ const RoundStatusSection = ({
         round={round}
         auditSettings={auditSettings}
         auditBoards={auditBoards}
+        userType="audit_admin"
       />
     )
   })()
