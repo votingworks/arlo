@@ -17,5 +17,8 @@
     ],
     "python.formatting.provider": "black",
     "typescript.tsdk": "client/node_modules/typescript/lib",
+    "editor.codeActionsOnSave": {
+      "source.fixAll": true
+    },
   }
 }
