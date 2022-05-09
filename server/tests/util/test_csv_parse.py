@@ -382,6 +382,19 @@ def test_parse_csv_total_row():
         == "It looks like the last row in the CSV might be a total row. Please remove this row from the CSV."
     )
 
+    # Shouldn't raise an error for a column with all 0s
+    parsed = list(
+        parse_csv(
+            ("Batch Name,Number of Ballots\n" "Batch A,0\n" "Batch B,0\n" "XXX,0\n"),
+            BALLOT_MANIFEST_COLUMNS,
+        )
+    )
+    assert parsed == [
+        {"Batch Name": "Batch A", "Number of Ballots": 0},
+        {"Batch Name": "Batch B", "Number of Ballots": 0},
+        {"Batch Name": "XXX", "Number of Ballots": 0},
+    ]
+
 
 # Cases where we are lenient
 
