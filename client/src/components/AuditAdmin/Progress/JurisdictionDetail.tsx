@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useState } from 'react'
 import {
   Classes,
@@ -7,6 +8,7 @@ import {
   Card,
   Colors,
   Button,
+  HTMLSelect,
 } from '@blueprintjs/core'
 import styled from 'styled-components'
 import { Formik, FormikProps } from 'formik'
@@ -21,22 +23,12 @@ import useSampleCount from '../../JurisdictionAdmin/useBallots'
 import AsyncButton from '../../Atoms/AsyncButton'
 import { JAFileDownloadButtons } from '../../JurisdictionAdmin/RoundManagement'
 import FileUpload from '../../Atoms/FileUpload'
-import { useBallotManifest, IFileUpload } from '../../useFileUpload'
-
-const FileStatusTag = ({
-  processing,
-}: {
-  processing: IFileInfo['processing']
-}) => {
-  switch (processing && processing.status) {
-    case FileProcessingStatus.ERRORED:
-      return <StatusTag intent="danger">Upload failed</StatusTag>
-    case FileProcessingStatus.PROCESSED:
-      return <StatusTag intent="success">Uploaded</StatusTag>
-    default:
-      return <StatusTag>No file uploaded</StatusTag>
-  }
-}
+import {
+  useBallotManifest,
+  IFileUpload,
+  useBatchTallies,
+  useCVRs,
+} from '../../useFileUpload'
 
 const prettyCvrFileType = (cvrFileType: CvrFileType) =>
   ({
@@ -50,52 +42,7 @@ const StatusCard = styled(Card)`
   &:not(:last-child) {
     margin-bottom: 20px;
   }
-  a.download-link {
-    margin-left: 15px;
-  }
-  p.error {
-    margin-top: 10px;
-    color: ${Colors.RED3};
-  }
 `
-
-const FileStatusCard = ({
-  title,
-  fileUpload,
-  fileInfo,
-  downloadUrl,
-}: {
-  title: string
-  fileUpload?: IFileUpload
-  fileInfo: IFileInfo
-  downloadUrl: string
-}) => {
-  return (
-    <StatusCard>
-      <H6>{title}</H6>
-      {/* <FileStatusTag processing={fileInfo.processing} /> */}
-      {/* {fileInfo.file && (
-      <>
-        <a
-          className="download-link"
-          href={downloadUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {fileInfo.file.name}
-        </a>
-        {fileInfo.file.cvrFileType && (
-          <span> ({prettyCvrFileType(fileInfo.file.cvrFileType)})</span>
-        )}
-      </>
-    )}
-    {fileInfo.processing && fileInfo.processing.error && (
-      <p className="error">{fileInfo.processing.error}</p>
-    )} */}
-      {fileUpload && <FileUpload {...fileUpload} acceptFileType="csv" />}
-    </StatusCard>
-  )
-}
 
 const Section = styled.div`
   &:not(:last-child) {
@@ -117,31 +64,38 @@ const JurisdictionDetail = ({
   auditSettings: IAuditSettings
 }) => {
   const ballotManifestUpload = useBallotManifest(electionId, jurisdiction.id)
+  const batchTalliesUpload = useBatchTallies(electionId, jurisdiction.id, {
+    enabled: !!jurisdiction.batchTallies,
+  })
+  const cvrsUpload = useCVRs(electionId, jurisdiction.id, {
+    enabled: !!jurisdiction.cvrs,
+  })
 
   return (
     <Dialog onClose={handleClose} title={jurisdiction.name} isOpen>
       <div className={Classes.DIALOG_BODY} style={{ marginBottom: 0 }}>
         <Section>
           <H5>Jurisdiction Files</H5>
-          <FileStatusCard
-            title="Ballot Manifest"
-            fileUpload={ballotManifestUpload}
-            fileInfo={jurisdiction.ballotManifest}
-            downloadUrl={`/api/election/${electionId}/jurisdiction/${jurisdiction.id}/ballot-manifest/csv`}
-          />
+          <StatusCard>
+            <H6>Ballot Manifest</H6>
+            <FileUpload {...ballotManifestUpload} acceptFileType="csv" />
+          </StatusCard>
           {jurisdiction.batchTallies && (
-            <FileStatusCard
-              title="Candidate Totals by Batch"
-              fileInfo={jurisdiction.batchTallies}
-              downloadUrl={`/api/election/${electionId}/jurisdiction/${jurisdiction.id}/batch-tallies/csv`}
-            />
+            <StatusCard>
+              <H6>Candidate Totals by Batch</H6>
+              <FileUpload {...batchTalliesUpload} acceptFileType="csv" />
+            </StatusCard>
           )}
           {jurisdiction.cvrs && (
-            <FileStatusCard
-              title="Cast Vote Records (CVR)"
-              fileInfo={jurisdiction.cvrs}
-              downloadUrl={`/api/election/${electionId}/jurisdiction/${jurisdiction.id}/cvrs/csv`}
-            />
+            <StatusCard>
+              <H6>Cast Vote Records (CVR)</H6>
+              <CvrsFileUpload
+                fileUpload={cvrsUpload}
+                cvrFileType={
+                  jurisdiction.cvrs.file && jurisdiction.cvrs.file.cvrFileType!
+                }
+              />
+            </StatusCard>
           )}
         </Section>
         {round && (
@@ -154,6 +108,54 @@ const JurisdictionDetail = ({
         )}
       </div>
     </Dialog>
+  )
+}
+
+const CvrsFileUpload = ({
+  fileUpload,
+  cvrFileType,
+}: {
+  fileUpload: IFileUpload
+  cvrFileType: CvrFileType | null
+}) => {
+  const [selectedCvrFileType, setSelectedCvrFileType] = useState<CvrFileType>()
+  const uploadFiles = {
+    ...fileUpload.uploadFiles,
+    mutateAsync: (formData: FormData) => {
+      formData.append('cvrFileType', selectedCvrFileType!)
+      return fileUpload.uploadFiles.mutateAsync(formData)
+    },
+  }
+
+  return (
+    <>
+      <p>
+        <label htmlFor="cvrFileType">CVR File Type: </label>
+        {cvrFileType ? (
+          prettyCvrFileType(cvrFileType)
+        ) : (
+          <HTMLSelect
+            name="cvrFileType"
+            value={selectedCvrFileType}
+            onChange={e =>
+              setSelectedCvrFileType(e.target.value as CvrFileType)
+            }
+          >
+            <option></option>
+            <option value={CvrFileType.DOMINION}>Dominion</option>
+            <option value={CvrFileType.CLEARBALLOT}>ClearBallot</option>
+            <option value={CvrFileType.ESS}>ES&amp;S</option>
+            <option value={CvrFileType.HART}>Hart</option>
+          </HTMLSelect>
+        )}
+      </p>
+      <FileUpload
+        {...fileUpload}
+        uploadFiles={uploadFiles}
+        acceptFileType="csv"
+        disabled={!(cvrFileType || selectedCvrFileType)}
+      />
+    </>
   )
 }
 

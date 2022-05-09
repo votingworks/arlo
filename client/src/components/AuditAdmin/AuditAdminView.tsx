@@ -32,7 +32,7 @@ const AuditAdminView: React.FC = () => {
     electionId,
     refreshId
   )
-  const jurisdictionsQuery = useJurisdictions(electionId) // TODO incorporate refresh
+  const jurisdictionsQuery = useJurisdictions(electionId, refreshId)
   const [contests] = useContests(electionId, undefined, refreshId)
   const [auditSettings] = useAuditSettings(electionId, refreshId)
 
@@ -63,7 +63,6 @@ const AuditAdminView: React.FC = () => {
     return null // Still loading
   const jurisdictions = jurisdictionsQuery.data
 
-  // TODO support multiple contests in batch comparison audits
   const isBatch = auditSettings.auditType === 'BATCH_COMPARISON'
   const filteredMenuItems = menuItems.filter(({ id }) => {
     switch (id as ElementType<typeof setupStages>) {

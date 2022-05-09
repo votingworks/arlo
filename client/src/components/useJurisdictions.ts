@@ -124,9 +124,9 @@ const useJurisdictionsDeprecated = (
   return jurisdictions
 }
 
-export const useJurisdictions = (electionId: string) => {
+export const useJurisdictions = (electionId: string, refreshId?: string) => {
   const url = `/api/election/${electionId}/jurisdiction`
-  return useQuery(url, async () => {
+  return useQuery([url, refreshId], async () => {
     const response = await fetchApi<{ jurisdictions: IJurisdiction[] }>(url)
     return response && response.jurisdictions
   })

@@ -1,16 +1,15 @@
 import React, { useState } from 'react'
 import { FileInput, Button, Colors, ProgressBar } from '@blueprintjs/core'
-import { useForm } from 'react-hook-form'
+import { useForm, UseFormMethods } from 'react-hook-form'
 import styled from 'styled-components'
 import StatusTag from './StatusTag'
 import { IFileUpload } from '../useFileUpload'
+import { CvrFileType } from '../useCSV'
 
 const ErrorP = styled.p`
   margin-top: 10px;
   color: ${Colors.RED3};
 `
-
-const FileUploadForm = styled.form``
 
 interface IFileUploadProps extends IFileUpload {
   acceptFileType: 'csv' | 'zip'
@@ -22,6 +21,7 @@ const FileUpload = ({
   uploadedFile,
   uploadFiles,
   deleteFile,
+  downloadFileUrl,
   acceptFileType,
   allowMultipleFiles = false,
   disabled = false,
@@ -49,11 +49,11 @@ const FileUpload = ({
       setIsReplacing(false)
     }
 
-    const files = watch('files')
+    const files: FileList | undefined = watch('files')
     const numFiles = files ? files.length : 0
 
     return (
-      <FileUploadForm onSubmit={handleSubmit(onUpload)}>
+      <form onSubmit={handleSubmit(onUpload)}>
         <p>
           <StatusTag>No file uploaded</StatusTag>
         </p>
@@ -71,7 +71,7 @@ const FileUpload = ({
                 return allowMultipleFiles
                   ? 'Select files...'
                   : 'Select a file...'
-              if (numFiles === 1) return files[0].name
+              if (numFiles === 1) return files![0].name
               return `${numFiles} files selected`
             })()}
             disabled={disabled || formState.isSubmitting}
@@ -87,7 +87,7 @@ const FileUpload = ({
             Upload File
           </Button>
         </p>
-      </FileUploadForm>
+      </form>
     )
   }
 
@@ -97,7 +97,7 @@ const FileUpload = ({
         ? upload.files[0].name
         : `${upload.files.length} files`
     return (
-      <FileUploadForm>
+      <form>
         <p>
           <StatusTag intent="warning">Uploading</StatusTag>
           <span style={{ marginLeft: '15px' }}>{fileName}</span>
@@ -108,7 +108,7 @@ const FileUpload = ({
           intent="warning"
           value={upload.progress}
         />
-      </FileUploadForm>
+      </form>
     )
   }
 
@@ -118,7 +118,7 @@ const FileUpload = ({
 
   if (!processing.completedAt) {
     return (
-      <FileUploadForm>
+      <form>
         <p>
           <StatusTag intent="primary">Processing</StatusTag>
           <span style={{ marginLeft: '15px' }}>{file.name}</span>
@@ -131,22 +131,25 @@ const FileUpload = ({
             value={processing.workProgress! / processing.workTotal}
           />
         )}
-      </FileUploadForm>
+      </form>
     )
   }
 
   const { error } = processing
   return (
-    <FileUploadForm
-      onSubmit={deleteFile && handleSubmit(() => deleteFile.mutateAsync())}
-    >
+    <form onSubmit={deleteFile && handleSubmit(() => deleteFile.mutateAsync())}>
       <p>
         {error ? (
           <StatusTag intent="danger">Upload Failed</StatusTag>
         ) : (
           <StatusTag intent="success">Uploaded</StatusTag>
         )}
-        <a href="/" style={{ marginLeft: '15px' }}>
+        <a
+          href={downloadFileUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ marginLeft: '15px' }}
+        >
           {file.name}
         </a>
       </p>
@@ -166,7 +169,7 @@ const FileUpload = ({
           </Button>
         )}
       </p>
-    </FileUploadForm>
+    </form>
   )
 }
 

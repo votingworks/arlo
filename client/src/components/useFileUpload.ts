@@ -22,23 +22,26 @@ export interface IFileUpload {
     progress?: number
   }
   deleteFile?: UseMutationResult<void, ApiError, void>
+  downloadFileUrl?: string
 }
 
 const useUploadedFile = (
   url: string,
-  options?: { onFileChange: () => void }
+  options: { onFileChange?: () => void; enabled?: boolean } = {}
 ) => {
   const isProcessing = (fileInfo?: IFileInfo) =>
     fileInfo && fileInfo.processing && !fileInfo.processing.completedAt
   return useQuery<IFileInfo, ApiError>(url, () => fetchApi(url), {
     refetchInterval: fileInfo => (isProcessing(fileInfo) ? 1000 : false),
     onSuccess: fileInfo => {
-      if (!isProcessing(fileInfo) && options) options.onFileChange()
+      if (!isProcessing(fileInfo) && options.onFileChange)
+        options.onFileChange()
     },
+    enabled: options.enabled,
   })
 }
 
-const useUploadFiles = (url: string, options?: { onSuccess: () => void }) => {
+const useUploadFiles = (url: string) => {
   const [progress, setProgress] = useState<number>()
 
   const putFiles = async (formData: FormData) => {
@@ -61,27 +64,20 @@ const useUploadFiles = (url: string, options?: { onSuccess: () => void }) => {
 
   return {
     ...useMutation<void, ApiError, FormData>(putFiles, {
-      onSuccess: () => {
-        queryClient.invalidateQueries(url)
-        if (options) options.onSuccess()
-      },
+      onSuccess: () => queryClient.invalidateQueries(url),
     }),
     progress,
   }
 }
 
-const useDeleteFile = (url: string, options?: { onSuccess: () => void }) => {
+const useDeleteFile = (url: string) => {
   const deleteFile = () => fetchApi(url, { method: 'DELETE' })
   const queryClient = useQueryClient()
   return useMutation<void, ApiError, void>(deleteFile, {
-    onSuccess: () => {
-      queryClient.invalidateQueries(url)
-      if (options) options.onSuccess()
-    },
+    onSuccess: () => queryClient.invalidateQueries(url),
   })
 }
 
-// eslint-disable-next-line import/prefer-default-export
 export const useBallotManifest = (
   electionId: string,
   jurisdictionId: string
@@ -101,5 +97,34 @@ export const useBallotManifest = (
     uploadedFile: useUploadedFile(url, { onFileChange: invalidateQueries }),
     uploadFiles: useUploadFiles(url),
     deleteFile: useDeleteFile(url),
+    downloadFileUrl: `${url}/csv`,
+  }
+}
+
+export const useBatchTallies = (
+  electionId: string,
+  jurisdictionId: string,
+  options: { enabled: boolean } = { enabled: true }
+): IFileUpload => {
+  const url = `/api/election/${electionId}/jurisdiction/${jurisdictionId}/batch-tallies`
+  return {
+    uploadedFile: useUploadedFile(url, options),
+    uploadFiles: useUploadFiles(url),
+    deleteFile: useDeleteFile(url),
+    downloadFileUrl: `${url}/csv`,
+  }
+}
+
+export const useCVRs = (
+  electionId: string,
+  jurisdictionId: string,
+  options: { enabled: boolean } = { enabled: true }
+): IFileUpload => {
+  const url = `/api/election/${electionId}/jurisdiction/${jurisdictionId}/cvrs`
+  return {
+    uploadedFile: useUploadedFile(url, options),
+    uploadFiles: useUploadFiles(url),
+    deleteFile: useDeleteFile(url),
+    downloadFileUrl: `${url}/csv`,
   }
 }

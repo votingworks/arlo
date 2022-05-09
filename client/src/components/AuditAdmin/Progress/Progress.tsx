@@ -9,7 +9,6 @@ import {
   IJurisdiction,
   getJurisdictionStatus,
   JurisdictionProgressStatus,
-  useJurisdictions,
 } from '../../useJurisdictions'
 import JurisdictionDetail from './JurisdictionDetail'
 import {
@@ -58,7 +57,6 @@ const Progress: React.FC<IProps> = ({
   round,
 }: IProps) => {
   const { electionId } = useParams<{ electionId: string }>()
-  const jurisdictionsQuery = useJurisdictions(electionId)
   const [filter, setFilter] = useState<string>('')
   const [isShowingUnique, setIsShowingUnique] = useState<boolean>(true)
   const [
