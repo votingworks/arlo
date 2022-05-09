@@ -1,0 +1,148 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`BatchTallySheet renders expected PDF content 1`] = `
+<div>
+  <div>
+    <div>
+      <div>
+        Audit Board Batch Tally Sheet
+      </div>
+      <div>
+        Batch Name: 
+        <div>
+          Batch 1
+        </div>
+      </div>
+    </div>
+    <div>
+      <div>
+        Jurisdiction: 
+        Jurisdiction 1
+      </div>
+      <div>
+        Audit Board: 
+        Audit Board 1
+      </div>
+      <div>
+        Batch Type (Optional): 
+        ____________________
+      </div>
+    </div>
+    <div>
+      <div>
+        <div>
+          Was the container sealed when received by the audit board?
+            
+        </div>
+        <div />
+        <div>
+           
+          Yes
+        </div>
+      </div>
+    </div>
+    <div>
+      <div>
+        <div>
+          <div>
+            <div>
+              Candidates/Choices
+            </div>
+          </div>
+          <div>
+            <div>
+              Enter Stack Totals
+            </div>
+          </div>
+        </div>
+        <div>
+          <div>
+            <div>
+              Choice 1
+            </div>
+          </div>
+          <div />
+        </div>
+        <div>
+          <div>
+            <div>
+              Choice 2
+            </div>
+          </div>
+          <div />
+        </div>
+        <div>
+          <div>
+            <div>
+              Choice 3
+            </div>
+          </div>
+          <div />
+        </div>
+      </div>
+    </div>
+    <div>
+      <div>
+        When work is completed, return all ballots to the ballot container and seal the container.
+      </div>
+      <div>
+        <div>
+          Was the container resealed by the audit board?
+            
+        </div>
+        <div />
+        <div>
+           
+          Yes
+        </div>
+      </div>
+    </div>
+    <div>
+      <div>
+        <div>
+          x
+          ______________________________
+        </div>
+        <div>
+          (Audit Board Member)
+        </div>
+      </div>
+      <div>
+        <div>
+          x
+          ______________________________
+        </div>
+        <div>
+          (Audit Board Member)
+        </div>
+      </div>
+    </div>
+    <div>
+      <div />
+    </div>
+    <div>
+      <div>
+        Check-In/Out Station Steps:
+      </div>
+      <div>
+        <div />
+        <div>
+           
+          Recorded batch check-in
+        </div>
+      </div>
+      <div>
+        <div />
+        <div>
+           
+          Entered tallies into Arlo
+        </div>
+      </div>
+      <div>
+        _____
+         Initials of check-in/out station member
+      </div>
+    </div>
+  </div>
+</div>
+`;
