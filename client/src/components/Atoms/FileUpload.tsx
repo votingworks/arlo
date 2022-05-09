@@ -1,10 +1,9 @@
 import React, { useState } from 'react'
 import { FileInput, Button, Colors, ProgressBar } from '@blueprintjs/core'
-import { useForm, UseFormMethods } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import styled from 'styled-components'
 import StatusTag from './StatusTag'
 import { IFileUpload } from '../useFileUpload'
-import { CvrFileType } from '../useCSV'
 
 const ErrorP = styled.p`
   margin-top: 10px;
@@ -12,6 +11,7 @@ const ErrorP = styled.p`
 `
 
 interface IFileUploadProps extends IFileUpload {
+  uploadFiles: (files: FileList) => Promise<void>
   acceptFileType: 'csv' | 'zip'
   allowMultipleFiles?: boolean
   disabled?: boolean
@@ -42,14 +42,11 @@ const FileUpload = ({
 
   if (!upload && (!file || isReplacing)) {
     const onUpload = async ({ files }: { files: FileList }) => {
-      const formData = new FormData()
-      const formKey = 'manifest' // TODO - make this configurable
-      for (const f of files) formData.append(formKey, f, f.name)
-      await uploadFiles.mutateAsync(formData)
+      await uploadFiles(files)
       setIsReplacing(false)
     }
 
-    const files: FileList | undefined = watch('files')
+    const files = watch('files')
     const numFiles = files ? files.length : 0
 
     return (
@@ -71,7 +68,7 @@ const FileUpload = ({
                 return allowMultipleFiles
                   ? 'Select files...'
                   : 'Select a file...'
-              if (numFiles === 1) return files![0].name
+              if (numFiles === 1) return files[0].name
               return `${numFiles} files selected`
             })()}
             disabled={disabled || formState.isSubmitting}
@@ -137,7 +134,7 @@ const FileUpload = ({
 
   const { error } = processing
   return (
-    <form onSubmit={deleteFile && handleSubmit(() => deleteFile.mutateAsync())}>
+    <form onSubmit={handleSubmit(deleteFile)}>
       <p>
         {error ? (
           <StatusTag intent="danger">Upload Failed</StatusTag>
@@ -158,16 +155,14 @@ const FileUpload = ({
         <Button disabled={disabled} onClick={() => setIsReplacing(true)}>
           Replace File
         </Button>
-        {deleteFile && (
-          <Button
-            type="submit"
-            loading={formState.isSubmitting}
-            disabled={disabled}
-            style={{ marginLeft: '5px' }}
-          >
-            Delete File
-          </Button>
-        )}
+        <Button
+          type="submit"
+          loading={formState.isSubmitting}
+          disabled={disabled}
+          style={{ marginLeft: '5px' }}
+        >
+          Delete File
+        </Button>
       </p>
     </form>
   )

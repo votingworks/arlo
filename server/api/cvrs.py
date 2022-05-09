@@ -1222,7 +1222,7 @@ def download_cvr_file(
 @api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/cvrs", methods=["DELETE"],
 )
-@restrict_access([UserType.JURISDICTION_ADMIN])
+@restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
 def clear_cvrs(
     election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):

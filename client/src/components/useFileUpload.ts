@@ -7,7 +7,7 @@ import {
 } from 'react-query'
 import axios, { AxiosRequestConfig } from 'axios'
 import { useState } from 'react'
-import { IFileInfo } from './useCSV'
+import { IFileInfo, CvrFileType } from './useCSV'
 import { fetchApi, ApiError } from './SupportTools/support-api'
 import { addCSRFToken } from './utilities'
 
@@ -18,10 +18,9 @@ interface IUseFileUploadProps {
 
 export interface IFileUpload {
   uploadedFile: UseQueryResult<IFileInfo, ApiError>
-  uploadFiles: UseMutationResult<void, ApiError, FormData> & {
-    progress?: number
-  }
-  deleteFile?: UseMutationResult<void, ApiError, void>
+  uploadFiles: (files: FileList) => Promise<void>
+  uploadProgress?: number
+  deleteFile: () => Promise<void>
   downloadFileUrl?: string
 }
 
@@ -41,10 +40,20 @@ const useUploadedFile = (
   })
 }
 
-const useUploadFiles = (url: string) => {
+const useUploadFiles = <FormFields>(url: string) => {
   const [progress, setProgress] = useState<number>()
 
-  const putFiles = async (formData: FormData) => {
+  const putFiles = async (formFields: FormFields) => {
+    const formData = new FormData()
+    for (const [key, value] of Object.entries(formFields)) {
+      if (value instanceof FileList) {
+        for (const file of value) {
+          formData.append(key, file)
+        }
+      } else {
+        formData.append(key, value)
+      }
+    }
     try {
       await axios(url, addCSRFToken({
         method: 'PUT',
@@ -63,7 +72,7 @@ const useUploadFiles = (url: string) => {
   const queryClient = useQueryClient()
 
   return {
-    ...useMutation<void, ApiError, FormData>(putFiles, {
+    ...useMutation<void, ApiError, FormFields>(putFiles, {
       onSuccess: () => queryClient.invalidateQueries(url),
     }),
     progress,
@@ -83,7 +92,7 @@ export const useBallotManifest = (
   jurisdictionId: string
 ): IFileUpload => {
   const url = `/api/election/${electionId}/jurisdiction/${jurisdictionId}/ballot-manifest`
-  const cvrUrl = `/api/election/${electionId}/jurisdiction/${jurisdictionId}/cvr`
+  const cvrUrl = `/api/election/${electionId}/jurisdiction/${jurisdictionId}/cvrs`
   const batchTalliesUrl = `/api/election/${electionId}/jurisdiction/${jurisdictionId}/batch-tallies`
   const jurisdictionsUrl = `/api/election/${electionId}/jurisdiction`
   const queryClient = useQueryClient()
@@ -92,11 +101,13 @@ export const useBallotManifest = (
     queryClient.invalidateQueries([batchTalliesUrl])
     queryClient.invalidateQueries([jurisdictionsUrl])
   }
-
+  const uploadFiles = useUploadFiles(url)
+  const deleteFile = useDeleteFile(url)
   return {
     uploadedFile: useUploadedFile(url, { onFileChange: invalidateQueries }),
-    uploadFiles: useUploadFiles(url),
-    deleteFile: useDeleteFile(url),
+    uploadFiles: files => uploadFiles.mutateAsync({ manifest: files }),
+    uploadProgress: uploadFiles.progress,
+    deleteFile: () => deleteFile.mutateAsync(),
     downloadFileUrl: `${url}/csv`,
   }
 }
@@ -107,24 +118,35 @@ export const useBatchTallies = (
   options: { enabled: boolean } = { enabled: true }
 ): IFileUpload => {
   const url = `/api/election/${electionId}/jurisdiction/${jurisdictionId}/batch-tallies`
+  const uploadFiles = useUploadFiles(url)
+  const deleteFile = useDeleteFile(url)
   return {
     uploadedFile: useUploadedFile(url, options),
-    uploadFiles: useUploadFiles(url),
-    deleteFile: useDeleteFile(url),
+    uploadFiles: files => uploadFiles.mutateAsync({ batchTallies: files }),
+    uploadProgress: uploadFiles.progress,
+    deleteFile: () => deleteFile.mutateAsync(),
     downloadFileUrl: `${url}/csv`,
   }
+}
+
+interface ICvrsFileUpload extends Omit<IFileUpload, 'uploadFiles'> {
+  uploadFiles: (cvrs: FileList, cvrFileType: CvrFileType) => Promise<void>
 }
 
 export const useCVRs = (
   electionId: string,
   jurisdictionId: string,
   options: { enabled: boolean } = { enabled: true }
-): IFileUpload => {
+): ICvrsFileUpload => {
   const url = `/api/election/${electionId}/jurisdiction/${jurisdictionId}/cvrs`
+  const uploadFiles = useUploadFiles(url)
+  const deleteFile = useDeleteFile(url)
   return {
     uploadedFile: useUploadedFile(url, options),
-    uploadFiles: useUploadFiles(url),
-    deleteFile: useDeleteFile(url),
+    uploadFiles: (cvrs, cvrFileType) =>
+      uploadFiles.mutateAsync({ cvrs, cvrFileType }),
+    uploadProgress: uploadFiles.progress,
+    deleteFile: () => deleteFile.mutateAsync(),
     downloadFileUrl: `${url}/csv`,
   }
 }

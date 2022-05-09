@@ -6,15 +6,13 @@ import {
   H5,
   H6,
   Card,
-  Colors,
   Button,
   HTMLSelect,
 } from '@blueprintjs/core'
 import styled from 'styled-components'
 import { Formik, FormikProps } from 'formik'
 import { IJurisdiction, JurisdictionRoundStatus } from '../../useJurisdictions'
-import { IFileInfo, FileProcessingStatus, CvrFileType } from '../../useCSV'
-import StatusTag from '../../Atoms/StatusTag'
+import { CvrFileType } from '../../useCSV'
 import { IRound } from '../useRoundsAuditAdmin'
 import { IAuditSettings } from '../../useAuditSettings'
 import { api } from '../../utilities'
@@ -25,7 +23,6 @@ import { JAFileDownloadButtons } from '../../JurisdictionAdmin/RoundManagement'
 import FileUpload from '../../Atoms/FileUpload'
 import {
   useBallotManifest,
-  IFileUpload,
   useBatchTallies,
   useCVRs,
 } from '../../useFileUpload'
@@ -67,10 +64,6 @@ const JurisdictionDetail = ({
   const batchTalliesUpload = useBatchTallies(electionId, jurisdiction.id, {
     enabled: !!jurisdiction.batchTallies,
   })
-  const cvrsUpload = useCVRs(electionId, jurisdiction.id, {
-    enabled: !!jurisdiction.cvrs,
-  })
-
   return (
     <Dialog onClose={handleClose} title={jurisdiction.name} isOpen>
       <div className={Classes.DIALOG_BODY} style={{ marginBottom: 0 }}>
@@ -83,16 +76,25 @@ const JurisdictionDetail = ({
           {jurisdiction.batchTallies && (
             <StatusCard>
               <H6>Candidate Totals by Batch</H6>
-              <FileUpload {...batchTalliesUpload} acceptFileType="csv" />
+              <FileUpload
+                {...batchTalliesUpload}
+                acceptFileType="csv"
+                disabled={
+                  ballotManifestUpload.uploadedFile.data &&
+                  !ballotManifestUpload.uploadedFile.data.file
+                }
+              />
             </StatusCard>
           )}
           {jurisdiction.cvrs && (
             <StatusCard>
               <H6>Cast Vote Records (CVR)</H6>
               <CvrsFileUpload
-                fileUpload={cvrsUpload}
-                cvrFileType={
-                  jurisdiction.cvrs.file && jurisdiction.cvrs.file.cvrFileType!
+                electionId={electionId}
+                jurisdiction={jurisdiction}
+                disabled={
+                  ballotManifestUpload.uploadedFile.data &&
+                  !ballotManifestUpload.uploadedFile.data.file
                 }
               />
             </StatusCard>
@@ -112,27 +114,25 @@ const JurisdictionDetail = ({
 }
 
 const CvrsFileUpload = ({
-  fileUpload,
-  cvrFileType,
+  electionId,
+  jurisdiction,
+  disabled,
 }: {
-  fileUpload: IFileUpload
-  cvrFileType: CvrFileType | null
+  electionId: string
+  jurisdiction: IJurisdiction
+  disabled?: boolean
 }) => {
+  const cvrsUpload = useCVRs(electionId, jurisdiction.id)
   const [selectedCvrFileType, setSelectedCvrFileType] = useState<CvrFileType>()
-  const uploadFiles = {
-    ...fileUpload.uploadFiles,
-    mutateAsync: (formData: FormData) => {
-      formData.append('cvrFileType', selectedCvrFileType!)
-      return fileUpload.uploadFiles.mutateAsync(formData)
-    },
-  }
+  const uploadFiles = (files: FileList) =>
+    cvrsUpload.uploadFiles(files, selectedCvrFileType!)
 
   return (
     <>
       <p>
         <label htmlFor="cvrFileType">CVR File Type: </label>
-        {cvrFileType ? (
-          prettyCvrFileType(cvrFileType)
+        {jurisdiction.cvrs!.file ? (
+          prettyCvrFileType(jurisdiction.cvrs!.file.cvrFileType!)
         ) : (
           <HTMLSelect
             name="cvrFileType"
@@ -140,6 +140,7 @@ const CvrsFileUpload = ({
             onChange={e =>
               setSelectedCvrFileType(e.target.value as CvrFileType)
             }
+            disabled={disabled}
           >
             <option></option>
             <option value={CvrFileType.DOMINION}>Dominion</option>
@@ -150,10 +151,12 @@ const CvrsFileUpload = ({
         )}
       </p>
       <FileUpload
-        {...fileUpload}
+        {...cvrsUpload}
         uploadFiles={uploadFiles}
         acceptFileType="csv"
-        disabled={!(cvrFileType || selectedCvrFileType)}
+        disabled={
+          disabled || (!jurisdiction.cvrs!.file && !selectedCvrFileType)
+        }
       />
     </>
   )
