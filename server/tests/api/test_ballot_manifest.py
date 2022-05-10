@@ -53,12 +53,48 @@ def test_ballot_manifest_upload(
     assert jurisdiction.batches[2].num_ballots == 0
 
 
-def test_ballot_manifest_replace(
+def test_ballot_manifest_clear(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
+        data={
+            "manifest": (
+                io.BytesIO(b"Batch Name,Number of Ballots\n" b"1,23\n"),
+                "manifest.csv",
+            )
+        },
+    )
+    assert_ok(rv)
+
+    file_id = Jurisdiction.query.get(jurisdiction_ids[0]).manifest_file_id
+
+    rv = client.delete(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"
+    )
+    assert json.loads(rv.data) == {"file": None, "processing": None}
+
+    jurisdiction = Jurisdiction.query.get(jurisdiction_ids[0])
+    assert jurisdiction.manifest_num_batches is None
+    assert jurisdiction.manifest_num_ballots is None
+    assert jurisdiction.batches == []
+    assert jurisdiction.manifest_file_id is None
+    assert File.query.get(file_id) is None
+
+
+def test_ballot_manifest_replace_as_audit_admin(
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+):
+    # Check that AA can also get/put/clear manifest
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
         data={
@@ -99,26 +135,7 @@ def test_ballot_manifest_replace(
     assert jurisdiction.batches[1].name == "12"
     assert jurisdiction.batches[1].num_ballots == 6
 
-
-def test_ballot_manifest_clear(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
-):
-    set_logged_in_user(
-        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
-    )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
-        data={
-            "manifest": (
-                io.BytesIO(b"Batch Name,Number of Ballots\n" b"1,23\n"),
-                "manifest.csv",
-            )
-        },
-    )
-    assert_ok(rv)
-
-    file_id = Jurisdiction.query.get(jurisdiction_ids[0]).manifest_file_id
-
+    # Now clear the manifest and check that it's deleted
     rv = client.delete(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
     )
@@ -128,13 +145,6 @@ def test_ballot_manifest_clear(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"
     )
     assert json.loads(rv.data) == {"file": None, "processing": None}
-
-    jurisdiction = Jurisdiction.query.get(jurisdiction_ids[0])
-    assert jurisdiction.manifest_num_batches is None
-    assert jurisdiction.manifest_num_ballots is None
-    assert jurisdiction.batches == []
-    assert jurisdiction.manifest_file_id is None
-    assert File.query.get(file_id) is None
 
 
 def test_ballot_manifest_upload_missing_file(
