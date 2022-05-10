@@ -18,10 +18,6 @@ const apiMock: jest.SpyInstance<
   ReturnType<typeof utilities.api>,
   Parameters<typeof utilities.api>
 > = jest.spyOn(utilities, 'api').mockImplementation()
-const checkAndToastMock: jest.SpyInstance<
-  ReturnType<typeof utilities.checkAndToast>,
-  Parameters<typeof utilities.checkAndToast>
-> = jest.spyOn(utilities, 'checkAndToast').mockReturnValue(false)
 
 const generateApiMock = (
   contestsReturn: { contests: IContest[] } | Error | { status: 'ok' },
@@ -49,8 +45,6 @@ const generateApiMock = (
 apiMock.mockImplementation(
   generateApiMock(contestMocks.emptyTargeted, { jurisdictions: [] })
 )
-
-checkAndToastMock.mockReturnValue(false)
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'), // use actual for all non-hook parts
@@ -85,7 +79,6 @@ function regexify(contest: IContestNumbered) {
 afterEach(() => {
   ;(nextStage.activate as jest.Mock).mockClear()
   apiMock.mockClear()
-  checkAndToastMock.mockClear()
   toastSpy.mockClear()
 })
 

@@ -89,10 +89,6 @@ const apiCalls = {
   }),
 }
 
-const checkAndToastMock: jest.SpyInstance<
-  ReturnType<typeof utilities.checkAndToast>,
-  Parameters<typeof utilities.checkAndToast>
-> = jest.spyOn(utilities, 'checkAndToast').mockReturnValue(false)
 const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
 
 jest.mock('react-router-dom', () => ({
@@ -128,7 +124,6 @@ beforeEach(() => {
   refreshMock.mockClear()
   startNextRoundMock.mockClear()
   toastSpy.mockClear()
-  checkAndToastMock.mockClear()
   routeMock.mockClear()
   ;(prevStage.activate as jest.Mock).mockClear()
 })

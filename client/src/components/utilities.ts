@@ -161,37 +161,6 @@ export const asyncForEach = async <T>(
   }
 }
 
-const getErrorsFromResponse = (
-  response: unknown
-): { message: string }[] | undefined => {
-  if (typeof response !== 'object' || !response) {
-    return undefined
-  }
-
-  const { errors } = response as { [key: string]: unknown }
-
-  if (!Array.isArray(errors)) {
-    return undefined
-  }
-
-  return errors
-}
-
-export const checkAndToast = (
-  response: unknown
-): response is IErrorResponse => {
-  const errors = getErrorsFromResponse(response)
-  if (errors) {
-    toast.error(
-      `There was a server error regarding: ${errors
-        .map(({ message }) => message)
-        .join(', ')}`
-    )
-    return true
-  }
-  return false
-}
-
 // https://overreacted.io/making-setinterval-declarative-with-react-hooks/
 /* istanbul ignore next */
 export const useInterval = (
