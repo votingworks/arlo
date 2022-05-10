@@ -1,35 +1,7 @@
 import { useRef, useEffect } from 'react'
 import { toast } from 'react-toastify'
-import { AxiosRequestConfig } from 'axios'
 import number from '../utils/number-schema'
-import { IErrorResponse } from '../types'
-
-const parseCookies = () =>
-  Object.fromEntries(
-    document.cookie.split(';').map(pair => pair.trim().split('='))
-  )
-
-export const addCSRFToken = (options?: RequestInit | AxiosRequestConfig) => {
-  const token = parseCookies()._csrf_token
-  if (
-    token &&
-    options &&
-    ['POST', 'PUT', 'PATCH', 'DELETE'].includes(options.method!)
-  )
-    return {
-      ...options,
-      headers: { ...options.headers, 'X-CSRFToken': token },
-    }
-  return options
-}
-
-export const tryJson = (responseText: string) => {
-  try {
-    return JSON.parse(responseText)
-  } catch (err) {
-    return {}
-  }
-}
+import { addCSRFToken, tryJson } from '../utils/api'
 
 export const parseApiError = async (response: Response) => {
   const responseText = await response.text()
@@ -39,6 +11,7 @@ export const parseApiError = async (response: Response) => {
   return { ...error, responseText, response }
 }
 
+// Deprecated - use utils/api.fetchApi with react-query
 export const api = async <T>(
   endpoint: string,
   options?: RequestInit
@@ -100,6 +73,7 @@ export const downloadFile = (fileBlob: Blob, fileName?: string) => {
   document.body.removeChild(a)
 }
 
+// Deprecated - use react-query's refetch interval
 export const poll = (
   condition: () => Promise<boolean>,
   callback: () => void,
@@ -159,37 +133,6 @@ export const asyncForEach = async <T>(
     // eslint-disable-next-line no-await-in-loop
     await callback(array[index], index, array)
   }
-}
-
-const getErrorsFromResponse = (
-  response: unknown
-): { message: string }[] | undefined => {
-  if (typeof response !== 'object' || !response) {
-    return undefined
-  }
-
-  const { errors } = response as { [key: string]: unknown }
-
-  if (!Array.isArray(errors)) {
-    return undefined
-  }
-
-  return errors
-}
-
-export const checkAndToast = (
-  response: unknown
-): response is IErrorResponse => {
-  const errors = getErrorsFromResponse(response)
-  if (errors) {
-    toast.error(
-      `There was a server error regarding: ${errors
-        .map(({ message }) => message)
-        .join(', ')}`
-    )
-    return true
-  }
-  return false
 }
 
 // https://overreacted.io/making-setinterval-declarative-with-react-hooks/

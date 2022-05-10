@@ -5,7 +5,6 @@ import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import relativeStages from '../_mocks'
 import Review from './Review'
-import * as utilities from '../../../utilities'
 import { settingsMock, sampleSizeMock } from './_mocks'
 import { contestMocks } from '../Contests/_mocks'
 import {
@@ -89,10 +88,6 @@ const apiCalls = {
   }),
 }
 
-const checkAndToastMock: jest.SpyInstance<
-  ReturnType<typeof utilities.checkAndToast>,
-  Parameters<typeof utilities.checkAndToast>
-> = jest.spyOn(utilities, 'checkAndToast').mockReturnValue(false)
 const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
 
 jest.mock('react-router-dom', () => ({
@@ -128,7 +123,6 @@ beforeEach(() => {
   refreshMock.mockClear()
   startNextRoundMock.mockClear()
   toastSpy.mockClear()
-  checkAndToastMock.mockClear()
   routeMock.mockClear()
   ;(prevStage.activate as jest.Mock).mockClear()
 })

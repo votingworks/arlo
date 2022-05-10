@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from 'react-query'
-import { fetchApi } from '../SupportTools/support-api'
+import { fetchApi } from '../../utils/api'
 
 export interface IBatchResults {
   [choiceId: string]: number

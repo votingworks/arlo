@@ -14,10 +14,6 @@ const apiMock: jest.SpyInstance<
   ReturnType<typeof utilities.api>,
   Parameters<typeof utilities.api>
 > = jest.spyOn(utilities, 'api').mockImplementation()
-const checkAndToastMock: jest.SpyInstance<
-  ReturnType<typeof utilities.checkAndToast>,
-  Parameters<typeof utilities.checkAndToast>
-> = jest.spyOn(utilities, 'checkAndToast').mockReturnValue(false)
 apiMock.mockImplementation(async () => {})
 
 const useJurisdictionsMock = useJurisdictions as jest.Mock
@@ -34,8 +30,6 @@ useContestsMock.mockImplementation(() => [
 const useAuditSettingsMock = useAuditSettings as jest.Mock
 jest.mock('../../useAuditSettings')
 useAuditSettingsMock.mockImplementation(() => [auditSettings.all, jest.fn()])
-
-checkAndToastMock.mockReturnValue(false)
 
 const mockHistoryPush = jest.fn()
 jest.mock('react-router-dom', () => ({
@@ -54,7 +48,6 @@ routeMock.mockReturnValue({
 
 afterEach(() => {
   apiMock.mockClear()
-  checkAndToastMock.mockClear()
 })
 
 describe('Setup', () => {
