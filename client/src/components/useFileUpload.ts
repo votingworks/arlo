@@ -3,7 +3,6 @@ import {
   useMutation,
   useQueryClient,
   UseQueryResult,
-  UseMutationResult,
 } from 'react-query'
 import axios, { AxiosRequestConfig } from 'axios'
 import { useState } from 'react'
