@@ -4,7 +4,7 @@ import { HTMLSelect, H3 } from '@blueprintjs/core'
 import { IOrganization, useAuthDataContext, IAuditAdmin } from '../UserContext'
 import { Wrapper, Inner } from '../Atoms/Wrapper'
 import { StyledTable, DownloadCSVButton } from '../Atoms/Table'
-import { fetchApi } from '../SupportTools/support-api'
+import { fetchApi } from '../../utils/api'
 
 interface IActivity {
   id: string

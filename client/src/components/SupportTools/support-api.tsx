@@ -1,24 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from 'react-query'
 import { useHistory } from 'react-router-dom'
-import { tryJson, addCSRFToken } from '../utilities'
-
-export class ApiError extends Error {
-  public statusCode: number
-
-  public constructor(message: string, statusCode: number) {
-    super(message)
-    this.statusCode = statusCode
-  }
-}
-
-export const fetchApi = async (url: string, options?: RequestInit) => {
-  const response = await fetch(url, addCSRFToken(options))
-  if (response.ok) return response.json()
-  const text = await response.text()
-  const { errors } = tryJson(text)
-  const error = errors && errors.length && errors[0].message
-  throw new ApiError(error || text, response.status)
-}
+import { fetchApi } from '../../utils/api'
 
 export interface IOrganizationBase {
   id: string

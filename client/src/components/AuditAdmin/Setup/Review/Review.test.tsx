@@ -5,7 +5,6 @@ import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import relativeStages from '../_mocks'
 import Review from './Review'
-import * as utilities from '../../../utilities'
 import { settingsMock, sampleSizeMock } from './_mocks'
 import { contestMocks } from '../Contests/_mocks'
 import {

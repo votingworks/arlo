@@ -1,35 +1,7 @@
 import { useRef, useEffect } from 'react'
 import { toast } from 'react-toastify'
-import { AxiosRequestConfig } from 'axios'
 import number from '../utils/number-schema'
-import { IErrorResponse } from '../types'
-
-const parseCookies = () =>
-  Object.fromEntries(
-    document.cookie.split(';').map(pair => pair.trim().split('='))
-  )
-
-export const addCSRFToken = (options?: RequestInit | AxiosRequestConfig) => {
-  const token = parseCookies()._csrf_token
-  if (
-    token &&
-    options &&
-    ['POST', 'PUT', 'PATCH', 'DELETE'].includes(options.method!)
-  )
-    return {
-      ...options,
-      headers: { ...options.headers, 'X-CSRFToken': token },
-    }
-  return options
-}
-
-export const tryJson = (responseText: string) => {
-  try {
-    return JSON.parse(responseText)
-  } catch (err) {
-    return {}
-  }
-}
+import { addCSRFToken, tryJson } from '../utils/api'
 
 export const parseApiError = async (response: Response) => {
   const responseText = await response.text()
@@ -39,6 +11,7 @@ export const parseApiError = async (response: Response) => {
   return { ...error, responseText, response }
 }
 
+// Deprecated - use utils/api.fetchApi with react-query
 export const api = async <T>(
   endpoint: string,
   options?: RequestInit
@@ -100,6 +73,7 @@ export const downloadFile = (fileBlob: Blob, fileName?: string) => {
   document.body.removeChild(a)
 }
 
+// Deprecated - use react-query's refetch interval
 export const poll = (
   condition: () => Promise<boolean>,
   callback: () => void,

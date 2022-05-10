@@ -14,11 +14,11 @@ import AuthDataProvider, {
   useAuthDataContext,
 } from './components/UserContext'
 import SupportTools from './components/SupportTools'
-import { ApiError } from './components/SupportTools/support-api'
 import JurisdictionAdminView from './components/JurisdictionAdmin/JurisdictionAdminView'
 import AuditAdminView from './components/AuditAdmin/AuditAdminView'
 import ActivityLog from './components/AuditAdmin/ActivityLog'
 import AuditBoardView from './components/AuditBoard/AuditBoardView'
+import { ApiError } from './utils/api'
 
 export const queryClient = new QueryClient({
   defaultOptions: {

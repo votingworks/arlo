@@ -1,8 +1,9 @@
 import axios, { AxiosRequestConfig } from 'axios'
 import { toast } from 'react-toastify'
 import { useEffect, useState } from 'react'
-import { api, useInterval, addCSRFToken } from './utilities'
+import { api, useInterval } from './utilities'
 import { IAuditSettings } from './useAuditSettings'
+import { addCSRFToken } from '../utils/api'
 
 export enum FileProcessingStatus {
   READY_TO_PROCESS = 'READY_TO_PROCESS',

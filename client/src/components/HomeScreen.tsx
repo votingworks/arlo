@@ -24,7 +24,7 @@ import {
   IOrganization,
   IAuditAdmin,
 } from './UserContext'
-import { parseApiError, addCSRFToken } from './utilities'
+import { parseApiError } from './utilities'
 import LinkButton from './Atoms/LinkButton'
 import FormSection from './Atoms/Form/FormSection'
 import FormButton from './Atoms/Form/FormButton'
@@ -34,7 +34,7 @@ import { groupBy, sortBy } from '../utils/array'
 import { IAuditSettings } from './useAuditSettings'
 import { useConfirm, Confirm } from './Atoms/Confirm'
 import { ErrorLabel } from './Atoms/Form/_helpers'
-import { fetchApi } from './SupportTools/support-api'
+import { addCSRFToken, fetchApi } from '../utils/api'
 
 const HomeScreen: React.FC = () => {
   const auth = useAuthDataContext()
