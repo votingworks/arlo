@@ -66,9 +66,9 @@ const DownloadBatchTallySheetsButton = ({
         return (
           <AnchorButton
             href={url || undefined}
+            download
             icon="th"
             loading={loading}
-            target="_blank"
           >
             Download Batch Tally Sheets
           </AnchorButton>
