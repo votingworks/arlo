@@ -7,6 +7,8 @@ import BatchTallySheet from './BatchTallySheet'
 import useContestsJurisdictionAdmin from '../useContestsJurisdictionAdmin'
 import { useBatches } from '../useBatchResults'
 
+const FILE_NAME = 'batch-tally-sheets.pdf'
+
 const AnchorButtonErrorState = (): JSX.Element => {
   useEffect(() => {
     toast.error('Error preparing batch tally sheets for download')
@@ -46,7 +48,7 @@ const DownloadBatchTallySheetsButton = ({
   return (
     <BlobProvider
       document={
-        <Document title="batch-tally-sheets.pdf">
+        <Document title={FILE_NAME}>
           {batches.map(b => (
             <BatchTallySheet
               auditBoardName={b.auditBoard ? b.auditBoard.name : ''}
@@ -66,7 +68,7 @@ const DownloadBatchTallySheetsButton = ({
         return (
           <AnchorButton
             href={url || undefined}
-            download
+            download={FILE_NAME}
             icon="th"
             loading={loading}
           >
