@@ -171,16 +171,25 @@ export const jaApiCalls = {
     url: '/api/election/1/jurisdiction/jurisdiction-id-1/round',
     response: { rounds },
   }),
-  getBallotManifestFile: (response: IFileInfo) => ({
-    url: '/api/election/1/jurisdiction/jurisdiction-id-1/ballot-manifest',
+  getBallotManifestFile: (
+    response: IFileInfo,
+    jurisdictionId: string = 'jurisdiction-id-1'
+  ) => ({
+    url: `/api/election/1/jurisdiction/${jurisdictionId}/ballot-manifest`,
     response,
   }),
-  getBatchTalliesFile: (response: IFileInfo) => ({
-    url: '/api/election/1/jurisdiction/jurisdiction-id-1/batch-tallies',
+  getBatchTalliesFile: (
+    response: IFileInfo,
+    jurisdictionId: string = 'jurisdiction-id-1'
+  ) => ({
+    url: `/api/election/1/jurisdiction/${jurisdictionId}/batch-tallies`,
     response,
   }),
-  getCVRSfile: (response: IFileInfo) => ({
-    url: '/api/election/1/jurisdiction/jurisdiction-id-1/cvrs',
+  getCVRSfile: (
+    response: IFileInfo,
+    jurisdictionId: string = 'jurisdiction-id-1'
+  ) => ({
+    url: `/api/election/1/jurisdiction/${jurisdictionId}/cvrs`,
     response,
   }),
   getSettings: (response: IAuditSettings) => ({

@@ -62,7 +62,7 @@ const JurisdictionDetail = ({
 }) => {
   const ballotManifestUpload = useBallotManifest(electionId, jurisdiction.id)
   const batchTalliesUpload = useBatchTallies(electionId, jurisdiction.id, {
-    enabled: !!jurisdiction.batchTallies,
+    enabled: auditSettings.auditType === 'BATCH_COMPARISON',
   })
   return (
     <Dialog onClose={handleClose} title={jurisdiction.name} isOpen>
@@ -71,30 +71,37 @@ const JurisdictionDetail = ({
           <H5>Jurisdiction Files</H5>
           <StatusCard>
             <H6>Ballot Manifest</H6>
-            <FileUpload {...ballotManifestUpload} acceptFileType="csv" />
+            <FileUpload
+              {...ballotManifestUpload}
+              acceptFileType="csv"
+              disabled={!!round}
+            />
           </StatusCard>
-          {jurisdiction.batchTallies && (
+          {auditSettings.auditType === 'BATCH_COMPARISON' && (
             <StatusCard>
               <H6>Candidate Totals by Batch</H6>
               <FileUpload
                 {...batchTalliesUpload}
                 acceptFileType="csv"
                 disabled={
-                  ballotManifestUpload.uploadedFile.data &&
-                  !ballotManifestUpload.uploadedFile.data.file
+                  !!round ||
+                  (ballotManifestUpload.uploadedFile.data &&
+                    !ballotManifestUpload.uploadedFile.data.file)
                 }
               />
             </StatusCard>
           )}
-          {jurisdiction.cvrs && (
+          {(auditSettings.auditType === 'BALLOT_COMPARISON' ||
+            auditSettings.auditType === 'HYBRID') && (
             <StatusCard>
               <H6>Cast Vote Records (CVR)</H6>
               <CvrsFileUpload
                 electionId={electionId}
                 jurisdiction={jurisdiction}
                 disabled={
-                  ballotManifestUpload.uploadedFile.data &&
-                  !ballotManifestUpload.uploadedFile.data.file
+                  !!round ||
+                  (ballotManifestUpload.uploadedFile.data &&
+                    !ballotManifestUpload.uploadedFile.data.file)
                 }
               />
             </StatusCard>

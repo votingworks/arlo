@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useQuery } from 'react-query'
 import { api } from './utilities'
 import { IFileInfo, FileProcessingStatus } from './useCSV'
-import { fetchApi } from './SupportTools/support-api'
+import { fetchApi } from '../utils/api'
 
 export interface IBallotManifestInfo extends IFileInfo {
   numBallots: number | null
@@ -105,7 +105,7 @@ export const getJurisdictionStatus = (jurisdiction: IJurisdiction) => {
   return JurisdictionProgressStatus.AUDIT_NOT_STARTED
 }
 
-const useJurisdictionsDeprecated = (
+export const useJurisdictionsDeprecated = (
   electionId: string,
   refreshId?: string
 ): IJurisdiction[] | null => {
@@ -127,9 +127,7 @@ const useJurisdictionsDeprecated = (
 export const useJurisdictions = (electionId: string, refreshId?: string) => {
   const url = `/api/election/${electionId}/jurisdiction`
   return useQuery([url, refreshId], async () => {
-    const response = await fetchApi<{ jurisdictions: IJurisdiction[] }>(url)
+    const response: { jurisdictions: IJurisdiction[] } = await fetchApi(url)
     return response && response.jurisdictions
   })
 }
-
-export default useJurisdictionsDeprecated

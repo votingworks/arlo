@@ -7,8 +7,7 @@ import {
 import axios, { AxiosRequestConfig } from 'axios'
 import { useState } from 'react'
 import { IFileInfo, CvrFileType } from './useCSV'
-import { fetchApi, ApiError } from './SupportTools/support-api'
-import { addCSRFToken } from './utilities'
+import { fetchApi, ApiError, addCSRFToken } from '../utils/api'
 
 interface IUseFileUploadProps {
   url: string
@@ -27,12 +26,14 @@ const useUploadedFile = (
   url: string,
   options: { onFileChange?: () => void; enabled?: boolean } = {}
 ) => {
+  const [isFirstFetch, setIsFirstFetch] = useState(true)
   const isProcessing = (fileInfo?: IFileInfo) =>
     fileInfo && fileInfo.processing && !fileInfo.processing.completedAt
   return useQuery<IFileInfo, ApiError>(url, () => fetchApi(url), {
     refetchInterval: fileInfo => (isProcessing(fileInfo) ? 1000 : false),
     onSuccess: fileInfo => {
-      if (!isProcessing(fileInfo) && options.onFileChange)
+      if (isFirstFetch) setIsFirstFetch(false)
+      if (!isFirstFetch && !isProcessing(fileInfo) && options.onFileChange)
         options.onFileChange()
     },
     enabled: options.enabled,

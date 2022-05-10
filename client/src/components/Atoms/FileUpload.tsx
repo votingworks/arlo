@@ -137,7 +137,7 @@ const FileUpload = ({
     <form onSubmit={handleSubmit(deleteFile)}>
       <p>
         {error ? (
-          <StatusTag intent="danger">Upload Failed</StatusTag>
+          <StatusTag intent="danger">Upload failed</StatusTag>
         ) : (
           <StatusTag intent="success">Uploaded</StatusTag>
         )}

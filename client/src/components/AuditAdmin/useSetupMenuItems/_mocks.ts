@@ -336,7 +336,7 @@ export const standardizedContestsFileMocks: { [key: string]: IFileInfo } = {
   },
 }
 
-export const manifestMocks: { [key: string]: IBallotManifestInfo } = {
+export const manifestMocks = {
   empty: {
     file: null,
     processing: null,
@@ -381,7 +381,7 @@ export const manifestMocks: { [key: string]: IBallotManifestInfo } = {
   },
 }
 
-export const talliesMocks: { [key: string]: IBatchTalliesFileInfo } = {
+export const talliesMocks = {
   empty: {
     file: null,
     processing: null,
@@ -476,7 +476,7 @@ export const cvrsMocks: { [key: string]: ICvrFileInfo } = {
   },
 }
 
-export const jurisdictionMocks: { [key: string]: IJurisdiction[] } = {
+export const jurisdictionMocks = {
   empty: [],
   // Setup - Ballot polling
   noManifests: [
