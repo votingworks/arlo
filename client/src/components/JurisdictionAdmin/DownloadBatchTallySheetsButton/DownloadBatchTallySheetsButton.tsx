@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import { AnchorButton } from '@blueprintjs/core'
 import { BlobProvider, Document } from '@react-pdf/renderer'
 import { toast } from 'react-toastify'
+import * as Sentry from '@sentry/react'
 
 import BatchTallySheet from './BatchTallySheet'
 import useContestsJurisdictionAdmin from '../useContestsJurisdictionAdmin'
@@ -9,10 +10,21 @@ import { useBatches } from '../useBatchResults'
 
 const FILE_NAME = 'batch-tally-sheets.pdf'
 
-const AnchorButtonErrorState = (): JSX.Element => {
+interface AnchorButtonErrorStateProps {
+  error: Error
+}
+
+const AnchorButtonErrorState = ({
+  error,
+}: AnchorButtonErrorStateProps): JSX.Element => {
+  // Render an error toast only once, when the component mounts
   useEffect(() => {
     toast.error('Error preparing batch tally sheets for download')
   }, [])
+
+  useEffect(() => {
+    Sentry.captureException(error)
+  }, [error])
 
   return (
     <AnchorButton disabled icon="th">
@@ -63,7 +75,7 @@ const DownloadBatchTallySheetsButton = ({
     >
       {({ error, loading, url }) => {
         if (error) {
-          return <AnchorButtonErrorState />
+          return <AnchorButtonErrorState error={error} />
         }
         return (
           <AnchorButton

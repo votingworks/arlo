@@ -4,6 +4,7 @@ import { toast } from 'react-toastify'
 import { screen, within } from '@testing-library/react'
 import { Route } from 'react-router-dom'
 import { QueryClientProvider } from 'react-query'
+import * as Sentry from '@sentry/react'
 import {
   roundMocks,
   batchesMocks,
@@ -44,6 +45,10 @@ jest.mock('react-toastify', () => ({
   toast: {
     error: jest.fn(),
   },
+}))
+
+jest.mock('@sentry/react', () => ({
+  captureException: jest.fn(),
 }))
 
 const renderView = (props: IRoundManagementProps) =>
@@ -253,7 +258,7 @@ describe('RoundManagement', () => {
     })
   })
 
-  it('handles failures to generate batch tally sheets PDF', async () => {
+  it('handles failures to generate batch tally sheets PDF whoa', async () => {
     const expectedCalls = [
       apiCalls.getSettings(auditSettings.batchComparisonAll),
       jaApiCalls.getUser,
@@ -262,11 +267,12 @@ describe('RoundManagement', () => {
       apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
       apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
     ]
+    const error = new Error('PDF generation failed')
     ;(BlobProvider as jest.Mock).mockImplementation(
       ({ children }: ReactPDF.BlobProviderProps) => {
         return children({
           blob: null,
-          error: new Error('PDF generation failed'),
+          error,
           loading: false,
           url: null,
         })
@@ -287,6 +293,7 @@ describe('RoundManagement', () => {
       })
       expect(downloadBatchTallySheetsButton).not.toHaveAttribute('href')
       expect(toast.error).toHaveBeenCalledTimes(1)
+      expect(Sentry.captureException).toHaveBeenCalledTimes(1)
     })
   })
 
