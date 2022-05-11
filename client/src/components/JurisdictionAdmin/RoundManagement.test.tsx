@@ -1,7 +1,7 @@
 import React from 'react'
 import { pdf } from '@react-pdf/renderer'
 import { toast } from 'react-toastify'
-import { act, screen, waitFor } from '@testing-library/react'
+import { act, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Route } from 'react-router-dom'
 import { QueryClientProvider } from 'react-query'
@@ -34,7 +34,9 @@ jest.mock('@react-pdf/renderer', () => ({
   ...jest.requireActual('@react-pdf/renderer'),
 
   // Mock @react-pdf/renderer to generate HTML instead of PDF content for easier testing
-  Document: jest.fn(({ children }) => <div>{children}</div>),
+  Document: jest.fn(({ children }) => (
+    <div data-testid="pdf-document">{children}</div>
+  )),
   Page: jest.fn(({ children }) => <div>{children}</div>),
   Text: jest.fn(({ children }) => <div>{children}</div>),
   View: jest.fn(({ children }) => <div>{children}</div>),
@@ -213,6 +215,13 @@ describe('RoundManagement', () => {
       apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
       apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
     ]
+    const blob = new Blob()
+    ;(pdf as jest.Mock).mockImplementation((doc: JSX.Element) => ({
+      toBlob: jest.fn(() => {
+        render(doc)
+        return Promise.resolve(blob)
+      }),
+    }))
 
     await withMockFetch(expectedCalls, async () => {
       renderView({
@@ -231,9 +240,29 @@ describe('RoundManagement', () => {
       act(() => {
         userEvent.click(downloadBatchTallySheetsButton)
       })
-      // PDF contents are tested in BatchTallySheet.test.tsx
       await waitFor(() => expect(pdf).toHaveBeenCalledTimes(1))
       await waitFor(() => expect(FileSaver.saveAs).toHaveBeenCalledTimes(1))
+      expect(FileSaver.saveAs).toHaveBeenCalledWith(
+        blob,
+        'batch-tally-sheets.pdf'
+      )
+
+      // PDF contents are further tested in BatchTallySheet.test.tsx
+      const pdfDocument = screen.getByTestId('pdf-document')
+      expect(
+        within(pdfDocument).queryAllByText('Audit Board Batch Tally Sheet')
+      ).toHaveLength(3)
+      await within(pdfDocument).findByText('Batch One')
+      await within(pdfDocument).findByText('Batch Two')
+      await within(pdfDocument).findByText('Batch Three')
+      expect(
+        within(pdfDocument).queryAllByText('Candidates/Choices')
+      ).toHaveLength(3)
+      expect(
+        within(pdfDocument).queryAllByText('Enter Stack Totals')
+      ).toHaveLength(3)
+      expect(within(pdfDocument).queryAllByText('Choice One')).toHaveLength(3)
+      expect(within(pdfDocument).queryAllByText('Choice Two')).toHaveLength(3)
     })
   })
 
