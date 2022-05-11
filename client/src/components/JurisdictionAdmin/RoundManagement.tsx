@@ -16,7 +16,7 @@ import QRs from './QRs'
 import RoundDataEntry from './RoundDataEntry'
 import useAuditSettingsJurisdictionAdmin from './useAuditSettingsJurisdictionAdmin'
 import BatchRoundDataEntry from './BatchRoundDataEntry'
-import { useAuthDataContext, IJurisdictionAdmin, IUser } from '../UserContext'
+import { useAuthDataContext, IJurisdictionAdmin } from '../UserContext'
 import { IRound } from '../AuditAdmin/useRoundsAuditAdmin'
 import { IAuditSettings } from '../useAuditSettings'
 import AsyncButton from '../Atoms/AsyncButton'
@@ -140,7 +140,6 @@ const RoundManagement = ({
             round={round}
             auditSettings={auditSettings}
             auditBoards={auditBoards}
-            userType="jurisdiction_admin"
           />
         </SpacedDiv>
       )}
@@ -166,7 +165,6 @@ export interface IJAFileDownloadButtonsProps {
   round: IRound
   auditSettings: IAuditSettings
   auditBoards: IAuditBoard[]
-  userType: IUser['type']
 }
 
 export const JAFileDownloadButtons = ({
@@ -176,7 +174,6 @@ export const JAFileDownloadButtons = ({
   round,
   auditSettings,
   auditBoards,
-  userType,
 }: IJAFileDownloadButtonsProps) => (
   <ButtonGroup vertical alignText="left">
     <Button
@@ -199,18 +196,14 @@ export const JAFileDownloadButtons = ({
       {auditSettings.auditType === 'BATCH_COMPARISON' ? 'Batch' : 'Ballot'}{' '}
       Retrieval List
     </Button>
-    {auditSettings.auditType === 'BATCH_COMPARISON' &&
-      // TODO: Allow audit admins to download batch tally sheets as well. To do this, update
-      // DownloadBatchTallySheetsButton to make audit admin API calls instead of jurisdiction
-      // manager API calls depending on the user type
-      userType === 'jurisdiction_admin' && (
-        <DownloadBatchTallySheetsButton
-          electionId={electionId}
-          jurisdictionId={jurisdictionId}
-          jurisdictionName={jurisdictionName}
-          roundId={round.id}
-        />
-      )}
+    {auditSettings.auditType === 'BATCH_COMPARISON' && (
+      <DownloadBatchTallySheetsButton
+        electionId={electionId}
+        jurisdictionId={jurisdictionId}
+        jurisdictionName={jurisdictionName}
+        roundId={round.id}
+      />
+    )}
     {auditSettings.auditType !== 'BATCH_COMPARISON' && (
       <>
         <AsyncButton

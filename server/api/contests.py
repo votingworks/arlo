@@ -223,7 +223,7 @@ def list_contests(election: Election):
 @api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/contest", methods=["GET"]
 )
-@restrict_access([UserType.JURISDICTION_ADMIN])
+@restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
 def list_jurisdictions_contests(
     election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
