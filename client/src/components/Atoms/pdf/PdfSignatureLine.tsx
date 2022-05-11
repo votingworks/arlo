@@ -29,7 +29,7 @@ const PdfSignatureLine = ({
       {label && (
         <Text
           style={{
-            fontSize: 9,
+            fontSize: 10,
             marginTop: 6,
           }}
         >

@@ -133,7 +133,7 @@ const BatchTallySheet = ({
       <PageSection style={styles.flexRow}>
         <PdfSignatureLine
           label="(Audit Board Member)"
-          style={{ marginRight: 9 }}
+          style={{ marginRight: 10 }}
         />
         <PdfSignatureLine label="(Audit Board Member)" />
       </PageSection>
