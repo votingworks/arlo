@@ -56,7 +56,7 @@ export interface IAuditBoard {
 }
 
 export const useOrganizations = () =>
-  useQuery<IOrganizationBase[], Error>('organizations', () =>
+  useQuery<IOrganizationBase[], Error>(['organizations'], () =>
     fetchApi('/api/support/organizations')
   )
 
@@ -71,7 +71,7 @@ export const useCreateOrganization = () => {
   const queryClient = useQueryClient()
 
   return useMutation(postOrganization, {
-    onSuccess: () => queryClient.invalidateQueries('organizations'),
+    onSuccess: () => queryClient.invalidateQueries(['organizations']),
   })
 }
 
@@ -107,8 +107,7 @@ export const useDeleteOrganization = (organizationId: string) => {
 
   return useMutation(deleteOrganization, {
     onSuccess: () => {
-      queryClient.removeQueries(['organizations', organizationId])
-      queryClient.resetQueries('organizations')
+      queryClient.resetQueries(['organizations'], { exact: true })
       history.push('/support')
     },
   })

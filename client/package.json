@@ -100,7 +100,7 @@
     "react-app-polyfill": "^1.0.1",
     "react-dom": "^16.13.1",
     "react-hook-form": "^6.13.1",
-    "react-query": "^3.2.0",
+    "react-query": "^3.39.0",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.4.0",
     "react-table": "^7.1.0",

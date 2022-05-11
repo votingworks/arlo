@@ -2,7 +2,7 @@ import React from 'react'
 import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ToastContainer } from 'react-toastify'
-import { QueryClientProvider, QueryClient } from 'react-query'
+import { QueryClientProvider } from 'react-query'
 import {
   withMockFetch,
   renderWithRouter,
@@ -175,20 +175,9 @@ const apiCalls = {
   },
 }
 
-const queryClientOptions = queryClient.getDefaultOptions()
-
 const renderRoute = (route: string) =>
   renderWithRouter(
-    <QueryClientProvider
-      client={
-        new QueryClient({
-          defaultOptions: {
-            ...queryClientOptions,
-            queries: { ...queryClientOptions.queries, retry: false },
-          },
-        })
-      }
-    >
+    <QueryClientProvider client={queryClient}>
       <AuthDataProvider>
         <SupportTools />
         <ToastContainer />
