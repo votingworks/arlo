@@ -1,9 +1,11 @@
 import React from 'react'
-import ReactPdf, { BlobProvider, Page } from '@react-pdf/renderer'
+import { pdf } from '@react-pdf/renderer'
 import { toast } from 'react-toastify'
-import { screen, within } from '@testing-library/react'
+import { act, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { Route } from 'react-router-dom'
 import { QueryClientProvider } from 'react-query'
+import * as FileSaver from 'file-saver'
 import * as Sentry from '@sentry/react'
 import {
   roundMocks,
@@ -37,8 +39,13 @@ jest.mock('@react-pdf/renderer', () => ({
   Text: jest.fn(({ children }) => <div>{children}</div>),
   View: jest.fn(({ children }) => <div>{children}</div>),
 
-  // Let individual tests mock BlobProvider as necessary
-  BlobProvider: jest.fn(() => null),
+  pdf: jest.fn(() => ({
+    toBlob: jest.fn(),
+  })),
+}))
+
+jest.mock('file-saver', () => ({
+  saveAs: jest.fn(),
 }))
 
 jest.mock('react-toastify', () => ({
@@ -98,9 +105,11 @@ describe('RoundManagement', () => {
     // Clear mock call counts, etc.
     jest.clearAllMocks()
 
-    // Reset the BlobProvider mock's implementation since some tests override the default mock
+    // Reset the pdf mock's implementation since some tests override the default mock
     // implementation
-    ;(BlobProvider as jest.Mock).mockImplementation(() => null)
+    ;(pdf as jest.Mock).mockImplementation(() => ({
+      toBlob: jest.fn(),
+    }))
   })
 
   it('renders audit setup with batch audit', async () => {
@@ -204,23 +213,6 @@ describe('RoundManagement', () => {
       apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
       apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
     ]
-    ;(BlobProvider as jest.Mock).mockImplementation(
-      ({ children, document }: ReactPdf.BlobProviderProps) => {
-        return (
-          <>
-            {children({
-              blob: null,
-              error: null,
-              loading: false,
-              url: 'blob:http://blob-url',
-            })}
-            {/* BlobProvider doesn't normally render the document in the DOM, but we do so here to
-              facilitate testing */}
-            <div data-testid="pdf">{document}</div>
-          </>
-        )
-      }
-    )
 
     await withMockFetch(expectedCalls, async () => {
       renderView({
@@ -234,31 +226,18 @@ describe('RoundManagement', () => {
       const downloadBatchTallySheetsButton = screen.getByRole('button', {
         name: /Download Batch Tally Sheets/,
       })
-      expect(downloadBatchTallySheetsButton).toHaveAttribute(
-        'href',
-        'blob:http://blob-url'
-      )
-
-      // Expect a @react-pdf/renderer Page per batch (note that a Page can span multiple actual
-      // pages). Page contents are further tested in BatchTallySheet.test.tsx
-      expect(Page).toHaveBeenCalledTimes(3)
-      const pdf = screen.getByTestId('pdf')
-      expect(
-        within(pdf).queryAllByText('Audit Board Batch Tally Sheet')
-      ).toHaveLength(3)
-      await within(pdf).findByText('Batch One')
-      await within(pdf).findByText('Batch Two')
-      await within(pdf).findByText('Batch Three')
-      expect(within(pdf).queryAllByText('Candidates/Choices')).toHaveLength(3)
-      expect(within(pdf).queryAllByText('Enter Stack Totals')).toHaveLength(3)
-      expect(within(pdf).queryAllByText('Choice One')).toHaveLength(3)
-      expect(within(pdf).queryAllByText('Choice Two')).toHaveLength(3)
-
       screen.getByRole('table') // Tested in BatchRoundDataEntry.test.tsx
+
+      act(() => {
+        userEvent.click(downloadBatchTallySheetsButton)
+      })
+      // PDF contents are tested in BatchTallySheet.test.tsx
+      await waitFor(() => expect(pdf).toHaveBeenCalledTimes(1))
+      await waitFor(() => expect(FileSaver.saveAs).toHaveBeenCalledTimes(1))
     })
   })
 
-  it('handles failures to generate batch tally sheets PDF whoa', async () => {
+  it('handles failures to generate batch tally sheets PDF', async () => {
     const expectedCalls = [
       apiCalls.getSettings(auditSettings.batchComparisonAll),
       jaApiCalls.getUser,
@@ -267,17 +246,9 @@ describe('RoundManagement', () => {
       apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
       apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
     ]
-    const error = new Error('PDF generation failed')
-    ;(BlobProvider as jest.Mock).mockImplementation(
-      ({ children }: ReactPdf.BlobProviderProps) => {
-        return children({
-          blob: null,
-          error,
-          loading: false,
-          url: null,
-        })
-      }
-    )
+    ;(pdf as jest.Mock).mockImplementation(() => ({
+      toBlob: jest.fn(() => Promise.reject(new Error('Whoa!'))),
+    }))
 
     await withMockFetch(expectedCalls, async () => {
       renderView({
@@ -291,9 +262,14 @@ describe('RoundManagement', () => {
       const downloadBatchTallySheetsButton = screen.getByRole('button', {
         name: /Download Batch Tally Sheets/,
       })
-      expect(downloadBatchTallySheetsButton).not.toHaveAttribute('href')
-      expect(toast.error).toHaveBeenCalledTimes(1)
-      expect(Sentry.captureException).toHaveBeenCalledTimes(1)
+
+      act(() => {
+        userEvent.click(downloadBatchTallySheetsButton)
+      })
+      await waitFor(() => expect(toast.error).toHaveBeenCalledTimes(1))
+      await waitFor(() =>
+        expect(Sentry.captureException).toHaveBeenCalledTimes(1)
+      )
     })
   })
 
