@@ -1,18 +1,25 @@
 import React from 'react'
-import { render, screen, within, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { act, render, screen, within, waitFor } from '@testing-library/react'
 import { Intent } from '@blueprintjs/core'
+import { pdf } from '@react-pdf/renderer'
+import { QueryClientProvider } from 'react-query'
+import * as FileSaver from 'file-saver'
 import {
   jurisdictionMocks,
   auditSettings,
   roundMocks,
   auditBoardMocks,
+  contestMocks,
 } from '../useSetupMenuItems/_mocks'
 import { withMockFetch } from '../../testUtilities'
 import { aaApiCalls, jaApiCalls } from '../../_mocks'
 import Progress from './Progress'
 import { dummyBallots } from '../../AuditBoard/_mocks'
 import { batchesMocks } from '../../JurisdictionAdmin/_mocks'
+import { IBatch } from '../../JurisdictionAdmin/useBatchResults'
+import { IContest } from '../../../types'
+import { queryClient } from '../../../App'
 import * as utilities from '../../utilities'
 
 jest.mock('react-router', () => ({
@@ -34,6 +41,25 @@ jest.mock('jspdf', () => {
   }
 })
 window.URL.createObjectURL = jest.fn()
+window.open = jest.fn()
+
+jest.mock('@react-pdf/renderer', () => ({
+  ...jest.requireActual('@react-pdf/renderer'),
+
+  // Mock @react-pdf/renderer to generate HTML instead of PDF content for easier testing
+  Document: jest.fn(({ children }) => <div>{children}</div>),
+  Page: jest.fn(({ children }) => <div>{children}</div>),
+  Text: jest.fn(({ children }) => <div>{children}</div>),
+  View: jest.fn(({ children }) => <div>{children}</div>),
+
+  pdf: jest.fn(() => ({
+    toBlob: jest.fn(),
+  })),
+}))
+
+jest.mock('file-saver', () => ({
+  saveAs: jest.fn(),
+}))
 
 const expectStatusTag = (cell: HTMLElement, status: string, intent: Intent) => {
   const statusTag = within(cell)
@@ -43,7 +69,30 @@ const expectStatusTag = (cell: HTMLElement, status: string, intent: Intent) => {
   else expect(statusTag).toHaveClass(`bp3-intent-${intent}`)
 }
 
+// User-type agnostic API calls
+const apiCalls = {
+  getBatches: (response: { batches: IBatch[] }) => ({
+    url: '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/batches',
+    response,
+  }),
+  getJurisdictionContests: (response: { contests: IContest[] }) => ({
+    url: `/api/election/1/jurisdiction/jurisdiction-id-1/contest`,
+    response,
+  }),
+}
+
 describe('Progress screen', () => {
+  beforeEach(() => {
+    // Clear mock call counts, etc.
+    jest.clearAllMocks()
+
+    // Reset the pdf mock's implementation since some tests override the default mock
+    // implementation
+    ;(pdf as jest.Mock).mockImplementation(() => ({
+      toBlob: jest.fn(),
+    }))
+  })
+
   afterAll(() => jest.restoreAllMocks())
 
   it('shows ballot manifest upload status', async () => {
@@ -658,7 +707,7 @@ describe('Progress screen', () => {
     })
   })
 
-  it('shows the detail modal with JA file download buttons after the audit starts', async () => {
+  it('shows the detail modal with JA file download buttons after a ballot comparison audit starts', async () => {
     const expectedCalls = [
       aaApiCalls.getMapData,
       jaApiCalls.getAuditBoards(auditBoardMocks.unfinished),
@@ -689,7 +738,6 @@ describe('Progress screen', () => {
         name: 'Round 1 Data Entry',
       })
 
-      window.open = jest.fn()
       userEvent.click(
         within(modal).getByRole('button', {
           name: /Download Aggregated Ballot Retrieval List/,
@@ -734,6 +782,67 @@ describe('Progress screen', () => {
           'Audit Board Credentials - Jurisdiction 1 - Test Audit.pdf',
           { returnPromise: true }
         )
+      )
+    })
+  })
+
+  it('shows the detail modal with JA file download buttons after a batch audit starts', async () => {
+    const expectedCalls = [
+      aaApiCalls.getMapData,
+      jaApiCalls.getAuditBoards(auditBoardMocks.unfinished),
+      apiCalls.getBatches(batchesMocks.emptyInitial),
+      apiCalls.getBatches(batchesMocks.emptyInitial),
+      apiCalls.getJurisdictionContests({ contests: contestMocks.oneTargeted }),
+    ]
+    const blob = new Blob()
+    ;(pdf as jest.Mock).mockImplementation((doc: JSX.Element) => ({
+      toBlob: jest.fn(() => {
+        render(doc)
+        return Promise.resolve(blob)
+      }),
+    }))
+
+    await withMockFetch(expectedCalls, async () => {
+      render(
+        <QueryClientProvider client={queryClient}>
+          <Progress
+            auditSettings={auditSettings.batchComparisonAll}
+            jurisdictions={jurisdictionMocks.oneComplete}
+            round={roundMocks.singleComplete[0]}
+          />
+        </QueryClientProvider>
+      )
+
+      // Open detail modal
+      userEvent.click(
+        await screen.findByRole('button', { name: 'Jurisdiction 1' })
+      )
+      const modal = screen
+        .getByRole('heading', { name: 'Jurisdiction 1' })
+        .closest('div.bp3-dialog')! as HTMLElement
+      await within(modal).findByRole('heading', {
+        name: 'Round 1 Data Entry',
+      })
+
+      userEvent.click(
+        await within(modal).findByRole('button', {
+          name: /Download Aggregated Batch Retrieval List/,
+        })
+      )
+      expect(window.open).toHaveBeenCalledWith(
+        '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/batches/retrieval-list'
+      )
+
+      userEvent.click(
+        await within(modal).findByRole('button', {
+          name: /Download Batch Tally Sheets/,
+        })
+      )
+      await waitFor(() => expect(pdf).toHaveBeenCalledTimes(1))
+      await waitFor(() => expect(FileSaver.saveAs).toHaveBeenCalledTimes(1))
+      expect(FileSaver.saveAs).toHaveBeenCalledWith(
+        blob,
+        'batch-tally-sheets.pdf'
       )
     })
   })
