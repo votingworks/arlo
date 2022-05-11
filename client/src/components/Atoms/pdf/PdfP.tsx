@@ -1,12 +1,11 @@
 import React, { ReactNode } from 'react'
+import { Style } from '@react-pdf/types'
 import { Text } from '@react-pdf/renderer'
-
-import { PdfStyle } from './styles'
 
 interface IProps {
   children?: ReactNode
   lastInSection?: boolean
-  style?: PdfStyle
+  style?: Style
 }
 
 const PdfP = ({ children, lastInSection, style }: IProps): JSX.Element => {

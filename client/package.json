@@ -69,6 +69,7 @@
     "@blueprintjs/core": "^3.20.0",
     "@blueprintjs/table": "^3.8.1",
     "@react-pdf/renderer": "^2.1.1",
+    "@react-pdf/types": "^2.0.8",
     "@sentry/react": "^5.27.3",
     "@sentry/tracing": "^5.27.3",
     "@testing-library/jest-dom": "^5.8.0",

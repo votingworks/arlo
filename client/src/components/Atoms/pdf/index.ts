@@ -6,4 +6,3 @@ import PdfSignatureLine from './PdfSignatureLine'
 export { PdfCheckbox, PdfDividerLine, PdfP, PdfSignatureLine }
 export * from './PdfHeading'
 export * from './PdfTable'
-export * from './styles'

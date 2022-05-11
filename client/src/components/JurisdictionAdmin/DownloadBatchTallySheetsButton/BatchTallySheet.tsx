@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react'
 import { Page, StyleSheet, Text, View } from '@react-pdf/renderer'
+import { Style } from '@react-pdf/types'
 
 import { blankLine } from '../../../utils/string'
 import { ICandidate } from '../../../types'
@@ -10,7 +11,6 @@ import {
   PdfHeading,
   PdfSignatureLine,
   PdfSubHeading,
-  PdfStyle,
   PdfTable,
   PdfTd,
   PdfTr,
@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
 
 interface IPageSectionProps {
   children: ReactNode
-  style?: PdfStyle
+  style?: Style
 }
 
 const PageSection = ({ children, style }: IPageSectionProps): JSX.Element => {

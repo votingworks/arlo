@@ -1,13 +1,13 @@
 import React from 'react'
+import { Style } from '@react-pdf/types'
 import { Text, View } from '@react-pdf/renderer'
 
 import { blankLine } from '../../../utils/string'
-import { PdfStyle } from './styles'
 
 interface IProps {
   label?: string
   marginRight?: number | string
-  style?: PdfStyle
+  style?: Style
 }
 
 const PdfSignatureLine = ({
