@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react'
-import { AnchorButton } from '@blueprintjs/core'
-import { BlobProvider, Document } from '@react-pdf/renderer'
+import React, { useState } from 'react'
+import { Button } from '@blueprintjs/core'
+import { Document, pdf } from '@react-pdf/renderer'
 import { toast } from 'react-toastify'
+import * as FileSaver from 'file-saver'
 import * as Sentry from '@sentry/react'
 
 import BatchTallySheet from './BatchTallySheet'
@@ -9,29 +10,6 @@ import useContestsJurisdictionAdmin from '../useContestsJurisdictionAdmin'
 import { useBatches } from '../useBatchResults'
 
 const FILE_NAME = 'batch-tally-sheets.pdf'
-
-interface AnchorButtonErrorStateProps {
-  error: Error
-}
-
-const AnchorButtonErrorState = ({
-  error,
-}: AnchorButtonErrorStateProps): JSX.Element => {
-  // Render an error toast only once, when the component mounts
-  useEffect(() => {
-    toast.error('Error preparing batch tally sheets for download')
-  }, [])
-
-  useEffect(() => {
-    Sentry.captureException(error)
-  }, [error])
-
-  return (
-    <AnchorButton disabled icon="th">
-      Download Batch Tally Sheets
-    </AnchorButton>
-  )
-}
 
 interface IProps {
   electionId: string
@@ -48,6 +26,7 @@ const DownloadBatchTallySheetsButton = ({
 }: IProps): JSX.Element | null => {
   const batchesQuery = useBatches(electionId, jurisdictionId, roundId)
   const contests = useContestsJurisdictionAdmin(electionId, jurisdictionId)
+  const [isDownloading, setIsDownloading] = useState(false)
 
   if (!batchesQuery.isSuccess || !contests) {
     return null
@@ -57,38 +36,41 @@ const DownloadBatchTallySheetsButton = ({
   // Batch comparison audits only support a single contest
   const contest = contests[0]
 
-  return (
-    <BlobProvider
-      document={
-        <Document title={FILE_NAME}>
-          {batches.map(b => (
-            <BatchTallySheet
-              auditBoardName={b.auditBoard ? b.auditBoard.name : ''}
-              batchName={b.name}
-              choices={contest.choices}
-              jurisdictionName={jurisdictionName}
-              key={b.id}
-            />
-          ))}
-        </Document>
+  const batchTallySheets = (
+    <Document title={FILE_NAME}>
+      {batches.map(b => (
+        <BatchTallySheet
+          auditBoardName={b.auditBoard ? b.auditBoard.name : ''}
+          batchName={b.name}
+          choices={contest.choices}
+          jurisdictionName={jurisdictionName}
+          key={b.id}
+        />
+      ))}
+    </Document>
+  )
+
+  const onClick = async () => {
+    setIsDownloading(true)
+
+    // Use a setImmediate to prevent PDF rendering from blocking React rendering
+    setImmediate(async () => {
+      let blob: Blob | null = null
+      try {
+        blob = await pdf(batchTallySheets).toBlob()
+        FileSaver.saveAs(blob, FILE_NAME)
+      } catch (err) {
+        toast.error('Error preparing batch tally sheets for download')
+        Sentry.captureException(err)
       }
-    >
-      {({ error, loading, url }) => {
-        if (error) {
-          return <AnchorButtonErrorState error={error} />
-        }
-        return (
-          <AnchorButton
-            href={url || undefined}
-            download={FILE_NAME}
-            icon="th"
-            loading={loading}
-          >
-            Download Batch Tally Sheets
-          </AnchorButton>
-        )
-      }}
-    </BlobProvider>
+      setIsDownloading(false)
+    })
+  }
+
+  return (
+    <Button icon="th" loading={isDownloading} onClick={onClick}>
+      Download Batch Tally Sheets
+    </Button>
   )
 }
 
