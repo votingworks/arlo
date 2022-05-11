@@ -4,6 +4,7 @@ node_modules
 .mypy_cache
 .pytest_cache
 .coverage*
+.vscode/*.log
 
 # vim temp files
 *~
