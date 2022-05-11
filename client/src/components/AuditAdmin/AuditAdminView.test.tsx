@@ -1,12 +1,7 @@
 import React from 'react'
 import { waitFor, fireEvent, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import {
-  BrowserRouter as Router,
-  Router as RegularRouter,
-  useParams,
-  Route,
-} from 'react-router-dom'
+import { Route } from 'react-router-dom'
 import { QueryClientProvider } from 'react-query'
 import AuditAdminView from './AuditAdminView'
 import {
@@ -15,11 +10,7 @@ import {
   auditSettings,
   roundMocks,
 } from './useSetupMenuItems/_mocks'
-import {
-  routerTestProps,
-  withMockFetch,
-  renderWithRouter,
-} from '../testUtilities'
+import { withMockFetch, renderWithRouter } from '../testUtilities'
 import AuthDataProvider, { useAuthDataContext } from '../UserContext'
 import getJurisdictionFileStatus from './useSetupMenuItems/getJurisdictionFileStatus'
 import getRoundStatus from './useSetupMenuItems/getRoundStatus'

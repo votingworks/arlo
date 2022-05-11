@@ -7,6 +7,7 @@ import { screen, act } from '@testing-library/react'
 import { Route } from 'react-router-dom'
 import FakeTimers from '@sinonjs/fake-timers'
 import userEvent from '@testing-library/user-event'
+import { QueryClientProvider } from 'react-query'
 import getJurisdictionFileStatus from './useSetupMenuItems/getJurisdictionFileStatus'
 import getRoundStatus from './useSetupMenuItems/getRoundStatus'
 import AuthDataProvider, { useAuthDataContext } from '../UserContext'
@@ -16,7 +17,6 @@ import { aaApiCalls } from '../_mocks'
 import { auditSettings, roundMocks } from './useSetupMenuItems/_mocks'
 import { sampleSizeMock } from './Setup/Review/_mocks'
 import { queryClient } from '../../App'
-import { QueryClientProvider } from 'react-query'
 
 const getJurisdictionFileStatusMock = getJurisdictionFileStatus as jest.Mock
 const getRoundStatusMock = getRoundStatus as jest.Mock
