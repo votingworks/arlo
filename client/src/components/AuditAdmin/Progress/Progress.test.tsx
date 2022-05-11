@@ -1,23 +1,22 @@
 import React from 'react'
-import { render, screen, within, waitFor } from '@testing-library/react'
+import { screen, within, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Intent } from '@blueprintjs/core'
+import { QueryClientProvider } from 'react-query'
+import { Route } from 'react-router-dom'
 import {
   jurisdictionMocks,
   auditSettings,
   roundMocks,
   auditBoardMocks,
 } from '../useSetupMenuItems/_mocks'
-import { withMockFetch } from '../../testUtilities'
+import { withMockFetch, renderWithRouter } from '../../testUtilities'
 import { aaApiCalls, jaApiCalls } from '../../_mocks'
-import Progress from './Progress'
+import Progress, { IProgressProps } from './Progress'
 import { dummyBallots } from '../../AuditBoard/_mocks'
 import { batchesMocks } from '../../JurisdictionAdmin/_mocks'
 import * as utilities from '../../utilities'
-
-jest.mock('react-router', () => ({
-  useParams: jest.fn().mockReturnValue({ electionId: '1' }),
-}))
+import { queryClient } from '../../../App'
 
 // Borrowed from generateSheets.test.tsx
 const mockSavePDF = jest.fn()
@@ -43,19 +42,32 @@ const expectStatusTag = (cell: HTMLElement, status: string, intent: Intent) => {
   else expect(statusTag).toHaveClass(`bp3-intent-${intent}`)
 }
 
+const render = (props: Partial<IProgressProps> = {}) =>
+  renderWithRouter(
+    <QueryClientProvider client={queryClient}>
+      <Route
+        path="/election/:electionId/progress"
+        render={routeProps => (
+          <Progress
+            {...routeProps}
+            jurisdictions={jurisdictionMocks.oneManifest}
+            auditSettings={auditSettings.all}
+            round={null}
+            {...props}
+          />
+        )}
+      />
+    </QueryClientProvider>,
+    { route: '/election/1/progress' }
+  )
+
 describe('Progress screen', () => {
   afterAll(() => jest.restoreAllMocks())
 
   it('shows ballot manifest upload status', async () => {
     const expectedCalls = [aaApiCalls.getMapData]
     await withMockFetch(expectedCalls, async () => {
-      const { container } = render(
-        <Progress
-          jurisdictions={jurisdictionMocks.oneManifest}
-          auditSettings={auditSettings.all}
-          round={null}
-        />
-      )
+      const { container } = render()
 
       expect(container.querySelectorAll('.d3-component').length).toBe(1)
 
@@ -327,7 +339,7 @@ describe('Progress screen', () => {
         'href',
         '/api/election/1/jurisdiction/jurisdiction-id-2/cvrs/csv'
       )
-      within(cvrsCard).getByText('ClearBallot')
+      within(cvrsCard).getByText('(ClearBallot)')
     })
   })
 
