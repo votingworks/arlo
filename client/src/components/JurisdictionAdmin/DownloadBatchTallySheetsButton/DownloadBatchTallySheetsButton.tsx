@@ -68,7 +68,7 @@ const DownloadBatchTallySheetsButton = ({
   }
 
   return (
-    <Button icon="th" loading={isDownloading} onClick={onClick}>
+    <Button icon="document" loading={isDownloading} onClick={onClick}>
       Download Batch Tally Sheets
     </Button>
   )

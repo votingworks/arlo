@@ -833,13 +833,11 @@ describe('Progress screen', () => {
         '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/batches/retrieval-list'
       )
 
-      await act(async () => {
-        userEvent.click(
-          await within(modal).findByRole('button', {
-            name: /Download Batch Tally Sheets/,
-          })
-        )
-      })
+      userEvent.click(
+        await within(modal).findByRole('button', {
+          name: /Download Batch Tally Sheets/,
+        })
+      )
       await waitFor(() => expect(pdf).toHaveBeenCalledTimes(1))
       await waitFor(() => expect(FileSaver.saveAs).toHaveBeenCalledTimes(1))
       expect(FileSaver.saveAs).toHaveBeenCalledWith(

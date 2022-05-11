@@ -237,9 +237,7 @@ describe('RoundManagement', () => {
       })
       screen.getByRole('table') // Tested in BatchRoundDataEntry.test.tsx
 
-      act(() => {
-        userEvent.click(downloadBatchTallySheetsButton)
-      })
+      userEvent.click(downloadBatchTallySheetsButton)
       await waitFor(() => expect(pdf).toHaveBeenCalledTimes(1))
       await waitFor(() => expect(FileSaver.saveAs).toHaveBeenCalledTimes(1))
       expect(FileSaver.saveAs).toHaveBeenCalledWith(
