@@ -30,15 +30,11 @@ exports[`BatchTallySheet renders expected PDF content 1`] = `
     </div>
     <div>
       <div>
-        <div>
-          Was the container sealed when received by the audit board?
-            
-        </div>
-        <div />
-        <div>
-           
-          Yes
-        </div>
+        Was the container sealed when received by the audit board?  
+      </div>
+      <div />
+      <div>
+         Yes
       </div>
     </div>
     <div>
@@ -87,13 +83,11 @@ exports[`BatchTallySheet renders expected PDF content 1`] = `
       </div>
       <div>
         <div>
-          Was the container resealed by the audit board?
-            
+          Was the container resealed by the audit board?  
         </div>
         <div />
         <div>
-           
-          Yes
+           Yes
         </div>
       </div>
     </div>
@@ -127,15 +121,13 @@ exports[`BatchTallySheet renders expected PDF content 1`] = `
       <div>
         <div />
         <div>
-           
-          Recorded batch check-in
+           Recorded batch check-in
         </div>
       </div>
       <div>
         <div />
         <div>
-           
-          Entered tallies into Arlo
+           Entered tallies into Arlo
         </div>
       </div>
       <div>

@@ -35,7 +35,13 @@ interface IPdfTrProps {
  */
 export const PdfTr = ({ children }: IPdfTrProps): JSX.Element => {
   return (
-    <View style={{ display: 'flex', flexDirection: 'row', width: '100%' }}>
+    <View
+      style={{
+        display: 'flex',
+        flexDirection: 'row',
+        width: '100%',
+      }}
+    >
       {children}
     </View>
   )

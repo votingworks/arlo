@@ -1,5 +1,5 @@
 import React from 'react'
-import ReactPDF, { BlobProvider, Page } from '@react-pdf/renderer'
+import ReactPdf, { BlobProvider, Page } from '@react-pdf/renderer'
 import { toast } from 'react-toastify'
 import { screen, within } from '@testing-library/react'
 import { Route } from 'react-router-dom'
@@ -205,7 +205,7 @@ describe('RoundManagement', () => {
       apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
     ]
     ;(BlobProvider as jest.Mock).mockImplementation(
-      ({ children, document }: ReactPDF.BlobProviderProps) => {
+      ({ children, document }: ReactPdf.BlobProviderProps) => {
         return (
           <>
             {children({
@@ -269,7 +269,7 @@ describe('RoundManagement', () => {
     ]
     const error = new Error('PDF generation failed')
     ;(BlobProvider as jest.Mock).mockImplementation(
-      ({ children }: ReactPDF.BlobProviderProps) => {
+      ({ children }: ReactPdf.BlobProviderProps) => {
         return children({
           blob: null,
           error,

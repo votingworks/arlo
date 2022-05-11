@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { ReactNode } from 'react'
 import { Page, StyleSheet, Text, View } from '@react-pdf/renderer'
 
 import { blankLine } from '../../../utils/string'
@@ -6,7 +6,11 @@ import { ICandidate } from '../../../types'
 import {
   PdfCheckbox,
   PdfDividerLine,
+  PdfP,
+  PdfHeading,
   PdfSignatureLine,
+  PdfSubHeading,
+  PdfStyle,
   PdfTable,
   PdfTd,
   PdfTr,
@@ -21,21 +25,6 @@ const styles = StyleSheet.create({
   pageSection: {
     marginBottom: 24,
   },
-  heading: {
-    fontSize: 18,
-  },
-  subHeading: {
-    fontSize: 16,
-    marginTop: 10,
-  },
-  p: {
-    marginBottom: 10,
-    overflow: 'hidden',
-  },
-  pLastInSection: {
-    marginBottom: 0,
-    overflow: 'hidden',
-  },
   bold: {
     fontFamily: 'Helvetica-Bold', // @react-pdf comes pre-packaged with this font
   },
@@ -46,7 +35,28 @@ const styles = StyleSheet.create({
   overflowHidden: {
     overflow: 'hidden',
   },
+  withSmallBottomMargin: {
+    marginBottom: 10,
+  },
 })
+
+interface IPageSectionProps {
+  children: ReactNode
+  style?: PdfStyle
+}
+
+const PageSection = ({ children, style }: IPageSectionProps): JSX.Element => {
+  return (
+    <View
+      style={{
+        ...styles.pageSection,
+        ...style,
+      }}
+    >
+      {children}
+    </View>
+  )
+}
 
 interface IProps {
   auditBoardName: string
@@ -63,27 +73,28 @@ const BatchTallySheet = ({
 }: IProps): JSX.Element => {
   return (
     <Page style={styles.page} size="LETTER">
-      <View style={styles.pageSection}>
-        <Text style={styles.heading}>Audit Board Batch Tally Sheet</Text>
-        <Text style={styles.subHeading}>
+      <PageSection>
+        <PdfHeading>Audit Board Batch Tally Sheet</PdfHeading>
+        <PdfSubHeading>
           Batch Name: <Text style={styles.bold}>{batchName}</Text>
+        </PdfSubHeading>
+      </PageSection>
+
+      <PageSection>
+        <PdfP>Jurisdiction: {jurisdictionName}</PdfP>
+        <PdfP>Audit Board: {auditBoardName}</PdfP>
+        <PdfP lastInSection>Batch Type (Optional): {blankLine(20)}</PdfP>
+      </PageSection>
+
+      <PageSection style={styles.flexRow}>
+        <Text>
+          Was the container sealed when received by the audit board?&nbsp;&nbsp;
         </Text>
-      </View>
-      <View style={styles.pageSection}>
-        <Text style={styles.p}>Jurisdiction: {jurisdictionName}</Text>
-        <Text style={styles.p}>Audit Board: {auditBoardName}</Text>
-        <Text style={styles.pLastInSection}>
-          Batch Type (Optional): {blankLine(20)}
-        </Text>
-      </View>
-      <View style={styles.pageSection}>
-        <PdfCheckbox
-          fontSize={styles.page.fontSize}
-          textBeforeCheckbox="Was the container sealed when received by the audit board?"
-          textAfterCheckbox="Yes"
-        />
-      </View>
-      <View style={styles.pageSection}>
+        <PdfCheckbox fontSize={styles.page.fontSize} />
+        <Text>&nbsp;Yes</Text>
+      </PageSection>
+
+      <PageSection>
         <PdfTable>
           <PdfTr>
             <PdfTd>
@@ -103,41 +114,48 @@ const BatchTallySheet = ({
             </PdfTr>
           ))}
         </PdfTable>
-      </View>
-      <View style={styles.pageSection}>
-        <Text style={styles.p}>
+      </PageSection>
+
+      <PageSection>
+        <PdfP>
           When work is completed, return all ballots to the ballot container and
           seal the container.
-        </Text>
-        <PdfCheckbox
-          fontSize={styles.page.fontSize}
-          textBeforeCheckbox="Was the container resealed by the audit board?"
-          textAfterCheckbox="Yes"
+        </PdfP>
+        <View style={styles.flexRow}>
+          <Text>
+            Was the container resealed by the audit board?&nbsp;&nbsp;
+          </Text>
+          <PdfCheckbox fontSize={styles.page.fontSize} />
+          <Text>&nbsp;Yes</Text>
+        </View>
+      </PageSection>
+
+      <PageSection style={styles.flexRow}>
+        <PdfSignatureLine
+          label="(Audit Board Member)"
+          style={{ marginRight: 9 }}
         />
-      </View>
-      <View style={[styles.pageSection, styles.flexRow]}>
-        <PdfSignatureLine label="(Audit Board Member)" marginRight={9} />
         <PdfSignatureLine label="(Audit Board Member)" />
-      </View>
-      <View style={styles.pageSection}>
+      </PageSection>
+
+      <PageSection>
         <PdfDividerLine />
-      </View>
-      <View style={styles.pageSection}>
-        <Text style={[styles.p, styles.bold]}>Check-In/Out Station Steps:</Text>
-        <PdfCheckbox
-          fontSize={styles.page.fontSize}
-          marginBottom={styles.p.marginBottom}
-          textAfterCheckbox="Recorded batch check-in"
-        />
-        <PdfCheckbox
-          fontSize={styles.page.fontSize}
-          marginBottom={styles.p.marginBottom}
-          textAfterCheckbox="Entered tallies into Arlo"
-        />
-        <Text style={styles.pLastInSection}>
+      </PageSection>
+
+      <PageSection>
+        <PdfP style={styles.bold}>Check-In/Out Station Steps:</PdfP>
+        <View style={[styles.flexRow, styles.withSmallBottomMargin]}>
+          <PdfCheckbox fontSize={styles.page.fontSize} />
+          <Text>&nbsp;Recorded batch check-in</Text>
+        </View>
+        <View style={[styles.flexRow, styles.withSmallBottomMargin]}>
+          <PdfCheckbox fontSize={styles.page.fontSize} />
+          <Text>&nbsp;Entered tallies into Arlo</Text>
+        </View>
+        <PdfP lastInSection>
           {blankLine(5)} Initials of check-in/out station member
-        </Text>
-      </View>
+        </PdfP>
+      </PageSection>
     </Page>
   )
 }
