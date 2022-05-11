@@ -46,14 +46,14 @@ const DownloadBatchTallySheetsButton = ({
   jurisdictionName,
   roundId,
 }: IProps): JSX.Element | null => {
-  const batchesResp = useBatches(electionId, jurisdictionId, roundId)
+  const batchesQuery = useBatches(electionId, jurisdictionId, roundId)
   const contests = useContestsJurisdictionAdmin(electionId, jurisdictionId)
 
-  if (!batchesResp || !batchesResp.data || !contests || contests.length === 0) {
+  if (!batchesQuery.isSuccess || !contests) {
     return null
   }
 
-  const { batches } = batchesResp.data
+  const { batches } = batchesQuery.data
   // Batch comparison audits only support a single contest
   const contest = contests[0]
 
