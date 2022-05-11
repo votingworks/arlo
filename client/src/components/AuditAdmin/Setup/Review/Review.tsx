@@ -39,7 +39,10 @@ import { ErrorLabel } from '../../../Atoms/Form/_helpers'
 import { IContest } from '../../../../types'
 import { sum } from '../../../../utils/number'
 import useAuditSettings from '../../../useAuditSettings'
-import useJurisdictions, { IJurisdiction } from '../../../useJurisdictions'
+import {
+  useJurisdictionsDeprecated,
+  IJurisdiction,
+} from '../../../useJurisdictions'
 import {
   useJurisdictionsFile,
   useStandardizedContestsFile,
@@ -74,7 +77,7 @@ const Review: React.FC<IProps> = ({
 }: IProps) => {
   const { electionId } = useParams<{ electionId: string }>()
   const [auditSettings] = useAuditSettings(electionId)
-  const jurisdictions = useJurisdictions(electionId)
+  const jurisdictions = useJurisdictionsDeprecated(electionId)
   const [jurisdictionsFile] = useJurisdictionsFile(electionId)
   const [standardizedContestsFile] = useStandardizedContestsFile(
     electionId,

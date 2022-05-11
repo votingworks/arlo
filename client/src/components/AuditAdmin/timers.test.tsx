@@ -15,6 +15,8 @@ import { renderWithRouter, withMockFetch } from '../testUtilities'
 import { aaApiCalls } from '../_mocks'
 import { auditSettings, roundMocks } from './useSetupMenuItems/_mocks'
 import { sampleSizeMock } from './Setup/Review/_mocks'
+import { queryClient } from '../../App'
+import { QueryClientProvider } from 'react-query'
 
 const getJurisdictionFileStatusMock = getJurisdictionFileStatus as jest.Mock
 const getRoundStatusMock = getRoundStatus as jest.Mock
@@ -33,9 +35,11 @@ const AuditAdminViewWithAuth: React.FC = () => {
 
 const renderWithRoute = (route: string, component: ReactElement) =>
   renderWithRouter(
-    <Route path="/election/:electionId/:view">
-      <AuthDataProvider>{component}</AuthDataProvider>
-    </Route>,
+    <QueryClientProvider client={queryClient}>
+      <Route path="/election/:electionId/:view">
+        <AuthDataProvider>{component}</AuthDataProvider>
+      </Route>
+    </QueryClientProvider>,
     {
       route,
     }
@@ -61,6 +65,7 @@ describe('timers', () => {
       ...loadEach,
       aaApiCalls.getMapData,
       ...loadEach,
+      aaApiCalls.getMapData,
     ]
     await withMockFetch(expectedCalls, async () => {
       renderWithRoute('/election/1/progress', <AuditAdminViewWithAuth />)
@@ -113,11 +118,11 @@ describe('timers', () => {
       ...loadEach,
       aaApiCalls.getSettings(auditSettings.all),
       aaApiCalls.getJurisdictionFile,
+      ...loadEach,
       aaApiCalls.getSettings(auditSettings.all),
       aaApiCalls.getJurisdictions,
       aaApiCalls.getJurisdictionFile,
       aaApiCalls.getContests,
-      ...loadEach,
       aaApiCalls.getSampleSizes,
       { ...aaApiCalls.getSampleSizes, response: sampleSizeMock.ballotPolling },
     ]
