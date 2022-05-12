@@ -8,7 +8,7 @@ import relativeStages from './_mocks'
 import { contestMocks } from './Contests/_mocks'
 import useContests from '../../useContests'
 import useAuditSettings from '../../useAuditSettings'
-import useJurisdictions from '../../useJurisdictions'
+import { useJurisdictionsDeprecated } from '../../useJurisdictions'
 
 const apiMock: jest.SpyInstance<
   ReturnType<typeof utilities.api>,
@@ -16,7 +16,7 @@ const apiMock: jest.SpyInstance<
 > = jest.spyOn(utilities, 'api').mockImplementation()
 apiMock.mockImplementation(async () => {})
 
-const useJurisdictionsMock = useJurisdictions as jest.Mock
+const useJurisdictionsMock = useJurisdictionsDeprecated as jest.Mock
 jest.mock('../../useJurisdictions')
 useJurisdictionsMock.mockImplementation(() => jurisdictionMocks.noManifests)
 

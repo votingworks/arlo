@@ -45,17 +45,17 @@ const totalFooter = <T extends object>(headerName: string) => (
   info: TableInstance<T>
 ) => sum(info.rows.map(row => row.values[headerName])).toLocaleString()
 
-interface IProps {
+export interface IProgressProps {
   jurisdictions: IJurisdiction[]
   auditSettings: IAuditSettings
   round: IRound | null
 }
 
-const Progress: React.FC<IProps> = ({
+const Progress: React.FC<IProgressProps> = ({
   jurisdictions,
   auditSettings,
   round,
-}: IProps) => {
+}: IProgressProps) => {
   const { electionId } = useParams<{ electionId: string }>()
   const [filter, setFilter] = useState<string>('')
   const [isShowingUnique, setIsShowingUnique] = useState<boolean>(true)

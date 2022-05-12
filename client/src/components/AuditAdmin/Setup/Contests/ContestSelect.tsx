@@ -10,7 +10,7 @@ import FormButtonBar from '../../../Atoms/Form/FormButtonBar'
 import FormButton from '../../../Atoms/Form/FormButton'
 import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
 import useStandardizedContests from '../../../useStandardizedContests'
-import useJurisdictions from '../../../useJurisdictions'
+import { useJurisdictionsDeprecated } from '../../../useJurisdictions'
 import { Table, FilterInput } from '../../../Atoms/Table'
 import { IAuditSettings } from '../../../useAuditSettings'
 import useContestsBallotComparison, {
@@ -45,7 +45,7 @@ const ContestSelect: React.FC<IProps> = ({
   const standardizedContests = useStandardizedContests(electionId)
   const [contests, updateContests] = useContestsBallotComparison(electionId)
   const [filter, setFilter] = useState('')
-  const jurisdictions = useJurisdictions(electionId)
+  const jurisdictions = useJurisdictionsDeprecated(electionId)
 
   if (!standardizedContests || !jurisdictions || !contests) return null // Still loading
 

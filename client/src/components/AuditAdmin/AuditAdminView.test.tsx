@@ -1,11 +1,8 @@
 import React from 'react'
-import { waitFor, fireEvent, render, screen } from '@testing-library/react'
+import { waitFor, fireEvent, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import {
-  BrowserRouter as Router,
-  Router as RegularRouter,
-  useParams,
-} from 'react-router-dom'
+import { Route, RouteProps } from 'react-router-dom'
+import { QueryClientProvider } from 'react-query'
 import AuditAdminView from './AuditAdminView'
 import {
   jurisdictionFileMocks,
@@ -13,7 +10,7 @@ import {
   auditSettings,
   roundMocks,
 } from './useSetupMenuItems/_mocks'
-import { routerTestProps, withMockFetch } from '../testUtilities'
+import { withMockFetch, renderWithRouter } from '../testUtilities'
 import AuthDataProvider, { useAuthDataContext } from '../UserContext'
 import getJurisdictionFileStatus from './useSetupMenuItems/getJurisdictionFileStatus'
 import getRoundStatus from './useSetupMenuItems/getRoundStatus'
@@ -23,20 +20,10 @@ import {
   jurisdictionErrorFile,
   standardizedContestsFile,
 } from './Setup/Participants/_mocks'
+import { queryClient } from '../../App'
 
 const getJurisdictionFileStatusMock = getJurisdictionFileStatus as jest.Mock
 const getRoundStatusMock = getRoundStatus as jest.Mock
-
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'), // use actual for all non-hook parts
-  useRouteMatch: jest.fn(),
-  useParams: jest.fn(),
-}))
-const paramsMock = useParams as jest.Mock
-paramsMock.mockReturnValue({
-  electionId: '1',
-  view: 'setup',
-})
 
 jest.mock('./useSetupMenuItems/getJurisdictionFileStatus')
 jest.mock('./useSetupMenuItems/getRoundStatus')
@@ -45,21 +32,27 @@ getRoundStatusMock.mockReturnValue(false)
 
 jest.mock('axios')
 
-afterEach(() => {
-  paramsMock.mockReturnValue({
-    electionId: '1',
-    view: 'setup',
-  })
-})
+// AuditAdminView will only be rendered once the user is logged in, so
+// we simulate that.
+const AuditAdminViewWithAuth = (props: RouteProps) => {
+  const auth = useAuthDataContext()
+  return auth ? <AuditAdminView {...props} /> : null
+}
+
+const render = (view: string = 'setup') =>
+  renderWithRouter(
+    <QueryClientProvider client={queryClient}>
+      <AuthDataProvider>
+        <Route
+          path="/election/:electionId/:view?"
+          render={routeProps => <AuditAdminViewWithAuth {...routeProps} />}
+        />
+      </AuthDataProvider>
+    </QueryClientProvider>,
+    { route: `/election/1/${view}` }
+  )
 
 describe('AA setup flow', () => {
-  // AuditAdminView will only be rendered once the user is logged in, so
-  // we simulate that.
-  const AuditAdminViewWithAuth: React.FC = () => {
-    const auth = useAuthDataContext()
-    return auth ? <AuditAdminView /> : null
-  }
-
   const loadEach = [
     aaApiCalls.getRounds([]),
     aaApiCalls.getJurisdictions,
@@ -74,17 +67,11 @@ describe('AA setup flow', () => {
       ...loadEach,
       aaApiCalls.getSettings(auditSettings.all),
       aaApiCalls.getJurisdictionFile,
-      aaApiCalls.getSettings(auditSettings.all),
       ...loadEach,
+      aaApiCalls.getSettings(auditSettings.all),
     ]
     await withMockFetch(expectedCalls, async () => {
-      const { queryAllByText, getByText } = render(
-        <AuthDataProvider>
-          <Router>
-            <AuditAdminViewWithAuth />
-          </Router>
-        </AuthDataProvider>
-      )
+      const { queryAllByText, getByText } = render()
 
       await waitFor(() => {
         expect(queryAllByText('Participants').length).toBe(2)
@@ -107,13 +94,7 @@ describe('AA setup flow', () => {
       aaApiCalls.getJurisdictionFile,
     ]
     await withMockFetch(expectedCalls, async () => {
-      const { container, queryAllByText } = render(
-        <AuthDataProvider>
-          <Router>
-            <AuditAdminViewWithAuth />
-          </Router>
-        </AuthDataProvider>
-      )
+      const { container, queryAllByText } = render()
 
       await waitFor(() => {
         expect(queryAllByText('Participants').length).toBe(2)
@@ -131,13 +112,7 @@ describe('AA setup flow', () => {
       aaApiCalls.getJurisdictionFileWithResponse(jurisdictionFileMocks.empty),
     ]
     await withMockFetch(expectedCalls, async () => {
-      const { queryAllByText } = render(
-        <AuthDataProvider>
-          <Router>
-            <AuditAdminViewWithAuth />
-          </Router>
-        </AuthDataProvider>
-      )
+      const { queryAllByText } = render()
 
       await waitFor(() => {
         expect(queryAllByText('Participants').length).toBe(2)
@@ -155,13 +130,7 @@ describe('AA setup flow', () => {
       aaApiCalls.getJurisdictionFile,
     ]
     await withMockFetch(expectedCalls, async () => {
-      const { queryByText, queryAllByText } = render(
-        <AuthDataProvider>
-          <Router>
-            <AuditAdminViewWithAuth />
-          </Router>
-        </AuthDataProvider>
-      )
+      const { queryByText, queryAllByText } = render()
 
       await waitFor(() => {
         expect(queryAllByText('Participants').length).toBe(2)
@@ -177,19 +146,14 @@ describe('AA setup flow', () => {
       ...loadEach,
       aaApiCalls.getSettings(auditSettings.blank),
       aaApiCalls.getJurisdictionFileWithResponse(jurisdictionFileMocks.empty),
+      aaApiCalls.getJurisdictions,
       aaApiCalls.putJurisdictionFile,
       aaApiCalls.getJurisdictionFileWithResponse(
         jurisdictionFileMocks.processed
       ),
     ]
     await withMockFetch(expectedCalls, async () => {
-      const { queryAllByText } = render(
-        <AuthDataProvider>
-          <Router>
-            <AuditAdminViewWithAuth />
-          </Router>
-        </AuthDataProvider>
-      )
+      const { queryAllByText } = render()
 
       await waitFor(() => {
         expect(queryAllByText('Participants').length).toBe(2)
@@ -214,17 +178,12 @@ describe('AA setup flow', () => {
       ...loadEach,
       aaApiCalls.getSettings(auditSettings.blank),
       aaApiCalls.getJurisdictionFileWithResponse(jurisdictionFileMocks.empty),
+      aaApiCalls.getJurisdictions,
       aaApiCalls.putJurisdictionErrorFile,
       aaApiCalls.getJurisdictionFileWithResponse(jurisdictionFileMocks.errored),
     ]
     await withMockFetch(expectedCalls, async () => {
-      const { queryAllByText } = render(
-        <AuthDataProvider>
-          <Router>
-            <AuditAdminViewWithAuth />
-          </Router>
-        </AuthDataProvider>
-      )
+      const { queryAllByText } = render()
 
       await waitFor(() => {
         expect(queryAllByText('Participants').length).toBe(2)
@@ -252,19 +211,14 @@ describe('AA setup flow', () => {
       aaApiCalls.getStandardizedContestsFileWithResponse(
         standardizedContestsFileMocks.empty
       ),
+      aaApiCalls.getJurisdictions,
       aaApiCalls.putStandardizedContestsFile,
       aaApiCalls.getStandardizedContestsFileWithResponse(
         standardizedContestsFileMocks.processed
       ),
     ]
     await withMockFetch(expectedCalls, async () => {
-      render(
-        <AuthDataProvider>
-          <Router>
-            <AuditAdminViewWithAuth />
-          </Router>
-        </AuthDataProvider>
-      )
+      render()
 
       // check file upload of jurisdiction
       await screen.findByText(/Uploaded/)
@@ -293,24 +247,12 @@ describe('AA setup flow', () => {
       ...loadAfterLaunch,
       ...loadAfterLaunch,
       ...loadAfterLaunch,
+      aaApiCalls.getMapData,
     ]
-    const routeProps = routerTestProps('/election/1', { electionId: '1' })
     await withMockFetch(expectedCalls, async () => {
-      paramsMock.mockReturnValue({
-        electionId: '1',
-        view: '',
-      })
-      render(
-        <AuthDataProvider>
-          <RegularRouter {...routeProps}>
-            <AuditAdminViewWithAuth />
-          </RegularRouter>
-        </AuthDataProvider>
-      )
+      const { history } = render('')
       await waitFor(() => {
-        expect(routeProps.history.location.pathname).toEqual(
-          '/election/1/progress'
-        )
+        expect(history.location.pathname).toEqual('/election/1/progress')
       })
     })
   })
@@ -336,13 +278,7 @@ describe('AA setup flow', () => {
       aaApiCalls.getRounds(roundMocks.empty),
     ]
     await withMockFetch(expectedCalls, async () => {
-      render(
-        <AuthDataProvider>
-          <Router>
-            <AuditAdminViewWithAuth />
-          </Router>
-        </AuthDataProvider>
-      )
+      render()
       await screen.findByRole('heading', {
         name: 'Arlo could not draw the sample',
       })

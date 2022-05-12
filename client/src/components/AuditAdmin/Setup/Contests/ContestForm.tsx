@@ -22,7 +22,7 @@ import FormButton from '../../../Atoms/Form/FormButton'
 import schema from './schema'
 import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
 import useContests from '../../../useContests'
-import useJurisdictions from '../../../useJurisdictions'
+import { useJurisdictionsDeprecated } from '../../../useJurisdictions'
 import { IContest, ICandidate } from '../../../../types'
 import DropdownCheckboxList from './DropdownCheckboxList'
 import Card from '../../../Atoms/SpacedCard'
@@ -82,7 +82,7 @@ const ContestForm: React.FC<IProps> = ({
 
   const { electionId } = useParams<{ electionId: string }>()
   const [contests, updateContests] = useContests(electionId, auditType)
-  const jurisdictions = useJurisdictions(electionId)
+  const jurisdictions = useJurisdictionsDeprecated(electionId)
   const standardizedContests = useStandardizedContests(electionId)
 
   if ((isHybrid && !standardizedContests) || !jurisdictions || !contests)
