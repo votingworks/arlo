@@ -1,10 +1,4 @@
-import { blankLine, pluralize } from './string'
-
-test('blankLine', () => {
-  expect(blankLine(0)).toEqual('')
-  expect(blankLine(1)).toEqual('_')
-  expect(blankLine(10)).toEqual('__________')
-})
+import { pluralize } from './string'
 
 test('pluralize', () => {
   expect(pluralize('word', 0)).toEqual('words')
