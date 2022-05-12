@@ -1,7 +1,7 @@
 import React from 'react'
 import { waitFor, fireEvent, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { Route } from 'react-router-dom'
+import { Route, RouteProps } from 'react-router-dom'
 import { QueryClientProvider } from 'react-query'
 import AuditAdminView from './AuditAdminView'
 import {
@@ -34,8 +34,7 @@ jest.mock('axios')
 
 // AuditAdminView will only be rendered once the user is logged in, so
 // we simulate that.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const AuditAdminViewWithAuth = (props: any) => {
+const AuditAdminViewWithAuth = (props: RouteProps) => {
   const auth = useAuthDataContext()
   return auth ? <AuditAdminView {...props} /> : null
 }
