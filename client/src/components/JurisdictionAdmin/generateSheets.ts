@@ -83,7 +83,6 @@ export const downloadLabels = async (
         })
       })
     })
-    labels.autoPrint()
     await labels.save(
       `Round ${round.roundNum} Labels - ${jurisdictionName} - ${auditName}.pdf`,
       { returnPromise: true }
@@ -133,7 +132,6 @@ export const downloadPlaceholders = async (
       })
       pageCount += 1
     })
-    placeholders.autoPrint()
     await placeholders.save(
       `Round ${round.roundNum} Placeholders - ${jurisdictionName} - ${auditName}.pdf`,
       { returnPromise: true }
@@ -200,7 +198,6 @@ export const downloadAuditBoardCredentials = async (
       auditBoardCreds.text(`${name}: No ballots`, 20, i * 10 + 20)
     })
   }
-  auditBoardCreds.autoPrint()
   await auditBoardCreds.save(
     `Audit Board Credentials - ${jurisdictionName} - ${auditName}.pdf`,
     { returnPromise: true }
