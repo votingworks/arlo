@@ -124,7 +124,7 @@ export const auditSettings = mockOfType<IAuditSettings>()({
   ballotComparisonAll: {
     state: 'AL',
     electionName: 'Election Name',
-    online: false,
+    online: true,
     randomSeed: '12345',
     riskLimit: 10,
     auditType: 'BALLOT_COMPARISON',
