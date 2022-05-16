@@ -1,7 +1,10 @@
 import React from 'react'
-import { screen } from '@testing-library/react'
+import { waitFor, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { Route } from 'react-router-dom'
 import { QueryClientProvider } from 'react-query'
+import { toast } from 'react-toastify'
+import * as Sentry from '@sentry/react'
 import {
   roundMocks,
   batchesMocks,
@@ -24,6 +27,27 @@ import {
   auditBoardMocks,
   contestMocks,
 } from '../AuditAdmin/useSetupMenuItems/_mocks'
+
+const mockSavePDF = jest.fn()
+jest.mock('jspdf', () => {
+  const { jsPDF } = jest.requireActual('jspdf')
+  return function mockJsPDF() {
+    return {
+      ...new jsPDF({ format: 'letter' }),
+      save: mockSavePDF,
+    }
+  }
+})
+
+jest.mock('react-toastify', () => ({
+  toast: {
+    error: jest.fn(),
+  },
+}))
+
+jest.mock('@sentry/react', () => ({
+  captureException: jest.fn(),
+}))
 
 const renderView = (props: IRoundManagementProps) =>
   renderWithRouter(
@@ -68,6 +92,11 @@ const apiCalls = {
 }
 
 describe('RoundManagement', () => {
+  beforeEach(() => {
+    // Clear mock call counts, etc.
+    jest.clearAllMocks()
+  })
+
   it('renders audit setup with batch audit', async () => {
     const expectedCalls = [
       apiCalls.getSettings(auditSettings.batchComparisonAll),
@@ -165,17 +194,62 @@ describe('RoundManagement', () => {
       apiCalls.getSettings(auditSettings.batchComparisonAll),
       jaApiCalls.getUser,
       apiCalls.getBatches(batchesMocks.emptyInitial),
-      apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
       apiCalls.getBatches(batchesMocks.emptyInitial),
+      apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
+      apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView({
-        round: roundMocks.incomplete,
         auditBoards: auditBoardMocks.unfinished,
         createAuditBoards: jest.fn(),
+        round: roundMocks.incomplete,
       })
-      await screen.findByText('Download Aggregated Batch Retrieval List')
+
+      await screen.findByRole('button', {
+        name: /Download Aggregated Batch Retrieval List/,
+      })
+
+      userEvent.click(
+        await screen.findByRole('button', {
+          name: /Download Batch Tally Sheets/,
+        })
+      )
+      await waitFor(() =>
+        expect(mockSavePDF).toHaveBeenCalledWith('Batch Tally Sheets.pdf', {
+          returnPromise: true,
+        })
+      )
+
       screen.getByRole('table') // Tested in BatchRoundDataEntry.test.tsx
+    })
+  })
+
+  it('handles failures to generate batch tally sheets PDF', async () => {
+    const expectedCalls = [
+      apiCalls.getSettings(auditSettings.batchComparisonAll),
+      jaApiCalls.getUser,
+      apiCalls.getBatches(batchesMocks.emptyInitial),
+      apiCalls.getBatches(batchesMocks.emptyInitial),
+      apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
+      apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
+    ]
+    mockSavePDF.mockImplementationOnce(() => Promise.reject(new Error('Whoa!')))
+    await withMockFetch(expectedCalls, async () => {
+      renderView({
+        auditBoards: auditBoardMocks.unfinished,
+        createAuditBoards: jest.fn(),
+        round: roundMocks.incomplete,
+      })
+
+      userEvent.click(
+        await screen.findByRole('button', {
+          name: /Download Batch Tally Sheets/,
+        })
+      )
+      await waitFor(() => expect(toast.error).toHaveBeenCalledTimes(1))
+      await waitFor(() =>
+        expect(Sentry.captureException).toHaveBeenCalledTimes(1)
+      )
     })
   })
 

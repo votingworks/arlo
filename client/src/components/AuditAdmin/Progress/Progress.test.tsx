@@ -9,6 +9,7 @@ import {
   auditSettings,
   roundMocks,
   auditBoardMocks,
+  contestMocks,
 } from '../useSetupMenuItems/_mocks'
 import { withMockFetch, renderWithRouter } from '../../testUtilities'
 import { aaApiCalls, jaApiCalls } from '../../_mocks'
@@ -17,6 +18,8 @@ import { dummyBallots } from '../../AuditBoard/_mocks'
 import { batchesMocks } from '../../JurisdictionAdmin/_mocks'
 import * as utilities from '../../utilities'
 import { queryClient } from '../../../App'
+import { IBatch } from '../../JurisdictionAdmin/useBatchResults'
+import { IContest } from '../../../types'
 
 // Borrowed from generateSheets.test.tsx
 const mockSavePDF = jest.fn()
@@ -33,6 +36,7 @@ jest.mock('jspdf', () => {
   }
 })
 window.URL.createObjectURL = jest.fn()
+window.open = jest.fn()
 
 const expectStatusTag = (cell: HTMLElement, status: string, intent: Intent) => {
   const statusTag = within(cell)
@@ -40,6 +44,18 @@ const expectStatusTag = (cell: HTMLElement, status: string, intent: Intent) => {
     .closest('.bp3-tag') as HTMLElement
   if (intent === 'none') expect(statusTag.className).not.toMatch(/bp3-intent/)
   else expect(statusTag).toHaveClass(`bp3-intent-${intent}`)
+}
+
+// User-type agnostic API calls
+const apiCalls = {
+  getBatches: (response: { batches: IBatch[] }) => ({
+    url: '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/batches',
+    response,
+  }),
+  getJurisdictionContests: (response: { contests: IContest[] }) => ({
+    url: `/api/election/1/jurisdiction/jurisdiction-id-1/contest`,
+    response,
+  }),
 }
 
 const render = (props: Partial<IProgressProps> = {}) =>
@@ -62,6 +78,11 @@ const render = (props: Partial<IProgressProps> = {}) =>
   )
 
 describe('Progress screen', () => {
+  beforeEach(() => {
+    // Clear mock call counts, etc.
+    jest.clearAllMocks()
+  })
+
   afterAll(() => jest.restoreAllMocks())
 
   it('shows ballot manifest upload status', async () => {
@@ -639,7 +660,7 @@ describe('Progress screen', () => {
     })
   })
 
-  it('shows the detail modal with JA file download buttons after the audit starts', async () => {
+  it('shows the detail modal with JA file download buttons after a ballot comparison audit starts', async () => {
     const expectedCalls = [
       aaApiCalls.getMapData,
       jaApiCalls.getAuditBoards(auditBoardMocks.unfinished),
@@ -667,7 +688,6 @@ describe('Progress screen', () => {
         name: 'Round 1 Data Entry',
       })
 
-      window.open = jest.fn()
       userEvent.click(
         within(modal).getByRole('button', {
           name: /Download Aggregated Ballot Retrieval List/,
@@ -712,6 +732,54 @@ describe('Progress screen', () => {
           'Audit Board Credentials - Jurisdiction 1 - Test Audit.pdf',
           { returnPromise: true }
         )
+      )
+    })
+  })
+
+  it('shows the detail modal with JA file download buttons after a batch audit starts', async () => {
+    const expectedCalls = [
+      aaApiCalls.getMapData,
+      jaApiCalls.getAuditBoards(auditBoardMocks.unfinished),
+      apiCalls.getBatches(batchesMocks.emptyInitial),
+      apiCalls.getBatches(batchesMocks.emptyInitial),
+      apiCalls.getJurisdictionContests({ contests: contestMocks.oneTargeted }),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      render({
+        auditSettings: auditSettings.batchComparisonAll,
+        jurisdictions: jurisdictionMocks.oneComplete,
+        round: roundMocks.singleComplete[0],
+      })
+
+      // Open detail modal
+      userEvent.click(
+        await screen.findByRole('button', { name: 'Jurisdiction 1' })
+      )
+      const modal = screen
+        .getByRole('heading', { name: 'Jurisdiction 1' })
+        .closest('div.bp3-dialog')! as HTMLElement
+      await within(modal).findByRole('heading', {
+        name: 'Round 1 Data Entry',
+      })
+
+      userEvent.click(
+        await within(modal).findByRole('button', {
+          name: /Download Aggregated Batch Retrieval List/,
+        })
+      )
+      expect(window.open).toHaveBeenCalledWith(
+        '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/batches/retrieval-list'
+      )
+
+      userEvent.click(
+        await within(modal).findByRole('button', {
+          name: /Download Batch Tally Sheets/,
+        })
+      )
+      await waitFor(() =>
+        expect(mockSavePDF).toHaveBeenCalledWith('Batch Tally Sheets.pdf', {
+          returnPromise: true,
+        })
       )
     })
   })
