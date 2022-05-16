@@ -207,3 +207,10 @@ export const findAndCloseToast = async (expectedContent: string) => {
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   )
 }
+
+// Enforces the value type for an object with values of type Mock, while
+// inferring the keys. This allows for good autocompletion of mocks in tests
+// while still enforcing their type.
+// Example: const mockNumbers = mockOfType<number>()({ 'one': 1, 'two': 2 })
+export const mockOfType = <T,>() => <Mock,>(mock: { [K in keyof Mock]: T }) =>
+  mock
