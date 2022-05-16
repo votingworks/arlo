@@ -1143,7 +1143,7 @@ def clear_cvr_data(jurisdiction: Jurisdiction):
 @api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/cvrs", methods=["PUT"],
 )
-@restrict_access([UserType.JURISDICTION_ADMIN])
+@restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
 def upload_cvrs(
     election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
@@ -1193,7 +1193,7 @@ def upload_cvrs(
 @api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/cvrs", methods=["GET"],
 )
-@restrict_access([UserType.JURISDICTION_ADMIN])
+@restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
 def get_cvrs(
     election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
 ):
@@ -1222,7 +1222,7 @@ def download_cvr_file(
 @api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/cvrs", methods=["DELETE"],
 )
-@restrict_access([UserType.JURISDICTION_ADMIN])
+@restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
 def clear_cvrs(
     election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):

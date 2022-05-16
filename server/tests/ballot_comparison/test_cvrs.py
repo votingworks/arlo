@@ -319,52 +319,6 @@ def test_dominion_cvr_unique_voting_identifier(
     )
 
 
-def test_cvrs_replace(
-    client: FlaskClient,
-    election_id: str,
-    jurisdiction_ids: List[str],
-    manifests,  # pylint: disable=unused-argument
-):
-    set_logged_in_user(
-        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
-    )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={
-            "cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",),
-            "cvrFileType": "DOMINION",
-        },
-    )
-    assert_ok(rv)
-
-    file_id = Jurisdiction.query.get(jurisdiction_ids[0]).cvr_file_id
-
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={
-            "cvrs": (
-                io.BytesIO("\n".join(TEST_CVRS.splitlines()[:-2]).encode()),
-                "cvrs.csv",
-            ),
-            "cvrFileType": "DOMINION",
-        },
-    )
-    assert_ok(rv)
-
-    # The old file should have been deleted
-    jurisdiction = Jurisdiction.query.get(jurisdiction_ids[0])
-    assert File.query.get(file_id) is None
-    assert jurisdiction.cvr_file_id != file_id
-
-    cvr_ballots = (
-        CvrBallot.query.join(Batch)
-        .filter_by(jurisdiction_id=jurisdiction_ids[0])
-        .order_by(CvrBallot.imprinted_id)
-        .all()
-    )
-    assert len(cvr_ballots) == len(TEST_CVRS.splitlines()) - 4 - 2
-
-
 def test_cvrs_clear(
     client: FlaskClient,
     election_id: str,
@@ -412,6 +366,62 @@ def test_cvrs_clear(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs/csv"
     )
     assert rv.status_code == 404
+
+
+def test_cvrs_replace_as_audit_admin(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    manifests,  # pylint: disable=unused-argument
+):
+    # Check that AA can also get/put/clear batch tallies
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
+        data={
+            "cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",),
+            "cvrFileType": "DOMINION",
+        },
+    )
+    assert_ok(rv)
+
+    file_id = Jurisdiction.query.get(jurisdiction_ids[0]).cvr_file_id
+
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
+        data={
+            "cvrs": (
+                io.BytesIO("\n".join(TEST_CVRS.splitlines()[:-2]).encode()),
+                "cvrs.csv",
+            ),
+            "cvrFileType": "DOMINION",
+        },
+    )
+    assert_ok(rv)
+
+    # The old file should have been deleted
+    jurisdiction = Jurisdiction.query.get(jurisdiction_ids[0])
+    assert File.query.get(file_id) is None
+    assert jurisdiction.cvr_file_id != file_id
+
+    cvr_ballots = (
+        CvrBallot.query.join(Batch)
+        .filter_by(jurisdiction_id=jurisdiction_ids[0])
+        .order_by(CvrBallot.imprinted_id)
+        .all()
+    )
+    assert len(cvr_ballots) == len(TEST_CVRS.splitlines()) - 4 - 2
+
+    # Now clear the CVRs and check they are deleted
+    rv = client.delete(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
+    )
+    assert json.loads(rv.data) == {"file": None, "processing": None}
 
 
 def test_cvrs_upload_missing_file(
