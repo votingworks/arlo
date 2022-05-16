@@ -1,7 +1,11 @@
+import autoTable from 'jspdf-autotable'
 import jsPDF from 'jspdf'
-import { IAuditBoard } from '../useAuditBoards'
 import { getBallots, IBallot } from './useBallots'
+import { IAuditBoard } from '../useAuditBoards'
+import { IBatch } from './useBatchResults'
+import { ICandidate } from '../../types'
 import { IRound } from '../AuditAdmin/useRoundsAuditAdmin'
+import { blankLine } from '../../utils/string'
 
 // Label constants in points
 const LABEL_HEIGHT = 72
@@ -83,7 +87,6 @@ export const downloadLabels = async (
         })
       })
     })
-    labels.autoPrint()
     await labels.save(
       `Round ${round.roundNum} Labels - ${jurisdictionName} - ${auditName}.pdf`,
       { returnPromise: true }
@@ -133,7 +136,6 @@ export const downloadPlaceholders = async (
       })
       pageCount += 1
     })
-    placeholders.autoPrint()
     await placeholders.save(
       `Round ${round.roundNum} Placeholders - ${jurisdictionName} - ${auditName}.pdf`,
       { returnPromise: true }
@@ -200,10 +202,354 @@ export const downloadAuditBoardCredentials = async (
       auditBoardCreds.text(`${name}: No ballots`, 20, i * 10 + 20)
     })
   }
-  auditBoardCreds.autoPrint()
   await auditBoardCreds.save(
     `Audit Board Credentials - ${jurisdictionName} - ${auditName}.pdf`,
     { returnPromise: true }
   )
   return auditBoardCreds.output() // returned for test snapshots
+}
+
+export const downloadBatchTallySheets = async (
+  batches: IBatch[],
+  contestChoices: ICandidate[],
+  jurisdictionName: string
+): Promise<string> => {
+  const doc = new jsPDF({ format: 'letter', unit: 'pt' })
+
+  const pageHeight = 792 // 11 inches * 72 pts per inch
+  const pageWidth = 612 // 8.5 inches
+  const pageMargin = 72 // 1 inch
+  const pageContentWidth = pageWidth - pageMargin * 2
+
+  const defaultFontSize = 12
+  const headingFontSize = 18
+  const subHeadingFontSize = 16
+  const sectionBottomMargin = 24
+  const pBottomMargin = 10
+  const drawingLineWidth = 1
+
+  const checkboxSize = 10
+  const checkboxLeftMargin = 10
+  const checkboxRightMargin = 6
+  const checkboxTopMargin = 1 // To properly align checkboxes with text
+
+  const tableCellMinWidth = 100
+  const tableCellPadding = 6
+
+  const signatureLineLabelFontSize = 10
+  const signatureLineRightMargin = 10
+  const signatureLineLabelTopMargin = 6
+
+  let y = pageMargin
+  const yMax = pageHeight - pageMargin
+  for (let i = 0; i < batches.length; i += 1) {
+    const batch = batches[i]
+
+    doc.setFont('Helvetica', 'normal').setFontSize(headingFontSize)
+    doc.setLineWidth(drawingLineWidth).setDrawColor('black')
+
+    doc.text('Audit Board Batch Tally Sheet', pageMargin, y)
+    y += doc.getLineHeight() + pBottomMargin
+
+    doc.setFont('Helvetica', 'bold').setFontSize(subHeadingFontSize)
+
+    y = renderTextWrapped({
+      doc,
+      text: `Batch Name: ${batch.name}`,
+      wrapWidth: pageContentWidth,
+      x: pageMargin,
+      y,
+      bottomMargin: sectionBottomMargin,
+    })
+
+    doc.setFont('Helvetica', 'normal').setFontSize(defaultFontSize)
+
+    y = renderTextWrapped({
+      doc,
+      text: `Jurisdiction: ${jurisdictionName}`,
+      wrapWidth: pageContentWidth,
+      x: pageMargin,
+      y,
+      bottomMargin: pBottomMargin,
+    })
+
+    y = renderTextWrapped({
+      doc,
+      text: `Audit Board: ${batch.auditBoard ? batch.auditBoard.name : ''}`,
+      wrapWidth: pageContentWidth,
+      x: pageMargin,
+      y,
+      bottomMargin: pBottomMargin,
+    })
+
+    doc.text(`Batch Type (Optional): ${blankLine(20)}`, pageMargin, y)
+    y += doc.getLineHeight() + sectionBottomMargin
+
+    const sealedPrompt =
+      'Was the container sealed when received by the audit board?'
+    const sealedPromptDimensions = doc.getTextDimensions(sealedPrompt)
+    doc.text(sealedPrompt, pageMargin, y)
+    const sealedCheckboxX =
+      pageMargin + sealedPromptDimensions.w + checkboxLeftMargin
+    const sealedCheckboxY = y - checkboxSize + checkboxTopMargin
+    doc.rect(sealedCheckboxX, sealedCheckboxY, checkboxSize, checkboxSize)
+    doc.text('Yes', sealedCheckboxX + checkboxSize + checkboxRightMargin, y)
+    y += sectionBottomMargin
+
+    // Assume up until this point that we won't spill onto a second page. From here onward, no
+    // longer make that assumption
+
+    // autoTable automatically adds page breaks
+    autoTable(doc, {
+      head: [['Candidates/Choices', 'Enter Stack Totals']],
+      body: contestChoices.map(choice => [
+        choice.name,
+        '', // Stack totals left blank for the audit board to fill out
+      ]),
+      startY: y,
+      margin: { bottom: pageMargin, left: pageMargin, right: pageMargin },
+      rowPageBreak: 'avoid',
+      theme: 'grid',
+      styles: {
+        cellPadding: tableCellPadding,
+        fillColor: 'white',
+        fontSize: defaultFontSize,
+        fontStyle: 'normal',
+        lineColor: 'black',
+        lineWidth: drawingLineWidth,
+        minCellWidth: tableCellMinWidth,
+        textColor: 'black',
+      },
+      headStyles: {
+        fontStyle: 'bold',
+      },
+    })
+
+    // Reset drawing settings, since autoTable seems to adjust them internally
+    doc.setLineWidth(drawingLineWidth).setDrawColor('black')
+
+    // https://github.com/simonbengtsson/jsPDF-AutoTable/issues/728
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    y = (doc as any).lastAutoTable.finalY
+    y += doc.getLineHeight() + sectionBottomMargin
+
+    y = addPageBreakIfNecessary({
+      doc,
+      y,
+      yMax,
+      heightOfNextAddition: doc.getLineHeight() + pBottomMargin,
+      pageMargin,
+    })
+
+    doc.text(
+      'When work is completed, return all ballots to the ballot container and seal the container.',
+      pageMargin,
+      y
+    )
+    y += doc.getLineHeight() + pBottomMargin
+
+    y = addPageBreakIfNecessary({
+      doc,
+      y,
+      yMax,
+      heightOfNextAddition: doc.getLineHeight() + sectionBottomMargin,
+      pageMargin,
+    })
+
+    const resealedPrompt = 'Was the container resealed by the audit board?'
+    const resealedPromptDimensions = doc.getTextDimensions(resealedPrompt)
+    doc.text(resealedPrompt, pageMargin, y)
+    const resealedCheckboxX =
+      pageMargin + resealedPromptDimensions.w + checkboxLeftMargin
+    const resealedCheckboxY = y - checkboxSize + checkboxTopMargin
+    doc.rect(resealedCheckboxX, resealedCheckboxY, checkboxSize, checkboxSize)
+    doc.text('Yes', resealedCheckboxX + checkboxSize + checkboxRightMargin, y)
+    y += doc.getLineHeight() + sectionBottomMargin
+
+    y = addPageBreakIfNecessary({
+      doc,
+      y,
+      yMax,
+      heightOfNextAddition:
+        doc.getLineHeight() +
+        signatureLineLabelTopMargin +
+        doc.getLineHeight() +
+        sectionBottomMargin,
+      pageMargin,
+    })
+
+    const signatureLine = `x${blankLine(30)}`
+    const signatureLineDimensions = doc.getTextDimensions(signatureLine)
+    doc.text(signatureLine, pageMargin, y)
+    doc.text(
+      signatureLine,
+      pageMargin + signatureLineDimensions.w + signatureLineRightMargin,
+      y
+    )
+    y += doc.getLineHeight() + signatureLineLabelTopMargin
+
+    doc.setFont('Helvetica', 'normal').setFontSize(signatureLineLabelFontSize)
+
+    const signatureLineLabel = '(Audit Board Member)'
+    const signatureLineLabelDimensions = doc.getTextDimensions(
+      signatureLineLabel
+    )
+    const signatureLine1LabelX =
+      // Center the signature line label below the signature line
+      pageMargin +
+      signatureLineDimensions.w / 2 -
+      signatureLineLabelDimensions.w / 2
+    doc.text(signatureLineLabel, signatureLine1LabelX, y)
+    const signatureLine2LabelX =
+      signatureLine1LabelX +
+      signatureLineRightMargin +
+      signatureLineDimensions.w
+    doc.text(signatureLineLabel, signatureLine2LabelX, y)
+    y += doc.getLineHeight() + sectionBottomMargin
+
+    doc.setFont('Helvetica', 'normal').setFontSize(defaultFontSize)
+
+    y = addPageBreakIfNecessary({
+      doc,
+      y,
+      yMax,
+      heightOfNextAddition: doc.getLineHeight() + sectionBottomMargin,
+      pageMargin,
+    })
+
+    doc.line(pageMargin, y, pageWidth - pageMargin, y)
+    y += doc.getLineHeight() + sectionBottomMargin
+
+    doc.setFont('Helvetica', 'bold').setFontSize(defaultFontSize)
+
+    y = addPageBreakIfNecessary({
+      doc,
+      y,
+      yMax,
+      heightOfNextAddition: doc.getLineHeight() + pBottomMargin,
+      pageMargin,
+    })
+
+    doc.text('Check-In/Out Station Steps:', pageMargin, y)
+    y += doc.getLineHeight() + pBottomMargin
+
+    doc.setFont('Helvetica', 'normal').setFontSize(defaultFontSize)
+
+    y = addPageBreakIfNecessary({
+      doc,
+      y,
+      yMax,
+      heightOfNextAddition: doc.getLineHeight() + pBottomMargin,
+      pageMargin,
+    })
+
+    doc.rect(
+      pageMargin,
+      y - checkboxSize + checkboxTopMargin,
+      checkboxSize,
+      checkboxSize
+    )
+    doc.text(
+      'Recorded batch check-in',
+      pageMargin + checkboxSize + checkboxRightMargin,
+      y
+    )
+    y += doc.getLineHeight() + pBottomMargin
+
+    y = addPageBreakIfNecessary({
+      doc,
+      y,
+      yMax,
+      heightOfNextAddition: doc.getLineHeight() + pBottomMargin,
+      pageMargin,
+    })
+
+    doc.rect(
+      pageMargin,
+      y - checkboxSize + checkboxTopMargin,
+      checkboxSize,
+      checkboxSize
+    )
+    doc.text(
+      'Entered tallies into Arlo',
+      pageMargin + checkboxSize + checkboxRightMargin,
+      y
+    )
+    y += doc.getLineHeight() + pBottomMargin
+
+    y = addPageBreakIfNecessary({
+      doc,
+      y,
+      yMax,
+      heightOfNextAddition: doc.getLineHeight() + pBottomMargin,
+      pageMargin,
+    })
+
+    doc.text(
+      `${blankLine(5)} Initials of check-in/out station member`,
+      pageMargin,
+      y
+    )
+
+    // Create page for next batch if present
+    if (i < batches.length - 1) {
+      doc.addPage()
+      y = pageMargin
+    }
+  }
+
+  await doc.save('Batch Tally Sheets.pdf', { returnPromise: true })
+  return doc.output() // Returned for snapshot tests
+}
+
+/**
+ * renderTextWrapped renders the provided text, wrapping at the specified wrap width, appending the
+ * specified bottom margin, and returning the updated y position
+ *
+ * Consistent units should be used for all numerical values
+ */
+function renderTextWrapped({
+  doc,
+  text,
+  wrapWidth,
+  x,
+  y,
+  bottomMargin,
+}: {
+  doc: jsPDF
+  text: string
+  wrapWidth: number
+  x: number
+  y: number
+  bottomMargin: number
+}): number {
+  const textSplit = doc.splitTextToSize(text, wrapWidth)
+  doc.text(textSplit, x, y)
+  return y + doc.getLineHeight() * textSplit.length + bottomMargin
+}
+
+/**
+ * addPageBreakIfNecessary adds a page break if the next addition to the document requires it and
+ * returns the updated y position
+ *
+ * Consistent units should be used for all numerical values
+ */
+function addPageBreakIfNecessary({
+  doc,
+  y,
+  yMax,
+  heightOfNextAddition,
+  pageMargin,
+}: {
+  doc: jsPDF
+  y: number
+  yMax: number
+  heightOfNextAddition: number
+  pageMargin: number
+}): number {
+  if (y + heightOfNextAddition > yMax) {
+    doc.addPage()
+    return pageMargin
+  }
+  return y
 }

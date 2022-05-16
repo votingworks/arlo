@@ -22,6 +22,7 @@ import { IAuditSettings } from '../useAuditSettings'
 import AsyncButton from '../Atoms/AsyncButton'
 import useSampleCount from './useBallots'
 import FullHandTallyDataEntry from './FullHandTallyDataEntry'
+import DownloadBatchTallySheetsButton from './DownloadBatchTallySheetsButton'
 
 const PaddedWrapper = styled(Wrapper)`
   flex-direction: column;
@@ -195,6 +196,14 @@ export const JAFileDownloadButtons = ({
       {auditSettings.auditType === 'BATCH_COMPARISON' ? 'Batch' : 'Ballot'}{' '}
       Retrieval List
     </Button>
+    {auditSettings.auditType === 'BATCH_COMPARISON' && (
+      <DownloadBatchTallySheetsButton
+        electionId={electionId}
+        jurisdictionId={jurisdictionId}
+        jurisdictionName={jurisdictionName}
+        roundId={round.id}
+      />
+    )}
     {auditSettings.auditType !== 'BATCH_COMPARISON' && (
       <>
         <AsyncButton
