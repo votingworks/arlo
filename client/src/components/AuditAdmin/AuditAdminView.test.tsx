@@ -146,7 +146,6 @@ describe('AA setup flow', () => {
       ...loadEach,
       aaApiCalls.getSettings(auditSettings.blank),
       aaApiCalls.getJurisdictionFileWithResponse(jurisdictionFileMocks.empty),
-      aaApiCalls.getJurisdictions,
       aaApiCalls.putJurisdictionFile,
       aaApiCalls.getJurisdictionFileWithResponse(
         jurisdictionFileMocks.processed
@@ -178,7 +177,6 @@ describe('AA setup flow', () => {
       ...loadEach,
       aaApiCalls.getSettings(auditSettings.blank),
       aaApiCalls.getJurisdictionFileWithResponse(jurisdictionFileMocks.empty),
-      aaApiCalls.getJurisdictions,
       aaApiCalls.putJurisdictionErrorFile,
       aaApiCalls.getJurisdictionFileWithResponse(jurisdictionFileMocks.errored),
     ]
@@ -211,7 +209,6 @@ describe('AA setup flow', () => {
       aaApiCalls.getStandardizedContestsFileWithResponse(
         standardizedContestsFileMocks.empty
       ),
-      aaApiCalls.getJurisdictions,
       aaApiCalls.putStandardizedContestsFile,
       aaApiCalls.getStandardizedContestsFileWithResponse(
         standardizedContestsFileMocks.processed
