@@ -433,114 +433,18 @@ describe('generateSheets', () => {
       })
     })
 
-    it('Adds page break after table if necessary - 1', async () => {
-      const pdf = await downloadBatchTallySheets(
-        mockBatches,
-        constructContestChoices(6),
-        mockJurisdiction.name
-      )
-      await expect(Buffer.from(pdf)).toMatchPdfSnapshot({
-        tolerance: diffTolerance,
+    // Cover all possible after-table page breaks
+    for (let i = 0; i < 10; i += 1) {
+      it(`Adds page break after table if necessary - ${i + 1}`, async () => {
+        const pdf = await downloadBatchTallySheets(
+          mockBatches,
+          constructContestChoices(6 + i),
+          mockJurisdiction.name
+        )
+        await expect(Buffer.from(pdf)).toMatchPdfSnapshot({
+          tolerance: diffTolerance,
+        })
       })
-    })
-
-    it('Adds page break after table if necessary - 2', async () => {
-      const pdf = await downloadBatchTallySheets(
-        mockBatches,
-        constructContestChoices(7),
-        mockJurisdiction.name
-      )
-      await expect(Buffer.from(pdf)).toMatchPdfSnapshot({
-        tolerance: diffTolerance,
-      })
-    })
-
-    it('Adds page break after table if necessary - 3', async () => {
-      const pdf = await downloadBatchTallySheets(
-        mockBatches,
-        constructContestChoices(8),
-        mockJurisdiction.name
-      )
-      await expect(Buffer.from(pdf)).toMatchPdfSnapshot({
-        tolerance: diffTolerance,
-      })
-    })
-
-    it('Adds page break after table if necessary - 4', async () => {
-      const pdf = await downloadBatchTallySheets(
-        mockBatches,
-        constructContestChoices(9),
-        mockJurisdiction.name
-      )
-      await expect(Buffer.from(pdf)).toMatchPdfSnapshot({
-        tolerance: diffTolerance,
-      })
-    })
-
-    it('Adds page break after table if necessary - 5', async () => {
-      const pdf = await downloadBatchTallySheets(
-        mockBatches,
-        constructContestChoices(10),
-        mockJurisdiction.name
-      )
-      await expect(Buffer.from(pdf)).toMatchPdfSnapshot({
-        tolerance: diffTolerance,
-      })
-    })
-
-    it('Adds page break after table if necessary - 6', async () => {
-      const pdf = await downloadBatchTallySheets(
-        mockBatches,
-        constructContestChoices(11),
-        mockJurisdiction.name
-      )
-      await expect(Buffer.from(pdf)).toMatchPdfSnapshot({
-        tolerance: diffTolerance,
-      })
-    })
-
-    it('Adds page break after table if necessary - 7', async () => {
-      const pdf = await downloadBatchTallySheets(
-        mockBatches,
-        constructContestChoices(12),
-        mockJurisdiction.name
-      )
-      await expect(Buffer.from(pdf)).toMatchPdfSnapshot({
-        tolerance: diffTolerance,
-      })
-    })
-
-    it('Adds page break after table if necessary - 8', async () => {
-      const pdf = await downloadBatchTallySheets(
-        mockBatches,
-        constructContestChoices(13),
-        mockJurisdiction.name
-      )
-      await expect(Buffer.from(pdf)).toMatchPdfSnapshot({
-        tolerance: diffTolerance,
-      })
-    })
-
-    it('Adds page break after table if necessary - 9', async () => {
-      const pdf = await downloadBatchTallySheets(
-        mockBatches,
-        constructContestChoices(14),
-        mockJurisdiction.name
-      )
-      await expect(Buffer.from(pdf)).toMatchPdfSnapshot({
-        tolerance: diffTolerance,
-      })
-    })
-
-    it('Adds page break after table if necessary - 10', async () => {
-      const pdf = await downloadBatchTallySheets(
-        mockBatches,
-        constructContestChoices(15),
-        mockJurisdiction.name
-      )
-      await expect(Buffer.from(pdf)).toMatchPdfSnapshot({
-        tolerance: diffTolerance,
-      })
-    })
+    }
   })
 })
