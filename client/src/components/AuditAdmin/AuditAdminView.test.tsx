@@ -1,5 +1,5 @@
 import React from 'react'
-import { waitFor, fireEvent, screen } from '@testing-library/react'
+import { waitFor, fireEvent, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Route, RouteProps } from 'react-router-dom'
 import { QueryClientProvider } from 'react-query'
@@ -9,12 +9,15 @@ import {
   standardizedContestsFileMocks,
   auditSettings,
   roundMocks,
+  manifestFile,
+  manifestMocks,
+  jurisdictionMocks,
 } from './useSetupMenuItems/_mocks'
 import { withMockFetch, renderWithRouter } from '../testUtilities'
 import AuthDataProvider, { useAuthDataContext } from '../UserContext'
 import getJurisdictionFileStatus from './useSetupMenuItems/getJurisdictionFileStatus'
 import getRoundStatus from './useSetupMenuItems/getRoundStatus'
-import { aaApiCalls } from '../_mocks'
+import { aaApiCalls, jaApiCalls } from '../_mocks'
 import {
   jurisdictionFile,
   jurisdictionErrorFile,
@@ -286,6 +289,61 @@ describe('AA setup flow', () => {
 
       userEvent.click(screen.getByRole('button', { name: 'Undo Audit Launch' }))
       await screen.findByText('The audit has not started.')
+    })
+  })
+
+  it('reloads jurisdiction progress after file upload', async () => {
+    const expectedCalls = [
+      aaApiCalls.getUser,
+      ...loadEach,
+      ...loadEach,
+      aaApiCalls.getMapData,
+      jaApiCalls.getBallotManifestFile(manifestMocks.empty),
+      jaApiCalls.putManifest,
+      jaApiCalls.getBallotManifestFile(manifestMocks.processed),
+      {
+        ...aaApiCalls.getJurisdictions,
+        response: { jurisdictions: jurisdictionMocks.allManifests },
+      },
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      const { container } = render('progress')
+
+      await waitFor(() => {
+        expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
+      })
+
+      screen.getByText('Audit Progress')
+      let rows = screen.getAllByRole('row')
+      let row1 = within(rows[1]).getAllByRole('cell')
+      expect(row1[0]).toHaveTextContent('Jurisdiction One')
+      within(row1[1]).getByText('No manifest uploaded')
+
+      // Click on a jurisdiction name to open the detail modal
+      userEvent.click(screen.getByRole('button', { name: 'Jurisdiction One' }))
+      const modal = screen
+        .getByRole('heading', { name: 'Jurisdiction One' })
+        .closest('div.bp3-dialog')! as HTMLElement
+      await within(modal).findByText('No file uploaded')
+
+      // Upload a manifest
+      userEvent.upload(
+        within(modal).getByLabelText('Select a file...'),
+        manifestFile
+      )
+      await within(modal).findByText('manifest.csv')
+      userEvent.click(
+        within(modal).getByRole('button', { name: 'Upload File' })
+      )
+      await within(modal).findByText('Uploaded')
+
+      // Close the detail modal
+      userEvent.click(screen.getByRole('button', { name: 'Close' }))
+
+      // Jurisdiction table should be updated
+      rows = screen.getAllByRole('row')
+      row1 = within(rows[1]).getAllByRole('cell')
+      within(row1[1]).getByText('Manifest uploaded')
     })
   })
 })

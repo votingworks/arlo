@@ -770,6 +770,47 @@ export const jurisdictionMocks = {
       currentRoundStatus: null,
     },
   ],
+  noneStartedBallotComparison: [
+    {
+      id: 'jurisdiction-id-1',
+      name: 'Jurisdiction 1',
+      ballotManifest: manifestMocks.processed,
+      cvrs: cvrsMocks.processed,
+      currentRoundStatus: {
+        status: JurisdictionRoundStatus.NOT_STARTED,
+        numUniqueAudited: 0,
+        numUnique: 10,
+        numSamplesAudited: 0,
+        numSamples: 11,
+      },
+    },
+    {
+      id: 'jurisdiction-id-2',
+      name: 'Jurisdiction 2',
+      ballotManifest: manifestMocks.processed,
+      cvrs: cvrsMocks.processed,
+      currentRoundStatus: {
+        status: JurisdictionRoundStatus.NOT_STARTED,
+        numUniqueAudited: 0,
+        numUnique: 20,
+        numSamplesAudited: 0,
+        numSamples: 22,
+      },
+    },
+    {
+      id: 'jurisdiction-id-3',
+      name: 'Jurisdiction 3',
+      ballotManifest: manifestMocks.processed,
+      cvrs: cvrsMocks.processed,
+      currentRoundStatus: {
+        status: JurisdictionRoundStatus.COMPLETE,
+        numUniqueAudited: 30,
+        numUnique: 30,
+        numSamplesAudited: 31,
+        numSamples: 31,
+      },
+    },
+  ],
   // Hybrid
   hybridTwoManifestsOneCvr: [
     {

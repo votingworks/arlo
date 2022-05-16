@@ -1,18 +1,18 @@
-import React from 'react'
+/* eslint-disable jsx-a11y/label-has-associated-control */
+import React, { useState } from 'react'
 import {
   Classes,
   Dialog,
   H5,
   H6,
   Card,
-  Colors,
   Button,
+  HTMLSelect,
 } from '@blueprintjs/core'
 import styled from 'styled-components'
 import { Formik, FormikProps } from 'formik'
 import { IJurisdiction, JurisdictionRoundStatus } from '../../useJurisdictions'
-import { IFileInfo, FileProcessingStatus, CvrFileType } from '../../useCSV'
-import StatusTag from '../../Atoms/StatusTag'
+import { CvrFileType } from '../../useCSV'
 import { IRound } from '../useRoundsAuditAdmin'
 import { IAuditSettings } from '../../useAuditSettings'
 import { api } from '../../utilities'
@@ -20,21 +20,12 @@ import useAuditBoards from '../../useAuditBoards'
 import useSampleCount from '../../JurisdictionAdmin/useBallots'
 import AsyncButton from '../../Atoms/AsyncButton'
 import { JAFileDownloadButtons } from '../../JurisdictionAdmin/RoundManagement'
-
-const FileStatusTag = ({
-  processing,
-}: {
-  processing: IFileInfo['processing']
-}) => {
-  switch (processing && processing.status) {
-    case FileProcessingStatus.ERRORED:
-      return <StatusTag intent="danger">Upload failed</StatusTag>
-    case FileProcessingStatus.PROCESSED:
-      return <StatusTag intent="success">Uploaded</StatusTag>
-    default:
-      return <StatusTag>No file uploaded</StatusTag>
-  }
-}
+import FileUpload from '../../Atoms/FileUpload'
+import {
+  useBallotManifest,
+  useBatchTallies,
+  useCVRs,
+} from '../../useFileUpload'
 
 const prettyCvrFileType = (cvrFileType: CvrFileType) =>
   ({
@@ -48,47 +39,7 @@ const StatusCard = styled(Card)`
   &:not(:last-child) {
     margin-bottom: 20px;
   }
-  a.download-link {
-    margin-left: 15px;
-  }
-  p.error {
-    margin-top: 10px;
-    color: ${Colors.RED3};
-  }
 `
-
-const FileStatusCard = ({
-  title,
-  fileInfo,
-  downloadUrl,
-}: {
-  title: string
-  fileInfo: IFileInfo
-  downloadUrl: string
-}) => (
-  <StatusCard>
-    <H6>{title}</H6>
-    <FileStatusTag processing={fileInfo.processing} />
-    {fileInfo.file && (
-      <>
-        <a
-          className="download-link"
-          href={downloadUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {fileInfo.file.name}
-        </a>
-        {fileInfo.file.cvrFileType && (
-          <span> ({prettyCvrFileType(fileInfo.file.cvrFileType)})</span>
-        )}
-      </>
-    )}
-    {fileInfo.processing && fileInfo.processing.error && (
-      <p className="error">{fileInfo.processing.error}</p>
-    )}
-  </StatusCard>
-)
 
 const Section = styled.div`
   &:not(:last-child) {
@@ -96,54 +47,134 @@ const Section = styled.div`
   }
 `
 
+export interface IJurisdictionDetailProps {
+  handleClose: () => void
+  jurisdiction: IJurisdiction
+  electionId: string
+  round: IRound | null
+  auditSettings: IAuditSettings
+}
+
 const JurisdictionDetail = ({
   handleClose,
   jurisdiction,
   electionId,
   round,
   auditSettings,
+}: IJurisdictionDetailProps) => {
+  const ballotManifestUpload = useBallotManifest(electionId, jurisdiction.id)
+  const batchTalliesUpload = useBatchTallies(electionId, jurisdiction.id, {
+    enabled: auditSettings.auditType === 'BATCH_COMPARISON',
+  })
+
+  return (
+    <Dialog onClose={handleClose} title={jurisdiction.name} isOpen>
+      <div className={Classes.DIALOG_BODY} style={{ marginBottom: 0 }}>
+        <Section>
+          <H5>Jurisdiction Files</H5>
+          <StatusCard>
+            <H6>Ballot Manifest</H6>
+            <FileUpload
+              {...ballotManifestUpload}
+              acceptFileType="csv"
+              disabled={!!round}
+            />
+          </StatusCard>
+          {auditSettings.auditType === 'BATCH_COMPARISON' && (
+            <StatusCard>
+              <H6>Candidate Totals by Batch</H6>
+              <FileUpload
+                {...batchTalliesUpload}
+                acceptFileType="csv"
+                disabled={
+                  !!round ||
+                  (ballotManifestUpload.uploadedFile.data &&
+                    !ballotManifestUpload.uploadedFile.data.file)
+                }
+              />
+            </StatusCard>
+          )}
+          {(auditSettings.auditType === 'BALLOT_COMPARISON' ||
+            auditSettings.auditType === 'HYBRID') && (
+            <StatusCard>
+              <H6>Cast Vote Records (CVR)</H6>
+              <CvrsFileUpload
+                electionId={electionId}
+                jurisdiction={jurisdiction}
+                disabled={
+                  !!round ||
+                  (ballotManifestUpload.uploadedFile.data &&
+                    !ballotManifestUpload.uploadedFile.data.file)
+                }
+              />
+            </StatusCard>
+          )}
+        </Section>
+        {round && (
+          <RoundStatusSection
+            electionId={electionId}
+            jurisdiction={jurisdiction}
+            round={round}
+            auditSettings={auditSettings}
+          />
+        )}
+      </div>
+    </Dialog>
+  )
+}
+
+const CvrsFileUpload = ({
+  electionId,
+  jurisdiction,
+  disabled,
 }: {
-  handleClose: () => void
-  jurisdiction: IJurisdiction
   electionId: string
-  round: IRound | null
-  auditSettings: IAuditSettings
-}) => (
-  <Dialog onClose={handleClose} title={jurisdiction.name} isOpen>
-    <div className={Classes.DIALOG_BODY} style={{ marginBottom: 0 }}>
-      <Section>
-        <H5>Jurisdiction Files</H5>
-        <FileStatusCard
-          title="Ballot Manifest"
-          fileInfo={jurisdiction.ballotManifest}
-          downloadUrl={`/api/election/${electionId}/jurisdiction/${jurisdiction.id}/ballot-manifest/csv`}
-        />
-        {jurisdiction.batchTallies && (
-          <FileStatusCard
-            title="Candidate Totals by Batch"
-            fileInfo={jurisdiction.batchTallies}
-            downloadUrl={`/api/election/${electionId}/jurisdiction/${jurisdiction.id}/batch-tallies/csv`}
-          />
+  jurisdiction: IJurisdiction
+  disabled?: boolean
+}) => {
+  const cvrsUpload = useCVRs(electionId, jurisdiction.id)
+  const [selectedCvrFileType, setSelectedCvrFileType] = useState<CvrFileType>()
+  const uploadFiles = (files: File[]) =>
+    cvrsUpload.uploadFiles(files, selectedCvrFileType!)
+
+  return (
+    <>
+      <div style={{ marginBottom: '10px' }}>
+        <label htmlFor="cvrFileType">CVR File Type: </label>
+        {jurisdiction.cvrs!.file ? (
+          prettyCvrFileType(jurisdiction.cvrs!.file.cvrFileType!)
+        ) : (
+          <HTMLSelect
+            name="cvrFileType"
+            id="cvrFileType"
+            value={selectedCvrFileType}
+            onChange={e =>
+              setSelectedCvrFileType(e.target.value as CvrFileType)
+            }
+            disabled={disabled}
+          >
+            <option></option>
+            <option value={CvrFileType.DOMINION}>Dominion</option>
+            <option value={CvrFileType.CLEARBALLOT}>ClearBallot</option>
+            <option value={CvrFileType.ESS}>ES&amp;S</option>
+            <option value={CvrFileType.HART}>Hart</option>
+          </HTMLSelect>
         )}
-        {jurisdiction.cvrs && (
-          <FileStatusCard
-            title="Cast Vote Records (CVR)"
-            fileInfo={jurisdiction.cvrs}
-            downloadUrl={`/api/election/${electionId}/jurisdiction/${jurisdiction.id}/cvrs/csv`}
-          />
-        )}
-      </Section>
-      {round && (
-        <RoundStatusSection
-          electionId={electionId}
-          jurisdiction={jurisdiction}
-          round={round}
-          auditSettings={auditSettings}
-        />
-      )}
-    </div>
-  </Dialog>
-)
+      </div>
+      <FileUpload
+        {...cvrsUpload}
+        uploadFiles={uploadFiles}
+        acceptFileType={
+          selectedCvrFileType === CvrFileType.HART ? 'zip' : 'csv'
+        }
+        allowMultipleFiles={selectedCvrFileType === CvrFileType.ESS}
+        disabled={
+          disabled || (!jurisdiction.cvrs!.file && !selectedCvrFileType)
+        }
+      />
+    </>
+  )
+}
 
 const unfinalizeFullHandTallyResults = async (
   electionId: string,
