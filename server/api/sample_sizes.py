@@ -93,6 +93,12 @@ def validate_hybrid_manifests_and_cvrs(contest: Contest):
             f" times the number of votes allowed ({contest.votes_allowed})"
         )
 
+    if any(count.non_cvr < 0 for count in vote_counts.values()):
+        raise UserError(
+            f"For contest {contest.name}, the CVRs contain more votes"
+            " than were entered in the contest settings."
+        )
+
 
 def sample_size_options(election: Election) -> Dict[str, Dict[str, SampleSizeOption]]:
     if not election.contests:
