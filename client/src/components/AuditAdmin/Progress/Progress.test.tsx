@@ -690,7 +690,7 @@ describe('Progress screen', () => {
 
       userEvent.click(
         within(modal).getByRole('button', {
-          name: /Download Aggregated Ballot Retrieval List/,
+          name: /Download Ballot Retrieval List/,
         })
       )
 
@@ -764,7 +764,7 @@ describe('Progress screen', () => {
 
       userEvent.click(
         await within(modal).findByRole('button', {
-          name: /Download Aggregated Batch Retrieval List/,
+          name: /Download Batch Retrieval List/,
         })
       )
       expect(window.open).toHaveBeenCalledWith(

@@ -1423,7 +1423,7 @@ exports[`RoundManagement renders links & data entry with offline ballot audit 1`
           <span
             class="bp3-button-text"
           >
-            Download Aggregated
+            Download
              
             Ballot
              
@@ -1673,7 +1673,7 @@ exports[`RoundManagement renders links & progress with online ballot audit 1`] =
           <span
             class="bp3-button-text"
           >
-            Download Aggregated
+            Download
              
             Ballot
              

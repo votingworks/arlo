@@ -192,7 +192,7 @@ export const JAFileDownloadButtons = ({
           )
       }
     >
-      Download Aggregated{' '}
+      Download{' '}
       {auditSettings.auditType === 'BATCH_COMPARISON' ? 'Batch' : 'Ballot'}{' '}
       Retrieval List
     </Button>
