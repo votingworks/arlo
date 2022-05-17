@@ -5,7 +5,7 @@ import {
   IFullHandTallyBatchResults,
   IFullHandTallyBatchResult,
 } from './useFullHandTallyResults'
-import { mockOfType } from '../testUtilities'
+import { mocksOfType } from '../testUtilities'
 
 export interface INullResultValues {
   [contestId: string]: {
@@ -13,7 +13,7 @@ export interface INullResultValues {
   }
 }
 
-export const roundMocks = mockOfType<IRound>()({
+export const roundMocks = mocksOfType<IRound>()({
   incomplete: {
     id: 'round-1',
     roundNum: 1,
@@ -61,7 +61,7 @@ export const roundMocks = mockOfType<IRound>()({
   },
 })
 
-export const resultsMocks = mockOfType<INullResultValues>()({
+export const resultsMocks = mocksOfType<INullResultValues>()({
   emptyInitial: {
     'contest-id-1': {
       'choice-id-1': null,
@@ -84,7 +84,7 @@ export const resultsMocks = mockOfType<INullResultValues>()({
   },
 })
 
-export const batchResultsMocks = mockOfType<INullResultValues>()({
+export const batchResultsMocks = mocksOfType<INullResultValues>()({
   empty: {
     'batch-1': {
       'choice-id-1': null,
@@ -115,7 +115,7 @@ export const batchResultsMocks = mockOfType<INullResultValues>()({
   },
 })
 
-export const batchesMocks = mockOfType<IBatches>()({
+export const batchesMocks = mocksOfType<IBatches>()({
   emptyInitial: {
     batches: [
       {
@@ -203,7 +203,7 @@ export const batchesMocks = mockOfType<IBatches>()({
   },
 })
 
-export const fullHandTallyBatchResultMock = mockOfType<
+export const fullHandTallyBatchResultMock = mocksOfType<
   IFullHandTallyBatchResults
 >()({
   empty: {
@@ -272,7 +272,7 @@ export const fullHandTallyBatchResultMock = mockOfType<
   },
 })
 
-export const fullHandTallyBatchResultsMock = mockOfType<
+export const fullHandTallyBatchResultsMock = mocksOfType<
   IFullHandTallyBatchResult
 >()({
   empty: {

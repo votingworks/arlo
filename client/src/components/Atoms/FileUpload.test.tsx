@@ -12,7 +12,7 @@ import {
 import FileUpload, { IFileUploadProps } from './FileUpload'
 import {
   withMockFetch,
-  mockOfType,
+  mocksOfType,
   serverError,
   findAndCloseToast,
 } from '../testUtilities'
@@ -55,7 +55,7 @@ const render = (element: React.ReactElement) =>
     <QueryClientProvider client={queryClient}>{element}</QueryClientProvider>
   )
 
-const fileInfoMocks = mockOfType<IFileInfo>()({
+const fileInfoMocks = mocksOfType<IFileInfo>()({
   empty: { file: null, processing: null },
   processing: {
     file: {

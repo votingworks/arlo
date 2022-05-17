@@ -12,7 +12,7 @@ import { IAuditBoard } from '../../useAuditBoards'
 import { IRound } from '../useRoundsAuditAdmin'
 import { IAuditSettings } from '../../useAuditSettings'
 import { FileProcessingStatus, IFileInfo, CvrFileType } from '../../useCSV'
-import { mockOfType } from '../../testUtilities'
+import { mocksOfType } from '../../testUtilities'
 
 export const manifestFile = new File(
   [readFileSync(join(__dirname, './test_manifest.csv'), 'utf8')],
@@ -30,7 +30,7 @@ export const cvrsFile = new File(
   { type: 'text/csv' }
 )
 
-export const auditSettings = mockOfType<IAuditSettings>()({
+export const auditSettings = mocksOfType<IAuditSettings>()({
   blank: {
     state: null,
     electionName: null,
@@ -143,7 +143,7 @@ export const auditSettings = mockOfType<IAuditSettings>()({
   },
 })
 
-export const roundMocks = mockOfType<IRound[]>()({
+export const roundMocks = mocksOfType<IRound[]>()({
   empty: [],
   singleIncomplete: [
     {
@@ -1045,7 +1045,7 @@ export const contestMocks: {
   ],
 }
 
-export const fileProcessingMocks = mockOfType<IFileInfo['processing']>()({
+export const fileProcessingMocks = mocksOfType<IFileInfo['processing']>()({
   null: null,
   processed: {
     status: FileProcessingStatus.PROCESSED,
@@ -1061,7 +1061,7 @@ export const fileProcessingMocks = mockOfType<IFileInfo['processing']>()({
   },
 })
 
-export const auditBoardMocks = mockOfType<IAuditBoard[]>()({
+export const auditBoardMocks = mocksOfType<IAuditBoard[]>()({
   empty: [],
   unfinished: [
     {
