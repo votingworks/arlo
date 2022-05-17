@@ -84,7 +84,7 @@ const ConfirmationModalTitle = styled.span`
 const ConfirmationModalSubTitle = styled.span`
   font-size: 16px;
   font-weight: 400;
-  whitespace: normal; /* Allow long batch names to wrap */
+  white-space: normal; /* Allow long batch names to wrap */
 `
 
 interface IProps {
