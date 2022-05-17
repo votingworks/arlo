@@ -175,6 +175,7 @@ def test_batch_tallies_clear(
     assert File.query.get(file_id) is None
     assert jurisdiction.batch_tallies is None
 
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies/csv"
     )
