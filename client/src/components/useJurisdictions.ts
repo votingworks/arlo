@@ -132,10 +132,6 @@ export const useJurisdictions = (electionId: string, refreshId?: string) => {
         `/api/election/${electionId}/jurisdiction`
       )
       return response && response.jurisdictions
-    },
-    // When a file input dialog closes, it triggers a window focus event,
-    // which causes a refetch by default, so we turn that off.
-    // https://github.com/tannerlinsley/react-query/issues/2960
-    { refetchOnWindowFocus: false }
+    }
   )
 }

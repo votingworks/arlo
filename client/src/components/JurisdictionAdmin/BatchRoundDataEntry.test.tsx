@@ -267,17 +267,12 @@ describe('Batch comparison data entry', () => {
     const expectedCalls = [
       apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
       apiCalls.getBatches(batchesMocks.emptyInitial),
-      apiCalls.getBatches(batchesMocks.emptyInitial),
       apiCalls.putBatchResults('batch-1', [tallySheet1, tallySheet2]),
       apiCalls.getBatches({
         ...batchesMocks.emptyInitial,
         batches: batchesWithResults([tallySheet1, tallySheet2]),
       }),
       apiCalls.putBatchResults('batch-1', [tallySheet2]),
-      apiCalls.getBatches({
-        ...batchesMocks.emptyInitial,
-        batches: batchesWithResults([tallySheet2]),
-      }),
       apiCalls.getBatches({
         ...batchesMocks.emptyInitial,
         batches: batchesWithResults([tallySheet2]),

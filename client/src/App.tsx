@@ -33,6 +33,10 @@ export const queryClient = new QueryClient({
       onError: (error: ApiError) => {
         toast.error(error.message)
       },
+      // When a file input dialog closes, it triggers a window focus event,
+      // which causes a refetch by default, so we turn that off to avoid confusion.
+      // https://github.com/tannerlinsley/react-query/issues/2960
+      refetchOnWindowFocus: false,
     },
     mutations: {
       onError: (error: ApiError) => {

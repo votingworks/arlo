@@ -31,10 +31,6 @@ export const useUploadedFile = (
   const isProcessing = (fileInfo?: IFileInfo) =>
     fileInfo && fileInfo.processing && !fileInfo.processing.completedAt
   return useQuery<IFileInfo, ApiError>(key, () => fetchApi(url), {
-    // When a file input dialog closes, it triggers a window focus event,
-    // which causes a refetch by default, so we turn that off.
-    // https://github.com/tannerlinsley/react-query/issues/2960
-    refetchOnWindowFocus: false,
     refetchInterval: fileInfo => (isProcessing(fileInfo) ? 1000 : false),
     // Once a file is finished processing or is deleted, call onFileChange
     // (but don't call it the very first time we load the file)
