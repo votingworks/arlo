@@ -720,6 +720,49 @@ def test_hybrid_manifest_validation_few_non_cvr_ballots(
     )
 
 
+def test_hybrid_manifest_validation_too_many_cvr_votes(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    election_settings,  # pylint: disable=unused-argument
+    manifests,  # pylint: disable=unused-argument
+    cvrs,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    contests = [
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Contest 1",
+            "isTargeted": True,
+            "choices": [
+                {"id": str(uuid.uuid4()), "name": "Choice 1-1", "numVotes": 13},
+                {"id": str(uuid.uuid4()), "name": "Choice 1-2", "numVotes": 10},
+            ],
+            "numWinners": 1,
+            "votesAllowed": 2,
+            "jurisdictionIds": jurisdiction_ids[:2],
+        },
+    ]
+    rv = put_json(client, f"/api/election/{election_id}/contest", contests)
+    assert_ok(rv)
+
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
+    assert rv.status_code == 200
+    compare_json(
+        json.loads(rv.data),
+        {
+            "sampleSizes": None,
+            "selected": None,
+            "task": {
+                "status": "ERRORED",
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": "For contest Contest 1, the CVRs contain more votes for choice Choice 1-1 (14) than were entered in the contest settings (13).",
+            },
+        },
+    )
+
+
 def test_hybrid_filter_cvrs(
     client: FlaskClient,
     election_id: str,
