@@ -376,7 +376,9 @@ describe('Audit Setup > Participants', () => {
       )
       userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
       await screen.findByText(/Uploaded/)
-      await screen.findByText('something went wrong')
+      await screen.findByText('something went wrong', undefined, {
+        timeout: 2000,
+      })
     })
   })
 
@@ -405,7 +407,9 @@ describe('Audit Setup > Participants', () => {
       userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
 
       await screen.findByText(/Uploaded/)
-      await screen.findByText('something went wrong')
+      await screen.findByText('something went wrong', undefined, {
+        timeout: 2000,
+      })
     })
   })
 })
