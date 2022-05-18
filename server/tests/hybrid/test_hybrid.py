@@ -757,7 +757,7 @@ def test_hybrid_manifest_validation_too_many_cvr_votes(
                 "status": "ERRORED",
                 "startedAt": assert_is_date,
                 "completedAt": assert_is_date,
-                "error": "For contest Contest 1, the CVRs contain more votes than were entered in the contest settings.",
+                "error": "For contest Contest 1, the CVRs contain more votes for choice Choice 1-1 (14) than were entered in the contest settings (13).",
             },
         },
     )

@@ -93,10 +93,20 @@ def validate_hybrid_manifests_and_cvrs(contest: Contest):
             f" times the number of votes allowed ({contest.votes_allowed})"
         )
 
-    if any(count.non_cvr < 0 for count in vote_counts.values()):
+    choices_by_id = {choice.id: choice for choice in contest.choices}
+    invalid_count = next(
+        (
+            (choices_by_id[choice_id], count)
+            for choice_id, count in vote_counts.items()
+            if count.cvr > choices_by_id[choice_id].num_votes
+        ),
+        None,
+    )
+    if invalid_count:
+        choice, count = invalid_count
         raise UserError(
-            f"For contest {contest.name}, the CVRs contain more votes"
-            " than were entered in the contest settings."
+            f"For contest {contest.name}, the CVRs contain more votes for choice {choice.name} ({count.cvr})"
+            f" than were entered in the contest settings ({choice.num_votes})."
         )
 
 
