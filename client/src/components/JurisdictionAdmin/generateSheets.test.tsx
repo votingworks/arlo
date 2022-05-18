@@ -52,11 +52,10 @@ function constructContestChoices(numChoices: number): ICandidate[] {
 const mockSavePDF = jest.fn()
 jest.mock('jspdf', () => {
   const { jsPDF } = jest.requireActual('jspdf')
-  // eslint-disable-next-line func-names, @typescript-eslint/no-explicit-any
-  return function(options: any) {
-    const mockjspdf = new jsPDF(options)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return function mockJsPDF(options?: any) {
     return {
-      ...mockjspdf,
+      ...new jsPDF(options),
       addImage: jest.fn(),
       save: mockSavePDF,
     }

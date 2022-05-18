@@ -31,9 +31,11 @@ import {
 const mockSavePDF = jest.fn()
 jest.mock('jspdf', () => {
   const { jsPDF } = jest.requireActual('jspdf')
-  return function mockJsPDF() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return function mockJsPDF(options?: any) {
     return {
-      ...new jsPDF({ format: 'letter' }),
+      ...new jsPDF(options),
+      addImage: jest.fn(),
       save: mockSavePDF,
     }
   }
