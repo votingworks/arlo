@@ -414,7 +414,7 @@ describe('JurisdictionDetail', () => {
 
       userEvent.click(
         screen.getByRole('button', {
-          name: /Download Aggregated Ballot Retrieval List/,
+          name: /Download Ballot Retrieval List/,
         })
       )
       expect(window.open).toHaveBeenCalledWith(
@@ -479,7 +479,7 @@ describe('JurisdictionDetail', () => {
 
       await screen.findByRole('heading', { name: 'Round 1 Data Entry' })
       screen.getByRole('button', {
-        name: /Download Aggregated Ballot Retrieval List/,
+        name: /Download Ballot Retrieval List/,
       })
       screen.getByRole('button', { name: /Download Ballot Labels/ })
       screen.getByRole('button', { name: /Download Placeholder Sheets/ })
@@ -517,7 +517,7 @@ describe('JurisdictionDetail', () => {
 
       userEvent.click(
         screen.getByRole('button', {
-          name: /Download Aggregated Batch Retrieval List/,
+          name: /Download Batch Retrieval List/,
         })
       )
       expect(window.open).toHaveBeenCalledWith(
