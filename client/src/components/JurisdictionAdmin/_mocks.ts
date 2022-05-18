@@ -5,6 +5,7 @@ import {
   IFullHandTallyBatchResults,
   IFullHandTallyBatchResult,
 } from './useFullHandTallyResults'
+import { mocksOfType } from '../testUtilities'
 
 export interface INullResultValues {
   [contestId: string]: {
@@ -12,9 +13,7 @@ export interface INullResultValues {
   }
 }
 
-export const roundMocks: {
-  [key in 'incomplete' | 'complete' | 'fullHandTallyIncomplete']: IRound
-} = {
+export const roundMocks = mocksOfType<IRound>()({
   incomplete: {
     id: 'round-1',
     roundNum: 1,
@@ -60,11 +59,9 @@ export const roundMocks: {
       error: null,
     },
   },
-}
+})
 
-export const resultsMocks: {
-  [key in 'emptyInitial' | 'complete']: INullResultValues
-} = {
+export const resultsMocks = mocksOfType<INullResultValues>()({
   emptyInitial: {
     'contest-id-1': {
       'choice-id-1': null,
@@ -85,11 +82,9 @@ export const resultsMocks: {
       'choice-id-4': 2,
     },
   },
-}
+})
 
-export const batchResultsMocks: {
-  [key in 'empty' | 'complete']: INullResultValues
-} = {
+export const batchResultsMocks = mocksOfType<INullResultValues>()({
   empty: {
     'batch-1': {
       'choice-id-1': null,
@@ -118,11 +113,9 @@ export const batchResultsMocks: {
       'choice-id-2': 2,
     },
   },
-}
+})
 
-export const batchesMocks: {
-  [key in 'emptyInitial' | 'complete']: IBatches
-} = {
+export const batchesMocks = mocksOfType<IBatches>()({
   emptyInitial: {
     batches: [
       {
@@ -208,16 +201,11 @@ export const batchesMocks: {
     ],
     resultsFinalizedAt: '2020-09-14T17:35:19.482Z',
   },
-}
+})
 
-export const fullHandTallyBatchResultMock: {
-  [key in
-    | 'empty'
-    | 'complete'
-    | 'updated'
-    | 'finalized'
-    | 'completeWithMultipleBatch']: IFullHandTallyBatchResults
-} = {
+export const fullHandTallyBatchResultMock = mocksOfType<
+  IFullHandTallyBatchResults
+>()({
   empty: {
     finalizedAt: '',
     results: [],
@@ -282,11 +270,11 @@ export const fullHandTallyBatchResultMock: {
       },
     ],
   },
-}
+})
 
-export const fullHandTallyBatchResultsMock: {
-  [key in 'empty' | 'complete' | 'updated']: IFullHandTallyBatchResult
-} = {
+export const fullHandTallyBatchResultsMock = mocksOfType<
+  IFullHandTallyBatchResult
+>()({
   empty: {
     batchName: '',
     batchType: '',
@@ -308,4 +296,4 @@ export const fullHandTallyBatchResultsMock: {
       'choice-id-2': 20,
     },
   },
-}
+})

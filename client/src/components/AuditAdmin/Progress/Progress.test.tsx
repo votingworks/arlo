@@ -9,17 +9,14 @@ import {
   auditSettings,
   roundMocks,
   auditBoardMocks,
-  contestMocks,
+  manifestMocks,
 } from '../useSetupMenuItems/_mocks'
 import { withMockFetch, renderWithRouter } from '../../testUtilities'
 import { aaApiCalls, jaApiCalls } from '../../_mocks'
 import Progress, { IProgressProps } from './Progress'
 import { dummyBallots } from '../../AuditBoard/_mocks'
-import { batchesMocks } from '../../JurisdictionAdmin/_mocks'
 import * as utilities from '../../utilities'
 import { queryClient } from '../../../App'
-import { IBatch } from '../../JurisdictionAdmin/useBatchResults'
-import { IContest } from '../../../types'
 
 // Borrowed from generateSheets.test.tsx
 const mockSavePDF = jest.fn()
@@ -44,18 +41,6 @@ const expectStatusTag = (cell: HTMLElement, status: string, intent: Intent) => {
     .closest('.bp3-tag') as HTMLElement
   if (intent === 'none') expect(statusTag.className).not.toMatch(/bp3-intent/)
   else expect(statusTag).toHaveClass(`bp3-intent-${intent}`)
-}
-
-// User-type agnostic API calls
-const apiCalls = {
-  getBatches: (response: { batches: IBatch[] }) => ({
-    url: '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/batches',
-    response,
-  }),
-  getJurisdictionContests: (response: { contests: IContest[] }) => ({
-    url: `/api/election/1/jurisdiction/jurisdiction-id-1/contest`,
-    response,
-  }),
 }
 
 const render = (props: Partial<IProgressProps> = {}) =>
@@ -89,7 +74,6 @@ describe('Progress screen', () => {
     const expectedCalls = [aaApiCalls.getMapData]
     await withMockFetch(expectedCalls, async () => {
       const { container } = render()
-
       expect(container.querySelectorAll('.d3-component').length).toBe(1)
 
       await waitFor(() => {
@@ -332,35 +316,6 @@ describe('Progress screen', () => {
       expect(footers[1]).toHaveTextContent('1/3 complete')
       expect(footers[2]).toHaveTextContent('6,351')
       expect(footers[3]).toHaveTextContent('10')
-
-      // Shows manifest and cvrs in the modal
-      userEvent.click(screen.getByText('2/2 files uploaded'))
-      const modal = screen
-        .getByRole('heading', { name: 'Jurisdiction 2' })
-        .closest('div.bp3-dialog')! as HTMLElement
-      within(modal).getByRole('heading', {
-        name: 'Jurisdiction Files',
-      })
-      const manifestCard = within(modal)
-        .getByRole('heading', {
-          name: 'Ballot Manifest',
-        })
-        .closest('div')!
-      within(manifestCard).getByText('Uploaded')
-      const cvrsCard = within(modal)
-        .getByRole('heading', {
-          name: 'Cast Vote Records (CVR)',
-        })
-        .closest('div')!
-      within(cvrsCard).getByText('Uploaded')
-      const cvrsLink = within(cvrsCard).getByRole('link', {
-        name: 'cvrs.csv',
-      })
-      expect(cvrsLink).toHaveAttribute(
-        'href',
-        '/api/election/1/jurisdiction/jurisdiction-id-2/cvrs/csv'
-      )
-      within(cvrsCard).getByText('(ClearBallot)')
     })
   })
 
@@ -591,8 +546,11 @@ describe('Progress screen', () => {
     })
   })
 
-  it('shows the detail modal before the audit starts', async () => {
-    const expectedCalls = [aaApiCalls.getMapData]
+  it('shows the detail modal with file upload status before the audit starts', async () => {
+    const expectedCalls = [
+      aaApiCalls.getMapData,
+      jaApiCalls.getBallotManifestFile(manifestMocks.errored),
+    ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = render()
 
@@ -604,69 +562,33 @@ describe('Progress screen', () => {
 
       // Click on a jurisdiction name to open the detail modal
       userEvent.click(screen.getByRole('button', { name: 'Jurisdiction 1' }))
-      let modal = screen
+      const modal = screen
         .getByRole('heading', { name: 'Jurisdiction 1' })
         .closest('div.bp3-dialog')! as HTMLElement
       within(modal).getByRole('heading', {
         name: 'Jurisdiction Files',
       })
-      let manifestCard = within(modal)
+      const manifestCard = within(modal)
         .getByRole('heading', {
           name: 'Ballot Manifest',
         })
         .closest('div')!
-      within(manifestCard).getByText('Upload failed')
-      within(manifestCard).getByText('Invalid CSV')
-      const manifestLink = within(manifestCard).getByRole('link', {
-        name: 'manifest.csv',
-      })
-      expect(manifestLink).toHaveAttribute(
-        'href',
-        '/api/election/1/jurisdiction/jurisdiction-id-1/ballot-manifest/csv'
-      )
+      await within(manifestCard).findByText('Upload failed')
 
       // Close the detail modal
       userEvent.click(screen.getByRole('button', { name: 'Close' }))
       expect(modal).not.toBeInTheDocument()
 
-      // Click on a different jurisdiction's status tag to open the modal
-      userEvent.click(screen.getByText('Manifest uploaded'))
-      modal = screen
-        .getByRole('heading', { name: 'Jurisdiction 3' })
-        .closest('div.bp3-dialog')! as HTMLElement
-      manifestCard = within(modal)
-        .getByRole('heading', {
-          name: 'Ballot Manifest',
-        })
-        .closest('div')!
-      within(manifestCard).getByText('Uploaded')
-      within(manifestCard).getByRole('link', {
-        name: 'manifest.csv',
-      })
-      userEvent.click(screen.getByRole('button', { name: 'Close' }))
-
-      // Check the last jurisdiction with no manifest uploaded
-      userEvent.click(screen.getByText('No manifest uploaded'))
-      modal = screen
-        .getByRole('heading', { name: 'Jurisdiction 2' })
-        .closest('div.bp3-dialog')! as HTMLElement
-      manifestCard = within(modal)
-        .getByRole('heading', {
-          name: 'Ballot Manifest',
-        })
-        .closest('div')!
-      within(manifestCard).getByText('No file uploaded')
-      userEvent.click(screen.getByRole('button', { name: 'Close' }))
+      // Tested further in JurisdictionDetail.test.tsx
     })
   })
 
-  it('shows the detail modal with JA file download buttons after a ballot comparison audit starts', async () => {
+  it('shows the detail modal with round status after an audit starts', async () => {
     const expectedCalls = [
       aaApiCalls.getMapData,
+      jaApiCalls.getBallotManifestFile(manifestMocks.processed),
       jaApiCalls.getAuditBoards(auditBoardMocks.unfinished),
       jaApiCalls.getBallotCount(dummyBallots.ballots),
-      jaApiCalls.getBallots(dummyBallots.ballots),
-      jaApiCalls.getBallots(dummyBallots.ballots),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = render({
@@ -688,153 +610,7 @@ describe('Progress screen', () => {
         name: 'Round 1 Data Entry',
       })
 
-      userEvent.click(
-        within(modal).getByRole('button', {
-          name: /Download Ballot Retrieval List/,
-        })
-      )
-
-      expect(window.open).toHaveBeenCalledWith(
-        '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/ballots/retrieval-list'
-      )
-
-      userEvent.click(
-        within(modal).getByRole('button', {
-          name: /Download Placeholder Sheets/,
-        })
-      )
-      await waitFor(() =>
-        expect(mockSavePDF).toHaveBeenCalledWith(
-          'Round 1 Placeholders - Jurisdiction 1 - Test Audit.pdf',
-          { returnPromise: true }
-        )
-      )
-      mockSavePDF.mockClear()
-      userEvent.click(
-        within(modal).getByRole('button', {
-          name: /Download Ballot Labels/,
-        })
-      )
-      await waitFor(() =>
-        expect(mockSavePDF).toHaveBeenCalledWith(
-          'Round 1 Labels - Jurisdiction 1 - Test Audit.pdf',
-          { returnPromise: true }
-        )
-      )
-      mockSavePDF.mockClear()
-      userEvent.click(
-        within(modal).getByRole('button', {
-          name: /Download Audit Board Credentials/,
-        })
-      )
-      await waitFor(() =>
-        expect(mockSavePDF).toHaveBeenCalledWith(
-          'Audit Board Credentials - Jurisdiction 1 - Test Audit.pdf',
-          { returnPromise: true }
-        )
-      )
-    })
-  })
-
-  it('shows the detail modal with JA file download buttons after a batch audit starts', async () => {
-    const expectedCalls = [
-      aaApiCalls.getMapData,
-      jaApiCalls.getAuditBoards(auditBoardMocks.unfinished),
-      apiCalls.getBatches(batchesMocks.emptyInitial),
-      apiCalls.getBatches(batchesMocks.emptyInitial),
-      apiCalls.getJurisdictionContests({ contests: contestMocks.oneTargeted }),
-    ]
-    await withMockFetch(expectedCalls, async () => {
-      render({
-        auditSettings: auditSettings.batchComparisonAll,
-        jurisdictions: jurisdictionMocks.oneComplete,
-        round: roundMocks.singleComplete[0],
-      })
-
-      // Open detail modal
-      userEvent.click(
-        await screen.findByRole('button', { name: 'Jurisdiction 1' })
-      )
-      const modal = screen
-        .getByRole('heading', { name: 'Jurisdiction 1' })
-        .closest('div.bp3-dialog')! as HTMLElement
-      await within(modal).findByRole('heading', {
-        name: 'Round 1 Data Entry',
-      })
-
-      userEvent.click(
-        await within(modal).findByRole('button', {
-          name: /Download Batch Retrieval List/,
-        })
-      )
-      expect(window.open).toHaveBeenCalledWith(
-        '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/batches/retrieval-list'
-      )
-
-      userEvent.click(
-        await within(modal).findByRole('button', {
-          name: /Download Batch Tally Sheets/,
-        })
-      )
-      await waitFor(() =>
-        expect(mockSavePDF).toHaveBeenCalledWith('Batch Tally Sheets.pdf', {
-          returnPromise: true,
-        })
-      )
-    })
-  })
-
-  it('shows a message in the detail modal when no ballots sampled', async () => {
-    const expectedCalls = [
-      aaApiCalls.getMapData,
-      jaApiCalls.getAuditBoards(auditBoardMocks.unfinished),
-      jaApiCalls.getBallotCount([]),
-    ]
-    await withMockFetch(expectedCalls, async () => {
-      const { container } = render({
-        jurisdictions: jurisdictionMocks.oneComplete,
-        round: roundMocks.singleIncomplete[0],
-      })
-
-      expect(container.querySelectorAll('.d3-component').length).toBe(1)
-
-      await waitFor(() => {
-        expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
-      })
-
-      userEvent.click(screen.getByRole('button', { name: 'Jurisdiction 1' }))
-      const modal = screen
-        .getByRole('heading', { name: 'Jurisdiction 1' })
-        .closest('div.bp3-dialog')! as HTMLElement
-      await within(modal).findByText('No ballots sampled')
-    })
-  })
-
-  it('shows a message in the detail modal when no audit boards set up', async () => {
-    const expectedCalls = [
-      aaApiCalls.getMapData,
-      jaApiCalls.getAuditBoards([]),
-      jaApiCalls.getBallotCount(dummyBallots.ballots),
-    ]
-    await withMockFetch(expectedCalls, async () => {
-      const { container } = render({
-        jurisdictions: jurisdictionMocks.noneStarted,
-        round: roundMocks.singleIncomplete[0],
-      })
-
-      expect(container.querySelectorAll('.d3-component').length).toBe(1)
-
-      await waitFor(() => {
-        expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
-      })
-
-      userEvent.click(screen.getByRole('button', { name: 'Jurisdiction 1' }))
-      const modal = screen
-        .getByRole('heading', { name: 'Jurisdiction 1' })
-        .closest('div.bp3-dialog')! as HTMLElement
-      await within(modal).findByText(
-        'Waiting for jurisdiction to set up audit boards'
-      )
+      // Tested further in JurisdictionDetail.test.tsx
     })
   })
 
@@ -882,96 +658,6 @@ describe('Progress screen', () => {
       userEvent.click(statusHeader)
       rows = screen.getAllByRole('row')
       within(rows[1]).getByRole('cell', { name: '2/2 files uploaded' })
-
-      // Shows manifest and tallies in the modal
-      userEvent.click(screen.getByText('2/2 files uploaded'))
-      const modal = screen
-        .getByRole('heading', { name: 'Jurisdiction 3' })
-        .closest('div.bp3-dialog')! as HTMLElement
-      within(modal).getByRole('heading', {
-        name: 'Jurisdiction Files',
-      })
-      const manifestCard = within(modal)
-        .getByRole('heading', {
-          name: 'Ballot Manifest',
-        })
-        .closest('div')!
-      within(manifestCard).getByText('Uploaded')
-      const talliesCard = within(modal)
-        .getByRole('heading', {
-          name: 'Candidate Totals by Batch',
-        })
-        .closest('div')!
-      within(talliesCard).getByText('Uploaded')
-      const talliesLink = within(talliesCard).getByRole('link', {
-        name: 'tallies.csv',
-      })
-      expect(talliesLink).toHaveAttribute(
-        'href',
-        '/api/election/1/jurisdiction/jurisdiction-id-3/batch-tallies/csv'
-      )
-    })
-  })
-
-  it('shows a message in the detail modal when no batches sampled', async () => {
-    const expectedCalls = [
-      aaApiCalls.getMapData,
-      jaApiCalls.getAuditBoards(auditBoardMocks.unfinished),
-      jaApiCalls.getBatches({ batches: [], resultsFinalizedAt: null }),
-    ]
-    await withMockFetch(expectedCalls, async () => {
-      const { container } = render({
-        jurisdictions: jurisdictionMocks.oneComplete,
-        auditSettings: auditSettings.batchComparisonAll,
-        round: roundMocks.singleIncomplete[0],
-      })
-
-      expect(container.querySelectorAll('.d3-component').length).toBe(1)
-
-      await waitFor(() => {
-        expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
-      })
-
-      userEvent.click(screen.getByRole('button', { name: 'Jurisdiction 1' }))
-      const modal = screen
-        .getByRole('heading', { name: 'Jurisdiction 1' })
-        .closest('div.bp3-dialog')! as HTMLElement
-      await within(modal).findByText('No ballots sampled')
-    })
-  })
-
-  it('shows a button to unfinalize batch results', async () => {
-    const expectedCalls = [
-      aaApiCalls.getMapData,
-      jaApiCalls.getAuditBoards(auditBoardMocks.single),
-      jaApiCalls.getBatches(batchesMocks.complete),
-      jaApiCalls.unfinalizeBatchResults,
-    ]
-    await withMockFetch(expectedCalls, async () => {
-      render({
-        jurisdictions: jurisdictionMocks.allComplete,
-        auditSettings: auditSettings.batchComparisonAll,
-        round: roundMocks.singleIncomplete[0],
-      })
-
-      userEvent.click(
-        await screen.findByRole('button', { name: 'Jurisdiction 1' })
-      )
-      const modal = screen
-        .getByRole('heading', { name: 'Jurisdiction 1' })
-        .closest('div.bp3-dialog')! as HTMLElement
-      await within(modal).findByText('Results finalized')
-
-      Object.defineProperty(window, 'location', {
-        writable: true,
-        value: { reload: jest.fn() },
-      })
-      userEvent.click(
-        within(modal).getByRole('button', { name: 'Unfinalize Results' })
-      )
-      await waitFor(() => {
-        expect(window.location.reload).toHaveBeenCalled()
-      })
     })
   })
 

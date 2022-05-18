@@ -17,6 +17,7 @@ import { IBatches } from './JurisdictionAdmin/useBatchResults'
 import { IOrganization } from './UserContext'
 import mapTopology from '../../public/us-states-counties.json'
 import { contestMocks } from './AuditAdmin/Setup/Contests/_mocks'
+import { IContest } from '../types'
 
 const jurisdictionFormData: FormData = new FormData()
 jurisdictionFormData.append(
@@ -247,6 +248,17 @@ export const jaApiCalls = {
     },
     response: { status: 'ok' },
   },
+  deleteTallies: {
+    url: '/api/election/1/jurisdiction/jurisdiction-id-1/batch-tallies',
+    options: {
+      method: 'DELETE',
+    },
+    response: { status: 'ok' },
+  },
+  getJurisdictionContests: (contests: IContest[]) => ({
+    url: `/api/election/1/jurisdiction/jurisdiction-id-1/contest`,
+    response: { contests },
+  }),
 }
 
 export const mockOrganizations = {

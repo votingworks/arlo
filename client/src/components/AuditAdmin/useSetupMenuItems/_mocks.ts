@@ -12,6 +12,7 @@ import { IAuditBoard } from '../../useAuditBoards'
 import { IRound } from '../useRoundsAuditAdmin'
 import { IAuditSettings } from '../../useAuditSettings'
 import { FileProcessingStatus, IFileInfo, CvrFileType } from '../../useCSV'
+import { mocksOfType } from '../../testUtilities'
 
 export const manifestFile = new File(
   [readFileSync(join(__dirname, './test_manifest.csv'), 'utf8')],
@@ -29,9 +30,7 @@ export const cvrsFile = new File(
   { type: 'text/csv' }
 )
 
-export const auditSettings: {
-  [key: string]: IAuditSettings
-} = {
+export const auditSettings = mocksOfType<IAuditSettings>()({
   blank: {
     state: null,
     electionName: null,
@@ -125,7 +124,7 @@ export const auditSettings: {
   ballotComparisonAll: {
     state: 'AL',
     electionName: 'Election Name',
-    online: false,
+    online: true,
     randomSeed: '12345',
     riskLimit: 10,
     auditType: 'BALLOT_COMPARISON',
@@ -142,18 +141,9 @@ export const auditSettings: {
     auditMathType: 'SUITE',
     auditName: 'Test Audit',
   },
-}
+})
 
-export const roundMocks: {
-  [key in
-    | 'empty'
-    | 'singleIncomplete'
-    | 'twoIncomplete'
-    | 'singleComplete'
-    | 'needAnother'
-    | 'drawSampleInProgress'
-    | 'drawSampleErrored']: IRound[]
-} = {
+export const roundMocks = mocksOfType<IRound[]>()({
   empty: [],
   singleIncomplete: [
     {
@@ -272,7 +262,7 @@ export const roundMocks: {
       },
     },
   ],
-}
+})
 
 export const jurisdictionFileMocks: { [key: string]: IFileInfo } = {
   empty: {
@@ -336,7 +326,7 @@ export const standardizedContestsFileMocks: { [key: string]: IFileInfo } = {
   },
 }
 
-export const manifestMocks: { [key: string]: IBallotManifestInfo } = {
+export const manifestMocks = {
   empty: {
     file: null,
     processing: null,
@@ -381,7 +371,7 @@ export const manifestMocks: { [key: string]: IBallotManifestInfo } = {
   },
 }
 
-export const talliesMocks: { [key: string]: IBatchTalliesFileInfo } = {
+export const talliesMocks = {
   empty: {
     file: null,
     processing: null,
@@ -476,7 +466,7 @@ export const cvrsMocks: { [key: string]: ICvrFileInfo } = {
   },
 }
 
-export const jurisdictionMocks: { [key: string]: IJurisdiction[] } = {
+export const jurisdictionMocks = {
   empty: [],
   // Setup - Ballot polling
   noManifests: [
@@ -780,6 +770,47 @@ export const jurisdictionMocks: { [key: string]: IJurisdiction[] } = {
       currentRoundStatus: null,
     },
   ],
+  noneStartedBallotComparison: [
+    {
+      id: 'jurisdiction-id-1',
+      name: 'Jurisdiction 1',
+      ballotManifest: manifestMocks.processed,
+      cvrs: cvrsMocks.processed,
+      currentRoundStatus: {
+        status: JurisdictionRoundStatus.NOT_STARTED,
+        numUniqueAudited: 0,
+        numUnique: 10,
+        numSamplesAudited: 0,
+        numSamples: 11,
+      },
+    },
+    {
+      id: 'jurisdiction-id-2',
+      name: 'Jurisdiction 2',
+      ballotManifest: manifestMocks.processed,
+      cvrs: cvrsMocks.processed,
+      currentRoundStatus: {
+        status: JurisdictionRoundStatus.NOT_STARTED,
+        numUniqueAudited: 0,
+        numUnique: 20,
+        numSamplesAudited: 0,
+        numSamples: 22,
+      },
+    },
+    {
+      id: 'jurisdiction-id-3',
+      name: 'Jurisdiction 3',
+      ballotManifest: manifestMocks.processed,
+      cvrs: cvrsMocks.processed,
+      currentRoundStatus: {
+        status: JurisdictionRoundStatus.COMPLETE,
+        numUniqueAudited: 30,
+        numUnique: 30,
+        numSamplesAudited: 31,
+        numSamples: 31,
+      },
+    },
+  ],
   // Hybrid
   hybridTwoManifestsOneCvr: [
     {
@@ -1014,9 +1045,7 @@ export const contestMocks: {
   ],
 }
 
-export const fileProcessingMocks: {
-  [key in 'null' | 'processed' | 'errored']: IFileInfo['processing']
-} = {
+export const fileProcessingMocks = mocksOfType<IFileInfo['processing']>()({
   null: null,
   processed: {
     status: FileProcessingStatus.PROCESSED,
@@ -1030,19 +1059,9 @@ export const fileProcessingMocks: {
     completedAt: '2019-07-18T16:35:07.000+00:00',
     error: 'something went wrong',
   },
-}
+})
 
-export const auditBoardMocks: {
-  [key in
-    | 'empty'
-    | 'unfinished'
-    | 'finished'
-    | 'single'
-    | 'double'
-    | 'noBallots'
-    | 'started'
-    | 'signedOff']: IAuditBoard[]
-} = {
+export const auditBoardMocks = mocksOfType<IAuditBoard[]>()({
   empty: [],
   unfinished: [
     {
@@ -1148,4 +1167,4 @@ export const auditBoardMocks: {
       },
     },
   ],
-}
+})

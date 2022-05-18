@@ -161,7 +161,7 @@ def clear_batch_tallies_data(jurisdiction: Jurisdiction):
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch-tallies",
     methods=["PUT"],
 )
-@restrict_access([UserType.JURISDICTION_ADMIN])
+@restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
 def upload_batch_tallies(
     election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
@@ -198,7 +198,7 @@ def upload_batch_tallies(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch-tallies",
     methods=["GET"],
 )
-@restrict_access([UserType.JURISDICTION_ADMIN])
+@restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
 def get_batch_tallies(
     election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
 ):
@@ -229,7 +229,7 @@ def download_batch_tallies_file(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch-tallies",
     methods=["DELETE"],
 )
-@restrict_access([UserType.JURISDICTION_ADMIN])
+@restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
 def clear_batch_tallies(
     election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):

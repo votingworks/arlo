@@ -132,16 +132,65 @@ def test_batch_tallies_upload(
     assert rv.data == batch_tallies_file
 
 
-def test_batch_tallies_replace(
+def test_batch_tallies_clear(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    contest_ids: List[str],  # pylint: disable=unused-argument
+    manifests,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
+        data={
+            "batchTallies": (
+                io.BytesIO(
+                    b"Batch Name,candidate 1,candidate 2,candidate 3\n"
+                    b"Batch 1,1,10,100\n"
+                    b"Batch 2,2,20,200\n"
+                    b"Batch 3,3,30,300\n"
+                ),
+                "batchTallies.csv",
+            )
+        },
+    )
+    assert_ok(rv)
+
+    file_id = Jurisdiction.query.get(jurisdiction_ids[0]).batch_tallies_file_id
+
+    rv = client.delete(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies"
+    )
+    assert json.loads(rv.data) == {"file": None, "processing": None}
+
+    jurisdiction = Jurisdiction.query.get(jurisdiction_ids[0])
+    assert jurisdiction.batch_tallies_file_id is None
+    assert File.query.get(file_id) is None
+    assert jurisdiction.batch_tallies is None
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies/csv"
+    )
+    assert rv.status_code == 404
+
+
+def test_batch_tallies_replace_as_audit_admin(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
     contest_id: str,
     manifests,  # pylint: disable=unused-argument
 ):
-    set_logged_in_user(
-        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
-    )
+    # Check that AA can also get/put/clear batch tallies
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
         data={
@@ -210,35 +259,7 @@ def test_batch_tallies_replace(
         },
     }
 
-
-def test_batch_tallies_clear(
-    client: FlaskClient,
-    election_id: str,
-    jurisdiction_ids: List[str],
-    contest_ids: List[str],  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-):
-    set_logged_in_user(
-        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
-    )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
-        data={
-            "batchTallies": (
-                io.BytesIO(
-                    b"Batch Name,candidate 1,candidate 2,candidate 3\n"
-                    b"Batch 1,1,10,100\n"
-                    b"Batch 2,2,20,200\n"
-                    b"Batch 3,3,30,300\n"
-                ),
-                "batchTallies.csv",
-            )
-        },
-    )
-    assert_ok(rv)
-
-    file_id = Jurisdiction.query.get(jurisdiction_ids[0]).batch_tallies_file_id
-
+    # Now clear the batch tallies and check they are deleted
     rv = client.delete(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
     )
@@ -248,17 +269,6 @@ def test_batch_tallies_clear(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies"
     )
     assert json.loads(rv.data) == {"file": None, "processing": None}
-
-    jurisdiction = Jurisdiction.query.get(jurisdiction_ids[0])
-    assert jurisdiction.batch_tallies_file_id is None
-    assert File.query.get(file_id) is None
-    assert jurisdiction.batch_tallies is None
-
-    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies/csv"
-    )
-    assert rv.status_code == 404
 
 
 def test_batch_tallies_upload_missing_file(
