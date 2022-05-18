@@ -165,7 +165,7 @@ describe('RoundManagement', () => {
         auditBoards: auditBoardMocks.unfinished,
         createAuditBoards: jest.fn(),
       })
-      await screen.findByText('Download Aggregated Ballot Retrieval List')
+      await screen.findByText('Download Ballot Retrieval List')
       expect(container).toMatchSnapshot()
     })
   })
@@ -184,7 +184,7 @@ describe('RoundManagement', () => {
         auditBoards: auditBoardMocks.unfinished,
         createAuditBoards: jest.fn(),
       })
-      await screen.findByText('Download Aggregated Ballot Retrieval List')
+      await screen.findByText('Download Ballot Retrieval List')
       expect(container).toMatchSnapshot()
     })
   })
@@ -206,7 +206,7 @@ describe('RoundManagement', () => {
       })
 
       await screen.findByRole('button', {
-        name: /Download Aggregated Batch Retrieval List/,
+        name: /Download Batch Retrieval List/,
       })
 
       userEvent.click(
