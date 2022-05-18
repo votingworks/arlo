@@ -22,6 +22,14 @@ export interface IFileUpload {
   downloadFileUrl?: string
 }
 
+/**
+ * useUploadedFile loads the current uploaded file state from the server. If the
+ * file is processing, it will refetch the file status every second. It takes an
+ * optional argument options.onFileChange, which will be called whenever the
+ * uploaded file on the server changes (i.e. when a new file finishes processing
+ * or when a file is deleted). It is not called when the file state is first
+ * loaded from the server, nor when a file is processing.
+ */
 export const useUploadedFile = (
   key: string[],
   url: string,
@@ -32,8 +40,6 @@ export const useUploadedFile = (
     fileInfo && fileInfo.processing && !fileInfo.processing.completedAt
   return useQuery<IFileInfo, ApiError>(key, () => fetchApi(url), {
     refetchInterval: fileInfo => (isProcessing(fileInfo) ? 1000 : false),
-    // Once a file is finished processing or is deleted, call onFileChange
-    // (but don't call it the very first time we load the file)
     onSuccess: fileInfo => {
       if (isFirstFetch.current) {
         isFirstFetch.current = false
