@@ -59,10 +59,9 @@ const Progress: React.FC<IProgressProps> = ({
   const { electionId } = useParams<{ electionId: string }>()
   const [filter, setFilter] = useState<string>('')
   const [isShowingUnique, setIsShowingUnique] = useState<boolean>(true)
-  const [
-    jurisdictionDetail,
-    setJurisdictionDetail,
-  ] = useState<IJurisdiction | null>(null)
+  const [jurisdictionDetailId, setJurisdictionDetailId] = useState<
+    string | null
+  >(null)
 
   // gives prop validation error if used as auditSettings.auditType
   const { auditType } = auditSettings
@@ -80,7 +79,7 @@ const Progress: React.FC<IProgressProps> = ({
           small
           intent="primary"
           minimal
-          onClick={() => setJurisdictionDetail(jurisdiction)}
+          onClick={() => setJurisdictionDetailId(jurisdiction.id)}
         >
           {jurisdiction.name}
         </Button>
@@ -97,7 +96,7 @@ const Progress: React.FC<IProgressProps> = ({
           <StatusTag
             {...props}
             interactive
-            onClick={() => setJurisdictionDetail(jurisdiction)}
+            onClick={() => setJurisdictionDetailId(jurisdiction.id)}
           />
         )
 
@@ -338,12 +337,16 @@ const Progress: React.FC<IProgressProps> = ({
         columns={columns}
         id="progress-table"
       />
-      {jurisdictionDetail && (
+      {jurisdictionDetailId && (
         <JurisdictionDetail
-          jurisdiction={jurisdictionDetail}
+          jurisdiction={
+            jurisdictions.find(
+              jurisdiction => jurisdiction.id === jurisdictionDetailId
+            )!
+          }
           electionId={electionId}
           round={round}
-          handleClose={() => setJurisdictionDetail(null)}
+          handleClose={() => setJurisdictionDetailId(null)}
           auditSettings={auditSettings}
         />
       )}

@@ -163,7 +163,7 @@ export const useBatchTallies = (
   }
 }
 
-interface ICvrsFileUpload extends Omit<IFileUpload, 'uploadFiles'> {
+export interface ICvrsFileUpload extends Omit<IFileUpload, 'uploadFiles'> {
   uploadFiles: (cvrs: File[], cvrFileType: CvrFileType) => Promise<void>
 }
 
