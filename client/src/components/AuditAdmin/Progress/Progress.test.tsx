@@ -22,11 +22,10 @@ import { queryClient } from '../../../App'
 const mockSavePDF = jest.fn()
 jest.mock('jspdf', () => {
   const { jsPDF } = jest.requireActual('jspdf')
-  const mockjspdf = new jsPDF({ format: 'letter' })
-  // eslint-disable-next-line func-names
-  return function() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return function mockJsPDF(options?: any) {
     return {
-      ...mockjspdf,
+      ...new jsPDF(options),
       addImage: jest.fn(),
       save: mockSavePDF,
     }
