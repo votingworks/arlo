@@ -129,15 +129,20 @@ const BatchResultsForm = ({
         : undefined,
   })
 
-  const onSubmit = (results: IBatchResults) => {
+  const onSubmit = async (results: IBatchResults) => {
     const tallySheet = {
       name: 'Tally Sheet #1',
       results,
     }
-    recordBatchResults.mutate(
-      { batchId: batch.id, resultTallySheets: [tallySheet] },
-      { onSuccess: closeForm }
-    )
+    try {
+      await recordBatchResults.mutateAsync({
+        batchId: batch.id,
+        resultTallySheets: [tallySheet],
+      })
+      closeForm()
+    } catch (e) {
+      // Do nothing - errors toasted by queryClient
+    }
   }
 
   return (
@@ -181,7 +186,7 @@ const BatchResultsForm = ({
           style={{ marginLeft: '5px' }}
           icon="cross"
           onClick={closeForm}
-          loading={formState.isSubmitting}
+          disabled={formState.isSubmitting}
           aria-label="Cancel"
         />
       </td>
@@ -235,10 +240,15 @@ const BatchTallySheetsModal = ({
   }: {
     resultTallySheets: IBatchResultTallySheet[]
   }) => {
-    recordBatchResults.mutate(
-      { batchId: batch.id, resultTallySheets },
-      { onSuccess: closeModal }
-    )
+    try {
+      await recordBatchResults.mutateAsync({
+        batchId: batch.id,
+        resultTallySheets,
+      })
+      closeModal()
+    } catch (error) {
+      // Do nothing - errors toasted by queryClient
+    }
   }
 
   return (
