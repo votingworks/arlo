@@ -12,7 +12,7 @@ import {
 import styled from 'styled-components'
 import { Formik, FormikProps } from 'formik'
 import { IJurisdiction, JurisdictionRoundStatus } from '../../useJurisdictions'
-import { CvrFileType } from '../../useCSV'
+import { CvrFileType, FileProcessingStatus } from '../../useCSV'
 import { IRound } from '../useRoundsAuditAdmin'
 import { IAuditSettings } from '../../useAuditSettings'
 import { api } from '../../utilities'
@@ -25,6 +25,7 @@ import {
   useBallotManifest,
   useBatchTallies,
   useCVRs,
+  ICvrsFileUpload,
 } from '../../useFileUpload'
 
 const prettyCvrFileType = (cvrFileType: CvrFileType) =>
@@ -62,10 +63,23 @@ const JurisdictionDetail = ({
   round,
   auditSettings,
 }: IJurisdictionDetailProps) => {
+  const cvrsEnabled =
+    auditSettings.auditType === 'BALLOT_COMPARISON' ||
+    auditSettings.auditType === 'HYBRID'
+  const batchTalliesEnabled = auditSettings.auditType === 'BATCH_COMPARISON'
   const ballotManifestUpload = useBallotManifest(electionId, jurisdiction.id)
   const batchTalliesUpload = useBatchTallies(electionId, jurisdiction.id, {
-    enabled: auditSettings.auditType === 'BATCH_COMPARISON',
+    enabled: batchTalliesEnabled,
   })
+  const cvrsUpload = useCVRs(electionId, jurisdiction.id, {
+    enabled: cvrsEnabled,
+  })
+
+  const ballotManifest = ballotManifestUpload.uploadedFile.data
+  const isManifestUploaded =
+    ballotManifest &&
+    ballotManifest.processing &&
+    ballotManifest.processing.status === FileProcessingStatus.PROCESSED
 
   return (
     <Dialog onClose={handleClose} title={jurisdiction.name} isOpen>
@@ -80,32 +94,22 @@ const JurisdictionDetail = ({
               disabled={!!round}
             />
           </StatusCard>
-          {auditSettings.auditType === 'BATCH_COMPARISON' && (
+          {batchTalliesEnabled && (
             <StatusCard>
               <H6>Candidate Totals by Batch</H6>
               <FileUpload
                 {...batchTalliesUpload}
                 acceptFileType="csv"
-                disabled={
-                  !!round ||
-                  (ballotManifestUpload.uploadedFile.data &&
-                    !ballotManifestUpload.uploadedFile.data.file)
-                }
+                disabled={!!round || !isManifestUploaded}
               />
             </StatusCard>
           )}
-          {(auditSettings.auditType === 'BALLOT_COMPARISON' ||
-            auditSettings.auditType === 'HYBRID') && (
+          {cvrsEnabled && (
             <StatusCard>
               <H6>Cast Vote Records (CVR)</H6>
               <CvrsFileUpload
-                electionId={electionId}
-                jurisdiction={jurisdiction}
-                disabled={
-                  !!round ||
-                  (ballotManifestUpload.uploadedFile.data &&
-                    !ballotManifestUpload.uploadedFile.data.file)
-                }
+                cvrsUpload={cvrsUpload}
+                disabled={!!round || !isManifestUploaded}
               />
             </StatusCard>
           )}
@@ -124,25 +128,32 @@ const JurisdictionDetail = ({
 }
 
 const CvrsFileUpload = ({
-  electionId,
-  jurisdiction,
+  cvrsUpload,
   disabled,
 }: {
-  electionId: string
-  jurisdiction: IJurisdiction
+  cvrsUpload: ICvrsFileUpload
   disabled?: boolean
 }) => {
-  const cvrsUpload = useCVRs(electionId, jurisdiction.id)
   const [selectedCvrFileType, setSelectedCvrFileType] = useState<CvrFileType>()
-  const uploadFiles = (files: File[]) =>
-    cvrsUpload.uploadFiles(files, selectedCvrFileType!)
+  const [isUploading, setIsUploading] = useState(false)
+  const uploadFiles = async (files: File[]) => {
+    setIsUploading(true)
+    try {
+      await cvrsUpload.uploadFiles(files, selectedCvrFileType!)
+    } finally {
+      setIsUploading(false)
+    }
+  }
+
+  const cvrs = cvrsUpload.uploadedFile.data
+  if (!cvrs) return null
 
   return (
     <>
       <div style={{ marginBottom: '10px' }}>
         <label htmlFor="cvrFileType">CVR File Type: </label>
-        {jurisdiction.cvrs!.file ? (
-          prettyCvrFileType(jurisdiction.cvrs!.file.cvrFileType!)
+        {cvrs.file ? (
+          prettyCvrFileType(cvrs.file.cvrFileType!)
         ) : (
           <HTMLSelect
             name="cvrFileType"
@@ -151,7 +162,7 @@ const CvrsFileUpload = ({
             onChange={e =>
               setSelectedCvrFileType(e.target.value as CvrFileType)
             }
-            disabled={disabled}
+            disabled={disabled || isUploading}
           >
             <option></option>
             <option value={CvrFileType.DOMINION}>Dominion</option>
@@ -168,9 +179,7 @@ const CvrsFileUpload = ({
           selectedCvrFileType === CvrFileType.HART ? 'zip' : 'csv'
         }
         allowMultipleFiles={selectedCvrFileType === CvrFileType.ESS}
-        disabled={
-          disabled || (!jurisdiction.cvrs!.file && !selectedCvrFileType)
-        }
+        disabled={disabled || (!cvrs.file && !selectedCvrFileType)}
       />
     </>
   )

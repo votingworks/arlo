@@ -176,6 +176,9 @@ describe('JurisdictionDetail', () => {
       userEvent.click(
         within(cvrsCard).getByRole('button', { name: 'Upload File' })
       )
+      await waitFor(() =>
+        expect(within(cvrsCard).getByLabelText('CVR File Type:')).toBeDisabled()
+      )
       await within(cvrsCard).findByText('Uploaded')
       const cvrsLink = within(cvrsCard).getByRole('link', { name: 'cvrs.csv' })
       expect(cvrsLink).toHaveAttribute(
@@ -204,6 +207,9 @@ describe('JurisdictionDetail', () => {
         within(cvrsCard).getByRole('button', { name: 'Delete File' })
       )
       await within(cvrsCard).findByText('No file uploaded')
+      const cvrFileTypeInput = within(cvrsCard).getByLabelText('CVR File Type:')
+      expect(cvrFileTypeInput).toBeEnabled()
+      expect(cvrFileTypeInput).toHaveValue('CLEARBALLOT')
     })
   })
 
