@@ -105,8 +105,13 @@ const Organizations = () => {
 
   if (!organizations.isSuccess) return null
 
-  const onSubmitCreateOrganization = ({ name }: { name: string }) => {
-    createOrganization.mutate({ name }, { onSuccess: () => reset() })
+  const onSubmitCreateOrganization = async ({ name }: { name: string }) => {
+    try {
+      await createOrganization.mutateAsync({ name })
+      reset()
+    } catch (error) {
+      // Do nothing - errors toasted by queryClient
+    }
   }
 
   return (
@@ -187,8 +192,13 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
 
   if (!organization.isSuccess) return null
 
-  const onSubmitCreateAuditAdmin = (auditAdmin: IAuditAdmin) => {
-    createAuditAdmin.mutate(auditAdmin, { onSuccess: () => resetCreateAdmin() })
+  const onSubmitCreateAuditAdmin = async (auditAdmin: IAuditAdmin) => {
+    try {
+      await createAuditAdmin.mutateAsync(auditAdmin)
+      resetCreateAdmin()
+    } catch (error) {
+      // Do nothing - errors toasted by queryClient
+    }
   }
 
   const { name, elections, auditAdmins } = organization.data
