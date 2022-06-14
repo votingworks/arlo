@@ -18,7 +18,13 @@ def findall(xml, tag):
     return xml.findall(tag, namespaces={"": ns})
 
 
-def parse_cvr_file(file_path):
+def get_directory_name(file_path):
+    directory_path = os.path.dirname(file_path)
+    directory_name = os.path.basename(directory_path)
+    return directory_name
+
+
+def parse_cvr_file(file_path, use_directory_name_as_tabulator=False):
     xml = ElementTree.parse(file_path).getroot()
     assert xml.tag == f"{{{ns}}}Cvr"
 
@@ -43,35 +49,57 @@ def parse_cvr_file(file_path):
             vote = find(choice, "Value").text
             cvr["Contests"][contest_name][choice_name] = vote
 
+    if use_directory_name_as_tabulator:
+        cvr["Tabulator"] = get_directory_name(file_path)
+
     return cvr
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
+    if not (
+        len(sys.argv) == 3
+        or (len(sys.argv) == 4 and sys.argv[1] == "--cvrs-exported-by-tabulator")
+    ):
         print(
-            "Usage: python -m scripts.parse-xml-cvrs <cvr_directory_path> <output_csv_path>",
+            "Usage: python -m scripts.parse-xml-cvrs [--cvrs-exported-by-tabulator] <cvr_directory_path> <output_csv_path>",
             file=sys.stderr,
         )
         sys.exit(1)
 
-    cvr_directory_path = sys.argv[1]
-    output_csv_path = sys.argv[2]
+    cvr_directory_path = sys.argv[len(sys.argv) - 2]
+    output_csv_path = sys.argv[len(sys.argv) - 1]
+    cvrs_exported_by_tabulator = len(sys.argv) == 4
 
-    contest_choices: dict = defaultdict(set)
+    print("Finding CVR files...")
+
+    cvr_file_paths = []
+    if cvrs_exported_by_tabulator:
+        for entry in os.scandir(cvr_directory_path):
+            if entry.is_dir():
+                for sub_entry in os.scandir(entry.path):
+                    if sub_entry.is_file() and sub_entry.name.endswith(".xml"):
+                        cvr_file_paths.append(sub_entry.path)
+    else:
+        for entry in os.scandir(cvr_directory_path):
+            if entry.is_file() and entry.name.endswith(".xml"):
+                cvr_file_paths.append(entry.path)
+
+    print(f"Found {len(cvr_file_paths)} CVR files")
+
     cvrs = []
-
-    for entry in os.scandir(cvr_directory_path):
-        if entry.is_dir():
-            print(f"Skipping directory: {entry.name}")
-            continue
-
+    contest_choices: dict = defaultdict(set)
+    for cvr_file_path in cvr_file_paths:
         try:
-            cvr = parse_cvr_file(entry.path)
+            cvr = parse_cvr_file(
+                cvr_file_path,
+                use_directory_name_as_tabulator=cvrs_exported_by_tabulator,
+            )
         except Exception as exc:
-            print(f"Error parsing file: {entry.path}")
+            print(f"Error parsing file: {cvr_file_path}")
             raise exc
 
         cvrs.append(cvr)
+
         # Keep track of all contest choices we've seen
         for contest_name, choices in cvr["Contests"].items():
             for choice_name in choices:
@@ -115,7 +143,7 @@ if __name__ == "__main__":
         for i, cvr in enumerate(cvrs):
             row = [
                 i,
-                1,
+                cvr["Tabulator"] if cvrs_exported_by_tabulator else 1,
                 cvr["BatchNumber"],
                 cvr["BatchSequence"],
                 cvr["CvrGuid"],
