@@ -552,6 +552,31 @@ def test_ballot_polling_not_found_ballots(snapshot):
     snapshot.assert_match(not_found_p_values)
 
 
+def test_bravo_no_90_percent_prob_sample_size():
+    contest = Contest(
+        "Contest",
+        {
+            "K": 228713,
+            "J": 124297,
+            "D": 115776,
+            "P": 43710,
+            "C": 41809,
+            "G": 41688,
+            "B": 13720,
+            "ballots": 672912,
+            "numWinners": 1,
+            "votesAllowed": 1,
+        },
+    )
+    sample_results = {
+        "round1": {"K": 50, "J": 21, "D": 30, "P": 8, "C": 10, "G": 10, "B": 1}
+    }
+    sample_sizes = bravo.get_sample_size(
+        RISK_LIMIT, contest, sample_results, {"round1": 135}
+    )
+    assert "0.9" not in sample_sizes
+
+
 bravo_contests = {
     "test1": {
         "cand1": 600,
