@@ -118,10 +118,10 @@ def run_task(task: BackgroundTask, db_session=db_session):
 
         if isinstance(error, UserError):
             logger.info(f"TASK_USER_ERROR {log_data}")
-
-        log_data["traceback"] = str(traceback.format_tb(error.__traceback__))
-        logger.error(f"TASK_ERROR {log_data}")
-        sentry_sdk.capture_exception(error)
+        else:
+            log_data["traceback"] = str(traceback.format_tb(error.__traceback__))
+            logger.error(f"TASK_ERROR {log_data}")
+            sentry_sdk.capture_exception(error)
 
 
 def run_new_tasks(db_session=db_session):
