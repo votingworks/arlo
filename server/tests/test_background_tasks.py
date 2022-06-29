@@ -1,5 +1,6 @@
 from datetime import datetime
 import logging
+from unittest.mock import patch
 import sqlalchemy
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy_utils import create_database, drop_database
@@ -169,15 +170,15 @@ def test_task_user_error(caplog, db_session):
     )
 
 
-def test_task_python_error(caplog, db_session):
+@patch("sentry_sdk.capture_exception", auto_spec=True)
+def test_task_python_error(capture_exception, caplog, db_session):
     @background_task
     def python_error():
         return [][1]
 
     task = create_background_task(python_error, {}, db_session)
 
-    with pytest.raises(IndexError):
-        run_new_tasks(db_session)
+    run_new_tasks(db_session)
 
     task = db_session.query(BackgroundTask).get(task.id)
     compare_json(
@@ -210,16 +211,19 @@ def test_task_python_error(caplog, db_session):
         ),
     )
 
+    capture_exception.assert_called_once()
+    assert isinstance(capture_exception.call_args[0][0], IndexError)
 
-def test_task_python_error_format(caplog, db_session):
+
+@patch("sentry_sdk.capture_exception", auto_spec=True)
+def test_task_python_error_format(capture_exception, caplog, db_session):
     @background_task
     def error_format():
         return next(iter([]))
 
     task = create_background_task(error_format, {}, db_session)
 
-    with pytest.raises(StopIteration):
-        run_new_tasks(db_session)
+    run_new_tasks(db_session)
 
     task = db_session.query(BackgroundTask).get(task.id)
     compare_json(
@@ -252,16 +256,19 @@ def test_task_python_error_format(caplog, db_session):
         ),
     )
 
+    capture_exception.assert_called_once()
+    assert isinstance(capture_exception.call_args[0][0], StopIteration)
 
-def test_task_db_error(caplog, db_session):
+
+@patch("sentry_sdk.capture_exception", auto_spec=True)
+def test_task_db_error(capture_exception, caplog, db_session):
     @background_task
     def db_error():
         db_session.add(Election(id=1))
 
     task = create_background_task(db_error, {}, db_session)
 
-    with pytest.raises(sqlalchemy.exc.IntegrityError):
-        run_new_tasks(db_session)
+    run_new_tasks(db_session)
 
     task = db_session.query(BackgroundTask).get(task.id)
     compare_json(
@@ -295,6 +302,9 @@ def test_task_db_error(caplog, db_session):
             " 'error': '(psycopg2.errors.NotNullViolation) null value in column \"audit_name\" violates not-null constraint"
         ),
     )
+
+    capture_exception.assert_called_once()
+    assert isinstance(capture_exception.call_args[0][0], sqlalchemy.exc.IntegrityError)
 
 
 def test_task_multiple_run_in_order(db_session):

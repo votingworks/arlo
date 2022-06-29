@@ -1,15 +1,10 @@
 import io, json
 from typing import BinaryIO, Dict, List
-import pytest
-from flask import session
 from flask.testing import FlaskClient
 
-from ...app import app
 from ...models import *  # pylint: disable=wildcard-import
 from ..helpers import *  # pylint: disable=wildcard-import
-from ...api.cvrs import upload_cvrs
 from ...util.file import zip_files
-from ...auth import lib as auth_lib
 from .conftest import TEST_CVRS
 
 
@@ -1815,10 +1810,16 @@ def test_hart_cvrs_invalid_zip_mimetype(
 
 
 def test_cvrs_unexpected_error(
+    client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
     manifests,  # pylint: disable=unused-argument
 ):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    manifest_num_ballots = jurisdictions[0]["ballotManifest"]["numBallots"]
+
     # Duplicate a row to simulate an unexpected error
     cvrs = """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
 ,,,,,,,,"Contest 1 (Vote For=1)","Contest 1 (Vote For=1)"
@@ -1827,19 +1828,39 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortio
 1,TABULATOR1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,0,1
 1,TABULATOR1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,0,1
 """
-    with app.test_request_context(
-        path=f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
         data={
             "cvrs": (io.BytesIO(cvrs.encode()), "cvrs.csv",),
             "cvrFileType": "DOMINION",
         },
-    ):
-        auth_lib.set_loggedin_user(
-            session, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
-        )
-        with pytest.raises(Exception, match="Could not parse CVR file"):
-            # pylint: disable=unexpected-keyword-arg,no-value-for-parameter
-            upload_cvrs(election_id=election_id, jurisdiction_id=jurisdiction_ids[0])
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
+    )
+    compare_json(
+        json.loads(rv.data),
+        {
+            "file": {
+                "name": "cvrs.csv",
+                "uploadedAt": assert_is_date,
+                "cvrFileType": "DOMINION",
+            },
+            "processing": {
+                "status": ProcessingStatus.ERRORED,
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": "Could not parse CVR file",
+                "workProgress": 0,
+                "workTotal": manifest_num_ballots,
+            },
+        },
+    )
 
     cvr_ballots = (
         CvrBallot.query.join(Batch)

@@ -5,13 +5,13 @@ from inspect import signature
 from datetime import datetime
 from typing import Optional, Callable, Dict
 from sqlalchemy.orm import Session
+import sentry_sdk
 
 from ..database import db_session, engine
 from ..models import *  # pylint: disable=wildcard-import
 from ..util.isoformat import isoformat
 from ..util.jsonschema import JSONDict
 from .. import config
-
 
 logger = logging.getLogger("arlo.worker")
 
@@ -73,7 +73,7 @@ def emit_progress_for_task(task_id: str):
 # Due to this constraint, functions in this file take an optional db_session
 # argument in order for the tests to call them using isolated databases. In
 # non-test environments, using the default global db_session is fine.
-def run_task(task: BackgroundTask, db_session=db_session) -> bool:
+def run_task(task: BackgroundTask, db_session=db_session):
     task_handler = task_dispatch.get(task.task_name)
     assert task_handler, (
         f"No task handler registered for {task.task_name}."
@@ -100,7 +100,6 @@ def run_task(task: BackgroundTask, db_session=db_session) -> bool:
 
         logger.info(f"TASK_COMPLETE {task_log_data(task)}")
 
-        return True
     except Exception as error:
         db_session.rollback()
 
@@ -119,11 +118,10 @@ def run_task(task: BackgroundTask, db_session=db_session) -> bool:
 
         if isinstance(error, UserError):
             logger.info(f"TASK_USER_ERROR {log_data}")
-            return True
-
-        log_data["traceback"] = str(traceback.format_tb(error.__traceback__))
-        logger.error(f"TASK_ERROR {log_data}")
-        raise error
+        else:
+            log_data["traceback"] = str(traceback.format_tb(error.__traceback__))
+            logger.error(f"TASK_ERROR {log_data}")
+            sentry_sdk.capture_exception(error)
 
 
 def run_new_tasks(db_session=db_session):
