@@ -961,3 +961,16 @@ def test_parse_csv_cant_detect_encoding():
         " If you are working with an Excel spreadsheet,"
         " make sure you export it as a .csv file before uploading"
     )
+
+
+def test_parse_csv_xls_mislabeled_as_csv():
+    xls_mislabeled_as_csv = os.path.join(os.path.dirname(__file__), "xls-mislabeled-as-csv.csv")
+    with open(xls_mislabeled_as_csv, "rb") as file:
+        with pytest.raises(CSVParseError) as error:
+            parse_csv_binary(file, [])
+    assert str(error.value) == (
+        "Please submit a valid CSV."
+        " If you are working with an Excel spreadsheet,"
+        " make sure you export it as a .csv file before uploading"
+        "\n\nAdditional details: 'charmap' codec can't decode byte 0x8d in position 750: character maps to <undefined>"
+    )
