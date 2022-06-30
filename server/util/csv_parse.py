@@ -68,7 +68,9 @@ def parse_csv(file: BinaryIO, columns: List[CSVColumnType]) -> CSVDictIterator:
         # While we do our best to validate files and detect their encoding before parsing them as
         # CSVs with that detected encoding, unusual files, e.g. XLS files mislabeled with a .csv
         # extension, may still result in decoding errors
-        raise CSVParseError(INVALID_CSV_ERROR + "\n\nAdditional details: {0}".format(err))
+        raise CSVParseError(
+            INVALID_CSV_ERROR + "\n\nAdditional details: {0}".format(err)
+        )
     csv = strip_whitespace(csv)
     csv = reject_no_rows(csv)
     csv = skip_empty_trailing_columns(csv)

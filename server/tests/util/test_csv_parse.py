@@ -964,7 +964,9 @@ def test_parse_csv_cant_detect_encoding():
 
 
 def test_parse_csv_xls_mislabeled_as_csv():
-    xls_mislabeled_as_csv = os.path.join(os.path.dirname(__file__), "xls-mislabeled-as-csv.csv")
+    xls_mislabeled_as_csv = os.path.join(
+        os.path.dirname(__file__), "xls-mislabeled-as-csv.csv"
+    )
     with open(xls_mislabeled_as_csv, "rb") as file:
         with pytest.raises(CSVParseError) as error:
             parse_csv_binary(file, [])
