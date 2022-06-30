@@ -60,17 +60,8 @@ INVALID_CSV_ERROR = (
 def parse_csv(file: BinaryIO, columns: List[CSVColumnType]) -> CSVDictIterator:
     validate_not_empty(file)
     text_file = decode_csv(file)
-    csv: CSVIterator
-    try:
-        validate_comma_delimited(text_file)
-        csv = py_csv.reader(text_file, delimiter=",")
-    except UnicodeDecodeError as err:
-        # While we do our best to validate files and detect their encoding before parsing them as
-        # CSVs with that detected encoding, unusual files, e.g. XLS files mislabeled with a .csv
-        # extension, may still result in decoding errors
-        raise CSVParseError(
-            INVALID_CSV_ERROR + "\n\nAdditional details: {0}".format(err)
-        ) from err
+    validate_comma_delimited(text_file)
+    csv: CSVIterator = py_csv.reader(text_file, delimiter=",")
     csv = strip_whitespace(csv)
     csv = reject_no_rows(csv)
     csv = skip_empty_trailing_columns(csv)
@@ -115,7 +106,23 @@ def decode_csv(file: IO[bytes]) -> TextIO:
     if encoding == "ascii":
         encoding = "utf-8"
     file.seek(0)
-    return io.TextIOWrapper(file, encoding=encoding, newline=None)
+    text_file = io.TextIOWrapper(file, encoding=encoding, newline=None)
+
+    # chardet sometimes detects an encoding with a low confidence threshold. To be extra safe, try
+    # reading the first line of the file with the detected encoding before returning the file. This
+    # check catches unusual cases like XLS files mislabeled with a .csv extension
+    try:
+        text_file.readline()
+    except UnicodeDecodeError as error:
+        raise CSVParseError(
+            INVALID_CSV_ERROR
+            + "\n\nAdditional details: Unable to decode file assuming {0} encoding".format(
+                encoding
+            )
+        ) from error
+    text_file.seek(0)
+
+    return text_file
 
 
 def validate_not_empty(file: IO[bytes]):

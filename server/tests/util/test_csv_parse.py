@@ -974,5 +974,5 @@ def test_parse_csv_xls_mislabeled_as_csv():
         "Please submit a valid CSV."
         " If you are working with an Excel spreadsheet,"
         " make sure you export it as a .csv file before uploading"
-        "\n\nAdditional details: 'charmap' codec can't decode byte 0x8d in position 750: character maps to <undefined>"
+        "\n\nAdditional details: Unable to decode file assuming Windows-1254 encoding"
     )
