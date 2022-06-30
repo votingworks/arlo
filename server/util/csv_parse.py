@@ -70,7 +70,7 @@ def parse_csv(file: BinaryIO, columns: List[CSVColumnType]) -> CSVDictIterator:
         # extension, may still result in decoding errors
         raise CSVParseError(
             INVALID_CSV_ERROR + "\n\nAdditional details: {0}".format(err)
-        )
+        ) from err
     csv = strip_whitespace(csv)
     csv = reject_no_rows(csv)
     csv = skip_empty_trailing_columns(csv)
