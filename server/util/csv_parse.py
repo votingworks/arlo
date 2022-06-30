@@ -60,8 +60,15 @@ INVALID_CSV_ERROR = (
 def parse_csv(file: BinaryIO, columns: List[CSVColumnType]) -> CSVDictIterator:
     validate_not_empty(file)
     text_file = decode_csv(file)
-    validate_comma_delimited(text_file)
-    csv: CSVIterator = py_csv.reader(text_file, delimiter=",")
+    csv: CSVIterator
+    try:
+        validate_comma_delimited(text_file)
+        csv = py_csv.reader(text_file, delimiter=",")
+    except UnicodeDecodeError as err:
+        # While we do our best to validate files and detect their encoding before parsing them as
+        # CSVs with that detected encoding, unusual files, e.g. XLS files mislabeled with a .csv
+        # extension, may still result in decoding errors
+        raise CSVParseError(INVALID_CSV_ERROR + "\n\nAdditional details: {0}".format(err))
     csv = strip_whitespace(csv)
     csv = reject_no_rows(csv)
     csv = skip_empty_trailing_columns(csv)
