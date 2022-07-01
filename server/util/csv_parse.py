@@ -106,7 +106,23 @@ def decode_csv(file: IO[bytes]) -> TextIO:
     if encoding == "ascii":
         encoding = "utf-8"
     file.seek(0)
-    return io.TextIOWrapper(file, encoding=encoding, newline=None)
+    text_file = io.TextIOWrapper(file, encoding=encoding, newline=None)
+
+    # chardet sometimes detects an encoding with a low confidence threshold. To be extra safe, try
+    # reading the first line of the file with the detected encoding before returning the file. This
+    # check catches unusual cases like XLS files mislabeled with a .csv extension
+    try:
+        text_file.readline()
+    except UnicodeDecodeError as error:
+        raise CSVParseError(
+            INVALID_CSV_ERROR
+            + "\n\nAdditional details: Unable to decode file assuming {0} encoding".format(
+                encoding
+            )
+        ) from error
+    text_file.seek(0)
+
+    return text_file
 
 
 def validate_not_empty(file: IO[bytes]):
