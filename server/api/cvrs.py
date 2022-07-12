@@ -513,10 +513,9 @@ def parse_ess_cvrs(
         # We've seen malformed ballots CSVs to lack of field quoting, leading to
         # commas in field values being parsed as extra columns. To hackily work
         # around this, we find and quote the example of this we've seen.
-        overvote_misquoting_regex = re.compile(r", Overvote,,")
+        misquoting_regex = re.compile(r", (Overvote|Undervote),,")
         ballots_file_lines = (
-            re.sub(overvote_misquoting_regex, '," Overvote,",', line)
-            for line in ballots_file
+            re.sub(misquoting_regex, '," \1,",', line) for line in ballots_file
         )
 
         ballots_csv = csv.reader(ballots_file_lines, delimiter=",")
@@ -592,7 +591,7 @@ def parse_ess_cvrs(
                     record_id = int(ballot_number)
                 else:
                     # Convert 16-character hex to a small-ish int that fits in
-                    # the db Based on the data we've seen, this creates a large
+                    # the db. Based on the data we've seen, this creates a large
                     # enough gap between ids to order them without creating any
                     # duplicates.
                     record_id = floor(int(tabulator_cvr, 16) / 10 ** 10)

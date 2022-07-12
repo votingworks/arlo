@@ -61,7 +61,7 @@ if __name__ == "__main__":
                 ] = row[:first_contest_column]
                 batch_counts[(scan_computer_name, box_id)] += 1
 
-        # Expects type 2 ES&S ballots file
+        # Expects type 2 ES&S ballots file (more on this in server/api/cvrs.py)
         elif cvr_file_type == "ESS":
             headers = next(cvr)
             print(headers)
