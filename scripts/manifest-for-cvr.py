@@ -1,4 +1,5 @@
 # pylint: disable=invalid-name
+import re
 import csv
 import sys
 from collections import defaultdict
@@ -10,9 +11,21 @@ if __name__ == "__main__":
         )
         sys.exit(1)
 
+    cvr_file_type = sys.argv[2]
     with open(sys.argv[1], "r") as cvr_file:
-        cvr = csv.reader(cvr_file, delimiter=",")
-        cvr_file_type = sys.argv[2]
+        if cvr_file_type == "ESS":
+            # We've seen malformed ballots CSVs to lack of field quoting, leading to
+            # commas in field values being parsed as extra columns. To hackily work
+            # around this, we find and quote the example of this we've seen.
+            overvote_misquoting_regex = re.compile(r", Overvote,,")
+            cvr_file_lines = (
+                re.sub(overvote_misquoting_regex, '," Overvote,",', line)
+                for line in cvr_file
+            )
+        else:
+            cvr_file_lines = (line for line in cvr_file)
+
+        cvr = csv.reader(cvr_file_lines, delimiter=",")
         batch_counts = defaultdict(int)  # type: ignore
 
         if cvr_file_type == "DOMINION":
@@ -47,6 +60,17 @@ if __name__ == "__main__":
                     *_,
                 ] = row[:first_contest_column]
                 batch_counts[(scan_computer_name, box_id)] += 1
+
+        # Expects type 2 ES&S ballots file
+        elif cvr_file_type == "ESS":
+            headers = next(cvr)
+            print(headers)
+            header_indices = {header: i for i, header in enumerate(headers)}
+            for row in cvr:
+                print(row)
+                tabulator = row[header_indices["Machine"]]
+                batch_name = row[header_indices["Batch"]]
+                batch_counts[(tabulator, batch_name)] += 1
 
     with open(sys.argv[3], "w") as manifest_file:
         manifest = csv.writer(manifest_file, delimiter=",")

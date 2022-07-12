@@ -1485,6 +1485,99 @@ def test_ess_cvr_invalid(
         )
 
 
+# In CVR row 4, we simulate a malformed CSV row due to bad quoting of the Remaining Ballot Exception field.
+ESS_TYPE_2_BALLOTS = """Cast Vote Record,Batch,Ballot Status,Original Ballot Exception,Remaining Ballot Exception,Write-in Type,Results Report,Ballot Style,Reporting Group,Tabulator CVR,Audit Number,Type,Poll Place,Poll Place ID,Precinct,Precinct ID,Machine,Adjudicated By,
+1,BATCH1,Not Reviewed,,,,N,REP 405,Election Day,02bc1dc7bc1e7774,7074480632,Card,Election Day,28,405,21,0001,
+2,BATCH1,Not Reviewed,,,,N,REP 405,Election Day,039b31b93d9a8099,7074480632,Card,Election Day,28,405,21,0001,
+3,BATCH1,Not Reviewed,Undervote,,,N,REP 405,Election Day,06348ce7b6d146d2,7074480632,Card,Election Day,28,405,21,0001,
+4,BATCH1,Not Reviewed,Overvote, Overvote,,,N,REP 405,Election Day,09809965339bad95,7074480632,Card,Election Day,28,405,21,0001,
+5,BATCH1,Not Reviewed,,,,N,REP 405,Election Day,0002003172,7074480632,Card,Election Day,28,405,21,0002,
+6,BATCH1,Not Reviewed,,,,N,REP 405,Election Day,0002003173,7074480632,Card,Election Day,28,405,21,0002,
+7,BATCH2,Not Reviewed,,,,N,REP 405,Election Day,19882855d197f6c2,7074480632,Card,Election Day,28,405,21,0001,
+8,BATCH2,Not Reviewed,,,,N,REP 405,Election Day,1dd6b0ff8462558c,7074480632,Card,Election Day,28,405,21,0001,
+9,BATCH2,Not Reviewed,,,,N,REP 405,Election Day,1f781b866b83de9b,7074480632,Card,Election Day,28,405,21,0001,
+10,BATCH2,Not Reviewed,,,,N,REP 405,Election Day,0002000171,7074480632,Card,Election Day,28,405,21,0002,
+11,BATCH2,Not Reviewed,,,,N,REP 405,Election Day,0002000172,7074480632,Card,Election Day,28,405,21,0002,
+12,BATCH2,Not Reviewed,,,,N,REP 405,Election Day,0002000173,7074480632,Card,Election Day,28,405,21,0002,
+13,BATCH2,Not Reviewed,,,,N,REP 405,Election Day,0002000174,7074480632,Card,Election Day,28,405,21,0002,
+15,BATCH2,Not Reviewed,,,,N,REP 405,Election Day,0002000175,7074480632,Card,Election Day,28,405,21,0002,
+"""
+
+
+def test_ess_cvr_type_2_upload(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    ess_manifests,  # pylint: disable=unused-argument
+    snapshot,
+):
+    # Upload CVRs
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
+        data={
+            "cvrs": [
+                (io.BytesIO(ESS_CVR.encode()), "ess_cvr.csv",),
+                (io.BytesIO(ESS_TYPE_2_BALLOTS.encode()), "ess_ballots.csv",),
+            ],
+            "cvrFileType": "ESS",
+        },
+    )
+    assert_ok(rv)
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    manifest_num_ballots = jurisdictions[0]["ballotManifest"]["numBallots"]
+
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
+    )
+    compare_json(
+        json.loads(rv.data),
+        {
+            "file": {
+                "name": "cvr-files.zip",
+                "uploadedAt": assert_is_date,
+                "cvrFileType": "ESS",
+            },
+            "processing": {
+                "status": ProcessingStatus.PROCESSED,
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": None,
+                "workProgress": manifest_num_ballots,
+                "workTotal": manifest_num_ballots,
+            },
+        },
+    )
+
+    cvr_ballots = (
+        CvrBallot.query.join(Batch)
+        .filter_by(jurisdiction_id=jurisdiction_ids[0])
+        .order_by(CvrBallot.imprinted_id)
+        .all()
+    )
+    assert len(cvr_ballots) == manifest_num_ballots - 1
+    snapshot.assert_match(
+        [
+            dict(
+                batch_name=cvr.batch.name,
+                tabulator=cvr.batch.tabulator,
+                ballot_position=cvr.ballot_position,
+                imprinted_id=cvr.imprinted_id,
+                interpretations=cvr.interpretations,
+            )
+            for cvr in cvr_ballots
+        ]
+    )
+    snapshot.assert_match(
+        Jurisdiction.query.get(jurisdiction_ids[0]).cvr_contests_metadata
+    )
+
+
 def build_hart_cvr(
     batch_name: str,
     batch_sequence: str,
