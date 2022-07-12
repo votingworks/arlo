@@ -515,7 +515,7 @@ def parse_ess_cvrs(
         # around this, we find and quote the example of this we've seen.
         misquoting_regex = re.compile(r", (Overvote|Undervote),,")
         ballots_file_lines = (
-            re.sub(misquoting_regex, '," \1,",', line) for line in ballots_file
+            re.sub(misquoting_regex, r'," \1,",', line) for line in ballots_file
         )
 
         ballots_csv = csv.reader(ballots_file_lines, delimiter=",")
