@@ -150,7 +150,6 @@ def draw_ppeb_sample(
     sample_tuples: List[Tuple[Any, Tuple[Any, Any]]] = []
 
     for batch in sample:
-        print(batch)
         # For some reason np converts the tuple to a list in sampling
         batch_tuple = tuple(batch)
         count = counts.get(batch_tuple, 0) + 1
