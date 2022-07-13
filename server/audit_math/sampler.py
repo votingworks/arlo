@@ -150,6 +150,7 @@ def draw_ppeb_sample(
     sample_tuples: List[Tuple[Any, Tuple[Any, Any]]] = []
 
     for batch in sample:
+        print(batch)
         # For some reason np converts the tuple to a list in sampling
         batch_tuple = tuple(batch)
         count = counts.get(batch_tuple, 0) + 1
@@ -163,7 +164,7 @@ def draw_ppeb_sample(
         # Trim the ticket number
         ticket = consistent_sampler.trim(ticket, 18)  # type: ignore
 
-        # I can't seem tomake mypy realize the tuple is what we expect
+        # I can't seem to make mypy realize the tuple is what we expect
         sample_tuples.append((ticket, batch_tuple))  # type: ignore
         counts[batch_tuple] = count
 

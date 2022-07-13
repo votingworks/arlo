@@ -1,7 +1,9 @@
 from decimal import Decimal
 from typing import Dict
+from csv import DictReader
 import pytest
 
+from ...audit_math import sampler
 from ...audit_math import macro
 from ...audit_math.sampler_contest import Contest
 
@@ -574,3 +576,55 @@ def test_close_contest() -> None:
 
     assert not computed_p
     assert res
+
+
+def test_dekalb_primary_2022():
+    name = "Dekalb Primary 2022"
+
+    info_dict = {
+        "Dee Dawkins-Haigler": 6672,
+        "Bee Nguyen": 37882,
+        "ballots": 45743,
+        "numWinners": 1,
+        "votesAllowed": 1,
+    }
+
+    contest = Contest(name, info_dict)
+
+    seed = "84976858374874550815"
+    alpha = 0.05
+    sample_size = 6
+
+    batches = {}
+    with open("server/tests/audit_math/audit_data/dekalb_2022_primary_batch_totals.csv") as csv:
+        for row in DictReader(csv):
+            batches[("Dekalb", row["Batch Name"])] = {
+                name: {
+                    "Dee Dawkins-Haigler": int(row["Dee Dawkins-Haigler"]),
+                    "Bee Nguyen": int(row["Bee Nguyen"]),
+                }
+            }
+
+    with open("server/tests/audit_math/audit_data/dekalb_2022_primary_manifest.csv") as csv:
+        for row in DictReader(csv):
+            batches[("Dekalb", row["Batch Name"])][name]["ballots"] = int(row["Number of Ballots"])
+
+
+    sample = sampler.draw_ppeb_sample(seed, contest, sample_size, 0, batches)
+
+    ticketnumbers = {}
+    for ticketnumber, batch in sample:
+        # Make it a tuple so the rest of Arlo is happy
+        ticketnumbers[ticketnumber] = batch
+
+    assert len(sample) == sample_size
+
+    # We know there are no discrepancies
+    sample_results = {
+        batch: batches[batch]
+        for batch in ticketnumbers.values()
+    }
+
+    measurement, finished = macro.compute_risk(5, contest, batches, sample_results, ticketnumbers)
+    assert measurement <= alpha
+    assert finished
