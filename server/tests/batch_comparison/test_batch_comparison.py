@@ -552,16 +552,16 @@ def test_batch_comparison_batches_sampled_multiple_times(
     batches = json.loads(rv.data)["batches"]
 
     # Record batch results that match batch tallies exactly
-    batch_results = {
+    round_2_batch_results = {
         # Batch 3
         batches[0]["id"]: {choice_ids[0]: 500, choice_ids[1]: 250, choice_ids[2]: 250,}
     }
 
-    for batch_id, results in batch_results.items():
+    for batch_id, sheet_results in round_2_batch_results.items():
         rv = put_json(
             client,
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/batches/{batch_id}/results",
-            [{"name": "Tally Sheet #1", "results": results}],
+            [{"name": "Tally Sheet #1", "results": sheet_results}],
         )
         assert_ok(rv)
 
