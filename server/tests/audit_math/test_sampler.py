@@ -204,7 +204,7 @@ def test_correct_sample_size():
     batches = {}
     with open("server/tests/audit_math/audit_data/dekalb_2022_primary_batch_totals.csv") as csv:
         for row in DictReader(csv):
-            batches[row["Batch Name"]] = {
+            batches[("Dekalb", row["Batch Name"])] = {
                 name: {
                     "Dee Dawkins-Haigler": int(row["Dee Dawkins-Haigler"]),
                     "Bee Nguyen": int(row["Bee Nguyen"]),
@@ -213,7 +213,7 @@ def test_correct_sample_size():
 
     with open("server/tests/audit_math/audit_data/dekalb_2022_primary_manifest.csv") as csv:
         for row in DictReader(csv):
-            batches[row["Batch Name"]][name]["ballots"] = int(row["Number of Ballots"])
+            batches[("Dekalb", row["Batch Name"])][name]["ballots"] = int(row["Number of Ballots"])
 
     sample = sampler.draw_ppeb_sample(seed, contest, sample_size, 0, batches)
 
