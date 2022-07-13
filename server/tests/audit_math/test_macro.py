@@ -596,7 +596,9 @@ def test_dekalb_primary_2022():
     sample_size = 6
 
     batches = {}
-    with open("server/tests/audit_math/audit_data/dekalb_2022_primary_batch_totals.csv") as csv:
+    with open(
+        "server/tests/audit_math/audit_data/dekalb_2022_primary_batch_totals.csv"
+    ) as csv:
         for row in DictReader(csv):
             batches[("Dekalb", row["Batch Name"])] = {
                 name: {
@@ -605,10 +607,13 @@ def test_dekalb_primary_2022():
                 }
             }
 
-    with open("server/tests/audit_math/audit_data/dekalb_2022_primary_manifest.csv") as csv:
+    with open(
+        "server/tests/audit_math/audit_data/dekalb_2022_primary_manifest.csv"
+    ) as csv:
         for row in DictReader(csv):
-            batches[("Dekalb", row["Batch Name"])][name]["ballots"] = int(row["Number of Ballots"])
-
+            batches[("Dekalb", row["Batch Name"])][name]["ballots"] = int(
+                row["Number of Ballots"]
+            )
 
     sample = sampler.draw_ppeb_sample(seed, contest, sample_size, 0, batches)
 
@@ -620,11 +625,10 @@ def test_dekalb_primary_2022():
     assert len(sample) == sample_size
 
     # We know there are no discrepancies
-    sample_results = {
-        batch: batches[batch]
-        for batch in ticketnumbers.values()
-    }
+    sample_results = {batch: batches[batch] for batch in ticketnumbers.values()}
 
-    measurement, finished = macro.compute_risk(5, contest, batches, sample_results, ticketnumbers)
+    measurement, finished = macro.compute_risk(
+        5, contest, batches, sample_results, ticketnumbers
+    )
     assert measurement <= alpha
     assert finished
