@@ -283,9 +283,14 @@ def test_batch_comparison_round_2(
     # Record some batch results
     choice_ids = [choice["id"] for choice in contests[0]["choices"]]
     batch_results = {
-        batches[0]["id"]: {choice_ids[0]: 400, choice_ids[1]: 50, choice_ids[2]: 40,},
-        batches[1]["id"]: {choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 40,},
-        batches[2]["id"]: {choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 40,},
+        # Use multiple tally sheets to make sure they get aggregated correctly
+        batches[0]["id"]: [
+            {choice_ids[0]: 200, choice_ids[1]: 40, choice_ids[2]: 0,},
+            {choice_ids[0]: 150, choice_ids[1]: 10, choice_ids[2]: 0,},
+            {choice_ids[0]: 50, choice_ids[1]: 0, choice_ids[2]: 40,},
+        ],
+        batches[1]["id"]: [{choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 40,}],
+        batches[2]["id"]: [{choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 40,}],
     }
 
     for batch_id, results in batch_results.items():
@@ -295,7 +300,10 @@ def test_batch_comparison_round_2(
         rv = put_json(
             client,
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/{batch_id}/results",
-            [{"name": "Tally Sheet #1", "results": results}],
+            [
+                {"name": f"Tally Sheet #{i}", "results": sheet_results}
+                for i, sheet_results in enumerate(results)
+            ],
         )
         assert_ok(rv)
 
@@ -497,18 +505,27 @@ def test_batch_comparison_batches_sampled_multiple_times(
     choice_ids = [choice["id"] for choice in contests[0]["choices"]]
     batch_results = {
         # Batch 1
-        batches[0]["id"]: {choice_ids[0]: 500, choice_ids[1]: 250, choice_ids[2]: 250,},
+        batches[0]["id"]: [
+            # Use multiple tally sheets to make sure we aggregate them correctly
+            # even when a batch is sampled multiple times
+            {choice_ids[0]: 300, choice_ids[1]: 200, choice_ids[2]: 50,},
+            {choice_ids[0]: 150, choice_ids[1]: 50, choice_ids[2]: 0,},
+            {choice_ids[0]: 50, choice_ids[1]: 0, choice_ids[2]: 200,},
+        ],
         # Batch 8
-        batches[1]["id"]: {choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 50,},
+        batches[1]["id"]: [{choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 50,}],
         # Batch 6
-        batches[2]["id"]: {choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 50,},
+        batches[2]["id"]: [{choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 50,}],
     }
 
     for batch_id, results in batch_results.items():
         rv = put_json(
             client,
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/{batch_id}/results",
-            [{"name": "Tally Sheet #1", "results": results}],
+            [
+                {"name": f"Tally Sheet #{i}", "results": sheet_results}
+                for i, sheet_results in enumerate(results)
+            ],
         )
         assert_ok(rv)
 
@@ -535,16 +552,16 @@ def test_batch_comparison_batches_sampled_multiple_times(
     batches = json.loads(rv.data)["batches"]
 
     # Record batch results that match batch tallies exactly
-    batch_results = {
+    round_2_batch_results = {
         # Batch 3
         batches[0]["id"]: {choice_ids[0]: 500, choice_ids[1]: 250, choice_ids[2]: 250,}
     }
 
-    for batch_id, results in batch_results.items():
+    for batch_id, sheet_results in round_2_batch_results.items():
         rv = put_json(
             client,
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/batches/{batch_id}/results",
-            [{"name": "Tally Sheet #1", "results": results}],
+            [{"name": "Tally Sheet #1", "results": sheet_results}],
         )
         assert_ok(rv)
 

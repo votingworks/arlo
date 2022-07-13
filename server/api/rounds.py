@@ -218,9 +218,15 @@ def batch_tallies(election: Election) -> BatchTallies:
 
 def sampled_batch_results(election: Election,) -> BatchTallies:
     results_by_batch_and_choice = (
-        Batch.query.join(Jurisdiction)
-        .filter_by(election_id=election.id)
-        .join(SampledBatchDraw)
+        Batch.query.filter(
+            Batch.id.in_(
+                Batch.query.join(Jurisdiction)
+                .filter_by(election_id=election.id)
+                .join(SampledBatchDraw)
+                .values(Batch.id)
+            )
+        )
+        .join(Jurisdiction)
         .join(Jurisdiction.contests)
         .join(ContestChoice)
         .outerjoin(BatchResultTallySheet)
@@ -231,12 +237,12 @@ def sampled_batch_results(election: Election,) -> BatchTallies:
                 BatchResult.contest_choice_id == ContestChoice.id,
             ),
         )
-        .distinct(Jurisdiction.id, Batch.id, ContestChoice.id)
+        .group_by(Jurisdiction.name, Batch.name, ContestChoice.id)
         .values(
             Jurisdiction.name,
             Batch.name,
             ContestChoice.id,
-            func.coalesce(BatchResult.result, 0),
+            func.sum(func.coalesce(BatchResult.result, 0)),
         )
     )
     results_by_batch = group_by(
