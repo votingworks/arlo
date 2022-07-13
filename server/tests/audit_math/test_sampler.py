@@ -1,6 +1,5 @@
 import random
 import pytest
-from csv import DictReader
 from ...audit_math import sampler
 from ...audit_math.sampler_contest import Contest
 
