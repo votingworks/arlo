@@ -1,3 +1,4 @@
+from math import floor
 import uuid
 import tempfile
 import csv
@@ -476,7 +477,7 @@ def parse_ess_cvrs(
     def is_ballots_file(file: TextIO):
         first_line = file.readline()
         file.seek(0)
-        return first_line.startswith("Ballots")
+        return first_line.startswith("Ballots") or "Tabulator CVR" in first_line
 
     ballots_files = {
         name: file for name, file in text_files.items() if is_ballots_file(file)
@@ -510,15 +511,23 @@ def parse_ess_cvrs(
         validate_comma_delimited(ballots_file)
         ballots_csv = csv.reader(ballots_file, delimiter=",")
 
-        # Skip some metadata rows
+        # There are two formats of the ballots file that we support based on
+        # different versions of the ES&S system
         # pylint: disable=stop-iteration-return
-        _ballots_header = next(ballots_csv)
-        _gen_tag = next(ballots_csv)
-        _county_name = next(ballots_csv)
-        _date = next(ballots_csv)
-        _empty_row = next(ballots_csv)
+        first_row = next(ballots_csv)
+        # One format starts with metadata rows before the headers, which we want to skip
+        if first_row[0] == "Ballots":
+            _gen_tag = next(ballots_csv)
+            _county_name = next(ballots_csv)
+            _date = next(ballots_csv)
+            _empty_row = next(ballots_csv)
+            headers = next(ballots_csv)
+            ballots_file_type = "type1"
+        # The other has headers in the first row
+        else:
+            headers = first_row
+            ballots_file_type = "type2"
 
-        headers = next(ballots_csv)
         header_indices = get_header_indices(headers)
 
         ballot_rows = (row for row in ballots_csv if not row[0].startswith("Total"))
@@ -530,7 +539,7 @@ def parse_ess_cvrs(
             ballot_rows, key=lambda row: int(row[header_indices["Cast Vote Record"]])
         )
 
-        tabulator_regex = re.compile(r"^(\d{4})(\d{6})$")
+        ten_digit_tabulator_cvr_regex = re.compile(r"^(\d{4})(\d{6})$")
 
         for row_index, row in enumerate(sorted_ballot_rows):
             cvr_number = column_value(
@@ -541,23 +550,49 @@ def parse_ess_cvrs(
                 row, "Tabulator CVR", cvr_number, header_indices
             )
 
-            match = tabulator_regex.match(tabulator_cvr)
-            if not match:
-                raise UserError(
-                    "Tabulator CVR should be a ten-digit number."
-                    f" Got {tabulator_cvr} for Cast Vote Record {cvr_number}."
-                    " Make sure any leading zeros have not been stripped from this field."
+            # In type 1 ballots files, Tabulator CVR is a 10-digit string. The
+            # first four digits are the tabulator ID, the last six are the
+            # ballot number within the batch. We use this full value as an
+            # imprinted ID even though it's not imprinted on the ballots.
+            if ballots_file_type == "type1":
+                match = ten_digit_tabulator_cvr_regex.match(tabulator_cvr)
+                if not match:
+                    raise UserError(
+                        "Tabulator CVR should be a ten-digit number."
+                        f" Got {tabulator_cvr} for Cast Vote Record {cvr_number}."
+                        " Make sure any leading zeros have not been stripped from this field."
+                    )
+                tabulator_number, ballot_number = match.groups()
+                imprinted_id = tabulator_cvr
+                record_id = int(ballot_number)
+
+            # In type 2 ballots files, we use the Machine column as the
+            # tabulator ID. Tabulator CVR has either the 10-digit string or a
+            # 16-character hex id, the latter of which is actually imprinted on
+            # the ballots. For the hex case, we attempt to use it as a ballot
+            # number, even though we don't know if it corresponds to ballot order.
+            elif ballots_file_type == "type2":
+                tabulator_number = column_value(
+                    row, "Machine", cvr_number, header_indices
                 )
-            tabulator_number, ballot_number = match.groups()
+                imprinted_id = tabulator_cvr
+                match = ten_digit_tabulator_cvr_regex.match(tabulator_cvr)
+                if match:
+                    _, ballot_number = match.groups()
+                    record_id = int(ballot_number)
+                else:
+                    # Convert 16-character hex to a small-ish int that fits in
+                    # the db. Based on the data we've seen, this creates a large
+                    # enough gap between ids to order them without creating any
+                    # duplicates.
+                    record_id = floor(int(tabulator_cvr, 16) / 10 ** 10)
 
             db_batch = batches_by_key.get((tabulator_number, batch_name))
             if db_batch:
                 yield (
                     cvr_number,
                     CvrBallot(
-                        batch=db_batch,
-                        record_id=int(ballot_number),
-                        imprinted_id=tabulator_cvr,
+                        batch=db_batch, record_id=record_id, imprinted_id=imprinted_id,
                     ),
                 )
             else:
