@@ -509,16 +509,7 @@ def parse_ess_cvrs(
         ballots_file: TextIO,
     ) -> Iterator[Tuple[str, CvrBallot]]:  # (CVR number, ballot)
         validate_comma_delimited(ballots_file)
-
-        # We've seen malformed ballots CSVs to lack of field quoting, leading to
-        # commas in field values being parsed as extra columns. To hackily work
-        # around this, we find and quote the example of this we've seen.
-        misquoting_regex = re.compile(r", (Overvote|Undervote),,")
-        ballots_file_lines = (
-            re.sub(misquoting_regex, r'," \1,",', line) for line in ballots_file
-        )
-
-        ballots_csv = csv.reader(ballots_file_lines, delimiter=",")
+        ballots_csv = csv.reader(ballots_file, delimiter=",")
 
         # There are two formats of the ballots file that we support based on
         # different versions of the ES&S system

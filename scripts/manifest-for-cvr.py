@@ -64,10 +64,8 @@ if __name__ == "__main__":
         # Expects type 2 ES&S ballots file (more on this in server/api/cvrs.py)
         elif cvr_file_type == "ESS":
             headers = next(cvr)
-            print(headers)
             header_indices = {header: i for i, header in enumerate(headers)}
             for row in cvr:
-                print(row)
                 tabulator = row[header_indices["Machine"]]
                 batch_name = row[header_indices["Batch"]]
                 batch_counts[(tabulator, batch_name)] += 1
