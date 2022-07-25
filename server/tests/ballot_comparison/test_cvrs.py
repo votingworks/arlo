@@ -1662,40 +1662,66 @@ HART_CVRS = [
     build_hart_cvr("BATCH4", "6", "1-4-6", ",,1,0,0", add_write_in=True),
 ]
 
-HART_SCANNED_BALLOT_INFORMATION = """CvrId,UniqueIdentifier
-1-1-1,unique-identifier-01
-1-1-2,unique-identifier-02
-1-1-3,unique-identifier-03
-1-2-1,unique-identifier-04
-1-2-2,unique-identifier-05
-1-2-3,unique-identifier-06
-1-3-1,unique-identifier-07
-1-3-2,unique-identifier-08
-1-3-3,unique-identifier-09
-1-4-1,unique-identifier-10
-1-4-2,unique-identifier-11
-1-4-4,unique-identifier-12
-1-4-5,unique-identifier-13
-1-4-6,unique-identifier-14
-"""
-
-HART_SCANNED_BALLOT_INFORMATION_MISSING_RECORDS = """CvrId,UniqueIdentifier
-1-1-2,unique-identifier-02
-1-2-1,unique-identifier-04
-1-2-3,unique-identifier-06
-1-3-2,unique-identifier-08
-1-4-1,unique-identifier-10
-1-4-4,unique-identifier-12
-1-4-6,unique-identifier-14
-"""
-
 # Modeled after a real scanned ballot information CSV
-HART_SCANNED_BALLOT_INFORMATION_WITH_FORMAT_VERSION_ROW = """#FormatVersion 1
+HART_SCANNED_BALLOT_INFORMATION = """#FormatVersion 1
 #BatchId,Workstation,VotingType,VotingMethod,ScanSequence,Precinct,PageNumber,UniqueIdentifier,VariationNumber,Language,Party,Status,RejectReason,VoterIntentIssues,vDriveDeviceDataId,CvrId
-1,"A0123456789","Absentee Voting","Paper",1,"101",1,"unique-identifier-01",0,"English",,"Scanned",,False,"ABCD(1234[ABCD-1234*AB","1-1-1"
-1,"A0123456789","Absentee Voting","Paper",1,"101",2,"unique-identifier-01",0,"English",,"Scanned",,False,"ABCD(1234[ABCD-1234*AB","1-1-1"
-1,"A0123456789","Absentee Voting","Paper",2,"102",1,"unique-identifier-02",0,"Spanish",,"Scanned",,False,"ABCD(1234[ABCD-1234*AB","1-1-2"
-1,"A0123456789","Absentee Voting","Paper",2,"102",2,"unique-identifier-02",0,"Spanish",,"Scanned",,False,"ABCD(1234[ABCD-1234*AB","1-1-2"
+1,"A0123456789","Absentee Voting","Paper",1,"001",1,"unique-identifier-01",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-1-1"
+1,"A0123456789","Absentee Voting","Paper",1,"001",2,"unique-identifier-01",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-1-1"
+1,"A0123456789","Absentee Voting","Paper",2,"001",1,"unique-identifier-02",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-1-2"
+1,"A0123456789","Absentee Voting","Paper",2,"001",2,"unique-identifier-02",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-1-2"
+1,"A0123456789","Absentee Voting","Paper",3,"001",1,"unique-identifier-03",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-1-3"
+1,"A0123456789","Absentee Voting","Paper",3,"001",2,"unique-identifier-03",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-1-3"
+1,"A0123456789","Absentee Voting","Paper",4,"001",1,"unique-identifier-04",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-2-1"
+1,"A0123456789","Absentee Voting","Paper",4,"001",2,"unique-identifier-04",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-2-1"
+1,"A0123456789","Absentee Voting","Paper",5,"001",1,"unique-identifier-05",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-2-2"
+1,"A0123456789","Absentee Voting","Paper",5,"001",2,"unique-identifier-05",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-2-2"
+1,"A0123456789","Absentee Voting","Paper",6,"001",1,"unique-identifier-06",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-2-3"
+1,"A0123456789","Absentee Voting","Paper",6,"001",2,"unique-identifier-06",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-2-3"
+1,"A0123456789","Absentee Voting","Paper",7,"001",1,"unique-identifier-07",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-3-1"
+1,"A0123456789","Absentee Voting","Paper",7,"001",2,"unique-identifier-07",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-3-1"
+1,"A0123456789","Absentee Voting","Paper",8,"001",1,"unique-identifier-08",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-3-2"
+1,"A0123456789","Absentee Voting","Paper",8,"001",2,"unique-identifier-08",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-3-2"
+1,"A0123456789","Absentee Voting","Paper",9,"001",1,"unique-identifier-09",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-3-3"
+1,"A0123456789","Absentee Voting","Paper",9,"001",2,"unique-identifier-09",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-3-3"
+1,"A0123456789","Absentee Voting","Paper",10,"001",1,"unique-identifier-10",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-4-1"
+1,"A0123456789","Absentee Voting","Paper",10,"001",2,"unique-identifier-10",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-4-1"
+1,"A0123456789","Absentee Voting","Paper",11,"001",1,"unique-identifier-11",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-4-2"
+1,"A0123456789","Absentee Voting","Paper",11,"001",2,"unique-identifier-11",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-4-2"
+1,"A0123456789","Absentee Voting","Paper",12,"001",1,"unique-identifier-12",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-4-4"
+1,"A0123456789","Absentee Voting","Paper",12,"001",2,"unique-identifier-12",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-4-4"
+1,"A0123456789","Absentee Voting","Paper",13,"001",1,"unique-identifier-13",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-4-5"
+1,"A0123456789","Absentee Voting","Paper",13,"001",2,"unique-identifier-13",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-4-5"
+1,"A0123456789","Absentee Voting","Paper",14,"001",1,"unique-identifier-14",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-4-6"
+1,"A0123456789","Absentee Voting","Paper",14,"001",2,"unique-identifier-14",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-4-6"
+"""
+
+HART_SCANNED_BALLOT_INFORMATION_MINIMAL = """#FormatVersion 1
+#CvrId,UniqueIdentifier
+"1-1-1","unique-identifier-01"
+"1-1-2","unique-identifier-02"
+"1-1-3","unique-identifier-03"
+"1-2-1","unique-identifier-04"
+"1-2-2","unique-identifier-05"
+"1-2-3","unique-identifier-06"
+"1-3-1","unique-identifier-07"
+"1-3-2","unique-identifier-08"
+"1-3-3","unique-identifier-09"
+"1-4-1","unique-identifier-10"
+"1-4-2","unique-identifier-11"
+"1-4-4","unique-identifier-12"
+"1-4-5","unique-identifier-13"
+"1-4-6","unique-identifier-14"
+"""
+
+HART_SCANNED_BALLOT_INFORMATION_MISSING_RECORDS = """#FormatVersion 1
+#CvrId,UniqueIdentifier
+"1-1-2","unique-identifier-02"
+"1-2-1","unique-identifier-04"
+"1-2-3","unique-identifier-06"
+"1-3-2","unique-identifier-08"
+"1-4-1","unique-identifier-10"
+"1-4-4","unique-identifier-12"
+"1-4-6","unique-identifier-14"
 """
 
 
@@ -1809,39 +1835,27 @@ def test_hart_cvr_upload_with_scanned_ballot_information(
             "expected_processing_work_progress": manifest_num_ballots,
         },
         {
+            "scanned_ballot_information_file_contents": HART_SCANNED_BALLOT_INFORMATION_MINIMAL,
+            "expected_processing_status": ProcessingStatus.PROCESSED,
+            "expected_processing_error": None,
+            "expected_processing_work_progress": manifest_num_ballots,
+        },
+        {
             "scanned_ballot_information_file_contents": HART_SCANNED_BALLOT_INFORMATION_MISSING_RECORDS,
             "expected_processing_status": ProcessingStatus.PROCESSED,
             "expected_processing_error": None,
             "expected_processing_work_progress": manifest_num_ballots,
         },
         {
-            "scanned_ballot_information_file_contents": HART_SCANNED_BALLOT_INFORMATION_WITH_FORMAT_VERSION_ROW,
-            "expected_processing_status": ProcessingStatus.PROCESSED,
-            "expected_processing_error": None,
-            "expected_processing_work_progress": manifest_num_ballots,
-        },
-        {
-            "scanned_ballot_information_file_contents": "CvrId,UniqueId\ncvr-id-1,unique-identifier-1\n",
+            "scanned_ballot_information_file_contents": "",
             "expected_processing_status": ProcessingStatus.ERRORED,
-            "expected_processing_error": "Missing required column UniqueIdentifier in scanned ballot information CSV.",
+            "expected_processing_error": "CSV cannot be empty.",
             "expected_processing_work_progress": 0,
         },
         {
-            "scanned_ballot_information_file_contents": "CvrGuid,UniqueIdentifier\ncvr-id-1,unique-identifier-1\n",
+            "scanned_ballot_information_file_contents": "CvrId,UniqueIdentifier\n",
             "expected_processing_status": ProcessingStatus.ERRORED,
-            "expected_processing_error": "Missing required column CvrId in scanned ballot information CSV.",
-            "expected_processing_work_progress": 0,
-        },
-        {
-            "scanned_ballot_information_file_contents": "#FormatVersion 1\nCvrId,UniqueId\ncvr-id-1,unique-identifier-1\n",
-            "expected_processing_status": ProcessingStatus.ERRORED,
-            "expected_processing_error": "Missing required column UniqueIdentifier in scanned ballot information CSV.",
-            "expected_processing_work_progress": 0,
-        },
-        {
-            "scanned_ballot_information_file_contents": "#FormatVersion 1\nCvrGuid,UniqueIdentifier\ncvr-id-1,unique-identifier-1\n",
-            "expected_processing_status": ProcessingStatus.ERRORED,
-            "expected_processing_error": "Missing required column CvrId in scanned ballot information CSV.",
+            "expected_processing_error": "Expected first line of scanned ballot information CSV to contain '#FormatVersion'.",
             "expected_processing_work_progress": 0,
         },
         {
@@ -1851,9 +1865,21 @@ def test_hart_cvr_upload_with_scanned_ballot_information(
             "expected_processing_work_progress": 0,
         },
         {
-            "scanned_ballot_information_file_contents": "",
+            "scanned_ballot_information_file_contents": "#FormatVersion 1\nCvrId,UniqueIdentifier\n",
             "expected_processing_status": ProcessingStatus.ERRORED,
-            "expected_processing_error": "CSV cannot be empty.",
+            "expected_processing_error": "CSV must contain at least one row after headers.",
+            "expected_processing_work_progress": 0,
+        },
+        {
+            "scanned_ballot_information_file_contents": "#FormatVersion 1\nCvrGuid,UniqueIdentifier\ncvr-id-1,unique-identifier-1\n",
+            "expected_processing_status": ProcessingStatus.ERRORED,
+            "expected_processing_error": "Missing required column CvrId in scanned ballot information CSV.",
+            "expected_processing_work_progress": 0,
+        },
+        {
+            "scanned_ballot_information_file_contents": "#FormatVersion 1\nCvrId,UniqueId\ncvr-id-1,unique-identifier-1\n",
+            "expected_processing_status": ProcessingStatus.ERRORED,
+            "expected_processing_error": "Missing required column UniqueIdentifier in scanned ballot information CSV.",
             "expected_processing_work_progress": 0,
         },
     ]

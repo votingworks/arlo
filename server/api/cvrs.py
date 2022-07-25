@@ -53,6 +53,7 @@ from ..util.csv_parse import (
     CSVIterator,
     decode_csv,
     does_file_have_csv_mimetype,
+    reject_no_rows,
     validate_comma_delimited,
     validate_csv_mimetype,
     validate_not_empty,
@@ -828,29 +829,31 @@ def parse_hart_cvrs(
         validate_not_empty(scanned_ballot_information_file)
         text_file = decode_csv(scanned_ballot_information_file)
 
-        # Determine whether the scanned ballot information CSV has a format version row and skip it
-        # if so
-        has_format_version_row = False
+        # Skip #FormatVersion row
         first_line = text_file.readline()
-        if first_line.startswith("#FormatVersion") or "," not in first_line:
-            has_format_version_row = True
-            validate_comma_delimited(text_file)
-            # validate_comma_delimited resets the cursor to the start of the file so skip the
-            # format version row again
-            text_file.readline()
-        else:
-            text_file.seek(0)
-            validate_comma_delimited(text_file)
-        reader = csv.reader(text_file, delimiter=",")
+        if "#FormatVersion" not in first_line:
+            raise UserError(
+                "Expected first line of scanned ballot information CSV to contain '#FormatVersion'."
+            )
+        validate_comma_delimited(text_file)
+        # validate_comma_delimited resets the cursor to the start of the file so skip the
+        # #FormatVersion row again
+        text_file.readline()
+        scanned_ballot_information_csv: CSVIterator = csv.reader(
+            text_file, delimiter=","
+        )
+        scanned_ballot_information_csv = reject_no_rows(scanned_ballot_information_csv)
 
-        headers_row = next(reader)
+        headers_row = next(scanned_ballot_information_csv)
+        if len(headers_row) > 0:
+            headers_row[0] = headers_row[0].lstrip("#")
         header_indices = get_header_indices(headers_row)
 
         cvr_guid_to_unique_identifier_mapping: Dict[str, str] = {}
-        for i, row in enumerate(reader):
-            row_number = i + 2  # Account for zero indexing and header row
-            if has_format_version_row:
-                row_number += 1
+        for i, row in enumerate(scanned_ballot_information_csv):
+            row_number = (
+                i + 3
+            )  # Account for zero indexing, #FormatVersion row, and header row
             cvr_guid = column_value(
                 row,
                 "CvrId",
