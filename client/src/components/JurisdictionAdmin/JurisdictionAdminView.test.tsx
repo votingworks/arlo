@@ -383,7 +383,6 @@ describe('JA setup', () => {
       userEvent.upload(fileSelect, [cvrsZip])
       await screen.findByLabelText('cvrs.zip')
       userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
-
       await screen.findByText('Uploaded at 11/18/2020, 9:39:14 PM.')
     })
   })
@@ -420,7 +419,6 @@ describe('JA setup', () => {
       },
       jaApiCalls.getCVRSfile(cvrsMocks.processed),
     ]
-
     await withMockFetch(expectedCalls, async () => {
       renderView()
       await screen.findByText('Audit Source Data')
@@ -436,7 +434,6 @@ describe('JA setup', () => {
       const fileSelect = screen.getByLabelText('Select files...')
       userEvent.upload(fileSelect, [cvrsZip, scannedBallotInformationCsv])
       await screen.findByLabelText('2 files selected')
-
       userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
       await screen.findByText('Uploaded at 11/18/2020, 9:39:14 PM.')
     })

@@ -47,7 +47,7 @@ const TestFileUpload = ({
     deleteFile: () => deleteFile.mutateAsync(),
     downloadFileUrl: '/test/download',
   }
-  return <FileUpload {...fileUpload} acceptFileType="csv" {...props} />
+  return <FileUpload {...fileUpload} acceptFileTypes={['csv']} {...props} />
 }
 
 const render = (element: React.ReactElement) =>

@@ -261,7 +261,7 @@ describe('JurisdictionDetail', () => {
     })
   })
 
-  it('before launch, accepts zip files for Hart CVR uploads', async () => {
+  it('before launch, accepts Hart CVR ZIP file', async () => {
     const cvrsFormData: FormData = new FormData()
     const cvrsZip = new File(['test cvr data'], 'cvrs.zip', {
       type: 'application/zip',
@@ -296,11 +296,67 @@ describe('JurisdictionDetail', () => {
         within(cvrsCard).getByRole('option', { name: 'Hart' })
       )
       userEvent.upload(
-        await within(cvrsCard).findByLabelText('Select a file...'),
-        cvrsZip
+        await within(cvrsCard).findByLabelText('Select files...'),
+        [cvrsZip]
       )
       await within(cvrsCard).findByText('cvrs.zip')
-      userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
+      userEvent.click(screen.getByRole('button', { name: 'Upload Files' }))
+      await within(cvrsCard).findByText('Uploaded')
+    })
+  })
+
+  it('before launch, accepts Hart CVR ZIP file and scanned ballot information CSV', async () => {
+    const cvrsFormData: FormData = new FormData()
+    const cvrsZip = new File(['test cvr data'], 'cvrs.zip', {
+      type: 'application/zip',
+    })
+    const scannedBallotInformationCsv = new File(
+      ['test cvr data'],
+      'scanned-ballot-information.csv',
+      {
+        type: 'text/csv',
+      }
+    )
+    cvrsFormData.append('cvrs', cvrsZip, cvrsZip.name)
+    cvrsFormData.append(
+      'cvrs',
+      scannedBallotInformationCsv,
+      scannedBallotInformationCsv.name
+    )
+    cvrsFormData.append('cvrFileType', 'HART')
+
+    const expectedCalls = [
+      jaApiCalls.getBallotManifestFile(manifestMocks.processed),
+      jaApiCalls.getCVRSfile(cvrsMocks.empty),
+      {
+        ...jaApiCalls.putCVRs,
+        options: { ...jaApiCalls.putCVRs.options, body: cvrsFormData },
+      },
+      jaApiCalls.getCVRSfile(cvrsMocks.processed),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      render({
+        jurisdiction: {
+          ...jurisdictionMocks.allManifests[0],
+          cvrs: cvrsMocks.empty,
+        },
+        auditSettings: auditSettings.ballotComparisonAll,
+      })
+
+      const cvrsCard = screen
+        .getByRole('heading', { name: 'Cast Vote Records (CVR)' })
+        .closest('div')!
+      await within(cvrsCard).findByText('No file uploaded')
+      userEvent.selectOptions(
+        within(cvrsCard).getByLabelText('CVR File Type:'),
+        within(cvrsCard).getByRole('option', { name: 'Hart' })
+      )
+      userEvent.upload(
+        await within(cvrsCard).findByLabelText('Select files...'),
+        [cvrsZip, scannedBallotInformationCsv]
+      )
+      await within(cvrsCard).findByText('2 files selected')
+      userEvent.click(screen.getByRole('button', { name: 'Upload Files' }))
       await within(cvrsCard).findByText('Uploaded')
     })
   })

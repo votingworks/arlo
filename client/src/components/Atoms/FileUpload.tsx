@@ -12,7 +12,7 @@ const ErrorP = styled.p`
 `
 
 export interface IFileUploadProps extends IFileUpload {
-  acceptFileType: 'csv' | 'zip'
+  acceptFileTypes: ('csv' | 'zip')[]
   allowMultipleFiles?: boolean
   disabled?: boolean
 }
@@ -23,7 +23,7 @@ const FileUpload = ({
   uploadProgress,
   deleteFile,
   downloadFileUrl,
-  acceptFileType,
+  acceptFileTypes,
   allowMultipleFiles = false,
   disabled = false,
 }: IFileUploadProps) => {
@@ -55,7 +55,7 @@ const FileUpload = ({
         <p>
           <FileInput
             inputProps={{
-              accept: `.${acceptFileType}`,
+              accept: acceptFileTypes.map(fileType => `.${fileType}`).join(','),
               name: 'files',
               multiple: allowMultipleFiles,
               ref: register(),
