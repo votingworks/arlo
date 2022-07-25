@@ -699,7 +699,7 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortio
 TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM
 TABULATOR1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,0,1
 """,
-            "Missing required column CvrNumber",
+            "Missing required column CvrNumber.",
             "DOMINION",
         ),
         (
@@ -709,7 +709,7 @@ TABULATOR1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,0,1
 CvrNumber,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM
 1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,0,1
 """,
-            "Missing required column TabulatorNum",
+            "Missing required column TabulatorNum.",
             "DOMINION",
         ),
         (
@@ -719,7 +719,7 @@ CvrNumber,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,
 CvrNumber,TabulatorNum,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM
 1,TABULATOR1,1,1-1-1,Election Day,12345,COUNTY,0,1
 """,
-            "Missing required column BatchId",
+            "Missing required column BatchId.",
             "DOMINION",
         ),
         (
@@ -729,7 +729,7 @@ CvrNumber,TabulatorNum,RecordId,ImprintedId,CountingGroup,PrecinctPortion,Ballot
 CvrNumber,TabulatorNum,BatchId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM
 1,TABULATOR1,BATCH1,1-1-1,Election Day,12345,COUNTY,0,1
 """,
-            "Missing required column RecordId",
+            "Missing required column RecordId.",
             "DOMINION",
         ),
         (
@@ -739,7 +739,7 @@ CvrNumber,TabulatorNum,BatchId,ImprintedId,CountingGroup,PrecinctPortion,BallotT
 CvrNumber,TabulatorNum,BatchId,RecordId,CountingGroup,PrecinctPortion,BallotType,REP,DEM
 1,TABULATOR1,BATCH1,1,Election Day,12345,COUNTY,0,1
 """,
-            "Missing required column ImprintedId",
+            "Missing required column ImprintedId.",
             "DOMINION",
         ),
         (
@@ -829,35 +829,35 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,UniqueVotingIdentifier,REP,D
             """BoxID,BoxPosition,BallotID,PrecinctID,BallotStyleID,PrecinctStyleName,ScanComputerName,Status,Remade,Choice_1_1:Contest 1:Vote For 1:Choice 1-1:Non-Partisan,Choice_210_1:Contest 1:Vote For 1:Choice 1-2:Non-Partisan,Choice_34_1:Contest 2:Vote For 2:Choice 2-1:Non-Partisan,Choice_4_1:Contest 2:Vote For 2:Choice 2-2:Non-Partisan,Choice_173_1:Contest 2:Vote For 2:Choice 2-3:Non-Partisan
 BATCH1,1,1-1-1,p,bs,ps,TABULATOR1,s,r,0,1,1,1,0
 """,
-            "Missing required column RowNumber",
+            "Missing required column RowNumber.",
             "CLEARBALLOT",
         ),
         (
             """RowNumber,BoxPosition,BallotID,PrecinctID,BallotStyleID,PrecinctStyleName,ScanComputerName,Status,Remade,Choice_1_1:Contest 1:Vote For 1:Choice 1-1:Non-Partisan,Choice_210_1:Contest 1:Vote For 1:Choice 1-2:Non-Partisan,Choice_34_1:Contest 2:Vote For 2:Choice 2-1:Non-Partisan,Choice_4_1:Contest 2:Vote For 2:Choice 2-2:Non-Partisan,Choice_173_1:Contest 2:Vote For 2:Choice 2-3:Non-Partisan
 1,1,1-1-1,p,bs,ps,TABULATOR1,s,r,0,1,1,1,0
 """,
-            "Missing required column BoxID",
+            "Missing required column BoxID.",
             "CLEARBALLOT",
         ),
         (
             """RowNumber,BoxID,BallotID,PrecinctID,BallotStyleID,PrecinctStyleName,ScanComputerName,Status,Remade,Choice_1_1:Contest 1:Vote For 1:Choice 1-1:Non-Partisan,Choice_210_1:Contest 1:Vote For 1:Choice 1-2:Non-Partisan,Choice_34_1:Contest 2:Vote For 2:Choice 2-1:Non-Partisan,Choice_4_1:Contest 2:Vote For 2:Choice 2-2:Non-Partisan,Choice_173_1:Contest 2:Vote For 2:Choice 2-3:Non-Partisan
 1,BATCH1,1-1-1,p,bs,ps,TABULATOR1,s,r,0,1,1,1,0
 """,
-            "Missing required column BoxPosition",
+            "Missing required column BoxPosition.",
             "CLEARBALLOT",
         ),
         (
             """RowNumber,BoxID,BoxPosition,PrecinctID,BallotStyleID,PrecinctStyleName,ScanComputerName,Status,Remade,Choice_1_1:Contest 1:Vote For 1:Choice 1-1:Non-Partisan,Choice_210_1:Contest 1:Vote For 1:Choice 1-2:Non-Partisan,Choice_34_1:Contest 2:Vote For 2:Choice 2-1:Non-Partisan,Choice_4_1:Contest 2:Vote For 2:Choice 2-2:Non-Partisan,Choice_173_1:Contest 2:Vote For 2:Choice 2-3:Non-Partisan
 1,BATCH1,1,p,bs,ps,TABULATOR1,s,r,0,1,1,1,0
 """,
-            "Missing required column BallotID",
+            "Missing required column BallotID.",
             "CLEARBALLOT",
         ),
         (
             """RowNumber,BoxID,BoxPosition,BallotID,PrecinctID,BallotStyleID,PrecinctStyleName,Status,Remade,Choice_1_1:Contest 1:Vote For 1:Choice 1-1:Non-Partisan,Choice_210_1:Contest 1:Vote For 1:Choice 1-2:Non-Partisan,Choice_34_1:Contest 2:Vote For 2:Choice 2-1:Non-Partisan,Choice_4_1:Contest 2:Vote For 2:Choice 2-2:Non-Partisan,Choice_173_1:Contest 2:Vote For 2:Choice 2-3:Non-Partisan
 1,BATCH1,1,1-1-1,p,bs,ps,s,r,0,1,1,1,0
 """,
-            "Missing required column ScanComputerName",
+            "Missing required column ScanComputerName.",
             "CLEARBALLOT",
         ),
         (
@@ -1431,7 +1431,7 @@ def test_ess_cvr_invalid(
                 ),
                 (io.BytesIO(ESS_BALLOTS_2.encode()), "ess_ballots_2.csv",),
             ],
-            "ess_cvr.csv: Missing required column Cast Vote Record",
+            "ess_cvr.csv: Missing required column Cast Vote Record.",
         ),
         (
             [
@@ -1821,27 +1821,27 @@ def test_hart_cvr_upload_with_scanned_ballot_information(
             "expected_processing_work_progress": manifest_num_ballots,
         },
         {
-            "scanned_ballot_information_file_contents": "CvrId,UniqueId\n",
+            "scanned_ballot_information_file_contents": "CvrId,UniqueId\ncvr-id-1,unique-identifier-1\n",
             "expected_processing_status": ProcessingStatus.ERRORED,
-            "expected_processing_error": "Scanned ballot information CSV missing UniqueIdentifier column.",
+            "expected_processing_error": "Missing required column UniqueIdentifier in scanned ballot information CSV.",
             "expected_processing_work_progress": 0,
         },
         {
-            "scanned_ballot_information_file_contents": "CvrGuid,UniqueIdentifier\n",
+            "scanned_ballot_information_file_contents": "CvrGuid,UniqueIdentifier\ncvr-id-1,unique-identifier-1\n",
             "expected_processing_status": ProcessingStatus.ERRORED,
-            "expected_processing_error": "Scanned ballot information CSV missing CvrId column.",
+            "expected_processing_error": "Missing required column CvrId in scanned ballot information CSV.",
             "expected_processing_work_progress": 0,
         },
         {
-            "scanned_ballot_information_file_contents": "#FormatVersion 1\nCvrId,UniqueId\n",
+            "scanned_ballot_information_file_contents": "#FormatVersion 1\nCvrId,UniqueId\ncvr-id-1,unique-identifier-1\n",
             "expected_processing_status": ProcessingStatus.ERRORED,
-            "expected_processing_error": "Scanned ballot information CSV missing UniqueIdentifier column.",
+            "expected_processing_error": "Missing required column UniqueIdentifier in scanned ballot information CSV.",
             "expected_processing_work_progress": 0,
         },
         {
-            "scanned_ballot_information_file_contents": "#FormatVersion 1\nCvrGuid,UniqueIdentifier\n",
+            "scanned_ballot_information_file_contents": "#FormatVersion 1\nCvrGuid,UniqueIdentifier\ncvr-id-1,unique-identifier-1\n",
             "expected_processing_status": ProcessingStatus.ERRORED,
-            "expected_processing_error": "Scanned ballot information CSV missing CvrId column.",
+            "expected_processing_error": "Missing required column CvrId in scanned ballot information CSV.",
             "expected_processing_work_progress": 0,
         },
         {

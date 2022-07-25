@@ -221,15 +221,24 @@ def column_value(
     row_number: int,
     header_indices: Dict[str, int],
     required: bool = True,
+    file_name: str = None,
 ):
     index = header_indices.get(header)
     if index is None:
         if required:
-            raise UserError(f"Missing required column {header}")
+            raise UserError(
+                f"Missing required column {header} in {file_name}."
+                if file_name is not None
+                else f"Missing required column {header}."
+            )
         return None
     value = row[index] if index < len(row) else None
     if required and (value is None or value == ""):
-        raise UserError(f"Missing required column {header} in row {row_number}.")
+        raise UserError(
+            f"Missing required column {header} in row {row_number} in {file_name}."
+            if file_name is not None
+            else f"Missing required column {header} in row {row_number}."
+        )
     return value
 
 
@@ -834,28 +843,31 @@ def parse_hart_cvrs(
             validate_comma_delimited(text_file)
         reader = csv.reader(text_file, delimiter=",")
 
-        headers = next(reader)
-        if "CvrId" not in headers:
-            raise UserError("Scanned ballot information CSV missing CvrId column.")
-        if "UniqueIdentifier" not in headers:
-            raise UserError(
-                "Scanned ballot information CSV missing UniqueIdentifier column."
-            )
-
-        cvr_guid_index = headers.index("CvrId")
-        unique_identifier_index = headers.index("UniqueIdentifier")
+        headers_row = next(reader)
+        header_indices = get_header_indices(headers_row)
 
         cvr_guid_to_unique_identifier_mapping: Dict[str, str] = {}
         for i, row in enumerate(reader):
             row_number = i + 2  # Account for zero indexing and header row
             if has_format_version_row:
                 row_number += 1
-            if len(row) != len(headers):
-                raise UserError(f"Wrong number of cells in row {row_number}")
-            cvr_guid = row[cvr_guid_index]
-            unique_identifier = row[unique_identifier_index]
+            cvr_guid = column_value(
+                row,
+                "CvrId",
+                row_number,
+                header_indices,
+                file_name="scanned ballot information CSV",
+            )
+            unique_identifier = column_value(
+                row,
+                "UniqueIdentifier",
+                row_number,
+                header_indices,
+                file_name="scanned ballot information CSV",
+            )
             if cvr_guid != "" and unique_identifier != "":
                 cvr_guid_to_unique_identifier_mapping[cvr_guid] = unique_identifier
+
         return cvr_guid_to_unique_identifier_mapping
 
     cvr_guid_to_unique_identifier_mapping = (
