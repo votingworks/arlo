@@ -92,7 +92,7 @@ def zip_files(files: Dict[str, BinaryIO]) -> IO[bytes]:
     return zip_file
 
 
-def unzip_files(zip_file: BinaryIO) -> Dict[str, IO[bytes]]:
+def unzip_files(zip_file: BinaryIO) -> Dict[str, BinaryIO]:
     extract_dir = tempfile.TemporaryDirectory()
     with ZipFile(zip_file, "r") as zip_archive:
         zip_archive.extractall(extract_dir.name)
