@@ -340,7 +340,7 @@ describe('JA setup', () => {
         screen.getByRole('option', { name: 'ES&S' })
       )
 
-      const fileSelect = screen.getByLabelText('Select a file...')
+      const fileSelect = screen.getByLabelText('Select files...')
       userEvent.upload(fileSelect, [cvrsFile1, cvrsFile2])
       await screen.findByLabelText('2 files selected')
       userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
@@ -350,7 +350,7 @@ describe('JA setup', () => {
     })
   })
 
-  it('allows zip CVR files to be uploaded for Hart', async () => {
+  it('allows CVRs ZIP file to be uploaded for Hart', async () => {
     const cvrsFormData: FormData = new FormData()
     const cvrsZip = new File(['test cvr data'], 'cvrs.zip', {
       type: 'application/zip',
@@ -379,11 +379,65 @@ describe('JA setup', () => {
         screen.getByRole('option', { name: 'Hart' })
       )
 
-      const fileSelect = screen.getByLabelText('Select a file...')
-      userEvent.upload(fileSelect, cvrsZip)
+      const fileSelect = screen.getByLabelText('Select files...')
+      userEvent.upload(fileSelect, [cvrsZip])
       await screen.findByLabelText('cvrs.zip')
       userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
 
+      await screen.findByText('Uploaded at 11/18/2020, 9:39:14 PM.')
+    })
+  })
+
+  it('allows CVRs ZIP file and scanned ballot information CSV to be uploaded for Hart', async () => {
+    const cvrsFormData: FormData = new FormData()
+    const cvrsZip = new File(['test cvr data'], 'cvrs.zip', {
+      type: 'application/zip',
+    })
+    const scannedBallotInformationCsv = new File(
+      ['test cvr data'],
+      'scanned-ballot-information.csv',
+      {
+        type: 'text/csv',
+      }
+    )
+    cvrsFormData.append('cvrs', cvrsZip, cvrsZip.name)
+    cvrsFormData.append(
+      'cvrs',
+      scannedBallotInformationCsv,
+      scannedBallotInformationCsv.name
+    )
+    cvrsFormData.append('cvrFileType', 'HART')
+
+    const expectedCalls = [
+      jaApiCalls.getUser,
+      jaApiCalls.getSettings(auditSettings.ballotComparisonAll),
+      jaApiCalls.getRounds([]),
+      jaApiCalls.getBallotManifestFile(manifestMocks.processed),
+      jaApiCalls.getCVRSfile(cvrsMocks.empty),
+      {
+        ...jaApiCalls.putCVRs,
+        options: { ...jaApiCalls.putCVRs.options, body: cvrsFormData },
+      },
+      jaApiCalls.getCVRSfile(cvrsMocks.processed),
+    ]
+
+    await withMockFetch(expectedCalls, async () => {
+      renderView()
+      await screen.findByText('Audit Source Data')
+
+      userEvent.selectOptions(
+        screen.getByLabelText(/CVR File Type:/),
+        screen.getByRole('option', { name: 'Hart' })
+      )
+      await screen.findByText(
+        /For Hart, you can also provide an optional scanned ballot information CSV. If provided, the unique identifiers in the CSV will be used as imprinted IDs./
+      )
+
+      const fileSelect = screen.getByLabelText('Select files...')
+      userEvent.upload(fileSelect, [cvrsZip, scannedBallotInformationCsv])
+      await screen.findByLabelText('2 files selected')
+
+      userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
       await screen.findByText('Uploaded at 11/18/2020, 9:39:14 PM.')
     })
   })
