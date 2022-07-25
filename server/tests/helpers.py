@@ -1,3 +1,4 @@
+import io
 import uuid, json, re
 from datetime import datetime
 from typing import Any, List, Union, Tuple, Optional
@@ -333,3 +334,9 @@ def find_log(caplog, level: int, message: str) -> Optional[logging.LogRecord]:
         ),
         None,
     )
+
+
+def string_to_bytes_io(string: str) -> io.BytesIO:
+    string_io = io.StringIO(string)
+    bytes_io = io.BytesIO(string_io.read().encode("utf-8"))
+    return bytes_io

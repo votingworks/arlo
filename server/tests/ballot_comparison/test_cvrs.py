@@ -1,5 +1,5 @@
 import io, json
-from typing import BinaryIO, Dict, List
+from typing import BinaryIO, Dict, List, TypedDict
 from flask.testing import FlaskClient
 
 from ...models import *  # pylint: disable=wildcard-import
@@ -1662,6 +1662,42 @@ HART_CVRS = [
     build_hart_cvr("BATCH4", "6", "1-4-6", ",,1,0,0", add_write_in=True),
 ]
 
+HART_SCANNED_BALLOT_INFORMATION = """CvrId,UniqueIdentifier
+1-1-1,unique-identifier-01
+1-1-2,unique-identifier-02
+1-1-3,unique-identifier-03
+1-2-1,unique-identifier-04
+1-2-2,unique-identifier-05
+1-2-3,unique-identifier-06
+1-3-1,unique-identifier-07
+1-3-2,unique-identifier-08
+1-3-3,unique-identifier-09
+1-4-1,unique-identifier-10
+1-4-2,unique-identifier-11
+1-4-4,unique-identifier-12
+1-4-5,unique-identifier-13
+1-4-6,unique-identifier-14
+"""
+
+HART_SCANNED_BALLOT_INFORMATION_MISSING_RECORDS = """CvrId,UniqueIdentifier
+1-1-2,unique-identifier-02
+1-2-1,unique-identifier-04
+1-2-3,unique-identifier-06
+1-3-2,unique-identifier-08
+1-4-1,unique-identifier-10
+1-4-4,unique-identifier-12
+1-4-6,unique-identifier-14
+"""
+
+# Modeled after a real scanned ballot information CSV
+HART_SCANNED_BALLOT_INFORMATION_WITH_FORMAT_VERSION_ROW = """#FormatVersion 1
+#BatchId,Workstation,VotingType,VotingMethod,ScanSequence,Precinct,PageNumber,UniqueIdentifier,VariationNumber,Language,Party,Status,RejectReason,VoterIntentIssues,vDriveDeviceDataId,CvrId
+1,"A0123456789","Absentee Voting","Paper",1,"101",1,"unique-identifier-01",0,"English",,"Scanned",,False,"ABCD(1234[ABCD-1234*AB","1-1-1"
+1,"A0123456789","Absentee Voting","Paper",1,"101",2,"unique-identifier-01",0,"English",,"Scanned",,False,"ABCD(1234[ABCD-1234*AB","1-1-1"
+1,"A0123456789","Absentee Voting","Paper",2,"102",1,"unique-identifier-02",0,"Spanish",,"Scanned",,False,"ABCD(1234[ABCD-1234*AB","1-1-2"
+1,"A0123456789","Absentee Voting","Paper",2,"102",2,"unique-identifier-02",0,"Spanish",,"Scanned",,False,"ABCD(1234[ABCD-1234*AB","1-1-2"
+"""
+
 
 def zip_hart_cvrs(cvrs: List[str]):
     files: Dict[str, BinaryIO] = {
@@ -1744,7 +1780,148 @@ def test_hart_cvr_upload(
     )
 
 
-def test_hart_cvr_invalid(
+def test_hart_cvr_upload_with_scanned_ballot_information(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    hart_manifests,  # pylint: disable=unused-argument
+    snapshot,
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    manifest_num_ballots = jurisdictions[0]["ballotManifest"]["numBallots"]
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+
+    class TestCase(TypedDict):
+        scanned_ballot_information_file_contents: str
+        expected_processing_status: ProcessingStatus
+        expected_processing_error: Optional[str]
+        expected_processing_work_progress: int
+
+    test_cases: List[TestCase] = [
+        {
+            "scanned_ballot_information_file_contents": HART_SCANNED_BALLOT_INFORMATION,
+            "expected_processing_status": ProcessingStatus.PROCESSED,
+            "expected_processing_error": None,
+            "expected_processing_work_progress": manifest_num_ballots,
+        },
+        {
+            "scanned_ballot_information_file_contents": HART_SCANNED_BALLOT_INFORMATION_MISSING_RECORDS,
+            "expected_processing_status": ProcessingStatus.PROCESSED,
+            "expected_processing_error": None,
+            "expected_processing_work_progress": manifest_num_ballots,
+        },
+        {
+            "scanned_ballot_information_file_contents": HART_SCANNED_BALLOT_INFORMATION_WITH_FORMAT_VERSION_ROW,
+            "expected_processing_status": ProcessingStatus.PROCESSED,
+            "expected_processing_error": None,
+            "expected_processing_work_progress": manifest_num_ballots,
+        },
+        {
+            "scanned_ballot_information_file_contents": "CvrId,UniqueId\n",
+            "expected_processing_status": ProcessingStatus.ERRORED,
+            "expected_processing_error": "Scanned ballot information CSV missing UniqueIdentifier column.",
+            "expected_processing_work_progress": 0,
+        },
+        {
+            "scanned_ballot_information_file_contents": "CvrGuid,UniqueIdentifier\n",
+            "expected_processing_status": ProcessingStatus.ERRORED,
+            "expected_processing_error": "Scanned ballot information CSV missing CvrId column.",
+            "expected_processing_work_progress": 0,
+        },
+        {
+            "scanned_ballot_information_file_contents": "#FormatVersion 1\nCvrId,UniqueId\n",
+            "expected_processing_status": ProcessingStatus.ERRORED,
+            "expected_processing_error": "Scanned ballot information CSV missing UniqueIdentifier column.",
+            "expected_processing_work_progress": 0,
+        },
+        {
+            "scanned_ballot_information_file_contents": "#FormatVersion 1\nCvrGuid,UniqueIdentifier\n",
+            "expected_processing_status": ProcessingStatus.ERRORED,
+            "expected_processing_error": "Scanned ballot information CSV missing CvrId column.",
+            "expected_processing_work_progress": 0,
+        },
+        {
+            "scanned_ballot_information_file_contents": "#FormatVersion 1\n",
+            "expected_processing_status": ProcessingStatus.ERRORED,
+            "expected_processing_error": "Please submit a valid CSV file with columns separated by commas.",
+            "expected_processing_work_progress": 0,
+        },
+        {
+            "scanned_ballot_information_file_contents": "",
+            "expected_processing_status": ProcessingStatus.ERRORED,
+            "expected_processing_error": "CSV cannot be empty.",
+            "expected_processing_work_progress": 0,
+        },
+    ]
+
+    for test_case in test_cases:
+        scanned_ballot_information = string_to_bytes_io(
+            test_case["scanned_ballot_information_file_contents"]
+        )
+        rv = client.put(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
+            data={
+                "cvrs": [
+                    (zip_hart_cvrs(HART_CVRS), "cvr-files.zip"),
+                    (scanned_ballot_information, "scanned-ballot-information.csv"),
+                ],
+                "cvrFileType": "HART",
+            },
+        )
+        assert_ok(rv)
+
+        rv = client.get(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
+        )
+        compare_json(
+            json.loads(rv.data),
+            {
+                "file": {
+                    "cvrFileType": "HART",
+                    "name": "cvr-files.zip",
+                    "uploadedAt": assert_is_date,
+                },
+                "processing": {
+                    "status": test_case["expected_processing_status"],
+                    "startedAt": assert_is_date,
+                    "completedAt": assert_is_date,
+                    "error": test_case["expected_processing_error"],
+                    "workProgress": test_case["expected_processing_work_progress"],
+                    "workTotal": manifest_num_ballots,
+                },
+            },
+        )
+
+        if test_case["expected_processing_status"] == ProcessingStatus.PROCESSED:
+            cvr_ballots = (
+                CvrBallot.query.join(Batch)
+                .filter_by(jurisdiction_id=jurisdiction_ids[0])
+                .order_by(CvrBallot.imprinted_id)
+                .all()
+            )
+            assert len(cvr_ballots) == manifest_num_ballots - 1
+            snapshot.assert_match(
+                [
+                    dict(
+                        batch_name=cvr.batch.name,
+                        tabulator=cvr.batch.tabulator,
+                        ballot_position=cvr.ballot_position,
+                        imprinted_id=cvr.imprinted_id,
+                        interpretations=cvr.interpretations,
+                    )
+                    for cvr in cvr_ballots
+                ]
+            )
+            snapshot.assert_match(
+                Jurisdiction.query.get(jurisdiction_ids[0]).cvr_contests_metadata
+            )
+
+
+def test_hart_cvr_upload_with_invalid_cvrs(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
@@ -1814,7 +1991,7 @@ def test_hart_cvr_invalid(
         )
 
 
-def test_hart_cvr_duplicate_batches_in_manifest(
+def test_hart_cvr_upload_with_duplicate_batches_in_manifest(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
@@ -1861,7 +2038,7 @@ def test_hart_cvr_duplicate_batches_in_manifest(
     )
 
 
-def test_hart_cvrs_invalid_zip_mimetype(
+def test_hart_cvr_upload_basic_input_validation(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
@@ -1870,35 +2047,104 @@ def test_hart_cvrs_invalid_zip_mimetype(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={
-            "cvrs": [(zip_hart_cvrs(HART_CVRS), "cvr-files.csv")],
-            "cvrFileType": "HART",
-        },
-    )
-    assert rv.status_code == 400
-    assert json.loads(rv.data) == {
-        "errors": [
-            {"message": "Please submit a ZIP file export.", "errorType": "Bad Request",}
-        ]
-    }
 
-    # Make sure that the Windows zip mimetype does work
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={
+    class TestCase(TypedDict):
+        cvrs: List
+        expected_status_code: int
+        expected_response: Any
+
+    test_cases: List[TestCase] = [
+        {
+            "cvrs": [(zip_hart_cvrs(HART_CVRS), "cvr-files.csv"),],
+            "expected_status_code": 400,
+            "expected_response": {
+                "errors": [
+                    {
+                        "errorType": "Bad Request",
+                        "message": "Please submit a ZIP file export.",
+                    }
+                ]
+            },
+        },
+        {
+            "cvrs": [
+                (zip_hart_cvrs(HART_CVRS), "cvr-files.csv"),
+                (
+                    string_to_bytes_io(HART_SCANNED_BALLOT_INFORMATION),
+                    "scanned-ballot-information.csv",
+                ),
+            ],
+            "expected_status_code": 400,
+            "expected_response": {
+                "errors": [
+                    {
+                        "errorType": "Bad Request",
+                        "message": "Please submit a ZIP file export.",
+                    }
+                ]
+            },
+        },
+        {
+            "cvrs": [
+                (zip_hart_cvrs(HART_CVRS), "cvr-files.zip"),
+                (
+                    string_to_bytes_io(HART_SCANNED_BALLOT_INFORMATION),
+                    "scanned-ballot-information.zip",
+                ),
+            ],
+            "expected_status_code": 400,
+            "expected_response": {
+                "errors": [
+                    {
+                        "errorType": "Bad Request",
+                        "message": "Please submit either a ZIP file export or a ZIP file export and a CSV.",
+                    }
+                ]
+            },
+        },
+        {
+            "cvrs": [
+                (zip_hart_cvrs(HART_CVRS), "cvr-files.zip"),
+                (
+                    string_to_bytes_io(HART_SCANNED_BALLOT_INFORMATION),
+                    "scanned-ballot-information-1.csv",
+                ),
+                (
+                    string_to_bytes_io(HART_SCANNED_BALLOT_INFORMATION),
+                    "scanned-ballot-information-2.csv",
+                ),
+            ],
+            "expected_status_code": 400,
+            "expected_response": {
+                "errors": [
+                    {
+                        "errorType": "Bad Request",
+                        "message": "Expected 1 or 2 files but received 3.",
+                    }
+                ]
+            },
+        },
+        {
             "cvrs": [
                 (
                     zip_hart_cvrs(HART_CVRS),
                     "cvr-files.zip",
+                    # Verify that the Windows ZIP mimetype works
                     "application/x-zip-compressed",
-                )
+                ),
             ],
-            "cvrFileType": "HART",
+            "expected_status_code": 200,
+            "expected_response": {"status": "ok"},
         },
-    )
-    assert_ok(rv)
+    ]
+
+    for test_case in test_cases:
+        rv = client.put(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
+            data={"cvrFileType": "HART", "cvrs": test_case["cvrs"]},
+        )
+        assert rv.status_code == test_case["expected_status_code"]
+        assert json.loads(rv.data) == test_case["expected_response"]
 
 
 def test_cvrs_unexpected_error(
