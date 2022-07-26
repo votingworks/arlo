@@ -91,6 +91,10 @@ const CSVFile = ({
               {title && <H4>{title}</H4>}
               <FormSectionDescription>
                 {description}
+                {values.cvrFileType === CvrFileType.HART &&
+                  ' ' +
+                    'For Hart, you can also provide an optional scanned ballot information CSV. ' +
+                    'If provided, the unique identifiers in the CSV will be used as imprinted IDs.'}
                 {sampleFileLink && (
                   <>
                     <br />
@@ -127,15 +131,19 @@ const CSVFile = ({
               <>
                 <FormSection>
                   <FileInput
-                    inputProps={
-                      values.cvrFileType === CvrFileType.HART
-                        ? { accept: '.zip', name: 'zip' }
-                        : {
-                            accept: '.csv',
-                            name: 'csv',
-                            multiple: values.cvrFileType === CvrFileType.ESS,
-                          }
-                    }
+                    inputProps={{
+                      // While this component is named CSVFile, it can accept zip files in the case
+                      // of Hart CVRs
+                      // TODO: Consider renaming the component and its internals accordingly
+                      accept:
+                        values.cvrFileType === CvrFileType.HART
+                          ? '.zip,.csv'
+                          : '.csv',
+                      name: 'csv',
+                      multiple:
+                        values.cvrFileType === CvrFileType.ESS ||
+                        values.cvrFileType === CvrFileType.HART,
+                    }}
                     onInputChange={e => {
                       const { files } = e.currentTarget
                       setFieldValue(
@@ -145,7 +153,12 @@ const CSVFile = ({
                     }}
                     hasSelection={!!values.csv}
                     text={(() => {
-                      if (!values.csv) return 'Select a file...'
+                      if (!values.csv) {
+                        return values.cvrFileType === CvrFileType.ESS ||
+                          values.cvrFileType === CvrFileType.HART
+                          ? 'Select files...'
+                          : 'Select a file...'
+                      }
                       if (values.csv.length === 1) return values.csv[0].name
                       return `${values.csv.length} files selected`
                     })()}

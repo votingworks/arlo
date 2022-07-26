@@ -52,6 +52,8 @@ from ..util.csv_download import csv_response
 from ..util.csv_parse import (
     CSVIterator,
     decode_csv,
+    does_file_have_csv_mimetype,
+    reject_no_rows,
     validate_comma_delimited,
     validate_csv_mimetype,
     validate_not_empty,
@@ -220,15 +222,24 @@ def column_value(
     row_number: int,
     header_indices: Dict[str, int],
     required: bool = True,
+    file_name: str = None,
 ):
     index = header_indices.get(header)
     if index is None:
         if required:
-            raise UserError(f"Missing required column {header}")
+            raise UserError(
+                f"Missing required column {header} in {file_name}."
+                if file_name is not None
+                else f"Missing required column {header}."
+            )
         return None
     value = row[index] if index < len(row) else None
     if required and (value is None or value == ""):
-        raise UserError(f"Missing required column {header} in row {row_number}.")
+        raise UserError(
+            f"Missing required column {header} in row {row_number} in {file_name}."
+            if file_name is not None
+            else f"Missing required column {header} in row {row_number}."
+        )
     return value
 
 
@@ -782,20 +793,97 @@ def parse_ess_cvrs(
 def parse_hart_cvrs(
     jurisdiction: Jurisdiction,
 ) -> Tuple[CVR_CONTESTS_METADATA, Iterable[CvrBallot]]:
-    # Hart CVRs consist of a zip file containing an individual XML file for each
-    # ballot's CVR. Our parsing steps:
-    # 1. Unzip the files
-    # 2. First, parse out the contest and choice names. We have to do this in
-    #    a separate pass since our storage scheme for interpretations requires
-    #    knowing all of the contest and choice names up front.
-    # 3. Next, parse out the interpretations.
+    # Hart CVRs consist of a ZIP file containing an individual XML file for each ballot's CVR.
+    # Separate from this ZIP file, an optional scanned ballot information CSV can be provided. If
+    # the latter is provided, the `UniqueIdentifier`s in it will be used as imprinted IDs.
+    # Otherwise, `CvrGuid`s will be used.
+    #
+    # Our parsing steps:
+    # 1. Unzip the wrapper ZIP file.
+    # 2. Expect either [ another ZIP file ] or [ another ZIP file and a CSV ].
+    # 3. If a CSV is found, parse it as a scanned ballot information CSV.
+    # 4. Unzip the CVRs ZIP file.
+    # 5. Parse out the contest and choice names. We have to do this in a separate pass since our
+    #    storage scheme for interpretations requires knowing all of the contest and choice names up
+    #    front.
+    # 3. Then, parse out the interpretations.
 
-    zip_file = retrieve_file(jurisdiction.cvr_file.storage_path)
-    files = unzip_files(zip_file)
-    zip_file.close()
+    wrapper_zip_file = retrieve_file(jurisdiction.cvr_file.storage_path)
+    files = unzip_files(wrapper_zip_file)
+    wrapper_zip_file.close()
+
+    cvrs_zip_file: Union[BinaryIO, None] = None
+    scanned_ballot_information_file: Union[BinaryIO, None] = None
+    for name, file in files.items():
+        if name.lower().endswith(".zip"):
+            cvrs_zip_file = file
+        if name.lower().endswith(".csv"):
+            scanned_ballot_information_file = file
+
+    if cvrs_zip_file is None:
+        raise UserError("Expected a file with a .zip extension.")
+
+    def construct_cvr_guid_to_unique_identifier_mapping(
+        scanned_ballot_information_file: BinaryIO,
+    ) -> Dict[str, str]:
+        validate_not_empty(scanned_ballot_information_file)
+        text_file = decode_csv(scanned_ballot_information_file)
+
+        # Skip #FormatVersion row
+        first_line = text_file.readline()
+        if "#FormatVersion" not in first_line:
+            raise UserError(
+                "Expected first line of scanned ballot information CSV to contain '#FormatVersion'."
+            )
+        validate_comma_delimited(text_file)
+        # validate_comma_delimited resets the cursor to the start of the file so skip the
+        # #FormatVersion row again
+        text_file.readline()
+        scanned_ballot_information_csv: CSVIterator = csv.reader(
+            text_file, delimiter=","
+        )
+        scanned_ballot_information_csv = reject_no_rows(scanned_ballot_information_csv)
+
+        headers_row = next(scanned_ballot_information_csv)
+        if len(headers_row) > 0:
+            headers_row[0] = headers_row[0].lstrip("#")
+        header_indices = get_header_indices(headers_row)
+
+        cvr_guid_to_unique_identifier_mapping: Dict[str, str] = {}
+        for i, row in enumerate(scanned_ballot_information_csv):
+            row_number = (
+                i + 3
+            )  # Account for zero indexing, #FormatVersion row, and header row
+            cvr_guid = column_value(
+                row,
+                "CvrId",
+                row_number,
+                header_indices,
+                file_name="scanned ballot information CSV",
+            )
+            unique_identifier = column_value(
+                row,
+                "UniqueIdentifier",
+                row_number,
+                header_indices,
+                file_name="scanned ballot information CSV",
+            )
+            cvr_guid_to_unique_identifier_mapping[cvr_guid] = unique_identifier
+
+        return cvr_guid_to_unique_identifier_mapping
+
+    cvr_guid_to_unique_identifier_mapping = (
+        construct_cvr_guid_to_unique_identifier_mapping(scanned_ballot_information_file)
+        if scanned_ballot_information_file is not None
+        else {}
+    )
+
+    cvr_files = unzip_files(cvrs_zip_file)
 
     # Remove excess files (e.g. WriteIn directory)
-    files = {name: file for name, file in files.items() if name.endswith(".xml")}
+    cvr_files = {
+        name: file for name, file in cvr_files.items() if name.lower().endswith(".xml")
+    }
 
     namespace = "http://tempuri.org/CVRDesign.xsd"
 
@@ -827,7 +915,7 @@ def parse_hart_cvrs(
     # Parse contests and choice names
     # { contest_name: choice_names }
     contest_choices = defaultdict(set)
-    for file in files.values():
+    for file in cvr_files.values():
         cvr_xml = ET.parse(file)
         for contest, choice_names in parse_contest_results(cvr_xml).items():
             contest_choices[contest].update(choice_names)
@@ -899,7 +987,7 @@ def parse_hart_cvrs(
         )
 
     def parse_cvr_ballots() -> Iterable[CvrBallot]:
-        for file_name, file in files.items():
+        for file_name, file in cvr_files.items():
             file.seek(0)
             cvr_xml = ET.parse(file)
             cvr_guid = find(cvr_xml, "CvrGuid").text
@@ -915,11 +1003,16 @@ def parse_hart_cvrs(
                 )
 
             db_batch = batches_by_key.get(batch_number)
+            imprinted_id = (
+                cvr_guid_to_unique_identifier_mapping[cvr_guid]
+                if cvr_guid in cvr_guid_to_unique_identifier_mapping
+                else cvr_guid
+            )
             if db_batch:
                 yield CvrBallot(
                     batch=db_batch,
                     record_id=int(batch_sequence),
-                    imprinted_id=cvr_guid,
+                    imprinted_id=imprinted_id,
                     interpretations=parse_interpretations(cvr_xml),
                 )
             else:
@@ -1156,10 +1249,20 @@ def validate_cvr_upload(
     if cvr_file_type not in [cvr_file_type.value for cvr_file_type in CvrFileType]:
         raise BadRequest("Invalid file type")
 
-    file = request.files["cvrs"]
     if cvr_file_type == CvrFileType.HART:
-        if file.mimetype not in ["application/zip", "application/x-zip-compressed"]:
+        files = request.files.getlist("cvrs")
+        if len(files) != 1 and len(files) != 2:
+            raise BadRequest(f"Expected 1 or 2 files but received {len(files)}.")
+        if not any(
+            file.mimetype in ["application/zip", "application/x-zip-compressed"]
+            for file in files
+        ):
             raise BadRequest("Please submit a ZIP file export.")
+        if len(files) == 2:
+            if not any(does_file_have_csv_mimetype(file) for file in files):
+                raise BadRequest(
+                    "Please submit either a ZIP file export or a ZIP file export and a CSV."
+                )
     else:
         validate_csv_mimetype(request.files["cvrs"])
 
@@ -1185,7 +1288,7 @@ def upload_cvrs(
     validate_cvr_upload(request, election, jurisdiction)
     clear_cvr_data(jurisdiction)
 
-    if request.form["cvrFileType"] == CvrFileType.ESS:
+    if request.form["cvrFileType"] in [CvrFileType.ESS, CvrFileType.HART]:
         file_name = "cvr-files.zip"
         zip_file = zip_files(
             {file.filename: file.stream for file in request.files.getlist("cvrs")}
@@ -1197,9 +1300,7 @@ def upload_cvrs(
         )
     else:
         file_name = request.files["cvrs"].filename
-        file_extension = (
-            "zip" if request.form["cvrFileType"] == CvrFileType.HART else "csv"
-        )
+        file_extension = "csv"
         storage_path = store_file(
             request.files["cvrs"].stream,
             f"audits/{election.id}/jurisdictions/{jurisdiction.id}/"

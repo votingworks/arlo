@@ -90,7 +90,7 @@ const JurisdictionDetail = ({
             <H6>Ballot Manifest</H6>
             <FileUpload
               {...ballotManifestUpload}
-              acceptFileType="csv"
+              acceptFileTypes={['csv']}
               disabled={!!round}
             />
           </StatusCard>
@@ -99,7 +99,7 @@ const JurisdictionDetail = ({
               <H6>Candidate Totals by Batch</H6>
               <FileUpload
                 {...batchTalliesUpload}
-                acceptFileType="csv"
+                acceptFileTypes={['csv']}
                 disabled={!!round || !isManifestUploaded}
               />
             </StatusCard>
@@ -175,10 +175,13 @@ const CvrsFileUpload = ({
       <FileUpload
         {...cvrsUpload}
         uploadFiles={uploadFiles}
-        acceptFileType={
-          selectedCvrFileType === CvrFileType.HART ? 'zip' : 'csv'
+        acceptFileTypes={
+          selectedCvrFileType === CvrFileType.HART ? ['zip', 'csv'] : ['csv']
         }
-        allowMultipleFiles={selectedCvrFileType === CvrFileType.ESS}
+        allowMultipleFiles={
+          selectedCvrFileType === CvrFileType.ESS ||
+          selectedCvrFileType === CvrFileType.HART
+        }
         disabled={disabled || (!cvrs.file && !selectedCvrFileType)}
       />
     </>
