@@ -868,8 +868,7 @@ def parse_hart_cvrs(
                 header_indices,
                 file_name="scanned ballot information CSV",
             )
-            if cvr_guid != "" and unique_identifier != "":
-                cvr_guid_to_unique_identifier_mapping[cvr_guid] = unique_identifier
+            cvr_guid_to_unique_identifier_mapping[cvr_guid] = unique_identifier
 
         return cvr_guid_to_unique_identifier_mapping
 
