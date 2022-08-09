@@ -976,3 +976,22 @@ def test_parse_csv_xls_mislabeled_as_csv():
         " make sure you export it as a .csv file before uploading"
         "\n\nAdditional details: Unable to decode file assuming Windows-1254 encoding"
     )
+
+
+def test_parse_csv_replace_bad_chars():
+    # In this case, the CSV appears to be utf-8, but deep within the file there
+    # are bytes that are actually latin-1 chars and can't be decoded as utf-8.
+    # In this case, the ó in the last row below. In these cases, we should just
+    # replace the undecodable character to avoid a crash.
+    batch_rows = "\n".join([f"Batch {i},1" for i in range(1, 5000)])
+    csv_with_latin_1_char = f"""Batch Name,Number of Ballots
+{batch_rows}
+Batch ó,1
+"""
+    rows = list(
+        parse_csv_binary(
+            io.BytesIO(csv_with_latin_1_char.encode("latin-1")), BALLOT_MANIFEST_COLUMNS
+        )
+    )
+    assert len(rows) == 5000
+    assert rows[-1]["Batch Name"] == "Batch �"
