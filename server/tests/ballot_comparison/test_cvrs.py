@@ -1068,7 +1068,7 @@ def test_cvr_reprocess_after_manifest_reupload(
     assert Jurisdiction.query.get(jurisdiction_ids[0]).cvr_contests_metadata is not None
 
 
-CLEARBALLOT_CVR = """RowNumber,BoxID,BoxPosition,BallotID,PrecinctID,BallotStyleID,PrecinctStyleName,ScanComputerName,Status,Remade,Choice_1_1:Contest 1:Vote For 1:Choice 1-1:Non-Partisan,Choice_210_1:Contest 1:Vote For 1:Choice 1-2:Non-Partisan,Choice_34_1:Contest 2:Vote For 2:Choice 2-1:Non-Partisan,Choice_4_1:Contest 2:Vote For 2:Choice 2-2:Non-Partisan,Choice_173_1:Contest 2:Vote For 2:Choice 2-3:Non-Partisan
+CLEARBALLOT_CVRS = """RowNumber,BoxID,BoxPosition,BallotID,PrecinctID,BallotStyleID,PrecinctStyleName,ScanComputerName,Status,Remade,Choice_1_1:Contest 1:Vote For 1:Choice 1-1:Non-Partisan,Choice_210_1:Contest 1:Vote For 1:Choice 1-2:Non-Partisan,Choice_34_1:Contest 2:Vote For 2:Choice 2-1:Non-Partisan,Choice_4_1:Contest 2:Vote For 2:Choice 2-2:Non-Partisan,Choice_173_1:Contest 2:Vote For 2:Choice 2-3:Non-Partisan
 1,BATCH1,1,1-1-1,p,bs,ps,TABULATOR1,s,r,0,1,1,1,0
 2,BATCH1,2,1-1-2,p,bs,ps,TABULATOR1,s,r,1,0,1,0,1
 3,BATCH1,3,1-1-3,p,bs,ps,TABULATOR1,s,r,0,1,1,1,0
@@ -1083,6 +1083,13 @@ CLEARBALLOT_CVR = """RowNumber,BoxID,BoxPosition,BallotID,PrecinctID,BallotStyle
 12,BATCH2,4,2-2-4,p,bs,ps,TABULATOR2,s,r,,,1,0,1
 13,BATCH2,5,2-2-5,p,bs,ps,TABULATOR2,s,r,,,1,1,0
 14,BATCH2,6,2-2-6,p,bs,ps,TABULATOR2,s,r,,,1,0,1
+"""
+
+# This file is based on a real file that we once received, probably exported by Clear Ballot but
+# not a Clear Ballot CVR file
+CLEARBALLOT_CVRS_INVALID = """ChoiceID,ContestID,ChoiceName
+1,1,Mike Wazowski
+2,1,James 'Sulley' Sullivan
 """
 
 
@@ -1100,7 +1107,7 @@ def test_clearballot_cvr_upload(
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
         data={
-            "cvrs": (io.BytesIO(CLEARBALLOT_CVR.encode()), "cvrs.csv",),
+            "cvrs": (io.BytesIO(CLEARBALLOT_CVRS.encode()), "cvrs.csv",),
             "cvrFileType": "CLEARBALLOT",
         },
     )
@@ -1157,6 +1164,56 @@ def test_clearballot_cvr_upload(
     )
     snapshot.assert_match(
         Jurisdiction.query.get(jurisdiction_ids[0]).cvr_contests_metadata
+    )
+
+
+def test_clearballot_cvr_upload_invalid(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    manifests,  # pylint: disable=unused-argument
+):
+    # Upload CVRs
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
+        data={
+            "cvrs": (io.BytesIO(CLEARBALLOT_CVRS_INVALID.encode()), "cvrs.csv",),
+            "cvrFileType": "CLEARBALLOT",
+        },
+    )
+    assert_ok(rv)
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    manifest_num_ballots = jurisdictions[0]["ballotManifest"]["numBallots"]
+
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
+    )
+    compare_json(
+        json.loads(rv.data),
+        {
+            "file": {
+                "cvrFileType": "CLEARBALLOT",
+                "name": "cvrs.csv",
+                "uploadedAt": assert_is_date,
+            },
+            "processing": {
+                "status": ProcessingStatus.ERRORED,
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": "CVR file should have at least one column beginning with 'Choice_'",
+                "workProgress": 0,
+                "workTotal": manifest_num_ballots,
+            },
+        },
     )
 
 

@@ -249,6 +249,12 @@ def parse_clearballot_cvrs(
     cvr_file = retrieve_file(jurisdiction.cvr_file.storage_path)
     cvrs = csv_reader_for_cvr(cvr_file)
     headers = next(cvrs)
+
+    if not any(header.startswith("Choice_") for header in headers):
+        raise UserError(
+            "CVR file should have at least one column beginning with 'Choice_'"
+        )
+
     first_contest_column = next(
         i for i, header in enumerate(headers) if header.startswith("Choice_")
     )
