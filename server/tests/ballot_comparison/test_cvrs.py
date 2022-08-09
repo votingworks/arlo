@@ -1085,8 +1085,11 @@ CLEARBALLOT_CVRS = """RowNumber,BoxID,BoxPosition,BallotID,PrecinctID,BallotStyl
 14,BATCH2,6,2-2-6,p,bs,ps,TABULATOR2,s,r,,,1,0,1
 """
 
-CLEARBALLOT_CVRS_MISSING_CONTEST_COLUMNS = """RowNumber,BoxID,BoxPosition,BallotID,PrecinctID,BallotStyleID,PrecinctStyleName,ScanComputerName,Status,Remade
-1,BATCH1,1,1-1-1,p,bs,ps,TABULATOR1,s,r
+# This file is based on a real file that we once received, probably exported by Clear Ballot but
+# not a Clear Ballot CVR file
+CLEARBALLOT_CVRS_INVALID = """ChoiceID,ContestID,ChoiceName
+1,1,Mike Wazowski
+2,1,James 'Sulley' Sullivan
 """
 
 
@@ -1164,7 +1167,7 @@ def test_clearballot_cvr_upload(
     )
 
 
-def test_clearballot_cvr_upload_missing_contest_columns(
+def test_clearballot_cvr_upload_invalid(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
@@ -1177,10 +1180,7 @@ def test_clearballot_cvr_upload_missing_contest_columns(
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
         data={
-            "cvrs": (
-                io.BytesIO(CLEARBALLOT_CVRS_MISSING_CONTEST_COLUMNS.encode()),
-                "cvrs.csv",
-            ),
+            "cvrs": (io.BytesIO(CLEARBALLOT_CVRS_INVALID.encode()), "cvrs.csv",),
             "cvrFileType": "CLEARBALLOT",
         },
     )
