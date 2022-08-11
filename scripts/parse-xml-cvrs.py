@@ -2,6 +2,7 @@
 import sys
 import os
 import csv
+import shutil
 from xml.etree import ElementTree
 from collections import defaultdict
 
@@ -55,6 +56,15 @@ def parse_cvr_file(file_path, use_directory_name_as_tabulator=False):
     return cvr
 
 
+def parse_scanned_ballot_information_csv(file_path):
+    unique_identifiers = set()
+    with open(file_path) as csv_file:
+        reader = csv.reader(csv_file)
+        for row in reader:
+            unique_identifiers.add(row[15])
+    return unique_identifiers
+
+
 if __name__ == "__main__":
     if not (
         len(sys.argv) == 3
@@ -69,6 +79,10 @@ if __name__ == "__main__":
     cvr_directory_path = sys.argv[len(sys.argv) - 2]
     output_csv_path = sys.argv[len(sys.argv) - 1]
     cvrs_exported_by_tabulator = len(sys.argv) == 4
+
+    audit_mode_unique_identifiers = parse_scanned_ballot_information_csv(
+        "/media/psf/shared/arlo-workspace/audit-mode-scanned-ballot-information.csv"
+    )
 
     print("Finding CVR files...")
 
@@ -98,64 +112,76 @@ if __name__ == "__main__":
             print(f"Error parsing file: {cvr_file_path}")
             raise exc
 
-        cvrs.append(cvr)
+        if not os.path.exists("./audit-mode"):
+            os.mkdir("./audit-mode")
+        if not os.path.exists("./live-mode"):
+            os.mkdir("./live-mode")
 
-        # Keep track of all contest choices we've seen
-        for contest_name, choices in cvr["Contests"].items():
-            for choice_name in choices:
-                contest_choices[contest_name].add(choice_name)
+        if cvr["CvrGuid"] in audit_mode_unique_identifiers:
+            shutil.copy(
+                cvr_file_path, "./audit-mode/" + os.path.basename(cvr_file_path)
+            )
+        else:
+            shutil.copy(cvr_file_path, "./live-mode/" + os.path.basename(cvr_file_path))
 
-        if len(cvrs) % 1000 == 0:
-            print(f"Parsed {len(cvrs)} files")
+        # cvrs.append(cvr)
 
-    print("Writing CSV...")
+        # # Keep track of all contest choices we've seen
+        # for contest_name, choices in cvr["Contests"].items():
+        #     for choice_name in choices:
+        #         contest_choices[contest_name].add(choice_name)
 
-    contest_choice_pairs = [
-        (contest_name, choice_name)
-        for contest_name, choices in contest_choices.items()
-        for choice_name in choices
-    ]
+        # if len(cvrs) % 1000 == 0:
+        #     print(f"Parsed {len(cvrs)} files")
 
-    with open(output_csv_path, "w") as output_file:
+    # print("Writing CSV...")
 
-        writer = csv.writer(output_file)
-        writer.writerow(["Election Name", "0.00.0.00"])
+    # contest_choice_pairs = [
+    #     (contest_name, choice_name)
+    #     for contest_name, choices in contest_choices.items()
+    #     for choice_name in choices
+    # ]
 
-        contest_headers = ["", "", "", "", ""] + [
-            f"{contest_name} (Vote For=1)" for contest_name, _ in contest_choice_pairs
-        ]
-        writer.writerow(contest_headers)
+    # with open(output_csv_path, "w") as output_file:
 
-        choice_headers = ["", "", "", "", ""] + [
-            choice_name for _, choice_name in contest_choice_pairs
-        ]
-        writer.writerow(choice_headers)
+    #     writer = csv.writer(output_file)
+    #     writer.writerow(["Election Name", "0.00.0.00"])
 
-        headers = [
-            "CvrNumber",
-            "TabulatorNum",
-            "BatchId",
-            "RecordId",
-            "ImprintedId",
-        ] + ["NP" for _ in contest_choice_pairs]
-        writer.writerow(headers)
+    #     contest_headers = ["", "", "", "", ""] + [
+    #         f"{contest_name} (Vote For=1)" for contest_name, _ in contest_choice_pairs
+    #     ]
+    #     writer.writerow(contest_headers)
 
-        for i, cvr in enumerate(cvrs):
-            row = [
-                i,
-                cvr["Tabulator"] if cvrs_exported_by_tabulator else 1,
-                cvr["BatchNumber"],
-                cvr["BatchSequence"],
-                cvr["CvrGuid"],
-            ]
+    #     choice_headers = ["", "", "", "", ""] + [
+    #         choice_name for _, choice_name in contest_choice_pairs
+    #     ]
+    #     writer.writerow(choice_headers)
 
-            # Fill in missing contest choices with 0s
-            for contest_name, choice_name in contest_choice_pairs:
-                if contest_name not in cvr["Contests"]:
-                    row.append("")
-                elif choice_name not in cvr["Contests"][contest_name]:
-                    row.append(0)
-                else:
-                    row.append(cvr["Contests"][contest_name][choice_name])
+    #     headers = [
+    #         "CvrNumber",
+    #         "TabulatorNum",
+    #         "BatchId",
+    #         "RecordId",
+    #         "ImprintedId",
+    #     ] + ["NP" for _ in contest_choice_pairs]
+    #     writer.writerow(headers)
 
-            writer.writerow(row)
+    #     for i, cvr in enumerate(cvrs):
+    #         row = [
+    #             i,
+    #             cvr["Tabulator"] if cvrs_exported_by_tabulator else 1,
+    #             cvr["BatchNumber"],
+    #             cvr["BatchSequence"],
+    #             cvr["CvrGuid"],
+    #         ]
+
+    #         # Fill in missing contest choices with 0s
+    #         for contest_name, choice_name in contest_choice_pairs:
+    #             if contest_name not in cvr["Contests"]:
+    #                 row.append("")
+    #             elif choice_name not in cvr["Contests"][contest_name]:
+    #                 row.append(0)
+    #             else:
+    #                 row.append(cvr["Contests"][contest_name][choice_name])
+
+    #         writer.writerow(row)
