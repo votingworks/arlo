@@ -1,5 +1,6 @@
 version: 2.1
 orbs:
+  browser-tools: circleci/browser-tools@1.4.0
   cypress: cypress-io/cypress@1
 
 executors:
@@ -88,16 +89,6 @@ commands:
             yarn --cwd client install
             yarn --cwd client build
 
-  install-chrome:
-    steps:
-      - run:
-          name: Install Chrome
-          command: |
-            curl -L -o google-chrome.deb https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_88.0.4324.96-1_amd64.deb
-            sudo dpkg -i google-chrome.deb
-            sudo sed -i 's|HERE/chrome\"|HERE/chrome\" --disable-setuid-sandbox|g' /opt/google/chrome/google-chrome
-            rm google-chrome.deb
-
 jobs:
   preflight:
     executor: arlo
@@ -181,7 +172,7 @@ jobs:
           name: install noauth
           command: |
             poetry install
-      - install-chrome
+      - browser-tools/install-chrome
       - create-data-model
       - run:
           name: cypress
