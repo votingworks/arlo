@@ -419,3 +419,29 @@ def sign_off_audit_board(
     db_session.commit()
 
     return jsonify(status="ok")
+
+
+@api.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/audit-board/<audit_board_id>/sign-off",
+    methods=["DELETE"],
+)
+@restrict_access([UserType.AUDIT_ADMIN])
+def reopen_audit_board(
+    election: Election,
+    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    round: Round,
+    audit_board: AuditBoard,
+):
+    current_round = get_current_round(election)
+
+    if not current_round or round.id != current_round.id:
+        raise Conflict("Audit board is not part of the current round.")
+    if round.ended_at:
+        raise Conflict("Can't reopen audit board after round ends.")
+    if audit_board.signed_off_at is None:
+        raise Conflict("Audit board has not signed off.")
+
+    audit_board.signed_off_at = None
+    db_session.commit()
+
+    return jsonify(status="ok")
