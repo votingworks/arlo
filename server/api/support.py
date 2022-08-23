@@ -356,7 +356,7 @@ def clear_jurisdiction_audit_boards(jurisdiction_id: str):
 
 @api.route("/support/audit-boards/<audit_board_id>/sign-off", methods=["DELETE"])
 @restrict_access_support
-def reopen_audit_board(audit_board_id: str):
+def support_reopen_audit_board(audit_board_id: str):
     audit_board = get_or_404(AuditBoard, audit_board_id)
     round = get_current_round(audit_board.jurisdiction.election)
 

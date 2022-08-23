@@ -1099,3 +1099,110 @@ def test_audit_board_human_order(
     assert [
         audit_board["name"] for audit_board in json.loads(rv.data)["auditBoards"]
     ] == [f"Audit Board #{i}" for i in range(1, 11)]
+
+
+def test_reopen_audit_board(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    contest_ids: List[str],
+    round_1_id: str,
+    audit_board_round_1_ids: List[str],
+):
+    member_1, member_2 = set_up_audit_board(
+        client,
+        election_id,
+        jurisdiction_ids[0],
+        round_1_id,
+        contest_ids[0],
+        audit_board_round_1_ids[0],
+    )
+    set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_1_ids[0])
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/sign-off",
+        {"memberName1": member_1, "memberName2": member_2,},
+    )
+    assert_ok(rv)
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+
+    rv = client.delete(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/sign-off"
+    )
+    assert_ok(rv)
+    assert AuditBoard.query.get(audit_board_round_1_ids[0]).signed_off_at is None
+
+
+def test_reopen_audit_board_error_cases(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    contest_ids: List[str],
+    round_1_id: str,
+    audit_board_round_1_ids: List[str],
+):
+    set_up_audit_board(
+        client,
+        election_id,
+        jurisdiction_ids[0],
+        round_1_id,
+        contest_ids[0],
+        audit_board_round_1_ids[0],
+    )
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+
+    rv = client.delete(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/sign-off"
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {"errorType": "Conflict", "message": "Audit board has not signed off.",}
+        ]
+    }
+
+    run_audit_round(round_1_id, contest_ids[0], contest_ids, 0.55)
+
+    rv = client.delete(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/sign-off"
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Can't reopen audit board after round ends.",
+            }
+        ]
+    }
+
+    # Start a second round
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/2")
+    sample_size_options = json.loads(rv.data)["sampleSizes"]
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {
+            "roundNum": 2,
+            "sampleSizes": {
+                contest_id: options[0]
+                for contest_id, options in sample_size_options.items()
+            },
+        },
+    )
+    assert_ok(rv)
+    rv = client.get(f"/api/election/{election_id}/round")
+    assert rv.status_code == 200
+
+    rv = client.delete(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/sign-off"
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Audit board is not part of the current round.",
+            }
+        ]
+    }
