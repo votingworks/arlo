@@ -132,7 +132,10 @@ def test_support_rename_organization(client: FlaskClient, org_id: str):
 
 
 def test_support_get_election(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    round_1_id: str,  # pylint: disable=unused-argument
 ):
     set_support_user(client, SUPPORT_EMAIL)
     rv = client.get(f"/api/support/elections/{election_id}")
@@ -148,6 +151,7 @@ def test_support_get_election(
                 {"id": jurisdiction_ids[1], "name": "J2",},
                 {"id": jurisdiction_ids[2], "name": "J3",},
             ],
+            "rounds": [{"id": round_1_id, "ended_at": None}],
             "deletedAt": None,
         },
     )
@@ -769,4 +773,62 @@ def test_support_clear_offline_results_wrong_audit_type(
                 "message": "Can only clear results for offline ballot polling audits.",
             }
         ]
+    }
+
+
+def test_reopen_current_round(
+    client: FlaskClient, election_id: str, contest_ids: List[str], round_1_id: str,
+):
+    def is_round_completed(round_id: str) -> bool:
+        rv = client.get(f"/api/support/elections/{election_id}")
+        rounds = json.loads(rv.data)["rounds"]
+        round = [r for r in rounds if r["id"] == round_id][0]
+
+        round_from_db = Round.query.get(round_id)
+
+        # Check what we can using the API and check the rest in the DB
+        return round["ended_at"] is not None and all(
+            round_contest.end_p_value is not None
+            and round_contest.is_complete is not None
+            and len(round_contest.results) > 0
+            for round_contest in round_from_db.round_contests
+        )
+
+    set_support_user(client, SUPPORT_EMAIL)
+
+    run_audit_round(round_1_id, contest_ids[0], contest_ids, 0.55)
+    assert is_round_completed(round_1_id)
+
+    rv = client.patch(f"/api/support/elections/{election_id}/reopen-current-round")
+    assert_ok(rv)
+    assert not is_round_completed(round_1_id)
+
+    # Verify that the round can be completed again
+    run_audit_round(round_1_id, contest_ids[0], contest_ids, 0.55)
+    assert is_round_completed(round_1_id)
+
+
+def test_reopen_current_round_when_audit_not_started(
+    client: FlaskClient, election_id: str,
+):
+    set_support_user(client, SUPPORT_EMAIL)
+
+    rv = client.patch(f"/api/support/elections/{election_id}/reopen-current-round")
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [{"errorType": "Conflict", "message": "Audit hasn't started yet.",}]
+    }
+
+
+def test_reopen_current_round_when_round_in_progress(
+    client: FlaskClient,
+    election_id: str,
+    round_1_id: str,  # pylint: disable=unused-argument
+):
+    set_support_user(client, SUPPORT_EMAIL)
+
+    rv = client.patch(f"/api/support/elections/{election_id}/reopen-current-round")
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [{"errorType": "Conflict", "message": "Round is in progress.",}]
     }
