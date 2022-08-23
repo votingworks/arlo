@@ -421,7 +421,7 @@ def log_in_as_jurisdiction_admin(email: str):
     return redirect("/")
 
 
-@api.route("/support/elections/<election_id>/rounds/current/reopen", methods=["PATCH"])
+@api.route("/support/elections/<election_id>/reopen-current-round", methods=["PATCH"])
 @restrict_access_support
 def reopen_current_round(election_id: str):
     election = get_or_404(Election, election_id)

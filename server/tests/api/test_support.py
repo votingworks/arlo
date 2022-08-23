@@ -789,7 +789,7 @@ def test_reopen_current_round(
     run_audit_round(round_1_id, contest_ids[0], contest_ids, 0.55)
     assert is_round_completed(round_1_id)
 
-    rv = client.patch(f"/api/support/elections/{election_id}/rounds/current/reopen")
+    rv = client.patch(f"/api/support/elections/{election_id}/reopen-current-round")
     assert_ok(rv)
     assert not is_round_completed(round_1_id)
 
@@ -803,7 +803,7 @@ def test_reopen_current_round_when_audit_not_started(
 ):
     set_support_user(client, SUPPORT_EMAIL)
 
-    rv = client.patch(f"/api/support/elections/{election_id}/rounds/current/reopen")
+    rv = client.patch(f"/api/support/elections/{election_id}/reopen-current-round")
     assert rv.status_code == 409
     assert json.loads(rv.data) == {
         "errors": [{"errorType": "Conflict", "message": "Audit hasn't started yet.",}]
@@ -817,7 +817,7 @@ def test_reopen_current_round_when_round_in_progress(
 ):
     set_support_user(client, SUPPORT_EMAIL)
 
-    rv = client.patch(f"/api/support/elections/{election_id}/rounds/current/reopen")
+    rv = client.patch(f"/api/support/elections/{election_id}/reopen-current-round")
     assert rv.status_code == 409
     assert json.loads(rv.data) == {
         "errors": [{"errorType": "Conflict", "message": "Round is in progress.",}]
