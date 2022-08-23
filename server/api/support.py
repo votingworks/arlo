@@ -419,3 +419,24 @@ def log_in_as_jurisdiction_admin(email: str):
         session, UserType.JURISDICTION_ADMIN, email, from_support_user=True
     )
     return redirect("/")
+
+
+@api.route("/support/elections/<election_id>/rounds/current/reopen", methods=["PATCH"])
+@restrict_access_support
+def reopen_current_round(election_id: str):
+    election = get_or_404(Election, election_id)
+    current_round = get_current_round(election)
+
+    if not current_round:
+        raise Conflict("Audit hasn't started yet.")
+    if not current_round.ended_at:
+        raise Conflict("Round is in progress.")
+
+    current_round.ended_at = None
+    for round_contest in current_round.round_contests:
+        round_contest.end_p_value = None
+        round_contest.is_complete = None
+        round_contest.results = []
+    db_session.commit()
+
+    return jsonify(status="ok")
