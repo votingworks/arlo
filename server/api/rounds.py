@@ -1153,7 +1153,7 @@ def list_rounds_jurisdiction_admin(
 
 @api.route("/election/<election_id>/round/<round_id>", methods=["DELETE"])
 @restrict_access([UserType.AUDIT_ADMIN])
-def undo_create_round(election: Election, round: Round):
+def undo_round_start(election: Election, round: Round):
     current_round = get_current_round(election)
     if not current_round or current_round.id != round.id:
         raise Conflict(
