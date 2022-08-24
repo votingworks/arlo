@@ -1044,6 +1044,25 @@ def validate_sample_size(round: dict, election: Election):
                 raise BadRequest("For a full hand tally, use only one target contest.")
 
 
+def delete_round_and_corresponding_sampled_ballots(round: Round):
+    db_session.delete(round)
+
+    # Delete any sampled ballots that were created this round (they will have no associated
+    # SampledBallotDraws since they are deleted by cascade when deleting the round)
+    SampledBallot.query.filter(
+        SampledBallot.id.in_(
+            SampledBallot.query.join(Batch)
+            .join(Jurisdiction)
+            .filter_by(election_id=round.election_id)
+            .filter(not_(SampledBallot.draws.any()))
+            .with_entities(SampledBallot.id)
+            .subquery()
+        )
+    ).with_entities(SampledBallot).delete(synchronize_session=False)
+
+    db_session.commit()
+
+
 @api.route("/election/<election_id>/round", methods=["POST"])
 @restrict_access([UserType.AUDIT_ADMIN])
 def create_round(election: Election):
@@ -1134,7 +1153,7 @@ def list_rounds_jurisdiction_admin(
 
 @api.route("/election/<election_id>/round/<round_id>", methods=["DELETE"])
 @restrict_access([UserType.AUDIT_ADMIN])
-def undo_create_round(election: Election, round: Round):
+def undo_round_start(election: Election, round: Round):
     current_round = get_current_round(election)
     if not current_round or current_round.id != round.id:
         raise Conflict(
@@ -1146,21 +1165,6 @@ def undo_create_round(election: Election, round: Round):
             "Cannot undo starting this round because some jurisdictions have already created audit boards."
         )
 
-    db_session.delete(round)
-    # Delete any sampled ballots that were created this round (they will have no
-    # associated SampledBallotDraws, since they are deleted by cascade when
-    # deleting the round).
-    SampledBallot.query.filter(
-        SampledBallot.id.in_(
-            SampledBallot.query.join(Batch)
-            .join(Jurisdiction)
-            .filter_by(election_id=election.id)
-            .filter(not_(SampledBallot.draws.any()))
-            .with_entities(SampledBallot.id)
-            .subquery()
-        )
-    ).with_entities(SampledBallot).delete(synchronize_session=False)
-
-    db_session.commit()
+    delete_round_and_corresponding_sampled_ballots(round)
 
     return jsonify(status="ok")

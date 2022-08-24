@@ -26,7 +26,7 @@ from ..config import (
 from ..util.jsonschema import validate
 from ..util.isoformat import isoformat
 from ..util.file import delete_file
-from .rounds import get_current_round
+from .rounds import delete_round_and_corresponding_sampled_ballots, get_current_round
 
 AUTH0_DOMAIN = urlparse(AUDITADMIN_AUTH0_BASE_URL).hostname
 
@@ -422,6 +422,27 @@ def log_in_as_jurisdiction_admin(email: str):
         session, UserType.JURISDICTION_ADMIN, email, from_support_user=True
     )
     return redirect("/")
+
+
+@api.route("/support/rounds/<round_id>", methods=["DELETE"])
+@restrict_access_support
+def support_undo_round_start(round_id: str):
+    round = get_or_404(Round, round_id)
+    election = get_or_404(Election, round.election_id)
+    current_round = get_current_round(election)
+
+    if not current_round or round.id != current_round.id:
+        raise Conflict(
+            "Cannot undo starting this round because it is not the current round."
+        )
+    if len(list(round.audit_boards)) > 0:
+        raise Conflict(
+            "Cannot undo starting this round because some jurisdictions have already created audit boards."
+        )
+
+    delete_round_and_corresponding_sampled_ballots(round)
+
+    return jsonify(status="ok")
 
 
 @api.route("/support/elections/<election_id>/reopen-current-round", methods=["PATCH"])

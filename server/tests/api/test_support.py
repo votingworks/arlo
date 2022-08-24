@@ -776,7 +776,51 @@ def test_support_clear_offline_results_wrong_audit_type(
     }
 
 
-def test_reopen_current_round(
+def test_support_undo_round_start(
+    client: FlaskClient, election_id: str, round_1_id: str, round_2_id: str,
+):
+    set_support_user(client, SUPPORT_EMAIL)
+
+    rv = client.get(f"/api/support/elections/{election_id}")
+    rounds = json.loads(rv.data)["rounds"]
+    assert len(rounds) == 2
+    assert rounds[0]["id"] == round_1_id
+    assert rounds[0]["ended_at"] is not None
+    assert rounds[1]["id"] == round_2_id
+    assert rounds[1]["ended_at"] is None
+
+    rv = client.delete(f"/api/support/rounds/{round_1_id}")
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Cannot undo starting this round because it is not the current round.",
+            }
+        ]
+    }
+
+    rv = client.delete(f"/api/support/rounds/{round_2_id}")
+    assert_ok(rv)
+    rv = client.get(f"/api/support/elections/{election_id}")
+    rounds = json.loads(rv.data)["rounds"]
+    assert len(rounds) == 1
+    assert rounds[0]["id"] == round_1_id
+    assert rounds[0]["ended_at"] is not None
+
+    rv = client.delete(f"/api/support/rounds/{round_1_id}")
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Cannot undo starting this round because some jurisdictions have already created audit boards.",
+            }
+        ]
+    }
+
+
+def test_support_reopen_current_round(
     client: FlaskClient, election_id: str, contest_ids: List[str], round_1_id: str,
 ):
     def is_round_completed(round_id: str) -> bool:
@@ -808,7 +852,7 @@ def test_reopen_current_round(
     assert is_round_completed(round_1_id)
 
 
-def test_reopen_current_round_when_audit_not_started(
+def test_support_reopen_current_round_when_audit_not_started(
     client: FlaskClient, election_id: str,
 ):
     set_support_user(client, SUPPORT_EMAIL)
@@ -820,7 +864,7 @@ def test_reopen_current_round_when_audit_not_started(
     }
 
 
-def test_reopen_current_round_when_round_in_progress(
+def test_support_reopen_current_round_when_round_in_progress(
     client: FlaskClient,
     election_id: str,
     round_1_id: str,  # pylint: disable=unused-argument
