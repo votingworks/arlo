@@ -485,6 +485,12 @@ export const aaApiCalls = {
     url: '/us-states-counties.json',
     response: mapTopology,
   },
+  reopenAuditBoard: {
+    url:
+      '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/audit-board/audit-board-1/sign-off',
+    options: { method: 'DELETE' },
+    response: { status: 'ok' },
+  },
 }
 
 export const supportApiCalls = {
