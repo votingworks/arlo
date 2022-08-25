@@ -28,7 +28,6 @@ import {
   IElection,
   useCreateOrganization,
   useJurisdiction,
-  IAuditBoard,
   useClearAuditBoards,
   useReopenAuditBoard,
   useClearOfflineResults,
@@ -39,6 +38,7 @@ import {
   IElectionBase,
 } from './support-api'
 import { useConfirm, Confirm } from '../Atoms/Confirm'
+import AuditBoardsTable from '../AuditAdmin/Progress/AuditBoardsTable'
 
 const SupportTools = () => {
   const auth = useAuthDataContext()
@@ -445,21 +445,6 @@ const Jurisdiction = ({ jurisdictionId }: { jurisdictionId: string }) => {
     })
   }
 
-  const onClickReopenAuditBoard = (auditBoard: IAuditBoard) => {
-    confirm({
-      title: 'Confirm',
-      description: `Are you sure you want to reopen ${auditBoard.name}?`,
-      yesButtonLabel: 'Reopen',
-      onYesClick: async () => {
-        await reopenAuditBoard.mutateAsync({
-          jurisdictionId,
-          auditBoardId: auditBoard.id,
-        })
-        toast.success(`Reopened ${auditBoard.name}`)
-      },
-    })
-  }
-
   const onClickClearOfflineResults = () => {
     confirm({
       title: 'Confirm',
@@ -484,28 +469,24 @@ const Jurisdiction = ({ jurisdictionId }: { jurisdictionId: string }) => {
             <p>The jurisdiction hasn&apos;t created audit boards yet.</p>
           ) : (
             <>
-              <Button intent="danger" onClick={onClickClearAuditBoards}>
+              <Button
+                intent="danger"
+                onClick={onClickClearAuditBoards}
+                style={{ marginBottom: '10px' }}
+              >
                 Clear audit boards
               </Button>
-              <Table striped>
-                <tbody>
-                  {auditBoards.map(auditBoard => (
-                    <tr key={auditBoard.id}>
-                      <td>{auditBoard.name}</td>
-                      {election.online && (
-                        <td>
-                          <Button
-                            onClick={() => onClickReopenAuditBoard(auditBoard)}
-                            disabled={!auditBoard.signedOffAt}
-                          >
-                            Reopen
-                          </Button>
-                        </td>
-                      )}
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
+              <AuditBoardsTable
+                areAuditBoardsOnline={election.online}
+                auditBoards={auditBoards}
+                reopenAuditBoard={async auditBoard => {
+                  await reopenAuditBoard.mutateAsync({
+                    auditBoardId: auditBoard.id,
+                    jurisdictionId,
+                  })
+                  toast.success(`Reopened ${auditBoard.name}`)
+                }}
+              />
             </>
           )}
           {election.auditType === 'BALLOT_POLLING' && !election.online && (
