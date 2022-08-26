@@ -344,7 +344,6 @@ const RoundStatusSection = ({
           <p>Data entry complete</p>
           {auditSettings.online && (
             <AuditBoardsTable
-              areAuditBoardsOnline
               auditBoards={auditBoards}
               reopenAuditBoard={auditBoard =>
                 reopenAuditBoard({

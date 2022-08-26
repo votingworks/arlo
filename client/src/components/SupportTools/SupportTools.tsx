@@ -29,7 +29,6 @@ import {
   useCreateOrganization,
   useJurisdiction,
   useClearAuditBoards,
-  useReopenAuditBoard,
   useClearOfflineResults,
   useDeleteOrganization,
   useRenameOrganization,
@@ -419,7 +418,6 @@ const Audit = ({ electionId }: { electionId: string }) => {
 const Jurisdiction = ({ jurisdictionId }: { jurisdictionId: string }) => {
   const jurisdiction = useJurisdiction(jurisdictionId)
   const clearAuditBoards = useClearAuditBoards()
-  const reopenAuditBoard = useReopenAuditBoard()
   const clearOfflineResults = useClearOfflineResults()
   const { confirm, confirmProps } = useConfirm()
 
@@ -476,17 +474,7 @@ const Jurisdiction = ({ jurisdictionId }: { jurisdictionId: string }) => {
               >
                 Clear audit boards
               </Button>
-              <AuditBoardsTable
-                areAuditBoardsOnline={election.online}
-                auditBoards={auditBoards}
-                reopenAuditBoard={async auditBoard => {
-                  await reopenAuditBoard.mutateAsync({
-                    auditBoardId: auditBoard.id,
-                    jurisdictionId,
-                  })
-                  toast.success(`Reopened ${auditBoard.name}`)
-                }}
-              />
+              <AuditBoardsTable auditBoards={auditBoards} />
             </>
           )}
           {election.auditType === 'BALLOT_POLLING' && !election.online && (

@@ -12,16 +12,11 @@ interface IAuditBoardMinimal {
 }
 
 interface IProps {
-  areAuditBoardsOnline: boolean
   auditBoards: IAuditBoardMinimal[]
-  reopenAuditBoard: (auditBoard: IAuditBoardMinimal) => Promise<void>
+  reopenAuditBoard?: (auditBoard: IAuditBoardMinimal) => Promise<void>
 }
 
-const AuditBoardsTable = ({
-  areAuditBoardsOnline,
-  auditBoards,
-  reopenAuditBoard,
-}: IProps) => {
+const AuditBoardsTable = ({ auditBoards, reopenAuditBoard }: IProps) => {
   const { confirm, confirmProps } = useConfirm()
 
   const columns: Column<IAuditBoardMinimal>[] = [
@@ -33,7 +28,7 @@ const AuditBoardsTable = ({
       },
     },
   ]
-  if (areAuditBoardsOnline) {
+  if (reopenAuditBoard) {
     columns.push({
       Header: 'Actions',
       // eslint-disable-next-line react/display-name
