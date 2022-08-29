@@ -28,9 +28,7 @@ import {
   IElection,
   useCreateOrganization,
   useJurisdiction,
-  IAuditBoard,
   useClearAuditBoards,
-  useReopenAuditBoard,
   useClearOfflineResults,
   useDeleteOrganization,
   useRenameOrganization,
@@ -39,6 +37,7 @@ import {
   IElectionBase,
 } from './support-api'
 import { useConfirm, Confirm } from '../Atoms/Confirm'
+import AuditBoardsTable from '../AuditAdmin/Progress/AuditBoardsTable'
 
 const SupportTools = () => {
   const auth = useAuthDataContext()
@@ -419,7 +418,6 @@ const Audit = ({ electionId }: { electionId: string }) => {
 const Jurisdiction = ({ jurisdictionId }: { jurisdictionId: string }) => {
   const jurisdiction = useJurisdiction(jurisdictionId)
   const clearAuditBoards = useClearAuditBoards()
-  const reopenAuditBoard = useReopenAuditBoard()
   const clearOfflineResults = useClearOfflineResults()
   const { confirm, confirmProps } = useConfirm()
 
@@ -441,21 +439,6 @@ const Jurisdiction = ({ jurisdictionId }: { jurisdictionId: string }) => {
       onYesClick: async () => {
         await clearAuditBoards.mutateAsync({ jurisdictionId })
         toast.success(`Cleared audit boards for ${name}`)
-      },
-    })
-  }
-
-  const onClickReopenAuditBoard = (auditBoard: IAuditBoard) => {
-    confirm({
-      title: 'Confirm',
-      description: `Are you sure you want to reopen ${auditBoard.name}?`,
-      yesButtonLabel: 'Reopen',
-      onYesClick: async () => {
-        await reopenAuditBoard.mutateAsync({
-          jurisdictionId,
-          auditBoardId: auditBoard.id,
-        })
-        toast.success(`Reopened ${auditBoard.name}`)
       },
     })
   }
@@ -484,28 +467,14 @@ const Jurisdiction = ({ jurisdictionId }: { jurisdictionId: string }) => {
             <p>The jurisdiction hasn&apos;t created audit boards yet.</p>
           ) : (
             <>
-              <Button intent="danger" onClick={onClickClearAuditBoards}>
+              <Button
+                intent="danger"
+                onClick={onClickClearAuditBoards}
+                style={{ marginBottom: '10px' }}
+              >
                 Clear audit boards
               </Button>
-              <Table striped>
-                <tbody>
-                  {auditBoards.map(auditBoard => (
-                    <tr key={auditBoard.id}>
-                      <td>{auditBoard.name}</td>
-                      {election.online && (
-                        <td>
-                          <Button
-                            onClick={() => onClickReopenAuditBoard(auditBoard)}
-                            disabled={!auditBoard.signedOffAt}
-                          >
-                            Reopen
-                          </Button>
-                        </td>
-                      )}
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
+              <AuditBoardsTable auditBoards={auditBoards} />
             </>
           )}
           {election.auditType === 'BALLOT_POLLING' && !election.online && (

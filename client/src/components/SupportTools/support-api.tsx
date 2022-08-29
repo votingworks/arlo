@@ -195,28 +195,6 @@ export const useClearAuditBoards = () => {
   })
 }
 
-export const useReopenAuditBoard = () => {
-  const reopenAuditBoard = async ({
-    auditBoardId,
-  }: {
-    jurisdictionId: string
-    auditBoardId: string
-  }) =>
-    fetchApi(`/api/support/audit-boards/${auditBoardId}/sign-off`, {
-      method: 'DELETE',
-    })
-
-  const queryClient = useQueryClient()
-
-  return useMutation(reopenAuditBoard, {
-    onSuccess: (_data, variables) =>
-      queryClient.invalidateQueries([
-        'jurisdictions',
-        variables.jurisdictionId,
-      ]),
-  })
-}
-
 export const useClearOfflineResults = () => {
   const clearOfflineResults = async ({
     jurisdictionId,

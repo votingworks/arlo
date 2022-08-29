@@ -27,6 +27,7 @@ import {
   useCVRs,
   ICvrsFileUpload,
 } from '../../useFileUpload'
+import AuditBoardsTable from './AuditBoardsTable'
 
 const prettyCvrFileType = (cvrFileType: CvrFileType) =>
   ({
@@ -188,26 +189,76 @@ const CvrsFileUpload = ({
   )
 }
 
-const unfinalizeFullHandTallyResults = async (
-  electionId: string,
-  jurisdictionId: string,
+const unfinalizeFullHandTallyResults = async ({
+  electionId,
+  jurisdictionId,
+  roundId,
+}: {
+  electionId: string
+  jurisdictionId: string
   roundId: string
-): Promise<boolean> => {
-  return !!(await api(
-    `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/full-hand-tally/finalize`,
-    { method: 'DELETE' }
-  ))
+}) => {
+  const success = Boolean(
+    await api(
+      `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/full-hand-tally/finalize`,
+      { method: 'DELETE' }
+    )
+  )
+  if (success) {
+    // Reload the whole page instead of properly refreshing the state from the server since the
+    // state is so high up in the component hierarchy
+    // TODO: Use react-query instead
+    window.location.reload()
+  }
 }
 
-const unfinalizeBatchResults = async (
-  electionId: string,
-  jurisdictionId: string,
+const unfinalizeBatchResults = async ({
+  electionId,
+  jurisdictionId,
+  roundId,
+}: {
+  electionId: string
+  jurisdictionId: string
   roundId: string
-) =>
-  !!(await api(
-    `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/batches/finalize`,
-    { method: 'DELETE' }
-  ))
+}) => {
+  const success = Boolean(
+    await api(
+      `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/batches/finalize`,
+      { method: 'DELETE' }
+    )
+  )
+  if (success) {
+    // Reload the whole page instead of properly refreshing the state from the server since the
+    // state is so high up in the component hierarchy
+    // TODO: Use react-query instead
+    window.location.reload()
+  }
+}
+
+const reopenAuditBoard = async ({
+  auditBoardId,
+  electionId,
+  jurisdictionId,
+  roundId,
+}: {
+  auditBoardId: string
+  electionId: string
+  jurisdictionId: string
+  roundId: string
+}) => {
+  const success = Boolean(
+    await api(
+      `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/audit-board/${auditBoardId}/sign-off`,
+      { method: 'DELETE' }
+    )
+  )
+  if (success) {
+    // Reload the whole page instead of properly refreshing the state from the server since the
+    // state is so high up in the component hierarchy
+    // TODO: Use react-query instead
+    window.location.reload()
+  }
+}
 
 const RoundStatusSection = ({
   electionId,
@@ -238,19 +289,13 @@ const RoundStatusSection = ({
         return (
           <Formik
             initialValues={{}}
-            onSubmit={async () => {
-              if (
-                await unfinalizeFullHandTallyResults(
-                  electionId,
-                  jurisdiction.id,
-                  round.id
-                )
-              )
-                // Hack: for now just reload the whole page here instead of
-                // properly refreshing the state from the server, since the
-                // state is way high up in the component hierarchy
-                window.location.reload()
-            }}
+            onSubmit={() =>
+              unfinalizeFullHandTallyResults({
+                electionId,
+                jurisdictionId: jurisdiction.id,
+                roundId: round.id,
+              })
+            }
           >
             {({ handleSubmit, isSubmitting }: FormikProps<{}>) => (
               <div>
@@ -274,34 +319,48 @@ const RoundStatusSection = ({
     }
 
     if (sampleCount.ballots === 0) return <p>No ballots sampled</p>
-    if (jurisdictionStatus === JurisdictionRoundStatus.COMPLETE)
-      if (auditSettings.auditType === 'BATCH_COMPARISON')
+    if (jurisdictionStatus === JurisdictionRoundStatus.COMPLETE) {
+      if (auditSettings.auditType === 'BATCH_COMPARISON') {
         return (
           <div>
             <p>Results finalized</p>
             <AsyncButton
-              onClick={async () => {
-                if (
-                  await unfinalizeBatchResults(
-                    electionId,
-                    jurisdiction.id,
-                    round.id
-                  )
-                )
-                  // Hack: for now just reload the whole page here instead of
-                  // properly refreshing the state from the server, since the
-                  // state is way high up in the component hierarchy
-                  window.location.reload()
-              }}
+              onClick={() =>
+                unfinalizeBatchResults({
+                  electionId,
+                  jurisdictionId: jurisdiction.id,
+                  roundId: round.id,
+                })
+              }
               intent="danger"
             >
               Unfinalize Results
             </AsyncButton>
           </div>
         )
-      else return <p>Data entry complete</p>
-    if (auditBoards.length === 0)
+      }
+      return (
+        <div>
+          <p>Data entry complete</p>
+          {auditSettings.online && (
+            <AuditBoardsTable
+              auditBoards={auditBoards}
+              reopenAuditBoard={auditBoard =>
+                reopenAuditBoard({
+                  auditBoardId: auditBoard.id,
+                  electionId,
+                  jurisdictionId: jurisdiction.id,
+                  roundId: round.id,
+                })
+              }
+            />
+          )}
+        </div>
+      )
+    }
+    if (auditBoards.length === 0) {
       return <p>Waiting for jurisdiction to set up audit boards</p>
+    }
     return (
       <JAFileDownloadButtons
         electionId={electionId}

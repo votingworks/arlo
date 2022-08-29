@@ -23,7 +23,7 @@ import {
   talliesFile,
   contestMocks,
 } from '../useSetupMenuItems/_mocks'
-import { jaApiCalls } from '../../_mocks'
+import { aaApiCalls, jaApiCalls } from '../../_mocks'
 import { withMockFetch } from '../../testUtilities'
 import { queryClient } from '../../../App'
 import { dummyBallots } from '../../AuditBoard/_mocks'
@@ -46,6 +46,10 @@ jest.mock('jspdf', () => {
 })
 window.URL.createObjectURL = jest.fn()
 window.open = jest.fn()
+Object.defineProperty(window, 'location', {
+  writable: true,
+  value: { reload: jest.fn() },
+})
 
 const render = (props: Partial<IJurisdictionDetailProps>) =>
   testingLibraryRender(
@@ -686,16 +690,85 @@ describe('JurisdictionDetail', () => {
 
       await screen.findByText('Results finalized')
 
-      Object.defineProperty(window, 'location', {
-        writable: true,
-        value: { reload: jest.fn() },
-      })
       userEvent.click(
         screen.getByRole('button', { name: 'Unfinalize Results' })
       )
       await waitFor(() => {
         expect(window.location.reload).toHaveBeenCalled()
       })
+    })
+  })
+
+  it('after launch of an audit with online audit boards, shows a table of audit boards', async () => {
+    const expectedCalls = [
+      jaApiCalls.getBallotManifestFile(manifestMocks.processed),
+      jaApiCalls.getAuditBoards(auditBoardMocks.double),
+      jaApiCalls.getBallotCount(dummyBallots.ballots),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      render({
+        auditSettings: auditSettings.all,
+        jurisdiction: jurisdictionMocks.allComplete[0],
+        round: roundMocks.singleIncomplete[0],
+      })
+
+      await screen.findByText('Data entry complete')
+      screen.getByText('Audit Board #01')
+      screen.getByText('Audit Board #02')
+      const reopenButtons = screen.getAllByRole('button', { name: 'Reopen' })
+      expect(reopenButtons).toHaveLength(2)
+      expect(reopenButtons[0]).toBeDisabled()
+      expect(reopenButtons[1]).toBeDisabled()
+    })
+  })
+
+  it('after launch of an audit with online audit boards, allows reopening of audit boards that have signed off', async () => {
+    const expectedCalls = [
+      jaApiCalls.getBallotManifestFile(manifestMocks.processed),
+      jaApiCalls.getAuditBoards(auditBoardMocks.signedOff),
+      jaApiCalls.getBallotCount(dummyBallots.ballots),
+      aaApiCalls.reopenAuditBoard,
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      render({
+        auditSettings: auditSettings.all,
+        jurisdiction: jurisdictionMocks.allComplete[0],
+        round: roundMocks.singleIncomplete[0],
+      })
+
+      await screen.findByText('Data entry complete')
+      screen.getByText('Audit Board #01')
+      userEvent.click(screen.getByRole('button', { name: 'Reopen' }))
+      const dialog = (await screen.findByRole('heading', {
+        name: 'Confirm',
+      })).closest('.bp3-dialog')! as HTMLElement
+      within(dialog).getByText(
+        'Are you sure you want to reopen Audit Board #01?'
+      )
+      userEvent.click(within(dialog).getByRole('button', { name: 'Reopen' }))
+      await waitFor(() => {
+        expect(window.location.reload).toHaveBeenCalled()
+      })
+    })
+  })
+
+  it('after launch of an audit with offline audit boards, does not show a table of audit boards', async () => {
+    const expectedCalls = [
+      jaApiCalls.getBallotManifestFile(manifestMocks.processed),
+      jaApiCalls.getAuditBoards(auditBoardMocks.double),
+      jaApiCalls.getBallotCount(dummyBallots.ballots),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      render({
+        auditSettings: auditSettings.offlineAll,
+        jurisdiction: jurisdictionMocks.allComplete[0],
+        round: roundMocks.singleIncomplete[0],
+      })
+
+      await screen.findByText('Data entry complete')
+      expect(
+        screen.queryByRole('button', { name: 'Reopen' })
+      ).not.toBeInTheDocument()
     })
   })
 })

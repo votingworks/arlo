@@ -92,6 +92,9 @@ interface ITableProps<T extends object> {
   id?: string
 }
 
+/**
+ * Deprecated: Use StyledTable or HTMLTable instead
+ */
 export const Table = <T extends object>({
   data,
   columns,

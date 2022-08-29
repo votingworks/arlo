@@ -357,25 +357,6 @@ def clear_jurisdiction_audit_boards(jurisdiction_id: str):
     return jsonify(status="ok")
 
 
-@api.route("/support/audit-boards/<audit_board_id>/sign-off", methods=["DELETE"])
-@restrict_access_support
-def support_reopen_audit_board(audit_board_id: str):
-    audit_board = get_or_404(AuditBoard, audit_board_id)
-    round = get_current_round(audit_board.jurisdiction.election)
-
-    if not round or audit_board.round_id != round.id:
-        raise Conflict("Audit board is not part of the current round.")
-    if round.ended_at:
-        raise Conflict("Can't reopen audit board after round ends.")
-    if audit_board.signed_off_at is None:
-        raise Conflict("Audit board has not signed off.")
-
-    audit_board.signed_off_at = None
-    db_session.commit()
-
-    return jsonify(status="ok")
-
-
 @api.route("/support/jurisdictions/<jurisdiction_id>/results", methods=["DELETE"])
 @restrict_access_support
 def clear_offline_results(jurisdiction_id: str):

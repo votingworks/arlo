@@ -163,11 +163,6 @@ const apiCalls = {
     url: '/api/support/jurisdictions/jurisdiction-id-1',
     response,
   }),
-  reopenAuditBoard: {
-    url: '/api/support/audit-boards/audit-board-id-1/sign-off',
-    options: { method: 'DELETE' },
-    response: { status: 'ok' },
-  },
   deleteOfflineResults: {
     url: '/api/support/jurisdictions/jurisdiction-id-1/results',
     options: { method: 'DELETE' },
@@ -665,63 +660,18 @@ describe('Support Tools', () => {
     })
   })
 
-  it('jurisdiction screen shows a list of audit boards with buttons to reopen them', async () => {
+  it('jurisdiction screen shows a list of audit boards', async () => {
     const expectedCalls = [
       supportApiCalls.getUser,
       apiCalls.getJurisdiction(mockJurisdiction),
-      apiCalls.reopenAuditBoard,
-      apiCalls.getJurisdiction({
-        ...mockJurisdiction,
-        auditBoards: [
-          {
-            id: 'audit-board-id-1',
-            name: 'Audit Board #1',
-            signedOffAt: null,
-          },
-          {
-            id: 'audit-board-id-2',
-            name: 'Audit Board #2',
-            signedOffAt: null,
-          },
-        ],
-      }),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderRoute('/support/jurisdictions/jurisdiction-id-1')
 
       await screen.findByRole('heading', { name: 'Jurisdiction 1' })
-
-      // List of audit boards with reopen buttons
       screen.getByRole('heading', { name: 'Current Round Audit Boards' })
-      const reopenButton1 = within(
-        screen.getByText('Audit Board #1').closest('tr')!
-      ).getByRole('button', { name: 'Reopen' })
-      const reopenButton2 = within(
-        screen.getByText('Audit Board #2').closest('tr')!
-      ).getByRole('button', { name: 'Reopen' })
-      // If audit board has not signed off, button is disabled
-      expect(reopenButton2).toBeDisabled()
-
-      // Click reopen button
-      userEvent.click(reopenButton1)
-
-      // Confirm dialog should open
-      const dialog = (await screen.findByRole('heading', {
-        name: /Confirm/,
-      })).closest('.bp3-dialog')! as HTMLElement
-      within(dialog).getByText(
-        'Are you sure you want to reopen Audit Board #1?'
-      )
-      userEvent.click(within(dialog).getByRole('button', { name: 'Reopen' }))
-
-      await findAndCloseToast('Reopened Audit Board #1')
-
-      expect(
-        within(screen.getByText('Audit Board #1').closest('tr')!).getByRole(
-          'button',
-          { name: 'Reopen' }
-        )
-      ).toBeDisabled()
+      screen.getByText('Audit Board #1')
+      screen.getByText('Audit Board #2')
     })
   })
 
@@ -736,33 +686,6 @@ describe('Support Tools', () => {
     await withMockFetch(expectedCalls, async () => {
       renderRoute('/support/jurisdictions/jurisdiction-id-1')
       await findAndCloseToast('something went wrong: getJurisdiction')
-    })
-  })
-
-  it('jurisdiction screen handles error on reopen audit board', async () => {
-    const expectedCalls = [
-      supportApiCalls.getUser,
-      apiCalls.getJurisdiction(mockJurisdiction),
-      serverError('reopenAuditBoard', apiCalls.reopenAuditBoard),
-    ]
-    await withMockFetch(expectedCalls, async () => {
-      renderRoute('/support/jurisdictions/jurisdiction-id-1')
-
-      await screen.findByRole('heading', { name: 'Jurisdiction 1' })
-
-      // Click reopen button
-      const reopenButton1 = within(
-        screen.getByText('Audit Board #1').closest('tr')!
-      ).getByRole('button', { name: 'Reopen' })
-      userEvent.click(reopenButton1)
-
-      // Confirm dialog should open
-      const dialog = (await screen.findByRole('heading', {
-        name: /Confirm/,
-      })).closest('.bp3-dialog')! as HTMLElement
-      userEvent.click(within(dialog).getByRole('button', { name: 'Reopen' }))
-
-      await findAndCloseToast('something went wrong: reopenAuditBoard')
     })
   })
 
