@@ -18,11 +18,7 @@ jest.mock('axios')
 const renderParticipants = () =>
   renderWithRouter(
     <Route path="/election/:electionId/setup">
-      <Participants
-        locked={false}
-        nextStage={nextStage}
-        refresh={refreshMock}
-      />
+      <Participants nextStage={nextStage} refresh={refreshMock} />
     </Route>,
     { route: '/election/1/setup' }
   )

@@ -14,7 +14,6 @@ import CSVFile from '../../../Atoms/CSVForm'
 
 interface IProps {
   nextStage: ISidebarMenuItem
-  locked: boolean
   refresh: () => void
 }
 
