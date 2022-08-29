@@ -108,7 +108,7 @@
     "react-toastify": "^5.3.1",
     "styled-components": "^4.3.2",
     "topojson-client": "^3.1.0",
-    "typescript": "3.5.1",
+    "typescript": "3.9.10",
     "uuidv4": "^4.0.0",
     "yup": "^0.27.0"
   },
@@ -116,7 +116,7 @@
     "@babel/register": "^7.6.2",
     "@sinonjs/fake-timers": "^6.0.1",
     "@testing-library/cypress": "^7.0.3",
-    "@testing-library/react": "^12.0.0",
+    "@testing-library/react": "^10.3.0",
     "@testing-library/react-hooks": "^3.3.0",
     "@testing-library/user-event": "^12.3.0",
     "@types/jsdom": "^12.2.4",

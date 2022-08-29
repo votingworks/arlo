@@ -52,7 +52,7 @@ const loadEach = [
   aaApiCalls.getSettings(auditSettings.all),
 ]
 
-// TODO: Fix these tests after moving to Vite
+// TODO: Fix these tests after switching to Vite
 describe.skip('timers', () => {
   let clock = FakeTimers.install()
   beforeEach(() => {

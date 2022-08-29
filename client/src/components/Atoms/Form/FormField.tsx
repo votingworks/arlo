@@ -25,15 +25,12 @@ const Area = styled(TextArea)`
 const NumberField = styled(NumericInput)`
   margin-top: 5px;
   width: 100%;
-
   .bp3-input-group {
     width: 100%;
   }
-
   input.bp3-input {
     margin-top: 0;
   }
-
   .bp3-button-group.bp3-vertical.bp3-fixed {
     transform: translateX(-100%);
     z-index: 15;
@@ -76,7 +73,7 @@ const FormField: React.FC<IProps> = ({
         onBlur={() => setFieldTouched(field.name)}
       />
     ) : type === 'textarea' ? (
-      <Area disabled={disabled} onChange={rest.onChange} {...field} {...rest} />
+      <Area disabled={disabled} {...field} {...rest} />
     ) : (
       <Field disabled={disabled} type={type} {...field} {...rest} />
     )}
