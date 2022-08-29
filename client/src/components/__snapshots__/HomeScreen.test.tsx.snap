@@ -91,7 +91,7 @@ exports[`Home screen redirects to audit screen if only one election exists for J
       class="sc-bdVaJa bKocXA"
     >
       <div
-        class="bp3-callout sc-hMqMXs gvJKSa"
+        class="bp3-callout sc-kEYyzF ejxvfy"
       >
         <div
           class="sc-bwzfXH jiphYj"
@@ -100,7 +100,7 @@ exports[`Home screen redirects to audit screen if only one election exists for J
             class="text"
           >
             <h3
-              class="bp3-heading sc-eNQAEJ xkxXg"
+              class="bp3-heading sc-hMqMXs iPDpyw"
             >
               Test Audit
             </h3>
@@ -116,19 +116,19 @@ exports[`Home screen redirects to audit screen if only one election exists for J
         </div>
       </div>
       <div
-        class="sc-bwzfXH sc-fMiknA gQUJtg"
+        class="sc-bwzfXH sc-dVhcbM jDwyKc"
       >
         <h2
-          class="bp3-heading sc-kEYyzF hZLToi"
+          class="bp3-heading sc-kkGfuU cPdmuO"
         >
           Audit Source Data
         </h2>
         <form>
           <div
-            class="sc-kkGfuU ivvpIi"
+            class="sc-iAyFgw dXmdgD"
           >
             <h2
-              class="bp3-heading sc-kEYyzF hZLToi"
+              class="bp3-heading sc-kkGfuU cPdmuO"
             />
             <div
               class="sc-bZQynM bGsEQi"
