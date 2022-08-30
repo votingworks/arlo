@@ -83,11 +83,11 @@ const LastRoundAction = ({ electionId, round }: ILastRoundActionProps) => {
           onClick={() =>
             confirm({
               title: 'Confirm',
-              description: `Are you sure you want to reopen Round ${round.roundNum}?`,
+              description: `Are you sure you want to reopen round ${round.roundNum}?`,
               yesButtonLabel: 'Reopen',
               onYesClick: async () => {
                 await reopenCurrentRound.mutateAsync({ electionId })
-                toast.success(`Reopened Round ${round.roundNum}`)
+                toast.success(`Reopened round ${round.roundNum}`)
               },
             })
           }
@@ -104,11 +104,11 @@ const LastRoundAction = ({ electionId, round }: ILastRoundActionProps) => {
         onClick={() =>
           confirm({
             title: 'Confirm',
-            description: `Are you sure you want to undo the start of Round ${round.roundNum}?`,
+            description: `Are you sure you want to undo the start of round ${round.roundNum}?`,
             yesButtonLabel: 'Undo Start',
             onYesClick: async () => {
               await undoRoundStart.mutateAsync({ roundId: round.id })
-              toast.success(`Undid the start of Round ${round.roundNum}`)
+              toast.success(`Undid the start of round ${round.roundNum}`)
             },
           })
         }

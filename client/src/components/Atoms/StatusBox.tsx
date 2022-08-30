@@ -239,7 +239,7 @@ export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
         headline={`Round ${roundNum} of the audit is in progress`}
         details={[
           `${numCompleted} of ${jurisdictions.length} jurisdictions` +
-            ` have completed Round ${roundNum}`,
+            ` have completed round ${roundNum}`,
         ]}
         auditName={auditSettings.auditName}
         buttonLabel={canUndoLaunch ? 'Undo Audit Launch' : undefined}
@@ -459,7 +459,7 @@ export const JurisdictionAdminStatusBox = ({
     }
     if (numCompleted === auditBoards.length)
       details.push(
-        `Waiting for all jurisdictions to complete Round ${roundNum}.`
+        `Waiting for all jurisdictions to complete round ${roundNum}.`
       )
     return (
       <StatusBox

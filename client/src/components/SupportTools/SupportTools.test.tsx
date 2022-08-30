@@ -763,7 +763,7 @@ describe('Support Tools', () => {
         .getByRole('heading', { name: 'Confirm' })
         .closest('.bp3-dialog')! as HTMLElement
       within(confirmDialog).getByText(
-        'Are you sure you want to undo the start of Round 2?'
+        'Are you sure you want to undo the start of round 2?'
       )
       userEvent.click(
         within(confirmDialog).getByRole('button', { name: 'Undo Start' })
@@ -775,7 +775,7 @@ describe('Support Tools', () => {
         .getByRole('heading', { name: 'Confirm' })
         .closest('.bp3-dialog')! as HTMLElement
       within(confirmDialog).getByText(
-        'Are you sure you want to reopen Round 1?'
+        'Are you sure you want to reopen round 1?'
       )
       userEvent.click(
         within(confirmDialog).getByRole('button', { name: 'Reopen' })

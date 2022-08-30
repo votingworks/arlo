@@ -208,7 +208,7 @@ describe('StatusBox', () => {
         </Router>
       )
       screen.getByText('Round 1 of the audit is in progress')
-      screen.getByText('1 of 3 jurisdictions have completed Round 1')
+      screen.getByText('1 of 3 jurisdictions have completed round 1')
       screen.getByRole('button', { name: 'Undo Audit Launch' })
     })
 
@@ -226,7 +226,7 @@ describe('StatusBox', () => {
         </Router>
       )
       screen.getByText('Round 1 of the audit is in progress')
-      screen.getByText('1 of 3 jurisdictions have completed Round 1')
+      screen.getByText('1 of 3 jurisdictions have completed round 1')
       expect(screen.queryByRole('button')).not.toBeInTheDocument()
     })
 
@@ -403,7 +403,7 @@ describe('StatusBox', () => {
         </Router>
       )
       screen.getByText('Round 1 of the audit is in progress')
-      screen.getByText('1 of 3 jurisdictions have completed Round 1')
+      screen.getByText('1 of 3 jurisdictions have completed round 1')
       screen.getByText('Full hand tally required')
       screen.getByText(
         'One or more target contests require a full hand tally to complete the audit.'
@@ -545,7 +545,7 @@ describe('StatusBox', () => {
       )
       screen.getByText('Round 1 of the audit is in progress.')
       screen.getByText('1 of 1 audit boards complete.')
-      screen.getByText('Waiting for all jurisdictions to complete Round 1.')
+      screen.getByText('Waiting for all jurisdictions to complete round 1.')
     })
 
     it('renders no audit board status if offline', async () => {
@@ -567,7 +567,7 @@ describe('StatusBox', () => {
         </Router>
       )
       screen.getByText('Round 1 of the audit is in progress.')
-      screen.getByText('Waiting for all jurisdictions to complete Round 1.')
+      screen.getByText('Waiting for all jurisdictions to complete round 1.')
       await waitFor(() =>
         expect(
           screen.queryByText('1 of 1 audit boards complete.')
