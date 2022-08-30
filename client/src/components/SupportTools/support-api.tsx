@@ -223,13 +223,8 @@ export const useClearOfflineResults = () => {
   })
 }
 
-export const useUndoRoundStart = () => {
-  const undoRoundStart = async ({
-    roundId,
-  }: {
-    electionId: string
-    roundId: string
-  }) =>
+export const useUndoRoundStart = (electionId: string) => {
+  const undoRoundStart = async ({ roundId }: { roundId: string }) =>
     fetchApi(`/api/support/rounds/${roundId}`, {
       method: 'DELETE',
     })
@@ -237,8 +232,8 @@ export const useUndoRoundStart = () => {
   const queryClient = useQueryClient()
 
   return useMutation(undoRoundStart, {
-    onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries(['elections', variables.electionId])
+    onSuccess: () => {
+      queryClient.invalidateQueries(['elections', electionId])
     },
   })
 }

@@ -74,7 +74,7 @@ interface ILastRoundActionProps {
 const LastRoundAction = ({ electionId, round }: ILastRoundActionProps) => {
   const { confirm, confirmProps } = useConfirm()
   const reopenCurrentRound = useReopenCurrentRound()
-  const undoRoundStart = useUndoRoundStart()
+  const undoRoundStart = useUndoRoundStart(electionId)
 
   if (round.endedAt) {
     return (
@@ -107,10 +107,7 @@ const LastRoundAction = ({ electionId, round }: ILastRoundActionProps) => {
             description: `Are you sure you want to undo the start of Round ${round.roundNum}?`,
             yesButtonLabel: 'Undo Start',
             onYesClick: async () => {
-              await undoRoundStart.mutateAsync({
-                electionId,
-                roundId: round.id,
-              })
+              await undoRoundStart.mutateAsync({ roundId: round.id })
               toast.success(`Undid the start of Round ${round.roundNum}`)
             },
           })
