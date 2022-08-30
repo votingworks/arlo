@@ -175,7 +175,8 @@ def get_election(election_id: str):
             for jurisdiction in election.jurisdictions
         ],
         rounds=[
-            dict(id=round.id, ended_at=round.ended_at) for round in election.rounds
+            dict(id=round.id, endedAt=round.ended_at, roundNum=round.round_num)
+            for round in election.rounds
         ],
         deletedAt=isoformat(election.deleted_at),
     )
@@ -308,6 +309,7 @@ def get_jurisdiction(jurisdiction_id: str):
             auditName=jurisdiction.election.audit_name,
             auditType=jurisdiction.election.audit_type,
             online=jurisdiction.election.online,
+            deletedAt=isoformat(jurisdiction.election.deleted_at),
         ),
         jurisdictionAdmins=sorted(
             [

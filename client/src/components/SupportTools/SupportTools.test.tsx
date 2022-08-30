@@ -1,5 +1,5 @@
 import React from 'react'
-import { screen, within } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ToastContainer } from 'react-toastify'
 import { QueryClientProvider } from 'react-query'
@@ -19,6 +19,7 @@ import {
   IElection,
   IJurisdictionBase,
   IJurisdiction,
+  IRound,
 } from './support-api'
 import { queryClient } from '../../App'
 
@@ -74,6 +75,7 @@ const mockElection: IElection = {
       name: 'Jurisdiction 2',
     },
   ],
+  rounds: [{ id: 'round-1', endedAt: null, roundNum: 1 }],
 }
 
 const mockJurisdiction: IJurisdiction = {
@@ -166,6 +168,16 @@ const apiCalls = {
   deleteOfflineResults: {
     url: '/api/support/jurisdictions/jurisdiction-id-1/results',
     options: { method: 'DELETE' },
+    response: { status: 'ok' },
+  },
+  undoRoundStart: {
+    url: '/api/support/rounds/round-2',
+    options: { method: 'DELETE' },
+    response: { status: 'ok' },
+  },
+  reopenCurrentRound: {
+    url: '/api/support/elections/election-id-1/reopen-current-round',
+    options: { method: 'PATCH' },
     response: { status: 'ok' },
   },
 }
@@ -646,6 +658,129 @@ describe('Support Tools', () => {
       expect(history.location.pathname).toEqual(
         '/support/jurisdictions/jurisdiction-id-1'
       )
+    })
+  })
+
+  const roundSummaryTestCases: {
+    rounds: IRound[]
+    expectedRoundsTableHead: string[]
+    expectedRoundsTableBody: {
+      round: string
+      status: string
+      action?: string
+    }[]
+  }[] = [
+    {
+      rounds: [],
+      expectedRoundsTableHead: ['Round', 'Status'],
+      expectedRoundsTableBody: [{ round: 'Round 1', status: 'Not started' }],
+    },
+    {
+      rounds: [{ id: 'round-1', endedAt: null, roundNum: 1 }],
+      expectedRoundsTableHead: ['Round', 'Status', 'Actions'],
+      expectedRoundsTableBody: [
+        { round: 'Round 1', status: 'In progress', action: 'Undo Start' },
+      ],
+    },
+    {
+      rounds: [
+        { id: 'round-1', endedAt: 'some-timestamp', roundNum: 1 },
+        { id: 'round-2', endedAt: null, roundNum: 2 },
+      ],
+      expectedRoundsTableHead: ['Round', 'Status', 'Actions'],
+      expectedRoundsTableBody: [
+        { round: 'Round 1', status: 'Completed' },
+        { round: 'Round 2', status: 'In progress', action: 'Undo Start' },
+      ],
+    },
+    {
+      rounds: [{ id: 'round-1', endedAt: 'some-timestamp', roundNum: 1 }],
+      expectedRoundsTableHead: ['Round', 'Status', 'Actions'],
+      expectedRoundsTableBody: [
+        { round: 'Round 1', status: 'Completed', action: 'Reopen' },
+      ],
+    },
+  ]
+  it.each(roundSummaryTestCases)(
+    'audit screen shows expected round summary',
+    async ({ rounds, expectedRoundsTableHead, expectedRoundsTableBody }) => {
+      const expectedCalls = [
+        supportApiCalls.getUser,
+        apiCalls.getElection({ ...mockElection, rounds }),
+      ]
+      await withMockFetch(expectedCalls, async () => {
+        renderRoute('/support/audits/election-id-1')
+
+        await screen.findByRole('heading', { name: 'Audit 1' })
+        expectedRoundsTableHead.forEach(header => {
+          screen.getByRole('columnheader', { name: header })
+        })
+        expectedRoundsTableBody.forEach(row => {
+          screen.getByRole('row', {
+            name: row.action
+              ? `${row.round} ${row.status} ${row.action}`
+              : `${row.round} ${row.status}`,
+          })
+          screen.getByRole('cell', { name: row.round })
+          screen.getByRole('cell', { name: row.status })
+          if (row.action) {
+            screen.getByRole('cell', { name: row.action })
+            screen.getByRole('button', { name: row.action })
+          }
+        })
+      })
+    }
+  )
+
+  it('audit screen supports undoing round starts and reopening rounds', async () => {
+    const expectedCalls = [
+      supportApiCalls.getUser,
+      apiCalls.getElection({
+        ...mockElection,
+        rounds: [
+          { id: 'round-1', endedAt: 'some-timestamp', roundNum: 1 },
+          { id: 'round-2', endedAt: null, roundNum: 2 },
+        ],
+      }),
+      apiCalls.undoRoundStart,
+      apiCalls.getElection({
+        ...mockElection,
+        rounds: [{ id: 'round-1', endedAt: 'some-timestamp', roundNum: 1 }],
+      }),
+      apiCalls.reopenCurrentRound,
+      apiCalls.getElection({
+        ...mockElection,
+        rounds: [{ id: 'round-1', endedAt: null, roundNum: 1 }],
+      }),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderRoute('/support/audits/election-id-1')
+
+      await screen.findByRole('heading', { name: 'Audit 1' })
+
+      userEvent.click(screen.getByText('Undo Start'))
+      let confirmDialog = screen
+        .getByRole('heading', { name: 'Confirm' })
+        .closest('.bp3-dialog')! as HTMLElement
+      within(confirmDialog).getByText(
+        'Are you sure you want to undo the start of round 2?'
+      )
+      userEvent.click(
+        within(confirmDialog).getByRole('button', { name: 'Undo Start' })
+      )
+      await waitFor(() => expect(confirmDialog).not.toBeInTheDocument())
+
+      userEvent.click(screen.getByText('Reopen'))
+      confirmDialog = screen
+        .getByRole('heading', { name: 'Confirm' })
+        .closest('.bp3-dialog')! as HTMLElement
+      within(confirmDialog).getByText(
+        'Are you sure you want to reopen round 1?'
+      )
+      userEvent.click(
+        within(confirmDialog).getByRole('button', { name: 'Reopen' })
+      )
+      await waitFor(() => expect(confirmDialog).not.toBeInTheDocument())
     })
   })
 

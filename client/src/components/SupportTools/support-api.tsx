@@ -29,8 +29,15 @@ export interface IAuditAdmin {
   email: string
 }
 
+export interface IRound {
+  id: string
+  endedAt: string | null
+  roundNum: number
+}
+
 export interface IElection extends IElectionBase {
   jurisdictions: IJurisdictionBase[]
+  rounds: IRound[]
 }
 
 export interface IJurisdictionBase {
@@ -213,5 +220,35 @@ export const useClearOfflineResults = () => {
         'jurisdictions',
         variables.jurisdictionId,
       ]),
+  })
+}
+
+export const useUndoRoundStart = (electionId: string) => {
+  const undoRoundStart = async ({ roundId }: { roundId: string }) =>
+    fetchApi(`/api/support/rounds/${roundId}`, {
+      method: 'DELETE',
+    })
+
+  const queryClient = useQueryClient()
+
+  return useMutation(undoRoundStart, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(['elections', electionId])
+    },
+  })
+}
+
+export const useReopenCurrentRound = () => {
+  const reopenCurrentRound = async ({ electionId }: { electionId: string }) =>
+    fetchApi(`/api/support/elections/${electionId}/reopen-current-round`, {
+      method: 'PATCH',
+    })
+
+  const queryClient = useQueryClient()
+
+  return useMutation(reopenCurrentRound, {
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries(['elections', variables.electionId])
+    },
   })
 }

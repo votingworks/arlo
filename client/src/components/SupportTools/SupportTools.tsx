@@ -38,6 +38,7 @@ import {
 } from './support-api'
 import { useConfirm, Confirm } from '../Atoms/Confirm'
 import AuditBoardsTable from '../AuditAdmin/Progress/AuditBoardsTable'
+import RoundsTable from './RoundsTable'
 
 const SupportTools = () => {
   const auth = useAuthDataContext()
@@ -391,7 +392,7 @@ const Audit = ({ electionId }: { electionId: string }) => {
 
   if (!election.isSuccess) return null
 
-  const { auditName, auditType, jurisdictions } = election.data
+  const { auditName, auditType, jurisdictions, rounds } = election.data
 
   return (
     <Column>
@@ -399,7 +400,8 @@ const Audit = ({ electionId }: { electionId: string }) => {
       <Tag large style={{ marginBottom: '15px' }}>
         {prettyAuditType(auditType)}
       </Tag>
-      <H3>Jurisdictions</H3>
+      <RoundsTable electionId={electionId} rounds={rounds} />
+      <H3 style={{ marginTop: '10px' }}>Jurisdictions</H3>
       <ButtonList>
         {jurisdictions.map(jurisdiction => (
           <LinkButton

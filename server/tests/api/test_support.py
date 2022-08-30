@@ -151,7 +151,7 @@ def test_support_get_election(
                 {"id": jurisdiction_ids[1], "name": "J2",},
                 {"id": jurisdiction_ids[2], "name": "J3",},
             ],
-            "rounds": [{"id": round_1_id, "ended_at": None}],
+            "rounds": [{"id": round_1_id, "endedAt": None, "roundNum": 1}],
             "deletedAt": None,
         },
     )
@@ -418,6 +418,7 @@ def test_support_get_jurisdiction(
                 "auditName": "Test Audit test_support_get_jurisdiction",
                 "auditType": "BALLOT_POLLING",
                 "online": True,
+                "deletedAt": None,
             },
             "jurisdictionAdmins": [{"email": default_ja_email(election_id)}],
             "auditBoards": [
@@ -675,9 +676,9 @@ def test_support_undo_round_start(
     rounds = json.loads(rv.data)["rounds"]
     assert len(rounds) == 2
     assert rounds[0]["id"] == round_1_id
-    assert rounds[0]["ended_at"] is not None
+    assert rounds[0]["endedAt"] is not None
     assert rounds[1]["id"] == round_2_id
-    assert rounds[1]["ended_at"] is None
+    assert rounds[1]["endedAt"] is None
 
     rv = client.delete(f"/api/support/rounds/{round_1_id}")
     assert rv.status_code == 409
@@ -696,7 +697,7 @@ def test_support_undo_round_start(
     rounds = json.loads(rv.data)["rounds"]
     assert len(rounds) == 1
     assert rounds[0]["id"] == round_1_id
-    assert rounds[0]["ended_at"] is not None
+    assert rounds[0]["endedAt"] is not None
 
     rv = client.delete(f"/api/support/rounds/{round_1_id}")
     assert rv.status_code == 409
@@ -721,7 +722,7 @@ def test_support_reopen_current_round(
         round_from_db = Round.query.get(round_id)
 
         # Check what we can using the API and check the rest in the DB
-        return round["ended_at"] is not None and all(
+        return round["endedAt"] is not None and all(
             round_contest.end_p_value is not None
             and round_contest.is_complete is not None
             and len(round_contest.results) > 0
