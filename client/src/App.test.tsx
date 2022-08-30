@@ -20,7 +20,7 @@ const apiMocks = {
   abAuth: {
     url: '/api/me',
     response: {
-      user: { type: 'audit_board', ...dummyBoards()[1] },
+      user: { ...dummyBoards()[1] },
       supportUser: null,
     },
   },

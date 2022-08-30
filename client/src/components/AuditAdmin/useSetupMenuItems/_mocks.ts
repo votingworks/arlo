@@ -1,13 +1,7 @@
 import { readFileSync } from 'fs'
 import { join } from 'path'
 import { IContest } from '../../../types'
-import {
-  IJurisdiction,
-  JurisdictionRoundStatus,
-  IBallotManifestInfo,
-  ICvrFileInfo,
-  IBatchTalliesFileInfo,
-} from '../../useJurisdictions' // uses IFileInfo instead of IBallotManifest and allows `file: null`
+import { JurisdictionRoundStatus, ICvrFileInfo } from '../../useJurisdictions' // uses IFileInfo instead of IBallotManifest and allows `file: null`
 import { IAuditBoard } from '../../useAuditBoards'
 import { IRound } from '../useRoundsAuditAdmin'
 import { IAuditSettings } from '../../useAuditSettings'

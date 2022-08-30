@@ -84,6 +84,7 @@ const ButtonList = styled(ButtonGroup).attrs({
   large: true,
   alignText: Alignment.LEFT,
 })`
+  margin-bottom: 30px;
   border: 1px solid ${Colors.LIGHT_GRAY3};
   width: 100%;
   .bp3-button {
@@ -92,7 +93,6 @@ const ButtonList = styled(ButtonGroup).attrs({
       border-top: 1px solid ${Colors.LIGHT_GRAY3};
     }
   }
-  margin-bottom: 30px;
 `
 
 const Organizations = () => {
@@ -235,6 +235,7 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
             <input
               type="text"
               name="name"
+              id="name"
               className={Classes.INPUT}
               ref={registerRename}
               style={{ width: '100%' }}

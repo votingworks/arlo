@@ -38,7 +38,7 @@ const useContestsBallotComparison = (
   const [contests, setContests] = useState<IContest[] | null>(null)
 
   const updateContests = async (newContests: INewContest[]) => {
-    if (putContests(electionId, newContests)) {
+    if (await putContests(electionId, newContests)) {
       setContests(await getContests(electionId))
       return true
     }
