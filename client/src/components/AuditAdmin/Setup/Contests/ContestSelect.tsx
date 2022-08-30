@@ -12,7 +12,6 @@ import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
 import useStandardizedContests from '../../../useStandardizedContests'
 import { useJurisdictionsDeprecated } from '../../../useJurisdictions'
 import { Table, FilterInput } from '../../../Atoms/Table'
-import { IAuditSettings } from '../../../useAuditSettings'
 import useContestsBallotComparison, {
   INewContest,
 } from '../../../useContestsBallotComparison'
@@ -21,8 +20,6 @@ interface IProps {
   isTargeted: boolean
   nextStage: ISidebarMenuItem
   prevStage: ISidebarMenuItem
-  locked: boolean
-  auditType: IAuditSettings['auditType']
 }
 
 interface IFormValues {
@@ -39,7 +36,6 @@ const ContestSelect: React.FC<IProps> = ({
   isTargeted,
   nextStage,
   prevStage,
-  //   locked,
 }) => {
   const { electionId } = useParams<{ electionId: string }>()
   const standardizedContests = useStandardizedContests(electionId)

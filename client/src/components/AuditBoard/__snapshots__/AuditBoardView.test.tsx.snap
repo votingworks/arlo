@@ -193,7 +193,7 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
                             Contest 1
                           </h3>
                           <label
-                            class="bp3-control bp3-checkbox sc-jlyJG dJELqb"
+                            class="bp3-control bp3-checkbox sc-jlyJG WRwCB"
                           >
                             <input
                               type="checkbox"
@@ -209,7 +209,7 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
                             </span>
                           </label>
                           <label
-                            class="bp3-control bp3-checkbox sc-jlyJG dJELqb"
+                            class="bp3-control bp3-checkbox sc-jlyJG WRwCB"
                           >
                             <input
                               type="checkbox"
@@ -229,7 +229,7 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
                           class="sc-cvbbAY ixevJx"
                         >
                           <label
-                            class="bp3-control bp3-checkbox sc-jlyJG dJELqb"
+                            class="bp3-control bp3-checkbox sc-jlyJG WRwCB"
                           >
                             <input
                               type="checkbox"
@@ -245,7 +245,7 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
                             </span>
                           </label>
                           <label
-                            class="bp3-control bp3-checkbox sc-jlyJG dJELqb"
+                            class="bp3-control bp3-checkbox sc-jlyJG WRwCB"
                           >
                             <input
                               type="checkbox"
@@ -287,7 +287,7 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
                             Contest 2
                           </h3>
                           <label
-                            class="bp3-control bp3-checkbox sc-jlyJG dJELqb"
+                            class="bp3-control bp3-checkbox sc-jlyJG WRwCB"
                           >
                             <input
                               type="checkbox"
@@ -303,7 +303,7 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
                             </span>
                           </label>
                           <label
-                            class="bp3-control bp3-checkbox sc-jlyJG dJELqb"
+                            class="bp3-control bp3-checkbox sc-jlyJG WRwCB"
                           >
                             <input
                               type="checkbox"
@@ -323,7 +323,7 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
                           class="sc-cvbbAY ixevJx"
                         >
                           <label
-                            class="bp3-control bp3-checkbox sc-jlyJG dJELqb"
+                            class="bp3-control bp3-checkbox sc-jlyJG WRwCB"
                           >
                             <input
                               type="checkbox"
@@ -339,7 +339,7 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
                             </span>
                           </label>
                           <label
-                            class="bp3-control bp3-checkbox sc-jlyJG dJELqb"
+                            class="bp3-control bp3-checkbox sc-jlyJG WRwCB"
                           >
                             <input
                               type="checkbox"

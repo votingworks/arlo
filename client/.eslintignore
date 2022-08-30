@@ -4,3 +4,4 @@
 /cypress/end-to-end
 /cypress/support
 *.d.ts
+jest.config.js

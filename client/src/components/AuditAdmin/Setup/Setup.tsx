@@ -48,13 +48,7 @@ const Setup: React.FC<IProps> = ({
   switch (stage) {
     case 'participants':
       // prevStage === undefined, so don't send it
-      return (
-        <Participants
-          nextStage={nextStage!}
-          locked={activeStage!.state === 'locked'}
-          refresh={refresh}
-        />
-      )
+      return <Participants nextStage={nextStage!} refresh={refresh} />
     case 'target-contests':
       return (
         <Contests
