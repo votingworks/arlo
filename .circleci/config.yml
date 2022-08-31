@@ -1,49 +1,22 @@
 version: 2.1
 orbs:
+  python: circleci/python@2.0.3
+  node: circleci/node@5.0.2
   browser-tools: circleci/browser-tools@1.4.0
-  cypress: cypress-io/cypress@1
 
 executors:
   arlo:
     docker:
-      - image: circleci/python:3.8.11-node-browsers
+      - image: cimg/python:3.8.13-browsers
         environment:
           DATABASE_URL: postgresql://root@localhost:5432/arlo-test
           FLASK_ENV: test
-      - image: circleci/postgres:9.6.3-alpine-ram
+      - image: cimg/postgres:12.11
         environment:
           POSTGRES_USER: root
           POSTGRES_DB: arlo-test
 
 commands:
-  restore-pip-cache:
-    steps:
-      - run: sudo chown -R circleci:circleci /usr/local/bin
-      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.8/site-packages
-      - restore_cache:
-          name: Restore Pip Cache
-          keys:
-            - pip-packages-v7-{{ .Branch }}-{{ checksum "poetry.lock" }}
-            - pip-packages-v7-{{ .Branch }}-
-            - pip-packages-v7-
-  save-pip-cache:
-    steps:
-      - run: sudo chown -R circleci:circleci /usr/local/bin
-      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.8/site-packages
-      - save_cache:
-          name: Save Pip Cache
-          key: pip-packages-v7-{{ .Branch }}-{{ checksum "poetry.lock" }}
-          paths:
-            - ~/.local
-            - ~/.cache
-
-  pip-install:
-    steps:
-      - run:
-          name: install
-          command: |
-            poetry install
-
   create-data-model:
     steps:
       - run:
@@ -58,37 +31,6 @@ commands:
             sudo sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
             sudo locale-gen
 
-  restore-yarn-cache:
-    steps:
-      - restore_cache:
-          name: Restore Yarn Cache
-          keys:
-            - yarn-packages-v6-{{ .Branch }}-{{ checksum "yarn.lock" }}
-
-  save-yarn-cache:
-    steps:
-      - save_cache:
-          name: Save Yarn Cache
-          key: yarn-packages-v6-{{ .Branch }}-{{ checksum "yarn.lock" }}
-          paths:
-            - ~/.cache/yarn
-            - ~/.cache/Cypress
-            - node_modules
-            - client/node_modules
-  restore-caches:
-    steps:
-      - restore-pip-cache
-      - restore-yarn-cache
-
-  install-yarn:
-    steps:
-      - run:
-          name: install
-          command: |
-            yarn install
-            yarn --cwd client install
-            yarn --cwd client build
-
 jobs:
   preflight:
     executor: arlo
@@ -97,9 +39,8 @@ jobs:
       - checkout
       - setup_remote_docker:
           docker_layer_caching: true
-      - restore-pip-cache
-      - pip-install
-      - save-pip-cache
+      - python/install-packages:
+          pkg-manager: poetry
       - create-data-model
 
       - run:
@@ -124,9 +65,8 @@ jobs:
       - checkout
       - setup_remote_docker:
           docker_layer_caching: true
-      - restore-pip-cache
-      - pip-install
-      - save-pip-cache
+      - python/install-packages:
+          pkg-manager: poetry
       - create-data-model
       - run:
           name: test server
@@ -140,9 +80,9 @@ jobs:
       - checkout
       - setup_remote_docker:
           docker_layer_caching: true
-      - restore-yarn-cache
-      - install-yarn
-      - save-yarn-cache
+      - node/install-packages:
+          pkg-manager: yarn
+          app-dir: client
       - run:
           name: install-graphicsmagick
           command: |
@@ -161,17 +101,16 @@ jobs:
       - checkout
       - setup_remote_docker:
           docker_layer_caching: true
-      - restore-caches
-      - run:
-          name: install
-          command: |
-            make install
-      # In order to install noauth, we install dev python deps, since the
-      # install command above only installs prod deps
-      - run:
-          name: install noauth
-          command: |
-            poetry install
+      - python/install-packages:
+          pkg-manager: poetry
+      - node/install-packages:
+          pkg-manager: yarn
+          app-dir: client
+          cache-version: v2
+          # In order to cache the Cypress binary, we have to cache
+          # ~/.cache/Cypress (alongside the default caching of ~/.cache/yarn).
+          # So we just cache all of ~/.cache.
+          cache-path: ~/.cache
       - browser-tools/install-chrome
       - create-data-model
       - run:
