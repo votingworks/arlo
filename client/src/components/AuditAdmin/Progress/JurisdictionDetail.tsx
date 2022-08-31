@@ -283,6 +283,19 @@ const RoundStatusSection = ({
   const status = (() => {
     const jurisdictionStatus =
       jurisdiction.currentRoundStatus && jurisdiction.currentRoundStatus.status
+    const auditBoardsTable = (
+      <AuditBoardsTable
+        auditBoards={auditBoards}
+        reopenAuditBoard={auditBoard =>
+          reopenAuditBoard({
+            auditBoardId: auditBoard.id,
+            electionId,
+            jurisdictionId: jurisdiction.id,
+            roundId: round.id,
+          })
+        }
+      />
+    )
 
     if (round.isFullHandTally) {
       if (jurisdictionStatus === JurisdictionRoundStatus.COMPLETE)
@@ -318,7 +331,9 @@ const RoundStatusSection = ({
       )
     }
 
-    if (sampleCount.ballots === 0) return <p>No ballots sampled</p>
+    if (sampleCount.ballots === 0) {
+      return <p>No ballots sampled</p>
+    }
     if (jurisdictionStatus === JurisdictionRoundStatus.COMPLETE) {
       if (auditSettings.auditType === 'BATCH_COMPARISON') {
         return (
@@ -342,19 +357,7 @@ const RoundStatusSection = ({
       return (
         <div>
           <p>Data entry complete</p>
-          {auditSettings.online && (
-            <AuditBoardsTable
-              auditBoards={auditBoards}
-              reopenAuditBoard={auditBoard =>
-                reopenAuditBoard({
-                  auditBoardId: auditBoard.id,
-                  electionId,
-                  jurisdictionId: jurisdiction.id,
-                  roundId: round.id,
-                })
-              }
-            />
-          )}
+          {auditSettings.online && auditBoardsTable}
         </div>
       )
     }
@@ -362,14 +365,19 @@ const RoundStatusSection = ({
       return <p>Waiting for jurisdiction to set up audit boards</p>
     }
     return (
-      <JAFileDownloadButtons
-        electionId={electionId}
-        jurisdictionId={jurisdiction.id}
-        jurisdictionName={jurisdiction.name}
-        round={round}
-        auditSettings={auditSettings}
-        auditBoards={auditBoards}
-      />
+      <>
+        <JAFileDownloadButtons
+          electionId={electionId}
+          jurisdictionId={jurisdiction.id}
+          jurisdictionName={jurisdiction.name}
+          round={round}
+          auditSettings={auditSettings}
+          auditBoards={auditBoards}
+        />
+        {auditSettings.online && (
+          <div style={{ marginTop: '10px' }}>{auditBoardsTable}</div>
+        )}
+      </>
     )
   })()
 
