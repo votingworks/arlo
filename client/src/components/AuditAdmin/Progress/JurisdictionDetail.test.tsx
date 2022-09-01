@@ -699,28 +699,35 @@ describe('JurisdictionDetail', () => {
     })
   })
 
-  it('after launch of an audit with online audit boards, shows a table of audit boards', async () => {
-    const expectedCalls = [
-      jaApiCalls.getBallotManifestFile(manifestMocks.processed),
-      jaApiCalls.getAuditBoards(auditBoardMocks.double),
-      jaApiCalls.getBallotCount(dummyBallots.ballots),
-    ]
-    await withMockFetch(expectedCalls, async () => {
-      render({
-        auditSettings: auditSettings.all,
-        jurisdiction: jurisdictionMocks.allComplete[0],
-        round: roundMocks.singleIncomplete[0],
-      })
+  it.each([
+    jurisdictionMocks.oneComplete[0], // Jurisdiction status = in progress
+    jurisdictionMocks.allComplete[0], // Jurisdiction status = complete
+  ])(
+    'after launch of an audit with online audit boards, shows a table of audit boards',
+    async jurisdiction => {
+      const expectedCalls = [
+        jaApiCalls.getBallotManifestFile(manifestMocks.processed),
+        jaApiCalls.getAuditBoards(auditBoardMocks.double),
+        jaApiCalls.getBallotCount(dummyBallots.ballots),
+      ]
+      await withMockFetch(expectedCalls, async () => {
+        render({
+          auditSettings: auditSettings.all,
+          jurisdiction,
+          round: roundMocks.singleIncomplete[0],
+        })
 
-      await screen.findByText('Data entry complete')
-      screen.getByText('Audit Board #01')
-      screen.getByText('Audit Board #02')
-      const reopenButtons = screen.getAllByRole('button', { name: 'Reopen' })
-      expect(reopenButtons).toHaveLength(2)
-      expect(reopenButtons[0]).toBeDisabled()
-      expect(reopenButtons[1]).toBeDisabled()
-    })
-  })
+        await screen.findByRole('columnheader', { name: 'Audit Board' })
+        screen.getByRole('columnheader', { name: 'Actions' })
+        screen.getByRole('cell', { name: 'Audit Board #01' })
+        screen.getByRole('cell', { name: 'Audit Board #02' })
+        const reopenButtons = screen.getAllByRole('button', { name: 'Reopen' })
+        expect(reopenButtons).toHaveLength(2)
+        expect(reopenButtons[0]).toBeDisabled()
+        expect(reopenButtons[1]).toBeDisabled()
+      })
+    }
+  )
 
   it('after launch of an audit with online audit boards, allows reopening of audit boards that have signed off', async () => {
     const expectedCalls = [
