@@ -16,12 +16,6 @@ initdevdb:
 	sudo -u postgres psql -c "create user arlo superuser password 'arlo';"
 	sudo -u postgres psql -c "create database arlo with owner arlo;"
 
-install:
-	poetry install --no-dev
-	yarn install
-	yarn --cwd client install
-	yarn --cwd client build
-
 install-development:
 	poetry install
 	yarn install
