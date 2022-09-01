@@ -48,7 +48,7 @@ DATABASE_URL = read_env_var(
 
 STATIC_FOLDER = os.path.normpath(
     os.path.join(
-        __file__, "..", "..", "client", "public" if FLASK_ENV == "test" else "build",
+        __file__, "..", "..", "client" if FLASK_ENV == "test" else "client/build",
     )
 )
 
