@@ -260,6 +260,22 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
                               </span>
                             </span>
                           </label>
+                          <label
+                            class="bp3-control bp3-checkbox sc-jlyJG WRwCB"
+                          >
+                            <input
+                              type="checkbox"
+                            />
+                            <span
+                              class="small bp3-control-indicator"
+                            >
+                              <span
+                                class="checkbox-text"
+                              >
+                                Invalid Write-In
+                              </span>
+                            </span>
+                          </label>
                           <div
                             class="sc-bRBYWo fhNHFP sc-jAaTju bNEIBb"
                           >
@@ -354,6 +370,22 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
                               </span>
                             </span>
                           </label>
+                          <label
+                            class="bp3-control bp3-checkbox sc-jlyJG WRwCB"
+                          >
+                            <input
+                              type="checkbox"
+                            />
+                            <span
+                              class="small bp3-control-indicator"
+                            >
+                              <span
+                                class="checkbox-text"
+                              >
+                                Invalid Write-In
+                              </span>
+                            </span>
+                          </label>
                           <div
                             class="sc-bRBYWo fhNHFP sc-jAaTju bNEIBb"
                           >
@@ -425,7 +457,12 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
                   <strong>
                     Not on Ballot
                   </strong>
-                   if the contest does not appear on the ballot.
+                   if the contest does not appear on the ballot. Select
+                   
+                  <strong>
+                    Invalid Write-In
+                  </strong>
+                   for a write-in adjudicated as invalid.
                 </li>
                 <li>
                   Once all votes are recorded,

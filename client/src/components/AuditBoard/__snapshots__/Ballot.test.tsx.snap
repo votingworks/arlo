@@ -209,6 +209,22 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
                             </span>
                           </span>
                         </label>
+                        <label
+                          class="bp3-control bp3-checkbox sc-chPdSV iBxXqw"
+                        >
+                          <input
+                            type="checkbox"
+                          />
+                          <span
+                            class="small bp3-control-indicator"
+                          >
+                            <span
+                              class="checkbox-text"
+                            >
+                              Invalid Write-In
+                            </span>
+                          </span>
+                        </label>
                         <div
                           class="sc-dxgOiQ jQgQXZ sc-fjdhpX fAFgBy"
                         >
@@ -280,7 +296,12 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
                 <strong>
                   Not on Ballot
                 </strong>
-                 if the contest does not appear on the ballot.
+                 if the contest does not appear on the ballot. Select
+                 
+                <strong>
+                  Invalid Write-In
+                </strong>
+                 for a write-in adjudicated as invalid.
               </li>
               <li>
                 Once all votes are recorded,
@@ -505,6 +526,22 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
                             </span>
                           </span>
                         </label>
+                        <label
+                          class="bp3-control bp3-checkbox sc-chPdSV iBxXqw"
+                        >
+                          <input
+                            type="checkbox"
+                          />
+                          <span
+                            class="small bp3-control-indicator"
+                          >
+                            <span
+                              class="checkbox-text"
+                            >
+                              Invalid Write-In
+                            </span>
+                          </span>
+                        </label>
                         <div
                           class="sc-dxgOiQ jQgQXZ sc-fjdhpX fAFgBy"
                         >
@@ -576,7 +613,12 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
                 <strong>
                   Not on Ballot
                 </strong>
-                 if the contest does not appear on the ballot.
+                 if the contest does not appear on the ballot. Select
+                 
+                <strong>
+                  Invalid Write-In
+                </strong>
+                 for a write-in adjudicated as invalid.
               </li>
               <li>
                 Once all votes are recorded,
@@ -801,6 +843,22 @@ exports[`Ballot selects Blank Vote 1`] = `
                             </span>
                           </span>
                         </label>
+                        <label
+                          class="bp3-control bp3-checkbox sc-chPdSV iBxXqw"
+                        >
+                          <input
+                            type="checkbox"
+                          />
+                          <span
+                            class="small bp3-control-indicator"
+                          >
+                            <span
+                              class="checkbox-text"
+                            >
+                              Invalid Write-In
+                            </span>
+                          </span>
+                        </label>
                         <div
                           class="sc-dxgOiQ jQgQXZ sc-fjdhpX fAFgBy"
                         >
@@ -870,7 +928,12 @@ exports[`Ballot selects Blank Vote 1`] = `
                 <strong>
                   Not on Ballot
                 </strong>
-                 if the contest does not appear on the ballot.
+                 if the contest does not appear on the ballot. Select
+                 
+                <strong>
+                  Invalid Write-In
+                </strong>
+                 for a write-in adjudicated as invalid.
               </li>
               <li>
                 Once all votes are recorded,
@@ -1095,6 +1158,22 @@ exports[`Ballot selects Not on Ballot 1`] = `
                             </span>
                           </span>
                         </label>
+                        <label
+                          class="bp3-control bp3-checkbox sc-chPdSV iBxXqw"
+                        >
+                          <input
+                            type="checkbox"
+                          />
+                          <span
+                            class="small bp3-control-indicator"
+                          >
+                            <span
+                              class="checkbox-text"
+                            >
+                              Invalid Write-In
+                            </span>
+                          </span>
+                        </label>
                         <div
                           class="sc-dxgOiQ jQgQXZ sc-fjdhpX fAFgBy"
                         >
@@ -1164,7 +1243,12 @@ exports[`Ballot selects Not on Ballot 1`] = `
                 <strong>
                   Not on Ballot
                 </strong>
-                 if the contest does not appear on the ballot.
+                 if the contest does not appear on the ballot. Select
+                 
+                <strong>
+                  Invalid Write-In
+                </strong>
+                 for a write-in adjudicated as invalid.
               </li>
               <li>
                 Once all votes are recorded,
@@ -1389,6 +1473,22 @@ exports[`Ballot switches audit and review views 1`] = `
                             </span>
                           </span>
                         </label>
+                        <label
+                          class="bp3-control bp3-checkbox sc-chPdSV iBxXqw"
+                        >
+                          <input
+                            type="checkbox"
+                          />
+                          <span
+                            class="small bp3-control-indicator"
+                          >
+                            <span
+                              class="checkbox-text"
+                            >
+                              Invalid Write-In
+                            </span>
+                          </span>
+                        </label>
                         <div
                           class="sc-dxgOiQ jQgQXZ sc-fjdhpX fAFgBy"
                         >
@@ -1458,7 +1558,12 @@ exports[`Ballot switches audit and review views 1`] = `
                 <strong>
                   Not on Ballot
                 </strong>
-                 if the contest does not appear on the ballot.
+                 if the contest does not appear on the ballot. Select
+                 
+                <strong>
+                  Invalid Write-In
+                </strong>
+                 for a write-in adjudicated as invalid.
               </li>
               <li>
                 Once all votes are recorded,

@@ -165,6 +165,7 @@ def audit_ballot(
     interpretation: Interpretation,
     choices: List[ContestChoice] = None,
     is_overvote: bool = False,
+    has_invalid_write_in: bool = False,
 ):
     # Make sure we don't try to audit this ballot twice for this contest
     if not any(i for i in ballot.interpretations if i.contest_id == contest_id):
@@ -175,6 +176,7 @@ def audit_ballot(
                 interpretation=interpretation,
                 selected_choices=choices or [],
                 is_overvote=is_overvote,
+                has_invalid_write_in=has_invalid_write_in,
             )
         ]
         ballot.status = BallotStatus.AUDITED
