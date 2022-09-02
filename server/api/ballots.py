@@ -144,6 +144,7 @@ def deserialize_interpretation(
         selected_choices=choices,
         comment=interpretation["comment"],
         is_overvote=len(choices) > contest.votes_allowed,
+        has_invalid_write_in=interpretation["hasInvalidWriteIn"],
     )
 
 
@@ -153,6 +154,7 @@ def serialize_interpretation(interpretation: BallotInterpretation) -> JSONDict:
         "interpretation": interpretation.interpretation,
         "choiceIds": [choice.id for choice in interpretation.selected_choices],
         "comment": interpretation.comment,
+        "hasInvalidWriteIn": interpretation.has_invalid_write_in,
     }
 
 
@@ -300,9 +302,16 @@ BALLOT_INTERPRETATION_SCHEMA = {
         },
         "choiceIds": {"type": "array", "items": {"type": "string"}},
         "comment": {"anyOf": [{"type": "string"}, {"type": "null"}]},
+        "hasInvalidWriteIn": {"type": "boolean"},
     },
     "additionalProperties": False,
-    "required": ["contestId", "interpretation", "choiceIds", "comment"],
+    "required": [
+        "contestId",
+        "interpretation",
+        "choiceIds",
+        "comment",
+        "hasInvalidWriteIn",
+    ],
 }
 
 AUDIT_BALLOT_SCHEMA = {

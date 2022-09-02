@@ -96,8 +96,8 @@ def pretty_batch_ticket_numbers(batch: Batch, round_id_to_num: Dict[str, int]) -
     return ", ".join(ticket_numbers)
 
 
-# (contest_id, interpretation, selected_choice_names, comment, is_overvote)
-InterpretationTuple = Tuple[str, str, List[str], str, bool]
+# (contest_id, interpretation, selected_choice_names, comment, is_overvote, has_invalid_write_in)
+InterpretationTuple = Tuple[str, str, List[str], str, bool, bool]
 
 
 def pretty_ballot_interpretation(
@@ -115,13 +115,18 @@ def pretty_ballot_interpretation(
         selected_choice_names,
         comment,
         is_overvote,
+        has_invalid_write_in,
     ) = interpretation
 
-    choices = (
-        ", ".join(selected_choice_names)
-        if interpretation_str == Interpretation.VOTE
-        else interpretation_str
-    )
+    choices = ""
+    if interpretation_str == Interpretation.VOTE:
+        choices = ", ".join(selected_choice_names)
+        if has_invalid_write_in:
+            choices += ", INVALID_WRITE_IN"
+    elif interpretation_str == Interpretation.BLANK:
+        choices = "INVALID_WRITE_IN" if has_invalid_write_in else interpretation_str
+    else:
+        choices = interpretation_str
     overvote = "OVERVOTE; " if is_overvote else ""
     comment = f"; COMMENT: {comment}" if comment else ""
     return overvote + choices + comment
@@ -497,6 +502,7 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
                     ballot_interpretation_selected_choices.c.selected_choice_names,
                     BallotInterpretation.comment,
                     BallotInterpretation.is_overvote,
+                    BallotInterpretation.has_invalid_write_in,
                 )
             ).label("interpretations"),
         )
