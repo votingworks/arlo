@@ -74,6 +74,7 @@ function constructEmptyInterpretation(
     interpretation: null,
     choiceIds: [],
     comment: null,
+    hasInvalidWriteIn: false,
   }
 }
 
@@ -208,6 +209,8 @@ interface IBallotAuditContestProps {
   setInterpretation: (i: IBallotInterpretation) => void
 }
 
+export const INVALID_WRITE_IN = 'INVALID_WRITE_IN'
+
 const BallotAuditContest = ({
   contest,
   interpretation,
@@ -226,14 +229,37 @@ const BallotAuditContest = ({
         ...interpretation,
         interpretation: checked ? value : null,
         choiceIds: [],
+        hasInvalidWriteIn: false,
+      })
+    } else if (value === INVALID_WRITE_IN) {
+      let newInterpretation: Interpretation | null
+      if (interpretation.choiceIds.length > 0) {
+        newInterpretation = Interpretation.VOTE
+      } else if (checked) {
+        newInterpretation = Interpretation.BLANK
+      } else {
+        newInterpretation = null
+      }
+      setInterpretation({
+        ...interpretation,
+        interpretation: newInterpretation,
+        hasInvalidWriteIn: checked,
       })
     } else {
       const choiceIds = checked
         ? [...interpretation.choiceIds, value]
         : interpretation.choiceIds.filter(v => v !== value)
+      let newInterpretation: Interpretation | null
+      if (choiceIds.length > 0) {
+        newInterpretation = Interpretation.VOTE
+      } else if (interpretation.hasInvalidWriteIn) {
+        newInterpretation = Interpretation.BLANK
+      } else {
+        newInterpretation = null
+      }
       setInterpretation({
         ...interpretation,
-        interpretation: choiceIds.length > 0 ? Interpretation.VOTE : null,
+        interpretation: newInterpretation,
         choiceIds,
       })
     }
@@ -258,7 +284,10 @@ const BallotAuditContest = ({
         <RightCheckboxes>
           <BlockCheckbox
             handleChange={onCheckboxClick(Interpretation.BLANK)}
-            checked={interpretation.interpretation === Interpretation.BLANK}
+            checked={
+              interpretation.interpretation === Interpretation.BLANK &&
+              !interpretation.hasInvalidWriteIn
+            }
             label="Blank Vote"
             small
           />
@@ -269,6 +298,12 @@ const BallotAuditContest = ({
               Interpretation.CONTEST_NOT_ON_BALLOT
             }
             label="Not on Ballot"
+            small
+          />
+          <BlockCheckbox
+            handleChange={onCheckboxClick(INVALID_WRITE_IN)}
+            checked={interpretation.hasInvalidWriteIn}
+            label="Invalid Write-In"
             small
           />
           <NoteField

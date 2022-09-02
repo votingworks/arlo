@@ -39,6 +39,12 @@ export interface IBallotInterpretation {
   interpretation: Interpretation | null
   choiceIds: string[]
   comment: string | null
+  /**
+   * If a ballot has an invalid write-in with no other selections, the corresponding interpretation
+   * will be BLANK. If a ballot for a vote-for-n contest has an invalid write-in alongside a valid
+   * selection, the corresponding interpretation will be VOTE.
+   */
+  hasInvalidWriteIn: boolean
 }
 
 export enum BallotStatus {

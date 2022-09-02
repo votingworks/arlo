@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { Redirect } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import LinkButton from '../Atoms/LinkButton'
-import BallotAudit from './BallotAudit'
+import BallotAudit, { INVALID_WRITE_IN } from './BallotAudit'
 import {
   IBallotInterpretation,
   IContest as IContestApi,
@@ -125,19 +125,28 @@ const Ballot: React.FC<IProps> = ({
   }
 
   const renderInterpretation = (
-    { interpretation, choiceIds }: IBallotInterpretation,
+    { interpretation, choiceIds, hasInvalidWriteIn }: IBallotInterpretation,
     contest: IContest
   ) => {
     if (!interpretation) return <div />
     switch (interpretation) {
-      case Interpretation.VOTE:
-        return contest.choices.map(choice =>
+      case Interpretation.VOTE: {
+        const choices = contest.choices.map(choice =>
           choiceIds.includes(choice.id) ? (
             <h3 key={choice.id}>{choice.name}</h3>
           ) : null
         )
+        if (hasInvalidWriteIn) {
+          choices.push(<h3 key={INVALID_WRITE_IN}>Invalid Write-In</h3>)
+        }
+        return choices
+      }
       case Interpretation.BLANK:
-        return <h3>Blank Vote</h3>
+        return hasInvalidWriteIn ? (
+          <h3>Invalid Write-In</h3>
+        ) : (
+          <h3>Blank Vote</h3>
+        )
       case Interpretation.CONTEST_NOT_ON_BALLOT:
         return <h3>Not on Ballot</h3>
       // case Interpretation.CANT_AGREE: (we do not support this case now)
@@ -242,7 +251,9 @@ const Ballot: React.FC<IProps> = ({
                   see marked on the paper ballot. Select{' '}
                   <strong>Blank Vote</strong> if the voter did not make any
                   selections. Select <strong>Not on Ballot</strong> if the
-                  contest does not appear on the ballot.
+                  contest does not appear on the ballot. Select{' '}
+                  <strong>Invalid Write-In</strong> for a write-in adjudicated
+                  as invalid.
                 </li>
                 <li>
                   Once all votes are recorded,{' '}
