@@ -393,16 +393,23 @@ const Audit = ({ electionId }: { electionId: string }) => {
 
   if (!election.isSuccess) return null
 
-  const { auditName, auditType, jurisdictions, rounds } = election.data
+  const { id, auditName, auditType, jurisdictions, rounds } = election.data
 
   return (
     <Column>
       <H2>{auditName}</H2>
-      <Tag large style={{ marginBottom: '15px' }}>
+      <div style={{ marginBottom: '10px' }}>
+        <AnchorButton href={`/api/support/elections/${id}/login`} icon="log-in">
+          Log in as audit admin
+        </AnchorButton>
+      </div>
+      <Tag large style={{ marginBottom: '10px' }}>
         {prettyAuditType(auditType)}
       </Tag>
-      <RoundsTable electionId={electionId} rounds={rounds} />
-      <H3 style={{ marginTop: '10px' }}>Jurisdictions</H3>
+      <div style={{ marginBottom: '10px' }}>
+        <RoundsTable electionId={electionId} rounds={rounds} />
+      </div>
+      <H3>Jurisdictions</H3>
       <ButtonList>
         {jurisdictions.map(jurisdiction => (
           <LinkButton
