@@ -9,7 +9,7 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
       class="bp3-navbar sc-ksYbfQ QHGZm"
     >
       <div
-        class="sc-bxivhb sc-frDJqD dfcocX"
+        class="sc-bxivhb sc-frDJqD fHxfRa"
       >
         <div
           class="bp3-navbar-group bp3-align-left"
@@ -58,7 +58,7 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
     </div>
     <div>
       <div
-        class="sc-bxivhb hMnACT"
+        class="sc-bxivhb imUAuK"
       >
         <div
           class="sc-fMiknA dSOusv"
@@ -454,7 +454,7 @@ exports[`AuditBoardView ballot interaction renders board table with ballots 1`] 
       class="bp3-navbar sc-ksYbfQ QHGZm"
     >
       <div
-        class="sc-bxivhb sc-frDJqD dfcocX"
+        class="sc-bxivhb sc-frDJqD fHxfRa"
       >
         <div
           class="bp3-navbar-group bp3-align-left"
@@ -508,7 +508,7 @@ exports[`AuditBoardView ballot interaction renders board table with ballots 1`] 
         class="sc-bZQynM gcSISu"
       >
         <div
-          class="sc-bxivhb sc-gzVnrw dPFfSP"
+          class="sc-bxivhb sc-gzVnrw bBxgry"
         >
           <div
             class="sc-ifAKCX Eaynb"
@@ -550,7 +550,7 @@ exports[`AuditBoardView ballot interaction renders board table with ballots 1`] 
         </div>
       </div>
       <div
-        class="sc-bxivhb hMnACT"
+        class="sc-bxivhb imUAuK"
       >
         <div
           class="sc-htoDjs hxAtLW"
@@ -2735,7 +2735,7 @@ exports[`AuditBoardView ballot interaction renders board table with no audited b
       class="bp3-navbar sc-ksYbfQ QHGZm"
     >
       <div
-        class="sc-bxivhb sc-frDJqD dfcocX"
+        class="sc-bxivhb sc-frDJqD fHxfRa"
       >
         <div
           class="bp3-navbar-group bp3-align-left"
@@ -2789,7 +2789,7 @@ exports[`AuditBoardView ballot interaction renders board table with no audited b
         class="sc-bZQynM gcSISu"
       >
         <div
-          class="sc-bxivhb sc-gzVnrw dPFfSP"
+          class="sc-bxivhb sc-gzVnrw bBxgry"
         >
           <div
             class="sc-ifAKCX Eaynb"
@@ -2831,7 +2831,7 @@ exports[`AuditBoardView ballot interaction renders board table with no audited b
         </div>
       </div>
       <div
-        class="sc-bxivhb hMnACT"
+        class="sc-bxivhb imUAuK"
       >
         <div
           class="sc-htoDjs hxAtLW"
@@ -4638,7 +4638,7 @@ exports[`AuditBoardView ballot interaction renders board table with no ballots 1
       class="bp3-navbar sc-ksYbfQ QHGZm"
     >
       <div
-        class="sc-bxivhb sc-frDJqD dfcocX"
+        class="sc-bxivhb sc-frDJqD fHxfRa"
       >
         <div
           class="bp3-navbar-group bp3-align-left"
@@ -4692,7 +4692,7 @@ exports[`AuditBoardView ballot interaction renders board table with no ballots 1
         class="sc-bZQynM gcSISu"
       >
         <div
-          class="sc-bxivhb sc-gzVnrw dPFfSP"
+          class="sc-bxivhb sc-gzVnrw bBxgry"
         >
           <div
             class="sc-ifAKCX Eaynb"
@@ -4734,7 +4734,7 @@ exports[`AuditBoardView ballot interaction renders board table with no ballots 1
         </div>
       </div>
       <div
-        class="sc-bxivhb hMnACT"
+        class="sc-bxivhb imUAuK"
       >
         <div
           class="sc-htoDjs hxAtLW"
@@ -4962,7 +4962,7 @@ exports[`AuditBoardView member form submits, goes to ballot table, and header sh
       class="bp3-navbar sc-ksYbfQ QHGZm"
     >
       <div
-        class="sc-bxivhb sc-frDJqD dfcocX"
+        class="sc-bxivhb sc-frDJqD fHxfRa"
       >
         <div
           class="bp3-navbar-group bp3-align-left"
@@ -5016,7 +5016,7 @@ exports[`AuditBoardView member form submits, goes to ballot table, and header sh
         class="sc-bZQynM gcSISu"
       >
         <div
-          class="sc-bxivhb sc-gzVnrw dPFfSP"
+          class="sc-bxivhb sc-gzVnrw bBxgry"
         >
           <div
             class="sc-ifAKCX Eaynb"
@@ -5058,7 +5058,7 @@ exports[`AuditBoardView member form submits, goes to ballot table, and header sh
         </div>
       </div>
       <div
-        class="sc-bxivhb hMnACT"
+        class="sc-bxivhb imUAuK"
       >
         <div
           class="sc-htoDjs hxAtLW"
