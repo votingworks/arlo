@@ -9,7 +9,7 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
       class="bp3-callout sc-hSdWYo gMDgEE"
     >
       <div
-        class="sc-kkGfuU dREAhJ"
+        class="sc-kkGfuU frdbBK"
       >
         <div
           class="text"
@@ -43,7 +43,7 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
       </div>
     </div>
     <div
-      class="sc-kkGfuU dREAhJ"
+      class="sc-kkGfuU frdbBK"
     >
       <div
         class="sc-cvbbAY vOHMb"
