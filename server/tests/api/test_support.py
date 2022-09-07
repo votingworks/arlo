@@ -10,6 +10,7 @@ from ...api.support import (
     AUDITADMIN_AUTH0_CLIENT_SECRET,
     Auth0Error,
 )
+from ...config import HTTP_ORIGIN
 
 SUPPORT_EMAIL = "support@example.org"
 
@@ -442,6 +443,7 @@ def test_support_log_in_as_audit_admin(
     rv = client.get(f"/api/support/audit-admins/{DEFAULT_AA_EMAIL}/login")
     assert rv.status_code == 302
     assert urlparse(rv.location).path == "/"
+    assert urlparse(rv.location).port == urlparse(HTTP_ORIGIN).port
 
     with client.session_transaction() as session:  # type: ignore
         assert session["_user"]["type"] == UserType.AUDIT_ADMIN
@@ -464,6 +466,7 @@ def test_support_log_in_as_jurisdiction_admin(
     )
     assert rv.status_code == 302
     assert urlparse(rv.location).path == "/"
+    assert urlparse(rv.location).port == urlparse(HTTP_ORIGIN).port
 
     with client.session_transaction() as session:  # type: ignore
         assert session["_user"]["type"] == UserType.JURISDICTION_ADMIN
@@ -482,6 +485,7 @@ def test_support_log_in_to_audit_as_audit_admin(client: FlaskClient, election_id
     rv = client.get(f"/api/support/elections/{election_id}/login")
     assert rv.status_code == 302
     assert urlparse(rv.location).path == f"/election/{election_id}"
+    assert urlparse(rv.location).port == urlparse(HTTP_ORIGIN).port
 
     with client.session_transaction() as session:  # type: ignore
         assert session["_user"]["type"] == UserType.AUDIT_ADMIN

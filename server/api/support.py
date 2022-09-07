@@ -2,7 +2,7 @@ import uuid
 import secrets
 from typing import Optional
 from urllib.parse import urlparse
-from flask import jsonify, request, session, redirect
+from flask import jsonify, request, session
 from auth0.v3.authentication import GetToken
 from auth0.v3.management import Auth0
 from auth0.v3.exceptions import Auth0Error
@@ -26,6 +26,7 @@ from ..config import (
 from ..util.jsonschema import validate
 from ..util.isoformat import isoformat
 from ..util.file import delete_file
+from ..util.redirect import redirect
 from .rounds import delete_round_and_corresponding_sampled_ballots, get_current_round
 
 AUTH0_DOMAIN = urlparse(AUDITADMIN_AUTH0_BASE_URL).hostname
