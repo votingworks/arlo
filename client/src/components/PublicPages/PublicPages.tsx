@@ -1,18 +1,19 @@
 import React from 'react'
-import { Redirect, Route, Switch } from 'react-router-dom'
+import { Route, Switch } from 'react-router-dom'
 
 import AuditPlanner from './AuditPlanner'
+import NotFound from './NotFound'
 import { Wrapper } from '../Atoms/Wrapper'
 
 const PublicPages: React.FC = () => {
   return (
     <Wrapper>
       <Switch>
-        <Route exact path="/public/audit-planner">
+        <Route exact path="/planner">
           <AuditPlanner />
         </Route>
         <Route>
-          <Redirect to="/" />
+          <NotFound />
         </Route>
       </Switch>
     </Wrapper>

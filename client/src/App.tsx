@@ -115,11 +115,8 @@ const App: React.FC = () => {
               <Route path="/support">
                 <SupportTools />
               </Route>
-              <Route path="/public">
-                <PublicPages />
-              </Route>
               <Route>
-                <Wrapper>404 Not Found</Wrapper>
+                <PublicPages />
               </Route>
             </Switch>
           </Main>
