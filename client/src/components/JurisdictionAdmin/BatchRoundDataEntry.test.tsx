@@ -285,9 +285,11 @@ describe('Batch comparison data entry', () => {
       userEvent.click(within(rows[1]).getByRole('button', { name: /More/ }))
       userEvent.click(screen.getByText('Use Multiple Tally Sheets'))
 
-      let dialog = (await screen.findByRole('heading', {
-        name: /Edit Tally Sheets for Batch: Batch One/,
-      })).closest('.bp3-dialog')! as HTMLElement
+      let dialog = (
+        await screen.findByRole('heading', {
+          name: /Edit Tally Sheets for Batch: Batch One/,
+        })
+      ).closest('.bp3-dialog')! as HTMLElement
       let tallySheetsTable = within(dialog).getByRole('table')
 
       const headers = within(tallySheetsTable).getAllByRole('columnheader')
@@ -370,9 +372,11 @@ describe('Batch comparison data entry', () => {
 
       // Reopen the tally sheets modal
       userEvent.click(editTallySheetsButton)
-      dialog = (await screen.findByRole('heading', {
-        name: /Edit Tally Sheets for Batch: Batch One/,
-      })).closest('.bp3-dialog')! as HTMLElement
+      dialog = (
+        await screen.findByRole('heading', {
+          name: /Edit Tally Sheets for Batch: Batch One/,
+        })
+      ).closest('.bp3-dialog')! as HTMLElement
       tallySheetsTable = within(dialog).getByRole('table')
       rows = within(tallySheetsTable).getAllByRole('row')
       expect(rows).toHaveLength(3)
@@ -400,9 +404,11 @@ describe('Batch comparison data entry', () => {
       // Open again
       userEvent.click(moreButton)
       userEvent.click(screen.getByText('Use Multiple Tally Sheets'))
-      dialog = (await screen.findByRole('heading', {
-        name: /Edit Tally Sheets for Batch: Batch One/,
-      })).closest('.bp3-dialog')! as HTMLElement
+      dialog = (
+        await screen.findByRole('heading', {
+          name: /Edit Tally Sheets for Batch: Batch One/,
+        })
+      ).closest('.bp3-dialog')! as HTMLElement
       tallySheetsTable = within(dialog).getByRole('table')
       rows = within(tallySheetsTable).getAllByRole('row')
       expect(rows).toHaveLength(3)
@@ -440,9 +446,11 @@ describe('Batch comparison data entry', () => {
       })
       userEvent.click(finalizeButton)
 
-      const dialog = (await screen.findByRole('heading', {
-        name: 'Are you sure you want to finalize your results?',
-      })).closest('.bp3-dialog')! as HTMLElement
+      const dialog = (
+        await screen.findByRole('heading', {
+          name: 'Are you sure you want to finalize your results?',
+        })
+      ).closest('.bp3-dialog')! as HTMLElement
       userEvent.click(within(dialog).getByRole('button', { name: /Confirm/ }))
 
       await screen.findByText('Results finalized')
@@ -534,9 +542,11 @@ describe('Batch comparison data entry', () => {
       userEvent.click(
         await screen.findByRole('button', { name: /Finalize Results/ })
       )
-      const dialog = (await screen.findByRole('heading', {
-        name: 'Are you sure you want to finalize your results?',
-      })).closest('.bp3-dialog')! as HTMLElement
+      const dialog = (
+        await screen.findByRole('heading', {
+          name: 'Are you sure you want to finalize your results?',
+        })
+      ).closest('.bp3-dialog')! as HTMLElement
       userEvent.click(within(dialog).getByRole('button', { name: /Confirm/ }))
       await findAndCloseToast('something went wrong: finalizeBatchResults')
     })

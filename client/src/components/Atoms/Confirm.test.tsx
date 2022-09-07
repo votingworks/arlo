@@ -38,9 +38,11 @@ describe('Confirm component', () => {
 
     userEvent.click(screen.getByRole('button', { name: 'Open Confirm' }))
 
-    const dialog = (await screen.findByRole('heading', {
-      name: /Test Title/,
-    })).closest('.bp3-dialog')! as HTMLElement
+    const dialog = (
+      await screen.findByRole('heading', {
+        name: /Test Title/,
+      })
+    ).closest('.bp3-dialog')! as HTMLElement
     within(dialog).getByText(
       'This action cannot be undone. Do you want to continue?'
     )
@@ -51,9 +53,11 @@ describe('Confirm component', () => {
 
     userEvent.click(screen.getByRole('button', { name: 'Open Confirm' }))
 
-    const dialog = (await screen.findByRole('heading', {
-      name: /Test Title/,
-    })).closest('.bp3-dialog')! as HTMLElement
+    const dialog = (
+      await screen.findByRole('heading', {
+        name: /Test Title/,
+      })
+    ).closest('.bp3-dialog')! as HTMLElement
     within(dialog).getByText(
       'This action cannot be undone. Do you want to continue?'
     )
@@ -74,9 +78,11 @@ describe('Confirm component', () => {
 
     userEvent.click(screen.getByRole('button', { name: 'Open Confirm' }))
 
-    const dialog = (await screen.findByRole('heading', {
-      name: /Test Title/,
-    })).closest('.bp3-dialog')! as HTMLElement
+    const dialog = (
+      await screen.findByRole('heading', {
+        name: /Test Title/,
+      })
+    ).closest('.bp3-dialog')! as HTMLElement
     within(dialog).getByText(
       'This action cannot be undone. Do you want to continue?'
     )

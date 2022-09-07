@@ -490,7 +490,9 @@ describe('JurisdictionDetail', () => {
         screen.getByRole('button', { name: /Download Placeholder Sheets/ })
       )
       await waitFor(() =>
-        expect(mockSavePDF).toHaveBeenCalledWith(
+        expect(
+          mockSavePDF
+        ).toHaveBeenCalledWith(
           'Round 1 Placeholders - Jurisdiction 1 - Test Audit.pdf',
           { returnPromise: true }
         )
@@ -500,7 +502,9 @@ describe('JurisdictionDetail', () => {
         screen.getByRole('button', { name: /Download Ballot Labels/ })
       )
       await waitFor(() =>
-        expect(mockSavePDF).toHaveBeenCalledWith(
+        expect(
+          mockSavePDF
+        ).toHaveBeenCalledWith(
           'Round 1 Labels - Jurisdiction 1 - Test Audit.pdf',
           { returnPromise: true }
         )
@@ -510,7 +514,9 @@ describe('JurisdictionDetail', () => {
         screen.getByRole('button', { name: /Download Audit Board Credentials/ })
       )
       await waitFor(() =>
-        expect(mockSavePDF).toHaveBeenCalledWith(
+        expect(
+          mockSavePDF
+        ).toHaveBeenCalledWith(
           'Audit Board Credentials - Jurisdiction 1 - Test Audit.pdf',
           { returnPromise: true }
         )
@@ -746,9 +752,11 @@ describe('JurisdictionDetail', () => {
       await screen.findByText('Data entry complete')
       screen.getByText('Audit Board #01')
       userEvent.click(screen.getByRole('button', { name: 'Reopen' }))
-      const dialog = (await screen.findByRole('heading', {
-        name: 'Confirm',
-      })).closest('.bp3-dialog')! as HTMLElement
+      const dialog = (
+        await screen.findByRole('heading', {
+          name: 'Confirm',
+        })
+      ).closest('.bp3-dialog')! as HTMLElement
       within(dialog).getByText(
         'Are you sure you want to reopen Audit Board #01?'
       )

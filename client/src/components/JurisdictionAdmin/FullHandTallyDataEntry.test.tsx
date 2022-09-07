@@ -117,9 +117,11 @@ describe('full hand tally data entry', () => {
       const addButton = screen.getByRole('button', { name: /Add batch/ })
       userEvent.click(addButton)
 
-      const dialog = (await screen.findByRole('heading', {
-        name: /Add Batch/,
-      })).closest('.bp3-dialog')! as HTMLElement
+      const dialog = (
+        await screen.findByRole('heading', {
+          name: /Add Batch/,
+        })
+      ).closest('.bp3-dialog')! as HTMLElement
       within(dialog).getByText('Batch Info')
       userEvent.click(
         within(dialog).getByRole('button', { name: 'Save Batch' })
@@ -150,9 +152,11 @@ describe('full hand tally data entry', () => {
       const addButton = screen.getByRole('button', { name: /Add batch/ })
       userEvent.click(addButton)
 
-      const dialog = (await screen.findByRole('heading', {
-        name: /Add Batch/,
-      })).closest('.bp3-dialog')! as HTMLElement
+      const dialog = (
+        await screen.findByRole('heading', {
+          name: /Add Batch/,
+        })
+      ).closest('.bp3-dialog')! as HTMLElement
       within(dialog).getByText('Batch Info')
 
       const batchNameInput = within(dialog).getByLabelText('Batch Name')
@@ -240,9 +244,11 @@ describe('full hand tally data entry', () => {
       await screen.findByText('Batch1')
       userEvent.click(screen.getByText(/Edit/))
 
-      const dialog = (await screen.findByRole('heading', {
-        name: /Edit Batch/,
-      })).closest('.bp3-dialog')! as HTMLElement
+      const dialog = (
+        await screen.findByRole('heading', {
+          name: /Edit Batch/,
+        })
+      ).closest('.bp3-dialog')! as HTMLElement
       within(dialog).getByText('Batch Info')
 
       const batchNameInput = within(dialog).getByLabelText('Batch Name')
@@ -275,9 +281,11 @@ describe('full hand tally data entry', () => {
       await screen.findByText('Batch1')
       userEvent.click(screen.getByText(/Edit/))
 
-      const dialog = (await screen.findByRole('heading', {
-        name: /Edit Batch/,
-      })).closest('.bp3-dialog')! as HTMLElement
+      const dialog = (
+        await screen.findByRole('heading', {
+          name: /Edit Batch/,
+        })
+      ).closest('.bp3-dialog')! as HTMLElement
       within(dialog).getByText('Batch Info')
 
       fireEvent.click(
@@ -307,9 +315,11 @@ describe('full hand tally data entry', () => {
 
       fireEvent.click(screen.getByRole('button', { name: 'Finalize Results' }))
 
-      const dialog = (await screen.findByRole('heading', {
-        name: /Are you sure you want to finalize your results?/,
-      })).closest('.bp3-dialog')! as HTMLElement
+      const dialog = (
+        await screen.findByRole('heading', {
+          name: /Are you sure you want to finalize your results?/,
+        })
+      ).closest('.bp3-dialog')! as HTMLElement
 
       within(dialog).getByText('This action cannot be undone.')
 

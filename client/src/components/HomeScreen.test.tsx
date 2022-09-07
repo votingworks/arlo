@@ -334,9 +334,11 @@ describe('Home screen', () => {
       })
       userEvent.click(screen.getByRole('button', { name: 'Delete Audit' }))
 
-      const dialog = (await screen.findByRole('heading', {
-        name: /Confirm/,
-      })).closest('.bp3-dialog')! as HTMLElement
+      const dialog = (
+        await screen.findByRole('heading', {
+          name: /Confirm/,
+        })
+      ).closest('.bp3-dialog')! as HTMLElement
       within(dialog).getByText(
         'Are you sure you want to delete November Presidential Election 2020?'
       )
@@ -365,9 +367,11 @@ describe('Home screen', () => {
       })
       userEvent.click(screen.getByRole('button', { name: 'Delete Audit' }))
 
-      const dialog = (await screen.findByRole('heading', {
-        name: /Confirm/,
-      })).closest('.bp3-dialog')! as HTMLElement
+      const dialog = (
+        await screen.findByRole('heading', {
+          name: /Confirm/,
+        })
+      ).closest('.bp3-dialog')! as HTMLElement
       within(dialog).getByText(
         'Are you sure you want to delete November Presidential Election 2020?'
       )

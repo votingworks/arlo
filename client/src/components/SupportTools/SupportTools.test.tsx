@@ -340,9 +340,11 @@ describe('Support Tools', () => {
         })
       )
 
-      const dialog = (await screen.findByRole('heading', {
-        name: /Confirm/,
-      })).closest('.bp3-dialog')! as HTMLElement
+      const dialog = (
+        await screen.findByRole('heading', {
+          name: /Confirm/,
+        })
+      ).closest('.bp3-dialog')! as HTMLElement
       within(dialog).getByText(
         'Are you sure you want to permanently delete Audit 3?'
       )
@@ -371,9 +373,11 @@ describe('Support Tools', () => {
           name: /Permanently Delete/,
         })
       )
-      const dialog = (await screen.findByRole('heading', {
-        name: /Confirm/,
-      })).closest('.bp3-dialog')! as HTMLElement
+      const dialog = (
+        await screen.findByRole('heading', {
+          name: /Confirm/,
+        })
+      ).closest('.bp3-dialog')! as HTMLElement
       userEvent.click(within(dialog).getByRole('button', { name: 'Delete' }))
 
       await findAndCloseToast('something went wrong: deleteElection')
@@ -471,9 +475,11 @@ describe('Support Tools', () => {
       )
 
       // Confirm dialog should open
-      const dialog = (await screen.findByRole('heading', {
-        name: /Confirm/,
-      })).closest('.bp3-dialog')! as HTMLElement
+      const dialog = (
+        await screen.findByRole('heading', {
+          name: /Confirm/,
+        })
+      ).closest('.bp3-dialog')! as HTMLElement
       within(dialog).getByText(
         'Are you sure you want to remove audit admin audit-admin-1@example.org from organization Organization 1?'
       )
@@ -505,9 +511,11 @@ describe('Support Tools', () => {
         ).getByRole('button', { name: /Remove/ })
       )
 
-      const dialog = (await screen.findByRole('heading', {
-        name: /Confirm/,
-      })).closest('.bp3-dialog')! as HTMLElement
+      const dialog = (
+        await screen.findByRole('heading', {
+          name: /Confirm/,
+        })
+      ).closest('.bp3-dialog')! as HTMLElement
       userEvent.click(within(dialog).getByRole('button', { name: 'Remove' }))
 
       const toast = await screen.findByRole('alert')
@@ -531,9 +539,11 @@ describe('Support Tools', () => {
       userEvent.click(screen.getByRole('button', { name: /Rename/ }))
 
       // Confirm dialog should open
-      const dialog = (await screen.findByRole('heading', {
-        name: /Rename/,
-      })).closest('.bp3-dialog')! as HTMLElement
+      const dialog = (
+        await screen.findByRole('heading', {
+          name: /Rename/,
+        })
+      ).closest('.bp3-dialog')! as HTMLElement
       userEvent.type(
         within(dialog).getByLabelText(
           'Enter a new name for this organization:'
@@ -560,9 +570,11 @@ describe('Support Tools', () => {
       userEvent.click(screen.getByRole('button', { name: /Rename/ }))
 
       // Confirm dialog should open
-      const dialog = (await screen.findByRole('heading', {
-        name: /Rename/,
-      })).closest('.bp3-dialog')! as HTMLElement
+      const dialog = (
+        await screen.findByRole('heading', {
+          name: /Rename/,
+        })
+      ).closest('.bp3-dialog')! as HTMLElement
       userEvent.type(
         within(dialog).getByLabelText(
           'Enter a new name for this organization:'
@@ -591,9 +603,11 @@ describe('Support Tools', () => {
       userEvent.click(screen.getByRole('button', { name: 'delete Delete' }))
 
       // Confirm dialog should open
-      const dialog = (await screen.findByRole('heading', {
-        name: /Confirm/,
-      })).closest('.bp3-dialog')! as HTMLElement
+      const dialog = (
+        await screen.findByRole('heading', {
+          name: /Confirm/,
+        })
+      ).closest('.bp3-dialog')! as HTMLElement
       within(dialog).getByText(
         'Are you sure you want to delete organization Organization 1?'
       )
@@ -623,9 +637,11 @@ describe('Support Tools', () => {
       userEvent.click(screen.getByRole('button', { name: 'delete Delete' }))
 
       // Confirm dialog should open
-      const dialog = (await screen.findByRole('heading', {
-        name: /Confirm/,
-      })).closest('.bp3-dialog')! as HTMLElement
+      const dialog = (
+        await screen.findByRole('heading', {
+          name: /Confirm/,
+        })
+      ).closest('.bp3-dialog')! as HTMLElement
       within(dialog).getByText(
         'Are you sure you want to delete organization Organization 1?'
       )

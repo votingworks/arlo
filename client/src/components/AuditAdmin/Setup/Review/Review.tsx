@@ -101,11 +101,12 @@ const Review: React.FC<IProps> = ({
     Object.values(standardizations.standardizations).length > 0
   const standardizationOutstanding =
     !!standardizations &&
-    Object.values(standardizations.standardizations).some(
-      jurisdictionStandardizations =>
-        Object.values(jurisdictionStandardizations).some(
-          cvrContestName => cvrContestName === null
-        )
+    Object.values(
+      standardizations.standardizations
+    ).some(jurisdictionStandardizations =>
+      Object.values(jurisdictionStandardizations).some(
+        cvrContestName => cvrContestName === null
+      )
     )
   const standardizationComplete =
     !!standardizations && !(standardizationNeeded && standardizationOutstanding)

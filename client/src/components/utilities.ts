@@ -150,18 +150,21 @@ export const useInterval = (
   }, [callback])
 
   // Set up the interval.
-  useEffect(/* eslint consistent-return: "off" */
-  () => {
-    function tick() {
-      savedCallback.current!()
-    }
-    if (callImmediately) tick()
-    if (delay !== null) {
-      // allows for pausing
-      const id = setInterval(tick, delay)
-      return () => clearInterval(id)
-    }
-  }, [delay, callImmediately])
+  useEffect(
+    /* eslint consistent-return: "off" */
+    () => {
+      function tick() {
+        savedCallback.current!()
+      }
+      if (callImmediately) tick()
+      if (delay !== null) {
+        // allows for pausing
+        const id = setInterval(tick, delay)
+        return () => clearInterval(id)
+      }
+    },
+    [delay, callImmediately]
+  )
 }
 
 /** https://stackoverflow.com/questions/6229197/how-to-know-if-two-arrays-have-the-same-values/55614659#55614659

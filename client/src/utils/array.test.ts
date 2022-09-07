@@ -12,11 +12,18 @@ test('groupBy', () => {
   expect(groupBy([{ a: '1' }], o => o.a)).toEqual({ '1': [{ a: '1' }] })
   expect(
     groupBy(
-      [{ a: '1', b: '1' }, { a: '2', b: '2' }, { a: '1', b: '3' }],
+      [
+        { a: '1', b: '1' },
+        { a: '2', b: '2' },
+        { a: '1', b: '3' },
+      ],
       o => o.a
     )
   ).toEqual({
-    '1': [{ a: '1', b: '1' }, { a: '1', b: '3' }],
+    '1': [
+      { a: '1', b: '1' },
+      { a: '1', b: '3' },
+    ],
     '2': [{ a: '2', b: '2' }],
   })
 })
@@ -71,7 +78,13 @@ test('partition', () => {
   expect(partition([1], () => false)).toEqual([[], [1]])
   expect(partition([1, 2], () => true)).toEqual([[1, 2], []])
   expect(partition([1, 2], () => false)).toEqual([[], [1, 2]])
-  expect(partition([1, 2, 3, 4], x => x % 2 === 0)).toEqual([[2, 4], [1, 3]])
-  expect(partition([1, 2, 3, 4], x => x % 2 === 1)).toEqual([[1, 3], [2, 4]])
+  expect(partition([1, 2, 3, 4], x => x % 2 === 0)).toEqual([
+    [2, 4],
+    [1, 3],
+  ])
+  expect(partition([1, 2, 3, 4], x => x % 2 === 1)).toEqual([
+    [1, 3],
+    [2, 4],
+  ])
   expect(partition([1, 2, 3], x => x > 1)).toEqual([[2, 3], [1]])
 })

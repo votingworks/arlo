@@ -90,7 +90,9 @@ describe('generateSheets', () => {
           mockJurisdiction.election.auditName
         )
         await expect(Buffer.from(pdf)).toMatchPdfSnapshot()
-        expect(mockSavePDF).toHaveBeenCalledWith(
+        expect(
+          mockSavePDF
+        ).toHaveBeenCalledWith(
           'Round 1 Labels - Jurisdiction One - audit one.pdf',
           { returnPromise: true }
         )
@@ -108,7 +110,9 @@ describe('generateSheets', () => {
           mockJurisdiction.election.auditName
         )
         await expect(Buffer.from(pdf)).toMatchPdfSnapshot()
-        expect(mockSavePDF).toHaveBeenCalledWith(
+        expect(
+          mockSavePDF
+        ).toHaveBeenCalledWith(
           'Round 1 Labels - Jurisdiction One - audit one.pdf',
           { returnPromise: true }
         )
@@ -136,7 +140,9 @@ describe('generateSheets', () => {
           mockJurisdiction.election.auditName
         )
         await expect(Buffer.from(pdf)).toMatchPdfSnapshot()
-        expect(mockSavePDF).toHaveBeenCalledWith(
+        expect(
+          mockSavePDF
+        ).toHaveBeenCalledWith(
           'Round 1 Labels - Jurisdiction One - audit one.pdf',
           { returnPromise: true }
         )
@@ -168,7 +174,9 @@ describe('generateSheets', () => {
           mockJurisdiction.election.auditName
         )
         await expect(Buffer.from(pdf)).toMatchPdfSnapshot()
-        expect(mockSavePDF).toHaveBeenCalledWith(
+        expect(
+          mockSavePDF
+        ).toHaveBeenCalledWith(
           'Round 1 Labels - Jurisdiction One - audit one.pdf',
           { returnPromise: true }
         )
@@ -211,7 +219,9 @@ describe('generateSheets', () => {
           mockJurisdiction.election.auditName
         )
         await expect(Buffer.from(pdf)).toMatchPdfSnapshot()
-        expect(mockSavePDF).toHaveBeenCalledWith(
+        expect(
+          mockSavePDF
+        ).toHaveBeenCalledWith(
           'Round 1 Placeholders - Jurisdiction One - audit one.pdf',
           { returnPromise: true }
         )
@@ -242,7 +252,9 @@ describe('generateSheets', () => {
           mockJurisdiction.election.auditName
         )
         await expect(Buffer.from(pdf)).toMatchPdfSnapshot()
-        expect(mockSavePDF).toHaveBeenCalledWith(
+        expect(
+          mockSavePDF
+        ).toHaveBeenCalledWith(
           'Round 1 Placeholders - Jurisdiction One - audit one.pdf',
           { returnPromise: true }
         )
@@ -282,7 +294,9 @@ describe('generateSheets', () => {
         mockJurisdiction.election.auditName
       )
       await expect(Buffer.from(pdf)).toMatchPdfSnapshot()
-      expect(mockSavePDF).toHaveBeenCalledWith(
+      expect(
+        mockSavePDF
+      ).toHaveBeenCalledWith(
         'Audit Board Credentials - Jurisdiction One - audit one.pdf',
         { returnPromise: true }
       )
@@ -302,7 +316,9 @@ describe('generateSheets', () => {
         mockJurisdiction.election.auditName
       )
       await expect(Buffer.from(pdf)).toMatchPdfSnapshot()
-      expect(mockSavePDF).toHaveBeenCalledWith(
+      expect(
+        mockSavePDF
+      ).toHaveBeenCalledWith(
         'Audit Board Credentials - Jurisdiction One - audit one.pdf',
         { returnPromise: true }
       )
