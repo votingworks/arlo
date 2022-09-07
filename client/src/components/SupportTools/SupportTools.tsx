@@ -396,32 +396,44 @@ const Audit = ({ electionId }: { electionId: string }) => {
   const { id, auditName, auditType, jurisdictions, rounds } = election.data
 
   return (
-    <Column>
+    <div>
       <H2>{auditName}</H2>
-      <div style={{ marginBottom: '10px' }}>
-        <AnchorButton href={`/api/support/elections/${id}/login`} icon="log-in">
-          Log in as audit admin
-        </AnchorButton>
-      </div>
-      <Tag large style={{ marginBottom: '10px' }}>
-        {prettyAuditType(auditType)}
-      </Tag>
-      <div style={{ marginBottom: '10px' }}>
-        <RoundsTable electionId={electionId} rounds={rounds} />
-      </div>
-      <H3>Jurisdictions</H3>
-      <ButtonList>
-        {jurisdictions.map(jurisdiction => (
-          <LinkButton
-            key={jurisdiction.id}
-            to={`/support/jurisdictions/${jurisdiction.id}`}
-            intent={Intent.PRIMARY}
+      <Column>
+        <div
+          style={{
+            alignItems: 'center',
+            display: 'flex',
+            marginBottom: '10px',
+          }}
+        >
+          <Tag large style={{ marginRight: '10px' }}>
+            {prettyAuditType(auditType)}
+          </Tag>
+          <AnchorButton
+            href={`/api/support/elections/${id}/login`}
+            icon="log-in"
+            intent="primary"
           >
-            {jurisdiction.name}
-          </LinkButton>
-        ))}
-      </ButtonList>
-    </Column>
+            Log in as audit admin
+          </AnchorButton>
+        </div>
+        <div style={{ marginBottom: '10px' }}>
+          <RoundsTable electionId={electionId} rounds={rounds} />
+        </div>
+        <H3>Jurisdictions</H3>
+        <ButtonList>
+          {jurisdictions.map(jurisdiction => (
+            <LinkButton
+              key={jurisdiction.id}
+              to={`/support/jurisdictions/${jurisdiction.id}`}
+              intent={Intent.PRIMARY}
+            >
+              {jurisdiction.name}
+            </LinkButton>
+          ))}
+        </ButtonList>
+      </Column>
+    </div>
   )
 }
 
