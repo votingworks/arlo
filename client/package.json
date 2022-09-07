@@ -3,14 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "node scripts/build.js",
+    "build": "vite build",
     "lint": "eslint --ext ts --ext tsx src",
     "lint:fix": "yarn lint --fix",
-    "start": "node scripts/start.js",
-    "test": "TZ=UTC is-ci \"test:ci\" \"test:watch\"",
-    "test:ci": "CI=true tsc && node scripts/test.js --maxWorkers 4 --env=jest-environment-jsdom-sixteen --coverage --testTimeout 30000",
-    "test:coverage": "TZ=UTC node scripts/test.js --coverage --watchAll=false --env=jest-environment-jsdom-sixteen --testTimeout 15000",
-    "test:watch": "node scripts/test.js --env=jest-environment-jsdom-sixteen --testTimeout 15000"
+    "start": "vite",
+    "test": "is-ci \"test:ci\" \"test:watch\"",
+    "test:ci": "CI=true tsc && jest --maxWorkers 4 --coverage --testTimeout 30000",
+    "test:coverage": "TZ=UTC jest --coverage",
+    "test:watch": "TZ=UTC jest --watchAll"
   },
   "lint-staged": {
     "*.+(css|graphql|json|less|md|mdx|sass|scss|yaml|yml)": [
@@ -145,6 +145,7 @@
     "typescript": "3.9.10",
     "url-loader": "2.3.0",
     "uuidv4": "^4.0.0",
+    "vite": "^3.0.9",
     "webpack": "4.41.5",
     "webpack-dev-server": "3.10.2",
     "webpack-manifest-plugin": "2.2.0",

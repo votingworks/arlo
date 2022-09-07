@@ -25,9 +25,7 @@ export const queryClient = new QueryClient({
     queries: {
       retry: (failureCount, error: ApiError) =>
         // Turn off query retries in test so we can mock effectively
-        ['development', 'production'].includes(
-          (window as any)._arlo_flask_env // eslint-disable-line @typescript-eslint/no-explicit-any
-        ) &&
+        process.env.NODE_ENV !== 'test' &&
         error.statusCode >= 500 && // Only retry server errors
         failureCount < 3,
       onError: (error: ApiError) => {
@@ -122,7 +120,7 @@ const App: React.FC = () => {
             </Switch>
           </Main>
         </AuthDataProvider>
-        {(window as any)._arlo_flask_env === 'development' && ( // eslint-disable-line @typescript-eslint/no-explicit-any
+        {process.env.NODE_ENV === 'development' && (
           <ReactQueryDevtools initialIsOpen={false} />
         )}
       </QueryClientProvider>
