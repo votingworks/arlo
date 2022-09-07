@@ -931,6 +931,38 @@ class ActivityLogRecord(Base):
     posted_to_slack_at = Column(UTCDateTime)
 
 
+class BatchInventoryData(BaseModel):
+    jurisdiction_id = Column(
+        String(200),
+        ForeignKey("jurisdiction.id", ondelete="cascade"),
+        nullable=False,
+        primary_key=True,
+    )
+
+    cvr_file_id = Column(String(200), ForeignKey("file.id", ondelete="set null"))
+    cvr_file = relationship(
+        "File",
+        foreign_keys=[cvr_file_id],
+        single_parent=True,
+        cascade="all, delete-orphan",
+    )
+    tabulator_status_file_id = Column(
+        String(200), ForeignKey("file.id", ondelete="set null")
+    )
+    tabulator_status_file = relationship(
+        "File",
+        foreign_keys=[tabulator_status_file_id],
+        single_parent=True,
+        cascade="all, delete-orphan",
+    )
+
+    election_results = Column(JSON)
+    tabulator_id_to_name = Column(JSON)
+
+    sign_off_user_id = Column(String(200), ForeignKey("user.id", ondelete="set null"))
+    signed_off_at = Column(UTCDateTime)
+
+
 class ProcessingStatus(str, enum.Enum):
     READY_TO_PROCESS = "READY_TO_PROCESS"
     PROCESSING = "PROCESSING"

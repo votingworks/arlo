@@ -74,6 +74,7 @@ def serialize_election(election):
         "auditName": election.audit_name,
         "electionName": election.election_name,
         "state": election.state,
+        "organizationId": election.organization_id,
     }
 
 

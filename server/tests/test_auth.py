@@ -649,6 +649,7 @@ def test_auth_me_jurisdiction_admin(
                         "auditName": election.audit_name,
                         "electionName": None,
                         "state": None,
+                        "organizationId": election.organization_id,
                     },
                     "numBallots": None,
                 }

@@ -18,6 +18,7 @@ import {
 } from '../testUtilities'
 import { queryClient } from '../../App'
 import { IFileInfo, FileProcessingStatus } from '../useCSV'
+import { fileInfoMocks } from '../_mocks'
 
 jest.mock('axios')
 
@@ -61,48 +62,6 @@ const render = (element: React.ReactElement) =>
   testingLibraryRender(
     <QueryClientProvider client={queryClient}>{element}</QueryClientProvider>
   )
-
-const fileInfoMocks = mocksOfType<IFileInfo>()({
-  empty: { file: null, processing: null },
-  processing: {
-    file: {
-      name: 'test-file.csv',
-      uploadedAt: '2020-06-08T21:39:05.765+00:00',
-    },
-    processing: {
-      status: FileProcessingStatus.PROCESSING,
-      startedAt: '2020-06-08T21:39:05.765+00:00',
-      completedAt: null,
-      error: null,
-      workProgress: 1,
-      workTotal: 2,
-    },
-  },
-  processed: {
-    file: {
-      name: 'test-file.csv',
-      uploadedAt: '2020-06-08T21:39:05.765+00:00',
-    },
-    processing: {
-      status: FileProcessingStatus.PROCESSED,
-      startedAt: '2020-06-08T21:39:05.765+00:00',
-      completedAt: '2020-06-08T21:40:05.765+00:00',
-      error: null,
-    },
-  },
-  errored: {
-    file: {
-      name: 'test-file.csv',
-      uploadedAt: '2020-06-08T21:39:05.765+00:00',
-    },
-    processing: {
-      status: FileProcessingStatus.ERRORED,
-      startedAt: '2020-06-08T21:39:05.765+00:00',
-      completedAt: '2020-06-08T21:40:05.765+00:00',
-      error: 'something went wrong',
-    },
-  },
-})
 
 const testFile = new File(['test content'], 'test-file.csv', {
   type: 'text/csv',

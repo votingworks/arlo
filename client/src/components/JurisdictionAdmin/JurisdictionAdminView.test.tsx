@@ -3,7 +3,10 @@ import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ToastContainer } from 'react-toastify'
 import { useParams } from 'react-router-dom'
-import AuthDataProvider, { useAuthDataContext } from '../UserContext'
+import AuthDataProvider, {
+  useAuthDataContext,
+  IJurisdictionAdmin,
+} from '../UserContext'
 import JurisdictionAdminView from './JurisdictionAdminView'
 import { renderWithRouter, withMockFetch, serverError } from '../testUtilities'
 import {
@@ -559,6 +562,44 @@ describe('JA setup', () => {
       renderView()
       await screen.findByRole('heading', { name: 'Audit Source Data' })
       screen.getByText('The audit has not started.')
+    })
+  })
+
+  it('shows a link to batch inventory for enabled organizations', async () => {
+    const expectedCalls = [
+      {
+        ...jaApiCalls.getUser,
+        response: {
+          user: {
+            ...jaApiCalls.getUser.response.user,
+            jurisdictions: [
+              {
+                ...jaApiCalls.getUser.response.user.jurisdictions[0],
+                election: {
+                  ...jaApiCalls.getUser.response.user.jurisdictions[0].election,
+                  organizationId: 'a67791e3-90a0-4d4e-a5e7-929f82bf4ce6', // VotingWorks Internal Sandbox
+                },
+              },
+            ],
+          },
+        },
+      },
+      jaApiCalls.getSettings(auditSettings.batchComparisonAll),
+      jaApiCalls.getRounds([]),
+      jaApiCalls.getBallotManifestFile(manifestMocks.empty),
+      jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderView()
+      await screen.findByText('Audit Source Data')
+      screen.getByRole('heading', { name: 'Batch Inventory' })
+      const button = screen.getByRole('button', {
+        name: 'Go to Batch Inventory',
+      })
+      expect(button).toHaveAttribute(
+        'href',
+        '/election/1/jurisdiction/jurisdiction-id-1/batch-inventory'
+      )
     })
   })
 })

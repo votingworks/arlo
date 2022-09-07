@@ -20,6 +20,7 @@ import mapTopology from '../../public/us-states-counties.json'
 import { contestMocks } from './AuditAdmin/Setup/Contests/_mocks'
 import { IContest } from '../types'
 import { INewAudit } from './HomeScreen'
+import { mocksOfType } from './testUtilities'
 
 const jurisdictionFormData: FormData = new FormData()
 jurisdictionFormData.append(
@@ -102,6 +103,7 @@ export const jaApiCalls = {
               auditName: 'audit one',
               electionName: 'election one',
               state: 'AL',
+              organizationId: 'org-id',
             },
             numBallots: 100,
           },
@@ -113,6 +115,7 @@ export const jaApiCalls = {
               auditName: 'audit two',
               electionName: 'election two',
               state: 'AL',
+              organizationId: 'org-id',
             },
             numBallots: 200,
           },
@@ -124,6 +127,7 @@ export const jaApiCalls = {
               auditName: 'audit one',
               electionName: 'election one',
               state: 'AL',
+              organizationId: 'org-id',
             },
             numBallots: 300,
           },
@@ -149,6 +153,7 @@ export const jaApiCalls = {
               auditName: 'audit one',
               electionName: 'election one',
               state: 'AL',
+              organizationId: 'org-id',
             },
           },
         ],
@@ -546,3 +551,45 @@ export const auditBoardApiCalls = {
     },
   },
 }
+
+export const fileInfoMocks = mocksOfType<IFileInfo>()({
+  empty: { file: null, processing: null },
+  processing: {
+    file: {
+      name: 'test-file.csv',
+      uploadedAt: '2020-06-08T21:39:05.765+00:00',
+    },
+    processing: {
+      status: FileProcessingStatus.PROCESSING,
+      startedAt: '2020-06-08T21:39:05.765+00:00',
+      completedAt: null,
+      error: null,
+      workProgress: 1,
+      workTotal: 2,
+    },
+  },
+  processed: {
+    file: {
+      name: 'test-file.csv',
+      uploadedAt: '2020-06-08T21:39:05.765+00:00',
+    },
+    processing: {
+      status: FileProcessingStatus.PROCESSED,
+      startedAt: '2020-06-08T21:39:05.765+00:00',
+      completedAt: '2020-06-08T21:40:05.765+00:00',
+      error: null,
+    },
+  },
+  errored: {
+    file: {
+      name: 'test-file.csv',
+      uploadedAt: '2020-06-08T21:39:05.765+00:00',
+    },
+    processing: {
+      status: FileProcessingStatus.ERRORED,
+      startedAt: '2020-06-08T21:39:05.765+00:00',
+      completedAt: '2020-06-08T21:40:05.765+00:00',
+      error: 'something went wrong',
+    },
+  },
+})

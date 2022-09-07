@@ -19,6 +19,7 @@ import ActivityLog from './components/AuditAdmin/ActivityLog'
 import AuditBoardView from './components/AuditBoard/AuditBoardView'
 import { ApiError } from './utils/api'
 import PublicPages from './components/PublicPages/PublicPages'
+import BatchInventory from './components/JurisdictionAdmin/BatchInventory'
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -95,6 +96,11 @@ const App: React.FC = () => {
                 userType="audit_board"
                 path="/election/:electionId/audit-board/:auditBoardId"
                 component={AuditBoardView}
+              />
+              <PrivateRoute
+                userType="jurisdiction_admin"
+                path="/election/:electionId/jurisdiction/:jurisdictionId/batch-inventory"
+                component={BatchInventory}
               />
               <PrivateRoute
                 userType="jurisdiction_admin"
