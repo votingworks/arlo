@@ -23,7 +23,7 @@ export interface IOrganization {
 export interface IJurisdiction {
   id: string
   name: string
-  election: IElection
+  election: IElection & { organizationId: string }
   numBallots: number | null
 }
 

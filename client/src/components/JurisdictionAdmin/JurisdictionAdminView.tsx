@@ -1,6 +1,7 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
+import { H4 } from '@blueprintjs/core'
 import { Wrapper, Inner } from '../Atoms/Wrapper'
 import useRoundsJurisdictionAdmin from './useRoundsJurisdictionAdmin'
 import { JurisdictionAdminStatusBox } from '../Atoms/StatusBox'
@@ -16,6 +17,8 @@ import H2Title from '../Atoms/H2Title'
 import CSVFile from '../Atoms/CSVForm'
 import { isAuditStarted } from '../AuditAdmin/useRoundsAuditAdmin'
 import RoundManagement from './RoundManagement'
+import LinkButton from '../Atoms/LinkButton'
+import { useBatchInventoryFeatureFlag } from '../useFeatureFlag'
 
 const VerticalInner = styled(Inner)`
   flex-direction: column;
@@ -26,6 +29,7 @@ const JurisdictionAdminView: React.FC = () => {
     electionId: string
     jurisdictionId: string
   }>()
+  const isBatchInventoryEnabled = useBatchInventoryFeatureFlag(jurisdictionId)
 
   const auditSettings = useAuditSettingsJurisdictionAdmin(
     electionId,
@@ -84,6 +88,23 @@ const JurisdictionAdminView: React.FC = () => {
         />
         <VerticalInner>
           <H2Title>Audit Source Data</H2Title>
+          {isBatchComparison && isBatchInventoryEnabled && (
+            <>
+              <H4>Batch Inventory</H4>
+              <p>
+                Create your Ballot Manifest and Candidate Totals by Batch files
+                using the batch inventory worksheet.
+              </p>
+              <p>
+                <LinkButton
+                  to={`/election/${electionId}/jurisdiction/${jurisdictionId}/batch-inventory`}
+                  intent="primary"
+                >
+                  Go to Batch Inventory
+                </LinkButton>
+              </p>
+            </>
+          )}
           <CSVFile
             csvFile={ballotManifest}
             uploadCSVFiles={uploadBallotManifest}

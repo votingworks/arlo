@@ -20,7 +20,7 @@ const buttonAndTagWidth = '115px' // Wide enough for the longest text
 
 export interface IFileUploadProps extends IFileUpload {
   title: string
-  acceptFileTypes: ('csv' | 'zip')[]
+  acceptFileTypes: ('csv' | 'zip' | 'xml')[]
   allowMultipleFiles?: boolean
   uploadDisabled?: boolean
   deleteDisabled?: boolean

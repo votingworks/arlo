@@ -4,7 +4,9 @@ import { Tag, ProgressBar, ITagProps } from '@blueprintjs/core'
 
 // Not sure why we need to disable this rule
 /* stylelint-disable value-keyword-case */
-const StyledTag = styled(Tag).attrs({ minimal: true })<{
+const StyledTag = styled(({ hasProgressBar: _, ...props }) => (
+  <Tag {...props} minimal />
+))<{
   hasProgressBar: boolean
 }>`
   position: relative;
