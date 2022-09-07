@@ -1,4 +1,4 @@
-name: Adds all issues to the VxSuite project
+name: Adds all issues to the Arlo project
 
 on:
   issues:
