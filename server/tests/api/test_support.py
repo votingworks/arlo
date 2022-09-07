@@ -472,6 +472,24 @@ def test_support_log_in_as_jurisdiction_admin(
         assert session["_last_request_at"] != original_last_request_at
 
 
+def test_support_log_in_to_audit_as_audit_admin(client: FlaskClient, election_id: str):
+    set_support_user(client, SUPPORT_EMAIL)
+
+    with client.session_transaction() as session:  # type: ignore
+        original_created_at = session["_created_at"]
+        original_last_request_at = session["_last_request_at"]
+
+    rv = client.get(f"/api/support/elections/{election_id}/login")
+    assert rv.status_code == 302
+    assert urlparse(rv.location).path == f"/election/{election_id}"
+
+    with client.session_transaction() as session:  # type: ignore
+        assert session["_user"]["type"] == UserType.AUDIT_ADMIN
+        assert session["_user"]["key"] == DEFAULT_AA_EMAIL
+        assert session["_created_at"] == original_created_at
+        assert session["_last_request_at"] != original_last_request_at
+
+
 def test_support_clear_audit_boards(
     client: FlaskClient,
     contest_ids: List[str],

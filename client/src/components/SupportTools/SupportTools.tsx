@@ -393,28 +393,47 @@ const Audit = ({ electionId }: { electionId: string }) => {
 
   if (!election.isSuccess) return null
 
-  const { auditName, auditType, jurisdictions, rounds } = election.data
+  const { id, auditName, auditType, jurisdictions, rounds } = election.data
 
   return (
-    <Column>
+    <div>
       <H2>{auditName}</H2>
-      <Tag large style={{ marginBottom: '15px' }}>
-        {prettyAuditType(auditType)}
-      </Tag>
-      <RoundsTable electionId={electionId} rounds={rounds} />
-      <H3 style={{ marginTop: '10px' }}>Jurisdictions</H3>
-      <ButtonList>
-        {jurisdictions.map(jurisdiction => (
-          <LinkButton
-            key={jurisdiction.id}
-            to={`/support/jurisdictions/${jurisdiction.id}`}
-            intent={Intent.PRIMARY}
+      <Column>
+        <div
+          style={{
+            alignItems: 'center',
+            display: 'flex',
+            marginBottom: '10px',
+          }}
+        >
+          <Tag large style={{ marginRight: '10px' }}>
+            {prettyAuditType(auditType)}
+          </Tag>
+          <AnchorButton
+            href={`/api/support/elections/${id}/login`}
+            icon="log-in"
+            intent="primary"
           >
-            {jurisdiction.name}
-          </LinkButton>
-        ))}
-      </ButtonList>
-    </Column>
+            Log in as audit admin
+          </AnchorButton>
+        </div>
+        <div style={{ marginBottom: '10px' }}>
+          <RoundsTable electionId={electionId} rounds={rounds} />
+        </div>
+        <H3>Jurisdictions</H3>
+        <ButtonList>
+          {jurisdictions.map(jurisdiction => (
+            <LinkButton
+              key={jurisdiction.id}
+              to={`/support/jurisdictions/${jurisdiction.id}`}
+              intent={Intent.PRIMARY}
+            >
+              {jurisdiction.name}
+            </LinkButton>
+          ))}
+        </ButtonList>
+      </Column>
+    </div>
   )
 }
 

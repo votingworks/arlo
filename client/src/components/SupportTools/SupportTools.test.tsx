@@ -638,7 +638,7 @@ describe('Support Tools', () => {
     })
   })
 
-  it('audit screen shows a list of jurisdictions', async () => {
+  it('audit screen shows login button and list of jurisdictions', async () => {
     const expectedCalls = [
       supportApiCalls.getUser,
       apiCalls.getElection(mockElection),
@@ -648,11 +648,22 @@ describe('Support Tools', () => {
       const { history } = renderRoute('/support/audits/election-id-1')
 
       await screen.findByRole('heading', { name: 'Audit 1' })
+
+      const loginButton = screen.getByRole('button', {
+        name: /Log in as audit admin/,
+      })
+      expect(loginButton).toHaveAttribute(
+        'href',
+        '/api/support/elections/election-id-1/login'
+      )
+
       screen.getByText('Ballot Polling')
 
-      // List of jurisdictions
+      const jurisdictionButton = screen.getByRole('button', {
+        name: 'Jurisdiction 1',
+      })
       screen.getByRole('button', { name: 'Jurisdiction 2' })
-      userEvent.click(screen.getByRole('button', { name: 'Jurisdiction 1' }))
+      userEvent.click(jurisdictionButton)
 
       await screen.findByRole('heading', { name: 'Jurisdiction 1' })
       expect(history.location.pathname).toEqual(
