@@ -5,9 +5,11 @@ import string
 from datetime import datetime, timezone
 from typing import Optional
 from urllib.parse import urljoin, urlencode
-from flask import redirect as flask_redirect, jsonify, request, session, render_template
+from flask import jsonify, request, session, render_template
 from authlib.integrations.flask_client import OAuth, OAuthError
 from werkzeug.exceptions import BadRequest
+
+from server.util.redirect import redirect
 
 from . import auth
 from ..models import *  # pylint: disable=wildcard-import
@@ -25,7 +27,6 @@ from ..api.audit_boards import serialize_members
 from ..activity_log import JurisdictionAdminLogin, record_activity, ActivityBase
 from ..util.isoformat import isoformat
 from ..config import (
-    HTTP_ORIGIN,
     SMTP_HOST,
     SMTP_PASSWORD,
     SMTP_PORT,
@@ -38,13 +39,6 @@ from ..config import (
     AUDITADMIN_AUTH0_CLIENT_SECRET,
 )
 from .. import config
-
-# Use the app's configured origin for redirects since the Flask dev server
-# origin (localhost:3001) is different from the frontend dev server origin
-# (localhost:3000), which can cause CORS issues in Cypress tests.
-def redirect(path: str):
-    return flask_redirect(urljoin(HTTP_ORIGIN, path))
-
 
 SUPPORT_OAUTH_CALLBACK_URL = "/auth/support/callback"
 AUDITADMIN_OAUTH_CALLBACK_URL = "/auth/auditadmin/callback"
