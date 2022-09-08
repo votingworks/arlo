@@ -642,6 +642,56 @@ def test_ab_audit_ballot_overvote(
     assert not interpretation.is_overvote
 
 
+def test_ab_audit_ballot_has_invalid_write_in(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    contest_ids: List[str],
+    round_1_id: str,
+    audit_board_round_1_ids: List[str],
+):
+    set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_1_ids[0])
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots"
+    )
+    ballots = json.loads(rv.data)["ballots"]
+    ballot_id = ballots[0]["id"]
+    choice_id = ContestChoice.query.filter_by(contest_id=contest_ids[0]).first().id
+
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots/{ballot_id}",
+        {
+            "status": "AUDITED",
+            "interpretations": [
+                {
+                    "contestId": contest_ids[0],
+                    "interpretation": "VOTE",
+                    "choiceIds": [choice_id],
+                    "comment": None,
+                    "hasInvalidWriteIn": True,
+                },
+                {
+                    "contestId": contest_ids[1],
+                    "interpretation": "BLANK",
+                    "choiceIds": [],
+                    "comment": None,
+                    "hasInvalidWriteIn": True,
+                },
+            ],
+        },
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots"
+    )
+    ballots = json.loads(rv.data)["ballots"]
+    interpretations = ballots[0]["interpretations"]
+    assert interpretations[0]["hasInvalidWriteIn"]
+    assert interpretations[1]["hasInvalidWriteIn"]
+
+
 def test_ab_audit_ballot_wrong_audit_board(
     client: FlaskClient,
     election_id: str,
@@ -955,6 +1005,28 @@ def test_ab_audit_ballot_invalid(
                 ],
             },
             f"Cannot include choiceIds with interpretation CONTEST_NOT_ON_BALLOT for contest {contest_ids[0]}",
+        ),
+        (
+            {
+                "status": "AUDITED",
+                "interpretations": [
+                    {
+                        "contestId": contest_ids[0],
+                        "interpretation": "VOTE",
+                        "choiceIds": [choice_id],
+                        "comment": "blah blah blah",
+                        "hasInvalidWriteIn": False,
+                    },
+                    {
+                        "contestId": contest_ids[1],
+                        "interpretation": "CONTEST_NOT_ON_BALLOT",
+                        "choiceIds": [],
+                        "comment": None,
+                        "hasInvalidWriteIn": True,
+                    },
+                ],
+            },
+            f"Cannot specify hasInvalidWriteIn=True with interpretation CONTEST_NOT_ON_BALLOT for contest {contest_ids[1]}",
         ),
         (
             {"status": "AUDITED", "interpretations": [],},
