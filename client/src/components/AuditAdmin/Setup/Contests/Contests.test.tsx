@@ -559,8 +559,9 @@ describe('Audit Setup > Contests', () => {
           'Content-Type': 'application/json',
         },
       })
-      const submittedBody: IContestNumbered[] = JSON.parse(apiMock.mock
-        .calls[3][1]!.body as string)
+      const submittedBody: IContestNumbered[] = JSON.parse(
+        apiMock.mock.calls[3][1]!.body as string
+      )
       expect(submittedBody[0].jurisdictionIds).toMatchObject([
         'jurisdiction-id-2',
       ])

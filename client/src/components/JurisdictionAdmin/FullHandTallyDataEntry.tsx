@@ -312,7 +312,9 @@ const FullHandTallyDataEntry = ({ round }: IProps) => {
                     title={
                       addingBatch
                         ? 'Add Batch'
-                        : `Edit Batch: ${results[values.editingBatchIndex!].batchName}`
+                        : `Edit Batch: ${
+                            results[values.editingBatchIndex!].batchName
+                          }`
                     }
                     isOpen={values.editingBatchIndex !== null}
                     style={{ width: 'none' }}

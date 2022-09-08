@@ -18,9 +18,10 @@ const generateUrl = <Params extends MatchParameter<Params>>(
     /* istanbul ignore else */
     if (Object.prototype.hasOwnProperty.call(params, param)) {
       const value = params[param]
-      tempPath = tempPath.replace(`:${param}`, value as NonNullable<
-        typeof value
-      >)
+      tempPath = tempPath.replace(
+        `:${param}`,
+        value as NonNullable<typeof value>
+      )
     }
   }
 

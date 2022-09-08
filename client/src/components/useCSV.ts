@@ -58,12 +58,15 @@ const putCSVFiles = async (
   for (const f of files) formData.append(formKey, f, f.name)
   if (cvrFileType) formData.append('cvrFileType', cvrFileType)
   try {
-    await axios(`/api${url}`, addCSRFToken({
-      method: 'PUT',
-      data: formData,
-      onUploadProgress: progress =>
-        trackProgress(progress.loaded / progress.total),
-    }) as AxiosRequestConfig)
+    await axios(
+      `/api${url}`,
+      addCSRFToken({
+        method: 'PUT',
+        data: formData,
+        onUploadProgress: progress =>
+          trackProgress(progress.loaded / progress.total),
+      }) as AxiosRequestConfig
+    )
     return true
   } catch (error) {
     const { errors } = error.response.data

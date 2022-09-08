@@ -6,7 +6,6 @@ import { ToastContainer, toast } from 'react-toastify'
 import { QueryClient, QueryClientProvider, DefaultOptions } from 'react-query'
 import { ReactQueryDevtools } from 'react-query/devtools'
 import Header from './components/Header'
-import { Wrapper } from './components/Atoms/Wrapper'
 import HomeScreen from './components/HomeScreen'
 import 'react-toastify/dist/ReactToastify.css'
 import AuthDataProvider, {

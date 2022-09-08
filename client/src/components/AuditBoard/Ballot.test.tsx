@@ -81,9 +81,11 @@ describe('Ballot', () => {
       bubbles: true,
     })
 
-    const dialog = (await screen.findByRole('heading', {
-      name: /Confirm the Ballot Selections/,
-    })).closest('.bp3-dialog')! as HTMLElement
+    const dialog = (
+      await screen.findByRole('heading', {
+        name: /Confirm the Ballot Selections/,
+      })
+    ).closest('.bp3-dialog')! as HTMLElement
     within(dialog).getByText('Contest Name')
     within(dialog).getByText('Choice One')
     userEvent.click(
@@ -124,9 +126,11 @@ describe('Ballot', () => {
       })
       userEvent.click(screen.getByRole('button', { name: 'Submit Selections' }))
 
-      const dialog = (await screen.findByRole('heading', {
-        name: /Confirm the Ballot Selections/,
-      })).closest('.bp3-dialog')! as HTMLElement
+      const dialog = (
+        await screen.findByRole('heading', {
+          name: /Confirm the Ballot Selections/,
+        })
+      ).closest('.bp3-dialog')! as HTMLElement
       within(dialog).getByText(buttonLabel)
 
       await waitFor(() => {
@@ -162,9 +166,11 @@ describe('Ballot', () => {
       bubbles: true,
     })
 
-    const dialog = (await screen.findByRole('heading', {
-      name: /Confirm the Ballot Selections/,
-    })).closest('.bp3-dialog')! as HTMLElement
+    const dialog = (
+      await screen.findByRole('heading', {
+        name: /Confirm the Ballot Selections/,
+      })
+    ).closest('.bp3-dialog')! as HTMLElement
     within(dialog).getByText('Contest Name')
     within(dialog).getByText('Comment: a test comment')
     userEvent.click(
@@ -181,9 +187,11 @@ describe('Ballot', () => {
       bubbles: true,
     })
 
-    const dialog2 = (await screen.findByRole('heading', {
-      name: /Confirm the Ballot Selections/,
-    })).closest('.bp3-dialog')! as HTMLElement
+    const dialog2 = (
+      await screen.findByRole('heading', {
+        name: /Confirm the Ballot Selections/,
+      })
+    ).closest('.bp3-dialog')! as HTMLElement
 
     expect(within(dialog2).queryByText('COMMENT:')).toBeFalsy()
   })
@@ -215,9 +223,11 @@ describe('Ballot', () => {
     })
     fireEvent.click(reviewButton, { bubbles: true })
 
-    const dialog = (await screen.findByRole('heading', {
-      name: /Confirm the Ballot Selections/,
-    })).closest('.bp3-dialog')! as HTMLElement
+    const dialog = (
+      await screen.findByRole('heading', {
+        name: /Confirm the Ballot Selections/,
+      })
+    ).closest('.bp3-dialog')! as HTMLElement
     within(dialog).getByText('Contest Name')
     within(dialog).getByText('Choice One')
     userEvent.click(
@@ -261,9 +271,11 @@ describe('Ballot', () => {
       name: 'Submit Selections',
     })
     fireEvent.click(reviewButton, { bubbles: true })
-    const dialog = (await screen.findByRole('heading', {
-      name: /Confirm the Ballot Selections/,
-    })).closest('.bp3-dialog')! as HTMLElement
+    const dialog = (
+      await screen.findByRole('heading', {
+        name: /Confirm the Ballot Selections/,
+      })
+    ).closest('.bp3-dialog')! as HTMLElement
     within(dialog).getByText('Contest Name')
     within(dialog).getByText('Choice One')
     const confirmButton = within(dialog).getByRole('button', {

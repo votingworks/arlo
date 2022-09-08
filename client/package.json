@@ -173,7 +173,7 @@
     "maildev": "^1.1.0",
     "pdf-parse": "^1.1.1",
     "pdf-visual-diff": "^0.5.0",
-    "prettier": "^1.17.1",
+    "prettier": "^1.19.1",
     "react-test-renderer": "^16.13.1",
     "sort-package-json": "^1.40.0",
     "stylelint": "^10.0.1",

@@ -814,9 +814,11 @@ describe('Audit Setup > Review & Launch', () => {
       )
 
       // Should show a form
-      let dialog = (await screen.findByRole('heading', {
-        name: 'Standardize Contest Names',
-      })).closest('div.bp3-dialog') as HTMLElement
+      let dialog = (
+        await screen.findByRole('heading', {
+          name: 'Standardize Contest Names',
+        })
+      ).closest('div.bp3-dialog') as HTMLElement
       expect(
         within(dialog)
           .getAllByRole('columnheader')
@@ -846,9 +848,11 @@ describe('Audit Setup > Review & Launch', () => {
       userEvent.click(
         screen.getByRole('button', { name: 'Standardize Contest Names' })
       )
-      dialog = (await screen.findByRole('heading', {
-        name: 'Standardize Contest Names',
-      })).closest('div.bp3-dialog') as HTMLElement
+      dialog = (
+        await screen.findByRole('heading', {
+          name: 'Standardize Contest Names',
+        })
+      ).closest('div.bp3-dialog') as HTMLElement
       rows = within(dialog).getAllByRole('row')
       expect(within(rows[1]).getByRole('combobox')).toHaveValue('Contest One')
 
@@ -872,9 +876,11 @@ describe('Audit Setup > Review & Launch', () => {
       userEvent.click(
         screen.getByRole('button', { name: 'Edit Standardized Contest Names' })
       )
-      dialog = (await screen.findByRole('heading', {
-        name: 'Standardize Contest Names',
-      })).closest('div.bp3-dialog') as HTMLElement
+      dialog = (
+        await screen.findByRole('heading', {
+          name: 'Standardize Contest Names',
+        })
+      ).closest('div.bp3-dialog') as HTMLElement
       userEvent.click(screen.getByRole('button', { name: 'Cancel' }))
       await waitFor(() => expect(dialog).not.toBeInTheDocument())
     })
@@ -902,9 +908,11 @@ describe('Audit Setup > Review & Launch', () => {
 
       // Select an option that requires a full hand tally
       userEvent.click(screen.getByLabelText(/90%/))
-      const warning = (await screen.findByText(
-        'The currently selected sample size for this contest requires a full hand tally.'
-      )).closest('.bp3-callout') as HTMLElement
+      const warning = (
+        await screen.findByText(
+          'The currently selected sample size for this contest requires a full hand tally.'
+        )
+      ).closest('.bp3-callout') as HTMLElement
       expect(warning).toHaveClass('bp3-intent-warning')
     })
   })
@@ -937,18 +945,20 @@ describe('Audit Setup > Review & Launch', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
-      const sampleSizeForm = (await screen.findByText(
-        /Choose the initial sample size/
-      )).closest('form')!
+      const sampleSizeForm = (
+        await screen.findByText(/Choose the initial sample size/)
+      ).closest('form')!
       const contest1Card = within(sampleSizeForm)
         .getByRole('heading', { name: 'Contest Name' })
         .closest('div')!
 
       // Select an option that requires a full hand tally
       userEvent.click(within(contest1Card).getByLabelText(/90%/))
-      const callout = (await within(contest1Card).findByText(
-        'The currently selected sample size for this contest requires a full hand tally.'
-      )).closest('.bp3-callout') as HTMLElement
+      const callout = (
+        await within(contest1Card).findByText(
+          'The currently selected sample size for this contest requires a full hand tally.'
+        )
+      ).closest('.bp3-callout') as HTMLElement
       within(callout).getByText(
         'Arlo supports running a full hand tally for audits with one target contest.' +
           ' Either remove this contest and audit it separately, or remove the other target contests.'
@@ -974,9 +984,11 @@ describe('Audit Setup > Review & Launch', () => {
       // Type a custom sample size that is a full hand tally
       userEvent.click(screen.getByLabelText(/Enter your own sample size/))
       userEvent.type(screen.getByRole('spinbutton'), '30')
-      const warning = (await screen.findByText(
-        'The currently selected sample size for this contest requires a full hand tally.'
-      )).closest('.bp3-callout') as HTMLElement
+      const warning = (
+        await screen.findByText(
+          'The currently selected sample size for this contest requires a full hand tally.'
+        )
+      ).closest('.bp3-callout') as HTMLElement
       expect(warning).toHaveClass('bp3-intent-warning')
 
       // Change to a smaller sample size
@@ -1011,9 +1023,11 @@ describe('Audit Setup > Review & Launch', () => {
       await screen.findByText(/Choose the initial sample size/)
       userEvent.click(screen.getByLabelText(/Enter your own sample size/))
       userEvent.type(screen.getByRole('spinbutton'), '30')
-      const warning = (await screen.findByText(
-        'The currently selected sample size for this contest requires a full hand tally.'
-      )).closest('.bp3-callout') as HTMLElement
+      const warning = (
+        await screen.findByText(
+          'The currently selected sample size for this contest requires a full hand tally.'
+        )
+      ).closest('.bp3-callout') as HTMLElement
       expect(warning).toHaveClass('bp3-intent-danger')
       within(warning).getByText(
         'To use Arlo for a full hand tally, recreate this audit using the ballot polling or batch comparison audit type.'
@@ -1036,9 +1050,11 @@ describe('Audit Setup > Review & Launch', () => {
       await screen.findByText(/Choose the initial sample size/)
       userEvent.click(screen.getByLabelText(/Enter your own sample size/))
       userEvent.type(screen.getByRole('spinbutton'), '20')
-      const warning = (await screen.findByText(
-        'The currently selected sample size for this contest requires a full hand tally.'
-      )).closest('.bp3-callout') as HTMLElement
+      const warning = (
+        await screen.findByText(
+          'The currently selected sample size for this contest requires a full hand tally.'
+        )
+      ).closest('.bp3-callout') as HTMLElement
       expect(warning).toHaveClass('bp3-intent-warning')
     })
   })

@@ -58,12 +58,15 @@ export const useUploadFiles = (key: string[], url: string) => {
 
   const putFiles = async (formData: FormData) => {
     try {
-      await axios(url, addCSRFToken({
-        method: 'PUT',
-        data: formData,
-        onUploadProgress: progressEvent =>
-          setProgress(progressEvent.loaded / progressEvent.total),
-      }) as AxiosRequestConfig)
+      await axios(
+        url,
+        addCSRFToken({
+          method: 'PUT',
+          data: formData,
+          onUploadProgress: progressEvent =>
+            setProgress(progressEvent.loaded / progressEvent.total),
+        }) as AxiosRequestConfig
+      )
     } catch (error) {
       const { errors } = error.response.data
       const message =
