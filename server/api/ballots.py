@@ -352,6 +352,14 @@ def validate_interpretation(interpretation: JSONDict):
                 f"Cannot include choiceIds with interpretation {interpretation['interpretation']} for contest {interpretation['contestId']}"
             )
 
+    if (
+        interpretation["interpretation"] == Interpretation.CONTEST_NOT_ON_BALLOT
+        and interpretation["hasInvalidWriteIn"]
+    ):
+        raise BadRequest(
+            f"Cannot specify hasInvalidWriteIn=True with interpretation {Interpretation.CONTEST_NOT_ON_BALLOT} for contest {interpretation['contestId']}"
+        )
+
 
 def validate_audit_ballot(ballot_audit: JSONDict, jurisdiction: Jurisdiction):
     validate(ballot_audit, AUDIT_BALLOT_SCHEMA)
