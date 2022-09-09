@@ -1,7 +1,6 @@
-import React from 'react'
-import { Formik, FormikProps, Field } from 'formik'
+import React, { useState } from 'react'
 import styled from 'styled-components'
-import { Button, Colors, H3, H4 } from '@blueprintjs/core'
+import { Button, Colors, H3, H4, TextArea } from '@blueprintjs/core'
 import {
   BallotRow,
   ContestCard,
@@ -15,7 +14,6 @@ import {
 import FormButton from '../Atoms/Form/FormButton'
 import { IBallotInterpretation, Interpretation, IContest } from '../../types'
 import { IBallot } from '../JurisdictionAdmin/useBallots'
-import FormField from '../Atoms/Form/FormField'
 import BlockCheckbox from './BlockCheckbox'
 
 const BallotMainRow = styled.div`
@@ -45,8 +43,8 @@ const NotFoundButton = styled(Button)`
   }
 `
 
-const NoteField = styled(Field)`
-  textarea {
+const NoteField = styled(TextArea)`
+  &.bp3-input {
     height: 100px;
   }
 `
@@ -84,6 +82,8 @@ interface IProps {
   confirmSelections: (interpretations: IBallotInterpretation[]) => void
   confirmBallotNotFound: () => void
   previousBallot: () => void
+  // eslint-disable-next-line react/no-unused-prop-types
+  key: string // Require a key (ballot ID) to force a state reset whenever a new ballot is toggled
 }
 
 const BallotAudit: React.FC<IProps> = ({
@@ -93,113 +93,101 @@ const BallotAudit: React.FC<IProps> = ({
   confirmBallotNotFound,
   previousBallot,
 }: IProps) => {
-  const interpretations = contests.map(
+  const initialInterpretations = contests.map(
     contest =>
       ballot.interpretations.find(i => i.contestId === contest.id) ||
       constructEmptyInterpretation(contest)
   )
+  const [interpretations, setInterpretations] = useState(initialInterpretations)
+  const onSubmit = () => confirmSelections(interpretations)
+  const resetForm = () => setInterpretations(initialInterpretations)
 
   return (
-    <Formik
-      initialValues={{ interpretations }}
-      enableReinitialize
-      onSubmit={values => {
-        confirmSelections(values.interpretations)
-      }}
-    >
-      {({
-        handleSubmit,
-        values,
-        setFieldValue,
-        resetForm,
-      }: FormikProps<{ interpretations: IBallotInterpretation[] }>) => {
-        return (
-          <>
-            <BallotMainRow>
-              {ballot.batch.container && (
-                <div>
-                  <SubTitle>Container</SubTitle>
-                  <BallotRowValue>{ballot.batch.container}</BallotRowValue>
-                </div>
-              )}
-              {ballot.batch.tabulator && (
-                <div>
-                  <SubTitle>Tabulator</SubTitle>
-                  <BallotRowValue>{ballot.batch.tabulator}</BallotRowValue>
-                </div>
-              )}
-              <div>
-                <SubTitle>Batch</SubTitle>
-                <BallotRowValue>{ballot.batch.name}</BallotRowValue>
-              </div>
-              <div>
-                <SubTitle>Ballot Number</SubTitle>
-                <BallotRowValue>{ballot.position}</BallotRowValue>
-              </div>
-              {ballot.imprintedId !== undefined && (
-                <div>
-                  <SubTitle>Imprinted ID</SubTitle>
-                  <BallotRowValue>{ballot.imprintedId}</BallotRowValue>
-                </div>
-              )}
-              <div>
-                <NotFoundButton
-                  onClick={() => {
-                    resetForm()
-                    confirmBallotNotFound()
-                  }}
-                  intent="danger"
-                  large
-                >
-                  Ballot Not Found
-                </NotFoundButton>
-              </div>
-            </BallotMainRow>
-            <FlushDivider />
-            <BallotRow>
-              <div className="ballot-main">
-                <SubTitle>Ballot Contests</SubTitle>
-                <form>
-                  {contests.map((contest, i) => (
-                    <BallotAuditContest
-                      key={contest.id}
-                      contest={contest}
-                      interpretation={values.interpretations[i]}
-                      setInterpretation={newInterpretation =>
-                        setFieldValue(
-                          `interpretations[${i}]`,
-                          newInterpretation
-                        )
-                      }
-                    />
-                  ))}
-                  <ProgressActions>
-                    <SubmitButton
-                      type="submit"
-                      onClick={handleSubmit}
-                      intent="success"
-                      large
-                      disabled={
-                        !(
-                          values.interpretations.filter(
-                            ({ interpretation }) => interpretation != null
-                          ).length > 0
-                        )
-                      }
-                    >
-                      Submit Selections
-                    </SubmitButton>
-                    <Button onClick={previousBallot} intent="none">
-                      Back
-                    </Button>
-                  </ProgressActions>
-                </form>
-              </div>
-            </BallotRow>
-          </>
-        )
-      }}
-    </Formik>
+    <>
+      <BallotMainRow>
+        {ballot.batch.container && (
+          <div>
+            <SubTitle>Container</SubTitle>
+            <BallotRowValue>{ballot.batch.container}</BallotRowValue>
+          </div>
+        )}
+        {ballot.batch.tabulator && (
+          <div>
+            <SubTitle>Tabulator</SubTitle>
+            <BallotRowValue>{ballot.batch.tabulator}</BallotRowValue>
+          </div>
+        )}
+        <div>
+          <SubTitle>Batch</SubTitle>
+          <BallotRowValue>{ballot.batch.name}</BallotRowValue>
+        </div>
+        <div>
+          <SubTitle>Ballot Number</SubTitle>
+          <BallotRowValue>{ballot.position}</BallotRowValue>
+        </div>
+        {ballot.imprintedId !== undefined && (
+          <div>
+            <SubTitle>Imprinted ID</SubTitle>
+            <BallotRowValue>{ballot.imprintedId}</BallotRowValue>
+          </div>
+        )}
+        <div>
+          <NotFoundButton
+            onClick={() => {
+              resetForm()
+              confirmBallotNotFound()
+            }}
+            intent="danger"
+            large
+          >
+            Ballot Not Found
+          </NotFoundButton>
+        </div>
+      </BallotMainRow>
+      <FlushDivider />
+      <BallotRow>
+        <div className="ballot-main">
+          <SubTitle>Ballot Contests</SubTitle>
+          <form>
+            {contests.map((contest, i) => (
+              <BallotAuditContest
+                key={contest.id}
+                contest={contest}
+                interpretation={interpretations[i]}
+                setInterpretation={newInterpretation => {
+                  const newInterpretations = [...interpretations]
+                  newInterpretations[i] = newInterpretation
+                  setInterpretations(newInterpretations)
+                }}
+              />
+            ))}
+            <ProgressActions>
+              <SubmitButton
+                type="submit"
+                onClick={e => {
+                  e.preventDefault()
+                  onSubmit()
+                }}
+                intent="success"
+                large
+                disabled={
+                  !(
+                    interpretations.filter(
+                      ({ interpretation }) => interpretation != null
+                    ).length > 0
+                  )
+                }
+              >
+                Submit Selections
+              </SubmitButton>
+              <Button onClick={previousBallot} intent="none">
+                Back
+              </Button>
+            </ProgressActions>
+          </form>
+        </div>
+      </BallotRow>
+    </>
   )
 }
 
@@ -308,11 +296,9 @@ const BallotAuditContest = ({
           />
           <NoteField
             name={`comment-${contest.name}`}
-            type="textarea"
-            component={FormField}
             value={interpretation.comment || ''}
             placeholder="Add Note"
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
               setInterpretation({
                 ...interpretation,
                 comment: e.currentTarget.value,

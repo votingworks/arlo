@@ -235,6 +235,7 @@ const Ballot: React.FC<IProps> = ({
                 confirmSelections={confirmSelections}
                 confirmBallotNotFound={confirmBallotNotFound}
                 previousBallot={previousBallot}
+                key={ballot.id}
               />
               <Confirm {...confirmProps} />
             </BallotWrapper>
