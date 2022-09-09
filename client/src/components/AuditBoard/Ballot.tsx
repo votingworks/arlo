@@ -4,13 +4,16 @@ import styled from 'styled-components'
 import { Redirect } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import LinkButton from '../Atoms/LinkButton'
-import BallotAudit, { INVALID_WRITE_IN } from './BallotAudit'
+import BallotAudit from './BallotAudit'
+import {
+  ballotInterpretationFromFormRepresentation,
+  IBallotInterpretationFormRepresentation,
+} from './ballotInterpretation'
 import {
   IBallotInterpretation,
   IContest as IContestApi,
   BallotStatus,
   IContest,
-  Interpretation,
 } from '../../types'
 import { FlushDivider } from './Atoms'
 import { Inner } from '../Atoms/Wrapper'
@@ -103,6 +106,47 @@ interface IProps {
   ) => void
 }
 
+interface IRenderedInterpretationProps {
+  interpretation: IBallotInterpretationFormRepresentation
+  contest: IContest
+}
+
+const RenderedInterpretation: React.FC<IRenderedInterpretationProps> = ({
+  interpretation,
+  contest,
+}) => {
+  const {
+    choiceIds,
+    isBlankVoteChecked,
+    isContestNotOnBallotChecked,
+    isInvalidWriteInChecked,
+  } = interpretation
+
+  if (choiceIds.length > 0) {
+    const choiceNames = contest.choices
+      .filter(choice => choiceIds.includes(choice.id))
+      .map(choice => choice.name)
+    return (
+      <>
+        {choiceNames.map(choiceName => (
+          <h3 key={choiceName}>{choiceName}</h3>
+        ))}
+        {isInvalidWriteInChecked && <h3>Invalid Write-In</h3>}
+      </>
+    )
+  }
+  if (isBlankVoteChecked) {
+    return <h3>Blank Vote</h3>
+  }
+  if (isContestNotOnBallotChecked) {
+    return <h3>Not on Ballot</h3>
+  }
+  if (isInvalidWriteInChecked) {
+    return <h3>Invalid Write-In</h3>
+  }
+  return null
+}
+
 const Ballot: React.FC<IProps> = ({
   home,
   batchId,
@@ -124,37 +168,6 @@ const Ballot: React.FC<IProps> = ({
     return <Redirect to={home} />
   }
 
-  const renderInterpretation = (
-    { interpretation, choiceIds, hasInvalidWriteIn }: IBallotInterpretation,
-    contest: IContest
-  ) => {
-    if (!interpretation) return <div />
-    switch (interpretation) {
-      case Interpretation.VOTE: {
-        const choices = contest.choices.map(choice =>
-          choiceIds.includes(choice.id) ? (
-            <h3 key={choice.id}>{choice.name}</h3>
-          ) : null
-        )
-        if (hasInvalidWriteIn) {
-          choices.push(<h3 key={INVALID_WRITE_IN}>Invalid Write-In</h3>)
-        }
-        return choices
-      }
-      case Interpretation.BLANK:
-        return hasInvalidWriteIn ? (
-          <h3>Invalid Write-In</h3>
-        ) : (
-          <h3>Blank Vote</h3>
-        )
-      case Interpretation.CONTEST_NOT_ON_BALLOT:
-        return <h3>Not on Ballot</h3>
-      // case Interpretation.CANT_AGREE: (we do not support this case now)
-      default:
-        return null
-    }
-  }
-
   const confirmationModalTitle = (
     <ConfirmationModalTitle>
       Confirm the Ballot Selections
@@ -166,7 +179,9 @@ const Ballot: React.FC<IProps> = ({
     </ConfirmationModalTitle>
   )
 
-  const confirmSelections = (newInterpretations: IBallotInterpretation[]) => {
+  const confirmSelections = (
+    newInterpretations: IBallotInterpretationFormRepresentation[]
+  ) => {
     confirm({
       title: confirmationModalTitle,
       description: (
@@ -174,7 +189,10 @@ const Ballot: React.FC<IProps> = ({
           {contests.map((contest, i) => (
             <div key={contest.id}>
               <p>{contest.name}</p>
-              {renderInterpretation(newInterpretations[i], contest)}
+              <RenderedInterpretation
+                interpretation={newInterpretations[i]}
+                contest={contest}
+              />
               <p>
                 {newInterpretations[i].comment &&
                   `Comment: ${newInterpretations[i].comment}`}
@@ -187,9 +205,9 @@ const Ballot: React.FC<IProps> = ({
         await submitBallot(
           ballot.id,
           BallotStatus.AUDITED,
-          newInterpretations.filter(
-            ({ interpretation }) => interpretation !== null
-          )
+          newInterpretations
+            .map(ballotInterpretationFromFormRepresentation)
+            .filter(({ interpretation }) => interpretation !== null)
         )
         toast.success('Success! Now showing the next ballot to audit.')
         nextBallot()

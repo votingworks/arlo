@@ -12,9 +12,14 @@ import {
   FlushDivider,
 } from './Atoms'
 import FormButton from '../Atoms/Form/FormButton'
-import { IBallotInterpretation, Interpretation, IContest } from '../../types'
+import { Interpretation, IContest } from '../../types'
 import { IBallot } from '../JurisdictionAdmin/useBallots'
 import BlockCheckbox from './BlockCheckbox'
+import {
+  ballotInterpretationToFormRepresentation,
+  IBallotInterpretationFormRepresentation,
+  INVALID_WRITE_IN,
+} from './ballotInterpretation'
 
 const BallotMainRow = styled.div`
   display: flex;
@@ -66,20 +71,37 @@ const SubmitButton = styled(FormButton)`
 
 function constructEmptyInterpretation(
   contest: IContest
-): IBallotInterpretation {
+): IBallotInterpretationFormRepresentation {
   return {
-    contestId: contest.id,
-    interpretation: null,
     choiceIds: [],
     comment: null,
-    hasInvalidWriteIn: false,
+    contestId: contest.id,
+    isBlankVoteChecked: false,
+    isContestNotOnBallotChecked: false,
+    isInvalidWriteInChecked: false,
   }
+}
+
+function hasInterpretationBeenSpecified({
+  choiceIds,
+  isBlankVoteChecked,
+  isContestNotOnBallotChecked,
+  isInvalidWriteInChecked,
+}: IBallotInterpretationFormRepresentation): boolean {
+  return (
+    choiceIds.length > 0 ||
+    isBlankVoteChecked ||
+    isContestNotOnBallotChecked ||
+    isInvalidWriteInChecked
+  )
 }
 
 interface IProps {
   ballot: IBallot
   contests: IContest[]
-  confirmSelections: (interpretations: IBallotInterpretation[]) => void
+  confirmSelections: (
+    interpretations: IBallotInterpretationFormRepresentation[]
+  ) => void
   confirmBallotNotFound: () => void
   previousBallot: () => void
   // eslint-disable-next-line react/no-unused-prop-types
@@ -93,11 +115,14 @@ const BallotAudit: React.FC<IProps> = ({
   confirmBallotNotFound,
   previousBallot,
 }: IProps) => {
-  const initialInterpretations = contests.map(
-    contest =>
-      ballot.interpretations.find(i => i.contestId === contest.id) ||
-      constructEmptyInterpretation(contest)
-  )
+  const initialInterpretations = contests.map(contest => {
+    const ballotInterpretation = ballot.interpretations.find(
+      i => i.contestId === contest.id
+    )
+    return ballotInterpretation
+      ? ballotInterpretationToFormRepresentation(ballotInterpretation)
+      : constructEmptyInterpretation(contest)
+  })
   const [interpretations, setInterpretations] = useState(initialInterpretations)
   const onSubmit = () => confirmSelections(interpretations)
   const resetForm = () => setInterpretations(initialInterpretations)
@@ -170,13 +195,7 @@ const BallotAudit: React.FC<IProps> = ({
                 }}
                 intent="success"
                 large
-                disabled={
-                  !(
-                    interpretations.filter(
-                      ({ interpretation }) => interpretation != null
-                    ).length > 0
-                  )
-                }
+                disabled={!interpretations.some(hasInterpretationBeenSpecified)}
               >
                 Submit Selections
               </SubmitButton>
@@ -193,67 +212,83 @@ const BallotAudit: React.FC<IProps> = ({
 
 interface IBallotAuditContestProps {
   contest: IContest
-  interpretation: IBallotInterpretation
-  setInterpretation: (i: IBallotInterpretation) => void
+  interpretation: IBallotInterpretationFormRepresentation
+  setInterpretation: (i: IBallotInterpretationFormRepresentation) => void
 }
-
-export const INVALID_WRITE_IN = 'INVALID_WRITE_IN'
 
 const BallotAuditContest = ({
   contest,
   interpretation,
   setInterpretation,
 }: IBallotAuditContestProps) => {
+  const {
+    choiceIds,
+    comment,
+    isBlankVoteChecked,
+    isContestNotOnBallotChecked,
+    isInvalidWriteInChecked,
+  } = interpretation
+
   const onCheckboxClick = (value: string) => (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const { checked } = e.currentTarget
-    if (
-      value === Interpretation.BLANK ||
-      value === Interpretation.CANT_AGREE ||
-      value === Interpretation.CONTEST_NOT_ON_BALLOT
-    ) {
-      setInterpretation({
-        ...interpretation,
-        interpretation: checked ? value : null,
-        choiceIds: [],
-        hasInvalidWriteIn: false,
-      })
+    if (value === Interpretation.BLANK) {
+      if (checked) {
+        setInterpretation({
+          ...interpretation,
+          choiceIds: [],
+          isBlankVoteChecked: true,
+          isContestNotOnBallotChecked: false,
+          isInvalidWriteInChecked: false,
+        })
+      } else {
+        setInterpretation({
+          ...interpretation,
+          isBlankVoteChecked: false,
+        })
+      }
+    } else if (value === Interpretation.CONTEST_NOT_ON_BALLOT) {
+      if (checked) {
+        setInterpretation({
+          ...interpretation,
+          choiceIds: [],
+          isBlankVoteChecked: false,
+          isContestNotOnBallotChecked: true,
+          isInvalidWriteInChecked: false,
+        })
+      } else {
+        setInterpretation({
+          ...interpretation,
+          isContestNotOnBallotChecked: false,
+        })
+      }
     } else if (value === INVALID_WRITE_IN) {
-      let newInterpretation: Interpretation | null
-      if (interpretation.choiceIds.length > 0) {
-        newInterpretation = Interpretation.VOTE
-      } else if (checked) {
-        newInterpretation = Interpretation.BLANK
+      if (checked) {
+        setInterpretation({
+          ...interpretation,
+          isBlankVoteChecked: false,
+          isContestNotOnBallotChecked: false,
+          isInvalidWriteInChecked: true,
+        })
       } else {
-        newInterpretation = null
+        setInterpretation({
+          ...interpretation,
+          isInvalidWriteInChecked: false,
+        })
       }
-      setInterpretation({
-        ...interpretation,
-        interpretation: newInterpretation,
-        hasInvalidWriteIn: checked,
-      })
     } else {
-      const choiceIds = checked
-        ? [...interpretation.choiceIds, value]
-        : interpretation.choiceIds.filter(v => v !== value)
-      let newInterpretation: Interpretation | null
-      if (choiceIds.length > 0) {
-        newInterpretation = Interpretation.VOTE
-      } else if (interpretation.hasInvalidWriteIn) {
-        newInterpretation = Interpretation.BLANK
-      } else {
-        newInterpretation = null
-      }
+      const newChoiceIds = checked
+        ? [...choiceIds, value]
+        : choiceIds.filter(v => v !== value)
       setInterpretation({
         ...interpretation,
-        interpretation: newInterpretation,
-        choiceIds,
+        choiceIds: newChoiceIds,
+        isBlankVoteChecked: false,
+        isContestNotOnBallotChecked: false,
       })
     }
   }
-
-  const isVote = interpretation.interpretation === Interpretation.VOTE
 
   return (
     <ContestCard>
@@ -264,7 +299,7 @@ const BallotAuditContest = ({
             <BlockCheckbox
               key={c.id}
               handleChange={onCheckboxClick(c.id)}
-              checked={isVote && interpretation.choiceIds.includes(c.id)}
+              checked={choiceIds.includes(c.id)}
               label={c.name}
             />
           ))}
@@ -272,31 +307,25 @@ const BallotAuditContest = ({
         <RightCheckboxes>
           <BlockCheckbox
             handleChange={onCheckboxClick(Interpretation.BLANK)}
-            checked={
-              interpretation.interpretation === Interpretation.BLANK &&
-              !interpretation.hasInvalidWriteIn
-            }
+            checked={isBlankVoteChecked}
             label="Blank Vote"
             small
           />
           <BlockCheckbox
             handleChange={onCheckboxClick(Interpretation.CONTEST_NOT_ON_BALLOT)}
-            checked={
-              interpretation.interpretation ===
-              Interpretation.CONTEST_NOT_ON_BALLOT
-            }
+            checked={isContestNotOnBallotChecked}
             label="Not on Ballot"
             small
           />
           <BlockCheckbox
             handleChange={onCheckboxClick(INVALID_WRITE_IN)}
-            checked={interpretation.hasInvalidWriteIn}
+            checked={isInvalidWriteInChecked}
             label="Invalid Write-In"
             small
           />
           <NoteField
             name={`comment-${contest.name}`}
-            value={interpretation.comment || ''}
+            value={comment || ''}
             placeholder="Add Note"
             onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
               setInterpretation({
