@@ -55,7 +55,7 @@ Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Ti
 \r
 ######## SAMPLED BALLOTS ########\r
 Jurisdiction Name,Tabulator,Batch Name,Ballot Position,Imprinted ID,Ticket Numbers: Contest 1,Audited?,Audit Result: Contest 1,CVR Result: Contest 1,Discrepancy: Contest 1,Audit Result: Contest 2,CVR Result: Contest 2,Discrepancy: Contest 2\r
-J1,TABULATOR1,BATCH1,1,1-1-1,Round 1: 0.243550726331576894,AUDITED,Choice 1-2,Choice 1-2,,"Choice 2-1, Choice 2-2","Choice 2-1, Choice 2-2",\r
+J1,TABULATOR1,BATCH1,1,1-1-1,Round 1: 0.243550726331576894,AUDITED,"Choice 1-2, INVALID_WRITE_IN",Choice 1-2,,"Choice 2-1, Choice 2-2, INVALID_WRITE_IN","Choice 2-1, Choice 2-2",\r
 J1,TABULATOR1,BATCH2,2,1-2-2,Round 1: 0.125871889047705889,AUDITED,"Choice 1-1, Choice 1-2",Choice 1-2,-1,Choice 2-2,"Choice 2-1, Choice 2-2",1\r
 J1,TABULATOR1,BATCH2,3,1-2-3,Round 1: 0.126622033568908859,AUDITED,Choice 1-1,Choice 1-1,,"Choice 2-1, Choice 2-3","Choice 2-1, Choice 2-3",\r
 J1,TABULATOR2,BATCH2,2,2-2-2,Round 1: 0.053992217600758631,AUDITED,"Choice 1-1, Choice 1-2","Choice 1-1, Choice 1-2",,"Choice 2-1, Choice 2-2, Choice 2-3","Choice 2-1, Choice 2-2, Choice 2-3",\r
@@ -67,8 +67,8 @@ J1,TABULATOR3,BATCH1,3,,Round 1: 0.041030221525069793,AUDITED,Choice 1-1,,,Choic
 J1,TABULATOR3,BATCH1,5,,Round 1: 0.072664791498577026,AUDITED,Choice 1-1,,,Choice 2-1,,\r
 J1,TABULATOR3,BATCH1,9,,Round 1: 0.293674693309260219,AUDITED,Choice 1-1,,,Choice 2-1,,\r
 J1,TABULATOR3,BATCH1,10,,Round 1: 0.199742518299743122,AUDITED,Choice 1-1,,,Choice 2-2,,\r
-J2,TABULATOR1,BATCH1,3,1-1-3,Round 1: 0.242392535590495322,AUDITED,Choice 1-2,Choice 1-2,,"Choice 2-1, Choice 2-2",,\r
-J2,TABULATOR1,BATCH2,1,1-2-1,Round 1: 0.200269401620671924,AUDITED,"Choice 1-1, Choice 1-2",Choice 1-1,1,"Choice 2-1, Choice 2-3",,\r
+J2,TABULATOR1,BATCH1,3,1-1-3,Round 1: 0.242392535590495322,AUDITED,"Choice 1-2, INVALID_WRITE_IN",Choice 1-2,,"Choice 2-1, Choice 2-2, INVALID_WRITE_IN",,\r
+J2,TABULATOR1,BATCH2,1,1-2-1,Round 1: 0.200269401620671924,AUDITED,"Choice 1-1, Choice 1-2, INVALID_WRITE_IN",Choice 1-1,1,"Choice 2-1, Choice 2-3, INVALID_WRITE_IN",,\r
 J2,TABULATOR2,BATCH1,1,2-1-1,Round 1: 0.174827909206366766,AUDITED,Choice 1-1,Choice 1-1,,"Choice 2-1, Choice 2-2",,\r
 J2,TABULATOR2,BATCH2,1,2-2-1,Round 1: 0.185417954749015145,AUDITED,Choice 1-1,Choice 1-1,,"Choice 2-1, Choice 2-3",,\r
 J2,TABULATOR2,BATCH2,2,2-2-2,"Round 1: 0.252054739518646128, 0.297145021317217438",AUDITED,"Choice 1-1, Choice 1-2","Choice 1-1, Choice 1-2",,"Choice 2-1, Choice 2-2, Choice 2-3",,\r
