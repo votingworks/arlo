@@ -144,6 +144,7 @@ def deserialize_interpretation(
         selected_choices=choices,
         comment=interpretation["comment"],
         is_overvote=len(choices) > contest.votes_allowed,
+        has_invalid_write_in=interpretation["hasInvalidWriteIn"],
     )
 
 
@@ -153,6 +154,7 @@ def serialize_interpretation(interpretation: BallotInterpretation) -> JSONDict:
         "interpretation": interpretation.interpretation,
         "choiceIds": [choice.id for choice in interpretation.selected_choices],
         "comment": interpretation.comment,
+        "hasInvalidWriteIn": interpretation.has_invalid_write_in,
     }
 
 
@@ -300,9 +302,16 @@ BALLOT_INTERPRETATION_SCHEMA = {
         },
         "choiceIds": {"type": "array", "items": {"type": "string"}},
         "comment": {"anyOf": [{"type": "string"}, {"type": "null"}]},
+        "hasInvalidWriteIn": {"type": "boolean"},
     },
     "additionalProperties": False,
-    "required": ["contestId", "interpretation", "choiceIds", "comment"],
+    "required": [
+        "contestId",
+        "interpretation",
+        "choiceIds",
+        "comment",
+        "hasInvalidWriteIn",
+    ],
 }
 
 AUDIT_BALLOT_SCHEMA = {
@@ -342,6 +351,14 @@ def validate_interpretation(interpretation: JSONDict):
             raise BadRequest(
                 f"Cannot include choiceIds with interpretation {interpretation['interpretation']} for contest {interpretation['contestId']}"
             )
+
+    if (
+        interpretation["interpretation"] == Interpretation.CONTEST_NOT_ON_BALLOT
+        and interpretation["hasInvalidWriteIn"]
+    ):
+        raise BadRequest(
+            f"Cannot specify hasInvalidWriteIn=True with interpretation {Interpretation.CONTEST_NOT_ON_BALLOT} for contest {interpretation['contestId']}"
+        )
 
 
 def validate_audit_ballot(ballot_audit: JSONDict, jurisdiction: Jurisdiction):

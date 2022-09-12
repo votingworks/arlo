@@ -6,11 +6,14 @@ import { toast } from 'react-toastify'
 import LinkButton from '../Atoms/LinkButton'
 import BallotAudit from './BallotAudit'
 import {
+  ballotInterpretationFromFormState,
+  IBallotInterpretationFormState,
+} from './ballotInterpretation'
+import {
   IBallotInterpretation,
   IContest as IContestApi,
   BallotStatus,
   IContest,
-  Interpretation,
 } from '../../types'
 import { FlushDivider } from './Atoms'
 import { Inner } from '../Atoms/Wrapper'
@@ -103,6 +106,47 @@ interface IProps {
   ) => void
 }
 
+interface IInterpretationSummaryProps {
+  interpretation: IBallotInterpretationFormState
+  contest: IContest
+}
+
+const InterpretationSummary: React.FC<IInterpretationSummaryProps> = ({
+  interpretation,
+  contest,
+}) => {
+  const {
+    choiceIds,
+    isBlankVoteChecked,
+    isContestNotOnBallotChecked,
+    isInvalidWriteInChecked,
+  } = interpretation
+
+  if (choiceIds.length > 0) {
+    const choiceNames = contest.choices
+      .filter(choice => choiceIds.includes(choice.id))
+      .map(choice => choice.name)
+    return (
+      <>
+        {choiceNames.map(choiceName => (
+          <h3 key={choiceName}>{choiceName}</h3>
+        ))}
+        {isInvalidWriteInChecked && <h3>Invalid Write-In</h3>}
+      </>
+    )
+  }
+  if (isBlankVoteChecked) {
+    return <h3>Blank Vote</h3>
+  }
+  if (isContestNotOnBallotChecked) {
+    return <h3>Not on Ballot</h3>
+  }
+  if (isInvalidWriteInChecked) {
+    return <h3>Invalid Write-In</h3>
+  }
+  return null
+}
+
 const Ballot: React.FC<IProps> = ({
   home,
   batchId,
@@ -124,28 +168,6 @@ const Ballot: React.FC<IProps> = ({
     return <Redirect to={home} />
   }
 
-  const renderInterpretation = (
-    { interpretation, choiceIds }: IBallotInterpretation,
-    contest: IContest
-  ) => {
-    if (!interpretation) return <div />
-    switch (interpretation) {
-      case Interpretation.VOTE:
-        return contest.choices.map(choice =>
-          choiceIds.includes(choice.id) ? (
-            <h3 key={choice.id}>{choice.name}</h3>
-          ) : null
-        )
-      case Interpretation.BLANK:
-        return <h3>Blank Vote</h3>
-      case Interpretation.CONTEST_NOT_ON_BALLOT:
-        return <h3>Not on Ballot</h3>
-      // case Interpretation.CANT_AGREE: (we do not support this case now)
-      default:
-        return null
-    }
-  }
-
   const confirmationModalTitle = (
     <ConfirmationModalTitle>
       Confirm the Ballot Selections
@@ -157,7 +179,9 @@ const Ballot: React.FC<IProps> = ({
     </ConfirmationModalTitle>
   )
 
-  const confirmSelections = (newInterpretations: IBallotInterpretation[]) => {
+  const confirmSelections = (
+    newInterpretations: IBallotInterpretationFormState[]
+  ) => {
     confirm({
       title: confirmationModalTitle,
       description: (
@@ -165,7 +189,10 @@ const Ballot: React.FC<IProps> = ({
           {contests.map((contest, i) => (
             <div key={contest.id}>
               <p>{contest.name}</p>
-              {renderInterpretation(newInterpretations[i], contest)}
+              <InterpretationSummary
+                interpretation={newInterpretations[i]}
+                contest={contest}
+              />
               <p>
                 {newInterpretations[i].comment &&
                   `Comment: ${newInterpretations[i].comment}`}
@@ -178,9 +205,9 @@ const Ballot: React.FC<IProps> = ({
         await submitBallot(
           ballot.id,
           BallotStatus.AUDITED,
-          newInterpretations.filter(
-            ({ interpretation }) => interpretation !== null
-          )
+          newInterpretations
+            .map(ballotInterpretationFromFormState)
+            .filter(({ interpretation }) => interpretation !== null)
         )
         toast.success('Success! Now showing the next ballot to audit.')
         nextBallot()
@@ -226,6 +253,7 @@ const Ballot: React.FC<IProps> = ({
                 confirmSelections={confirmSelections}
                 confirmBallotNotFound={confirmBallotNotFound}
                 previousBallot={previousBallot}
+                key={ballot.id}
               />
               <Confirm {...confirmProps} />
             </BallotWrapper>
@@ -242,7 +270,9 @@ const Ballot: React.FC<IProps> = ({
                   see marked on the paper ballot. Select{' '}
                   <strong>Blank Vote</strong> if the voter did not make any
                   selections. Select <strong>Not on Ballot</strong> if the
-                  contest does not appear on the ballot.
+                  contest does not appear on the ballot. Select{' '}
+                  <strong>Invalid Write-In</strong> for a write-in adjudicated
+                  as invalid.
                 </li>
                 <li>
                   Once all votes are recorded,{' '}

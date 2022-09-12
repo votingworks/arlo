@@ -595,21 +595,39 @@ def set_up_audit_board(
         .order_by(ContestChoice.name)
         .all()
     )
+
+    num_ballot_draws = len(ballot_draws)
     ballot_draws = iter(ballot_draws)
     for draw in itertools.islice(ballot_draws, CHOICE_1_VOTES):
         audit_ballot(draw.sampled_ballot, contest_id, Interpretation.VOTE, [choices[0]])
-    for draw in itertools.islice(ballot_draws, CHOICE_2_VOTES):
-        audit_ballot(draw.sampled_ballot, contest_id, Interpretation.VOTE, [choices[1]])
-    for draw in itertools.islice(ballot_draws, OVERVOTES):
+    for i, draw in enumerate(itertools.islice(ballot_draws, CHOICE_2_VOTES)):
+        audit_ballot(
+            draw.sampled_ballot,
+            contest_id,
+            Interpretation.VOTE,
+            [choices[1]],
+            # Add an invalid write-in to the last choice 2 vote
+            has_invalid_write_in=(i == CHOICE_2_VOTES - 1),
+        )
+    for i, draw in enumerate(itertools.islice(ballot_draws, OVERVOTES)):
         audit_ballot(
             draw.sampled_ballot,
             contest_id,
             Interpretation.VOTE,
             [choices[0], choices[1]],
             is_overvote=True,
+            # Add an invalid write-in to the last overvote
+            has_invalid_write_in=(i == OVERVOTES - 1),
         )
-    for draw in ballot_draws:
-        audit_ballot(draw.sampled_ballot, contest_id, Interpretation.BLANK)
+    num_blanks = num_ballot_draws - CHOICE_1_VOTES - CHOICE_2_VOTES - OVERVOTES
+    for i, draw in enumerate(ballot_draws):
+        audit_ballot(
+            draw.sampled_ballot,
+            contest_id,
+            Interpretation.BLANK,
+            # Add an invalid write-in to the last blank vote
+            has_invalid_write_in=(i == num_blanks - 1),
+        )
     db_session.commit()
 
     return member_1, member_2

@@ -83,12 +83,14 @@ def test_ja_ballots_round_1(
                     "interpretation": "VOTE",
                     "choiceIds": [choice_id],
                     "comment": "blah blah blah",
+                    "hasInvalidWriteIn": False,
                 },
                 {
                     "contestId": contest_ids[1],
                     "interpretation": "CONTEST_NOT_ON_BALLOT",
                     "choiceIds": [],
                     "comment": None,
+                    "hasInvalidWriteIn": False,
                 },
             ],
         },
@@ -122,12 +124,14 @@ def test_ja_ballots_round_1(
                     "interpretation": "VOTE",
                     "choiceIds": [choice_id],
                     "comment": "blah blah blah",
+                    "hasInvalidWriteIn": False,
                 },
                 {
                     "contestId": contest_ids[1],
                     "interpretation": "CONTEST_NOT_ON_BALLOT",
                     "choiceIds": [],
                     "comment": None,
+                    "hasInvalidWriteIn": False,
                 },
             ],
         },
@@ -204,12 +208,14 @@ def test_ja_ballots_round_2(
                     "comment": None,
                     "contestId": assert_is_id,
                     "interpretation": "VOTE",
+                    "hasInvalidWriteIn": False,
                 },
                 {
                     "choiceIds": [],
                     "comment": None,
                     "contestId": assert_is_id,
                     "interpretation": "CONTEST_NOT_ON_BALLOT",
+                    "hasInvalidWriteIn": False,
                 },
             ],
         },
@@ -269,12 +275,14 @@ def test_ab_list_ballot_round_1(
                     "interpretation": "VOTE",
                     "choiceIds": [choice_id],
                     "comment": "blah blah blah",
+                    "hasInvalidWriteIn": False,
                 },
                 {
                     "contestId": contest_ids[1],
                     "interpretation": "CONTEST_NOT_ON_BALLOT",
                     "choiceIds": [],
                     "comment": None,
+                    "hasInvalidWriteIn": False,
                 },
             ],
         },
@@ -305,12 +313,14 @@ def test_ab_list_ballot_round_1(
                     "interpretation": "VOTE",
                     "choiceIds": [choice_id],
                     "comment": "blah blah blah",
+                    "hasInvalidWriteIn": False,
                 },
                 {
                     "contestId": contest_ids[1],
                     "interpretation": "CONTEST_NOT_ON_BALLOT",
                     "choiceIds": [],
                     "comment": None,
+                    "hasInvalidWriteIn": False,
                 },
             ],
             "auditBoard": {"id": assert_is_id, "name": "Audit Board #1"},
@@ -441,12 +451,14 @@ def test_ab_audit_ballot_happy_path(
                     "interpretation": "VOTE",
                     "choiceIds": [choice_id],
                     "comment": "blah blah blah",
+                    "hasInvalidWriteIn": False,
                 },
                 {
                     "contestId": contest_ids[1],
                     "interpretation": "CONTEST_NOT_ON_BALLOT",
                     "choiceIds": [],
                     "comment": None,
+                    "hasInvalidWriteIn": False,
                 },
             ],
         },
@@ -458,12 +470,14 @@ def test_ab_audit_ballot_happy_path(
                     "interpretation": "BLANK",
                     "choiceIds": [],
                     "comment": None,
+                    "hasInvalidWriteIn": False,
                 },
                 {
                     "contestId": contest_ids[1],
                     "interpretation": "CONTEST_NOT_ON_BALLOT",
                     "choiceIds": [],
                     "comment": None,
+                    "hasInvalidWriteIn": False,
                 },
             ],
         },
@@ -475,12 +489,14 @@ def test_ab_audit_ballot_happy_path(
                     "interpretation": "CANT_AGREE",
                     "choiceIds": [],
                     "comment": None,
+                    "hasInvalidWriteIn": False,
                 },
                 {
                     "contestId": contest_ids[1],
                     "interpretation": "CONTEST_NOT_ON_BALLOT",
                     "choiceIds": [],
                     "comment": None,
+                    "hasInvalidWriteIn": False,
                 },
             ],
         },
@@ -494,12 +510,14 @@ def test_ab_audit_ballot_happy_path(
                     "interpretation": "VOTE",
                     "choiceIds": [choice_id],
                     "comment": None,
+                    "hasInvalidWriteIn": False,
                 },
                 {
                     "contestId": contest_ids[1],
                     "interpretation": "CANT_AGREE",
                     "choiceIds": [],
                     "comment": "weird scribble",
+                    "hasInvalidWriteIn": False,
                 },
             ],
         },
@@ -511,12 +529,14 @@ def test_ab_audit_ballot_happy_path(
                     "interpretation": "CONTEST_NOT_ON_BALLOT",
                     "choiceIds": [],
                     "comment": None,
+                    "hasInvalidWriteIn": False,
                 },
                 {
                     "contestId": contest_ids[1],
                     "interpretation": "VOTE",
                     "choiceIds": [c.id for c in contest_2_choices[0:2]],
                     "comment": None,
+                    "hasInvalidWriteIn": False,
                 },
             ],
         },
@@ -576,12 +596,14 @@ def test_ab_audit_ballot_overvote(
                     "interpretation": "CONTEST_NOT_ON_BALLOT",
                     "choiceIds": [],
                     "comment": None,
+                    "hasInvalidWriteIn": False,
                 },
                 {
                     "contestId": contest_id,
                     "interpretation": "VOTE",
                     "choiceIds": choice_ids,
                     "comment": None,
+                    "hasInvalidWriteIn": False,
                 },
             ],
         },
@@ -602,12 +624,14 @@ def test_ab_audit_ballot_overvote(
                     "interpretation": "CONTEST_NOT_ON_BALLOT",
                     "choiceIds": [],
                     "comment": None,
+                    "hasInvalidWriteIn": False,
                 },
                 {
                     "contestId": contest_id,
                     "interpretation": "VOTE",
                     "choiceIds": choice_ids[0:2],
                     "comment": None,
+                    "hasInvalidWriteIn": False,
                 },
             ],
         },
@@ -616,6 +640,56 @@ def test_ab_audit_ballot_overvote(
 
     interpretation = BallotInterpretation.query.get((ballot_id, contest_id))
     assert not interpretation.is_overvote
+
+
+def test_ab_audit_ballot_has_invalid_write_in(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    contest_ids: List[str],
+    round_1_id: str,
+    audit_board_round_1_ids: List[str],
+):
+    set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_1_ids[0])
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots"
+    )
+    ballots = json.loads(rv.data)["ballots"]
+    ballot_id = ballots[0]["id"]
+    choice_id = ContestChoice.query.filter_by(contest_id=contest_ids[0]).first().id
+
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots/{ballot_id}",
+        {
+            "status": "AUDITED",
+            "interpretations": [
+                {
+                    "contestId": contest_ids[0],
+                    "interpretation": "VOTE",
+                    "choiceIds": [choice_id],
+                    "comment": None,
+                    "hasInvalidWriteIn": True,
+                },
+                {
+                    "contestId": contest_ids[1],
+                    "interpretation": "BLANK",
+                    "choiceIds": [],
+                    "comment": None,
+                    "hasInvalidWriteIn": True,
+                },
+            ],
+        },
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots"
+    )
+    ballots = json.loads(rv.data)["ballots"]
+    interpretations = ballots[0]["interpretations"]
+    assert interpretations[0]["hasInvalidWriteIn"]
+    assert interpretations[1]["hasInvalidWriteIn"]
 
 
 def test_ab_audit_ballot_wrong_audit_board(
@@ -647,6 +721,7 @@ def test_ab_audit_ballot_wrong_audit_board(
                     "interpretation": "VOTE",
                     "choiceIds": [choice_id],
                     "comment": "blah blah blah",
+                    "hasInvalidWriteIn": False,
                 }
             ],
         },
@@ -680,6 +755,7 @@ def test_ab_audit_ballot_invalid(
                     "interpretation": "VOTE",
                     "choiceIds": [choice_id],
                     "comment": "blah blah blah",
+                    "hasInvalidWriteIn": False,
                 }
             ],
         }
@@ -705,6 +781,7 @@ def test_ab_audit_ballot_invalid(
             "interpretation": "VOTE",
             "choiceIds": [choice_id],
             "comment": "blah blah blah",
+            "hasInvalidWriteIn": False,
         }
         del interpretation[missing_field]
         rv = put_json(
@@ -732,6 +809,7 @@ def test_ab_audit_ballot_invalid(
                         "interpretation": "VOTE",
                         "choiceIds": [choice_id],
                         "comment": "blah blah blah",
+                        "hasInvalidWriteIn": False,
                     }
                 ],
             },
@@ -746,6 +824,7 @@ def test_ab_audit_ballot_invalid(
                         "interpretation": "vote",
                         "choiceIds": [choice_id],
                         "comment": "blah blah blah",
+                        "hasInvalidWriteIn": False,
                     }
                 ],
             },
@@ -760,12 +839,14 @@ def test_ab_audit_ballot_invalid(
                         "interpretation": "VOTE",
                         "choiceIds": [],
                         "comment": "blah blah blah",
+                        "hasInvalidWriteIn": False,
                     },
                     {
                         "contestId": contest_ids[1],
                         "interpretation": "CONTEST_NOT_ON_BALLOT",
                         "choiceIds": [],
                         "comment": None,
+                        "hasInvalidWriteIn": False,
                     },
                 ],
             },
@@ -780,12 +861,14 @@ def test_ab_audit_ballot_invalid(
                         "interpretation": "VOTE",
                         "choiceIds": [""],
                         "comment": "blah blah blah",
+                        "hasInvalidWriteIn": False,
                     },
                     {
                         "contestId": contest_ids[1],
                         "interpretation": "CONTEST_NOT_ON_BALLOT",
                         "choiceIds": [],
                         "comment": None,
+                        "hasInvalidWriteIn": False,
                     },
                 ],
             },
@@ -800,12 +883,14 @@ def test_ab_audit_ballot_invalid(
                         "interpretation": "VOTE",
                         "choiceIds": [choice_id],
                         "comment": "blah blah blah",
+                        "hasInvalidWriteIn": False,
                     },
                     {
                         "contestId": contest_ids[1],
                         "interpretation": "CONTEST_NOT_ON_BALLOT",
                         "choiceIds": [],
                         "comment": None,
+                        "hasInvalidWriteIn": False,
                     },
                 ],
             },
@@ -820,12 +905,14 @@ def test_ab_audit_ballot_invalid(
                         "interpretation": "VOTE",
                         "choiceIds": ["12345"],
                         "comment": "blah blah blah",
+                        "hasInvalidWriteIn": False,
                     },
                     {
                         "contestId": contest_ids[1],
                         "interpretation": "CONTEST_NOT_ON_BALLOT",
                         "choiceIds": [],
                         "comment": None,
+                        "hasInvalidWriteIn": False,
                     },
                 ],
             },
@@ -840,12 +927,14 @@ def test_ab_audit_ballot_invalid(
                         "interpretation": "CONTEST_NOT_ON_BALLOT",
                         "choiceIds": [],
                         "comment": None,
+                        "hasInvalidWriteIn": False,
                     },
                     {
                         "contestId": contest_ids[1],
                         "interpretation": "VOTE",
                         "choiceIds": [choice_id],
                         "comment": "blah blah blah",
+                        "hasInvalidWriteIn": False,
                     },
                 ],
             },
@@ -860,12 +949,14 @@ def test_ab_audit_ballot_invalid(
                         "interpretation": "BLANK",
                         "choiceIds": [choice_id],
                         "comment": "blah blah blah",
+                        "hasInvalidWriteIn": False,
                     },
                     {
                         "contestId": contest_ids[1],
                         "interpretation": "CONTEST_NOT_ON_BALLOT",
                         "choiceIds": [],
                         "comment": None,
+                        "hasInvalidWriteIn": False,
                     },
                 ],
             },
@@ -880,12 +971,14 @@ def test_ab_audit_ballot_invalid(
                         "interpretation": "CANT_AGREE",
                         "choiceIds": [choice_id],
                         "comment": "blah blah blah",
+                        "hasInvalidWriteIn": False,
                     },
                     {
                         "contestId": contest_ids[1],
                         "interpretation": "CONTEST_NOT_ON_BALLOT",
                         "choiceIds": [],
                         "comment": None,
+                        "hasInvalidWriteIn": False,
                     },
                 ],
             },
@@ -900,16 +993,40 @@ def test_ab_audit_ballot_invalid(
                         "interpretation": "CONTEST_NOT_ON_BALLOT",
                         "choiceIds": [choice_id],
                         "comment": "blah blah blah",
+                        "hasInvalidWriteIn": False,
                     },
                     {
                         "contestId": contest_ids[1],
                         "interpretation": "CONTEST_NOT_ON_BALLOT",
                         "choiceIds": [],
                         "comment": None,
+                        "hasInvalidWriteIn": False,
                     },
                 ],
             },
             f"Cannot include choiceIds with interpretation CONTEST_NOT_ON_BALLOT for contest {contest_ids[0]}",
+        ),
+        (
+            {
+                "status": "AUDITED",
+                "interpretations": [
+                    {
+                        "contestId": contest_ids[0],
+                        "interpretation": "VOTE",
+                        "choiceIds": [choice_id],
+                        "comment": "blah blah blah",
+                        "hasInvalidWriteIn": False,
+                    },
+                    {
+                        "contestId": contest_ids[1],
+                        "interpretation": "CONTEST_NOT_ON_BALLOT",
+                        "choiceIds": [],
+                        "comment": None,
+                        "hasInvalidWriteIn": True,
+                    },
+                ],
+            },
+            f"Cannot specify hasInvalidWriteIn=True with interpretation CONTEST_NOT_ON_BALLOT for contest {contest_ids[1]}",
         ),
         (
             {"status": "AUDITED", "interpretations": [],},
@@ -924,6 +1041,7 @@ def test_ab_audit_ballot_invalid(
                         "interpretation": "VOTE",
                         "choiceIds": [choice_id],
                         "comment": "blah blah blah",
+                        "hasInvalidWriteIn": False,
                     }
                 ],
             },
@@ -938,12 +1056,14 @@ def test_ab_audit_ballot_invalid(
                         "interpretation": "VOTE",
                         "choiceIds": [choice_id],
                         "comment": "blah blah blah",
+                        "hasInvalidWriteIn": False,
                     },
                     {
                         "contestId": contest_ids[1],
                         "interpretation": "CONTEST_NOT_ON_BALLOT",
                         "choiceIds": [],
                         "comment": None,
+                        "hasInvalidWriteIn": False,
                     },
                 ],
             },
@@ -958,12 +1078,14 @@ def test_ab_audit_ballot_invalid(
                         "interpretation": "VOTE",
                         "choiceIds": [choice_id],
                         "comment": "blah blah blah",
+                        "hasInvalidWriteIn": False,
                     },
                     {
                         "contestId": contest_ids[1],
                         "interpretation": "CONTEST_NOT_ON_BALLOT",
                         "choiceIds": [],
                         "comment": None,
+                        "hasInvalidWriteIn": False,
                     },
                 ],
             },

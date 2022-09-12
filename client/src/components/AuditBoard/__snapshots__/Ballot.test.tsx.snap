@@ -6,22 +6,22 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
 <div>
   <div>
     <div
-      class="sc-hMqMXs hlEuTf"
+      class="sc-kGXeez iveVJo"
     >
       <div
-        class="sc-kkGfuU eOTllS"
+        class="sc-dxgOiQ cnAnsE"
       >
         <div
-          class="sc-iAyFgw ePMlNJ"
+          class="sc-ckVGcZ dWmLvW"
         >
           <div
-            class="sc-hSdWYo itUVyb"
+            class="sc-jKJlTe BtGnJ"
           >
             <div
-              class="sc-jWBwVP hYQrug"
+              class="sc-kEYyzF bYnpXO"
             >
               <button
-                class="bp3-button bp3-minimal sc-cvbbAY iAnrjt"
+                class="bp3-button bp3-minimal sc-hMqMXs gLjYcq"
                 href="/election/1/audit-board/1"
                 type="button"
               >
@@ -51,7 +51,7 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
                 </span>
               </button>
               <h3
-                class="bp3-heading sc-kEYyzF eCqCcX"
+                class="bp3-heading sc-kpOJdX gOTkwU"
               >
                 Audit Ballot Selections
               </h3>
@@ -60,7 +60,7 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
               class="bp3-divider sc-bdVaJa gqVLlZ"
             />
             <div
-              class="sc-kgoBCf lpnfg"
+              class="sc-jTzLTM jwrcvs"
             >
               <div>
                 <h5
@@ -69,7 +69,7 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
                   Tabulator
                 </h5>
                 <h4
-                  class="bp3-heading sc-kGXeez BgGit"
+                  class="bp3-heading sc-fjdhpX MzakE"
                 >
                   11
                 </h4>
@@ -81,7 +81,7 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
                   Batch
                 </h5>
                 <h4
-                  class="bp3-heading sc-kGXeez BgGit"
+                  class="bp3-heading sc-fjdhpX MzakE"
                 >
                   0003-04-Precinct 13 (Jonesboro Fire Department)
                 </h4>
@@ -93,14 +93,14 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
                   Ballot Number
                 </h5>
                 <h4
-                  class="bp3-heading sc-kGXeez BgGit"
+                  class="bp3-heading sc-fjdhpX MzakE"
                 >
                   313
                 </h4>
               </div>
               <div>
                 <button
-                  class="bp3-button bp3-large bp3-intent-danger sc-kpOJdX TIXGk"
+                  class="bp3-button bp3-large bp3-intent-danger sc-jzJRlG cpuuIz"
                   type="button"
                 >
                   <span
@@ -136,12 +136,12 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
                         class="sc-htoDjs ClGoI"
                       >
                         <h3
-                          class="bp3-heading sc-ckVGcZ bvdPk"
+                          class="bp3-heading sc-kAzzGY kxTNdi"
                         >
                           Contest Name
                         </h3>
                         <label
-                          class="bp3-control bp3-checkbox sc-chPdSV iBxXqw"
+                          class="bp3-control bp3-checkbox sc-VigVT dTZkaX"
                         >
                           <input
                             checked=""
@@ -158,7 +158,7 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
                           </span>
                         </label>
                         <label
-                          class="bp3-control bp3-checkbox sc-chPdSV iBxXqw"
+                          class="bp3-control bp3-checkbox sc-VigVT dTZkaX"
                         >
                           <input
                             type="checkbox"
@@ -178,7 +178,7 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
                         class="sc-dnqmqq fUHzAV"
                       >
                         <label
-                          class="bp3-control bp3-checkbox sc-chPdSV iBxXqw"
+                          class="bp3-control bp3-checkbox sc-VigVT dTZkaX"
                         >
                           <input
                             type="checkbox"
@@ -194,7 +194,7 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
                           </span>
                         </label>
                         <label
-                          class="bp3-control bp3-checkbox sc-chPdSV iBxXqw"
+                          class="bp3-control bp3-checkbox sc-VigVT dTZkaX"
                         >
                           <input
                             type="checkbox"
@@ -209,17 +209,29 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
                             </span>
                           </span>
                         </label>
-                        <div
-                          class="sc-dxgOiQ jQgQXZ sc-fjdhpX fAFgBy"
+                        <label
+                          class="bp3-control bp3-checkbox sc-VigVT dTZkaX"
                         >
-                          <textarea
-                            class="bp3-input sc-cSHVUG gCafTO"
-                            name="comment-Contest Name"
-                            placeholder="Add Note"
+                          <input
+                            type="checkbox"
+                          />
+                          <span
+                            class="small bp3-control-indicator"
                           >
-                            Good ballot
-                          </textarea>
-                        </div>
+                            <span
+                              class="checkbox-text"
+                            >
+                              Invalid Write-In
+                            </span>
+                          </span>
+                        </label>
+                        <textarea
+                          class="bp3-input sc-cSHVUG iENywS"
+                          name="comment-Contest Name"
+                          placeholder="Add Note"
+                        >
+                          Good ballot
+                        </textarea>
                       </div>
                     </div>
                   </div>
@@ -227,7 +239,7 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
                     class="sc-ifAKCX jzSIMx"
                   >
                     <button
-                      class="bp3-button bp3-large bp3-intent-success sc-jKJlTe hYVpwa sc-gqjmRU eotNvg"
+                      class="bp3-button bp3-large bp3-intent-success sc-chPdSV hbSLVF sc-gqjmRU eotNvg"
                       type="submit"
                     >
                       <span
@@ -252,7 +264,7 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
             </div>
           </div>
           <div
-            class="sc-eHgmQL hkDfEt"
+            class="sc-eNQAEJ fdspOC"
           >
             <h4
               class="bp3-heading"
@@ -260,7 +272,7 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
               Instructions
             </h4>
             <ol
-              class="bp3-list sc-brqgnP cxHmEu"
+              class="bp3-list sc-kkGfuU drhJhK"
             >
               <li>
                 Confirm that you are looking at the correct ballot for the batch and position. If the ballot was not located, select
@@ -280,7 +292,12 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
                 <strong>
                   Not on Ballot
                 </strong>
-                 if the contest does not appear on the ballot.
+                 if the contest does not appear on the ballot. Select
+                 
+                <strong>
+                  Invalid Write-In
+                </strong>
+                 for a write-in adjudicated as invalid.
               </li>
               <li>
                 Once all votes are recorded,
@@ -303,22 +320,22 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
 <div>
   <div>
     <div
-      class="sc-hMqMXs hlEuTf"
+      class="sc-kGXeez iveVJo"
     >
       <div
-        class="sc-kkGfuU eOTllS"
+        class="sc-dxgOiQ cnAnsE"
       >
         <div
-          class="sc-iAyFgw ePMlNJ"
+          class="sc-ckVGcZ dWmLvW"
         >
           <div
-            class="sc-hSdWYo itUVyb"
+            class="sc-jKJlTe BtGnJ"
           >
             <div
-              class="sc-jWBwVP hYQrug"
+              class="sc-kEYyzF bYnpXO"
             >
               <button
-                class="bp3-button bp3-minimal sc-cvbbAY iAnrjt"
+                class="bp3-button bp3-minimal sc-hMqMXs gLjYcq"
                 href="/election/1/audit-board/1"
                 type="button"
               >
@@ -348,7 +365,7 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
                 </span>
               </button>
               <h3
-                class="bp3-heading sc-kEYyzF eCqCcX"
+                class="bp3-heading sc-kpOJdX gOTkwU"
               >
                 Audit Ballot Selections
               </h3>
@@ -357,7 +374,7 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
               class="bp3-divider sc-bdVaJa gqVLlZ"
             />
             <div
-              class="sc-kgoBCf lpnfg"
+              class="sc-jTzLTM jwrcvs"
             >
               <div>
                 <h5
@@ -366,7 +383,7 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
                   Tabulator
                 </h5>
                 <h4
-                  class="bp3-heading sc-kGXeez BgGit"
+                  class="bp3-heading sc-fjdhpX MzakE"
                 >
                   11
                 </h4>
@@ -378,7 +395,7 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
                   Batch
                 </h5>
                 <h4
-                  class="bp3-heading sc-kGXeez BgGit"
+                  class="bp3-heading sc-fjdhpX MzakE"
                 >
                   0003-04-Precinct 19 (Jonesboro Fire Department)
                 </h4>
@@ -390,14 +407,14 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
                   Ballot Number
                 </h5>
                 <h4
-                  class="bp3-heading sc-kGXeez BgGit"
+                  class="bp3-heading sc-fjdhpX MzakE"
                 >
                   2112
                 </h4>
               </div>
               <div>
                 <button
-                  class="bp3-button bp3-large bp3-intent-danger sc-kpOJdX TIXGk"
+                  class="bp3-button bp3-large bp3-intent-danger sc-jzJRlG cpuuIz"
                   type="button"
                 >
                   <span
@@ -433,12 +450,12 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
                         class="sc-htoDjs ClGoI"
                       >
                         <h3
-                          class="bp3-heading sc-ckVGcZ bvdPk"
+                          class="bp3-heading sc-kAzzGY kxTNdi"
                         >
                           Contest Name
                         </h3>
                         <label
-                          class="bp3-control bp3-checkbox sc-chPdSV iBxXqw"
+                          class="bp3-control bp3-checkbox sc-VigVT dTZkaX"
                         >
                           <input
                             type="checkbox"
@@ -454,7 +471,7 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
                           </span>
                         </label>
                         <label
-                          class="bp3-control bp3-checkbox sc-chPdSV iBxXqw"
+                          class="bp3-control bp3-checkbox sc-VigVT dTZkaX"
                         >
                           <input
                             type="checkbox"
@@ -474,7 +491,7 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
                         class="sc-dnqmqq fUHzAV"
                       >
                         <label
-                          class="bp3-control bp3-checkbox sc-chPdSV iBxXqw"
+                          class="bp3-control bp3-checkbox sc-VigVT dTZkaX"
                         >
                           <input
                             type="checkbox"
@@ -490,7 +507,7 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
                           </span>
                         </label>
                         <label
-                          class="bp3-control bp3-checkbox sc-chPdSV iBxXqw"
+                          class="bp3-control bp3-checkbox sc-VigVT dTZkaX"
                         >
                           <input
                             type="checkbox"
@@ -505,15 +522,27 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
                             </span>
                           </span>
                         </label>
-                        <div
-                          class="sc-dxgOiQ jQgQXZ sc-fjdhpX fAFgBy"
+                        <label
+                          class="bp3-control bp3-checkbox sc-VigVT dTZkaX"
                         >
-                          <textarea
-                            class="bp3-input sc-cSHVUG gCafTO"
-                            name="comment-Contest Name"
-                            placeholder="Add Note"
+                          <input
+                            type="checkbox"
                           />
-                        </div>
+                          <span
+                            class="small bp3-control-indicator"
+                          >
+                            <span
+                              class="checkbox-text"
+                            >
+                              Invalid Write-In
+                            </span>
+                          </span>
+                        </label>
+                        <textarea
+                          class="bp3-input sc-cSHVUG iENywS"
+                          name="comment-Contest Name"
+                          placeholder="Add Note"
+                        />
                       </div>
                     </div>
                   </div>
@@ -521,7 +550,7 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
                     class="sc-ifAKCX jzSIMx"
                   >
                     <button
-                      class="bp3-button bp3-disabled bp3-large bp3-intent-success sc-jKJlTe hYVpwa sc-gqjmRU eotNvg"
+                      class="bp3-button bp3-disabled bp3-large bp3-intent-success sc-chPdSV hbSLVF sc-gqjmRU eotNvg"
                       disabled=""
                       tabindex="-1"
                       type="submit"
@@ -548,7 +577,7 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
             </div>
           </div>
           <div
-            class="sc-eHgmQL hkDfEt"
+            class="sc-eNQAEJ fdspOC"
           >
             <h4
               class="bp3-heading"
@@ -556,7 +585,7 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
               Instructions
             </h4>
             <ol
-              class="bp3-list sc-brqgnP cxHmEu"
+              class="bp3-list sc-kkGfuU drhJhK"
             >
               <li>
                 Confirm that you are looking at the correct ballot for the batch and position. If the ballot was not located, select
@@ -576,7 +605,12 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
                 <strong>
                   Not on Ballot
                 </strong>
-                 if the contest does not appear on the ballot.
+                 if the contest does not appear on the ballot. Select
+                 
+                <strong>
+                  Invalid Write-In
+                </strong>
+                 for a write-in adjudicated as invalid.
               </li>
               <li>
                 Once all votes are recorded,
@@ -599,22 +633,22 @@ exports[`Ballot selects Blank Vote 1`] = `
 <div>
   <div>
     <div
-      class="sc-hMqMXs hlEuTf"
+      class="sc-kGXeez iveVJo"
     >
       <div
-        class="sc-kkGfuU eOTllS"
+        class="sc-dxgOiQ cnAnsE"
       >
         <div
-          class="sc-iAyFgw ePMlNJ"
+          class="sc-ckVGcZ dWmLvW"
         >
           <div
-            class="sc-hSdWYo itUVyb"
+            class="sc-jKJlTe BtGnJ"
           >
             <div
-              class="sc-jWBwVP hYQrug"
+              class="sc-kEYyzF bYnpXO"
             >
               <button
-                class="bp3-button bp3-minimal sc-cvbbAY iAnrjt"
+                class="bp3-button bp3-minimal sc-hMqMXs gLjYcq"
                 href="/election/1/audit-board/1"
                 type="button"
               >
@@ -644,7 +678,7 @@ exports[`Ballot selects Blank Vote 1`] = `
                 </span>
               </button>
               <h3
-                class="bp3-heading sc-kEYyzF eCqCcX"
+                class="bp3-heading sc-kpOJdX gOTkwU"
               >
                 Audit Ballot Selections
               </h3>
@@ -653,7 +687,7 @@ exports[`Ballot selects Blank Vote 1`] = `
               class="bp3-divider sc-bdVaJa gqVLlZ"
             />
             <div
-              class="sc-kgoBCf lpnfg"
+              class="sc-jTzLTM jwrcvs"
             >
               <div>
                 <h5
@@ -662,7 +696,7 @@ exports[`Ballot selects Blank Vote 1`] = `
                   Tabulator
                 </h5>
                 <h4
-                  class="bp3-heading sc-kGXeez BgGit"
+                  class="bp3-heading sc-fjdhpX MzakE"
                 >
                   11
                 </h4>
@@ -674,7 +708,7 @@ exports[`Ballot selects Blank Vote 1`] = `
                   Batch
                 </h5>
                 <h4
-                  class="bp3-heading sc-kGXeez BgGit"
+                  class="bp3-heading sc-fjdhpX MzakE"
                 >
                   0003-04-Precinct 19 (Jonesboro Fire Department)
                 </h4>
@@ -686,14 +720,14 @@ exports[`Ballot selects Blank Vote 1`] = `
                   Ballot Number
                 </h5>
                 <h4
-                  class="bp3-heading sc-kGXeez BgGit"
+                  class="bp3-heading sc-fjdhpX MzakE"
                 >
                   2112
                 </h4>
               </div>
               <div>
                 <button
-                  class="bp3-button bp3-large bp3-intent-danger sc-kpOJdX TIXGk"
+                  class="bp3-button bp3-large bp3-intent-danger sc-jzJRlG cpuuIz"
                   type="button"
                 >
                   <span
@@ -729,12 +763,12 @@ exports[`Ballot selects Blank Vote 1`] = `
                         class="sc-htoDjs ClGoI"
                       >
                         <h3
-                          class="bp3-heading sc-ckVGcZ bvdPk"
+                          class="bp3-heading sc-kAzzGY kxTNdi"
                         >
                           Contest Name
                         </h3>
                         <label
-                          class="bp3-control bp3-checkbox sc-chPdSV iBxXqw"
+                          class="bp3-control bp3-checkbox sc-VigVT dTZkaX"
                         >
                           <input
                             type="checkbox"
@@ -750,7 +784,7 @@ exports[`Ballot selects Blank Vote 1`] = `
                           </span>
                         </label>
                         <label
-                          class="bp3-control bp3-checkbox sc-chPdSV iBxXqw"
+                          class="bp3-control bp3-checkbox sc-VigVT dTZkaX"
                         >
                           <input
                             type="checkbox"
@@ -770,7 +804,7 @@ exports[`Ballot selects Blank Vote 1`] = `
                         class="sc-dnqmqq fUHzAV"
                       >
                         <label
-                          class="bp3-control bp3-checkbox sc-chPdSV iBxXqw"
+                          class="bp3-control bp3-checkbox sc-VigVT dTZkaX"
                         >
                           <input
                             type="checkbox"
@@ -786,7 +820,7 @@ exports[`Ballot selects Blank Vote 1`] = `
                           </span>
                         </label>
                         <label
-                          class="bp3-control bp3-checkbox sc-chPdSV iBxXqw"
+                          class="bp3-control bp3-checkbox sc-VigVT dTZkaX"
                         >
                           <input
                             type="checkbox"
@@ -801,15 +835,27 @@ exports[`Ballot selects Blank Vote 1`] = `
                             </span>
                           </span>
                         </label>
-                        <div
-                          class="sc-dxgOiQ jQgQXZ sc-fjdhpX fAFgBy"
+                        <label
+                          class="bp3-control bp3-checkbox sc-VigVT dTZkaX"
                         >
-                          <textarea
-                            class="bp3-input sc-cSHVUG gCafTO"
-                            name="comment-Contest Name"
-                            placeholder="Add Note"
+                          <input
+                            type="checkbox"
                           />
-                        </div>
+                          <span
+                            class="small bp3-control-indicator"
+                          >
+                            <span
+                              class="checkbox-text"
+                            >
+                              Invalid Write-In
+                            </span>
+                          </span>
+                        </label>
+                        <textarea
+                          class="bp3-input sc-cSHVUG iENywS"
+                          name="comment-Contest Name"
+                          placeholder="Add Note"
+                        />
                       </div>
                     </div>
                   </div>
@@ -817,7 +863,7 @@ exports[`Ballot selects Blank Vote 1`] = `
                     class="sc-ifAKCX jzSIMx"
                   >
                     <button
-                      class="bp3-button bp3-large bp3-intent-success sc-jKJlTe hYVpwa sc-gqjmRU eotNvg"
+                      class="bp3-button bp3-large bp3-intent-success sc-chPdSV hbSLVF sc-gqjmRU eotNvg"
                       type="submit"
                     >
                       <span
@@ -842,7 +888,7 @@ exports[`Ballot selects Blank Vote 1`] = `
             </div>
           </div>
           <div
-            class="sc-eHgmQL hkDfEt"
+            class="sc-eNQAEJ fdspOC"
           >
             <h4
               class="bp3-heading"
@@ -850,7 +896,7 @@ exports[`Ballot selects Blank Vote 1`] = `
               Instructions
             </h4>
             <ol
-              class="bp3-list sc-brqgnP cxHmEu"
+              class="bp3-list sc-kkGfuU drhJhK"
             >
               <li>
                 Confirm that you are looking at the correct ballot for the batch and position. If the ballot was not located, select
@@ -870,7 +916,12 @@ exports[`Ballot selects Blank Vote 1`] = `
                 <strong>
                   Not on Ballot
                 </strong>
-                 if the contest does not appear on the ballot.
+                 if the contest does not appear on the ballot. Select
+                 
+                <strong>
+                  Invalid Write-In
+                </strong>
+                 for a write-in adjudicated as invalid.
               </li>
               <li>
                 Once all votes are recorded,
@@ -893,22 +944,22 @@ exports[`Ballot selects Not on Ballot 1`] = `
 <div>
   <div>
     <div
-      class="sc-hMqMXs hlEuTf"
+      class="sc-kGXeez iveVJo"
     >
       <div
-        class="sc-kkGfuU eOTllS"
+        class="sc-dxgOiQ cnAnsE"
       >
         <div
-          class="sc-iAyFgw ePMlNJ"
+          class="sc-ckVGcZ dWmLvW"
         >
           <div
-            class="sc-hSdWYo itUVyb"
+            class="sc-jKJlTe BtGnJ"
           >
             <div
-              class="sc-jWBwVP hYQrug"
+              class="sc-kEYyzF bYnpXO"
             >
               <button
-                class="bp3-button bp3-minimal sc-cvbbAY iAnrjt"
+                class="bp3-button bp3-minimal sc-hMqMXs gLjYcq"
                 href="/election/1/audit-board/1"
                 type="button"
               >
@@ -938,7 +989,7 @@ exports[`Ballot selects Not on Ballot 1`] = `
                 </span>
               </button>
               <h3
-                class="bp3-heading sc-kEYyzF eCqCcX"
+                class="bp3-heading sc-kpOJdX gOTkwU"
               >
                 Audit Ballot Selections
               </h3>
@@ -947,7 +998,7 @@ exports[`Ballot selects Not on Ballot 1`] = `
               class="bp3-divider sc-bdVaJa gqVLlZ"
             />
             <div
-              class="sc-kgoBCf lpnfg"
+              class="sc-jTzLTM jwrcvs"
             >
               <div>
                 <h5
@@ -956,7 +1007,7 @@ exports[`Ballot selects Not on Ballot 1`] = `
                   Tabulator
                 </h5>
                 <h4
-                  class="bp3-heading sc-kGXeez BgGit"
+                  class="bp3-heading sc-fjdhpX MzakE"
                 >
                   11
                 </h4>
@@ -968,7 +1019,7 @@ exports[`Ballot selects Not on Ballot 1`] = `
                   Batch
                 </h5>
                 <h4
-                  class="bp3-heading sc-kGXeez BgGit"
+                  class="bp3-heading sc-fjdhpX MzakE"
                 >
                   0003-04-Precinct 19 (Jonesboro Fire Department)
                 </h4>
@@ -980,14 +1031,14 @@ exports[`Ballot selects Not on Ballot 1`] = `
                   Ballot Number
                 </h5>
                 <h4
-                  class="bp3-heading sc-kGXeez BgGit"
+                  class="bp3-heading sc-fjdhpX MzakE"
                 >
                   2112
                 </h4>
               </div>
               <div>
                 <button
-                  class="bp3-button bp3-large bp3-intent-danger sc-kpOJdX TIXGk"
+                  class="bp3-button bp3-large bp3-intent-danger sc-jzJRlG cpuuIz"
                   type="button"
                 >
                   <span
@@ -1023,12 +1074,12 @@ exports[`Ballot selects Not on Ballot 1`] = `
                         class="sc-htoDjs ClGoI"
                       >
                         <h3
-                          class="bp3-heading sc-ckVGcZ bvdPk"
+                          class="bp3-heading sc-kAzzGY kxTNdi"
                         >
                           Contest Name
                         </h3>
                         <label
-                          class="bp3-control bp3-checkbox sc-chPdSV iBxXqw"
+                          class="bp3-control bp3-checkbox sc-VigVT dTZkaX"
                         >
                           <input
                             type="checkbox"
@@ -1044,7 +1095,7 @@ exports[`Ballot selects Not on Ballot 1`] = `
                           </span>
                         </label>
                         <label
-                          class="bp3-control bp3-checkbox sc-chPdSV iBxXqw"
+                          class="bp3-control bp3-checkbox sc-VigVT dTZkaX"
                         >
                           <input
                             type="checkbox"
@@ -1064,7 +1115,7 @@ exports[`Ballot selects Not on Ballot 1`] = `
                         class="sc-dnqmqq fUHzAV"
                       >
                         <label
-                          class="bp3-control bp3-checkbox sc-chPdSV iBxXqw"
+                          class="bp3-control bp3-checkbox sc-VigVT dTZkaX"
                         >
                           <input
                             type="checkbox"
@@ -1080,7 +1131,7 @@ exports[`Ballot selects Not on Ballot 1`] = `
                           </span>
                         </label>
                         <label
-                          class="bp3-control bp3-checkbox sc-chPdSV iBxXqw"
+                          class="bp3-control bp3-checkbox sc-VigVT dTZkaX"
                         >
                           <input
                             type="checkbox"
@@ -1095,15 +1146,27 @@ exports[`Ballot selects Not on Ballot 1`] = `
                             </span>
                           </span>
                         </label>
-                        <div
-                          class="sc-dxgOiQ jQgQXZ sc-fjdhpX fAFgBy"
+                        <label
+                          class="bp3-control bp3-checkbox sc-VigVT dTZkaX"
                         >
-                          <textarea
-                            class="bp3-input sc-cSHVUG gCafTO"
-                            name="comment-Contest Name"
-                            placeholder="Add Note"
+                          <input
+                            type="checkbox"
                           />
-                        </div>
+                          <span
+                            class="small bp3-control-indicator"
+                          >
+                            <span
+                              class="checkbox-text"
+                            >
+                              Invalid Write-In
+                            </span>
+                          </span>
+                        </label>
+                        <textarea
+                          class="bp3-input sc-cSHVUG iENywS"
+                          name="comment-Contest Name"
+                          placeholder="Add Note"
+                        />
                       </div>
                     </div>
                   </div>
@@ -1111,7 +1174,7 @@ exports[`Ballot selects Not on Ballot 1`] = `
                     class="sc-ifAKCX jzSIMx"
                   >
                     <button
-                      class="bp3-button bp3-large bp3-intent-success sc-jKJlTe hYVpwa sc-gqjmRU eotNvg"
+                      class="bp3-button bp3-large bp3-intent-success sc-chPdSV hbSLVF sc-gqjmRU eotNvg"
                       type="submit"
                     >
                       <span
@@ -1136,7 +1199,7 @@ exports[`Ballot selects Not on Ballot 1`] = `
             </div>
           </div>
           <div
-            class="sc-eHgmQL hkDfEt"
+            class="sc-eNQAEJ fdspOC"
           >
             <h4
               class="bp3-heading"
@@ -1144,7 +1207,7 @@ exports[`Ballot selects Not on Ballot 1`] = `
               Instructions
             </h4>
             <ol
-              class="bp3-list sc-brqgnP cxHmEu"
+              class="bp3-list sc-kkGfuU drhJhK"
             >
               <li>
                 Confirm that you are looking at the correct ballot for the batch and position. If the ballot was not located, select
@@ -1164,7 +1227,12 @@ exports[`Ballot selects Not on Ballot 1`] = `
                 <strong>
                   Not on Ballot
                 </strong>
-                 if the contest does not appear on the ballot.
+                 if the contest does not appear on the ballot. Select
+                 
+                <strong>
+                  Invalid Write-In
+                </strong>
+                 for a write-in adjudicated as invalid.
               </li>
               <li>
                 Once all votes are recorded,
@@ -1187,22 +1255,22 @@ exports[`Ballot switches audit and review views 1`] = `
 <div>
   <div>
     <div
-      class="sc-hMqMXs hlEuTf"
+      class="sc-kGXeez iveVJo"
     >
       <div
-        class="sc-kkGfuU eOTllS"
+        class="sc-dxgOiQ cnAnsE"
       >
         <div
-          class="sc-iAyFgw ePMlNJ"
+          class="sc-ckVGcZ dWmLvW"
         >
           <div
-            class="sc-hSdWYo itUVyb"
+            class="sc-jKJlTe BtGnJ"
           >
             <div
-              class="sc-jWBwVP hYQrug"
+              class="sc-kEYyzF bYnpXO"
             >
               <button
-                class="bp3-button bp3-minimal sc-cvbbAY iAnrjt"
+                class="bp3-button bp3-minimal sc-hMqMXs gLjYcq"
                 href="/election/1/audit-board/1"
                 type="button"
               >
@@ -1232,7 +1300,7 @@ exports[`Ballot switches audit and review views 1`] = `
                 </span>
               </button>
               <h3
-                class="bp3-heading sc-kEYyzF eCqCcX"
+                class="bp3-heading sc-kpOJdX gOTkwU"
               >
                 Audit Ballot Selections
               </h3>
@@ -1241,7 +1309,7 @@ exports[`Ballot switches audit and review views 1`] = `
               class="bp3-divider sc-bdVaJa gqVLlZ"
             />
             <div
-              class="sc-kgoBCf lpnfg"
+              class="sc-jTzLTM jwrcvs"
             >
               <div>
                 <h5
@@ -1250,7 +1318,7 @@ exports[`Ballot switches audit and review views 1`] = `
                   Tabulator
                 </h5>
                 <h4
-                  class="bp3-heading sc-kGXeez BgGit"
+                  class="bp3-heading sc-fjdhpX MzakE"
                 >
                   11
                 </h4>
@@ -1262,7 +1330,7 @@ exports[`Ballot switches audit and review views 1`] = `
                   Batch
                 </h5>
                 <h4
-                  class="bp3-heading sc-kGXeez BgGit"
+                  class="bp3-heading sc-fjdhpX MzakE"
                 >
                   0003-04-Precinct 19 (Jonesboro Fire Department)
                 </h4>
@@ -1274,14 +1342,14 @@ exports[`Ballot switches audit and review views 1`] = `
                   Ballot Number
                 </h5>
                 <h4
-                  class="bp3-heading sc-kGXeez BgGit"
+                  class="bp3-heading sc-fjdhpX MzakE"
                 >
                   2112
                 </h4>
               </div>
               <div>
                 <button
-                  class="bp3-button bp3-large bp3-intent-danger sc-kpOJdX TIXGk"
+                  class="bp3-button bp3-large bp3-intent-danger sc-jzJRlG cpuuIz"
                   type="button"
                 >
                   <span
@@ -1317,12 +1385,12 @@ exports[`Ballot switches audit and review views 1`] = `
                         class="sc-htoDjs ClGoI"
                       >
                         <h3
-                          class="bp3-heading sc-ckVGcZ bvdPk"
+                          class="bp3-heading sc-kAzzGY kxTNdi"
                         >
                           Contest Name
                         </h3>
                         <label
-                          class="bp3-control bp3-checkbox sc-chPdSV iBxXqw"
+                          class="bp3-control bp3-checkbox sc-VigVT dTZkaX"
                         >
                           <input
                             type="checkbox"
@@ -1338,7 +1406,7 @@ exports[`Ballot switches audit and review views 1`] = `
                           </span>
                         </label>
                         <label
-                          class="bp3-control bp3-checkbox sc-chPdSV iBxXqw"
+                          class="bp3-control bp3-checkbox sc-VigVT dTZkaX"
                         >
                           <input
                             type="checkbox"
@@ -1358,7 +1426,7 @@ exports[`Ballot switches audit and review views 1`] = `
                         class="sc-dnqmqq fUHzAV"
                       >
                         <label
-                          class="bp3-control bp3-checkbox sc-chPdSV iBxXqw"
+                          class="bp3-control bp3-checkbox sc-VigVT dTZkaX"
                         >
                           <input
                             type="checkbox"
@@ -1374,7 +1442,7 @@ exports[`Ballot switches audit and review views 1`] = `
                           </span>
                         </label>
                         <label
-                          class="bp3-control bp3-checkbox sc-chPdSV iBxXqw"
+                          class="bp3-control bp3-checkbox sc-VigVT dTZkaX"
                         >
                           <input
                             type="checkbox"
@@ -1389,15 +1457,27 @@ exports[`Ballot switches audit and review views 1`] = `
                             </span>
                           </span>
                         </label>
-                        <div
-                          class="sc-dxgOiQ jQgQXZ sc-fjdhpX fAFgBy"
+                        <label
+                          class="bp3-control bp3-checkbox sc-VigVT dTZkaX"
                         >
-                          <textarea
-                            class="bp3-input sc-cSHVUG gCafTO"
-                            name="comment-Contest Name"
-                            placeholder="Add Note"
+                          <input
+                            type="checkbox"
                           />
-                        </div>
+                          <span
+                            class="small bp3-control-indicator"
+                          >
+                            <span
+                              class="checkbox-text"
+                            >
+                              Invalid Write-In
+                            </span>
+                          </span>
+                        </label>
+                        <textarea
+                          class="bp3-input sc-cSHVUG iENywS"
+                          name="comment-Contest Name"
+                          placeholder="Add Note"
+                        />
                       </div>
                     </div>
                   </div>
@@ -1405,7 +1485,7 @@ exports[`Ballot switches audit and review views 1`] = `
                     class="sc-ifAKCX jzSIMx"
                   >
                     <button
-                      class="bp3-button bp3-large bp3-intent-success sc-jKJlTe hYVpwa sc-gqjmRU eotNvg"
+                      class="bp3-button bp3-large bp3-intent-success sc-chPdSV hbSLVF sc-gqjmRU eotNvg"
                       type="submit"
                     >
                       <span
@@ -1430,7 +1510,7 @@ exports[`Ballot switches audit and review views 1`] = `
             </div>
           </div>
           <div
-            class="sc-eHgmQL hkDfEt"
+            class="sc-eNQAEJ fdspOC"
           >
             <h4
               class="bp3-heading"
@@ -1438,7 +1518,7 @@ exports[`Ballot switches audit and review views 1`] = `
               Instructions
             </h4>
             <ol
-              class="bp3-list sc-brqgnP cxHmEu"
+              class="bp3-list sc-kkGfuU drhJhK"
             >
               <li>
                 Confirm that you are looking at the correct ballot for the batch and position. If the ballot was not located, select
@@ -1458,7 +1538,12 @@ exports[`Ballot switches audit and review views 1`] = `
                 <strong>
                   Not on Ballot
                 </strong>
-                 if the contest does not appear on the ballot.
+                 if the contest does not appear on the ballot. Select
+                 
+                <strong>
+                  Invalid Write-In
+                </strong>
+                 for a write-in adjudicated as invalid.
               </li>
               <li>
                 Once all votes are recorded,

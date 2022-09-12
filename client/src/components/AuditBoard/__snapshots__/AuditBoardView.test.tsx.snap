@@ -6,10 +6,10 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
     class="sc-htpNat cBZqYS"
   >
     <div
-      class="bp3-navbar sc-ksYbfQ QHGZm"
+      class="bp3-navbar sc-gisBJw dpeRNj"
     >
       <div
-        class="sc-bxivhb sc-frDJqD fHxfRa"
+        class="sc-bxivhb sc-cHGsZl leMjvM"
       >
         <div
           class="bp3-navbar-group bp3-align-left"
@@ -61,19 +61,19 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
         class="sc-bxivhb imUAuK"
       >
         <div
-          class="sc-fMiknA dSOusv"
+          class="sc-csuQGl cKHbnJ"
         >
           <div
-            class="sc-dVhcbM eppSxF"
+            class="sc-Rmtcm evvFKW"
           >
             <div
-              class="sc-eqIVtm frkvBF"
+              class="sc-bRBYWo eNFGUv"
             >
               <div
-                class="sc-gisBJw bOlyDI"
+                class="sc-fBuWsC iwWyFr"
               >
                 <button
-                  class="bp3-button bp3-minimal sc-caSCKo gfxreq"
+                  class="bp3-button bp3-minimal sc-jhAzac coxLCj"
                   href="/election/1/audit-board/audit-board-1"
                   type="button"
                 >
@@ -103,7 +103,7 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
                   </span>
                 </button>
                 <h3
-                  class="bp3-heading sc-fBuWsC WkuWb"
+                  class="bp3-heading sc-gipzik eQUCeP"
                 >
                   Audit Ballot Selections
                 </h3>
@@ -112,7 +112,7 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
                 class="bp3-divider sc-ckVGcZ dgQdnS"
               />
               <div
-                class="sc-gipzik ekuIFz"
+                class="sc-cMljjf ijrbIJ"
               >
                 <div>
                   <h5
@@ -121,7 +121,7 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
                     Tabulator
                   </h5>
                   <h4
-                    class="bp3-heading sc-csuQGl kiBObf"
+                    class="bp3-heading sc-jAaTju bJLMVU"
                   >
                     11
                   </h4>
@@ -133,7 +133,7 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
                     Batch
                   </h5>
                   <h4
-                    class="bp3-heading sc-csuQGl kiBObf"
+                    class="bp3-heading sc-jAaTju bJLMVU"
                   >
                     0003-04-Precinct 19 (Jonesboro Fire Department)
                   </h4>
@@ -145,14 +145,14 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
                     Ballot Number
                   </h5>
                   <h4
-                    class="bp3-heading sc-csuQGl kiBObf"
+                    class="bp3-heading sc-jAaTju bJLMVU"
                   >
                     2112
                   </h4>
                 </div>
                 <div>
                   <button
-                    class="bp3-button bp3-large bp3-intent-danger sc-Rmtcm iksoTS"
+                    class="bp3-button bp3-large bp3-intent-danger sc-jDwBTQ zUGYg"
                     type="button"
                   >
                     <span
@@ -188,12 +188,12 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
                           class="sc-eHgmQL kYkRfs"
                         >
                           <h3
-                            class="bp3-heading sc-hzDkRC BSXNx"
+                            class="bp3-heading sc-iRbamj gePPsN"
                           >
                             Contest 1
                           </h3>
                           <label
-                            class="bp3-control bp3-checkbox sc-jlyJG WRwCB"
+                            class="bp3-control bp3-checkbox sc-brqgnP iQRexL"
                           >
                             <input
                               type="checkbox"
@@ -209,7 +209,7 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
                             </span>
                           </label>
                           <label
-                            class="bp3-control bp3-checkbox sc-jlyJG WRwCB"
+                            class="bp3-control bp3-checkbox sc-brqgnP iQRexL"
                           >
                             <input
                               type="checkbox"
@@ -229,7 +229,7 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
                           class="sc-cvbbAY ixevJx"
                         >
                           <label
-                            class="bp3-control bp3-checkbox sc-jlyJG WRwCB"
+                            class="bp3-control bp3-checkbox sc-brqgnP iQRexL"
                           >
                             <input
                               type="checkbox"
@@ -245,7 +245,7 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
                             </span>
                           </label>
                           <label
-                            class="bp3-control bp3-checkbox sc-jlyJG WRwCB"
+                            class="bp3-control bp3-checkbox sc-brqgnP iQRexL"
                           >
                             <input
                               type="checkbox"
@@ -260,15 +260,27 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
                               </span>
                             </span>
                           </label>
-                          <div
-                            class="sc-bRBYWo fhNHFP sc-jAaTju bNEIBb"
+                          <label
+                            class="bp3-control bp3-checkbox sc-brqgnP iQRexL"
                           >
-                            <textarea
-                              class="bp3-input sc-gPEVay ildqic"
-                              name="comment-Contest 1"
-                              placeholder="Add Note"
+                            <input
+                              type="checkbox"
                             />
-                          </div>
+                            <span
+                              class="small bp3-control-indicator"
+                            >
+                              <span
+                                class="checkbox-text"
+                              >
+                                Invalid Write-In
+                              </span>
+                            </span>
+                          </label>
+                          <textarea
+                            class="bp3-input sc-gPEVay kBKLHX"
+                            name="comment-Contest 1"
+                            placeholder="Add Note"
+                          />
                         </div>
                       </div>
                     </div>
@@ -282,12 +294,12 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
                           class="sc-eHgmQL kYkRfs"
                         >
                           <h3
-                            class="bp3-heading sc-hzDkRC BSXNx"
+                            class="bp3-heading sc-iRbamj gePPsN"
                           >
                             Contest 2
                           </h3>
                           <label
-                            class="bp3-control bp3-checkbox sc-jlyJG WRwCB"
+                            class="bp3-control bp3-checkbox sc-brqgnP iQRexL"
                           >
                             <input
                               type="checkbox"
@@ -303,7 +315,7 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
                             </span>
                           </label>
                           <label
-                            class="bp3-control bp3-checkbox sc-jlyJG WRwCB"
+                            class="bp3-control bp3-checkbox sc-brqgnP iQRexL"
                           >
                             <input
                               type="checkbox"
@@ -323,7 +335,7 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
                           class="sc-cvbbAY ixevJx"
                         >
                           <label
-                            class="bp3-control bp3-checkbox sc-jlyJG WRwCB"
+                            class="bp3-control bp3-checkbox sc-brqgnP iQRexL"
                           >
                             <input
                               type="checkbox"
@@ -339,7 +351,7 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
                             </span>
                           </label>
                           <label
-                            class="bp3-control bp3-checkbox sc-jlyJG WRwCB"
+                            class="bp3-control bp3-checkbox sc-brqgnP iQRexL"
                           >
                             <input
                               type="checkbox"
@@ -354,15 +366,27 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
                               </span>
                             </span>
                           </label>
-                          <div
-                            class="sc-bRBYWo fhNHFP sc-jAaTju bNEIBb"
+                          <label
+                            class="bp3-control bp3-checkbox sc-brqgnP iQRexL"
                           >
-                            <textarea
-                              class="bp3-input sc-gPEVay ildqic"
-                              name="comment-Contest 2"
-                              placeholder="Add Note"
+                            <input
+                              type="checkbox"
                             />
-                          </div>
+                            <span
+                              class="small bp3-control-indicator"
+                            >
+                              <span
+                                class="checkbox-text"
+                              >
+                                Invalid Write-In
+                              </span>
+                            </span>
+                          </label>
+                          <textarea
+                            class="bp3-input sc-gPEVay kBKLHX"
+                            name="comment-Contest 2"
+                            placeholder="Add Note"
+                          />
                         </div>
                       </div>
                     </div>
@@ -370,7 +394,7 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
                       class="sc-kEYyzF hgMwhC"
                     >
                       <button
-                        class="bp3-button bp3-disabled bp3-large bp3-intent-success sc-jhAzac evJAVP sc-dxgOiQ iagcVQ"
+                        class="bp3-button bp3-disabled bp3-large bp3-intent-success sc-jlyJG ezzNhI sc-dxgOiQ iagcVQ"
                         disabled=""
                         tabindex="-1"
                         type="submit"
@@ -397,7 +421,7 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
               </div>
             </div>
             <div
-              class="sc-fAjcbJ fMLyib"
+              class="sc-hzDkRC kAgOIS"
             >
               <h4
                 class="bp3-heading"
@@ -405,7 +429,7 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
                 Instructions
               </h4>
               <ol
-                class="bp3-list sc-kjoXOD ilvKfD"
+                class="bp3-list sc-fMiknA limQSO"
               >
                 <li>
                   Confirm that you are looking at the correct ballot for the batch and position. If the ballot was not located, select
@@ -425,7 +449,12 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
                   <strong>
                     Not on Ballot
                   </strong>
-                   if the contest does not appear on the ballot.
+                   if the contest does not appear on the ballot. Select
+                   
+                  <strong>
+                    Invalid Write-In
+                  </strong>
+                   for a write-in adjudicated as invalid.
                 </li>
                 <li>
                   Once all votes are recorded,
@@ -451,10 +480,10 @@ exports[`AuditBoardView ballot interaction renders board table with ballots 1`] 
     class="sc-htpNat cBZqYS"
   >
     <div
-      class="bp3-navbar sc-ksYbfQ QHGZm"
+      class="bp3-navbar sc-gisBJw dpeRNj"
     >
       <div
-        class="sc-bxivhb sc-frDJqD fHxfRa"
+        class="sc-bxivhb sc-cHGsZl leMjvM"
       >
         <div
           class="bp3-navbar-group bp3-align-left"
@@ -2732,10 +2761,10 @@ exports[`AuditBoardView ballot interaction renders board table with no audited b
     class="sc-htpNat cBZqYS"
   >
     <div
-      class="bp3-navbar sc-ksYbfQ QHGZm"
+      class="bp3-navbar sc-gisBJw dpeRNj"
     >
       <div
-        class="sc-bxivhb sc-frDJqD fHxfRa"
+        class="sc-bxivhb sc-cHGsZl leMjvM"
       >
         <div
           class="bp3-navbar-group bp3-align-left"
@@ -4635,10 +4664,10 @@ exports[`AuditBoardView ballot interaction renders board table with no ballots 1
     class="sc-htpNat cBZqYS"
   >
     <div
-      class="bp3-navbar sc-ksYbfQ QHGZm"
+      class="bp3-navbar sc-gisBJw dpeRNj"
     >
       <div
-        class="sc-bxivhb sc-frDJqD fHxfRa"
+        class="sc-bxivhb sc-cHGsZl leMjvM"
       >
         <div
           class="bp3-navbar-group bp3-align-left"
@@ -4959,10 +4988,10 @@ exports[`AuditBoardView member form submits, goes to ballot table, and header sh
     class="sc-htpNat cBZqYS"
   >
     <div
-      class="bp3-navbar sc-ksYbfQ QHGZm"
+      class="bp3-navbar sc-gisBJw dpeRNj"
     >
       <div
-        class="sc-bxivhb sc-frDJqD fHxfRa"
+        class="sc-bxivhb sc-cHGsZl leMjvM"
       >
         <div
           class="bp3-navbar-group bp3-align-left"

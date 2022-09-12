@@ -165,6 +165,7 @@ def audit_ballot(
     interpretation: Interpretation,
     choices: List[ContestChoice] = None,
     is_overvote: bool = False,
+    has_invalid_write_in: bool = False,
 ):
     # Make sure we don't try to audit this ballot twice for this contest
     if not any(i for i in ballot.interpretations if i.contest_id == contest_id):
@@ -175,13 +176,18 @@ def audit_ballot(
                 interpretation=interpretation,
                 selected_choices=choices or [],
                 is_overvote=is_overvote,
+                has_invalid_write_in=has_invalid_write_in,
             )
         ]
         ballot.status = BallotStatus.AUDITED
 
 
 def run_audit_round(
-    round_id: str, target_contest_id: str, contest_ids: List[str], vote_ratio: float
+    round_id: str,
+    target_contest_id: str,
+    contest_ids: List[str],
+    vote_ratio: float,
+    invalid_write_in_ratio: float = 0,
 ):
     round = Round.query.get(round_id)
     contest = Contest.query.get(target_contest_id)
@@ -193,13 +199,19 @@ def run_audit_round(
         .order_by(Batch.name, SampledBallot.ballot_position)
         .all()
     )
-    winner_votes = int(vote_ratio * len(ballot_draws))
-    for ballot_draw in ballot_draws[:winner_votes]:
+
+    num_winner_votes = int(vote_ratio * len(ballot_draws))
+    num_loser_votes = len(ballot_draws) - num_winner_votes
+    num_winner_invalid_write_ins = int(invalid_write_in_ratio * num_winner_votes)
+    num_loser_invalid_write_ins = int(invalid_write_in_ratio * num_loser_votes)
+
+    for i, ballot_draw in enumerate(ballot_draws[:num_winner_votes]):
         audit_ballot(
             ballot_draw.sampled_ballot,
             contest.id,
             Interpretation.VOTE,
             [contest.choices[0]],
+            has_invalid_write_in=(i < num_winner_invalid_write_ins),
         )
         for other_contest_id in other_contest_ids:
             audit_ballot(
@@ -207,12 +219,50 @@ def run_audit_round(
                 other_contest_id,
                 Interpretation.CONTEST_NOT_ON_BALLOT,
             )
-    for ballot_draw in ballot_draws[winner_votes:]:
+    for i, ballot_draw in enumerate(ballot_draws[num_winner_votes:]):
         audit_ballot(
             ballot_draw.sampled_ballot,
             contest.id,
             Interpretation.VOTE,
             [contest.choices[1]],
+            has_invalid_write_in=(i < num_loser_invalid_write_ins),
+        )
+        for other_contest_id in other_contest_ids:
+            audit_ballot(
+                ballot_draw.sampled_ballot,
+                other_contest_id,
+                Interpretation.CONTEST_NOT_ON_BALLOT,
+            )
+    end_round(round.election, round)
+    db_session.commit()
+
+
+def run_audit_round_all_blanks(
+    round_id: str,
+    target_contest_id: str,
+    contest_ids: List[str],
+    invalid_write_in_ratio: float = 0,
+):
+    round = Round.query.get(round_id)
+    contest = Contest.query.get(target_contest_id)
+    other_contest_ids = set(contest_ids) - {target_contest_id}
+    ballot_draws = (
+        SampledBallotDraw.query.filter_by(round_id=round_id)
+        .join(SampledBallot)
+        .join(Batch)
+        .order_by(Batch.name, SampledBallot.ballot_position)
+        .all()
+    )
+
+    num_invalid_write_ins = int(invalid_write_in_ratio * len(ballot_draws))
+
+    for i, ballot_draw in enumerate(ballot_draws):
+        audit_ballot(
+            ballot_draw.sampled_ballot,
+            contest.id,
+            Interpretation.BLANK,
+            [],
+            has_invalid_write_in=(i < num_invalid_write_ins),
         )
         for other_contest_id in other_contest_ids:
             audit_ballot(

@@ -401,7 +401,11 @@ def test_contest_names_dont_match_cvr_contests(
 
 
 def audit_all_ballots(
-    round_id: str, audit_results, target_contest_id, opportunistic_contest_id
+    round_id: str,
+    audit_results,
+    target_contest_id,
+    opportunistic_contest_id,
+    invalid_write_in_ratio=0.1,
 ):
     choice_1_1, choice_1_2, *_ = sorted(
         Contest.query.get(target_contest_id).choices,
@@ -433,8 +437,10 @@ def audit_all_ballots(
 
     assert sorted(sampled_ballot_keys) == sorted(list(audit_results.keys()))
 
-    for ballot in sampled_ballots:
+    num_sampled_ballots = len(sampled_ballots)
+    for i, ballot in enumerate(sampled_ballots):
         interpretation_str, _ = audit_results[ballot_key(ballot)]
+        has_invalid_write_in = i < num_sampled_ballots * invalid_write_in_ratio
 
         if interpretation_str == "not found":
             ballot.status = BallotStatus.NOT_FOUND
@@ -443,8 +449,18 @@ def audit_all_ballots(
         ballot.status = BallotStatus.AUDITED
 
         if interpretation_str == "blank":
-            audit_ballot(ballot, target_contest_id, Interpretation.BLANK)
-            audit_ballot(ballot, opportunistic_contest_id, Interpretation.BLANK)
+            audit_ballot(
+                ballot,
+                target_contest_id,
+                Interpretation.BLANK,
+                has_invalid_write_in=has_invalid_write_in,
+            )
+            audit_ballot(
+                ballot,
+                opportunistic_contest_id,
+                Interpretation.BLANK,
+                has_invalid_write_in=has_invalid_write_in,
+            )
 
         else:
             (
@@ -469,6 +485,7 @@ def audit_all_ballots(
                     else Interpretation.VOTE
                 ),
                 target_choices,
+                has_invalid_write_in=has_invalid_write_in,
             )
 
             opportunistic_choices = (
@@ -487,6 +504,7 @@ def audit_all_ballots(
                     else Interpretation.VOTE
                 ),
                 opportunistic_choices,
+                has_invalid_write_in=has_invalid_write_in,
             )
 
     end_round(round.election, round)

@@ -307,6 +307,7 @@ describe('AuditBoardView', () => {
               interpretation: 'VOTE',
               choiceIds: ['choice-id-1'],
               comment: null,
+              hasInvalidWriteIn: false,
             },
           ],
         }),
@@ -358,12 +359,14 @@ describe('AuditBoardView', () => {
               interpretation: 'VOTE',
               choiceIds: ['choice-id-1'],
               comment: null,
+              hasInvalidWriteIn: false,
             },
             {
               contestId: 'contest-id-2',
               interpretation: 'CONTEST_NOT_ON_BALLOT',
               choiceIds: [],
               comment: null,
+              hasInvalidWriteIn: false,
             },
           ],
         }),
@@ -441,6 +444,7 @@ describe('AuditBoardView', () => {
               interpretation: 'VOTE',
               choiceIds: ['choice-id-3'],
               comment: null,
+              hasInvalidWriteIn: false,
             },
           ],
         }),
@@ -621,6 +625,152 @@ describe('AuditBoardView', () => {
           expect(dialog2).not.toBeInTheDocument()
         })
         await screen.findByText('Audit Ballot Selections')
+      })
+    })
+
+    it('handles "Invalid Write-In" selection', async () => {
+      const invalidWriteInInterpretations = [
+        {
+          contestId: 'contest-id-1',
+          interpretation: 'BLANK',
+          choiceIds: [],
+          comment: null,
+          hasInvalidWriteIn: true,
+        },
+        {
+          contestId: 'contest-id-2',
+          interpretation: 'VOTE',
+          choiceIds: ['choice-id-3'],
+          comment: null,
+          hasInvalidWriteIn: true,
+        },
+      ]
+      const expectedCalls = [
+        apiCalls.getAuditBoard,
+        apiCalls.getAuditBoard,
+        apiCalls.getContests,
+        apiCalls.getBallotsInitial,
+        apiCalls.putAuditBallot('ballot-id-2', {
+          status: 'AUDITED',
+          interpretations: invalidWriteInInterpretations,
+        }),
+        {
+          ...apiCalls.getBallotsOneAudited,
+          response: {
+            ballots: [
+              dummyBallots.ballots[0],
+              {
+                ...doneDummyBallots.ballots[1],
+                interpretations: invalidWriteInInterpretations,
+              },
+              ...dummyBallots.ballots.slice(2),
+            ],
+          },
+        },
+      ]
+      await withMockFetch(expectedCalls, async () => {
+        renderAuditBoardView()
+
+        userEvent.click(
+          await screen.findByRole('button', { name: 'Audit Next Ballot' })
+        )
+        await screen.findByRole('heading', { name: 'Ballot Contests' })
+        const submitSelectionsButton = screen.getByRole('button', {
+          name: 'Submit Selections',
+        })
+        expect(submitSelectionsButton).toBeDisabled()
+
+        // ----- Contest 1 -----
+
+        let contest1InvalidWriteInButton = screen.getAllByRole('checkbox', {
+          name: 'Invalid Write-In',
+        })[0]
+        const contest1BlankVoteButton = screen.getAllByRole('checkbox', {
+          name: 'Blank Vote',
+        })[0]
+
+        // Check that "Invalid Write-In" can be selected and unselected
+        userEvent.click(contest1InvalidWriteInButton)
+        expect(contest1InvalidWriteInButton).toBeChecked()
+        expect(submitSelectionsButton).toBeEnabled()
+        userEvent.click(contest1InvalidWriteInButton)
+        expect(contest1InvalidWriteInButton).not.toBeChecked()
+        expect(submitSelectionsButton).toBeDisabled()
+
+        // Check that selecting "Blank Vote" unselects "Invalid Write-In"
+        userEvent.click(contest1InvalidWriteInButton)
+        expect(contest1InvalidWriteInButton).toBeChecked()
+        userEvent.click(contest1BlankVoteButton)
+        expect(contest1InvalidWriteInButton).not.toBeChecked()
+
+        // Finish contest 1 with "Invalid Write-In" selected
+        userEvent.click(contest1InvalidWriteInButton)
+        expect(contest1InvalidWriteInButton).toBeChecked()
+
+        // ----- Contest 2 -----
+
+        let contest2InvalidWriteInButton = screen.getAllByRole('checkbox', {
+          name: 'Invalid Write-In',
+        })[1]
+        let contest2ChoiceButton = screen.getByRole('checkbox', {
+          name: 'Choice Three',
+        })
+
+        // Check that both valid choice and "Invalid Write-In" can be selected
+        userEvent.click(contest2ChoiceButton)
+        userEvent.click(contest2InvalidWriteInButton)
+        expect(contest2ChoiceButton).toBeChecked()
+        expect(contest2InvalidWriteInButton).toBeChecked()
+
+        // Check that unselecting "Invalid Write-In" leaves valid choice selected
+        userEvent.click(contest2InvalidWriteInButton)
+        expect(contest2InvalidWriteInButton).not.toBeChecked()
+        expect(contest2ChoiceButton).toBeChecked()
+
+        // Finish contest 2 with valid choice and "Invalid Write-In" selected
+        userEvent.click(contest2InvalidWriteInButton)
+        expect(contest2InvalidWriteInButton).toBeChecked()
+
+        // ----- Submission -----
+
+        userEvent.click(submitSelectionsButton)
+        const confirmationDialog = (
+          await screen.findByRole('heading', {
+            name:
+              'Confirm the Ballot Selections Batch 0003-04-Precinct 19 (Jonesboro Fire Department) · Ballot Number 2112',
+          })
+        ).closest('.bp3-dialog')! as HTMLElement
+        expect(
+          within(confirmationDialog).getAllByText('Invalid Write-In')
+        ).toHaveLength(2)
+        expect(within(confirmationDialog).getByText('Choice Three'))
+        userEvent.click(
+          within(confirmationDialog).getByRole('button', {
+            name: 'Confirm Selections',
+          })
+        )
+        await waitFor(() => {
+          expect(confirmationDialog).not.toBeInTheDocument()
+        })
+
+        // ----- Revisiting audited ballot -----
+
+        userEvent.click(screen.getByRole('button', { name: /All Ballots/ }))
+        userEvent.click(
+          (await screen.findAllByRole('button', { name: 'Re-Audit' }))[1]
+        )
+        ;[
+          contest1InvalidWriteInButton,
+          contest2InvalidWriteInButton,
+        ] = screen.getAllByRole('checkbox', {
+          name: 'Invalid Write-In',
+        })
+        contest2ChoiceButton = screen.getByRole('checkbox', {
+          name: 'Choice Three',
+        })
+        expect(contest1InvalidWriteInButton).toBeChecked()
+        expect(contest2ChoiceButton).toBeChecked()
+        expect(contest2InvalidWriteInButton).toBeChecked()
       })
     })
   })

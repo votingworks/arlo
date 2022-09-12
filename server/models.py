@@ -677,6 +677,11 @@ class BallotInterpretation(BaseModel):
     # recompute this in different places.
     is_overvote = Column(Boolean, nullable=False)
 
+    # If a ballot has an invalid write-in with no other selections, the corresponding interpretation
+    # will be BLANK. If a ballot for a vote-for-n contest has an invalid write-in alongside a valid
+    # selection, the corresponding interpretation will be VOTE.
+    has_invalid_write_in = Column(Boolean, nullable=False)
+
 
 # Represents the choices selected on the ballot (as interpreted by an audit board).
 ballot_interpretation_contest_choice = Table(
