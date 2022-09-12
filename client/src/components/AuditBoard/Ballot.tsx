@@ -6,8 +6,8 @@ import { toast } from 'react-toastify'
 import LinkButton from '../Atoms/LinkButton'
 import BallotAudit from './BallotAudit'
 import {
-  ballotInterpretationFromFormRepresentation,
-  IBallotInterpretationFormRepresentation,
+  ballotInterpretationFromFormState,
+  IBallotInterpretationFormState,
 } from './ballotInterpretation'
 import {
   IBallotInterpretation,
@@ -106,12 +106,12 @@ interface IProps {
   ) => void
 }
 
-interface IRenderedInterpretationProps {
-  interpretation: IBallotInterpretationFormRepresentation
+interface IInterpretationSummaryProps {
+  interpretation: IBallotInterpretationFormState
   contest: IContest
 }
 
-const RenderedInterpretation: React.FC<IRenderedInterpretationProps> = ({
+const InterpretationSummary: React.FC<IInterpretationSummaryProps> = ({
   interpretation,
   contest,
 }) => {
@@ -180,7 +180,7 @@ const Ballot: React.FC<IProps> = ({
   )
 
   const confirmSelections = (
-    newInterpretations: IBallotInterpretationFormRepresentation[]
+    newInterpretations: IBallotInterpretationFormState[]
   ) => {
     confirm({
       title: confirmationModalTitle,
@@ -189,7 +189,7 @@ const Ballot: React.FC<IProps> = ({
           {contests.map((contest, i) => (
             <div key={contest.id}>
               <p>{contest.name}</p>
-              <RenderedInterpretation
+              <InterpretationSummary
                 interpretation={newInterpretations[i]}
                 contest={contest}
               />
@@ -206,7 +206,7 @@ const Ballot: React.FC<IProps> = ({
           ballot.id,
           BallotStatus.AUDITED,
           newInterpretations
-            .map(ballotInterpretationFromFormRepresentation)
+            .map(ballotInterpretationFromFormState)
             .filter(({ interpretation }) => interpretation !== null)
         )
         toast.success('Success! Now showing the next ballot to audit.')

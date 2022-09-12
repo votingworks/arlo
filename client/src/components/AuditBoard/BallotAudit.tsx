@@ -16,8 +16,8 @@ import { Interpretation, IContest } from '../../types'
 import { IBallot } from '../JurisdictionAdmin/useBallots'
 import BlockCheckbox from './BlockCheckbox'
 import {
-  ballotInterpretationToFormRepresentation,
-  IBallotInterpretationFormRepresentation,
+  ballotInterpretationToFormState,
+  IBallotInterpretationFormState,
   INVALID_WRITE_IN,
 } from './ballotInterpretation'
 
@@ -71,7 +71,7 @@ const SubmitButton = styled(FormButton)`
 
 function constructEmptyInterpretation(
   contest: IContest
-): IBallotInterpretationFormRepresentation {
+): IBallotInterpretationFormState {
   return {
     choiceIds: [],
     comment: null,
@@ -87,7 +87,7 @@ function hasInterpretationBeenSpecified({
   isBlankVoteChecked,
   isContestNotOnBallotChecked,
   isInvalidWriteInChecked,
-}: IBallotInterpretationFormRepresentation): boolean {
+}: IBallotInterpretationFormState): boolean {
   return (
     choiceIds.length > 0 ||
     isBlankVoteChecked ||
@@ -99,9 +99,7 @@ function hasInterpretationBeenSpecified({
 interface IProps {
   ballot: IBallot
   contests: IContest[]
-  confirmSelections: (
-    interpretations: IBallotInterpretationFormRepresentation[]
-  ) => void
+  confirmSelections: (interpretations: IBallotInterpretationFormState[]) => void
   confirmBallotNotFound: () => void
   previousBallot: () => void
   // eslint-disable-next-line react/no-unused-prop-types
@@ -120,7 +118,7 @@ const BallotAudit: React.FC<IProps> = ({
       i => i.contestId === contest.id
     )
     return ballotInterpretation
-      ? ballotInterpretationToFormRepresentation(ballotInterpretation)
+      ? ballotInterpretationToFormState(ballotInterpretation)
       : constructEmptyInterpretation(contest)
   })
   const [interpretations, setInterpretations] = useState(initialInterpretations)
@@ -212,8 +210,8 @@ const BallotAudit: React.FC<IProps> = ({
 
 interface IBallotAuditContestProps {
   contest: IContest
-  interpretation: IBallotInterpretationFormRepresentation
-  setInterpretation: (i: IBallotInterpretationFormRepresentation) => void
+  interpretation: IBallotInterpretationFormState
+  setInterpretation: (i: IBallotInterpretationFormState) => void
 }
 
 const BallotAuditContest = ({
@@ -234,49 +232,28 @@ const BallotAuditContest = ({
   ) => {
     const { checked } = e.currentTarget
     if (value === Interpretation.BLANK) {
-      if (checked) {
-        setInterpretation({
-          ...interpretation,
-          choiceIds: [],
-          isBlankVoteChecked: true,
-          isContestNotOnBallotChecked: false,
-          isInvalidWriteInChecked: false,
-        })
-      } else {
-        setInterpretation({
-          ...interpretation,
-          isBlankVoteChecked: false,
-        })
-      }
+      setInterpretation({
+        ...interpretation,
+        choiceIds: [],
+        isBlankVoteChecked: checked,
+        isContestNotOnBallotChecked: false,
+        isInvalidWriteInChecked: false,
+      })
     } else if (value === Interpretation.CONTEST_NOT_ON_BALLOT) {
-      if (checked) {
-        setInterpretation({
-          ...interpretation,
-          choiceIds: [],
-          isBlankVoteChecked: false,
-          isContestNotOnBallotChecked: true,
-          isInvalidWriteInChecked: false,
-        })
-      } else {
-        setInterpretation({
-          ...interpretation,
-          isContestNotOnBallotChecked: false,
-        })
-      }
+      setInterpretation({
+        ...interpretation,
+        choiceIds: [],
+        isBlankVoteChecked: false,
+        isContestNotOnBallotChecked: checked,
+        isInvalidWriteInChecked: false,
+      })
     } else if (value === INVALID_WRITE_IN) {
-      if (checked) {
-        setInterpretation({
-          ...interpretation,
-          isBlankVoteChecked: false,
-          isContestNotOnBallotChecked: false,
-          isInvalidWriteInChecked: true,
-        })
-      } else {
-        setInterpretation({
-          ...interpretation,
-          isInvalidWriteInChecked: false,
-        })
-      }
+      setInterpretation({
+        ...interpretation,
+        isBlankVoteChecked: false,
+        isContestNotOnBallotChecked: false,
+        isInvalidWriteInChecked: checked,
+      })
     } else {
       const newChoiceIds = checked
         ? [...choiceIds, value]

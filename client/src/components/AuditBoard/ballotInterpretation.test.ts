@@ -1,14 +1,14 @@
 import {
-  ballotInterpretationFromFormRepresentation,
-  ballotInterpretationToFormRepresentation,
-  IBallotInterpretationFormRepresentation,
+  ballotInterpretationFromFormState,
+  ballotInterpretationToFormState,
+  IBallotInterpretationFormState,
 } from './ballotInterpretation'
 import { IBallotInterpretation, Interpretation } from '../../types'
 
 const testCases: [
   string, // Description
   IBallotInterpretation,
-  IBallotInterpretationFormRepresentation
+  IBallotInterpretationFormState
 ][] = [
   [
     'no interpretation',
@@ -121,18 +121,12 @@ const testCases: [
 ]
 test.each(testCases)(
   'ballotInterpretation transformations (%s)',
-  (
-    _description,
-    ballotInterpretation,
-    ballotInterpretationFormRepresentation
-  ) => {
+  (_description, ballotInterpretation, ballotInterpretationFormState) => {
+    expect(ballotInterpretationToFormState(ballotInterpretation)).toEqual(
+      ballotInterpretationFormState
+    )
     expect(
-      ballotInterpretationToFormRepresentation(ballotInterpretation)
-    ).toEqual(ballotInterpretationFormRepresentation)
-    expect(
-      ballotInterpretationFromFormRepresentation(
-        ballotInterpretationFormRepresentation
-      )
+      ballotInterpretationFromFormState(ballotInterpretationFormState)
     ).toEqual(ballotInterpretation)
   }
 )

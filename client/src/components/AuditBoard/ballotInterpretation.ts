@@ -5,7 +5,7 @@ export const INVALID_WRITE_IN = 'INVALID_WRITE_IN'
 /**
  * A modified representation of a ballot interpretation, optimized for the audit board form
  */
-export interface IBallotInterpretationFormRepresentation {
+export interface IBallotInterpretationFormState {
   choiceIds: string[]
   comment: string | null
   contestId: string
@@ -15,15 +15,15 @@ export interface IBallotInterpretationFormRepresentation {
 }
 
 /**
- * Converts an IBallotInterpretation to an IBallotInterpretationFormRepresentation
+ * Converts an IBallotInterpretation to an IBallotInterpretationFormState
  */
-export function ballotInterpretationToFormRepresentation({
+export function ballotInterpretationToFormState({
   choiceIds,
   comment,
   contestId,
   hasInvalidWriteIn,
   interpretation,
-}: IBallotInterpretation): IBallotInterpretationFormRepresentation {
+}: IBallotInterpretation): IBallotInterpretationFormState {
   return {
     choiceIds,
     comment,
@@ -37,16 +37,16 @@ export function ballotInterpretationToFormRepresentation({
 }
 
 /**
- * Converts an IBallotInterpretationFormRepresentation to an IBallotInterpretation
+ * Converts an IBallotInterpretationFormState to an IBallotInterpretation
  */
-export function ballotInterpretationFromFormRepresentation({
+export function ballotInterpretationFromFormState({
   choiceIds,
   comment,
   contestId,
   isBlankVoteChecked,
   isContestNotOnBallotChecked,
   isInvalidWriteInChecked,
-}: IBallotInterpretationFormRepresentation): IBallotInterpretation {
+}: IBallotInterpretationFormState): IBallotInterpretation {
   let interpretation: Interpretation | null = null
   if (choiceIds.length > 0) {
     interpretation = Interpretation.VOTE
