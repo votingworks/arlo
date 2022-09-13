@@ -5,7 +5,9 @@ const parseCookies = () =>
     document.cookie.split(';').map(pair => pair.trim().split('='))
   )
 
-export const addCSRFToken = (options?: RequestInit | AxiosRequestConfig) => {
+export const addCSRFToken = <T extends RequestInit | AxiosRequestConfig>(
+  options?: T
+): T | undefined => {
   const token = parseCookies()._csrf_token
   if (
     token &&
@@ -19,7 +21,7 @@ export const addCSRFToken = (options?: RequestInit | AxiosRequestConfig) => {
   return options
 }
 
-export const tryJson = (responseText: string) => {
+export const tryJson = (responseText: string): ReturnType<JSON['parse']> => {
   try {
     return JSON.parse(responseText)
   } catch (err) {

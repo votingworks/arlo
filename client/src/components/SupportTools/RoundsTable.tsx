@@ -12,7 +12,7 @@ interface IProps {
   rounds: IRound[]
 }
 
-const RoundsTable = ({ electionId, rounds }: IProps) => {
+const RoundsTable = ({ electionId, rounds }: IProps): React.ReactElement => {
   if (rounds.length === 0) {
     return (
       <StyledTable style={{ tableLayout: 'auto' }}>
@@ -71,7 +71,10 @@ interface ILastRoundActionProps {
   round: IRound
 }
 
-const LastRoundAction = ({ electionId, round }: ILastRoundActionProps) => {
+const LastRoundAction = ({
+  electionId,
+  round,
+}: ILastRoundActionProps): React.ReactElement => {
   const { confirm, confirmProps } = useConfirm()
   const reopenCurrentRound = useReopenCurrentRound()
   const undoRoundStart = useUndoRoundStart(electionId)

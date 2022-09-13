@@ -27,14 +27,14 @@ interface IProps {
   verticalSpaced?: boolean
   minimal?: boolean
 }
-const FormButton: React.FC<IProps> = ({
+const FormButton = ({
   disabled,
   onClick,
   size,
   children,
   verticalSpaced,
   ...rest
-}: IProps) =>
+}: IProps): React.ReactElement =>
   verticalSpaced ? (
     <VerticalSpacedButton
       onClick={onClick}

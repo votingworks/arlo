@@ -215,10 +215,10 @@ interface IHeaderAuditBoardProps {
   members: IAuditBoardMember[]
 }
 
-export const HeaderAuditBoard: React.FC<IHeaderAuditBoardProps> = ({
+export const HeaderAuditBoard = ({
   boardName,
   members,
-}: IHeaderAuditBoardProps) => {
+}: IHeaderAuditBoardProps): React.ReactElement => {
   return (
     <Nav>
       <InnerBar>

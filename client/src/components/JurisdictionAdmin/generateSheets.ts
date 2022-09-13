@@ -23,6 +23,58 @@ const sectionBottomMargin = 24
 const pBottomMargin = 10
 const drawingLineWidth = 1
 
+/**
+ * renderTextWrapped renders the provided text, wrapping at the specified wrap width, appending the
+ * specified bottom margin, and returning the updated y position
+ *
+ * Consistent units should be used for all numerical values
+ */
+function renderTextWrapped({
+  doc,
+  text,
+  wrapWidth,
+  x,
+  y,
+  bottomMargin,
+}: {
+  doc: jsPDF
+  text: string
+  wrapWidth: number
+  x: number
+  y: number
+  bottomMargin: number
+}): number {
+  const textSplit = doc.splitTextToSize(text, wrapWidth)
+  doc.text(textSplit, x, y)
+  return y + doc.getLineHeight() * textSplit.length + bottomMargin
+}
+
+/**
+ * addPageBreakIfNecessary adds a page break if the next addition to the document requires it and
+ * returns the updated y position
+ *
+ * Consistent units should be used for all numerical values
+ */
+function addPageBreakIfNecessary({
+  doc,
+  y,
+  yMax,
+  heightOfNextAddition,
+  pageMargin, // eslint-disable-line no-shadow
+}: {
+  doc: jsPDF
+  y: number
+  yMax: number
+  heightOfNextAddition: number
+  pageMargin: number
+}): number {
+  if (y + heightOfNextAddition > yMax) {
+    doc.addPage()
+    return pageMargin
+  }
+  return y
+}
+
 // Label constants in points
 const LABEL_HEIGHT = 72
 const LABEL_WIDTH = 190
@@ -576,56 +628,4 @@ export const downloadBatchTallySheets = async (
 
   await doc.save('Batch Tally Sheets.pdf', { returnPromise: true })
   return doc.output() // Returned for snapshot tests
-}
-
-/**
- * renderTextWrapped renders the provided text, wrapping at the specified wrap width, appending the
- * specified bottom margin, and returning the updated y position
- *
- * Consistent units should be used for all numerical values
- */
-function renderTextWrapped({
-  doc,
-  text,
-  wrapWidth,
-  x,
-  y,
-  bottomMargin,
-}: {
-  doc: jsPDF
-  text: string
-  wrapWidth: number
-  x: number
-  y: number
-  bottomMargin: number
-}): number {
-  const textSplit = doc.splitTextToSize(text, wrapWidth)
-  doc.text(textSplit, x, y)
-  return y + doc.getLineHeight() * textSplit.length + bottomMargin
-}
-
-/**
- * addPageBreakIfNecessary adds a page break if the next addition to the document requires it and
- * returns the updated y position
- *
- * Consistent units should be used for all numerical values
- */
-function addPageBreakIfNecessary({
-  doc,
-  y,
-  yMax,
-  heightOfNextAddition,
-  pageMargin, // eslint-disable-line no-shadow
-}: {
-  doc: jsPDF
-  y: number
-  yMax: number
-  heightOfNextAddition: number
-  pageMargin: number
-}): number {
-  if (y + heightOfNextAddition > yMax) {
-    doc.addPage()
-    return pageMargin
-  }
-  return y
 }

@@ -41,6 +41,7 @@ const TableControls = styled.div`
 const formatNumber = ({ value }: { value: number | null }) =>
   value && value.toLocaleString()
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 const totalFooter = <T extends object>(headerName: string) => (
   info: TableInstance<T>
 ) => sum(info.rows.map(row => row.values[headerName])).toLocaleString()
@@ -51,11 +52,11 @@ export interface IProgressProps {
   round: IRound | null
 }
 
-const Progress: React.FC<IProgressProps> = ({
+const Progress = ({
   jurisdictions,
   auditSettings,
   round,
-}: IProgressProps) => {
+}: IProgressProps): React.ReactElement => {
   const { electionId } = useParams<{ electionId: string }>()
   const [filter, setFilter] = useState<string>('')
   const [isShowingUnique, setIsShowingUnique] = useState<boolean>(true)

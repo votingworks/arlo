@@ -78,8 +78,8 @@ export const poll = (
   condition: () => Promise<boolean>,
   callback: () => void,
   errback: (arg0: Error) => void,
-  timeout: number = 120000,
-  interval: number = 1000
+  timeout = 120000,
+  interval = 1000
 ) => {
   const endTime = Date.now() + timeout
   ;(async function p() {

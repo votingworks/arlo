@@ -23,7 +23,9 @@ interface IProps {
   createAuditBoards: (auditBoards: { name: string }[]) => Promise<boolean>
 }
 
-const CreateAuditBoards = ({ createAuditBoards }: IProps) => {
+const CreateAuditBoards = ({
+  createAuditBoards,
+}: IProps): React.ReactElement => {
   const submit = async ({ numAuditBoards }: IValues) => {
     const maxAuditBoardsIndexLength = numAuditBoards.toString().length
     const boards = [...Array(numAuditBoards).keys()].map(i => ({

@@ -45,14 +45,14 @@ interface IStatusBoxProps {
   children?: ReactElement
 }
 
-const StatusBox: React.FC<IStatusBoxProps> = ({
+const StatusBox = ({
   headline,
   details,
   auditName,
   buttonLabel,
   onButtonClick,
   children,
-}: IStatusBoxProps) => {
+}: IStatusBoxProps): React.ReactElement => {
   return (
     <Wrapper icon={null}>
       <Inner>
@@ -148,7 +148,7 @@ interface IAuditAdminProps {
   children?: ReactElement
 }
 
-export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
+export const AuditAdminStatusBox = ({
   rounds,
   startNextRound,
   undoRoundStart,
@@ -156,7 +156,7 @@ export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
   contests,
   auditSettings,
   children,
-}: IAuditAdminProps) => {
+}: IAuditAdminProps): React.ReactElement => {
   const { electionId } = useParams<{ electionId: string }>()
 
   // Audit setup
@@ -306,7 +306,7 @@ const AuditAdminAnotherRoundStatusBox = ({
   roundNum,
   startNextRound,
   children,
-}: IAuditAdminAnotherRoundStatusBoxProps) => {
+}: IAuditAdminAnotherRoundStatusBoxProps): React.ReactElement => {
   const sampleSizesResponse = useSampleSizes(electionId, roundNum + 1, true)
   // The server should autoselect one option per contest, so we pick the first
   // item in the options array for each contest

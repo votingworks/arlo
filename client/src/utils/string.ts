@@ -6,6 +6,6 @@ export function blankLine(length: number): string {
   return line
 }
 
-export function pluralize(word: string, n: number) {
+export function pluralize(word: string, n: number): string {
   return n === 1 ? word : `${word}s`
 }

@@ -48,7 +48,7 @@ const RoundManagement = ({
   round,
   auditBoards,
   createAuditBoards,
-}: IRoundManagementProps) => {
+}: IRoundManagementProps): React.ReactElement => {
   const { electionId, jurisdictionId } = useParams<{
     electionId: string
     jurisdictionId: string
@@ -174,7 +174,7 @@ export const JAFileDownloadButtons = ({
   round,
   auditSettings,
   auditBoards,
-}: IJAFileDownloadButtonsProps) => (
+}: IJAFileDownloadButtonsProps): React.ReactElement => (
   <ButtonGroup vertical alignText="left">
     <Button
       icon="th"

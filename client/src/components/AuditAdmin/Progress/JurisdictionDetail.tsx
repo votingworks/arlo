@@ -310,7 +310,7 @@ const RoundStatusSection = ({
               })
             }
           >
-            {({ handleSubmit, isSubmitting }: FormikProps<{}>) => (
+            {({ handleSubmit, isSubmitting }: FormikProps<unknown>) => (
               <div>
                 <p>Data entry complete and results finalized.</p>
                 <Button

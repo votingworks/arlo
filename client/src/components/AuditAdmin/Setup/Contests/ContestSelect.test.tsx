@@ -10,7 +10,7 @@ import { aaApiCalls } from '../../../_mocks'
 
 const { nextStage, prevStage } = relativeStages('target-contests')
 
-const render = (isTargeted: boolean = true) =>
+const render = (isTargeted = true) =>
   renderWithRouter(
     <Route path="/election/:electionId/setup">
       <Contests

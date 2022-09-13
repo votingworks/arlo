@@ -56,13 +56,13 @@ const deleteRound = async (electionId: string, roundId: string) => {
   return response !== null
 }
 
-export const isDrawSampleComplete = (rounds: IRound[]) =>
+export const isDrawSampleComplete = (rounds: IRound[]): boolean =>
   rounds[rounds.length - 1].drawSampleTask.completedAt !== null
 
-export const drawSampleError = (rounds: IRound[]) =>
-  rounds.length > 0 && rounds[rounds.length - 1].drawSampleTask.error
+export const drawSampleError = (rounds: IRound[]): string | null =>
+  rounds.length > 0 ? rounds[rounds.length - 1].drawSampleTask.error : null
 
-export const isAuditStarted = (rounds: IRound[]) =>
+export const isAuditStarted = (rounds: IRound[]): boolean =>
   rounds.length > 0 && isDrawSampleComplete(rounds) && !drawSampleError(rounds)
 
 const useRoundsAuditAdmin = (

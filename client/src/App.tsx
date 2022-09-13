@@ -55,10 +55,10 @@ interface PrivateRouteProps extends RouteProps {
   userType: IUser['type']
 }
 
-export const PrivateRoute: React.FC<PrivateRouteProps> = ({
+export const PrivateRoute = ({
   userType,
   ...props
-}: PrivateRouteProps) => {
+}: PrivateRouteProps): React.ReactElement => {
   const auth = useAuthDataContext()
   if (auth === null) {
     // Still loading /api/me, don't show anything

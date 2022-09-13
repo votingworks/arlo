@@ -1,4 +1,4 @@
-export function groupBy<T extends {}>(
+export function groupBy<T extends Record<string, unknown>>(
   arr: T[],
   keyFn: (obj: T) => string
 ): { [group: string]: T[] } {
@@ -36,7 +36,7 @@ export function replaceAtIndex<T>(arr: T[], index: number, newElement: T): T[] {
     .concat(arr.slice(index + 1))
 }
 
-export function range(start: number, stop: number) {
+export function range(start: number, stop: number): number[] {
   return [...Array(stop - start + 1)].map((_, i) => start + i)
 }
 

@@ -1,4 +1,4 @@
-export function isObjectEmpty(object: {}): boolean {
+export function isObjectEmpty(object: Record<string, unknown>): boolean {
   return Object.keys(object).length === 0
 }
 

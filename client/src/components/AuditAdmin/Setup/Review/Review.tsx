@@ -69,12 +69,12 @@ interface IProps {
   startNextRound: (sampleSizes: ISampleSizes) => Promise<boolean>
 }
 
-const Review: React.FC<IProps> = ({
+const Review = ({
   prevStage,
   locked,
   refresh,
   startNextRound,
-}: IProps) => {
+}: IProps): React.ReactElement => {
   const { electionId } = useParams<{ electionId: string }>()
   const [auditSettings] = useAuditSettings(electionId)
   const jurisdictions = useJurisdictionsDeprecated(electionId)
@@ -742,7 +742,7 @@ const StandardizeContestNamesDialog = ({
   standardizations,
   updateStandardizations,
   jurisdictionsById,
-}: IStandardizeContestNamesDialogProps) => (
+}: IStandardizeContestNamesDialogProps): React.ReactElement => (
   <Dialog
     isOpen={isOpen}
     onClose={onClose}

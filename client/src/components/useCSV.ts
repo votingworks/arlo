@@ -85,7 +85,7 @@ const deleteCSVFile = async (url: string): Promise<boolean> => {
 const useCSV = (
   url: string,
   formKey: string,
-  shouldFetch: boolean = true,
+  shouldFetch = true,
   dependencyFile?: IFileInfo | null
 ): [
   IFileInfo | null,

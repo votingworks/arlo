@@ -28,17 +28,13 @@ export const StyledTable = styled.table`
   }
 `
 
-interface IFilterInputProps<T extends object> {
+interface IFilterInputProps {
   placeholder: string
   value: string
   onChange: (value: string) => void
 }
 
-export const FilterInput = <T extends object>({
-  placeholder,
-  value,
-  onChange,
-}: IFilterInputProps<T>) => (
+export const FilterInput = ({ placeholder, value, onChange }) => (
   <div className="bp3-input-group .modifier">
     <span className="bp3-icon bp3-icon-filter"></span>
     <input
@@ -86,6 +82,7 @@ export const DownloadCSVButton = ({
   )
 }
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 interface ITableProps<T extends object> {
   data: T[]
   columns: Column<T>[]
@@ -95,11 +92,12 @@ interface ITableProps<T extends object> {
 /**
  * Deprecated: Use StyledTable or HTMLTable instead
  */
+// eslint-disable-next-line @typescript-eslint/ban-types
 export const Table = <T extends object>({
   data,
   columns,
   id,
-}: ITableProps<T>) => {
+}: ITableProps<T>): React.ReactElement => {
   const {
     getTableProps,
     getTableBodyProps,
@@ -181,14 +179,16 @@ export const Table = <T extends object>({
   )
 }
 
-export const sortByRank = <T extends object>(rank: (data: T) => number) =>
+// eslint-disable-next-line @typescript-eslint/ban-types
+export const sortByRank = <T extends object>(
+  rank: (data: T) => number
+): ((rowA: Row<T>, rowB: Row<T>) => number) =>
   // react-table requires the sortBy function be memoized, but the linter only
   // expects useCallback to be called directly within a component/hook.
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  React.useCallback(
-    (rowA: Row<T>, rowB: Row<T>) => rank(rowA.original) - rank(rowB.original),
-    [rank]
-  )
+  React.useCallback((rowA, rowB) => rank(rowA.original) - rank(rowB.original), [
+    rank,
+  ])
 
 // FlexTable uses flexbox styling to compute thead/tbody height.
 // This allows us to create a scrollable table body when there's overflow.

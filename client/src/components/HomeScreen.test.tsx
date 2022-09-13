@@ -16,7 +16,7 @@ const setupScreenCalls = [
 const renderView = (route: string) => renderWithRouter(<App />, { route })
 
 const error = (
-  apiCall: { url: string; options?: object },
+  apiCall: { url: string; options?: Record<string, unknown> },
   statusCode: number,
   message: string
 ) => ({

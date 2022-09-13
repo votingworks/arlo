@@ -54,14 +54,14 @@ export interface IProps {
   className?: string
 }
 
-const FormField: React.FC<IProps> = ({
+const FormField = ({
   field,
   form: { touched, errors, setFieldTouched, setFieldValue },
   disabled,
   className,
   type,
   ...rest
-}: IProps) => (
+}: IProps): React.ReactElement => (
   <Wrapper className={className} wide={type === 'textarea'}>
     {type === 'number' ? (
       <NumberField
