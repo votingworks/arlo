@@ -7,6 +7,22 @@ import { ICandidate } from '../../types'
 import { IRound } from '../AuditAdmin/useRoundsAuditAdmin'
 import { blankLine } from '../../utils/string'
 
+// Page constants in points
+// Note that these aren't used consistently yet, since they were added later
+const pageHeight = 792 // 11 inches * 72 pts per inch
+const pageWidth = 612 // 8.5 inches
+const pageMargin = 72 // 1 inch
+const pageContentWidth = pageWidth - pageMargin * 2
+
+// Text constants in points
+// Note that these aren't used consistently yet, since they were added later
+const defaultFontSize = 12
+const headingFontSize = 18
+const subHeadingFontSize = 16
+const sectionBottomMargin = 24
+const pBottomMargin = 10
+const drawingLineWidth = 1
+
 // Label constants in points
 const LABEL_HEIGHT = 72
 const LABEL_WIDTH = 190
@@ -150,63 +166,135 @@ export const downloadAuditBoardCredentials = async (
   jurisdictionName: string,
   auditName: string
 ): Promise<string> => {
-  const auditBoardsWithoutBallots: string[] = []
-  const auditBoardCreds = new jsPDF({ format: 'letter' })
-  auditBoards.forEach((board, i) => {
+  const doc = new jsPDF({ format: 'letter', unit: 'pt' })
+
+  const auditBoardsWithBallots = auditBoards.filter(
+    board => board.currentRoundStatus.numSampledBallots > 0
+  )
+  const auditBoardsWithoutBallots = auditBoards.filter(
+    board => board.currentRoundStatus.numSampledBallots === 0
+  )
+  auditBoardsWithBallots.forEach((board, i) => {
     const qr: HTMLCanvasElement | null = document.querySelector(
       `#qr-${board.passphrase} > canvas`
     )
     /* istanbul ignore next */
     if (!qr) return
-    if (board.currentRoundStatus.numSampledBallots > 0) {
-      if (i > 0) auditBoardCreds.addPage('letter')
-      const url = qr.toDataURL()
-      auditBoardCreds.setFont('Helvetica', '', 'bold')
-      auditBoardCreds.setFontSize(22)
-      auditBoardCreds.text(board.name, 20, 20)
-      auditBoardCreds.setFont('Helvetica', '', 'normal')
-      auditBoardCreds.setFontSize(14)
-      auditBoardCreds.text(
-        'Scan this QR code to enter the votes you see on your assigned ballots.',
-        20,
-        40
-      )
-      auditBoardCreds.addImage(url, 'JPEG', 20, 50, 50, 50)
-      auditBoardCreds.text(
-        auditBoardCreds.splitTextToSize(
-          'If you are not able to scan the QR code, you may also type the following URL into a web browser to access the data entry portal.',
-          180
-        ),
-        20,
-        120
-      )
-      const urlText: string[] = auditBoardCreds.splitTextToSize(
-        `${window.location.origin}/auditboard/${board.passphrase}`,
-        180
-      )
-      const urlHeight = urlText.reduce(
-        (a: number, t: string) => auditBoardCreds.getTextDimensions(t).h + a,
-        0
-      )
-      auditBoardCreds.text(urlText, 20, 140)
-      auditBoardCreds.link(0, 130, 220, urlHeight + 10, {
-        url: `${window.location.origin}/auditboard/${board.passphrase}`,
-      })
-    } else {
-      auditBoardsWithoutBallots.push(board.name)
-    }
+    if (i > 0) doc.addPage('letter')
+
+    let y = pageMargin
+    const x = pageMargin
+    const wrapWidth = pageContentWidth
+    doc.setFont('Helvetica', 'normal').setFontSize(defaultFontSize)
+
+    doc.setFillColor('#F8EDE2') // Light yellow from Blueprint
+    const calloutPadding = 15
+    doc.roundedRect(
+      x - calloutPadding,
+      y,
+      pageContentWidth + calloutPadding * 2,
+      doc.getLineHeight() * 3 + calloutPadding * 2,
+      3,
+      3,
+      'F'
+    )
+    doc.setFont('Helvetica', 'bold').setFontSize(defaultFontSize)
+    y = renderTextWrapped({
+      doc,
+      text: 'Keep Secure!',
+      wrapWidth: pageContentWidth - calloutPadding,
+      x,
+      y: y + calloutPadding + doc.getLineHeight() * (2 / 3),
+      bottomMargin: doc.getLineHeight() / 4,
+    })
+    doc.setFont('Helvetica', 'normal').setFontSize(defaultFontSize)
+    y = renderTextWrapped({
+      doc,
+      text: 'Share these login credentials with audit board members only.',
+      wrapWidth: pageContentWidth - calloutPadding,
+      x,
+      y,
+      bottomMargin: 0,
+    })
+    y = renderTextWrapped({
+      doc,
+      text: 'Do not post publicly.',
+      wrapWidth: pageContentWidth - calloutPadding,
+      x,
+      y,
+      bottomMargin: 0,
+    })
+    y += calloutPadding + sectionBottomMargin
+
+    doc.setFont('Helvetica', 'bold').setFontSize(headingFontSize)
+    y = renderTextWrapped({
+      doc,
+      text: board.name,
+      wrapWidth,
+      x,
+      y,
+      bottomMargin: pBottomMargin,
+    })
+    doc.setFont('Helvetica', 'normal').setFontSize(defaultFontSize)
+    y = renderTextWrapped({
+      doc,
+      text: 'Scan this QR code to log in to Arlo:',
+      wrapWidth,
+      x,
+      y,
+      bottomMargin: pBottomMargin,
+    })
+
+    const qrCodeImage = qr.toDataURL()
+    const qrCodeWidth = 200
+    const qrCodeHeight = 200
+    doc.addImage(qrCodeImage, 'JPEG', x, y, qrCodeWidth, qrCodeHeight)
+    y += qrCodeHeight + sectionBottomMargin * 2
+
+    y = renderTextWrapped({
+      doc,
+      text: 'Alternatively, you can use this link:',
+      wrapWidth,
+      x,
+      y,
+      bottomMargin: pBottomMargin,
+    })
+
+    doc.setFont('Helvetica', 'bold').setFontSize(defaultFontSize)
+    const loginUrl = `${window.location.origin}/auditboard/${board.passphrase}`
+    const yBeforeUrl = y
+    y = renderTextWrapped({
+      doc,
+      text: loginUrl,
+      wrapWidth,
+      x,
+      y,
+      bottomMargin: 0,
+    })
+    doc.link(x, yBeforeUrl, pageContentWidth, y - yBeforeUrl, {
+      url: loginUrl,
+    })
   })
-  if (auditBoardsWithoutBallots.length) {
-    auditBoardCreds.addPage('letter')
-    auditBoardsWithoutBallots.forEach((name, i) => {
-      auditBoardCreds.text(`${name}: No ballots`, 20, i * 10 + 20)
+  if (auditBoardsWithoutBallots.length > 0) {
+    doc.addPage('letter')
+    let y = pageMargin
+    doc.setFont('Helvetica', 'bold').setFontSize(defaultFontSize)
+    auditBoardsWithoutBallots.forEach(board => {
+      y = renderTextWrapped({
+        doc,
+        text: `${board.name}: No ballots`,
+        wrapWidth: pageContentWidth,
+        x: pageMargin,
+        y,
+        bottomMargin: 0,
+      })
     })
   }
-  await auditBoardCreds.save(
+  await doc.save(
     `Audit Board Credentials - ${jurisdictionName} - ${auditName}.pdf`,
     { returnPromise: true }
   )
-  return auditBoardCreds.output() // returned for test snapshots
+  return doc.output() // returned for test snapshots
 }
 
 export const downloadBatchTallySheets = async (
@@ -215,18 +303,6 @@ export const downloadBatchTallySheets = async (
   jurisdictionName: string
 ): Promise<string> => {
   const doc = new jsPDF({ format: 'letter', unit: 'pt' })
-
-  const pageHeight = 792 // 11 inches * 72 pts per inch
-  const pageWidth = 612 // 8.5 inches
-  const pageMargin = 72 // 1 inch
-  const pageContentWidth = pageWidth - pageMargin * 2
-
-  const defaultFontSize = 12
-  const headingFontSize = 18
-  const subHeadingFontSize = 16
-  const sectionBottomMargin = 24
-  const pBottomMargin = 10
-  const drawingLineWidth = 1
 
   const checkboxSize = 10
   const checkboxLeftMargin = 10
@@ -539,7 +615,7 @@ function addPageBreakIfNecessary({
   y,
   yMax,
   heightOfNextAddition,
-  pageMargin,
+  pageMargin, // eslint-disable-line no-shadow
 }: {
   doc: jsPDF
   y: number

@@ -223,6 +223,12 @@ exports[`RoundProgress renders incomplete round with an audit board with no ball
       />
     </div>
   </div>
+  <div
+    class="sc-bwzfXH eCcuoP"
+  >
+    Audit Board #03
+    : no ballots to audit
+  </div>
 </div>
 `;
 
