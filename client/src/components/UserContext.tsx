@@ -72,7 +72,7 @@ export interface IAuthData {
 
 const AuthDataContext = createContext<IAuthData | null>(null)
 
-const AuthDataProvider: React.FC = () => {
+const AuthDataProvider: React.FC = props => {
   const [authData, setAuthData] = useState<IAuthData | null>(null)
 
   useEffect(() => {
@@ -84,7 +84,7 @@ const AuthDataProvider: React.FC = () => {
 
   const authDataValue = useMemo(() => authData && { ...authData }, [authData])
 
-  return <AuthDataContext.Provider value={authDataValue} />
+  return <AuthDataContext.Provider value={authDataValue} {...props} />
 }
 
 export const useAuthDataContext = (): IAuthData | null =>
