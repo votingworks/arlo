@@ -1136,6 +1136,16 @@ export const auditBoardMocks = mocksOfType<IAuditBoard[]>()({
         numAuditedBallots: 0,
       },
     },
+    {
+      id: 'audit-board-3',
+      name: 'Audit Board #03',
+      signedOffAt: null,
+      passphrase: 'happy-tertiary-randomness',
+      currentRoundStatus: {
+        numSampledBallots: 0,
+        numAuditedBallots: 0,
+      },
+    },
   ],
   started: [
     {
