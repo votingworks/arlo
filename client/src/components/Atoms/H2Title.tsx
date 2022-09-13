@@ -13,8 +13,8 @@ interface IProps {
   children: React.ReactNode
 }
 
-const H2Title: React.FC<IProps> = ({ children }: IProps) => (
-  <StyledH2>{children}</StyledH2>
-)
+const H2Title: React.FC<IProps> = ({
+  children,
+}: IProps): React.ReactElement => <StyledH2>{children}</StyledH2>
 
 export default H2Title

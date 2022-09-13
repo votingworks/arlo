@@ -27,7 +27,7 @@ interface IValues {
   results: IResultValues
 }
 
-const RoundDataEntry = ({ round }: IProps): React.ReactElement => {
+const RoundDataEntry = ({ round }: IProps): React.ReactElement | null => {
   const { electionId, jurisdictionId } = useParams<{
     electionId: string
     jurisdictionId: string

@@ -185,7 +185,7 @@ describe('utilities.ts', () => {
       const condition = async () => {
         throw new Error('error')
       }
-      const callback = () => {}
+      const callback = jest.fn()
       const error = (err: Error) => {
         result = err
       }

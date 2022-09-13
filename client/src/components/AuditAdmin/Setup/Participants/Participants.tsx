@@ -17,7 +17,10 @@ interface IProps {
   refresh: () => void
 }
 
-const Participants: React.FC<IProps> = ({ nextStage, refresh }: IProps) => {
+const Participants: React.FC<IProps> = ({
+  nextStage,
+  refresh,
+}: IProps): React.ReactElement | null => {
   const { electionId } = useParams<{ electionId: string }>()
   const [auditSettings] = useAuditSettings(electionId)
   const [jurisdictionsFile, uploadJurisdictionsFile] = useJurisdictionsFile(

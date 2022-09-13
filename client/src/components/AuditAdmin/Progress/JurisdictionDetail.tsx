@@ -63,7 +63,7 @@ const JurisdictionDetail = ({
   electionId,
   round,
   auditSettings,
-}: IJurisdictionDetailProps) => {
+}: IJurisdictionDetailProps): React.ReactElement => {
   const cvrsEnabled =
     auditSettings.auditType === 'BALLOT_COMPARISON' ||
     auditSettings.auditType === 'HYBRID'

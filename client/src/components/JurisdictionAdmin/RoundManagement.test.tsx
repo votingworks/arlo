@@ -51,7 +51,7 @@ jest.mock('@sentry/react', () => ({
   captureException: jest.fn(),
 }))
 
-const renderView = (props: IRoundManagementProps): React.ReactElement =>
+const renderView = (props: IRoundManagementProps) =>
   renderWithRouter(
     <Route
       path="/election/:electionId/jurisdiction/:jurisdictionId"

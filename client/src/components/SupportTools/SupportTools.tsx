@@ -40,7 +40,7 @@ import { useConfirm, Confirm } from '../Atoms/Confirm'
 import AuditBoardsTable from '../AuditAdmin/Progress/AuditBoardsTable'
 import RoundsTable from './RoundsTable'
 
-const SupportTools = () => {
+const SupportTools = (): React.ReactElement | null => {
   const auth = useAuthDataContext()
   if (!auth) return null // Still loading
   if (!auth.supportUser) return <Redirect to="/" />

@@ -113,7 +113,9 @@ interface IProps {
   round: IRound
 }
 
-const FullHandTallyDataEntry = ({ round }: IProps): React.ReactElement => {
+const FullHandTallyDataEntry = ({
+  round,
+}: IProps): React.ReactElement | null => {
   const { electionId, jurisdictionId } = useParams<{
     electionId: string
     jurisdictionId: string

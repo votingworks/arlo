@@ -17,7 +17,7 @@ const PaddedInner = styled(Inner)`
   padding-top: 30px;
 `
 
-const SignOff = ({ auditBoard, submitSignoff }: IProps) => {
+const SignOff = ({ auditBoard, submitSignoff }: IProps): React.ReactElement => {
   return (
     <PaddedInner>
       <div>

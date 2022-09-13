@@ -51,7 +51,7 @@ const ContestForm = ({
   prevStage,
   locked,
   auditType,
-}) => {
+}: IProps): React.ReactElement | null => {
   const contestValues: IContest[] = [
     {
       id: '',

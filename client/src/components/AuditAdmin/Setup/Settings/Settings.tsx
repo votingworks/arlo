@@ -35,7 +35,7 @@ const Settings = ({
   nextStage,
   prevStage,
   locked,
-}: IProps): React.ReactElement => {
+}: IProps): React.ReactElement | null => {
   const { electionId } = useParams<{ electionId: string }>()
   const [auditSettings, updateSettings] = useAuditSettings(electionId!)
   if (!auditSettings) return null // still loading

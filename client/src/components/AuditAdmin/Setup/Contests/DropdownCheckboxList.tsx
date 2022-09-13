@@ -37,7 +37,7 @@ const DropdownCheckboxList = ({
   text,
   optionList,
   contestIndex,
-}: IProps) => {
+}: IProps): React.ReactElement => {
   const jurisdictionList = values.contests[contestIndex].jurisdictionIds
   const updateList = (value: string, checked: boolean) => {
     const itemIndex = jurisdictionList.indexOf(value)

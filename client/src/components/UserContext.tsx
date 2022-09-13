@@ -72,8 +72,7 @@ export interface IAuthData {
 
 const AuthDataContext = createContext<IAuthData | null>(null)
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const AuthDataProvider = (props: any) => {
+const AuthDataProvider: React.FC = () => {
   const [authData, setAuthData] = useState<IAuthData | null>(null)
 
   useEffect(() => {
@@ -85,9 +84,10 @@ const AuthDataProvider = (props: any) => {
 
   const authDataValue = useMemo(() => authData && { ...authData }, [authData])
 
-  return <AuthDataContext.Provider value={authDataValue} {...props} />
+  return <AuthDataContext.Provider value={authDataValue} />
 }
 
-export const useAuthDataContext = () => useContext(AuthDataContext)
+export const useAuthDataContext = (): IAuthData | null =>
+  useContext(AuthDataContext)
 
 export default AuthDataProvider

@@ -379,7 +379,7 @@ const ListAuditsJurisdictionAdmin = ({
   )
 }
 
-interface IValues {
+export interface INewAudit {
   organizationId: string
   auditName: string
   auditType: IAuditSettings['auditType']
@@ -406,18 +406,21 @@ const WideField = styled(FormField)`
 
 const CreateAudit = ({ organizations }: { organizations: IOrganization[] }) => {
   const history = useHistory()
-  const createElection = useMutation<{ electionId: string }, unknown, IValues>(
-    (newAudit: IValues) =>
-      fetchApi('/api/election', {
-        method: 'POST',
-        body: JSON.stringify(newAudit),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
+  const createElection = useMutation<
+    { electionId: string },
+    unknown,
+    INewAudit
+  >((newAudit: INewAudit) =>
+    fetchApi('/api/election', {
+      method: 'POST',
+      body: JSON.stringify(newAudit),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
   )
 
-  const onSubmit = async (newAudit: IValues) => {
+  const onSubmit = async (newAudit: INewAudit) => {
     const { electionId } = await createElection.mutateAsync(newAudit)
     history.push(`/election/${electionId}/setup`)
   }
@@ -438,7 +441,7 @@ const CreateAudit = ({ organizations }: { organizations: IOrganization[] }) => {
         setFieldValue,
         setValues,
         values,
-      }: FormikProps<IValues>) => (
+      }: FormikProps<INewAudit>) => (
         <CreateAuditWrapper>
           <h2>New Audit</h2>
           <FormSection>
@@ -482,13 +485,13 @@ const CreateAudit = ({ organizations }: { organizations: IOrganization[] }) => {
                 name="auditType"
                 onChange={e => {
                   const auditType = e.currentTarget
-                    .value as IValues['auditType']
+                    .value as INewAudit['auditType']
                   const auditMathType = {
                     BALLOT_POLLING: 'BRAVO',
                     BALLOT_COMPARISON: 'SUPERSIMPLE',
                     BATCH_COMPARISON: 'MACRO',
                     HYBRID: 'SUITE',
-                  }[auditType] as IValues['auditMathType']
+                  }[auditType] as INewAudit['auditMathType']
                   setValues({ ...values, auditType, auditMathType })
                 }}
                 selectedValue={values.auditType}

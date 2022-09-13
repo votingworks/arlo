@@ -3,7 +3,9 @@ import { toast } from 'react-toastify'
 import number from '../utils/number-schema'
 import { addCSRFToken, tryJson } from '../utils/api'
 
-export const parseApiError = async (response: Response) => {
+export const parseApiError = async (
+  response: Response
+): Promise<{ message: string; responseText: string; response: Response }> => {
   const responseText = await response.text()
   const { errors } = tryJson(responseText)
   const error =
@@ -48,13 +50,13 @@ export const api = async <T>(
   }
 }
 
-export const apiDownload = (endpoint: string) =>
+export const apiDownload = (endpoint: string): Promise<void> =>
   new Promise((resolve, reject) => {
     try {
       const windowObj = window.open(`/api${endpoint}`)
       if (windowObj != null) {
         windowObj.onbeforeunload = () => {
-          resolve('done')
+          resolve()
         }
       }
     } catch (err) {
@@ -64,7 +66,7 @@ export const apiDownload = (endpoint: string) =>
     }
   })
 
-export const downloadFile = (fileBlob: Blob, fileName?: string) => {
+export const downloadFile = (fileBlob: Blob, fileName?: string): void => {
   const a = document.createElement('a')
   document.body.appendChild(a)
   a.href = URL.createObjectURL(fileBlob)
@@ -80,7 +82,7 @@ export const poll = (
   errback: (arg0: Error) => void,
   timeout = 120000,
   interval = 1000
-) => {
+): void => {
   const endTime = Date.now() + timeout
   ;(async function p() {
     const time = Date.now()
@@ -128,7 +130,7 @@ export const testNumber = (
 export const asyncForEach = async <T>(
   array: T[],
   callback: (value: T, index: number, array: T[]) => Promise<void>
-) => {
+): Promise<void> => {
   for (let index = 0; index < array.length; index += 1) {
     // eslint-disable-next-line no-await-in-loop
     await callback(array[index], index, array)
@@ -138,10 +140,12 @@ export const asyncForEach = async <T>(
 // https://overreacted.io/making-setinterval-declarative-with-react-hooks/
 /* istanbul ignore next */
 export const useInterval = (
+  // eslint-disable-next-line @typescript-eslint/ban-types
   callback: Function,
   delay: number | null,
   callImmediately?: boolean
-) => {
+): void => {
+  // eslint-disable-next-line @typescript-eslint/ban-types
   const savedCallback = useRef<Function>()
 
   // Remember the latest function.
@@ -199,7 +203,7 @@ export const areArraysEqualSets = (a1: unknown[], a2: unknown[]): boolean => {
 }
 
 // From https://usehooks-typescript.com/react-hook/use-is-mounted
-export const useIsMounted = () => {
+export const useIsMounted = (): (() => boolean) => {
   const isMounted = useRef(false)
 
   useEffect(() => {

@@ -128,7 +128,11 @@ interface IProps {
   url: string
 }
 
-const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
+const BoardTable: React.FC<IProps> = ({
+  boardName,
+  ballots,
+  url,
+}: IProps): React.ReactElement => {
   const columns: Column<IBallot>[] = [
     {
       Header: 'Batch',

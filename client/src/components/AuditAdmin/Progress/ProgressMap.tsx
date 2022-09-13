@@ -127,7 +127,7 @@ const Map = ({
   jurisdictions,
   isRoundStarted,
   auditType,
-}: IProps) => {
+}: IProps): React.ReactElement | null => {
   const width = 960
   const height = 500
   const d3Container = useRef(null)

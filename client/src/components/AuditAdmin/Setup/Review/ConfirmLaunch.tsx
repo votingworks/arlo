@@ -16,7 +16,7 @@ const ConfirmLaunch = ({
   handleSubmit,
   isSubmitting,
   message,
-}) => (
+}: IConfirmLaunchProps): React.ReactElement => (
   <Dialog
     icon="info-sign"
     onClose={handleClose}

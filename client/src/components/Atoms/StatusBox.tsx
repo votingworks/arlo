@@ -371,7 +371,7 @@ export const JurisdictionAdminStatusBox = ({
   children,
   auditName,
   isAuditOnline,
-}: IJurisdictionAdminProps) => {
+}: IJurisdictionAdminProps): React.ReactElement => {
   const { electionId, jurisdictionId } = useParams<{
     electionId: string
     jurisdictionId: string

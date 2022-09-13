@@ -37,7 +37,7 @@ jest.mock('axios')
 
 // AuditAdminView will only be rendered once the user is logged in, so
 // we simulate that.
-const AuditAdminViewWithAuth = (props: RouteProps): React.ReactElement => {
+const AuditAdminViewWithAuth = (props: RouteProps) => {
   const auth = useAuthDataContext()
   return auth ? <AuditAdminView {...props} /> : null
 }

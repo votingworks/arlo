@@ -48,7 +48,7 @@ const RoundManagement = ({
   round,
   auditBoards,
   createAuditBoards,
-}: IRoundManagementProps): React.ReactElement => {
+}: IRoundManagementProps): React.ReactElement | null => {
   const { electionId, jurisdictionId } = useParams<{
     electionId: string
     jurisdictionId: string

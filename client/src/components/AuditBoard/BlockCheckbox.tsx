@@ -49,7 +49,12 @@ interface IProps {
   small?: boolean
 }
 
-const BlockCheckbox = ({ label, handleChange, small, checked }: IProps) => (
+const BlockCheckbox = ({
+  label,
+  handleChange,
+  small,
+  checked,
+}: IProps): React.ReactElement => (
   <Block className="bp3-control bp3-checkbox">
     <input type="checkbox" onChange={handleChange} checked={checked} />
     <span className={`${small && 'small'} bp3-control-indicator`}>

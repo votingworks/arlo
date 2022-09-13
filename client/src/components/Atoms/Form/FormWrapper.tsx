@@ -14,7 +14,10 @@ interface IProps {
   children?: ReactNode
 }
 
-const FormWrapper: React.FC<IProps> = ({ children, title }: IProps) => (
+const FormWrapper: React.FC<IProps> = ({
+  children,
+  title,
+}: IProps): React.ReactElement => (
   <StyledFormWrapper>
     <H2Title>{title}</H2Title>
     {children}

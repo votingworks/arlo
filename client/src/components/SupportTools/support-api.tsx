@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { useQuery, useMutation, useQueryClient } from 'react-query'
 import { useHistory } from 'react-router-dom'
 import { fetchApi } from '../../utils/api'

@@ -26,7 +26,7 @@ const FileUpload = ({
   acceptFileTypes,
   allowMultipleFiles = false,
   disabled = false,
-}: IFileUploadProps) => {
+}: IFileUploadProps): React.ReactElement | null => {
   const { register, handleSubmit, formState, watch } = useForm<{
     files: FileList
   }>({ mode: 'onTouched' })

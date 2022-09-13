@@ -51,7 +51,7 @@ const CSVFile = ({
   sampleFileLink,
   enabled,
   showCvrFileType,
-}: IProps) => {
+}: IProps): React.ReactElement => {
   const { file, processing, upload } = csvFile
   const isProcessing = !!(processing && !processing.completedAt)
   const [isEditing, setIsEditing] = useState<boolean>(!file || isProcessing)

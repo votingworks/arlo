@@ -37,6 +37,7 @@ export class ApiError extends Error {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const fetchApi = async (url: string, options?: RequestInit) => {
   const response = await fetch(url, addCSRFToken(options))
   if (response.ok) return response.json()

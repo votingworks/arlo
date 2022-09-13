@@ -74,7 +74,7 @@ const Review = ({
   locked,
   refresh,
   startNextRound,
-}: IProps): React.ReactElement => {
+}: IProps): React.ReactElement | null => {
   const { electionId } = useParams<{ electionId: string }>()
   const [auditSettings] = useAuditSettings(electionId)
   const jurisdictions = useJurisdictionsDeprecated(electionId)
