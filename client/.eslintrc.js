@@ -102,5 +102,9 @@ module.exports = {
     'testing-library/prefer-wait-for': 'error',
     'testing-library/no-wait-for-empty-callback': 'error',
     'react/require-default-props': 'off',
+    'jsx-a11y/label-has-associated-control': [
+      1,
+      { controlElement: ['InputGroup'] },
+    ],
   },
 }
