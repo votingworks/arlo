@@ -8,7 +8,7 @@ export interface IConfirmOptions {
   yesButtonLabel?: string
   yesButtonIntent?: Intent
   noButtonLabel?: string
-  onYesClick: () => Promise<void>
+  onYesClick: (() => Promise<void>) | (() => void)
 }
 
 export const useConfirm = () => {
