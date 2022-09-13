@@ -13,7 +13,7 @@ interface IProps {
   auditType: IAuditSettings['auditType']
 }
 
-const Contests: React.FC<IProps> = (props: IProps): React.ReactElement => {
+const Contests: React.FC<IProps> = (props: IProps) => {
   return props.auditType === 'BALLOT_COMPARISON' ? (
     <ContestSelect {...props} />
   ) : (

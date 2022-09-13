@@ -16,10 +16,7 @@ interface IProps {
   children: ReactNode
 }
 
-const FormButtonBar: React.FC<IProps> = ({
-  children,
-  right,
-}: IProps): React.ReactElement => {
+const FormButtonBar: React.FC<IProps> = ({ children, right }: IProps) => {
   return right ? (
     <RightButtonBar>{children}</RightButtonBar>
   ) : (

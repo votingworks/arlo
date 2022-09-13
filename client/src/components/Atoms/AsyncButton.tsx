@@ -7,9 +7,7 @@ interface IAsyncButtonProps extends IButtonProps {
   style?: CSSProperties
 }
 
-const AsyncButton: React.FC<IAsyncButtonProps> = (
-  props: IAsyncButtonProps
-): React.ReactElement => {
+const AsyncButton: React.FC<IAsyncButtonProps> = (props: IAsyncButtonProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const isMounted = useIsMounted()
   return (
