@@ -1,8 +1,8 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Button, Card, Colors, H2, InputGroup } from '@blueprintjs/core'
+import { Button, Card, Classes, Colors, H2 } from '@blueprintjs/core'
+import { useFieldArray, useForm } from 'react-hook-form'
 
-import IntegerInput from './IntegerInput'
 import { Confirm, useConfirm } from '../../Atoms/Confirm'
 import {
   constructInitialElectionResults,
@@ -18,6 +18,11 @@ const Container = styled(Card)`
 
 const InnerContainer = styled.div`
   padding: 24px;
+
+  .bp3-input[readonly] {
+    background: transparent;
+    box-shadow: none;
+  }
 `
 
 const Heading = styled(H2)`
@@ -101,49 +106,28 @@ const CardAction = styled(Button)`
 
 interface IProps {
   editable: boolean
-  electionResults: IElectionResults
   enableEditing: () => void
-  planAudit: () => void
-  setElectionResults: (electionResults: IElectionResults) => void
+  planAudit: (electionResults: IElectionResults) => void
 }
 
 const ElectionResultsCard: React.FC<IProps> = ({
   editable,
-  electionResults,
   enableEditing,
   planAudit,
-  setElectionResults,
 }) => {
-  const { candidates, numWinners, totalBallotsCast } = electionResults
   const { confirm, confirmProps } = useConfirm()
 
-  const setCandidate = (candidateIndex: number, candidate: ICandidate) => {
-    setElectionResults({
-      ...electionResults,
-      candidates: [
-        ...candidates.slice(0, candidateIndex),
-        candidate,
-        ...candidates.slice(candidateIndex + 1),
-      ],
-    })
-  }
-
-  const addCandidate = () => {
-    setElectionResults({
-      ...electionResults,
-      candidates: [...candidates, constructNewCandidate(candidates.length)],
-    })
-  }
-
-  const removeCandidate = (candidateIndex: number) => {
-    setElectionResults({
-      ...electionResults,
-      candidates: [
-        ...candidates.slice(0, candidateIndex),
-        ...candidates.slice(candidateIndex + 1),
-      ],
-    })
-  }
+  const { control, handleSubmit, register, reset } = useForm<IElectionResults>({
+    defaultValues: constructInitialElectionResults(),
+  })
+  const {
+    append: addCandidate,
+    fields: candidates,
+    remove: removeCandidate,
+  } = useFieldArray<ICandidate>({
+    control,
+    name: 'candidates',
+  })
 
   return (
     <>
@@ -159,66 +143,57 @@ const ElectionResultsCard: React.FC<IProps> = ({
               </tr>
             </thead>
             <tbody>
-              {electionResults.candidates.map((candidate, i) => (
+              {candidates.map((candidate, i) => (
                 <tr key={candidate.id}>
                   <td>
-                    {editable ? (
-                      <CandidateContainer>
-                        {i >= 2 && (
-                          <Button
-                            aria-label={`Remove Candidate ${i}`}
-                            icon="minus"
-                            onClick={() => removeCandidate(i)}
-                          />
-                        )}
-                        <InputGroup
-                          aria-label={`Candidate ${i} Name`}
-                          name={`candidate[${i}].name`}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                            setCandidate(i, {
-                              ...candidate,
-                              name: e.target.value,
-                            })
-                          }
-                          placeholder="Candidate name"
-                          value={candidate.name}
+                    <CandidateContainer>
+                      {i >= 2 && (
+                        <Button
+                          aria-label={`Remove Candidate ${i}`}
+                          disabled={!editable}
+                          icon="minus"
+                          onClick={() => removeCandidate(i)}
                         />
-                      </CandidateContainer>
-                    ) : (
-                      candidate.name
-                    )}
+                      )}
+                      <input
+                        aria-label={`Candidate ${i} Name`}
+                        className={Classes.INPUT}
+                        defaultValue={candidate.name}
+                        name={`candidates[${i}].name`}
+                        placeholder="Candidate name"
+                        readOnly={!editable}
+                        ref={register()}
+                      />
+                    </CandidateContainer>
                   </td>
                   <td>
-                    {editable ? (
-                      <VotesContainer>
-                        <IntegerInput
-                          ariaLabel={`Candidate ${i} Votes`}
-                          name={`candidate[${i}].votes`}
-                          onChange={newValue =>
-                            setCandidate(i, {
-                              ...candidate,
-                              votes: newValue,
-                            })
-                          }
-                          value={candidate.votes}
-                        />
-                      </VotesContainer>
-                    ) : (
-                      candidate.votes
-                    )}
+                    <VotesContainer>
+                      <input
+                        aria-label={`Candidate ${i} Votes`}
+                        className={Classes.INPUT}
+                        defaultValue={`${candidate.votes}`}
+                        name={`candidates[${i}].votes`}
+                        placeholder="0"
+                        readOnly={!editable}
+                        ref={register({ valueAsNumber: true })}
+                        type="number"
+                      />
+                    </VotesContainer>
                   </td>
                 </tr>
               ))}
-              {editable && (
-                <tr>
-                  <td>
-                    <Button icon="plus" onClick={addCandidate}>
-                      Add Candidate
-                    </Button>
-                  </td>
-                  <td />
-                </tr>
-              )}
+              <tr>
+                <td>
+                  <Button
+                    disabled={!editable}
+                    icon="plus"
+                    onClick={() => addCandidate(constructNewCandidate())}
+                  >
+                    Add Candidate
+                  </Button>
+                </td>
+                <td />
+              </tr>
             </tbody>
           </CandidatesTable>
 
@@ -226,39 +201,27 @@ const ElectionResultsCard: React.FC<IProps> = ({
             <AdditionalInputContainer>
               <label>
                 <span>Number of Winners</span>
-                {editable ? (
-                  <IntegerInput
-                    name="numberOfWinners"
-                    onChange={newValue =>
-                      setElectionResults({
-                        ...electionResults,
-                        numWinners: newValue,
-                      })
-                    }
-                    value={numWinners}
-                  />
-                ) : (
-                  numWinners
-                )}
+                <input
+                  className={Classes.INPUT}
+                  name="numWinners"
+                  placeholder="0"
+                  readOnly={!editable}
+                  ref={register({ valueAsNumber: true })}
+                  type="number"
+                />
               </label>
             </AdditionalInputContainer>
             <AdditionalInputContainer>
               <label>
                 <span>Total Ballots Cast</span>
-                {editable ? (
-                  <IntegerInput
-                    name="totalBallotsCast"
-                    onChange={newValue =>
-                      setElectionResults({
-                        ...electionResults,
-                        totalBallotsCast: newValue,
-                      })
-                    }
-                    value={totalBallotsCast}
-                  />
-                ) : (
-                  totalBallotsCast
-                )}
+                <input
+                  className={Classes.INPUT}
+                  name="totalBallotsCast"
+                  placeholder="0"
+                  readOnly={!editable}
+                  ref={register({ valueAsNumber: true })}
+                  type="number"
+                />
               </label>
             </AdditionalInputContainer>
           </AdditionalInputsRow>
@@ -272,7 +235,7 @@ const ElectionResultsCard: React.FC<IProps> = ({
                 description: 'Are you sure you want to clear and start over?',
                 yesButtonLabel: 'Clear',
                 onYesClick: () => {
-                  setElectionResults(constructInitialElectionResults())
+                  reset()
                   enableEditing()
                 },
               })
@@ -281,7 +244,9 @@ const ElectionResultsCard: React.FC<IProps> = ({
             Clear
           </CardAction>
           {editable ? (
-            <CardAction onClick={planAudit}>Plan Audit</CardAction>
+            <CardAction onClick={handleSubmit(planAudit)}>
+              Plan Audit
+            </CardAction>
           ) : (
             <CardAction onClick={enableEditing}>Edit</CardAction>
           )}

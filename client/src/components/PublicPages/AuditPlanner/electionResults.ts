@@ -1,7 +1,6 @@
 import { sum } from '../../../utils/number'
 
 export interface ICandidate {
-  id: string
   name: string
   votes: number
 }
@@ -12,9 +11,8 @@ export interface IElectionResults {
   totalBallotsCast: number
 }
 
-export function constructNewCandidate(index: number): ICandidate {
+export function constructNewCandidate(): ICandidate {
   return {
-    id: `candidate-${index}`,
     name: '',
     votes: 0,
   }
@@ -22,7 +20,7 @@ export function constructNewCandidate(index: number): ICandidate {
 
 export function constructInitialElectionResults(): IElectionResults {
   return {
-    candidates: [constructNewCandidate(0), constructNewCandidate(1)],
+    candidates: [constructNewCandidate(), constructNewCandidate()],
     numWinners: 1,
     totalBallotsCast: 0,
   }

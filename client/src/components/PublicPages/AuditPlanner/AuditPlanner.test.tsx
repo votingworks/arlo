@@ -48,9 +48,9 @@ async function checkThatElectionResultsCardIsInInitialState() {
     name: 'Candidate 1 Votes',
   })
   expect(candidate0NameInput).toHaveValue('')
-  expect(candidate0VotesInput).toHaveValue(null)
+  expect(candidate0VotesInput).toHaveValue(0)
   expect(candidate1NameInput).toHaveValue('')
-  expect(candidate1VotesInput).toHaveValue(null)
+  expect(candidate1VotesInput).toHaveValue(0)
   const addCandidateButton = screen.getByRole('button', {
     name: /Add Candidate/,
   })
@@ -62,7 +62,7 @@ async function checkThatElectionResultsCardIsInInitialState() {
     name: 'Total Ballots Cast',
   })
   expect(numberOfWinnersInput).toHaveValue(1)
-  expect(totalBallotsCastInput).toHaveValue(null)
+  expect(totalBallotsCastInput).toHaveValue(0)
 
   const clearButton = screen.getByRole('button', { name: 'Clear' })
   const planAuditButton = screen.getByRole('button', { name: 'Plan Audit' })
@@ -129,22 +129,28 @@ test('Entering election results - validation and submit', async () => {
   // Successful submission
 
   userEvent.click(planAuditButton)
-  await waitFor(() => {
+  await waitFor(() =>
     expect(
       screen.queryByRole('button', { name: 'Plan Audit' })
     ).not.toBeInTheDocument()
-    const electionResultsCard = screen.getByTestId('election-results-card')
-    expect(within(electionResultsCard).queryAllByRole('textbox')).toHaveLength(
-      0
-    )
-    expect(
-      within(electionResultsCard).queryAllByRole('spinbutton')
-    ).toHaveLength(0)
-  })
-  screen.getByRole('row', { name: 'Helga Hippo 10' })
-  screen.getByRole('row', { name: 'Bobby Bear 0' })
-  screen.getByText('1') // Number of winners
-  screen.getByText('15') // Total ballots cast
+  )
+  const electionResultsCard = screen.getByTestId('election-results-card')
+  const textInputs = within(electionResultsCard).queryAllByRole('textbox')
+  expect(textInputs).toHaveLength(2)
+  expect(textInputs[0]).toHaveValue('Helga Hippo') // Candidate 0 name
+  expect(textInputs[1]).toHaveValue('Bobby Bear') // Candidate 1 name
+  for (const textInput of textInputs) {
+    expect(textInput).toHaveAttribute('readonly')
+  }
+  const numericInputs = within(electionResultsCard).queryAllByRole('spinbutton')
+  expect(numericInputs).toHaveLength(4)
+  expect(numericInputs[0]).toHaveValue(10) // Candidate 0 votes
+  expect(numericInputs[1]).toHaveValue(0) // Candidate 1 votes
+  expect(numericInputs[2]).toHaveValue(1) // Number of winners
+  expect(numericInputs[3]).toHaveValue(15) // Total ballots cast
+  for (const numericInput of numericInputs) {
+    expect(numericInput).toHaveAttribute('readonly')
+  }
   screen.getByRole('button', { name: 'Clear' })
   screen.getByRole('button', { name: 'Edit' })
 })
@@ -167,25 +173,25 @@ test('Entering election results - adding and removing candidates', async () => {
   )
   expect(
     screen.getByRole('spinbutton', { name: 'Candidate 2 Votes' })
-  ).toHaveValue(null)
+  ).toHaveValue(0)
   const candidate2RemoveButton = screen.getByRole('button', {
     name: 'Remove Candidate 2',
   })
 
   // Remove candidate
   userEvent.click(candidate2RemoveButton)
-  await waitFor(() => {
+  await waitFor(() =>
     expect(screen.getAllByRole('row')).toHaveLength(initialNumRows)
-    expect(
-      screen.queryByRole('textbox', { name: 'Candidate 2 Name' })
-    ).not.toBeInTheDocument()
-    expect(
-      screen.queryByRole('spinbutton', { name: 'Candidate 2 Votes' })
-    ).not.toBeInTheDocument()
-    expect(
-      screen.queryByRole('textbox', { name: 'Remove Candidate 2' })
-    ).not.toBeInTheDocument()
-  })
+  )
+  expect(
+    screen.queryByRole('textbox', { name: 'Candidate 2 Name' })
+  ).not.toBeInTheDocument()
+  expect(
+    screen.queryByRole('spinbutton', { name: 'Candidate 2 Votes' })
+  ).not.toBeInTheDocument()
+  expect(
+    screen.queryByRole('textbox', { name: 'Remove Candidate 2' })
+  ).not.toBeInTheDocument()
 })
 
 test('Entering election results - clearing', async () => {
@@ -281,11 +287,28 @@ test('Entering election results - editing', async () => {
   userEvent.type(candidate1VotesInput, '5')
   userEvent.type(totalBallotsCastInput, '20')
   userEvent.click(planAuditButton)
-
-  screen.getByRole('row', { name: 'Helga Hippo 10' })
-  screen.getByRole('row', { name: 'Bobby Bear 5' })
-  screen.getByText('1') // Number of winners
-  screen.getByText('20') // Total ballots cast
+  await waitFor(() =>
+    expect(
+      screen.queryByRole('button', { name: 'Plan Audit' })
+    ).not.toBeInTheDocument()
+  )
+  let electionResultsCard = screen.getByTestId('election-results-card')
+  let textInputs = within(electionResultsCard).queryAllByRole('textbox')
+  expect(textInputs).toHaveLength(2)
+  expect(textInputs[0]).toHaveValue('Helga Hippo') // Candidate 0 name
+  expect(textInputs[1]).toHaveValue('Bobby Bear') // Candidate 1 name
+  for (const textInput of textInputs) {
+    expect(textInput).toHaveAttribute('readonly')
+  }
+  let numericInputs = within(electionResultsCard).queryAllByRole('spinbutton')
+  expect(numericInputs).toHaveLength(4)
+  expect(numericInputs[0]).toHaveValue(10) // Candidate 0 votes
+  expect(numericInputs[1]).toHaveValue(5) // Candidate 1 votes
+  expect(numericInputs[2]).toHaveValue(1) // Number of winners
+  expect(numericInputs[3]).toHaveValue(20) // Total ballots cast
+  for (const numericInput of numericInputs) {
+    expect(numericInput).toHaveAttribute('readonly')
+  }
 
   userEvent.click(screen.getByRole('button', { name: 'Edit' }))
   planAuditButton = await screen.findByRole('button', { name: 'Plan Audit' })
@@ -302,9 +325,26 @@ test('Entering election results - editing', async () => {
   userEvent.type(candidate1VotesInput, '{backspace}7')
   userEvent.type(totalBallotsCastInput, '{backspace}2')
   userEvent.click(planAuditButton)
-
-  screen.getByRole('row', { name: 'Helga Hippopotamus 10' })
-  screen.getByRole('row', { name: 'Bobby Bear 7' })
-  screen.getByText('1') // Number of winners
-  screen.getByText('22') // Total ballots cast
+  await waitFor(() =>
+    expect(
+      screen.queryByRole('button', { name: 'Plan Audit' })
+    ).not.toBeInTheDocument()
+  )
+  electionResultsCard = screen.getByTestId('election-results-card')
+  textInputs = within(electionResultsCard).queryAllByRole('textbox')
+  expect(textInputs).toHaveLength(2)
+  expect(textInputs[0]).toHaveValue('Helga Hippopotamus') // Candidate 0 name
+  expect(textInputs[1]).toHaveValue('Bobby Bear') // Candidate 1 name
+  for (const textInput of textInputs) {
+    expect(textInput).toHaveAttribute('readonly')
+  }
+  numericInputs = within(electionResultsCard).queryAllByRole('spinbutton')
+  expect(numericInputs).toHaveLength(4)
+  expect(numericInputs[0]).toHaveValue(10) // Candidate 0 votes
+  expect(numericInputs[1]).toHaveValue(7) // Candidate 1 votes
+  expect(numericInputs[2]).toHaveValue(1) // Number of winners
+  expect(numericInputs[3]).toHaveValue(22) // Total ballots cast
+  for (const numericInput of numericInputs) {
+    expect(numericInput).toHaveAttribute('readonly')
+  }
 })

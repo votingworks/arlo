@@ -4,11 +4,7 @@ import { H1 } from '@blueprintjs/core'
 import { toast } from 'react-toastify'
 
 import ElectionResultsCard from './ElectionResultsCard'
-import {
-  constructInitialElectionResults,
-  IElectionResults,
-  validateElectionResults,
-} from './electionResults'
+import { IElectionResults, validateElectionResults } from './electionResults'
 import { Inner } from '../../Atoms/Wrapper'
 
 const PageHeading = styled(H1)`
@@ -16,12 +12,9 @@ const PageHeading = styled(H1)`
 `
 
 const AuditPlanner: React.FC = () => {
-  const [electionResults, setElectionResults] = useState<IElectionResults>(
-    constructInitialElectionResults()
-  )
   const [electionResultsEditable, setElectionResultsEditable] = useState(true)
 
-  const planAudit = () => {
+  const planAudit = (electionResults: IElectionResults) => {
     try {
       validateElectionResults(electionResults)
     } catch (err) {
@@ -40,10 +33,8 @@ const AuditPlanner: React.FC = () => {
       <PageHeading>Audit Planner</PageHeading>
       <ElectionResultsCard
         editable={electionResultsEditable}
-        electionResults={electionResults}
         enableEditing={enableEditing}
         planAudit={planAudit}
-        setElectionResults={setElectionResults}
       />
     </Inner>
   )
