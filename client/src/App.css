@@ -29,10 +29,6 @@ legend {
   color: rgb(0, 0, 238);
 }
 
-:focus {
-  outline: rgb(77, 144, 254) dashed 0.25rem;
-}
-
 /* Foundational */
 html,
 body,
