@@ -1,10 +1,9 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import { H1 } from '@blueprintjs/core'
-import { toast } from 'react-toastify'
 
 import ElectionResultsCard from './ElectionResultsCard'
-import { IElectionResults, validateElectionResults } from './electionResults'
+import { IElectionResults } from './electionResults'
 import { Inner } from '../../Atoms/Wrapper'
 
 const PageHeading = styled(H1)`
@@ -14,13 +13,7 @@ const PageHeading = styled(H1)`
 const AuditPlanner: React.FC = () => {
   const [electionResultsEditable, setElectionResultsEditable] = useState(true)
 
-  const planAudit = (electionResults: IElectionResults) => {
-    try {
-      validateElectionResults(electionResults)
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Unknown error')
-      return
-    }
+  const planAudit = (_electionResults: IElectionResults) => {
     setElectionResultsEditable(false)
   }
 

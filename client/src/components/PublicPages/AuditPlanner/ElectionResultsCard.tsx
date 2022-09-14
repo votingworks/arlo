@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { Button, Card, Classes, Colors, H2 } from '@blueprintjs/core'
+import { ErrorMessage } from '@hookform/error-message'
 import { useFieldArray, useForm } from 'react-hook-form'
 
 import { Confirm, useConfirm } from '../../Atoms/Confirm'
@@ -11,6 +12,7 @@ import {
   IElectionResults,
 } from './electionResults'
 import { StyledTable } from '../../Atoms/Table'
+import { sum } from '../../../utils/number'
 
 const Container = styled(Card)`
   padding: 0;
@@ -38,35 +40,24 @@ const CandidatesTable = styled(StyledTable)`
   }
   td {
     padding: 16px;
+    vertical-align: top;
   }
 `
 
-const CandidateContainer = styled.div`
-  display: flex;
-
-  .bp3-button {
-    margin-right: 8px;
+const CandidateNameContainer = styled.td`
+  .bp3-input {
+    width: 100%;
   }
-  .bp3-input-group {
-    flex-grow: 1;
-  }
-`
-
-const VotesContainer = styled.div`
-  display: flex;
 `
 
 const AdditionalInputsRow = styled.div`
   display: flex;
   margin-bottom: 16px;
-  margin-left: 16px;
 `
 
 const AdditionalInputContainer = styled.div`
-  align-items: start;
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
+  margin-left: 16px;
+  width: 50%;
 
   label > span {
     color: ${Colors.DARK_GRAY5};
@@ -104,6 +95,13 @@ const CardAction = styled(Button)`
   }
 `
 
+const InputErrorText = styled.p`
+  color: ${Colors.RED1};
+  margin-bottom: 0;
+  margin-left: 4px;
+  margin-top: 8px;
+`
+
 interface IProps {
   editable: boolean
   enableEditing: () => void
@@ -117,17 +115,34 @@ const ElectionResultsCard: React.FC<IProps> = ({
 }) => {
   const { confirm, confirmProps } = useConfirm()
 
-  const { control, handleSubmit, register, reset } = useForm<IElectionResults>({
+  const {
+    control,
+    formState,
+    getValues,
+    handleSubmit,
+    register,
+    reset,
+    trigger,
+  } = useForm<IElectionResults>({
     defaultValues: constructInitialElectionResults(),
   })
+  const { errors } = formState
   const {
     append: addCandidate,
-    fields: candidates,
+    fields: candidateFields,
     remove: removeCandidate,
   } = useFieldArray<ICandidate>({
     control,
     name: 'candidates',
   })
+
+  const validateAllCandidateVotesFields = () => {
+    trigger(
+      [...Array(candidateFields.length).keys()].map(
+        i => `candidates[${i}].votes`
+      )
+    )
+  }
 
   return (
     <>
@@ -143,42 +158,73 @@ const ElectionResultsCard: React.FC<IProps> = ({
               </tr>
             </thead>
             <tbody>
-              {candidates.map((candidate, i) => (
-                <tr key={candidate.id}>
-                  <td>
-                    <CandidateContainer>
-                      {i >= 2 && (
-                        <Button
-                          aria-label={`Remove Candidate ${i}`}
-                          disabled={!editable}
-                          icon="minus"
-                          onClick={() => removeCandidate(i)}
-                        />
+              {candidateFields.map((candidateField, i) => (
+                <tr key={candidateField.id}>
+                  <CandidateNameContainer>
+                    {i >= 2 && (
+                      <Button
+                        aria-label={`Remove Candidate ${i}`}
+                        disabled={!editable}
+                        icon="minus"
+                        onClick={() => removeCandidate(i)}
+                      />
+                    )}
+                    <input
+                      aria-label={`Candidate ${i} Name`}
+                      className={Classes.INPUT}
+                      defaultValue={candidateField.name}
+                      name={`candidates[${i}].name`}
+                      placeholder="Candidate name"
+                      readOnly={!editable}
+                      ref={register({
+                        required: 'Name is required for all candidates.',
+                      })}
+                    />
+                    <ErrorMessage
+                      errors={errors}
+                      name={`candidates[${i}].name`}
+                      render={({ message }) => (
+                        <InputErrorText>{message}</InputErrorText>
                       )}
-                      <input
-                        aria-label={`Candidate ${i} Name`}
-                        className={Classes.INPUT}
-                        defaultValue={candidate.name}
-                        name={`candidates[${i}].name`}
-                        placeholder="Candidate name"
-                        readOnly={!editable}
-                        ref={register()}
-                      />
-                    </CandidateContainer>
-                  </td>
+                    />
+                  </CandidateNameContainer>
                   <td>
-                    <VotesContainer>
-                      <input
-                        aria-label={`Candidate ${i} Votes`}
-                        className={Classes.INPUT}
-                        defaultValue={`${candidate.votes}`}
-                        name={`candidates[${i}].votes`}
-                        placeholder="0"
-                        readOnly={!editable}
-                        ref={register({ valueAsNumber: true })}
-                        type="number"
-                      />
-                    </VotesContainer>
+                    <input
+                      aria-label={`Candidate ${i} Votes`}
+                      className={Classes.INPUT}
+                      defaultValue={`${candidateField.votes}`}
+                      name={`candidates[${i}].votes`}
+                      onChange={validateAllCandidateVotesFields}
+                      placeholder="0"
+                      readOnly={!editable}
+                      ref={register({
+                        min: {
+                          value: 0,
+                          message:
+                            'Candidate vote counts cannot be less than 0.',
+                        },
+                        required: 'Vote count is required for all candidates.',
+                        validate: () => {
+                          if (
+                            getValues().candidates.every(
+                              candidate => candidate.votes <= 0
+                            )
+                          ) {
+                            return 'At least 1 candidate must have greater than 0 votes.'
+                          }
+                          return true
+                        },
+                        valueAsNumber: true,
+                      })}
+                      type="number"
+                    />
+                    <ErrorMessage
+                      errors={errors}
+                      name={`candidates[${i}].votes`}
+                      render={({ message }) => (
+                        <InputErrorText>{message}</InputErrorText>
+                      )}
+                    />
                   </td>
                 </tr>
               ))}
@@ -206,8 +252,28 @@ const ElectionResultsCard: React.FC<IProps> = ({
                   name="numWinners"
                   placeholder="0"
                   readOnly={!editable}
-                  ref={register({ valueAsNumber: true })}
+                  ref={register({
+                    min: {
+                      value: 1,
+                      message: 'Number of winners cannot be less than 1.',
+                    },
+                    required: 'Number of winners is required.',
+                    validate: value => {
+                      if (value > getValues().candidates.length) {
+                        return 'Number of winners cannot be greater than the number of candidates.'
+                      }
+                      return true
+                    },
+                    valueAsNumber: true,
+                  })}
                   type="number"
+                />
+                <ErrorMessage
+                  errors={errors}
+                  name="numWinners"
+                  render={({ message }) => (
+                    <InputErrorText>{message}</InputErrorText>
+                  )}
                 />
               </label>
             </AdditionalInputContainer>
@@ -219,8 +285,31 @@ const ElectionResultsCard: React.FC<IProps> = ({
                   name="totalBallotsCast"
                   placeholder="0"
                   readOnly={!editable}
-                  ref={register({ valueAsNumber: true })}
+                  ref={register({
+                    required: 'Total ballots cast is required.',
+                    validate: value => {
+                      if (
+                        value <
+                        sum(
+                          getValues().candidates.map(
+                            candidate => candidate.votes
+                          )
+                        )
+                      ) {
+                        return 'Total ballots cast cannot be less than the sum of candidate votes.'
+                      }
+                      return true
+                    },
+                    valueAsNumber: true,
+                  })}
                   type="number"
+                />
+                <ErrorMessage
+                  errors={errors}
+                  name="totalBallotsCast"
+                  render={({ message }) => (
+                    <InputErrorText>{message}</InputErrorText>
+                  )}
                 />
               </label>
             </AdditionalInputContainer>

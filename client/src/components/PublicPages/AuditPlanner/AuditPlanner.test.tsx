@@ -16,15 +16,28 @@ function renderAuditPlanner() {
   )
 }
 
-async function checkAndDismissToast(expectedMessage: string) {
-  const toast = await screen.findByRole('alert')
-  expect(toast).toHaveTextContent(expectedMessage)
-  userEvent.click(
-    within(toast.parentElement!).getByRole('button', { name: 'close' })
-  )
-  await waitFor(() =>
-    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
-  )
+async function areExpectedErrorMessagesDisplayed({
+  displayed,
+  notDisplayed = [],
+}: {
+  displayed: string[]
+  notDisplayed?: string[]
+}) {
+  const counts: { [message: string]: number } = {}
+  for (const message of displayed) {
+    counts[message] = counts[message] ? counts[message] + 1 : 1
+  }
+  for (const message of displayed) {
+    // eslint-disable-next-line no-await-in-loop
+    expect(await screen.findAllByText(message)).toHaveLength(counts[message])
+  }
+
+  for (const message of notDisplayed) {
+    // eslint-disable-next-line no-await-in-loop
+    await waitFor(() =>
+      expect(screen.queryByText(message)).not.toBeInTheDocument()
+    )
+  }
 }
 
 async function checkThatElectionResultsCardIsInInitialState() {
@@ -93,41 +106,85 @@ test('Entering election results - validation and submit', async () => {
   } = await checkThatElectionResultsCardIsInInitialState()
 
   // Failed submissions
-
   userEvent.click(planAuditButton)
-  await checkAndDismissToast('A name must be provided for all candidates.')
+  await areExpectedErrorMessagesDisplayed({
+    displayed: [
+      'Name is required for all candidates.',
+      'Name is required for all candidates.',
+      'At least 1 candidate must have greater than 0 votes.',
+      'At least 1 candidate must have greater than 0 votes.',
+    ],
+  })
   userEvent.type(candidate0NameInput, 'Helga Hippo')
   userEvent.type(candidate1NameInput, 'Bobby Bear')
-
-  userEvent.click(planAuditButton)
-  await checkAndDismissToast(
-    'At least 1 candidate must have greater than 0 votes.'
-  )
-
+  await areExpectedErrorMessagesDisplayed({
+    displayed: [
+      'At least 1 candidate must have greater than 0 votes.',
+      'At least 1 candidate must have greater than 0 votes.',
+    ],
+    notDisplayed: ['Name is required for all candidates.'],
+  })
+  userEvent.type(candidate0VotesInput, '{backspace}')
+  await areExpectedErrorMessagesDisplayed({
+    displayed: [
+      'Vote count is required for all candidates.',
+      'At least 1 candidate must have greater than 0 votes.',
+    ],
+  })
   userEvent.type(candidate0VotesInput, '-1')
-  userEvent.click(planAuditButton)
-  await checkAndDismissToast('Candidate vote counts cannot be less than 0.')
+  await areExpectedErrorMessagesDisplayed({
+    displayed: [
+      'Candidate vote counts cannot be less than 0.',
+      'At least 1 candidate must have greater than 0 votes.',
+    ],
+    notDisplayed: ['Vote count is required for all candidates.'],
+  })
   userEvent.type(candidate0VotesInput, '{backspace}10')
-
+  await areExpectedErrorMessagesDisplayed({
+    displayed: [],
+    notDisplayed: [
+      'Candidate vote counts cannot be less than 0.',
+      'At least 1 candidate must have greater than 0 votes.',
+    ],
+  })
   userEvent.click(planAuditButton)
-  await checkAndDismissToast(
-    'Total ballots cast cannot be less than the sum of votes for candidates.'
-  )
+  await areExpectedErrorMessagesDisplayed({
+    displayed: [
+      'Total ballots cast cannot be less than the sum of candidate votes.',
+    ],
+  })
+  userEvent.type(totalBallotsCastInput, '{backspace}')
+  await areExpectedErrorMessagesDisplayed({
+    displayed: ['Total ballots cast is required.'],
+    notDisplayed: [
+      'Total ballots cast cannot be less than the sum of candidate votes.',
+    ],
+  })
   userEvent.type(totalBallotsCastInput, '15')
-
-  userEvent.type(numberOfWinnersInput, '{backspace}0')
-  userEvent.click(planAuditButton)
-  await checkAndDismissToast('Number of winners must be at least 1.')
-
+  await areExpectedErrorMessagesDisplayed({
+    displayed: [],
+    notDisplayed: ['Total ballots cast is required.'],
+  })
+  userEvent.type(numberOfWinnersInput, '{backspace}')
+  await areExpectedErrorMessagesDisplayed({
+    displayed: ['Number of winners is required.'],
+  })
   userEvent.type(numberOfWinnersInput, '3')
-  userEvent.click(planAuditButton)
-  await checkAndDismissToast(
-    'Number of winners cannot be greater than the number of candidates.'
-  )
+  await areExpectedErrorMessagesDisplayed({
+    displayed: [
+      'Number of winners cannot be greater than the number of candidates.',
+    ],
+    notDisplayed: ['Number of winners is required.'],
+  })
   userEvent.type(numberOfWinnersInput, '{backspace}1')
+  await areExpectedErrorMessagesDisplayed({
+    displayed: [],
+    notDisplayed: [
+      'Number of winners cannot be greater than the number of candidates.',
+    ],
+  })
 
   // Successful submission
-
   userEvent.click(planAuditButton)
   await waitFor(() =>
     expect(
