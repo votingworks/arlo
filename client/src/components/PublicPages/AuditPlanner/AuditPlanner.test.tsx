@@ -113,31 +113,21 @@ test('Entering election results - validation and submit', async () => {
       'Required',
       'Required',
       'At least 1 candidate must have greater than 0 votes',
-      'At least 1 candidate must have greater than 0 votes',
     ],
   })
   userEvent.type(candidate0NameInput, 'Helga Hippo')
   userEvent.type(candidate1NameInput, 'Bobby Bear')
   await areExpectedErrorMessagesDisplayed({
-    displayed: [
-      'At least 1 candidate must have greater than 0 votes',
-      'At least 1 candidate must have greater than 0 votes',
-    ],
+    displayed: ['At least 1 candidate must have greater than 0 votes'],
     notDisplayed: ['Required'],
   })
   userEvent.type(candidate0VotesInput, '{backspace}')
   await areExpectedErrorMessagesDisplayed({
-    displayed: [
-      'Required',
-      'At least 1 candidate must have greater than 0 votes',
-    ],
+    displayed: ['Required'],
   })
   userEvent.type(candidate0VotesInput, '-1')
   await areExpectedErrorMessagesDisplayed({
-    displayed: [
-      'Cannot be less than 0',
-      'At least 1 candidate must have greater than 0 votes',
-    ],
+    displayed: ['Cannot be less than 0'],
     notDisplayed: ['Required'],
   })
   userEvent.type(candidate0VotesInput, '{backspace}10')

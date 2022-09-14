@@ -203,6 +203,8 @@ const ElectionResultsCard: React.FC<IProps> = ({
                         required: 'Required',
                         validate: () => {
                           if (
+                            // No need to display this message for all candidate votes inputs
+                            i === 0 &&
                             getValues().candidates.every(
                               candidate => candidate.votes <= 0
                             )
