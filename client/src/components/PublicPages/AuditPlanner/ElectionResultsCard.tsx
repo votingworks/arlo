@@ -15,16 +15,7 @@ import { StyledTable } from '../../Atoms/Table'
 import { sum } from '../../../utils/number'
 
 const Container = styled(Card)`
-  padding: 0;
-`
-
-const InnerContainer = styled.div`
   padding: 24px;
-
-  .bp3-input[readonly] {
-    background: transparent;
-    box-shadow: none;
-  }
 `
 
 const Heading = styled(H2)`
@@ -49,6 +40,10 @@ const CandidatesTable = styled(StyledTable)`
   td:nth-child(3) {
     width: 62px; // Just large enough to house the candidate delete button
   }
+  .bp3-input[readonly] {
+    background: transparent;
+    box-shadow: none;
+  }
 `
 
 const CandidateNameContainer = styled.td`
@@ -69,28 +64,10 @@ const AdditionalInputContainer = styled.td`
 
 const CardActionsRow = styled.div`
   display: flex;
-`
+  justify-content: end;
 
-const CardAction = styled(Button)`
-  &.bp3-button {
-    border-radius: 0;
-    border-top: 1px solid ${Colors.LIGHT_GRAY3};
-    box-shadow: none;
-    font-size: 20px;
-    min-height: 60px;
-    width: 50%;
-  }
-  &.bp3-button:focus {
-    z-index: 1; // Ensures that focus outlines aren't covered
-  }
-  &.bp3-button:first-child {
-    border-bottom-left-radius: 3px;
-  }
-  &.bp3-button:last-child {
-    border-bottom-right-radius: 3px;
-  }
-  &.bp3-button:not(:last-child) {
-    border-right: 1px solid ${Colors.LIGHT_GRAY3};
+  .bp3-button:last-child {
+    margin-left: 12px;
   }
 `
 
@@ -148,180 +125,179 @@ const ElectionResultsCard: React.FC<IProps> = ({
   return (
     <>
       <Container data-testid="election-results-card">
-        <InnerContainer>
-          <Heading>Election Results</Heading>
+        <Heading>Election Results</Heading>
 
-          <CandidatesTable>
-            <thead>
-              <tr>
-                <th>Candidate</th>
-                <th>Votes</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {candidateFields.map((candidateField, i) => (
-                <tr key={candidateField.id}>
-                  <CandidateNameContainer>
-                    <input
-                      aria-label={`Candidate ${i} Name`}
-                      className={Classes.INPUT}
-                      defaultValue={candidateField.name}
-                      name={`candidates[${i}].name`}
-                      placeholder="Candidate name"
-                      readOnly={!editable}
-                      ref={register({
-                        required: 'Required',
-                      })}
-                    />
-                    <ErrorMessage
-                      errors={errors}
-                      name={`candidates[${i}].name`}
-                      render={({ message }) => (
-                        <InputErrorText>{message}</InputErrorText>
-                      )}
-                    />
-                  </CandidateNameContainer>
-                  <td>
-                    <input
-                      aria-label={`Candidate ${i} Votes`}
-                      className={Classes.INPUT}
-                      defaultValue={`${candidateField.votes}`}
-                      name={`candidates[${i}].votes`}
-                      onChange={validateAllCandidateVotesFields}
-                      placeholder="0"
-                      readOnly={!editable}
-                      ref={register({
-                        min: {
-                          value: 0,
-                          message: 'Cannot be less than 0',
-                        },
-                        required: 'Required',
-                        validate: () => {
-                          if (
-                            getValues().candidates.every(
-                              candidate => candidate.votes <= 0
-                            )
-                          ) {
-                            return 'At least 1 candidate must have greater than 0 votes'
-                          }
-                          return true
-                        },
-                        valueAsNumber: true,
-                      })}
-                      type="number"
-                    />
-                    <ErrorMessage
-                      errors={errors}
-                      name={`candidates[${i}].votes`}
-                      render={({ message }) => (
-                        <InputErrorText>{message}</InputErrorText>
-                      )}
-                    />
-                  </td>
-                  <td>
-                    {i >= 2 && (
-                      <Button
-                        aria-label={`Remove Candidate ${i}`}
-                        disabled={!editable}
-                        icon="trash"
-                        onClick={() => removeCandidate(i)}
-                      />
+        <CandidatesTable>
+          <thead>
+            <tr>
+              <th>Candidate</th>
+              <th>Votes</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {candidateFields.map((candidateField, i) => (
+              <tr key={candidateField.id}>
+                <CandidateNameContainer>
+                  <input
+                    aria-label={`Candidate ${i} Name`}
+                    className={Classes.INPUT}
+                    defaultValue={candidateField.name}
+                    name={`candidates[${i}].name`}
+                    placeholder="Candidate name"
+                    readOnly={!editable}
+                    ref={register({
+                      required: 'Required',
+                    })}
+                  />
+                  <ErrorMessage
+                    errors={errors}
+                    name={`candidates[${i}].name`}
+                    render={({ message }) => (
+                      <InputErrorText>{message}</InputErrorText>
                     )}
-                  </td>
-                </tr>
-              ))}
-              <tr>
+                  />
+                </CandidateNameContainer>
                 <td>
-                  <Button
-                    disabled={!editable}
-                    icon="plus"
-                    onClick={() => addCandidate(constructNewCandidate())}
-                  >
-                    Add Candidate
-                  </Button>
+                  <input
+                    aria-label={`Candidate ${i} Votes`}
+                    className={Classes.INPUT}
+                    defaultValue={`${candidateField.votes}`}
+                    name={`candidates[${i}].votes`}
+                    onChange={validateAllCandidateVotesFields}
+                    placeholder="0"
+                    readOnly={!editable}
+                    ref={register({
+                      min: {
+                        value: 0,
+                        message: 'Cannot be less than 0',
+                      },
+                      required: 'Required',
+                      validate: () => {
+                        if (
+                          getValues().candidates.every(
+                            candidate => candidate.votes <= 0
+                          )
+                        ) {
+                          return 'At least 1 candidate must have greater than 0 votes'
+                        }
+                        return true
+                      },
+                      valueAsNumber: true,
+                    })}
+                    type="number"
+                  />
+                  <ErrorMessage
+                    errors={errors}
+                    name={`candidates[${i}].votes`}
+                    render={({ message }) => (
+                      <InputErrorText>{message}</InputErrorText>
+                    )}
+                  />
                 </td>
-                <td />
-                <td />
+                <td>
+                  {i >= 2 && (
+                    <Button
+                      aria-label={`Remove Candidate ${i}`}
+                      disabled={!editable}
+                      icon="trash"
+                      onClick={() => removeCandidate(i)}
+                    />
+                  )}
+                </td>
               </tr>
-              <tr className="transparent-background">
-                <AdditionalInputContainer>
-                  <label>
-                    <span>Number of Winners</span>
-                    <input
-                      className={Classes.INPUT}
-                      name="numWinners"
-                      placeholder="0"
-                      readOnly={!editable}
-                      ref={register({
-                        min: {
-                          value: 1,
-                          message: 'Cannot be less than 1',
-                        },
-                        required: 'Required',
-                        validate: value => {
-                          if (value > getValues().candidates.length) {
-                            return 'Cannot be greater than number of candidates'
-                          }
-                          return true
-                        },
-                        valueAsNumber: true,
-                      })}
-                      type="number"
-                    />
-                    <ErrorMessage
-                      errors={errors}
-                      name="numWinners"
-                      render={({ message }) => (
-                        <InputErrorText>{message}</InputErrorText>
-                      )}
-                    />
-                  </label>
-                </AdditionalInputContainer>
-                <AdditionalInputContainer>
-                  <label>
-                    <span>Total Ballots Cast</span>
-                    <input
-                      className={Classes.INPUT}
-                      name="totalBallotsCast"
-                      placeholder="0"
-                      readOnly={!editable}
-                      ref={register({
-                        required: 'Required',
-                        validate: value => {
-                          if (
-                            value <
-                            sum(
-                              getValues().candidates.map(
-                                candidate => candidate.votes
-                              )
+            ))}
+            <tr>
+              <td>
+                <Button
+                  disabled={!editable}
+                  icon="plus"
+                  onClick={() => addCandidate(constructNewCandidate())}
+                >
+                  Add Candidate
+                </Button>
+              </td>
+              <td />
+              <td />
+            </tr>
+            <tr className="transparent-background">
+              <AdditionalInputContainer>
+                <label>
+                  <span>Number of Winners</span>
+                  <input
+                    className={Classes.INPUT}
+                    name="numWinners"
+                    placeholder="0"
+                    readOnly={!editable}
+                    ref={register({
+                      min: {
+                        value: 1,
+                        message: 'Cannot be less than 1',
+                      },
+                      required: 'Required',
+                      validate: value => {
+                        if (value > getValues().candidates.length) {
+                          return 'Cannot be greater than number of candidates'
+                        }
+                        return true
+                      },
+                      valueAsNumber: true,
+                    })}
+                    type="number"
+                  />
+                  <ErrorMessage
+                    errors={errors}
+                    name="numWinners"
+                    render={({ message }) => (
+                      <InputErrorText>{message}</InputErrorText>
+                    )}
+                  />
+                </label>
+              </AdditionalInputContainer>
+              <AdditionalInputContainer>
+                <label>
+                  <span>Total Ballots Cast</span>
+                  <input
+                    className={Classes.INPUT}
+                    name="totalBallotsCast"
+                    placeholder="0"
+                    readOnly={!editable}
+                    ref={register({
+                      required: 'Required',
+                      validate: value => {
+                        if (
+                          value <
+                          sum(
+                            getValues().candidates.map(
+                              candidate => candidate.votes
                             )
-                          ) {
-                            return 'Cannot be less than sum of candidate votes'
-                          }
-                          return true
-                        },
-                        valueAsNumber: true,
-                      })}
-                      type="number"
-                    />
-                    <ErrorMessage
-                      errors={errors}
-                      name="totalBallotsCast"
-                      render={({ message }) => (
-                        <InputErrorText>{message}</InputErrorText>
-                      )}
-                    />
-                  </label>
-                </AdditionalInputContainer>
-                <td />
-              </tr>
-            </tbody>
-          </CandidatesTable>
-        </InnerContainer>
+                          )
+                        ) {
+                          return 'Cannot be less than sum of candidate votes'
+                        }
+                        return true
+                      },
+                      valueAsNumber: true,
+                    })}
+                    type="number"
+                  />
+                  <ErrorMessage
+                    errors={errors}
+                    name="totalBallotsCast"
+                    render={({ message }) => (
+                      <InputErrorText>{message}</InputErrorText>
+                    )}
+                  />
+                </label>
+              </AdditionalInputContainer>
+              <td />
+            </tr>
+          </tbody>
+        </CandidatesTable>
 
         <CardActionsRow>
-          <CardAction
+          <Button
+            large
             onClick={() =>
               confirm({
                 title: 'Confirm',
@@ -335,13 +311,15 @@ const ElectionResultsCard: React.FC<IProps> = ({
             }
           >
             Clear
-          </CardAction>
+          </Button>
           {editable ? (
-            <CardAction onClick={handleSubmit(planAudit)}>
+            <Button intent="primary" large onClick={handleSubmit(planAudit)}>
               Plan Audit
-            </CardAction>
+            </Button>
           ) : (
-            <CardAction onClick={enableEditing}>Edit</CardAction>
+            <Button large onClick={enableEditing}>
+              Edit
+            </Button>
           )}
         </CardActionsRow>
       </Container>
