@@ -55,7 +55,7 @@ interface IConfirmProps extends IConfirmOptions {
   onClose: () => void
 }
 
-export const Confirm = ({
+export const Confirm: React.FC<IConfirmProps> = ({
   isOpen,
   title,
   description,
@@ -64,7 +64,7 @@ export const Confirm = ({
   noButtonLabel,
   onYesClick,
   onClose,
-}: IConfirmProps): React.ReactElement => {
+}) => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const isMounted = useIsMounted()
 

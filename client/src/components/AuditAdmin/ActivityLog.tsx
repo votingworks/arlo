@@ -68,7 +68,7 @@ const prettyAction = (activity: IActivity) => {
   }
 }
 
-const ActivityLog = (): React.ReactElement | null => {
+const ActivityLog: React.FC = () => {
   const auth = useAuthDataContext()
   const user = auth && (auth.user as IAuditAdmin)
   const organizations = useQuery<IOrganization[]>(

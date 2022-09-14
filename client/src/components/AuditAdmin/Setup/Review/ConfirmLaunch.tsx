@@ -10,13 +10,13 @@ interface IConfirmLaunchProps {
   message?: string
 }
 
-const ConfirmLaunch = ({
+const ConfirmLaunch: React.FC<IConfirmLaunchProps> = ({
   isOpen,
   handleClose,
   handleSubmit,
   isSubmitting,
   message,
-}: IConfirmLaunchProps): React.ReactElement => (
+}) => (
   <Dialog
     icon="info-sign"
     onClose={handleClose}

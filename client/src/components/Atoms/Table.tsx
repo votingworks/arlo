@@ -34,11 +34,11 @@ interface IFilterInputProps {
   onChange: (value: string) => void
 }
 
-export const FilterInput = ({
+export const FilterInput: React.FC<IFilterInputProps> = ({
   placeholder,
   value,
   onChange,
-}: IFilterInputProps): React.ReactElement => (
+}) => (
   <div className="bp3-input-group .modifier">
     <span className="bp3-icon bp3-icon-filter"></span>
     <input
@@ -56,10 +56,10 @@ interface IDownloadCSVButtonProps {
   fileName?: string
 }
 
-export const DownloadCSVButton = ({
+export const DownloadCSVButton: React.FC<IDownloadCSVButtonProps> = ({
   tableId,
   fileName,
-}: IDownloadCSVButtonProps): React.ReactElement => {
+}) => {
   const onClick = () => {
     const table = document.querySelector(`#${tableId}`)!
     const headers = Array.from(table.querySelectorAll('th')).map(

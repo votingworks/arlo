@@ -8,7 +8,7 @@ const SpacedCard = styled(Card)`
   }
 `
 
-const ElevatedCard = (props: ICardProps): React.ReactElement => (
+const ElevatedCard: React.FC<ICardProps> = props => (
   <SpacedCard elevation={Elevation.TWO} {...props} />
 )
 

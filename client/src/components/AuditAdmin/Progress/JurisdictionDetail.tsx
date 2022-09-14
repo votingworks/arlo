@@ -57,13 +57,13 @@ export interface IJurisdictionDetailProps {
   auditSettings: IAuditSettings
 }
 
-const JurisdictionDetail = ({
+const JurisdictionDetail: React.FC<IJurisdictionDetailProps> = ({
   handleClose,
   jurisdiction,
   electionId,
   round,
   auditSettings,
-}: IJurisdictionDetailProps): React.ReactElement => {
+}) => {
   const cvrsEnabled =
     auditSettings.auditType === 'BALLOT_COMPARISON' ||
     auditSettings.auditType === 'HYBRID'

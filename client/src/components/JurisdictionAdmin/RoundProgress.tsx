@@ -26,11 +26,9 @@ const SmallBarWrapper = styled.div`
   }
 `
 
-const RoundProgress = ({
+const RoundProgress: React.FC<{ auditBoards: IAuditBoard[] }> = ({
   auditBoards,
-}: {
-  auditBoards: IAuditBoard[]
-}): React.ReactElement | null => {
+}) => {
   if (!auditBoards.length) return null
   const auditedBallots = sum(
     auditBoards.map(ab => ab.currentRoundStatus.numAuditedBallots)

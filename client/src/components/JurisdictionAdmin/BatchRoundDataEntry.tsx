@@ -359,11 +359,7 @@ const BatchTallySheetsModal = ({
   )
 }
 
-const BatchRoundDataEntry = ({
-  round,
-}: {
-  round: IRound
-}): React.ReactElement | null => {
+const BatchRoundDataEntry: React.FC<{ round: IRound }> = ({ round }) => {
   const { electionId, jurisdictionId } = useParams<{
     electionId: string
     jurisdictionId: string

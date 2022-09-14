@@ -17,11 +17,7 @@ export const prettifyRefreshStatus = (refreshTime: number): string => {
     10} seconds`
 }
 
-export const RefreshTag = ({
-  refresh,
-}: {
-  refresh: () => void
-}): React.ReactElement => {
+export const RefreshTag: React.FC<{ refresh: () => void }> = ({ refresh }) => {
   const [lastRefreshTime, setLastRefreshTime] = useState(Date.now())
   const [time, setTime] = useState(Date.now())
 

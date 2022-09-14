@@ -25,7 +25,7 @@ interface IProps {
   title: string
 }
 
-const Sidebar = ({ menuItems, title }: IProps): React.ReactElement => (
+const Sidebar: React.FC<IProps> = ({ menuItems, title }) => (
   <Wrapper>
     <H2Title>{title}</H2Title>
     <Menu>

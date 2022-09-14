@@ -3,11 +3,9 @@ import copy from 'copy-to-clipboard'
 import { Button } from '@blueprintjs/core'
 import { useIsMounted } from '../utilities'
 
-const CopyToClipboard = ({
-  getText,
-}: {
+const CopyToClipboard: React.FC<{
   getText: () => string
-}): React.ReactElement => {
+}> = ({ getText }) => {
   const [copied, setCopied] = useState(false)
   const isMounted = useIsMounted()
   return (

@@ -42,7 +42,7 @@ interface IProps {
   showCvrFileType?: boolean
 }
 
-const CSVFile = ({
+const CSVFile: React.FC<IProps> = ({
   csvFile,
   uploadCSVFiles,
   deleteCSVFile,
@@ -51,7 +51,7 @@ const CSVFile = ({
   sampleFileLink,
   enabled,
   showCvrFileType,
-}: IProps): React.ReactElement => {
+}) => {
   const { file, processing, upload } = csvFile
   const isProcessing = !!(processing && !processing.completedAt)
   const [isEditing, setIsEditing] = useState<boolean>(!file || isProcessing)

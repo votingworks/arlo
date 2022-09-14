@@ -15,10 +15,10 @@ interface IProps {
   reopenAuditBoard?: (auditBoard: IAuditBoardMinimal) => Promise<void>
 }
 
-const AuditBoardsTable = ({
+const AuditBoardsTable: React.FC<IProps> = ({
   auditBoards,
   reopenAuditBoard,
-}: IProps): React.ReactElement => {
+}) => {
   const { confirm, confirmProps } = useConfirm()
 
   return (
