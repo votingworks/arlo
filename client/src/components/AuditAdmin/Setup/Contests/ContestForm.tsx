@@ -100,7 +100,7 @@ const ContestForm: React.FC<IProps> = ({
   }
 
   const isOpportunisticFormClean = (
-    touched: {},
+    touched: Record<string, unknown>,
     values: { contests: IContest[] }
   ) => {
     return (
