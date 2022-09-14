@@ -69,7 +69,6 @@ async function checkThatElectionResultsCardIsInInitialState() {
   const addCandidateButton = screen.getByRole('button', {
     name: /Add Candidate/,
   })
-
   const numberOfWinnersInput = screen.getByRole('spinbutton', {
     name: 'Number of Winners',
   })
@@ -185,7 +184,7 @@ test('Entering election results - validation and submit', async () => {
       screen.queryByRole('button', { name: 'Plan Audit' })
     ).not.toBeInTheDocument()
   )
-  const electionResultsCard = screen.getByTestId('election-results-card')
+  const electionResultsCard = screen.getByTestId('electionResultsCard')
   const textInputs = within(electionResultsCard).queryAllByRole('textbox')
   expect(textInputs).toHaveLength(2)
   expect(textInputs[0]).toHaveValue('Helga Hippo') // Candidate 0 name
@@ -345,7 +344,7 @@ test('Entering election results - editing', async () => {
       screen.queryByRole('button', { name: 'Plan Audit' })
     ).not.toBeInTheDocument()
   )
-  let electionResultsCard = screen.getByTestId('election-results-card')
+  let electionResultsCard = screen.getByTestId('electionResultsCard')
   let textInputs = within(electionResultsCard).queryAllByRole('textbox')
   expect(textInputs).toHaveLength(2)
   expect(textInputs[0]).toHaveValue('Helga Hippo') // Candidate 0 name
@@ -383,7 +382,7 @@ test('Entering election results - editing', async () => {
       screen.queryByRole('button', { name: 'Plan Audit' })
     ).not.toBeInTheDocument()
   )
-  electionResultsCard = screen.getByTestId('election-results-card')
+  electionResultsCard = screen.getByTestId('electionResultsCard')
   textInputs = within(electionResultsCard).queryAllByRole('textbox')
   expect(textInputs).toHaveLength(2)
   expect(textInputs[0]).toHaveValue('Helga Hippopotamus') // Candidate 0 name

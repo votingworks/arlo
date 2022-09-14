@@ -1,6 +1,14 @@
+import classnames from 'classnames'
 import React from 'react'
 import styled from 'styled-components'
-import { Button, Card, Classes, Colors, H2 } from '@blueprintjs/core'
+import {
+  Button,
+  Card,
+  Classes,
+  FormGroup,
+  H2,
+  HTMLTable,
+} from '@blueprintjs/core'
 import { ErrorMessage } from '@hookform/error-message'
 import { useFieldArray, useForm } from 'react-hook-form'
 
@@ -11,7 +19,6 @@ import {
   ICandidate,
   IElectionResults,
 } from './electionResults'
-import { StyledTable } from '../../Atoms/Table'
 import { sum } from '../../../utils/number'
 
 const Container = styled(Card)`
@@ -22,44 +29,52 @@ const Heading = styled(H2)`
   margin-bottom: 24px;
 `
 
-const CandidatesTable = styled(StyledTable)`
+const CandidatesTable = styled(HTMLTable)`
   margin-bottom: 24px;
+  table-layout: fixed;
+  width: 100%;
 
-  th {
-    font-size: 20px;
-    padding: 16px;
+  &.bp3-html-table th {
+    font-size: 18px;
+    padding: 8px;
   }
-  td {
-    padding: 16px;
+
+  &.bp3-html-table td {
+    height: 68px; // Large enough to house candidate inputs plus inline error messages
+    padding: 8px;
     vertical-align: top;
   }
-  tr.transparent-background {
-    background-color: transparent;
+  &.bp3-html-table tr:nth-child(1) td {
+    height: 76px; // Extra height to accommodate extra top padding
+    padding-top: 16px;
   }
-  th:nth-child(3),
-  td:nth-child(3) {
-    width: 62px; // Just large enough to house the candidate delete button
+  &.bp3-html-table tr:last-child td {
+    height: 108px; // Extra height to accommodate input labels
   }
-  .bp3-input[readonly] {
+
+  &.bp3-html-table th:nth-child(3),
+  &.bp3-html-table td:nth-child(3) {
+    width: 62px; // Large enough to house candidate delete buttons
+  }
+
+  &.bp3-html-table .bp3-form-group {
+    margin-bottom: 0;
+  }
+
+  &.bp3-html-table .bp3-input[readonly] {
     background: transparent;
     box-shadow: none;
   }
-`
 
-const CandidateNameContainer = styled.td`
-  .bp3-input {
-    width: 100%;
-  }
-`
-
-const AdditionalInputContainer = styled.td`
-  label > span {
-    color: ${Colors.DARK_GRAY5};
-    display: block;
-    font-size: 20px;
+  &.bp3-html-table .bp3-label {
+    font-size: 18px;
     font-weight: bold;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
   }
+`
+
+const InputFullWidth = styled.input`
+  width: 100%;
 `
 
 const CardActionsRow = styled.div`
@@ -69,13 +84,6 @@ const CardActionsRow = styled.div`
   .bp3-button:last-child {
     margin-left: 12px;
   }
-`
-
-const InputErrorText = styled.p`
-  color: ${Colors.RED1};
-  margin-bottom: 0;
-  margin-left: 4px;
-  margin-top: 8px;
 `
 
 interface IProps {
@@ -124,7 +132,7 @@ const ElectionResultsCard: React.FC<IProps> = ({
 
   return (
     <>
-      <Container data-testid="election-results-card">
+      <Container data-testid="electionResultsCard">
         <Heading>Election Results</Heading>
 
         <CandidatesTable>
@@ -138,69 +146,85 @@ const ElectionResultsCard: React.FC<IProps> = ({
           <tbody>
             {candidateFields.map((candidateField, i) => (
               <tr key={candidateField.id}>
-                <CandidateNameContainer>
-                  <input
-                    aria-label={`Candidate ${i} Name`}
-                    className={Classes.INPUT}
-                    defaultValue={candidateField.name}
-                    name={`candidates[${i}].name`}
-                    placeholder="Candidate name"
-                    readOnly={!editable}
-                    ref={register({
-                      required: 'Required',
-                    })}
-                  />
-                  <ErrorMessage
-                    errors={errors}
-                    name={`candidates[${i}].name`}
-                    render={({ message }) => (
-                      <InputErrorText>{message}</InputErrorText>
-                    )}
-                  />
-                </CandidateNameContainer>
                 <td>
-                  <input
-                    aria-label={`Candidate ${i} Votes`}
-                    className={Classes.INPUT}
-                    defaultValue={`${candidateField.votes}`}
-                    name={`candidates[${i}].votes`}
-                    onChange={validateAllCandidateVotesFields}
-                    placeholder="0"
-                    readOnly={!editable}
-                    ref={register({
-                      min: {
-                        value: 0,
-                        message: 'Cannot be less than 0',
-                      },
-                      required: 'Required',
-                      validate: () => {
-                        if (
-                          getValues().candidates.every(
-                            candidate => candidate.votes <= 0
-                          )
-                        ) {
-                          return 'At least 1 candidate must have greater than 0 votes'
-                        }
-                        return true
-                      },
-                      valueAsNumber: true,
-                    })}
-                    type="number"
-                  />
-                  <ErrorMessage
-                    errors={errors}
-                    name={`candidates[${i}].votes`}
-                    render={({ message }) => (
-                      <InputErrorText>{message}</InputErrorText>
-                    )}
-                  />
+                  <FormGroup
+                    helperText={
+                      <ErrorMessage
+                        errors={errors}
+                        name={`candidates[${i}].name`}
+                        render={({ message }) => message}
+                      />
+                    }
+                    intent={errors.candidates?.[i]?.name && 'danger'}
+                  >
+                    <InputFullWidth
+                      aria-label={`Candidate ${i} Name`}
+                      className={classnames(
+                        Classes.INPUT,
+                        errors.candidates?.[i]?.name && Classes.INTENT_DANGER
+                      )}
+                      defaultValue={candidateField.name}
+                      name={`candidates[${i}].name`}
+                      placeholder="Candidate name"
+                      readOnly={!editable}
+                      ref={register({
+                        required: 'Required',
+                      })}
+                    />
+                  </FormGroup>
+                </td>
+                <td>
+                  <FormGroup
+                    helperText={
+                      <ErrorMessage
+                        errors={errors}
+                        name={`candidates[${i}].votes`}
+                        render={({ message }) => message}
+                      />
+                    }
+                    intent={errors.candidates?.[i]?.votes && 'danger'}
+                  >
+                    <input
+                      aria-label={`Candidate ${i} Votes`}
+                      className={classnames(
+                        Classes.INPUT,
+                        errors.candidates?.[i]?.votes && Classes.INTENT_DANGER
+                      )}
+                      defaultValue={`${candidateField.votes}`}
+                      name={`candidates[${i}].votes`}
+                      onChange={validateAllCandidateVotesFields}
+                      placeholder="0"
+                      readOnly={!editable}
+                      ref={register({
+                        min: {
+                          value: 0,
+                          message: 'Cannot be less than 0',
+                        },
+                        required: 'Required',
+                        validate: () => {
+                          if (
+                            getValues().candidates.every(
+                              candidate => candidate.votes <= 0
+                            )
+                          ) {
+                            return 'At least 1 candidate must have greater than 0 votes'
+                          }
+                          return true
+                        },
+                        valueAsNumber: true,
+                      })}
+                      type="number"
+                    />
+                  </FormGroup>
                 </td>
                 <td>
                   {i >= 2 && (
                     <Button
                       aria-label={`Remove Candidate ${i}`}
                       disabled={!editable}
-                      icon="trash"
+                      icon="delete"
+                      intent="danger"
+                      minimal
                       onClick={() => removeCandidate(i)}
                     />
                   )}
@@ -220,12 +244,26 @@ const ElectionResultsCard: React.FC<IProps> = ({
               <td />
               <td />
             </tr>
-            <tr className="transparent-background">
-              <AdditionalInputContainer>
-                <label>
-                  <span>Number of Winners</span>
+            <tr>
+              <td>
+                <FormGroup
+                  helperText={
+                    <ErrorMessage
+                      errors={errors}
+                      name="numWinners"
+                      render={({ message }) => message}
+                    />
+                  }
+                  intent={errors.numWinners && 'danger'}
+                  label="Number of Winners"
+                  labelFor="numWinners"
+                >
                   <input
-                    className={Classes.INPUT}
+                    className={classnames(
+                      Classes.INPUT,
+                      errors.numWinners && Classes.INTENT_DANGER
+                    )}
+                    id="numWinners"
                     name="numWinners"
                     placeholder="0"
                     readOnly={!editable}
@@ -245,20 +283,24 @@ const ElectionResultsCard: React.FC<IProps> = ({
                     })}
                     type="number"
                   />
-                  <ErrorMessage
-                    errors={errors}
-                    name="numWinners"
-                    render={({ message }) => (
-                      <InputErrorText>{message}</InputErrorText>
-                    )}
-                  />
-                </label>
-              </AdditionalInputContainer>
-              <AdditionalInputContainer>
-                <label>
-                  <span>Total Ballots Cast</span>
+                </FormGroup>
+              </td>
+              <td>
+                <FormGroup
+                  helperText={
+                    <ErrorMessage
+                      errors={errors}
+                      name="totalBallotsCast"
+                      render={({ message }) => message}
+                    />
+                  }
+                  intent={errors.totalBallotsCast && 'danger'}
+                  label="Total Ballots Cast"
+                  labelFor="totalBallotsCast"
+                >
                   <input
                     className={Classes.INPUT}
+                    id="totalBallotsCast"
                     name="totalBallotsCast"
                     placeholder="0"
                     readOnly={!editable}
@@ -281,15 +323,8 @@ const ElectionResultsCard: React.FC<IProps> = ({
                     })}
                     type="number"
                   />
-                  <ErrorMessage
-                    errors={errors}
-                    name="totalBallotsCast"
-                    render={({ message }) => (
-                      <InputErrorText>{message}</InputErrorText>
-                    )}
-                  />
-                </label>
-              </AdditionalInputContainer>
+                </FormGroup>
+              </td>
               <td />
             </tr>
           </tbody>
