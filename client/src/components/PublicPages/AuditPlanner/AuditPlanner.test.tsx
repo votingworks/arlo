@@ -44,7 +44,9 @@ async function checkThatElectionResultsCardIsInInitialState() {
   screen.getByRole('heading', { name: 'Election Results' })
 
   expect(screen.getAllByRole('row')).toHaveLength(
-    4 // 1 header row + 2 content rows + 1 row for 'Add Candidate' button
+    // 1 header row + 2 candidate rows + 1 row for 'Add Candidate' button + 1 row for additional
+    // inputs
+    5
   )
   screen.getByRole('columnheader', { name: 'Candidate' })
   screen.getByRole('columnheader', { name: 'Votes' })
@@ -109,79 +111,71 @@ test('Entering election results - validation and submit', async () => {
   userEvent.click(planAuditButton)
   await areExpectedErrorMessagesDisplayed({
     displayed: [
-      'Name is required for all candidates.',
-      'Name is required for all candidates.',
-      'At least 1 candidate must have greater than 0 votes.',
-      'At least 1 candidate must have greater than 0 votes.',
+      'Required',
+      'Required',
+      'At least 1 candidate must have greater than 0 votes',
+      'At least 1 candidate must have greater than 0 votes',
     ],
   })
   userEvent.type(candidate0NameInput, 'Helga Hippo')
   userEvent.type(candidate1NameInput, 'Bobby Bear')
   await areExpectedErrorMessagesDisplayed({
     displayed: [
-      'At least 1 candidate must have greater than 0 votes.',
-      'At least 1 candidate must have greater than 0 votes.',
+      'At least 1 candidate must have greater than 0 votes',
+      'At least 1 candidate must have greater than 0 votes',
     ],
-    notDisplayed: ['Name is required for all candidates.'],
+    notDisplayed: ['Required'],
   })
   userEvent.type(candidate0VotesInput, '{backspace}')
   await areExpectedErrorMessagesDisplayed({
     displayed: [
-      'Vote count is required for all candidates.',
-      'At least 1 candidate must have greater than 0 votes.',
+      'Required',
+      'At least 1 candidate must have greater than 0 votes',
     ],
   })
   userEvent.type(candidate0VotesInput, '-1')
   await areExpectedErrorMessagesDisplayed({
     displayed: [
-      'Candidate vote counts cannot be less than 0.',
-      'At least 1 candidate must have greater than 0 votes.',
+      'Cannot be less than 0',
+      'At least 1 candidate must have greater than 0 votes',
     ],
-    notDisplayed: ['Vote count is required for all candidates.'],
+    notDisplayed: ['Required'],
   })
   userEvent.type(candidate0VotesInput, '{backspace}10')
   await areExpectedErrorMessagesDisplayed({
     displayed: [],
     notDisplayed: [
-      'Candidate vote counts cannot be less than 0.',
-      'At least 1 candidate must have greater than 0 votes.',
+      'Cannot be less than 0',
+      'At least 1 candidate must have greater than 0 votes',
     ],
   })
   userEvent.click(planAuditButton)
   await areExpectedErrorMessagesDisplayed({
-    displayed: [
-      'Total ballots cast cannot be less than the sum of candidate votes.',
-    ],
+    displayed: ['Cannot be less than sum of candidate votes'],
   })
   userEvent.type(totalBallotsCastInput, '{backspace}')
   await areExpectedErrorMessagesDisplayed({
-    displayed: ['Total ballots cast is required.'],
-    notDisplayed: [
-      'Total ballots cast cannot be less than the sum of candidate votes.',
-    ],
+    displayed: ['Required'],
+    notDisplayed: ['Cannot be less than sum of candidate votes'],
   })
   userEvent.type(totalBallotsCastInput, '15')
   await areExpectedErrorMessagesDisplayed({
     displayed: [],
-    notDisplayed: ['Total ballots cast is required.'],
+    notDisplayed: ['Required'],
   })
   userEvent.type(numberOfWinnersInput, '{backspace}')
   await areExpectedErrorMessagesDisplayed({
-    displayed: ['Number of winners is required.'],
+    displayed: ['Required'],
   })
   userEvent.type(numberOfWinnersInput, '3')
   await areExpectedErrorMessagesDisplayed({
-    displayed: [
-      'Number of winners cannot be greater than the number of candidates.',
-    ],
-    notDisplayed: ['Number of winners is required.'],
+    displayed: ['Cannot be greater than number of candidates'],
+    notDisplayed: ['Required'],
   })
   userEvent.type(numberOfWinnersInput, '{backspace}1')
   await areExpectedErrorMessagesDisplayed({
     displayed: [],
-    notDisplayed: [
-      'Number of winners cannot be greater than the number of candidates.',
-    ],
+    notDisplayed: ['Cannot be greater than number of candidates'],
   })
 
   // Successful submission
@@ -218,7 +212,9 @@ test('Entering election results - adding and removing candidates', async () => {
   const {
     addCandidateButton,
   } = await checkThatElectionResultsCardIsInInitialState()
-  const initialNumRows = 4 // 1 header row + 2 content rows + 1 row for 'Add Candidate' button
+  // 1 header row + 2 candidate rows + 1 row for 'Add Candidate' button + 1 row for additional
+  // inputs
+  const initialNumRows = 5
 
   // Add candidate
   userEvent.click(addCandidateButton)

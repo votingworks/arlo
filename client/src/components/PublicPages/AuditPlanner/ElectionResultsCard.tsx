@@ -42,6 +42,13 @@ const CandidatesTable = styled(StyledTable)`
     padding: 16px;
     vertical-align: top;
   }
+  tr.transparent-background {
+    background-color: transparent;
+  }
+  th:nth-child(3),
+  td:nth-child(3) {
+    width: 62px; // Just large enough to house the candidate delete button
+  }
 `
 
 const CandidateNameContainer = styled.td`
@@ -50,15 +57,7 @@ const CandidateNameContainer = styled.td`
   }
 `
 
-const AdditionalInputsRow = styled.div`
-  display: flex;
-  margin-bottom: 16px;
-`
-
-const AdditionalInputContainer = styled.div`
-  margin-left: 16px;
-  width: 50%;
-
+const AdditionalInputContainer = styled.td`
   label > span {
     color: ${Colors.DARK_GRAY5};
     display: block;
@@ -155,20 +154,13 @@ const ElectionResultsCard: React.FC<IProps> = ({
               <tr>
                 <th>Candidate</th>
                 <th>Votes</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
               {candidateFields.map((candidateField, i) => (
                 <tr key={candidateField.id}>
                   <CandidateNameContainer>
-                    {i >= 2 && (
-                      <Button
-                        aria-label={`Remove Candidate ${i}`}
-                        disabled={!editable}
-                        icon="minus"
-                        onClick={() => removeCandidate(i)}
-                      />
-                    )}
                     <input
                       aria-label={`Candidate ${i} Name`}
                       className={Classes.INPUT}
@@ -177,7 +169,7 @@ const ElectionResultsCard: React.FC<IProps> = ({
                       placeholder="Candidate name"
                       readOnly={!editable}
                       ref={register({
-                        required: 'Name is required for all candidates.',
+                        required: 'Required',
                       })}
                     />
                     <ErrorMessage
@@ -200,17 +192,16 @@ const ElectionResultsCard: React.FC<IProps> = ({
                       ref={register({
                         min: {
                           value: 0,
-                          message:
-                            'Candidate vote counts cannot be less than 0.',
+                          message: 'Cannot be less than 0',
                         },
-                        required: 'Vote count is required for all candidates.',
+                        required: 'Required',
                         validate: () => {
                           if (
                             getValues().candidates.every(
                               candidate => candidate.votes <= 0
                             )
                           ) {
-                            return 'At least 1 candidate must have greater than 0 votes.'
+                            return 'At least 1 candidate must have greater than 0 votes'
                           }
                           return true
                         },
@@ -226,6 +217,16 @@ const ElectionResultsCard: React.FC<IProps> = ({
                       )}
                     />
                   </td>
+                  <td>
+                    {i >= 2 && (
+                      <Button
+                        aria-label={`Remove Candidate ${i}`}
+                        disabled={!editable}
+                        icon="trash"
+                        onClick={() => removeCandidate(i)}
+                      />
+                    )}
+                  </td>
                 </tr>
               ))}
               <tr>
@@ -239,81 +240,82 @@ const ElectionResultsCard: React.FC<IProps> = ({
                   </Button>
                 </td>
                 <td />
+                <td />
+              </tr>
+              <tr className="transparent-background">
+                <AdditionalInputContainer>
+                  <label>
+                    <span>Number of Winners</span>
+                    <input
+                      className={Classes.INPUT}
+                      name="numWinners"
+                      placeholder="0"
+                      readOnly={!editable}
+                      ref={register({
+                        min: {
+                          value: 1,
+                          message: 'Cannot be less than 1',
+                        },
+                        required: 'Required',
+                        validate: value => {
+                          if (value > getValues().candidates.length) {
+                            return 'Cannot be greater than number of candidates'
+                          }
+                          return true
+                        },
+                        valueAsNumber: true,
+                      })}
+                      type="number"
+                    />
+                    <ErrorMessage
+                      errors={errors}
+                      name="numWinners"
+                      render={({ message }) => (
+                        <InputErrorText>{message}</InputErrorText>
+                      )}
+                    />
+                  </label>
+                </AdditionalInputContainer>
+                <AdditionalInputContainer>
+                  <label>
+                    <span>Total Ballots Cast</span>
+                    <input
+                      className={Classes.INPUT}
+                      name="totalBallotsCast"
+                      placeholder="0"
+                      readOnly={!editable}
+                      ref={register({
+                        required: 'Required',
+                        validate: value => {
+                          if (
+                            value <
+                            sum(
+                              getValues().candidates.map(
+                                candidate => candidate.votes
+                              )
+                            )
+                          ) {
+                            return 'Cannot be less than sum of candidate votes'
+                          }
+                          return true
+                        },
+                        valueAsNumber: true,
+                      })}
+                      type="number"
+                    />
+                    <ErrorMessage
+                      errors={errors}
+                      name="totalBallotsCast"
+                      render={({ message }) => (
+                        <InputErrorText>{message}</InputErrorText>
+                      )}
+                    />
+                  </label>
+                </AdditionalInputContainer>
+                <td />
               </tr>
             </tbody>
           </CandidatesTable>
-
-          <AdditionalInputsRow>
-            <AdditionalInputContainer>
-              <label>
-                <span>Number of Winners</span>
-                <input
-                  className={Classes.INPUT}
-                  name="numWinners"
-                  placeholder="0"
-                  readOnly={!editable}
-                  ref={register({
-                    min: {
-                      value: 1,
-                      message: 'Number of winners cannot be less than 1.',
-                    },
-                    required: 'Number of winners is required.',
-                    validate: value => {
-                      if (value > getValues().candidates.length) {
-                        return 'Number of winners cannot be greater than the number of candidates.'
-                      }
-                      return true
-                    },
-                    valueAsNumber: true,
-                  })}
-                  type="number"
-                />
-                <ErrorMessage
-                  errors={errors}
-                  name="numWinners"
-                  render={({ message }) => (
-                    <InputErrorText>{message}</InputErrorText>
-                  )}
-                />
-              </label>
-            </AdditionalInputContainer>
-            <AdditionalInputContainer>
-              <label>
-                <span>Total Ballots Cast</span>
-                <input
-                  className={Classes.INPUT}
-                  name="totalBallotsCast"
-                  placeholder="0"
-                  readOnly={!editable}
-                  ref={register({
-                    required: 'Total ballots cast is required.',
-                    validate: value => {
-                      if (
-                        value <
-                        sum(
-                          getValues().candidates.map(
-                            candidate => candidate.votes
-                          )
-                        )
-                      ) {
-                        return 'Total ballots cast cannot be less than the sum of candidate votes.'
-                      }
-                      return true
-                    },
-                    valueAsNumber: true,
-                  })}
-                  type="number"
-                />
-                <ErrorMessage
-                  errors={errors}
-                  name="totalBallotsCast"
-                  render={({ message }) => (
-                    <InputErrorText>{message}</InputErrorText>
-                  )}
-                />
-              </label>
-            </AdditionalInputContainer>
-          </AdditionalInputsRow>
         </InnerContainer>
 
         <CardActionsRow>
