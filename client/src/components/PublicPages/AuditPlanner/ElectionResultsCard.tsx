@@ -125,7 +125,7 @@ const ElectionResultsCard: React.FC<IProps> = ({
   } = useForm<IElectionResults>({
     defaultValues: constructInitialElectionResults(),
   })
-  const { errors } = formState
+  const { errors, isSubmitted } = formState
   const {
     append: addCandidate,
     fields: candidateFields,
@@ -136,11 +136,13 @@ const ElectionResultsCard: React.FC<IProps> = ({
   })
 
   const validateAllCandidateVotesFields = () => {
-    trigger(
-      [...Array(candidateFields.length).keys()].map(
-        i => `candidates[${i}].votes`
+    if (isSubmitted) {
+      trigger(
+        [...Array(candidateFields.length).keys()].map(
+          i => `candidates[${i}].votes`
+        )
       )
-    )
+    }
   }
 
   return (
