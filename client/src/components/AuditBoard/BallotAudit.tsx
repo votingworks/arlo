@@ -106,13 +106,13 @@ interface IProps {
   key: string // Require a key (ballot ID) to force a state reset whenever a new ballot is toggled
 }
 
-const BallotAudit = ({
+const BallotAudit: React.FC<IProps> = ({
   ballot,
   contests,
   confirmSelections,
   confirmBallotNotFound,
   previousBallot,
-}: IProps): React.ReactElement => {
+}: IProps) => {
   const initialInterpretations = contests.map(contest => {
     const ballotInterpretation = ballot.interpretations.find(
       i => i.contestId === contest.id
@@ -218,7 +218,7 @@ const BallotAuditContest = ({
   contest,
   interpretation,
   setInterpretation,
-}: IBallotAuditContestProps): React.ReactElement => {
+}: IBallotAuditContestProps) => {
   const {
     choiceIds,
     comment,

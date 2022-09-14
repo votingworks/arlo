@@ -91,7 +91,7 @@ interface TParams {
   jurisdictionId?: string
 }
 
-const Header = (): React.ReactElement | null => {
+const Header: React.FC<{}> = () => {
   const electionMatch:
     | RouteComponentProps<TParams>['match']
     | null = useRouteMatch('/election/:electionId')
@@ -215,10 +215,10 @@ interface IHeaderAuditBoardProps {
   members: IAuditBoardMember[]
 }
 
-export const HeaderAuditBoard = ({
+export const HeaderAuditBoard: React.FC<IHeaderAuditBoardProps> = ({
   boardName,
   members,
-}: IHeaderAuditBoardProps): React.ReactElement => {
+}: IHeaderAuditBoardProps) => {
   return (
     <Nav>
       <InnerBar>

@@ -16,11 +16,11 @@ interface IProps {
   children: ReactNode
 }
 
-const FormSection = ({
+const FormSection: React.FC<IProps> = ({
   label,
   description,
   children,
-}: IProps): React.ReactElement => {
+}: IProps) => {
   return (
     <Section>
       {label ? <H5>{label}</H5> : undefined}

@@ -45,13 +45,13 @@ interface IProps {
   auditType: IAuditSettings['auditType']
 }
 
-const ContestForm = ({
+const ContestForm: React.FC<IProps> = ({
   isTargeted,
   nextStage,
   prevStage,
   locked,
   auditType,
-}: IProps): React.ReactElement | null => {
+}) => {
   const contestValues: IContest[] = [
     {
       id: '',
@@ -100,7 +100,7 @@ const ContestForm = ({
   }
 
   const isOpportunisticFormClean = (
-    touched: Record<string, unknown>,
+    touched: {},
     values: { contests: IContest[] }
   ) => {
     return (

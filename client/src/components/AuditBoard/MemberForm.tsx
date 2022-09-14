@@ -12,11 +12,11 @@ interface IProps {
   submitMembers: (members: IAuditBoardMember[]) => void
 }
 
-const MemberForm = ({
+const MemberForm: React.FC<IProps> = ({
   boardName,
   jurisdictionName,
   submitMembers,
-}: IProps): React.ReactElement => {
+}: IProps) => {
   return (
     <div>
       <H1>{boardName}: Member Sign-in</H1>

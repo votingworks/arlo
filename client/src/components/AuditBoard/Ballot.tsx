@@ -147,7 +147,7 @@ const InterpretationSummary: React.FC<IInterpretationSummaryProps> = ({
   return null
 }
 
-const Ballot = ({
+const Ballot: React.FC<IProps> = ({
   home,
   batchId,
   ballotPosition,
@@ -156,7 +156,7 @@ const Ballot = ({
   previousBallot,
   nextBallot,
   submitBallot,
-}: IProps): React.ReactElement => {
+}: IProps) => {
   const ballotIx = ballots.findIndex(
     b => b.position === ballotPosition && b.batch.id === batchId
   )

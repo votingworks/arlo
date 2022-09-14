@@ -31,11 +31,11 @@ type IValues = Pick<
   'state' | 'electionName' | 'online' | 'randomSeed' | 'riskLimit'
 >
 
-const Settings = ({
+const Settings: React.FC<IProps> = ({
   nextStage,
   prevStage,
   locked,
-}: IProps): React.ReactElement | null => {
+}: IProps) => {
   const { electionId } = useParams<{ electionId: string }>()
   const [auditSettings, updateSettings] = useAuditSettings(electionId!)
   if (!auditSettings) return null // still loading
