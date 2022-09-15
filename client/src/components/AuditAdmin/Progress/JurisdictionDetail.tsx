@@ -88,8 +88,9 @@ const JurisdictionDetail: React.FC<IJurisdictionDetailProps> = ({
         <Section>
           <H5>Jurisdiction Files</H5>
           <StatusCard>
-            <H6>Ballot Manifest</H6>
+            {/* <H6>Ballot Manifest</H6> */}
             <FileUpload
+              title="Ballot Manifest"
               {...ballotManifestUpload}
               acceptFileTypes={['csv']}
               disabled={!!round}
@@ -97,8 +98,9 @@ const JurisdictionDetail: React.FC<IJurisdictionDetailProps> = ({
           </StatusCard>
           {batchTalliesEnabled && (
             <StatusCard>
-              <H6>Candidate Totals by Batch</H6>
+              {/* <H6>Candidate Totals by Batch</H6> */}
               <FileUpload
+                title="Candidate Totals by Batch"
                 {...batchTalliesUpload}
                 acceptFileTypes={['csv']}
                 disabled={!!round || !isManifestUploaded}
@@ -107,8 +109,9 @@ const JurisdictionDetail: React.FC<IJurisdictionDetailProps> = ({
           )}
           {cvrsEnabled && (
             <StatusCard>
-              <H6>Cast Vote Records (CVR)</H6>
+              {/* <H6>Cast Vote Records (CVR)</H6> */}
               <CvrsFileUpload
+                title="Cast Vote Records (CVR)"
                 cvrsUpload={cvrsUpload}
                 disabled={!!round || !isManifestUploaded}
               />

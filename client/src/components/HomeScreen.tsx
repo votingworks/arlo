@@ -35,9 +35,120 @@ import { IAuditSettings } from './useAuditSettings'
 import { useConfirm, Confirm } from './Atoms/Confirm'
 import { ErrorLabel } from './Atoms/Form/_helpers'
 import { addCSRFToken, fetchApi } from '../utils/api'
+import FileUpload from './Atoms/FileUpload'
 
 const HomeScreen: React.FC = () => {
   const auth = useAuthDataContext()
+  const fileUpload = {
+    uploadedFile: { isSuccess: true, data: { file: null, processing: null } },
+    uploadFiles: async () => undefined,
+    deleteFile: async () => undefined,
+    downloadFileUrl: 'fake',
+  }
+
+  if (false) {
+    return (
+      <div
+        style={{
+          marginTop: '40px',
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gap: '40px',
+        }}
+      >
+        <div>
+          <FileUpload
+            title="Candidate Totals by Batch"
+            acceptFileTypes={['csv']}
+            {...fileUpload}
+          />
+          <br />
+          <br />
+          <br />
+          <FileUpload
+            title="Ballot Manifest"
+            acceptFileTypes={['csv']}
+            {...fileUpload}
+            uploadProgress={0.37}
+            initialFile={new File([], 'fake.csv')}
+          />
+          <br />
+          <br />
+          <br />
+          <FileUpload
+            title="Cast Vote Records (CVR)"
+            acceptFileTypes={['csv']}
+            {...fileUpload}
+            uploadedFile={{
+              isSuccess: true,
+              data: {
+                file: {
+                  name: 'Cast vote records.csv',
+                },
+                processing: {
+                  status: 'PROCESSING',
+                  completedAt: null,
+                  workProgress: 3,
+                  workTotal: 10,
+                },
+              },
+            }}
+          />
+        </div>
+        <div>
+          <FileUpload
+            title="Standardized Contests"
+            acceptFileTypes={['csv']}
+            {...fileUpload}
+            uploadedFile={{
+              isSuccess: true,
+              data: {
+                file: {
+                  name: 'standardized contests.csv',
+                },
+                processing: {
+                  status: 'PROCESSED',
+                  completedAt: new Date().toISOString(),
+                },
+              },
+            }}
+          />
+          <br />
+          <br />
+          <br />
+          <FileUpload
+            title="Participating Jurisdictions"
+            acceptFileTypes={['csv']}
+            {...fileUpload}
+            uploadedFile={{
+              isSuccess: true,
+              data: {
+                file: {
+                  name: 'jurisdictions.csv',
+                },
+                processing: {
+                  status: 'ERROR',
+                  completedAt: new Date().toISOString(),
+                  error: [
+                    'Invalid ScanComputerName/BoxID for row with',
+                    ' RowNumber {row_number}: {scan_computer_name}, {box_id}.',
+                    ' The ScanComputerName and BoxID fields in the CVR file',
+                    ' must match the Tabulator and Batch Name fields in the',
+                    ' ballot manifest.',
+                    ' The closest match we found in the ballot manifest was:',
+                    ' {closest_match[0]}, {closest_match[1]}.',
+                    ' Please check your CVR file and ballot manifest thoroughly',
+                    ' to make sure these values match - there may be a similar',
+                    ' inconsistency in other rows in the CVR file.',
+                  ].join(''),
+                },
+              },
+            }}
+          />
+        </div>
+      </div>
+    )
+  }
 
   if (auth === null) return null // Still loading
 
