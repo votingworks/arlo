@@ -1,25 +1,25 @@
-export interface ICandidate {
+export interface ICandidateFormState {
   name: string
-  votes: number
+  votes: number | null
 }
 
-export interface IElectionResults {
-  candidates: ICandidate[]
-  numWinners: number
-  totalBallotsCast: number
+export interface IElectionResultsFormState {
+  candidates: ICandidateFormState[]
+  numWinners: number | null
+  totalBallotsCast: number | null
 }
 
-export function constructNewCandidate(): ICandidate {
+export function constructNewCandidate(): ICandidateFormState {
   return {
     name: '',
-    votes: 0,
+    votes: null,
   }
 }
 
-export function constructInitialElectionResults(): IElectionResults {
+export function constructInitialElectionResults(): IElectionResultsFormState {
   return {
     candidates: [constructNewCandidate(), constructNewCandidate()],
     numWinners: 1,
-    totalBallotsCast: 0,
+    totalBallotsCast: null,
   }
 }

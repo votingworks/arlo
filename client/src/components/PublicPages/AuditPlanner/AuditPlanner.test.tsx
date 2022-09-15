@@ -29,7 +29,9 @@ async function areExpectedErrorMessagesDisplayed({
   }
   for (const message of displayed) {
     // eslint-disable-next-line no-await-in-loop
-    expect(await screen.findAllByText(message)).toHaveLength(counts[message])
+    await waitFor(() =>
+      expect(screen.getAllByText(message)).toHaveLength(counts[message])
+    )
   }
 
   for (const message of notDisplayed) {
@@ -63,9 +65,9 @@ async function checkThatElectionResultsCardIsInInitialState() {
     name: 'Candidate 1 Votes',
   })
   expect(candidate0NameInput).toHaveValue('')
-  expect(candidate0VotesInput).toHaveValue(0)
+  expect(candidate0VotesInput).toHaveValue(null)
   expect(candidate1NameInput).toHaveValue('')
-  expect(candidate1VotesInput).toHaveValue(0)
+  expect(candidate1VotesInput).toHaveValue(null)
   const addCandidateButton = screen.getByRole('button', {
     name: /Add Candidate/,
   })
@@ -76,7 +78,7 @@ async function checkThatElectionResultsCardIsInInitialState() {
     name: 'Total Ballots Cast',
   })
   expect(numberOfWinnersInput).toHaveValue(1)
-  expect(totalBallotsCastInput).toHaveValue(0)
+  expect(totalBallotsCastInput).toHaveValue(null)
 
   const clearButton = screen.getByRole('button', { name: 'Clear' })
   const planAuditButton = screen.getByRole('button', { name: 'Plan Audit' })
@@ -101,6 +103,7 @@ test('Entering election results - validation and submit', async () => {
     candidate0NameInput,
     candidate0VotesInput,
     candidate1NameInput,
+    candidate1VotesInput,
     numberOfWinnersInput,
     totalBallotsCastInput,
     planAuditButton,
@@ -109,48 +112,38 @@ test('Entering election results - validation and submit', async () => {
   // Failed submissions
   userEvent.click(planAuditButton)
   await areExpectedErrorMessagesDisplayed({
-    displayed: [
-      'Required',
-      'Required',
-      'At least 1 candidate must have greater than 0 votes',
-    ],
+    displayed: ['Required', 'Required', 'Required', 'Required', 'Required'],
   })
   userEvent.type(candidate0NameInput, 'Helga Hippo')
   userEvent.type(candidate1NameInput, 'Bobby Bear')
   await areExpectedErrorMessagesDisplayed({
+    displayed: ['Required', 'Required', 'Required'],
+  })
+  userEvent.type(candidate0VotesInput, '0')
+  userEvent.type(candidate1VotesInput, '0')
+  userEvent.type(totalBallotsCastInput, '0')
+  await areExpectedErrorMessagesDisplayed({
     displayed: ['At least 1 candidate must have greater than 0 votes'],
     notDisplayed: ['Required'],
   })
-  userEvent.type(candidate0VotesInput, '{backspace}')
-  await areExpectedErrorMessagesDisplayed({
-    displayed: ['Required'],
-  })
-  userEvent.type(candidate0VotesInput, '-1')
+  userEvent.type(candidate0VotesInput, '{backspace}-1')
   await areExpectedErrorMessagesDisplayed({
     displayed: ['Cannot be less than 0'],
-    notDisplayed: ['Required'],
+    notDisplayed: ['At least 1 candidate must have greater than 0 votes'],
   })
-  userEvent.type(candidate0VotesInput, '{backspace}10')
+  userEvent.type(candidate0VotesInput, '{backspace}{backspace}10')
   await areExpectedErrorMessagesDisplayed({
     displayed: [],
-    notDisplayed: [
-      'Cannot be less than 0',
-      'At least 1 candidate must have greater than 0 votes',
-    ],
+    notDisplayed: ['Cannot be less than 0'],
   })
   userEvent.click(planAuditButton)
   await areExpectedErrorMessagesDisplayed({
     displayed: ['Cannot be less than sum of candidate votes'],
   })
-  userEvent.type(totalBallotsCastInput, '{backspace}')
-  await areExpectedErrorMessagesDisplayed({
-    displayed: ['Required'],
-    notDisplayed: ['Cannot be less than sum of candidate votes'],
-  })
-  userEvent.type(totalBallotsCastInput, '15')
+  userEvent.type(totalBallotsCastInput, '{backspace}15')
   await areExpectedErrorMessagesDisplayed({
     displayed: [],
-    notDisplayed: ['Required'],
+    notDisplayed: ['Cannot be less than sum of candidate votes'],
   })
   userEvent.type(numberOfWinnersInput, '{backspace}')
   await areExpectedErrorMessagesDisplayed({
@@ -215,7 +208,7 @@ test('Entering election results - adding and removing candidates', async () => {
   )
   expect(
     screen.getByRole('spinbutton', { name: 'Candidate 2 Votes' })
-  ).toHaveValue(0)
+  ).toHaveValue(null)
   const candidate2RemoveButton = screen.getByRole('button', {
     name: 'Remove Candidate 2',
   })

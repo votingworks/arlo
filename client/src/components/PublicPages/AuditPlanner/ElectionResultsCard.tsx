@@ -16,8 +16,8 @@ import { Confirm, useConfirm } from '../../Atoms/Confirm'
 import {
   constructInitialElectionResults,
   constructNewCandidate,
-  ICandidate,
-  IElectionResults,
+  ICandidateFormState,
+  IElectionResultsFormState,
 } from './electionResults'
 import { sum } from '../../../utils/number'
 
@@ -95,7 +95,7 @@ const CardActionsRow = styled.div`
 interface IProps {
   editable: boolean
   enableEditing: () => void
-  planAudit: (electionResults: IElectionResults) => void
+  planAudit: (electionResults: IElectionResultsFormState) => void
 }
 
 const ElectionResultsCard: React.FC<IProps> = ({
@@ -113,7 +113,7 @@ const ElectionResultsCard: React.FC<IProps> = ({
     register,
     reset,
     trigger,
-  } = useForm<IElectionResults>({
+  } = useForm<IElectionResultsFormState>({
     defaultValues: constructInitialElectionResults(),
   })
   const { errors, isSubmitted } = formState
@@ -121,7 +121,7 @@ const ElectionResultsCard: React.FC<IProps> = ({
     append: addCandidate,
     fields: candidateFields,
     remove: removeCandidate,
-  } = useFieldArray<ICandidate>({
+  } = useFieldArray<ICandidateFormState>({
     control,
     name: 'candidates',
   })
@@ -169,7 +169,6 @@ const ElectionResultsCard: React.FC<IProps> = ({
                         Classes.INPUT,
                         errors.candidates?.[i]?.name && Classes.INTENT_DANGER
                       )}
-                      defaultValue={candidateField.name}
                       name={`candidates[${i}].name`}
                       placeholder="Candidate name"
                       readOnly={!editable}
@@ -196,7 +195,6 @@ const ElectionResultsCard: React.FC<IProps> = ({
                         Classes.INPUT,
                         errors.candidates?.[i]?.votes && Classes.INTENT_DANGER
                       )}
-                      defaultValue={`${candidateField.votes}`}
                       name={`candidates[${i}].votes`}
                       onChange={validateAllCandidateVotesFields}
                       placeholder="0"
@@ -212,7 +210,7 @@ const ElectionResultsCard: React.FC<IProps> = ({
                             // No need to display this message for all candidate votes inputs
                             i === 0 &&
                             getValues().candidates.every(
-                              candidate => candidate.votes <= 0
+                              candidate => (candidate.votes || 0) <= 0
                             )
                           ) {
                             return 'At least 1 candidate must have greater than 0 votes'
@@ -307,7 +305,10 @@ const ElectionResultsCard: React.FC<IProps> = ({
                   labelFor="totalBallotsCast"
                 >
                   <input
-                    className={Classes.INPUT}
+                    className={classnames(
+                      Classes.INPUT,
+                      errors.totalBallotsCast && Classes.INTENT_DANGER
+                    )}
                     id="totalBallotsCast"
                     name="totalBallotsCast"
                     placeholder="0"
@@ -319,7 +320,7 @@ const ElectionResultsCard: React.FC<IProps> = ({
                           value <
                           sum(
                             getValues().candidates.map(
-                              candidate => candidate.votes
+                              candidate => candidate.votes || 0
                             )
                           )
                         ) {

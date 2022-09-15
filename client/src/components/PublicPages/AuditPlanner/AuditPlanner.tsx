@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { H1 } from '@blueprintjs/core'
 
 import ElectionResultsCard from './ElectionResultsCard'
-import { IElectionResults } from './electionResults'
+import { IElectionResultsFormState } from './electionResults'
 import { Inner } from '../../Atoms/Wrapper'
 
 const PageHeading = styled(H1)`
@@ -14,7 +14,7 @@ const PageHeading = styled(H1)`
 const AuditPlanner: React.FC = () => {
   const [electionResultsEditable, setElectionResultsEditable] = useState(true)
 
-  const planAudit = (_electionResults: IElectionResults) => {
+  const planAudit = (_electionResults: IElectionResultsFormState) => {
     setElectionResultsEditable(false)
   }
 
