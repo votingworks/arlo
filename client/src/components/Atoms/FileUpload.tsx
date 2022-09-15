@@ -155,7 +155,7 @@ const FileUpload: React.FC<IFileUploadProps> = ({
               uploadDisabled ||
               numSelectedFiles === 0 ||
               formState.isSubmitting ||
-              (processing && !processing.completedAt)
+              (processing !== null && !processing.completedAt)
             }
             style={{ width: buttonAndTagWidth }}
           >
