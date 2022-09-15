@@ -93,7 +93,8 @@ const JurisdictionDetail: React.FC<IJurisdictionDetailProps> = ({
               title="Ballot Manifest"
               {...ballotManifestUpload}
               acceptFileTypes={['csv']}
-              disabled={!!round}
+              uploadDisabled={round !== null}
+              deleteDisabled={round !== null}
             />
           </StatusCard>
           {batchTalliesEnabled && (
@@ -103,17 +104,17 @@ const JurisdictionDetail: React.FC<IJurisdictionDetailProps> = ({
                 title="Candidate Totals by Batch"
                 {...batchTalliesUpload}
                 acceptFileTypes={['csv']}
-                disabled={!!round || !isManifestUploaded}
+                uploadDisabled={!isManifestUploaded || round !== null}
+                deleteDisabled={round !== null}
               />
             </StatusCard>
           )}
           {cvrsEnabled && (
             <StatusCard>
-              {/* <H6>Cast Vote Records (CVR)</H6> */}
               <CvrsFileUpload
-                title="Cast Vote Records (CVR)"
                 cvrsUpload={cvrsUpload}
-                disabled={!!round || !isManifestUploaded}
+                uploadDisabled={!isManifestUploaded || round !== null}
+                deleteDisabled={round !== null}
               />
             </StatusCard>
           )}
@@ -133,13 +134,16 @@ const JurisdictionDetail: React.FC<IJurisdictionDetailProps> = ({
 
 const CvrsFileUpload = ({
   cvrsUpload,
-  disabled,
+  uploadDisabled,
+  deleteDisabled,
 }: {
   cvrsUpload: ICvrsFileUpload
-  disabled?: boolean
+  uploadDisabled?: boolean
+  deleteDisabled?: boolean
 }) => {
   const [selectedCvrFileType, setSelectedCvrFileType] = useState<CvrFileType>()
   const [isUploading, setIsUploading] = useState(false)
+
   const uploadFiles = async (files: File[]) => {
     setIsUploading(true)
     try {
@@ -154,29 +158,8 @@ const CvrsFileUpload = ({
 
   return (
     <>
-      <div style={{ marginBottom: '10px' }}>
-        <label htmlFor="cvrFileType">CVR File Type: </label>
-        {cvrs.file ? (
-          prettyCvrFileType(cvrs.file.cvrFileType!)
-        ) : (
-          <HTMLSelect
-            name="cvrFileType"
-            id="cvrFileType"
-            value={selectedCvrFileType}
-            onChange={e =>
-              setSelectedCvrFileType(e.target.value as CvrFileType)
-            }
-            disabled={disabled || isUploading}
-          >
-            <option></option>
-            <option value={CvrFileType.DOMINION}>Dominion</option>
-            <option value={CvrFileType.CLEARBALLOT}>ClearBallot</option>
-            <option value={CvrFileType.ESS}>ES&amp;S</option>
-            <option value={CvrFileType.HART}>Hart</option>
-          </HTMLSelect>
-        )}
-      </div>
       <FileUpload
+        title="Cast Vote Records (CVR)"
         {...cvrsUpload}
         uploadFiles={uploadFiles}
         acceptFileTypes={
@@ -186,7 +169,29 @@ const CvrsFileUpload = ({
           selectedCvrFileType === CvrFileType.ESS ||
           selectedCvrFileType === CvrFileType.HART
         }
-        disabled={disabled || (!cvrs.file && !selectedCvrFileType)}
+        uploadDisabled={uploadDisabled || (!cvrs.file && !selectedCvrFileType)}
+        deleteDisabled={deleteDisabled}
+        additionalFields={
+          <div>
+            <label htmlFor="cvrFileType">CVR File Type: </label>
+            <HTMLSelect
+              name="cvrFileType"
+              id="cvrFileType"
+              value={selectedCvrFileType}
+              onChange={e =>
+                setSelectedCvrFileType(e.target.value as CvrFileType)
+              }
+              disabled={uploadDisabled || isUploading || cvrs.file !== null}
+              style={{ width: '195px', marginLeft: '10px' }}
+            >
+              <option></option>
+              <option value={CvrFileType.DOMINION}>Dominion</option>
+              <option value={CvrFileType.CLEARBALLOT}>ClearBallot</option>
+              <option value={CvrFileType.ESS}>ES&amp;S</option>
+              <option value={CvrFileType.HART}>Hart</option>
+            </HTMLSelect>
+          </div>
+        }
       />
     </>
   )

@@ -215,3 +215,15 @@ export const useIsMounted = (): (() => boolean) => {
 
   return () => isMounted.current
 }
+
+/**
+ * Asserts that the given condition is true, adding a type assertion to that effect.
+ */
+export function assert(
+  condition: boolean,
+  message?: string
+): asserts condition {
+  if (!condition) {
+    throw new Error(message)
+  }
+}

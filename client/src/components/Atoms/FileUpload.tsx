@@ -5,14 +5,18 @@ import styled from 'styled-components'
 import StatusTag, { StatusTagWithProgress } from './StatusTag'
 import { IFileUpload } from '../useFileUpload'
 import AsyncButton from './AsyncButton'
+import { assert } from '../utilities'
 
 const Row = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 10px;
+  &:not(:last-child) {
+    margin-bottom: 10px;
+  }
 `
-const buttonAndTagWidth = '115px'
+
+const buttonAndTagWidth = '115px' // Wide enough for the longest text
 
 const FileStatusTag = styled(StatusTag)`
   width: ${buttonAndTagWidth};
@@ -30,6 +34,7 @@ export interface IFileUploadProps extends IFileUpload {
   allowMultipleFiles?: boolean
   uploadDisabled?: boolean
   deleteDisabled?: boolean
+  additionalFields?: React.ReactNode
 }
 
 const FileUpload: React.FC<IFileUploadProps> = ({
@@ -43,6 +48,7 @@ const FileUpload: React.FC<IFileUploadProps> = ({
   allowMultipleFiles = false,
   uploadDisabled = false,
   deleteDisabled = false,
+  additionalFields,
 }: IFileUploadProps) => {
   const { register, handleSubmit, formState, watch, reset } = useForm<{
     files: FileList
@@ -74,16 +80,18 @@ const FileUpload: React.FC<IFileUploadProps> = ({
 
   const statusTag = (() => {
     if (!uploadProgress && !file) return null
-    if (uploadProgress)
+
+    if (uploadProgress !== undefined) {
       return (
         <FileStatusTagWithProgress intent="warning" progress={uploadProgress}>
           Uploading
         </FileStatusTagWithProgress>
       )
+    }
 
-    if (!processing || !file) return null // TODO Impossible, assert
+    assert(processing !== null)
 
-    if (!processing.completedAt)
+    if (!processing.completedAt) {
       return processing.workTotal ? (
         <FileStatusTagWithProgress
           intent="primary"
@@ -94,9 +102,11 @@ const FileUpload: React.FC<IFileUploadProps> = ({
       ) : (
         <FileStatusTag intent="primary">Processing</FileStatusTag>
       )
+    }
 
-    if (processing?.error)
+    if (processing.error) {
       return <FileStatusTag intent="danger">Upload Failed</FileStatusTag>
+    }
 
     return <FileStatusTag intent="success">Uploaded</FileStatusTag>
   })()
@@ -114,6 +124,7 @@ const FileUpload: React.FC<IFileUploadProps> = ({
           </Callout>
         </Row>
       )}
+      {additionalFields && <Row>{additionalFields}</Row>}
       <Row>
         <FileInput
           inputProps={{
@@ -130,13 +141,7 @@ const FileUpload: React.FC<IFileUploadProps> = ({
             if (numSelectedFiles === 1) return selectedFiles[0].name
             return `${numSelectedFiles} files selected`
           })()}
-          disabled={
-            uploadDisabled ||
-            formState.isSubmitting ||
-            file !== null ||
-            // TODO remove this last case
-            uploadProgress !== undefined
-          }
+          disabled={uploadDisabled || formState.isSubmitting || file !== null}
           fill
         />
       </Row>
@@ -150,9 +155,7 @@ const FileUpload: React.FC<IFileUploadProps> = ({
               uploadDisabled ||
               numSelectedFiles === 0 ||
               formState.isSubmitting ||
-              (processing && !processing.completedAt) ||
-              // TODO remove this last case
-              uploadProgress !== undefined
+              (processing && !processing.completedAt)
             }
             style={{ width: buttonAndTagWidth }}
           >
