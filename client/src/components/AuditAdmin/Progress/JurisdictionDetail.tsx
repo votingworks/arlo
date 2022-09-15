@@ -4,7 +4,6 @@ import {
   Classes,
   Dialog,
   H5,
-  H6,
   Card,
   Button,
   HTMLSelect,
@@ -15,7 +14,7 @@ import { IJurisdiction, JurisdictionRoundStatus } from '../../useJurisdictions'
 import { CvrFileType, FileProcessingStatus } from '../../useCSV'
 import { IRound } from '../useRoundsAuditAdmin'
 import { IAuditSettings } from '../../useAuditSettings'
-import { api } from '../../utilities'
+import { api, assert } from '../../utilities'
 import useAuditBoards from '../../useAuditBoards'
 import useSampleCount from '../../JurisdictionAdmin/useBallots'
 import AsyncButton from '../../Atoms/AsyncButton'
@@ -29,17 +28,9 @@ import {
 } from '../../useFileUpload'
 import AuditBoardsTable from './AuditBoardsTable'
 
-const prettyCvrFileType = (cvrFileType: CvrFileType) =>
-  ({
-    DOMINION: 'Dominion',
-    CLEARBALLOT: 'ClearBallot',
-    ESS: 'ES&S',
-    HART: 'Hart',
-  }[cvrFileType])
-
 const StatusCard = styled(Card)`
   &:not(:last-child) {
-    margin-bottom: 20px;
+    margin-bottom: 15px;
   }
 `
 
@@ -88,7 +79,6 @@ const JurisdictionDetail: React.FC<IJurisdictionDetailProps> = ({
         <Section>
           <H5>Jurisdiction Files</H5>
           <StatusCard>
-            {/* <H6>Ballot Manifest</H6> */}
             <FileUpload
               title="Ballot Manifest"
               {...ballotManifestUpload}
@@ -99,7 +89,6 @@ const JurisdictionDetail: React.FC<IJurisdictionDetailProps> = ({
           </StatusCard>
           {batchTalliesEnabled && (
             <StatusCard>
-              {/* <H6>Candidate Totals by Batch</H6> */}
               <FileUpload
                 title="Candidate Totals by Batch"
                 {...batchTalliesUpload}
@@ -109,7 +98,7 @@ const JurisdictionDetail: React.FC<IJurisdictionDetailProps> = ({
               />
             </StatusCard>
           )}
-          {cvrsEnabled && (
+          {cvrsEnabled && cvrsUpload.uploadedFile.isSuccess && (
             <StatusCard>
               <CvrsFileUpload
                 cvrsUpload={cvrsUpload}
@@ -141,7 +130,10 @@ const CvrsFileUpload = ({
   uploadDisabled?: boolean
   deleteDisabled?: boolean
 }) => {
-  const [selectedCvrFileType, setSelectedCvrFileType] = useState<CvrFileType>()
+  assert(cvrsUpload.uploadedFile.isSuccess)
+  const [selectedCvrFileType, setSelectedCvrFileType] = useState<
+    CvrFileType | undefined
+  >(cvrsUpload.uploadedFile.data?.file?.cvrFileType)
   const [isUploading, setIsUploading] = useState(false)
 
   const uploadFiles = async (files: File[]) => {
@@ -154,7 +146,6 @@ const CvrsFileUpload = ({
   }
 
   const cvrs = cvrsUpload.uploadedFile.data
-  if (!cvrs) return null
 
   return (
     <>
