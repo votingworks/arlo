@@ -324,7 +324,7 @@ describe('AA setup flow', () => {
       const modal = screen
         .getByRole('heading', { name: 'Jurisdiction One' })
         .closest('div.bp3-dialog')! as HTMLElement
-      await within(modal).findByText('No file uploaded')
+      await within(modal).findByText('Ballot Manifest')
 
       // Upload a manifest
       userEvent.upload(
@@ -332,9 +332,7 @@ describe('AA setup flow', () => {
         manifestFile
       )
       await within(modal).findByText('manifest.csv')
-      userEvent.click(
-        within(modal).getByRole('button', { name: 'Upload File' })
-      )
+      userEvent.click(within(modal).getByRole('button', { name: /Upload/ }))
       await within(modal).findByText('Uploaded')
 
       // Close the detail modal
