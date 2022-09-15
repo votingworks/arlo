@@ -46,13 +46,13 @@ const HomeScreen: React.FC = () => {
     downloadFileUrl: 'fake',
   }
 
-  if (false) {
+  if (true) {
     return (
       <div
         style={{
           marginTop: '40px',
           display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
+          gridTemplateColumns: '400px 400px',
           gap: '40px',
         }}
       >
@@ -109,6 +109,27 @@ const HomeScreen: React.FC = () => {
                 processing: {
                   status: 'PROCESSED',
                   completedAt: new Date().toISOString(),
+                },
+              },
+            }}
+          />
+          <br />
+          <br />
+          <br />
+          <FileUpload
+            title="Participating Jurisdictions"
+            acceptFileTypes={['csv']}
+            {...fileUpload}
+            uploadedFile={{
+              isSuccess: true,
+              data: {
+                file: {
+                  name: 'jurisdictions.csv',
+                },
+                processing: {
+                  status: 'ERROR',
+                  completedAt: new Date().toISOString(),
+                  error: ['Missing columns: Batch Name'].join(''),
                 },
               },
             }}
