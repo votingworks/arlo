@@ -6,7 +6,7 @@ exports[`Home screen redirects to audit screen if only one election exists for J
     class="Toastify"
   />
   <div
-    class="sc-krvtoX dgZkJF"
+    class="sc-dUjcNx dfBBrg"
   >
     <div
       class="bp3-navbar sc-bxivhb jwFLoW"
@@ -91,7 +91,7 @@ exports[`Home screen redirects to audit screen if only one election exists for J
       class="sc-bdVaJa bKocXA"
     >
       <div
-        class="bp3-callout sc-kEYyzF ejxvfy"
+        class="bp3-callout sc-kkGfuU jfrnYf"
       >
         <div
           class="sc-bwzfXH ijTqJq"
@@ -100,7 +100,7 @@ exports[`Home screen redirects to audit screen if only one election exists for J
             class="text"
           >
             <h3
-              class="bp3-heading sc-hMqMXs iPDpyw"
+              class="bp3-heading sc-kEYyzF jTUxjS"
             >
               Test Audit
             </h3>
@@ -116,19 +116,19 @@ exports[`Home screen redirects to audit screen if only one election exists for J
         </div>
       </div>
       <div
-        class="sc-bwzfXH sc-dVhcbM hrMLwO"
+        class="sc-bwzfXH sc-eqIVtm iMhxQB"
       >
         <h2
-          class="bp3-heading sc-kkGfuU cPdmuO"
+          class="bp3-heading sc-iAyFgw cHZdIf"
         >
           Audit Source Data
         </h2>
         <form>
           <div
-            class="sc-iAyFgw dXmdgD"
+            class="sc-hSdWYo hzbdZY"
           >
             <h2
-              class="bp3-heading sc-kkGfuU cPdmuO"
+              class="bp3-heading sc-iAyFgw cHZdIf"
             />
             <div
               class="sc-bZQynM bGsEQi"
