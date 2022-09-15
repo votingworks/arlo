@@ -40,16 +40,17 @@ const CandidatesTable = styled(HTMLTable)`
   }
 
   &.bp3-html-table td {
-    height: 68px; // Large enough to house candidate inputs plus inline error messages
+    height: 70px; // Large enough to house inputs plus inline error messages
     padding: 8px;
+    padding-bottom: 0;
     vertical-align: top;
   }
   &.bp3-html-table tr:nth-child(1) td {
-    height: 76px; // Extra height to accommodate extra top padding
+    height: 78px; // Extra height to accommodate extra top padding
     padding-top: 16px;
   }
   &.bp3-html-table tr:last-child td {
-    height: 108px; // Extra height to accommodate input labels
+    height: 102px; // Extra height to accommodate input labels
   }
 
   &.bp3-html-table th:nth-child(3),
@@ -59,6 +60,10 @@ const CandidatesTable = styled(HTMLTable)`
 
   &.bp3-html-table .bp3-form-group {
     margin-bottom: 0;
+  }
+
+  &.bp3-html-table .bp3-input {
+    height: 40px;
   }
 
   &.bp3-html-table .bp3-input[readonly] {
