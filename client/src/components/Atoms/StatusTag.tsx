@@ -15,12 +15,12 @@ const StatusTagWithProgressBar = styled(StatusTag)`
   .bp3-progress-bar {
     position: absolute;
     bottom: -2px;
-    left: 0px;
+    left: 0;
+    border-radius: 0;
     height: 2px;
-    border-radius: 0px;
   }
   .bp3-progress-meter {
-    border-radius: 0px;
+    border-radius: 0;
   }
 `
 
@@ -29,7 +29,7 @@ export const StatusTagWithProgress: React.FC<{
 } & Omit<ITagProps, 'minimal'>> = ({ progress, children, ...props }) => (
   <StatusTagWithProgressBar {...props}>
     {children}
-    {<ProgressBar stripes={false} value={progress} intent={props.intent} />}
+    <ProgressBar stripes={false} value={progress} intent={props.intent} />
   </StatusTagWithProgressBar>
 )
 

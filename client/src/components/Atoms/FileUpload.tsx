@@ -113,7 +113,9 @@ const FileUpload: React.FC<IFileUploadProps> = ({
 
   return (
     <form onSubmit={handleSubmit(onUpload)}>
-      <Row>
+      {/* Set a height so that the height doesn't change based on the status tag
+      being present or not */}
+      <Row style={{ height: '20px' }}>
         <H5 style={{ marginBottom: 0 }}>{title}</H5>
         {statusTag}
       </Row>
