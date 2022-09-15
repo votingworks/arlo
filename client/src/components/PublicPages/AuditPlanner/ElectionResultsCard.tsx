@@ -36,7 +36,7 @@ const CandidatesTable = styled(HTMLTable)`
   table-layout: fixed;
 
   &.bp3-html-table th {
-    font-size: 18px;
+    font-size: 14px;
     padding: 8px;
   }
 
@@ -45,20 +45,17 @@ const CandidatesTable = styled(HTMLTable)`
     padding: 8px;
     padding-bottom: 0;
     vertical-align: top;
+    width: 296px; // Large enough to accommodate longest error string
   }
-  &.bp3-html-table tr:nth-child(1) td {
+  &.bp3-html-table tr:first-child td {
     height: 78px; // Extra height to accommodate extra top padding
     padding-top: 16px;
   }
+  &.bp3-html-table tr:not(:last-child) td:last-child {
+    padding-right: 0; // To properly align remove candidate button
+  }
   &.bp3-html-table tr:last-child td {
     height: 102px; // Extra height to accommodate input labels
-  }
-
-  &.bp3-html-table th:nth-child(3),
-  &.bp3-html-table td:nth-child(3) {
-    padding-bottom: 22px;
-    vertical-align: middle;
-    width: 46px; // Large enough to house candidate delete buttons
   }
 
   &.bp3-html-table .bp3-form-group {
@@ -67,25 +64,32 @@ const CandidatesTable = styled(HTMLTable)`
 
   &.bp3-html-table .bp3-input {
     height: 40px;
-    width: 280px; // Large enough to accommodate longest error string
+    width: 100%;
   }
-
   &.bp3-html-table .bp3-input[readonly] {
     background: transparent;
     box-shadow: none;
   }
 
   &.bp3-html-table .bp3-label {
-    font-size: 18px;
     font-weight: bold;
     margin-bottom: 8px;
+  }
+`
+
+const CandidateVotesInputAndRemoveButtonContainer = styled.div`
+  align-items: center;
+  display: flex;
+
+  .bp3-button {
+    margin-left: 8px;
   }
 `
 
 const CardActionsRow = styled.div`
   display: flex;
   justify-content: end;
-  margin-right: 54px;
+  margin-right: 8px;
 
   .bp3-button:last-child {
     margin-left: 12px;
@@ -146,7 +150,6 @@ const ElectionResultsCard: React.FC<IProps> = ({
             <tr>
               <th>Candidate</th>
               <th>Votes</th>
-              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -189,51 +192,51 @@ const ElectionResultsCard: React.FC<IProps> = ({
                     }
                     intent={errors.candidates?.[i]?.votes && 'danger'}
                   >
-                    <input
-                      aria-label={`Candidate ${i} Votes`}
-                      className={classnames(
-                        Classes.INPUT,
-                        errors.candidates?.[i]?.votes && Classes.INTENT_DANGER
+                    <CandidateVotesInputAndRemoveButtonContainer>
+                      <input
+                        aria-label={`Candidate ${i} Votes`}
+                        className={classnames(
+                          Classes.INPUT,
+                          errors.candidates?.[i]?.votes && Classes.INTENT_DANGER
+                        )}
+                        name={`candidates[${i}].votes`}
+                        onChange={validateAllCandidateVotesFields}
+                        placeholder="0"
+                        readOnly={!editable}
+                        ref={register({
+                          min: {
+                            value: 0,
+                            message: 'Cannot be less than 0',
+                          },
+                          required: 'Required',
+                          validate: () => {
+                            if (
+                              // No need to display this message for all candidate votes inputs
+                              i === 0 &&
+                              getValues().candidates.every(
+                                candidate => (candidate.votes || 0) <= 0
+                              )
+                            ) {
+                              return 'At least 1 candidate must have greater than 0 votes'
+                            }
+                            return true
+                          },
+                          valueAsNumber: true,
+                        })}
+                        type="number"
+                      />
+                      {editable && (
+                        <Button
+                          aria-label={`Remove Candidate ${i}`}
+                          disabled={!editable || candidateFields.length === 2}
+                          icon="delete"
+                          intent="danger"
+                          minimal
+                          onClick={() => removeCandidate(i)}
+                        />
                       )}
-                      name={`candidates[${i}].votes`}
-                      onChange={validateAllCandidateVotesFields}
-                      placeholder="0"
-                      readOnly={!editable}
-                      ref={register({
-                        min: {
-                          value: 0,
-                          message: 'Cannot be less than 0',
-                        },
-                        required: 'Required',
-                        validate: () => {
-                          if (
-                            // No need to display this message for all candidate votes inputs
-                            i === 0 &&
-                            getValues().candidates.every(
-                              candidate => (candidate.votes || 0) <= 0
-                            )
-                          ) {
-                            return 'At least 1 candidate must have greater than 0 votes'
-                          }
-                          return true
-                        },
-                        valueAsNumber: true,
-                      })}
-                      type="number"
-                    />
+                    </CandidateVotesInputAndRemoveButtonContainer>
                   </FormGroup>
-                </td>
-                <td>
-                  {i >= 2 && (
-                    <Button
-                      aria-label={`Remove Candidate ${i}`}
-                      disabled={!editable}
-                      icon="delete"
-                      intent="danger"
-                      minimal
-                      onClick={() => removeCandidate(i)}
-                    />
-                  )}
                 </td>
               </tr>
             ))}
@@ -247,7 +250,6 @@ const ElectionResultsCard: React.FC<IProps> = ({
                   Add Candidate
                 </Button>
               </td>
-              <td />
               <td />
             </tr>
             <tr>
@@ -334,7 +336,6 @@ const ElectionResultsCard: React.FC<IProps> = ({
                   />
                 </FormGroup>
               </td>
-              <td />
             </tr>
           </tbody>
         </CandidatesTable>

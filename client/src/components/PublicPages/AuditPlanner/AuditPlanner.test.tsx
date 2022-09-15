@@ -58,16 +58,24 @@ async function checkThatElectionResultsCardIsInInitialState() {
   const candidate0VotesInput = screen.getByRole('spinbutton', {
     name: 'Candidate 0 Votes',
   })
+  const candidate0RemoveButton = screen.getByRole('button', {
+    name: 'Remove Candidate 0',
+  })
   const candidate1NameInput = screen.getByRole('textbox', {
     name: 'Candidate 1 Name',
   })
   const candidate1VotesInput = screen.getByRole('spinbutton', {
     name: 'Candidate 1 Votes',
   })
+  const candidate1RemoveButton = screen.getByRole('button', {
+    name: 'Remove Candidate 1',
+  })
   expect(candidate0NameInput).toHaveValue('')
   expect(candidate0VotesInput).toHaveValue(null)
+  expect(candidate0RemoveButton).toBeDisabled()
   expect(candidate1NameInput).toHaveValue('')
   expect(candidate1VotesInput).toHaveValue(null)
+  expect(candidate1RemoveButton).toBeDisabled()
   const addCandidateButton = screen.getByRole('button', {
     name: /Add Candidate/,
   })
@@ -86,8 +94,10 @@ async function checkThatElectionResultsCardIsInInitialState() {
   return {
     candidate0NameInput,
     candidate0VotesInput,
+    candidate0RemoveButton,
     candidate1NameInput,
     candidate1VotesInput,
+    candidate1RemoveButton,
     addCandidateButton,
     numberOfWinnersInput,
     totalBallotsCastInput,
