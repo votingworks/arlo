@@ -22,17 +22,18 @@ import {
 import { sum } from '../../../utils/number'
 
 const Container = styled(Card)`
-  padding: 24px;
+  margin: auto;
+  padding: 32px 24px;
 `
 
 const Heading = styled(H2)`
   margin-bottom: 24px;
+  margin-left: 8px;
 `
 
 const CandidatesTable = styled(HTMLTable)`
   margin-bottom: 24px;
   table-layout: fixed;
-  width: 100%;
 
   &.bp3-html-table th {
     font-size: 18px;
@@ -55,7 +56,9 @@ const CandidatesTable = styled(HTMLTable)`
 
   &.bp3-html-table th:nth-child(3),
   &.bp3-html-table td:nth-child(3) {
-    width: 62px; // Large enough to house candidate delete buttons
+    padding-bottom: 22px;
+    vertical-align: middle;
+    width: 46px; // Large enough to house candidate delete buttons
   }
 
   &.bp3-html-table .bp3-form-group {
@@ -64,6 +67,7 @@ const CandidatesTable = styled(HTMLTable)`
 
   &.bp3-html-table .bp3-input {
     height: 40px;
+    width: 280px; // Large enough to accommodate longest error string
   }
 
   &.bp3-html-table .bp3-input[readonly] {
@@ -78,13 +82,10 @@ const CandidatesTable = styled(HTMLTable)`
   }
 `
 
-const InputFullWidth = styled.input`
-  width: 100%;
-`
-
 const CardActionsRow = styled.div`
   display: flex;
   justify-content: end;
+  margin-right: 54px;
 
   .bp3-button:last-child {
     margin-left: 12px;
@@ -162,7 +163,7 @@ const ElectionResultsCard: React.FC<IProps> = ({
                     }
                     intent={errors.candidates?.[i]?.name && 'danger'}
                   >
-                    <InputFullWidth
+                    <input
                       aria-label={`Candidate ${i} Name`}
                       className={classnames(
                         Classes.INPUT,

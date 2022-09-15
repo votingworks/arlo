@@ -8,6 +8,7 @@ import { Inner } from '../../Atoms/Wrapper'
 
 const PageHeading = styled(H1)`
   margin-bottom: 24px;
+  text-align: center;
 `
 
 const AuditPlanner: React.FC = () => {
