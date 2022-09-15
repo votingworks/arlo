@@ -52,7 +52,9 @@ export interface IJurisdiction {
   } | null
 }
 
-export const getJurisdictionStatus = (jurisdiction: IJurisdiction) => {
+export const getJurisdictionStatus = (
+  jurisdiction: IJurisdiction
+): JurisdictionProgressStatus => {
   const {
     currentRoundStatus,
     ballotManifest,
@@ -124,6 +126,7 @@ export const useJurisdictionsDeprecated = (
   return jurisdictions
 }
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const useJurisdictions = (electionId: string, refreshId?: string) => {
   return useQuery(
     ['elections', electionId, 'jurisdictions', { refreshId }],

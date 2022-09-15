@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 /**
  * This file was mostly copy-pasted from https://github.com/jquense/yup/blob/1426feceb6c5544c526711bedcf388afaf6115b9/src/number.js.
  *
@@ -19,7 +20,7 @@ import isAbsent from 'yup/lib/util/isAbsent'
 
 export type RoundMethod = 'ceil' | 'floor' | 'round' | 'trunc'
 
-export function getGroupingSeparator() {
+function getGroupingSeparator() {
   const formatter = new Intl.NumberFormat(undefined, {
     useGrouping: true,
   })

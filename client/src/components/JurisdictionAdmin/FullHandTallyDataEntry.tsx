@@ -74,7 +74,11 @@ const Input = styled.input`
 
 const totalStyle = { color: Colors.BLUE3, fontWeight: 600 }
 
-const InputWithValidation = ({ field, form, ...props }: FieldProps) => {
+const InputWithValidation: React.FC<FieldProps> = ({
+  field,
+  form,
+  ...props
+}) => {
   const error = getIn(form.errors, field.name)
   return (
     <div>
@@ -88,7 +92,11 @@ const InputWithValidation = ({ field, form, ...props }: FieldProps) => {
   )
 }
 
-const SelectWithValidation = ({ field, form, ...props }: FieldProps) => {
+const SelectWithValidation: React.FC<FieldProps> = ({
+  field,
+  form,
+  ...props
+}) => {
   const error = getIn(form.errors, field.name)
   return (
     <div className="bp3-select bp3-fill">
@@ -105,7 +113,7 @@ interface IProps {
   round: IRound
 }
 
-const FullHandTallyDataEntry = ({ round }: IProps) => {
+const FullHandTallyDataEntry: React.FC<IProps> = ({ round }) => {
   const { electionId, jurisdictionId } = useParams<{
     electionId: string
     jurisdictionId: string

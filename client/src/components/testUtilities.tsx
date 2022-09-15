@@ -29,7 +29,7 @@ const generateUrl = <Params extends MatchParameter<Params>>(
 }
 
 /** Credit to https://stackoverflow.com/a/56452779 for solution to mocking React Router props */
-
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/ban-types
 export const routerTestProps = <Params extends MatchParameter<Params> = {}>(
   path: string,
   params: Params
@@ -47,6 +47,7 @@ export const routerTestProps = <Params extends MatchParameter<Params> = {}>(
 }
 
 // Copied from https://testing-library.com/docs/example-react-router
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const renderWithRouter = (
   ui: React.ReactElement,
   {
@@ -76,6 +77,7 @@ export const renderWithRouter = (
 interface FetchRequest {
   url: string
   options?: RequestInit
+  // eslint-disable-next-line @typescript-eslint/ban-types
   response: object | null
   error?: {
     status: number
@@ -102,7 +104,7 @@ const isEqualRequestBody = (
 export const withMockFetch = async (
   requests: FetchRequest[],
   testFn: () => Promise<void>
-) => {
+): Promise<void> => {
   const requestsLeft = [...requests]
   const mockFetch = jest.fn(async (url: string, options: RequestInit = {}) => {
     const [expectedRequest] = requestsLeft.splice(0, 1)
@@ -181,8 +183,8 @@ export const withMockFetch = async (
 
 export const serverError = (
   name: string,
-  apiCall: { url: string; options?: object }
-) => ({
+  apiCall: { url: string; options?: RequestInit }
+): FetchRequest => ({
   ...apiCall,
   response: {
     errors: [
@@ -192,14 +194,16 @@ export const serverError = (
   error: { status: 500, statusText: 'Server Error' },
 })
 
-export const regexpEscape = (s: string) => {
+export const regexpEscape = (s: string): string => {
   /* eslint-disable no-useless-escape */
   return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
 }
 
 // It's important to close the toast after checking it so there's no rendering
 // happen after the test ends
-export const findAndCloseToast = async (expectedContent: string) => {
+export const findAndCloseToast = async (
+  expectedContent: string
+): Promise<void> => {
   const toastBody = await screen.findByRole('alert')
   expect(toastBody).toHaveTextContent(expectedContent)
   const toast = toastBody.closest('div.Toastify__toast')! as HTMLElement
@@ -213,5 +217,6 @@ export const findAndCloseToast = async (expectedContent: string) => {
 // inferring the keys. This allows for good autocompletion of mocks in tests
 // while still enforcing their type.
 // Example: const mockNumbers = mocksOfType<number>()({ 'one': 1, 'two': 2 })
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const mocksOfType = <T,>() => <Mock,>(mock: { [K in keyof Mock]: T }) =>
   mock

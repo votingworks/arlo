@@ -361,7 +361,7 @@ interface IJurisdictionAdminProps {
   isAuditOnline: boolean
 }
 
-export const JurisdictionAdminStatusBox = ({
+export const JurisdictionAdminStatusBox: React.FC<IJurisdictionAdminProps> = ({
   rounds,
   ballotManifest,
   batchTallies,

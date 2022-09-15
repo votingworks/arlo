@@ -11,7 +11,12 @@ export interface IConfirmOptions {
   onYesClick: (() => Promise<void>) | (() => void)
 }
 
-export const useConfirm = () => {
+interface IUseConfirmResult {
+  confirm: (options: IConfirmOptions) => void
+  confirmProps: IConfirmProps
+}
+
+export const useConfirm = (): IUseConfirmResult => {
   // We show the dialog whenever options are set.
   // On close, we set options to null.
   const [options, setOptions] = useState<IConfirmOptions | null>(null)
@@ -50,7 +55,7 @@ interface IConfirmProps extends IConfirmOptions {
   onClose: () => void
 }
 
-export const Confirm = ({
+export const Confirm: React.FC<IConfirmProps> = ({
   isOpen,
   title,
   description,
@@ -59,7 +64,7 @@ export const Confirm = ({
   noButtonLabel,
   onYesClick,
   onClose,
-}: IConfirmProps) => {
+}) => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const isMounted = useIsMounted()
 

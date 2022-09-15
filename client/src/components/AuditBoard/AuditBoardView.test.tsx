@@ -12,6 +12,11 @@ import {
 import AuthDataProvider, { useAuthDataContext } from '../UserContext'
 import AuditBoardView from './AuditBoardView'
 import { contestMocks } from '../AuditAdmin/useSetupMenuItems/_mocks'
+import {
+  IBallotInterpretation,
+  BallotStatus,
+  Interpretation,
+} from '../../types'
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'), // use actual for all non-hook parts
@@ -104,7 +109,13 @@ const apiCalls = {
       '/api/election/1/jurisdiction/jurisdiction-1/round/round-1/audit-board/audit-board-1/ballots',
     response: dummyBallotsNotAudited,
   },
-  putAuditBallot: (ballotId: string, body: object) => ({
+  putAuditBallot: (
+    ballotId: string,
+    body: {
+      status: BallotStatus
+      interpretations: IBallotInterpretation[]
+    }
+  ) => ({
     url: `/api/election/1/jurisdiction/jurisdiction-1/round/round-1/audit-board/audit-board-1/ballots/${ballotId}`,
     options: {
       method: 'PUT',
@@ -256,7 +267,7 @@ describe('AuditBoardView', () => {
         apiCalls.getContests,
         apiCalls.getBallotsInitial,
         apiCalls.putAuditBallot('ballot-id-2', {
-          status: 'NOT_FOUND',
+          status: BallotStatus.NOT_FOUND,
           interpretations: [],
         }),
         apiCalls.getBallotsOneAudited,
@@ -300,11 +311,11 @@ describe('AuditBoardView', () => {
         apiCalls.getContests,
         apiCalls.getBallotsInitial,
         apiCalls.putAuditBallot('ballot-id-2', {
-          status: 'AUDITED',
+          status: BallotStatus.AUDITED,
           interpretations: [
             {
               contestId: 'contest-id-1',
-              interpretation: 'VOTE',
+              interpretation: Interpretation.VOTE,
               choiceIds: ['choice-id-1'],
               comment: null,
               hasInvalidWriteIn: false,
@@ -352,18 +363,18 @@ describe('AuditBoardView', () => {
         apiCalls.getContests,
         apiCalls.getBallotsInitial,
         apiCalls.putAuditBallot('ballot-id-2', {
-          status: 'AUDITED',
+          status: BallotStatus.AUDITED,
           interpretations: [
             {
               contestId: 'contest-id-1',
-              interpretation: 'VOTE',
+              interpretation: Interpretation.VOTE,
               choiceIds: ['choice-id-1'],
               comment: null,
               hasInvalidWriteIn: false,
             },
             {
               contestId: 'contest-id-2',
-              interpretation: 'CONTEST_NOT_ON_BALLOT',
+              interpretation: Interpretation.CONTEST_NOT_ON_BALLOT,
               choiceIds: [],
               comment: null,
               hasInvalidWriteIn: false,
@@ -437,11 +448,11 @@ describe('AuditBoardView', () => {
         apiCalls.getContests,
         apiCalls.getBallotsInitial,
         apiCalls.putAuditBallot('ballot-id-2', {
-          status: 'AUDITED',
+          status: BallotStatus.AUDITED,
           interpretations: [
             {
               contestId: 'contest-id-2',
-              interpretation: 'VOTE',
+              interpretation: Interpretation.VOTE,
               choiceIds: ['choice-id-3'],
               comment: null,
               hasInvalidWriteIn: false,
@@ -496,7 +507,7 @@ describe('AuditBoardView', () => {
         apiCalls.getContests,
         apiCalls.getBallotsInitial,
         apiCalls.putAuditBallot('ballot-id-2', {
-          status: 'NOT_FOUND',
+          status: BallotStatus.NOT_FOUND,
           interpretations: [],
         }),
         apiCalls.getBallotsOneAudited,
@@ -563,7 +574,7 @@ describe('AuditBoardView', () => {
         apiCalls.getContests,
         apiCalls.getBallotsInitial,
         apiCalls.putAuditBallot('ballot-id-2', {
-          status: 'NOT_FOUND',
+          status: BallotStatus.NOT_FOUND,
           interpretations: [],
         }),
         apiCalls.getBallotsOneAudited,
@@ -632,14 +643,14 @@ describe('AuditBoardView', () => {
       const invalidWriteInInterpretations = [
         {
           contestId: 'contest-id-1',
-          interpretation: 'BLANK',
+          interpretation: Interpretation.BLANK,
           choiceIds: [],
           comment: null,
           hasInvalidWriteIn: true,
         },
         {
           contestId: 'contest-id-2',
-          interpretation: 'VOTE',
+          interpretation: Interpretation.VOTE,
           choiceIds: ['choice-id-3'],
           comment: null,
           hasInvalidWriteIn: true,
@@ -651,7 +662,7 @@ describe('AuditBoardView', () => {
         apiCalls.getContests,
         apiCalls.getBallotsInitial,
         apiCalls.putAuditBallot('ballot-id-2', {
-          status: 'AUDITED',
+          status: BallotStatus.AUDITED,
           interpretations: invalidWriteInInterpretations,
         }),
         {

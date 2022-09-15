@@ -8,8 +8,12 @@ const asyncMock = (): [
   () => unknown,
   () => unknown
 ] => {
-  let resolvePromise = () => {}
-  let rejectPromise = () => {}
+  let resolvePromise = () => {
+    // do nothing
+  }
+  let rejectPromise = () => {
+    // do nothing
+  }
   const promise = new Promise((resolve, reject) => {
     resolvePromise = resolve
     rejectPromise = reject

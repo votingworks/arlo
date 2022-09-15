@@ -26,7 +26,7 @@ export const getBallots = async (
   electionId: string,
   jurisdictionId: string,
   roundId: string
-) => {
+): Promise<IBallot[] | null> => {
   const response = await api<{ ballots: IBallot[] }>(
     `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/ballots`
   )
@@ -37,7 +37,7 @@ export const getBatches = async (
   electionId: string,
   jurisdictionId: string,
   roundId: string
-) => {
+): Promise<IBatch[] | null> => {
   const response = await api<{ batches: IBatch[] }>(
     `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/batches`
   )

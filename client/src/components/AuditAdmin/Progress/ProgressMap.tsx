@@ -122,12 +122,12 @@ const MapSpinner = styled(Spinner)`
   margin: 0 auto;
 `
 
-const Map = ({
+const Map: React.FC<IProps> = ({
   stateAbbreviation,
   jurisdictions,
   isRoundStarted,
   auditType,
-}: IProps) => {
+}) => {
   const width = 960
   const height = 500
   const d3Container = useRef(null)

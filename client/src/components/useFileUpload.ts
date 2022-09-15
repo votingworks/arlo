@@ -30,6 +30,7 @@ export interface IFileUpload {
  * or when a file is deleted). It is not called when the file state is first
  * loaded from the server, nor when a file is processing.
  */
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const useUploadedFile = (
   key: string[],
   url: string,
@@ -53,6 +54,7 @@ export const useUploadedFile = (
   })
 }
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const useUploadFiles = (key: string[], url: string) => {
   const [progress, setProgress] = useState<number>()
 
@@ -87,6 +89,7 @@ export const useUploadFiles = (key: string[], url: string) => {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const useDeleteFile = (key: string[], url: string) => {
   const deleteFile = () => fetchApi(url, { method: 'DELETE' })
   const queryClient = useQueryClient()

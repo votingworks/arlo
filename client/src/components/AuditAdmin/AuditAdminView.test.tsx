@@ -42,7 +42,7 @@ const AuditAdminViewWithAuth = (props: RouteProps) => {
   return auth ? <AuditAdminView {...props} /> : null
 }
 
-const render = (view: string = 'setup') =>
+const render = (view = 'setup') =>
   renderWithRouter(
     <QueryClientProvider client={queryClient}>
       <AuthDataProvider>

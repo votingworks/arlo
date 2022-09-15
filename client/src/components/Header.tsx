@@ -91,7 +91,7 @@ interface TParams {
   jurisdictionId?: string
 }
 
-const Header: React.FC<{}> = () => {
+const Header: React.FC = () => {
   const electionMatch:
     | RouteComponentProps<TParams>['match']
     | null = useRouteMatch('/election/:electionId')

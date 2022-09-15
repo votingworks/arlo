@@ -44,11 +44,11 @@ export interface IRoundManagementProps {
   createAuditBoards: (auditBoards: { name: string }[]) => Promise<boolean>
 }
 
-const RoundManagement = ({
+const RoundManagement: React.FC<IRoundManagementProps> = ({
   round,
   auditBoards,
   createAuditBoards,
-}: IRoundManagementProps) => {
+}) => {
   const { electionId, jurisdictionId } = useParams<{
     electionId: string
     jurisdictionId: string
@@ -167,14 +167,14 @@ export interface IJAFileDownloadButtonsProps {
   auditBoards: IAuditBoard[]
 }
 
-export const JAFileDownloadButtons = ({
+export const JAFileDownloadButtons: React.FC<IJAFileDownloadButtonsProps> = ({
   electionId,
   jurisdictionId,
   jurisdictionName,
   round,
   auditSettings,
   auditBoards,
-}: IJAFileDownloadButtonsProps) => (
+}) => (
   <ButtonGroup vertical alignText="left">
     <Button
       icon="th"

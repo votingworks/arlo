@@ -12,7 +12,7 @@ interface ILinkButtonProps
 // LinkButton creates a React Router Link that uses a BlueprintJS button instead
 // of an anchor tag. This allows us to disable links (and gives us nice button
 // styling).
-const LinkButton = (props: ILinkButtonProps) => {
+const LinkButton: React.FC<ILinkButtonProps> = (props: ILinkButtonProps) => {
   return (
     <Link
       {...props}

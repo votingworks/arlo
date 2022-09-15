@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { IFileInfo, FileProcessingStatus } from './useCSV'
 import { IAuditBoard } from './useAuditBoards'
 import { IAuditSettings } from './useAuditSettings'
@@ -18,6 +19,7 @@ import { IOrganization } from './UserContext'
 import mapTopology from '../../public/us-states-counties.json'
 import { contestMocks } from './AuditAdmin/Setup/Contests/_mocks'
 import { IContest } from '../types'
+import { INewAudit } from './HomeScreen'
 
 const jurisdictionFormData: FormData = new FormData()
 jurisdictionFormData.append(
@@ -320,11 +322,11 @@ export const aaApiCalls = {
     url: '/api/audit_admins/audit-admin-1-id/organizations',
     response: organizations,
   }),
-  postNewAudit: (body: {}) => ({
+  postNewAudit: (newAudit: INewAudit) => ({
     url: '/api/election',
     options: {
       method: 'POST',
-      body: JSON.stringify(body),
+      body: JSON.stringify(newAudit),
       headers: {
         'Content-Type': 'application/json',
       },

@@ -41,6 +41,7 @@ const TableControls = styled.div`
 const formatNumber = ({ value }: { value: number | null }) =>
   value && value.toLocaleString()
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 const totalFooter = <T extends object>(headerName: string) => (
   info: TableInstance<T>
 ) => sum(info.rows.map(row => row.values[headerName])).toLocaleString()

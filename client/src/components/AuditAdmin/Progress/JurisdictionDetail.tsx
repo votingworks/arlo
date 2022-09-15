@@ -57,13 +57,13 @@ export interface IJurisdictionDetailProps {
   auditSettings: IAuditSettings
 }
 
-const JurisdictionDetail = ({
+const JurisdictionDetail: React.FC<IJurisdictionDetailProps> = ({
   handleClose,
   jurisdiction,
   electionId,
   round,
   auditSettings,
-}: IJurisdictionDetailProps) => {
+}) => {
   const cvrsEnabled =
     auditSettings.auditType === 'BALLOT_COMPARISON' ||
     auditSettings.auditType === 'HYBRID'
@@ -310,7 +310,7 @@ const RoundStatusSection = ({
               })
             }
           >
-            {({ handleSubmit, isSubmitting }: FormikProps<{}>) => (
+            {({ handleSubmit, isSubmitting }: FormikProps<unknown>) => (
               <div>
                 <p>Data entry complete and results finalized.</p>
                 <Button

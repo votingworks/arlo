@@ -32,12 +32,12 @@ interface IProps {
   contestIndex: number
 }
 
-const DropdownCheckboxList = ({
+const DropdownCheckboxList: React.FC<IProps> = ({
   formikBag: { values, setFieldValue },
   text,
   optionList,
   contestIndex,
-}: IProps) => {
+}) => {
   const jurisdictionList = values.contests[contestIndex].jurisdictionIds
   const updateList = (value: string, checked: boolean) => {
     const itemIndex = jurisdictionList.indexOf(value)

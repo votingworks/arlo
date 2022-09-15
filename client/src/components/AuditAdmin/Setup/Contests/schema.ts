@@ -3,6 +3,7 @@ import number, { parse as parseNumber } from '../../../../utils/number-schema'
 import { ICandidate } from '../../../../types'
 import { IAuditSettings } from '../../../useAuditSettings'
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 const contestsSchema = (auditType: IAuditSettings['auditType']) =>
   Yup.object().shape({
     contests: Yup.array()

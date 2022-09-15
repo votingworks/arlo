@@ -14,7 +14,7 @@ const apiMock: jest.SpyInstance<
   ReturnType<typeof utilities.api>,
   Parameters<typeof utilities.api>
 > = jest.spyOn(utilities, 'api').mockImplementation()
-apiMock.mockImplementation(async () => {})
+apiMock.mockImplementation()
 
 const useJurisdictionsMock = useJurisdictionsDeprecated as jest.Mock
 jest.mock('../../useJurisdictions')

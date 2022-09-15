@@ -106,5 +106,6 @@ module.exports = {
       1,
       { controlElement: ['InputGroup'] },
     ],
+    '@typescript-eslint/no-extra-semi': 'off',
   },
 }

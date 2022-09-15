@@ -85,7 +85,7 @@ const deleteCSVFile = async (url: string): Promise<boolean> => {
 const useCSV = (
   url: string,
   formKey: string,
-  shouldFetch: boolean = true,
+  shouldFetch = true,
   dependencyFile?: IFileInfo | null
 ): [
   IFileInfo | null,
@@ -191,7 +191,14 @@ export const useStandardizedContestsFile = (
   return [csv, uploadCSV]
 }
 
-export const useBallotManifest = (electionId: string, jurisdictionId: string) =>
+export const useBallotManifest = (
+  electionId: string,
+  jurisdictionId: string
+): [
+  IFileInfo | null,
+  (csv: File[]) => Promise<boolean>,
+  () => Promise<boolean>
+] =>
   useCSV(
     `/election/${electionId}/jurisdiction/${jurisdictionId}/ballot-manifest`,
     'manifest'
@@ -202,7 +209,11 @@ export const useBatchTallies = (
   jurisdictionId: string,
   auditSettings: IAuditSettings | null,
   ballotManifest: IFileInfo | null
-) =>
+): [
+  IFileInfo | null,
+  (csv: File[]) => Promise<boolean>,
+  () => Promise<boolean>
+] =>
   useCSV(
     `/election/${electionId}/jurisdiction/${jurisdictionId}/batch-tallies`,
     'batchTallies',
@@ -215,7 +226,11 @@ export const useCVRs = (
   jurisdictionId: string,
   auditSettings: IAuditSettings | null,
   ballotManifest: IFileInfo | null
-) =>
+): [
+  IFileInfo | null,
+  (csv: File[]) => Promise<boolean>,
+  () => Promise<boolean>
+] =>
   useCSV(
     `/election/${electionId}/jurisdiction/${jurisdictionId}/cvrs`,
     'cvrs',
@@ -224,4 +239,5 @@ export const useCVRs = (
         auditSettings.auditType === 'HYBRID'),
     ballotManifest
   )
+
 export default useCSV

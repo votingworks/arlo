@@ -67,7 +67,7 @@ const hybridContestsInputMocks = {
 
 const { nextStage, prevStage } = relativeStages('target-contests')
 
-const render = (isTargeted: boolean = true) =>
+const render = (isTargeted = true) =>
   renderWithRouter(
     <Route path="/election/:electionId/setup">
       <Contests
@@ -105,15 +105,6 @@ const apiCalls = {
     options: {
       method: 'PUT',
       body: JSON.stringify(contests),
-      headers: { 'Content-Type': 'application/json' },
-    },
-    response: { status: 'ok' },
-  }),
-  submitContests: (mockContest: object) => ({
-    url: '/api/election/1/contest',
-    options: {
-      method: 'PUT',
-      body: JSON.stringify(mockContest),
       headers: { 'Content-Type': 'application/json' },
     },
     response: { status: 'ok' },
@@ -193,7 +184,7 @@ describe('Audit Setup > Contests (Hybrid)', () => {
       apiCalls.getContests([]),
       aaApiCalls.getJurisdictions,
       apiCalls.getStandardizedContests,
-      apiCalls.submitContests(contests),
+      apiCalls.putContests(contests),
       apiCalls.getContests(contests),
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -232,7 +223,7 @@ describe('Audit Setup > Contests (Hybrid)', () => {
       apiCalls.getContests(contests),
       aaApiCalls.getJurisdictions,
       apiCalls.getStandardizedContests,
-      apiCalls.submitContests(contests.slice(1)),
+      apiCalls.putContests(contests.slice(1)),
       apiCalls.getContests(contests.slice(1)),
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -255,7 +246,7 @@ describe('Audit Setup > Contests (Hybrid)', () => {
       apiCalls.getContests([]),
       aaApiCalls.getJurisdictions,
       apiCalls.getStandardizedContests,
-      apiCalls.submitContests(contests),
+      apiCalls.putContests(contests),
       apiCalls.getContests(contests),
     ]
     await withMockFetch(expectedCalls, async () => {

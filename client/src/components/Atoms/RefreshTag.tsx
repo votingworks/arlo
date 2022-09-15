@@ -9,7 +9,7 @@ const RefreshStatusTag = styled(Tag)`
   text-align: center;
 `
 
-export const prettifyRefreshStatus = (refreshTime: number) => {
+export const prettifyRefreshStatus = (refreshTime: number): string => {
   if (refreshTime < 240000)
     return `Will refresh in ${5 - Math.floor(refreshTime / 60000)} minutes`
   if (refreshTime < 250000) return `Will refresh in 1 minute`
@@ -17,7 +17,7 @@ export const prettifyRefreshStatus = (refreshTime: number) => {
     10} seconds`
 }
 
-export const RefreshTag = ({ refresh }: { refresh: () => void }) => {
+export const RefreshTag: React.FC<{ refresh: () => void }> = ({ refresh }) => {
   const [lastRefreshTime, setLastRefreshTime] = useState(Date.now())
   const [time, setTime] = useState(Date.now())
 

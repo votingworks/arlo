@@ -38,8 +38,8 @@ const prettyAction = (activity: IActivity) => {
       return `Calculated sample sizes`
     case 'UploadFile': {
       const fileType = ({
-        ballot_manifest: 'ballot manifest', // eslint-disable-line @typescript-eslint/camelcase
-        batch_tallies: 'candidate totals by batch', // eslint-disable-line @typescript-eslint/camelcase
+        ballot_manifest: 'ballot manifest',
+        batch_tallies: 'candidate totals by batch',
         cvrs: 'CVRs',
       } as { [k: string]: string })[activity.info.file_type]
       return activity.info.error
@@ -68,7 +68,7 @@ const prettyAction = (activity: IActivity) => {
   }
 }
 
-const ActivityLog = () => {
+const ActivityLog: React.FC = () => {
   const auth = useAuthDataContext()
   const user = auth && (auth.user as IAuditAdmin)
   const organizations = useQuery<IOrganization[]>(

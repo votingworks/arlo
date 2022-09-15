@@ -17,7 +17,7 @@ export interface IFileUploadProps extends IFileUpload {
   disabled?: boolean
 }
 
-const FileUpload = ({
+const FileUpload: React.FC<IFileUploadProps> = ({
   uploadedFile,
   uploadFiles,
   uploadProgress,
@@ -26,7 +26,7 @@ const FileUpload = ({
   acceptFileTypes,
   allowMultipleFiles = false,
   disabled = false,
-}: IFileUploadProps) => {
+}) => {
   const { register, handleSubmit, formState, watch } = useForm<{
     files: FileList
   }>({ mode: 'onTouched' })

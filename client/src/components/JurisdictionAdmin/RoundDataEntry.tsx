@@ -27,7 +27,7 @@ interface IValues {
   results: IResultValues
 }
 
-const RoundDataEntry = ({ round }: IProps) => {
+const RoundDataEntry: React.FC<IProps> = ({ round }) => {
   const { electionId, jurisdictionId } = useParams<{
     electionId: string
     jurisdictionId: string

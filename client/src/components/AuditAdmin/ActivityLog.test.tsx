@@ -84,9 +84,9 @@ const apiCalls = {
         election: mockElection,
         user: null,
         info: {
-          jurisdiction_id: 'jurisdiction-id-1', // eslint-disable-line @typescript-eslint/camelcase
-          jurisdiction_name: 'Jurisdiction 1', // eslint-disable-line @typescript-eslint/camelcase
-          file_type: 'ballot_manifest', // eslint-disable-line @typescript-eslint/camelcase
+          jurisdiction_id: 'jurisdiction-id-1',
+          jurisdiction_name: 'Jurisdiction 1',
+          file_type: 'ballot_manifest',
           error: 'failed',
         },
       },
@@ -97,9 +97,9 @@ const apiCalls = {
         election: mockElection,
         user: null,
         info: {
-          jurisdiction_id: 'jurisdiction-id-1', // eslint-disable-line @typescript-eslint/camelcase
-          jurisdiction_name: 'Jurisdiction 1', // eslint-disable-line @typescript-eslint/camelcase
-          file_type: 'batch_tallies', // eslint-disable-line @typescript-eslint/camelcase
+          jurisdiction_id: 'jurisdiction-id-1',
+          jurisdiction_name: 'Jurisdiction 1',
+          file_type: 'batch_tallies',
           error: null,
         },
       },
@@ -110,9 +110,9 @@ const apiCalls = {
         election: mockElection,
         user: null,
         info: {
-          jurisdiction_id: 'jurisdiction-id-1', // eslint-disable-line @typescript-eslint/camelcase
-          jurisdiction_name: 'Jurisdiction 1', // eslint-disable-line @typescript-eslint/camelcase
-          file_type: 'cvrs', // eslint-disable-line @typescript-eslint/camelcase
+          jurisdiction_id: 'jurisdiction-id-1',
+          jurisdiction_name: 'Jurisdiction 1',
+          file_type: 'cvrs',
           error: null,
         },
       },
@@ -130,7 +130,7 @@ const apiCalls = {
         timestamp: nextTimestamp(),
         election: mockElection,
         user: mockSupportUser,
-        info: { round_num: 1 }, // eslint-disable-line @typescript-eslint/camelcase
+        info: { round_num: 1 },
       },
       {
         id: nextId(),
@@ -139,9 +139,9 @@ const apiCalls = {
         election: mockElection,
         user: mockJurisdictionAdmin,
         info: {
-          jurisdiction_id: 'jurisdiction-id-1', // eslint-disable-line @typescript-eslint/camelcase
-          jurisdiction_name: 'Jurisdiction 1', // eslint-disable-line @typescript-eslint/camelcase
-          num_audit_boards: 2, // eslint-disable-line @typescript-eslint/camelcase
+          jurisdiction_id: 'jurisdiction-id-1',
+          jurisdiction_name: 'Jurisdiction 1',
+          num_audit_boards: 2,
         },
       },
       {
@@ -151,8 +151,8 @@ const apiCalls = {
         election: mockElection,
         user: mockJurisdictionAdmin,
         info: {
-          jurisdiction_id: 'jurisdiction-id-1', // eslint-disable-line @typescript-eslint/camelcase
-          jurisdiction_name: 'Jurisdiction 1', // eslint-disable-line @typescript-eslint/camelcase
+          jurisdiction_id: 'jurisdiction-id-1',
+          jurisdiction_name: 'Jurisdiction 1',
         },
       },
       {
@@ -162,8 +162,8 @@ const apiCalls = {
         election: mockElection,
         user: mockJurisdictionAdmin,
         info: {
-          jurisdiction_id: 'jurisdiction-id-1', // eslint-disable-line @typescript-eslint/camelcase
-          jurisdiction_name: 'Jurisdiction 1', // eslint-disable-line @typescript-eslint/camelcase
+          jurisdiction_id: 'jurisdiction-id-1',
+          jurisdiction_name: 'Jurisdiction 1',
         },
       },
       {
@@ -177,9 +177,9 @@ const apiCalls = {
           supportUser: false,
         },
         info: {
-          jurisdiction_id: 'jurisdiction-id-1', // eslint-disable-line @typescript-eslint/camelcase
-          jurisdiction_name: 'Jurisdiction 1', // eslint-disable-line @typescript-eslint/camelcase
-          audit_board_name: 'Audit Board #1', // eslint-disable-line @typescript-eslint/camelcase
+          jurisdiction_id: 'jurisdiction-id-1',
+          jurisdiction_name: 'Jurisdiction 1',
+          audit_board_name: 'Audit Board #1',
         },
       },
       {
@@ -192,7 +192,7 @@ const apiCalls = {
           type: 'audit_board',
           supportUser: false,
         },
-        info: { round_num: 1, is_audit_complete: true }, // eslint-disable-line @typescript-eslint/camelcase
+        info: { round_num: 1, is_audit_complete: true },
       },
       {
         id: nextId(),

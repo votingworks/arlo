@@ -5,7 +5,7 @@ import { IRound } from '../AuditAdmin/useRoundsAuditAdmin'
 const useRoundsJurisdictionAdmin = (
   electionId: string,
   jurisdictionId: string
-) => {
+): IRound[] | null => {
   const [rounds, setRounds] = useState<IRound[] | null>(null)
 
   useEffect(() => {
