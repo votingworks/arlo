@@ -8,6 +8,7 @@ export const Wrapper = styled.div`
 `
 
 interface IInnerProps {
+  flexDirection?: 'column' | 'row'
   withTopPadding?: boolean
 }
 
@@ -18,7 +19,8 @@ export const Inner = styled.div<IInnerProps>`
   width: 100%;
   max-width: 1020px;
   padding: 0 30px;
-  padding-top: ${props => (props.withTopPadding ? '30px' : '0')};
+  padding-top: ${props => (props.withTopPadding ? '30px' : undefined)};
+  flex-direction: ${props => props.flexDirection || undefined};
 `
 
 export default Wrapper
