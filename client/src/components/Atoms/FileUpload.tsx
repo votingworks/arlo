@@ -2,7 +2,7 @@ import React from 'react'
 import { H5, FileInput, Button, Callout, AnchorButton } from '@blueprintjs/core'
 import { useForm } from 'react-hook-form'
 import styled from 'styled-components'
-import StatusTag, { StatusTagWithProgress } from './StatusTag'
+import StatusTag from './StatusTag'
 import { IFileUpload } from '../useFileUpload'
 import AsyncButton from './AsyncButton'
 import { assert } from '../utilities'
@@ -17,16 +17,6 @@ const Row = styled.div`
 `
 
 const buttonAndTagWidth = '115px' // Wide enough for the longest text
-
-const FileStatusTag = styled(StatusTag)`
-  width: ${buttonAndTagWidth};
-  text-align: center;
-`
-
-const FileStatusTagWithProgress = styled(StatusTagWithProgress)`
-  width: ${buttonAndTagWidth};
-  text-align: center;
-`
 
 export interface IFileUploadProps extends IFileUpload {
   title: string
@@ -83,32 +73,34 @@ const FileUpload: React.FC<IFileUploadProps> = ({
 
     if (uploadProgress !== undefined) {
       return (
-        <FileStatusTagWithProgress intent="warning" progress={uploadProgress}>
+        <StatusTag intent="warning" progress={uploadProgress}>
           Uploading
-        </FileStatusTagWithProgress>
+        </StatusTag>
       )
     }
 
     assert(processing !== null)
 
     if (!processing.completedAt) {
-      return processing.workTotal ? (
-        <FileStatusTagWithProgress
+      return (
+        <StatusTag
           intent="primary"
-          progress={processing.workProgress! / processing.workTotal}
+          progress={
+            processing.workTotal
+              ? processing.workProgress! / processing.workTotal
+              : undefined
+          }
         >
           Processing
-        </FileStatusTagWithProgress>
-      ) : (
-        <FileStatusTag intent="primary">Processing</FileStatusTag>
+        </StatusTag>
       )
     }
 
     if (processing.error) {
-      return <FileStatusTag intent="danger">Upload Failed</FileStatusTag>
+      return <StatusTag intent="danger">Upload Failed</StatusTag>
     }
 
-    return <FileStatusTag intent="success">Uploaded</FileStatusTag>
+    return <StatusTag intent="success">Uploaded</StatusTag>
   })()
 
   return (
