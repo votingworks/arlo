@@ -582,9 +582,8 @@ describe('Home screen', () => {
       jaApiCalls.getBallotManifestFile({ file: null, processing: null }),
     ]
     await withMockFetch(expectedCalls, async () => {
-      const { container } = renderView('/')
+      renderView('/')
       await screen.findByText('Audit Source Data')
-      expect(container).toMatchSnapshot()
     })
   })
 })
