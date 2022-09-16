@@ -5,6 +5,7 @@ import {
   Button,
   Card,
   Classes,
+  Colors,
   FormGroup,
   H2,
   HTMLTable,
@@ -36,7 +37,6 @@ const CandidatesTable = styled(HTMLTable)`
   table-layout: fixed;
 
   &.bp3-html-table th {
-    font-size: 14px;
     padding: 8px;
   }
 
@@ -67,7 +67,7 @@ const CandidatesTable = styled(HTMLTable)`
     width: 100%;
   }
   &.bp3-html-table .bp3-input[readonly] {
-    background: transparent;
+    background: ${Colors.LIGHT_GRAY5};
     box-shadow: none;
   }
 
@@ -225,16 +225,14 @@ const ElectionResultsCard: React.FC<IProps> = ({
                         })}
                         type="number"
                       />
-                      {editable && (
-                        <Button
-                          aria-label={`Remove Candidate ${i}`}
-                          disabled={!editable || candidateFields.length === 2}
-                          icon="delete"
-                          intent="danger"
-                          minimal
-                          onClick={() => removeCandidate(i)}
-                        />
-                      )}
+                      <Button
+                        aria-label={`Remove Candidate ${i}`}
+                        disabled={!editable || candidateFields.length === 2}
+                        icon="delete"
+                        intent={editable ? 'danger' : undefined}
+                        minimal
+                        onClick={() => removeCandidate(i)}
+                      />
                     </CandidateVotesInputAndRemoveButtonContainer>
                   </FormGroup>
                 </td>
