@@ -41,6 +41,8 @@ COMPUTE_SAMPLE_SIZES_INPUT_SCHEMA = {
 }
 
 
+# Conceptually, this is a GET but we use a POST so that we can specify election results in a body.
+# Specifying election results in a query param could cause us to hit URL size limits
 @api.route("/public/sample-sizes", methods=["POST"])
 def public_compute_sample_sizes():
     compute_sample_sizes_input = request.get_json()

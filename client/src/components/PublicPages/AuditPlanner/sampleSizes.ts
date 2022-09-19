@@ -35,6 +35,9 @@ export const useSampleSizes = (
     async () => {
       const queryStartTime = new Date().getTime()
       const query = await fetchApi('/api/public/sample-sizes', {
+        // Conceptually, this is a GET but we use a POST so that we can specify election results in
+        // a body. Specifying election results in a query param could cause us to hit URL size
+        // limits
         method: 'POST',
         body: JSON.stringify({ electionResults, riskLimitPercentage }),
         headers: { 'Content-Type': 'application/json' },
