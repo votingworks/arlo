@@ -23,18 +23,24 @@ import {
 import { sum } from '../../../utils/number'
 
 const Container = styled(Card)`
-  margin: auto;
-  padding: 32px 24px;
+  &.bp3-card {
+    margin: auto;
+    padding: 32px 24px;
+  }
 `
 
 const Heading = styled(H2)`
-  margin-bottom: 24px;
-  margin-left: 8px;
+  &.bp3-heading {
+    margin-left: 8px;
+    margin-bottom: 24px;
+  }
 `
 
 const CandidatesTable = styled(HTMLTable)`
-  margin-bottom: 24px;
-  table-layout: fixed;
+  &.bp3-html-table {
+    margin-bottom: 24px;
+    table-layout: fixed;
+  }
 
   &.bp3-html-table th {
     padding: 8px;
@@ -96,15 +102,22 @@ const CardActionsRow = styled.div`
   }
 `
 
+const numericValidationRule = {
+  message: 'Can only contain numeric characters',
+  value: /^[0-9]+$/,
+}
+
 interface IProps {
+  clearElectionResults: () => void
   editable: boolean
-  enableEditing: () => void
-  planAudit: (electionResults: IElectionResultsFormState) => void
+  enableElectionResultsEditing: () => void
+  planAudit: (electionResultsFormState: IElectionResultsFormState) => void
 }
 
 const ElectionResultsCard: React.FC<IProps> = ({
+  clearElectionResults,
   editable,
-  enableEditing,
+  enableElectionResultsEditing,
   planAudit,
 }) => {
   const { confirm, confirmProps } = useConfirm()
@@ -115,12 +128,12 @@ const ElectionResultsCard: React.FC<IProps> = ({
     getValues,
     handleSubmit,
     register,
-    reset,
+    reset: resetForm,
     trigger,
   } = useForm<IElectionResultsFormState>({
     defaultValues: constructInitialElectionResults(),
   })
-  const { errors, isSubmitted } = formState
+  const { errors, isSubmitted, isSubmitting } = formState
   const {
     append: addCandidate,
     fields: candidateFields,
@@ -142,7 +155,7 @@ const ElectionResultsCard: React.FC<IProps> = ({
 
   return (
     <>
-      <Container data-testid="electionResultsCard">
+      <Container data-testid="electionResultsCard" elevation={1}>
         <Heading>Election Results</Heading>
 
         <CandidatesTable>
@@ -205,9 +218,10 @@ const ElectionResultsCard: React.FC<IProps> = ({
                         readOnly={!editable}
                         ref={register({
                           min: {
-                            value: 0,
                             message: 'Cannot be less than 0',
+                            value: 0,
                           },
+                          pattern: numericValidationRule,
                           required: 'Required',
                           validate: () => {
                             if (
@@ -275,9 +289,10 @@ const ElectionResultsCard: React.FC<IProps> = ({
                     readOnly={!editable}
                     ref={register({
                       min: {
-                        value: 1,
                         message: 'Cannot be less than 1',
+                        value: 1,
                       },
+                      pattern: numericValidationRule,
                       required: 'Required',
                       validate: value => {
                         if (value > getValues().candidates.length) {
@@ -314,6 +329,7 @@ const ElectionResultsCard: React.FC<IProps> = ({
                     placeholder="0"
                     readOnly={!editable}
                     ref={register({
+                      pattern: numericValidationRule,
                       required: 'Required',
                       validate: value => {
                         if (
@@ -347,8 +363,9 @@ const ElectionResultsCard: React.FC<IProps> = ({
                 description: 'Are you sure you want to clear and start over?',
                 yesButtonLabel: 'Clear',
                 onYesClick: () => {
-                  reset()
-                  enableEditing()
+                  resetForm()
+                  clearElectionResults()
+                  enableElectionResultsEditing()
                 },
               })
             }
@@ -356,11 +373,16 @@ const ElectionResultsCard: React.FC<IProps> = ({
             Clear
           </Button>
           {editable ? (
-            <Button intent="primary" large onClick={handleSubmit(planAudit)}>
+            <Button
+              intent="primary"
+              large
+              loading={isSubmitting}
+              onClick={handleSubmit(planAudit)}
+            >
               Plan Audit
             </Button>
           ) : (
-            <Button large onClick={enableEditing}>
+            <Button large onClick={enableElectionResultsEditing}>
               Edit
             </Button>
           )}
