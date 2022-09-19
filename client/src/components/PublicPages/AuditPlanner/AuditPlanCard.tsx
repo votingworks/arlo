@@ -167,6 +167,8 @@ const AuditPlanCard: React.FC<IProps> = ({ disabled, electionResults }) => {
               <Icon icon="error" intent="danger" />
               <span>Error computing sample size</span>
             </SampleSizeError>
+          ) : selectedAuditType === 'batchComparison' ? (
+            <span>{sampleSizes?.data?.[selectedAuditType]} batches</span>
           ) : (
             <span>{sampleSizes?.data?.[selectedAuditType]} ballots</span>
           )}

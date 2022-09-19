@@ -587,7 +587,7 @@ test('Audit plan card interactions', async () => {
     expect(ballotPollingRadioInput).not.toBeChecked()
     expect(ballotComparisonRadioInput).not.toBeChecked()
     expect(batchComparisonRadioInput).toBeChecked()
-    screen.getByText('4 ballots')
+    screen.getByText('4 batches')
 
     userEvent.click(ballotPollingRadioInput)
     expect(ballotPollingRadioInput).toBeChecked()
