@@ -43,6 +43,7 @@ const AuditPlanner: React.FC = () => {
 
   const clearElectionResults = () => {
     setSavedElectionResults(undefined)
+    setAreElectionResultsEditable(true)
   }
 
   return (

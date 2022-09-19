@@ -365,7 +365,6 @@ const ElectionResultsCard: React.FC<IProps> = ({
                 onYesClick: () => {
                   resetForm()
                   clearElectionResults()
-                  enableElectionResultsEditing()
                 },
               })
             }
