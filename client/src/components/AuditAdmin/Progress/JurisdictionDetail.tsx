@@ -4,7 +4,6 @@ import {
   Classes,
   Dialog,
   H5,
-  H6,
   Card,
   Button,
   HTMLSelect,
@@ -15,7 +14,7 @@ import { IJurisdiction, JurisdictionRoundStatus } from '../../useJurisdictions'
 import { CvrFileType, FileProcessingStatus } from '../../useCSV'
 import { IRound } from '../useRoundsAuditAdmin'
 import { IAuditSettings } from '../../useAuditSettings'
-import { api } from '../../utilities'
+import { api, assert } from '../../utilities'
 import useAuditBoards from '../../useAuditBoards'
 import useSampleCount from '../../JurisdictionAdmin/useBallots'
 import AsyncButton from '../../Atoms/AsyncButton'
@@ -29,17 +28,9 @@ import {
 } from '../../useFileUpload'
 import AuditBoardsTable from './AuditBoardsTable'
 
-const prettyCvrFileType = (cvrFileType: CvrFileType) =>
-  ({
-    DOMINION: 'Dominion',
-    CLEARBALLOT: 'ClearBallot',
-    ESS: 'ES&S',
-    HART: 'Hart',
-  }[cvrFileType])
-
 const StatusCard = styled(Card)`
   &:not(:last-child) {
-    margin-bottom: 20px;
+    margin-bottom: 15px;
   }
 `
 
@@ -88,29 +79,31 @@ const JurisdictionDetail: React.FC<IJurisdictionDetailProps> = ({
         <Section>
           <H5>Jurisdiction Files</H5>
           <StatusCard>
-            <H6>Ballot Manifest</H6>
             <FileUpload
+              title="Ballot Manifest"
               {...ballotManifestUpload}
               acceptFileTypes={['csv']}
-              disabled={!!round}
+              uploadDisabled={round !== null}
+              deleteDisabled={round !== null}
             />
           </StatusCard>
           {batchTalliesEnabled && (
             <StatusCard>
-              <H6>Candidate Totals by Batch</H6>
               <FileUpload
+                title="Candidate Totals by Batch"
                 {...batchTalliesUpload}
                 acceptFileTypes={['csv']}
-                disabled={!!round || !isManifestUploaded}
+                uploadDisabled={!isManifestUploaded || round !== null}
+                deleteDisabled={round !== null}
               />
             </StatusCard>
           )}
-          {cvrsEnabled && (
+          {cvrsEnabled && cvrsUpload.uploadedFile.isSuccess && (
             <StatusCard>
-              <H6>Cast Vote Records (CVR)</H6>
               <CvrsFileUpload
                 cvrsUpload={cvrsUpload}
-                disabled={!!round || !isManifestUploaded}
+                uploadDisabled={!isManifestUploaded || round !== null}
+                deleteDisabled={round !== null}
               />
             </StatusCard>
           )}
@@ -130,13 +123,19 @@ const JurisdictionDetail: React.FC<IJurisdictionDetailProps> = ({
 
 const CvrsFileUpload = ({
   cvrsUpload,
-  disabled,
+  uploadDisabled,
+  deleteDisabled,
 }: {
   cvrsUpload: ICvrsFileUpload
-  disabled?: boolean
+  uploadDisabled?: boolean
+  deleteDisabled?: boolean
 }) => {
-  const [selectedCvrFileType, setSelectedCvrFileType] = useState<CvrFileType>()
+  assert(cvrsUpload.uploadedFile.isSuccess)
+  const [selectedCvrFileType, setSelectedCvrFileType] = useState<
+    CvrFileType | undefined
+  >(cvrsUpload.uploadedFile.data?.file?.cvrFileType)
   const [isUploading, setIsUploading] = useState(false)
+
   const uploadFiles = async (files: File[]) => {
     setIsUploading(true)
     try {
@@ -147,33 +146,11 @@ const CvrsFileUpload = ({
   }
 
   const cvrs = cvrsUpload.uploadedFile.data
-  if (!cvrs) return null
 
   return (
     <>
-      <div style={{ marginBottom: '10px' }}>
-        <label htmlFor="cvrFileType">CVR File Type: </label>
-        {cvrs.file ? (
-          prettyCvrFileType(cvrs.file.cvrFileType!)
-        ) : (
-          <HTMLSelect
-            name="cvrFileType"
-            id="cvrFileType"
-            value={selectedCvrFileType}
-            onChange={e =>
-              setSelectedCvrFileType(e.target.value as CvrFileType)
-            }
-            disabled={disabled || isUploading}
-          >
-            <option></option>
-            <option value={CvrFileType.DOMINION}>Dominion</option>
-            <option value={CvrFileType.CLEARBALLOT}>ClearBallot</option>
-            <option value={CvrFileType.ESS}>ES&amp;S</option>
-            <option value={CvrFileType.HART}>Hart</option>
-          </HTMLSelect>
-        )}
-      </div>
       <FileUpload
+        title="Cast Vote Records (CVR)"
         {...cvrsUpload}
         uploadFiles={uploadFiles}
         acceptFileTypes={
@@ -183,7 +160,29 @@ const CvrsFileUpload = ({
           selectedCvrFileType === CvrFileType.ESS ||
           selectedCvrFileType === CvrFileType.HART
         }
-        disabled={disabled || (!cvrs.file && !selectedCvrFileType)}
+        uploadDisabled={uploadDisabled || (!cvrs.file && !selectedCvrFileType)}
+        deleteDisabled={deleteDisabled}
+        additionalFields={
+          <div>
+            <label htmlFor="cvrFileType">CVR File Type: </label>
+            <HTMLSelect
+              name="cvrFileType"
+              id="cvrFileType"
+              value={selectedCvrFileType}
+              onChange={e =>
+                setSelectedCvrFileType(e.target.value as CvrFileType)
+              }
+              disabled={uploadDisabled || isUploading || cvrs.file !== null}
+              style={{ width: '195px', marginLeft: '10px' }}
+            >
+              <option></option>
+              <option value={CvrFileType.DOMINION}>Dominion</option>
+              <option value={CvrFileType.CLEARBALLOT}>ClearBallot</option>
+              <option value={CvrFileType.ESS}>ES&amp;S</option>
+              <option value={CvrFileType.HART}>Hart</option>
+            </HTMLSelect>
+          </div>
+        }
       />
     </>
   )

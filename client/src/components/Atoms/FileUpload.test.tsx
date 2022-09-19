@@ -47,7 +47,14 @@ const TestFileUpload = ({
     deleteFile: () => deleteFile.mutateAsync(),
     downloadFileUrl: '/test/download',
   }
-  return <FileUpload {...fileUpload} acceptFileTypes={['csv']} {...props} />
+  return (
+    <FileUpload
+      title="Test File"
+      {...fileUpload}
+      acceptFileTypes={['csv']}
+      {...props}
+    />
+  )
 }
 
 const render = (element: React.ReactElement) =>
@@ -119,9 +126,9 @@ describe('FileUpload + useFileUpload', () => {
       const onFileChange = jest.fn()
       render(<TestFileUpload onFileChange={onFileChange} />)
 
-      await screen.findByText('No file uploaded')
+      await screen.findByText('Test File')
       expect(onFileChange).not.toHaveBeenCalled()
-      const uploadButton = screen.getByRole('button', { name: 'Upload File' })
+      const uploadButton = screen.getByRole('button', { name: /Upload/ })
       expect(uploadButton).toBeDisabled()
 
       const fileInput = screen.getByLabelText('Select a file...')
@@ -137,14 +144,14 @@ describe('FileUpload + useFileUpload', () => {
       expect(uploadButton).toBeDisabled()
 
       await screen.findByText('Uploaded')
-      const fileLink = screen.getByRole('link', { name: 'test-file.csv' })
+      const fileLink = screen.getByRole('button', { name: /Download/ })
       expect(fileLink).toHaveAttribute('href', '/test/download')
-      screen.getByRole('button', { name: 'Delete File' })
+      screen.getByRole('button', { name: /Delete/ })
       expect(onFileChange).toHaveBeenCalledTimes(1)
     })
   })
 
-  it('when a file is uploaded, shows a delete file button', async () => {
+  it('when a file is uploaded, shows a Delete button', async () => {
     const expectedCalls = [
       { url: '/test', response: fileInfoMocks.processed },
       {
@@ -160,10 +167,10 @@ describe('FileUpload + useFileUpload', () => {
 
       await screen.findByText('Uploaded')
       expect(onFileChange).not.toHaveBeenCalled()
-      const deleteButton = screen.getByRole('button', { name: 'Delete File' })
+      const deleteButton = screen.getByRole('button', { name: /Delete/ })
       userEvent.click(deleteButton)
       expect(deleteButton).toBeDisabled()
-      await screen.findByText('No file uploaded')
+      expect(await screen.findByLabelText('Select a file...')).toHaveValue('')
       expect(onFileChange).toHaveBeenCalledTimes(1)
     })
   })
@@ -181,8 +188,8 @@ describe('FileUpload + useFileUpload', () => {
     await withMockFetch(expectedCalls, async () => {
       render(<TestFileUpload />)
 
-      await screen.findByText('No file uploaded')
-      const uploadButton = screen.getByRole('button', { name: 'Upload File' })
+      await screen.findByText('Test File')
+      const uploadButton = screen.getByRole('button', { name: /Upload/ })
       expect(uploadButton).toBeDisabled()
 
       const fileInput = screen.getByLabelText('Select a file...')
@@ -191,11 +198,11 @@ describe('FileUpload + useFileUpload', () => {
 
       userEvent.click(uploadButton)
 
-      await screen.findByText('Upload failed')
+      await screen.findByText('Upload Failed')
       screen.getByText('something went wrong')
-      const fileLink = screen.getByRole('link', { name: 'test-file.csv' })
+      const fileLink = screen.getByRole('button', { name: /Download/ })
       expect(fileLink).toHaveAttribute('href', '/test/download')
-      screen.getByRole('button', { name: 'Delete File' })
+      screen.getByRole('button', { name: /Delete/ })
     })
   })
 
@@ -218,8 +225,8 @@ describe('FileUpload + useFileUpload', () => {
     await withMockFetch(expectedCalls, async () => {
       render(<TestFileUpload allowMultipleFiles />)
 
-      await screen.findByText('No file uploaded')
-      const uploadButton = screen.getByRole('button', { name: 'Upload Files' })
+      await screen.findByText('Test File')
+      const uploadButton = screen.getByRole('button', { name: /Upload/ })
       expect(uploadButton).toBeDisabled()
 
       const fileInput = screen.getByLabelText('Select files...')
@@ -231,24 +238,25 @@ describe('FileUpload + useFileUpload', () => {
     })
   })
 
-  it('can be disabled when no file uploaded', async () => {
+  it('can have upload disabled when no file uploaded', async () => {
     const expectedCalls = [{ url: '/test', response: fileInfoMocks.empty }]
     await withMockFetch(expectedCalls, async () => {
-      render(<TestFileUpload disabled />)
+      render(<TestFileUpload uploadDisabled />)
 
-      await screen.findByText('No file uploaded')
+      await screen.findByText('Test File')
       expect(screen.getByLabelText('Select a file...')).toBeDisabled()
-      expect(screen.getByRole('button', { name: 'Upload File' })).toBeDisabled()
+      expect(screen.getByRole('button', { name: /Upload/ })).toBeDisabled()
     })
   })
 
-  it('can be disabled when file is uploaded', async () => {
+  it('can have delete disabled when file is uploaded', async () => {
     const expectedCalls = [{ url: '/test', response: fileInfoMocks.processed }]
     await withMockFetch(expectedCalls, async () => {
-      render(<TestFileUpload disabled />)
+      render(<TestFileUpload deleteDisabled />)
 
       await screen.findByText('Uploaded')
-      expect(screen.getByRole('button', { name: 'Delete File' })).toBeDisabled()
+      expect(screen.getByRole('button', { name: /Delete/ })).toBeDisabled()
+      expect(screen.getByRole('button', { name: /Download/ })).toBeEnabled()
     })
   })
 
@@ -283,10 +291,10 @@ describe('FileUpload + useFileUpload', () => {
           <ToastContainer />
         </>
       )
-      await screen.findByText('No file uploaded')
+      await screen.findByText('Test File')
       userEvent.upload(screen.getByLabelText('Select a file...'), testFile)
       await screen.findByText('test-file.csv')
-      userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
+      userEvent.click(screen.getByRole('button', { name: /Upload/ }))
       await findAndCloseToast('putFile')
     })
   })
@@ -307,7 +315,7 @@ describe('FileUpload + useFileUpload', () => {
         </>
       )
       await screen.findByText('Uploaded')
-      userEvent.click(screen.getByRole('button', { name: 'Delete File' }))
+      userEvent.click(screen.getByRole('button', { name: /Delete/ }))
       await findAndCloseToast('deleteFile')
     })
   })

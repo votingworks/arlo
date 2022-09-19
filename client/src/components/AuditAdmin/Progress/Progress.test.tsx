@@ -567,12 +567,12 @@ describe('Progress screen', () => {
       within(modal).getByRole('heading', {
         name: 'Jurisdiction Files',
       })
-      const manifestCard = within(modal)
-        .getByRole('heading', {
+      const manifestCard = (
+        await within(modal).findByRole('heading', {
           name: 'Ballot Manifest',
         })
-        .closest('div')!
-      await within(manifestCard).findByText('Upload failed')
+      ).closest('.bp3-card') as HTMLElement
+      within(manifestCard).getByText('Upload Failed')
 
       // Close the detail modal
       userEvent.click(screen.getByRole('button', { name: 'Close' }))
