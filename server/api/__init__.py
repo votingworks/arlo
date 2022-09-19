@@ -23,3 +23,4 @@ from . import reports
 from . import activity
 from . import support
 from . import batch_inventory
+from . import public
