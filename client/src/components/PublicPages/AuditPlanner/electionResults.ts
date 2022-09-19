@@ -1,3 +1,14 @@
+export interface ICandidate {
+  name: string
+  votes: number
+}
+
+export interface IElectionResults {
+  candidates: ICandidate[]
+  numWinners: number
+  totalBallotsCast: number
+}
+
 export interface ICandidateFormState {
   name: string
   votes: number | null
@@ -21,5 +32,18 @@ export function constructInitialElectionResults(): IElectionResultsFormState {
     candidates: [constructNewCandidate(), constructNewCandidate()],
     numWinners: 1,
     totalBallotsCast: null,
+  }
+}
+
+export function assertIsElectionResults(
+  electionResultsFormState: IElectionResultsFormState
+): asserts electionResultsFormState is IElectionResults {
+  const { candidates, numWinners, totalBallotsCast } = electionResultsFormState
+  if (
+    candidates.some(candidate => candidate.votes === null) ||
+    numWinners === null ||
+    totalBallotsCast === null
+  ) {
+    throw new Error('Required field is null')
   }
 }
