@@ -3,9 +3,10 @@ import styled from 'styled-components'
 import { Card, H2, H3, Icon, Slider, Spinner } from '@blueprintjs/core'
 
 import SegmentedControl from '../../Atoms/SegmentedControl'
-import { AuditType, useSampleSizes } from './sampleSizes'
+import { AuditType } from '../../useAuditSettings'
 import { IElectionResults } from './electionResults'
 import { useDebounce } from '../../../utils/debounce'
+import { useSampleSizes } from './sampleSizes'
 
 interface IContainerProps {
   disabled?: boolean
@@ -85,9 +86,9 @@ const AuditPlanCard: React.FC<IProps> = ({ disabled, electionResults }) => {
     window.scrollTo(0, document.body.scrollHeight)
   }, [])
 
-  const [selectedAuditType, setSelectedAuditType] = useState<AuditType>(
-    'ballotPolling'
-  )
+  const [selectedAuditType, setSelectedAuditType] = useState<
+    Exclude<AuditType, 'HYBRID'>
+  >('BALLOT_POLLING')
   const [riskLimitPercentage, setRiskLimitPercentage] = useState(
     DEFAULT_RISK_LIMIT_PERCENTAGE
   )
@@ -121,9 +122,9 @@ const AuditPlanCard: React.FC<IProps> = ({ disabled, electionResults }) => {
             large
             onChange={setSelectedAuditType}
             options={[
-              { label: 'Ballot Polling', value: 'ballotPolling' },
-              { label: 'Ballot Comparison', value: 'ballotComparison' },
-              { label: 'Batch Comparison', value: 'batchComparison' },
+              { label: 'Ballot Polling', value: 'BALLOT_POLLING' },
+              { label: 'Ballot Comparison', value: 'BALLOT_COMPARISON' },
+              { label: 'Batch Comparison', value: 'BATCH_COMPARISON' },
             ]}
             value={selectedAuditType}
           />
@@ -167,7 +168,7 @@ const AuditPlanCard: React.FC<IProps> = ({ disabled, electionResults }) => {
               <Icon icon="error" intent="danger" />
               <span>Error computing sample size</span>
             </SampleSizeError>
-          ) : selectedAuditType === 'batchComparison' ? (
+          ) : selectedAuditType === 'BATCH_COMPARISON' ? (
             <span>{sampleSizes?.data?.[selectedAuditType]} batches</span>
           ) : (
             <span>{sampleSizes?.data?.[selectedAuditType]} ballots</span>

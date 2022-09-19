@@ -1,18 +1,19 @@
 import { toast } from 'react-toastify'
 import { useQuery, UseQueryResult } from 'react-query'
 
+import { AuditType } from '../../useAuditSettings'
 import { fetchApi } from '../../../utils/api'
 import { IElectionResults } from './electionResults'
 import { sleep } from '../../../utils/sleep'
 
-export type AuditType = 'ballotComparison' | 'ballotPolling' | 'batchComparison'
-
-export type SampleSizes = { [key in AuditType]: number }
+export type SampleSizes = {
+  [key in Exclude<AuditType, 'HYBRID'>]: number
+}
 
 export const placeholderSampleSizes: SampleSizes = {
-  ballotComparison: 0,
-  ballotPolling: 0,
-  batchComparison: 0,
+  BALLOT_COMPARISON: 0,
+  BALLOT_POLLING: 0,
+  BATCH_COMPARISON: 0,
 }
 
 interface UseSampleSizesOptions {
@@ -34,7 +35,7 @@ export const useSampleSizes = (
     ['sampleSizes', electionResults, riskLimitPercentage],
     async () => {
       const queryStartTime = new Date().getTime()
-      const query = await fetchApi('/api/public/sample-sizes', {
+      const sampleSizes = await fetchApi('/api/public/sample-sizes', {
         // Conceptually, this is a GET but we use a POST so that we can specify election results in
         // a body. Specifying election results in a query param could cause us to hit URL size
         // limits
@@ -49,7 +50,11 @@ export const useSampleSizes = (
         await sleep(minFetchDurationMs - queryTimeMs)
       }
 
-      return query
+      return {
+        BALLOT_COMPARISON: sampleSizes.ballotComparison,
+        BALLOT_POLLING: sampleSizes.ballotPolling,
+        BATCH_COMPARISON: sampleSizes.batchComparison,
+      }
     },
     {
       onError: showToastOnError

@@ -1,17 +1,19 @@
 import { useEffect, useCallback, useState } from 'react'
 import { api } from './utilities'
 
+export type AuditType =
+  | 'BALLOT_POLLING'
+  | 'BATCH_COMPARISON'
+  | 'BALLOT_COMPARISON'
+  | 'HYBRID'
+
 export interface IAuditSettings {
   state: string | null
   electionName: string | null
   online: boolean | null
   randomSeed: string | null
   riskLimit: number | null
-  auditType:
-    | 'BALLOT_POLLING'
-    | 'BATCH_COMPARISON'
-    | 'BALLOT_COMPARISON'
-    | 'HYBRID'
+  auditType: AuditType
   auditMathType: 'BRAVO' | 'MINERVA' | 'SUPERSIMPLE' | 'MACRO' | 'SUITE'
   auditName: string
 }
