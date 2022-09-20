@@ -192,8 +192,11 @@ const apiMocks = {
   }),
 }
 
+let mockScrollIntoView: jest.Mock
+
 beforeEach(async () => {
-  window.scrollTo = jest.fn()
+  mockScrollIntoView = jest.fn()
+  window.HTMLElement.prototype.scrollIntoView = mockScrollIntoView
   await queryClient.invalidateQueries()
 })
 
@@ -561,6 +564,7 @@ test('Audit plan card interactions', async () => {
     userEvent.type(totalBallotsCastInput, '20')
     userEvent.click(planAuditButton)
     await waitForSampleSizeComputation('3 ballots')
+    expect(mockScrollIntoView).toHaveBeenCalledTimes(1)
 
     // Toggle audit methods ----------
 

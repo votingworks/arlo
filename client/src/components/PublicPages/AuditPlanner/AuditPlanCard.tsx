@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { Card, H2, H3, Icon, Slider, Spinner } from '@blueprintjs/core'
 
@@ -81,9 +81,12 @@ interface IProps {
 }
 
 const AuditPlanCard: React.FC<IProps> = ({ disabled, electionResults }) => {
-  // Scroll to the bottom of the screen when the audit plan card first appears
+  // Scroll the card, specifically the sample size, into view when it first appears
+  const sampleSizeRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
-    window.scrollTo(0, document.body.scrollHeight)
+    if (sampleSizeRef.current) {
+      sampleSizeRef.current.scrollIntoView({ behavior: 'smooth' })
+    }
   }, [])
 
   const [selectedAuditType, setSelectedAuditType] = useState<
@@ -156,7 +159,7 @@ const AuditPlanCard: React.FC<IProps> = ({ disabled, electionResults }) => {
         </Section>
       </InnerContainer>
 
-      <SampleSizeSection>
+      <SampleSizeSection ref={sampleSizeRef}>
         <SubHeading>Estimated Sample Size</SubHeading>
         <SampleSize>
           {isComputingSampleSizes ? (
