@@ -10,12 +10,6 @@ export type SampleSizes = {
   [key in Exclude<AuditType, 'HYBRID'>]: number
 }
 
-export const placeholderSampleSizes: SampleSizes = {
-  BALLOT_COMPARISON: 0,
-  BALLOT_POLLING: 0,
-  BATCH_COMPARISON: 0,
-}
-
 interface UseSampleSizesOptions {
   /** Allow introducing an artificial delay to avoid flickering loading spinners */
   minFetchDurationMs?: number
@@ -60,7 +54,6 @@ export const useSampleSizes = (
       onError: showToastOnError
         ? error => toast.error(error.message)
         : () => {}, // eslint-disable-line @typescript-eslint/no-empty-function
-      placeholderData: placeholderSampleSizes,
       staleTime: Infinity, // Allow use of cached query results
     }
   )
