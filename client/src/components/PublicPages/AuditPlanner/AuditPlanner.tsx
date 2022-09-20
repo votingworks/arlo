@@ -30,11 +30,24 @@ const AuditPlanner: React.FC = () => {
   const [areElectionResultsEditable, setAreElectionResultsEditable] = useState(
     true
   )
+  const [
+    sampleSizeCalculationStartedAt,
+    setSampleSizeCalculationStartedAt,
+  ] = useState<number>()
+
+  const recordSampleSizeCalculationStart = () => {
+    setSampleSizeCalculationStartedAt(new Date().getTime())
+  }
+
+  const recordSampleSizeCalculationEnd = () => {
+    setSampleSizeCalculationStartedAt(undefined)
+  }
 
   const planAudit = (electionResultsFormState: IElectionResultsFormState) => {
     assertIsElectionResults(electionResultsFormState)
     setSavedElectionResults(electionResultsFormState)
     setAreElectionResultsEditable(false)
+    recordSampleSizeCalculationStart()
   }
 
   const enableElectionResultsEditing = () => {
@@ -59,6 +72,9 @@ const AuditPlanner: React.FC = () => {
         <AuditPlanCard
           disabled={areElectionResultsEditable}
           electionResults={savedElectionResults}
+          recordSampleSizeCalculationStart={recordSampleSizeCalculationStart}
+          recordSampleSizeCalculationEnd={recordSampleSizeCalculationEnd}
+          sampleSizeCalculationStartedAt={sampleSizeCalculationStartedAt}
         />
       )}
     </Container>

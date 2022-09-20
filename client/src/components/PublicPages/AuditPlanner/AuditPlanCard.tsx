@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
-import { Card, H2, H3, Icon, Slider, Spinner } from '@blueprintjs/core'
+import { Card, H2, H3, Slider } from '@blueprintjs/core'
 
+import SampleSize from './SampleSize'
 import SegmentedControl from '../../Atoms/SegmentedControl'
 import { AuditType } from '../../useAuditSettings'
 import { IElectionResults } from './electionResults'
@@ -55,37 +56,30 @@ const SampleSizeSection = styled.div`
   padding: 32px;
 `
 
-const SAMPLE_SIZE_CONTAINER_HEIGHT = 36
-
-const SampleSize = styled.div`
-  display: flex;
-  font-size: 28px;
-  min-height: ${SAMPLE_SIZE_CONTAINER_HEIGHT}px;
-`
-
-const SampleSizeError = styled.span`
-  align-items: center;
-  display: flex;
-  font-size: 14px;
-
-  .bp3-icon {
-    margin-right: 8px;
-  }
-`
-
 const DEFAULT_RISK_LIMIT_PERCENTAGE = 5
+const RISK_LIMIT_PERCENTAGE_DEBOUNCE_TIME_MS = 500
+const MINIMUM_SPINNER_DURATION_MS = 1000
 
 interface IProps {
   disabled: boolean
   electionResults: IElectionResults
+  recordSampleSizeCalculationStart: () => void
+  recordSampleSizeCalculationEnd: () => void
+  sampleSizeCalculationStartedAt?: number
 }
 
-const AuditPlanCard: React.FC<IProps> = ({ disabled, electionResults }) => {
+const AuditPlanCard: React.FC<IProps> = ({
+  disabled,
+  electionResults,
+  recordSampleSizeCalculationStart,
+  recordSampleSizeCalculationEnd,
+  sampleSizeCalculationStartedAt,
+}) => {
   // Scroll the card, specifically the sample size, into view when it first appears
-  const sampleSizeRef = useRef<HTMLDivElement>(null)
+  const sampleSizeSectionRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
-    if (sampleSizeRef.current) {
-      sampleSizeRef.current.scrollIntoView({ behavior: 'smooth' })
+    if (sampleSizeSectionRef.current) {
+      sampleSizeSectionRef.current.scrollIntoView({ behavior: 'smooth' })
     }
   }, [])
 
@@ -95,21 +89,47 @@ const AuditPlanCard: React.FC<IProps> = ({ disabled, electionResults }) => {
   const [riskLimitPercentage, setRiskLimitPercentage] = useState(
     DEFAULT_RISK_LIMIT_PERCENTAGE
   )
-  const [
-    debouncedRiskLimitPercentage,
-    isDebouncingRiskLimitPercentage,
-  ] = useDebounce(riskLimitPercentage, 500)
+  const [debouncedRiskLimitPercentage] = useDebounce(
+    riskLimitPercentage,
+    RISK_LIMIT_PERCENTAGE_DEBOUNCE_TIME_MS
+  )
   const sampleSizes = useSampleSizes(
     electionResults,
     debouncedRiskLimitPercentage,
     {
-      minFetchDurationMs: isDebouncingRiskLimitPercentage ? 500 : 1000,
-      showToastOnError: false, // We display an inline error message instead
+      // We display an inline error message instead
+      showToastOnError: false,
     }
   )
 
-  const isComputingSampleSizes =
-    isDebouncingRiskLimitPercentage || sampleSizes.isFetching
+  // Only clear sampleSizeCalculationStartedAt, used to control display of the loading spinner,
+  // once at least MINIMUM_SPINNER_DURATION_MS has passed
+  useEffect(() => {
+    let timeout: NodeJS.Timeout | undefined
+    if (sampleSizeCalculationStartedAt && !sampleSizes.isFetching) {
+      const timeElapsedSinceSampleSizeCalculationStarted =
+        new Date().getTime() - sampleSizeCalculationStartedAt
+      if (
+        timeElapsedSinceSampleSizeCalculationStarted >=
+        MINIMUM_SPINNER_DURATION_MS
+      ) {
+        recordSampleSizeCalculationEnd()
+      } else {
+        timeout = setTimeout(() => {
+          recordSampleSizeCalculationEnd()
+        }, MINIMUM_SPINNER_DURATION_MS - timeElapsedSinceSampleSizeCalculationStarted)
+      }
+    }
+    return () => {
+      if (timeout) {
+        clearTimeout(timeout)
+      }
+    }
+  }, [
+    recordSampleSizeCalculationEnd,
+    sampleSizeCalculationStartedAt,
+    sampleSizes.isFetching,
+  ])
 
   return (
     <Container data-testid="auditPlanCard" disabled={disabled} elevation={1}>
@@ -153,30 +173,24 @@ const AuditPlanCard: React.FC<IProps> = ({ disabled, electionResults }) => {
             )}
             min={0}
             max={20}
-            onChange={setRiskLimitPercentage}
+            onChange={value => {
+              setRiskLimitPercentage(value)
+              recordSampleSizeCalculationStart()
+            }}
             value={riskLimitPercentage}
           />
         </Section>
       </InnerContainer>
 
-      <SampleSizeSection ref={sampleSizeRef}>
+      <SampleSizeSection ref={sampleSizeSectionRef}>
         <SubHeading>Estimated Sample Size</SubHeading>
-        <SampleSize>
-          {isComputingSampleSizes ? (
-            <Spinner size={SAMPLE_SIZE_CONTAINER_HEIGHT} />
-          ) : disabled ? (
-            <span>&mdash;</span>
-          ) : sampleSizes.isError ? (
-            <SampleSizeError>
-              <Icon icon="error" intent="danger" />
-              <span>Error computing sample size</span>
-            </SampleSizeError>
-          ) : selectedAuditType === 'BATCH_COMPARISON' ? (
-            <span>{sampleSizes?.data?.[selectedAuditType]} batches</span>
-          ) : (
-            <span>{sampleSizes?.data?.[selectedAuditType]} ballots</span>
-          )}
-        </SampleSize>
+        <SampleSize
+          auditType={selectedAuditType}
+          disabled={disabled}
+          error={sampleSizes.error || undefined}
+          isComputing={Boolean(sampleSizeCalculationStartedAt)}
+          sampleSize={sampleSizes.data?.[selectedAuditType] || 0}
+        />
       </SampleSizeSection>
     </Container>
   )
