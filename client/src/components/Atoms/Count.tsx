@@ -2,20 +2,20 @@ import React from 'react'
 
 interface IProps {
   className?: string
-  n: number
+  count: number
   plural: string
   singular: string
 }
 
 const Count: React.FC<IProps> = ({
   className,
-  n,
+  count,
   plural,
   singular,
 }: IProps) => {
   return (
     <span className={className}>
-      {n.toLocaleString()} {n === 1 ? singular : plural}
+      {count.toLocaleString()} {count === 1 ? singular : plural}
     </span>
   )
 }

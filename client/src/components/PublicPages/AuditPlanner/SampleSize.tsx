@@ -51,9 +51,9 @@ const SampleSize: React.FC<IProps> = ({
       </Error>
     )
   } else if (auditType === 'BATCH_COMPARISON') {
-    content = <Count n={sampleSize} plural="batches" singular="batch" />
+    content = <Count count={sampleSize} plural="batches" singular="batch" />
   } else {
-    content = <Count n={sampleSize} plural="ballots" singular="ballot" />
+    content = <Count count={sampleSize} plural="ballots" singular="ballot" />
   }
   return <Container>{content}</Container>
 }
