@@ -2,6 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { Icon, Spinner } from '@blueprintjs/core'
 
+import Count from '../../Atoms/Count'
 import { AuditType } from '../../useAuditSettings'
 
 const CONTAINER_HEIGHT = 36
@@ -50,9 +51,9 @@ const SampleSize: React.FC<IProps> = ({
       </Error>
     )
   } else if (auditType === 'BATCH_COMPARISON') {
-    content = <span>{sampleSize} batches</span>
+    content = <Count n={sampleSize} plural="batches" singular="batch" />
   } else {
-    content = <span>{sampleSize} ballots</span>
+    content = <Count n={sampleSize} plural="ballots" singular="ballot" />
   }
   return <Container>{content}</Container>
 }
