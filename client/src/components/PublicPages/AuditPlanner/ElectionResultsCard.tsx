@@ -22,6 +22,8 @@ import {
 } from './electionResults'
 import { sum } from '../../../utils/number'
 
+const HIDDEN_INPUT_CLASS_NAME = 'hidden-input'
+
 const Container = styled(Card)`
   &.bp3-card {
     margin: auto;
@@ -75,6 +77,9 @@ const CandidatesTable = styled(HTMLTable)`
   &.bp3-html-table .bp3-input[readonly] {
     background: ${Colors.LIGHT_GRAY5};
     box-shadow: none;
+  }
+  &.bp3-html-table .bp3-input.${HIDDEN_INPUT_CLASS_NAME} {
+    display: none;
   }
 
   &.bp3-html-table .bp3-label {
@@ -207,15 +212,17 @@ const ElectionResultsCard: React.FC<IProps> = ({
                   >
                     <CandidateVotesInputAndRemoveButtonContainer>
                       <input
+                        aria-hidden={!editable}
                         aria-label={`Candidate ${i} Votes`}
                         className={classnames(
                           Classes.INPUT,
-                          errors.candidates?.[i]?.votes && Classes.INTENT_DANGER
+                          errors.candidates?.[i]?.votes &&
+                            Classes.INTENT_DANGER,
+                          !editable && HIDDEN_INPUT_CLASS_NAME
                         )}
                         name={`candidates[${i}].votes`}
                         onChange={validateAllCandidateVotesFields}
                         placeholder="0"
-                        readOnly={!editable}
                         ref={register({
                           min: {
                             message: 'Cannot be less than 0',
@@ -239,6 +246,16 @@ const ElectionResultsCard: React.FC<IProps> = ({
                         })}
                         type="number"
                       />
+                      {!editable && (
+                        <input
+                          aria-label={`Candidate ${i} Votes`}
+                          className={Classes.INPUT}
+                          readOnly
+                          value={(
+                            getValues().candidates?.[i]?.votes || 0
+                          ).toLocaleString()}
+                        />
+                      )}
                       <Button
                         aria-label={`Remove Candidate ${i}`}
                         disabled={!editable || candidateFields.length === 2}
@@ -276,17 +293,18 @@ const ElectionResultsCard: React.FC<IProps> = ({
                   }
                   intent={errors.numWinners && 'danger'}
                   label="Number of Winners"
-                  labelFor="numWinners"
+                  labelFor={editable ? 'numWinners' : 'numWinnersReadOnly'}
                 >
                   <input
+                    aria-hidden={!editable}
                     className={classnames(
                       Classes.INPUT,
-                      errors.numWinners && Classes.INTENT_DANGER
+                      errors.numWinners && Classes.INTENT_DANGER,
+                      !editable && HIDDEN_INPUT_CLASS_NAME
                     )}
                     id="numWinners"
                     name="numWinners"
                     placeholder="0"
-                    readOnly={!editable}
                     ref={register({
                       min: {
                         message: 'Cannot be less than 1',
@@ -304,6 +322,14 @@ const ElectionResultsCard: React.FC<IProps> = ({
                     })}
                     type="number"
                   />
+                  {!editable && (
+                    <input
+                      className={Classes.INPUT}
+                      id="numWinnersReadOnly"
+                      readOnly
+                      value={(getValues().numWinners || 0).toLocaleString()}
+                    />
+                  )}
                 </FormGroup>
               </td>
               <td>
@@ -317,17 +343,20 @@ const ElectionResultsCard: React.FC<IProps> = ({
                   }
                   intent={errors.totalBallotsCast && 'danger'}
                   label="Total Ballots Cast"
-                  labelFor="totalBallotsCast"
+                  labelFor={
+                    editable ? 'totalBallotsCast' : 'totalBallotsCastReadOnly'
+                  }
                 >
                   <input
+                    aria-hidden={!editable}
                     className={classnames(
                       Classes.INPUT,
-                      errors.totalBallotsCast && Classes.INTENT_DANGER
+                      errors.totalBallotsCast && Classes.INTENT_DANGER,
+                      !editable && HIDDEN_INPUT_CLASS_NAME
                     )}
                     id="totalBallotsCast"
                     name="totalBallotsCast"
                     placeholder="0"
-                    readOnly={!editable}
                     ref={register({
                       pattern: numericValidationRule,
                       required: 'Required',
@@ -348,6 +377,16 @@ const ElectionResultsCard: React.FC<IProps> = ({
                     })}
                     type="number"
                   />
+                  {!editable && (
+                    <input
+                      className={Classes.INPUT}
+                      id="totalBallotsCastReadOnly"
+                      readOnly
+                      value={(
+                        getValues().totalBallotsCast || 0
+                      ).toLocaleString()}
+                    />
+                  )}
                 </FormGroup>
               </td>
             </tr>
