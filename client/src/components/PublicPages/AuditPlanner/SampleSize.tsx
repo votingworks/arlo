@@ -27,7 +27,7 @@ interface IProps {
   disabled?: boolean
   error?: Error
   isComputing?: boolean
-  sampleSize: number
+  sampleSize?: number
 }
 
 const SampleSize: React.FC<IProps> = ({
@@ -38,7 +38,7 @@ const SampleSize: React.FC<IProps> = ({
   sampleSize,
 }) => {
   let content: JSX.Element
-  if (disabled) {
+  if (disabled || sampleSize === undefined) {
     content = <span>&mdash;</span>
   } else if (isComputing) {
     content = <Spinner size={CONTAINER_HEIGHT} />

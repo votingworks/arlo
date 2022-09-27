@@ -145,7 +145,7 @@ const AuditPlanCard: React.FC<IProps> = ({ disabled, electionResults }) => {
           sampleSize={
             sampleSizes.data?.[selectedAuditType][
               debouncedRiskLimitPercentage.toString()
-            ] || 0
+            ]
           }
         />
       </SampleSizeSection>
