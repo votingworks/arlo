@@ -32,12 +32,9 @@ ELECTION_RESULTS_SCHEMA = {
 
 COMPUTE_SAMPLE_SIZES_INPUT_SCHEMA = {
     "type": "object",
-    "properties": {
-        "electionResults": ELECTION_RESULTS_SCHEMA,
-        "riskLimitPercentage": {"type": "integer", "minimum": 0, "maximum": 20},
-    },
+    "properties": {"electionResults": ELECTION_RESULTS_SCHEMA},
     "additionalProperties": False,
-    "required": ["electionResults", "riskLimitPercentage"],
+    "required": ["electionResults"],
 }
 
 
@@ -47,4 +44,13 @@ COMPUTE_SAMPLE_SIZES_INPUT_SCHEMA = {
 def public_compute_sample_sizes():
     compute_sample_sizes_input = request.get_json()
     validate(compute_sample_sizes_input, COMPUTE_SAMPLE_SIZES_INPUT_SCHEMA)
-    return jsonify(dict(ballotComparison=0, ballotPolling=0, batchComparison=0))
+    sample_sizes = {
+        "ballotComparison": {},
+        "ballotPolling": {},
+        "batchComparison": {},
+    }
+    for risk_limit_percentage in list(range(0, 21)):
+        sample_sizes["ballotComparison"][str(risk_limit_percentage)] = 0
+        sample_sizes["ballotPolling"][str(risk_limit_percentage)] = 0
+        sample_sizes["batchComparison"][str(risk_limit_percentage)] = 0
+    return jsonify(sample_sizes)

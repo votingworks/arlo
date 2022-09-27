@@ -6,7 +6,9 @@ import { fetchApi } from '../../../utils/api'
 import { IElectionResults } from './electionResults'
 
 export type SampleSizes = {
-  [key in Exclude<AuditType, 'HYBRID'>]: number
+  [auditType in Exclude<AuditType, 'HYBRID'>]: {
+    [riskLimitPercentage: string]: number
+  }
 }
 
 interface UseSampleSizesOptions {
@@ -16,18 +18,17 @@ interface UseSampleSizesOptions {
 
 export const useSampleSizes = (
   electionResults: IElectionResults,
-  riskLimitPercentage: number,
   { showToastOnError = true }: UseSampleSizesOptions = {}
 ): UseQueryResult<SampleSizes, Error> =>
   useQuery<SampleSizes, Error>(
-    ['sampleSizes', electionResults, riskLimitPercentage],
+    ['sampleSizes', electionResults],
     async () => {
       const sampleSizes = await fetchApi('/api/public/sample-sizes', {
         // Conceptually, this is a GET but we use a POST so that we can specify election results in
         // a body. Specifying election results in a query param could cause us to hit URL size
         // limits
         method: 'POST',
-        body: JSON.stringify({ electionResults, riskLimitPercentage }),
+        body: JSON.stringify({ electionResults }),
         headers: { 'Content-Type': 'application/json' },
       })
       return {
@@ -40,6 +41,5 @@ export const useSampleSizes = (
       onError: showToastOnError
         ? error => toast.error(error.message)
         : () => {}, // eslint-disable-line @typescript-eslint/no-empty-function
-      staleTime: Infinity, // Allow use of cached query results
     }
   )
