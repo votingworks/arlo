@@ -112,12 +112,6 @@ async function checkThatElectionResultsCardIsInInitialState() {
   }
 }
 
-async function waitForSampleSizeComputation(expectedResult: string) {
-  await screen.findByText(expectedResult, undefined, {
-    timeout: 2000,
-  })
-}
-
 const body1 = JSON.stringify({
   electionResults: {
     candidates: [
@@ -127,7 +121,6 @@ const body1 = JSON.stringify({
     numWinners: 1,
     totalBallotsCast: 20,
   },
-  riskLimitPercentage: 5,
 })
 
 const body2 = JSON.stringify({
@@ -139,19 +132,6 @@ const body2 = JSON.stringify({
     numWinners: 1,
     totalBallotsCast: 22,
   },
-  riskLimitPercentage: 5,
-})
-
-const body3 = JSON.stringify({
-  electionResults: {
-    candidates: [
-      { name: 'Helga Hippo', votes: 10 },
-      { name: 'Bobby Bear', votes: 5 },
-    ],
-    numWinners: 1,
-    totalBallotsCast: 20,
-  },
-  riskLimitPercentage: 6,
 })
 
 const apiMocks = {
@@ -162,7 +142,11 @@ const apiMocks = {
       body: body1,
       headers: { 'Content-Type': 'application/json' },
     },
-    response: { ballotComparison: 2, ballotPolling: 3, batchComparison: 4 },
+    response: {
+      ballotComparison: { '5': 2, '6': 8 },
+      ballotPolling: { '5': 3, '6': 9 },
+      batchComparison: { '5': 4, '6': 10 },
+    },
   },
   publicComputeSampleSizes2: {
     url: '/api/public/sample-sizes',
@@ -171,16 +155,11 @@ const apiMocks = {
       body: body2,
       headers: { 'Content-Type': 'application/json' },
     },
-    response: { ballotComparison: 5, ballotPolling: 6, batchComparison: 7 },
-  },
-  publicComputeSampleSizes3: {
-    url: '/api/public/sample-sizes',
-    options: {
-      method: 'POST',
-      body: body3,
-      headers: { 'Content-Type': 'application/json' },
+    response: {
+      ballotComparison: { '5': 5 },
+      ballotPolling: { '5': 6 },
+      batchComparison: { '5': 7 },
     },
-    response: { ballotComparison: 8, ballotPolling: 9, batchComparison: 10 },
   },
   publicComputeSampleSizesError: serverError('publicComputeSampleSizes', {
     url: '/api/public/sample-sizes',
@@ -316,7 +295,7 @@ test('Entering election results - validation and submit', async () => {
     }
     screen.getByRole('button', { name: 'Clear' })
     screen.getByRole('button', { name: 'Edit' })
-    await waitForSampleSizeComputation('3 ballots')
+    await screen.findByText('3 ballots')
   })
 })
 
@@ -420,7 +399,7 @@ test('Entering election results - clearing', async () => {
     userEvent.type(candidate1VotesInput, '5')
     userEvent.type(totalBallotsCastInput, '20')
     userEvent.click(planAuditButton)
-    await waitForSampleSizeComputation('3 ballots')
+    await screen.findByText('3 ballots')
 
     // Clearing after submission
     userEvent.click(clearButton)
@@ -493,7 +472,7 @@ test('Entering election results - editing', async () => {
     for (const numericInput of numericInputs) {
       expect(numericInput).toHaveAttribute('readonly')
     }
-    await waitForSampleSizeComputation('3 ballots')
+    await screen.findByText('3 ballots')
 
     const editButton = screen.getByRole('button', { name: 'Edit' })
     userEvent.click(editButton)
@@ -535,14 +514,13 @@ test('Entering election results - editing', async () => {
     for (const numericInput of numericInputs) {
       expect(numericInput).toHaveAttribute('readonly')
     }
-    await waitForSampleSizeComputation('6 ballots')
+    await screen.findByText('6 ballots')
   })
 })
 
 test('Audit plan card interactions', async () => {
   const expectedCalls = [
     apiMocks.publicComputeSampleSizes1,
-    apiMocks.publicComputeSampleSizes3,
     apiMocks.publicComputeSampleSizes2,
   ]
   await withMockFetch(expectedCalls, async () => {
@@ -563,7 +541,7 @@ test('Audit plan card interactions', async () => {
     userEvent.type(candidate1VotesInput, '5')
     userEvent.type(totalBallotsCastInput, '20')
     userEvent.click(planAuditButton)
-    await waitForSampleSizeComputation('3 ballots')
+    await screen.findByText('3 ballots')
     expect(mockScrollIntoView).toHaveBeenCalledTimes(1)
 
     // Toggle audit methods ----------
@@ -585,19 +563,19 @@ test('Audit plan card interactions', async () => {
     expect(ballotPollingRadioInput).not.toBeChecked()
     expect(ballotComparisonRadioInput).toBeChecked()
     expect(batchComparisonRadioInput).not.toBeChecked()
-    screen.getByText('2 ballots')
+    await screen.findByText('2 ballots')
 
     userEvent.click(batchComparisonRadioInput)
     expect(ballotPollingRadioInput).not.toBeChecked()
     expect(ballotComparisonRadioInput).not.toBeChecked()
     expect(batchComparisonRadioInput).toBeChecked()
-    screen.getByText('4 batches')
+    await screen.findByText('4 batches')
 
     userEvent.click(ballotPollingRadioInput)
     expect(ballotPollingRadioInput).toBeChecked()
     expect(ballotComparisonRadioInput).not.toBeChecked()
     expect(batchComparisonRadioInput).not.toBeChecked()
-    screen.getByText('3 ballots')
+    await screen.findByText('3 ballots')
 
     // Change risk limit percentage ----------
 
@@ -607,11 +585,13 @@ test('Audit plan card interactions', async () => {
     expect(sliderHandle).toBeInTheDocument()
     expect(sliderHandle).toHaveTextContent('5%')
     fireEvent.keyDown(sliderHandle, { key: 'ArrowRight', keyCode: 39 })
+    fireEvent.keyUp(sliderHandle, { key: 'ArrowRight', keyCode: 39 })
     expect(sliderHandle).toHaveTextContent('6%')
-    await waitForSampleSizeComputation('9 ballots')
+    await screen.findByText('9 ballots')
     fireEvent.keyDown(sliderHandle, { key: 'ArrowLeft', keyCode: 37 })
+    fireEvent.keyUp(sliderHandle, { key: 'ArrowLeft', keyCode: 37 })
     expect(sliderHandle).toHaveTextContent('5%')
-    await waitForSampleSizeComputation('3 ballots')
+    await screen.findByText('3 ballots')
 
     // Edit election results ----------
 
@@ -672,7 +652,7 @@ test('Audit plan card interactions', async () => {
     expect(batchComparisonRadioInput).toBeEnabled()
     sliderHandle = document.querySelector('.bp3-slider-handle')! as HTMLElement
     expect(!sliderHandle.classList.contains('.bp3-disabled'))
-    await waitForSampleSizeComputation('6 ballots')
+    await screen.findByText('6 ballots')
   })
 })
 
@@ -696,6 +676,6 @@ test('Sample size computation error handling', async () => {
     userEvent.type(candidate1VotesInput, '5')
     userEvent.type(totalBallotsCastInput, '20')
     userEvent.click(planAuditButton)
-    await waitForSampleSizeComputation('Error computing sample size')
+    await screen.findByText('Error computing sample size')
   })
 })
