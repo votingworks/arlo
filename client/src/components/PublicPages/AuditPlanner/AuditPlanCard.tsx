@@ -147,6 +147,7 @@ const AuditPlanCard: React.FC<IProps> = ({ disabled, electionResults }) => {
               debouncedRiskLimitPercentage.toString()
             ]
           }
+          totalBallotsCast={electionResults.totalBallotsCast}
         />
       </SampleSizeSection>
     </Container>

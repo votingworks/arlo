@@ -112,6 +112,31 @@ async function checkThatElectionResultsCardIsInInitialState() {
   }
 }
 
+function moveSlider(
+  sliderHandle: HTMLElement,
+  direction: 'left' | 'right',
+  positions = 1
+) {
+  for (let i = 0; i < positions; i += 1) {
+    switch (direction) {
+      case 'left': {
+        fireEvent.keyDown(sliderHandle, { key: 'ArrowLeft', keyCode: 37 })
+        fireEvent.keyUp(sliderHandle, { key: 'ArrowLeft', keyCode: 37 })
+        break
+      }
+      case 'right': {
+        fireEvent.keyDown(sliderHandle, { key: 'ArrowRight', keyCode: 39 })
+        fireEvent.keyUp(sliderHandle, { key: 'ArrowRight', keyCode: 39 })
+        break
+      }
+      default: {
+        const exhaustiveCheck: never = direction
+        throw new Error(`Unhandled direction: ${exhaustiveCheck}`)
+      }
+    }
+  }
+}
+
 const body1 = JSON.stringify({
   electionResults: {
     candidates: [
@@ -143,9 +168,9 @@ const apiMocks = {
       headers: { 'Content-Type': 'application/json' },
     },
     response: {
-      ballotComparison: { '5': 1000, '6': 1006 },
-      ballotPolling: { '5': 1001, '6': 1007 },
-      batchComparison: { '5': 1002, '6': 1008 },
+      ballotComparison: { '0': 2000, '5': 1000, '6': 1006 },
+      ballotPolling: { '0': 2000, '5': 1001, '6': 1007 },
+      batchComparison: { '0': 2000, '5': 1002, '6': 1008 },
     },
   },
   publicComputeSampleSizes2: {
@@ -573,12 +598,13 @@ test('Audit plan card interactions', async () => {
     )! as HTMLElement
     expect(sliderHandle).toBeInTheDocument()
     expect(sliderHandle).toHaveTextContent('5%')
-    fireEvent.keyDown(sliderHandle, { key: 'ArrowRight', keyCode: 39 })
-    fireEvent.keyUp(sliderHandle, { key: 'ArrowRight', keyCode: 39 })
+    moveSlider(sliderHandle, 'right', 1)
     expect(sliderHandle).toHaveTextContent('6%')
     await screen.findByText('1,007 ballots')
-    fireEvent.keyDown(sliderHandle, { key: 'ArrowLeft', keyCode: 37 })
-    fireEvent.keyUp(sliderHandle, { key: 'ArrowLeft', keyCode: 37 })
+    moveSlider(sliderHandle, 'left', 6)
+    expect(sliderHandle).toHaveTextContent('0%')
+    await screen.findByText('Full hand tally')
+    moveSlider(sliderHandle, 'right', 5)
     expect(sliderHandle).toHaveTextContent('5%')
     await screen.findByText('1,001 ballots')
 
