@@ -115,22 +115,22 @@ async function checkThatElectionResultsCardIsInInitialState() {
 const body1 = JSON.stringify({
   electionResults: {
     candidates: [
-      { name: 'Helga Hippo', votes: 10 },
-      { name: 'Bobby Bear', votes: 5 },
+      { name: 'Helga Hippo', votes: 1000 },
+      { name: 'Bobby Bear', votes: 900 },
     ],
     numWinners: 1,
-    totalBallotsCast: 20,
+    totalBallotsCast: 2000,
   },
 })
 
 const body2 = JSON.stringify({
   electionResults: {
     candidates: [
-      { name: 'Helga Hippopotamus', votes: 10 },
-      { name: 'Bobby Bear', votes: 7 },
+      { name: 'Helga Hippopotamus', votes: 1000 },
+      { name: 'Bobby Bear', votes: 901 },
     ],
     numWinners: 1,
-    totalBallotsCast: 22,
+    totalBallotsCast: 2001,
   },
 })
 
@@ -143,9 +143,9 @@ const apiMocks = {
       headers: { 'Content-Type': 'application/json' },
     },
     response: {
-      ballotComparison: { '5': 2, '6': 8 },
-      ballotPolling: { '5': 3, '6': 9 },
-      batchComparison: { '5': 4, '6': 10 },
+      ballotComparison: { '5': 1000, '6': 1006 },
+      ballotPolling: { '5': 1001, '6': 1007 },
+      batchComparison: { '5': 1002, '6': 1008 },
     },
   },
   publicComputeSampleSizes2: {
@@ -156,9 +156,9 @@ const apiMocks = {
       headers: { 'Content-Type': 'application/json' },
     },
     response: {
-      ballotComparison: { '5': 5 },
-      ballotPolling: { '5': 6 },
-      batchComparison: { '5': 7 },
+      ballotComparison: { '5': 1003 },
+      ballotPolling: { '5': 1004 },
+      batchComparison: { '5': 1005 },
     },
   },
   publicComputeSampleSizesError: serverError('publicComputeSampleSizes', {
@@ -211,43 +211,43 @@ test('Entering election results - validation and submit', async () => {
       displayed: ['At least 1 candidate must have greater than 0 votes'],
       notDisplayed: ['Required'],
     })
-    userEvent.type(candidate0VotesInput, '{backspace}-1')
+    userEvent.clear(candidate0VotesInput)
+    userEvent.type(candidate0VotesInput, '-1')
     await areExpectedErrorMessagesDisplayed({
       displayed: ['Cannot be less than 0'],
       notDisplayed: ['At least 1 candidate must have greater than 0 votes'],
     })
-    userEvent.type(candidate0VotesInput, '{backspace}{backspace}10.2')
+    userEvent.clear(candidate0VotesInput)
+    userEvent.type(candidate0VotesInput, '1000.2')
     await areExpectedErrorMessagesDisplayed({
       displayed: ['Can only contain numeric characters'],
       notDisplayed: ['Cannot be less than 0'],
     })
-    userEvent.type(
-      candidate0VotesInput,
-      '{backspace}{backspace}{backspace}{backspace}10'
-    )
+    userEvent.clear(candidate0VotesInput)
+    userEvent.type(candidate0VotesInput, '1000')
     await areExpectedErrorMessagesDisplayed({
       displayed: [],
       notDisplayed: ['Can only contain numeric characters'],
     })
-    userEvent.type(candidate1VotesInput, '{backspace}5')
+    userEvent.clear(candidate1VotesInput)
+    userEvent.type(candidate1VotesInput, '900')
     userEvent.click(planAuditButton)
     await areExpectedErrorMessagesDisplayed({
       displayed: ['Cannot be less than sum of candidate votes'],
     })
-    userEvent.type(totalBallotsCastInput, '{backspace}20.2')
+    userEvent.clear(totalBallotsCastInput)
+    userEvent.type(totalBallotsCastInput, '2000.2')
     await areExpectedErrorMessagesDisplayed({
       displayed: ['Can only contain numeric characters'],
       notDisplayed: ['Cannot be less than sum of candidate votes'],
     })
-    userEvent.type(
-      totalBallotsCastInput,
-      '{backspace}{backspace}{backspace}{backspace}20'
-    )
+    userEvent.clear(totalBallotsCastInput)
+    userEvent.type(totalBallotsCastInput, '2000')
     await areExpectedErrorMessagesDisplayed({
       displayed: [],
       notDisplayed: ['Can only contain numeric characters'],
     })
-    userEvent.type(numberOfWinnersInput, '{backspace}')
+    userEvent.clear(numberOfWinnersInput)
     await areExpectedErrorMessagesDisplayed({
       displayed: ['Required'],
     })
@@ -256,12 +256,14 @@ test('Entering election results - validation and submit', async () => {
       displayed: ['Cannot be greater than number of candidates'],
       notDisplayed: ['Required'],
     })
-    userEvent.type(numberOfWinnersInput, '{backspace}1.2')
+    userEvent.clear(numberOfWinnersInput)
+    userEvent.type(numberOfWinnersInput, '1.2')
     await areExpectedErrorMessagesDisplayed({
       displayed: ['Can only contain numeric characters'],
       notDisplayed: ['Cannot be greater than number of candidates'],
     })
-    userEvent.type(numberOfWinnersInput, '{backspace}{backspace}{backspace}1')
+    userEvent.clear(numberOfWinnersInput)
+    userEvent.type(numberOfWinnersInput, '1')
     await areExpectedErrorMessagesDisplayed({
       displayed: [],
       notDisplayed: ['Can only contain numeric characters'],
@@ -276,26 +278,19 @@ test('Entering election results - validation and submit', async () => {
     )
     const electionResultsCard = screen.getByTestId('electionResultsCard')
     const textInputs = within(electionResultsCard).queryAllByRole('textbox')
-    expect(textInputs).toHaveLength(2)
-    expect(textInputs[0]).toHaveValue('Helga Hippo') // Candidate 0 name
-    expect(textInputs[1]).toHaveValue('Bobby Bear') // Candidate 1 name
+    expect(textInputs).toHaveLength(6)
     for (const textInput of textInputs) {
       expect(textInput).toHaveAttribute('readonly')
     }
-    const numericInputs = within(electionResultsCard).queryAllByRole(
-      'spinbutton'
-    )
-    expect(numericInputs).toHaveLength(4)
-    expect(numericInputs[0]).toHaveValue(10) // Candidate 0 votes
-    expect(numericInputs[1]).toHaveValue(5) // Candidate 1 votes
-    expect(numericInputs[2]).toHaveValue(1) // Number of winners
-    expect(numericInputs[3]).toHaveValue(20) // Total ballots cast
-    for (const numericInput of numericInputs) {
-      expect(numericInput).toHaveAttribute('readonly')
-    }
+    expect(textInputs[0]).toHaveValue('Helga Hippo') // Candidate 0 name
+    expect(textInputs[1]).toHaveValue('1,000') // Candidate 0 votes
+    expect(textInputs[2]).toHaveValue('Bobby Bear') // Candidate 1 name
+    expect(textInputs[3]).toHaveValue('900') // Candidate 1 votes
+    expect(textInputs[4]).toHaveValue('1') // Number of winners
+    expect(textInputs[5]).toHaveValue('2,000') // Total ballots cast
     screen.getByRole('button', { name: 'Clear' })
     screen.getByRole('button', { name: 'Edit' })
-    await screen.findByText('3 ballots')
+    await screen.findByText('1,001 ballots')
   })
 })
 
@@ -361,12 +356,12 @@ test('Entering election results - clearing', async () => {
 
     // Enter election results but don't submit
     userEvent.type(candidate0NameInput, 'Helga Hippo')
-    userEvent.type(candidate0VotesInput, '10')
+    userEvent.type(candidate0VotesInput, '1000')
     userEvent.type(candidate1NameInput, 'Bobby Bear')
-    userEvent.type(candidate1VotesInput, '5')
+    userEvent.type(candidate1VotesInput, '900')
     userEvent.click(addCandidateButton)
     userEvent.type(numberOfWinnersInput, '2')
-    userEvent.type(totalBallotsCastInput, '20')
+    userEvent.type(totalBallotsCastInput, '2000')
 
     // Clearing before submission
     userEvent.click(clearButton)
@@ -394,12 +389,12 @@ test('Entering election results - clearing', async () => {
 
     // Enter election results and submit
     userEvent.type(candidate0NameInput, 'Helga Hippo')
-    userEvent.type(candidate0VotesInput, '10')
+    userEvent.type(candidate0VotesInput, '1000')
     userEvent.type(candidate1NameInput, 'Bobby Bear')
-    userEvent.type(candidate1VotesInput, '5')
-    userEvent.type(totalBallotsCastInput, '20')
+    userEvent.type(candidate1VotesInput, '900')
+    userEvent.type(totalBallotsCastInput, '2000')
     userEvent.click(planAuditButton)
-    await screen.findByText('3 ballots')
+    await screen.findByText('1,001 ballots')
 
     // Clearing after submission
     userEvent.click(clearButton)
@@ -445,10 +440,10 @@ test('Entering election results - editing', async () => {
     } = elements
 
     userEvent.type(candidate0NameInput, 'Helga Hippo')
-    userEvent.type(candidate0VotesInput, '10')
+    userEvent.type(candidate0VotesInput, '1000')
     userEvent.type(candidate1NameInput, 'Bobby Bear')
-    userEvent.type(candidate1VotesInput, '5')
-    userEvent.type(totalBallotsCastInput, '20')
+    userEvent.type(candidate1VotesInput, '900')
+    userEvent.type(totalBallotsCastInput, '2000')
     userEvent.click(planAuditButton)
     await waitFor(() =>
       expect(
@@ -457,22 +452,17 @@ test('Entering election results - editing', async () => {
     )
     let electionResultsCard = screen.getByTestId('electionResultsCard')
     let textInputs = within(electionResultsCard).queryAllByRole('textbox')
-    expect(textInputs).toHaveLength(2)
-    expect(textInputs[0]).toHaveValue('Helga Hippo') // Candidate 0 name
-    expect(textInputs[1]).toHaveValue('Bobby Bear') // Candidate 1 name
+    expect(textInputs).toHaveLength(6)
     for (const textInput of textInputs) {
       expect(textInput).toHaveAttribute('readonly')
     }
-    let numericInputs = within(electionResultsCard).queryAllByRole('spinbutton')
-    expect(numericInputs).toHaveLength(4)
-    expect(numericInputs[0]).toHaveValue(10) // Candidate 0 votes
-    expect(numericInputs[1]).toHaveValue(5) // Candidate 1 votes
-    expect(numericInputs[2]).toHaveValue(1) // Number of winners
-    expect(numericInputs[3]).toHaveValue(20) // Total ballots cast
-    for (const numericInput of numericInputs) {
-      expect(numericInput).toHaveAttribute('readonly')
-    }
-    await screen.findByText('3 ballots')
+    expect(textInputs[0]).toHaveValue('Helga Hippo') // Candidate 0 name
+    expect(textInputs[1]).toHaveValue('1,000') // Candidate 0 votes
+    expect(textInputs[2]).toHaveValue('Bobby Bear') // Candidate 1 name
+    expect(textInputs[3]).toHaveValue('900') // Candidate 1 votes
+    expect(textInputs[4]).toHaveValue('1') // Number of winners
+    expect(textInputs[5]).toHaveValue('2,000') // Total ballots cast
+    await screen.findByText('1,001 ballots')
 
     const editButton = screen.getByRole('button', { name: 'Edit' })
     userEvent.click(editButton)
@@ -489,8 +479,10 @@ test('Entering election results - editing', async () => {
       name: 'Total Ballots Cast',
     })
     userEvent.type(candidate0NameInput, 'potamus')
-    userEvent.type(candidate1VotesInput, '{backspace}7')
-    userEvent.type(totalBallotsCastInput, '{backspace}2')
+    userEvent.clear(candidate1VotesInput)
+    userEvent.type(candidate1VotesInput, '901')
+    userEvent.clear(totalBallotsCastInput)
+    userEvent.type(totalBallotsCastInput, '2001')
     userEvent.click(planAuditButton)
     await waitFor(() =>
       expect(
@@ -499,22 +491,17 @@ test('Entering election results - editing', async () => {
     )
     electionResultsCard = screen.getByTestId('electionResultsCard')
     textInputs = within(electionResultsCard).queryAllByRole('textbox')
-    expect(textInputs).toHaveLength(2)
-    expect(textInputs[0]).toHaveValue('Helga Hippopotamus') // Candidate 0 name
-    expect(textInputs[1]).toHaveValue('Bobby Bear') // Candidate 1 name
+    expect(textInputs).toHaveLength(6)
     for (const textInput of textInputs) {
       expect(textInput).toHaveAttribute('readonly')
     }
-    numericInputs = within(electionResultsCard).queryAllByRole('spinbutton')
-    expect(numericInputs).toHaveLength(4)
-    expect(numericInputs[0]).toHaveValue(10) // Candidate 0 votes
-    expect(numericInputs[1]).toHaveValue(7) // Candidate 1 votes
-    expect(numericInputs[2]).toHaveValue(1) // Number of winners
-    expect(numericInputs[3]).toHaveValue(22) // Total ballots cast
-    for (const numericInput of numericInputs) {
-      expect(numericInput).toHaveAttribute('readonly')
-    }
-    await screen.findByText('6 ballots')
+    expect(textInputs[0]).toHaveValue('Helga Hippopotamus') // Candidate 0 name
+    expect(textInputs[1]).toHaveValue('1,000') // Candidate 0 votes
+    expect(textInputs[2]).toHaveValue('Bobby Bear') // Candidate 1 name
+    expect(textInputs[3]).toHaveValue('901') // Candidate 1 votes
+    expect(textInputs[4]).toHaveValue('1') // Number of winners
+    expect(textInputs[5]).toHaveValue('2,001') // Total ballots cast
+    await screen.findByText('1,004 ballots')
   })
 })
 
@@ -536,12 +523,12 @@ test('Audit plan card interactions', async () => {
     } = elements
 
     userEvent.type(candidate0NameInput, 'Helga Hippo')
-    userEvent.type(candidate0VotesInput, '10')
+    userEvent.type(candidate0VotesInput, '1000')
     userEvent.type(candidate1NameInput, 'Bobby Bear')
-    userEvent.type(candidate1VotesInput, '5')
-    userEvent.type(totalBallotsCastInput, '20')
+    userEvent.type(candidate1VotesInput, '900')
+    userEvent.type(totalBallotsCastInput, '2000')
     userEvent.click(planAuditButton)
-    await screen.findByText('3 ballots')
+    await screen.findByText('1,001 ballots')
     expect(mockScrollIntoView).toHaveBeenCalledTimes(1)
 
     // Toggle audit methods ----------
@@ -563,19 +550,19 @@ test('Audit plan card interactions', async () => {
     expect(ballotPollingRadioInput).not.toBeChecked()
     expect(ballotComparisonRadioInput).toBeChecked()
     expect(batchComparisonRadioInput).not.toBeChecked()
-    await screen.findByText('2 ballots')
+    await screen.findByText('1,000 ballots')
 
     userEvent.click(batchComparisonRadioInput)
     expect(ballotPollingRadioInput).not.toBeChecked()
     expect(ballotComparisonRadioInput).not.toBeChecked()
     expect(batchComparisonRadioInput).toBeChecked()
-    await screen.findByText('4 batches')
+    await screen.findByText('1,002 batches')
 
     userEvent.click(ballotPollingRadioInput)
     expect(ballotPollingRadioInput).toBeChecked()
     expect(ballotComparisonRadioInput).not.toBeChecked()
     expect(batchComparisonRadioInput).not.toBeChecked()
-    await screen.findByText('3 ballots')
+    await screen.findByText('1,001 ballots')
 
     // Change risk limit percentage ----------
 
@@ -587,11 +574,11 @@ test('Audit plan card interactions', async () => {
     fireEvent.keyDown(sliderHandle, { key: 'ArrowRight', keyCode: 39 })
     fireEvent.keyUp(sliderHandle, { key: 'ArrowRight', keyCode: 39 })
     expect(sliderHandle).toHaveTextContent('6%')
-    await screen.findByText('9 ballots')
+    await screen.findByText('1,007 ballots')
     fireEvent.keyDown(sliderHandle, { key: 'ArrowLeft', keyCode: 37 })
     fireEvent.keyUp(sliderHandle, { key: 'ArrowLeft', keyCode: 37 })
     expect(sliderHandle).toHaveTextContent('5%')
-    await screen.findByText('3 ballots')
+    await screen.findByText('1,001 ballots')
 
     // Edit election results ----------
 
@@ -628,8 +615,10 @@ test('Audit plan card interactions', async () => {
       name: 'Total Ballots Cast',
     })
     userEvent.type(candidate0NameInput, 'potamus')
-    userEvent.type(candidate1VotesInput, '{backspace}7')
-    userEvent.type(totalBallotsCastInput, '{backspace}2')
+    userEvent.clear(candidate1VotesInput)
+    userEvent.type(candidate1VotesInput, '901')
+    userEvent.clear(totalBallotsCastInput)
+    userEvent.type(totalBallotsCastInput, '2001')
     userEvent.click(planAuditButton)
     await waitFor(() =>
       expect(
@@ -652,7 +641,7 @@ test('Audit plan card interactions', async () => {
     expect(batchComparisonRadioInput).toBeEnabled()
     sliderHandle = document.querySelector('.bp3-slider-handle')! as HTMLElement
     expect(!sliderHandle.classList.contains('.bp3-disabled'))
-    await screen.findByText('6 ballots')
+    await screen.findByText('1,004 ballots')
   })
 })
 
@@ -671,10 +660,10 @@ test('Sample size computation error handling', async () => {
     } = await checkThatElectionResultsCardIsInInitialState()
 
     userEvent.type(candidate0NameInput, 'Helga Hippo')
-    userEvent.type(candidate0VotesInput, '10')
+    userEvent.type(candidate0VotesInput, '1000')
     userEvent.type(candidate1NameInput, 'Bobby Bear')
-    userEvent.type(candidate1VotesInput, '5')
-    userEvent.type(totalBallotsCastInput, '20')
+    userEvent.type(candidate1VotesInput, '900')
+    userEvent.type(totalBallotsCastInput, '2000')
     userEvent.click(planAuditButton)
     await screen.findByText('Error computing sample size')
   })

@@ -2,6 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { Icon, Spinner } from '@blueprintjs/core'
 
+import Count from '../../Atoms/Count'
 import { AuditType } from '../../useAuditSettings'
 
 const CONTAINER_HEIGHT = 36
@@ -38,7 +39,7 @@ const SampleSize: React.FC<IProps> = ({
   sampleSize,
 }) => {
   let content: JSX.Element
-  if (disabled || sampleSize === undefined) {
+  if (disabled) {
     content = <span>&mdash;</span>
   } else if (isComputing) {
     content = <Spinner size={CONTAINER_HEIGHT} />
@@ -49,10 +50,12 @@ const SampleSize: React.FC<IProps> = ({
         <span>Error computing sample size</span>
       </Error>
     )
+  } else if (sampleSize === undefined) {
+    content = <span>&mdash;</span>
   } else if (auditType === 'BATCH_COMPARISON') {
-    content = <span>{sampleSize} batches</span>
+    content = <Count count={sampleSize} plural="batches" singular="batch" />
   } else {
-    content = <span>{sampleSize} ballots</span>
+    content = <Count count={sampleSize} plural="ballots" singular="ballot" />
   }
   return <Container>{content}</Container>
 }
