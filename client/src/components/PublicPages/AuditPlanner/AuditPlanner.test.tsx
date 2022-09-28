@@ -225,9 +225,20 @@ test('Entering election results - validation and submit', async () => {
       displayed: ['Required', 'Required', 'Required', 'Required', 'Required'],
     })
     userEvent.type(candidate0NameInput, 'Helga Hippo')
+    userEvent.type(candidate1NameInput, 'Helga Hippo')
+    await areExpectedErrorMessagesDisplayed({
+      displayed: [
+        'Candidates must have unique names',
+        'Required',
+        'Required',
+        'Required',
+      ],
+    })
+    userEvent.clear(candidate1NameInput)
     userEvent.type(candidate1NameInput, 'Bobby Bear')
     await areExpectedErrorMessagesDisplayed({
       displayed: ['Required', 'Required', 'Required'],
+      notDisplayed: ['Candidates must have unique names'],
     })
     userEvent.type(candidate0VotesInput, '0')
     userEvent.type(candidate1VotesInput, '0')

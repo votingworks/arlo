@@ -230,6 +230,16 @@ const ElectionResultsCard: React.FC<IProps> = ({
     name: 'candidates',
   })
 
+  const validateAllCandidateNameFields = () => {
+    if (isSubmitted) {
+      trigger(
+        [...Array(candidateFields.length).keys()].map(
+          i => `candidates[${i}].name`
+        )
+      )
+    }
+  }
+
   const validateAllCandidateVotesFields = () => {
     if (isSubmitted) {
       trigger(
@@ -273,10 +283,29 @@ const ElectionResultsCard: React.FC<IProps> = ({
                         errors.candidates?.[i]?.name && Classes.INTENT_DANGER
                       )}
                       name={`candidates[${i}].name`}
+                      onChange={validateAllCandidateNameFields}
                       placeholder="Candidate name"
                       readOnly={!editable}
                       ref={register({
                         required: 'Required',
+                        validate: () => {
+                          const { candidates } = getValues()
+                          const allCandidatesHaveNames = candidates.every(
+                            candidate => candidate.name
+                          )
+                          const candidateNames = candidates.map(
+                            candidate => candidate.name
+                          )
+                          if (
+                            // No need to display this message for all candidate name inputs
+                            i === 0 &&
+                            allCandidatesHaveNames &&
+                            new Set(candidateNames).size < candidates.length
+                          ) {
+                            return 'Candidates must have unique names'
+                          }
+                          return true
+                        },
                       })}
                     />
                   </FormGroup>

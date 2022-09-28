@@ -174,6 +174,20 @@ def test_public_compute_sample_sizes_input_validation(client: FlaskClient):
                 "electionResults": {
                     **valid_input["electionResults"],
                     "candidates": [
+                        {"name": "Helga Hippo", "votes": 1000},
+                        {"name": "Helga Hippo", "votes": 900},
+                    ],
+                },
+            },
+            "expected_status_code": 409,
+            "expected_error_message": "Candidates must have unique names",
+        },
+        {
+            "body": {
+                **valid_input,
+                "electionResults": {
+                    **valid_input["electionResults"],
+                    "candidates": [
                         {"name": "Helga Hippo", "votes": 0},
                         {"name": "Bobby Bear", "votes": 0},
                     ],

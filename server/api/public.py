@@ -76,6 +76,9 @@ def parse_compute_sample_sizes_input(
     num_winners = election_results["numWinners"]
     total_ballots_cast = election_results["totalBallotsCast"]
 
+    if len(set(candidate["name"] for candidate in candidates)) < len(candidates):
+        raise Conflict("Candidates must have unique names")
+
     if all(candidate["votes"] == 0 for candidate in candidates):
         raise Conflict("At least 1 candidate must have greater than 0 votes")
 
@@ -85,13 +88,13 @@ def parse_compute_sample_sizes_input(
     contest = Contest(
         choices=[
             ContestChoice(
-                id=f"candidate-{i}",
+                id=candidate["name"],
                 num_votes=candidate["votes"]
                 + 0.01  # Safeguard against math errors involving 0s
                 if candidate["votes"] == 0
                 else candidate["votes"],
             )
-            for i, candidate in enumerate(candidates)
+            for candidate in candidates
         ],
         num_winners=num_winners,
         total_ballots_cast=total_ballots_cast,
