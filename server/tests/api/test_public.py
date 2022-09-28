@@ -190,17 +190,6 @@ def test_public_compute_sample_sizes_input_validation(client: FlaskClient):
             "expected_status_code": 409,
             "expected_error_message": "Number of winners must be less than number of candidates",
         },
-        {
-            "body": {
-                **valid_input,
-                "electionResults": {
-                    **valid_input["electionResults"],
-                    "totalBallotsCast": 1899,
-                },
-            },
-            "expected_status_code": 409,
-            "expected_error_message": "Total ballots cast cannot be less than sum of candidate votes",
-        },
     ]
     for test_case in test_cases:
         rv = client.post(

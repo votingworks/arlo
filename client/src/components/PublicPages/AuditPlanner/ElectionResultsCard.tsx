@@ -398,21 +398,12 @@ const ElectionResultsCard: React.FC<IProps> = ({
                   placeholder="0"
                   readOnly={!editable}
                   ref={register({
+                    min: {
+                      message: 'Cannot be less than 1',
+                      value: 1,
+                    },
                     pattern: numericValidationRule,
                     required: 'Required',
-                    validate: value => {
-                      if (
-                        value <
-                        sum(
-                          getValues().candidates.map(
-                            candidate => candidate.votes || 0
-                          )
-                        )
-                      ) {
-                        return 'Cannot be less than sum of candidate votes'
-                      }
-                      return true
-                    },
                     valueAsNumber: true,
                   })}
                   value={getValues().totalBallotsCast || 0}

@@ -206,7 +206,7 @@ test('Entering election results - validation and submit', async () => {
     })
     userEvent.type(candidate0VotesInput, '0')
     userEvent.type(candidate1VotesInput, '0')
-    userEvent.type(totalBallotsCastInput, '0')
+    userEvent.type(totalBallotsCastInput, '1')
     await areExpectedErrorMessagesDisplayed({
       displayed: ['At least 1 candidate must have greater than 0 votes'],
       notDisplayed: ['Required'],
@@ -231,15 +231,17 @@ test('Entering election results - validation and submit', async () => {
     })
     userEvent.clear(candidate1VotesInput)
     userEvent.type(candidate1VotesInput, '900')
+    userEvent.clear(totalBallotsCastInput)
+    userEvent.type(totalBallotsCastInput, '0')
     userEvent.click(planAuditButton)
     await areExpectedErrorMessagesDisplayed({
-      displayed: ['Cannot be less than sum of candidate votes'],
+      displayed: ['Cannot be less than 1'],
     })
     userEvent.clear(totalBallotsCastInput)
     userEvent.type(totalBallotsCastInput, '2000.2')
     await areExpectedErrorMessagesDisplayed({
       displayed: ['Can only contain numeric characters'],
-      notDisplayed: ['Cannot be less than sum of candidate votes'],
+      notDisplayed: ['Cannot be less than 1'],
     })
     userEvent.clear(totalBallotsCastInput)
     userEvent.type(totalBallotsCastInput, '2000')

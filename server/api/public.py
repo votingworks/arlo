@@ -82,10 +82,6 @@ def parse_compute_sample_sizes_input(
     if num_winners >= len(candidates):
         raise Conflict("Number of winners must be less than number of candidates")
 
-    candidate_votes_sum = sum(candidate["votes"] for candidate in candidates)
-    if total_ballots_cast < candidate_votes_sum:
-        raise Conflict("Total ballots cast cannot be less than sum of candidate votes")
-
     contest = Contest(
         choices=[
             ContestChoice(
