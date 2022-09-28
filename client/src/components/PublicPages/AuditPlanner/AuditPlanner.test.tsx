@@ -251,16 +251,16 @@ test('Entering election results - validation and submit', async () => {
     await areExpectedErrorMessagesDisplayed({
       displayed: ['Required'],
     })
-    userEvent.type(numberOfWinnersInput, '3')
+    userEvent.type(numberOfWinnersInput, '2')
     await areExpectedErrorMessagesDisplayed({
-      displayed: ['Cannot be greater than number of candidates'],
+      displayed: ['Must be less than number of candidates'],
       notDisplayed: ['Required'],
     })
     userEvent.clear(numberOfWinnersInput)
     userEvent.type(numberOfWinnersInput, '1.2')
     await areExpectedErrorMessagesDisplayed({
       displayed: ['Can only contain numeric characters'],
-      notDisplayed: ['Cannot be greater than number of candidates'],
+      notDisplayed: ['Must be less than number of candidates'],
     })
     userEvent.clear(numberOfWinnersInput)
     userEvent.type(numberOfWinnersInput, '1')

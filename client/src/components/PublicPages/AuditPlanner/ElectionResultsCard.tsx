@@ -372,8 +372,8 @@ const ElectionResultsCard: React.FC<IProps> = ({
                     pattern: numericValidationRule,
                     required: 'Required',
                     validate: value => {
-                      if (value > getValues().candidates.length) {
-                        return 'Cannot be greater than number of candidates'
+                      if (value >= getValues().candidates.length) {
+                        return 'Must be less than number of candidates'
                       }
                       return true
                     },
