@@ -1,10 +1,22 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
-import { H1 } from '@blueprintjs/core'
+import { Colors, H1 } from '@blueprintjs/core'
 
+import AuditPlanCard from './AuditPlanCard'
 import ElectionResultsCard from './ElectionResultsCard'
-import { IElectionResultsFormState } from './electionResults'
+import {
+  assertIsElectionResults,
+  IElectionResults,
+  IElectionResultsFormState,
+} from './electionResults'
 import { Inner } from '../../Atoms/Wrapper'
+
+const Container = styled(Inner)`
+  // Undo the override in App.css and restore to Blueprint's original heading color
+  .bp3-heading {
+    color: ${Colors.DARK_GRAY1};
+  }
+`
 
 const PageHeading = styled(H1)`
   margin-bottom: 24px;
@@ -12,25 +24,44 @@ const PageHeading = styled(H1)`
 `
 
 const AuditPlanner: React.FC = () => {
-  const [electionResultsEditable, setElectionResultsEditable] = useState(true)
+  const [savedElectionResults, setSavedElectionResults] = useState<
+    IElectionResults
+  >()
+  const [areElectionResultsEditable, setAreElectionResultsEditable] = useState(
+    true
+  )
 
-  const planAudit = (_electionResults: IElectionResultsFormState) => {
-    setElectionResultsEditable(false)
+  const planAudit = (electionResultsFormState: IElectionResultsFormState) => {
+    assertIsElectionResults(electionResultsFormState)
+    setSavedElectionResults(electionResultsFormState)
+    setAreElectionResultsEditable(false)
   }
 
-  const enableEditing = () => {
-    setElectionResultsEditable(true)
+  const enableElectionResultsEditing = () => {
+    setAreElectionResultsEditable(true)
+  }
+
+  const clearElectionResults = () => {
+    setSavedElectionResults(undefined)
+    setAreElectionResultsEditable(true)
   }
 
   return (
-    <Inner flexDirection="column" withTopPadding>
+    <Container flexDirection="column" withTopPadding>
       <PageHeading>Audit Planner</PageHeading>
       <ElectionResultsCard
-        editable={electionResultsEditable}
-        enableEditing={enableEditing}
+        clearElectionResults={clearElectionResults}
+        editable={areElectionResultsEditable}
+        enableElectionResultsEditing={enableElectionResultsEditing}
         planAudit={planAudit}
       />
-    </Inner>
+      {savedElectionResults && (
+        <AuditPlanCard
+          disabled={areElectionResultsEditable}
+          electionResults={savedElectionResults}
+        />
+      )}
+    </Container>
   )
 }
 
