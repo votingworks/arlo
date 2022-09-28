@@ -830,6 +830,18 @@ def test_multiplicity():
     assert p != 0  # This wasn't a recount
 
 
+def test_supersimple_sample_size_zero_risk_limit():
+    contest_data = {
+        "winner": 15,
+        "loser": 10,
+        "ballots": 30,
+        "numWinners": 1,
+        "votesAllowed": 1,
+    }
+    contest = Contest("Test Contest", contest_data)
+    assert supersimple.get_sample_sizes(0, contest, None) == contest.ballots
+
+
 true_dms = {
     "Contest A": 0.2,
     "Contest B": 0.1,

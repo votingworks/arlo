@@ -189,6 +189,9 @@ def get_sample_sizes(
     alpha = Decimal(risk_limit) / 100
     assert alpha < 1
 
+    if alpha == 0:
+        return contest.ballots
+
     sample_results = sample_results or {}
     obs_o1 = Decimal(sample_results.get("1-over", 0))
     obs_o2 = Decimal(sample_results.get("2-over", 0))

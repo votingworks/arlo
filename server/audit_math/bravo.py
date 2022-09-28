@@ -340,6 +340,15 @@ def get_sample_size(
     alpha = Decimal(risk_limit) / 100
     assert alpha < 1, "The risk-limit must be less than one!"
 
+    if alpha == 0:
+        return {
+            "all-ballots": {
+                "type": "all-ballots",
+                "size": contest.ballots,
+                "prob": None,
+            }
+        }
+
     quants = [0.7, 0.8, 0.9]
 
     samples: Dict = {}

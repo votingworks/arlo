@@ -106,9 +106,6 @@ def parse_compute_sample_sizes_input(
 def compute_ballot_comparison_sample_size(
     contest: sampler_contest.Contest, risk_limit_percentage: int
 ) -> int:
-    if is_full_hand_tally_required(contest, risk_limit_percentage):
-        return contest.ballots
-
     sample_size = supersimple.get_sample_sizes(risk_limit_percentage, contest, None)
     return min(sample_size, contest.ballots)
 
@@ -116,14 +113,11 @@ def compute_ballot_comparison_sample_size(
 def compute_ballot_polling_sample_size(
     contest: sampler_contest.Contest, risk_limit_percentage: int
 ) -> int:
-    if is_full_hand_tally_required(contest, risk_limit_percentage):
-        return contest.ballots
-
     sample_size_options = bravo.get_sample_size(
         risk_limit_percentage, contest, None, None
     )
     sample_size: int = sample_size_options.get(
-        "0.9", sample_size_options.get("asn", {"size": contest.ballots}),
+        "0.9", sample_size_options.get("asn", sample_size_options.get("all-ballots")),
     )["size"]
     return min(sample_size, contest.ballots)
 
@@ -131,7 +125,8 @@ def compute_ballot_polling_sample_size(
 def compute_batch_comparison_sample_size(
     contest: sampler_contest.Contest, risk_limit_percentage: int
 ) -> int:
-    if is_full_hand_tally_required(contest, risk_limit_percentage):
+    is_tie = contest.diluted_margin == 0
+    if is_tie or risk_limit_percentage == 0:
         return contest.ballots
 
     sample_size = int(
@@ -139,12 +134,3 @@ def compute_batch_comparison_sample_size(
         + 2
     )
     return min(sample_size, contest.ballots)
-
-
-def is_full_hand_tally_required(
-    contest: sampler_contest.Contest, risk_limit_percentage: int
-) -> bool:
-    is_tie = contest.diluted_margin == 0
-    # These situations can trigger zero-related errors in audit math, e.g. ZeroDivisionErrors, so
-    # we special case them
-    return is_tie or risk_limit_percentage == 0
