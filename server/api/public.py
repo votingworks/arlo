@@ -107,13 +107,6 @@ def parse_compute_sample_sizes_input(
     return contest_for_sampler
 
 
-def is_full_hand_tally_required(
-    contest: sampler_contest.Contest, risk_limit_percentage: int
-) -> bool:
-    is_tie = contest.diluted_margin == 0
-    return is_tie or risk_limit_percentage == 0
-
-
 def compute_ballot_comparison_sample_size(
     contest: sampler_contest.Contest, risk_limit_percentage: int
 ) -> int:
@@ -150,3 +143,12 @@ def compute_batch_comparison_sample_size(
         + 2
     )
     return min(sample_size, contest.ballots)
+
+
+def is_full_hand_tally_required(
+    contest: sampler_contest.Contest, risk_limit_percentage: int
+) -> bool:
+    is_tie = contest.diluted_margin == 0
+    # These situations can trigger zero-related errors in audit math, e.g. ZeroDivisionErrors, so
+    # we special case them
+    return is_tie or risk_limit_percentage == 0
