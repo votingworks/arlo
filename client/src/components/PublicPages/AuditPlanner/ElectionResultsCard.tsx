@@ -1,5 +1,5 @@
 import classnames from 'classnames'
-import React from 'react'
+import React, { forwardRef, ReactNode } from 'react'
 import styled from 'styled-components'
 import {
   Button,
@@ -112,6 +112,88 @@ const numericValidationRule = {
   value: /^[0-9]+$/,
 }
 
+interface INumericInputProps {
+  'aria-label'?: string
+  hasError?: boolean
+  id?: string
+  idReadOnly?: string
+  name: string
+  onChange?: () => void
+  placeholder?: string
+  readOnly?: boolean
+  value: number
+}
+
+const NumericInput = forwardRef<HTMLInputElement, INumericInputProps>(
+  function NumericInput(props, ref) {
+    const {
+      hasError,
+      id,
+      idReadOnly,
+      name,
+      onChange,
+      placeholder,
+      readOnly,
+      value,
+    } = props
+
+    // Renders two inputs under the hood, one managed by react-hook-form via the passed in ref
+    // and the other for read-only display
+    return (
+      <>
+        <input
+          aria-hidden={readOnly}
+          aria-label={props['aria-label']}
+          className={classnames(
+            Classes.INPUT,
+            hasError && Classes.INTENT_DANGER,
+            readOnly && HIDDEN_INPUT_CLASS_NAME
+          )}
+          id={id}
+          name={name}
+          onChange={onChange}
+          placeholder={placeholder}
+          ref={ref}
+          type="number"
+        />
+        {readOnly && (
+          <input
+            aria-label={props['aria-label']}
+            className={Classes.INPUT}
+            id={idReadOnly}
+            readOnly
+            value={value.toLocaleString()}
+          />
+        )}
+      </>
+    )
+  }
+)
+
+interface INumericInputFormGroupProps
+  extends Omit<INumericInputProps, 'idReadOnly'> {
+  helperText?: ReactNode
+  label?: string
+}
+
+const NumericInputFormGroup = forwardRef<
+  HTMLInputElement,
+  INumericInputFormGroupProps
+>(function NumericInputFormGroup(props, ref) {
+  const { hasError, helperText, id, label, readOnly } = props
+  const idReadOnly = `${id}-readOnly`
+  return (
+    <FormGroup
+      helperText={helperText}
+      intent={hasError ? 'danger' : undefined}
+      label={label}
+      labelFor={readOnly ? idReadOnly : id}
+    >
+      <NumericInput {...props} id={id} idReadOnly={idReadOnly} ref={ref} />
+    </FormGroup>
+  )
+})
+
 interface IProps {
   clearElectionResults: () => void
   editable: boolean
@@ -211,18 +293,13 @@ const ElectionResultsCard: React.FC<IProps> = ({
                     intent={errors.candidates?.[i]?.votes && 'danger'}
                   >
                     <CandidateVotesInputAndRemoveButtonContainer>
-                      <input
-                        aria-hidden={!editable}
+                      <NumericInput
                         aria-label={`Candidate ${i} Votes`}
-                        className={classnames(
-                          Classes.INPUT,
-                          errors.candidates?.[i]?.votes &&
-                            Classes.INTENT_DANGER,
-                          !editable && HIDDEN_INPUT_CLASS_NAME
-                        )}
+                        hasError={Boolean(errors.candidates?.[i]?.votes)}
                         name={`candidates[${i}].votes`}
                         onChange={validateAllCandidateVotesFields}
                         placeholder="0"
+                        readOnly={!editable}
                         ref={register({
                           min: {
                             message: 'Cannot be less than 0',
@@ -244,18 +321,8 @@ const ElectionResultsCard: React.FC<IProps> = ({
                           },
                           valueAsNumber: true,
                         })}
-                        type="number"
+                        value={getValues().candidates?.[i]?.votes || 0}
                       />
-                      {!editable && (
-                        <input
-                          aria-label={`Candidate ${i} Votes`}
-                          className={Classes.INPUT}
-                          readOnly
-                          value={(
-                            getValues().candidates?.[i]?.votes || 0
-                          ).toLocaleString()}
-                        />
-                      )}
                       <Button
                         aria-label={`Remove Candidate ${i}`}
                         disabled={!editable || candidateFields.length === 2}
@@ -283,7 +350,8 @@ const ElectionResultsCard: React.FC<IProps> = ({
             </tr>
             <tr>
               <td>
-                <FormGroup
+                <NumericInputFormGroup
+                  hasError={Boolean(errors.numWinners)}
                   helperText={
                     <ErrorMessage
                       errors={errors}
@@ -291,49 +359,32 @@ const ElectionResultsCard: React.FC<IProps> = ({
                       render={({ message }) => message}
                     />
                   }
-                  intent={errors.numWinners && 'danger'}
+                  id="numWinners"
                   label="Number of Winners"
-                  labelFor={editable ? 'numWinners' : 'numWinnersReadOnly'}
-                >
-                  <input
-                    aria-hidden={!editable}
-                    className={classnames(
-                      Classes.INPUT,
-                      errors.numWinners && Classes.INTENT_DANGER,
-                      !editable && HIDDEN_INPUT_CLASS_NAME
-                    )}
-                    id="numWinners"
-                    name="numWinners"
-                    placeholder="0"
-                    ref={register({
-                      min: {
-                        message: 'Cannot be less than 1',
-                        value: 1,
-                      },
-                      pattern: numericValidationRule,
-                      required: 'Required',
-                      validate: value => {
-                        if (value > getValues().candidates.length) {
-                          return 'Cannot be greater than number of candidates'
-                        }
-                        return true
-                      },
-                      valueAsNumber: true,
-                    })}
-                    type="number"
-                  />
-                  {!editable && (
-                    <input
-                      className={Classes.INPUT}
-                      id="numWinnersReadOnly"
-                      readOnly
-                      value={(getValues().numWinners || 0).toLocaleString()}
-                    />
-                  )}
-                </FormGroup>
+                  name="numWinners"
+                  placeholder="0"
+                  readOnly={!editable}
+                  ref={register({
+                    min: {
+                      message: 'Cannot be less than 1',
+                      value: 1,
+                    },
+                    pattern: numericValidationRule,
+                    required: 'Required',
+                    validate: value => {
+                      if (value > getValues().candidates.length) {
+                        return 'Cannot be greater than number of candidates'
+                      }
+                      return true
+                    },
+                    valueAsNumber: true,
+                  })}
+                  value={getValues().numWinners || 0}
+                />
               </td>
               <td>
-                <FormGroup
+                <NumericInputFormGroup
+                  hasError={Boolean(errors.totalBallotsCast)}
                   helperText={
                     <ErrorMessage
                       errors={errors}
@@ -341,53 +392,31 @@ const ElectionResultsCard: React.FC<IProps> = ({
                       render={({ message }) => message}
                     />
                   }
-                  intent={errors.totalBallotsCast && 'danger'}
+                  id="totalBallotsCast"
                   label="Total Ballots Cast"
-                  labelFor={
-                    editable ? 'totalBallotsCast' : 'totalBallotsCastReadOnly'
-                  }
-                >
-                  <input
-                    aria-hidden={!editable}
-                    className={classnames(
-                      Classes.INPUT,
-                      errors.totalBallotsCast && Classes.INTENT_DANGER,
-                      !editable && HIDDEN_INPUT_CLASS_NAME
-                    )}
-                    id="totalBallotsCast"
-                    name="totalBallotsCast"
-                    placeholder="0"
-                    ref={register({
-                      pattern: numericValidationRule,
-                      required: 'Required',
-                      validate: value => {
-                        if (
-                          value <
-                          sum(
-                            getValues().candidates.map(
-                              candidate => candidate.votes || 0
-                            )
+                  name="totalBallotsCast"
+                  placeholder="0"
+                  readOnly={!editable}
+                  ref={register({
+                    pattern: numericValidationRule,
+                    required: 'Required',
+                    validate: value => {
+                      if (
+                        value <
+                        sum(
+                          getValues().candidates.map(
+                            candidate => candidate.votes || 0
                           )
-                        ) {
-                          return 'Cannot be less than sum of candidate votes'
-                        }
-                        return true
-                      },
-                      valueAsNumber: true,
-                    })}
-                    type="number"
-                  />
-                  {!editable && (
-                    <input
-                      className={Classes.INPUT}
-                      id="totalBallotsCastReadOnly"
-                      readOnly
-                      value={(
-                        getValues().totalBallotsCast || 0
-                      ).toLocaleString()}
-                    />
-                  )}
-                </FormGroup>
+                        )
+                      ) {
+                        return 'Cannot be less than sum of candidate votes'
+                      }
+                      return true
+                    },
+                    valueAsNumber: true,
+                  })}
+                  value={getValues().totalBallotsCast || 0}
+                />
               </td>
             </tr>
           </tbody>
