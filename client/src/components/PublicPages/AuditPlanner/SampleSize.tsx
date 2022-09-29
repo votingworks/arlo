@@ -29,6 +29,7 @@ interface IProps {
   error?: Error
   isComputing?: boolean
   sampleSize?: number
+  totalBallotsCast: number
 }
 
 const SampleSize: React.FC<IProps> = ({
@@ -37,6 +38,7 @@ const SampleSize: React.FC<IProps> = ({
   error,
   isComputing,
   sampleSize,
+  totalBallotsCast,
 }) => {
   let content: JSX.Element
   if (disabled) {
@@ -52,6 +54,8 @@ const SampleSize: React.FC<IProps> = ({
     )
   } else if (sampleSize === undefined) {
     content = <span>&mdash;</span>
+  } else if (sampleSize === totalBallotsCast) {
+    content = <span>Full hand tally</span>
   } else if (auditType === 'BATCH_COMPARISON') {
     content = <Count count={sampleSize} plural="batches" singular="batch" />
   } else {

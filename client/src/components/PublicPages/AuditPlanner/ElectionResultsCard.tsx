@@ -230,6 +230,16 @@ const ElectionResultsCard: React.FC<IProps> = ({
     name: 'candidates',
   })
 
+  const validateAllCandidateNameFields = () => {
+    if (isSubmitted) {
+      trigger(
+        [...Array(candidateFields.length).keys()].map(
+          i => `candidates[${i}].name`
+        )
+      )
+    }
+  }
+
   const validateAllCandidateVotesFields = () => {
     if (isSubmitted) {
       trigger(
@@ -273,10 +283,29 @@ const ElectionResultsCard: React.FC<IProps> = ({
                         errors.candidates?.[i]?.name && Classes.INTENT_DANGER
                       )}
                       name={`candidates[${i}].name`}
+                      onChange={validateAllCandidateNameFields}
                       placeholder="Candidate name"
                       readOnly={!editable}
                       ref={register({
                         required: 'Required',
+                        validate: () => {
+                          const { candidates } = getValues()
+                          const allCandidatesHaveNames = candidates.every(
+                            candidate => candidate.name
+                          )
+                          const candidateNames = candidates.map(
+                            candidate => candidate.name
+                          )
+                          if (
+                            // No need to display this message for all candidate name inputs
+                            i === 0 &&
+                            allCandidatesHaveNames &&
+                            new Set(candidateNames).size < candidates.length
+                          ) {
+                            return 'Candidates must have unique names'
+                          }
+                          return true
+                        },
                       })}
                     />
                   </FormGroup>
@@ -372,8 +401,8 @@ const ElectionResultsCard: React.FC<IProps> = ({
                     pattern: numericValidationRule,
                     required: 'Required',
                     validate: value => {
-                      if (value > getValues().candidates.length) {
-                        return 'Cannot be greater than number of candidates'
+                      if (value >= getValues().candidates.length) {
+                        return 'Must be less than number of candidates'
                       }
                       return true
                     },
@@ -398,21 +427,12 @@ const ElectionResultsCard: React.FC<IProps> = ({
                   placeholder="0"
                   readOnly={!editable}
                   ref={register({
+                    min: {
+                      message: 'Cannot be less than 1',
+                      value: 1,
+                    },
                     pattern: numericValidationRule,
                     required: 'Required',
-                    validate: value => {
-                      if (
-                        value <
-                        sum(
-                          getValues().candidates.map(
-                            candidate => candidate.votes || 0
-                          )
-                        )
-                      ) {
-                        return 'Cannot be less than sum of candidate votes'
-                      }
-                      return true
-                    },
                     valueAsNumber: true,
                   })}
                   value={getValues().totalBallotsCast || 0}

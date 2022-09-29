@@ -577,6 +577,20 @@ def test_bravo_no_90_percent_prob_sample_size():
     assert "0.9" not in sample_sizes
 
 
+def test_bravo_sample_size_zero_risk_limit():
+    contest_data = {
+        "winner": 15,
+        "loser": 10,
+        "ballots": 30,
+        "numWinners": 1,
+        "votesAllowed": 1,
+    }
+    contest = Contest("Test Contest", contest_data)
+    assert bravo.get_sample_size(0, contest, None, None) == {
+        "all-ballots": {"type": "all-ballots", "size": contest.ballots, "prob": None},
+    }
+
+
 bravo_contests = {
     "test1": {
         "cand1": 600,

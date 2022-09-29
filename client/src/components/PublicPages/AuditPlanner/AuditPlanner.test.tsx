@@ -112,6 +112,31 @@ async function checkThatElectionResultsCardIsInInitialState() {
   }
 }
 
+function moveSlider(
+  sliderHandle: HTMLElement,
+  direction: 'left' | 'right',
+  positions = 1
+) {
+  for (let i = 0; i < positions; i += 1) {
+    switch (direction) {
+      case 'left': {
+        fireEvent.keyDown(sliderHandle, { key: 'ArrowLeft', keyCode: 37 })
+        fireEvent.keyUp(sliderHandle, { key: 'ArrowLeft', keyCode: 37 })
+        break
+      }
+      case 'right': {
+        fireEvent.keyDown(sliderHandle, { key: 'ArrowRight', keyCode: 39 })
+        fireEvent.keyUp(sliderHandle, { key: 'ArrowRight', keyCode: 39 })
+        break
+      }
+      default: {
+        const exhaustiveCheck: never = direction
+        throw new Error(`Unhandled direction: ${exhaustiveCheck}`)
+      }
+    }
+  }
+}
+
 const body1 = JSON.stringify({
   electionResults: {
     candidates: [
@@ -143,9 +168,9 @@ const apiMocks = {
       headers: { 'Content-Type': 'application/json' },
     },
     response: {
-      ballotComparison: { '5': 1000, '6': 1006 },
-      ballotPolling: { '5': 1001, '6': 1007 },
-      batchComparison: { '5': 1002, '6': 1008 },
+      ballotComparison: { '0': 2000, '5': 1000, '6': 1006 },
+      ballotPolling: { '0': 2000, '5': 1001, '6': 1007 },
+      batchComparison: { '0': 2000, '5': 1002, '6': 1008 },
     },
   },
   publicComputeSampleSizes2: {
@@ -200,13 +225,24 @@ test('Entering election results - validation and submit', async () => {
       displayed: ['Required', 'Required', 'Required', 'Required', 'Required'],
     })
     userEvent.type(candidate0NameInput, 'Helga Hippo')
+    userEvent.type(candidate1NameInput, 'Helga Hippo')
+    await areExpectedErrorMessagesDisplayed({
+      displayed: [
+        'Candidates must have unique names',
+        'Required',
+        'Required',
+        'Required',
+      ],
+    })
+    userEvent.clear(candidate1NameInput)
     userEvent.type(candidate1NameInput, 'Bobby Bear')
     await areExpectedErrorMessagesDisplayed({
       displayed: ['Required', 'Required', 'Required'],
+      notDisplayed: ['Candidates must have unique names'],
     })
     userEvent.type(candidate0VotesInput, '0')
     userEvent.type(candidate1VotesInput, '0')
-    userEvent.type(totalBallotsCastInput, '0')
+    userEvent.type(totalBallotsCastInput, '1')
     await areExpectedErrorMessagesDisplayed({
       displayed: ['At least 1 candidate must have greater than 0 votes'],
       notDisplayed: ['Required'],
@@ -231,15 +267,17 @@ test('Entering election results - validation and submit', async () => {
     })
     userEvent.clear(candidate1VotesInput)
     userEvent.type(candidate1VotesInput, '900')
+    userEvent.clear(totalBallotsCastInput)
+    userEvent.type(totalBallotsCastInput, '0')
     userEvent.click(planAuditButton)
     await areExpectedErrorMessagesDisplayed({
-      displayed: ['Cannot be less than sum of candidate votes'],
+      displayed: ['Cannot be less than 1'],
     })
     userEvent.clear(totalBallotsCastInput)
     userEvent.type(totalBallotsCastInput, '2000.2')
     await areExpectedErrorMessagesDisplayed({
       displayed: ['Can only contain numeric characters'],
-      notDisplayed: ['Cannot be less than sum of candidate votes'],
+      notDisplayed: ['Cannot be less than 1'],
     })
     userEvent.clear(totalBallotsCastInput)
     userEvent.type(totalBallotsCastInput, '2000')
@@ -251,16 +289,16 @@ test('Entering election results - validation and submit', async () => {
     await areExpectedErrorMessagesDisplayed({
       displayed: ['Required'],
     })
-    userEvent.type(numberOfWinnersInput, '3')
+    userEvent.type(numberOfWinnersInput, '2')
     await areExpectedErrorMessagesDisplayed({
-      displayed: ['Cannot be greater than number of candidates'],
+      displayed: ['Must be less than number of candidates'],
       notDisplayed: ['Required'],
     })
     userEvent.clear(numberOfWinnersInput)
     userEvent.type(numberOfWinnersInput, '1.2')
     await areExpectedErrorMessagesDisplayed({
       displayed: ['Can only contain numeric characters'],
-      notDisplayed: ['Cannot be greater than number of candidates'],
+      notDisplayed: ['Must be less than number of candidates'],
     })
     userEvent.clear(numberOfWinnersInput)
     userEvent.type(numberOfWinnersInput, '1')
@@ -571,12 +609,13 @@ test('Audit plan card interactions', async () => {
     )! as HTMLElement
     expect(sliderHandle).toBeInTheDocument()
     expect(sliderHandle).toHaveTextContent('5%')
-    fireEvent.keyDown(sliderHandle, { key: 'ArrowRight', keyCode: 39 })
-    fireEvent.keyUp(sliderHandle, { key: 'ArrowRight', keyCode: 39 })
+    moveSlider(sliderHandle, 'right', 1)
     expect(sliderHandle).toHaveTextContent('6%')
     await screen.findByText('1,007 ballots')
-    fireEvent.keyDown(sliderHandle, { key: 'ArrowLeft', keyCode: 37 })
-    fireEvent.keyUp(sliderHandle, { key: 'ArrowLeft', keyCode: 37 })
+    moveSlider(sliderHandle, 'left', 6)
+    expect(sliderHandle).toHaveTextContent('0%')
+    await screen.findByText('Full hand tally')
+    moveSlider(sliderHandle, 'right', 5)
     expect(sliderHandle).toHaveTextContent('5%')
     await screen.findByText('1,001 ballots')
 
