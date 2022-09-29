@@ -136,6 +136,7 @@ def bravo_sample_sizes(
     sample_w: int,
     sample_r: int,
     p_completion: float,
+    total_ballots: int,
 ) -> int:
     """
     Analytic calculation for BRAVO round completion assuming the election
@@ -151,6 +152,7 @@ def bravo_sample_sizes(
                           already been sampled
         p_completion    - the desired chance of completion in one round,
                           if the outcome is correct
+        total_ballots   - the total ballots cast
 
     Outputs:
         sample_size     - the expected sample size for the given chance
@@ -211,13 +213,17 @@ def bravo_sample_sizes(
     # Get a guarantee. (Perhaps contrary to intuition, using
     # math.ceil instead of math.floor can lead to a
     # larger sample.)
-    searching = True
-    while searching:
+    test_stat = Decimal(0)
+    while (
+        test_stat < threshold
+        # In extreme cases, the test_stat never reaches the threshold (or at least doesn't do so in
+        # a reasonable amount of time). This second check prevents this loop from hanging in those
+        # cases.
+        and size < total_ballots
+    ):
         x_c = Decimal(stats.binom.ppf(1.0 - p_completion, size, float(p_w2)))
         test_stat = x_c * plus + (size - x_c) * minus
-        if test_stat > threshold:
-            searching = False
-        else:
+        if test_stat < threshold:
             size += 1
 
     # The preceding fussiness notwithstanding, we use a simple
@@ -429,7 +435,9 @@ def get_sample_size(
     }
 
     for quant in quants:
-        size = bravo_sample_sizes(alpha, p_w, p_l, sample_w, sample_l, quant)
+        size = bravo_sample_sizes(
+            alpha, p_w, p_l, sample_w, sample_l, quant, contest.ballots
+        )
         if size != 0:
             samples[str(quant)] = {"type": None, "size": size, "prob": quant}
 
