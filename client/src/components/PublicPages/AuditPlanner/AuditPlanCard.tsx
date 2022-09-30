@@ -6,7 +6,10 @@ import SampleSize from './SampleSize'
 import SegmentedControl from '../../Atoms/SegmentedControl'
 import { AuditType } from '../../useAuditSettings'
 import { IElectionResults } from './electionResults'
+import { useCssBreakpoints } from '../../../utils/responsiveness'
 import { useSampleSizes } from './sampleSizes'
+
+const HIDDEN_LABEL_CLASS_NAME = 'hidden-label'
 
 interface IContainerProps {
   disabled?: boolean
@@ -17,9 +20,10 @@ const Container = styled(Card)<IContainerProps>`
     margin: auto;
     margin-top: 24px;
     margin-bottom: 72px;
+    max-width: 640px;
     opacity: ${props => (props.disabled ? '0.5' : '1')}
     padding: 0;
-    width: 640px;
+    width: 100%;
   }
 `
 
@@ -48,6 +52,15 @@ const SubHeading = styled(H3)`
   }
 `
 
+const RiskLimitSlider = styled(Slider)`
+  &.bp3-slider .${HIDDEN_LABEL_CLASS_NAME} {
+    color: transparent;
+  }
+  &.bp3-slider .bp3-slider-handle .${HIDDEN_LABEL_CLASS_NAME} {
+    color: white;
+  }
+`
+
 const SampleSizeSection = styled.div`
   background: #f3f8ff; // A custom tint of Blueprint v4 @blue5
   border-bottom-left-radius: 3px; // Match Blueprint card
@@ -71,6 +84,7 @@ const AuditPlanCard: React.FC<IProps> = ({ disabled, electionResults }) => {
     }
   }, [])
 
+  const { isMobileWidth } = useCssBreakpoints()
   const [selectedAuditType, setSelectedAuditType] = useState<
     Exclude<AuditType, 'HYBRID'>
   >('BALLOT_POLLING')
@@ -105,23 +119,24 @@ const AuditPlanCard: React.FC<IProps> = ({ disabled, electionResults }) => {
               { label: 'Batch Comparison', value: 'BATCH_COMPARISON' },
             ]}
             value={selectedAuditType}
+            vertical={isMobileWidth}
           />
         </Section>
 
         <Section>
           <SubHeading>Risk Limit</SubHeading>
-          <Slider
+          <RiskLimitSlider
             disabled={disabled}
             labelRenderer={value => (
               <span
                 // A hack to display the listed values on both the slider axis and the slider label,
                 // and all other values on only the slider label. More recent versions of the
                 // Blueprint slider actually support this differentiation
-                style={{
-                  color: [0, 5, 10, 15, 20].includes(value)
-                    ? undefined
-                    : 'white',
-                }}
+                className={
+                  ![0, 5, 10, 15, 20].includes(value)
+                    ? HIDDEN_LABEL_CLASS_NAME
+                    : undefined
+                }
               >
                 {value}%
               </span>

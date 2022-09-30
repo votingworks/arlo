@@ -6,6 +6,7 @@ const Option = styled(Button)`
   &.bp3-button {
     flex-basis: 0;
     flex-grow: 1;
+    text-align: center;
   }
 `
 
@@ -22,12 +23,13 @@ interface IProps<T extends string> {
   onChange: (value: T) => void
   options: IOption<T>[]
   value: T
+  vertical?: boolean
 }
 
 const SegmentedControl = <T extends string>(
   props: IProps<T>
 ): React.ReactElement => {
-  const { disabled, fill, large, onChange, options, value } = props
+  const { disabled, fill, large, onChange, options, value, vertical } = props
 
   // TODO: Use a proper radio group under the hood or add the required keyboard support for a radio
   // group (https://www.w3.org/WAI/ARIA/apg/example-index/radio/radio-rating.html#kbd_label) to
@@ -38,6 +40,7 @@ const SegmentedControl = <T extends string>(
       fill={fill}
       large={large}
       role="radiogroup"
+      vertical={vertical}
     >
       {options.map(option => (
         <Option
