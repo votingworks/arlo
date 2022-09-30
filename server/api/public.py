@@ -10,11 +10,16 @@ from ..util.jsonschema import validate
 from ..models import *  # pylint: disable=wildcard-import
 
 
+# Leave enough buffer to support an election of galactic scale while making it hard for users to
+# crash the sample size math by holding down the 0 key :D
+# Keep this in sync with the client-side limit in client/src/components/PublicPages/AuditPlanner/
+MAX_NUMERICAL_VALUE = 1e15
+
 ELECTION_RESULTS_CANDIDATE_SCHEMA = {
     "type": "object",
     "properties": {
         "name": {"type": "string"},
-        "votes": {"type": "integer", "minimum": 0},
+        "votes": {"type": "integer", "minimum": 0, "maximum": MAX_NUMERICAL_VALUE},
     },
     "additionalProperties": False,
     "required": ["name", "votes"],
@@ -28,8 +33,16 @@ ELECTION_RESULTS_SCHEMA = {
             "items": ELECTION_RESULTS_CANDIDATE_SCHEMA,
             "minItems": 2,
         },
-        "numWinners": {"type": "integer", "minimum": 1},
-        "totalBallotsCast": {"type": "integer", "minimum": 1},
+        "numWinners": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": MAX_NUMERICAL_VALUE,
+        },
+        "totalBallotsCast": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": MAX_NUMERICAL_VALUE,
+        },
     },
     "additionalProperties": False,
     "required": ["candidates", "numWinners", "totalBallotsCast"],
