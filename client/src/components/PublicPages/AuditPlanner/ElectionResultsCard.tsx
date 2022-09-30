@@ -20,7 +20,6 @@ import {
   ICandidateFormState,
   IElectionResultsFormState,
 } from './electionResults'
-import { sum } from '../../../utils/number'
 
 const HIDDEN_INPUT_CLASS_NAME = 'hidden-input'
 
@@ -107,6 +106,23 @@ const CardActionsRow = styled.div`
   }
 `
 
+const minValueRule = (minValue: number) => ({
+  message: `Cannot be less than ${minValue}`,
+  value: minValue,
+})
+
+/**
+ * Leave enough buffer to support an election of galactic scale while making it hard for users to
+ * crash the sample size math by holding down the 0 key :D
+ * Keep this in sync with the server-side limit in server/api/public.py
+ */
+const MAX_NUMERICAL_VALUE = 1e15
+
+const maxValueRule = {
+  message: 'Too large',
+  value: MAX_NUMERICAL_VALUE,
+}
+
 const numericValidationRule = {
   message: 'Can only contain numeric characters',
   value: /^[0-9]+$/,
@@ -137,8 +153,8 @@ const NumericInput = forwardRef<HTMLInputElement, INumericInputProps>(
       value,
     } = props
 
-    // Renders two inputs under the hood, one managed by react-hook-form via the passed in ref
-    // and the other for read-only display
+    // Render two inputs under the hood, one managed by react-hook-form via the passed in ref and
+    // the other for read-only display
     return (
       <>
         <input
@@ -330,10 +346,8 @@ const ElectionResultsCard: React.FC<IProps> = ({
                         placeholder="0"
                         readOnly={!editable}
                         ref={register({
-                          min: {
-                            message: 'Cannot be less than 0',
-                            value: 0,
-                          },
+                          min: minValueRule(0),
+                          max: maxValueRule,
                           pattern: numericValidationRule,
                           required: 'Required',
                           validate: () => {
@@ -394,10 +408,8 @@ const ElectionResultsCard: React.FC<IProps> = ({
                   placeholder="0"
                   readOnly={!editable}
                   ref={register({
-                    min: {
-                      message: 'Cannot be less than 1',
-                      value: 1,
-                    },
+                    min: minValueRule(1),
+                    max: maxValueRule,
                     pattern: numericValidationRule,
                     required: 'Required',
                     validate: value => {
@@ -427,10 +439,8 @@ const ElectionResultsCard: React.FC<IProps> = ({
                   placeholder="0"
                   readOnly={!editable}
                   ref={register({
-                    min: {
-                      message: 'Cannot be less than 1',
-                      value: 1,
-                    },
+                    min: minValueRule(1),
+                    max: maxValueRule,
                     pattern: numericValidationRule,
                     required: 'Required',
                     valueAsNumber: true,
