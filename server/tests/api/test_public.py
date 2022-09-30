@@ -119,6 +119,20 @@ def test_public_compute_sample_sizes_input_validation(client: FlaskClient):
                 "electionResults": {
                     **valid_input["electionResults"],
                     "candidates": [
+                        {"name": "Helga Hippo", "votes": 1e16},
+                        {"name": "Bobby Bear", "votes": 900},
+                    ],
+                },
+            },
+            "expected_status_code": 400,
+            "expected_error_message": "1e+16 is greater than the maximum of 1000000000000000.0",
+        },
+        {
+            "body": {
+                **valid_input,
+                "electionResults": {
+                    **valid_input["electionResults"],
+                    "candidates": [
                         {"name": "Helga Hippo", "votes": 1.2},
                         {"name": "Bobby Bear", "votes": 900},
                     ],
@@ -134,6 +148,17 @@ def test_public_compute_sample_sizes_input_validation(client: FlaskClient):
             },
             "expected_status_code": 400,
             "expected_error_message": "0 is less than the minimum of 1",
+        },
+        {
+            "body": {
+                **valid_input,
+                "electionResults": {
+                    **valid_input["electionResults"],
+                    "numWinners": 1e16,
+                },
+            },
+            "expected_status_code": 400,
+            "expected_error_message": "1e+16 is greater than the maximum of 1000000000000000.0",
         },
         {
             "body": {
@@ -156,6 +181,17 @@ def test_public_compute_sample_sizes_input_validation(client: FlaskClient):
             },
             "expected_status_code": 400,
             "expected_error_message": "0 is less than the minimum of 1",
+        },
+        {
+            "body": {
+                **valid_input,
+                "electionResults": {
+                    **valid_input["electionResults"],
+                    "totalBallotsCast": 1e16,
+                },
+            },
+            "expected_status_code": 400,
+            "expected_error_message": "1e+16 is greater than the maximum of 1000000000000000.0",
         },
         {
             "body": {

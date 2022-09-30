@@ -254,10 +254,16 @@ test('Entering election results - validation and submit', async () => {
       notDisplayed: ['At least 1 candidate must have greater than 0 votes'],
     })
     userEvent.clear(candidate0VotesInput)
+    userEvent.type(candidate0VotesInput, '10000000000000000')
+    await areExpectedErrorMessagesDisplayed({
+      displayed: ['Too large'],
+      notDisplayed: ['Cannot be less than 0'],
+    })
+    userEvent.clear(candidate0VotesInput)
     userEvent.type(candidate0VotesInput, '1000.2')
     await areExpectedErrorMessagesDisplayed({
       displayed: ['Can only contain numeric characters'],
-      notDisplayed: ['Cannot be less than 0'],
+      notDisplayed: ['Too large'],
     })
     userEvent.clear(candidate0VotesInput)
     userEvent.type(candidate0VotesInput, '1000')
@@ -269,15 +275,20 @@ test('Entering election results - validation and submit', async () => {
     userEvent.type(candidate1VotesInput, '900')
     userEvent.clear(totalBallotsCastInput)
     userEvent.type(totalBallotsCastInput, '0')
-    userEvent.click(planAuditButton)
     await areExpectedErrorMessagesDisplayed({
       displayed: ['Cannot be less than 1'],
+    })
+    userEvent.clear(totalBallotsCastInput)
+    userEvent.type(totalBallotsCastInput, '10000000000000000')
+    await areExpectedErrorMessagesDisplayed({
+      displayed: ['Too large'],
+      notDisplayed: ['Cannot be less than 1'],
     })
     userEvent.clear(totalBallotsCastInput)
     userEvent.type(totalBallotsCastInput, '2000.2')
     await areExpectedErrorMessagesDisplayed({
       displayed: ['Can only contain numeric characters'],
-      notDisplayed: ['Cannot be less than 1'],
+      notDisplayed: ['Too large'],
     })
     userEvent.clear(totalBallotsCastInput)
     userEvent.type(totalBallotsCastInput, '2000')
@@ -289,10 +300,16 @@ test('Entering election results - validation and submit', async () => {
     await areExpectedErrorMessagesDisplayed({
       displayed: ['Required'],
     })
+    userEvent.type(numberOfWinnersInput, '0')
+    await areExpectedErrorMessagesDisplayed({
+      displayed: ['Cannot be less than 1'],
+      notDisplayed: ['Required'],
+    })
+    userEvent.clear(numberOfWinnersInput)
     userEvent.type(numberOfWinnersInput, '2')
     await areExpectedErrorMessagesDisplayed({
       displayed: ['Must be less than number of candidates'],
-      notDisplayed: ['Required'],
+      notDisplayed: ['Cannot be less than 1'],
     })
     userEvent.clear(numberOfWinnersInput)
     userEvent.type(numberOfWinnersInput, '1.2')
