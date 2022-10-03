@@ -196,6 +196,19 @@ const apiMocks = {
   }),
 }
 
+jest.mock(
+  '../../../utils/responsiveness',
+  (): typeof import('../../../utils/responsiveness') => {
+    return {
+      ...jest.requireActual('../../../utils/responsiveness'),
+      useCssBreakpoints: () => ({
+        isMobileWidth: false,
+        isTabletWidth: false,
+        isDesktopWidth: true,
+      }),
+    }
+  }
+)
 let mockScrollIntoView: jest.Mock
 
 beforeEach(async () => {

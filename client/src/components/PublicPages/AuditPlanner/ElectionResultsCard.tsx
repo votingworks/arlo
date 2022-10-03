@@ -20,6 +20,7 @@ import {
   ICandidateFormState,
   IElectionResultsFormState,
 } from './electionResults'
+import { useCssBreakpoints } from '../../../utils/responsiveness'
 
 const HIDDEN_INPUT_CLASS_NAME = 'hidden-input'
 
@@ -224,7 +225,7 @@ const ElectionResultsCard: React.FC<IProps> = ({
   planAudit,
 }) => {
   const { confirm, confirmProps } = useConfirm()
-
+  const { isMobileWidth, isTabletWidth, isDesktopWidth } = useCssBreakpoints()
   const {
     control,
     formState,
@@ -382,11 +383,12 @@ const ElectionResultsCard: React.FC<IProps> = ({
             <tr>
               <td>
                 <Button
+                  aria-label={isMobileWidth ? 'Add Candidate' : undefined}
                   disabled={!editable}
                   icon="plus"
                   onClick={() => addCandidate(constructNewCandidate())}
                 >
-                  Add Candidate
+                  {(isTabletWidth || isDesktopWidth) && 'Add Candidate'}
                 </Button>
               </td>
               <td />
