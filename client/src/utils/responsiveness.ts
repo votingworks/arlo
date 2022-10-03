@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 /**
  * Given a CSS media query, returns whether the media query is matched, e.g.
@@ -8,7 +8,7 @@ import { useState, useEffect } from 'react'
  * Listens for updates, e.g. in response to window resizing.
  */
 export function useMediaQuery(query: string): boolean {
-  const [isMatched, setIsMatched] = useState(false)
+  const [isMatched, setIsMatched] = useState(window.matchMedia(query).matches)
 
   useEffect(() => {
     const matchMedia = window.matchMedia(query)
