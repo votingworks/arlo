@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Card, Colors, Icon } from '@blueprintjs/core'
+import { Card, Colors, H5, Icon } from '@blueprintjs/core'
 import { assert } from '../utilities'
 
 /**
@@ -47,23 +47,31 @@ const StepListItemContainer = styled.li`
   align-items: center;
 `
 
-const StepListItemCircle = styled.div<{ isIncomplete: boolean }>`
+type StepState = 'incomplete' | 'current' | 'complete'
+
+const StepListItemCircle = styled.div<{
+  state: StepState
+}>`
   display: flex;
   align-items: center;
   justify-content: center;
   height: 30px;
   width: 30px;
   border-radius: 50%;
+  opacity: ${props => (props.state === 'complete' ? 0.7 : 1)};
   background-color: ${props =>
-    props.isIncomplete ? Colors.GRAY4 : Colors.BLUE3};
+    props.state === 'incomplete' ? Colors.GRAY4 : Colors.BLUE3};
   margin-right: 10px;
   color: ${Colors.WHITE};
   font-weight: 500;
 `
 
-const StepListItemLabel = styled.div<{ isIncomplete: boolean }>`
-  color: ${props => (props.isIncomplete ? Colors.GRAY3 : 'inherit')};
-  font-weight: 700;
+const StepListItemLabel = styled(H5)<{
+  state: StepState
+}>`
+  color: ${props =>
+    props.state === 'current' ? Colors.DARK_GRAY5 : Colors.GRAY3};
+  margin: 0;
 `
 
 const StepListItemLine = styled.div`
@@ -88,16 +96,22 @@ export const StepList: React.FC<{ currentStepId: string }> = ({
     <StepListContainer>
       {steps.map((step, index) => {
         assert(React.isValidElement(step))
-        const isCurrent = index === currentStepIndex
-        const isComplete = index < currentStepIndex
-        const isIncomplete = index > currentStepIndex
+        const state =
+          index < currentStepIndex
+            ? 'complete'
+            : index === currentStepIndex
+            ? 'current'
+            : 'incomplete'
         return (
           <React.Fragment key={step.props.id}>
-            <StepListItemContainer aria-current={isCurrent}>
-              <StepListItemCircle isIncomplete={isIncomplete}>
-                {isComplete ? <Icon icon="tick" /> : index + 1}
+            <StepListItemContainer>
+              <StepListItemCircle state={state}>
+                {state === 'complete' ? <Icon icon="tick" /> : index + 1}
               </StepListItemCircle>
-              <StepListItemLabel isIncomplete={isIncomplete}>
+              <StepListItemLabel
+                state={state}
+                aria-current={state === 'current' ? 'step' : undefined}
+              >
                 {step}
               </StepListItemLabel>
             </StepListItemContainer>
