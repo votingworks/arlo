@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { Card, Colors, Icon } from '@blueprintjs/core'
+import { assert } from '../utilities'
 
 /**
  * A set of components to display a multi-step process. Consists of a card
@@ -9,13 +10,17 @@ import { Card, Colors, Icon } from '@blueprintjs/core'
  *  - a step content panel (middle)
  *  - a step actions bar (bottom)
  *
- * These components are purely graphical - the parent must manage all state
- * (current step, disabling, etc.)
+ * These components are mostly graphical - the parent must manage relevant state
+ * (current step, navigation, disabling, etc.)
  *
  * Example usage:
  *
  *  <Steps>
- *    <StepProgress steps=["Log In", "Prepare", "Audit"] currentStep="Prepare" />
+ *    <StepList currentStepId="prepare">
+ *      <StepListItem id="logIn">Log In</StepListItem>
+ *      <StepListItem id="prepare">Prepare</StepListItem>
+ *      <StepListItem id="audit">Audit Ballots</StepListItem>
+ *    </StepList>
  *    <StepPanel>Prepare your ballots</StepPanel>
  *    <StepActions
  *      left={<Button>Back</Button>}
@@ -28,7 +33,7 @@ export const Steps = styled(Card).attrs({ elevation: 1 })`
   padding: 0;
 `
 
-const StepProgressRow = styled.ol`
+const StepListContainer = styled.ol`
   background-color: ${Colors.LIGHT_GRAY5};
   display: flex;
   align-items: center;
@@ -37,12 +42,12 @@ const StepProgressRow = styled.ol`
   border-radius: 3px 3px 0 0;
 `
 
-const StepProgressStep = styled.li`
+const StepListItemContainer = styled.li`
   display: flex;
   align-items: center;
 `
 
-const StepProgressCircle = styled.div<{ incomplete: boolean }>`
+const StepListItemCircle = styled.div<{ isIncomplete: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -50,50 +55,64 @@ const StepProgressCircle = styled.div<{ incomplete: boolean }>`
   width: 30px;
   border-radius: 50%;
   background-color: ${props =>
-    props.incomplete ? Colors.GRAY4 : Colors.BLUE3};
+    props.isIncomplete ? Colors.GRAY4 : Colors.BLUE3};
   margin-right: 10px;
   color: ${Colors.WHITE};
   font-weight: 500;
 `
 
-const StepProgressLabel = styled.div<{ incomplete: boolean }>`
-  color: ${props => (props.incomplete ? Colors.GRAY3 : 'inherit')};
+const StepListItemLabel = styled.div<{ isIncomplete: boolean }>`
+  color: ${props => (props.isIncomplete ? Colors.GRAY3 : 'inherit')};
   font-weight: 700;
 `
 
-const StepProgressLine = styled.div`
+const StepListItemLine = styled.div`
   flex-grow: 1;
   height: 1px;
   background: ${Colors.GRAY5};
   margin: 0 10px;
 `
 
-export const StepProgress: React.FC<{
-  steps: readonly string[]
-  currentStep: string
-}> = ({ steps, currentStep }) => {
-  const currentStepIndex = steps.indexOf(currentStep)
+export const StepList: React.FC<{ currentStepId: string }> = ({
+  currentStepId,
+  children,
+}) => {
+  const steps = React.Children.toArray(children)
+  const currentStepIndex = steps
+    .map(step => {
+      assert(React.isValidElement(step))
+      return step.props.id
+    })
+    .indexOf(currentStepId)
   return (
-    <StepProgressRow>
-      {steps.map((step, i) => (
-        <React.Fragment key={step}>
-          <StepProgressStep
-            aria-label={step}
-            aria-current={i === currentStepIndex ? 'step' : undefined}
-          >
-            <StepProgressCircle incomplete={i > currentStepIndex}>
-              {i < currentStepIndex ? <Icon icon="tick" /> : i + 1}
-            </StepProgressCircle>
-            <StepProgressLabel incomplete={i > currentStepIndex}>
-              {step}
-            </StepProgressLabel>
-          </StepProgressStep>
-          {i < steps.length - 1 && <StepProgressLine />}
-        </React.Fragment>
-      ))}
-    </StepProgressRow>
+    <StepListContainer>
+      {steps.map((step, index) => {
+        assert(React.isValidElement(step))
+        const isCurrent = index === currentStepIndex
+        const isComplete = index < currentStepIndex
+        const isIncomplete = index > currentStepIndex
+        return (
+          <React.Fragment key={step.props.id}>
+            <StepListItemContainer aria-current={isCurrent}>
+              <StepListItemCircle isIncomplete={isIncomplete}>
+                {isComplete ? <Icon icon="tick" /> : index + 1}
+              </StepListItemCircle>
+              <StepListItemLabel isIncomplete={isIncomplete}>
+                {step}
+              </StepListItemLabel>
+            </StepListItemContainer>
+            {index < steps.length - 1 && <StepListItemLine />}
+          </React.Fragment>
+        )
+      })}
+    </StepListContainer>
   )
 }
+
+// eslint-disable-next-line react/no-unused-prop-types
+export const StepListItem: React.FC<{ id: string }> = ({ children }) => (
+  <React.Fragment>{children}</React.Fragment>
+)
 
 export const StepPanel = styled.div`
   display: flex;

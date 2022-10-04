@@ -22,7 +22,13 @@ import {
 } from '../useFileUpload'
 import { apiDownload } from '../utilities'
 import LinkButton from '../Atoms/LinkButton'
-import { StepPanel, StepActions, StepProgress, Steps } from '../Atoms/Steps'
+import {
+  StepPanel,
+  StepActions,
+  Steps,
+  StepListItem,
+  StepList,
+} from '../Atoms/Steps'
 
 const STEPS = [
   'Upload Election Results',
@@ -317,7 +323,9 @@ const BatchInventorySteps: React.FC<{
     ? 'Inventory Batches'
     : 'Download Audit Files'
 
-  const [step, setStep] = useState<typeof STEPS[number]>(initialStep)
+  const [currentStep, setCurrentStep] = useState<typeof STEPS[number]>(
+    initialStep
+  )
 
   return (
     <Wrapper>
@@ -333,15 +341,21 @@ const BatchInventorySteps: React.FC<{
           </LinkButton>
         </HeadingRow>
         <Steps>
-          <StepProgress steps={STEPS} currentStep={step} />
+          <StepList currentStepId={currentStep}>
+            {STEPS.map(step => (
+              <StepListItem key={step} id={step}>
+                {step}
+              </StepListItem>
+            ))}
+          </StepList>
           {(() => {
-            switch (step) {
+            switch (currentStep) {
               case 'Upload Election Results':
                 return (
                   <UploadElectionResultsStep
                     cvrUpload={cvrUpload}
                     tabulatorStatusUpload={tabulatorStatusUpload}
-                    nextStep={() => setStep('Inventory Batches')}
+                    nextStep={() => setCurrentStep('Inventory Batches')}
                   />
                 )
               case 'Inventory Batches':
@@ -349,8 +363,8 @@ const BatchInventorySteps: React.FC<{
                   <InventoryBatchesStep
                     worksheetUrl={`/election/${electionId}/jurisdiction/${jurisdictionId}/batch-inventory/worksheet`}
                     signOffQueries={signOffQueries}
-                    prevStep={() => setStep('Upload Election Results')}
-                    nextStep={() => setStep('Download Audit Files')}
+                    prevStep={() => setCurrentStep('Upload Election Results')}
+                    nextStep={() => setCurrentStep('Download Audit Files')}
                   />
                 )
               case 'Download Audit Files':
@@ -358,7 +372,7 @@ const BatchInventorySteps: React.FC<{
                   <DownloadAuditFilesStep
                     ballotManifestUrl={`/election/${electionId}/jurisdiction/${jurisdictionId}/batch-inventory/ballot-manifest`}
                     batchTalliesUrl={`/election/${electionId}/jurisdiction/${jurisdictionId}/batch-inventory/batch-tallies`}
-                    prevStep={() => setStep('Inventory Batches')}
+                    prevStep={() => setCurrentStep('Inventory Batches')}
                   />
                 )
               default:
