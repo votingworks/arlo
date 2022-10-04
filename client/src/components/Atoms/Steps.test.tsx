@@ -7,10 +7,10 @@ describe('Steps', () => {
   it('renders a step list, panel, and actions', () => {
     render(
       <Steps>
-        <StepList currentStepId="prepare">
-          <StepListItem id="logIn">Log In</StepListItem>
-          <StepListItem id="prepare">Prepare</StepListItem>
-          <StepListItem id="audit">Audit Ballots</StepListItem>
+        <StepList>
+          <StepListItem>Log In</StepListItem>
+          <StepListItem current>Prepare</StepListItem>
+          <StepListItem>Audit Ballots</StepListItem>
         </StepList>
         <StepPanel>Prepare your ballots</StepPanel>
         <StepActions

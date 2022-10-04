@@ -341,9 +341,9 @@ const BatchInventorySteps: React.FC<{
           </LinkButton>
         </HeadingRow>
         <Steps>
-          <StepList currentStepId={currentStep}>
+          <StepList>
             {STEPS.map(step => (
-              <StepListItem key={step} id={step}>
+              <StepListItem key={step} current={step === currentStep}>
                 {step}
               </StepListItem>
             ))}

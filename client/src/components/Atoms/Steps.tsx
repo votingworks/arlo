@@ -16,10 +16,10 @@ import { assert } from '../utilities'
  * Example usage:
  *
  *  <Steps>
- *    <StepList currentStepId="prepare">
- *      <StepListItem id="logIn">Log In</StepListItem>
- *      <StepListItem id="prepare">Prepare</StepListItem>
- *      <StepListItem id="audit">Audit Ballots</StepListItem>
+ *    <StepList>
+ *      <StepListItem>Log In</StepListItem>
+ *      <StepListItem current>Prepare</StepListItem>
+ *      <StepListItem>Audit Ballots</StepListItem>
  *    </StepList>
  *    <StepPanel>Prepare your ballots</StepPanel>
  *    <StepActions
@@ -66,11 +66,11 @@ const StepListItemCircle = styled.div<{
   font-weight: 500;
 `
 
-const StepListItemLabel = styled(H5)<{
-  state: StepState
-}>`
-  color: ${props =>
-    props.state === 'current' ? Colors.DARK_GRAY5 : Colors.GRAY3};
+// eslint-disable-next-line no-unused-vars
+export const StepListItem = styled(({ current, ...props }) => (
+  <H5 {...props} />
+))<{ current: boolean }>`
+  color: ${props => (props.current ? Colors.DARK_GRAY5 : Colors.GRAY3)};
   margin: 0;
 `
 
@@ -81,21 +81,15 @@ const StepListItemLine = styled.div`
   margin: 0 10px;
 `
 
-export const StepList: React.FC<{ currentStepId: string }> = ({
-  currentStepId,
-  children,
-}) => {
-  const steps = React.Children.toArray(children)
-  const currentStepIndex = steps
-    .map(step => {
-      assert(React.isValidElement(step))
-      return step.props.id
-    })
-    .indexOf(currentStepId)
+export const StepList: React.FC = ({ children }) => {
+  const stepItems = React.Children.toArray(children)
+  const currentStepIndex = stepItems.findIndex(
+    stepItem => React.isValidElement(stepItem) && stepItem.props.current
+  )
   return (
     <StepListContainer>
-      {steps.map((step, index) => {
-        assert(React.isValidElement(step))
+      {stepItems.map((stepItem, index) => {
+        assert(React.isValidElement(stepItem))
         const state =
           index < currentStepIndex
             ? 'complete'
@@ -103,30 +97,22 @@ export const StepList: React.FC<{ currentStepId: string }> = ({
             ? 'current'
             : 'incomplete'
         return (
-          <React.Fragment key={step.props.id}>
+          <React.Fragment key={stepItem.key || index}>
             <StepListItemContainer>
               <StepListItemCircle state={state}>
                 {state === 'complete' ? <Icon icon="tick" /> : index + 1}
               </StepListItemCircle>
-              <StepListItemLabel
-                state={state}
-                aria-current={state === 'current' ? 'step' : undefined}
-              >
-                {step}
-              </StepListItemLabel>
+              {React.cloneElement(stepItem, {
+                'aria-current': state === 'current' ? 'step' : undefined,
+              })}
             </StepListItemContainer>
-            {index < steps.length - 1 && <StepListItemLine />}
+            {index < stepItems.length - 1 && <StepListItemLine />}
           </React.Fragment>
         )
       })}
     </StepListContainer>
   )
 }
-
-// eslint-disable-next-line react/no-unused-prop-types
-export const StepListItem: React.FC<{ id: string }> = ({ children }) => (
-  <React.Fragment>{children}</React.Fragment>
-)
 
 export const StepPanel = styled.div`
   display: flex;
