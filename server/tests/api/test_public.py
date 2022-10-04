@@ -500,6 +500,32 @@ def test_public_compute_sample_sizes(client: FlaskClient, snapshot):
             },
         },
         {
+            "description": "Large number of votes with small margin",
+            "body": {
+                "electionResults": {
+                    "candidates": [
+                        {"name": "Helga Hippo", "votes": 1_000_000},
+                        {"name": "Bobby Bear", "votes": 999_999},
+                    ],
+                    "numWinners": 1,
+                    "totalBallotsCast": 1_999_999,
+                },
+            },
+        },
+        {
+            "description": "Super large number of votes with small margin",
+            "body": {
+                "electionResults": {
+                    "candidates": [
+                        {"name": "Helga Hippo", "votes": 1_000_000_000},
+                        {"name": "Bobby Bear", "votes": 999_999_999},
+                    ],
+                    "numWinners": 1,
+                    "totalBallotsCast": 1_999_999_999,
+                },
+            },
+        },
+        {
             "description": "Large number of additional ballots cast",
             "body": {
                 "electionResults": {

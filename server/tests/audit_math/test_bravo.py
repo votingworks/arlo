@@ -103,6 +103,7 @@ def test_bravo_sample_sizes():
             sample_w=r0_sample_win,
             sample_r=r0_sample_rup,
             p_completion=0.9,
+            total_ballots=10000,
         )
     )
     delta = expected_size1 - computed_size1
@@ -121,6 +122,7 @@ def test_bravo_sample_sizes():
             sample_w=r0_sample_win,
             sample_r=r0_sample_rup,
             p_completion=0.9,
+            total_ballots=10000,
         )
     )
     delta = expected_size1 - computed_size1
@@ -139,6 +141,7 @@ def test_bravo_sample_sizes():
             sample_w=r0_sample_win,
             sample_r=r0_sample_rup,
             p_completion=0.6,
+            total_ballots=10000,
         )
     )
     delta = expected_size1 - computed_size1
@@ -157,6 +160,7 @@ def test_bravo_sample_sizes():
             sample_w=r0_sample_win,
             sample_r=r0_sample_rup,
             p_completion=0.9,
+            total_ballots=10000,
         )
     )
     delta = expected_size1 - computed_size1
@@ -179,6 +183,7 @@ def test_bravo_sample_sizes_small_prob():
             sample_w=r0_sample_win,
             sample_r=r0_sample_rup,
             p_completion=0.4,
+            total_ballots=10000,
         )
     )
     delta = expected_size1 - computed_size1
@@ -202,6 +207,7 @@ def test_bravo_sample_sizes_round1_finish():
             sample_w=r0_sample_win,
             sample_r=r0_sample_rup,
             p_completion=0.9,
+            total_ballots=10000,
         )
     )
     delta = expected_size1 - computed_size1
@@ -224,6 +230,7 @@ def test_bravo_sample_sizes_round1_incomplete():
             sample_w=r0_sample_win,
             sample_r=r0_sample_rup,
             p_completion=0.9,
+            total_ballots=10000,
         )
     )
     delta = expected_size1 - computed_size1
