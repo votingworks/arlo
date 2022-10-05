@@ -3,17 +3,11 @@ This is a wrapper class to accomodate using more than one test statistics for
 ballot polling audits.
 """
 from typing import Dict, Tuple, Optional
-from typing_extensions import Literal, TypedDict
+
 from ..models import AuditMathType
 from .sampler_contest import Contest
 from . import bravo, minerva
-
-
-class SampleSizeOption(TypedDict):
-    type: Optional[Literal["ASN"]]
-    size: int
-    prob: Optional[float]
-
+from .ballot_polling_types import SampleSizeOption
 
 # { round_id: { choice_id: num_votes }}
 BALLOT_POLLING_SAMPLE_RESULTS = Optional[  # pylint: disable=invalid-name
