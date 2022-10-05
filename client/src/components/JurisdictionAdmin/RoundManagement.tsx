@@ -23,6 +23,7 @@ import AsyncButton from '../Atoms/AsyncButton'
 import useSampleCount from './useBallots'
 import FullHandTallyDataEntry from './FullHandTallyDataEntry'
 import DownloadBatchTallySheetsButton from './DownloadBatchTallySheetsButton'
+import AuditRoundBatchComparison from './AuditRoundBatchComparison'
 
 const PaddedWrapper = styled(Wrapper)`
   flex-direction: column;
@@ -89,6 +90,16 @@ const RoundManagement: React.FC<IRoundManagementProps> = ({
           round.
         </StrongP>
       </PaddedWrapper>
+    )
+  }
+
+  if (auditType === 'BATCH_COMPARISON') {
+    return (
+      <AuditRoundBatchComparison
+        jurisdiction={jurisdiction}
+        round={round}
+        sampleCount={sampleCount}
+      />
     )
   }
 
