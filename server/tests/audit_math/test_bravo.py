@@ -24,21 +24,19 @@ def contests():
     return contests
 
 
-def test_expected_sample_sizes(contests):
-    # Test expected sample sizes computation
-
+def test_expected_sample_size(contests):
     true_asns = {
         "test1": 119,
         "test2": 22,
-        "test3": -1,
-        "test4": -1,
-        "test5": 1000,
+        "test3": ValueError("Cannot compute ASN for a contest with no losers"),
+        "test4": ValueError("Cannot compute ASN for a contest with no losers"),
+        "test5": ValueError("Cannot compute ASN for a tied contest"),
         "test6": 238,
         "test7": 101,
         "test8": 34,
-        "test9": -1,
+        "test9": ValueError("Cannot compute ASN for a contest with no losers"),
         "test10": 48,
-        "test11": -1,
+        "test11": ValueError("Sample indicates the audit is over"),
         "test12": 119,
     }
 
@@ -46,46 +44,63 @@ def test_expected_sample_sizes(contests):
         cumulative_sample = {}
         for candidate in contests[contest].candidates:
             cumulative_sample[candidate] = 0
-        computed = bravo.get_expected_sample_sizes(
-            ALPHA, contests[contest], cumulative_sample
-        )
+
         expected = true_asns[contest]
+        if isinstance(expected, ValueError):
+            err = pytest.raises(
+                ValueError,
+                bravo.get_expected_sample_size,
+                ALPHA,
+                contests[contest],
+                cumulative_sample,
+            )
+            assert err.match(str(expected))
+        else:
+            computed = bravo.get_expected_sample_size(
+                ALPHA, contests[contest], cumulative_sample
+            )["size"]
+            assert (
+                computed == expected
+            ), "get_expected_sample_size failed in {}: got {}, expected {}".format(
+                contest, computed, expected
+            )
 
-        assert (
-            expected == computed
-        ), "get_expected_sample_sizes failed in {}: got {}, expected {}".format(
-            contest, computed, expected
-        )
 
-
-def test_expected_sample_sizes_second_round(contests):
-    # Test expected sample sizes computation
-
+def test_expected_sample_size_second_round(contests):
     true_asns = {
-        "test1": -12,
+        "test1": ValueError("Sample indicates the audit is over"),
         "test2": 42,
-        "test3": -1,
-        "test4": -1,
-        "test5": 1000,
-        "test6": -2,
-        "test7": -28,
+        "test3": ValueError("Cannot compute ASN for a contest with no losers"),
+        "test4": ValueError("Cannot compute ASN for a contest with no losers"),
+        "test5": ValueError("Cannot compute ASN for a tied contest"),
+        "test6": ValueError("Sample indicates the audit is over"),
+        "test7": ValueError("Sample indicates the audit is over"),
         "test8": 14,
-        "test9": -1,
-        "test10": -52,
-        "test11": -1,
+        "test9": ValueError("Cannot compute ASN for a contest with no losers"),
+        "test10": ValueError("Sample indicates the audit is over"),
+        "test11": ValueError("Sample indicates the audit is over"),
     }
 
     for contest in true_asns:
         expected = true_asns[contest]
-        computed = bravo.get_expected_sample_sizes(
-            ALPHA, contests[contest], round1_sample_results[contest]["round1"]
-        )
-
-        assert (
-            expected == computed
-        ), "get_expected_sample_sizes failed in {}: got {}, expected {}".format(
-            contest, computed, expected
-        )
+        if isinstance(expected, ValueError):
+            err = pytest.raises(
+                ValueError,
+                bravo.get_expected_sample_size,
+                ALPHA,
+                contests[contest],
+                round1_sample_results[contest]["round1"],
+            )
+            assert err.match(str(expected))
+        else:
+            computed = bravo.get_expected_sample_size(
+                ALPHA, contests[contest], round1_sample_results[contest]["round1"]
+            )["size"]
+            assert (
+                expected == computed
+            ), "get_expected_sample_size failed in {}: got {}, expected {}".format(
+                contest, computed, expected
+            )
 
 
 def test_bravo_sample_sizes():
@@ -299,7 +314,7 @@ def test_get_sample_size(contests):
                     round1_sample_results[contest],
                     round1_sizes[contest],
                 )
-                assert verr.match("Sample indicates the audit is over!")
+                assert verr.match("Sample indicates the audit is over")
             else:
                 # Test round 2
                 computed = bravo.get_sample_size(
@@ -559,31 +574,6 @@ def test_ballot_polling_not_found_ballots(snapshot):
     snapshot.assert_match(not_found_p_values)
 
 
-def test_bravo_no_90_percent_prob_sample_size():
-    contest = Contest(
-        "Contest",
-        {
-            "K": 228713,
-            "J": 124297,
-            "D": 115776,
-            "P": 43710,
-            "C": 41809,
-            "G": 41688,
-            "B": 13720,
-            "ballots": 672912,
-            "numWinners": 1,
-            "votesAllowed": 1,
-        },
-    )
-    sample_results = {
-        "round1": {"K": 50, "J": 21, "D": 30, "P": 8, "C": 10, "G": 10, "B": 1}
-    }
-    sample_sizes = bravo.get_sample_size(
-        RISK_LIMIT, contest, sample_results, {"round1": 135}
-    )
-    assert "0.9" not in sample_sizes
-
-
 def test_bravo_sample_size_zero_risk_limit():
     contest_data = {
         "winner": 15,
@@ -592,8 +582,10 @@ def test_bravo_sample_size_zero_risk_limit():
         "numWinners": 1,
         "votesAllowed": 1,
     }
-    contest = Contest("Test Contest", contest_data)
-    assert bravo.get_sample_size(0, contest, None, None) == {
+    contest = Contest("Contest", contest_data)
+
+    sample_size = bravo.get_sample_size(0, contest, None, None)
+    assert sample_size == {
         "all-ballots": {"type": "all-ballots", "size": contest.ballots, "prob": None},
     }
 
