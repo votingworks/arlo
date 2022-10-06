@@ -294,11 +294,12 @@ const ElectionResultsCard: React.FC<IProps> = ({
                     intent={errors.candidates?.[i]?.name && 'danger'}
                   >
                     <input
-                      aria-label={`Candidate ${i} Name`}
+                      aria-label={`Candidate ${i + 1} Name`}
                       className={classnames(
                         Classes.INPUT,
                         errors.candidates?.[i]?.name && Classes.INTENT_DANGER
                       )}
+                      defaultValue={`Candidate ${i + 1}`}
                       name={`candidates[${i}].name`}
                       onChange={validateAllCandidateNameFields}
                       placeholder="Candidate name"
@@ -340,7 +341,7 @@ const ElectionResultsCard: React.FC<IProps> = ({
                   >
                     <CandidateVotesInputAndRemoveButtonContainer>
                       <NumericInput
-                        aria-label={`Candidate ${i} Votes`}
+                        aria-label={`Candidate ${i + 1} Votes`}
                         hasError={Boolean(errors.candidates?.[i]?.votes)}
                         name={`candidates[${i}].votes`}
                         onChange={validateAllCandidateVotesFields}
@@ -368,7 +369,7 @@ const ElectionResultsCard: React.FC<IProps> = ({
                         value={getValues().candidates?.[i]?.votes || 0}
                       />
                       <Button
-                        aria-label={`Remove Candidate ${i}`}
+                        aria-label={`Remove Candidate ${i + 1}`}
                         disabled={!editable || candidateFields.length === 2}
                         icon="delete"
                         intent={editable ? 'danger' : undefined}
