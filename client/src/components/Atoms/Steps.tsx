@@ -66,13 +66,37 @@ const StepListItemCircle = styled.div<{
   font-weight: 500;
 `
 
-// eslint-disable-next-line no-unused-vars
-export const StepListItem = styled(({ current, ...props }) => (
-  <H5 {...props} />
-))<{ current: boolean }>`
+// eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
+const StepListItemLabel = styled(({ current, ...props }) => <H5 {...props} />)<{
+  current: boolean
+}>`
   color: ${props => (props.current ? Colors.DARK_GRAY5 : Colors.GRAY3)};
   margin: 0;
 `
+
+interface IStepListItemProps {
+  state: StepState
+  stepNumber?: number
+}
+
+export const StepListItem: React.FC<IStepListItemProps> = ({
+  state,
+  stepNumber,
+  children,
+}) => {
+  return (
+    <StepListItemContainer
+      aria-current={state === 'current' ? 'step' : undefined}
+    >
+      <StepListItemCircle state={state}>
+        {state === 'complete' ? <Icon icon="tick" /> : stepNumber}
+      </StepListItemCircle>
+      <StepListItemLabel current={state === 'current'}>
+        {children}
+      </StepListItemLabel>
+    </StepListItemContainer>
+  )
+}
 
 const StepListItemLine = styled.div`
   flex-grow: 1;
@@ -82,31 +106,17 @@ const StepListItemLine = styled.div`
 `
 
 export const StepList: React.FC = ({ children }) => {
-  const stepItems = React.Children.toArray(children)
-  const currentStepIndex = stepItems.findIndex(
-    stepItem => React.isValidElement(stepItem) && stepItem.props.current
-  )
+  const stepListItems = React.Children.toArray(children)
   return (
     <StepListContainer>
-      {stepItems.map((stepItem, index) => {
+      {stepListItems.map((stepItem, index) => {
         assert(React.isValidElement(stepItem))
-        const state =
-          index < currentStepIndex
-            ? 'complete'
-            : index === currentStepIndex
-            ? 'current'
-            : 'incomplete'
         return (
           <React.Fragment key={stepItem.key || index}>
-            <StepListItemContainer>
-              <StepListItemCircle state={state}>
-                {state === 'complete' ? <Icon icon="tick" /> : index + 1}
-              </StepListItemCircle>
-              {React.cloneElement(stepItem, {
-                'aria-current': state === 'current' ? 'step' : undefined,
-              })}
-            </StepListItemContainer>
-            {index < stepItems.length - 1 && <StepListItemLine />}
+            {React.cloneElement(stepItem, {
+              stepNumber: stepItem.props.stepNumber ?? index + 1,
+            })}
+            {index < stepListItems.length - 1 && <StepListItemLine />}
           </React.Fragment>
         )
       })}
@@ -116,11 +126,11 @@ export const StepList: React.FC = ({ children }) => {
 
 export const StepPanel = styled.div`
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: center;
-  gap: 70px;
-  min-height: 300px;
-  padding: 50px 70px;
+  gap: 20px;
+  min-height: 400px;
+  padding: 20px;
   > * {
     flex: 1;
   }

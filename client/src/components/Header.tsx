@@ -146,9 +146,9 @@ const Header: React.FC = () => {
                   <span>Arlo</span>
                 </Link>
               </NavbarHeading>
-              {jurisdiction && (
+              {/* {jurisdiction && (
                 <NavbarHeading>Jurisdiction: {jurisdiction.name}</NavbarHeading>
-              )}
+              )} */}
             </NavbarGroup>
             {auth && auth.user && auth.user.type !== 'audit_board' && (
               <>

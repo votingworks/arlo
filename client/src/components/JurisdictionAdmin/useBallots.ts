@@ -55,7 +55,7 @@ const getBallotCount = async (
   return response && response.count
 }
 
-interface ISampleCount {
+export interface ISampleCount {
   ballots: number
   batches?: number
 }

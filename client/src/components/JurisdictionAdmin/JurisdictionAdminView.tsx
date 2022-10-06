@@ -203,7 +203,7 @@ const JurisdictionAdminView: React.FC = () => {
         auditName={auditSettings.auditName}
         isAuditOnline={!!auditSettings.online}
       />
-      <Inner withTopPadding flexDirection="column">
+      <Inner flexDirection="column">
         <RoundManagement
           round={rounds[rounds.length - 1]}
           auditBoards={auditBoards}

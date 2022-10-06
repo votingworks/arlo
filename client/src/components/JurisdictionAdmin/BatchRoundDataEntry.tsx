@@ -427,11 +427,11 @@ const BatchRoundDataEntry: React.FC<{ round: IRound }> = ({ round }) => {
   return (
     <div>
       <div>
-        <p>
+        {/* <p>
           When you have examined all of the ballots assigned to you, enter the
           number of votes recorded for each candidate/choice from the audited
           ballots in each batch.
-        </p>
+        </p> */}
         {resultsFinalizedAt && (
           <Callout
             icon="tick-circle"

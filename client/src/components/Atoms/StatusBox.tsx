@@ -1,7 +1,14 @@
 import React, { ReactElement } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
-import { Callout, H3, H4, Button } from '@blueprintjs/core'
+import {
+  Callout,
+  H3,
+  H4,
+  Button,
+  Divider,
+  ProgressBar,
+} from '@blueprintjs/core'
 import { Formik } from 'formik'
 import { apiDownload } from '../utilities'
 import { Inner } from './Wrapper'
@@ -25,9 +32,9 @@ const SpacedH3 = styled(H3)`
   }
 `
 
-const Wrapper = styled(Callout)`
+const Wrapper = styled.div`
   display: flex;
-  padding: 30px 0;
+  padding: 25px 0;
   .text {
     flex-grow: 1;
     p {
@@ -54,17 +61,39 @@ const StatusBox: React.FC<IStatusBoxProps> = ({
   children,
 }: IStatusBoxProps) => {
   return (
-    <Wrapper icon={null}>
+    <Wrapper>
       <Inner>
-        <div className="text">
-          <SpacedH3>{auditName}</SpacedH3>
-          <H4>{headline}</H4>
-          {details.map(detail => (
-            <p key={detail}>{detail}</p>
-          ))}
-          {children}
+        <div
+          className="bp3-text-large"
+          style={{
+            display: 'flex',
+            width: '100%',
+            justifyContent: 'space-between',
+          }}
+        >
+          <div style={{ display: 'flex' }}>
+            <span>{auditName} - Los Angeles County</span>
+            <Divider style={{ margin: '0 15px' }} />
+            <strong>Round 1</strong>
+          </div>
+          <div
+            style={{ display: 'flex', width: '300px', alignItems: 'center' }}
+          >
+            <div style={{ flexShrink: 0, marginRight: '10px' }}>
+              <strong>1/4 batches audited</strong>
+            </div>
+            <ProgressBar value={0.25} stripes={false} intent="primary" />
+          </div>
+          {/* <div className="text"> */}
         </div>
-        {buttonLabel && onButtonClick && (
+        {/* <SpacedH3>{auditName}</SpacedH3> */}
+        {/* <H4>{headline}</H4> */}
+        {/* {details.map(detail => (
+          <p key={detail}>{detail}</p>
+        ))} */}
+        {/* {children} */}
+        {/* </div> */}
+        {/* {buttonLabel && onButtonClick && (
           <Formik initialValues={{}} onSubmit={onButtonClick}>
             {({ handleSubmit, isSubmitting }) => (
               <div>
@@ -79,7 +108,7 @@ const StatusBox: React.FC<IStatusBoxProps> = ({
               </div>
             )}
           </Formik>
-        )}
+        )} */}
       </Inner>
     </Wrapper>
   )
