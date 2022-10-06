@@ -7,20 +7,22 @@ Note that this library works for one contest at a time, as if each contest being
 targeted is being audited completely independently.
 """
 import math
-from decimal import Decimal, ROUND_CEILING
+from decimal import Decimal
 from collections import defaultdict
 import logging
-from typing import Dict, Tuple, Optional
+from typing import Dict, Tuple, Optional, TypedDict
 from scipy import stats
 
 from .sampler_contest import Contest
+from .ballot_polling_types import SampleSizeOption
 
 
-def get_expected_sample_sizes(
-    alpha: Decimal, contest: Contest, sample_results: Dict[str, int]
-) -> int:
+def get_expected_sample_size(
+    alpha: Decimal, contest: Contest, cumulative_sample_results: Dict[str, int]
+) -> SampleSizeOption:
     """
-    Returns the expected sample size for a BRAVO audit of <contest>
+    Returns the expected sample size (also known as the ASN or average sample number) for a BRAVO
+    audit of <contest>
 
     Input:
         risk_limit      - the risk-limit for this audit
@@ -34,45 +36,76 @@ def get_expected_sample_sizes(
                         }
 
     Output:
-        expected sample size - the expected sample size for the contest
+        the expected sample size for the contest
     """
+    if is_tie(contest):
+        raise ValueError("Cannot compute ASN for a tied contest")
 
-    margin = contest.margins
-    p_w = Decimal("inf")
-    s_w = Decimal(0.0)
-    p_l = Decimal(0.0)
-    # Get smallest p_w - p_l
-    for winner in margin["winners"]:
-        if margin["winners"][winner]["p_w"] < p_w:
-            p_w = Decimal(margin["winners"][winner]["p_w"])
+    winners = contest.margins["winners"]
+    losers = contest.margins["losers"]
 
-    # If there aren't any losers,
-    if not margin["losers"]:
-        return -1
+    if not losers:
+        raise ValueError("Cannot compute ASN for a contest with no losers")
 
-    for loser in margin["losers"]:
-        if margin["losers"][loser]["p_l"] > p_l:
-            p_l = Decimal(margin["losers"][loser]["p_l"])
+    T = get_test_statistics(contest.margins, cumulative_sample_results)
 
-    s_w = p_w / (p_w + p_l)
+    class SampleSizeWinnerLoserStats(TypedDict):
+        p_w: Decimal
+        p_l: Decimal
+        sample_w: int
+        sample_l: int
 
-    if p_w == 1.0 or contest.num_winners >= len(contest.candidates):
-        # Handle single-candidate or crazy landslides
-        return -1
-    elif p_w == p_l:
-        return contest.ballots
-    else:
-        z_w = (2 * s_w).ln()
-        z_l = (2 - 2 * s_w).ln()
+    sample_size = 0
+    sample_size_winner_loser_stats: Optional[SampleSizeWinnerLoserStats] = None
+    for winner_name, winner_stats in winners.items():
+        for loser_name, loser_stats in losers.items():
+            weighted_alpha = (Decimal(1) / alpha) / T[(winner_name, loser_name)]
+            p_w = Decimal(winner_stats["p_w"])
+            p_l = Decimal(loser_stats["p_l"])
+            if p_l == 0:
+                # p_l is 0 --> s_w is 1 --> z_l is -Infinity
+                # Skip this pair to avoid invalid operation errors
+                continue
+            s_w = p_w / (p_w + p_l)
+            z_w = (2 * s_w).ln()
+            z_l = (2 - 2 * s_w).ln()
 
-        T = Decimal(min(get_test_statistics(contest.margins, sample_results).values()))
-
-        weighted_alpha = (Decimal(1.0) / alpha) / T
-        return int(
-            (
+            possible_sample_size = math.ceil(
                 (weighted_alpha.ln() + (z_w / Decimal(2))) / (p_w * z_w + p_l * z_l)
-            ).quantize(Decimal(1), rounding=ROUND_CEILING)
+            )
+            if possible_sample_size > sample_size:
+                sample_size = possible_sample_size
+                sample_size_winner_loser_stats = {
+                    "p_w": p_w,
+                    "p_l": p_l,
+                    "sample_w": cumulative_sample_results[winner_name],
+                    "sample_l": cumulative_sample_results[loser_name],
+                }
+
+    if sample_size == 0:
+        raise ValueError("Sample indicates the audit is over")
+
+    probability_of_completion = (
+        expected_prob(
+            alpha,
+            sample_size_winner_loser_stats["p_w"],
+            sample_size_winner_loser_stats["p_l"],
+            sample_size_winner_loser_stats["sample_w"],
+            sample_size_winner_loser_stats["sample_l"],
+            sample_size,
         )
+        if sample_size_winner_loser_stats is not None
+        # We can't meaningfully compute the probability of completion of the number of winners is
+        # greater than 1
+        and contest.num_winners == 1
+        else None
+    )
+
+    return {
+        "type": "ASN",
+        "size": sample_size,
+        "prob": probability_of_completion,
+    }
 
 
 def get_test_statistics(
@@ -307,7 +340,7 @@ def get_sample_size(
     contest: Contest,
     sample_results: Optional[Dict[str, Dict[str, int]]],
     round_sizes: Optional[Dict[int, int]],
-) -> Dict[str, "SampleSizeOption"]:  # type: ignore
+) -> Dict[str, SampleSizeOption]:
     """
     Computes initial sample size parameterized by likelihood that the
     initial sample will confirm the election result, assuming no
@@ -338,7 +371,6 @@ def get_sample_size(
 
                 }
     """
-
     logging.debug(
         f"bravo::get_sample_size({risk_limit=}, {contest=}, {sample_results=})"
     )
@@ -357,66 +389,19 @@ def get_sample_size(
 
     quants = [0.7, 0.8, 0.9]
 
-    samples: Dict = {}
-
     if round_sizes:
         num_sampled = sum(round_sizes.values())
         # If we've already sampled all the ballots, we should never be here
         if num_sampled >= contest.ballots:
             raise ValueError("All ballots have already been audited!")
 
-    margin = contest.margins
-    # If we're in a race without a loser, throw an error
-    if not margin["losers"]:
+    winners = contest.margins["winners"]
+    losers = contest.margins["losers"]
+
+    if not losers:
         raise ValueError("Contest must have candidates who did not win!")
 
-    # Handle landslides
-    if any([margin["winners"][winner]["p_w"] == 1.0 for winner in contest.winners]):
-        samples["asn"] = {
-            "type": "ASN",
-            "size": 1,
-            "prob": 1.0,
-        }
-
-        return samples
-
-    # Get cumulative sample results
-    cumulative_sample = {}
-    if sample_results:
-        cumulative_sample = compute_cumulative_sample(sample_results)
-    else:
-        for candidate in contest.candidates:
-            cumulative_sample[candidate] = 0
-
-    asn = get_expected_sample_sizes(alpha, contest, cumulative_sample)
-
-    if asn <= 0:
-        raise ValueError("Sample indicates the audit is over!")
-
-    p_w = Decimal("inf")
-    p_l = Decimal(0)
-    best_loser = ""
-    worse_winner = ""
-
-    # For multi-winner, do nothing
-    if contest.num_winners != 1:
-        return {"asn": {"type": "ASN", "size": asn, "prob": None}}
-
-    # Get smallest p_w - p_l
-    for winner in margin["winners"]:
-        if margin["winners"][winner]["p_w"] < p_w:
-            p_w = Decimal(margin["winners"][winner]["p_w"])
-            worse_winner = winner
-
-    for loser in margin["losers"]:
-        if margin["losers"][loser]["p_l"] > p_l:
-            p_l = Decimal(margin["losers"][loser]["p_l"])
-            best_loser = loser
-
-    num_ballots = contest.ballots
-
-    # If tied, do a recount
-    if p_w == p_l:
+    if is_tie(contest):
         return {
             "all-ballots": {
                 "type": "all-ballots",
@@ -425,29 +410,57 @@ def get_sample_size(
             }
         }
 
-    sample_w = cumulative_sample[worse_winner]
-    sample_l = cumulative_sample[best_loser]
+    if is_landslide(contest):
+        return {
+            "asn": {"type": "ASN", "size": 1, "prob": 1},
+        }
 
-    samples["asn"] = {
-        "type": "ASN",
-        "size": asn,
-        "prob": expected_prob(alpha, p_w, p_l, sample_w, sample_l, asn),
-    }
+    cumulative_sample = {}
+    if sample_results:
+        cumulative_sample = compute_cumulative_sample(sample_results)
+    else:
+        for candidate in contest.candidates:
+            cumulative_sample[candidate] = 0
+
+    samples: Dict[str, SampleSizeOption] = {}
+
+    samples["asn"] = get_expected_sample_size(alpha, contest, cumulative_sample)
+
+    if contest.num_winners != 1:
+        return samples
 
     for quant in quants:
-        size = bravo_sample_sizes(
-            alpha, p_w, p_l, sample_w, sample_l, quant, contest.ballots
-        )
-        if size != 0:
-            samples[str(quant)] = {"type": None, "size": size, "prob": quant}
+        sample_size = 0
+        for winner_name, winner_stats in winners.items():
+            for loser_name, loser_stats in losers.items():
+                p_w = Decimal(winner_stats["p_w"])
+                p_l = Decimal(loser_stats["p_l"])
+                if p_l == 0:
+                    # Skip this pair to avoid invalid operation errors
+                    continue
+                sample_w = cumulative_sample[winner_name]
+                sample_l = cumulative_sample[loser_name]
+
+                possible_sample_size = bravo_sample_sizes(
+                    alpha, p_w, p_l, sample_w, sample_l, quant, contest.ballots
+                )
+                if possible_sample_size > sample_size:
+                    sample_size = possible_sample_size
+
+        if sample_size != 0:
+            samples[str(quant)] = {
+                "type": None,
+                "size": sample_size,
+                "prob": quant,
+            }
 
     # If the computed sample size is a good chunk of the ballots, recommend
     # auditing all ballots, since this is actually less work than auditing a
     # large proportion (for large elections).
     large_election_threshold = 100000
-    all_ballots_threshold = num_ballots * 0.25
+    all_ballots_threshold = contest.ballots * 0.25
     if (
-        num_ballots > large_election_threshold
+        contest.ballots > large_election_threshold
         and "0.9" in samples
         and samples["0.9"]["size"] >= all_ballots_threshold
     ):
@@ -517,3 +530,25 @@ def compute_risk(
             finished = False
     logging.debug(f"bravo::compute_risk -> {measurements=}, {finished=}")
     return measurements, finished
+
+
+def is_tie(contest: Contest) -> bool:
+    winners = contest.margins["winners"]
+    losers = contest.margins["losers"]
+
+    if not losers:
+        return False
+
+    smallest_p_w = min([winner_stats["p_w"] for winner_stats in winners.values()])
+    largest_p_l = max([loser_stats["p_l"] for loser_stats in losers.values()])
+    return bool(smallest_p_w == largest_p_l)
+
+
+def is_landslide(contest: Contest) -> bool:
+    losers = contest.margins["losers"]
+
+    if not losers:  # pragma: no cover
+        return False
+
+    largest_p_l = max([loser_stats["p_l"] for loser_stats in losers.values()])
+    return bool(largest_p_l == 0)

@@ -100,13 +100,7 @@ def parse_compute_sample_sizes_input(
 
     contest = Contest(
         choices=[
-            ContestChoice(
-                id=candidate["name"],
-                num_votes=candidate["votes"]
-                + 0.01  # Safeguard against math errors involving 0s
-                if candidate["votes"] == 0
-                else candidate["votes"],
-            )
+            ContestChoice(id=candidate["name"], num_votes=candidate["votes"])
             for candidate in candidates
         ],
         num_winners=num_winners,
@@ -133,7 +127,10 @@ def compute_ballot_polling_sample_size(
         risk_limit_percentage, contest, None, None
     )
     sample_size: int = sample_size_options.get(
-        "0.9", sample_size_options.get("asn", sample_size_options.get("all-ballots")),
+        "0.9",
+        sample_size_options.get(
+            "all-ballots", sample_size_options.get("asn", {"size": contest.ballots})
+        ),
     )["size"]
     return min(sample_size, contest.ballots)
 
