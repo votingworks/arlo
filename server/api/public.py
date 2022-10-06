@@ -129,7 +129,7 @@ def compute_ballot_polling_sample_size(
     sample_size: int = sample_size_options.get(
         "0.9",
         sample_size_options.get(
-            "asn", sample_size_options.get("all-ballots", {"size": contest.ballots})
+            "all-ballots", sample_size_options.get("asn", {"size": contest.ballots})
         ),
     )["size"]
     return min(sample_size, contest.ballots)
