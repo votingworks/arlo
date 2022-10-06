@@ -574,6 +574,34 @@ def test_ballot_polling_not_found_ballots(snapshot):
     snapshot.assert_match(not_found_p_values)
 
 
+def test_bravo_sample_size_considers_all_candidate_pairs():
+    contest_data = {
+        "candidate1": 200_000,
+        "candidate2": 120_000,
+        "candidate3": 100_000,
+        "ballots": 500_000,
+        "numWinners": 1,
+        "votesAllowed": 1,
+    }
+    contest = Contest("Contest", contest_data)
+    sample_results = {
+        # Round 1 meets the risk limit for candidates 1 and 2 (the candidates with the smallest
+        # margin in the reported election results) but not candidates 1 and 3
+        "round1": {"candidate1": 200, "candidate2": 120, "candidate3": 200},
+    }
+    round_sizes = {"round1": 520}
+
+    sample_size = bravo.get_sample_size(
+        RISK_LIMIT, contest, sample_results, round_sizes
+    )
+    assert sample_size == {
+        "asn": {"prob": 0.51, "size": 766, "type": "ASN"},
+        "0.7": {"prob": 0.7, "size": 877, "type": None},
+        "0.8": {"prob": 0.8, "size": 954, "type": None},
+        "0.9": {"prob": 0.9, "size": 1075, "type": None},
+    }
+
+
 def test_bravo_sample_size_zero_risk_limit():
     contest_data = {
         "winner": 15,
