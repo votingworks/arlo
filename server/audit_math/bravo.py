@@ -10,7 +10,7 @@ import math
 from decimal import Decimal
 from collections import defaultdict
 import logging
-from typing import Dict, Tuple, Optional
+from typing import Dict, Tuple, Optional, TypedDict
 from scipy import stats
 
 from .sampler_contest import Contest
@@ -49,8 +49,14 @@ def get_expected_sample_size(
 
     T = get_test_statistics(contest.margins, cumulative_sample_results)
 
+    class SampleSizeWinnerLoserStats(TypedDict):
+        p_w: Decimal
+        p_l: Decimal
+        sample_w: int
+        sample_l: int
+
     sample_size = 0
-    probability_of_completion = None
+    sample_size_winner_loser_stats: Optional[SampleSizeWinnerLoserStats] = None
     for winner_name, winner_stats in winners.items():
         for loser_name, loser_stats in losers.items():
             weighted_alpha = (Decimal(1) / alpha) / T[(winner_name, loser_name)]
@@ -69,20 +75,31 @@ def get_expected_sample_size(
             )
             if possible_sample_size > sample_size:
                 sample_size = possible_sample_size
-                # We can't meaningfully compute the probability of completion of the number of
-                # winners is greater than 1
-                if contest.num_winners == 1:
-                    probability_of_completion = expected_prob(
-                        alpha,
-                        p_w,
-                        p_l,
-                        cumulative_sample_results[winner_name],
-                        cumulative_sample_results[loser_name],
-                        sample_size,
-                    )
+                sample_size_winner_loser_stats = {
+                    "p_w": p_w,
+                    "p_l": p_l,
+                    "sample_w": cumulative_sample_results[winner_name],
+                    "sample_l": cumulative_sample_results[loser_name],
+                }
 
     if sample_size == 0:
         raise ValueError("Sample indicates the audit is over")
+
+    probability_of_completion = (
+        expected_prob(
+            alpha,
+            sample_size_winner_loser_stats["p_w"],
+            sample_size_winner_loser_stats["p_l"],
+            sample_size_winner_loser_stats["sample_w"],
+            sample_size_winner_loser_stats["sample_l"],
+            sample_size,
+        )
+        if sample_size_winner_loser_stats is not None
+        # We can't meaningfully compute the probability of completion of the number of winners is
+        # greater than 1
+        and contest.num_winners == 1
+        else None
+    )
 
     return {
         "type": "ASN",
