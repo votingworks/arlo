@@ -100,7 +100,7 @@ const render = () =>
   )
 
 const expectToBeOnStep = async (name: string) => {
-  await screen.findByRole('listitem', {
+  await screen.findByRole('heading', {
     name,
     current: 'step',
   })

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { H2, Button, H4, Colors, Icon, Checkbox, Card } from '@blueprintjs/core'
+import { H2, Button, H4, Checkbox } from '@blueprintjs/core'
 import {
   useQueryClient,
   useMutation,
@@ -22,6 +22,13 @@ import {
 } from '../useFileUpload'
 import { apiDownload } from '../utilities'
 import LinkButton from '../Atoms/LinkButton'
+import {
+  StepPanel,
+  StepActions,
+  Steps,
+  StepListItem,
+  StepList,
+} from '../Atoms/Steps'
 
 const STEPS = [
   'Upload Election Results',
@@ -112,107 +119,6 @@ const useBatchInventorySignOff = (
     undoSignOff,
   }
 }
-
-const StepContainer = styled(Card).attrs({ elevation: 1 })`
-  padding: 0;
-`
-
-const StepProgressRow = styled.ol`
-  background-color: ${Colors.LIGHT_GRAY5};
-  display: flex;
-  align-items: center;
-  padding: 25px;
-  margin: 0;
-  border-radius: 3px 3px 0 0;
-`
-
-const StepProgressStep = styled.li`
-  display: flex;
-  align-items: center;
-`
-
-const StepProgressCircle = styled.div<{ incomplete: boolean }>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 30px;
-  width: 30px;
-  border-radius: 50%;
-  background-color: ${props =>
-    props.incomplete ? Colors.GRAY4 : Colors.BLUE3};
-  margin-right: 10px;
-  color: ${Colors.WHITE};
-  font-weight: 500;
-`
-
-const StepProgressLabel = styled.div<{ incomplete: boolean }>`
-  color: ${props => (props.incomplete ? Colors.GRAY3 : 'inherit')};
-  font-weight: 700;
-`
-
-const StepProgressLine = styled.div`
-  flex-grow: 1;
-  height: 1px;
-  background: ${Colors.GRAY5};
-  margin: 0 10px;
-`
-
-const StepProgress: React.FC<{
-  steps: readonly string[]
-  currentStep: string
-}> = ({ steps, currentStep }) => {
-  const currentStepIndex = steps.indexOf(currentStep)
-  return (
-    <StepProgressRow>
-      {steps.map((step, i) => (
-        <React.Fragment key={step}>
-          <StepProgressStep
-            aria-label={step}
-            aria-current={i === currentStepIndex ? 'step' : undefined}
-          >
-            <StepProgressCircle incomplete={i > currentStepIndex}>
-              {i < currentStepIndex ? <Icon icon="tick" /> : i + 1}
-            </StepProgressCircle>
-            <StepProgressLabel incomplete={i > currentStepIndex}>
-              {step}
-            </StepProgressLabel>
-          </StepProgressStep>
-          {i < steps.length - 1 && <StepProgressLine />}
-        </React.Fragment>
-      ))}
-    </StepProgressRow>
-  )
-}
-
-const StepPanel = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 70px;
-  min-height: 300px;
-  padding: 50px 70px;
-  > * {
-    flex: 1;
-  }
-`
-
-const StepActionsRow = styled.div`
-  display: flex;
-  padding: 20px;
-  background-color: ${Colors.LIGHT_GRAY5};
-  justify-content: space-between;
-  border-radius: 0 0 3px 3px;
-`
-
-const StepActions: React.FC<{
-  left?: React.ReactElement
-  right?: React.ReactElement
-}> = ({ left, right }) => (
-  <StepActionsRow>
-    {left || <div />}
-    {right || <div />}
-  </StepActionsRow>
-)
 
 const UploadElectionResultsStep: React.FC<{
   nextStep: () => void
@@ -417,7 +323,9 @@ const BatchInventorySteps: React.FC<{
     ? 'Inventory Batches'
     : 'Download Audit Files'
 
-  const [step, setStep] = useState<typeof STEPS[number]>(initialStep)
+  const [currentStep, setCurrentStep] = useState<typeof STEPS[number]>(
+    initialStep
+  )
 
   return (
     <Wrapper>
@@ -432,16 +340,22 @@ const BatchInventorySteps: React.FC<{
             Back to Audit Source Data
           </LinkButton>
         </HeadingRow>
-        <StepContainer>
-          <StepProgress steps={STEPS} currentStep={step} />
+        <Steps>
+          <StepList>
+            {STEPS.map(step => (
+              <StepListItem key={step} current={step === currentStep}>
+                {step}
+              </StepListItem>
+            ))}
+          </StepList>
           {(() => {
-            switch (step) {
+            switch (currentStep) {
               case 'Upload Election Results':
                 return (
                   <UploadElectionResultsStep
                     cvrUpload={cvrUpload}
                     tabulatorStatusUpload={tabulatorStatusUpload}
-                    nextStep={() => setStep('Inventory Batches')}
+                    nextStep={() => setCurrentStep('Inventory Batches')}
                   />
                 )
               case 'Inventory Batches':
@@ -449,8 +363,8 @@ const BatchInventorySteps: React.FC<{
                   <InventoryBatchesStep
                     worksheetUrl={`/election/${electionId}/jurisdiction/${jurisdictionId}/batch-inventory/worksheet`}
                     signOffQueries={signOffQueries}
-                    prevStep={() => setStep('Upload Election Results')}
-                    nextStep={() => setStep('Download Audit Files')}
+                    prevStep={() => setCurrentStep('Upload Election Results')}
+                    nextStep={() => setCurrentStep('Download Audit Files')}
                   />
                 )
               case 'Download Audit Files':
@@ -458,14 +372,14 @@ const BatchInventorySteps: React.FC<{
                   <DownloadAuditFilesStep
                     ballotManifestUrl={`/election/${electionId}/jurisdiction/${jurisdictionId}/batch-inventory/ballot-manifest`}
                     batchTalliesUrl={`/election/${electionId}/jurisdiction/${jurisdictionId}/batch-inventory/batch-tallies`}
-                    prevStep={() => setStep('Inventory Batches')}
+                    prevStep={() => setCurrentStep('Inventory Batches')}
                   />
                 )
               default:
                 throw new Error('Unknown step')
             }
           })()}
-        </StepContainer>
+        </Steps>
       </Inner>
     </Wrapper>
   )
