@@ -237,7 +237,7 @@ const ElectionResultsCard: React.FC<IProps> = ({
   } = useForm<IElectionResultsFormState>({
     defaultValues: constructInitialElectionResults(),
   })
-  const { errors, isSubmitted, isSubmitting } = formState
+  const { errors, isSubmitted, isSubmitting, touched } = formState
   const {
     append: addCandidate,
     fields: candidateFields,
@@ -302,6 +302,16 @@ const ElectionResultsCard: React.FC<IProps> = ({
                       defaultValue={`Candidate ${i + 1}`}
                       name={`candidates[${i}].name`}
                       onChange={validateAllCandidateNameFields}
+                      onFocus={() => {
+                        const self = document.querySelector<HTMLInputElement>(
+                          `input[name="candidates[${i}].name"]`
+                        )
+                        // Auto-select the default candidate name for easy replacement on first
+                        // focus
+                        if (self && !touched.candidates?.[i]?.name) {
+                          self.select()
+                        }
+                      }}
                       placeholder="Candidate name"
                       readOnly={!editable}
                       ref={register({
