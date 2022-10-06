@@ -21,7 +21,8 @@ def get_expected_sample_size(
     alpha: Decimal, contest: Contest, cumulative_sample_results: Dict[str, int]
 ) -> SampleSizeOption:
     """
-    Returns the expected sample size or ASN (average sample number) for a BRAVO audit of <contest>
+    Returns the expected sample size (also known as the ASN or average sample number) for a BRAVO
+    audit of <contest>
 
     Input:
         risk_limit      - the risk-limit for this audit
@@ -35,7 +36,7 @@ def get_expected_sample_size(
                         }
 
     Output:
-        the expected sample size or ASN for the contest
+        the expected sample size for the contest
     """
     if is_tie(contest):
         raise ValueError("Cannot compute ASN for a tied contest")
