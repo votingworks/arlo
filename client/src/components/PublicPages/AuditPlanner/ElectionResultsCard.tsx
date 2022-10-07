@@ -234,6 +234,7 @@ const ElectionResultsCard: React.FC<IProps> = ({
     register,
     reset: resetForm,
     trigger,
+    watch,
   } = useForm<IElectionResultsFormState>({
     defaultValues: constructInitialElectionResults(),
   })
@@ -376,7 +377,11 @@ const ElectionResultsCard: React.FC<IProps> = ({
                           },
                           valueAsNumber: true,
                         })}
-                        value={getValues().candidates?.[i]?.votes || 0}
+                        value={
+                          watch<string, number | null>(
+                            `candidates[${i}].votes`
+                          ) || 0
+                        }
                       />
                       <Button
                         aria-label={`Remove Candidate ${i + 1}`}
@@ -433,7 +438,7 @@ const ElectionResultsCard: React.FC<IProps> = ({
                     },
                     valueAsNumber: true,
                   })}
-                  value={getValues().numWinners || 0}
+                  value={watch('numWinners') || 0}
                 />
               </td>
               <td>
@@ -458,7 +463,7 @@ const ElectionResultsCard: React.FC<IProps> = ({
                     required: 'Required',
                     valueAsNumber: true,
                   })}
-                  value={getValues().totalBallotsCast || 0}
+                  value={watch('totalBallotsCast') || 0}
                 />
               </td>
             </tr>
