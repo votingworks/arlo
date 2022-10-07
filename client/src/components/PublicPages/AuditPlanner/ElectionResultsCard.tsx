@@ -234,10 +234,11 @@ const ElectionResultsCard: React.FC<IProps> = ({
     register,
     reset: resetForm,
     trigger,
+    watch,
   } = useForm<IElectionResultsFormState>({
     defaultValues: constructInitialElectionResults(),
   })
-  const { errors, isSubmitted, isSubmitting } = formState
+  const { errors, isSubmitted, isSubmitting, touched } = formState
   const {
     append: addCandidate,
     fields: candidateFields,
@@ -294,13 +295,24 @@ const ElectionResultsCard: React.FC<IProps> = ({
                     intent={errors.candidates?.[i]?.name && 'danger'}
                   >
                     <input
-                      aria-label={`Candidate ${i} Name`}
+                      aria-label={`Candidate ${i + 1} Name`}
                       className={classnames(
                         Classes.INPUT,
                         errors.candidates?.[i]?.name && Classes.INTENT_DANGER
                       )}
+                      defaultValue={`Candidate ${i + 1}`}
                       name={`candidates[${i}].name`}
                       onChange={validateAllCandidateNameFields}
+                      onFocus={() => {
+                        const self = document.querySelector<HTMLInputElement>(
+                          `input[name="candidates[${i}].name"]`
+                        )
+                        // Auto-select the default candidate name for easy replacement on first
+                        // focus
+                        if (self && !touched.candidates?.[i]?.name) {
+                          self.select()
+                        }
+                      }}
                       placeholder="Candidate name"
                       readOnly={!editable}
                       ref={register({
@@ -340,7 +352,7 @@ const ElectionResultsCard: React.FC<IProps> = ({
                   >
                     <CandidateVotesInputAndRemoveButtonContainer>
                       <NumericInput
-                        aria-label={`Candidate ${i} Votes`}
+                        aria-label={`Candidate ${i + 1} Votes`}
                         hasError={Boolean(errors.candidates?.[i]?.votes)}
                         name={`candidates[${i}].votes`}
                         onChange={validateAllCandidateVotesFields}
@@ -365,10 +377,14 @@ const ElectionResultsCard: React.FC<IProps> = ({
                           },
                           valueAsNumber: true,
                         })}
-                        value={getValues().candidates?.[i]?.votes || 0}
+                        value={
+                          watch<string, number | null>(
+                            `candidates[${i}].votes`
+                          ) || 0
+                        }
                       />
                       <Button
-                        aria-label={`Remove Candidate ${i}`}
+                        aria-label={`Remove Candidate ${i + 1}`}
                         disabled={!editable || candidateFields.length === 2}
                         icon="delete"
                         intent={editable ? 'danger' : undefined}
@@ -422,7 +438,7 @@ const ElectionResultsCard: React.FC<IProps> = ({
                     },
                     valueAsNumber: true,
                   })}
-                  value={getValues().numWinners || 0}
+                  value={watch('numWinners') || 0}
                 />
               </td>
               <td>
@@ -447,7 +463,7 @@ const ElectionResultsCard: React.FC<IProps> = ({
                     required: 'Required',
                     valueAsNumber: true,
                   })}
-                  value={getValues().totalBallotsCast || 0}
+                  value={watch('totalBallotsCast') || 0}
                 />
               </td>
             </tr>

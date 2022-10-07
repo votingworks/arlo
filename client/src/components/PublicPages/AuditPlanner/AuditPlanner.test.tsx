@@ -58,15 +58,6 @@ async function checkThatElectionResultsCardIsInInitialState() {
   )
   screen.getByRole('columnheader', { name: 'Candidate' })
   screen.getByRole('columnheader', { name: 'Votes' })
-  const candidate0NameInput = screen.getByRole('textbox', {
-    name: 'Candidate 0 Name',
-  })
-  const candidate0VotesInput = screen.getByRole('spinbutton', {
-    name: 'Candidate 0 Votes',
-  })
-  const candidate0RemoveButton = screen.getByRole('button', {
-    name: 'Remove Candidate 0',
-  })
   const candidate1NameInput = screen.getByRole('textbox', {
     name: 'Candidate 1 Name',
   })
@@ -76,12 +67,21 @@ async function checkThatElectionResultsCardIsInInitialState() {
   const candidate1RemoveButton = screen.getByRole('button', {
     name: 'Remove Candidate 1',
   })
-  expect(candidate0NameInput).toHaveValue('')
-  expect(candidate0VotesInput).toHaveValue(null)
-  expect(candidate0RemoveButton).toBeDisabled()
-  expect(candidate1NameInput).toHaveValue('')
+  const candidate2NameInput = screen.getByRole('textbox', {
+    name: 'Candidate 2 Name',
+  })
+  const candidate2VotesInput = screen.getByRole('spinbutton', {
+    name: 'Candidate 2 Votes',
+  })
+  const candidate2RemoveButton = screen.getByRole('button', {
+    name: 'Remove Candidate 2',
+  })
+  expect(candidate1NameInput).toHaveValue('Candidate 1')
   expect(candidate1VotesInput).toHaveValue(null)
   expect(candidate1RemoveButton).toBeDisabled()
+  expect(candidate2NameInput).toHaveValue('Candidate 2')
+  expect(candidate2VotesInput).toHaveValue(null)
+  expect(candidate2RemoveButton).toBeDisabled()
   const addCandidateButton = screen.getByRole('button', {
     name: /Add Candidate/,
   })
@@ -98,12 +98,12 @@ async function checkThatElectionResultsCardIsInInitialState() {
   const planAuditButton = screen.getByRole('button', { name: 'Plan Audit' })
 
   return {
-    candidate0NameInput,
-    candidate0VotesInput,
-    candidate0RemoveButton,
     candidate1NameInput,
     candidate1VotesInput,
     candidate1RemoveButton,
+    candidate2NameInput,
+    candidate2VotesInput,
+    candidate2RemoveButton,
     addCandidateButton,
     numberOfWinnersInput,
     totalBallotsCastInput,
@@ -223,10 +223,10 @@ test('Entering election results - validation and submit', async () => {
     renderAuditPlanner()
     await screen.findByRole('heading', { name: 'Audit Planner' })
     const {
-      candidate0NameInput,
-      candidate0VotesInput,
       candidate1NameInput,
       candidate1VotesInput,
+      candidate2NameInput,
+      candidate2VotesInput,
       numberOfWinnersInput,
       totalBallotsCastInput,
       planAuditButton,
@@ -235,10 +235,12 @@ test('Entering election results - validation and submit', async () => {
     // Failed submissions
     userEvent.click(planAuditButton)
     await areExpectedErrorMessagesDisplayed({
-      displayed: ['Required', 'Required', 'Required', 'Required', 'Required'],
+      displayed: ['Required', 'Required', 'Required'],
     })
-    userEvent.type(candidate0NameInput, 'Helga Hippo')
+    userEvent.clear(candidate1NameInput)
     userEvent.type(candidate1NameInput, 'Helga Hippo')
+    userEvent.clear(candidate2NameInput)
+    userEvent.type(candidate2NameInput, 'Helga Hippo')
     await areExpectedErrorMessagesDisplayed({
       displayed: [
         'Candidates must have unique names',
@@ -247,45 +249,45 @@ test('Entering election results - validation and submit', async () => {
         'Required',
       ],
     })
-    userEvent.clear(candidate1NameInput)
-    userEvent.type(candidate1NameInput, 'Bobby Bear')
+    userEvent.clear(candidate2NameInput)
+    userEvent.type(candidate2NameInput, 'Bobby Bear')
     await areExpectedErrorMessagesDisplayed({
       displayed: ['Required', 'Required', 'Required'],
       notDisplayed: ['Candidates must have unique names'],
     })
-    userEvent.type(candidate0VotesInput, '0')
     userEvent.type(candidate1VotesInput, '0')
+    userEvent.type(candidate2VotesInput, '0')
     userEvent.type(totalBallotsCastInput, '1')
     await areExpectedErrorMessagesDisplayed({
       displayed: ['At least 1 candidate must have greater than 0 votes'],
       notDisplayed: ['Required'],
     })
-    userEvent.clear(candidate0VotesInput)
-    userEvent.type(candidate0VotesInput, '-1')
+    userEvent.clear(candidate1VotesInput)
+    userEvent.type(candidate1VotesInput, '-1')
     await areExpectedErrorMessagesDisplayed({
       displayed: ['Cannot be less than 0'],
       notDisplayed: ['At least 1 candidate must have greater than 0 votes'],
     })
-    userEvent.clear(candidate0VotesInput)
-    userEvent.type(candidate0VotesInput, '10000000000000000')
+    userEvent.clear(candidate1VotesInput)
+    userEvent.type(candidate1VotesInput, '10000000000000000')
     await areExpectedErrorMessagesDisplayed({
       displayed: ['Too large'],
       notDisplayed: ['Cannot be less than 0'],
     })
-    userEvent.clear(candidate0VotesInput)
-    userEvent.type(candidate0VotesInput, '1000.2')
+    userEvent.clear(candidate1VotesInput)
+    userEvent.type(candidate1VotesInput, '1000.2')
     await areExpectedErrorMessagesDisplayed({
       displayed: ['Can only contain numeric characters'],
       notDisplayed: ['Too large'],
     })
-    userEvent.clear(candidate0VotesInput)
-    userEvent.type(candidate0VotesInput, '1000')
+    userEvent.clear(candidate1VotesInput)
+    userEvent.type(candidate1VotesInput, '1000')
     await areExpectedErrorMessagesDisplayed({
       displayed: [],
       notDisplayed: ['Can only contain numeric characters'],
     })
-    userEvent.clear(candidate1VotesInput)
-    userEvent.type(candidate1VotesInput, '900')
+    userEvent.clear(candidate2VotesInput)
+    userEvent.type(candidate2VotesInput, '900')
     userEvent.clear(totalBallotsCastInput)
     userEvent.type(totalBallotsCastInput, '0')
     await areExpectedErrorMessagesDisplayed({
@@ -379,28 +381,28 @@ test('Entering election results - adding and removing candidates', async () => {
       expect(screen.getAllByRole('row')).toHaveLength(initialNumRows + 1)
     )
     expect(
-      screen.getByRole('textbox', { name: 'Candidate 2 Name' })
-    ).toHaveValue('')
+      screen.getByRole('textbox', { name: 'Candidate 3 Name' })
+    ).toHaveValue('Candidate 3')
     expect(
-      screen.getByRole('spinbutton', { name: 'Candidate 2 Votes' })
+      screen.getByRole('spinbutton', { name: 'Candidate 3 Votes' })
     ).toHaveValue(null)
-    const candidate2RemoveButton = screen.getByRole('button', {
-      name: 'Remove Candidate 2',
+    const candidate3RemoveButton = screen.getByRole('button', {
+      name: 'Remove Candidate 3',
     })
 
     // Remove candidate
-    userEvent.click(candidate2RemoveButton)
+    userEvent.click(candidate3RemoveButton)
     await waitFor(() =>
       expect(screen.getAllByRole('row')).toHaveLength(initialNumRows)
     )
     expect(
-      screen.queryByRole('textbox', { name: 'Candidate 2 Name' })
+      screen.queryByRole('textbox', { name: 'Candidate 3 Name' })
     ).not.toBeInTheDocument()
     expect(
-      screen.queryByRole('spinbutton', { name: 'Candidate 2 Votes' })
+      screen.queryByRole('spinbutton', { name: 'Candidate 3 Votes' })
     ).not.toBeInTheDocument()
     expect(
-      screen.queryByRole('textbox', { name: 'Remove Candidate 2' })
+      screen.queryByRole('textbox', { name: 'Remove Candidate 3' })
     ).not.toBeInTheDocument()
   })
 })
@@ -411,10 +413,10 @@ test('Entering election results - clearing', async () => {
     renderAuditPlanner()
     await screen.findByRole('heading', { name: 'Audit Planner' })
     let {
-      candidate0NameInput,
-      candidate0VotesInput,
       candidate1NameInput,
       candidate1VotesInput,
+      candidate2NameInput,
+      candidate2VotesInput,
       addCandidateButton,
       numberOfWinnersInput,
       totalBallotsCastInput,
@@ -423,10 +425,12 @@ test('Entering election results - clearing', async () => {
     } = await checkThatElectionResultsCardIsInInitialState()
 
     // Enter election results but don't submit
-    userEvent.type(candidate0NameInput, 'Helga Hippo')
-    userEvent.type(candidate0VotesInput, '1000')
-    userEvent.type(candidate1NameInput, 'Bobby Bear')
-    userEvent.type(candidate1VotesInput, '900')
+    userEvent.clear(candidate1NameInput)
+    userEvent.type(candidate1NameInput, 'Helga Hippo')
+    userEvent.type(candidate1VotesInput, '1000')
+    userEvent.clear(candidate2NameInput)
+    userEvent.type(candidate2NameInput, 'Bobby Bear')
+    userEvent.type(candidate2VotesInput, '900')
     userEvent.click(addCandidateButton)
     userEvent.type(numberOfWinnersInput, '2')
     userEvent.type(totalBallotsCastInput, '2000')
@@ -444,10 +448,10 @@ test('Entering election results - clearing', async () => {
     )
     await waitFor(() => expect(confirmDialog).not.toBeInTheDocument())
     ;({
-      candidate0NameInput,
-      candidate0VotesInput,
       candidate1NameInput,
       candidate1VotesInput,
+      candidate2NameInput,
+      candidate2VotesInput,
       addCandidateButton,
       numberOfWinnersInput,
       totalBallotsCastInput,
@@ -456,10 +460,12 @@ test('Entering election results - clearing', async () => {
     } = await checkThatElectionResultsCardIsInInitialState())
 
     // Enter election results and submit
-    userEvent.type(candidate0NameInput, 'Helga Hippo')
-    userEvent.type(candidate0VotesInput, '1000')
-    userEvent.type(candidate1NameInput, 'Bobby Bear')
-    userEvent.type(candidate1VotesInput, '900')
+    userEvent.clear(candidate1NameInput)
+    userEvent.type(candidate1NameInput, 'Helga Hippo')
+    userEvent.type(candidate1VotesInput, '1000')
+    userEvent.clear(candidate2NameInput)
+    userEvent.type(candidate2NameInput, 'Bobby Bear')
+    userEvent.type(candidate2VotesInput, '900')
     userEvent.type(totalBallotsCastInput, '2000')
     userEvent.click(planAuditButton)
     await screen.findByText('1,001 ballots')
@@ -477,10 +483,10 @@ test('Entering election results - clearing', async () => {
     )
     await waitFor(() => expect(confirmDialog).not.toBeInTheDocument())
     ;({
-      candidate0NameInput,
-      candidate0VotesInput,
       candidate1NameInput,
       candidate1VotesInput,
+      candidate2NameInput,
+      candidate2VotesInput,
       addCandidateButton,
       numberOfWinnersInput,
       totalBallotsCastInput,
@@ -499,18 +505,20 @@ test('Entering election results - editing', async () => {
     renderAuditPlanner()
     await screen.findByRole('heading', { name: 'Audit Planner' })
     const elements = await checkThatElectionResultsCardIsInInitialState()
-    const { candidate0VotesInput, candidate1NameInput } = elements
+    const { candidate1VotesInput, candidate2NameInput } = elements
     let {
-      candidate0NameInput,
-      candidate1VotesInput,
+      candidate1NameInput,
+      candidate2VotesInput,
       totalBallotsCastInput,
       planAuditButton,
     } = elements
 
-    userEvent.type(candidate0NameInput, 'Helga Hippo')
-    userEvent.type(candidate0VotesInput, '1000')
-    userEvent.type(candidate1NameInput, 'Bobby Bear')
-    userEvent.type(candidate1VotesInput, '900')
+    userEvent.clear(candidate1NameInput)
+    userEvent.type(candidate1NameInput, 'Helga Hippo')
+    userEvent.type(candidate1VotesInput, '1000')
+    userEvent.clear(candidate2NameInput)
+    userEvent.type(candidate2NameInput, 'Bobby Bear')
+    userEvent.type(candidate2VotesInput, '900')
     userEvent.type(totalBallotsCastInput, '2000')
     userEvent.click(planAuditButton)
     await waitFor(() =>
@@ -537,18 +545,18 @@ test('Entering election results - editing', async () => {
     planAuditButton = await screen.findByRole('button', {
       name: 'Plan Audit',
     })
-    candidate0NameInput = screen.getByRole('textbox', {
-      name: 'Candidate 0 Name',
+    candidate1NameInput = screen.getByRole('textbox', {
+      name: 'Candidate 1 Name',
     })
-    candidate1VotesInput = screen.getByRole('spinbutton', {
-      name: 'Candidate 1 Votes',
+    candidate2VotesInput = screen.getByRole('spinbutton', {
+      name: 'Candidate 2 Votes',
     })
     totalBallotsCastInput = screen.getByRole('spinbutton', {
       name: 'Total Ballots Cast',
     })
-    userEvent.type(candidate0NameInput, 'potamus')
-    userEvent.clear(candidate1VotesInput)
-    userEvent.type(candidate1VotesInput, '901')
+    userEvent.type(candidate1NameInput, 'potamus')
+    userEvent.clear(candidate2VotesInput)
+    userEvent.type(candidate2VotesInput, '901')
     userEvent.clear(totalBallotsCastInput)
     userEvent.type(totalBallotsCastInput, '2001')
     userEvent.click(planAuditButton)
@@ -582,18 +590,20 @@ test('Audit plan card interactions', async () => {
     renderAuditPlanner()
     await screen.findByRole('heading', { name: 'Audit Planner' })
     const elements = await checkThatElectionResultsCardIsInInitialState()
-    const { candidate0VotesInput, candidate1NameInput } = elements
+    const { candidate1VotesInput, candidate2NameInput } = elements
     let {
-      candidate0NameInput,
-      candidate1VotesInput,
+      candidate1NameInput,
+      candidate2VotesInput,
       totalBallotsCastInput,
       planAuditButton,
     } = elements
 
-    userEvent.type(candidate0NameInput, 'Helga Hippo')
-    userEvent.type(candidate0VotesInput, '1000')
-    userEvent.type(candidate1NameInput, 'Bobby Bear')
-    userEvent.type(candidate1VotesInput, '900')
+    userEvent.clear(candidate1NameInput)
+    userEvent.type(candidate1NameInput, 'Helga Hippo')
+    userEvent.type(candidate1VotesInput, '1000')
+    userEvent.clear(candidate2NameInput)
+    userEvent.type(candidate2NameInput, 'Bobby Bear')
+    userEvent.type(candidate2VotesInput, '900')
     userEvent.type(totalBallotsCastInput, '2000')
     userEvent.click(planAuditButton)
     await screen.findByText('1,001 ballots')
@@ -674,18 +684,18 @@ test('Audit plan card interactions', async () => {
     expect(sliderHandle.classList.contains('.bp3-disabled'))
     screen.getByText('—')
 
-    candidate0NameInput = screen.getByRole('textbox', {
-      name: 'Candidate 0 Name',
+    candidate1NameInput = screen.getByRole('textbox', {
+      name: 'Candidate 1 Name',
     })
-    candidate1VotesInput = screen.getByRole('spinbutton', {
-      name: 'Candidate 1 Votes',
+    candidate2VotesInput = screen.getByRole('spinbutton', {
+      name: 'Candidate 2 Votes',
     })
     totalBallotsCastInput = screen.getByRole('spinbutton', {
       name: 'Total Ballots Cast',
     })
-    userEvent.type(candidate0NameInput, 'potamus')
-    userEvent.clear(candidate1VotesInput)
-    userEvent.type(candidate1VotesInput, '901')
+    userEvent.type(candidate1NameInput, 'potamus')
+    userEvent.clear(candidate2VotesInput)
+    userEvent.type(candidate2VotesInput, '901')
     userEvent.clear(totalBallotsCastInput)
     userEvent.type(totalBallotsCastInput, '2001')
     userEvent.click(planAuditButton)
@@ -720,18 +730,20 @@ test('Sample size computation error handling', async () => {
     renderAuditPlanner()
     await screen.findByRole('heading', { name: 'Audit Planner' })
     const {
-      candidate0NameInput,
-      candidate0VotesInput,
       candidate1NameInput,
       candidate1VotesInput,
+      candidate2NameInput,
+      candidate2VotesInput,
       totalBallotsCastInput,
       planAuditButton,
     } = await checkThatElectionResultsCardIsInInitialState()
 
-    userEvent.type(candidate0NameInput, 'Helga Hippo')
-    userEvent.type(candidate0VotesInput, '1000')
-    userEvent.type(candidate1NameInput, 'Bobby Bear')
-    userEvent.type(candidate1VotesInput, '900')
+    userEvent.clear(candidate1NameInput)
+    userEvent.type(candidate1NameInput, 'Helga Hippo')
+    userEvent.type(candidate1VotesInput, '1000')
+    userEvent.clear(candidate2NameInput)
+    userEvent.type(candidate2NameInput, 'Bobby Bear')
+    userEvent.type(candidate2VotesInput, '900')
     userEvent.type(totalBallotsCastInput, '2000')
     userEvent.click(planAuditButton)
     await screen.findByText('Error computing sample size')
