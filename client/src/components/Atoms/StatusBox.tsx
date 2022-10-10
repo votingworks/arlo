@@ -52,6 +52,39 @@ interface IStatusBoxProps {
   children?: ReactElement
 }
 
+export const StatusBar = styled.div.attrs({ className: 'bp3-text-large' })`
+  padding-top: 25px;
+  padding-bottom: 15px;
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+`
+
+interface IAuditHeadingProps {
+  auditName: string
+  jurisdictionName?: string
+  auditStage?: string
+}
+
+export const AuditHeading: React.FC<IAuditHeadingProps> = ({
+  auditName,
+  jurisdictionName,
+  auditStage,
+}) => {
+  return (
+    <div style={{ display: 'flex' }}>
+      <span>{auditName}</span>
+      {jurisdictionName && <span>&nbsp;&mdash; {jurisdictionName}</span>}
+      {auditStage && (
+        <>
+          <Divider style={{ margin: '0 15px' }} />
+          <strong>{auditStage}</strong>
+        </>
+      )}
+    </div>
+  )
+}
+
 const StatusBox: React.FC<IStatusBoxProps> = ({
   headline,
   details,

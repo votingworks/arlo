@@ -1,7 +1,9 @@
 import React from 'react'
 import {
   Button,
+  FormGroup,
   Icon,
+  H4,
   Text,
   UL,
   Callout,
@@ -34,6 +36,7 @@ import { apiDownload } from '../utilities'
 import LinkButton from '../Atoms/LinkButton'
 import styled from 'styled-components'
 import BatchRoundDataEntry from './BatchRoundDataEntry'
+import SegmentedControl from '../Atoms/SegmentedControl'
 
 interface IPrepareBatchesStepProps {
   nextStepUrl: string
@@ -110,6 +113,7 @@ const SubStep = styled.div`
   border-radius: 5px;
   background-color: ${Colors.LIGHT_GRAY5};
   padding: 30px;
+  flex: 1;
 `
 
 const DigitInput = styled(InputGroup).attrs({})`
@@ -129,92 +133,138 @@ const AuditBoardsStep: React.FC<IAuditBoardsStepProps> = ({
   }/auditboard/${jurisdiction.name.replace(' ', '').substr(0, 6)}-749`
   const auditBoards = [
     {
-      name: 'Audit Board #1',
-      logInConfirmedAt: new Date().toISOString(),
-      members: [{ name: 'John Smith' }, { name: 'Jane Doe' }],
+      name: 'Audit Board #3',
+      logInConfirmedAt: null,
+      members: [
+        { name: 'Aaron Michaels' },
+        { name: 'Matthew Mitchell Roberts' },
+      ],
     },
     {
       name: 'Audit Board #2',
       logInConfirmedAt: null,
       members: [{ name: 'Kate Bradley' }, { name: 'Sarah Lee' }],
     },
+    {
+      name: 'Audit Board #1',
+      logInConfirmedAt: new Date().toISOString(),
+      members: [{ name: 'John Smith' }, { name: 'Jane Doe' }],
+    },
+    {
+      name: 'Audit Board #8',
+      logInConfirmedAt: new Date().toISOString(),
+      members: [{ name: 'Jack Sprat' }, { name: 'Mary White' }],
+    },
   ]
   return (
     <>
       <StepPanel>
-        <SubStep>
-          <H5>Share Login Link</H5>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            padding: '0 230px',
+          }}
+        >
+          <H4>Do you want to set up audit board accounts?</H4>
           <p>
-            <InputGroup readOnly value={loginLinkUrl} fill />
+            To speed up auditing, you can divvy up the batches between multiple
+            audit boards, who can each log into Arlo to enter the audited
+            tallies. Otherwise, you can enter the audited tallies yourself.
           </p>
-          <p>
-            <Button icon="clipboard">Copy Link</Button>
-            <Button
-              icon="download"
-              intent="primary"
-              style={{ marginLeft: '10px' }}
-            >
-              Download Printout
+          <div style={{ marginTop: '10px' }}>
+            <Button>Yes, set up audit board accounts</Button>
+            <Button intent="primary" style={{ marginLeft: '10px' }}>
+              No, enter tallies myself
             </Button>
-          </p>
-        </SubStep>
-        <SubStep>
-          <H5>Confirm Audit Boards</H5>
-          {auditBoards.length === 0 ? (
-            <Card>
-              <p>
-                <strong>No audit boards have logged in yet</strong>
-              </p>
-              <p>Once each audit board logs in, confirm their identity here.</p>
-            </Card>
-          ) : (
-            auditBoards.map(auditBoard => (
-              <Card
-                key={auditBoard.name}
-                style={{
-                  marginBottom: '10px',
-                  display: 'grid',
-                  gap: '5px',
-                  gridTemplateColumns: '1fr 140px',
-                  alignItems: 'center',
-                  height: '90px',
-                }}
+          </div>
+        </div>
+        {/* <div style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}>
+          <SubStep>
+            <H5>Share Login Link</H5>
+            <p>
+              <InputGroup readOnly value={loginLinkUrl} fill />
+            </p>
+            <p>
+              <Button icon="clipboard">Copy Link</Button>
+              <Button
+                icon="download"
+                intent="primary"
+                style={{ marginLeft: '10px' }}
               >
-                <div>
-                  <div>
-                    <strong>{auditBoard.name}</strong>
-                  </div>
-                  <Text className="bp3-text-small bp3-text-muted" ellipsize>
-                    {auditBoard.members.map(member => member.name).join(', ')}
-                  </Text>
-                </div>
-                {auditBoard.logInConfirmedAt ? (
-                  <div>
-                    <Icon icon="tick-circle" intent="primary" iconSize={20} />
-                    <span
-                      style={{ marginLeft: '7px' }}
-                      className="bp3-text-large"
-                    >
-                      Logged in
-                    </span>
-                  </div>
-                ) : (
-                  <div style={{ display: 'flex' }}>
-                    <Icon icon="key" intent="warning" iconSize={20} />
-                    <div style={{ marginLeft: '7px' }}>
-                      <label>Enter login code</label>
-                      <div style={{ display: 'flex', marginTop: '5px' }}>
-                        <DigitInput />
-                        <DigitInput />
-                        <DigitInput />
-                      </div>
-                    </div>
-                  </div>
-                )}
+                Download Printout
+              </Button>
+            </p>
+          </SubStep>
+          <SubStep style={{ display: 'flex', flexDirection: 'column' }}>
+            <H5>Confirm Audit Boards</H5>
+            {auditBoards.length === 0 ? (
+              <Card>
+                <p>
+                  <strong>No audit boards have logged in yet</strong>
+                </p>
+                <p>
+                  Once each audit board logs in, confirm their identity here.
+                </p>
               </Card>
-            ))
-          )}
-        </SubStep>
+            ) : (
+              <div style={{ overflowY: 'auto', padding: '1px' }}>
+                {auditBoards.map(auditBoard => (
+                  <Card
+                    key={auditBoard.name}
+                    style={{
+                      marginBottom: '10px',
+                      display: 'grid',
+                      gap: '5px',
+                      gridTemplateColumns: '1fr 140px',
+                      alignItems: 'center',
+                      height: '90px',
+                    }}
+                  >
+                    <div>
+                      <div>
+                        <strong>{auditBoard.name}</strong>
+                      </div>
+                      <Text className="bp3-text-small bp3-text-muted" ellipsize>
+                        {auditBoard.members
+                          .map(member => member.name)
+                          .join(', ')}
+                      </Text>
+                    </div>
+                    {auditBoard.logInConfirmedAt ? (
+                      <div>
+                        <Icon
+                          icon="tick-circle"
+                          intent="primary"
+                          iconSize={20}
+                        />
+                        <span
+                          style={{ marginLeft: '7px' }}
+                          className="bp3-text-large"
+                        >
+                          Logged in
+                        </span>
+                      </div>
+                    ) : (
+                      <div style={{ display: 'flex' }}>
+                        <Icon icon="key" intent="warning" iconSize={20} />
+                        <div style={{ marginLeft: '7px' }}>
+                          <label>Enter login code</label>
+                          <div style={{ display: 'flex', marginTop: '5px' }}>
+                            <DigitInput />
+                            <DigitInput />
+                            <DigitInput />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </Card>
+                ))}
+              </div>
+            )}
+          </SubStep>
+        </div> */}
       </StepPanel>
       <StepActions
         left={

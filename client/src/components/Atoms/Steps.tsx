@@ -129,7 +129,7 @@ export const StepPanel = styled.div`
   align-items: stretch;
   justify-content: center;
   gap: 20px;
-  min-height: 400px;
+  height: 400px;
   padding: 20px;
   > * {
     flex: 1;

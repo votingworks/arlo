@@ -6,6 +6,7 @@ import React, {
   useContext,
 } from 'react'
 import { api } from './utilities'
+import { AuditType } from './useAuditSettings'
 
 export interface IElection {
   id: string
@@ -39,6 +40,7 @@ export interface IAuditBoard {
   jurisdictionId: string
   jurisdictionName: string
   electionId: string
+  auditType: AuditType
   roundId: string
   members: IAuditBoardMember[]
   signedOffAt: string | null

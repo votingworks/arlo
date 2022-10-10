@@ -12,6 +12,8 @@ import {
   Popover,
   Menu,
   MenuItem,
+  InputGroup,
+  H4,
 } from '@blueprintjs/core'
 import { useForm, useFieldArray } from 'react-hook-form'
 import styled, { css } from 'styled-components'
@@ -30,6 +32,14 @@ import { IContest } from '../../types'
 import CopyToClipboard from '../Atoms/CopyToClipboard'
 import { useConfirm, Confirm } from '../Atoms/Confirm'
 import { IRound } from '../AuditAdmin/useRoundsAuditAdmin'
+import {
+  ListSearch,
+  ListAndDetail,
+  List,
+  ListItems,
+  Detail,
+  ListItem,
+} from '../Atoms/ListAndDetail'
 
 const ResultsTable = styled(HTMLTable).attrs({
   striped: true,
@@ -359,6 +369,24 @@ const BatchTallySheetsModal = ({
   )
 }
 
+const BatchTallyTable = styled(HTMLTable).attrs({
+  striped: true,
+  bordered: true,
+})`
+  border: 1px solid ${Colors.LIGHT_GRAY1};
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: separate;
+
+  thead {
+    // position: sticky;
+    // top: 0;
+    // z-index: 1;
+    box-shadow: 0 1px 0 ${Colors.GRAY4};
+    background: ${Colors.WHITE};
+  }
+`
+
 const BatchRoundDataEntry: React.FC<{ round: IRound }> = ({ round }) => {
   const { electionId, jurisdictionId } = useParams<{
     electionId: string
@@ -424,177 +452,224 @@ const BatchRoundDataEntry: React.FC<{ round: IRound }> = ({ round }) => {
     }
   }
 
+  const selectedBatch = editing && batches.find(b => b.id === editing.batchId)
+
   return (
-    <div>
-      <div>
-        {/* <p>
-          When you have examined all of the ballots assigned to you, enter the
-          number of votes recorded for each candidate/choice from the audited
-          ballots in each batch.
-        </p> */}
-        {resultsFinalizedAt && (
-          <Callout
-            icon="tick-circle"
-            intent="success"
-            style={{ margin: '20px 0 20px 0' }}
-          >
-            Results finalized
-          </Callout>
-        )}
-      </div>
-      <ResultsTable id="results-table">
-        <thead>
-          <tr>
-            <th
-              style={{
-                width: `${25 - Math.min(contest.choices.length, 10) * 1.5}%`,
-              }}
+    <ListAndDetail>
+      <List>
+        <ListSearch placeholder="Search batches..." />
+        <ListItems>
+          {batches.map(batch => (
+            <ListItem
+              key={batch.id}
+              onClick={() =>
+                setEditing({ batchId: batch.id, showTallySheetsModal: false })
+              }
             >
-              Batch Name
-            </th>
-            {contest.choices.map(choice => (
-              <th key={`th-${choice.id}`}>{choice.name}</th>
-            ))}
-            <TotalsTH>Batch Total Votes</TotalsTH>
-            <th style={{ width: '125px' }}>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {batches.map(batch =>
-            editing &&
-            batch.id === editing.batchId &&
-            !editing.showTallySheetsModal ? (
-              <BatchResultsForm
-                electionId={electionId}
-                jurisdictionId={jurisdictionId}
-                roundId={round.id}
-                contest={contest}
-                batch={batch}
-                key={batch.id}
-                closeForm={() => setEditing(null)}
-              />
-            ) : (
-              <tr key={batch.id}>
-                <td>{batch.name}</td>
-                {contest.choices.map(choice => {
-                  const choiceVotes = batchChoiceVotes(batch, choice.id)
-                  return (
-                    <ChoiceTD key={`${batch.name}-${choice.id}`}>
-                      {choiceVotes && choiceVotes.toLocaleString()}
-                    </ChoiceTD>
-                  )
-                })}
-                <TotalsTD>
-                  {batch.resultTallySheets.length > 0 &&
-                    sum(
-                      contest.choices.map(
-                        choice => batchChoiceVotes(batch, choice.id)!
-                      )
-                    ).toLocaleString()}
-                </TotalsTD>
-                <td>
-                  {batch.resultTallySheets.length > 1 ? (
-                    <Button
-                      icon="edit"
-                      disabled={editing !== null || !!resultsFinalizedAt}
-                      onClick={() =>
-                        setEditing({
-                          batchId: batch.id,
-                          showTallySheetsModal: true,
-                        })
-                      }
-                    >
-                      Edit Tally Sheets
-                    </Button>
-                  ) : (
-                    <ButtonGroup>
-                      <Button
-                        icon="edit"
-                        disabled={editing !== null || !!resultsFinalizedAt}
-                        onClick={() =>
-                          setEditing({
-                            batchId: batch.id,
-                            showTallySheetsModal: false,
-                          })
-                        }
-                      >
-                        Edit
-                      </Button>
-                      <Popover
-                        position="bottom"
-                        content={
-                          <Menu>
-                            <MenuItem
-                              text="Use Multiple Tally Sheets"
-                              onClick={() =>
-                                setEditing({
-                                  batchId: batch.id,
-                                  showTallySheetsModal: true,
-                                })
-                              }
-                            />
-                          </Menu>
-                        }
-                      >
-                        <Button
-                          icon="chevron-down"
-                          disabled={editing !== null || !!resultsFinalizedAt}
-                          aria-label="More"
-                        />
-                      </Popover>
-                    </ButtonGroup>
-                  )}
-                </td>
-              </tr>
-            )
-          )}
-          <tr>
-            <TotalsTD>Choice Total Votes</TotalsTD>
-            {contest.choices.map(choice => (
-              <TotalsTD key={`total-${choice.id}`}>
-                {choiceTotal(choice.id).toLocaleString()}
-              </TotalsTD>
-            ))}
-            <TotalsTD>
-              {sum(
-                contest.choices.map(choice => choiceTotal(choice.id))
-              ).toLocaleString()}
-            </TotalsTD>
-            <td />
-          </tr>
-        </tbody>
-      </ResultsTable>
-      {editing && editing.showTallySheetsModal && (
-        <BatchTallySheetsModal
-          batch={batches.find(batch => batch.id === editing.batchId)!}
-          electionId={electionId}
-          jurisdictionId={jurisdictionId}
-          roundId={round.id}
-          contest={contest}
-          closeModal={() => setEditing(null)}
-        />
-      )}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          marginTop: '20px',
-        }}
-      >
-        <CopyToClipboard
-          getText={() => document.getElementById('results-table')!.outerHTML}
-        />
-        <Button
-          intent="primary"
-          onClick={onClickFinalize}
-          disabled={!!resultsFinalizedAt}
-        >
-          Finalize Results
-        </Button>
-        <Confirm {...confirmProps} />
-      </div>
-    </div>
+              {batch.name}
+            </ListItem>
+          ))}
+        </ListItems>
+      </List>
+      <Detail>
+        {!selectedBatch ? (
+          <p className="bp3-text-large">
+            Select a batch to enter audited tally results.
+          </p>
+        ) : (
+          <>
+            <H4>Batch: {selectedBatch.name}</H4>
+            <BatchTallyTable striped bordered>
+              <thead>
+                <th>Choice</th>
+                <th>Votes</th>
+              </thead>
+              <tbody>
+                {contest.choices.map(choice => (
+                  <tr key={choice.id}>
+                    <td>{choice.name}</td>
+                    <td />
+                  </tr>
+                ))}
+              </tbody>
+            </BatchTallyTable>
+          </>
+        )}
+      </Detail>
+    </ListAndDetail>
   )
+
+  // return (
+  //   <div>
+  //     <div>
+  //       {/* <p>
+  //         When you have examined all of the ballots assigned to you, enter the
+  //         number of votes recorded for each candidate/choice from the audited
+  //         ballots in each batch.
+  //       </p> */}
+  //       {resultsFinalizedAt && (
+  //         <Callout
+  //           icon="tick-circle"
+  //           intent="success"
+  //           style={{ margin: '20px 0 20px 0' }}
+  //         >
+  //           Results finalized
+  //         </Callout>
+  //       )}
+  //     </div>
+  //     <ResultsTable id="results-table">
+  //       <thead>
+  //         <tr>
+  //           <th
+  //             style={{
+  //               width: `${25 - Math.min(contest.choices.length, 10) * 1.5}%`,
+  //             }}
+  //           >
+  //             Batch Name
+  //           </th>
+  //           {contest.choices.map(choice => (
+  //             <th key={`th-${choice.id}`}>{choice.name}</th>
+  //           ))}
+  //           <TotalsTH>Batch Total Votes</TotalsTH>
+  //           <th style={{ width: '125px' }}>Actions</th>
+  //         </tr>
+  //       </thead>
+  //       <tbody>
+  //         {batches.map(batch =>
+  //           editing &&
+  //           batch.id === editing.batchId &&
+  //           !editing.showTallySheetsModal ? (
+  //             <BatchResultsForm
+  //               electionId={electionId}
+  //               jurisdictionId={jurisdictionId}
+  //               roundId={round.id}
+  //               contest={contest}
+  //               batch={batch}
+  //               key={batch.id}
+  //               closeForm={() => setEditing(null)}
+  //             />
+  //           ) : (
+  //             <tr key={batch.id}>
+  //               <td>{batch.name}</td>
+  //               {contest.choices.map(choice => {
+  //                 const choiceVotes = batchChoiceVotes(batch, choice.id)
+  //                 return (
+  //                   <ChoiceTD key={`${batch.name}-${choice.id}`}>
+  //                     {choiceVotes && choiceVotes.toLocaleString()}
+  //                   </ChoiceTD>
+  //                 )
+  //               })}
+  //               <TotalsTD>
+  //                 {batch.resultTallySheets.length > 0 &&
+  //                   sum(
+  //                     contest.choices.map(
+  //                       choice => batchChoiceVotes(batch, choice.id)!
+  //                     )
+  //                   ).toLocaleString()}
+  //               </TotalsTD>
+  //               <td>
+  //                 {batch.resultTallySheets.length > 1 ? (
+  //                   <Button
+  //                     icon="edit"
+  //                     disabled={editing !== null || !!resultsFinalizedAt}
+  //                     onClick={() =>
+  //                       setEditing({
+  //                         batchId: batch.id,
+  //                         showTallySheetsModal: true,
+  //                       })
+  //                     }
+  //                   >
+  //                     Edit Tally Sheets
+  //                   </Button>
+  //                 ) : (
+  //                   <ButtonGroup>
+  //                     <Button
+  //                       icon="edit"
+  //                       disabled={editing !== null || !!resultsFinalizedAt}
+  //                       onClick={() =>
+  //                         setEditing({
+  //                           batchId: batch.id,
+  //                           showTallySheetsModal: false,
+  //                         })
+  //                       }
+  //                     >
+  //                       Edit
+  //                     </Button>
+  //                     <Popover
+  //                       position="bottom"
+  //                       content={
+  //                         <Menu>
+  //                           <MenuItem
+  //                             text="Use Multiple Tally Sheets"
+  //                             onClick={() =>
+  //                               setEditing({
+  //                                 batchId: batch.id,
+  //                                 showTallySheetsModal: true,
+  //                               })
+  //                             }
+  //                           />
+  //                         </Menu>
+  //                       }
+  //                     >
+  //                       <Button
+  //                         icon="chevron-down"
+  //                         disabled={editing !== null || !!resultsFinalizedAt}
+  //                         aria-label="More"
+  //                       />
+  //                     </Popover>
+  //                   </ButtonGroup>
+  //                 )}
+  //               </td>
+  //             </tr>
+  //           )
+  //         )}
+  //         <tr>
+  //           <TotalsTD>Choice Total Votes</TotalsTD>
+  //           {contest.choices.map(choice => (
+  //             <TotalsTD key={`total-${choice.id}`}>
+  //               {choiceTotal(choice.id).toLocaleString()}
+  //             </TotalsTD>
+  //           ))}
+  //           <TotalsTD>
+  //             {sum(
+  //               contest.choices.map(choice => choiceTotal(choice.id))
+  //             ).toLocaleString()}
+  //           </TotalsTD>
+  //           <td />
+  //         </tr>
+  //       </tbody>
+  //     </ResultsTable>
+  //     {editing && editing.showTallySheetsModal && (
+  //       <BatchTallySheetsModal
+  //         batch={batches.find(batch => batch.id === editing.batchId)!}
+  //         electionId={electionId}
+  //         jurisdictionId={jurisdictionId}
+  //         roundId={round.id}
+  //         contest={contest}
+  //         closeModal={() => setEditing(null)}
+  //       />
+  //     )}
+  //     <div
+  //       style={{
+  //         display: 'flex',
+  //         justifyContent: 'space-between',
+  //         marginTop: '20px',
+  //       }}
+  //     >
+  //       <CopyToClipboard
+  //         getText={() => document.getElementById('results-table')!.outerHTML}
+  //       />
+  //       <Button
+  //         intent="primary"
+  //         onClick={onClickFinalize}
+  //         disabled={!!resultsFinalizedAt}
+  //       >
+  //         Finalize Results
+  //       </Button>
+  //       <Confirm {...confirmProps} />
+  //     </div>
+  //   </div>
+  // )
 }
 
 export default BatchRoundDataEntry
