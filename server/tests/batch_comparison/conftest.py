@@ -18,6 +18,20 @@ def election_id(client: FlaskClient, org_id: str, request):
 
 
 @pytest.fixture
+def election_settings(client: FlaskClient, election_id: str):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    settings = {
+        "electionName": "Test Election",
+        "online": False,
+        "randomSeed": "1234567890",
+        "riskLimit": 10,
+        "state": USState.California,
+    }
+    rv = put_json(client, f"/api/election/{election_id}/settings", settings)
+    assert_ok(rv)
+
+
+@pytest.fixture
 def contest_ids(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     contests = [

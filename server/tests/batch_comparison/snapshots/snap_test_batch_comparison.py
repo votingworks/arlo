@@ -19,13 +19,7 @@ Contest 1,Targeted,1,2,5000,candidate 1: 5000; candidate 2: 2500; candidate 3: 2
 \r
 ######## AUDIT SETTINGS ########\r
 Audit Name,Audit Type,Audit Math Type,Risk Limit,Random Seed,Online Data Entry?\r
-Test Audit test_batch_comparison_batches_sampled_multiple_times,BATCH_COMPARISON,MACRO,10%,1234567890,Yes\r
-\r
-######## AUDIT BOARDS ########\r
-Jurisdiction Name,Audit Board Name,Member 1 Name,Member 1 Affiliation,Member 2 Name,Member 2 Affiliation\r
-J1,Audit Board #1,,,,\r
-J1,Audit Board #2,,,,\r
-J2,Audit Board #1,,,,\r
+Test Audit test_batch_comparison_batches_sampled_multiple_times,BATCH_COMPARISON,MACRO,10%,1234567890,No\r
 \r
 ######## ROUNDS ########\r
 Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes\r
@@ -82,15 +76,7 @@ Contest 1,Targeted,1,2,5000,candidate 1: 5000; candidate 2: 2500; candidate 3: 2
 \r
 ######## AUDIT SETTINGS ########\r
 Audit Name,Audit Type,Audit Math Type,Risk Limit,Random Seed,Online Data Entry?\r
-Test Audit test_batch_comparison_round_2,BATCH_COMPARISON,MACRO,10%,1234567890,Yes\r
-\r
-######## AUDIT BOARDS ########\r
-Jurisdiction Name,Audit Board Name,Member 1 Name,Member 1 Affiliation,Member 2 Name,Member 2 Affiliation\r
-J1,Audit Board #1,,,,\r
-J1,Audit Board #1,,,,\r
-J1,Audit Board #2,,,,\r
-J1,Audit Board #2,,,,\r
-J2,Audit Board #1,,,,\r
+Test Audit test_batch_comparison_round_2,BATCH_COMPARISON,MACRO,10%,1234567890,No\r
 \r
 ######## ROUNDS ########\r
 Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes\r
