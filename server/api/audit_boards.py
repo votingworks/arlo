@@ -43,6 +43,9 @@ def validate_audit_boards(
     if not current_round or round.id != current_round.id:
         raise Conflict(f"Round {round.round_num} is not the current round")
 
+    if election.audit_type == AuditType.BATCH_COMPARISON:
+        raise Conflict("Batch comparison audits do not use audit boards")
+
     if any(ab for ab in jurisdiction.audit_boards if ab.round_id == round.id):
         raise Conflict(f"Audit boards already created for round {round.round_num}")
 

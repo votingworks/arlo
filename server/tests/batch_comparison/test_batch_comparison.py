@@ -574,3 +574,25 @@ def test_batch_comparison_undo_start_round_1(
         .count()
         == 0
     )
+
+
+def test_batch_comparison_cant_create_audit_boards(
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
+        [{"name": "Audit Board #1"}],
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Batch comparison audits do not use audit boards",
+            }
+        ]
+    }
