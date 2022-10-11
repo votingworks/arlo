@@ -59,9 +59,9 @@ snapshots["test_batch_comparison_round_2 1"] = {
 
 snapshots[
     "test_batch_comparison_round_2 10"
-] = """Batch Name,Container,Tabulator,Audit Board
-Batch 3,,,Audit Board #1
-Batch 4,,,Audit Board #2
+] = """Batch Name,Container,Tabulator
+Batch 3,,
+Batch 4,,
 """
 
 snapshots[

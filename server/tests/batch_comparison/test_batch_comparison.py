@@ -4,7 +4,6 @@ from flask.testing import FlaskClient
 
 from ...models import *  # pylint: disable=wildcard-import
 from ..helpers import *  # pylint: disable=wildcard-import
-from ...util.collections import group_by
 
 
 def test_batch_comparison_only_one_contest_allowed(
@@ -212,58 +211,12 @@ def test_batch_comparison_round_1(
     sampled_jurisdictions = {draw.batch.jurisdiction_id for draw in batch_draws}
     assert sampled_jurisdictions == set(jurisdiction_ids[:2])
 
-    set_logged_in_user(
-        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
-    )
-    rv = post_json(
-        client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{rounds[0]['id']}/audit-board",
-        [
-            {"name": "Audit Board #1"},
-            {"name": "Audit Board #2"},
-            {"name": "Audit Board #3"},
-        ],
-    )
-    assert_ok(rv)
-
-    # Check jurisdiction status moved to IN_PROGRESS
-    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.get(f"/api/election/{election_id}/jurisdiction")
-    jurisdictions = json.loads(rv.data)["jurisdictions"]
-    assert jurisdictions[0]["currentRoundStatus"]["status"] == "IN_PROGRESS"
-    assert jurisdictions[1]["currentRoundStatus"]["status"] == "NOT_STARTED"
-
-    # Check that the batches got divvied up evenly between the audit boards
-    sampled_batches = (
-        Batch.query.filter_by(jurisdiction_id=jurisdiction_ids[0])
-        .join(SampledBatchDraw)
-        .filter_by(round_id=rounds[0]["id"])
-        .all()
-    )
-    audit_board_batches = [
-        [batch.id for batch in batches]
-        for batches in group_by(
-            sampled_batches, key=lambda batch: batch.audit_board_id
-        ).values()
-    ]
-    assert len(audit_board_batches) == 3
-    assert abs(len(audit_board_batches[0]) - len(audit_board_batches[1])) <= 1
-    assert abs(len(audit_board_batches[1]) - len(audit_board_batches[2])) <= 1
-
-    # And check that each batch got assigned to one and only one audit board
-    assert sorted(
-        list(set(batch_id for batches in audit_board_batches for batch_id in batches))
-    ) == sorted(
-        list(batch_id for batches in audit_board_batches for batch_id in batches)
-    )
-
 
 def test_batch_comparison_round_2(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
     round_1_id: str,
-    audit_board_round_1_ids: List[str],  # pylint: disable=unused-argument
     snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -334,12 +287,6 @@ def test_batch_comparison_round_2(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = post_json(
-        client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/audit-board",
-        [{"name": "Audit Board #1"}],
-    )
-
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/batches"
     )
@@ -410,16 +357,6 @@ def test_batch_comparison_round_2(
     sampled_jurisdictions = {draw.batch.jurisdiction_id for draw in batch_draws}
     assert sampled_jurisdictions == set(jurisdiction_ids[:2])
 
-    set_logged_in_user(
-        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
-    )
-    rv = post_json(
-        client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{rounds[1]['id']}/audit-board",
-        [{"name": "Audit Board #1"}, {"name": "Audit Board #2"},],
-    )
-    assert_ok(rv)
-
     # Test the retrieval list correctly marks ballots that were sampled last round
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{rounds[1]['id']}/batches/retrieval-list"
@@ -477,7 +414,6 @@ def test_batch_comparison_batches_sampled_multiple_times(
     election_id: str,
     jurisdiction_ids: List[str],
     round_1_id: str,
-    audit_board_round_1_ids: List[str],  # pylint: disable=unused-argument
     snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -539,12 +475,6 @@ def test_batch_comparison_batches_sampled_multiple_times(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = post_json(
-        client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/audit-board",
-        [{"name": "Audit Board #1"}],
-    )
-
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/batches"
     )
