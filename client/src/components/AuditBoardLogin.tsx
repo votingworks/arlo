@@ -167,10 +167,8 @@ const AuditBoardLogin: React.FC = () => {
             }}
             className="bp3-text-muted"
           >
-            <AuditHeading
-              auditName={auditBoard.auditName}
-              jurisdictionName={auditBoard.jurisdictionName}
-            />
+            Test County &mdash; General Election
+            {/* {auditBoard.jurisdictionName} &mdash; {auditBoard.auditName} */}
           </div>
           {(() => {
             if (!auditBoard.loginCode) {

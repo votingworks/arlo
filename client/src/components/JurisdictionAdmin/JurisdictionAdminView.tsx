@@ -244,10 +244,10 @@ const JurisdictionAdminView: React.FC = () => {
             }}
           >
             <div style={{ flexShrink: 0 }}>
-              <strong>1/4 batches audited</strong>
+              <strong>0/4 batches audited</strong>
             </div>
             <div style={{ width: '150px' }}>
-              <ProgressBar value={0.25} stripes={false} intent="primary" />
+              <ProgressBar value={0} stripes={false} intent="primary" />
             </div>
           </div>
         </StatusBar>

@@ -128,9 +128,7 @@ const AuditBoardsStep: React.FC<IAuditBoardsStepProps> = ({
   round,
   sampleCount,
 }) => {
-  const loginLinkUrl = `${
-    window.location.origin
-  }/auditboard/${jurisdiction.name.replace(' ', '').substr(0, 6)}-749`
+  const loginLinkUrl = `https://arlo.voting.works/auditboard/disdain-coastal-underwire-cinch`
   const auditBoards = [
     {
       logInConfirmedAt: null,
@@ -156,88 +154,95 @@ const AuditBoardsStep: React.FC<IAuditBoardsStepProps> = ({
       members: [{ name: 'Craig Carlyle' }, { name: 'Janine Trotsky' }],
     },
   ]
+
+  const wantsTallyEntryAccounts = true
+
   return (
     <>
       <StepPanel>
-        {/* <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          <div style={{ width: '450px' }}>
-            <H4>Do you want to set up additional tally entry accounts?</H4>
-            <p>
-              Auditors can log into Arlo to enter results for audited batches.
-              Whether or not you add auditors, you can always enter or edit
-              results yourself.
-            </p>
-            <div style={{ marginTop: '10px' }}>
-              <Button intent="primary">Set Up Tally Entry Accounts</Button>
-              <Button style={{ marginLeft: '10px' }}>Skip</Button>
+        {!wantsTallyEntryAccounts ? (
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <div style={{ width: '450px' }}>
+              <H5>Do you want to set up additional tally entry accounts?</H5>
+              <p>
+                If you want to have multiple people entering tallies at the same
+                time, set up tally entry accounts for them. Otherwise, use your
+                account to enter the tally for each batch you audit.
+              </p>
+              <div style={{ marginTop: '10px' }}>
+                <Button intent="primary">Set Up Tally Entry Accounts</Button>
+                <Button style={{ marginLeft: '10px' }}>Skip</Button>
+              </div>
             </div>
           </div>
-        </div> */}
-        <div style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}>
-          <SubStep>
-            <H5>Share Tally Entry Login Link</H5>
-            <p>
-              <InputGroup readOnly value={loginLinkUrl} fill />
-            </p>
-            <p>
-              <Button icon="clipboard">Copy Link</Button>
-              <Button
-                icon="download"
-                intent="primary"
-                style={{ marginLeft: '10px' }}
-              >
-                Download Printout
-              </Button>
-            </p>
-          </SubStep>
-          <SubStep style={{ display: 'flex', flexDirection: 'column' }}>
-            <H5>Confirm Tally Entry Accounts</H5>
-            {auditBoards.length === 0 ? (
-              <Card>
-                <p>
-                  <strong>No tally entry accounts have logged in yet</strong>
-                </p>
-                <p>
-                  Once each audit board logs in, confirm their identity here.
-                </p>
-              </Card>
-            ) : (
-              <div style={{ overflowY: 'auto', padding: '1px' }}>
-                {auditBoards.map(auditBoard => (
-                  <Card
-                    key={auditBoard.name}
-                    style={{
-                      marginBottom: '10px',
-                      display: 'grid',
-                      gap: '10px',
-                      gridTemplateColumns: '1fr 155px',
-                      alignItems: 'center',
-                      padding: '10px 15px',
-                    }}
-                  >
-                    <div>
-                      {auditBoard.members.map(member => (
-                        <Text key={member.name}>{member.name}</Text>
-                      ))}
-                    </div>
-                    {auditBoard.logInConfirmedAt ? (
-                      <div style={{ paddingLeft: '10px' }}>
-                        <Icon icon="tick-circle" intent="primary" />
-                        <span style={{ marginLeft: '7px' }}>Logged In</span>
+        ) : (
+          <div
+            style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}
+          >
+            <SubStep>
+              <H5>Share Tally Entry Login Link</H5>
+              <p>
+                <InputGroup readOnly value={loginLinkUrl} fill />
+              </p>
+              <p>
+                <Button icon="clipboard">Copy Link</Button>
+                <Button
+                  icon="download"
+                  intent="primary"
+                  style={{ marginLeft: '10px' }}
+                >
+                  Download Printout
+                </Button>
+              </p>
+            </SubStep>
+            <SubStep style={{ display: 'flex', flexDirection: 'column' }}>
+              <H5>Confirm Tally Entry Accounts</H5>
+              {auditBoards.length === 0 ? (
+                <Card>
+                  <p>
+                    <strong>No tally entry accounts have logged in yet</strong>
+                  </p>
+                  <p>
+                    Once each audit board logs in, confirm their identity here.
+                  </p>
+                </Card>
+              ) : (
+                <div style={{ overflowY: 'auto', padding: '1px' }}>
+                  {auditBoards.map(auditBoard => (
+                    <Card
+                      key={auditBoard.name}
+                      style={{
+                        marginBottom: '10px',
+                        display: 'grid',
+                        gap: '10px',
+                        gridTemplateColumns: '1fr 155px',
+                        alignItems: 'center',
+                        padding: '10px 15px',
+                      }}
+                    >
+                      <div>
+                        {auditBoard.members.map(member => (
+                          <Text key={member.name}>{member.name}</Text>
+                        ))}
                       </div>
-                    ) : (
-                      <Button icon="key" intent="warning" minimal>
-                        Enter Login Code
-                      </Button>
-                    )}
-                    {/* <Icon icon="key" intent="warning" iconSize={20} />
+                      {auditBoard.logInConfirmedAt ? (
+                        <div style={{ paddingLeft: '10px' }}>
+                          <Icon icon="tick-circle" intent="primary" />
+                          <span style={{ marginLeft: '7px' }}>Logged In</span>
+                        </div>
+                      ) : (
+                        <Button icon="key" intent="warning" minimal>
+                          Enter Login Code
+                        </Button>
+                      )}
+                      {/* <Icon icon="key" intent="warning" iconSize={20} />
                         <div style={{ marginLeft: '7px' }}>
                           <label>Enter login code</label>
                           <div style={{ display: 'flex', marginTop: '5px' }}>
@@ -246,12 +251,13 @@ const AuditBoardsStep: React.FC<IAuditBoardsStepProps> = ({
                             <DigitInput />
                           </div>
                         </div> */}
-                  </Card>
-                ))}
-              </div>
-            )}
-          </SubStep>
-        </div>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </SubStep>
+          </div>
+        )}
       </StepPanel>
       <StepActions
         left={
