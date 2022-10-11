@@ -64,7 +64,7 @@ const MemberFields: React.FC = () => {
       </FormGroup>
       <FormGroup
         label="Party Affiliation"
-        labelInfo="(optional)"
+        labelInfo="(if required)"
         helperText=" "
       >
         <HTMLSelect fill>
@@ -85,8 +85,8 @@ const LoginStartScreen: React.FC<{ onLoginClick: () => void }> = ({
 }) => {
   return (
     <form>
-      <H1>Audit Board Log In</H1>
-      <p className="bp3-text-large">Enter your names and party affiliations</p>
+      <H1>Tally Entry Log In</H1>
+      {/* <p className="bp3-text-large">Enter your names</p> */}
       <div
         style={{
           marginTop: '25px',

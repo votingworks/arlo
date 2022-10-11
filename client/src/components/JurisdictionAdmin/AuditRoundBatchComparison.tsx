@@ -133,7 +133,6 @@ const AuditBoardsStep: React.FC<IAuditBoardsStepProps> = ({
   }/auditboard/${jurisdiction.name.replace(' ', '').substr(0, 6)}-749`
   const auditBoards = [
     {
-      name: 'Audit Board #3',
       logInConfirmedAt: null,
       members: [
         { name: 'Aaron Michaels' },
@@ -141,48 +140,49 @@ const AuditBoardsStep: React.FC<IAuditBoardsStepProps> = ({
       ],
     },
     {
-      name: 'Audit Board #2',
       logInConfirmedAt: null,
       members: [{ name: 'Kate Bradley' }, { name: 'Sarah Lee' }],
     },
     {
-      name: 'Audit Board #1',
       logInConfirmedAt: new Date().toISOString(),
       members: [{ name: 'John Smith' }, { name: 'Jane Doe' }],
     },
     {
-      name: 'Audit Board #8',
       logInConfirmedAt: new Date().toISOString(),
       members: [{ name: 'Jack Sprat' }, { name: 'Mary White' }],
+    },
+    {
+      logInConfirmedAt: new Date().toISOString(),
+      members: [{ name: 'Craig Carlyle' }, { name: 'Janine Trotsky' }],
     },
   ]
   return (
     <>
       <StepPanel>
-        <div
+        {/* <div
           style={{
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
-            padding: '0 230px',
+            alignItems: 'center',
           }}
         >
-          <H4>Do you want to set up audit board accounts?</H4>
-          <p>
-            To speed up auditing, you can divvy up the batches between multiple
-            audit boards, who can each log into Arlo to enter the audited
-            tallies. Otherwise, you can enter the audited tallies yourself.
-          </p>
-          <div style={{ marginTop: '10px' }}>
-            <Button>Yes, set up audit board accounts</Button>
-            <Button intent="primary" style={{ marginLeft: '10px' }}>
-              No, enter tallies myself
-            </Button>
+          <div style={{ width: '450px' }}>
+            <H4>Do you want to set up additional tally entry accounts?</H4>
+            <p>
+              Auditors can log into Arlo to enter results for audited batches.
+              Whether or not you add auditors, you can always enter or edit
+              results yourself.
+            </p>
+            <div style={{ marginTop: '10px' }}>
+              <Button intent="primary">Set Up Tally Entry Accounts</Button>
+              <Button style={{ marginLeft: '10px' }}>Skip</Button>
+            </div>
           </div>
-        </div>
-        {/* <div style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}>
+        </div> */}
+        <div style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}>
           <SubStep>
-            <H5>Share Login Link</H5>
+            <H5>Share Tally Entry Login Link</H5>
             <p>
               <InputGroup readOnly value={loginLinkUrl} fill />
             </p>
@@ -198,11 +198,11 @@ const AuditBoardsStep: React.FC<IAuditBoardsStepProps> = ({
             </p>
           </SubStep>
           <SubStep style={{ display: 'flex', flexDirection: 'column' }}>
-            <H5>Confirm Audit Boards</H5>
+            <H5>Confirm Tally Entry Accounts</H5>
             {auditBoards.length === 0 ? (
               <Card>
                 <p>
-                  <strong>No audit boards have logged in yet</strong>
+                  <strong>No tally entry accounts have logged in yet</strong>
                 </p>
                 <p>
                   Once each audit board logs in, confirm their identity here.
@@ -216,39 +216,28 @@ const AuditBoardsStep: React.FC<IAuditBoardsStepProps> = ({
                     style={{
                       marginBottom: '10px',
                       display: 'grid',
-                      gap: '5px',
-                      gridTemplateColumns: '1fr 140px',
+                      gap: '10px',
+                      gridTemplateColumns: '1fr 155px',
                       alignItems: 'center',
-                      height: '90px',
+                      padding: '10px 15px',
                     }}
                   >
                     <div>
-                      <div>
-                        <strong>{auditBoard.name}</strong>
-                      </div>
-                      <Text className="bp3-text-small bp3-text-muted" ellipsize>
-                        {auditBoard.members
-                          .map(member => member.name)
-                          .join(', ')}
-                      </Text>
+                      {auditBoard.members.map(member => (
+                        <Text key={member.name}>{member.name}</Text>
+                      ))}
                     </div>
                     {auditBoard.logInConfirmedAt ? (
-                      <div>
-                        <Icon
-                          icon="tick-circle"
-                          intent="primary"
-                          iconSize={20}
-                        />
-                        <span
-                          style={{ marginLeft: '7px' }}
-                          className="bp3-text-large"
-                        >
-                          Logged in
-                        </span>
+                      <div style={{ paddingLeft: '10px' }}>
+                        <Icon icon="tick-circle" intent="primary" />
+                        <span style={{ marginLeft: '7px' }}>Logged In</span>
                       </div>
                     ) : (
-                      <div style={{ display: 'flex' }}>
-                        <Icon icon="key" intent="warning" iconSize={20} />
+                      <Button icon="key" intent="warning" minimal>
+                        Enter Login Code
+                      </Button>
+                    )}
+                    {/* <Icon icon="key" intent="warning" iconSize={20} />
                         <div style={{ marginLeft: '7px' }}>
                           <label>Enter login code</label>
                           <div style={{ display: 'flex', marginTop: '5px' }}>
@@ -256,15 +245,13 @@ const AuditBoardsStep: React.FC<IAuditBoardsStepProps> = ({
                             <DigitInput />
                             <DigitInput />
                           </div>
-                        </div>
-                      </div>
-                    )}
+                        </div> */}
                   </Card>
                 ))}
               </div>
             )}
           </SubStep>
-        </div> */}
+        </div>
       </StepPanel>
       <StepActions
         left={
@@ -331,8 +318,8 @@ const AuditRoundBatchComparison: React.FC<IAuditRoundBatchComparisonProps> = ({
   const location = useLocation()
   const steps = [
     { title: 'Prepare Batches', pathname: `/prepare-batches` },
-    { title: 'Set Up Audit Boards', pathname: `/audit-boards` },
-    { title: 'Audit Batches', pathname: `/audit-batches` },
+    { title: 'Set Up Tally Entry Accounts', pathname: `/audit-boards` },
+    { title: 'Enter Tallies', pathname: `/audit-batches` },
   ]
   const currentStepIndex = steps.findIndex(
     ({ pathname }) => `${url}${pathname}` === location.pathname

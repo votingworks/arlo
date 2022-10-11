@@ -53,8 +53,7 @@ interface IStatusBoxProps {
 }
 
 export const StatusBar = styled.div.attrs({ className: 'bp3-text-large' })`
-  padding-top: 25px;
-  padding-bottom: 15px;
+  padding: 25px 0;
   display: flex;
   width: 100%;
   justify-content: space-between;
@@ -62,19 +61,19 @@ export const StatusBar = styled.div.attrs({ className: 'bp3-text-large' })`
 
 interface IAuditHeadingProps {
   auditName: string
-  jurisdictionName?: string
+  organizationOrJurisdictionName?: string
   auditStage?: string
 }
 
 export const AuditHeading: React.FC<IAuditHeadingProps> = ({
   auditName,
-  jurisdictionName,
+  organizationOrJurisdictionName,
   auditStage,
 }) => {
   return (
     <div style={{ display: 'flex' }}>
-      <span>{auditName}</span>
-      {jurisdictionName && <span>&nbsp;&mdash; {jurisdictionName}</span>}
+      <span>{organizationOrJurisdictionName}</span>
+      <span>&nbsp;&mdash; {auditName}</span>
       {auditStage && (
         <>
           <Divider style={{ margin: '0 15px' }} />

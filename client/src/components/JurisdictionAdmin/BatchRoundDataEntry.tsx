@@ -587,7 +587,9 @@ const BatchRoundDataEntry: React.FC<{ round: IRound }> = ({ round }) => {
                 >
                   <div>
                     Last edited by:{' '}
-                    <span style={{ fontWeight: '500' }}>Audit Board #1</span>
+                    <span style={{ fontWeight: '500' }}>
+                      John Smith, Kristin King
+                    </span>
                   </div>
                   <Button icon="edit" onClick={() => setIsEditing(true)}>
                     Edit Results

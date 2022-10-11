@@ -1,10 +1,21 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
-import { H4 } from '@blueprintjs/core'
+import {
+  H4,
+  ProgressBar,
+  Button,
+  Tooltip,
+  Classes,
+  AnchorButton,
+} from '@blueprintjs/core'
 import { Wrapper, Inner } from '../Atoms/Wrapper'
 import useRoundsJurisdictionAdmin from './useRoundsJurisdictionAdmin'
-import { JurisdictionAdminStatusBox } from '../Atoms/StatusBox'
+import {
+  JurisdictionAdminStatusBox,
+  AuditHeading,
+  StatusBar,
+} from '../Atoms/StatusBox'
 import {
   useBallotManifest,
   useBatchTallies,
@@ -19,6 +30,8 @@ import { isAuditStarted } from '../AuditAdmin/useRoundsAuditAdmin'
 import RoundManagement from './RoundManagement'
 import LinkButton from '../Atoms/LinkButton'
 import { useBatchInventoryFeatureFlag } from '../useFeatureFlag'
+import { useAuthDataContext } from '../UserContext'
+import { assert } from '../utilities'
 
 const VerticalInner = styled(Inner)`
   flex-direction: column;
@@ -29,6 +42,14 @@ const JurisdictionAdminView: React.FC = () => {
     electionId: string
     jurisdictionId: string
   }>()
+
+  const auth = useAuthDataContext()
+  assert(auth?.user?.type === 'jurisdiction_admin')
+  const jurisdiction = auth.user.jurisdictions.find(
+    j => j.id === jurisdictionId
+  )
+  assert(jurisdiction !== undefined)
+
   const isBatchInventoryEnabled = useBatchInventoryFeatureFlag(jurisdictionId)
 
   const auditSettings = useAuditSettingsJurisdictionAdmin(
@@ -191,9 +212,12 @@ const JurisdictionAdminView: React.FC = () => {
       </Wrapper>
     )
   }
+
+  const round = rounds[rounds.length - 1]
+
   return (
     <Wrapper>
-      <JurisdictionAdminStatusBox
+      {/* <JurisdictionAdminStatusBox
         rounds={rounds}
         ballotManifest={ballotManifest}
         batchTallies={batchTallies}
@@ -202,10 +226,33 @@ const JurisdictionAdminView: React.FC = () => {
         auditType={auditSettings.auditType}
         auditName={auditSettings.auditName}
         isAuditOnline={!!auditSettings.online}
-      />
+      /> */}
       <Inner flexDirection="column">
+        <StatusBar>
+          <AuditHeading
+            auditName={auditSettings.auditName}
+            organizationOrJurisdictionName={jurisdiction.name}
+            auditStage={
+              rounds.length === 0 ? 'Audit Setup' : `Round ${round.roundNum}`
+            }
+          />
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+            }}
+          >
+            <div style={{ flexShrink: 0 }}>
+              <strong>1/4 batches audited</strong>
+            </div>
+            <div style={{ width: '150px' }}>
+              <ProgressBar value={0.25} stripes={false} intent="primary" />
+            </div>
+          </div>
+        </StatusBar>
         <RoundManagement
-          round={rounds[rounds.length - 1]}
+          round={round}
           auditBoards={auditBoards}
           createAuditBoards={createAuditBoards}
         />
