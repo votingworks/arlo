@@ -393,13 +393,6 @@ def ballot_round_status(election: Election, round: Round) -> Dict[str, JSONDict]
 
 
 def batch_round_status(election: Election, round: Round) -> Dict[str, JSONDict]:
-    jurisdictions_with_audit_boards = set(
-        jurisdiction_id
-        for jurisdiction_id, in AuditBoard.query.filter_by(round_id=round.id).values(
-            AuditBoard.jurisdiction_id.distinct()
-        )
-    )
-
     sample_count_by_jurisdiction = dict(
         SampledBatchDraw.query.filter_by(round_id=round.id)
         .join(Batch)
@@ -453,15 +446,15 @@ def batch_round_status(election: Election, round: Round) -> Dict[str, JSONDict]:
     def num_batches_audited(jurisdiction_id: str) -> int:
         return audited_batch_count_by_jurisdiction.get(jurisdiction_id, 0)
 
-    # NOT_STARTED = the jurisdiction hasn’t set up any audit boards
-    # IN_PROGRESS = the audit boards are set up
-    # COMPLETE = all the batch results are recorded
+    # NOT_STARTED = the jurisdiction hasn’t audited any batches yet
+    # IN_PROGRESS = the jurisdiction is auditing batches
+    # COMPLETE = the batch results are finalized
     def status(jurisdiction_id: str) -> JurisdictionStatus:
         # Special case: jurisdictions that don't get any batches assigned are
         # COMPLETE from the get-go
         if num_samples(jurisdiction_id) == 0:
             return JurisdictionStatus.COMPLETE
-        if jurisdiction_id not in jurisdictions_with_audit_boards:
+        if num_samples_audited(jurisdiction_id) == 0:
             return JurisdictionStatus.NOT_STARTED
         if jurisdiction_id not in finalized_jurisdiction_ids:
             return JurisdictionStatus.IN_PROGRESS
