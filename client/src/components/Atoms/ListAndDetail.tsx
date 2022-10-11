@@ -19,13 +19,17 @@ export const ListItems = styled.ul`
   border-top: 1px solid ${Colors.LIGHT_GRAY2};
 `
 
+// TODO put a button inside for :active styling
 export const ListItem = styled.li`
   padding: 10px 15px;
   border-bottom: 1px solid ${Colors.LIGHT_GRAY4};
   cursor: pointer;
 
+  background-color: ${props => (props.selected ? Colors.LIGHT_GRAY4 : 'white')};
+
   &:hover {
-    background-color: ${Colors.LIGHT_GRAY5};
+    background-color: ${props =>
+      props.selected ? Colors.LIGHT_GRAY4 : Colors.LIGHT_GRAY5};
   }
 `
 
@@ -37,5 +41,5 @@ export const ListSearch = styled(InputGroup).attrs({
 `
 
 export const Detail = styled.div`
-  padding: 20px;
+  padding: 15px;
 `

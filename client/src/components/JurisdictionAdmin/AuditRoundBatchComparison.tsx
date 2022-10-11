@@ -298,7 +298,7 @@ const AuditBatchesStep: React.FC<IAuditBatchesStepProps> = ({
   round,
 }) => (
   <>
-    <StepPanel>
+    <StepPanel style={{ padding: 0 }}>
       <BatchRoundDataEntry round={round} />
     </StepPanel>
     <StepActions
@@ -306,6 +306,11 @@ const AuditBatchesStep: React.FC<IAuditBatchesStepProps> = ({
         <LinkButton to={previousStepUrl} icon="chevron-left">
           Back
         </LinkButton>
+      }
+      right={
+        <Button intent="primary" disabled>
+          Finalize Results
+        </Button>
       }
     />
   </>

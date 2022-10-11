@@ -14,6 +14,8 @@ import {
   MenuItem,
   InputGroup,
   H4,
+  Tabs,
+  Tab,
 } from '@blueprintjs/core'
 import { useForm, useFieldArray } from 'react-hook-form'
 import styled, { css } from 'styled-components'
@@ -385,6 +387,10 @@ const BatchTallyTable = styled(HTMLTable).attrs({
     box-shadow: 0 1px 0 ${Colors.GRAY4};
     background: ${Colors.WHITE};
   }
+
+  tr td {
+    vertical-align: middle;
+  }
 `
 
 const BatchRoundDataEntry: React.FC<{ round: IRound }> = ({ round }) => {
@@ -400,16 +406,25 @@ const BatchRoundDataEntry: React.FC<{ round: IRound }> = ({ round }) => {
     round.id
   )
   const { confirm, confirmProps } = useConfirm()
-  const [editing, setEditing] = useState<{
-    batchId: IBatch['id']
-    showTallySheetsModal: boolean
-  } | null>(null)
+  const [selectedBatchId, setSelectedBatchId] = useState<IBatch['id'] | null>()
+  const [isEditing, setIsEditing] = useState(false)
+  const [search, setSearch] = useState('')
+  // const [editing, setEditing] = useState<{
+  //   batchId: IBatch['id']
+  //   showTallySheetsModal: boolean
+  // } | null>(null)
+
+  const [multiple, setMultiple] = useState(false)
 
   if (!contests || !batchesResp.isSuccess) return null
 
   // Batch comparison audits only support a single contest
   const [contest] = contests
-  const { batches, resultsFinalizedAt } = batchesResp.data
+  let { batches, resultsFinalizedAt } = batchesResp.data
+  batches = batches.map(batch => ({
+    ...batch,
+    name: `Tabulator A - Batch ${batch.name}`,
+  }))
 
   const batchChoiceVotes = (batch: IBatch, choiceId: string) =>
     batch.resultTallySheets.length > 0
@@ -452,33 +467,68 @@ const BatchRoundDataEntry: React.FC<{ round: IRound }> = ({ round }) => {
     }
   }
 
-  const selectedBatch = editing && batches.find(b => b.id === editing.batchId)
+  const selectedBatch = batches.find(batch => batch.id === selectedBatchId)
 
   return (
-    <ListAndDetail>
+    <ListAndDetail style={{ borderWidth: '1px 0' }}>
       <List>
-        <ListSearch placeholder="Search batches..." />
+        <ListSearch
+          placeholder="Search batches..."
+          onChange={e => setSearch(e.target.value)}
+        />
         <ListItems>
-          {batches.map(batch => (
-            <ListItem
-              key={batch.id}
-              onClick={() =>
-                setEditing({ batchId: batch.id, showTallySheetsModal: false })
-              }
-            >
-              {batch.name}
-            </ListItem>
-          ))}
+          {batches
+            .filter(batch =>
+              batch.name.toLowerCase().includes(search.toLowerCase())
+            )
+            .map(batch => (
+              <ListItem
+                key={batch.id}
+                onClick={() => setSelectedBatchId(batch.id)}
+                selected={batch.id === selectedBatchId}
+              >
+                {batch.name}
+              </ListItem>
+            ))}
         </ListItems>
       </List>
       <Detail>
         {!selectedBatch ? (
           <p className="bp3-text-large">
-            Select a batch to enter audited tally results.
+            Select a batch to enter audit results.
           </p>
         ) : (
           <>
-            <H4>Batch: {selectedBatch.name}</H4>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'baseline',
+              }}
+            >
+              <H4>{selectedBatch.name}</H4>
+            </div>
+            <div style={{ marginBottom: '10px' }}>
+              <Tabs
+                id={selectedBatch.name}
+                selectedTabId={multiple ? 'sheet-2' : 'totals'}
+              >
+                <Tab id="totals">Vote Totals</Tab>
+                {multiple && <Tab id="sheet-1">Sheet 1</Tab>}
+                {multiple && <Tab id="sheet-2">Sheet 2</Tab>}
+                <Tabs.Expander />
+                {isEditing &&
+                  (multiple ? (
+                    <Button icon="add" minimal>
+                      Add sheet
+                    </Button>
+                  ) : (
+                    <Button minimal onClick={() => setMultiple(true)}>
+                      Use multiple tally sheets
+                    </Button>
+                  ))}
+              </Tabs>
+            </div>
             <BatchTallyTable striped bordered>
               <thead>
                 <th>Choice</th>
@@ -486,13 +536,65 @@ const BatchRoundDataEntry: React.FC<{ round: IRound }> = ({ round }) => {
               </thead>
               <tbody>
                 {contest.choices.map(choice => (
-                  <tr key={choice.id}>
+                  <tr key={choice.id} style={{ height: '55px' }}>
                     <td>{choice.name}</td>
-                    <td />
+                    <td>
+                      {isEditing ? (
+                        <input
+                          className={Classes.INPUT}
+                          type="number"
+                          value={batchChoiceVotes(selectedBatch, choice.id)}
+                        />
+                      ) : (
+                        batchChoiceVotes(selectedBatch, choice.id)
+                      )}
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </BatchTallyTable>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'baseline',
+                marginTop: '10px',
+              }}
+            >
+              {isEditing && multiple ? (
+                <Button icon="delete" minimal intent="danger">
+                  Delete sheet
+                </Button>
+              ) : (
+                <div />
+              )}
+              {isEditing ? (
+                <Button
+                  icon="tick"
+                  intent="primary"
+                  onClick={() => setIsEditing(false)}
+                >
+                  Save Results
+                </Button>
+              ) : (
+                <div
+                  style={{
+                    display: 'flex',
+                    gap: '15px',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}
+                >
+                  <div>
+                    Last edited by:{' '}
+                    <span style={{ fontWeight: '500' }}>Audit Board #1</span>
+                  </div>
+                  <Button icon="edit" onClick={() => setIsEditing(true)}>
+                    Edit Results
+                  </Button>
+                </div>
+              )}
+            </div>
           </>
         )}
       </Detail>
