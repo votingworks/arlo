@@ -115,7 +115,10 @@ const RoundManagement: React.FC<IRoundManagementProps> = ({
     )
   })()
 
-  if (auditBoards.length === 0) {
+  if (
+    auditBoards.length === 0 &&
+    auditSettings.auditType !== 'BATCH_COMPARISON'
+  ) {
     return (
       <PaddedWrapper>
         <H3>Round {roundNum} Audit Board Setup</H3>

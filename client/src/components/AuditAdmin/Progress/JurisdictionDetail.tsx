@@ -360,7 +360,10 @@ const RoundStatusSection = ({
         </div>
       )
     }
-    if (auditBoards.length === 0) {
+    if (
+      auditBoards.length === 0 &&
+      auditSettings.auditType !== 'BATCH_COMPARISON'
+    ) {
       return <p>Waiting for jurisdiction to set up audit boards</p>
     }
     return (
