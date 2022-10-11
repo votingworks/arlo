@@ -23,20 +23,12 @@ const mockBatches: IBatch[] = [
     id: 'B1',
     name: 'Batch #1',
     numBallots: 0,
-    auditBoard: {
-      id: 'AB1',
-      name: 'Audit Board #1',
-    },
     resultTallySheets: [],
   },
   {
     id: 'B2',
     name: 'Batch #2',
     numBallots: 0,
-    auditBoard: {
-      id: 'AB1',
-      name: 'Audit Board #1',
-    },
     resultTallySheets: [],
   },
 ]
@@ -366,20 +358,12 @@ describe('generateSheets', () => {
           id: 'B1',
           name: allStarLyrics,
           numBallots: 0,
-          auditBoard: {
-            id: 'AB1',
-            name: allStarLyrics,
-          },
           resultTallySheets: [],
         },
         {
           id: 'B2',
           name: allStarLyrics,
           numBallots: 0,
-          auditBoard: {
-            id: 'AB1',
-            name: allStarLyrics,
-          },
           resultTallySheets: [],
         },
       ]
@@ -413,20 +397,12 @@ describe('generateSheets', () => {
           id: 'B1',
           name: manyAs,
           numBallots: 0,
-          auditBoard: {
-            id: 'AB1',
-            name: manyAs,
-          },
           resultTallySheets: [],
         },
         {
           id: 'B2',
           name: manyAs,
           numBallots: 0,
-          auditBoard: {
-            id: 'AB1',
-            name: manyAs,
-          },
           resultTallySheets: [],
         },
       ]
