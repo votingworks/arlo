@@ -517,6 +517,23 @@ class AuditBoard(BaseModel):
 
     __table_args__ = (UniqueConstraint("jurisdiction_id", "round_id", "name"),)
 
+class TallyEntryAccount(BaseModel):
+    id = Column(String(200), primary_key=True)
+
+    jurisdiction_id = Column(
+        String(200), ForeignKey("jurisdiction.id", ondelete="cascade"), nullable=False,
+    )
+    jurisdiction = relationship("Jurisdiction", back_populates="tally_entry_accounts")
+
+    member_1 = Column(String(200))
+    member_1_affiliation = Column(Enum(Affiliation))
+    member_2 = Column(String(200))
+    member_2_affiliation = Column(Enum(Affiliation))
+
+    login_code = Column(String(200), unique=True)
+    login_code_requested_at = Column(UTCDateTime)
+    login_code_attempts = Column(Integer)
+
 
 class SampleSizeOptions(BaseModel):
     election_id = Column(
