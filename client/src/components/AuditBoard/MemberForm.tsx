@@ -4,12 +4,12 @@ import { Formik, FormikProps, getIn } from 'formik'
 import FormSection from '../Atoms/Form/FormSection'
 import FormButton from '../Atoms/Form/FormButton'
 import { LabelText, NameField } from './Atoms'
-import { IAuditBoardMember } from '../UserContext'
+import { IMember } from '../UserContext'
 
 interface IProps {
   boardName: string
   jurisdictionName: string
-  submitMembers: (members: IAuditBoardMember[]) => void
+  submitMembers: (members: IMember[]) => void
 }
 
 const MemberForm: React.FC<IProps> = ({
@@ -51,7 +51,7 @@ const MemberForm: React.FC<IProps> = ({
           values,
           handleSubmit,
           isSubmitting,
-        }: FormikProps<[IAuditBoardMember, IAuditBoardMember]>) => (
+        }: FormikProps<[IMember, IMember]>) => (
           <form>
             {[0, 1].map(i => (
               <FormSection label="Audit Board Member" key={i}>

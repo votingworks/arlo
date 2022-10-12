@@ -15,7 +15,7 @@ import {
   Icon,
 } from '@blueprintjs/core'
 import { Link, useRouteMatch, RouteComponentProps } from 'react-router-dom'
-import { useAuthDataContext, IAuditBoardMember } from './UserContext'
+import { useAuthDataContext, IMember } from './UserContext'
 import { Inner } from './Atoms/Wrapper'
 import LinkButton from './Atoms/LinkButton'
 
@@ -212,7 +212,7 @@ const Header: React.FC = () => {
 
 interface IHeaderAuditBoardProps {
   boardName: string
-  members: IAuditBoardMember[]
+  members: IMember[]
 }
 
 export const HeaderAuditBoard: React.FC<IHeaderAuditBoardProps> = ({

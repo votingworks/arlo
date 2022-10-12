@@ -92,6 +92,10 @@ const App: React.FC = () => {
             <Route path="/" component={Header} />
             <Switch>
               <Route exact path="/" component={HomeScreen} />
+              <Route
+                path="/jurisdiction/:jurisdictionId/tally-entry"
+                component={TallyEntryUserView}
+              />
               <PrivateRoute
                 userType="audit_board"
                 path="/election/:electionId/audit-board/:auditBoardId"
