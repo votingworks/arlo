@@ -381,13 +381,6 @@ class Batch(BaseModel):
         "SampledBallot", back_populates="batch", uselist=True, passive_deletes=True
     )
 
-    # For batch comparison audits, we sample the batch itself, and assign it to
-    # an audit board to be audited.
-    audit_board_id = Column(
-        String(200), ForeignKey("audit_board.id", ondelete="set null"),
-    )
-    audit_board = relationship("AuditBoard")
-
     # For hybrid audits, the ballot manifest tells us which batches have CVRs
     # (and should use ballot comparison math) and which don't (and should use
     # ballot polling math).

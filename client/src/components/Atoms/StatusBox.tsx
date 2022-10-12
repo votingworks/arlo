@@ -423,7 +423,7 @@ export const JurisdictionAdminStatusBox: React.FC<IJurisdictionAdminProps> = ({
   const inProgressHeadline = `Round ${roundNum} of the audit is in progress.`
 
   // Round in progress, hasn't set up audit boards
-  if (auditBoards.length === 0)
+  if (auditBoards.length === 0 && auditType !== 'BATCH_COMPARISON')
     return (
       <StatusBox
         headline={inProgressHeadline}
@@ -457,7 +457,7 @@ export const JurisdictionAdminStatusBox: React.FC<IJurisdictionAdminProps> = ({
         `${numCompleted} of ${auditBoards.length} audit boards complete.`
       )
     }
-    if (numCompleted === auditBoards.length)
+    if (numCompleted === auditBoards.length && auditType !== 'BATCH_COMPARISON')
       details.push(
         `Waiting for all jurisdictions to complete round ${roundNum}.`
       )

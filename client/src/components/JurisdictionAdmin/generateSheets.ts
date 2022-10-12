@@ -401,14 +401,8 @@ export const downloadBatchTallySheets = async (
       bottomMargin: pBottomMargin,
     })
 
-    y = renderTextWrapped({
-      doc,
-      text: `Audit Board: ${batch.auditBoard ? batch.auditBoard.name : ''}`,
-      wrapWidth: pageContentWidth,
-      x: pageMargin,
-      y,
-      bottomMargin: pBottomMargin,
-    })
+    doc.text(`Audit Board (Optional): ${blankLine(20)}`, pageMargin, y)
+    y += doc.getLineHeight() + pBottomMargin
 
     doc.text(`Batch Type (Optional): ${blankLine(20)}`, pageMargin, y)
     y += doc.getLineHeight() + sectionBottomMargin

@@ -137,8 +137,6 @@ describe('Batch Comparison', () => {
     cy.findByRole('heading', { name: 'Audit Progress' })
     cy.logout(auditAdmin)
     cy.loginJurisdictionAdmin(jurisdictionAdmin)
-    cy.contains('Number of Audit Boards')
-    cy.findByText('Save & Next').click()
 
     cy.findAllByRole('columnheader')
       .eq(1)

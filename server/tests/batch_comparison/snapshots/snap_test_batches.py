@@ -9,19 +9,19 @@ snapshots = Snapshot()
 
 snapshots[
     "test_batch_retrieval_list_round_1 1"
-] = """Batch Name,Container,Tabulator,Audit Board
-Batch 1,,,Audit Board #1
-Batch 8,,,Audit Board #1
-Batch 6,,,Audit Board #2
+] = """Batch Name,Container,Tabulator
+Batch 1,,
+Batch 6,,
+Batch 8,,
 """
 
 snapshots[
     "test_batches_human_sort_order 1"
-] = """Batch Name,Container,Tabulator,Audit Board
-Batch 1 - 1,,,Audit Board #1
-Batch 1 - 10,,,Audit Board #1
-Batch 2,,,Audit Board #1
-Batch 10,,,Audit Board #1
+] = """Batch Name,Container,Tabulator
+Batch 1 - 1,,
+Batch 1 - 10,,
+Batch 2,,
+Batch 10,,
 """
 
 snapshots[

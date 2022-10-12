@@ -14,10 +14,6 @@ export interface IBatch {
   id: string
   name: string
   numBallots: number
-  auditBoard: null | {
-    id: string
-    name: string
-  }
   resultTallySheets: IBatchResultTallySheet[]
 }
 

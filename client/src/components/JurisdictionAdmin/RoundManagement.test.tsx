@@ -99,25 +99,6 @@ describe('RoundManagement', () => {
     jest.clearAllMocks()
   })
 
-  it('renders audit setup with batch audit', async () => {
-    const expectedCalls = [
-      apiCalls.getSettings(auditSettings.batchComparisonAll),
-      jaApiCalls.getUser,
-      apiCalls.getBatches(batchesMocks.emptyInitial),
-    ]
-    await withMockFetch(expectedCalls, async () => {
-      const { container } = renderView({
-        round: roundMocks.incomplete,
-        auditBoards: [],
-        createAuditBoards: jest.fn(),
-      })
-      await screen.findByText('Round 1 Audit Board Setup')
-      screen.getByText(/Batches to audit: 3/)
-      screen.getByText(/Total ballots in batches: 300/)
-      expect(container).toMatchSnapshot()
-    })
-  })
-
   it('renders audit setup with ballot audit', async () => {
     const expectedCalls = [
       apiCalls.getSettings(auditSettings.all),
@@ -202,7 +183,7 @@ describe('RoundManagement', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView({
-        auditBoards: auditBoardMocks.unfinished,
+        auditBoards: [],
         createAuditBoards: jest.fn(),
         round: roundMocks.incomplete,
       })
@@ -238,7 +219,7 @@ describe('RoundManagement', () => {
     mockSavePDF.mockImplementationOnce(() => Promise.reject(new Error('Whoa!')))
     await withMockFetch(expectedCalls, async () => {
       renderView({
-        auditBoards: auditBoardMocks.unfinished,
+        auditBoards: [],
         createAuditBoards: jest.fn(),
         round: roundMocks.incomplete,
       })
@@ -282,7 +263,7 @@ describe('RoundManagement', () => {
     await withMockFetch(expectedCalls, async () => {
       renderView({
         round: roundMocks.incomplete,
-        auditBoards: auditBoardMocks.unfinished,
+        auditBoards: [],
         createAuditBoards: jest.fn(),
       })
       await screen.findByText(

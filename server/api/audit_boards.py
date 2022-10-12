@@ -1,5 +1,4 @@
 import uuid
-import itertools
 from datetime import datetime
 from typing import List, Dict
 from flask import jsonify, request, current_app
@@ -43,6 +42,9 @@ def validate_audit_boards(
     current_round = get_current_round(election)
     if not current_round or round.id != current_round.id:
         raise Conflict(f"Round {round.round_num} is not the current round")
+
+    if election.audit_type == AuditType.BATCH_COMPARISON:
+        raise Conflict("Batch comparison audits do not use audit boards")
 
     if any(ab for ab in jurisdiction.audit_boards if ab.round_id == round.id):
         raise Conflict(f"Audit boards already created for round {round.round_num}")
@@ -159,22 +161,6 @@ def assign_sampled_ballots(
         raise InternalServerError("Error assigning ballots to audit boards")
 
 
-def assign_sampled_batches(
-    jurisdiction: Jurisdiction, round: Round, audit_boards: List[AuditBoard]
-):
-    sampled_batches = (
-        Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
-        .join(SampledBatchDraw)
-        .filter_by(round_id=round.id)
-        .order_by(Batch.created_at)
-        .all()
-    )
-    audit_board_generator = itertools.cycle(audit_boards)
-    for batch in sampled_batches:
-        batch.audit_board_id = next(audit_board_generator).id
-        db_session.add(batch)
-
-
 @api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/audit-board",
     methods=["POST"],
@@ -196,10 +182,7 @@ def create_audit_boards(election: Election, jurisdiction: Jurisdiction, round: R
     ]
     db_session.add_all(audit_boards)
 
-    if election.audit_type == AuditType.BATCH_COMPARISON:
-        assign_sampled_batches(jurisdiction, round, audit_boards)
-    else:
-        assign_sampled_ballots(jurisdiction, round, audit_boards)
+    assign_sampled_ballots(jurisdiction, round, audit_boards)
 
     record_activity(
         CreateAuditBoards(

@@ -48,12 +48,11 @@ def get_batch_retrieval_list(
         .join(SampledBatchDraw)
         .filter_by(round_id=round.id)
         .filter(Batch.id.notin_(already_audited_batches(jurisdiction, round)))
-        .join(AuditBoard)
-        .group_by(AuditBoard.id, Batch.id)
-        .order_by(func.human_sort(AuditBoard.name), func.human_sort(Batch.name))
-        .values(Batch.name, Batch.container, Batch.tabulator, AuditBoard.name,)
+        .group_by(Batch.id)
+        .order_by(func.human_sort(Batch.name))
+        .values(Batch.name, Batch.container, Batch.tabulator)
     )
-    retrieval_list_rows = [["Batch Name", "Container", "Tabulator", "Audit Board",]] + [
+    retrieval_list_rows = [["Batch Name", "Container", "Tabulator"]] + [
         list(batch_tuple) for batch_tuple in batches
     ]
 
@@ -69,12 +68,10 @@ def get_batch_retrieval_list(
 
 
 def serialize_batch(batch: Batch) -> JSONDict:
-    audit_board = batch.audit_board
     return {
         "id": batch.id,
         "name": batch.name,
         "numBallots": batch.num_ballots,
-        "auditBoard": audit_board and {"id": audit_board.id, "name": audit_board.name},
         "resultTallySheets": [
             {
                 "name": tally_sheet.name,
@@ -103,10 +100,9 @@ def list_batches_for_jurisdiction(
         .join(SampledBatchDraw)
         .filter_by(round_id=round.id)
         .filter(Batch.id.notin_(already_audited_batches(jurisdiction, round)))
-        .outerjoin(AuditBoard)
         .outerjoin(BatchResultTallySheet)
         .outerjoin(BatchResult)
-        .order_by(func.human_sort(AuditBoard.name), func.human_sort(Batch.name))
+        .order_by(func.human_sort(Batch.name))
         .options(
             contains_eager(Batch.result_tally_sheets).contains_eager(
                 BatchResultTallySheet.results
@@ -154,12 +150,6 @@ def validate_batch_results(
     current_round = get_current_round(election)
     if not current_round or round.id != current_round.id:
         raise Conflict(f"Round {round.round_num} is not the current round")
-
-    num_audit_boards = AuditBoard.query.filter_by(
-        jurisdiction_id=jurisdiction.id, round_id=round.id
-    ).count()
-    if num_audit_boards == 0:
-        raise Conflict("Must set up audit boards before recording results")
 
     if (
         BatchResultsFinalized.query.filter_by(

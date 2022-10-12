@@ -44,17 +44,9 @@ def test_list_batches(
             "id": assert_is_id,
             "name": "Batch 1",
             "numBallots": 500,
-            "auditBoard": None,
             "resultTallySheets": [],
         },
     )
-
-    rv = post_json(
-        client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
-        [{"name": "Audit Board #1"}, {"name": "Audit Board #2"},],
-    )
-    assert_ok(rv)
 
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches"
@@ -67,7 +59,6 @@ def test_list_batches(
             "id": assert_is_id,
             "name": "Batch 1",
             "numBallots": 500,
-            "auditBoard": {"id": assert_is_id, "name": "Audit Board #1"},
             "resultTallySheets": [],
         },
     )
@@ -106,20 +97,6 @@ def test_batch_retrieval_list_round_1(
         scrub_datetime(rv.headers["Content-Disposition"])
         == 'attachment; filename="batch-retrieval-J1-Test-Audit-test-batch-retrieval-list-round-1-DATETIME.csv"'
     )
-
-    retrieval_list = rv.data.decode("utf-8").replace("\r\n", "\n")
-    assert retrieval_list == "Batch Name,Container,Tabulator,Audit Board\n"
-
-    rv = post_json(
-        client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
-        [{"name": "Audit Board #1"}, {"name": "Audit Board #2"},],
-    )
-    assert_ok(rv)
-
-    rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/retrieval-list"
-    )
     retrieval_list = rv.data.decode("utf-8").replace("\r\n", "\n")
     assert len(retrieval_list.splitlines()) == J1_BATCHES_ROUND_1 + 1
     snapshot.assert_match(retrieval_list)
@@ -130,7 +107,6 @@ def test_record_batch_results(
     election_id: str,
     jurisdiction_ids: List[str],
     round_1_id: str,
-    audit_board_round_1_ids: List[str],  # pylint: disable=unused-argument
     snapshot,
 ):
     set_logged_in_user(
@@ -216,12 +192,6 @@ def test_record_batch_results(
     assert rounds[0]["endedAt"] is None
 
     # Record results for the other jurisdiction
-    rv = post_json(
-        client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/audit-board",
-        [{"name": "Audit Board #1"}],
-    )
-
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/batches"
     )
@@ -303,13 +273,6 @@ def test_record_batch_results(
     rounds = json.loads(rv.data)["rounds"]
     round_2_id = rounds[1]["id"]
 
-    rv = post_json(
-        client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/audit-board",
-        [{"name": "Audit Board #1"}],
-    )
-    assert_ok(rv)
-
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/batches"
     )
@@ -321,38 +284,11 @@ def test_record_batch_results(
         assert batch["id"] not in round_1_batch_ids
 
 
-def test_record_batch_results_without_audit_boards(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str
-):
-    set_logged_in_user(
-        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
-    )
-    rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches"
-    )
-    batches = json.loads(rv.data)["batches"]
-    rv = put_json(
-        client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/{batches[0]['id']}/results",
-        {},
-    )
-    assert rv.status_code == 409
-    assert json.loads(rv.data) == {
-        "errors": [
-            {
-                "errorType": "Conflict",
-                "message": "Must set up audit boards before recording results",
-            }
-        ]
-    }
-
-
 def test_record_batch_results_invalid(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
     round_1_id: str,  # pylint: disable=unused-argument
-    audit_board_round_1_ids: List[str],  # pylint: disable=unused-argument
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -476,11 +412,7 @@ def test_record_batch_results_invalid(
 
 
 def test_unfinalize_batch_results(
-    client: FlaskClient,
-    election_id: str,
-    jurisdiction_ids: List[str],
-    round_1_id: str,
-    audit_board_round_1_ids: List[str],  # pylint: disable=unused-argument
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -584,12 +516,6 @@ def test_unfinalize_batch_results(
     assert_ok(rv)
 
     # Finish the round
-    rv = post_json(
-        client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/audit-board",
-        [{"name": "Audit Board #1"}],
-    )
-    assert_ok(rv)
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/batches"
     )
@@ -648,13 +574,6 @@ def test_record_batch_results_bad_round(
     )
 
     for jurisdiction_id in jurisdiction_ids[:2]:
-        rv = post_json(
-            client,
-            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_1_id}/audit-board",
-            [{"name": "Audit Board #1"}],
-        )
-        assert_ok(rv)
-
         rv = client.get(
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_1_id}/batches"
         )
@@ -700,13 +619,6 @@ def test_record_batch_results_bad_round(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-
-    rv = post_json(
-        client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/audit-board",
-        [{"name": "Audit Board #1"}],
-    )
-    assert_ok(rv)
 
     # Try a batch from the previous round
     rv = put_json(
@@ -876,18 +788,10 @@ def test_batches_human_sort_order(
     rounds = json.loads(rv.data)["rounds"]
     round_1_id = rounds[0]["id"]
 
-    # Create audit boards
+    # Check that the batches are ordered in human order
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = post_json(
-        client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
-        [{"name": "Audit Board #1"}],
-    )
-    assert_ok(rv)
-
-    # Check that the batches are ordered in human order
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/retrieval-list"
     )
@@ -915,11 +819,7 @@ def test_batches_human_sort_order(
 
 
 def test_finalize_batch_results_incomplete(
-    client: FlaskClient,
-    election_id: str,
-    jurisdiction_ids: List[str],
-    round_1_id: str,
-    audit_board_round_1_ids: List[str],  # pylint: disable=unused-argument
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
