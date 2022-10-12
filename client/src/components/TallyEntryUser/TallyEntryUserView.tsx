@@ -1,31 +1,34 @@
 import React from 'react'
-import { useParams, Switch } from 'react-router-dom'
-import { useAuthDataContext } from '../UserContext'
-import { assert } from '../utilities'
-import useTallyEntryUser from './useTallyEntryUser'
+import { Switch, Redirect, useRouteMatch, Route } from 'react-router-dom'
+import useCurrentUser from './useCurrentUser'
+import TallyEntryLoginScreen from './TallyEntryLoginScreen'
+import TallyEntryScreen from './TallyEntryScreen'
 
 const TallyEntryUserView: React.FC = () => {
-  const { jurisdictionId } = useParams<{ jurisdictionId: string }>()
-  const tallyEntryUser = useTallyEntryUser()
+  const { path } = useRouteMatch()
+  const userQuery = useCurrentUser()
 
-  // TODO how are we gonna get the audit name/jurisdiction name to display here?
-  // - a public endpoint? jurisdictionId -> name
-  // - create the tally entry user immediately when they visit the login link
-  // - put the jurisdiction id in the session and use that to validate the request for name
-  if (tallyEntryUser === null) {
-    return <TallyEntryLoginStartScreen jurisdictionId={jurisdictionId} />
-  }
+  if (!userQuery.isSuccess) return null // Still loading
 
-  // TODO maybe we want a specific tally entry login error page
-  if (tallyEntryUser.jurisdictionId !== jurisdictionId) {
+  const user = userQuery.data
+  if (user?.type !== 'tally_entry') {
+    // TODO figure out when this would happen and handle this case better
     return <Redirect to="/" />
   }
 
-  if (tallyEntryUser.loginConfirmedAt === null) {
-    return <TallyEntryLoginCodeScreen jurisdictionId={jurisdictionId} />
-  }
-
-  return <TallyEntryScreen jurisdictionId={jurisdictionId} />
+  return (
+    <Switch>
+      <Route exact path={`${path}/login`}>
+        <TallyEntryLoginScreen user={user} />
+      </Route>
+      {user?.loginConfirmedAt && (
+        <Route exact path={path}>
+          <TallyEntryScreen />
+        </Route>
+      )}
+      <Redirect to={`${path}/login`} />
+    </Switch>
+  )
 }
 
 export default TallyEntryUserView
