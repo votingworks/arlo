@@ -122,6 +122,11 @@ def auth_me():
         tally_entry_user = TallyEntryUser.query.get(user_key)
         jurisdiction = tally_entry_user.jurisdiction
         if jurisdiction.election.deleted_at is None:
+            # Tally entry users get a reponse from /api/me before their login
+            # code is confirmed by the JA. Thus, it's important to make sure
+            # that we only return data that they are allowed to see during the
+            # login process. Data that is only available after login
+            # confirmation should be accessed via separate endpoints.
             user = dict(
                 type=user_type,
                 id=tally_entry_user.id,
@@ -340,60 +345,57 @@ def tally_entry_passphrase(passphrase: str):
     jurisdiction = Jurisdiction.query.filter_by(
         tally_entry_passphrase=passphrase
     ).one_or_none()
+    # TODO redirect to a nice error screen that explains they probably made a typo
     if jurisdiction is None:
-        # TODO does it make sense to redirect to the main login page here?
-        # Maybe a 404 would be a better first cut?
-        return redirect(
-            "/?"
-            + urlencode(
-                {"error": "invalid_login_link", "message": "Invalid login link."}
-            )
-        )
-    return redirect(f"/jurisdiction/{jurisdiction.id}/tally-entry")
+        return NotFound()
+
+    tally_entry_user = TallyEntryUser(
+        id=str(uuid.uuid4()), jurisdiction_id=jurisdiction.id,
+    )
+    db_session.add(tally_entry_user)
+    db_session.commit()
+
+    # We set the tally entry user in the session even though they haven't fully
+    # logged in yet. This allows the user to hit /api/me to retrieve
+    # jurisdiction name and login code to show on the login screens. The
+    # restrict_access decorator ensures that they can't do anything else until
+    # their login code is confirmed by the JA.
+    set_loggedin_user(session, UserType.TALLY_ENTRY, tally_entry_user.id)
+
+    return redirect("/tally-entry/login")
 
 
 @auth.route("/auth/tallyentry/code", methods=["POST"])
 def tally_entry_user_generate_code():
-    body = request.get_json()
-    jurisdiction = Jurisdiction.query.get(body.get("jurisdictionId"))
-    if jurisdiction is None:
-        raise BadRequest(
-            "Invalid jurisdiction. Please try visiting your login link again."
-        )
+    _, user_key = get_loggedin_user(session)
+    tally_entry_user = get_or_404(TallyEntryUser, user_key)
 
+    body = request.get_json()
     members = body.get("members", [])
     validate_members(members)
 
-    tally_entry_user = TallyEntryUser(
-        id=str(uuid.uuid4()),
-        jurisdiction_id=jurisdiction.id,
-        member_1=members[0]["name"].strip(),
-        member_1_affiliation=members[0]["affiliation"],
-    )
+    tally_entry_user.member_1 = members[0]["name"].strip()
+    tally_entry_user.member_1_affiliation = members[0]["affiliation"]
     if len(members) > 1:
         tally_entry_user.member_2 = members[1]["name"].strip()
         tally_entry_user.member_2_affiliation = members[1]["affiliation"]
-
-    db_session.add(tally_entry_user)
 
     # Generate a login code and make sure its unique to the jurisdiction.
     #
     # Note that this doesn't protect against race conditions that might result
     # in a duplicate code, but we have a unique index on the table that will
-    # prevent the code from being written in that very rare case.  Here we're
+    # prevent the code from being written in that very rare case. Here we're
     # just checking for collisions not resulting from a race.
     while True:
         login_code = "".join(secrets.choice(string.digits) for _ in range(3))
         if not TallyEntryUser.query.filter_by(
-            jurisdiction_id=jurisdiction.id, login_code=login_code
+            jurisdiction_id=tally_entry_user.jurisdiction_id, login_code=login_code
         ).one_or_none():
             tally_entry_user.login_code = login_code
             break
 
-    # We set the tally entry user in the session even though their code isn't
-    # confirmed yet. The restrict_access decorator ensures that they can't
-    # do anything until the code is confirmed.
-    set_loggedin_user(session, UserType.TALLY_ENTRY, tally_entry_user.id)
+    # TODO add a login code created at timestamp so we can expire old codes
+    # Will need to think through what the UX for generating a new code should be
 
     db_session.commit()
 
@@ -413,7 +415,9 @@ def tally_entry_jurisdiction_generate_passphrase(
             "Tally entry accounts are only supported in batch comparison audits."
         )
 
-    jurisdiction.tally_entry_passphrase = xp.generate_xkcdpassword(WORDS, numwords=4, delimiter="-")
+    jurisdiction.tally_entry_passphrase = xp.generate_xkcdpassword(
+        WORDS, numwords=4, delimiter="-"
+    )
 
     db_session.commit()
     return jsonify(status="ok")
@@ -429,6 +433,9 @@ def tally_entry_jurisdiction_status(
 ):
     tally_entry_users = (
         TallyEntryUser.query.filter_by(jurisdiction_id=jurisdiction.id)
+        # The JA only needs to know about tally entry users that have gotten far
+        # enough through the login process to have a login code
+        .filter(TallyEntryUser.login_code.isnot(None))
         .order_by(TallyEntryUser.created_at.desc())
         .all()
     )

@@ -554,21 +554,9 @@ def test_tally_entry_login(
     login_link = f"/tallyentry/{tally_entry_status['passphrase']}"
     rv = tally_entry_client.get(login_link)
     assert rv.status_code == 302
-    assert urlparse(rv.location).path == f"/jurisdiction/{jurisdiction_id}/tally-entry"
+    assert urlparse(rv.location).path == "/tally-entry/login"
 
-    # Enter tally entry user details and start login
-    members = [
-        dict(name="Alice", affiliation="DEM"),
-        dict(name="Bob", affiliation=None),
-    ]
-    rv = post_json(
-        tally_entry_client,
-        "/auth/tallyentry/code",
-        dict(jurisdictionId=jurisdiction_id, members=members),
-    )
-    assert_ok(rv)
-
-    # Poll for login status
+    # Load the jurisdiction info
     rv = tally_entry_client.get("/api/me")
     assert rv.status_code == 200
     tally_entry_me_response = json.loads(rv.data)
@@ -578,21 +566,45 @@ def test_tally_entry_login(
             user=dict(
                 type="tally_entry",
                 id=assert_is_id,
-                loginCode=assert_is_string,
+                loginCode=None,
                 loginConfirmedAt=None,
                 jurisdictionId=jurisdiction_id,
                 jurisdictionName=jurisdiction.name,
                 electionId=election_id,
                 auditName=election.audit_name,
-                members=members,
+                members=[],
             ),
             supportUser=None,
         ),
     )
 
-    tally_entry_user_id = tally_entry_me_response["user"]["id"]
+    # Jurisdiction admin doesn't see the request yet
+    rv = client.get(
+        f"/auth/tallyentry/election/{election_id}/jurisdiction/{jurisdiction_id}"
+    )
+    assert rv.status_code == 200
+    tally_entry_status = json.loads(rv.data)
+    compare_json(
+        tally_entry_status, dict(passphrase=assert_is_passphrase, loginRequests=[])
+    )
+
+    # Enter tally entry user details and start login
+    members = [
+        dict(name="Alice", affiliation="DEM"),
+        dict(name="Bob", affiliation=None),
+    ]
+    rv = post_json(tally_entry_client, "/auth/tallyentry/code", dict(members=members))
+    assert_ok(rv)
+
+    # Poll for login status
+    rv = tally_entry_client.get("/api/me")
+    assert rv.status_code == 200
+    tally_entry_me_response = json.loads(rv.data)
     login_code = tally_entry_me_response["user"]["loginCode"]
+    assert login_code is not None
     assert re.match(r"^\d{3}$", login_code)
+    assert tally_entry_me_response["user"]["members"] == members
+    tally_entry_user_id = tally_entry_me_response["user"]["id"]
 
     # JA sees the login request on their screen
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, ja_email)
