@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
-import { Colors, H1 } from '@blueprintjs/core'
+import { H1 } from '@blueprintjs/core'
 
 import AuditPlanCard from './AuditPlanCard'
 import ElectionResultsCard from './ElectionResultsCard'
@@ -10,13 +10,6 @@ import {
   IElectionResultsFormState,
 } from './electionResults'
 import { Inner } from '../../Atoms/Wrapper'
-
-const Container = styled(Inner)`
-  // Undo the override in App.css and restore to Blueprint's original heading color
-  .bp3-heading {
-    color: ${Colors.DARK_GRAY1};
-  }
-`
 
 const PageHeading = styled(H1)`
   margin-bottom: 24px;
@@ -47,7 +40,7 @@ const AuditPlanner: React.FC = () => {
   }
 
   return (
-    <Container flexDirection="column" withTopPadding>
+    <Inner flexDirection="column" withTopPadding>
       <PageHeading>Audit Planner</PageHeading>
       <ElectionResultsCard
         clearElectionResults={clearElectionResults}
@@ -61,7 +54,7 @@ const AuditPlanner: React.FC = () => {
           electionResults={savedElectionResults}
         />
       )}
-    </Container>
+    </Inner>
   )
 }
 

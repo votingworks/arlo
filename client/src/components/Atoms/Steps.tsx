@@ -70,7 +70,7 @@ const StepListItemCircle = styled.div<{
 export const StepListItem = styled(({ current, ...props }) => (
   <H5 {...props} />
 ))<{ current: boolean }>`
-  color: ${props => (props.current ? Colors.DARK_GRAY5 : Colors.GRAY3)};
+  color: ${props => (props.current ? Colors.DARK_GRAY1 : Colors.GRAY3)};
   margin: 0;
 `
 

@@ -48,7 +48,6 @@ body,
 /* stylelint-disable-next-line no-duplicate-selectors */
 html {
   background: #ffffff;
-  color: #263238;
   font-size: 24px; /* Magic number, must synced with JavaScript global defaults */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -58,7 +57,6 @@ body {
   margin: 0;
   line-height: 1.28581;
   letter-spacing: 0;
-  color: #182026;
   font-family: 'Helvetica Neue', 'Helvetica', 'Arial', 'Lucida Grande',
     sans-serif;
   font-size: 14px;
@@ -169,10 +167,6 @@ body {
 code {
   font-family: 'source-code-pro', 'Menlo', 'Monaco', 'Consolas', 'Courier New',
     monospace;
-}
-
-.bp3-heading {
-  color: #394b59;
 }
 
 hr {

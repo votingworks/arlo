@@ -34,7 +34,7 @@ describe('Steps', () => {
       name: 'Prepare',
       current: 'step',
     })
-    expect(prepareHeader).toHaveStyle({ color: Colors.DARK_GRAY5 })
+    expect(prepareHeader).toHaveStyle({ color: Colors.DARK_GRAY1 })
     const prepareCircle = prepareHeader.previousElementSibling!
     expect(prepareCircle).toHaveTextContent('2')
     expect(prepareCircle).toHaveStyle({ backgroundColor: Colors.BLUE3 })
