@@ -46,6 +46,8 @@ const MemberFields: React.FC = () => {
   )
 }
 
+// TODO use react-hook-form to manage this form
+// Then submit the form to the backend
 const LoginStartForm: React.FC = () => {
   return (
     <form>
