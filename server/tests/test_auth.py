@@ -39,20 +39,39 @@ def election_id(client: FlaskClient, org_id: str, aa_email: str) -> str:
 
 
 @pytest.fixture
+def batch_election_id(client: FlaskClient, org_id: str, aa_email: str) -> str:
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, aa_email)
+    return create_election(
+        client,
+        organization_id=org_id,
+        audit_type=AuditType.BATCH_COMPARISON,
+        audit_math_type=AuditMathType.MACRO,
+    )
+
+
+@pytest.fixture
 def jurisdiction_id(election_id: str) -> str:
     jurisdiction = create_jurisdiction(election_id)
     return str(jurisdiction.id)
 
 
 @pytest.fixture
+def batch_jurisdiction_id(batch_election_id: str) -> str:
+    jurisdiction = create_jurisdiction(batch_election_id)
+    return str(jurisdiction.id)
+
+
+@pytest.fixture
 def ja_email(jurisdiction_id: str) -> str:
     email = f"ja-{jurisdiction_id}@example.com"
-    jurisdiction_admin = create_user(email)
-    admin = JurisdictionAdministration(
-        jurisdiction_id=jurisdiction_id, user_id=jurisdiction_admin.id
-    )
-    db_session.add(admin)
-    db_session.commit()
+    create_jurisdiction_admin(jurisdiction_id, email)
+    return email
+
+
+@pytest.fixture
+def batch_ja_email(batch_jurisdiction_id: str) -> str:
+    email = f"ja-{jurisdiction_id}@example.com"
+    create_jurisdiction_admin(batch_jurisdiction_id, email)
     return email
 
 
@@ -492,6 +511,123 @@ def test_audit_board_log_in(
             datetime.now(timezone.utc)
             - datetime.fromisoformat(session["_last_request_at"])
         ) < timedelta(seconds=1)
+
+
+def test_tally_entry_login(
+    client: FlaskClient,
+    batch_election_id: str,
+    batch_jurisdiction_id: str,
+    batch_ja_email: str,
+):
+    tally_entry_client = app.test_client()
+
+    election_id = batch_election_id
+    jurisdiction_id = batch_jurisdiction_id
+    ja_email = batch_ja_email
+    election = Election.query.get(election_id)
+    jurisdiction = Jurisdiction.query.get(jurisdiction_id)
+
+    # Tally entry login starts out turned off
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, ja_email)
+    rv = client.get(
+        f"/auth/tallyentry/election/{election_id}/jurisdiction/{jurisdiction_id}"
+    )
+    assert rv.status_code == 200
+    assert json.loads(rv.data) == dict(passphrase=None, loginRequests=[],)
+
+    # Turn on tally entry login, generating a login link passphrase
+    rv = client.post(
+        f"/auth/tallyentry/election/{election_id}/jurisdiction/{jurisdiction_id}"
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/auth/tallyentry/election/{election_id}/jurisdiction/{jurisdiction_id}"
+    )
+    assert rv.status_code == 200
+    tally_entry_status = json.loads(rv.data)
+    compare_json(
+        tally_entry_status, dict(passphrase=assert_is_passphrase, loginRequests=[])
+    )
+
+    # As an un-logged-in user, visit the login link
+    login_link = f"/tallyentry/{tally_entry_status['passphrase']}"
+    rv = tally_entry_client.get(login_link)
+    assert rv.status_code == 302
+    assert urlparse(rv.location).path == f"/jurisdiction/{jurisdiction_id}/tally-entry"
+
+    # Enter tally entry user details and start login
+    members = [
+        dict(name="Alice", affiliation="DEM"),
+        dict(name="Bob", affiliation=None),
+    ]
+    rv = post_json(
+        tally_entry_client,
+        "/auth/tallyentry/code",
+        dict(jurisdictionId=jurisdiction_id, members=members),
+    )
+    assert_ok(rv)
+
+    # Poll for login status
+    rv = tally_entry_client.get("/api/me")
+    assert rv.status_code == 200
+    tally_entry_me_response = json.loads(rv.data)
+    compare_json(
+        tally_entry_me_response,
+        dict(
+            user=dict(
+                type="tally_entry",
+                id=assert_is_id,
+                loginCode=assert_is_string,
+                loginConfirmedAt=None,
+                jurisdictionId=jurisdiction_id,
+                jurisdictionName=jurisdiction.name,
+                electionId=election_id,
+                auditName=election.audit_name,
+                members=members,
+            ),
+            supportUser=None,
+        ),
+    )
+
+    tally_entry_user_id = tally_entry_me_response["user"]["id"]
+    login_code = tally_entry_me_response["user"]["loginCode"]
+    assert re.match(r"^\d{3}$", login_code)
+
+    # JA sees the login request on their screen
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, ja_email)
+    rv = client.get(
+        f"/auth/tallyentry/election/{election_id}/jurisdiction/{jurisdiction_id}"
+    )
+    assert rv.status_code == 200
+    compare_json(
+        json.loads(rv.data),
+        dict(
+            passphrase=assert_is_passphrase,
+            loginRequests=[
+                dict(
+                    tallyEntryUserId=tally_entry_user_id,
+                    createdAt=assert_is_date,
+                    members=members,
+                    loginConfirmedAt=None,
+                )
+            ],
+        ),
+    )
+
+    # Tell login code to JA, who enters it on their screen
+    rv = post_json(
+        client,
+        f"/auth/tallyentry/election/{election_id}/jurisdiction/{jurisdiction_id}/confirm",
+        dict(tallyEntryUserId=tally_entry_user_id, loginCode=login_code),
+    )
+    assert_ok(rv)
+
+    # Tally entry user is logged in
+    rv = tally_entry_client.get("/api/me")
+    assert rv.status_code == 200
+    tally_entry_me_response = json.loads(rv.data)
+    assert_is_date(tally_entry_me_response["user"]["loginConfirmedAt"])
 
 
 def test_logout(client: FlaskClient, aa_email: str):

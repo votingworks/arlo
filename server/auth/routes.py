@@ -5,9 +5,11 @@ import string
 from datetime import datetime, timezone
 from typing import Optional
 from urllib.parse import urljoin, urlencode
+import uuid
 from flask import jsonify, request, session, render_template
 from authlib.integrations.flask_client import OAuth, OAuthError
-from werkzeug.exceptions import BadRequest
+from werkzeug.exceptions import BadRequest, Conflict
+from xkcdpass import xkcd_password as xp
 
 from server.util.redirect import redirect
 
@@ -16,6 +18,7 @@ from ..models import *  # pylint: disable=wildcard-import
 from ..database import db_session
 from .lib import (
     get_loggedin_user,
+    restrict_access,
     set_loggedin_user,
     clear_loggedin_user,
     set_support_user,
@@ -23,7 +26,7 @@ from .lib import (
     get_support_user,
     UserType,
 )
-from ..api.audit_boards import serialize_members
+from ..api.audit_boards import WORDS, serialize_members, validate_members
 from ..activity_log import JurisdictionAdminLogin, record_activity, ActivityBase
 from ..util.isoformat import isoformat
 from ..config import (
@@ -85,7 +88,7 @@ def auth_me():
     if user_type == UserType.AUDIT_ADMIN:
         db_user = User.query.filter_by(email=user_key).one()
         user = dict(type=user_type, email=db_user.email, id=db_user.id)
-    if user_type == UserType.JURISDICTION_ADMIN:
+    elif user_type == UserType.JURISDICTION_ADMIN:
         db_user = User.query.filter_by(email=user_key).one()
         user = dict(
             type=user_type,
@@ -114,6 +117,21 @@ def auth_me():
                 name=audit_board.name,
                 members=serialize_members(audit_board),
                 signedOffAt=isoformat(audit_board.signed_off_at),
+            )
+    elif user_type == UserType.TALLY_ENTRY:
+        tally_entry_user = TallyEntryUser.query.get(user_key)
+        jurisdiction = tally_entry_user.jurisdiction
+        if jurisdiction.election.deleted_at is None:
+            user = dict(
+                type=user_type,
+                id=tally_entry_user.id,
+                loginCode=tally_entry_user.login_code,
+                loginConfirmedAt=isoformat(tally_entry_user.login_confirmed_at),
+                jurisdictionId=jurisdiction.id,
+                jurisdictionName=jurisdiction.name,
+                electionId=jurisdiction.election.id,
+                auditName=jurisdiction.election.audit_name,
+                members=serialize_members(tally_entry_user),
             )
 
     support_user_email = get_support_user(session)
@@ -315,6 +333,143 @@ def auditboard_passphrase(passphrase: str):
     return redirect(
         f"/election/{audit_board.jurisdiction.election.id}/audit-board/{audit_board.id}"
     )
+
+
+@auth.route("/tallyentry/<passphrase>", methods=["GET"])
+def tally_entry_passphrase(passphrase: str):
+    jurisdiction = Jurisdiction.query.filter_by(
+        tally_entry_passphrase=passphrase
+    ).one_or_none()
+    if jurisdiction is None:
+        # TODO does it make sense to redirect to the main login page here?
+        # Maybe a 404 would be a better first cut?
+        return redirect(
+            "/?"
+            + urlencode(
+                {"error": "invalid_login_link", "message": "Invalid login link."}
+            )
+        )
+    return redirect(f"/jurisdiction/{jurisdiction.id}/tally-entry")
+
+
+@auth.route("/auth/tallyentry/code", methods=["POST"])
+def tally_entry_user_generate_code():
+    body = request.get_json()
+    jurisdiction = Jurisdiction.query.get(body.get("jurisdictionId"))
+    if jurisdiction is None:
+        raise BadRequest(
+            "Invalid jurisdiction. Please try visiting your login link again."
+        )
+
+    members = body.get("members", [])
+    validate_members(members)
+
+    tally_entry_user = TallyEntryUser(
+        id=str(uuid.uuid4()),
+        jurisdiction_id=jurisdiction.id,
+        member_1=members[0]["name"].strip(),
+        member_1_affiliation=members[0]["affiliation"],
+    )
+    if len(members) > 1:
+        tally_entry_user.member_2 = members[1]["name"].strip()
+        tally_entry_user.member_2_affiliation = members[1]["affiliation"]
+
+    db_session.add(tally_entry_user)
+
+    # Generate a login code and make sure its unique to the jurisdiction.
+    #
+    # Note that this doesn't protect against race conditions that might result
+    # in a duplicate code, but we have a unique index on the table that will
+    # prevent the code from being written in that very rare case.  Here we're
+    # just checking for collisions not resulting from a race.
+    while True:
+        login_code = "".join(secrets.choice(string.digits) for _ in range(3))
+        if not TallyEntryUser.query.filter_by(
+            jurisdiction_id=jurisdiction.id, login_code=login_code
+        ).one_or_none():
+            tally_entry_user.login_code = login_code
+            break
+
+    # We set the tally entry user in the session even though their code isn't
+    # confirmed yet. The restrict_access decorator ensures that they can't
+    # do anything until the code is confirmed.
+    set_loggedin_user(session, UserType.TALLY_ENTRY, tally_entry_user.id)
+
+    db_session.commit()
+
+    return jsonify(status="ok")
+
+
+@auth.route(
+    "/auth/tallyentry/election/<election_id>/jurisdiction/<jurisdiction_id>",
+    methods=["POST"],
+)
+@restrict_access([UserType.JURISDICTION_ADMIN])
+def tally_entry_jurisdiction_generate_passphrase(
+    election: Election, jurisdiction: Jurisdiction
+):
+    if election.audit_type != AuditType.BATCH_COMPARISON:
+        return Conflict(
+            "Tally entry accounts are only supported in batch comparison audits."
+        )
+
+    jurisdiction.tally_entry_passphrase = xp.generate_xkcdpassword(WORDS, numwords=4, delimiter="-")
+
+    db_session.commit()
+    return jsonify(status="ok")
+
+
+@auth.route(
+    "/auth/tallyentry/election/<election_id>/jurisdiction/<jurisdiction_id>",
+    methods=["GET"],
+)
+@restrict_access([UserType.JURISDICTION_ADMIN])
+def tally_entry_jurisdiction_status(
+    election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
+):
+    tally_entry_users = (
+        TallyEntryUser.query.filter_by(jurisdiction_id=jurisdiction.id)
+        .order_by(TallyEntryUser.created_at.desc())
+        .all()
+    )
+    return jsonify(
+        passphrase=jurisdiction.tally_entry_passphrase,
+        loginRequests=[
+            dict(
+                tallyEntryUserId=tally_entry_user.id,
+                createdAt=tally_entry_user.created_at.isoformat(),
+                members=serialize_members(tally_entry_user),
+                loginConfirmedAt=isoformat(tally_entry_user.login_confirmed_at),
+            )
+            for tally_entry_user in tally_entry_users
+        ],
+    )
+
+
+@auth.route(
+    "/auth/tallyentry/election/<election_id>/jurisdiction/<jurisdiction_id>/confirm",
+    methods=["POST"],
+)
+@restrict_access([UserType.JURISDICTION_ADMIN])
+def tally_entry_jurisdiction_confirm_login_code(
+    election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
+):
+    body = request.get_json()
+    tally_entry_user = TallyEntryUser.query.get(body.get("tallyEntryUserId"))
+    if not tally_entry_user:
+        raise BadRequest("Tally entry user not found.")
+
+    if tally_entry_user.jurisdiction_id != jurisdiction.id:
+        raise BadRequest("Tally entry user is not in your jurisdiction.")
+
+    if body.get("loginCode") != tally_entry_user.login_code:
+        raise BadRequest("Invalid code.")
+
+    tally_entry_user.login_confirmed_at = datetime.now(timezone.utc)
+
+    db_session.commit()
+
+    return jsonify(status="ok")
 
 
 @auth.errorhandler(OAuthError)

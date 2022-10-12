@@ -20,10 +20,15 @@ class UserType(str, enum.Enum):
     # Audit boards are represented by the AuditBoard record and use
     # AuditBoard.id as their login key. In the real world, a member of an audit
     # board will log in on behalf of the audit board by navigating to
-    # /audit-board/<passphrase>, initiating the session. We consider the whole
+    # /auditboard/<passphrase>, initiating the session. We consider the whole
     # audit board to be one "logged in user," as opposed to trying to know
     # which specific audit board member logged in.
     AUDIT_BOARD = "audit_board"
+    # Tally entry users are represented with a TallyEntryUser record and use
+    # TallyEntryUser.id as their login key. A tally entry user (or users, if
+    # there are multiple people working together), will log by navigating
+    # /tallyentry/<passphrase>.
+    TALLY_ENTRY = "tally_entry"
 
 
 _SUPPORT_USER = "_support_user"
@@ -135,12 +140,23 @@ def check_access(
                 description=f"{user.email} does not have access to jurisdiction {jurisdiction.id}"
             )
 
-    else:
-        assert user_type == UserType.AUDIT_BOARD
+    elif user_type == UserType.AUDIT_BOARD:
         assert audit_board
         if audit_board.id != user_key:
             raise Forbidden(
                 description=f"User does not have access to audit board {audit_board.id}"
+            )
+
+    else:
+        assert user_type == UserType.TALLY_ENTRY
+        user = TallyEntryUser.query.filter_by(id=user_key).one()
+        if user.login_confirmed_at is None:
+            raise Unauthorized(
+                "Your jurisdiction manager must confirm your login code."
+            )
+        if jurisdiction and user.jurisdiction_id != jurisdiction.id:
+            raise Forbidden(
+                description=f"User does not have access to jurisdiction {jurisdiction.id}"
             )
 
 

@@ -288,6 +288,11 @@ def assert_match_report(report_bytes: bytes, snapshot):
     snapshot.assert_match(scrub_datetime(report))
 
 
+def assert_is_string(value):
+    __tracebackhide__ = True  # pylint: disable=unused-variable
+    assert isinstance(value, str)
+
+
 def assert_is_id(value):
     __tracebackhide__ = True  # pylint: disable=unused-variable
     assert isinstance(value, str)
