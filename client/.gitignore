@@ -18,6 +18,9 @@
 /dist
 tsconfig.tsbuildinfo
 
+# linting
+.eslintcache
+
 # misc
 .DS_Store
 .env.local
