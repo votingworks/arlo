@@ -362,7 +362,7 @@ def tally_entry_passphrase(passphrase: str):
     # their login code is confirmed by the JA.
     set_loggedin_user(session, UserType.TALLY_ENTRY, tally_entry_user.id)
 
-    return redirect("/tally-entry/login")
+    return redirect("/tally-entry")
 
 
 @auth.route("/auth/tallyentry/code", methods=["POST"])

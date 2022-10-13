@@ -554,7 +554,7 @@ def test_tally_entry_login(
     login_link = f"/tallyentry/{tally_entry_status['passphrase']}"
     rv = tally_entry_client.get(login_link)
     assert rv.status_code == 302
-    assert urlparse(rv.location).path == "/tally-entry/login"
+    assert urlparse(rv.location).path == "/tally-entry"
 
     # Load the jurisdiction info
     rv = tally_entry_client.get("/api/me")
