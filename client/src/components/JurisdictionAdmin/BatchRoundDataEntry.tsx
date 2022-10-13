@@ -434,10 +434,9 @@ const BatchRoundDataEntry: React.FC<IBatchRoundDataEntryProps> = ({
   return (
     <div>
       <div>
-        <p>
-          When you have examined all of the ballots assigned to you, enter the
-          number of votes recorded for each candidate/choice from the audited
-          ballots in each batch.
+        <p className="bp3-text-large">
+          For each batch, enter the number of votes tallied for each
+          candidate/choice.
         </p>
         {resultsFinalizedAt && (
           <Callout
