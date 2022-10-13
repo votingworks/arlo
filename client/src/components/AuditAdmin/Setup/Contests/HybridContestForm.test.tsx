@@ -314,7 +314,7 @@ describe('Audit Setup > Contests (Hybrid)', () => {
       typeInto(
         getByLabelText('Votes Allowed', {
           selector: 'input',
-        }),
+        }) as Element,
         '2'
       )
 

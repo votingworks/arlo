@@ -77,13 +77,13 @@ describe('AA setup flow', () => {
       const { queryAllByText, getByText } = render()
 
       await waitFor(() => {
-        expect(queryAllByText('Participants').length).toBe(2)
+        expect(queryAllByText('Participants')).toHaveLength(2)
       })
 
-      fireEvent.click(getByText('Audit Settings'), { bubbles: true })
+      fireEvent.click(getByText('Audit Settings') as Element, { bubbles: true })
 
       await waitFor(() => {
-        expect(queryAllByText('Audit Settings').length).toBe(2)
+        expect(queryAllByText('Audit Settings')).toHaveLength(2)
       })
     })
   })
@@ -100,7 +100,7 @@ describe('AA setup flow', () => {
       const { container, queryAllByText } = render()
 
       await waitFor(() => {
-        expect(queryAllByText('Participants').length).toBe(2)
+        expect(queryAllByText('Participants')).toHaveLength(2)
       })
       expect(container).toMatchSnapshot()
     })
@@ -118,7 +118,7 @@ describe('AA setup flow', () => {
       const { queryAllByText } = render()
 
       await waitFor(() => {
-        expect(queryAllByText('Participants').length).toBe(2)
+        expect(queryAllByText('Participants')).toHaveLength(2)
         screen.getByLabelText('Select a file...')
       })
     })
@@ -136,7 +136,7 @@ describe('AA setup flow', () => {
       const { queryByText, queryAllByText } = render()
 
       await waitFor(() => {
-        expect(queryAllByText('Participants').length).toBe(2)
+        expect(queryAllByText('Participants')).toHaveLength(2)
         expect(queryByText(/Current file/))
       })
     })
@@ -158,7 +158,7 @@ describe('AA setup flow', () => {
       const { queryAllByText } = render()
 
       await waitFor(() => {
-        expect(queryAllByText('Participants').length).toBe(2)
+        expect(queryAllByText('Participants')).toHaveLength(2)
       })
       const jurisdisctionInput = screen.getByLabelText('Select a file...')
       const jurisdictionButton = screen.getByRole('button', {
@@ -187,7 +187,7 @@ describe('AA setup flow', () => {
       const { queryAllByText } = render()
 
       await waitFor(() => {
-        expect(queryAllByText('Participants').length).toBe(2)
+        expect(queryAllByText('Participants')).toHaveLength(2)
       })
       const jurisdisctionInput = screen.getByLabelText('Select a file...')
       const jurisdictionButton = screen.getByRole('button', {
