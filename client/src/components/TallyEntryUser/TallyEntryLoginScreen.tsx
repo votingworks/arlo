@@ -9,8 +9,26 @@ import {
   Button,
   Colors,
 } from '@blueprintjs/core'
+import { useForm } from 'react-hook-form'
+import { useMutation, useQueryClient } from 'react-query'
 import { Inner, Wrapper } from '../Atoms/Wrapper'
-import { ITallyEntryUser } from '../UserContext'
+import { ITallyEntryUser, IMember } from '../UserContext'
+import { fetchApi } from '../../utils/api'
+
+const useRequestCode = () => {
+  const postRequestCode = async (body: { members: IMember[] }) =>
+    fetchApi(`/auth/tallyentry/code`, {
+      method: 'POST',
+      body: JSON.stringify(body),
+      headers: { 'Content-Type': 'application/json' },
+    })
+
+  const queryClient = useQueryClient()
+
+  return useMutation(postRequestCode, {
+    onSuccess: () => queryClient.invalidateQueries(['user']),
+  })
+}
 
 const MemberFieldset = styled.fieldset`
   display: grid;
@@ -18,49 +36,87 @@ const MemberFieldset = styled.fieldset`
   gap: 15px;
   text-align: left;
   .bp3-form-helper-text {
-    min-height: 10px;
+    height: 16px;
   }
 `
 
-const MemberFields: React.FC = () => {
-  return (
-    <MemberFieldset>
-      <FormGroup label="Name" helperText=" ">
-        <InputGroup />
-      </FormGroup>
-      <FormGroup
-        label="Party Affiliation"
-        labelInfo="(if required)"
-        helperText=" "
-      >
-        <HTMLSelect fill>
-          <option value="" />
-          <option value="DEM">Democrat</option>
-          <option value="REP">Republican</option>
-          <option value="LIB">Libertarian</option>
-          <option value="IND">Independent/Unaffiliated</option>
-          <option value="OTH">Other</option>
-        </HTMLSelect>
-      </FormGroup>
-    </MemberFieldset>
-  )
+interface ILoginStartFormValues {
+  member1: IMember
+  member2: IMember
 }
 
 // TODO use react-hook-form to manage this form
 // Then submit the form to the backend
 const LoginStartForm: React.FC = () => {
+  const { register, handleSubmit, errors } = useForm<ILoginStartFormValues>()
+  const requestCode = useRequestCode()
+
+  const onSubmit = async (values: ILoginStartFormValues) => {
+    const members: IMember[] = Object.values(values)
+      .filter(member => member.name !== '')
+      .map(member => ({
+        name: member.name,
+        affiliation: member.affiliation || null,
+      }))
+    try {
+      await requestCode.mutateAsync({ members })
+    } catch (error) {
+      // Do nothing - errors toasted by queryClient
+    }
+  }
+
+  const memberKeys = ['member1', 'member2'] as const
   return (
     <form>
-      <H1>Tally Entry Log In</H1>
-      <div
-        style={{
-          marginTop: '25px',
-        }}
+      <H1 style={{ marginBottom: '35px' }}>Tally Entry Log In</H1>
+      {memberKeys.map(memberKey => {
+        const nameInputKey = `${memberKey}.name`
+        const nameInputError = errors[memberKey]?.name
+        return (
+          <MemberFieldset key={memberKey}>
+            <FormGroup
+              label="Name"
+              labelFor={nameInputKey}
+              helperText={nameInputError?.message}
+              intent={nameInputError && 'danger'}
+            >
+              <InputGroup
+                id={nameInputKey}
+                name={nameInputKey}
+                type="text"
+                inputRef={register({
+                  required: memberKey === 'member1' ? 'Enter your name' : false,
+                })}
+                intent={nameInputError && 'danger'}
+              />
+            </FormGroup>
+            <FormGroup
+              label="Party Affiliation"
+              labelInfo="(if required)"
+              helperText=" "
+            >
+              <HTMLSelect
+                name={`${memberKey}.affiliation`}
+                elementRef={register}
+                fill
+              >
+                <option value="" />
+                <option value="DEM">Democrat</option>
+                <option value="REP">Republican</option>
+                <option value="LIB">Libertarian</option>
+                <option value="IND">Independent/Unaffiliated</option>
+                <option value="OTH">Other</option>
+              </HTMLSelect>
+            </FormGroup>
+          </MemberFieldset>
+        )
+      })}
+      <Button
+        onClick={handleSubmit(onSubmit)}
+        large
+        intent="primary"
+        style={{ minWidth: '160px' }}
       >
-        <MemberFields />
-        <MemberFields />
-      </div>
-      <Button large intent="primary" style={{ minWidth: '160px' }}>
         Log in
       </Button>
     </form>
@@ -76,7 +132,7 @@ const LoginCode = styled.div`
   font-weight: 700;
   color: ${Colors.BLUE3};
   letter-spacing: 20px;
-  padding-left: 20px; // Account for extra letter-spacing on right
+  padding-left: 20px; /* Account for extra letter-spacing on right */
   flex: 1;
   display: flex;
   flex-direction: column;

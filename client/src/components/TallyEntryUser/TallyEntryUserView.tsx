@@ -1,12 +1,20 @@
 import React from 'react'
-import { Switch, Redirect, useRouteMatch, Route } from 'react-router-dom'
+import { Redirect } from 'react-router-dom'
 import useCurrentUser from './useCurrentUser'
 import TallyEntryLoginScreen from './TallyEntryLoginScreen'
 import TallyEntryScreen from './TallyEntryScreen'
+import { IUser } from '../UserContext'
 
 const TallyEntryUserView: React.FC = () => {
-  const { path } = useRouteMatch()
-  const userQuery = useCurrentUser()
+  const userQuery = useCurrentUser({
+    // Once the login code is generated, poll until the login is confirmed
+    refetchInterval: (user: IUser | null | undefined) =>
+      user?.type === 'tally_entry' &&
+      user.loginCode !== null &&
+      user.loginConfirmedAt === null
+        ? 1000
+        : false,
+  })
 
   if (!userQuery.isSuccess) return null // Still loading
 
@@ -16,18 +24,10 @@ const TallyEntryUserView: React.FC = () => {
     return <Redirect to="/" />
   }
 
-  return (
-    <Switch>
-      <Route exact path={`${path}/login`}>
-        <TallyEntryLoginScreen user={user} />
-      </Route>
-      {user?.loginConfirmedAt && (
-        <Route exact path={path}>
-          <TallyEntryScreen />
-        </Route>
-      )}
-      <Redirect to={`${path}/login`} />
-    </Switch>
+  return user.loginConfirmedAt === null ? (
+    <TallyEntryLoginScreen user={user} />
+  ) : (
+    <TallyEntryScreen />
   )
 }
 
