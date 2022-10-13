@@ -31,7 +31,11 @@ const TallyEntryUserView: React.FC = () => {
       {user.loginConfirmedAt === null ? (
         <TallyEntryLoginScreen user={user} />
       ) : (
-        <TallyEntryScreen />
+        <TallyEntryScreen
+          electionId={user.electionId}
+          jurisdictionId={user.jurisdictionId}
+          roundId={user.roundId}
+        />
       )}
     </>
   )
