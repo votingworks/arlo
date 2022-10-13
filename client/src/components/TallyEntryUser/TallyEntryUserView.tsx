@@ -4,6 +4,7 @@ import useCurrentUser from './useCurrentUser'
 import TallyEntryLoginScreen from './TallyEntryLoginScreen'
 import TallyEntryScreen from './TallyEntryScreen'
 import { IUser } from '../UserContext'
+import { HeaderTallyEntry } from '../Header'
 
 const TallyEntryUserView: React.FC = () => {
   const userQuery = useCurrentUser({
@@ -24,10 +25,15 @@ const TallyEntryUserView: React.FC = () => {
     return <Redirect to="/" />
   }
 
-  return user.loginConfirmedAt === null ? (
-    <TallyEntryLoginScreen user={user} />
-  ) : (
-    <TallyEntryScreen />
+  return (
+    <>
+      <HeaderTallyEntry />
+      {user.loginConfirmedAt === null ? (
+        <TallyEntryLoginScreen user={user} />
+      ) : (
+        <TallyEntryScreen />
+      )}
+    </>
   )
 }
 

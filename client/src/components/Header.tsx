@@ -74,7 +74,7 @@ const InnerBar = styled(Inner)`
     text-decoration: none;
     color: ${Colors.DARK_GRAY2};
     font-size: 1.1rem;
-    font-weight: bold;
+    font-weight: 700;
     img {
       position: relative;
       bottom: 2px;
@@ -112,7 +112,12 @@ const Header: React.FC = () => {
       j => j.id === jurisdictionMatch.params.jurisdictionId
     )
 
-  if (auth && auth.user && auth.user.type === 'audit_board') return null
+  if (
+    auth &&
+    auth.user &&
+    (auth.user.type === 'audit_board' || auth?.user.type === 'tally_entry')
+  )
+    return null
 
   return (
     <>
@@ -255,5 +260,29 @@ export const HeaderAuditBoard: React.FC<IHeaderAuditBoardProps> = ({
     </Nav>
   )
 }
+
+export const HeaderTallyEntry: React.FC = () => (
+  <Nav>
+    <InnerBar>
+      <NavbarGroup align={Alignment.LEFT}>
+        <NavbarHeading>
+          <Link to="/" className="title">
+            <img
+              src="/votingworks-logo-circle.png"
+              alt="Arlo, by VotingWorks"
+            />
+            <span>Arlo</span>
+          </Link>
+        </NavbarHeading>
+      </NavbarGroup>
+      <NavbarGroup align={Alignment.RIGHT}>
+        <a href="/auth/logout">
+          {' '}
+          <span>Log out</span>{' '}
+        </a>
+      </NavbarGroup>
+    </InnerBar>
+  </Nav>
+)
 
 export default Header
