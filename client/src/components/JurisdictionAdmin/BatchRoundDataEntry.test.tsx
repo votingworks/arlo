@@ -62,6 +62,7 @@ const renderComponent = () =>
         electionId="1"
         jurisdictionId="1"
         roundId="round-1"
+        showFinalizeAndCopyButtons
       />
       <ToastContainer />
     </QueryClientProvider>

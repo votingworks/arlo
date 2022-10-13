@@ -362,12 +362,14 @@ interface IBatchRoundDataEntryProps {
   electionId: string
   jurisdictionId: string
   roundId: string
+  showFinalizeAndCopyButtons: boolean
 }
 
 const BatchRoundDataEntry: React.FC<IBatchRoundDataEntryProps> = ({
   electionId,
   jurisdictionId,
   roundId,
+  showFinalizeAndCopyButtons,
 }) => {
   const contests = useContestsJurisdictionAdmin(electionId, jurisdictionId)
   const batchesResp = useBatches(electionId, jurisdictionId, roundId)
@@ -579,25 +581,27 @@ const BatchRoundDataEntry: React.FC<IBatchRoundDataEntryProps> = ({
           closeModal={() => setEditing(null)}
         />
       )}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          marginTop: '20px',
-        }}
-      >
-        <CopyToClipboard
-          getText={() => document.getElementById('results-table')!.outerHTML}
-        />
-        <Button
-          intent="primary"
-          onClick={onClickFinalize}
-          disabled={!!resultsFinalizedAt}
+      {showFinalizeAndCopyButtons && (
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            marginTop: '20px',
+          }}
         >
-          Finalize Results
-        </Button>
-        <Confirm {...confirmProps} />
-      </div>
+          <CopyToClipboard
+            getText={() => document.getElementById('results-table')!.outerHTML}
+          />
+          <Button
+            intent="primary"
+            onClick={onClickFinalize}
+            disabled={!!resultsFinalizedAt}
+          >
+            Finalize Results
+          </Button>
+          <Confirm {...confirmProps} />
+        </div>
+      )}
     </div>
   )
 }

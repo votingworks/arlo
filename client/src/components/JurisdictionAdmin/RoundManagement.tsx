@@ -152,6 +152,7 @@ const RoundManagement: React.FC<IRoundManagementProps> = ({
             electionId={electionId}
             jurisdictionId={jurisdictionId}
             roundId={round.id}
+            showFinalizeAndCopyButtons
           />
         ) : auditSettings.online ? (
           <RoundProgress auditBoards={auditBoards} />
