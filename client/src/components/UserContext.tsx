@@ -67,6 +67,7 @@ export interface ITallyEntryUser {
   jurisdictionId: string
   jurisdictionName: string
   electionId: string
+  roundId: string
   auditName: string
   members: IMember[]
 }

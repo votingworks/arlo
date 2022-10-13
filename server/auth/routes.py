@@ -10,6 +10,7 @@ from flask import jsonify, request, session, render_template
 from authlib.integrations.flask_client import OAuth, OAuthError
 from werkzeug.exceptions import BadRequest, Conflict
 from xkcdpass import xkcd_password as xp
+from server.api.rounds import get_current_round
 
 from server.util.redirect import redirect
 
@@ -127,6 +128,7 @@ def auth_me():
             # that we only return data that they are allowed to see during the
             # login process. Data that is only available after login
             # confirmation should be accessed via separate endpoints.
+            round = get_current_round(jurisdiction.election)
             user = dict(
                 type=user_type,
                 id=tally_entry_user.id,
@@ -136,6 +138,7 @@ def auth_me():
                 jurisdictionName=jurisdiction.name,
                 electionId=jurisdiction.election.id,
                 auditName=jurisdiction.election.audit_name,
+                roundId=round.id,
                 members=serialize_members(tally_entry_user),
             )
 
