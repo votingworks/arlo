@@ -12,9 +12,13 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
+    "incremental": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "dist",
     "types": ["node", "@types/jest", "@testing-library/jest-dom"],
     "jsx": "preserve"
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": ["**/node_modules", "**/.*/"]
 }
