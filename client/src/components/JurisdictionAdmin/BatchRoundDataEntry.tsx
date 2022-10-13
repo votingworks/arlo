@@ -29,7 +29,6 @@ import { sum } from '../../utils/number'
 import { IContest } from '../../types'
 import CopyToClipboard from '../Atoms/CopyToClipboard'
 import { useConfirm, Confirm } from '../Atoms/Confirm'
-import { IRound } from '../AuditAdmin/useRoundsAuditAdmin'
 
 const ResultsTable = styled(HTMLTable).attrs({
   striped: true,
@@ -359,17 +358,23 @@ const BatchTallySheetsModal = ({
   )
 }
 
-const BatchRoundDataEntry: React.FC<{ round: IRound }> = ({ round }) => {
-  const { electionId, jurisdictionId } = useParams<{
-    electionId: string
-    jurisdictionId: string
-  }>()
+interface IBatchRoundDataEntryProps {
+  electionId: string
+  jurisdictionId: string
+  roundId: string
+}
+
+const BatchRoundDataEntry: React.FC<IBatchRoundDataEntryProps> = ({
+  electionId,
+  jurisdictionId,
+  roundId,
+}) => {
   const contests = useContestsJurisdictionAdmin(electionId, jurisdictionId)
-  const batchesResp = useBatches(electionId, jurisdictionId, round.id)
+  const batchesResp = useBatches(electionId, jurisdictionId, roundId)
   const finalizeResults = useFinalizeBatchResults(
     electionId,
     jurisdictionId,
-    round.id
+    roundId
   )
   const { confirm, confirmProps } = useConfirm()
   const [editing, setEditing] = useState<{
@@ -467,7 +472,7 @@ const BatchRoundDataEntry: React.FC<{ round: IRound }> = ({ round }) => {
               <BatchResultsForm
                 electionId={electionId}
                 jurisdictionId={jurisdictionId}
-                roundId={round.id}
+                roundId={roundId}
                 contest={contest}
                 batch={batch}
                 key={batch.id}
@@ -569,7 +574,7 @@ const BatchRoundDataEntry: React.FC<{ round: IRound }> = ({ round }) => {
           batch={batches.find(batch => batch.id === editing.batchId)!}
           electionId={electionId}
           jurisdictionId={jurisdictionId}
-          roundId={round.id}
+          roundId={roundId}
           contest={contest}
           closeModal={() => setEditing(null)}
         />
