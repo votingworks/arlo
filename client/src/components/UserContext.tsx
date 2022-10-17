@@ -62,7 +62,7 @@ export interface IAuditBoard {
 export interface ITallyEntryUser {
   type: 'tally_entry'
   id: string
-  loginCode: string
+  loginCode: string | null
   loginConfirmedAt: string | null
   jurisdictionId: string
   jurisdictionName: string

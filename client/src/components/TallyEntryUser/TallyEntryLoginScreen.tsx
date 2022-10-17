@@ -47,7 +47,9 @@ interface ILoginStartFormValues {
 }
 
 const LoginStartForm: React.FC = () => {
-  const { register, handleSubmit, errors } = useForm<ILoginStartFormValues>()
+  const { register, handleSubmit, errors, formState } = useForm<
+    ILoginStartFormValues
+  >()
   const requestCode = useRequestCode()
 
   const onSubmit = async (values: ILoginStartFormValues) => {
@@ -71,6 +73,7 @@ const LoginStartForm: React.FC = () => {
       {memberKeys.map(memberKey => {
         const nameInputKey = `${memberKey}.name`
         const nameInputError = errors[memberKey]?.name
+        const partySelectKey = `${memberKey}.affiliation`
         return (
           <MemberFieldset key={memberKey}>
             <FormGroup
@@ -92,10 +95,12 @@ const LoginStartForm: React.FC = () => {
             <FormGroup
               label="Party Affiliation"
               labelInfo="(if required)"
+              labelFor={partySelectKey}
               helperText=" "
             >
               <HTMLSelect
-                name={`${memberKey}.affiliation`}
+                name={partySelectKey}
+                id={partySelectKey}
                 elementRef={register}
                 fill
               >
@@ -115,6 +120,7 @@ const LoginStartForm: React.FC = () => {
         large
         intent="primary"
         style={{ minWidth: '160px' }}
+        loading={formState.isSubmitting}
       >
         Log in
       </Button>
@@ -167,7 +173,7 @@ const AuditHeading = styled.div.attrs({ className: 'bp3-text-muted' })`
   justify-content: center;
 `
 
-interface ITallyEntryLoginScreenProps {
+export interface ITallyEntryLoginScreenProps {
   user: ITallyEntryUser
 }
 
