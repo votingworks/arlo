@@ -129,6 +129,7 @@ def auth_me():
             # login process. Data that is only available after login
             # confirmation should be accessed via separate endpoints.
             round = get_current_round(jurisdiction.election)
+            assert round is not None
             user = dict(
                 type=user_type,
                 id=tally_entry_user.id,
