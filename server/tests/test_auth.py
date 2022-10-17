@@ -642,6 +642,255 @@ def test_tally_entry_login(
     assert_is_date(tally_entry_me_response["user"]["loginConfirmedAt"])
 
 
+def test_tally_entry_wrong_audit_type(
+    client: FlaskClient, election_id: str, jurisdiction_id: str, ja_email: str
+):
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, ja_email)
+    rv = client.post(
+        f"/auth/tallyentry/election/{election_id}/jurisdiction/{jurisdiction_id}"
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Tally entry accounts are only supported in batch comparison audits.",
+            }
+        ]
+    }
+
+
+def test_tally_entry_generate_unique_code(
+    client: FlaskClient,
+    batch_election_id: str,
+    batch_jurisdiction_id: str,
+    batch_ja_email: str,
+):
+    # To make sure that the login codes are unique within a jurisdiction, we'll
+    # create tally entry users with every possible login code except one (000)
+    # and then try to login. We should end up with login code 000.
+    codes = [
+        f"{d1}{d2}{d3}"
+        for d1 in range(0, 10)
+        for d2 in range(0, 10)
+        for d3 in range(0, 10)
+        if not (d1 == 0 and d2 == 0 and d3 == 0)
+    ]
+    assert len(codes) == 10 * 10 * 10 - 1
+    for code in codes:
+        db_session.add(
+            TallyEntryUser(
+                id=str(uuid.uuid4()),
+                jurisdiction_id=batch_jurisdiction_id,
+                login_code=code,
+            )
+        )
+    db_session.commit()
+
+    tally_entry_client = app.test_client()
+
+    election_id = batch_election_id
+    jurisdiction_id = batch_jurisdiction_id
+    ja_email = batch_ja_email
+
+    # Turn on tally entry login, generating a login link passphrase
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, ja_email)
+    rv = client.post(
+        f"/auth/tallyentry/election/{election_id}/jurisdiction/{jurisdiction_id}"
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/auth/tallyentry/election/{election_id}/jurisdiction/{jurisdiction_id}"
+    )
+    assert rv.status_code == 200
+    tally_entry_status = json.loads(rv.data)
+
+    # As an un-logged-in user, visit the login link
+    login_link = f"/tallyentry/{tally_entry_status['passphrase']}"
+    rv = tally_entry_client.get(login_link)
+    assert rv.status_code == 302
+
+    # Enter tally entry user details and start login
+    members = [dict(name="Alice", affiliation=None)]
+    rv = post_json(tally_entry_client, "/auth/tallyentry/code", dict(members=members))
+    assert_ok(rv)
+
+    # Poll for login status
+    rv = tally_entry_client.get("/api/me")
+    assert rv.status_code == 200
+    tally_entry_me_response = json.loads(rv.data)
+    login_code = tally_entry_me_response["user"]["loginCode"]
+    assert login_code == "000"
+
+
+def test_tally_entry_invalid_members(
+    client: FlaskClient,
+    batch_election_id: str,
+    batch_jurisdiction_id: str,
+    batch_ja_email: str,
+):
+    tally_entry_client = app.test_client()
+    election_id = batch_election_id
+    jurisdiction_id = batch_jurisdiction_id
+    ja_email = batch_ja_email
+
+    # Turn on tally entry login, generating a login link passphrase
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, ja_email)
+    rv = client.post(
+        f"/auth/tallyentry/election/{election_id}/jurisdiction/{jurisdiction_id}"
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/auth/tallyentry/election/{election_id}/jurisdiction/{jurisdiction_id}"
+    )
+    assert rv.status_code == 200
+    tally_entry_status = json.loads(rv.data)
+
+    # As an un-logged-in user, visit the login link
+    login_link = f"/tallyentry/{tally_entry_status['passphrase']}"
+    rv = tally_entry_client.get(login_link)
+    assert rv.status_code == 302
+
+    invalid_member_requests = [
+        ([{"affiliation": "DEM"}], "'name' is a required property"),
+        ([{"name": "Joe Schmo"}], "'affiliation' is a required property"),
+        ([{"name": "", "affiliation": "DEM"}], "'name' must not be empty."),
+        ([{"name": None, "affiliation": "DEM"}], "None is not of type 'string'"),
+        (
+            [{"name": "Jane Plain", "affiliation": ""}],
+            "'' is not one of ['DEM', 'REP', 'LIB', 'IND', 'OTH']",
+        ),
+        (
+            [{"name": "Jane Plain", "affiliation": "Democrat"}],
+            "'Democrat' is not one of ['DEM', 'REP', 'LIB', 'IND', 'OTH']",
+        ),
+        ([], "Must have at least one member.",),
+        (
+            [
+                {"name": "Joe Schmo", "affiliation": "DEM"},
+                {"name": "Jane Plain", "affiliation": "REP"},
+                {"name": "Extra Member", "affiliation": "IND"},
+            ],
+            "Cannot have more than two members.",
+        ),
+    ]
+    for invalid_members, expected_message in invalid_member_requests:
+        rv = post_json(
+            tally_entry_client, "/auth/tallyentry/code", dict(members=invalid_members)
+        )
+        assert rv.status_code == 400
+        assert json.loads(rv.data) == {
+            "errors": [{"errorType": "Bad Request", "message": expected_message}]
+        }
+
+
+def test_tally_entry_invalid_code(
+    client: FlaskClient,
+    batch_election_id: str,
+    batch_jurisdiction_id: str,
+    batch_ja_email: str,
+    election_id: str,
+    jurisdiction_id: str,
+    ja_email: str,
+):
+    tally_entry_client = app.test_client()
+    other_election_id = election_id
+    other_jurisdiction_id = jurisdiction_id
+    other_ja_email = ja_email
+    election_id = batch_election_id
+    jurisdiction_id = batch_jurisdiction_id
+    ja_email = batch_ja_email
+
+    # Turn on tally entry login, generating a login link passphrase
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, ja_email)
+    rv = client.post(
+        f"/auth/tallyentry/election/{election_id}/jurisdiction/{jurisdiction_id}"
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/auth/tallyentry/election/{election_id}/jurisdiction/{jurisdiction_id}"
+    )
+    assert rv.status_code == 200
+    tally_entry_status = json.loads(rv.data)
+
+    # As an un-logged-in user, visit the login link
+    login_link = f"/tallyentry/{tally_entry_status['passphrase']}"
+    rv = tally_entry_client.get(login_link)
+    assert rv.status_code == 302
+
+    # Enter tally entry user details and start login
+    members = [dict(name="Alice", affiliation=None)]
+    rv = post_json(tally_entry_client, "/auth/tallyentry/code", dict(members=members))
+    assert_ok(rv)
+
+    # Poll for login status
+    rv = tally_entry_client.get("/api/me")
+    assert rv.status_code == 200
+    tally_entry_me_response = json.loads(rv.data)
+    login_code = tally_entry_me_response["user"]["loginCode"]
+    tally_entry_user_id = tally_entry_me_response["user"]["id"]
+
+    # Try to log in with an invalid code
+    invalid_code = "000" if login_code != "000" else "111"
+    rv = post_json(
+        client,
+        f"/auth/tallyentry/election/{election_id}/jurisdiction/{jurisdiction_id}/confirm",
+        dict(tallyEntryUserId=tally_entry_user_id, code=invalid_code),
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [{"errorType": "Bad Request", "message": "Invalid code."}]
+    }
+
+    # Try to log in with another user's code
+    members = [dict(name="Alice", affiliation=None)]
+    rv = post_json(tally_entry_client, "/auth/tallyentry/code", dict(members=members))
+    assert_ok(rv)
+    rv = tally_entry_client.get("/api/me")
+    assert rv.status_code == 200
+    tally_entry_me_response = json.loads(rv.data)
+    other_tally_entry_user_id = tally_entry_me_response["user"]["id"]
+    rv = post_json(
+        client,
+        f"/auth/tallyentry/election/{election_id}/jurisdiction/{jurisdiction_id}/confirm",
+        dict(tallyEntryUserId=other_tally_entry_user_id, code=login_code),
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [{"errorType": "Bad Request", "message": "Invalid code."}]
+    }
+
+    # Try to log in with an invalid user id
+    rv = post_json(
+        client,
+        f"/auth/tallyentry/election/{election_id}/jurisdiction/{jurisdiction_id}/confirm",
+        dict(tallyEntryUserId="invalid", code=login_code),
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {"errorType": "Bad Request", "message": "Tally entry user not found."}
+        ]
+    }
+
+    # Try to log in with the wrong jurisdiction
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, other_ja_email)
+    rv = post_json(
+        client,
+        f"/auth/tallyentry/election/{other_election_id}/jurisdiction/{other_jurisdiction_id}/confirm",
+        dict(tallyEntryUserId=tally_entry_user_id, code=login_code),
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {"errorType": "Bad Request", "message": "Tally entry user not found.",}
+        ]
+    }
+
+
 def test_logout(client: FlaskClient, aa_email: str):
     # Logging out when not logged in should not cause an error
     rv = client.get("/auth/logout")

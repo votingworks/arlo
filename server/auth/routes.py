@@ -347,7 +347,7 @@ def tally_entry_passphrase(passphrase: str):
     ).one_or_none()
     # TODO redirect to a nice error screen that explains they probably made a typo
     if jurisdiction is None:
-        return NotFound()
+        raise NotFound()
 
     tally_entry_user = TallyEntryUser(
         id=str(uuid.uuid4()), jurisdiction_id=jurisdiction.id,
@@ -395,7 +395,7 @@ def tally_entry_user_generate_code():
             break
 
     # TODO add a login code created at timestamp so we can expire old codes
-    # Will need to think through what the UX for generating a new code should be
+    # https://github.com/votingworks/arlo/issues/1633
 
     db_session.commit()
 
@@ -411,7 +411,7 @@ def tally_entry_jurisdiction_generate_passphrase(
     election: Election, jurisdiction: Jurisdiction
 ):
     if election.audit_type != AuditType.BATCH_COMPARISON:
-        return Conflict(
+        raise Conflict(
             "Tally entry accounts are only supported in batch comparison audits."
         )
 
@@ -463,11 +463,8 @@ def tally_entry_jurisdiction_confirm_login_code(
 ):
     body = request.get_json()
     tally_entry_user = TallyEntryUser.query.get(body.get("tallyEntryUserId"))
-    if not tally_entry_user:
+    if not tally_entry_user or tally_entry_user.jurisdiction_id != jurisdiction.id:
         raise BadRequest("Tally entry user not found.")
-
-    if tally_entry_user.jurisdiction_id != jurisdiction.id:
-        raise BadRequest("Tally entry user is not in your jurisdiction.")
 
     if body.get("loginCode") != tally_entry_user.login_code:
         raise BadRequest("Invalid code.")
