@@ -105,6 +105,23 @@ def audit_board_id(jurisdiction_id: str, round_id: str) -> str:
     return create_audit_board(jurisdiction_id, round_id)
 
 
+def create_tally_entry_user(jurisdiction_id: str) -> str:
+    tally_entry_user_id = str(uuid.uuid4())
+    tally_entry_user = TallyEntryUser(
+        id=tally_entry_user_id,
+        jurisdiction_id=jurisdiction_id,
+        login_confirmed_at=datetime.now(timezone.utc),
+    )
+    db_session.add(tally_entry_user)
+    db_session.commit()
+    return str(tally_entry_user.id)
+
+
+@pytest.fixture
+def tally_entry_user_id(batch_jurisdiction_id: str) -> str:
+    return create_tally_entry_user(batch_jurisdiction_id)
+
+
 # Tests for log in/log out flows
 
 
@@ -724,6 +741,30 @@ def test_tally_entry_generate_unique_code(
     assert login_code == "000"
 
 
+def test_tally_entry_invalid_passphrase(
+    client: FlaskClient,
+    batch_election_id: str,
+    batch_jurisdiction_id: str,
+    batch_ja_email: str,
+):
+    tally_entry_client = app.test_client()
+    election_id = batch_election_id
+    jurisdiction_id = batch_jurisdiction_id
+    ja_email = batch_ja_email
+
+    # Turn on tally entry login, generating a login link passphrase
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, ja_email)
+    rv = client.post(
+        f"/auth/tallyentry/election/{election_id}/jurisdiction/{jurisdiction_id}"
+    )
+    assert_ok(rv)
+
+    # As an un-logged-in user, visit an incorrect login link
+    login_link = "/tallyentry/invalid-passphrase"
+    rv = tally_entry_client.get(login_link)
+    assert rv.status_code == 404
+
+
 def test_tally_entry_invalid_members(
     client: FlaskClient,
     batch_election_id: str,
@@ -1248,6 +1289,22 @@ def test_restrict_access_audit_admin_audit_board_user(
     }
 
 
+def test_restrict_access_audit_admin_tally_entry_user(
+    client: FlaskClient, batch_election_id: str, tally_entry_user_id: str,
+):
+    set_logged_in_user(client, UserType.TALLY_ENTRY, tally_entry_user_id)
+    rv = client.get(f"/api/election/{batch_election_id}/test_auth")
+    assert rv.status_code == 403
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Forbidden",
+                "message": "Access forbidden for user type tally_entry",
+            }
+        ]
+    }
+
+
 def test_restrict_access_audit_admin_anonymous_user(
     client: FlaskClient,
     org_id: str,  # pylint: disable=unused-argument
@@ -1381,6 +1438,27 @@ def test_restrict_access_jurisdiction_admin_with_audit_board_user(
     }
 
 
+def test_restrict_access_jurisdiction_admin_with_tally_entry_user(
+    client: FlaskClient,
+    batch_election_id: str,
+    batch_jurisdiction_id: str,
+    tally_entry_user_id: str,
+):
+    set_logged_in_user(client, UserType.TALLY_ENTRY, tally_entry_user_id)
+    rv = client.get(
+        f"/api/election/{batch_election_id}/jurisdiction/{batch_jurisdiction_id}/test_auth"
+    )
+    assert rv.status_code == 403
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Forbidden",
+                "message": "Access forbidden for user type tally_entry",
+            }
+        ]
+    }
+
+
 def test_restrict_access_jurisdiction_admin_with_anonymous_user(
     client: FlaskClient, election_id: str, jurisdiction_id: str
 ):
@@ -1459,6 +1537,29 @@ def test_restrict_access_audit_board_with_jurisdiction_admin(
             {
                 "errorType": "Forbidden",
                 "message": "Access forbidden for user type jurisdiction_admin",
+            }
+        ]
+    }
+
+
+def test_restrict_access_audit_board_with_tally_entry_user(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_id: str,
+    round_id: str,
+    audit_board_id: str,
+    tally_entry_user_id: str,
+):
+    set_logged_in_user(client, UserType.TALLY_ENTRY, tally_entry_user_id)
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_id}/audit-board/{audit_board_id}/test_auth"
+    )
+    assert rv.status_code == 403
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Forbidden",
+                "message": "Access forbidden for user type tally_entry",
             }
         ]
     }
@@ -1631,6 +1732,190 @@ def test_restrict_access_audit_board_audit_board_not_found(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_id}/audit-board/not-a-real-id/test_auth"
     )
     assert rv.status_code == 404
+
+
+def test_restrict_access_tally_entry_with_tally_entry_user(
+    client: FlaskClient,
+    batch_election_id: str,
+    batch_jurisdiction_id: str,
+    tally_entry_user_id: str,
+):
+    set_logged_in_user(client, UserType.TALLY_ENTRY, tally_entry_user_id)
+    rv = client.get(
+        f"/api/election/{batch_election_id}/jurisdiction/{batch_jurisdiction_id}/tally-entry/test_auth"
+    )
+    assert rv.status_code == 200
+    assert json.loads(rv.data) == [
+        batch_election_id,
+        batch_jurisdiction_id,
+    ]
+
+
+def test_restrict_access_tally_entry_with_audit_admin(
+    client: FlaskClient,
+    batch_election_id: str,
+    batch_jurisdiction_id: str,
+    aa_email: str,
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, aa_email)
+    rv = client.get(
+        f"/api/election/{batch_election_id}/jurisdiction/{batch_jurisdiction_id}/tally-entry/test_auth"
+    )
+    assert rv.status_code == 403
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Forbidden",
+                "message": "Access forbidden for user type audit_admin",
+            }
+        ]
+    }
+
+
+def test_restrict_access_tally_entry_with_jurisdiction_admin(
+    client: FlaskClient,
+    batch_election_id: str,
+    batch_jurisdiction_id: str,
+    batch_ja_email: str,
+):
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, batch_ja_email)
+    rv = client.get(
+        f"/api/election/{batch_election_id}/jurisdiction/{batch_jurisdiction_id}/tally-entry/test_auth"
+    )
+    assert rv.status_code == 403
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Forbidden",
+                "message": "Access forbidden for user type jurisdiction_admin",
+            }
+        ]
+    }
+
+
+def test_restrict_access_tally_entry_with_audit_board(
+    client: FlaskClient,
+    batch_election_id: str,
+    batch_jurisdiction_id: str,
+    audit_board_id: str,
+):
+    set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_id)
+    rv = client.get(
+        f"/api/election/{batch_election_id}/jurisdiction/{batch_jurisdiction_id}/tally-entry/test_auth"
+    )
+    assert rv.status_code == 403
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Forbidden",
+                "message": "Access forbidden for user type audit_board",
+            }
+        ]
+    }
+
+
+def test_restrict_access_tally_entry_with_anonymous_user(
+    client: FlaskClient, batch_election_id: str, batch_jurisdiction_id: str,
+):
+    clear_logged_in_user(client)
+    rv = client.get(
+        f"/api/election/{batch_election_id}/jurisdiction/{batch_jurisdiction_id}/tally-entry/test_auth"
+    )
+    assert rv.status_code == 401
+    assert json.loads(rv.data) == {
+        "errors": [
+            {"errorType": "Unauthorized", "message": "Please log in to access Arlo"}
+        ]
+    }
+
+
+def test_restrict_access_tally_entry_election_not_found(
+    client: FlaskClient, batch_jurisdiction_id: str, tally_entry_user_id: str,
+):
+    set_logged_in_user(client, UserType.TALLY_ENTRY, tally_entry_user_id)
+    rv = client.get(
+        f"/api/election/not-a-real-id/jurisdiction/{batch_jurisdiction_id}/tally-entry/test_auth"
+    )
+    assert rv.status_code == 404
+
+
+def test_restrict_access_tally_entry_jurisdiction_not_found(
+    client: FlaskClient, batch_election_id: str, tally_entry_user_id: str,
+):
+    set_logged_in_user(client, UserType.TALLY_ENTRY, tally_entry_user_id)
+    rv = client.get(
+        f"/api/election/{batch_election_id}/jurisdiction/not-a-real-id/tally-entry/test_auth"
+    )
+    assert rv.status_code == 404
+
+
+def test_restrict_access_tally_entry_tally_entry_user_not_logged_in(
+    client: FlaskClient,
+    batch_election_id: str,
+    batch_jurisdiction_id: str,
+    tally_entry_user_id: str,
+):
+    user = TallyEntryUser.query.get(tally_entry_user_id)
+    user.login_confirmed_at = None
+    db_session.commit()
+
+    set_logged_in_user(client, UserType.TALLY_ENTRY, tally_entry_user_id)
+    rv = client.get(
+        f"/api/election/{batch_election_id}/jurisdiction/{batch_jurisdiction_id}/tally-entry/test_auth"
+    )
+    assert rv.status_code == 401
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Unauthorized",
+                "message": "Your jurisdiction manager must confirm your login code.",
+            }
+        ]
+    }
+
+
+def test_restrict_access_tally_entry_wrong_election(
+    client: FlaskClient,
+    tally_entry_user_id: str,
+    election_id: str,
+    jurisdiction_id: str,
+):
+    set_logged_in_user(client, UserType.TALLY_ENTRY, tally_entry_user_id)
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/tally-entry/test_auth"
+    )
+    assert rv.status_code == 403
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Forbidden",
+                "message": f"User does not have access to jurisdiction {jurisdiction_id}",
+            }
+        ]
+    }
+
+
+def test_restrict_access_tally_entry_wrong_jurisdiction(
+    client: FlaskClient, batch_election_id: str, tally_entry_user_id: str,
+):
+    jurisdiction_id = create_jurisdiction(batch_election_id, "Other jurisdiction").id
+
+    set_logged_in_user(client, UserType.TALLY_ENTRY, tally_entry_user_id)
+    rv = client.get(
+        f"/api/election/{batch_election_id}/jurisdiction/{jurisdiction_id}/tally-entry/test_auth"
+    )
+    assert rv.status_code == 403
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Forbidden",
+                "message": f"User does not have access to jurisdiction {jurisdiction_id}",
+            }
+        ]
+    }
+
+
+# Additional auth tests
 
 
 def test_support(client: FlaskClient):
