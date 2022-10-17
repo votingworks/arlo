@@ -8,6 +8,7 @@ import {
   H1,
   Button,
   Colors,
+  Classes,
 } from '@blueprintjs/core'
 import { useForm } from 'react-hook-form'
 import { useMutation, useQueryClient } from 'react-query'
@@ -35,7 +36,7 @@ const MemberFieldset = styled.fieldset`
   grid-template-columns: 1fr 1fr;
   gap: 15px;
   text-align: left;
-  .bp3-form-helper-text {
+  ${Classes.FORM_HELPER_TEXT} {
     height: 16px;
   }
 `
@@ -45,8 +46,6 @@ interface ILoginStartFormValues {
   member2: IMember
 }
 
-// TODO use react-hook-form to manage this form
-// Then submit the form to the backend
 const LoginStartForm: React.FC = () => {
   const { register, handleSubmit, errors } = useForm<ILoginStartFormValues>()
   const requestCode = useRequestCode()
@@ -144,7 +143,7 @@ const LoginCodeDisplay: React.FC<ILoginCodeDisplayProps> = ({ loginCode }) => {
     <>
       <H1 style={{ margin: 0 }}>Login Code</H1>
       <LoginCode>{loginCode}</LoginCode>
-      <p className="bp3-text-large">
+      <p className={Classes.TEXT_LARGE}>
         Tell your login code to the person running your audit.
       </p>
     </>
