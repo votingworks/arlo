@@ -10,10 +10,7 @@ import { IBatches, IBatchResultTallySheet } from './useBatchResults'
 import { IContest } from '../../types'
 import { withMockFetch, findAndCloseToast, serverError } from '../testUtilities'
 import { queryClient } from '../../App'
-import {
-  contestMocks,
-  roundMocks,
-} from '../AuditAdmin/useSetupMenuItems/_mocks'
+import { contestMocks } from '../AuditAdmin/useSetupMenuItems/_mocks'
 
 jest.mock('copy-to-clipboard', () => jest.fn(() => true))
 

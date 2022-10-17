@@ -434,7 +434,7 @@ const BatchRoundDataEntry: React.FC<IBatchRoundDataEntryProps> = ({
   return (
     <div>
       <div>
-        <p className="bp3-text-large">
+        <p className={Classes.TEXT_LARGE}>
           For each batch, enter the number of votes tallied for each
           candidate/choice.
         </p>

@@ -5,6 +5,8 @@ import TallyEntryUserView from './TallyEntryUserView'
 import { queryClient } from '../../App'
 import { withMockFetch, renderWithRouter } from '../testUtilities'
 import { tallyEntryApiCalls, tallyEntryUser } from '../_mocks'
+import { contestMocks } from '../AuditAdmin/useSetupMenuItems/_mocks'
+import { batchesMocks } from '../JurisdictionAdmin/_mocks'
 
 const renderView = () =>
   renderWithRouter(
@@ -41,6 +43,8 @@ describe('TallyEntryUserView', () => {
     const expectedCalls = [
       tallyEntryApiCalls.getUser(tallyEntryUser.unconfirmed),
       tallyEntryApiCalls.getUser(tallyEntryUser.confirmed),
+      tallyEntryApiCalls.getContests(contestMocks.oneTargeted),
+      tallyEntryApiCalls.getBatches(batchesMocks.emptyInitial),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()

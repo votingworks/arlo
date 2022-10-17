@@ -1,6 +1,6 @@
 import React from 'react'
 import { H2 } from '@blueprintjs/core'
-import { Wrapper, Inner } from '../Atoms/Wrapper'
+import { Inner } from '../Atoms/Wrapper'
 import BatchRoundDataEntry from '../JurisdictionAdmin/BatchRoundDataEntry'
 
 interface ITallyEntryScreenProps {
