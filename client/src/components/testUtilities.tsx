@@ -3,7 +3,14 @@ import React from 'react'
 import { createLocation, createMemoryHistory, MemoryHistory } from 'history'
 import { match as routerMatch, Router } from 'react-router-dom'
 import equal from 'fast-deep-equal'
-import { render, screen, within, waitFor } from '@testing-library/react'
+import {
+  render,
+  screen,
+  within,
+  waitFor,
+  RenderResult,
+  Queries,
+} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 type MatchParameter<Params> = { [K in keyof Params]?: string }
@@ -46,15 +53,18 @@ export const routerTestProps = <Params extends MatchParameter<Params> = {}>(
   return { history, location, match }
 }
 
+type RenderWithRouterReturn = RenderResult<Queries> & {
+  history: MemoryHistory
+}
+
 // Copied from https://testing-library.com/docs/example-react-router
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export const renderWithRouter = (
+export function renderWithRouter(
   ui: React.ReactElement,
   {
     route = '/',
     history = createMemoryHistory({ initialEntries: [route] }),
   }: { route?: string; history?: MemoryHistory } = {}
-) => {
+): RenderWithRouterReturn {
   const Wrapper: React.FC = ({ children }: { children?: React.ReactNode }) => (
     <Router history={history}>{children}</Router>
   )
@@ -65,7 +75,7 @@ export const renderWithRouter = (
     // to reference it in our tests (just try to avoid using
     // this to test implementation details).
     history,
-  }
+  } as RenderWithRouterReturn
 }
 
 // withMockFetch is a helper to mock calls to external APIs (e.g. the Arlo backend).

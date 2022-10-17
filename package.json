@@ -11,7 +11,8 @@
     ],
     "*.py": [
       "poetry run black",
-      "poetry run pylint -j 0"
+      "poetry run pylint -j 0",
+      "poetry run mypy"
     ],
     "package.json": [
       "sort-package-json"
@@ -19,7 +20,7 @@
   },
   "devDependencies": {
     "husky": "^7.0.1",
-    "lint-staged": "^10.5.4",
+    "lint-staged": "^13.0.3",
     "prettier": "^1.19.1",
     "sort-package-json": "^1.53.1"
   }
