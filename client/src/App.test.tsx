@@ -3,7 +3,13 @@ import { screen } from '@testing-library/react'
 import App from './App'
 import { withMockFetch, renderWithRouter } from './components/testUtilities'
 import { dummyBoards } from './components/AuditBoard/_mocks'
-import { jaApiCalls, aaApiCalls, mockOrganizations } from './components/_mocks'
+import {
+  jaApiCalls,
+  aaApiCalls,
+  mockOrganizations,
+  tallyEntryApiCalls,
+  tallyEntryUser,
+} from './components/_mocks'
 import {
   auditSettings,
   manifestMocks,
@@ -74,6 +80,18 @@ describe('App', () => {
         )
       })
     })
+
+    it('redirects to tally entry flow when logged in as a tally entry user', async () => {
+      const expectedCalls = [
+        tallyEntryApiCalls.getUser(tallyEntryUser.confirmed),
+        tallyEntryApiCalls.getUser(tallyEntryUser.confirmed),
+      ]
+      await withMockFetch(expectedCalls, async () => {
+        const { history } = renderView('/')
+        await screen.findByRole('heading', { name: 'Enter Tallies' })
+        expect(history.location.pathname).toEqual('/tally-entry')
+      })
+    })
   })
 
   describe('/election/:electionId/jurisdiction/:jurisdictionId', () => {
@@ -132,6 +150,20 @@ describe('App', () => {
         )
       })
     })
+
+    it('redirects to tally entry when logged in as tally entry user', async () => {
+      const expectedCalls = [
+        tallyEntryApiCalls.getUser(tallyEntryUser.confirmed),
+        tallyEntryApiCalls.getUser(tallyEntryUser.confirmed),
+      ]
+      await withMockFetch(expectedCalls, async () => {
+        const { history } = renderView(
+          '/election/1/jurisdiction/jurisdiction-id-1'
+        )
+        await screen.findByRole('heading', { name: 'Enter Tallies' })
+        expect(history.location.pathname).toEqual('/tally-entry')
+      })
+    })
   })
 
   describe('/election/:electionId/audit-board/:auditBoardId', () => {
@@ -169,6 +201,18 @@ describe('App', () => {
       })
     })
 
+    it('redirects to tally entry when logged in as tally entry user', async () => {
+      const expectedCalls = [
+        tallyEntryApiCalls.getUser(tallyEntryUser.confirmed),
+        tallyEntryApiCalls.getUser(tallyEntryUser.confirmed),
+      ]
+      await withMockFetch(expectedCalls, async () => {
+        const { history } = renderView('/election/1/audit-board/audit-board-1')
+        await screen.findByRole('heading', { name: 'Enter Tallies' })
+        expect(history.location.pathname).toEqual('/tally-entry')
+      })
+    })
+
     it('renders data entry flow when logged in as an audit board', async () => {
       const expectedCalls = [apiMocks.abAuth, apiMocks.abAuth]
       await withMockFetch(expectedCalls, async () => {
@@ -176,6 +220,67 @@ describe('App', () => {
         await screen.findByRole('heading', {
           name: 'Audit Board #1: Member Sign-in',
         })
+      })
+    })
+  })
+
+  describe('/tally-entry', () => {
+    it('renders tally entry flow when logged in as tally entry user', async () => {
+      const expectedCalls = [
+        tallyEntryApiCalls.getUser(tallyEntryUser.confirmed),
+        tallyEntryApiCalls.getUser(tallyEntryUser.confirmed),
+      ]
+      await withMockFetch(expectedCalls, async () => {
+        renderView('/tally-entry')
+        await screen.findByRole('heading', { name: 'Enter Tallies' })
+      })
+    })
+
+    it('redirects to login screen when unauthenticated', async () => {
+      const expectedCalls = [apiMocks.failedAuth, apiMocks.failedAuth]
+      await withMockFetch(expectedCalls, async () => {
+        const { history } = renderView('/tally-entry')
+        await screen.findByRole('button', { name: 'Log in to your audit' })
+        expect(history.location.pathname).toEqual('/')
+      })
+    })
+
+    it('redirects to home when logged in as AA', async () => {
+      const expectedCalls = [
+        aaApiCalls.getUser,
+        aaApiCalls.getUser,
+        aaApiCalls.getOrganizations(mockOrganizations.oneOrgNoAudits),
+      ]
+      await withMockFetch(expectedCalls, async () => {
+        const { history } = renderView('/tally-entry')
+        await screen.findByRole('heading', {
+          name: 'Audits - State of California',
+        })
+        expect(history.location.pathname).toEqual('/')
+      })
+    })
+
+    it('redirects to home when logged in as JA', async () => {
+      const expectedCalls = [jaApiCalls.getUser, jaApiCalls.getUser]
+      await withMockFetch(expectedCalls, async () => {
+        const { history } = renderView('/tally-entry')
+        await screen.findByRole('heading', {
+          name: 'Jurisdictions - audit one',
+        })
+        expect(history.location.pathname).toEqual('/')
+      })
+    })
+
+    it('redirects to audit board data entry when logged in as an audit board', async () => {
+      const expectedCalls = [apiMocks.abAuth, apiMocks.abAuth, apiMocks.abAuth]
+      await withMockFetch(expectedCalls, async () => {
+        const { history } = renderView('/tally-entry')
+        await screen.findByRole('heading', {
+          name: 'Audit Board #1: Member Sign-in',
+        })
+        expect(history.location.pathname).toEqual(
+          '/election/1/audit-board/audit-board-1'
+        )
       })
     })
   })

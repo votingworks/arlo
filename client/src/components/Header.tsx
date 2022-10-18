@@ -15,7 +15,7 @@ import {
   Icon,
 } from '@blueprintjs/core'
 import { Link, useRouteMatch, RouteComponentProps } from 'react-router-dom'
-import { useAuthDataContext, IAuditBoardMember } from './UserContext'
+import { useAuthDataContext, IMember } from './UserContext'
 import { Inner } from './Atoms/Wrapper'
 import LinkButton from './Atoms/LinkButton'
 
@@ -74,7 +74,7 @@ const InnerBar = styled(Inner)`
     text-decoration: none;
     color: ${Colors.DARK_GRAY2};
     font-size: 1.1rem;
-    font-weight: bold;
+    font-weight: 700;
     img {
       position: relative;
       bottom: 2px;
@@ -112,7 +112,12 @@ const Header: React.FC = () => {
       j => j.id === jurisdictionMatch.params.jurisdictionId
     )
 
-  if (auth && auth.user && auth.user.type === 'audit_board') return null
+  if (
+    auth &&
+    auth.user &&
+    (auth.user.type === 'audit_board' || auth?.user.type === 'tally_entry')
+  )
+    return null
 
   return (
     <>
@@ -150,59 +155,62 @@ const Header: React.FC = () => {
                 <NavbarHeading>Jurisdiction: {jurisdiction.name}</NavbarHeading>
               )}
             </NavbarGroup>
-            {auth && auth.user && auth.user.type !== 'audit_board' && (
-              <>
-                <NavbarGroup align={Alignment.RIGHT}>
-                  {auth.user.type === 'audit_admin' && (
-                    <>
-                      {electionId && (
-                        <>
-                          <LinkButton
-                            to={`/election/${electionId}/setup`}
-                            minimal
-                            icon="wrench"
-                          >
-                            Audit Setup
-                          </LinkButton>
-                          <LinkButton
-                            to={`/election/${electionId}/progress`}
-                            minimal
-                            icon="horizontal-bar-chart"
-                          >
-                            Audit Progress
-                          </LinkButton>
-                          <NavbarDivider />
-                        </>
-                      )}
-                      <LinkButton to="/" minimal icon="projects">
-                        All Audits
-                      </LinkButton>
-                      <LinkButton to="/activity" minimal icon="history">
-                        Activity Log
-                      </LinkButton>
-                      <NavbarDivider />
-                    </>
-                  )}
-                  <UserMenu>
-                    <Popover
-                      content={
-                        <Menu>
-                          <MenuItem text="Log out" href="/auth/logout" />
-                        </Menu>
-                      }
-                      usePortal={false}
-                      position={Position.BOTTOM}
-                      minimal
-                      fill
-                    >
-                      <Button icon="user" minimal>
-                        {auth.user.email}
-                      </Button>
-                    </Popover>
-                  </UserMenu>
-                </NavbarGroup>
-              </>
-            )}
+            {auth &&
+              auth.user &&
+              auth.user.type !== 'audit_board' &&
+              auth.user.type !== 'tally_entry' && (
+                <>
+                  <NavbarGroup align={Alignment.RIGHT}>
+                    {auth.user.type === 'audit_admin' && (
+                      <>
+                        {electionId && (
+                          <>
+                            <LinkButton
+                              to={`/election/${electionId}/setup`}
+                              minimal
+                              icon="wrench"
+                            >
+                              Audit Setup
+                            </LinkButton>
+                            <LinkButton
+                              to={`/election/${electionId}/progress`}
+                              minimal
+                              icon="horizontal-bar-chart"
+                            >
+                              Audit Progress
+                            </LinkButton>
+                            <NavbarDivider />
+                          </>
+                        )}
+                        <LinkButton to="/" minimal icon="projects">
+                          All Audits
+                        </LinkButton>
+                        <LinkButton to="/activity" minimal icon="history">
+                          Activity Log
+                        </LinkButton>
+                        <NavbarDivider />
+                      </>
+                    )}
+                    <UserMenu>
+                      <Popover
+                        content={
+                          <Menu>
+                            <MenuItem text="Log out" href="/auth/logout" />
+                          </Menu>
+                        }
+                        usePortal={false}
+                        position={Position.BOTTOM}
+                        minimal
+                        fill
+                      >
+                        <Button icon="user" minimal>
+                          {auth.user.email}
+                        </Button>
+                      </Popover>
+                    </UserMenu>
+                  </NavbarGroup>
+                </>
+              )}
           </InnerBar>
         </Nav>
       )}
@@ -212,7 +220,7 @@ const Header: React.FC = () => {
 
 interface IHeaderAuditBoardProps {
   boardName: string
-  members: IAuditBoardMember[]
+  members: IMember[]
 }
 
 export const HeaderAuditBoard: React.FC<IHeaderAuditBoardProps> = ({
@@ -252,5 +260,29 @@ export const HeaderAuditBoard: React.FC<IHeaderAuditBoardProps> = ({
     </Nav>
   )
 }
+
+export const HeaderTallyEntry: React.FC = () => (
+  <Nav>
+    <InnerBar>
+      <NavbarGroup align={Alignment.LEFT}>
+        <NavbarHeading>
+          <Link to="/" className="title">
+            <img
+              src="/votingworks-logo-circle.png"
+              alt="Arlo, by VotingWorks"
+            />
+            <span>Arlo</span>
+          </Link>
+        </NavbarHeading>
+      </NavbarGroup>
+      <NavbarGroup align={Alignment.RIGHT}>
+        <a href="/auth/logout">
+          {' '}
+          <span>Log out</span>{' '}
+        </a>
+      </NavbarGroup>
+    </InnerBar>
+  </Nav>
+)
 
 export default Header

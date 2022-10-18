@@ -9,7 +9,7 @@ exports[`AuditBoardView ballot interaction renders ballot route 1`] = `
       class="bp3-navbar sc-gisBJw dpeRNj"
     >
       <div
-        class="sc-bxivhb sc-cHGsZl gsHXDB"
+        class="sc-bxivhb sc-cHGsZl iPCsle"
       >
         <div
           class="bp3-navbar-group bp3-align-left"
@@ -483,7 +483,7 @@ exports[`AuditBoardView ballot interaction renders board table with ballots 1`] 
       class="bp3-navbar sc-gisBJw dpeRNj"
     >
       <div
-        class="sc-bxivhb sc-cHGsZl gsHXDB"
+        class="sc-bxivhb sc-cHGsZl iPCsle"
       >
         <div
           class="bp3-navbar-group bp3-align-left"
@@ -2764,7 +2764,7 @@ exports[`AuditBoardView ballot interaction renders board table with no audited b
       class="bp3-navbar sc-gisBJw dpeRNj"
     >
       <div
-        class="sc-bxivhb sc-cHGsZl gsHXDB"
+        class="sc-bxivhb sc-cHGsZl iPCsle"
       >
         <div
           class="bp3-navbar-group bp3-align-left"
@@ -4667,7 +4667,7 @@ exports[`AuditBoardView ballot interaction renders board table with no ballots 1
       class="bp3-navbar sc-gisBJw dpeRNj"
     >
       <div
-        class="sc-bxivhb sc-cHGsZl gsHXDB"
+        class="sc-bxivhb sc-cHGsZl iPCsle"
       >
         <div
           class="bp3-navbar-group bp3-align-left"
@@ -4991,7 +4991,7 @@ exports[`AuditBoardView member form submits, goes to ballot table, and header sh
       class="bp3-navbar sc-gisBJw dpeRNj"
     >
       <div
-        class="sc-bxivhb sc-cHGsZl gsHXDB"
+        class="sc-bxivhb sc-cHGsZl iPCsle"
       >
         <div
           class="bp3-navbar-group bp3-align-left"

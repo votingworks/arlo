@@ -21,6 +21,7 @@ export default defineConfig({
       '/api': devFlaskServerUrl,
       '/auth': devFlaskServerUrl,
       '/auditboard': devFlaskServerUrl,
+      '/tallyentry': devFlaskServerUrl,
     },
     port: 3000,
   },

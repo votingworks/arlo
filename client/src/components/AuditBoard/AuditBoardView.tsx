@@ -9,7 +9,7 @@ import MemberForm from './MemberForm'
 import Ballot from './Ballot'
 import SignOff from './SignOff'
 import { Wrapper, Inner } from '../Atoms/Wrapper'
-import { IAuditBoard, IAuditBoardMember } from '../UserContext'
+import { IAuditBoard, IMember } from '../UserContext'
 import { IBallot } from '../JurisdictionAdmin/useBallots'
 import { HeaderAuditBoard } from '../Header'
 
@@ -57,7 +57,7 @@ const putMembers = async (
   jurisdictionId: string,
   roundId: string,
   auditBoardId: string,
-  members: IAuditBoardMember[]
+  members: IMember[]
 ): Promise<boolean> => {
   const response = await api(
     `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/audit-board/${auditBoardId}/members`,
@@ -146,7 +146,7 @@ const AuditBoardView: React.FC = () => {
     })()
   }, [electionId, auditBoard])
 
-  const submitMembers = async (members: IAuditBoardMember[]) => {
+  const submitMembers = async (members: IMember[]) => {
     const response1 = await putMembers(
       electionId,
       auditBoard!.jurisdictionId,

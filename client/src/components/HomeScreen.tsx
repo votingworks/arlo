@@ -79,6 +79,9 @@ const HomeScreen: React.FC = () => {
       const auditBoardUrl = `/election/${electionId}/audit-board/${auditBoardId}`
       return <Redirect to={auditBoardUrl} />
     }
+    case 'tally_entry': {
+      return <Redirect to="/tally-entry" />
+    }
     default:
       /* istanbul ignore next */
       return null // Shouldn't happen

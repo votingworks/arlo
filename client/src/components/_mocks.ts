@@ -15,7 +15,7 @@ import {
 import { IRound } from './AuditAdmin/useRoundsAuditAdmin'
 import { IBallot } from './JurisdictionAdmin/useBallots'
 import { IBatches } from './JurisdictionAdmin/useBatchResults'
-import { IOrganization } from './UserContext'
+import { IOrganization, ITallyEntryUser, IMember } from './UserContext'
 import mapTopology from '../../public/us-states-counties.json'
 import { contestMocks } from './AuditAdmin/Setup/Contests/_mocks'
 import { IContest } from '../types'
@@ -550,6 +550,73 @@ export const auditBoardApiCalls = {
       supportUser: null,
     },
   },
+}
+
+export const tallyEntryUser = mocksOfType<ITallyEntryUser>()({
+  initial: {
+    type: 'tally_entry',
+    id: 'tally-entry-user-1',
+    jurisdictionId: 'jurisdiction-id-1',
+    jurisdictionName: 'Jurisdiction One',
+    electionId: '1',
+    auditName: 'Test Audit',
+    loginCode: null,
+    loginConfirmedAt: null,
+    members: [],
+  },
+  unconfirmed: {
+    type: 'tally_entry',
+    id: 'tally-entry-user-1',
+    jurisdictionId: 'jurisdiction-id-1',
+    jurisdictionName: 'Jurisdiction One',
+    electionId: '1',
+    auditName: 'Test Audit',
+    loginCode: '123',
+    loginConfirmedAt: null,
+    members: [
+      {
+        name: 'John Doe',
+        affiliation: 'DEM',
+      },
+      { name: 'Jane Doe', affiliation: null },
+    ],
+  },
+  confirmed: {
+    type: 'tally_entry',
+    id: 'tally-entry-user-1',
+    jurisdictionId: 'jurisdiction-id-1',
+    jurisdictionName: 'Jurisdiction One',
+    electionId: '1',
+    auditName: 'Test Audit',
+    loginCode: '123',
+    loginConfirmedAt: '2022-10-17T21:12:42.600Z',
+    members: [
+      {
+        name: 'John Doe',
+        affiliation: 'DEM',
+      },
+      { name: 'Jane Doe', affiliation: null },
+    ],
+  },
+})
+
+export const tallyEntryApiCalls = {
+  getUser: (user: ITallyEntryUser) => ({
+    url: '/api/me',
+    response: {
+      user,
+      supportUser: null,
+    },
+  }),
+  postRequestLoginCode: (body: { members: IMember[] }) => ({
+    url: '/auth/tallyentry/code',
+    options: {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    },
+    response: { status: 'ok' },
+  }),
 }
 
 export const fileInfoMocks = mocksOfType<IFileInfo>()({

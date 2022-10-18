@@ -27,23 +27,6 @@ export interface IJurisdiction {
   numBallots: number | null
 }
 
-export interface IAuditBoardMember {
-  name: string
-  affiliation: string | null
-}
-
-export interface IAuditBoard {
-  type: 'audit_board'
-  id: string
-  name: string
-  jurisdictionId: string
-  jurisdictionName: string
-  electionId: string
-  roundId: string
-  members: IAuditBoardMember[]
-  signedOffAt: string | null
-}
-
 export interface IAuditAdmin {
   type: 'audit_admin'
   name: string
@@ -59,7 +42,40 @@ export interface IJurisdictionAdmin {
   jurisdictions: IJurisdiction[]
 }
 
-export type IUser = IAuditAdmin | IJurisdictionAdmin | IAuditBoard
+export interface IMember {
+  name: string
+  affiliation: string | null
+}
+
+export interface IAuditBoard {
+  type: 'audit_board'
+  id: string
+  name: string
+  jurisdictionId: string
+  jurisdictionName: string
+  electionId: string
+  roundId: string
+  members: IMember[]
+  signedOffAt: string | null
+}
+
+export interface ITallyEntryUser {
+  type: 'tally_entry'
+  id: string
+  loginCode: string | null
+  loginConfirmedAt: string | null
+  jurisdictionId: string
+  jurisdictionName: string
+  electionId: string
+  auditName: string
+  members: IMember[]
+}
+
+export type IUser =
+  | IAuditAdmin
+  | IJurisdictionAdmin
+  | IAuditBoard
+  | ITallyEntryUser
 
 export interface ISupportUser {
   email: string

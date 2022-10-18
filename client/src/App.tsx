@@ -20,6 +20,7 @@ import AuditBoardView from './components/AuditBoard/AuditBoardView'
 import { ApiError } from './utils/api'
 import PublicPages from './components/PublicPages/PublicPages'
 import BatchInventory from './components/JurisdictionAdmin/BatchInventory'
+import TallyEntryUserView from './components/TallyEntryUser/TallyEntryUserView'
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -92,6 +93,7 @@ const App: React.FC = () => {
             <Route path="/" component={Header} />
             <Switch>
               <Route exact path="/" component={HomeScreen} />
+              <Route exact path="/tally-entry" component={TallyEntryUserView} />
               <PrivateRoute
                 userType="audit_board"
                 path="/election/:electionId/audit-board/:auditBoardId"
