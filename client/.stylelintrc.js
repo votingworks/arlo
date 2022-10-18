@@ -11,5 +11,6 @@ module.exports = {
     'selector-max-id': 1,
     'selector-max-universal': 1,
     'order/properties-order': null,
+    'selector-class-pattern': null,
   },
 }

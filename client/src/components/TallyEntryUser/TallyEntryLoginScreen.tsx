@@ -36,7 +36,7 @@ const MemberFieldset = styled.fieldset`
   grid-template-columns: 1fr 1fr;
   gap: 15px;
   text-align: left;
-  ${Classes.FORM_HELPER_TEXT} {
+  .${Classes.FORM_HELPER_TEXT} {
     height: 16px;
   }
 `
@@ -79,7 +79,7 @@ const LoginStartForm: React.FC = () => {
             <FormGroup
               label="Name"
               labelFor={nameInputKey}
-              helperText={nameInputError?.message}
+              helperText={nameInputError?.message || ' '} // Always render helper text to keep spacing consistent
               intent={nameInputError && 'danger'}
             >
               <InputGroup
@@ -96,7 +96,7 @@ const LoginStartForm: React.FC = () => {
               label="Party Affiliation"
               labelInfo="(if required)"
               labelFor={partySelectKey}
-              helperText=" "
+              helperText=" " // Always render helper text to keep spacing consistent
             >
               <HTMLSelect
                 name={partySelectKey}
@@ -167,7 +167,7 @@ const LogInPanel = styled(Card).attrs({ elevation: 1 })`
   height: 430px;
 `
 
-const AuditHeading = styled.div.attrs({ className: 'bp3-text-muted' })`
+const AuditHeading = styled.div.attrs({ className: Classes.TEXT_MUTED })`
   margin-bottom: 10px;
   display: flex;
   justify-content: center;
