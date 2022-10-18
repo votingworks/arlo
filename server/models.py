@@ -276,6 +276,10 @@ class Jurisdiction(BaseModel):
 
     finalized_full_hand_tally_results_at = Column(UTCDateTime)
 
+    # In batch comparison audits, JMs can generate a login link for additional
+    # tally entry users to log in.
+    tally_entry_passphrase = Column(String(200))
+
     batches = relationship(
         "Batch", back_populates="jurisdiction", uselist=True, passive_deletes=True
     )
@@ -486,6 +490,8 @@ class Affiliation(str, enum.Enum):
     OTHER = "OTH"
 
 
+# In ballot polling/comparison audits, ballots are divvied up between audit
+# boards, who can log in and enter their ballot interpretation
 class AuditBoard(BaseModel):
     id = Column(String(200), primary_key=True)
 
@@ -516,6 +522,29 @@ class AuditBoard(BaseModel):
     )
 
     __table_args__ = (UniqueConstraint("jurisdiction_id", "round_id", "name"),)
+
+
+# In batch comparison audits, jurisdiction managers can allow additional people
+# to log in and help enter tallies using a TallyEntryUser
+class TallyEntryUser(BaseModel):
+    id = Column(String(200), primary_key=True)
+
+    jurisdiction_id = Column(
+        String(200), ForeignKey("jurisdiction.id", ondelete="cascade"), nullable=False,
+    )
+    jurisdiction = relationship("Jurisdiction")
+
+    # In some cases, the tally entry user might be an audit board and have
+    # multiple members. In others, it might just be one person.
+    member_1 = Column(String(200))
+    member_1_affiliation = Column(Enum(Affiliation))
+    member_2 = Column(String(200))
+    member_2_affiliation = Column(Enum(Affiliation))
+
+    login_code = Column(String(200))
+    login_confirmed_at = Column(UTCDateTime)
+
+    __table_args__ = (UniqueConstraint("jurisdiction_id", "login_code"),)
 
 
 class SampleSizeOptions(BaseModel):

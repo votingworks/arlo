@@ -327,6 +327,17 @@ def auth_decorator_test_routes():
         assert audit_board
         return jsonify([election.id, jurisdiction.id, round.id, audit_board.id])
 
+    @app.route(
+        "/api/election/<election_id>/jurisdiction/<jurisdiction_id>/tally-entry/test_auth"
+    )
+    @restrict_access([UserType.TALLY_ENTRY])
+    def fake_tally_entry_route(
+        election: Election, jurisdiction: Jurisdiction
+    ):  # pylint: disable=unused-variable
+        assert election
+        assert jurisdiction
+        return jsonify([election.id, jurisdiction.id])
+
 
 # Add special routes to test our error handlers. This fixture will run once before
 # the test session starts. We have to add the route before starting any tests
