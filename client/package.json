@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "vite build",
-    "lint": "eslint --ext ts --ext tsx src",
+    "lint": "eslint --cache --ext ts --ext tsx src",
     "lint:fix": "yarn lint --fix",
     "start": "vite",
     "test": "is-ci \"test:ci\" \"test:watch\"",

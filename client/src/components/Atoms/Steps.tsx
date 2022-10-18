@@ -66,8 +66,7 @@ const StepListItemCircle = styled.div<{
   font-weight: 500;
 `
 
-// eslint-disable-next-line no-unused-vars
-export const StepListItem = styled(({ current, ...props }) => (
+export const StepListItem = styled(({ current: _, ...props }) => (
   <H5 {...props} />
 ))<{ current: boolean }>`
   color: ${props => (props.current ? Colors.DARK_GRAY1 : Colors.GRAY3)};

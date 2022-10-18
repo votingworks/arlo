@@ -12,7 +12,7 @@ import {
 } from '@blueprintjs/core'
 import { useForm } from 'react-hook-form'
 import { useMutation, useQueryClient } from 'react-query'
-import { Inner, Wrapper } from '../Atoms/Wrapper'
+import { Inner } from '../Atoms/Wrapper'
 import { ITallyEntryUser, IMember } from '../UserContext'
 import { fetchApi } from '../../utils/api'
 

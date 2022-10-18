@@ -10,14 +10,8 @@ import {
   IFileUpload,
 } from '../useFileUpload'
 import FileUpload, { IFileUploadProps } from './FileUpload'
-import {
-  withMockFetch,
-  mocksOfType,
-  serverError,
-  findAndCloseToast,
-} from '../testUtilities'
+import { withMockFetch, serverError, findAndCloseToast } from '../testUtilities'
 import { queryClient } from '../../App'
-import { IFileInfo, FileProcessingStatus } from '../useCSV'
 import { fileInfoMocks } from '../_mocks'
 
 jest.mock('axios')
