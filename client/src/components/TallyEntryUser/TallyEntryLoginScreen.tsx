@@ -182,20 +182,18 @@ const TallyEntryLoginScreen: React.FC<ITallyEntryLoginScreenProps> = ({
 }) => {
   const { jurisdictionName, auditName, loginCode } = user
   return (
-    <Wrapper>
-      <Inner flexDirection="column">
-        <LogInPanel>
-          <AuditHeading>
-            {jurisdictionName} &mdash; {auditName}
-          </AuditHeading>
-          {loginCode === null ? (
-            <LoginStartForm />
-          ) : (
-            <LoginCodeDisplay loginCode={loginCode} />
-          )}
-        </LogInPanel>
-      </Inner>
-    </Wrapper>
+    <Inner flexDirection="column">
+      <LogInPanel>
+        <AuditHeading>
+          {jurisdictionName} &mdash; {auditName}
+        </AuditHeading>
+        {loginCode === null ? (
+          <LoginStartForm />
+        ) : (
+          <LoginCodeDisplay loginCode={loginCode} />
+        )}
+      </LogInPanel>
+    </Inner>
   )
 }
 

@@ -107,6 +107,7 @@ def test_record_batch_results(
     election_id: str,
     jurisdiction_ids: List[str],
     round_1_id: str,
+    tally_entry_user_id: str,
     snapshot,
 ):
     set_logged_in_user(
@@ -191,7 +192,8 @@ def test_record_batch_results(
     rounds = json.loads(rv.data)["rounds"]
     assert rounds[0]["endedAt"] is None
 
-    # Record results for the other jurisdiction
+    # Record results for the other jurisdiction using a tally entry account
+    set_logged_in_user(client, UserType.TALLY_ENTRY, tally_entry_user_id)
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/batches"
     )
@@ -226,6 +228,9 @@ def test_record_batch_results(
     assert batches[0]["resultTallySheets"] == tally_sheets
 
     # Finalize results
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = post_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/batches/finalize",

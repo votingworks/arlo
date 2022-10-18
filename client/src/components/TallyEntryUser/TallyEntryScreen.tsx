@@ -1,11 +1,29 @@
 import React from 'react'
-import { H1 } from '@blueprintjs/core'
+import { H2 } from '@blueprintjs/core'
+import { Inner } from '../Atoms/Wrapper'
+import BatchRoundDataEntry from '../JurisdictionAdmin/BatchRoundDataEntry'
 
-const TallyEntryScreen: React.FC = () => {
+interface ITallyEntryScreenProps {
+  electionId: string
+  jurisdictionId: string
+  roundId: string
+}
+
+const TallyEntryScreen: React.FC<ITallyEntryScreenProps> = ({
+  electionId,
+  jurisdictionId,
+  roundId,
+}) => {
   return (
-    <div>
-      <H1>Enter Tallies</H1>
-    </div>
+    <Inner flexDirection="column" withTopPadding>
+      <H2>Enter Tallies</H2>
+      <BatchRoundDataEntry
+        electionId={electionId}
+        jurisdictionId={jurisdictionId}
+        roundId={roundId}
+        showFinalizeAndCopyButtons={false}
+      />
+    </Inner>
   )
 }
 

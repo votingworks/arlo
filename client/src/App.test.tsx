@@ -83,12 +83,12 @@ describe('App', () => {
 
     it('redirects to tally entry flow when logged in as a tally entry user', async () => {
       const expectedCalls = [
-        tallyEntryApiCalls.getUser(tallyEntryUser.confirmed),
-        tallyEntryApiCalls.getUser(tallyEntryUser.confirmed),
+        tallyEntryApiCalls.getUser(tallyEntryUser.initial),
+        tallyEntryApiCalls.getUser(tallyEntryUser.initial),
       ]
       await withMockFetch(expectedCalls, async () => {
         const { history } = renderView('/')
-        await screen.findByRole('heading', { name: 'Enter Tallies' })
+        await screen.findByRole('heading', { name: 'Tally Entry Log In' })
         expect(history.location.pathname).toEqual('/tally-entry')
       })
     })
@@ -153,14 +153,14 @@ describe('App', () => {
 
     it('redirects to tally entry when logged in as tally entry user', async () => {
       const expectedCalls = [
-        tallyEntryApiCalls.getUser(tallyEntryUser.confirmed),
-        tallyEntryApiCalls.getUser(tallyEntryUser.confirmed),
+        tallyEntryApiCalls.getUser(tallyEntryUser.initial),
+        tallyEntryApiCalls.getUser(tallyEntryUser.initial),
       ]
       await withMockFetch(expectedCalls, async () => {
         const { history } = renderView(
           '/election/1/jurisdiction/jurisdiction-id-1'
         )
-        await screen.findByRole('heading', { name: 'Enter Tallies' })
+        await screen.findByRole('heading', { name: 'Tally Entry Log In' })
         expect(history.location.pathname).toEqual('/tally-entry')
       })
     })
@@ -203,12 +203,12 @@ describe('App', () => {
 
     it('redirects to tally entry when logged in as tally entry user', async () => {
       const expectedCalls = [
-        tallyEntryApiCalls.getUser(tallyEntryUser.confirmed),
-        tallyEntryApiCalls.getUser(tallyEntryUser.confirmed),
+        tallyEntryApiCalls.getUser(tallyEntryUser.initial),
+        tallyEntryApiCalls.getUser(tallyEntryUser.initial),
       ]
       await withMockFetch(expectedCalls, async () => {
         const { history } = renderView('/election/1/audit-board/audit-board-1')
-        await screen.findByRole('heading', { name: 'Enter Tallies' })
+        await screen.findByRole('heading', { name: 'Tally Entry Log In' })
         expect(history.location.pathname).toEqual('/tally-entry')
       })
     })
@@ -227,12 +227,12 @@ describe('App', () => {
   describe('/tally-entry', () => {
     it('renders tally entry flow when logged in as tally entry user', async () => {
       const expectedCalls = [
-        tallyEntryApiCalls.getUser(tallyEntryUser.confirmed),
-        tallyEntryApiCalls.getUser(tallyEntryUser.confirmed),
+        tallyEntryApiCalls.getUser(tallyEntryUser.initial),
+        tallyEntryApiCalls.getUser(tallyEntryUser.initial),
       ]
       await withMockFetch(expectedCalls, async () => {
         renderView('/tally-entry')
-        await screen.findByRole('heading', { name: 'Enter Tallies' })
+        await screen.findByRole('heading', { name: 'Tally Entry Log In' })
       })
     })
 

@@ -87,6 +87,11 @@ def round_id(election_id: str) -> str:
     return create_round(election_id)
 
 
+@pytest.fixture
+def batch_round_id(batch_election_id: str) -> str:
+    return create_round(batch_election_id)
+
+
 def create_audit_board(jurisdiction_id: str, round_id: str) -> str:
     audit_board_id = str(uuid.uuid4())
     audit_board = AuditBoard(
@@ -535,6 +540,7 @@ def test_tally_entry_login(
     batch_election_id: str,
     batch_jurisdiction_id: str,
     batch_ja_email: str,
+    batch_round_id: str,  # pylint: disable=unused-argument
 ):
     tally_entry_client = app.test_client()
 
@@ -589,6 +595,7 @@ def test_tally_entry_login(
                 jurisdictionName=jurisdiction.name,
                 electionId=election_id,
                 auditName=election.audit_name,
+                roundId=batch_round_id,
                 members=[],
             ),
             supportUser=None,
@@ -682,6 +689,7 @@ def test_tally_entry_generate_unique_code(
     batch_election_id: str,
     batch_jurisdiction_id: str,
     batch_ja_email: str,
+    batch_round_id: str,  # pylint: disable=unused-argument
 ):
     # To make sure that the login codes are unique within a jurisdiction, we'll
     # create tally entry users with every possible login code except one (000)
@@ -832,6 +840,7 @@ def test_tally_entry_invalid_code(
     batch_election_id: str,
     batch_jurisdiction_id: str,
     batch_ja_email: str,
+    batch_round_id: str,  # pylint: disable=unused-argument
     election_id: str,
     jurisdiction_id: str,
     ja_email: str,

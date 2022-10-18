@@ -560,6 +560,7 @@ export const tallyEntryUser = mocksOfType<ITallyEntryUser>()({
     jurisdictionName: 'Jurisdiction One',
     electionId: '1',
     auditName: 'Test Audit',
+    roundId: 'round-1',
     loginCode: null,
     loginConfirmedAt: null,
     members: [],
@@ -571,6 +572,7 @@ export const tallyEntryUser = mocksOfType<ITallyEntryUser>()({
     jurisdictionName: 'Jurisdiction One',
     electionId: '1',
     auditName: 'Test Audit',
+    roundId: 'round-1',
     loginCode: '123',
     loginConfirmedAt: null,
     members: [
@@ -588,6 +590,7 @@ export const tallyEntryUser = mocksOfType<ITallyEntryUser>()({
     jurisdictionName: 'Jurisdiction One',
     electionId: '1',
     auditName: 'Test Audit',
+    roundId: 'round-1',
     loginCode: '123',
     loginConfirmedAt: '2022-10-17T21:12:42.600Z',
     members: [
@@ -617,6 +620,8 @@ export const tallyEntryApiCalls = {
     },
     response: { status: 'ok' },
   }),
+  getBatches: jaApiCalls.getBatches,
+  getContests: jaApiCalls.getJurisdictionContests,
 }
 
 export const fileInfoMocks = mocksOfType<IFileInfo>()({

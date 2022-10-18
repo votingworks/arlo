@@ -89,7 +89,9 @@ def serialize_batch(batch: Batch) -> JSONDict:
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/batches",
     methods=["GET"],
 )
-@restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
+@restrict_access(
+    [UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN, UserType.TALLY_ENTRY]
+)
 def list_batches_for_jurisdiction(
     election: Election,  # pylint: disable=unused-argument
     jurisdiction: Jurisdiction,
@@ -198,7 +200,7 @@ def validate_batch_results(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/batches/<batch_id>/results",
     methods=["PUT"],
 )
-@restrict_access([UserType.JURISDICTION_ADMIN])
+@restrict_access([UserType.JURISDICTION_ADMIN, UserType.TALLY_ENTRY])
 def record_batch_results(
     election: Election,  # pylint: disable=unused-argument
     jurisdiction: Jurisdiction,

@@ -1,6 +1,7 @@
 import io
 import pytest
 
+from ...app import app
 from ...models import *  # pylint: disable=wildcard-import
 from ..helpers import *  # pylint: disable=wildcard-import
 
@@ -175,3 +176,65 @@ def round_1_id(
     rv = client.get(f"/api/election/{election_id}/round")
     rounds = json.loads(rv.data)["rounds"]
     return rounds[0]["id"]
+
+
+@pytest.fixture
+def tally_entry_user_id(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    round_1_id: str,  # pylint: disable=unused-argument
+):
+    # Use the second jurisdiction
+    jurisdiction_id = jurisdiction_ids[1]
+
+    # Turn on tally entry login, generating a login link passphrase
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.post(
+        f"/auth/tallyentry/election/{election_id}/jurisdiction/{jurisdiction_id}"
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/auth/tallyentry/election/{election_id}/jurisdiction/{jurisdiction_id}"
+    )
+    assert rv.status_code == 200
+    tally_entry_status = json.loads(rv.data)
+
+    # As an un-logged-in user, visit the login link
+    tally_entry_client = app.test_client()
+    login_link = f"/tallyentry/{tally_entry_status['passphrase']}"
+    rv = tally_entry_client.get(login_link)
+    assert rv.status_code == 302
+
+    # Load the jurisdiction info
+    rv = tally_entry_client.get("/api/me")
+    assert rv.status_code == 200
+    tally_entry_me_response = json.loads(rv.data)
+
+    # Enter tally entry user details and start login
+    members = [
+        dict(name="Alice", affiliation="DEM"),
+        dict(name="Bob", affiliation=None),
+    ]
+    rv = post_json(tally_entry_client, "/auth/tallyentry/code", dict(members=members))
+    assert_ok(rv)
+
+    # Poll for login status
+    rv = tally_entry_client.get("/api/me")
+    assert rv.status_code == 200
+    tally_entry_me_response = json.loads(rv.data)
+    login_code = tally_entry_me_response["user"]["loginCode"]
+    user_id = tally_entry_me_response["user"]["id"]
+
+    # Tell login code to JA, who enters it on their screen
+    rv = post_json(
+        client,
+        f"/auth/tallyentry/election/{election_id}/jurisdiction/{jurisdiction_id}/confirm",
+        dict(tallyEntryUserId=user_id, loginCode=login_code),
+    )
+    assert_ok(rv)
+
+    return user_id

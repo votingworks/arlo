@@ -29,7 +29,6 @@ import { sum } from '../../utils/number'
 import { IContest } from '../../types'
 import CopyToClipboard from '../Atoms/CopyToClipboard'
 import { useConfirm, Confirm } from '../Atoms/Confirm'
-import { IRound } from '../AuditAdmin/useRoundsAuditAdmin'
 
 const ResultsTable = styled(HTMLTable).attrs({
   striped: true,
@@ -359,17 +358,25 @@ const BatchTallySheetsModal = ({
   )
 }
 
-const BatchRoundDataEntry: React.FC<{ round: IRound }> = ({ round }) => {
-  const { electionId, jurisdictionId } = useParams<{
-    electionId: string
-    jurisdictionId: string
-  }>()
+interface IBatchRoundDataEntryProps {
+  electionId: string
+  jurisdictionId: string
+  roundId: string
+  showFinalizeAndCopyButtons: boolean
+}
+
+const BatchRoundDataEntry: React.FC<IBatchRoundDataEntryProps> = ({
+  electionId,
+  jurisdictionId,
+  roundId,
+  showFinalizeAndCopyButtons,
+}) => {
   const contests = useContestsJurisdictionAdmin(electionId, jurisdictionId)
-  const batchesResp = useBatches(electionId, jurisdictionId, round.id)
+  const batchesResp = useBatches(electionId, jurisdictionId, roundId)
   const finalizeResults = useFinalizeBatchResults(
     electionId,
     jurisdictionId,
-    round.id
+    roundId
   )
   const { confirm, confirmProps } = useConfirm()
   const [editing, setEditing] = useState<{
@@ -427,10 +434,9 @@ const BatchRoundDataEntry: React.FC<{ round: IRound }> = ({ round }) => {
   return (
     <div>
       <div>
-        <p>
-          When you have examined all of the ballots assigned to you, enter the
-          number of votes recorded for each candidate/choice from the audited
-          ballots in each batch.
+        <p className={Classes.TEXT_LARGE}>
+          For each batch, enter the number of votes tallied for each
+          candidate/choice.
         </p>
         {resultsFinalizedAt && (
           <Callout
@@ -467,7 +473,7 @@ const BatchRoundDataEntry: React.FC<{ round: IRound }> = ({ round }) => {
               <BatchResultsForm
                 electionId={electionId}
                 jurisdictionId={jurisdictionId}
-                roundId={round.id}
+                roundId={roundId}
                 contest={contest}
                 batch={batch}
                 key={batch.id}
@@ -569,30 +575,32 @@ const BatchRoundDataEntry: React.FC<{ round: IRound }> = ({ round }) => {
           batch={batches.find(batch => batch.id === editing.batchId)!}
           electionId={electionId}
           jurisdictionId={jurisdictionId}
-          roundId={round.id}
+          roundId={roundId}
           contest={contest}
           closeModal={() => setEditing(null)}
         />
       )}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          marginTop: '20px',
-        }}
-      >
-        <CopyToClipboard
-          getText={() => document.getElementById('results-table')!.outerHTML}
-        />
-        <Button
-          intent="primary"
-          onClick={onClickFinalize}
-          disabled={!!resultsFinalizedAt}
+      {showFinalizeAndCopyButtons && (
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            marginTop: '20px',
+          }}
         >
-          Finalize Results
-        </Button>
-        <Confirm {...confirmProps} />
-      </div>
+          <CopyToClipboard
+            getText={() => document.getElementById('results-table')!.outerHTML}
+          />
+          <Button
+            intent="primary"
+            onClick={onClickFinalize}
+            disabled={!!resultsFinalizedAt}
+          >
+            Finalize Results
+          </Button>
+          <Confirm {...confirmProps} />
+        </div>
+      )}
     </div>
   )
 }

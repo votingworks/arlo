@@ -1,6 +1,5 @@
 import React from 'react'
-import { screen, within, waitFor } from '@testing-library/react'
-import { useParams } from 'react-router-dom'
+import { render, screen, within, waitFor } from '@testing-library/react'
 import { QueryClientProvider } from 'react-query'
 import userEvent from '@testing-library/user-event'
 import copy from 'copy-to-clipboard'
@@ -9,30 +8,11 @@ import BatchRoundDataEntry from './BatchRoundDataEntry'
 import { batchesMocks } from './_mocks'
 import { IBatches, IBatchResultTallySheet } from './useBatchResults'
 import { IContest } from '../../types'
-import {
-  renderWithRouter,
-  withMockFetch,
-  findAndCloseToast,
-  serverError,
-} from '../testUtilities'
+import { withMockFetch, findAndCloseToast, serverError } from '../testUtilities'
 import { queryClient } from '../../App'
-import {
-  contestMocks,
-  roundMocks,
-} from '../AuditAdmin/useSetupMenuItems/_mocks'
+import { contestMocks } from '../AuditAdmin/useSetupMenuItems/_mocks'
 
 jest.mock('copy-to-clipboard', () => jest.fn(() => true))
-
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'), // use actual for all non-hook parts
-  useRouteMatch: jest.fn(),
-  useParams: jest.fn(),
-}))
-const paramsMock = useParams as jest.Mock
-paramsMock.mockReturnValue({
-  electionId: '1',
-  jurisdictionId: '1',
-})
 
 const apiCalls = {
   getJAContests: (response: { contests: IContest[] }) => ({
@@ -72,15 +52,17 @@ const batchesWithResults = (resultTallySheets: IBatchResultTallySheet[]) => [
   ...batchesMocks.emptyInitial.batches.slice(1),
 ]
 
-const render = () =>
-  renderWithRouter(
+const renderComponent = () =>
+  render(
     <QueryClientProvider client={queryClient}>
-      <BatchRoundDataEntry round={roundMocks.singleIncomplete[0]} />
+      <BatchRoundDataEntry
+        electionId="1"
+        jurisdictionId="1"
+        roundId="round-1"
+        showFinalizeAndCopyButtons
+      />
       <ToastContainer />
-    </QueryClientProvider>,
-    {
-      route: '/election/1/jurisdiction/1',
-    }
+    </QueryClientProvider>
   )
 
 describe('Batch comparison data entry', () => {
@@ -90,7 +72,7 @@ describe('Batch comparison data entry', () => {
       apiCalls.getBatches(batchesMocks.emptyInitial),
     ]
     await withMockFetch(expectedCalls, async () => {
-      render()
+      renderComponent()
       const batchTable = await screen.findByRole('table')
 
       const headers = within(batchTable).getAllByRole('columnheader')
@@ -156,7 +138,7 @@ describe('Batch comparison data entry', () => {
       }),
     ]
     await withMockFetch(expectedCalls, async () => {
-      render()
+      renderComponent()
       const batchTable = await screen.findByRole('table')
       let rows = within(batchTable).getAllByRole('row')
       userEvent.click(within(rows[1]).getByRole('button', { name: /Edit/ }))
@@ -221,7 +203,7 @@ describe('Batch comparison data entry', () => {
       apiCalls.getBatches(batchesMocks.emptyInitial),
     ]
     await withMockFetch(expectedCalls, async () => {
-      render()
+      renderComponent()
       const batchTable = await screen.findByRole('table')
       let rows = within(batchTable).getAllByRole('row')
       userEvent.click(within(rows[1]).getByRole('button', { name: /Edit/ }))
@@ -279,7 +261,7 @@ describe('Batch comparison data entry', () => {
       }),
     ]
     await withMockFetch(expectedCalls, async () => {
-      render()
+      renderComponent()
       const batchTable = await screen.findByRole('table')
       let rows = within(batchTable).getAllByRole('row')
       userEvent.click(within(rows[1]).getByRole('button', { name: /More/ }))
@@ -440,7 +422,7 @@ describe('Batch comparison data entry', () => {
       apiCalls.getBatches(batchesMocks.complete),
     ]
     await withMockFetch(expectedCalls, async () => {
-      render()
+      renderComponent()
       const finalizeButton = await screen.findByRole('button', {
         name: /Finalize Results/,
       })
@@ -475,7 +457,7 @@ describe('Batch comparison data entry', () => {
       }),
     ]
     await withMockFetch(expectedCalls, async () => {
-      render()
+      renderComponent()
       const finalizeButton = await screen.findByRole('button', {
         name: /Finalize Results/,
       })
@@ -505,7 +487,7 @@ describe('Batch comparison data entry', () => {
       ),
     ]
     await withMockFetch(expectedCalls, async () => {
-      render()
+      renderComponent()
       const batchTable = await screen.findByRole('table')
       let rows = within(batchTable).getAllByRole('row')
       userEvent.click(within(rows[1]).getByRole('button', { name: /Edit/ }))
@@ -538,7 +520,7 @@ describe('Batch comparison data entry', () => {
       serverError('finalizeBatchResults', apiCalls.finalizeBatchResults()),
     ]
     await withMockFetch(expectedCalls, async () => {
-      render()
+      renderComponent()
       userEvent.click(
         await screen.findByRole('button', { name: /Finalize Results/ })
       )

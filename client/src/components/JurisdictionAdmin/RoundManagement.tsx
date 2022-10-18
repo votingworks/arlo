@@ -148,7 +148,12 @@ const RoundManagement: React.FC<IRoundManagementProps> = ({
       )}
       <SpacedDiv>
         {auditSettings.auditType === 'BATCH_COMPARISON' ? (
-          <BatchRoundDataEntry round={round} />
+          <BatchRoundDataEntry
+            electionId={electionId}
+            jurisdictionId={jurisdictionId}
+            roundId={round.id}
+            showFinalizeAndCopyButtons
+          />
         ) : auditSettings.online ? (
           <RoundProgress auditBoards={auditBoards} />
         ) : round.isFullHandTally ? (
