@@ -1,16 +1,29 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { Button, Colors } from '@blueprintjs/core'
-import { Steps, StepList, StepListItem, StepPanel, StepActions } from './Steps'
+import {
+  Steps,
+  StepList,
+  StepListItem,
+  StepPanel,
+  StepActions,
+  stepState,
+} from './Steps'
 
 describe('Steps', () => {
   it('renders a step list, panel, and actions', () => {
     render(
       <Steps>
         <StepList>
-          <StepListItem>Log In</StepListItem>
-          <StepListItem current>Prepare</StepListItem>
-          <StepListItem>Audit Ballots</StepListItem>
+          <StepListItem stepNumber={1} state="complete">
+            Log In
+          </StepListItem>
+          <StepListItem stepNumber={2} state="current">
+            Prepare
+          </StepListItem>
+          <StepListItem stepNumber={3} state="incomplete">
+            Audit Ballots
+          </StepListItem>
         </StepList>
         <StepPanel>Prepare your ballots</StepPanel>
         <StepActions
@@ -52,5 +65,12 @@ describe('Steps', () => {
 
     screen.getByRole('button', { name: 'Back' })
     screen.getByRole('button', { name: 'Next' })
+  })
+
+  it('has a stepState helper to determine step state in the common case', () => {
+    const currentStepNumber = 2
+    expect(stepState(1, currentStepNumber)).toBe('complete')
+    expect(stepState(2, currentStepNumber)).toBe('current')
+    expect(stepState(3, currentStepNumber)).toBe('incomplete')
   })
 })

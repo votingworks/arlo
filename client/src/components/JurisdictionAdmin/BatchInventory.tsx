@@ -26,8 +26,9 @@ import {
   StepPanel,
   StepActions,
   Steps,
-  StepListItem,
   StepList,
+  StepListItem,
+  stepState,
 } from '../Atoms/Steps'
 
 const STEPS = [
@@ -326,6 +327,7 @@ const BatchInventorySteps: React.FC<{
   const [currentStep, setCurrentStep] = useState<typeof STEPS[number]>(
     initialStep
   )
+  const currentStepNumber = STEPS.indexOf(currentStep) + 1
 
   return (
     <Wrapper>
@@ -342,8 +344,12 @@ const BatchInventorySteps: React.FC<{
         </HeadingRow>
         <Steps>
           <StepList>
-            {STEPS.map(step => (
-              <StepListItem key={step} current={step === currentStep}>
+            {STEPS.map((step, index) => (
+              <StepListItem
+                key={step}
+                stepNumber={index + 1}
+                state={stepState(index + 1, currentStepNumber)}
+              >
                 {step}
               </StepListItem>
             ))}
