@@ -35,7 +35,7 @@ interface IStatusTagProps extends Omit<ITagProps, 'minimal'> {
   progress?: number
 }
 
-export const StatusTag: React.FC<IStatusTagProps> = ({
+const StatusTag: React.FC<IStatusTagProps> = ({
   progress,
   children,
   ...props

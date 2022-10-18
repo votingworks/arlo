@@ -1,6 +1,5 @@
 /* eslint-disable jsx-a11y/no-autofocus */
 import React, { useState } from 'react'
-import { useParams } from 'react-router-dom'
 import {
   HTMLTable,
   Colors,

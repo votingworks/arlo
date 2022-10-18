@@ -1,6 +1,6 @@
 import React from 'react'
 import { QueryClientProvider } from 'react-query'
-import { render, screen, within } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { tallyEntryApiCalls } from '../_mocks'
 import TallyEntryScreen from './TallyEntryScreen'
 import { queryClient } from '../../App'

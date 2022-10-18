@@ -3,10 +3,7 @@ import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ToastContainer } from 'react-toastify'
 import { useParams } from 'react-router-dom'
-import AuthDataProvider, {
-  useAuthDataContext,
-  IJurisdictionAdmin,
-} from '../UserContext'
+import AuthDataProvider, { useAuthDataContext } from '../UserContext'
 import JurisdictionAdminView from './JurisdictionAdminView'
 import { renderWithRouter, withMockFetch, serverError } from '../testUtilities'
 import {
