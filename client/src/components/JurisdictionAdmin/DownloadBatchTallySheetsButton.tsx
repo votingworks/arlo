@@ -6,6 +6,7 @@ import AsyncButton from '../Atoms/AsyncButton'
 import useContestsJurisdictionAdmin from './useContestsJurisdictionAdmin'
 import { downloadBatchTallySheets } from './generateSheets'
 import { useBatches } from './useBatchResults'
+import { sleep } from '../../utils/sleep'
 
 interface IProps {
   electionId: string
@@ -23,15 +24,16 @@ const DownloadBatchTallySheetsButton = ({
   const batchesQuery = useBatches(electionId, jurisdictionId, roundId)
   const contests = useContestsJurisdictionAdmin(electionId, jurisdictionId)
 
-  if (!batchesQuery.isSuccess || !contests) {
-    return null
-  }
-
-  const { batches } = batchesQuery.data
-  // Batch comparison audits only support a single contest
-  const contest = contests[0]
-
   const onClick = async () => {
+    // Wait for the batches/contests to load in case they haven't yet.
+    while (!batchesQuery.isSuccess || contests === null) {
+      // eslint-disable-next-line no-await-in-loop
+      await sleep(100)
+    }
+    const { batches } = batchesQuery.data
+    // Batch comparison audits only support a single contest
+    const contest = contests[0]
+
     try {
       await downloadBatchTallySheets(batches, contest.choices, jurisdictionName)
     } catch (err) {
@@ -41,7 +43,7 @@ const DownloadBatchTallySheetsButton = ({
   }
 
   return (
-    <AsyncButton icon="document" onClick={onClick}>
+    <AsyncButton icon="download" intent="primary" onClick={onClick}>
       Download Batch Tally Sheets
     </AsyncButton>
   )
