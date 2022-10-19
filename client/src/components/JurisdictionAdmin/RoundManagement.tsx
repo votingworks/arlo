@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { ButtonGroup, Button, H2, H3 } from '@blueprintjs/core'
 import { Wrapper } from '../Atoms/Wrapper'
-import { apiDownload } from '../utilities'
+import { apiDownload, assert } from '../utilities'
 import CreateAuditBoards from './CreateAuditBoards'
 import RoundProgress from './RoundProgress'
 import {
@@ -15,18 +15,17 @@ import { IAuditBoard } from '../useAuditBoards'
 import QRs from './QRs'
 import RoundDataEntry from './RoundDataEntry'
 import useAuditSettingsJurisdictionAdmin from './useAuditSettingsJurisdictionAdmin'
-import BatchRoundDataEntry from './BatchRoundDataEntry'
-import { useAuthDataContext, IJurisdictionAdmin } from '../UserContext'
+import { useAuthDataContext } from '../UserContext'
 import { IRound } from '../AuditAdmin/useRoundsAuditAdmin'
 import { IAuditSettings } from '../useAuditSettings'
 import AsyncButton from '../Atoms/AsyncButton'
 import useSampleCount from './useBallots'
 import FullHandTallyDataEntry from './FullHandTallyDataEntry'
 import DownloadBatchTallySheetsButton from './DownloadBatchTallySheetsButton'
+import BatchRoundSteps from './BatchRoundSteps/BatchRoundSteps'
 
 const PaddedWrapper = styled(Wrapper)`
   flex-direction: column;
-  align-items: flex-start;
   padding: 30px 0;
 `
 
@@ -66,9 +65,10 @@ const RoundManagement: React.FC<IRoundManagementProps> = ({
     auditType
   )
 
-  if (!auth || !auth.user || !auditSettings || !sampleCount) return null // Still loading
+  if (!auth?.user || !auditSettings || !sampleCount) return null // Still loading
 
-  const jurisdiction = (auth.user as IJurisdictionAdmin).jurisdictions.find(
+  assert(auth.user.type === 'jurisdiction_admin')
+  const jurisdiction = auth.user.jurisdictions.find(
     j => j.id === jurisdictionId
   )!
   const { roundNum } = round
@@ -92,20 +92,20 @@ const RoundManagement: React.FC<IRoundManagementProps> = ({
     )
   }
 
+  if (auditType === 'BATCH_COMPARISON') {
+    return (
+      <PaddedWrapper>
+        <BatchRoundSteps jurisdiction={jurisdiction} round={round} />
+      </PaddedWrapper>
+    )
+  }
+
   const samplesToAudit = (() => {
     if (round.isFullHandTally)
       return (
         <StrongP>
           Please audit all of the ballots in your jurisdiction (
           {jurisdiction.numBallots} ballots)
-        </StrongP>
-      )
-    if (auditSettings.auditType === 'BATCH_COMPARISON')
-      return (
-        <StrongP>
-          Batches to audit: {sampleCount.batches!.toLocaleString()}
-          <br />
-          Total ballots in batches: {sampleCount.ballots.toLocaleString()}
         </StrongP>
       )
     return (
@@ -147,14 +147,7 @@ const RoundManagement: React.FC<IRoundManagementProps> = ({
         </SpacedDiv>
       )}
       <SpacedDiv>
-        {auditSettings.auditType === 'BATCH_COMPARISON' ? (
-          <BatchRoundDataEntry
-            electionId={electionId}
-            jurisdictionId={jurisdictionId}
-            roundId={round.id}
-            showFinalizeAndCopyButtons
-          />
-        ) : auditSettings.online ? (
+        {auditSettings.online ? (
           <RoundProgress auditBoards={auditBoards} />
         ) : round.isFullHandTally ? (
           <FullHandTallyDataEntry round={round} />
@@ -186,79 +179,57 @@ export const JAFileDownloadButtons: React.FC<IJAFileDownloadButtonsProps> = ({
   <ButtonGroup vertical alignText="left">
     <Button
       icon="th"
-      onClick={
-        /* istanbul ignore next */ // tested in generateSheets.test.tsx
-        () =>
-          apiDownload(
-            `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${
-              round.id
-            }/${
-              auditSettings.auditType === 'BATCH_COMPARISON'
-                ? 'batches'
-                : 'ballots'
-            }/retrieval-list`
-          )
+      onClick={() =>
+        apiDownload(
+          `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${round.id}/ballots/retrieval-list`
+        )
       }
     >
-      Download{' '}
-      {auditSettings.auditType === 'BATCH_COMPARISON' ? 'Batch' : 'Ballot'}{' '}
-      Retrieval List
+      Download Ballot Retrieval List
     </Button>
-    {auditSettings.auditType === 'BATCH_COMPARISON' && (
-      <DownloadBatchTallySheetsButton
-        electionId={electionId}
-        jurisdictionId={jurisdictionId}
-        jurisdictionName={jurisdictionName}
-        roundId={round.id}
-      />
-    )}
-    {auditSettings.auditType !== 'BATCH_COMPARISON' && (
+    <AsyncButton
+      icon="document"
+      onClick={() =>
+        downloadPlaceholders(
+          electionId,
+          jurisdictionId,
+          round,
+          jurisdictionName,
+          auditSettings.auditName
+        )
+      }
+    >
+      Download Placeholder Sheets
+    </AsyncButton>
+    <AsyncButton
+      icon="label"
+      onClick={() =>
+        downloadLabels(
+          electionId,
+          jurisdictionId,
+          round,
+          jurisdictionName,
+          auditSettings.auditName
+        )
+      }
+    >
+      Download Ballot Labels
+    </AsyncButton>
+    {auditSettings.online && (
       <>
         <AsyncButton
-          icon="document"
+          icon="key"
           onClick={() =>
-            downloadPlaceholders(
-              electionId,
-              jurisdictionId,
-              round,
+            downloadAuditBoardCredentials(
+              auditBoards,
               jurisdictionName,
               auditSettings.auditName
             )
           }
         >
-          Download Placeholder Sheets
+          Download Audit Board Credentials
         </AsyncButton>
-        <AsyncButton
-          icon="label"
-          onClick={() =>
-            downloadLabels(
-              electionId,
-              jurisdictionId,
-              round,
-              jurisdictionName,
-              auditSettings.auditName
-            )
-          }
-        >
-          Download Ballot Labels
-        </AsyncButton>
-        {auditSettings.online && (
-          <>
-            <AsyncButton
-              icon="key"
-              onClick={() =>
-                downloadAuditBoardCredentials(
-                  auditBoards,
-                  jurisdictionName,
-                  auditSettings.auditName
-                )
-              }
-            >
-              Download Audit Board Credentials
-            </AsyncButton>
-            <QRs passphrases={auditBoards.map(b => b.passphrase)} />
-          </>
-        )}
+        <QRs passphrases={auditBoards.map(b => b.passphrase)} />
       </>
     )}
   </ButtonGroup>
