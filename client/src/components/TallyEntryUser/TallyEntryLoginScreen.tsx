@@ -68,7 +68,7 @@ const LoginStartForm: React.FC = () => {
 
   const memberKeys = ['member1', 'member2'] as const
   return (
-    <form>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <H1 style={{ marginBottom: '35px' }}>Tally Entry Log In</H1>
       {memberKeys.map(memberKey => {
         const nameInputKey = `${memberKey}.name`
@@ -116,7 +116,7 @@ const LoginStartForm: React.FC = () => {
         )
       })}
       <Button
-        onClick={handleSubmit(onSubmit)}
+        type="submit"
         large
         intent="primary"
         style={{ minWidth: '160px' }}
