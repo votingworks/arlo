@@ -360,12 +360,15 @@ const RoundStatusSection = ({
         </div>
       )
     }
-    if (
-      auditBoards.length === 0 &&
-      auditSettings.auditType !== 'BATCH_COMPARISON'
-    ) {
+
+    if (auditSettings.auditType === 'BATCH_COMPARISON') {
+      return <p>Auditing in progress</p>
+    }
+
+    if (auditBoards.length === 0) {
       return <p>Waiting for jurisdiction to set up audit boards</p>
     }
+
     return (
       <>
         <JAFileDownloadButtons
