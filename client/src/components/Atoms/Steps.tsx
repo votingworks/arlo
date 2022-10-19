@@ -1,7 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
 import { Card, Colors, H5, Icon } from '@blueprintjs/core'
-import { assert } from '../utilities'
 
 /**
  * A set of components to display a multi-step process. Consists of a card
@@ -10,16 +9,16 @@ import { assert } from '../utilities'
  *  - a step content panel (middle)
  *  - a step actions bar (bottom)
  *
- * These components are mostly graphical - the parent must manage relevant state
- * (current step, navigation, disabling, etc.)
+ * These components are solely graphical - the parent must manage relevant state
+ * (step completion, current step, navigation, disabling, etc.)
  *
  * Example usage:
  *
  *  <Steps>
  *    <StepList>
- *      <StepListItem>Log In</StepListItem>
- *      <StepListItem current>Prepare</StepListItem>
- *      <StepListItem>Audit Ballots</StepListItem>
+ *      <StepListItem stepNumber={1} state="complete">Log In</StepListItem>
+ *      <StepListItem stepNumber={2} state="current" >Prepare</StepListItem>
+ *      <StepListItem stepNumber={3} state="incomplete">Audit Ballots</StepListItem>
  *    </StepList>
  *    <StepPanel>Prepare your ballots</StepPanel>
  *    <StepActions
@@ -66,14 +65,40 @@ const StepListItemCircle = styled.div<{
   font-weight: 500;
 `
 
-export const StepListItem = styled(({ current: _, ...props }) => (
+const StepListItemLabel = styled(({ state: _, ...props }) => (
   <H5 {...props} />
-))<{ current: boolean }>`
-  color: ${props => (props.current ? Colors.DARK_GRAY1 : Colors.GRAY3)};
+))<{ state: StepState }>`
+  color: ${props =>
+    props.state === 'current' ? Colors.DARK_GRAY1 : Colors.GRAY3};
   margin: 0;
 `
 
-const StepListItemLine = styled.div`
+interface IStepListItemProps {
+  state: StepState
+  stepNumber: number
+}
+
+export const StepListItem: React.FC<IStepListItemProps> = ({
+  state,
+  stepNumber,
+  children,
+}) => {
+  return (
+    <StepListItemContainer>
+      <StepListItemCircle state={state}>
+        {state === 'complete' ? <Icon icon="tick" /> : stepNumber}
+      </StepListItemCircle>
+      <StepListItemLabel
+        aria-current={state === 'current' ? 'step' : undefined}
+        state={state}
+      >
+        {children}
+      </StepListItemLabel>
+    </StepListItemContainer>
+  )
+}
+
+const StepListConnector = styled.div`
   flex-grow: 1;
   height: 1px;
   background: ${Colors.GRAY5};
@@ -81,34 +106,16 @@ const StepListItemLine = styled.div`
 `
 
 export const StepList: React.FC = ({ children }) => {
-  const stepItems = React.Children.toArray(children)
-  const currentStepIndex = stepItems.findIndex(
-    stepItem => React.isValidElement(stepItem) && stepItem.props.current
-  )
+  const stepListItems = React.Children.toArray(children)
   return (
     <StepListContainer>
-      {stepItems.map((stepItem, index) => {
-        assert(React.isValidElement(stepItem))
-        const state =
-          index < currentStepIndex
-            ? 'complete'
-            : index === currentStepIndex
-            ? 'current'
-            : 'incomplete'
-        return (
-          <React.Fragment key={stepItem.key || index}>
-            <StepListItemContainer>
-              <StepListItemCircle state={state}>
-                {state === 'complete' ? <Icon icon="tick" /> : index + 1}
-              </StepListItemCircle>
-              {React.cloneElement(stepItem, {
-                'aria-current': state === 'current' ? 'step' : undefined,
-              })}
-            </StepListItemContainer>
-            {index < stepItems.length - 1 && <StepListItemLine />}
-          </React.Fragment>
-        )
-      })}
+      {stepListItems.map((stepListItem, index) => (
+        // eslint-disable-next-line react/no-array-index-key
+        <React.Fragment key={`step-container-${index}`}>
+          {stepListItem}
+          {index < stepListItems.length - 1 && <StepListConnector />}
+        </React.Fragment>
+      ))}
     </StepListContainer>
   )
 }
@@ -142,3 +149,17 @@ export const StepActions: React.FC<{
     {right || <div />}
   </StepActionsRow>
 )
+
+// Utility function to compute step state for the most common step list pattern:
+// - a single current step
+// - all previous steps are complete
+// - all subsequent steps are incomplete
+export const stepState = (
+  stepNumber: number,
+  currentStepNumber: number
+): StepState =>
+  stepNumber < currentStepNumber
+    ? 'complete'
+    : stepNumber === currentStepNumber
+    ? 'current'
+    : 'incomplete'
