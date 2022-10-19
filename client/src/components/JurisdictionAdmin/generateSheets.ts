@@ -1,5 +1,6 @@
 import autoTable from 'jspdf-autotable'
 import jsPDF from 'jspdf'
+import { Colors } from '@blueprintjs/core'
 import { getBallots, IBallot } from './useBallots'
 import { IAuditBoard } from '../useAuditBoards'
 import { IBatch } from './useBatchResults'
@@ -622,4 +623,107 @@ export const downloadBatchTallySheets = async (
 
   await doc.save('Batch Tally Sheets.pdf', { returnPromise: true })
   return doc.output() // Returned for snapshot tests
+}
+
+export const downloadTallyEntryLoginLinkPrintout = async (
+  loginLinkUrl: string,
+  jurisdictionName: string,
+  auditName: string
+): Promise<string> => {
+  const doc = new jsPDF({ format: 'letter', unit: 'pt' })
+
+  let y = pageMargin
+  const x = pageMargin
+  const wrapWidth = pageContentWidth
+  doc.setFont('Helvetica', 'normal').setFontSize(defaultFontSize)
+
+  doc.setFillColor('#F8EDE2') // Light yellow from Blueprint
+  const calloutPadding = 15
+  doc.roundedRect(
+    x - calloutPadding,
+    y,
+    pageContentWidth + calloutPadding * 2,
+    doc.getLineHeight() * 3 + calloutPadding * 2,
+    3,
+    3,
+    'F'
+  )
+  doc.setFont('Helvetica', 'bold').setFontSize(defaultFontSize)
+  y = renderTextWrapped({
+    doc,
+    text: 'Keep Secure!',
+    wrapWidth: pageContentWidth - calloutPadding,
+    x,
+    y: y + calloutPadding + doc.getLineHeight() * (2 / 3),
+    bottomMargin: doc.getLineHeight() / 4,
+  })
+  doc.setFont('Helvetica', 'normal').setFontSize(defaultFontSize)
+  y = renderTextWrapped({
+    doc,
+    text: 'Share this login link with tally entry account users only.',
+    wrapWidth: pageContentWidth - calloutPadding,
+    x,
+    y,
+    bottomMargin: 0,
+  })
+  y = renderTextWrapped({
+    doc,
+    text: 'Do not post publicly.',
+    wrapWidth: pageContentWidth - calloutPadding,
+    x,
+    y,
+    bottomMargin: 0,
+  })
+  y += calloutPadding + sectionBottomMargin
+
+  doc.setFont('Helvetica', 'normal').setFontSize(10)
+  doc.setTextColor(Colors.GRAY1)
+  y = renderTextWrapped({
+    doc,
+    text: `${jurisdictionName} - ${auditName}`,
+    wrapWidth,
+    x,
+    y,
+    bottomMargin: pBottomMargin,
+  })
+
+  doc.setTextColor(Colors.BLACK)
+  doc.setFont('Helvetica', 'bold').setFontSize(headingFontSize)
+  y = renderTextWrapped({
+    doc,
+    text: 'Tally Entry Login Link',
+    wrapWidth,
+    x,
+    y,
+    bottomMargin: pBottomMargin,
+  })
+
+  doc.setFont('Helvetica', 'normal').setFontSize(defaultFontSize)
+  y = renderTextWrapped({
+    doc,
+    text: 'Use this link to log into Arlo:',
+    wrapWidth,
+    x,
+    y,
+    bottomMargin: pBottomMargin,
+  })
+
+  doc.setFont('Helvetica', 'bold').setFontSize(defaultFontSize)
+  const yBeforeUrl = y
+  y = renderTextWrapped({
+    doc,
+    text: loginLinkUrl,
+    wrapWidth,
+    x,
+    y,
+    bottomMargin: 0,
+  })
+  doc.link(x, yBeforeUrl, pageContentWidth, y - yBeforeUrl, {
+    url: loginLinkUrl,
+  })
+  await doc.save(
+    `Tally Entry Login Link - ${jurisdictionName} - ${auditName}.pdf`,
+    { returnPromise: true }
+  )
+  return doc.output() // returned for test snapshots
 }

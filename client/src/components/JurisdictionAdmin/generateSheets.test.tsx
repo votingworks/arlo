@@ -6,13 +6,14 @@ import {
   downloadPlaceholders,
   downloadLabels,
   downloadBatchTallySheets,
+  downloadTallyEntryLoginLinkPrintout,
 } from './generateSheets'
 import { IAuditBoard } from '../useAuditBoards'
 import { jaApiCalls } from '../_mocks'
 import { auditBoardMocks } from '../AuditAdmin/useSetupMenuItems/_mocks'
 import { dummyBallots, dummyBallotsMultipage } from '../AuditBoard/_mocks'
 import { withMockFetch } from '../testUtilities'
-import { roundMocks } from './_mocks'
+import { roundMocks, tallyEntryAccountStatusMocks } from './_mocks'
 import { IBatch } from './useBatchResults'
 import { ICandidate } from '../../types'
 
@@ -437,5 +438,23 @@ describe('generateSheets', () => {
         })
       })
     }
+  })
+
+  describe('downloadTallyEntryLoginLinkPrintout', () => {
+    it('generates tally entry login link printout', async () => {
+      const loginLinkUrl = `http://localhost/tallyentry/${tallyEntryAccountStatusMocks.noLoginRequests.passphrase}`
+      const pdf = await downloadTallyEntryLoginLinkPrintout(
+        loginLinkUrl,
+        mockJurisdiction.name,
+        mockJurisdiction.election.auditName
+      )
+      await expect(Buffer.from(pdf)).toMatchPdfSnapshot()
+      expect(
+        mockSavePDF
+      ).toHaveBeenCalledWith(
+        'Tally Entry Login Link - Jurisdiction One - audit one.pdf',
+        { returnPromise: true }
+      )
+    })
   })
 })
