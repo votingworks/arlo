@@ -297,9 +297,10 @@ const FullHandTallyDataEntry: React.FC<IProps> = ({ round }) => {
                   Add batch
                 </Button>
                 <CopyToClipboard
-                  getText={() =>
-                    document.getElementById('results-table')!.outerHTML
-                  }
+                  getText={() => ({
+                    text: document.getElementById('results-table')!.outerHTML,
+                    format: 'text/html',
+                  })}
                 />
                 <Button
                   onClick={() => setIsConfirmOpen(true)}

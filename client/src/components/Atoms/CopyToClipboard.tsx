@@ -4,15 +4,18 @@ import { Button } from '@blueprintjs/core'
 import { useIsMounted } from '../utilities'
 
 const CopyToClipboard: React.FC<{
-  getText: () => string
-}> = ({ getText }) => {
+  getText: () => { text: string; format: 'text/plain' | 'text/html' }
+  label?: string
+  copiedLabel?: string
+}> = ({ getText, label = 'Copy to clipboard', copiedLabel = 'Copied' }) => {
   const [copied, setCopied] = useState(false)
   const isMounted = useIsMounted()
   return (
     <Button
       icon={copied ? 'tick-circle' : 'clipboard'}
       onClick={() => {
-        const success = copy(getText(), { format: 'text/html' })
+        const { text, format } = getText()
+        const success = copy(text, { format })
         if (success) {
           setCopied(true)
           setTimeout(() => {
@@ -20,9 +23,11 @@ const CopyToClipboard: React.FC<{
           }, 3000)
         }
       }}
-      style={{ width: '160px' }}
+      style={{
+        minWidth: `${Math.max(label.length, copiedLabel.length)}em`,
+      }}
     >
-      {copied ? 'Copied' : 'Copy to clipboard'}
+      {copied ? copiedLabel : label}
     </Button>
   )
 }
