@@ -59,7 +59,6 @@ const renderComponent = () =>
         electionId="1"
         jurisdictionId="1"
         roundId="round-1"
-        showFinalizeAndCopyButtons
       />
       <ToastContainer />
     </QueryClientProvider>
@@ -185,15 +184,6 @@ describe('Batch comparison data entry', () => {
       expect(row4[1]).toHaveTextContent('1')
       expect(row4[2]).toHaveTextContent('2')
       expect(row4[3]).toHaveTextContent('3')
-
-      // Test copy button
-      const copyButton = screen.getByRole('button', {
-        name: /Copy to clipboard/,
-      })
-      userEvent.click(copyButton)
-
-      expect(copy).toHaveBeenCalled()
-      expect((copy as jest.Mock).mock.calls[0][0]).toMatchSnapshot()
     })
   })
 
@@ -411,64 +401,6 @@ describe('Batch comparison data entry', () => {
     })
   })
 
-  it('finalizes results', async () => {
-    const expectedCalls = [
-      apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
-      apiCalls.getBatches({
-        ...batchesMocks.complete,
-        resultsFinalizedAt: null,
-      }),
-      apiCalls.finalizeBatchResults(),
-      apiCalls.getBatches(batchesMocks.complete),
-    ]
-    await withMockFetch(expectedCalls, async () => {
-      renderComponent()
-      const finalizeButton = await screen.findByRole('button', {
-        name: /Finalize Results/,
-      })
-      userEvent.click(finalizeButton)
-
-      const dialog = (
-        await screen.findByRole('heading', {
-          name: 'Are you sure you want to finalize your results?',
-        })
-      ).closest('.bp3-dialog')! as HTMLElement
-      userEvent.click(within(dialog).getByRole('button', { name: /Confirm/ }))
-
-      await screen.findByText('Results finalized')
-      expect(finalizeButton).toBeDisabled()
-      const editButtons = screen.getAllByRole('button', { name: /Edit/ })
-      editButtons.forEach(button => expect(button).toBeDisabled())
-      expect(
-        screen.getByRole('button', { name: /Copy to clipboard/ })
-      ).toBeEnabled()
-    })
-  })
-
-  it('disallows finalizing until all batches have results', async () => {
-    const expectedCalls = [
-      apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
-      apiCalls.getBatches({
-        batches: [
-          batchesMocks.emptyInitial.batches[0],
-          ...batchesMocks.complete.batches.slice(1),
-        ],
-        resultsFinalizedAt: null,
-      }),
-    ]
-    await withMockFetch(expectedCalls, async () => {
-      renderComponent()
-      const finalizeButton = await screen.findByRole('button', {
-        name: /Finalize Results/,
-      })
-      userEvent.click(finalizeButton)
-
-      await findAndCloseToast(
-        'Please enter results for all batches before finalizing.'
-      )
-    })
-  })
-
   it('handles errors on save', async () => {
     const expectedCalls = [
       apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
@@ -507,30 +439,6 @@ describe('Batch comparison data entry', () => {
 
       await findAndCloseToast('something went wrong: putBatchResults')
       expect(saveButton).toBeInTheDocument()
-    })
-  })
-
-  it('handles errors on finalize', async () => {
-    const expectedCalls = [
-      apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
-      apiCalls.getBatches({
-        ...batchesMocks.complete,
-        resultsFinalizedAt: null,
-      }),
-      serverError('finalizeBatchResults', apiCalls.finalizeBatchResults()),
-    ]
-    await withMockFetch(expectedCalls, async () => {
-      renderComponent()
-      userEvent.click(
-        await screen.findByRole('button', { name: /Finalize Results/ })
-      )
-      const dialog = (
-        await screen.findByRole('heading', {
-          name: 'Are you sure you want to finalize your results?',
-        })
-      ).closest('.bp3-dialog')! as HTMLElement
-      userEvent.click(within(dialog).getByRole('button', { name: /Confirm/ }))
-      await findAndCloseToast('something went wrong: finalizeBatchResults')
     })
   })
 })

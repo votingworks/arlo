@@ -21,6 +21,7 @@ import { contestMocks } from './AuditAdmin/Setup/Contests/_mocks'
 import { IContest } from '../types'
 import { INewAudit } from './HomeScreen'
 import { mocksOfType } from './testUtilities'
+import { ITallyEntryAccountStatus } from './JurisdictionAdmin/BatchRoundSteps/TallyEntryAccountsStep'
 
 const jurisdictionFormData: FormData = new FormData()
 jurisdictionFormData.append(
@@ -242,6 +243,11 @@ export const jaApiCalls = {
     url: '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/batches',
     response: batches,
   }),
+  finalizeBatchResults: {
+    url: `/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/batches/finalize`,
+    options: { method: 'POST' },
+    response: { status: 'ok' },
+  },
   unfinalizeBatchResults: {
     url:
       '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/batches/finalize',
@@ -266,6 +272,29 @@ export const jaApiCalls = {
     url: `/api/election/1/jurisdiction/jurisdiction-id-1/contest`,
     response: { contests },
   }),
+  getTallyEntryAccountStatus: (status: ITallyEntryAccountStatus) => ({
+    url: `/auth/tallyentry/election/1/jurisdiction/jurisdiction-id-1`,
+    response: status,
+  }),
+  postTurnOnTallyEntryAccounts: {
+    url: `/auth/tallyentry/election/1/jurisdiction/jurisdiction-id-1`,
+    options: {
+      method: 'POST',
+    },
+    response: { status: 'ok' },
+  },
+  postConfirmTallyEntryLoginCode: {
+    url: `/auth/tallyentry/election/1/jurisdiction/jurisdiction-id-1/confirm`,
+    options: {
+      method: 'POST',
+      body: JSON.stringify({
+        tallyEntryUserId: 'tally-entry-user-id-1',
+        loginCode: '123',
+      }),
+      headers: { 'Content-Type': 'application/json' },
+    },
+    response: { status: 'ok' },
+  },
 }
 
 export const mockOrganizations = {

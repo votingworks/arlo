@@ -6,6 +6,7 @@ import {
   IFullHandTallyBatchResult,
 } from './useFullHandTallyResults'
 import { mocksOfType } from '../testUtilities'
+import { ITallyEntryAccountStatus } from './BatchRoundSteps/TallyEntryAccountsStep'
 
 export interface INullResultValues {
   [contestId: string]: {
@@ -280,5 +281,54 @@ export const fullHandTallyBatchResultsMock = mocksOfType<
       'choice-id-1': 10,
       'choice-id-2': 20,
     },
+  },
+})
+
+export const tallyEntryAccountStatusMocks = mocksOfType<
+  ITallyEntryAccountStatus
+>()({
+  turnedOff: {
+    passphrase: null,
+    loginRequests: [],
+  },
+  noLoginRequests: {
+    passphrase: 'fake-passphrase-four-words',
+    loginRequests: [],
+  },
+  loginRequestsUnconfirmed: {
+    passphrase: 'fake-passphrase-four-words',
+    loginRequests: [
+      {
+        tallyEntryUserId: 'tally-entry-user-id-1',
+        members: [
+          { name: 'John Doe', affiliation: 'DEM' },
+          { name: 'Jane Smith', affiliation: null },
+        ],
+        loginConfirmedAt: null,
+      },
+      {
+        tallyEntryUserId: 'tally-entry-user-id-2',
+        members: [{ name: 'Kevin Jones', affiliation: 'IND' }],
+        loginConfirmedAt: null,
+      },
+    ],
+  },
+  loginRequestsOneConfirmed: {
+    passphrase: 'fake-passphrase-four-words',
+    loginRequests: [
+      {
+        tallyEntryUserId: 'tally-entry-user-id-1',
+        members: [
+          { name: 'John Doe', affiliation: 'DEM' },
+          { name: 'Jane Smith', affiliation: null },
+        ],
+        loginConfirmedAt: '2022-10-19T15:01:00+00:00',
+      },
+      {
+        tallyEntryUserId: 'tally-entry-user-id-2',
+        members: [{ name: 'Kevin Jones', affiliation: 'IND' }],
+        loginConfirmedAt: null,
+      },
+    ],
   },
 })

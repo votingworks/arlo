@@ -112,7 +112,7 @@ exports[`full hand tally data entry deletes full hand tally batch result 1`] = `
         </button>
         <button
           class="bp3-button"
-          style="width: 160px;"
+          style="min-width: 17em;"
           type="button"
         >
           <span
@@ -313,7 +313,7 @@ exports[`full hand tally data entry edits full hand tally batch result 1`] = `
         </button>
         <button
           class="bp3-button"
-          style="width: 160px;"
+          style="min-width: 17em;"
           type="button"
         >
           <span
@@ -544,7 +544,7 @@ exports[`full hand tally data entry finalizes full hand tally results 1`] = `
         </button>
         <button
           class="bp3-button"
-          style="width: 160px;"
+          style="min-width: 17em;"
           type="button"
         >
           <span
@@ -702,7 +702,7 @@ exports[`full hand tally data entry renders 1`] = `
         </button>
         <button
           class="bp3-button"
-          style="width: 160px;"
+          style="min-width: 17em;"
           type="button"
         >
           <span
@@ -903,7 +903,7 @@ exports[`full hand tally data entry renders with full hand tally results 1`] = `
         </button>
         <button
           class="bp3-button"
-          style="width: 160px;"
+          style="min-width: 17em;"
           type="button"
         >
           <span
@@ -1156,7 +1156,7 @@ exports[`full hand tally data entry renders with proper totals 1`] = `
         </button>
         <button
           class="bp3-button"
-          style="width: 160px;"
+          style="min-width: 17em;"
           type="button"
         >
           <span
@@ -1357,7 +1357,7 @@ exports[`full hand tally data entry submits full hand tally batch result 1`] = `
         </button>
         <button
           class="bp3-button"
-          style="width: 160px;"
+          style="min-width: 17em;"
           type="button"
         >
           <span
@@ -1513,7 +1513,7 @@ exports[`full hand tally data entry validation error for blank submission 1`] = 
         </button>
         <button
           class="bp3-button"
-          style="width: 160px;"
+          style="min-width: 17em;"
           type="button"
         >
           <span
