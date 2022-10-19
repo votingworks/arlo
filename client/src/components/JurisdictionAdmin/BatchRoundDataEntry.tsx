@@ -14,20 +14,16 @@ import {
 } from '@blueprintjs/core'
 import { useForm, useFieldArray } from 'react-hook-form'
 import styled, { css } from 'styled-components'
-import { toast } from 'react-toastify'
 import useContestsJurisdictionAdmin from './useContestsJurisdictionAdmin'
 import {
   useBatches,
   IBatch,
   useRecordBatchResults,
-  useFinalizeBatchResults,
   IBatchResults,
   IBatchResultTallySheet,
 } from './useBatchResults'
 import { sum } from '../../utils/number'
 import { IContest } from '../../types'
-import CopyToClipboard from '../Atoms/CopyToClipboard'
-import { useConfirm, Confirm } from '../Atoms/Confirm'
 
 const ResultsTable = styled(HTMLTable).attrs({
   striped: true,
@@ -42,7 +38,7 @@ const ResultsTable = styled(HTMLTable).attrs({
   thead {
     position: sticky;
     top: 0;
-    z-index: 1;
+    z-index: 10; /* Above BlueprintJS button z-indexes */
     box-shadow: 0 1px 0 ${Colors.GRAY4};
     background: ${Colors.WHITE};
   }
@@ -361,23 +357,15 @@ interface IBatchRoundDataEntryProps {
   electionId: string
   jurisdictionId: string
   roundId: string
-  showFinalizeAndCopyButtons: boolean
 }
 
 const BatchRoundDataEntry: React.FC<IBatchRoundDataEntryProps> = ({
   electionId,
   jurisdictionId,
   roundId,
-  showFinalizeAndCopyButtons,
 }) => {
   const contests = useContestsJurisdictionAdmin(electionId, jurisdictionId)
   const batchesResp = useBatches(electionId, jurisdictionId, roundId)
-  const finalizeResults = useFinalizeBatchResults(
-    electionId,
-    jurisdictionId,
-    roundId
-  )
-  const { confirm, confirmProps } = useConfirm()
   const [editing, setEditing] = useState<{
     batchId: IBatch['id']
     showTallySheetsModal: boolean
@@ -401,39 +389,10 @@ const BatchRoundDataEntry: React.FC<IBatchRoundDataEntryProps> = ({
   const choiceTotal = (choiceId: string) =>
     sum(batches.map(batch => batchChoiceVotes(batch, choiceId) || 0))
 
-  const onClickFinalize = () => {
-    if (batches.some(batch => batch.resultTallySheets.length === 0)) {
-      toast.error('Please enter results for all batches before finalizing.')
-    } else {
-      confirm({
-        title: 'Are you sure you want to finalize your results?',
-        description: (
-          <>
-            <p>
-              You should only finalize your results once you have finished
-              auditing every batch of ballots and have entered the results for
-              each batch on this page.
-            </p>
-            <p>
-              <strong>
-                Before finalizing your results, check the results you have
-                entered into Arlo page against the tally sheets.
-              </strong>
-            </p>
-          </>
-        ),
-        yesButtonLabel: 'Confirm',
-        onYesClick: async () => {
-          await finalizeResults.mutateAsync()
-        },
-      })
-    }
-  }
-
   return (
     <div>
       <div>
-        <p className={Classes.TEXT_LARGE}>
+        <p className={Classes.TEXT_LARGE} style={{ marginTop: '20px' }}>
           For each batch, enter the number of votes tallied for each
           candidate/choice.
         </p>
@@ -443,7 +402,7 @@ const BatchRoundDataEntry: React.FC<IBatchRoundDataEntryProps> = ({
             intent="success"
             style={{ margin: '20px 0 20px 0' }}
           >
-            Results finalized
+            Tallies finalized
           </Callout>
         )}
       </div>
@@ -578,27 +537,6 @@ const BatchRoundDataEntry: React.FC<IBatchRoundDataEntryProps> = ({
           contest={contest}
           closeModal={() => setEditing(null)}
         />
-      )}
-      {showFinalizeAndCopyButtons && (
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            marginTop: '20px',
-          }}
-        >
-          <CopyToClipboard
-            getText={() => document.getElementById('results-table')!.outerHTML}
-          />
-          <Button
-            intent="primary"
-            onClick={onClickFinalize}
-            disabled={!!resultsFinalizedAt}
-          >
-            Finalize Results
-          </Button>
-          <Confirm {...confirmProps} />
-        </div>
       )}
     </div>
   )

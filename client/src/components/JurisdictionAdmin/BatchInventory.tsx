@@ -29,7 +29,9 @@ import {
   StepList,
   StepListItem,
   stepState,
+  StepPanelColumn,
 } from '../Atoms/Steps'
+import { CenterColumn } from '../Atoms/Layout'
 
 const STEPS = [
   'Upload Election Results',
@@ -129,17 +131,21 @@ const UploadElectionResultsStep: React.FC<{
   return (
     <>
       <StepPanel>
-        <FileUpload
-          title="Cast Vote Records (CVR)"
-          {...cvrUpload}
-          acceptFileTypes={['csv']}
-        />
-        <FileUpload
-          title="Tabulator Status"
-          {...tabulatorStatusUpload}
-          acceptFileTypes={['xml']}
-          uploadDisabled={!isUploaded(cvrUpload)}
-        />
+        <StepPanelColumn>
+          <FileUpload
+            title="Cast Vote Records (CVR)"
+            {...cvrUpload}
+            acceptFileTypes={['csv']}
+          />
+        </StepPanelColumn>
+        <StepPanelColumn>
+          <FileUpload
+            title="Tabulator Status"
+            {...tabulatorStatusUpload}
+            acceptFileTypes={['xml']}
+            uploadDisabled={!isUploaded(cvrUpload)}
+          />
+        </StepPanelColumn>
       </StepPanel>
       <StepActions
         right={
@@ -182,7 +188,7 @@ const InventoryBatchesStep: React.FC<{
   return (
     <>
       <StepPanel>
-        <div style={{ textAlign: 'center' }}>
+        <CenterColumn>
           <p>
             Follow the instructions in the worksheet to inventory your batches.
           </p>
@@ -202,7 +208,7 @@ const InventoryBatchesStep: React.FC<{
               <span>I have completed the batch inventory worksheet.</span>
             </Checkbox>
           </p>
-        </div>
+        </CenterColumn>
       </StepPanel>
       <StepActions
         left={
@@ -238,11 +244,8 @@ const DownloadAuditFilesStep: React.FC<{
   return (
     <>
       <StepPanel>
-        <div
+        <CenterColumn
           style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
             maxWidth: '50%',
           }}
         >
@@ -274,7 +277,7 @@ const DownloadAuditFilesStep: React.FC<{
               Download Candidate Totals by Batch
             </AsyncButton>
           </div>
-        </div>
+        </CenterColumn>
       </StepPanel>
       <StepActions
         left={

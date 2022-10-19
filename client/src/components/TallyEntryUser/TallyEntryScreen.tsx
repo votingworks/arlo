@@ -21,7 +21,6 @@ const TallyEntryScreen: React.FC<ITallyEntryScreenProps> = ({
         electionId={electionId}
         jurisdictionId={jurisdictionId}
         roundId={roundId}
-        showFinalizeAndCopyButtons={false}
       />
     </Inner>
   )

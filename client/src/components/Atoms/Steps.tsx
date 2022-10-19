@@ -122,14 +122,20 @@ export const StepList: React.FC = ({ children }) => {
 
 export const StepPanel = styled.div`
   display: flex;
-  align-items: center;
   justify-content: center;
-  gap: 70px;
-  min-height: 300px;
-  padding: 50px 70px;
-  > * {
-    flex: 1;
-  }
+  gap: 20px;
+  height: 400px;
+  padding: 20px;
+  overflow-y: auto;
+`
+
+export const StepPanelColumn = styled.div`
+  border-radius: 5px;
+  background-color: ${Colors.LIGHT_GRAY5};
+  padding: 30px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 `
 
 const StepActionsRow = styled.div`
