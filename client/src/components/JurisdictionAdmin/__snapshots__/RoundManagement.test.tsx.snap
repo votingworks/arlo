@@ -3,7 +3,7 @@
 exports[`RoundManagement renders audit setup with ballot audit 1`] = `
 <div>
   <div
-    class="sc-bdVaJa sc-jAaTju ezXCTE"
+    class="sc-bdVaJa sc-Rmtcm fETQSm"
   >
     <h3
       class="bp3-heading"
@@ -13,7 +13,7 @@ exports[`RoundManagement renders audit setup with ballot audit 1`] = `
        Audit Board Setup
     </h3>
     <p
-      class="sc-gPEVay iRuTiV"
+      class="sc-hzDkRC cmAXCD"
     >
       Ballots to audit: 
       27
@@ -681,7 +681,7 @@ exports[`RoundManagement renders audit setup with ballot audit 1`] = `
 exports[`RoundManagement renders complete view 1`] = `
 <div>
   <div
-    class="sc-bdVaJa sc-jAaTju ezXCTE"
+    class="sc-bdVaJa sc-Rmtcm fETQSm"
   >
     <h2
       class="bp3-heading"
@@ -695,7 +695,7 @@ exports[`RoundManagement renders complete view 1`] = `
 exports[`RoundManagement renders links & data entry with offline ballot audit 1`] = `
 <div>
   <div
-    class="sc-bdVaJa sc-jAaTju ezXCTE"
+    class="sc-bdVaJa sc-Rmtcm fETQSm"
   >
     <h3
       class="bp3-heading"
@@ -705,10 +705,10 @@ exports[`RoundManagement renders links & data entry with offline ballot audit 1`
        Data Entry
     </h3>
     <div
-      class="sc-jDwBTQ hRNNdd"
+      class="sc-bRBYWo enyONj"
     >
       <p
-        class="sc-gPEVay iRuTiV"
+        class="sc-hzDkRC cmAXCD"
       >
         Ballots to audit: 
         27
@@ -806,7 +806,7 @@ exports[`RoundManagement renders links & data entry with offline ballot audit 1`
       </div>
     </div>
     <div
-      class="sc-jDwBTQ hRNNdd"
+      class="sc-bRBYWo enyONj"
     >
       <form>
         <p>
@@ -941,7 +941,7 @@ exports[`RoundManagement renders links & data entry with offline ballot audit 1`
 exports[`RoundManagement renders links & progress with online ballot audit 1`] = `
 <div>
   <div
-    class="sc-bdVaJa sc-jAaTju ezXCTE"
+    class="sc-bdVaJa sc-Rmtcm fETQSm"
   >
     <h3
       class="bp3-heading"
@@ -951,10 +951,10 @@ exports[`RoundManagement renders links & progress with online ballot audit 1`] =
        Data Entry
     </h3>
     <div
-      class="sc-jDwBTQ hRNNdd"
+      class="sc-bRBYWo enyONj"
     >
       <p
-        class="sc-gPEVay iRuTiV"
+        class="sc-hzDkRC cmAXCD"
       >
         Ballots to audit: 
         27
@@ -1095,7 +1095,7 @@ exports[`RoundManagement renders links & progress with online ballot audit 1`] =
       </div>
     </div>
     <div
-      class="sc-jDwBTQ hRNNdd"
+      class="sc-bRBYWo enyONj"
     >
       <div
         class="sc-gZMcBi cPjbpf"
