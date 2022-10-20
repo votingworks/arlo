@@ -1,6 +1,6 @@
 import React from 'react'
 import { H1, Icon, Classes } from '@blueprintjs/core'
-import { useLocation } from 'react-router-dom'
+import { useLocation, Redirect } from 'react-router-dom'
 import useCurrentUser from './useCurrentUser'
 import TallyEntryLoginScreen from './TallyEntryLoginScreen'
 import TallyEntryScreen from './TallyEntryScreen'
@@ -56,8 +56,11 @@ const TallyEntryUserView: React.FC = () => {
   if (!userQuery.isSuccess) return null // Still loading
 
   const user = userQuery.data
-  if (user?.type !== 'tally_entry') {
+  if (!user) {
     return <TallyEntryNotLoggedInScreen />
+  }
+  if (user.type !== 'tally_entry') {
+    return <Redirect to="/" />
   }
 
   return (
