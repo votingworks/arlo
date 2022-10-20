@@ -9,7 +9,7 @@ import pytest
 from flask.testing import FlaskClient
 
 from ..auth import UserType
-from ..auth.routes import auth0_sa, auth0_aa
+from ..auth.auth_routes import auth0_sa, auth0_aa
 from ..models import *  # pylint: disable=wildcard-import
 from ..util.jsonschema import JSONDict
 from .helpers import *  # pylint: disable=wildcard-import

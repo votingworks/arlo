@@ -5,7 +5,7 @@ import requests
 
 from .. import config
 from ..models import ActivityLogRecord
-from ..auth.lib import UserType
+from ..auth.auth_helpers import UserType
 from ..database import db_session
 from . import activity_log
 from ..sentry import configure_sentry

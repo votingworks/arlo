@@ -11,7 +11,7 @@ from werkzeug.exceptions import Conflict
 
 from ..database import db_session
 from . import api
-from ..auth.lib import UserType, restrict_access, get_loggedin_user
+from ..auth.auth_helpers import UserType, restrict_access, get_loggedin_user
 from .cvrs import column_value, csv_reader_for_cvr, get_header_indices
 from ..models import *  # pylint: disable=wildcard-import
 from ..util.csv_parse import validate_csv_mimetype

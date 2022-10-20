@@ -3,7 +3,7 @@ from sentry_sdk.integrations.flask import FlaskIntegration
 from flask import Flask, session, request
 from .models import Election
 from .config import FLASK_ENV, SENTRY_DSN
-from .auth.lib import get_loggedin_user
+from .auth.auth_helpers import get_loggedin_user
 
 
 def set_sentry_user():

@@ -14,7 +14,7 @@ from .config import (
 from .database import init_db, db_session, engine
 from .api import api
 from .auth import auth
-from .auth.routes import oauth
+from .auth.auth_routes import oauth
 from .sentry import configure_sentry
 
 if FLASK_ENV not in ["development", "test"]:

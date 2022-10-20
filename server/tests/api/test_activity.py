@@ -3,7 +3,7 @@ from typing import List
 from unittest.mock import MagicMock, patch, Mock
 from flask.testing import FlaskClient
 
-from ...auth.routes import auth0_aa
+from ...auth.auth_routes import auth0_aa
 from ...util.jsonschema import JSONDict
 from ..helpers import *  # pylint: disable=wildcard-import
 from ..test_auth import parse_login_code_from_smtp
