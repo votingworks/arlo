@@ -53,25 +53,6 @@ describe('Batch Comparison', () => {
     cy.logout(auditAdmin)
     cy.loginJurisdictionAdmin(jurisdictionAdmin)
 
-    // upload invalid manifest
-    cy.fixture('CSVs/manifest/batch_comparison_manifest_col_error.csv').then(
-      fileContent => {
-        cy.get('input[type="file"]')
-          .first()
-          .attachFile({
-            fileContent: fileContent.toString(),
-            fileName: 'batch_comparison_manifest_col_error.csv',
-            mimeType: 'text/csv',
-          })
-      }
-    )
-    cy.findAllByText('Upload File').spread((firstButton, secondButton) => {
-      firstButton.click()
-    })
-    cy.contains('Missing required column: Number of Ballots.')
-
-    // upload valid manifest
-    cy.findByText('Replace File').click()
     cy.findAllByText('Upload File').should('have.length', 2)
     cy.fixture('CSVs/manifest/batch_comparison_manifest.csv').then(
       fileContent => {
@@ -89,27 +70,6 @@ describe('Batch Comparison', () => {
     })
     cy.contains('Uploaded')
 
-    // upload invalid batch tallies
-    cy.fixture(
-      'CSVs/candidate-total-batch/sample_candidate_totals_by_batch_col_error.csv'
-    ).then(fileContent => {
-      cy.get('input[type="file"]')
-        .last()
-        .attachFile({
-          fileContent: fileContent.toString(),
-          fileName: 'sample_candidate_totals_by_batch_col_error.csv',
-          mimeType: 'text/csv',
-        })
-    })
-    cy.findAllByText('Upload File')
-      .last()
-      .click()
-    cy.contains(/Missing required column: Palpatine/)
-
-    // now upload valid batch tallies
-    cy.findAllByText('Replace File').spread((firstButton, secondButton) => {
-      secondButton.click()
-    })
     cy.fixture(
       'CSVs/candidate-total-batch/sample_candidate_totals_by_batch.csv'
     ).then(fileContent => {
@@ -124,6 +84,7 @@ describe('Batch Comparison', () => {
     cy.findAllByText('Upload File').click()
     cy.findAllByText(/Uploaded/).should('have.length', 2)
     cy.logout(jurisdictionAdmin)
+
     cy.loginAuditAdmin(auditAdmin)
     cy.findByText(`TestAudit${id}`).click()
     cy.findByText('Review & Launch').click()
@@ -137,6 +98,55 @@ describe('Batch Comparison', () => {
     cy.findByRole('heading', { name: 'Audit Progress' })
     cy.logout(auditAdmin)
     cy.loginJurisdictionAdmin(jurisdictionAdmin)
+
+    cy.findByRole('heading', { name: 'Prepare Batches' })
+    cy.findByRole('button', { name: /Continue/ }).click()
+    cy.findByRole('heading', { name: 'Set Up Tally Entry Accounts' })
+    cy.findByRole('button', { name: 'Set Up Tally Entry Accounts' }).click()
+
+    // Start tally entry login
+    cy.findByRole('textbox')
+      .invoke('val')
+      .then(loginLink => {
+        cy.visit(loginLink)
+        // Since tally entry users can't log in again once they log out, we have
+        // to save their session cookie so that we can restore it later (after
+        // switching back to the jurisdiction admin account to confirm the login
+        // code).
+        cy.getCookie('session').then(tallyEntryCookie => {
+          cy.findByRole('heading', { name: 'Tally Entry Login' })
+          cy.findAllByLabelText('Name')
+            .eq(0)
+            .type('John Snow')
+          cy.findAllByLabelText('Name')
+            .eq(1)
+            .type('Frodo Baggins')
+          cy.findByRole('button', { name: 'Log In' }).click()
+
+          cy.findByRole('heading', { name: 'Login Code' })
+            .next()
+            .invoke('text')
+            .then(loginCode => {
+              cy.logout()
+
+              // Switch back to jurisdiction admin account and confirm the login code
+              cy.loginJurisdictionAdmin(jurisdictionAdmin)
+              cy.findByRole('heading', {
+                name: 'Set Up Tally Entry Accounts',
+              }).click()
+              cy.findByRole('button', { name: /Enter Login Code/ }).click()
+              cy.findByLabelText(
+                'Enter the login code shown on their screen:'
+              ).type(loginCode)
+              cy.findByRole('button', { name: 'Confirm' }).click()
+
+              // Switch back to tally entry user, who should now be logged in
+              cy.setCookie('session', tallyEntryCookie.value, tallyEntryCookie)
+              cy.visit('/tally-entry')
+              cy.findByRole('heading', { name: 'Enter Tallies' })
+            })
+        })
+      })
 
     cy.findAllByRole('columnheader')
       .eq(1)
@@ -164,11 +174,14 @@ describe('Batch Comparison', () => {
 
     auditBatch('Batch 3', { vader: 600, palpatine: 400 })
     auditBatch('Batch 5', { vader: 3000, palpatine: 0 })
-    auditBatch('Batch 10', { vader: 3000, palpatine: 0 })
+    cy.logout()
 
-    cy.findByRole('button', { name: /Finalize Results/ }).click()
+    cy.loginJurisdictionAdmin(jurisdictionAdmin)
+    cy.findByRole('heading', { name: 'Enter Tallies' }).click()
+    auditBatch('Batch 10', { vader: 3000, palpatine: 0 })
+    cy.findByRole('button', { name: /Finalize Tallies/ }).click()
     cy.findByRole('button', { name: /Confirm/ }).click()
-    cy.findByText('Results finalized')
+    cy.findByText('Tallies finalized')
 
     cy.logout(jurisdictionAdmin)
     cy.loginAuditAdmin(auditAdmin)
