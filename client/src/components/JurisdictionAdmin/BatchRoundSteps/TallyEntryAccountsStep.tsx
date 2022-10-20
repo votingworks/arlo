@@ -22,7 +22,7 @@ import { fetchApi, ApiError } from '../../../utils/api'
 import AsyncButton from '../../Atoms/AsyncButton'
 import CopyToClipboard from '../../Atoms/CopyToClipboard'
 import { downloadTallyEntryLoginLinkPrintout } from '../generateSheets'
-import { ButtonRow, CenterColumn, CenterRow } from '../../Atoms/Layout'
+import { ButtonRow, Column, Row } from '../../Atoms/Layout'
 
 const useTurnOnTallyEntryAccounts = (
   electionId: string,
@@ -200,13 +200,14 @@ const ConfirmTallyEntryLoginModal: React.FC<IConfirmTallyEntryLoginProps> = ({
       onClose={onClose}
     >
       <form onSubmit={handleSubmit(onSubmit)}>
-        <CenterColumn
+        <Column
           className={Classes.DIALOG_BODY}
           style={{ height: '120px' }}
+          justify="center"
         >
           {/* TODO make a multi-digit input component */}
           {!isConfirmed ? (
-            <CenterColumn>
+            <Column align="center">
               <label
                 className={Classes.TEXT_LARGE}
                 style={{ display: 'block', marginBottom: '15px' }}
@@ -231,9 +232,9 @@ const ConfirmTallyEntryLoginModal: React.FC<IConfirmTallyEntryLoginProps> = ({
                 style={{ height: '80px', width: '110px', fontSize: '50px' }}
                 autoFocus
               />
-            </CenterColumn>
+            </Column>
           ) : (
-            <CenterRow>
+            <Row justify="center">
               <Icon
                 icon="tick-circle"
                 iconSize={30}
@@ -241,9 +242,9 @@ const ConfirmTallyEntryLoginModal: React.FC<IConfirmTallyEntryLoginProps> = ({
                 style={{ marginRight: '7px' }}
               />
               <H3 style={{ margin: 0 }}>Login Confirmed</H3>
-            </CenterRow>
+            </Row>
           )}
-        </CenterColumn>
+        </Column>
         <div className={Classes.DIALOG_FOOTER}>
           <div
             className={Classes.DIALOG_FOOTER_ACTIONS}
@@ -278,9 +279,6 @@ const ConfirmTallyEntryLoginModal: React.FC<IConfirmTallyEntryLoginProps> = ({
 const LoginRequestList = styled.div`
   overflow-y: auto;
   padding: 1px; /* Account for Card border */
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
 `
 
 const LoginRequestItem = styled(Card)`
@@ -289,6 +287,7 @@ const LoginRequestItem = styled(Card)`
   grid-template-columns: 1fr 155px; /* Width of largest button */
   align-items: center;
   padding: 10px 15px;
+  margin-bottom: 10px;
   height: 56px; /* Height of tallest item */
 `
 

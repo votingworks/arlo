@@ -31,7 +31,7 @@ import {
   stepState,
   StepPanelColumn,
 } from '../Atoms/Steps'
-import { CenterColumn } from '../Atoms/Layout'
+import { Column } from '../Atoms/Layout'
 
 const STEPS = [
   'Upload Election Results',
@@ -188,7 +188,7 @@ const InventoryBatchesStep: React.FC<{
   return (
     <>
       <StepPanel>
-        <CenterColumn>
+        <Column justify="center" align="center">
           <p>
             Follow the instructions in the worksheet to inventory your batches.
           </p>
@@ -208,7 +208,7 @@ const InventoryBatchesStep: React.FC<{
               <span>I have completed the batch inventory worksheet.</span>
             </Checkbox>
           </p>
-        </CenterColumn>
+        </Column>
       </StepPanel>
       <StepActions
         left={
@@ -244,11 +244,7 @@ const DownloadAuditFilesStep: React.FC<{
   return (
     <>
       <StepPanel>
-        <CenterColumn
-          style={{
-            maxWidth: '50%',
-          }}
-        >
+        <Column justify="center" align="center" style={{ maxWidth: '50%' }}>
           <H4>Batch Inventory Complete</H4>
           <p style={{ marginBottom: '15px' }}>
             Next, download the Ballot Manifest and Candidate Totals by Batch
@@ -277,7 +273,7 @@ const DownloadAuditFilesStep: React.FC<{
               Download Candidate Totals by Batch
             </AsyncButton>
           </div>
-        </CenterColumn>
+        </Column>
       </StepPanel>
       <StepActions
         left={

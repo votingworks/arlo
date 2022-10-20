@@ -12,5 +12,7 @@ module.exports = {
     'selector-max-universal': 1,
     'order/properties-order': null,
     'selector-class-pattern': null,
+    // Fix for: https://github.com/stylelint/stylelint-config-standard/issues/138
+    'value-keyword-case': ['lower', { ignoreKeywords: ['dummyValue'] }],
   },
 }
