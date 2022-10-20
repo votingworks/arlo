@@ -16,13 +16,13 @@ const TallyEntryNotLoggedInScreen: React.FC = () => {
   const { headline, details } = (() => {
     if (query.get('error') === 'login_link_not_found') {
       return {
-        headline: "We couldn't find the login link you entered",
+        headline: 'We couldn’t find the login link you entered',
         details:
           'Did you make a typo? Please try entering your login link again.',
       }
     }
     return {
-      headline: "You're logged out",
+      headline: 'You’re logged out',
       details: 'To log in, enter your login link in the URL bar.',
     }
   })()

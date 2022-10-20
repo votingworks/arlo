@@ -21,7 +21,7 @@ describe('TallyEntryUserView', () => {
     const expectedCalls = [apiCalls.unauthenticatedUser]
     await withMockFetch(expectedCalls, async () => {
       renderView()
-      await screen.findByRole('heading', { name: "You're logged out" })
+      await screen.findByRole('heading', { name: 'You’re logged out' })
       screen.getByText('To log in, enter your login link in the URL bar.')
     })
   })
@@ -31,7 +31,7 @@ describe('TallyEntryUserView', () => {
     await withMockFetch(expectedCalls, async () => {
       renderView({ route: '/tally-entry?error=login_link_not_found' })
       await screen.findByRole('heading', {
-        name: "We couldn't find the login link you entered",
+        name: 'We couldn’t find the login link you entered',
       })
       screen.getByText(
         'Did you make a typo? Please try entering your login link again.'
