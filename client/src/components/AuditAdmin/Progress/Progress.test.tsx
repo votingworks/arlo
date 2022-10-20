@@ -606,7 +606,7 @@ describe('Progress screen', () => {
         .getByRole('heading', { name: 'Jurisdiction 1' })
         .closest('div.bp3-dialog')! as HTMLElement
       await within(modal).findByRole('heading', {
-        name: 'Round 1 Data Entry',
+        name: 'Current Audit Round',
       })
 
       // Tested further in JurisdictionDetail.test.tsx

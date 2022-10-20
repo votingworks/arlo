@@ -21,6 +21,7 @@ import {
   manifestFile,
   cvrsFile,
   talliesFile,
+  contestMocks,
 } from '../useSetupMenuItems/_mocks'
 import { aaApiCalls, jaApiCalls } from '../../_mocks'
 import { withMockFetch } from '../../testUtilities'
@@ -467,7 +468,7 @@ describe('JurisdictionDetail', () => {
         round: roundMocks.singleIncomplete[0],
       })
 
-      await screen.findByRole('heading', { name: 'Round 1 Data Entry' })
+      await screen.findByRole('heading', { name: 'Current Audit Round' })
 
       userEvent.click(
         screen.getByRole('button', {
@@ -540,7 +541,7 @@ describe('JurisdictionDetail', () => {
         round: roundMocks.singleIncomplete[0],
       })
 
-      await screen.findByRole('heading', { name: 'Round 1 Data Entry' })
+      await screen.findByRole('heading', { name: 'Current Audit Round' })
       screen.getByRole('button', {
         name: /Download Ballot Retrieval List/,
       })
@@ -566,6 +567,8 @@ describe('JurisdictionDetail', () => {
       jaApiCalls.getBatchTalliesFile(talliesMocks.processed),
       jaApiCalls.getAuditBoards(auditBoardMocks.unfinished),
       jaApiCalls.getBatches(batchesMocks.emptyInitial),
+      jaApiCalls.getBatches(batchesMocks.emptyInitial),
+      jaApiCalls.getJurisdictionContests(contestMocks.oneTargeted),
     ]
     await withMockFetch(expectedCalls, async () => {
       render({
@@ -586,8 +589,28 @@ describe('JurisdictionDetail', () => {
         within(talliesCard).getByRole('button', { name: /Delete/ })
       ).toBeDisabled()
 
-      await screen.findByRole('heading', { name: 'Round 1 Data Entry' })
-      screen.getByText('Auditing in progress')
+      await screen.findByRole('heading', { name: 'Current Audit Round' })
+      userEvent.click(
+        screen.getByRole('button', {
+          name: /Download Batch Retrieval List/,
+        })
+      )
+      expect(window.open).toHaveBeenCalledWith(
+        '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/batches/retrieval-list'
+      )
+
+      userEvent.click(
+        screen.getByRole('button', { name: /Download Batch Tally Sheets/ })
+      )
+      await waitFor(() =>
+        expect(
+          mockSavePDF
+        ).toHaveBeenCalledWith(
+          'Batch Tally Sheets - Jurisdiction 1 - Test Audit.pdf',
+          { returnPromise: true }
+        )
+      )
+      mockSavePDF.mockClear()
     })
   })
 
@@ -669,10 +692,10 @@ describe('JurisdictionDetail', () => {
         round: roundMocks.singleIncomplete[0],
       })
 
-      await screen.findByText('Results finalized')
+      await screen.findByText('Tallies finalized')
 
       userEvent.click(
-        screen.getByRole('button', { name: 'Unfinalize Results' })
+        screen.getByRole('button', { name: 'Unfinalize Tallies' })
       )
       await waitFor(() => {
         expect(window.location.reload).toHaveBeenCalled()

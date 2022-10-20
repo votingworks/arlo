@@ -2,14 +2,16 @@ import React from 'react'
 import { toast } from 'react-toastify'
 import * as Sentry from '@sentry/react'
 
-import AsyncButton from '../Atoms/AsyncButton'
-import useContestsJurisdictionAdmin from './useContestsJurisdictionAdmin'
-import { downloadBatchTallySheets } from './generateSheets'
-import { useBatches } from './useBatchResults'
-import { sleep } from '../../utils/sleep'
+import { IButtonProps } from '@blueprintjs/core'
+import AsyncButton from '../../Atoms/AsyncButton'
+import useContestsJurisdictionAdmin from '../useContestsJurisdictionAdmin'
+import { downloadBatchTallySheets } from '../generateSheets'
+import { useBatches } from '../useBatchResults'
+import { sleep } from '../../../utils/sleep'
 
-interface IProps {
+interface IDownloadBatchTallySheetsButtonProps extends IButtonProps {
   electionId: string
+  auditName: string
   jurisdictionId: string
   jurisdictionName: string
   roundId: string
@@ -17,10 +19,12 @@ interface IProps {
 
 const DownloadBatchTallySheetsButton = ({
   electionId,
+  auditName,
   jurisdictionId,
   jurisdictionName,
   roundId,
-}: IProps): JSX.Element | null => {
+  ...buttonProps
+}: IDownloadBatchTallySheetsButtonProps): JSX.Element | null => {
   const batchesQuery = useBatches(electionId, jurisdictionId, roundId)
   const contestsQuery = useContestsJurisdictionAdmin(electionId, jurisdictionId)
 
@@ -37,7 +41,12 @@ const DownloadBatchTallySheetsButton = ({
     const [contest] = contestsQuery.data
 
     try {
-      await downloadBatchTallySheets(batches, contest.choices, jurisdictionName)
+      await downloadBatchTallySheets(
+        batches,
+        contest.choices,
+        jurisdictionName,
+        auditName
+      )
     } catch (err) {
       toast.error('Error preparing batch tally sheets for download')
       Sentry.captureException(err)
@@ -45,7 +54,7 @@ const DownloadBatchTallySheetsButton = ({
   }
 
   return (
-    <AsyncButton icon="download" intent="primary" onClick={onClick}>
+    <AsyncButton icon="download" {...buttonProps} onClick={onClick}>
       Download Batch Tally Sheets
     </AsyncButton>
   )
