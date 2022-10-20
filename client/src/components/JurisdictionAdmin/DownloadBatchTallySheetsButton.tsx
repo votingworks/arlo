@@ -27,9 +27,11 @@ const DownloadBatchTallySheetsButton = ({
   const onClick = async () => {
     // Wait for the batches/contests to load in case they haven't yet.
     while (!batchesQuery.isSuccess || contests === null) {
+      if (batchesQuery.isError) return
       // eslint-disable-next-line no-await-in-loop
       await sleep(100)
     }
+
     const { batches } = batchesQuery.data
     // Batch comparison audits only support a single contest
     const contest = contests[0]
