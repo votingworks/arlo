@@ -188,7 +188,7 @@ const InventoryBatchesStep: React.FC<{
   return (
     <>
       <StepPanel>
-        <Column justify="center" align="center">
+        <Column justifyContent="center" alignItems="center">
           <p>
             Follow the instructions in the worksheet to inventory your batches.
           </p>
@@ -244,7 +244,11 @@ const DownloadAuditFilesStep: React.FC<{
   return (
     <>
       <StepPanel>
-        <Column justify="center" align="center" style={{ maxWidth: '50%' }}>
+        <Column
+          justifyContent="center"
+          alignItems="center"
+          style={{ maxWidth: '50%' }}
+        >
           <H4>Batch Inventory Complete</H4>
           <p style={{ marginBottom: '15px' }}>
             Next, download the Ballot Manifest and Candidate Totals by Batch

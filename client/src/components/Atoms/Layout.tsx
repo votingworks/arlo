@@ -1,22 +1,22 @@
 import styled, { css } from 'styled-components'
 
-interface BoxProps {
-  justify?: 'start' | 'center' | 'end' | 'space-between' | 'space-around'
-  align?: 'start' | 'center' | 'end' | 'stretch' | 'baseline'
+interface FlexboxProps {
+  justifyContent?: 'start' | 'center' | 'end' | 'space-between' | 'space-around'
+  alignItems?: 'start' | 'center' | 'end' | 'stretch' | 'baseline'
   gap?: string
 }
 
-const Box = styled.div<BoxProps>`
+const Flexbox = styled.div<FlexboxProps>`
   display: flex;
   ${props =>
-    props.justify &&
+    props.justifyContent &&
     css`
-      justify-content: ${props.justify};
+      justify-content: ${props.justifyContent};
     `}
   ${props =>
-    props.align &&
+    props.alignItems &&
     css`
-      align-items: ${props.align};
+      align-items: ${props.alignItems};
     `}
   ${props =>
     props.gap &&
@@ -33,7 +33,7 @@ const Box = styled.div<BoxProps>`
  *    ... items ...
  *  </Row>
  */
-export const Row = styled(Box)`
+export const Row = styled(Flexbox)`
   flex-direction: row;
 `
 
@@ -45,7 +45,7 @@ export const Row = styled(Box)`
  *    ... items ...
  *  </Row>
  */
-export const Column = styled(Box)`
+export const Column = styled(Flexbox)`
   flex-direction: column;
 `
 

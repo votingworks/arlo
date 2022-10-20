@@ -203,11 +203,11 @@ const ConfirmTallyEntryLoginModal: React.FC<IConfirmTallyEntryLoginProps> = ({
         <Column
           className={Classes.DIALOG_BODY}
           style={{ height: '120px' }}
-          justify="center"
+          justifyContent="center"
         >
           {/* TODO make a multi-digit input component */}
           {!isConfirmed ? (
-            <Column align="center">
+            <Column alignItems="center">
               <label
                 className={Classes.TEXT_LARGE}
                 style={{ display: 'block', marginBottom: '15px' }}
@@ -234,7 +234,7 @@ const ConfirmTallyEntryLoginModal: React.FC<IConfirmTallyEntryLoginProps> = ({
               />
             </Column>
           ) : (
-            <Row justify="center">
+            <Row justifyContent="center">
               <Icon
                 icon="tick-circle"
                 iconSize={30}
