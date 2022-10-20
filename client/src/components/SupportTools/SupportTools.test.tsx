@@ -837,6 +837,24 @@ describe('Support Tools', () => {
     })
   })
 
+  it("jurisdiction screen doesn't shows a list of audit boards for batch comparison audits", async () => {
+    const expectedCalls = [
+      supportApiCalls.getUser,
+      apiCalls.getJurisdiction({
+        ...mockJurisdiction,
+        election: { ...mockElection, auditType: 'BATCH_COMPARISON' },
+      }),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderRoute('/support/jurisdictions/jurisdiction-id-1')
+
+      await screen.findByRole('heading', { name: 'Jurisdiction 1' })
+      expect(
+        screen.queryByRole('heading', { name: 'Current Round Audit Boards' })
+      ).not.toBeInTheDocument()
+    })
+  })
+
   it('jurisdiction screen handles error', async () => {
     const expectedCalls = [
       supportApiCalls.getUser,
