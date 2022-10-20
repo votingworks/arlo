@@ -364,18 +364,18 @@ const BatchRoundDataEntry: React.FC<IBatchRoundDataEntryProps> = ({
   jurisdictionId,
   roundId,
 }) => {
-  const contests = useContestsJurisdictionAdmin(electionId, jurisdictionId)
-  const batchesResp = useBatches(electionId, jurisdictionId, roundId)
+  const contestsQuery = useContestsJurisdictionAdmin(electionId, jurisdictionId)
+  const batchesQuery = useBatches(electionId, jurisdictionId, roundId)
   const [editing, setEditing] = useState<{
     batchId: IBatch['id']
     showTallySheetsModal: boolean
   } | null>(null)
 
-  if (!contests || !batchesResp.isSuccess) return null
+  if (!contestsQuery.isSuccess || !batchesQuery.isSuccess) return null
 
   // Batch comparison audits only support a single contest
-  const [contest] = contests
-  const { batches, resultsFinalizedAt } = batchesResp.data
+  const [contest] = contestsQuery.data
+  const { batches, resultsFinalizedAt } = batchesQuery.data
 
   const batchChoiceVotes = (batch: IBatch, choiceId: string) =>
     batch.resultTallySheets.length > 0

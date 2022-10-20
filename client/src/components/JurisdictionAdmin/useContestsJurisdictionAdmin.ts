@@ -1,31 +1,17 @@
-import { useEffect, useState } from 'react'
-import { api } from '../utilities'
+import { useQuery, UseQueryResult } from 'react-query'
 import { IContest } from '../../types'
-
-const getContests = async (
-  electionId: string,
-  jurisdictionId: string
-): Promise<IContest[] | null> => {
-  const response = await api<{ contests: IContest[] }>(
-    `/election/${electionId}/jurisdiction/${jurisdictionId}/contest`
-  )
-  if (!response) return null
-  return response.contests
-}
+import { fetchApi, ApiError } from '../../utils/api'
 
 const useContestsJurisdictionAdmin = (
   electionId: string,
   jurisdictionId: string
-): IContest[] | null => {
-  const [contests, setContests] = useState<IContest[] | null>(null)
-
-  useEffect(() => {
-    ;(async () => {
-      const newContests = await getContests(electionId, jurisdictionId)
-      setContests(newContests)
-    })()
-  }, [electionId, jurisdictionId])
-  return contests
-}
+): UseQueryResult<IContest[], ApiError> =>
+  useQuery(['jurisdictions', jurisdictionId, 'contests'], async () => {
+    return (
+      await fetchApi(
+        `/api/election/${electionId}/jurisdiction/${jurisdictionId}/contest`
+      )
+    ).contests
+  })
 
 export default useContestsJurisdictionAdmin

@@ -2,6 +2,7 @@ import React from 'react'
 import { screen, fireEvent, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { useParams } from 'react-router-dom'
+import { QueryClientProvider } from 'react-query'
 import {
   fullHandTallyBatchResultMock,
   fullHandTallyBatchResultsMock,
@@ -16,6 +17,7 @@ import FullHandTallyDataEntry from './FullHandTallyDataEntry'
 import { contestMocks } from '../AuditAdmin/useSetupMenuItems/_mocks'
 import { withMockFetch, renderWithRouter } from '../testUtilities'
 import { IContest } from '../../types'
+import { queryClient } from '../../App'
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'), // use actual for all non-hook parts
@@ -83,6 +85,16 @@ const apiCalls = {
   },
 }
 
+const renderComponent = () =>
+  renderWithRouter(
+    <QueryClientProvider client={queryClient}>
+      <FullHandTallyDataEntry round={roundMocks.fullHandTallyIncomplete} />
+    </QueryClientProvider>,
+    {
+      route: '/election/1/jurisdiction/1',
+    }
+  )
+
 describe('full hand tally data entry', () => {
   it('renders', async () => {
     const expectedCalls = [
@@ -90,12 +102,7 @@ describe('full hand tally data entry', () => {
       apiCalls.getResults(fullHandTallyBatchResultMock.empty),
     ]
     await withMockFetch(expectedCalls, async () => {
-      const { container } = renderWithRouter(
-        <FullHandTallyDataEntry round={roundMocks.fullHandTallyIncomplete} />,
-        {
-          route: '/election/1/jurisdiction/1',
-        }
-      )
+      const { container } = renderComponent()
       await screen.findByText('No batches added. Add your first batch below.')
       expect(container).toMatchSnapshot()
     })
@@ -107,12 +114,7 @@ describe('full hand tally data entry', () => {
       apiCalls.getResults(fullHandTallyBatchResultMock.empty),
     ]
     await withMockFetch(expectedCalls, async () => {
-      const { container } = renderWithRouter(
-        <FullHandTallyDataEntry round={roundMocks.fullHandTallyIncomplete} />,
-        {
-          route: '/election/1/jurisdiction/1',
-        }
-      )
+      const { container } = renderComponent()
       await screen.findByText('No batches added. Add your first batch below.')
       const addButton = screen.getByRole('button', { name: /Add batch/ })
       userEvent.click(addButton)
@@ -142,12 +144,7 @@ describe('full hand tally data entry', () => {
       apiCalls.getResults(fullHandTallyBatchResultMock.complete),
     ]
     await withMockFetch(expectedCalls, async () => {
-      const { container } = renderWithRouter(
-        <FullHandTallyDataEntry round={roundMocks.fullHandTallyIncomplete} />,
-        {
-          route: '/election/1/jurisdiction/1',
-        }
-      )
+      const { container } = renderComponent()
       await screen.findByText('No batches added. Add your first batch below.')
       const addButton = screen.getByRole('button', { name: /Add batch/ })
       userEvent.click(addButton)
@@ -187,12 +184,7 @@ describe('full hand tally data entry', () => {
       apiCalls.getResults(fullHandTallyBatchResultMock.complete),
     ]
     await withMockFetch(expectedCalls, async () => {
-      const { container } = renderWithRouter(
-        <FullHandTallyDataEntry round={roundMocks.fullHandTallyIncomplete} />,
-        {
-          route: '/election/1/jurisdiction/1',
-        }
-      )
+      const { container } = renderComponent()
       await screen.findByText('Batch1')
 
       expect(container).toMatchSnapshot()
@@ -207,12 +199,7 @@ describe('full hand tally data entry', () => {
       ),
     ]
     await withMockFetch(expectedCalls, async () => {
-      const { container } = renderWithRouter(
-        <FullHandTallyDataEntry round={roundMocks.fullHandTallyIncomplete} />,
-        {
-          route: '/election/1/jurisdiction/1',
-        }
-      )
+      const { container } = renderComponent()
       await screen.findByText('Batch1')
 
       const totalRow = screen
@@ -234,12 +221,7 @@ describe('full hand tally data entry', () => {
       apiCalls.getResults(fullHandTallyBatchResultMock.updated),
     ]
     await withMockFetch(expectedCalls, async () => {
-      const { container } = renderWithRouter(
-        <FullHandTallyDataEntry round={roundMocks.fullHandTallyIncomplete} />,
-        {
-          route: '/election/1/jurisdiction/1',
-        }
-      )
+      const { container } = renderComponent()
 
       await screen.findByText('Batch1')
       userEvent.click(screen.getByText(/Edit/))
@@ -271,12 +253,7 @@ describe('full hand tally data entry', () => {
       apiCalls.getResults(fullHandTallyBatchResultMock.empty),
     ]
     await withMockFetch(expectedCalls, async () => {
-      const { container } = renderWithRouter(
-        <FullHandTallyDataEntry round={roundMocks.fullHandTallyIncomplete} />,
-        {
-          route: '/election/1/jurisdiction/1',
-        }
-      )
+      const { container } = renderComponent()
 
       await screen.findByText('Batch1')
       userEvent.click(screen.getByText(/Edit/))
@@ -305,12 +282,7 @@ describe('full hand tally data entry', () => {
       apiCalls.getResults(fullHandTallyBatchResultMock.finalized),
     ]
     await withMockFetch(expectedCalls, async () => {
-      const { container } = renderWithRouter(
-        <FullHandTallyDataEntry round={roundMocks.fullHandTallyIncomplete} />,
-        {
-          route: '/election/1/jurisdiction/1',
-        }
-      )
+      const { container } = renderComponent()
       await screen.findByText('Batch1')
 
       fireEvent.click(screen.getByRole('button', { name: 'Finalize Results' }))

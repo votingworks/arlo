@@ -22,19 +22,19 @@ const DownloadBatchTallySheetsButton = ({
   roundId,
 }: IProps): JSX.Element | null => {
   const batchesQuery = useBatches(electionId, jurisdictionId, roundId)
-  const contests = useContestsJurisdictionAdmin(electionId, jurisdictionId)
+  const contestsQuery = useContestsJurisdictionAdmin(electionId, jurisdictionId)
 
   const onClick = async () => {
     // Wait for the batches/contests to load in case they haven't yet.
-    while (!batchesQuery.isSuccess || contests === null) {
-      if (batchesQuery.isError) return
+    while (!batchesQuery.isSuccess || !contestsQuery.isSuccess) {
+      if (batchesQuery.isError || contestsQuery.isError) return
       // eslint-disable-next-line no-await-in-loop
       await sleep(100)
     }
 
     const { batches } = batchesQuery.data
     // Batch comparison audits only support a single contest
-    const contest = contests[0]
+    const [contest] = contestsQuery.data
 
     try {
       await downloadBatchTallySheets(batches, contest.choices, jurisdictionName)

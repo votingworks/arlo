@@ -32,14 +32,15 @@ const RoundDataEntry: React.FC<IProps> = ({ round }) => {
     electionId: string
     jurisdictionId: string
   }>()
-  const contests = useContestsJurisdictionAdmin(electionId, jurisdictionId)
+  const contestsQuery = useContestsJurisdictionAdmin(electionId, jurisdictionId)
   const [results, updateResults] = useResults(
     electionId,
     jurisdictionId,
     round.id
   )
 
-  if (!results || !contests) return null
+  if (!results || !contestsQuery.isSuccess) return null
+  const contests = contestsQuery.data
 
   const alreadySubmittedResults = Object.values(results).some(a =>
     Object.values(a).some(b => b)
