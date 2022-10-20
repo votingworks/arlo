@@ -769,7 +769,10 @@ def test_tally_entry_invalid_passphrase(
     # As an un-logged-in user, visit an incorrect login link
     login_link = "/tallyentry/invalid-passphrase"
     rv = tally_entry_client.get(login_link)
-    assert rv.status_code == 404
+    assert rv.status_code == 302
+    location = urlparse(rv.location)
+    assert location.path == "/tally-entry"
+    assert location.query == "error=login_link_not_found&message=Login+link+not+found."
 
 
 def test_tally_entry_invalid_members(
