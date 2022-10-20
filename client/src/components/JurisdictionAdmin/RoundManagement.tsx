@@ -21,7 +21,6 @@ import { IAuditSettings } from '../useAuditSettings'
 import AsyncButton from '../Atoms/AsyncButton'
 import useSampleCount from './useBallots'
 import FullHandTallyDataEntry from './FullHandTallyDataEntry'
-import DownloadBatchTallySheetsButton from './DownloadBatchTallySheetsButton'
 import BatchRoundSteps from './BatchRoundSteps/BatchRoundSteps'
 
 const PaddedWrapper = styled(Wrapper)`

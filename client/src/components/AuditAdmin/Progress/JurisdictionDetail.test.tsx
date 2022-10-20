@@ -21,7 +21,6 @@ import {
   manifestFile,
   cvrsFile,
   talliesFile,
-  contestMocks,
 } from '../useSetupMenuItems/_mocks'
 import { aaApiCalls, jaApiCalls } from '../../_mocks'
 import { withMockFetch } from '../../testUtilities'

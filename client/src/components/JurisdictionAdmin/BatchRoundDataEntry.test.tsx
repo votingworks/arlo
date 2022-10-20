@@ -2,7 +2,6 @@ import React from 'react'
 import { render, screen, within, waitFor } from '@testing-library/react'
 import { QueryClientProvider } from 'react-query'
 import userEvent from '@testing-library/user-event'
-import copy from 'copy-to-clipboard'
 import { ToastContainer } from 'react-toastify'
 import BatchRoundDataEntry from './BatchRoundDataEntry'
 import { batchesMocks } from './_mocks'
@@ -11,8 +10,6 @@ import { IContest } from '../../types'
 import { withMockFetch, findAndCloseToast, serverError } from '../testUtilities'
 import { queryClient } from '../../App'
 import { contestMocks } from '../AuditAdmin/useSetupMenuItems/_mocks'
-
-jest.mock('copy-to-clipboard', () => jest.fn(() => true))
 
 const apiCalls = {
   getJAContests: (response: { contests: IContest[] }) => ({
