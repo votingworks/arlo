@@ -7,8 +7,8 @@ from flask.testing import FlaskClient
 from werkzeug.wrappers import Response
 from sqlalchemy.exc import IntegrityError
 
-from ..auth.lib import UserType
-from ..auth import lib as auth_lib
+from ..auth.auth_helpers import UserType
+from ..auth import auth_helpers
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
 from ..api.audit_boards import end_round
@@ -56,22 +56,22 @@ def set_logged_in_user(
     from_support_user=False,
 ):
     with client.session_transaction() as session:  # type: ignore
-        auth_lib.set_loggedin_user(session, user_type, user_key, from_support_user)
+        auth_helpers.set_loggedin_user(session, user_type, user_key, from_support_user)
 
 
 def clear_logged_in_user(client: FlaskClient):
     with client.session_transaction() as session:  # type: ignore
-        auth_lib.clear_loggedin_user(session)
+        auth_helpers.clear_loggedin_user(session)
 
 
 def set_support_user(client: FlaskClient, email: str):
     with client.session_transaction() as session:  # type: ignore
-        auth_lib.set_support_user(session, email)
+        auth_helpers.set_support_user(session, email)
 
 
 def clear_support_user(client: FlaskClient):
     with client.session_transaction() as session:  # type: ignore
-        auth_lib.clear_support_user(session)
+        auth_helpers.clear_support_user(session)
 
 
 def create_user(email=DEFAULT_AA_EMAIL) -> User:

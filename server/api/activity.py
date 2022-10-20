@@ -3,7 +3,7 @@ from flask.json import jsonify
 from werkzeug.exceptions import Forbidden
 
 from ..models import *  # pylint: disable=wildcard-import
-from ..auth.lib import UserType, get_loggedin_user
+from ..auth.auth_helpers import UserType, get_loggedin_user
 from . import api
 from ..util.isoformat import isoformat
 

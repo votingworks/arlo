@@ -17,7 +17,7 @@ from server.util.redirect import redirect
 from . import auth
 from ..models import *  # pylint: disable=wildcard-import
 from ..database import db_session
-from .lib import (
+from .auth_helpers import (
     get_loggedin_user,
     restrict_access,
     set_loggedin_user,
@@ -448,7 +448,6 @@ def tally_entry_jurisdiction_status(
         loginRequests=[
             dict(
                 tallyEntryUserId=tally_entry_user.id,
-                createdAt=tally_entry_user.created_at.isoformat(),
                 members=serialize_members(tally_entry_user),
                 loginConfirmedAt=isoformat(tally_entry_user.login_confirmed_at),
             )
@@ -471,7 +470,7 @@ def tally_entry_jurisdiction_confirm_login_code(
         raise BadRequest("Tally entry user not found.")
 
     if body.get("loginCode") != tally_entry_user.login_code:
-        raise BadRequest("Invalid code.")
+        raise BadRequest("Invalid code, please try again.")
 
     tally_entry_user.login_confirmed_at = datetime.now(timezone.utc)
 

@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 from ..models import ActivityLogRecord, Election
 from ..database import db_session
-from ..auth.lib import get_loggedin_user, get_support_user
+from ..auth.auth_helpers import get_loggedin_user, get_support_user
 
 
 @dataclass

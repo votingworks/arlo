@@ -9,7 +9,7 @@ import pytest
 from flask.testing import FlaskClient
 
 from ..auth import UserType
-from ..auth.routes import auth0_sa, auth0_aa
+from ..auth.auth_routes import auth0_sa, auth0_aa
 from ..models import *  # pylint: disable=wildcard-import
 from ..util.jsonschema import JSONDict
 from .helpers import *  # pylint: disable=wildcard-import
@@ -643,7 +643,6 @@ def test_tally_entry_login(
             loginRequests=[
                 dict(
                     tallyEntryUserId=tally_entry_user_id,
-                    createdAt=assert_is_date,
                     members=members,
                     loginConfirmedAt=None,
                 )
@@ -892,7 +891,9 @@ def test_tally_entry_invalid_code(
     )
     assert rv.status_code == 400
     assert json.loads(rv.data) == {
-        "errors": [{"errorType": "Bad Request", "message": "Invalid code."}]
+        "errors": [
+            {"errorType": "Bad Request", "message": "Invalid code, please try again."}
+        ]
     }
 
     # Try to log in with another user's code
@@ -910,7 +911,9 @@ def test_tally_entry_invalid_code(
     )
     assert rv.status_code == 400
     assert json.loads(rv.data) == {
-        "errors": [{"errorType": "Bad Request", "message": "Invalid code."}]
+        "errors": [
+            {"errorType": "Bad Request", "message": "Invalid code, please try again."}
+        ]
     }
 
     # Try to log in with an invalid user id
