@@ -66,30 +66,11 @@ describe('BatchRoundSteps', () => {
 
   it('navigates between steps using buttons or links', async () => {
     const expectedCalls = [
-      // Continue buttons
       jaApiCalls.getBatches(batchesMocks.emptyInitial),
       jaApiCalls.getJurisdictionContests(contestMocks.oneTargeted),
       jaApiCalls.getTallyEntryAccountStatus(
         tallyEntryAccountStatusMocks.turnedOff
       ),
-      jaApiCalls.getJurisdictionContests(contestMocks.oneTargeted),
-      jaApiCalls.getBatches(batchesMocks.emptyInitial),
-
-      // Back buttons
-      jaApiCalls.getTallyEntryAccountStatus(
-        tallyEntryAccountStatusMocks.turnedOff
-      ),
-      jaApiCalls.getBatches(batchesMocks.emptyInitial),
-      jaApiCalls.getJurisdictionContests(contestMocks.oneTargeted),
-
-      // Step title links
-      jaApiCalls.getJurisdictionContests(contestMocks.oneTargeted),
-      jaApiCalls.getBatches(batchesMocks.emptyInitial),
-      jaApiCalls.getTallyEntryAccountStatus(
-        tallyEntryAccountStatusMocks.turnedOff
-      ),
-      jaApiCalls.getBatches(batchesMocks.emptyInitial),
-      jaApiCalls.getJurisdictionContests(contestMocks.oneTargeted),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderComponent()
@@ -399,7 +380,6 @@ describe('BatchRoundSteps', () => {
     const expectedCalls = [
       jaApiCalls.getBatches(batchesMocks.emptyInitial),
       jaApiCalls.getJurisdictionContests(contestMocks.oneTargeted),
-      jaApiCalls.getBatches(batchesMocks.emptyInitial),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderComponent('/enter-tallies')
@@ -431,10 +411,6 @@ describe('BatchRoundSteps', () => {
         resultsFinalizedAt: null,
       }),
       jaApiCalls.getJurisdictionContests(contestMocks.oneTargeted),
-      jaApiCalls.getBatches({
-        ...batchesMocks.complete,
-        resultsFinalizedAt: null,
-      }),
       jaApiCalls.finalizeBatchResults,
       jaApiCalls.getBatches(batchesMocks.complete),
     ]
@@ -470,10 +446,6 @@ describe('BatchRoundSteps', () => {
         resultsFinalizedAt: null,
       }),
       jaApiCalls.getJurisdictionContests(contestMocks.oneTargeted),
-      jaApiCalls.getBatches({
-        ...batchesMocks.complete,
-        resultsFinalizedAt: null,
-      }),
       serverError('finalizeBatchResults', jaApiCalls.finalizeBatchResults),
     ]
     await withMockFetch(expectedCalls, async () => {

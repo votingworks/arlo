@@ -409,18 +409,21 @@ const WideField = styled(FormField)`
 
 const CreateAudit = ({ organizations }: { organizations: IOrganization[] }) => {
   const history = useHistory()
+  const queryClient = useQueryClient()
   const createElection = useMutation<
     { electionId: string },
     unknown,
     INewAudit
-  >((newAudit: INewAudit) =>
-    fetchApi('/api/election', {
-      method: 'POST',
-      body: JSON.stringify(newAudit),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
+  >(
+    (newAudit: INewAudit) =>
+      fetchApi('/api/election', {
+        method: 'POST',
+        body: JSON.stringify(newAudit),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }),
+    { onSuccess: () => queryClient.invalidateQueries('orgs') }
   )
 
   const onSubmit = async (newAudit: INewAudit) => {
