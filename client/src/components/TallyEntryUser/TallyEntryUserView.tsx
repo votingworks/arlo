@@ -1,10 +1,46 @@
 import React from 'react'
-import { Redirect } from 'react-router-dom'
+import { H1, Icon, Classes } from '@blueprintjs/core'
+import { useLocation, Redirect } from 'react-router-dom'
 import useCurrentUser from './useCurrentUser'
 import TallyEntryLoginScreen from './TallyEntryLoginScreen'
 import TallyEntryScreen from './TallyEntryScreen'
 import { IUser } from '../UserContext'
 import { HeaderTallyEntry } from '../Header'
+import { Inner } from '../Atoms/Wrapper'
+import { Column } from '../Atoms/Layout'
+
+const TallyEntryNotLoggedInScreen: React.FC = () => {
+  // Support an 'error' query parameter.
+  // We use this to communicate authentication errors to the user.
+  const query = new URLSearchParams(useLocation().search)
+  const { headline, details } = (() => {
+    if (query.get('error') === 'login_link_not_found') {
+      return {
+        headline: 'We couldn’t find the login link you entered',
+        details:
+          'Did you make a typo? Please try entering your login link again.',
+      }
+    }
+    return {
+      headline: 'You’re logged out',
+      details: 'To log in, enter your login link in the URL bar.',
+    }
+  })()
+
+  return (
+    <>
+      <Inner flexDirection="column">
+        <Column alignItems="center" gap="30px" style={{ marginTop: '100px' }}>
+          <Icon icon="warning-sign" intent="warning" iconSize={100} />
+          <Column alignItems="center" gap="10px">
+            <H1>{headline}</H1>
+            <p className={Classes.TEXT_LARGE}>{details}</p>
+          </Column>
+        </Column>
+      </Inner>
+    </>
+  )
+}
 
 const TallyEntryUserView: React.FC = () => {
   const userQuery = useCurrentUser({
@@ -20,8 +56,10 @@ const TallyEntryUserView: React.FC = () => {
   if (!userQuery.isSuccess) return null // Still loading
 
   const user = userQuery.data
-  if (user?.type !== 'tally_entry') {
-    // TODO figure out when this would happen and handle this case better
+  if (!user) {
+    return <TallyEntryNotLoggedInScreen />
+  }
+  if (user.type !== 'tally_entry') {
     return <Redirect to="/" />
   }
 

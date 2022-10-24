@@ -236,12 +236,11 @@ describe('App', () => {
       })
     })
 
-    it('redirects to login screen when unauthenticated', async () => {
+    it('shows an error message when unauthenticated', async () => {
       const expectedCalls = [apiMocks.failedAuth, apiMocks.failedAuth]
       await withMockFetch(expectedCalls, async () => {
-        const { history } = renderView('/tally-entry')
-        await screen.findByRole('button', { name: 'Log in to your audit' })
-        expect(history.location.pathname).toEqual('/')
+        renderView('/tally-entry')
+        await screen.findByRole('heading', { name: 'You’re logged out' })
       })
     })
 

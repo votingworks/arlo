@@ -12,8 +12,6 @@ from werkzeug.exceptions import BadRequest, Conflict
 from xkcdpass import xkcd_password as xp
 from server.api.rounds import get_current_round
 
-from server.util.redirect import redirect
-
 from . import auth
 from ..models import *  # pylint: disable=wildcard-import
 from ..database import db_session
@@ -30,6 +28,7 @@ from .auth_helpers import (
 from ..api.audit_boards import WORDS, serialize_members, validate_members
 from ..activity_log import JurisdictionAdminLogin, record_activity, ActivityBase
 from ..util.isoformat import isoformat
+from ..util.redirect import redirect
 from ..config import (
     SMTP_HOST,
     SMTP_PASSWORD,
@@ -349,9 +348,8 @@ def tally_entry_passphrase(passphrase: str):
     jurisdiction = Jurisdiction.query.filter_by(
         tally_entry_passphrase=passphrase
     ).one_or_none()
-    # TODO redirect to a nice error screen that explains they probably made a typo
     if jurisdiction is None:
-        raise NotFound()
+        return redirect("/tally-entry?" + urlencode({"error": "login_link_not_found"}))
 
     tally_entry_user = TallyEntryUser(
         id=str(uuid.uuid4()), jurisdiction_id=jurisdiction.id,
