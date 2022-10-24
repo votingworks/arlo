@@ -1,544 +1,644 @@
-/* eslint-disable jsx-a11y/no-autofocus */
-import React, { useState } from 'react'
+import classnames from 'classnames'
+import React, { BaseSyntheticEvent, useEffect, useState } from 'react'
+import styled from 'styled-components'
 import {
-  HTMLTable,
-  Colors,
+  ArrayField,
+  SubmitErrorHandler,
+  SubmitHandler,
+  useFieldArray,
+  useForm,
+  UseFormMethods,
+} from 'react-hook-form'
+import {
   Button,
   Classes,
-  Callout,
-  Dialog,
-  ButtonGroup,
-  Popover,
-  Menu,
-  MenuItem,
+  Colors,
+  H4,
+  HTMLTable,
+  Tab,
+  Tabs,
 } from '@blueprintjs/core'
-import { useForm, useFieldArray } from 'react-hook-form'
-import styled, { css } from 'styled-components'
+import { ErrorMessage } from '@hookform/error-message'
+
 import useContestsJurisdictionAdmin from './useContestsJurisdictionAdmin'
+import { Confirm, useConfirm } from '../Atoms/Confirm'
+import { Detail, List, ListAndDetail, ListItem } from '../Atoms/ListAndDetail'
 import {
-  useBatches,
   IBatch,
-  useRecordBatchResults,
-  IBatchResults,
   IBatchResultTallySheet,
+  useBatches,
+  useRecordBatchResults,
 } from './useBatchResults'
-import { sum } from '../../utils/number'
 import { IContest } from '../../types'
+import { sum } from '../../utils/number'
+import { useDebounce } from '../../utils/debounce'
 
-const ResultsTable = styled(HTMLTable).attrs({
-  striped: true,
+const HIDDEN_INPUT_CLASS_NAME = 'hidden-input'
+
+const BatchResultTallySheetTable = styled(HTMLTable).attrs({
   bordered: true,
+  striped: true,
 })`
-  position: relative;
-  border: 1px solid ${Colors.LIGHT_GRAY1};
-  width: 100%;
-  table-layout: fixed;
-  border-collapse: separate;
-
-  thead {
-    position: sticky;
-    top: 0;
-    z-index: 10; /* Above BlueprintJS button z-indexes */
-    box-shadow: 0 1px 0 ${Colors.GRAY4};
-    background: ${Colors.WHITE};
+  &.${Classes.HTML_TABLE} {
+    border: 1px solid ${Colors.LIGHT_GRAY1};
+    table-layout: fixed;
+    width: 100%;
   }
 
-  thead tr th {
-    overflow-x: hidden;
-    vertical-align: bottom;
+  &.${Classes.HTML_TABLE} tbody tr {
+    height: 56px;
   }
 
-  tr td {
+  &.${Classes.HTML_TABLE} td {
     vertical-align: middle;
   }
 
-  /* Exclude edit buttons from copy/paste */
-  th:last-child,
-  td:last-child {
-    -moz-user-select: none; /* stylelint-disable-line property-no-vendor-prefix */
-    -webkit-user-select: none; /* stylelint-disable-line property-no-vendor-prefix */
-    user-select: none;
+  .${Classes.INPUT}.${HIDDEN_INPUT_CLASS_NAME} {
+    display: none;
   }
 `
 
-const TallySheetsTable = styled(HTMLTable).attrs({
-  striped: true,
-  bordered: true,
+const Actions = styled('div')`
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+
+  .${Classes.INPUT}.${HIDDEN_INPUT_CLASS_NAME} {
+    display: none;
+  }
+`
+
+const SheetActions = styled('div')`
+  align-items: center;
+  display: flex;
+`
+
+const ConfirmSheetRenameButton = styled(Button)`
+  margin-left: 8px;
+`
+
+const SheetRenameErrorMessage = styled('span').attrs({
+  className: Classes.TEXT_SMALL,
 })`
-  border: 1px solid ${Colors.LIGHT_GRAY1};
-  table-layout: fixed;
-  border-collapse: separate;
-
-  thead {
-    box-shadow: 0 1px 0 ${Colors.GRAY4};
-    background: ${Colors.WHITE};
-  }
+  color: ${Colors.RED2};
+  margin-left: 8px;
 `
 
-const ChoiceTD = styled.td`
-  width: 100px;
-  vertical-align: middle;
+const Spacer = styled('div')`
+  flex-grow: 1;
 `
 
-const totalsStyle = css`
-  &&& {
-    color: ${Colors.BLUE3};
-    font-weight: 600;
-  }
-`
-
-const TotalsTD = styled.td`
-  ${totalsStyle} /* stylelint-disable-line value-keyword-case */
-`
-const TotalsTH = styled.th`
-  ${totalsStyle} /* stylelint-disable-line value-keyword-case */
-`
-
-const BatchResultsForm = ({
-  electionId,
-  jurisdictionId,
-  roundId,
-  contest,
-  batch,
-  closeForm,
-}: {
-  electionId: string
-  jurisdictionId: string
-  roundId: string
-  contest: IContest
-  batch: IBatch
-  closeForm: () => void
-}) => {
-  const recordBatchResults = useRecordBatchResults(
-    electionId,
-    jurisdictionId,
-    roundId
-  )
-  const { register, handleSubmit, watch, formState, errors } = useForm<
-    IBatchResults
-  >({
-    defaultValues:
-      batch.resultTallySheets.length === 1
-        ? batch.resultTallySheets[0].results
-        : undefined,
-  })
-
-  const onSubmit = async (results: IBatchResults) => {
-    const tallySheet = {
-      name: 'Tally Sheet #1',
-      results,
-    }
-    try {
-      await recordBatchResults.mutateAsync({
-        batchId: batch.id,
-        resultTallySheets: [tallySheet],
-      })
-      closeForm()
-    } catch (e) {
-      // Do nothing - errors toasted by queryClient
-    }
-  }
-
-  return (
-    <tr key={batch.id}>
-      <td>{batch.name}</td>
-      {contest.choices.map((choice, i) => (
-        <ChoiceTD key={`${batch.name}-${choice.id}`}>
-          <input
-            className={Classes.INPUT}
-            type="number"
-            name={choice.id}
-            ref={register({
-              valueAsNumber: true,
-              min: 0,
-              required: true,
-            })}
-            style={{
-              width: '100%',
-              border: errors[choice.id] ? '1px solid red' : 'inherit',
-            }}
-            autoFocus={i === 0}
-            aria-label={choice.name}
-          />
-        </ChoiceTD>
-      ))}
-      <TotalsTD>
-        {sum(Object.values(watch()).filter(n => n)).toLocaleString()}
-      </TotalsTD>
-      <td style={{ paddingRight: 0 }}>
-        <Button
-          intent="primary"
-          icon="tick"
-          onClick={handleSubmit(onSubmit)}
-          loading={formState.isSubmitting}
-        >
-          Save
-        </Button>
-        <Button
-          small
-          minimal
-          style={{ marginLeft: '5px' }}
-          icon="cross"
-          onClick={closeForm}
-          disabled={formState.isSubmitting}
-          aria-label="Cancel"
-        />
-      </td>
-    </tr>
-  )
+interface IBatchRoundDataEntryFormState {
+  resultTallySheets: IBatchResultTallySheet[]
 }
 
-const emptyTallySheet = (index: number) => ({
-  name: `Tally Sheet #${index}`,
-  results: {},
-})
+const VOTE_TOTALS_TAB_ID = 'vote-totals'
 
-const BatchTallySheetsModal = ({
-  electionId,
-  jurisdictionId,
-  roundId,
-  contest,
-  batch,
-  closeModal,
-}: {
+function defaultResultTallySheetName(index: number) {
+  return `Sheet ${index + 1}`
+}
+
+function constructEmptyResultTallySheet(index: number): IBatchResultTallySheet {
+  return {
+    name: defaultResultTallySheetName(index),
+    results: {},
+  }
+}
+
+interface IProps {
   electionId: string
   jurisdictionId: string
   roundId: string
-  contest: IContest
-  batch: IBatch
-  closeModal: () => void
+}
+
+const BatchRoundDataEntry: React.FC<IProps> = ({
+  electionId,
+  jurisdictionId,
+  roundId,
 }) => {
+  const batchesQuery = useBatches(electionId, jurisdictionId, roundId)
+  const contestsQuery = useContestsJurisdictionAdmin(electionId, jurisdictionId)
   const recordBatchResults = useRecordBatchResults(
     electionId,
     jurisdictionId,
     roundId
   )
-  const initialTallySheets =
-    batch.resultTallySheets.length > 1
-      ? batch.resultTallySheets
-      : batch.resultTallySheets.concat([
-          emptyTallySheet(batch.resultTallySheets.length + 1),
-        ])
-  const { register, control, handleSubmit, formState, errors } = useForm<{
-    resultTallySheets: IBatchResultTallySheet[]
-  }>({
-    defaultValues: { resultTallySheets: initialTallySheets },
+  const { confirm, confirmProps } = useConfirm()
+
+  const [searchQuery, setSearchQuery] = useState('')
+  const [selectedBatchId, setSelectedBatchId] = useState<IBatch['id']>()
+  const [selectedTabId, setSelectedTabId] = useState('')
+  const [isEditing, setIsEditing] = useState(false)
+  const [isRenamingSheet, setIsRenamingSheet] = useState(false)
+  const [sheetNameBeforeRename, setSheetNameBeforeRename] = useState<{
+    index: number
+    name: string
+  }>()
+
+  const batches = batchesQuery.isSuccess ? batchesQuery.data.batches : []
+  const filteredBatches = batches.filter(batch =>
+    batch.name.toLowerCase().includes(searchQuery.toLowerCase())
+  )
+  const selectedBatch = batches.find(batch => batch.id === selectedBatchId)
+
+  const initialResultTallySheets = selectedBatch?.resultTallySheets.length
+    ? selectedBatch.resultTallySheets
+    : [constructEmptyResultTallySheet(0)]
+  const formMethods = useForm<IBatchRoundDataEntryFormState>({
+    defaultValues: {
+      resultTallySheets: initialResultTallySheets,
+    },
   })
-  const { fields, append, remove } = useFieldArray({
+  const {
+    control,
+    formState,
+    getValues,
+    handleSubmit,
+    reset,
+    setValue,
+    watch,
+  } = formMethods
+  const {
+    append: appendSheet,
+    fields: sheets,
+    remove: removeSheet,
+  } = useFieldArray<IBatchResultTallySheet>({
     control,
     name: 'resultTallySheets',
   })
 
-  const onSubmit = async ({
-    resultTallySheets,
-  }: {
-    resultTallySheets: IBatchResultTallySheet[]
-  }) => {
-    try {
-      await recordBatchResults.mutateAsync({
-        batchId: batch.id,
-        resultTallySheets,
+  // Reset state whenever a new batch is selected
+  useEffect(() => {
+    reset({ resultTallySheets: initialResultTallySheets })
+    setSelectedTabId(VOTE_TOTALS_TAB_ID)
+    setIsEditing(false)
+  }, [selectedBatchId])
+
+  // Auto-select first search match
+  const [debouncedSearchQuery] = useDebounce(searchQuery)
+  useEffect(() => {
+    if (
+      debouncedSearchQuery &&
+      filteredBatches.length > 0 &&
+      !formState.isDirty
+    ) {
+      setSelectedBatchId(filteredBatches[0].id)
+    }
+  }, [debouncedSearchQuery])
+
+  if (!batchesQuery.isSuccess || !contestsQuery.isSuccess) {
+    return null
+  }
+
+  const areResultsFinalized = Boolean(batchesQuery.data.resultsFinalizedAt)
+  // Batch comparison audits only support a single contest
+  const [contest] = contestsQuery.data
+
+  // ---------- Handlers (START) ----------
+
+  const selectBatch = (batchId: string) => {
+    if (formState.isDirty) {
+      confirm({
+        title: 'Unsaved Changes',
+        description:
+          'You have unsaved changes. ' +
+          'Are you sure you want to leave this batch without saving changes?',
+        yesButtonLabel: 'Yes, Leave Batch without Saving',
+        onYesClick: () => {
+          setSelectedBatchId(batchId)
+        },
+        noButtonLabel: 'Return to Batch',
       })
-      closeModal()
-    } catch (error) {
-      // Do nothing - errors toasted by queryClient
+      return
+    }
+    setSelectedBatchId(batchId)
+  }
+
+  const enableEditing = () => {
+    setIsEditing(true)
+
+    // Open the first editable sheet if not already on an editable sheet
+    if (sheets.length > 1 && selectedTabId === VOTE_TOTALS_TAB_ID) {
+      setSelectedTabId(getValues(`resultTallySheets[0].name`))
     }
   }
 
+  const onValidSubmit: SubmitHandler<IBatchRoundDataEntryFormState> = async ({
+    resultTallySheets,
+  }) => {
+    if (!selectedBatch) {
+      return
+    }
+    try {
+      setSelectedTabId(VOTE_TOTALS_TAB_ID)
+      await recordBatchResults.mutateAsync({
+        batchId: selectedBatch.id,
+        resultTallySheets,
+      })
+      // Reset the form's isDirty value back to false
+      reset({ resultTallySheets })
+    } catch {
+      // Errors are automatically toasted by the queryClient
+      setIsEditing(true)
+    }
+  }
+
+  const onInvalidSubmit: SubmitErrorHandler<IBatchRoundDataEntryFormState> = errors => {
+    // Open the first sheet with a validation error
+    if (sheets.length > 1) {
+      const index = (errors.resultTallySheets || []).findIndex(Boolean)
+      if (index !== -1) {
+        setSelectedTabId(getValues(`resultTallySheets[${index}].name`))
+      }
+    }
+
+    setIsEditing(true)
+  }
+
+  const initiateSheetRename = (index: number) => {
+    setIsRenamingSheet(true)
+    setSheetNameBeforeRename({
+      index,
+      name: getValues(`resultTallySheets[${index}].name`),
+    })
+  }
+
+  const confirmSheetRename = () => {
+    setIsRenamingSheet(false)
+    setSheetNameBeforeRename(undefined)
+  }
+
+  const cancelSheetRename = () => {
+    setIsRenamingSheet(false)
+    if (sheetNameBeforeRename) {
+      const { index, name } = sheetNameBeforeRename
+      setValue(`resultTallySheets[${index}].name`, name)
+      setSheetNameBeforeRename(undefined)
+    }
+  }
+
+  const addSheet = () => {
+    let newSheetName = defaultResultTallySheetName(sheets.length)
+    function doesNewSheetNameConflict() {
+      return sheets.some(
+        (_, i) => getValues(`resultTallySheets[${i}].name`) === newSheetName
+      )
+    }
+
+    let incrementToAvoidConflict = 0
+    while (doesNewSheetNameConflict()) {
+      incrementToAvoidConflict += 1
+      newSheetName = defaultResultTallySheetName(
+        sheets.length + incrementToAvoidConflict
+      )
+    }
+
+    appendSheet({
+      name: newSheetName,
+      results: {},
+    })
+    setSelectedTabId(newSheetName)
+  }
+
+  const deleteSheet = (index: number) => {
+    const numSheetsAfterDeletion = sheets.length - 1
+
+    if (numSheetsAfterDeletion === 1 || index === 0) {
+      setSelectedTabId(VOTE_TOTALS_TAB_ID)
+    } else {
+      // Open the sheet before the to-be-deleted sheet
+      setSelectedTabId(
+        getValues(`resultTallySheets[${Math.max(index - 1, 0)}].name`)
+      )
+    }
+
+    // If we drop back down to 1 sheet, rename that sheet "Sheet 1" under the hood
+    if (numSheetsAfterDeletion === 1) {
+      const remainingIndex = index === 1 ? 0 : 1
+      setValue(`resultTallySheets[${remainingIndex}].name`, 'Sheet 1')
+    }
+
+    removeSheet(index)
+  }
+
+  const saveResults = (e: BaseSyntheticEvent) => {
+    cancelSheetRename()
+    setIsEditing(false)
+    handleSubmit(onValidSubmit, onInvalidSubmit)(e)
+  }
+
+  // ---------- Handlers (END) ----------
+
   return (
-    <Dialog
-      icon="edit"
-      title={`Edit Tally Sheets for Batch: ${batch.name}`}
-      onClose={closeModal}
-      isOpen
-      style={{ width: 'unset', maxWidth: '960px' }}
-    >
-      <div className={Classes.DIALOG_BODY}>
-        <TallySheetsTable>
-          <thead>
-            <tr>
-              <th>Tally Sheet Label</th>
-              {contest.choices.map(choice => (
-                <th key={choice.id}>{choice.name}</th>
-              ))}
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {fields.map((tallySheet, index) => (
-              <tr key={tallySheet.id}>
-                <ChoiceTD key="tally-sheet-label">
-                  <input
-                    className={Classes.INPUT}
-                    name={`resultTallySheets[${index}].name`}
-                    type="text"
-                    ref={register({ required: true })}
-                    defaultValue={tallySheet.name}
-                    style={{
-                      border:
-                        errors.resultTallySheets &&
-                        errors.resultTallySheets[index] &&
-                        errors.resultTallySheets[index]!.name
-                          ? '1px solid red'
-                          : 'inherit',
-                    }}
-                    aria-label="Tally Sheet Label"
-                  />
-                </ChoiceTD>
-                {contest.choices.map(choice => (
-                  <ChoiceTD key={choice.id}>
-                    <input
-                      className={Classes.INPUT}
-                      type="number"
-                      name={`resultTallySheets[${index}].results[${choice.id}]`}
-                      ref={register({
-                        valueAsNumber: true,
-                        min: 0,
-                        required: true,
-                      })}
-                      defaultValue={tallySheet.results[choice.id]}
-                      style={{
-                        border:
-                          errors.resultTallySheets &&
-                          errors.resultTallySheets[index] &&
-                          errors.resultTallySheets[index]!.results &&
-                          errors.resultTallySheets[index]!.results![choice.id]
-                            ? '1px solid red'
-                            : 'inherit',
-                      }}
-                      aria-label={choice.name}
-                    />
-                  </ChoiceTD>
-                ))}
-                <td>
-                  <Button
-                    onClick={() => remove(index)}
-                    icon="trash"
-                    disabled={fields.length === 1}
-                  >
-                    Delete
-                  </Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </TallySheetsTable>
-      </div>
-      <div className={Classes.DIALOG_FOOTER}>
-        <div
-          className={Classes.DIALOG_FOOTER_ACTIONS}
-          style={{ justifyContent: 'space-between' }}
-        >
-          <Button
-            onClick={() => append(emptyTallySheet(fields.length + 1))}
-            icon="plus"
-            style={{ marginLeft: '0' }}
+    <ListAndDetail>
+      <List
+        search={{
+          placeholder: 'Search batches...',
+          setQuery: setSearchQuery,
+        }}
+      >
+        {filteredBatches.map(batch => (
+          <ListItem
+            key={batch.id}
+            onClick={() => selectBatch(batch.id)}
+            selected={batch.id === selectedBatchId}
           >
-            Add Tally Sheet
-          </Button>
-          <div>
-            <Button onClick={closeModal}>Cancel</Button>
-            <Button
-              intent="primary"
-              icon="tick"
-              onClick={handleSubmit(onSubmit)}
-              loading={formState.isSubmitting}
+            {batch.name}
+          </ListItem>
+        ))}
+      </List>
+
+      <Detail>
+        {!selectedBatch ? (
+          <p>Select a batch to enter audit results.</p>
+        ) : (
+          <>
+            <H4>{selectedBatch.name}</H4>
+            <Tabs
+              id={selectedBatch.name}
+              onChange={(newTabId: string) => {
+                cancelSheetRename()
+                setSelectedTabId(newTabId)
+              }}
+              // Defaults to false but noting explicitly for clarity. Rendering all tabs at all
+              // times is important for react-hook-form's state management
+              renderActiveTabPanelOnly={false}
+              selectedTabId={selectedTabId}
             >
-              Save Tally Sheets
-            </Button>
-          </div>
-        </div>
-      </div>
-    </Dialog>
+              <Tab
+                id={VOTE_TOTALS_TAB_ID}
+                key={VOTE_TOTALS_TAB_ID}
+                panel={
+                  <BatchResultTallySheet
+                    areResultsFinalized={areResultsFinalized}
+                    cancelSheetRename={cancelSheetRename}
+                    confirmSheetRename={confirmSheetRename}
+                    contest={contest}
+                    deleteSheet={() => deleteSheet(0)}
+                    enableEditing={enableEditing}
+                    formMethods={formMethods}
+                    index={0}
+                    initiateSheetRename={() => initiateSheetRename(0)}
+                    isEditing={isEditing}
+                    isRenamingSheet={isRenamingSheet}
+                    isTotalsSheet={sheets.length > 1}
+                    savedResults={
+                      selectedBatch.resultTallySheets[0]?.results || {}
+                    }
+                    saveResults={saveResults}
+                    sheets={sheets}
+                  />
+                }
+              >
+                Vote Totals
+              </Tab>
+              {sheets.length > 1 &&
+                sheets.map((sheet, i) => (
+                  <Tab
+                    id={sheet.name}
+                    key={sheet.id}
+                    panel={
+                      <BatchResultTallySheet
+                        areResultsFinalized={areResultsFinalized}
+                        cancelSheetRename={cancelSheetRename}
+                        confirmSheetRename={confirmSheetRename}
+                        contest={contest}
+                        deleteSheet={() => deleteSheet(i)}
+                        enableEditing={enableEditing}
+                        formMethods={formMethods}
+                        index={i}
+                        initiateSheetRename={() => initiateSheetRename(i)}
+                        isEditing={isEditing}
+                        isRenamingSheet={isRenamingSheet}
+                        savedResults={
+                          selectedBatch.resultTallySheets[i]?.results || {}
+                        }
+                        saveResults={saveResults}
+                        sheets={sheets}
+                      />
+                    }
+                  >
+                    {sheetNameBeforeRename && sheetNameBeforeRename.index === i
+                      ? sheetNameBeforeRename.name
+                      : watch(`resultTallySheets[${i}].name`)}
+                  </Tab>
+                ))}
+
+              <Tabs.Expander />
+
+              {isEditing && (
+                <Button
+                  disabled={isRenamingSheet}
+                  icon="add"
+                  minimal
+                  onClick={addSheet}
+                >
+                  {sheets.length > 1
+                    ? 'Add sheet'
+                    : 'Use multiple tally sheets'}
+                </Button>
+              )}
+            </Tabs>
+          </>
+        )}
+      </Detail>
+      <Confirm {...confirmProps} />
+    </ListAndDetail>
   )
 }
 
-interface IBatchRoundDataEntryProps {
-  electionId: string
-  jurisdictionId: string
-  roundId: string
+interface IBatchResultTallySheetProps {
+  areResultsFinalized: boolean
+  cancelSheetRename: () => void
+  confirmSheetRename: () => void
+  contest: IContest
+  deleteSheet: () => void
+  enableEditing: () => void
+  formMethods: UseFormMethods<IBatchRoundDataEntryFormState>
+  index: number
+  initiateSheetRename: () => void
+  isEditing: boolean
+  isRenamingSheet: boolean
+  isTotalsSheet?: boolean
+  savedResults: { [choiceId: string]: number }
+  saveResults: (e: BaseSyntheticEvent) => void
+  sheets: Partial<ArrayField<IBatchResultTallySheet, 'id'>>[]
 }
 
-const BatchRoundDataEntry: React.FC<IBatchRoundDataEntryProps> = ({
-  electionId,
-  jurisdictionId,
-  roundId,
+const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
+  areResultsFinalized,
+  cancelSheetRename,
+  confirmSheetRename,
+  contest,
+  deleteSheet,
+  enableEditing,
+  formMethods,
+  index,
+  initiateSheetRename,
+  isEditing,
+  isRenamingSheet,
+  isTotalsSheet,
+  savedResults,
+  saveResults,
+  sheets,
 }) => {
-  const contestsQuery = useContestsJurisdictionAdmin(electionId, jurisdictionId)
-  const batchesQuery = useBatches(electionId, jurisdictionId, roundId)
-  const [editing, setEditing] = useState<{
-    batchId: IBatch['id']
-    showTallySheetsModal: boolean
-  } | null>(null)
-
-  if (!contestsQuery.isSuccess || !batchesQuery.isSuccess) return null
-
-  // Batch comparison audits only support a single contest
-  const [contest] = contestsQuery.data
-  const { batches, resultsFinalizedAt } = batchesQuery.data
-
-  const batchChoiceVotes = (batch: IBatch, choiceId: string) =>
-    batch.resultTallySheets.length > 0
-      ? sum(
-          batch.resultTallySheets.map(
-            tallySheet => tallySheet.results[choiceId]
-          )
-        )
-      : undefined
-
-  const choiceTotal = (choiceId: string) =>
-    sum(batches.map(batch => batchChoiceVotes(batch, choiceId) || 0))
+  const { errors, formState, getValues, register, trigger, watch } = formMethods
 
   return (
-    <div>
-      <div>
-        <p className={Classes.TEXT_LARGE} style={{ marginTop: '20px' }}>
-          For each batch, enter the number of votes tallied for each
-          candidate/choice.
-        </p>
-        {resultsFinalizedAt && (
-          <Callout
-            icon="tick-circle"
-            intent="success"
-            style={{ margin: '20px 0 20px 0' }}
-          >
-            Tallies finalized
-          </Callout>
-        )}
-      </div>
-      <ResultsTable id="results-table">
+    <>
+      <BatchResultTallySheetTable>
         <thead>
           <tr>
-            <th
-              style={{
-                width: `${25 - Math.min(contest.choices.length, 10) * 1.5}%`,
-              }}
-            >
-              Batch Name
-            </th>
-            {contest.choices.map(choice => (
-              <th key={`th-${choice.id}`}>{choice.name}</th>
-            ))}
-            <TotalsTH>Batch Total Votes</TotalsTH>
-            <th style={{ width: '125px' }}>Actions</th>
+            <th>Choice</th>
+            <th>Votes</th>
           </tr>
         </thead>
         <tbody>
-          {batches.map(batch =>
-            editing &&
-            batch.id === editing.batchId &&
-            !editing.showTallySheetsModal ? (
-              <BatchResultsForm
-                electionId={electionId}
-                jurisdictionId={jurisdictionId}
-                roundId={roundId}
-                contest={contest}
-                batch={batch}
-                key={batch.id}
-                closeForm={() => setEditing(null)}
-              />
-            ) : (
-              <tr key={batch.id}>
-                <td>{batch.name}</td>
-                {contest.choices.map(choice => {
-                  const choiceVotes = batchChoiceVotes(batch, choice.id)
-                  return (
-                    <ChoiceTD key={`${batch.name}-${choice.id}`}>
-                      {choiceVotes && choiceVotes.toLocaleString()}
-                    </ChoiceTD>
-                  )
-                })}
-                <TotalsTD>
-                  {batch.resultTallySheets.length > 0 &&
-                    sum(
-                      contest.choices.map(
-                        choice => batchChoiceVotes(batch, choice.id)!
+          {contest.choices.map(choice => (
+            <tr key={choice.id}>
+              <td>{choice.name}</td>
+              <td>
+                {isTotalsSheet ? (
+                  <span>
+                    {sum(
+                      sheets.map(
+                        (_, i) =>
+                          watch(
+                            `resultTallySheets[${i}].results[${choice.id}]`
+                          ) || 0
                       )
-                    ).toLocaleString()}
-                </TotalsTD>
-                <td>
-                  {batch.resultTallySheets.length > 1 ? (
-                    <Button
-                      icon="edit"
-                      disabled={editing !== null || !!resultsFinalizedAt}
-                      onClick={() =>
-                        setEditing({
-                          batchId: batch.id,
-                          showTallySheetsModal: true,
-                        })
-                      }
-                    >
-                      Edit Tally Sheets
-                    </Button>
-                  ) : (
-                    <ButtonGroup>
-                      <Button
-                        icon="edit"
-                        disabled={editing !== null || !!resultsFinalizedAt}
-                        onClick={() =>
-                          setEditing({
-                            batchId: batch.id,
-                            showTallySheetsModal: false,
-                          })
-                        }
-                      >
-                        Edit
-                      </Button>
-                      <Popover
-                        position="bottom"
-                        content={
-                          <Menu>
-                            <MenuItem
-                              text="Use Multiple Tally Sheets"
-                              onClick={() =>
-                                setEditing({
-                                  batchId: batch.id,
-                                  showTallySheetsModal: true,
-                                })
-                              }
-                            />
-                          </Menu>
-                        }
-                      >
-                        <Button
-                          icon="chevron-down"
-                          disabled={editing !== null || !!resultsFinalizedAt}
-                          aria-label="More"
-                        />
-                      </Popover>
-                    </ButtonGroup>
-                  )}
-                </td>
-              </tr>
-            )
-          )}
-          <tr>
-            <TotalsTD>Choice Total Votes</TotalsTD>
-            {contest.choices.map(choice => (
-              <TotalsTD key={`total-${choice.id}`}>
-                {choiceTotal(choice.id).toLocaleString()}
-              </TotalsTD>
-            ))}
-            <TotalsTD>
-              {sum(
-                contest.choices.map(choice => choiceTotal(choice.id))
-              ).toLocaleString()}
-            </TotalsTD>
-            <td />
-          </tr>
+                    )}
+                  </span>
+                ) : (
+                  <>
+                    <input
+                      aria-label={`${choice.name} Votes`}
+                      className={classnames(
+                        Classes.INPUT,
+                        errors.resultTallySheets?.[index]?.results?.[
+                          choice.id
+                        ] && Classes.INTENT_DANGER,
+                        // Visually hide this input instead of completely unmounting it to avoid
+                        // interfering with react-hook-form's state management
+                        !isEditing &&
+                          !formState.isSubmitting &&
+                          HIDDEN_INPUT_CLASS_NAME
+                      )}
+                      defaultValue={`${sheets[index]?.results?.[choice.id] ||
+                        0}`}
+                      disabled={formState.isSubmitting}
+                      name={`resultTallySheets[${index}].results[${choice.id}]`}
+                      ref={register({
+                        min: 0,
+                        required: true,
+                        valueAsNumber: true,
+                      })}
+                      type="number"
+                    />
+                    {!isEditing && !formState.isSubmitting && (
+                      <span>{savedResults[choice.id] || 0}</span>
+                    )}
+                  </>
+                )}
+              </td>
+            </tr>
+          ))}
         </tbody>
-      </ResultsTable>
-      {editing && editing.showTallySheetsModal && (
-        <BatchTallySheetsModal
-          batch={batches.find(batch => batch.id === editing.batchId)!}
-          electionId={electionId}
-          jurisdictionId={jurisdictionId}
-          roundId={roundId}
-          contest={contest}
-          closeModal={() => setEditing(null)}
-        />
-      )}
-    </div>
+      </BatchResultTallySheetTable>
+
+      <Actions>
+        {!isTotalsSheet && (
+          <SheetActions>
+            {isEditing && sheets.length > 1 && !isRenamingSheet && (
+              <>
+                <Button icon="edit" minimal onClick={initiateSheetRename}>
+                  Rename sheet
+                </Button>
+                <Button
+                  icon="delete"
+                  intent="danger"
+                  minimal
+                  onClick={deleteSheet}
+                >
+                  Delete sheet
+                </Button>
+              </>
+            )}
+            <input
+              className={classnames(
+                Classes.INPUT,
+                Classes.SMALL,
+                errors.resultTallySheets?.[index]?.name &&
+                  Classes.INTENT_DANGER,
+                // Visually hide this input instead of completely unmounting it to avoid
+                // interfering with react-hook-form's state management
+                !isRenamingSheet && HIDDEN_INPUT_CLASS_NAME
+              )}
+              defaultValue={sheets[index].name}
+              name={`resultTallySheets[${index}].name`}
+              onChange={() => trigger(`resultTallySheets[${index}].name`)}
+              ref={register({
+                required: true,
+                validate: () => {
+                  const sheetNames = sheets.map((_, i) =>
+                    getValues(`resultTallySheets[${i}].name`)
+                  )
+                  if (new Set(sheetNames).size < sheetNames.length) {
+                    return 'Must be unique'
+                  }
+                  return true
+                },
+              })}
+            />
+            {isRenamingSheet && (
+              <>
+                <ConfirmSheetRenameButton
+                  disabled={Boolean(errors.resultTallySheets?.[index]?.name)}
+                  icon="tick"
+                  minimal
+                  onClick={confirmSheetRename}
+                >
+                  Done
+                </ConfirmSheetRenameButton>
+                <Button icon="delete" minimal onClick={cancelSheetRename}>
+                  Cancel
+                </Button>
+                <ErrorMessage
+                  errors={errors}
+                  name={`resultTallySheets[${index}].name`}
+                  render={({ message }) => (
+                    <SheetRenameErrorMessage>{message}</SheetRenameErrorMessage>
+                  )}
+                />
+              </>
+            )}
+          </SheetActions>
+        )}
+
+        <Spacer />
+
+        {isEditing || formState.isSubmitting ? (
+          <Button
+            disabled={isRenamingSheet}
+            icon="tick"
+            intent="primary"
+            loading={formState.isSubmitting}
+            onClick={saveResults}
+          >
+            Save Results
+          </Button>
+        ) : (
+          <Button
+            disabled={areResultsFinalized}
+            icon="edit"
+            onClick={enableEditing}
+          >
+            Edit Results
+          </Button>
+        )}
+      </Actions>
+    </>
   )
 }
 

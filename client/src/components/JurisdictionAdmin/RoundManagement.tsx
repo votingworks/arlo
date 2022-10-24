@@ -30,6 +30,7 @@ const PaddedWrapper = styled(Wrapper)`
 
 const SpacedDiv = styled.div`
   margin-bottom: 30px;
+  width: 100%;
 `
 
 const StrongP = styled.p`
