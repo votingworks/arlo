@@ -21,7 +21,6 @@ import {
   manifestFile,
   cvrsFile,
   talliesFile,
-  contestMocks,
 } from '../useSetupMenuItems/_mocks'
 import { aaApiCalls, jaApiCalls } from '../../_mocks'
 import { withMockFetch } from '../../testUtilities'
@@ -567,8 +566,6 @@ describe('JurisdictionDetail', () => {
       jaApiCalls.getBatchTalliesFile(talliesMocks.processed),
       jaApiCalls.getAuditBoards(auditBoardMocks.unfinished),
       jaApiCalls.getBatches(batchesMocks.emptyInitial),
-      jaApiCalls.getBatches(batchesMocks.emptyInitial),
-      jaApiCalls.getJurisdictionContests(contestMocks.oneTargeted),
     ]
     await withMockFetch(expectedCalls, async () => {
       render({
@@ -576,26 +573,6 @@ describe('JurisdictionDetail', () => {
         auditSettings: auditSettings.batchComparisonAll,
         round: roundMocks.singleIncomplete[0],
       })
-
-      await screen.findByRole('heading', { name: 'Round 1 Data Entry' })
-
-      userEvent.click(
-        screen.getByRole('button', {
-          name: /Download Batch Retrieval List/,
-        })
-      )
-      expect(window.open).toHaveBeenCalledWith(
-        '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/batches/retrieval-list'
-      )
-
-      userEvent.click(
-        screen.getByRole('button', { name: /Download Batch Tally Sheets/ })
-      )
-      await waitFor(() =>
-        expect(mockSavePDF).toHaveBeenCalledWith('Batch Tally Sheets.pdf', {
-          returnPromise: true,
-        })
-      )
 
       // Batch tallies should still be shown for download, but form should be disabled
       const talliesCard = (
@@ -608,6 +585,9 @@ describe('JurisdictionDetail', () => {
       expect(
         within(talliesCard).getByRole('button', { name: /Delete/ })
       ).toBeDisabled()
+
+      await screen.findByRole('heading', { name: 'Round 1 Data Entry' })
+      screen.getByText('Auditing in progress')
     })
   })
 

@@ -21,7 +21,7 @@ describe('TallyEntryUserView', () => {
     const expectedCalls = [tallyEntryApiCalls.getUser(tallyEntryUser.initial)]
     await withMockFetch(expectedCalls, async () => {
       renderView()
-      await screen.findByRole('heading', { name: 'Tally Entry Log In' })
+      await screen.findByRole('heading', { name: 'Tally Entry Login' })
       const logOutLink = screen.getByRole('link', { name: 'Log out' })
       expect(logOutLink).toHaveAttribute('href', '/auth/logout')
     })

@@ -88,7 +88,7 @@ describe('App', () => {
       ]
       await withMockFetch(expectedCalls, async () => {
         const { history } = renderView('/')
-        await screen.findByRole('heading', { name: 'Tally Entry Log In' })
+        await screen.findByRole('heading', { name: 'Tally Entry Login' })
         expect(history.location.pathname).toEqual('/tally-entry')
       })
     })
@@ -160,7 +160,7 @@ describe('App', () => {
         const { history } = renderView(
           '/election/1/jurisdiction/jurisdiction-id-1'
         )
-        await screen.findByRole('heading', { name: 'Tally Entry Log In' })
+        await screen.findByRole('heading', { name: 'Tally Entry Login' })
         expect(history.location.pathname).toEqual('/tally-entry')
       })
     })
@@ -208,7 +208,7 @@ describe('App', () => {
       ]
       await withMockFetch(expectedCalls, async () => {
         const { history } = renderView('/election/1/audit-board/audit-board-1')
-        await screen.findByRole('heading', { name: 'Tally Entry Log In' })
+        await screen.findByRole('heading', { name: 'Tally Entry Login' })
         expect(history.location.pathname).toEqual('/tally-entry')
       })
     })
@@ -232,7 +232,7 @@ describe('App', () => {
       ]
       await withMockFetch(expectedCalls, async () => {
         renderView('/tally-entry')
-        await screen.findByRole('heading', { name: 'Tally Entry Log In' })
+        await screen.findByRole('heading', { name: 'Tally Entry Login' })
       })
     })
 

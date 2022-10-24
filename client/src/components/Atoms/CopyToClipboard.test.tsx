@@ -8,12 +8,16 @@ jest.mock('copy-to-clipboard', () => jest.fn(() => true))
 
 describe('CopyToClipboard', () => {
   it('renders a button that copies when clicked', async () => {
-    render(<CopyToClipboard getText={() => 'text to copy'} />)
+    render(
+      <CopyToClipboard
+        getText={() => ({ text: 'text to copy', format: 'text/plain' })}
+      />
+    )
     const button = screen.getByRole('button', { name: /Copy to clipboard/ })
 
     userEvent.click(button)
 
-    expect(copy).toHaveBeenCalledWith('text to copy', { format: 'text/html' })
+    expect(copy).toHaveBeenCalledWith('text to copy', { format: 'text/plain' })
 
     // Button text should change to Copied
     screen.getByRole('button', { name: /Copied/ })

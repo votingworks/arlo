@@ -2,6 +2,7 @@ import React from 'react'
 import { screen, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { useParams } from 'react-router-dom'
+import { QueryClientProvider } from 'react-query'
 import RoundDataEntry from './RoundDataEntry'
 import { IContest } from '../../types'
 import {
@@ -10,6 +11,7 @@ import {
 } from '../AuditAdmin/useSetupMenuItems/_mocks'
 import { resultsMocks, INullResultValues } from './_mocks'
 import { withMockFetch, renderWithRouter } from '../testUtilities'
+import { queryClient } from '../../App'
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'), // use actual for all non-hook parts
@@ -44,6 +46,16 @@ const apiCalls = {
   }),
 }
 
+const renderComponent = () =>
+  renderWithRouter(
+    <QueryClientProvider client={queryClient}>
+      <RoundDataEntry round={roundMocks.singleIncomplete[0]} />
+    </QueryClientProvider>,
+    {
+      route: '/election/1/jurisdiction/1',
+    }
+  )
+
 describe('offline round data entry', () => {
   it('renders', async () => {
     const expectedCalls = [
@@ -51,12 +63,7 @@ describe('offline round data entry', () => {
       apiCalls.getResults(resultsMocks.emptyInitial),
     ]
     await withMockFetch(expectedCalls, async () => {
-      const { container } = renderWithRouter(
-        <RoundDataEntry round={roundMocks.singleIncomplete[0]} />,
-        {
-          route: '/election/1/jurisdiction/1',
-        }
-      )
+      const { container } = renderComponent()
       await screen.findByText('Votes for Choice One:')
       expect(container).toMatchSnapshot()
     })
@@ -69,12 +76,7 @@ describe('offline round data entry', () => {
       apiCalls.putResults(resultsMocks.complete),
     ]
     await withMockFetch(expectedCalls, async () => {
-      const { container } = renderWithRouter(
-        <RoundDataEntry round={roundMocks.singleIncomplete[0]} />,
-        {
-          route: '/election/1/jurisdiction/1',
-        }
-      )
+      const { container } = renderComponent()
       await screen.findByText('Votes for Choice One:')
       fireEvent.change(screen.getByLabelText('Votes for Choice One:'), {
         target: { value: '1' },

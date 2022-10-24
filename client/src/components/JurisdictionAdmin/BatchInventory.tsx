@@ -29,7 +29,9 @@ import {
   StepList,
   StepListItem,
   stepState,
+  StepPanelColumn,
 } from '../Atoms/Steps'
+import { Column } from '../Atoms/Layout'
 
 const STEPS = [
   'Upload Election Results',
@@ -129,17 +131,21 @@ const UploadElectionResultsStep: React.FC<{
   return (
     <>
       <StepPanel>
-        <FileUpload
-          title="Cast Vote Records (CVR)"
-          {...cvrUpload}
-          acceptFileTypes={['csv']}
-        />
-        <FileUpload
-          title="Tabulator Status"
-          {...tabulatorStatusUpload}
-          acceptFileTypes={['xml']}
-          uploadDisabled={!isUploaded(cvrUpload)}
-        />
+        <StepPanelColumn>
+          <FileUpload
+            title="Cast Vote Records (CVR)"
+            {...cvrUpload}
+            acceptFileTypes={['csv']}
+          />
+        </StepPanelColumn>
+        <StepPanelColumn>
+          <FileUpload
+            title="Tabulator Status"
+            {...tabulatorStatusUpload}
+            acceptFileTypes={['xml']}
+            uploadDisabled={!isUploaded(cvrUpload)}
+          />
+        </StepPanelColumn>
       </StepPanel>
       <StepActions
         right={
@@ -182,7 +188,7 @@ const InventoryBatchesStep: React.FC<{
   return (
     <>
       <StepPanel>
-        <div style={{ textAlign: 'center' }}>
+        <Column justifyContent="center" alignItems="center">
           <p>
             Follow the instructions in the worksheet to inventory your batches.
           </p>
@@ -202,7 +208,7 @@ const InventoryBatchesStep: React.FC<{
               <span>I have completed the batch inventory worksheet.</span>
             </Checkbox>
           </p>
-        </div>
+        </Column>
       </StepPanel>
       <StepActions
         left={
@@ -238,13 +244,10 @@ const DownloadAuditFilesStep: React.FC<{
   return (
     <>
       <StepPanel>
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            maxWidth: '50%',
-          }}
+        <Column
+          justifyContent="center"
+          alignItems="center"
+          style={{ maxWidth: '50%' }}
         >
           <H4>Batch Inventory Complete</H4>
           <p style={{ marginBottom: '15px' }}>
@@ -274,7 +277,7 @@ const DownloadAuditFilesStep: React.FC<{
               Download Candidate Totals by Batch
             </AsyncButton>
           </div>
-        </div>
+        </Column>
       </StepPanel>
       <StepActions
         left={

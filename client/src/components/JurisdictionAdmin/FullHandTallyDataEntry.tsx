@@ -118,7 +118,7 @@ const FullHandTallyDataEntry: React.FC<IProps> = ({ round }) => {
     electionId: string
     jurisdictionId: string
   }>()
-  const contests = useContestsJurisdictionAdmin(electionId, jurisdictionId)
+  const contestsQuery = useContestsJurisdictionAdmin(electionId, jurisdictionId)
   const [
     batchResults,
     addResult,
@@ -128,10 +128,10 @@ const FullHandTallyDataEntry: React.FC<IProps> = ({ round }) => {
   ] = useFullHandTallyResults(electionId, jurisdictionId, round.id)
   const [isConfirmOpen, setIsConfirmOpen] = useState(false)
 
-  if (!contests || !batchResults) return null
+  if (!contestsQuery.isSuccess || !batchResults) return null
 
   // We only support one contest for now
-  const contest = contests[0]
+  const [contest] = contestsQuery.data
 
   const { results, finalizedAt } = batchResults
 
@@ -297,9 +297,10 @@ const FullHandTallyDataEntry: React.FC<IProps> = ({ round }) => {
                   Add batch
                 </Button>
                 <CopyToClipboard
-                  getText={() =>
-                    document.getElementById('results-table')!.outerHTML
-                  }
+                  getText={() => ({
+                    text: document.getElementById('results-table')!.outerHTML,
+                    format: 'text/html',
+                  })}
                 />
                 <Button
                   onClick={() => setIsConfirmOpen(true)}

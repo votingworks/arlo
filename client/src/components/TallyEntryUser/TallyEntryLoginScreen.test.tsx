@@ -28,14 +28,14 @@ describe('TallyEntryLoginScreen', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       renderScreen({ user: tallyEntryUser.initial })
-      screen.getByRole('heading', { name: 'Tally Entry Log In' })
+      screen.getByRole('heading', { name: 'Tally Entry Login' })
       screen.getByText('Jurisdiction One — Test Audit')
 
       const [nameInput1, nameInput2] = screen.getAllByLabelText('Name')
       const [partySelect1, _partySelect2] = screen.getAllByLabelText(
         'Party Affiliation (if required)'
       )
-      const loginButton = screen.getByRole('button', { name: 'Log in' })
+      const loginButton = screen.getByRole('button', { name: 'Log In' })
 
       userEvent.type(nameInput1, 'John Doe')
       userEvent.selectOptions(partySelect1, 'Democrat')
@@ -57,10 +57,10 @@ describe('TallyEntryLoginScreen', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       renderScreen({ user: tallyEntryUser.initial })
-      screen.getByRole('heading', { name: 'Tally Entry Log In' })
+      screen.getByRole('heading', { name: 'Tally Entry Login' })
 
       const [nameInput1] = screen.getAllByLabelText('Name')
-      const loginButton = screen.getByRole('button', { name: 'Log in' })
+      const loginButton = screen.getByRole('button', { name: 'Log In' })
 
       // First member name is required
       userEvent.click(loginButton)
