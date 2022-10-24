@@ -186,9 +186,12 @@ describe('BatchRoundSteps', () => {
       userEvent.click(batchTallySheetButton)
       expect(batchTallySheetButton).toBeDisabled()
       await waitFor(() =>
-        expect(mockSavePDF).toHaveBeenCalledWith('Batch Tally Sheets.pdf', {
-          returnPromise: true,
-        })
+        expect(mockSavePDF).toHaveBeenCalledWith(
+          'Batch Tally Sheets - Jurisdiction One - audit one.pdf',
+          {
+            returnPromise: true,
+          }
+        )
       )
       expect(batchTallySheetButton).toBeEnabled()
     })

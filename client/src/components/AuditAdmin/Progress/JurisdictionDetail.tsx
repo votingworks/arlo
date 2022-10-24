@@ -7,6 +7,7 @@ import {
   Card,
   Button,
   HTMLSelect,
+  ButtonGroup,
 } from '@blueprintjs/core'
 import styled from 'styled-components'
 import { Formik, FormikProps } from 'formik'
@@ -27,6 +28,8 @@ import {
   ICvrsFileUpload,
 } from '../../useFileUpload'
 import AuditBoardsTable from './AuditBoardsTable'
+import DownloadBatchRetrievalListButton from '../../JurisdictionAdmin/BatchRoundSteps/DownloadBatchRetrievalListButton'
+import DownloadBatchTallySheetsButton from '../../JurisdictionAdmin/BatchRoundSteps/DownloadBatchTallySheetsButton'
 
 const StatusCard = styled(Card)`
   &:not(:last-child) {
@@ -337,7 +340,7 @@ const RoundStatusSection = ({
       if (auditSettings.auditType === 'BATCH_COMPARISON') {
         return (
           <div>
-            <p>Results finalized</p>
+            <p>Tallies finalized</p>
             <AsyncButton
               onClick={() =>
                 unfinalizeBatchResults({
@@ -348,7 +351,7 @@ const RoundStatusSection = ({
               }
               intent="danger"
             >
-              Unfinalize Results
+              Unfinalize Tallies
             </AsyncButton>
           </div>
         )
@@ -362,7 +365,22 @@ const RoundStatusSection = ({
     }
 
     if (auditSettings.auditType === 'BATCH_COMPARISON') {
-      return <p>Auditing in progress</p>
+      return (
+        <ButtonGroup vertical alignText="left">
+          <DownloadBatchRetrievalListButton
+            electionId={electionId}
+            jurisdictionId={jurisdiction.id}
+            roundId={round.id}
+          />
+          <DownloadBatchTallySheetsButton
+            electionId={electionId}
+            auditName={auditSettings.auditName}
+            jurisdictionId={jurisdiction.id}
+            jurisdictionName={jurisdiction.name}
+            roundId={round.id}
+          />
+        </ButtonGroup>
+      )
     }
 
     if (auditBoards.length === 0) {
@@ -388,7 +406,7 @@ const RoundStatusSection = ({
 
   return (
     <Section>
-      <H5>Round {round.roundNum} Data Entry</H5>
+      <H5>Current Audit Round</H5>
       {status}
     </Section>
   )

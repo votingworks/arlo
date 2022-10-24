@@ -327,28 +327,36 @@ describe('generateSheets', () => {
       const pdf = await downloadBatchTallySheets(
         mockBatches,
         constructContestChoices(2),
-        mockJurisdiction.name
+        mockJurisdiction.name,
+        mockJurisdiction.election.auditName
       )
       await expect(Buffer.from(pdf)).toMatchPdfSnapshot({
         tolerance: diffTolerance,
       })
-      expect(mockSavePDF).toHaveBeenCalledWith('Batch Tally Sheets.pdf', {
-        returnPromise: true,
-      })
+      expect(mockSavePDF).toHaveBeenCalledWith(
+        'Batch Tally Sheets - Jurisdiction One - audit one.pdf',
+        {
+          returnPromise: true,
+        }
+      )
     })
 
     it('Handles single-batch case', async () => {
       const pdf = await downloadBatchTallySheets(
         [mockBatches[0]],
         constructContestChoices(2),
-        mockJurisdiction.name
+        mockJurisdiction.name,
+        mockJurisdiction.election.auditName
       )
       await expect(Buffer.from(pdf)).toMatchPdfSnapshot({
         tolerance: diffTolerance,
       })
-      expect(mockSavePDF).toHaveBeenCalledWith('Batch Tally Sheets.pdf', {
-        returnPromise: true,
-      })
+      expect(mockSavePDF).toHaveBeenCalledWith(
+        'Batch Tally Sheets - Jurisdiction One - audit one.pdf',
+        {
+          returnPromise: true,
+        }
+      )
     })
 
     it('Handles long content', async () => {
@@ -380,14 +388,18 @@ describe('generateSheets', () => {
       const pdf = await downloadBatchTallySheets(
         batches,
         contestChoices,
-        jurisdictionName
+        jurisdictionName,
+        'Test Audit'
       )
       await expect(Buffer.from(pdf)).toMatchPdfSnapshot({
         tolerance: diffTolerance,
       })
-      expect(mockSavePDF).toHaveBeenCalledWith('Batch Tally Sheets.pdf', {
-        returnPromise: true,
-      })
+      expect(mockSavePDF).toHaveBeenCalledWith(
+        `Batch Tally Sheets - ${jurisdictionName} - Test Audit.pdf`,
+        {
+          returnPromise: true,
+        }
+      )
     })
 
     it('Handles long content with no spaces', async () => {
@@ -415,14 +427,18 @@ describe('generateSheets', () => {
       const pdf = await downloadBatchTallySheets(
         batches,
         contestChoices,
-        jurisdictionName
+        jurisdictionName,
+        'Test Audit'
       )
       await expect(Buffer.from(pdf)).toMatchPdfSnapshot({
         tolerance: diffTolerance,
       })
-      expect(mockSavePDF).toHaveBeenCalledWith('Batch Tally Sheets.pdf', {
-        returnPromise: true,
-      })
+      expect(mockSavePDF).toHaveBeenCalledWith(
+        `Batch Tally Sheets - ${jurisdictionName} - Test Audit.pdf`,
+        {
+          returnPromise: true,
+        }
+      )
     })
 
     // Cover all possible after-table page breaks
@@ -431,7 +447,8 @@ describe('generateSheets', () => {
         const pdf = await downloadBatchTallySheets(
           mockBatches,
           constructContestChoices(6 + i),
-          mockJurisdiction.name
+          mockJurisdiction.name,
+          mockJurisdiction.election.auditName
         )
         await expect(Buffer.from(pdf)).toMatchPdfSnapshot({
           tolerance: diffTolerance,

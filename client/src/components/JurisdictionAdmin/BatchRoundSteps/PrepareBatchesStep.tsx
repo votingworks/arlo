@@ -3,10 +3,9 @@ import { H5, UL } from '@blueprintjs/core'
 import { IJurisdiction } from '../../UserContext'
 import { IRound } from '../../AuditAdmin/useRoundsAuditAdmin'
 import { StepPanel, StepPanelColumn, StepActions } from '../../Atoms/Steps'
-import { apiDownload } from '../../utilities'
-import DownloadBatchTallySheetsButton from '../DownloadBatchTallySheetsButton'
+import DownloadBatchTallySheetsButton from './DownloadBatchTallySheetsButton'
 import LinkButton from '../../Atoms/LinkButton'
-import AsyncButton from '../../Atoms/AsyncButton'
+import DownloadBatchRetrievalListButton from './DownloadBatchRetrievalListButton'
 
 interface IPrepareBatchesStepProps {
   nextStepUrl: string
@@ -24,17 +23,12 @@ const PrepareBatchesStep: React.FC<IPrepareBatchesStepProps> = ({
       <StepPanelColumn>
         <H5>Retrieve Batches from Storage</H5>
         <p>
-          <AsyncButton
-            icon="download"
+          <DownloadBatchRetrievalListButton
+            electionId={jurisdiction.election.id}
+            jurisdictionId={jurisdiction.id}
+            roundId={round.id}
             intent="primary"
-            onClick={() =>
-              apiDownload(
-                `/election/${jurisdiction.election.id}/jurisdiction/${jurisdiction.id}/round/${round.id}/batches/retrieval-list`
-              )
-            }
-          >
-            Download Batch Retrieval List
-          </AsyncButton>
+          />
         </p>
         <span>For each batch in the retrieval list:</span>
         <UL>
@@ -48,9 +42,11 @@ const PrepareBatchesStep: React.FC<IPrepareBatchesStepProps> = ({
         <p>
           <DownloadBatchTallySheetsButton
             electionId={jurisdiction.election.id}
+            auditName={jurisdiction.election.auditName}
             jurisdictionId={jurisdiction.id}
             jurisdictionName={jurisdiction.name}
             roundId={round.id}
+            intent="primary"
           />
         </p>
         <p>

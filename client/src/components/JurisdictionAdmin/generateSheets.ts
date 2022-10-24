@@ -353,7 +353,8 @@ export const downloadAuditBoardCredentials = async (
 export const downloadBatchTallySheets = async (
   batches: IBatch[],
   contestChoices: ICandidate[],
-  jurisdictionName: string
+  jurisdictionName: string,
+  auditName: string
 ): Promise<string> => {
   const doc = new jsPDF({ format: 'letter', unit: 'pt' })
 
@@ -621,7 +622,10 @@ export const downloadBatchTallySheets = async (
     }
   }
 
-  await doc.save('Batch Tally Sheets.pdf', { returnPromise: true })
+  await doc.save(
+    `Batch Tally Sheets - ${jurisdictionName} - ${auditName}.pdf`,
+    { returnPromise: true }
+  )
   return doc.output() // Returned for snapshot tests
 }
 
