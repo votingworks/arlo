@@ -3,7 +3,7 @@
 exports[`RoundManagement renders audit setup with ballot audit 1`] = `
 <div>
   <div
-    class="sc-bdVaJa sc-gipzik iuWObY"
+    class="sc-bdVaJa sc-kvZOFW buxZzP"
   >
     <h3
       class="bp3-heading"
@@ -13,13 +13,13 @@ exports[`RoundManagement renders audit setup with ballot audit 1`] = `
        Audit Board Setup
     </h3>
     <p
-      class="sc-Rmtcm oXfno"
+      class="sc-jbKcbu ezTDBH"
     >
       Ballots to audit: 
       27
     </p>
     <div
-      class="sc-dnqmqq jnbCEU"
+      class="sc-jWBwVP fgskbB"
     >
       <h4
         class="bp3-heading"
@@ -30,10 +30,10 @@ exports[`RoundManagement renders audit setup with ballot audit 1`] = `
         Select the appropriate number of audit boards based upon the personnel available and the number of ballots assigned to your jurisdiction for this round of the audit. You will have the opportunity to adjust the number of audit boards before the next round of the audit, if another round is required.
       </p>
       <div
-        class="sc-gzVnrw iZqYnV"
+        class="sc-bZQynM bGsEQi"
       >
         <div
-          class="bp3-html-select sc-iwsKbI iSMuWx sc-bZQynM dFcXvN"
+          class="bp3-html-select sc-brqgnP iEmaVB sc-cvbbAY jAgsBm"
         >
           <select
             data-testid="numAuditBoards"
@@ -664,7 +664,7 @@ exports[`RoundManagement renders audit setup with ballot audit 1`] = `
         </div>
       </div>
       <button
-        class="bp3-button bp3-intent-primary sc-EHOje gmpgQN"
+        class="bp3-button bp3-intent-primary sc-dnqmqq iQfLYL"
         type="button"
       >
         <span
@@ -681,7 +681,7 @@ exports[`RoundManagement renders audit setup with ballot audit 1`] = `
 exports[`RoundManagement renders complete view 1`] = `
 <div>
   <div
-    class="sc-bdVaJa sc-gipzik iuWObY"
+    class="sc-bdVaJa sc-kvZOFW buxZzP"
   >
     <h2
       class="bp3-heading"
@@ -695,7 +695,7 @@ exports[`RoundManagement renders complete view 1`] = `
 exports[`RoundManagement renders links & data entry with offline ballot audit 1`] = `
 <div>
   <div
-    class="sc-bdVaJa sc-gipzik iuWObY"
+    class="sc-bdVaJa sc-kvZOFW buxZzP"
   >
     <h3
       class="bp3-heading"
@@ -705,10 +705,10 @@ exports[`RoundManagement renders links & data entry with offline ballot audit 1`
        Data Entry
     </h3>
     <div
-      class="sc-csuQGl hRric"
+      class="sc-hqyNC bkcVXz"
     >
       <p
-        class="sc-Rmtcm oXfno"
+        class="sc-jbKcbu ezTDBH"
       >
         Ballots to audit: 
         27
@@ -806,7 +806,7 @@ exports[`RoundManagement renders links & data entry with offline ballot audit 1`
       </div>
     </div>
     <div
-      class="sc-csuQGl hRric"
+      class="sc-hqyNC bkcVXz"
     >
       <form>
         <p>
@@ -821,17 +821,17 @@ exports[`RoundManagement renders links & data entry with offline ballot audit 1`
             Contest 1
           </h5>
           <label
-            class="sc-chPdSV izZSzF"
+            class="sc-iRbamj kQWgHU"
             for="results[contest-id-1][choice-id-1]"
           >
             Votes for 
             Choice One
             :
             <div
-              class="sc-jTzLTM gTHUJn"
+              class="sc-gqjmRU egaEhI"
             >
               <div
-                class="bp3-input-group sc-fjdhpX dmEgAR"
+                class="bp3-input-group sc-VigVT hfLuvB"
               >
                 <input
                   class="bp3-input"
@@ -844,17 +844,17 @@ exports[`RoundManagement renders links & data entry with offline ballot audit 1`
             </div>
           </label>
           <label
-            class="sc-chPdSV izZSzF"
+            class="sc-iRbamj kQWgHU"
             for="results[contest-id-1][choice-id-2]"
           >
             Votes for 
             Choice Two
             :
             <div
-              class="sc-jTzLTM gTHUJn"
+              class="sc-gqjmRU egaEhI"
             >
               <div
-                class="bp3-input-group sc-fjdhpX dmEgAR"
+                class="bp3-input-group sc-VigVT hfLuvB"
               >
                 <input
                   class="bp3-input"
@@ -876,17 +876,17 @@ exports[`RoundManagement renders links & data entry with offline ballot audit 1`
             Contest 2
           </h5>
           <label
-            class="sc-chPdSV izZSzF"
+            class="sc-iRbamj kQWgHU"
             for="results[contest-id-2][choice-id-3]"
           >
             Votes for 
             Choice Three
             :
             <div
-              class="sc-jTzLTM gTHUJn"
+              class="sc-gqjmRU egaEhI"
             >
               <div
-                class="bp3-input-group sc-fjdhpX dmEgAR"
+                class="bp3-input-group sc-VigVT hfLuvB"
               >
                 <input
                   class="bp3-input"
@@ -899,17 +899,17 @@ exports[`RoundManagement renders links & data entry with offline ballot audit 1`
             </div>
           </label>
           <label
-            class="sc-chPdSV izZSzF"
+            class="sc-iRbamj kQWgHU"
             for="results[contest-id-2][choice-id-4]"
           >
             Votes for 
             Choice Four
             :
             <div
-              class="sc-jTzLTM gTHUJn"
+              class="sc-gqjmRU egaEhI"
             >
               <div
-                class="bp3-input-group sc-fjdhpX dmEgAR"
+                class="bp3-input-group sc-VigVT hfLuvB"
               >
                 <input
                   class="bp3-input"
@@ -923,7 +923,7 @@ exports[`RoundManagement renders links & data entry with offline ballot audit 1`
           </label>
         </div>
         <button
-          class="bp3-button bp3-intent-primary sc-kAzzGY cxWquR sc-EHOje gmpgQN"
+          class="bp3-button bp3-intent-primary sc-gPEVay eGxjmR sc-dnqmqq iQfLYL"
           type="submit"
         >
           <span
@@ -941,7 +941,7 @@ exports[`RoundManagement renders links & data entry with offline ballot audit 1`
 exports[`RoundManagement renders links & progress with online ballot audit 1`] = `
 <div>
   <div
-    class="sc-bdVaJa sc-gipzik iuWObY"
+    class="sc-bdVaJa sc-kvZOFW buxZzP"
   >
     <h3
       class="bp3-heading"
@@ -951,10 +951,10 @@ exports[`RoundManagement renders links & progress with online ballot audit 1`] =
        Data Entry
     </h3>
     <div
-      class="sc-csuQGl hRric"
+      class="sc-hqyNC bkcVXz"
     >
       <p
-        class="sc-Rmtcm oXfno"
+        class="sc-jbKcbu ezTDBH"
       >
         Ballots to audit: 
         27
@@ -1079,7 +1079,7 @@ exports[`RoundManagement renders links & progress with online ballot audit 1`] =
           </span>
         </button>
         <div
-          class="sc-VigVT iyEYjY"
+          class="sc-jDwBTQ idqqoL"
           id="qr-root"
         >
           <span
@@ -1095,10 +1095,10 @@ exports[`RoundManagement renders links & progress with online ballot audit 1`] =
       </div>
     </div>
     <div
-      class="sc-csuQGl hRric"
+      class="sc-hqyNC bkcVXz"
     >
       <div
-        class="sc-gZMcBi cPjbpf"
+        class="sc-cMljjf hhbGWd"
       >
         <h4
           class="bp3-heading"
@@ -1122,7 +1122,7 @@ exports[`RoundManagement renders links & progress with online ballot audit 1`] =
         </div>
       </div>
       <div
-        class="sc-gqjmRU cknesl"
+        class="sc-jAaTju cAxehW"
       >
         <div>
           <span>
