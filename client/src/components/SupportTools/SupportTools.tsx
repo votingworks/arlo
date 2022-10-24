@@ -484,19 +484,23 @@ const Jurisdiction = ({ jurisdictionId }: { jurisdictionId: string }) => {
       <H2>{name}</H2>
       <div style={{ display: 'flex', width: '100%' }}>
         <Column>
-          <H3>Current Round Audit Boards</H3>
-          {auditBoards.length === 0 ? (
-            <p>The jurisdiction hasn&apos;t created audit boards yet.</p>
-          ) : (
+          {election.auditType !== 'BATCH_COMPARISON' && (
             <>
-              <Button
-                intent="danger"
-                onClick={onClickClearAuditBoards}
-                style={{ marginBottom: '10px' }}
-              >
-                Clear audit boards
-              </Button>
-              <AuditBoardsTable auditBoards={auditBoards} />
+              <H3>Current Round Audit Boards</H3>
+              {auditBoards.length === 0 ? (
+                <p>The jurisdiction hasn&apos;t created audit boards yet.</p>
+              ) : (
+                <>
+                  <Button
+                    intent="danger"
+                    onClick={onClickClearAuditBoards}
+                    style={{ marginBottom: '10px' }}
+                  >
+                    Clear audit boards
+                  </Button>
+                  <AuditBoardsTable auditBoards={auditBoards} />
+                </>
+              )}
             </>
           )}
           {election.auditType === 'BALLOT_POLLING' && !election.online && (
