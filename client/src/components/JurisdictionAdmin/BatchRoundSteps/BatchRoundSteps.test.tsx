@@ -12,8 +12,8 @@ import {
   withMockFetch,
   findAndCloseToast,
   serverError,
+  createQueryClient,
 } from '../../testUtilities'
-import { queryClient } from '../../../App'
 import BatchRoundSteps from './BatchRoundSteps'
 import { jaApiCalls } from '../../_mocks'
 import {
@@ -44,7 +44,7 @@ jest.mock('@sentry/react', () => ({
 
 const renderComponent = (stepPath = '') => {
   renderWithRouter(
-    <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={createQueryClient()}>
       <Route path="/election/:electionId/jurisdiction/:jurisdictionId/round/:roundId">
         <BatchRoundSteps
           jurisdiction={jaApiCalls.getUser.response.user.jurisdictions[0]}

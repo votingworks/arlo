@@ -3,14 +3,13 @@ import { QueryClientProvider } from 'react-query'
 import { render, screen } from '@testing-library/react'
 import { tallyEntryApiCalls } from '../_mocks'
 import TallyEntryScreen from './TallyEntryScreen'
-import { queryClient } from '../../App'
-import { withMockFetch } from '../testUtilities'
+import { withMockFetch, createQueryClient } from '../testUtilities'
 import { contestMocks } from '../AuditAdmin/useSetupMenuItems/_mocks'
 import { batchesMocks } from '../JurisdictionAdmin/_mocks'
 
 const renderScreen = () =>
   render(
-    <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={createQueryClient()}>
       <TallyEntryScreen
         electionId="1"
         jurisdictionId="jurisdiction-id-1"

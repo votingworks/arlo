@@ -7,8 +7,12 @@ import BatchRoundDataEntry from './BatchRoundDataEntry'
 import { batchesMocks } from './_mocks'
 import { IBatches, IBatchResultTallySheet } from './useBatchResults'
 import { IContest } from '../../types'
-import { withMockFetch, findAndCloseToast, serverError } from '../testUtilities'
-import { queryClient } from '../../App'
+import {
+  withMockFetch,
+  findAndCloseToast,
+  serverError,
+  createQueryClient,
+} from '../testUtilities'
 import { contestMocks } from '../AuditAdmin/useSetupMenuItems/_mocks'
 
 const apiCalls = {
@@ -51,7 +55,7 @@ const batchesWithResults = (resultTallySheets: IBatchResultTallySheet[]) => [
 
 const renderComponent = () =>
   render(
-    <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={createQueryClient()}>
       <BatchRoundDataEntry
         electionId="1"
         jurisdictionId="1"

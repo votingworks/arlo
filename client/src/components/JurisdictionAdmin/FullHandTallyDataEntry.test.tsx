@@ -15,9 +15,12 @@ import {
 } from './useFullHandTallyResults'
 import FullHandTallyDataEntry from './FullHandTallyDataEntry'
 import { contestMocks } from '../AuditAdmin/useSetupMenuItems/_mocks'
-import { withMockFetch, renderWithRouter } from '../testUtilities'
+import {
+  withMockFetch,
+  renderWithRouter,
+  createQueryClient,
+} from '../testUtilities'
 import { IContest } from '../../types'
-import { queryClient } from '../../App'
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'), // use actual for all non-hook parts
@@ -87,7 +90,7 @@ const apiCalls = {
 
 const renderComponent = () =>
   renderWithRouter(
-    <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={createQueryClient()}>
       <FullHandTallyDataEntry round={roundMocks.fullHandTallyIncomplete} />
     </QueryClientProvider>,
     {

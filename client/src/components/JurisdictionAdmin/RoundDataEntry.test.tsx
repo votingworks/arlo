@@ -10,8 +10,11 @@ import {
   roundMocks,
 } from '../AuditAdmin/useSetupMenuItems/_mocks'
 import { resultsMocks, INullResultValues } from './_mocks'
-import { withMockFetch, renderWithRouter } from '../testUtilities'
-import { queryClient } from '../../App'
+import {
+  withMockFetch,
+  renderWithRouter,
+  createQueryClient,
+} from '../testUtilities'
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'), // use actual for all non-hook parts
@@ -48,7 +51,7 @@ const apiCalls = {
 
 const renderComponent = () =>
   renderWithRouter(
-    <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={createQueryClient()}>
       <RoundDataEntry round={roundMocks.singleIncomplete[0]} />
     </QueryClientProvider>,
     {

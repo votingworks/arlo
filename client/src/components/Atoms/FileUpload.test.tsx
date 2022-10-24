@@ -10,8 +10,12 @@ import {
   IFileUpload,
 } from '../useFileUpload'
 import FileUpload, { IFileUploadProps } from './FileUpload'
-import { withMockFetch, serverError, findAndCloseToast } from '../testUtilities'
-import { queryClient } from '../../App'
+import {
+  withMockFetch,
+  serverError,
+  findAndCloseToast,
+  createQueryClient,
+} from '../testUtilities'
 import { fileInfoMocks } from '../_mocks'
 
 jest.mock('axios')
@@ -54,7 +58,9 @@ const TestFileUpload = ({
 
 const render = (element: React.ReactElement) =>
   testingLibraryRender(
-    <QueryClientProvider client={queryClient}>{element}</QueryClientProvider>
+    <QueryClientProvider client={createQueryClient()}>
+      {element}
+    </QueryClientProvider>
   )
 
 const testFile = new File(['test content'], 'test-file.csv', {

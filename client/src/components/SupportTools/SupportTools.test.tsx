@@ -8,6 +8,7 @@ import {
   renderWithRouter,
   serverError,
   findAndCloseToast,
+  createQueryClient,
 } from '../testUtilities'
 import SupportTools from './SupportTools'
 import AuthDataProvider from '../UserContext'
@@ -21,7 +22,6 @@ import {
   IJurisdiction,
   IRound,
 } from './support-api'
-import { queryClient } from '../../App'
 
 const mockOrganizationBase: IOrganizationBase = {
   id: 'organization-id-1',
@@ -184,7 +184,7 @@ const apiCalls = {
 
 const renderRoute = (route: string) =>
   renderWithRouter(
-    <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={createQueryClient()}>
       <AuthDataProvider>
         <SupportTools />
         <ToastContainer />

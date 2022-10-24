@@ -14,8 +14,11 @@ import { jaApiCalls } from '../_mocks'
 import { IAuditSettings } from '../useAuditSettings'
 import { IFullHandTallyBatchResults } from './useFullHandTallyResults'
 import RoundManagement, { IRoundManagementProps } from './RoundManagement'
-import { renderWithRouter, withMockFetch } from '../testUtilities'
-import { queryClient } from '../../App'
+import {
+  renderWithRouter,
+  withMockFetch,
+  createQueryClient,
+} from '../testUtilities'
 import AuthDataProvider from '../UserContext'
 import { dummyBallots } from '../AuditBoard/_mocks'
 import { IContest } from '../../types'
@@ -43,7 +46,7 @@ const renderView = (props: IRoundManagementProps) =>
     <Route
       path="/election/:electionId/jurisdiction/:jurisdictionId"
       render={routeProps => (
-        <QueryClientProvider client={queryClient}>
+        <QueryClientProvider client={createQueryClient()}>
           <AuthDataProvider>
             <RoundManagement {...routeProps} {...props} />
           </AuthDataProvider>

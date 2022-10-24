@@ -4,10 +4,13 @@ import { QueryClientProvider } from 'react-query'
 import { Route } from 'react-router-dom'
 import userEvent from '@testing-library/user-event'
 import BatchInventory from './BatchInventory'
-import { withMockFetch, renderWithRouter } from '../testUtilities'
+import {
+  withMockFetch,
+  renderWithRouter,
+  createQueryClient,
+} from '../testUtilities'
 import { IFileInfo } from '../useCSV'
 import { fileInfoMocks } from '../_mocks'
-import { queryClient } from '../../App'
 
 jest.mock('axios')
 
@@ -91,7 +94,7 @@ const apiCalls = {
 
 const render = () =>
   renderWithRouter(
-    <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={createQueryClient()}>
       <Route path="/election/:electionId/jurisdiction/:jurisdictionId/batch-inventory">
         <BatchInventory />
       </Route>

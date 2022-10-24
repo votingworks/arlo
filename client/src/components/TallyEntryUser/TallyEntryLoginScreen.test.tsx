@@ -6,12 +6,11 @@ import TallyEntryLoginScreen, {
   ITallyEntryLoginScreenProps,
 } from './TallyEntryLoginScreen'
 import { tallyEntryUser, tallyEntryApiCalls } from '../_mocks'
-import { queryClient } from '../../App'
-import { withMockFetch } from '../testUtilities'
+import { withMockFetch, createQueryClient } from '../testUtilities'
 
 const renderScreen = (props: ITallyEntryLoginScreenProps) =>
   render(
-    <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={createQueryClient()}>
       <TallyEntryLoginScreen {...props} />
     </QueryClientProvider>
   )
