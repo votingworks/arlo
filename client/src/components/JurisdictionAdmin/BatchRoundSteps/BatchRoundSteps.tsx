@@ -13,6 +13,7 @@ import { Steps, StepList, StepListItem, stepState } from '../../Atoms/Steps'
 import PrepareBatchesStep from './PrepareBatchesStep'
 import TallyEntryAccountsStep from './TallyEntryAccountsStep'
 import EnterTalliesStep from './EnterTalliesStep'
+import { useBatches } from '../useBatchResults'
 
 interface IBatchRoundStepsProps {
   jurisdiction: IJurisdiction
@@ -25,6 +26,15 @@ const BatchRoundSteps: React.FC<IBatchRoundStepsProps> = ({
 }) => {
   const { path, url } = useRouteMatch()
   const location = useLocation()
+  const batchesQuery = useBatches(
+    jurisdiction.election.id,
+    jurisdiction.id,
+    round.id
+  )
+
+  if (!batchesQuery.isSuccess) return null // Still loading
+  const { batches } = batchesQuery.data
+
   const steps = [
     { title: 'Prepare Batches', pathname: `/prepare-batches` },
     { title: 'Set Up Tally Entry Accounts', pathname: `/tally-entry-accounts` },
@@ -75,8 +85,13 @@ const BatchRoundSteps: React.FC<IBatchRoundStepsProps> = ({
             round={round}
           />
         </Route>
-        {/* TODO have a smart default based on whether or not any tallies are entered yet  */}
-        <Redirect to={`${url}/prepare-batches`} />
+        <Redirect
+          to={
+            batches.some(batch => batch.resultTallySheets.length > 0)
+              ? `${url}/enter-tallies`
+              : `${url}/prepare-batches`
+          }
+        />
       </Switch>
     </Steps>
   )

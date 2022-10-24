@@ -75,11 +75,13 @@ describe('BatchRoundSteps', () => {
     await withMockFetch(expectedCalls, async () => {
       renderComponent()
 
-      // Continue buttons
+      // Defaults to Prepare Batches
       await screen.findByRole('heading', {
         name: 'Prepare Batches',
         current: 'step',
       })
+
+      // Continue buttons
       userEvent.click(screen.getByRole('button', { name: /Continue/ }))
       await screen.findByRole('heading', {
         name: 'Set Up Tally Entry Accounts',
@@ -125,6 +127,20 @@ describe('BatchRoundSteps', () => {
       userEvent.click(screen.getByRole('link', { name: 'Prepare Batches' }))
       await screen.findByRole('heading', {
         name: 'Prepare Batches',
+        current: 'step',
+      })
+    })
+  })
+
+  it('defaults to Enter Tallies step if any tallies have been entered', async () => {
+    const expectedCalls = [
+      jaApiCalls.getBatches(batchesMocks.complete),
+      jaApiCalls.getJurisdictionContests(contestMocks.oneTargeted),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderComponent()
+      await screen.findByRole('heading', {
+        name: 'Enter Tallies',
         current: 'step',
       })
     })
@@ -201,6 +217,7 @@ describe('BatchRoundSteps', () => {
 
   it('shows Step 2: Set Up Tally Entry Accounts', async () => {
     const expectedCalls = [
+      jaApiCalls.getBatches(batchesMocks.emptyInitial),
       jaApiCalls.getTallyEntryAccountStatus(
         tallyEntryAccountStatusMocks.turnedOff
       ),
@@ -267,6 +284,7 @@ describe('BatchRoundSteps', () => {
   it('on Step 2, polls for login requests and can confirm a request', async () => {
     jest.useFakeTimers()
     const expectedCalls = [
+      jaApiCalls.getBatches(batchesMocks.emptyInitial),
       jaApiCalls.getTallyEntryAccountStatus(
         tallyEntryAccountStatusMocks.noLoginRequests
       ),
