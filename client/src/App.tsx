@@ -22,28 +22,27 @@ import PublicPages from './components/PublicPages/PublicPages'
 import BatchInventory from './components/JurisdictionAdmin/BatchInventory'
 import TallyEntryUserView from './components/TallyEntryUser/TallyEntryUserView'
 
+export const queryClientDefaultOptions: DefaultOptions<ApiError> = {
+  queries: {
+    retry: (failureCount: number, error: ApiError): boolean =>
+      error.statusCode >= 500 && failureCount < 3, // Only retry server errors
+    onError: (error: ApiError): void => {
+      toast.error(error.message)
+    },
+    // When a file input dialog closes, it triggers a window focus event,
+    // which causes a refetch by default, so we turn that off to avoid confusion.
+    // https://github.com/tannerlinsley/react-query/issues/2960
+    refetchOnWindowFocus: false,
+  },
+  mutations: {
+    onError: (error: ApiError): void => {
+      toast.error(error.message)
+    },
+  },
+}
+
 export const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: (failureCount, error: ApiError) =>
-        // Turn off query retries in test so we can mock effectively
-        process.env.NODE_ENV !== 'test' &&
-        error.statusCode >= 500 && // Only retry server errors
-        failureCount < 3,
-      onError: (error: ApiError) => {
-        toast.error(error.message)
-      },
-      // When a file input dialog closes, it triggers a window focus event,
-      // which causes a refetch by default, so we turn that off to avoid confusion.
-      // https://github.com/tannerlinsley/react-query/issues/2960
-      refetchOnWindowFocus: false,
-    },
-    mutations: {
-      onError: (error: ApiError) => {
-        toast.error(error.message)
-      },
-    },
-  } as DefaultOptions,
+  defaultOptions: queryClientDefaultOptions as DefaultOptions<unknown>,
 })
 
 const Main = styled.div`
