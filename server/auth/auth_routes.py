@@ -349,12 +349,7 @@ def tally_entry_passphrase(passphrase: str):
         tally_entry_passphrase=passphrase
     ).one_or_none()
     if jurisdiction is None:
-        return redirect(
-            "/tally-entry?"
-            + urlencode(
-                {"error": "login_link_not_found", "message": "Login link not found."}
-            )
-        )
+        return redirect("/tally-entry?" + urlencode({"error": "login_link_not_found"}))
 
     tally_entry_user = TallyEntryUser(
         id=str(uuid.uuid4()), jurisdiction_id=jurisdiction.id,

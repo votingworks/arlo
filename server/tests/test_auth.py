@@ -772,7 +772,7 @@ def test_tally_entry_invalid_passphrase(
     assert rv.status_code == 302
     location = urlparse(rv.location)
     assert location.path == "/tally-entry"
-    assert location.query == "error=login_link_not_found&message=Login+link+not+found."
+    assert location.query == "error=login_link_not_found"
 
 
 def test_tally_entry_invalid_members(
