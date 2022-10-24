@@ -6,6 +6,9 @@ import {
 } from './cypress/plugins'
 
 export default defineConfig({
+  // We only really need videos on failures in CI, so if there's a failure in
+  // CI, we can just turn this setting on and run the tests again.
+  video: false,
   viewportWidth: 1000,
   viewportHeight: 1000,
   defaultCommandTimeout: 10000,
