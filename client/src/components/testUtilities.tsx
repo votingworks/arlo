@@ -233,12 +233,17 @@ export const findAndCloseToast = async (
 export const mocksOfType = <T,>() => <Mock,>(mock: { [K in keyof Mock]: T }) =>
   mock
 
-// Create a react-query query client with the same defaults as the app, except
-// turn off query retries since those make it hard to test query error handling
+// Create a react-query query client with the same defaults as the app (and a few test-specific exceptions).
 export const createQueryClient = (): QueryClient =>
   new QueryClient({
     defaultOptions: {
       ...queryClientDefaultOptions,
-      queries: { ...queryClientDefaultOptions.queries, retry: false },
+      queries: {
+        ...queryClientDefaultOptions.queries,
+        // Turn off query retries since those make it hard to test query error handling
+        retry: false,
+        // Cache query results forever to make sure we explicitly invalidate queries that we want to reload
+        staleTime: Infinity,
+      },
     } as DefaultOptions<unknown>,
   })
