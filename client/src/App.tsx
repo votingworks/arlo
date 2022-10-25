@@ -24,6 +24,16 @@ import TallyEntryUserView from './components/TallyEntryUser/TallyEntryUserView'
 
 export const queryClientDefaultOptions: DefaultOptions<ApiError> = {
   queries: {
+    // By default, react-query has a staleTime of 0, meaning every time a query
+    // is invoked, it will fetch fresh data. This aggressive approach is good
+    // for making sure we always show up to date data from the server. However,
+    // if multiple components in the same tree use the same query, they will
+    // make duplicate requests for the same data when they mount. As a small
+    // optimization, we increase the staleTime to 1 second so that multiple
+    // components that are mounted simultaneously can use cached data. Note that
+    // manual query cache invalidations will override this, so there's no real
+    // risk.
+    staleTime: 1000,
     retry: (failureCount: number, error: ApiError): boolean =>
       error.statusCode >= 500 && failureCount < 3, // Only retry server errors
     onError: (error: ApiError): void => {
@@ -40,10 +50,6 @@ export const queryClientDefaultOptions: DefaultOptions<ApiError> = {
     },
   },
 }
-
-export const queryClient = new QueryClient({
-  defaultOptions: queryClientDefaultOptions as DefaultOptions<unknown>,
-})
 
 const Main = styled.div`
   display: flex;
@@ -82,7 +88,11 @@ export const PrivateRoute: React.FC<PrivateRouteProps> = ({
   )
 }
 
-const App: React.FC = () => {
+const App: React.FC<{ queryClient?: QueryClient }> = ({
+  queryClient = new QueryClient({
+    defaultOptions: queryClientDefaultOptions as DefaultOptions<unknown>,
+  }),
+}) => {
   return (
     <>
       <ToastContainer />

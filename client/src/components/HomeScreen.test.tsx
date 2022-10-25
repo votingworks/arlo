@@ -1,7 +1,11 @@
 import React from 'react'
 import { screen, within, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { withMockFetch, renderWithRouter } from './testUtilities'
+import {
+  withMockFetch,
+  renderWithRouter,
+  createQueryClient,
+} from './testUtilities'
 import App from '../App'
 import { aaApiCalls, apiCalls, mockOrganizations, jaApiCalls } from './_mocks'
 import { auditSettings } from './AuditAdmin/useSetupMenuItems/_mocks'
@@ -13,7 +17,8 @@ const setupScreenCalls = [
   aaApiCalls.getSettings(auditSettings.blank),
 ]
 
-const renderView = (route: string) => renderWithRouter(<App />, { route })
+const renderView = (route: string) =>
+  renderWithRouter(<App queryClient={createQueryClient()} />, { route })
 
 const error = (
   apiCall: { url: string; options?: Record<string, unknown> },
@@ -197,13 +202,13 @@ describe('Home screen', () => {
         auditType: 'BATCH_COMPARISON',
         auditMathType: 'MACRO',
       }),
+      aaApiCalls.getOrganizations(mockOrganizations.oneOrgOneAudit),
       ...setupScreenCalls,
       aaApiCalls.getJurisdictionFile,
       aaApiCalls.getRounds([]),
       ...setupScreenCalls,
       aaApiCalls.getSettings(auditSettings.blank),
       aaApiCalls.getJurisdictionFile,
-      aaApiCalls.getOrganizations(mockOrganizations.oneOrgOneAudit),
       ...setupScreenCalls,
       aaApiCalls.getJurisdictionFile,
       aaApiCalls.getRounds([]),
@@ -266,6 +271,7 @@ describe('Home screen', () => {
         auditType: 'BALLOT_POLLING',
         auditMathType: 'BRAVO',
       }),
+      aaApiCalls.getOrganizations(mockOrganizations.twoOrgs),
       ...setupScreenCalls,
       aaApiCalls.getJurisdictionFile,
       aaApiCalls.getRounds([]),
@@ -391,13 +397,14 @@ describe('Home screen', () => {
   it('creates batch comparison audits', async () => {
     const expectedCalls = [
       aaApiCalls.getUser,
-      aaApiCalls.getOrganizations(mockOrganizations.oneOrgOneAudit),
+      aaApiCalls.getOrganizations(mockOrganizations.oneOrgNoAudits),
       aaApiCalls.postNewAudit({
         organizationId: 'org-id',
         auditName: 'November Presidential Election 2020',
         auditType: 'BATCH_COMPARISON',
         auditMathType: 'MACRO',
       }),
+      aaApiCalls.getOrganizations(mockOrganizations.oneOrgOneAudit),
       ...setupScreenCalls,
       aaApiCalls.getJurisdictionFile,
       aaApiCalls.getRounds([]),
@@ -436,6 +443,7 @@ describe('Home screen', () => {
         auditType: 'BALLOT_COMPARISON',
         auditMathType: 'SUPERSIMPLE',
       }),
+      aaApiCalls.getOrganizations(mockOrganizations.oneOrgOneAudit),
       ...setupScreenCalls,
       aaApiCalls.getJurisdictionFile,
       aaApiCalls.getRounds([]),
@@ -474,6 +482,7 @@ describe('Home screen', () => {
         auditType: 'HYBRID',
         auditMathType: 'SUITE',
       }),
+      aaApiCalls.getOrganizations(mockOrganizations.oneOrgOneAudit),
       ...setupScreenCalls,
       aaApiCalls.getJurisdictionFile,
       aaApiCalls.getRounds([]),
