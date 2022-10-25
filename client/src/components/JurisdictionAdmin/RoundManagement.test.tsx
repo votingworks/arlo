@@ -43,16 +43,14 @@ jest.mock('jspdf', () => {
 
 const renderView = (props: IRoundManagementProps) =>
   renderWithRouter(
-    <Route
-      path="/election/:electionId/jurisdiction/:jurisdictionId"
-      render={routeProps => (
-        <QueryClientProvider client={createQueryClient()}>
-          <AuthDataProvider>
-            <RoundManagement {...routeProps} {...props} />
-          </AuthDataProvider>
-        </QueryClientProvider>
-      )}
-    />,
+    <QueryClientProvider client={createQueryClient()}>
+      <AuthDataProvider>
+        <Route
+          path="/election/:electionId/jurisdiction/:jurisdictionId"
+          render={routeProps => <RoundManagement {...routeProps} {...props} />}
+        />
+      </AuthDataProvider>
+    </QueryClientProvider>,
     {
       route: '/election/1/jurisdiction/jurisdiction-id-1',
     }
