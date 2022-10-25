@@ -1,3 +1,4 @@
+import random
 import uuid
 from collections import defaultdict
 from typing import (
@@ -42,6 +43,7 @@ from ..activity_log import (
     StartRound,
     EndRound,
 )
+from ..feature_flags import is_enabled_sample_extra_batches_by_counting_group
 
 
 def get_current_round(election: Election) -> Optional[Round]:
@@ -92,6 +94,8 @@ def count_audited_votes(election: Election, round: Round):
                     BatchResult.tally_sheet_id.in_(
                         BatchResultTallySheet.query.join(Batch)
                         .join(SampledBatchDraw)
+                        # Special case: don't include extra sampled batches
+                        .filter(SampledBatchDraw.ticket_number != "EXTRA")
                         .filter_by(round_id=round.id)
                         .with_entities(BatchResultTallySheet.id)
                         .subquery()
@@ -223,6 +227,8 @@ def sampled_batch_results(election: Election,) -> BatchTallies:
                 Batch.query.join(Jurisdiction)
                 .filter_by(election_id=election.id)
                 .join(SampledBatchDraw)
+                # Special case: don't include extra sampled batches
+                .filter(SampledBatchDraw.ticket_number != "EXTRA")
                 .values(Batch.id)
             )
         )
@@ -267,6 +273,8 @@ def sampled_batches_by_ticket_number(election: Election) -> Dict[str, Tuple[str,
         SampledBatchDraw.query.join(Batch)
         .join(Jurisdiction)
         .filter_by(election_id=election.id)
+        # Special case: don't include extra sampled batches
+        .filter(SampledBatchDraw.ticket_number != "EXTRA")
         .order_by(SampledBatchDraw.ticket_number)
         .values(SampledBatchDraw.ticket_number, Jurisdiction.name, Batch.name)
     )
@@ -924,6 +932,59 @@ def sample_batches(
             ticket_number=ticket_number,
         )
         db_session.add(sampled_batch_draw)
+
+    # Experimental feature
+    # Add extra batches on top of the original sample that will be audited, but
+    # not counted in the final risk measurement.
+    if (
+        is_enabled_sample_extra_batches_by_counting_group(election)
+        and round.round_num == 1
+    ):
+        rand = random.Random(str(election.random_seed))
+        for jurisdiction in contest.jurisdictions:
+            batch_ids_with_container = (
+                Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
+                .with_entities(Batch.id, Batch.container)
+                .all()
+            )
+            # To simplify this experiment, we specify the counting group in the
+            # container column of the ballot manifest
+            bmd_batch_ids = {
+                batch_id
+                for batch_id, container in batch_ids_with_container
+                if container in ["Advanced Voting", "Election Day"]
+            }
+            hmpb_batch_ids = {
+                batch_id
+                for batch_id, container in batch_ids_with_container
+                if container in ["Absentee by Mail", "Provisional"]
+            }
+            sampled_batch_ids = {
+                batch_key_to_id[batch_key]
+                for _, batch_key in sample
+                if batch_key[0] == jurisdiction.name
+            }
+            # If we didn't sample any BMD batches, add one to the sample
+            if len(bmd_batch_ids & sampled_batch_ids) == 0 and len(bmd_batch_ids) > 0:
+                extra_bmd_batch_id = rand.choice(list(bmd_batch_ids))
+                db_session.add(
+                    SampledBatchDraw(
+                        batch_id=extra_bmd_batch_id,
+                        round_id=round.id,
+                        ticket_number="EXTRA",
+                    )
+                )
+            # If we didn't sample any HMPB batches, add one to the sample
+            if len(hmpb_batch_ids & sampled_batch_ids) == 0 and len(hmpb_batch_ids) > 0:
+                extra_hmpb_batch_id = rand.choice(list(hmpb_batch_ids))
+                # No ticket_number, since this wasn't part of the actual sample
+                db_session.add(
+                    SampledBatchDraw(
+                        batch_id=extra_hmpb_batch_id,
+                        round_id=round.id,
+                        ticket_number="EXTRA",
+                    )
+                )
 
 
 def create_round_schema(audit_type: AuditType):
