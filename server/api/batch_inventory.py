@@ -38,6 +38,7 @@ def batch_key_to_name(batch_key: BatchKey, tabulator_id_to_name: Dict[str, str])
 class ElectionResults(TypedDict):
     ballot_count_by_batch: Dict[BatchKey, int]
     ballot_count_by_group: Dict[str, int]
+    batch_to_counting_group: Dict[BatchKey, str]
     # { batch_key: { choice_name: count } }
     batch_tallies: Dict[BatchKey, Dict[str, int]]
 
@@ -94,6 +95,7 @@ def process_batch_inventory_cvr_file(jurisdiction_id: str):
 
     ballot_count_by_group: Dict[str, int] = defaultdict(int)
     ballot_count_by_batch: Dict[BatchKey, int] = defaultdict(int)
+    batch_to_counting_group: Dict[BatchKey, str] = {}
     batch_tallies: Dict[BatchKey, Dict[str, int]] = defaultdict(
         lambda: defaultdict(int)
     )
@@ -111,6 +113,7 @@ def process_batch_inventory_cvr_file(jurisdiction_id: str):
 
         ballot_count_by_batch[batch_key] += 1
         ballot_count_by_group[counting_group] += 1
+        batch_to_counting_group[batch_key] = counting_group
 
         choice_votes = {
             choice.name: parse_vote(
@@ -131,6 +134,7 @@ def process_batch_inventory_cvr_file(jurisdiction_id: str):
     election_results: ElectionResults = dict(
         ballot_count_by_batch=dict_to_items_list(ballot_count_by_batch),
         ballot_count_by_group=dict(ballot_count_by_group),
+        batch_to_counting_group=dict_to_items_list(batch_to_counting_group),
         batch_tallies=dict_to_items_list(batch_tallies),
     )
     batch_inventory_data.election_results = election_results
@@ -483,7 +487,13 @@ def download_batch_inventory_ballot_manifest(
     csv_io = io.StringIO()
     ballot_manifest = csv.writer(csv_io)
 
-    ballot_manifest.writerow(["Batch Name", "Number of Ballots"])
+    ballot_manifest.writerow(["Container", "Batch Name", "Number of Ballots"])
+
+    # We originally didn't have counting group stored, so we make this
+    # optional for backwards compatibility
+    batch_to_counting_group = items_list_to_dict(
+        election_results.get("batch_to_counting_group", [])
+    )
 
     for batch_key, ballot_count in items_list_to_dict(
         election_results["ballot_count_by_batch"]
@@ -491,7 +501,8 @@ def download_batch_inventory_ballot_manifest(
         batch_name = batch_key_to_name(
             batch_key, batch_inventory_data.tabulator_id_to_name
         )
-        ballot_manifest.writerow([batch_name, ballot_count])
+        counting_group = batch_to_counting_group.get(batch_key)
+        ballot_manifest.writerow([counting_group, batch_name, ballot_count])
 
     csv_io.seek(0)
     return csv_response(
