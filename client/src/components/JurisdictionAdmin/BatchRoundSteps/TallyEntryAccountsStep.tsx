@@ -25,6 +25,7 @@ import { downloadTallyEntryLoginLinkPrintout } from '../generateSheets'
 import { ButtonRow, Column, Row } from '../../Atoms/Layout'
 import { assert } from '../../utilities'
 import { range, replaceAtIndex } from '../../../utils/array'
+import CodeInputAtom from '../../Atoms/CodeInput'
 
 const useTurnOnTallyEntryAccounts = (
   electionId: string,
@@ -144,93 +145,13 @@ const TurnOnTallyEntryAccountsPrompt: React.FC<ITurnOnTallyEntryAccountsPromptPr
   )
 }
 
-const DigitInput = styled.input.attrs({ className: Classes.INPUT })`
-  width: 70px;
-  font-size: 50px;
-  height: 80px;
-  text-align: center;
+const CodeInput = styled(CodeInputAtom)`
+  input {
+    width: 70px;
+    font-size: 50px;
+    height: 80px;
+  }
 `
-
-interface ICodeInputProps {
-  length: number
-  value: string
-  onChange: (value: string) => void
-}
-
-// A component that takes the same props as a controlled text input, but
-// actually renders and coordinates multiple individual digit inputs.
-const CodeInput: React.FC<ICodeInputProps> = ({
-  length,
-  value = '',
-  onChange,
-}) => {
-  assert(/^\d*$/.test(value), 'CodeInput value must be a string of digits')
-
-  const digitInputRefs = range(0, length - 1).map(() =>
-    React.createRef<HTMLInputElement>()
-  )
-
-  const focusDigitInput = (index: number) => {
-    const digitInputRef = digitInputRefs[index]
-    if (digitInputRef?.current) {
-      digitInputRef.current.focus()
-    }
-  }
-
-  const moveFocusRight = (index: number) => {
-    if (index < length - 1) {
-      focusDigitInput(index + 1)
-    }
-  }
-
-  const moveFocusLeft = (index: number) => {
-    if (index > 0) {
-      focusDigitInput(index - 1)
-    }
-  }
-
-  const onDigitKeyDown = (index: number, key: string) => {
-    if (key.match(/[0-9]/)) {
-      onChange(replaceAtIndex(value.split(''), index, key).join(''))
-      moveFocusRight(index)
-    } else if (key === 'Backspace') {
-      onChange(replaceAtIndex(value.split(''), index, '').join(''))
-      moveFocusLeft(index)
-    } else if (key === 'ArrowLeft') {
-      moveFocusLeft(index)
-    } else if (key === 'ArrowRight') {
-      // Only allow moving right up until the first empty digit
-      if (index < value.length) {
-        moveFocusRight(index)
-      }
-    }
-  }
-
-  // Whenever we have no digits entered, focus the first digit input
-  // E.g. on mount, after backspacing, or after form reset
-  useEffect(() => {
-    if (value === '') {
-      focusDigitInput(0)
-    }
-  })
-
-  return (
-    <Row gap="10px">
-      {digitInputRefs.map((ref, index) => (
-        <DigitInput
-          ref={ref}
-          type="text"
-          // eslint-disable-next-line react/no-array-index-key
-          key={`digit-${index}`}
-          value={value[index] || ''}
-          onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>) =>
-            onDigitKeyDown(index, event.key)
-          }
-        />
-      ))}
-    </Row>
-  )
-}
 
 interface IConfirmTallyEntryLoginProps {
   jurisdiction: IJurisdiction
@@ -303,20 +224,27 @@ const ConfirmTallyEntryLoginModal: React.FC<IConfirmTallyEntryLoginProps> = ({
           style={{ height: '120px' }}
           justifyContent="center"
         >
-          {/* TODO make a multi-digit input component */}
           {!isConfirmed ? (
             <Column alignItems="center">
+              {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
               <label
                 className={Classes.TEXT_LARGE}
                 style={{ display: 'block', marginBottom: '15px' }}
-                htmlFor="loginCode"
+                id="loginCodeLabel"
               >
                 Enter the login code shown on their screen:
               </label>
               <Controller
                 name="loginCode"
                 control={control}
-                render={props => <CodeInput {...props} length={3} />}
+                defaultValue=""
+                render={({ ref: _, ...props }) => (
+                  <CodeInput
+                    aria-labelledby="loginCodeLabel"
+                    length={3}
+                    {...props}
+                  />
+                )}
                 rules={{
                   required: codeValidationMessage,
                   maxLength: {

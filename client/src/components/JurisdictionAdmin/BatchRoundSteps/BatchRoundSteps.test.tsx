@@ -13,6 +13,7 @@ import {
   findAndCloseToast,
   serverError,
   createQueryClient,
+  typeCode,
 } from '../../testUtilities'
 import BatchRoundSteps from './BatchRoundSteps'
 import { jaApiCalls } from '../../_mocks'
@@ -353,7 +354,7 @@ describe('BatchRoundSteps', () => {
       await within(dialog).findByText('Enter a 3-digit login code')
 
       // Try an invalid code
-      userEvent.type(loginCodeInput, '123')
+      typeCode(loginCodeInput, '123')
       userEvent.click(confirmButton)
       await within(dialog).findByText('Invalid code, please try again.')
 
