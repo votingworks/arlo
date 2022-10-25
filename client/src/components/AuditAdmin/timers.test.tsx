@@ -12,11 +12,14 @@ import getJurisdictionFileStatus from './useSetupMenuItems/getJurisdictionFileSt
 import getRoundStatus from './useSetupMenuItems/getRoundStatus'
 import AuthDataProvider, { useAuthDataContext } from '../UserContext'
 import AuditAdminView from './AuditAdminView'
-import { renderWithRouter, withMockFetch } from '../testUtilities'
+import {
+  renderWithRouter,
+  withMockFetch,
+  createQueryClient,
+} from '../testUtilities'
 import { aaApiCalls } from '../_mocks'
 import { auditSettings, roundMocks } from './useSetupMenuItems/_mocks'
 import { sampleSizeMock } from './Setup/Review/_mocks'
-import { queryClient } from '../../App'
 
 const getJurisdictionFileStatusMock = getJurisdictionFileStatus as jest.Mock
 const getRoundStatusMock = getRoundStatus as jest.Mock
@@ -35,7 +38,7 @@ const AuditAdminViewWithAuth: React.FC = () => {
 
 const renderWithRoute = (route: string, component: ReactElement) =>
   renderWithRouter(
-    <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={createQueryClient()}>
       <Route path="/election/:electionId/:view">
         <AuthDataProvider>{component}</AuthDataProvider>
       </Route>

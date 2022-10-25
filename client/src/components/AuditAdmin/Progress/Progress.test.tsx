@@ -11,12 +11,15 @@ import {
   auditBoardMocks,
   manifestMocks,
 } from '../useSetupMenuItems/_mocks'
-import { withMockFetch, renderWithRouter } from '../../testUtilities'
+import {
+  withMockFetch,
+  renderWithRouter,
+  createQueryClient,
+} from '../../testUtilities'
 import { aaApiCalls, jaApiCalls } from '../../_mocks'
 import Progress, { IProgressProps } from './Progress'
 import { dummyBallots } from '../../AuditBoard/_mocks'
 import * as utilities from '../../utilities'
-import { queryClient } from '../../../App'
 
 // Borrowed from generateSheets.test.tsx
 const mockSavePDF = jest.fn()
@@ -44,7 +47,7 @@ const expectStatusTag = (cell: HTMLElement, status: string, intent: Intent) => {
 
 const render = (props: Partial<IProgressProps> = {}) =>
   renderWithRouter(
-    <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={createQueryClient()}>
       <Route
         path="/election/:electionId/progress"
         render={routeProps => (

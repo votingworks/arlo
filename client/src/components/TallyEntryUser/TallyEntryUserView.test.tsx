@@ -2,15 +2,18 @@ import React from 'react'
 import { screen } from '@testing-library/react'
 import { QueryClientProvider } from 'react-query'
 import TallyEntryUserView from './TallyEntryUserView'
-import { queryClient } from '../../App'
-import { withMockFetch, renderWithRouter } from '../testUtilities'
+import {
+  withMockFetch,
+  renderWithRouter,
+  createQueryClient,
+} from '../testUtilities'
 import { tallyEntryApiCalls, tallyEntryUser, apiCalls } from '../_mocks'
 import { contestMocks } from '../AuditAdmin/useSetupMenuItems/_mocks'
 import { batchesMocks } from '../JurisdictionAdmin/_mocks'
 
 const renderView = ({ route = '/tally-entry' }: { route?: string } = {}) =>
   renderWithRouter(
-    <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={createQueryClient()}>
       <TallyEntryUserView />
     </QueryClientProvider>,
     { route }

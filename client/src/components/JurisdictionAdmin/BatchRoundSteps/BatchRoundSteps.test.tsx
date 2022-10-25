@@ -12,8 +12,8 @@ import {
   withMockFetch,
   findAndCloseToast,
   serverError,
+  createQueryClient,
 } from '../../testUtilities'
-import { queryClient } from '../../../App'
 import BatchRoundSteps from './BatchRoundSteps'
 import { jaApiCalls } from '../../_mocks'
 import {
@@ -44,7 +44,7 @@ jest.mock('@sentry/react', () => ({
 
 const renderComponent = (stepPath = '') => {
   renderWithRouter(
-    <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={createQueryClient()}>
       <Route path="/election/:electionId/jurisdiction/:jurisdictionId/round/:roundId">
         <BatchRoundSteps
           jurisdiction={jaApiCalls.getUser.response.user.jurisdictions[0]}
@@ -397,6 +397,7 @@ describe('BatchRoundSteps', () => {
 
   it('shows Step 3: Enter Tallies', async () => {
     const expectedCalls = [
+      jaApiCalls.getBatches(batchesMocks.emptyInitial),
       jaApiCalls.getJurisdictionContests(contestMocks.oneTargeted),
       jaApiCalls.getBatches(batchesMocks.emptyInitial),
     ]
@@ -425,6 +426,10 @@ describe('BatchRoundSteps', () => {
 
   it('on Step 3, confirms finalizing tallies', async () => {
     const expectedCalls = [
+      jaApiCalls.getBatches({
+        ...batchesMocks.complete,
+        resultsFinalizedAt: null,
+      }),
       jaApiCalls.getJurisdictionContests(contestMocks.oneTargeted),
       jaApiCalls.getBatches({
         ...batchesMocks.complete,
@@ -439,6 +444,7 @@ describe('BatchRoundSteps', () => {
         name: 'Enter Tallies',
         current: 'step',
       })
+      await screen.findByRole('table')
 
       const finalizeButton = screen.getByRole('button', {
         name: /Finalize Tallies/,
@@ -459,6 +465,10 @@ describe('BatchRoundSteps', () => {
 
   it('handles errors on finalize', async () => {
     const expectedCalls = [
+      jaApiCalls.getBatches({
+        ...batchesMocks.complete,
+        resultsFinalizedAt: null,
+      }),
       jaApiCalls.getJurisdictionContests(contestMocks.oneTargeted),
       jaApiCalls.getBatches({
         ...batchesMocks.complete,

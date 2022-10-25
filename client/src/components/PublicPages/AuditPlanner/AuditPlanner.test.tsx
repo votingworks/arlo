@@ -5,16 +5,16 @@ import { fireEvent, screen, waitFor, within } from '@testing-library/react'
 import { ToastContainer } from 'react-toastify'
 
 import AuditPlanner from './AuditPlanner'
-import { queryClient } from '../../../App'
 import {
   renderWithRouter,
   serverError,
   withMockFetch,
+  createQueryClient,
 } from '../../testUtilities'
 
 function renderAuditPlanner() {
   renderWithRouter(
-    <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={createQueryClient()}>
       <AuditPlanner />
       <ToastContainer />
     </QueryClientProvider>,
@@ -214,7 +214,6 @@ let mockScrollIntoView: jest.Mock
 beforeEach(async () => {
   mockScrollIntoView = jest.fn()
   window.HTMLElement.prototype.scrollIntoView = mockScrollIntoView
-  await queryClient.invalidateQueries()
 })
 
 test('Entering election results - validation and submit', async () => {

@@ -12,6 +12,8 @@ import {
   Queries,
 } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { QueryClient, DefaultOptions } from 'react-query'
+import { queryClientDefaultOptions } from '../App'
 
 type MatchParameter<Params> = { [K in keyof Params]?: string }
 
@@ -230,3 +232,13 @@ export const findAndCloseToast = async (
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const mocksOfType = <T,>() => <Mock,>(mock: { [K in keyof Mock]: T }) =>
   mock
+
+// Create a react-query query client with the same defaults as the app, except
+// turn off query retries since those make it hard to test query error handling
+export const createQueryClient = (): QueryClient =>
+  new QueryClient({
+    defaultOptions: {
+      ...queryClientDefaultOptions,
+      queries: { ...queryClientDefaultOptions.queries, retry: false },
+    } as DefaultOptions<unknown>,
+  })

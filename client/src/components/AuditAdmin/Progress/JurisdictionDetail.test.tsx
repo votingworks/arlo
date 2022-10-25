@@ -24,8 +24,7 @@ import {
   contestMocks,
 } from '../useSetupMenuItems/_mocks'
 import { aaApiCalls, jaApiCalls } from '../../_mocks'
-import { withMockFetch } from '../../testUtilities'
-import { queryClient } from '../../../App'
+import { withMockFetch, createQueryClient } from '../../testUtilities'
 import { dummyBallots } from '../../AuditBoard/_mocks'
 import { batchesMocks } from '../../JurisdictionAdmin/_mocks'
 
@@ -53,7 +52,7 @@ Object.defineProperty(window, 'location', {
 
 const render = (props: Partial<IJurisdictionDetailProps>) =>
   testingLibraryRender(
-    <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={createQueryClient()}>
       <JurisdictionDetail
         handleClose={jest.fn()}
         jurisdiction={jurisdictionMocks.noManifests[0]}
