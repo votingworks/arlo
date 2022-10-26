@@ -368,7 +368,6 @@ const BatchRoundDataEntry: React.FC<IProps> = ({
             >
               <Tab
                 id={VOTE_TOTALS_TAB_ID}
-                key={VOTE_TOTALS_TAB_ID}
                 panel={
                   <BatchResultTallySheet
                     areResultsFinalized={areResultsFinalized}
@@ -383,6 +382,11 @@ const BatchRoundDataEntry: React.FC<IProps> = ({
                     isEditing={isEditing}
                     isRenamingSheet={isRenamingSheet}
                     isTotalsSheet={sheets.length > 1}
+                    key={
+                      sheets.length === 1
+                        ? sheets[0].id || ''
+                        : VOTE_TOTALS_TAB_ID
+                    }
                     savedResults={
                       selectedBatch.resultTallySheets[0]?.results || {}
                     }
@@ -411,6 +415,7 @@ const BatchRoundDataEntry: React.FC<IProps> = ({
                         initiateSheetRename={() => initiateSheetRename(i)}
                         isEditing={isEditing}
                         isRenamingSheet={isRenamingSheet}
+                        key={sheet.id || ''}
                         savedResults={
                           selectedBatch.resultTallySheets[i]?.results || {}
                         }
@@ -461,6 +466,9 @@ interface IBatchResultTallySheetProps {
   isEditing: boolean
   isRenamingSheet: boolean
   isTotalsSheet?: boolean
+  // Require a key to ensure that inputs within this component re-render in response to
+  // useFieldArray updates
+  key: string // eslint-disable-line react/no-unused-prop-types
   savedResults: { [choiceId: string]: number }
   saveResults: (e: BaseSyntheticEvent) => void
   sheets: Partial<ArrayField<IBatchResultTallySheet, 'id'>>[]
