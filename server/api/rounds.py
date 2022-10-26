@@ -95,7 +95,7 @@ def count_audited_votes(election: Election, round: Round):
                         BatchResultTallySheet.query.join(Batch)
                         .join(SampledBatchDraw)
                         # Special case: don't include extra sampled batches
-                        .filter(SampledBatchDraw.ticket_number != "EXTRA")
+                        .filter(SampledBatchDraw.ticket_number != EXTRA_TICKET_NUMBER)
                         .filter_by(round_id=round.id)
                         .with_entities(BatchResultTallySheet.id)
                         .subquery()
@@ -228,7 +228,7 @@ def sampled_batch_results(election: Election,) -> BatchTallies:
                 .filter_by(election_id=election.id)
                 .join(SampledBatchDraw)
                 # Special case: don't include extra sampled batches
-                .filter(SampledBatchDraw.ticket_number != "EXTRA")
+                .filter(SampledBatchDraw.ticket_number != EXTRA_TICKET_NUMBER)
                 .values(Batch.id)
             )
         )
@@ -274,7 +274,7 @@ def sampled_batches_by_ticket_number(election: Election) -> Dict[str, Tuple[str,
         .join(Jurisdiction)
         .filter_by(election_id=election.id)
         # Special case: don't include extra sampled batches
-        .filter(SampledBatchDraw.ticket_number != "EXTRA")
+        .filter(SampledBatchDraw.ticket_number != EXTRA_TICKET_NUMBER)
         .order_by(SampledBatchDraw.ticket_number)
         .values(SampledBatchDraw.ticket_number, Jurisdiction.name, Batch.name)
     )
@@ -971,18 +971,17 @@ def sample_batches(
                     SampledBatchDraw(
                         batch_id=extra_bmd_batch_id,
                         round_id=round.id,
-                        ticket_number="EXTRA",
+                        ticket_number=EXTRA_TICKET_NUMBER,
                     )
                 )
             # If we didn't sample any HMPB batches, add one to the sample
             if len(hmpb_batch_ids & sampled_batch_ids) == 0 and len(hmpb_batch_ids) > 0:
                 extra_hmpb_batch_id = rand.choice(list(hmpb_batch_ids))
-                # No ticket_number, since this wasn't part of the actual sample
                 db_session.add(
                     SampledBatchDraw(
                         batch_id=extra_hmpb_batch_id,
                         round_id=round.id,
-                        ticket_number="EXTRA",
+                        ticket_number=EXTRA_TICKET_NUMBER,
                     )
                 )
 
