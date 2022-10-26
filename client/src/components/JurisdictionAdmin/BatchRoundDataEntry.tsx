@@ -642,7 +642,7 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
                     )
                   )}
                 </span>
-              ) : isEditing ? (
+              ) : (
                 <>
                   <input
                     aria-label={`${choice.name} Votes`}
@@ -661,18 +661,21 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
                       valueAsNumber: true,
                     })}
                     type="number"
+                    // Visually hide this input instead of completely unmounting it to avoid
+                    // interfering with react-hook-form's state management. Unmounting seems to
+                    // interfere with the form's isDirty tracking
+                    style={{ display: !isEditing ? 'none' : undefined }}
                   />
-                  {/* We include a hidden input for name so that it's registered in the
-                    react-hook-form state */}
                   <input
                     defaultValue={sheetFields[index].name}
                     name={`resultTallySheets[${index}].name`}
                     ref={register()}
+                    // Including a completely hidden input for name so that it's registered in the
+                    // react-hook-form state
                     style={{ display: 'none' }}
                   />
+                  {!isEditing && <span>{savedResults[choice.id] || 0}</span>}
                 </>
-              ) : (
-                <span>{savedResults[choice.id] || 0}</span>
               )}
             </td>
           </tr>
