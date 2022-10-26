@@ -21,7 +21,9 @@ import { Button, Card, Classes, Colors, InputGroup } from '@blueprintjs/core'
 export const ListAndDetail = styled(Card)`
   display: grid;
   grid-template-columns: 1fr 3fr;
+  overflow-y: auto;
   padding: 0;
+  width: 100%;
 `
 
 // ---------- List ----------
