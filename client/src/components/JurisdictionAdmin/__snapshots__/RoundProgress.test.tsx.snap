@@ -3,13 +3,13 @@
 exports[`RoundProgress renders an audit board with auditing complete that has not signed off 1`] = `
 <div>
   <div
-    class="sc-bdVaJa fHQGtV"
+    class="sc-bdVaJa ervxYq"
   >
-    <h4
+    <h3
       class="bp3-heading"
     >
       Audit Board Progress
-    </h4>
+    </h3>
     <p>
       30
        of 
@@ -27,7 +27,7 @@ exports[`RoundProgress renders an audit board with auditing complete that has no
     </div>
   </div>
   <div
-    class="sc-bwzfXH eCcuoP"
+    class="sc-bwzfXH bNkKpp"
   >
     <div>
       <span>
@@ -58,13 +58,13 @@ exports[`RoundProgress renders an audit board with auditing complete that has no
 exports[`RoundProgress renders complete round 1`] = `
 <div>
   <div
-    class="sc-bdVaJa fHQGtV"
+    class="sc-bdVaJa ervxYq"
   >
-    <h4
+    <h3
       class="bp3-heading"
     >
       Audit Board Progress
-    </h4>
+    </h3>
     <p>
       30
        of 
@@ -82,7 +82,7 @@ exports[`RoundProgress renders complete round 1`] = `
     </div>
   </div>
   <div
-    class="sc-bwzfXH eCcuoP"
+    class="sc-bwzfXH bNkKpp"
   >
     <div>
       <span>
@@ -113,13 +113,13 @@ exports[`RoundProgress renders complete round 1`] = `
 exports[`RoundProgress renders incomplete round with an audit board 1`] = `
 <div>
   <div
-    class="sc-bdVaJa fHQGtV"
+    class="sc-bdVaJa ervxYq"
   >
-    <h4
+    <h3
       class="bp3-heading"
     >
       Audit Board Progress
-    </h4>
+    </h3>
     <p>
       0
        of 
@@ -137,7 +137,7 @@ exports[`RoundProgress renders incomplete round with an audit board 1`] = `
     </div>
   </div>
   <div
-    class="sc-bwzfXH eCcuoP"
+    class="sc-bwzfXH bNkKpp"
   >
     <div>
       <span>
@@ -168,13 +168,13 @@ exports[`RoundProgress renders incomplete round with an audit board 1`] = `
 exports[`RoundProgress renders incomplete round with an audit board with no ballots sampled 1`] = `
 <div>
   <div
-    class="sc-bdVaJa fHQGtV"
+    class="sc-bdVaJa ervxYq"
   >
-    <h4
+    <h3
       class="bp3-heading"
     >
       Audit Board Progress
-    </h4>
+    </h3>
     <p>
       0
        of 
@@ -192,13 +192,13 @@ exports[`RoundProgress renders incomplete round with an audit board with no ball
     </div>
   </div>
   <div
-    class="sc-bwzfXH eCcuoP"
+    class="sc-bwzfXH bNkKpp"
   >
     Audit Board #01
     : no ballots to audit
   </div>
   <div
-    class="sc-bwzfXH eCcuoP"
+    class="sc-bwzfXH bNkKpp"
   >
     <div>
       <span>
@@ -224,7 +224,7 @@ exports[`RoundProgress renders incomplete round with an audit board with no ball
     </div>
   </div>
   <div
-    class="sc-bwzfXH eCcuoP"
+    class="sc-bwzfXH bNkKpp"
   >
     Audit Board #03
     : no ballots to audit
@@ -235,13 +235,13 @@ exports[`RoundProgress renders incomplete round with an audit board with no ball
 exports[`RoundProgress renders incomplete round with auditing in progress 1`] = `
 <div>
   <div
-    class="sc-bdVaJa fHQGtV"
+    class="sc-bdVaJa ervxYq"
   >
-    <h4
+    <h3
       class="bp3-heading"
     >
       Audit Board Progress
-    </h4>
+    </h3>
     <p>
       15
        of 
@@ -259,7 +259,7 @@ exports[`RoundProgress renders incomplete round with auditing in progress 1`] = 
     </div>
   </div>
   <div
-    class="sc-bwzfXH eCcuoP"
+    class="sc-bwzfXH bNkKpp"
   >
     <div>
       <span>
@@ -290,13 +290,13 @@ exports[`RoundProgress renders incomplete round with auditing in progress 1`] = 
 exports[`RoundProgress renders incomplete round with two audit boards 1`] = `
 <div>
   <div
-    class="sc-bdVaJa fHQGtV"
+    class="sc-bdVaJa ervxYq"
   >
-    <h4
+    <h3
       class="bp3-heading"
     >
       Audit Board Progress
-    </h4>
+    </h3>
     <p>
       0
        of 
@@ -314,7 +314,7 @@ exports[`RoundProgress renders incomplete round with two audit boards 1`] = `
     </div>
   </div>
   <div
-    class="sc-bwzfXH eCcuoP"
+    class="sc-bwzfXH bNkKpp"
   >
     <div>
       <span>
@@ -340,7 +340,7 @@ exports[`RoundProgress renders incomplete round with two audit boards 1`] = `
     </div>
   </div>
   <div
-    class="sc-bwzfXH eCcuoP"
+    class="sc-bwzfXH bNkKpp"
   >
     <div>
       <span>

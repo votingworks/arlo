@@ -6,10 +6,10 @@ exports[`Setup renders Audit Settings stage 1`] = `
     data-testid="form-one"
   >
     <div
-      class="sc-hSdWYo hzbdZY"
+      class="sc-kkGfuU ivvpIi"
     >
       <h2
-        class="bp3-heading sc-iAyFgw cHZdIf"
+        class="bp3-heading sc-kEYyzF hZLToi"
       >
         Audit Settings
       </h2>
@@ -664,10 +664,10 @@ exports[`Setup renders Audit Settings stage with locked next stage 1`] = `
     data-testid="form-one"
   >
     <div
-      class="sc-hSdWYo hzbdZY"
+      class="sc-kkGfuU ivvpIi"
     >
       <h2
-        class="bp3-heading sc-iAyFgw cHZdIf"
+        class="bp3-heading sc-kEYyzF hZLToi"
       >
         Audit Settings
       </h2>
@@ -1330,10 +1330,10 @@ exports[`Setup renders Audit Settings stage with processing next stage 1`] = `
     data-testid="form-one"
   >
     <div
-      class="sc-hSdWYo hzbdZY"
+      class="sc-kkGfuU ivvpIi"
     >
       <h2
-        class="bp3-heading sc-iAyFgw cHZdIf"
+        class="bp3-heading sc-kEYyzF hZLToi"
       >
         Audit Settings
       </h2>
@@ -1990,10 +1990,10 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
     data-testid="form-one"
   >
     <div
-      class="sc-hSdWYo hzbdZY"
+      class="sc-kkGfuU ivvpIi"
     >
       <h2
-        class="bp3-heading sc-iAyFgw cHZdIf"
+        class="bp3-heading sc-kEYyzF hZLToi"
       >
         Opportunistic Contests
       </h2>
@@ -2322,10 +2322,10 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
     data-testid="form-one"
   >
     <div
-      class="sc-hSdWYo hzbdZY"
+      class="sc-kkGfuU ivvpIi"
     >
       <h2
-        class="bp3-heading sc-iAyFgw cHZdIf"
+        class="bp3-heading sc-kEYyzF hZLToi"
       >
         Opportunistic Contests
       </h2>
@@ -2659,10 +2659,10 @@ exports[`Setup renders Opportunistic Contests stage with processing next stage 1
     data-testid="form-one"
   >
     <div
-      class="sc-hSdWYo hzbdZY"
+      class="sc-kkGfuU ivvpIi"
     >
       <h2
-        class="bp3-heading sc-iAyFgw cHZdIf"
+        class="bp3-heading sc-kEYyzF hZLToi"
       >
         Opportunistic Contests
       </h2>
@@ -2990,22 +2990,19 @@ exports[`Setup renders Opportunistic Contests stage with processing next stage 1
 exports[`Setup renders Participants stage 1`] = `
 <div>
   <div
-    class="sc-hSdWYo hzbdZY"
+    class="sc-kkGfuU ivvpIi"
   >
     <h2
-      class="bp3-heading sc-iAyFgw cHZdIf"
+      class="bp3-heading sc-kEYyzF hZLToi"
     >
       Participants
     </h2>
     <form>
       <div
-        class="sc-hSdWYo hzbdZY"
+        class="sc-kkGfuU ivvpIi"
       >
-        <h2
-          class="bp3-heading sc-iAyFgw cHZdIf"
-        />
         <div
-          class="sc-bZQynM bGsEQi"
+          class="sc-iAyFgw gPlgsX"
         >
           <div
             class="sc-gzVnrw kvvweo"
@@ -3023,7 +3020,7 @@ exports[`Setup renders Participants stage 1`] = `
           </div>
         </div>
         <div
-          class="sc-bZQynM bGsEQi"
+          class="sc-iAyFgw gPlgsX"
         >
           <label
             class="bp3-file-input"
@@ -3076,22 +3073,19 @@ exports[`Setup renders Participants stage 1`] = `
 exports[`Setup renders Participants stage with locked next stage 1`] = `
 <div>
   <div
-    class="sc-hSdWYo hzbdZY"
+    class="sc-kkGfuU ivvpIi"
   >
     <h2
-      class="bp3-heading sc-iAyFgw cHZdIf"
+      class="bp3-heading sc-kEYyzF hZLToi"
     >
       Participants
     </h2>
     <form>
       <div
-        class="sc-hSdWYo hzbdZY"
+        class="sc-kkGfuU ivvpIi"
       >
-        <h2
-          class="bp3-heading sc-iAyFgw cHZdIf"
-        />
         <div
-          class="sc-bZQynM bGsEQi"
+          class="sc-iAyFgw gPlgsX"
         >
           <div
             class="sc-gzVnrw kvvweo"
@@ -3109,7 +3103,7 @@ exports[`Setup renders Participants stage with locked next stage 1`] = `
           </div>
         </div>
         <div
-          class="sc-bZQynM bGsEQi"
+          class="sc-iAyFgw gPlgsX"
         >
           <label
             class="bp3-file-input"
@@ -3164,22 +3158,19 @@ exports[`Setup renders Participants stage with locked next stage 1`] = `
 exports[`Setup renders Participants stage with processing next stage 1`] = `
 <div>
   <div
-    class="sc-hSdWYo hzbdZY"
+    class="sc-kkGfuU ivvpIi"
   >
     <h2
-      class="bp3-heading sc-iAyFgw cHZdIf"
+      class="bp3-heading sc-kEYyzF hZLToi"
     >
       Participants
     </h2>
     <form>
       <div
-        class="sc-hSdWYo hzbdZY"
+        class="sc-kkGfuU ivvpIi"
       >
-        <h2
-          class="bp3-heading sc-iAyFgw cHZdIf"
-        />
         <div
-          class="sc-bZQynM bGsEQi"
+          class="sc-iAyFgw gPlgsX"
         >
           <div
             class="sc-gzVnrw kvvweo"
@@ -3197,7 +3188,7 @@ exports[`Setup renders Participants stage with processing next stage 1`] = `
           </div>
         </div>
         <div
-          class="sc-bZQynM bGsEQi"
+          class="sc-iAyFgw gPlgsX"
         >
           <label
             class="bp3-file-input"
@@ -3251,7 +3242,7 @@ exports[`Setup renders Review & Launch stage 1`] = `
 <div>
   <div>
     <h2
-      class="bp3-heading sc-iAyFgw cHZdIf"
+      class="bp3-heading sc-kEYyzF hZLToi"
     >
       Review & Launch
     </h2>
@@ -3536,7 +3527,7 @@ exports[`Setup renders Review & Launch stage with locked next stage 1`] = `
 <div>
   <div>
     <h2
-      class="bp3-heading sc-iAyFgw cHZdIf"
+      class="bp3-heading sc-kEYyzF hZLToi"
     >
       Review & Launch
     </h2>
@@ -3821,7 +3812,7 @@ exports[`Setup renders Review & Launch stage with processing next stage 1`] = `
 <div>
   <div>
     <h2
-      class="bp3-heading sc-iAyFgw cHZdIf"
+      class="bp3-heading sc-kEYyzF hZLToi"
     >
       Review & Launch
     </h2>
@@ -4108,10 +4099,10 @@ exports[`Setup renders Target Contests stage 1`] = `
     data-testid="form-one"
   >
     <div
-      class="sc-hSdWYo hzbdZY"
+      class="sc-kkGfuU ivvpIi"
     >
       <h2
-        class="bp3-heading sc-iAyFgw cHZdIf"
+        class="bp3-heading sc-kEYyzF hZLToi"
       >
         Target Contests
       </h2>
@@ -4440,10 +4431,10 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
     data-testid="form-one"
   >
     <div
-      class="sc-hSdWYo hzbdZY"
+      class="sc-kkGfuU ivvpIi"
     >
       <h2
-        class="bp3-heading sc-iAyFgw cHZdIf"
+        class="bp3-heading sc-kEYyzF hZLToi"
       >
         Target Contests
       </h2>
@@ -4777,10 +4768,10 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
     data-testid="form-one"
   >
     <div
-      class="sc-hSdWYo hzbdZY"
+      class="sc-kkGfuU ivvpIi"
     >
       <h2
-        class="bp3-heading sc-iAyFgw cHZdIf"
+        class="bp3-heading sc-kEYyzF hZLToi"
       >
         Target Contests
       </h2>

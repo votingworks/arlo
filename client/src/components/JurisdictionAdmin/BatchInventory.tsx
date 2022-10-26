@@ -254,7 +254,7 @@ const DownloadAuditFilesStep: React.FC<{
             Next, download the Ballot Manifest and Candidate Totals by Batch
             files, then upload them on the{' '}
             <Link to={`/election/${electionId}/jurisdiction/${jurisdictionId}`}>
-              Audit Source Data
+              Audit Setup
             </Link>{' '}
             page.
           </p>
@@ -291,7 +291,7 @@ const DownloadAuditFilesStep: React.FC<{
             intent="primary"
             rightIcon="chevron-right"
           >
-            Return to Audit Source Data
+            Return to Audit Setup
           </LinkButton>
         }
       />
@@ -342,7 +342,7 @@ const BatchInventorySteps: React.FC<{
             to={`/election/${electionId}/jurisdiction/${jurisdictionId}`}
             icon="chevron-left"
           >
-            Back to Audit Source Data
+            Back to Audit Setup
           </LinkButton>
         </HeadingRow>
         <Steps>

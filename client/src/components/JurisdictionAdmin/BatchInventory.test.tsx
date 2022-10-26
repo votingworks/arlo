@@ -238,7 +238,7 @@ describe('BatchInventory', () => {
       await screen.findByText('Download Audit Files')
 
       const returnButton = screen.getByRole('button', {
-        name: /Return to Audit Source Data/,
+        name: /Return to Audit Setup/,
       })
       expect(returnButton).toBeEnabled()
       expect(returnButton).toHaveAttribute(
@@ -313,7 +313,7 @@ describe('BatchInventory', () => {
     })
   })
 
-  it('always has a link to go back to Audit Source Data', async () => {
+  it('always has a link to go back to Audit Setup', async () => {
     const expectedCalls = [
       apiCalls.getCvr(fileInfoMocks.empty),
       apiCalls.getTabulatorStatus(fileInfoMocks.empty),
@@ -324,7 +324,7 @@ describe('BatchInventory', () => {
       await screen.findByText('Upload Election Results')
 
       const button = screen.getByRole('button', {
-        name: /Back to Audit Source Data/,
+        name: /Back to Audit Setup/,
       })
       expect(button).toHaveAttribute(
         'href',

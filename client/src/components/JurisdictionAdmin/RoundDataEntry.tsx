@@ -1,6 +1,6 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
-import { H5, Card, H3 } from '@blueprintjs/core'
+import { H5, H3 } from '@blueprintjs/core'
 import { Field, Formik, FormikProps } from 'formik'
 import styled from 'styled-components'
 import useContestsJurisdictionAdmin from './useContestsJurisdictionAdmin'

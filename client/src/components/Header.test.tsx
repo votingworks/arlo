@@ -126,9 +126,6 @@ describe('Header', () => {
         name: /Arlo, by VotingWorks/,
       })
 
-      // Jurisdiction name
-      screen.getByText('Jurisdiction: Jurisdiction One')
-
       // User's email
       const userButton = screen.getByRole('button', {
         name: /jurisdictionadmin@email.org/,

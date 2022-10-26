@@ -116,7 +116,8 @@ describe('App', () => {
       ]
       await withMockFetch(expectedCalls, async () => {
         renderView('/election/1/jurisdiction/jurisdiction-id-1')
-        await screen.findByText('Jurisdiction: Jurisdiction One')
+        await screen.findByText(/Jurisdiction One/)
+        screen.getByText(/audit one/)
       })
     })
 

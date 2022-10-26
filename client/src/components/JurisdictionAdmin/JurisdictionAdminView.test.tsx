@@ -54,7 +54,7 @@ describe('JA setup', () => {
     })
   })
 
-  it('renders initial state', async () => {
+  it('renders setup screen', async () => {
     const expectedCalls = [
       jaApiCalls.getUser,
       jaApiCalls.getSettings(auditSettings.batchComparisonAll),
@@ -63,9 +63,10 @@ describe('JA setup', () => {
       jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
     ]
     await withMockFetch(expectedCalls, async () => {
-      const { container } = renderView()
-      await screen.findByText('Audit Source Data')
-      expect(container).toMatchSnapshot()
+      renderView()
+      await screen.findByText('Audit Setup')
+      screen.getByText(/Jurisdiction One/)
+      screen.getByText(/audit one/)
     })
   })
 
@@ -82,7 +83,7 @@ describe('JA setup', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
-      await screen.findByText('Audit Source Data')
+      await screen.findByText('Audit Setup')
 
       const uploadButton = screen.getByRole('button', { name: 'Upload File' })
       userEvent.click(uploadButton)
@@ -115,7 +116,7 @@ describe('JA setup', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
-      await screen.findByText('Audit Source Data')
+      await screen.findByText('Audit Setup')
       const talliesInput = screen.getByLabelText('Select a file...')
       const talliesButton = screen.getByRole('button', { name: 'Upload File' })
 
@@ -139,7 +140,7 @@ describe('JA setup', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
-      await screen.findByText('Audit Source Data')
+      await screen.findByText('Audit Setup')
       userEvent.upload(screen.getByLabelText('Select a file...'), talliesFile)
       userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
       const toast = await screen.findByRole('alert')
@@ -159,7 +160,7 @@ describe('JA setup', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
-      await screen.findByText('Audit Source Data')
+      await screen.findByText('Audit Setup')
       expect(screen.getAllByText(/Uploaded/)).toHaveLength(2)
 
       // Replace & upload errored batch tallies
@@ -190,7 +191,7 @@ describe('JA setup', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
-      await screen.findByText('Audit Source Data')
+      await screen.findByText('Audit Setup')
 
       // Upload a new manifest
       userEvent.click(
@@ -219,7 +220,7 @@ describe('JA setup', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
-      await screen.findByText('Audit Source Data')
+      await screen.findByText('Audit Setup')
       const fileTypeSelect = screen.getByLabelText(/CVR File Type:/)
       within(fileTypeSelect).getByRole('option', {
         name: 'Dominion',
@@ -286,7 +287,7 @@ describe('JA setup', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
-      await screen.findByText('Audit Source Data')
+      await screen.findByText('Audit Setup')
       expect(screen.getAllByText(/Uploaded/)).toHaveLength(2)
 
       // Replace & upload errored CVRs
@@ -333,7 +334,7 @@ describe('JA setup', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
-      await screen.findByText('Audit Source Data')
+      await screen.findByText('Audit Setup')
 
       userEvent.selectOptions(
         screen.getByLabelText(/CVR File Type:/),
@@ -372,7 +373,7 @@ describe('JA setup', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
-      await screen.findByText('Audit Source Data')
+      await screen.findByText('Audit Setup')
 
       userEvent.selectOptions(
         screen.getByLabelText(/CVR File Type:/),
@@ -421,7 +422,7 @@ describe('JA setup', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
-      await screen.findByText('Audit Source Data')
+      await screen.findByText('Audit Setup')
 
       userEvent.selectOptions(
         screen.getByLabelText(/CVR File Type:/),
@@ -452,7 +453,7 @@ describe('JA setup', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
-      await screen.findByText('Audit Source Data')
+      await screen.findByText('Audit Setup')
 
       // Upload a new manifest
       userEvent.click(
@@ -481,7 +482,7 @@ describe('JA setup', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
-      await screen.findByText('Audit Source Data')
+      await screen.findByText('Audit Setup')
       const [manifestInput, talliesInput] = screen.getAllByLabelText(
         'Select a file...'
       )
@@ -513,7 +514,7 @@ describe('JA setup', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
-      await screen.findByText('Audit Source Data')
+      await screen.findByText('Audit Setup')
 
       const replaceButton = await screen.findByText('Replace File')
       userEvent.click(replaceButton)
@@ -543,8 +544,7 @@ describe('JA setup', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
-      await screen.findByRole('heading', { name: 'Audit Source Data' })
-      screen.getByText('The audit has not started.')
+      await screen.findByText('Audit Setup')
     })
   })
 
@@ -557,8 +557,7 @@ describe('JA setup', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
-      await screen.findByRole('heading', { name: 'Audit Source Data' })
-      screen.getByText('The audit has not started.')
+      await screen.findByText('Audit Setup')
     })
   })
 
@@ -588,7 +587,7 @@ describe('JA setup', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
-      await screen.findByText('Audit Source Data')
+      await screen.findByText('Audit Setup')
       screen.getByRole('heading', { name: 'Batch Inventory' })
       const button = screen.getByRole('button', {
         name: 'Go to Batch Inventory',

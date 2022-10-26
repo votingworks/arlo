@@ -6,10 +6,10 @@ exports[`Audit Setup > Contests renders empty opportunistic state correctly 1`] 
     data-testid="form-one"
   >
     <div
-      class="sc-hSdWYo hzbdZY"
+      class="sc-kkGfuU ivvpIi"
     >
       <h2
-        class="bp3-heading sc-iAyFgw cHZdIf"
+        class="bp3-heading sc-kEYyzF hZLToi"
       >
         Opportunistic Contests
       </h2>
@@ -338,10 +338,10 @@ exports[`Audit Setup > Contests renders empty targeted state correctly 1`] = `
     data-testid="form-one"
   >
     <div
-      class="sc-hSdWYo hzbdZY"
+      class="sc-kkGfuU ivvpIi"
     >
       <h2
-        class="bp3-heading sc-iAyFgw cHZdIf"
+        class="bp3-heading sc-kEYyzF hZLToi"
       >
         Target Contests
       </h2>
@@ -670,10 +670,10 @@ exports[`Audit Setup > Contests renders filled opportunistic state correctly 1`]
     data-testid="form-one"
   >
     <div
-      class="sc-hSdWYo hzbdZY"
+      class="sc-kkGfuU ivvpIi"
     >
       <h2
-        class="bp3-heading sc-iAyFgw cHZdIf"
+        class="bp3-heading sc-kEYyzF hZLToi"
       >
         Opportunistic Contests
       </h2>
@@ -1002,10 +1002,10 @@ exports[`Audit Setup > Contests renders filled targeted state correctly 1`] = `
     data-testid="form-one"
   >
     <div
-      class="sc-hSdWYo hzbdZY"
+      class="sc-kkGfuU ivvpIi"
     >
       <h2
-        class="bp3-heading sc-iAyFgw cHZdIf"
+        class="bp3-heading sc-kEYyzF hZLToi"
       >
         Target Contests
       </h2>

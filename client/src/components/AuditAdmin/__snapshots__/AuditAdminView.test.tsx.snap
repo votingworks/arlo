@@ -3,19 +3,19 @@
 exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
 <div>
   <div
-    class="sc-kEYyzF gOPOqs"
+    class="sc-kkGfuU dLCWAR"
   >
     <div
-      class="bp3-callout sc-hSdWYo gMDgEE"
+      class="bp3-callout sc-eHgmQL gudjM"
     >
       <div
-        class="sc-kkGfuU gzyJPg"
+        class="sc-iAyFgw bOIrpM"
       >
         <div
           class="text"
         >
           <h3
-            class="bp3-heading sc-iAyFgw fUjqOI"
+            class="bp3-heading sc-hSdWYo ebeAbt"
           >
             Test Audit
           </h3>
@@ -31,7 +31,7 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
             0 of 2 jurisdictions have completed file uploads.
           </p>
           <span
-            class="bp3-tag sc-jWBwVP fvZRn"
+            class="bp3-tag sc-brqgnP hhHalm"
           >
             <span
               class="bp3-text-overflow-ellipsis bp3-fill"
@@ -43,10 +43,10 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
       </div>
     </div>
     <div
-      class="sc-kkGfuU gzyJPg"
+      class="sc-iAyFgw bOIrpM"
     >
       <div
-        class="sc-cvbbAY vOHMb"
+        class="sc-jWBwVP eLwNVs"
       >
         <h2
           class="bp3-heading sc-ifAKCX cmZyyF"
@@ -209,11 +209,8 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
           <div
             class="sc-EHOje bjGJmd"
           >
-            <h2
-              class="bp3-heading sc-ifAKCX cmZyyF"
-            />
             <div
-              class="sc-bZQynM bGsEQi"
+              class="sc-iwsKbI jQhHGA"
             >
               <div
                 class="sc-gzVnrw kvvweo"
@@ -231,7 +228,7 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
               </div>
             </div>
             <div
-              class="sc-bZQynM bGsEQi"
+              class="sc-iwsKbI jQhHGA"
             >
               <p>
                 <strong>

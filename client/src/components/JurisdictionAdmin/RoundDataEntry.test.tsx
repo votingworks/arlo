@@ -60,18 +60,6 @@ const renderComponent = () =>
   )
 
 describe('offline round data entry', () => {
-  it('renders', async () => {
-    const expectedCalls = [
-      apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
-      apiCalls.getResults(resultsMocks.emptyInitial),
-    ]
-    await withMockFetch(expectedCalls, async () => {
-      const { container } = renderComponent()
-      await screen.findByText('Votes for Choice One:')
-      expect(container).toMatchSnapshot()
-    })
-  })
-
   it('submits', async () => {
     const expectedCalls = [
       apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
@@ -79,7 +67,7 @@ describe('offline round data entry', () => {
       apiCalls.putResults(resultsMocks.complete),
     ]
     await withMockFetch(expectedCalls, async () => {
-      const { container } = renderComponent()
+      renderComponent()
       await screen.findByText('Votes for Choice One:')
       fireEvent.change(screen.getByLabelText('Votes for Choice One:'), {
         target: { value: '1' },
@@ -93,9 +81,8 @@ describe('offline round data entry', () => {
       fireEvent.change(screen.getByLabelText('Votes for Choice Four:'), {
         target: { value: '2' },
       })
-      userEvent.click(screen.getByText('Submit Data for Round 1'))
-      await screen.findByText('Already Submitted Data for Round 1')
-      expect(container).toMatchSnapshot()
+      userEvent.click(screen.getByText('Submit Tallies'))
+      await screen.findByText('Tallies Submitted')
     })
   })
 })

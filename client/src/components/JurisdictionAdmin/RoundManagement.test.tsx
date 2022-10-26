@@ -87,61 +87,74 @@ describe('RoundManagement', () => {
     jest.clearAllMocks()
   })
 
-  it('renders audit setup with ballot audit', async () => {
+  it('renders audit board setup for ballot audit', async () => {
     const expectedCalls = [
       apiCalls.getSettings(auditSettings.all),
       jaApiCalls.getUser,
       apiCalls.getBallotCount,
     ]
     await withMockFetch(expectedCalls, async () => {
-      const { container } = renderView({
+      renderView({
         round: roundMocks.incomplete,
         auditBoards: [],
         createAuditBoards: jest.fn(),
       })
-      await screen.findByText('Round 1 Audit Board Setup')
+      await screen.findByText('Set Up Audit Boards')
       screen.getByText('Ballots to audit: 27')
-      expect(container).toMatchSnapshot()
+      // TODO test this form
+      screen.getByText(/Jurisdiction One/)
+      screen.getByText(/audit one/)
     })
   })
 
-  it('renders complete view', async () => {
+  it('renders message when audit complete', async () => {
     const expectedCalls = [
       apiCalls.getSettings(auditSettings.all),
       jaApiCalls.getUser,
       apiCalls.getBallotCount,
     ]
     await withMockFetch(expectedCalls, async () => {
-      const { container } = renderView({
+      renderView({
         round: roundMocks.complete,
         auditBoards: auditBoardMocks.signedOff,
         createAuditBoards: jest.fn(),
       })
-      await screen.findByText(
-        'Congratulations! Your Risk-Limiting Audit is now complete.'
-      )
-      expect(container).toMatchSnapshot()
+      await screen.findByText('Audit Complete')
+      screen.getByText(/Jurisdiction One/)
+      screen.getByText(/audit one/)
     })
   })
 
-  it('renders links & progress with online ballot audit', async () => {
+  it('renders audit board progress for online ballot audit', async () => {
     const expectedCalls = [
       apiCalls.getSettings(auditSettings.all),
       jaApiCalls.getUser,
       apiCalls.getBallotCount,
     ]
     await withMockFetch(expectedCalls, async () => {
-      const { container } = renderView({
+      renderView({
         round: roundMocks.incomplete,
         auditBoards: auditBoardMocks.unfinished,
         createAuditBoards: jest.fn(),
       })
-      await screen.findByText('Download Ballot Retrieval List')
-      expect(container).toMatchSnapshot()
+      await screen.findByRole('heading', { name: 'Prepare Ballots' })
+      screen.getByText('Ballots to audit: 27')
+      // TODO test these buttons
+      screen.getByRole('button', { name: /Download Ballot Retrieval List/ })
+      screen.getByRole('button', { name: /Download Placeholder Sheets/ })
+      screen.getByRole('button', { name: /Download Ballot Labels/ })
+      screen.getByRole('button', { name: /Download Audit Board Credentials/ })
+
+      screen.getByRole('heading', { name: 'Audit Board Progress' })
+      screen.getByText('Audit Board #01: 0 of 30 ballots audited')
+      // Tested further in RoundProgress.test.tsx
+
+      screen.getByText(/Jurisdiction One/)
+      screen.getByText(/audit one/)
     })
   })
 
-  it('renders links & data entry with offline ballot audit', async () => {
+  it('renders tally entry form for offline ballot audit', async () => {
     const expectedCalls = [
       apiCalls.getSettings(auditSettings.offlineAll),
       jaApiCalls.getUser,
@@ -150,13 +163,24 @@ describe('RoundManagement', () => {
       apiCalls.getResults(batchResultsMocks.empty),
     ]
     await withMockFetch(expectedCalls, async () => {
-      const { container } = renderView({
+      renderView({
         round: roundMocks.incomplete,
         auditBoards: auditBoardMocks.unfinished,
         createAuditBoards: jest.fn(),
       })
-      await screen.findByText('Download Ballot Retrieval List')
-      expect(container).toMatchSnapshot()
+      await screen.findByRole('heading', { name: 'Prepare Ballots' })
+      screen.getByText('Ballots to audit: 27')
+      // TODO test these buttons
+      screen.getByRole('button', { name: /Download Ballot Retrieval List/ })
+      screen.getByRole('button', { name: /Download Placeholder Sheets/ })
+      screen.getByRole('button', { name: /Download Ballot Labels/ })
+
+      await screen.findByRole('heading', { name: 'Enter Tallies' })
+      screen.getByRole('heading', { name: 'Contest 1' })
+      // Tested further in RoundDataEntry.test.tsx
+
+      screen.getByText(/Jurisdiction One/)
+      screen.getByText(/audit one/)
     })
   })
 
@@ -177,6 +201,9 @@ describe('RoundManagement', () => {
 
       await screen.findByRole('heading', { name: 'Prepare Batches' })
       // Tested further in BatchRoundSteps.test.tsx
+
+      screen.getByText(/Jurisdiction One/)
+      screen.getByText(/audit one/)
     })
   })
 
@@ -192,9 +219,13 @@ describe('RoundManagement', () => {
         auditBoards: auditBoardMocks.unfinished,
         createAuditBoards: jest.fn(),
       })
-      await screen.findByText(
+      await screen.findByRole('heading', { name: 'No ballots to audit' })
+      screen.getByText(
         'Your jurisdiction has not been assigned any ballots to audit in this round.'
       )
+
+      screen.getByText(/Jurisdiction One/)
+      screen.getByText(/audit one/)
     })
   })
 
@@ -210,9 +241,13 @@ describe('RoundManagement', () => {
         auditBoards: [],
         createAuditBoards: jest.fn(),
       })
-      await screen.findByText(
+      await screen.findByRole('heading', { name: 'No ballots to audit' })
+      screen.getByText(
         'Your jurisdiction has not been assigned any ballots to audit in this round.'
       )
+
+      screen.getByText(/Jurisdiction One/)
+      screen.getByText(/audit one/)
     })
   })
 
@@ -234,6 +269,9 @@ describe('RoundManagement', () => {
         'Please audit all of the ballots in your jurisdiction (100 ballots)'
       )
       screen.getByText('No batches added. Add your first batch below.')
+
+      screen.getByText(/Jurisdiction One/)
+      screen.getByText(/audit one/)
     })
   })
 })
