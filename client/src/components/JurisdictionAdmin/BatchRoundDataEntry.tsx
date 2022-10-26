@@ -127,6 +127,7 @@ const BatchRoundDataEntry: React.FC<IProps> = ({
   const { confirm, confirmProps } = useConfirm()
 
   const [searchQuery, setSearchQuery] = useState('')
+  const [debouncedSearchQuery] = useDebounce(searchQuery)
   const [selectedBatchId, setSelectedBatchId] = useState<IBatch['id']>()
   const [selectedTabId, setSelectedTabId] = useState('')
   const [isEditing, setIsEditing] = useState(false)
@@ -138,7 +139,7 @@ const BatchRoundDataEntry: React.FC<IProps> = ({
 
   const batches = batchesQuery.isSuccess ? batchesQuery.data.batches : []
   const filteredBatches = batches.filter(batch =>
-    batch.name.toLowerCase().includes(searchQuery.toLowerCase())
+    batch.name.toLowerCase().includes(debouncedSearchQuery.toLowerCase())
   )
   const selectedBatch = batches.find(batch => batch.id === selectedBatchId)
 
@@ -176,7 +177,6 @@ const BatchRoundDataEntry: React.FC<IProps> = ({
   }, [selectedBatchId])
 
   // Auto-select first search match
-  const [debouncedSearchQuery] = useDebounce(searchQuery)
   useEffect(() => {
     if (
       debouncedSearchQuery &&
