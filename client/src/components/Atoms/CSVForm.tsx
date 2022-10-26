@@ -12,11 +12,15 @@ import {
 import * as Yup from 'yup'
 import { CvrFileType, IFileInfo, FileProcessingStatus } from '../useCSV'
 import FormWrapper from './Form/FormWrapper'
-import FormSection, { FormSectionDescription } from './Form/FormSection'
+import { FormSectionDescription } from './Form/FormSection'
 import { ErrorLabel, SuccessLabel } from './Form/_helpers'
 import { sum } from '../../utils/number'
 import FormButton from './Form/FormButton'
 import AsyncButton from './AsyncButton'
+
+// CSVFile is deprecated in favor of FileUpload
+
+const FormSection = styled.div``
 
 export const Select = styled(HTMLSelect)`
   margin-top: 5px;

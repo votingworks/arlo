@@ -16,7 +16,7 @@ interface IProps {
 
 const FormWrapper: React.FC<IProps> = ({ children, title }: IProps) => (
   <StyledFormWrapper>
-    <H2Title>{title}</H2Title>
+    {title && <H2Title>{title}</H2Title>}
     {children}
   </StyledFormWrapper>
 )
