@@ -135,9 +135,13 @@ describe('Batch Comparison', () => {
                 name: 'Set Up Tally Entry Accounts',
               }).click()
               cy.findByRole('button', { name: /Enter Login Code/ }).click()
-              cy.findByLabelText(
-                'Enter the login code shown on their screen:'
-              ).type(loginCode)
+              cy.findByLabelText('Enter the login code shown on their screen:')
+                .findAllByRole('textbox')
+                .then(digitInputs => {
+                  loginCode.split('').forEach((digit, index) => {
+                    cy.wrap(digitInputs[index]).type(digit)
+                  })
+                })
               cy.findByRole('button', { name: 'Confirm' }).click()
 
               // Switch back to tally entry user, who should now be logged in
