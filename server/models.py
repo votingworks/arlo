@@ -843,6 +843,10 @@ class SampledBatchDraw(BaseModel):
     __table_args__ = (PrimaryKeyConstraint("batch_id", "round_id", "ticket_number"),)
 
 
+# (Experimental) To we add extra batches on top of the sample, give them a
+# special ticket number to flag them.
+EXTRA_TICKET_NUMBER = "EXTRA"
+
 # In a batch comparison audit, audit boards will record votes on tally sheets.
 # They may use one sheet for the whole batch, or split the batch up and use
 # multiple sheets.

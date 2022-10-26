@@ -33,11 +33,11 @@ Tabulator 2 - BATCH2,6,\r
 
 snapshots[
     "test_batch_inventory_happy_path 2"
-] = """Batch Name,Number of Ballots\r
-Tabulator 1 - BATCH1,3\r
-Tabulator 1 - BATCH2,3\r
-Tabulator 2 - BATCH1,3\r
-Tabulator 2 - BATCH2,6\r
+] = """Container,Batch Name,Number of Ballots\r
+Election Day,Tabulator 1 - BATCH1,3\r
+Election Day,Tabulator 1 - BATCH2,3\r
+Mail,Tabulator 2 - BATCH1,3\r
+Election Day,Tabulator 2 - BATCH2,6\r
 """
 
 snapshots[
