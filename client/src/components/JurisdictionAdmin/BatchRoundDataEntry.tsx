@@ -358,7 +358,7 @@ const BatchRoundDataEntry: React.FC<IProps> = ({
 
       <Detail>
         {!selectedBatch ? (
-          <p>Select a batch to enter audit results.</p>
+          <p>Select a batch to enter tallies.</p>
         ) : (
           <>
             <H4>{selectedBatch.name}</H4>
@@ -641,7 +641,7 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
             loading={formState.isSubmitting}
             onClick={saveResults}
           >
-            Save Results
+            Save Tallies
           </Button>
         ) : (
           <Button
@@ -649,7 +649,7 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
             icon="edit"
             onClick={enableEditing}
           >
-            Edit Results
+            Edit Tallies
           </Button>
         )}
       </Actions>
