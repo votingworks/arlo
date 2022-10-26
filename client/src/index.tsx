@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom'
 import { BrowserRouter as Router } from 'react-router-dom'
 import * as Sentry from '@sentry/react'
 import { Integrations } from '@sentry/tracing'
+import { FocusStyleManager } from '@blueprintjs/core'
 import './index.css'
 import App from './App'
 
@@ -15,6 +16,8 @@ if (process.env.NODE_ENV === 'production') {
     tracesSampleRate: 0.2,
   })
 }
+
+FocusStyleManager.onlyShowFocusOnTabs()
 
 ReactDOM.render(
   <Router>
