@@ -1,15 +1,10 @@
 import React from 'react'
-import { H4 } from '@blueprintjs/core'
 import { Formik, Field } from 'formik'
 import styled from 'styled-components'
 import { generateOptions } from '../Atoms/Form/_helpers'
 import FormButton from '../Atoms/Form/FormButton'
 import Select from '../Atoms/Form/Select'
 import FormSection from '../Atoms/Form/FormSection'
-
-const Wrapper = styled.div`
-  margin: 20px 0;
-`
 
 const AuditBoardsInput = styled(Field)`
   margin-left: 0;
@@ -35,8 +30,7 @@ const CreateAuditBoards: React.FC<IProps> = ({ createAuditBoards }) => {
   }
 
   return (
-    <Wrapper>
-      <H4>Number of Audit Boards</H4>
+    <div>
       <p>
         Select the appropriate number of audit boards based upon the personnel
         available and the number of ballots assigned to your jurisdiction for
@@ -71,7 +65,7 @@ const CreateAuditBoards: React.FC<IProps> = ({ createAuditBoards }) => {
           </>
         )}
       </Formik>
-    </Wrapper>
+    </div>
   )
 }
 

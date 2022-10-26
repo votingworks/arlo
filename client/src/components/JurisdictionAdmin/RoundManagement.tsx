@@ -1,7 +1,7 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
-import { ButtonGroup, Button, H2, H3 } from '@blueprintjs/core'
+import { ButtonGroup, Button, H2, H3, Card, Colors } from '@blueprintjs/core'
 import { Inner as InnerAtom } from '../Atoms/Wrapper'
 import { apiDownload, assert } from '../utilities'
 import CreateAuditBoards from './CreateAuditBoards'
@@ -24,10 +24,11 @@ import FullHandTallyDataEntry from './FullHandTallyDataEntry'
 import BatchRoundSteps from './BatchRoundSteps/BatchRoundSteps'
 import { StatusBar, AuditHeading } from '../Atoms/StatusBar'
 import BatchRoundProgress from './BatchRoundProgress'
+import { Row } from '../Atoms/Layout'
 
 const Inner = styled(InnerAtom).attrs({ flexDirection: 'column' })``
 
-const SpacedDiv = styled.div`
+const SpacedDiv = styled(Card).attrs({ elevation: 1 })`
   margin-bottom: 30px;
 `
 
@@ -122,41 +123,43 @@ const RoundManagement: React.FC<IRoundManagementProps> = ({
     )
   }
 
-  const samplesToAudit = (() => {
-    if (round.isFullHandTally)
-      return (
+  const samplesToAudit = (
+    <StrongP>Ballots to audit: {sampleCount.ballots.toLocaleString()}</StrongP>
+  )
+
+  if (auditBoards.length === 0) {
+    return (
+      <Inner>
+        <StatusBar>{auditHeading}</StatusBar>
+        <Card>
+          <H3>Set Up Audit Boards</H3>
+          {samplesToAudit}
+          <CreateAuditBoards createAuditBoards={createAuditBoards} />
+        </Card>
+      </Inner>
+    )
+  }
+
+  if (round.isFullHandTally) {
+    return (
+      <Inner>
+        <StatusBar>{auditHeading}</StatusBar>
+        <hr style={{ margin: 0, marginBottom: '20px' }} />
         <StrongP>
           Please audit all of the ballots in your jurisdiction (
           {jurisdiction.numBallots} ballots)
         </StrongP>
-      )
-    return (
-      <StrongP>
-        Ballots to audit: {sampleCount.ballots.toLocaleString()}
-      </StrongP>
-    )
-  })()
-
-  if (
-    auditBoards.length === 0 &&
-    auditSettings.auditType !== 'BATCH_COMPARISON'
-  ) {
-    return (
-      <Inner>
-        <H3>Round {roundNum} Audit Board Setup</H3>
-        {samplesToAudit}
-        <CreateAuditBoards createAuditBoards={createAuditBoards} />
+        <FullHandTallyDataEntry round={round} />
       </Inner>
     )
   }
 
   return (
     <Inner>
-      <H3>Round {roundNum} Data Entry</H3>
-      {round.isFullHandTally ? (
-        samplesToAudit
-      ) : (
+      <StatusBar>{auditHeading}</StatusBar>
+      <Row gap="15px">
         <SpacedDiv>
+          <H3>Prepare Ballots</H3>
           {samplesToAudit}
           <JAFileDownloadButtons
             electionId={electionId}
@@ -167,16 +170,14 @@ const RoundManagement: React.FC<IRoundManagementProps> = ({
             auditBoards={auditBoards}
           />
         </SpacedDiv>
-      )}
-      <SpacedDiv>
-        {auditSettings.online ? (
-          <RoundProgress auditBoards={auditBoards} />
-        ) : round.isFullHandTally ? (
-          <FullHandTallyDataEntry round={round} />
-        ) : (
-          <RoundDataEntry round={round} />
-        )}
-      </SpacedDiv>
+        <SpacedDiv style={{ flex: 1 }}>
+          {auditSettings.online ? (
+            <RoundProgress auditBoards={auditBoards} />
+          ) : (
+            <RoundDataEntry round={round} />
+          )}
+        </SpacedDiv>
+      </Row>
     </Inner>
   )
 }

@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Divider, Classes } from '@blueprintjs/core'
+import { Divider, Classes, Colors } from '@blueprintjs/core'
 import {
   Row,
   // IFlexboxProps is needed by TS in order to export StatusBar
@@ -16,7 +16,7 @@ export const StatusBar = styled(Row).attrs({
   justifyContent: 'space-between',
   className: Classes.TEXT_LARGE,
 })`
-  padding: 25px 0;
+  padding: 20px 0;
 `
 
 interface IAuditHeadingProps {
