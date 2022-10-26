@@ -14,6 +14,7 @@ import {
 import userEvent from '@testing-library/user-event'
 import { QueryClient, DefaultOptions } from 'react-query'
 import { queryClientDefaultOptions } from '../App'
+import { assert } from './utilities'
 
 type MatchParameter<Params> = { [K in keyof Params]?: string }
 
@@ -247,3 +248,14 @@ export const createQueryClient = (): QueryClient =>
       },
     } as DefaultOptions<unknown>,
   })
+
+/**
+ * Type a code into a CodeInput element (see Atoms/CodeInput.tsx)
+ */
+export const typeCode = (codeInputElement: HTMLElement, code: string) => {
+  const digitInputs = within(codeInputElement).getAllByRole('textbox')
+  assert(code.length <= digitInputs.length)
+  code.split('').forEach((digit, index) => {
+    userEvent.type(digitInputs[index], digit)
+  })
+}

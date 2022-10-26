@@ -13,6 +13,7 @@ import {
   findAndCloseToast,
   serverError,
   createQueryClient,
+  typeCode,
 } from '../../testUtilities'
 import BatchRoundSteps from './BatchRoundSteps'
 import { jaApiCalls } from '../../_mocks'
@@ -353,12 +354,22 @@ describe('BatchRoundSteps', () => {
       await within(dialog).findByText('Enter a 3-digit login code')
 
       // Try an invalid code
-      userEvent.type(loginCodeInput, '123')
+      typeCode(loginCodeInput, '123')
+      const digitInputs = within(loginCodeInput).getAllByRole('textbox')
+      expect(digitInputs[0]).toHaveValue('1')
+      expect(digitInputs[1]).toHaveValue('2')
+      expect(digitInputs[2]).toHaveValue('3')
       userEvent.click(confirmButton)
       await within(dialog).findByText('Invalid code, please try again.')
 
+      // Code should be cleared
+      expect(digitInputs[0]).toHaveValue('')
+      expect(digitInputs[1]).toHaveValue('')
+      expect(digitInputs[2]).toHaveValue('')
+
       // Confirm successfully
       // (we use the same code, but the request mock is set up to succeed this time)
+      typeCode(loginCodeInput, '123')
       userEvent.click(confirmButton)
       await screen.findByText('Login Confirmed')
       screen.getAllByRole('button', { name: 'Close' })

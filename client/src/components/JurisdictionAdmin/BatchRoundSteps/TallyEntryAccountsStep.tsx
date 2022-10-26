@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   H5,
   Button,
@@ -13,7 +13,7 @@ import {
   H3,
 } from '@blueprintjs/core'
 import { useMutation, useQueryClient, useQuery } from 'react-query'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import styled from 'styled-components'
 import { IJurisdiction, IMember } from '../../UserContext'
 import { StepPanel, StepPanelColumn, StepActions } from '../../Atoms/Steps'
@@ -23,6 +23,9 @@ import AsyncButton from '../../Atoms/AsyncButton'
 import CopyToClipboard from '../../Atoms/CopyToClipboard'
 import { downloadTallyEntryLoginLinkPrintout } from '../generateSheets'
 import { ButtonRow, Column, Row } from '../../Atoms/Layout'
+import { assert } from '../../utilities'
+import { range, replaceAtIndex } from '../../../utils/array'
+import CodeInputAtom from '../../Atoms/CodeInput'
 
 const useTurnOnTallyEntryAccounts = (
   electionId: string,
@@ -142,6 +145,14 @@ const TurnOnTallyEntryAccountsPrompt: React.FC<ITurnOnTallyEntryAccountsPromptPr
   )
 }
 
+const CodeInput = styled(CodeInputAtom)`
+  input {
+    width: 70px;
+    font-size: 50px;
+    height: 80px;
+  }
+`
+
 interface IConfirmTallyEntryLoginProps {
   jurisdiction: IJurisdiction
   loginRequest: ITallyEntryLoginRequest | null
@@ -157,7 +168,14 @@ const ConfirmTallyEntryLoginModal: React.FC<IConfirmTallyEntryLoginProps> = ({
     jurisdiction.election.id,
     jurisdiction.id
   )
-  const { register, handleSubmit, errors, formState, setError } = useForm<{
+  const {
+    handleSubmit,
+    errors,
+    formState,
+    setError,
+    control,
+    reset,
+  } = useForm<{
     loginCode: string
   }>({ reValidateMode: 'onSubmit' })
   const [isConfirmed, setIsConfirmed] = useState(false)
@@ -184,6 +202,7 @@ const ConfirmTallyEntryLoginModal: React.FC<IConfirmTallyEntryLoginProps> = ({
       }, 1500)
     } catch (error) {
       if (error instanceof ApiError) {
+        reset()
         setError('loginCode', { message: error.message })
       }
     }
@@ -205,20 +224,28 @@ const ConfirmTallyEntryLoginModal: React.FC<IConfirmTallyEntryLoginProps> = ({
           style={{ height: '120px' }}
           justifyContent="center"
         >
-          {/* TODO make a multi-digit input component */}
           {!isConfirmed ? (
             <Column alignItems="center">
+              {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
               <label
                 className={Classes.TEXT_LARGE}
                 style={{ display: 'block', marginBottom: '15px' }}
-                htmlFor="loginCode"
+                id="loginCodeLabel"
               >
                 Enter the login code shown on their screen:
               </label>
-              <InputGroup
-                id="loginCode"
+              <Controller
                 name="loginCode"
-                inputRef={register({
+                control={control}
+                defaultValue=""
+                render={({ ref: _, ...props }) => (
+                  <CodeInput
+                    aria-labelledby="loginCodeLabel"
+                    length={3}
+                    {...props}
+                  />
+                )}
+                rules={{
                   required: codeValidationMessage,
                   maxLength: {
                     value: 3,
@@ -228,9 +255,7 @@ const ConfirmTallyEntryLoginModal: React.FC<IConfirmTallyEntryLoginProps> = ({
                     value: 3,
                     message: codeValidationMessage,
                   },
-                })}
-                style={{ height: '80px', width: '110px', fontSize: '50px' }}
-                autoFocus
+                }}
               />
             </Column>
           ) : (
