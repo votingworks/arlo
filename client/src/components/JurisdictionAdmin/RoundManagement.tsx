@@ -1,7 +1,7 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
-import { ButtonGroup, Button, H2, H3, Card, Colors } from '@blueprintjs/core'
+import { ButtonGroup, Button, H2, H3, Card, Icon } from '@blueprintjs/core'
 import { Inner as InnerAtom } from '../Atoms/Wrapper'
 import { apiDownload, assert } from '../utilities'
 import CreateAuditBoards from './CreateAuditBoards'
@@ -24,7 +24,7 @@ import FullHandTallyDataEntry from './FullHandTallyDataEntry'
 import BatchRoundSteps from './BatchRoundSteps/BatchRoundSteps'
 import { StatusBar, AuditHeading } from '../Atoms/StatusBar'
 import BatchRoundProgress from './BatchRoundProgress'
-import { Row } from '../Atoms/Layout'
+import { Row, Column } from '../Atoms/Layout'
 
 const Inner = styled(InnerAtom).attrs({ flexDirection: 'column' })``
 
@@ -79,10 +79,26 @@ const RoundManagement: React.FC<IRoundManagementProps> = ({
           <AuditHeading
             auditName={jurisdiction.election.auditName}
             jurisdictionName={jurisdiction.name}
-            auditStage="Audit Complete"
           />
         </StatusBar>
-        <H2>Congratulations! Your Risk-Limiting Audit is now complete.</H2>
+        <Card>
+          <Column alignItems="center" gap="30px" style={{ padding: '100px 0' }}>
+            <Icon icon="tick-circle" intent="primary" iconSize={100} />
+            <Column alignItems="center" gap="10px">
+              <H2>Audit Complete</H2>
+              <AsyncButton
+                intent="primary"
+                onClick={() =>
+                  apiDownload(
+                    `/election/${electionId}/jurisdiction/${jurisdictionId}/report`
+                  )
+                }
+              >
+                Download Audit Report
+              </AsyncButton>
+            </Column>
+          </Column>
+        </Card>
       </Inner>
     )
   }
@@ -99,10 +115,17 @@ const RoundManagement: React.FC<IRoundManagementProps> = ({
     return (
       <Inner>
         <StatusBar>{auditHeading}</StatusBar>
-        <StrongP>
-          Your jurisdiction has not been assigned any ballots to audit in this
-          round.
-        </StrongP>
+        <Card>
+          <Column alignItems="center" gap="30px" style={{ padding: '100px 0' }}>
+            <Column alignItems="center" gap="10px">
+              <H2>No ballots to audit</H2>
+              <p>
+                Your jurisdiction has not been assigned any ballots to audit in
+                this round.
+              </p>
+            </Column>
+          </Column>
+        </Card>
       </Inner>
     )
   }
