@@ -176,6 +176,13 @@ const BatchRoundDataEntry: React.FC<IProps> = ({
     setIsEditing(false)
   }, [selectedBatchId])
 
+  // Auto-select first batch on initial load
+  useEffect(() => {
+    if (!selectedBatchId && filteredBatches.length > 0) {
+      setSelectedBatchId(filteredBatches[0].id)
+    }
+  }, [filteredBatches, selectedBatchId, setSelectedBatchId])
+
   // Auto-select first search match
   useEffect(() => {
     if (
@@ -185,7 +192,7 @@ const BatchRoundDataEntry: React.FC<IProps> = ({
     ) {
       setSelectedBatchId(filteredBatches[0].id)
     }
-  }, [debouncedSearchQuery])
+  }, [debouncedSearchQuery, filteredBatches, formState, setSelectedBatchId])
 
   if (!batchesQuery.isSuccess || !contestsQuery.isSuccess) {
     return null
