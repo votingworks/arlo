@@ -88,29 +88,15 @@ const InnerBar = styled(Inner)`
 
 interface TParams {
   electionId: string
-  jurisdictionId?: string
 }
 
 const Header: React.FC = () => {
   const electionMatch:
     | RouteComponentProps<TParams>['match']
     | null = useRouteMatch('/election/:electionId')
-  const jurisdictionMatch:
-    | RouteComponentProps<TParams>['match']
-    | null = useRouteMatch(
-    '/election/:electionId/jurisdiction/:jurisdictionId?'
-  )
   const supportMatch = useRouteMatch('/support')
   const auth = useAuthDataContext()
   const electionId = electionMatch ? electionMatch.params.electionId : undefined
-  const jurisdiction =
-    jurisdictionMatch &&
-    auth &&
-    auth.user &&
-    auth.user.type === 'jurisdiction_admin' &&
-    auth.user.jurisdictions.find(
-      j => j.id === jurisdictionMatch.params.jurisdictionId
-    )
 
   if (
     auth &&
@@ -151,9 +137,6 @@ const Header: React.FC = () => {
                   <span>Arlo</span>
                 </Link>
               </NavbarHeading>
-              {jurisdiction && (
-                <NavbarHeading>Jurisdiction: {jurisdiction.name}</NavbarHeading>
-              )}
             </NavbarGroup>
             {auth &&
               auth.user &&
