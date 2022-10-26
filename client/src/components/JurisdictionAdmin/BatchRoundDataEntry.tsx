@@ -447,8 +447,8 @@ const BatchRoundDataEntry: React.FC<IProps> = ({
                   onClick={addSheet}
                 >
                   {sheets.length > 1
-                    ? 'Add sheet'
-                    : 'Use multiple tally sheets'}
+                    ? 'Add Sheet'
+                    : 'Use Multiple Tally Sheets'}
                 </Button>
               )}
             </Tabs>
@@ -568,7 +568,7 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
             {isEditing && sheets.length > 1 && !isRenamingSheet && (
               <>
                 <Button icon="edit" minimal onClick={initiateSheetRename}>
-                  Rename sheet
+                  Rename Sheet
                 </Button>
                 <Button
                   icon="delete"
@@ -576,7 +576,7 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
                   minimal
                   onClick={deleteSheet}
                 >
-                  Delete sheet
+                  Delete Sheet
                 </Button>
               </>
             )}
