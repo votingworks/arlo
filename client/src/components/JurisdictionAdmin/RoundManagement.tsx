@@ -2,7 +2,7 @@ import React from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { ButtonGroup, Button, H2, H3 } from '@blueprintjs/core'
-import { Wrapper } from '../Atoms/Wrapper'
+import { Inner as InnerAtom } from '../Atoms/Wrapper'
 import { apiDownload, assert } from '../utilities'
 import CreateAuditBoards from './CreateAuditBoards'
 import RoundProgress from './RoundProgress'
@@ -22,11 +22,10 @@ import AsyncButton from '../Atoms/AsyncButton'
 import useSampleCount from './useBallots'
 import FullHandTallyDataEntry from './FullHandTallyDataEntry'
 import BatchRoundSteps from './BatchRoundSteps/BatchRoundSteps'
+import { StatusBar, AuditHeading } from '../Atoms/StatusBar'
+import BatchRoundProgress from './BatchRoundProgress'
 
-const PaddedWrapper = styled(Wrapper)`
-  flex-direction: column;
-  padding: 30px 0;
-`
+const Inner = styled(InnerAtom).attrs({ flexDirection: 'column' })``
 
 const SpacedDiv = styled.div`
   margin-bottom: 30px;
@@ -74,28 +73,52 @@ const RoundManagement: React.FC<IRoundManagementProps> = ({
 
   if (round.isAuditComplete) {
     return (
-      <PaddedWrapper>
+      <Inner>
+        <StatusBar>
+          <AuditHeading
+            auditName={jurisdiction.election.auditName}
+            jurisdictionName={jurisdiction.name}
+            auditStage="Audit Complete"
+          />
+        </StatusBar>
         <H2>Congratulations! Your Risk-Limiting Audit is now complete.</H2>
-      </PaddedWrapper>
+      </Inner>
     )
   }
 
+  const auditHeading = (
+    <AuditHeading
+      auditName={jurisdiction.election.auditName}
+      jurisdictionName={jurisdiction.name}
+      auditStage={`Round ${roundNum}`}
+    />
+  )
+
   if (sampleCount.ballots === 0 && !round.isFullHandTally) {
     return (
-      <PaddedWrapper>
+      <Inner>
+        <StatusBar>{auditHeading}</StatusBar>
         <StrongP>
           Your jurisdiction has not been assigned any ballots to audit in this
           round.
         </StrongP>
-      </PaddedWrapper>
+      </Inner>
     )
   }
 
   if (auditType === 'BATCH_COMPARISON') {
     return (
-      <PaddedWrapper>
+      <Inner>
+        <StatusBar>
+          {auditHeading}
+          <BatchRoundProgress
+            electionId={electionId}
+            jurisdictionId={jurisdictionId}
+            roundId={round.id}
+          />
+        </StatusBar>
         <BatchRoundSteps jurisdiction={jurisdiction} round={round} />
-      </PaddedWrapper>
+      </Inner>
     )
   }
 
@@ -119,16 +142,16 @@ const RoundManagement: React.FC<IRoundManagementProps> = ({
     auditSettings.auditType !== 'BATCH_COMPARISON'
   ) {
     return (
-      <PaddedWrapper>
+      <Inner>
         <H3>Round {roundNum} Audit Board Setup</H3>
         {samplesToAudit}
         <CreateAuditBoards createAuditBoards={createAuditBoards} />
-      </PaddedWrapper>
+      </Inner>
     )
   }
 
   return (
-    <PaddedWrapper>
+    <Inner>
       <H3>Round {roundNum} Data Entry</H3>
       {round.isFullHandTally ? (
         samplesToAudit
@@ -154,7 +177,7 @@ const RoundManagement: React.FC<IRoundManagementProps> = ({
           <RoundDataEntry round={round} />
         )}
       </SpacedDiv>
-    </PaddedWrapper>
+    </Inner>
   )
 }
 

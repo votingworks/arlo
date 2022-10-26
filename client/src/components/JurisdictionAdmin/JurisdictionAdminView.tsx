@@ -193,23 +193,11 @@ const JurisdictionAdminView: React.FC = () => {
   }
   return (
     <Wrapper>
-      <JurisdictionAdminStatusBox
-        rounds={rounds}
-        ballotManifest={ballotManifest}
-        batchTallies={batchTallies}
-        cvrs={cvrs}
+      <RoundManagement
+        round={rounds[rounds.length - 1]}
         auditBoards={auditBoards}
-        auditType={auditSettings.auditType}
-        auditName={auditSettings.auditName}
-        isAuditOnline={!!auditSettings.online}
+        createAuditBoards={createAuditBoards}
       />
-      <Inner>
-        <RoundManagement
-          round={rounds[rounds.length - 1]}
-          auditBoards={auditBoards}
-          createAuditBoards={createAuditBoards}
-        />
-      </Inner>
     </Wrapper>
   )
 }
