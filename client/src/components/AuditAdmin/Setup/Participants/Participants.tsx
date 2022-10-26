@@ -75,14 +75,16 @@ const Participants: React.FC<IProps> = ({ nextStage, refresh }: IProps) => {
         enabled
       />
       {(isBallotComparison || isHybrid) && (
-        <CSVFile
-          csvFile={standardizedContestsFile!}
-          uploadCSVFiles={uploadStandardizedContestsFile}
-          title="Standardized Contests"
-          description='Click "Browse" to choose the appropriate file from your computer. This file should be a comma-separated list of all the contests on the ballot, the vote choices available in each, and the jurisdiction(s) where each contest appeared on the ballot.'
-          sampleFileLink="/sample_standardized_contests.csv"
-          enabled={isFileProcessed(jurisdictionsFile)}
-        />
+        <div style={{ marginTop: '30px' }}>
+          <CSVFile
+            csvFile={standardizedContestsFile!}
+            uploadCSVFiles={uploadStandardizedContestsFile}
+            title="Standardized Contests"
+            description='Click "Browse" to choose the appropriate file from your computer. This file should be a comma-separated list of all the contests on the ballot, the vote choices available in each, and the jurisdiction(s) where each contest appeared on the ballot.'
+            sampleFileLink="/sample_standardized_contests.csv"
+            enabled={isFileProcessed(jurisdictionsFile)}
+          />
+        </div>
       )}
       <FormButtonBar>
         <FormButton
