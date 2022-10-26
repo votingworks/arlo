@@ -153,6 +153,9 @@ const BatchRoundDataEntry: React.FC<IProps> = ({
     setValue,
     watch,
   } = formMethods
+  // BEWARE! You have to access properties on the formState to subscribe to it:
+  // https://github.com/react-hook-form/react-hook-form/issues/9002
+  const { isDirty, isSubmitting } = formState
   const sheetFieldArrayMethods = useFieldArray<IBatchResultTallySheet>({
     control,
     name: 'resultTallySheets',
@@ -190,16 +193,12 @@ const BatchRoundDataEntry: React.FC<IProps> = ({
 
   // Auto-select first search match
   useEffect(() => {
-    if (
-      debouncedSearchQuery &&
-      filteredBatches.length > 0 &&
-      !formState.isDirty
-    ) {
+    if (debouncedSearchQuery && filteredBatches.length > 0 && !isDirty) {
       setSelectedBatchId(filteredBatches[0].id)
     }
-  }, [debouncedSearchQuery, filteredBatches, formState, setSelectedBatchId])
+  }, [debouncedSearchQuery, filteredBatches, isDirty, setSelectedBatchId])
 
-  // Auto-select newly created sheets
+  // Auto-select new sheets
   useEffect(() => {
     if (
       autoSelectLastTabOnceNumSheetsIs !== undefined &&
@@ -226,15 +225,16 @@ const BatchRoundDataEntry: React.FC<IProps> = ({
   // ---------- Handlers (START) ----------
 
   const selectBatch = (batchId: string) => {
-    if (formState.isDirty) {
+    if (isDirty) {
       confirm({
         title: 'Unsaved Changes',
         description:
           'You have unsaved changes. ' +
           'Are you sure you want to leave this batch without saving changes?',
-        yesButtonLabel: 'Yes, Leave Batch without Saving',
+        yesButtonLabel: 'Discard Changes',
+        yesButtonIntent: 'danger',
         onYesClick: () => setSelectedBatchId(batchId),
-        noButtonLabel: 'Return to Batch',
+        noButtonLabel: 'Cancel',
       })
       return
     }
@@ -270,6 +270,8 @@ const BatchRoundDataEntry: React.FC<IProps> = ({
       name: newSheetName,
       results: {},
     })
+    // We want to auto-select the new sheet but don't yet have the react-hook-form useFieldArray ID
+    // to select it, so we do so via a useEffect hook
     setAutoSelectLastTabOnceNumSheetsIs(sheetFields.length + 1)
   }
 
@@ -287,7 +289,9 @@ const BatchRoundDataEntry: React.FC<IProps> = ({
   }
 
   const confirmSheetRename = () => {
-    setValue(`resultTallySheets[${currentSheetIndex}].name`, draftSheetName)
+    setValue(`resultTallySheets[${currentSheetIndex}].name`, draftSheetName, {
+      shouldDirty: true,
+    })
     setIsRenamingSheet(false)
     setAreAdditionalSheetActionsOpen(false)
     setDraftSheetName('')
@@ -386,7 +390,7 @@ const BatchRoundDataEntry: React.FC<IProps> = ({
   const sheetActions = (
     <ButtonGroup>
       <Button
-        disabled={formState.isSubmitting || isRenamingSheet}
+        disabled={isSubmitting || isRenamingSheet}
         icon="add"
         minimal
         onClick={addSheet}
@@ -405,7 +409,7 @@ const BatchRoundDataEntry: React.FC<IProps> = ({
                   <Row>
                     <InputGroup
                       aria-label="New Sheet Name"
-                      disabled={formState.isSubmitting}
+                      disabled={isSubmitting}
                       intent={draftSheetNameError ? 'danger' : undefined}
                       onChange={(e: ChangeEvent<HTMLInputElement>) =>
                         setDraftSheetName(e.target.value)
@@ -450,7 +454,7 @@ const BatchRoundDataEntry: React.FC<IProps> = ({
         >
           <Button
             aria-label="Additional Actions"
-            disabled={formState.isSubmitting}
+            disabled={isSubmitting}
             icon="caret-down"
             minimal
             onClick={openAdditionalSheetActions}
@@ -552,7 +556,7 @@ const BatchRoundDataEntry: React.FC<IProps> = ({
             {isEditing ? (
               <>
                 <Button
-                  disabled={formState.isSubmitting || isRenamingSheet}
+                  disabled={isSubmitting || isRenamingSheet}
                   icon="delete"
                   intent="danger"
                   minimal
@@ -564,7 +568,7 @@ const BatchRoundDataEntry: React.FC<IProps> = ({
                   disabled={isRenamingSheet}
                   icon="tick"
                   intent="primary"
-                  loading={formState.isSubmitting}
+                  loading={isSubmitting}
                   onClick={saveResults}
                 >
                   Save Tallies
@@ -609,24 +613,10 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
   savedResults,
   sheetFields,
 }) => {
-  const {
-    errors,
-    formState,
-    register,
-    setValue,
-    unregister,
-    watch,
-  } = formMethods
-
-  // Since we don't have persistent inputs for sheet names, we have to register them manually to
-  // persist them in react-hook-form state
-  useEffect(() => {
-    register(`resultTallySheets[${index}].name`)
-    setValue(`resultTallySheets[${index}].name`, sheetFields[index].name)
-    return () => {
-      unregister(`resultTallySheets[${index}].name`)
-    }
-  }, [index, sheetFields])
+  const { errors, formState, register, watch } = formMethods
+  // BEWARE! You have to access properties on the formState to subscribe to it:
+  // https://github.com/react-hook-form/react-hook-form/issues/9002
+  const { isSubmitting } = formState
 
   return (
     <BatchResultTallySheetTable>
@@ -653,24 +643,34 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
                   )}
                 </span>
               ) : isEditing ? (
-                <input
-                  aria-label={`${choice.name} Votes`}
-                  className={classnames(
-                    Classes.INPUT,
-                    errors.resultTallySheets?.[index]?.results?.[choice.id] &&
-                      Classes.INTENT_DANGER
-                  )}
-                  defaultValue={`${sheetFields[index]?.results?.[choice.id] ||
-                    0}`}
-                  name={`resultTallySheets[${index}].results[${choice.id}]`}
-                  readOnly={formState.isSubmitting}
-                  ref={register({
-                    min: 0,
-                    required: true,
-                    valueAsNumber: true,
-                  })}
-                  type="number"
-                />
+                <>
+                  <input
+                    aria-label={`${choice.name} Votes`}
+                    className={classnames(
+                      Classes.INPUT,
+                      errors.resultTallySheets?.[index]?.results?.[choice.id] &&
+                        Classes.INTENT_DANGER
+                    )}
+                    defaultValue={`${sheetFields[index]?.results?.[choice.id] ||
+                      0}`}
+                    name={`resultTallySheets[${index}].results[${choice.id}]`}
+                    readOnly={isSubmitting}
+                    ref={register({
+                      min: 0,
+                      required: true,
+                      valueAsNumber: true,
+                    })}
+                    type="number"
+                  />
+                  {/* We include a hidden input for name so that it's registered in the
+                    react-hook-form state */}
+                  <input
+                    defaultValue={sheetFields[index].name}
+                    name={`resultTallySheets[${index}].name`}
+                    ref={register()}
+                    style={{ display: 'none' }}
+                  />
+                </>
               ) : (
                 <span>{savedResults[choice.id] || 0}</span>
               )}
