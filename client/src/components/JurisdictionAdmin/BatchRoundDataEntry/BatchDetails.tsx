@@ -30,19 +30,11 @@ import {
   Tabs,
 } from '@blueprintjs/core'
 
-import useContestsJurisdictionAdmin from './useContestsJurisdictionAdmin'
-import { ButtonRow, Row } from '../Atoms/Layout'
-import { Confirm, useConfirm } from '../Atoms/Confirm'
-import { Detail, List, ListAndDetail, ListItem } from '../Atoms/ListAndDetail'
-import {
-  IBatch,
-  IBatchResultTallySheet,
-  useBatches,
-  useRecordBatchResults,
-} from './useBatchResults'
-import { IContest } from '../../types'
-import { sum } from '../../utils/number'
-import { useDebounce } from '../../utils/debounce'
+import { ButtonRow, Row } from '../../Atoms/Layout'
+import { Detail } from '../../Atoms/ListAndDetail'
+import { IBatch, IBatchResultTallySheet } from '../useBatchResults'
+import { IContest } from '../../../types'
+import { sum } from '../../../utils/number'
 
 const RenameSheetPanel = styled('div')`
   min-height: 70px; // Match the height of the additional sheet actions menu
@@ -94,30 +86,28 @@ function constructEmptyResultTallySheet(index: number): IBatchResultTallySheet {
   }
 }
 
-interface IProps {
-  electionId: string
-  jurisdictionId: string
-  roundId: string
+interface IBatchDetailsProps {
+  areResultsFinalized: boolean
+  batch: IBatch
+  contest: IContest
+  saveBatchResults: (
+    resultTallySheets: IBatchResultTallySheet[]
+  ) => Promise<void>
+  setAreChangesUnsaved: (areChangesUnsaved: boolean) => void
+
+  // Require a key to ensure that the form within this component resets when a different batch is
+  // selected
+  key: string // eslint-disable-line react/no-unused-prop-types
 }
 
-const BatchRoundDataEntry: React.FC<IProps> = ({
-  electionId,
-  jurisdictionId,
-  roundId,
+const BatchDetails: React.FC<IBatchDetailsProps> = ({
+  areResultsFinalized,
+  batch,
+  contest,
+  saveBatchResults,
+  setAreChangesUnsaved,
 }) => {
-  const batchesQuery = useBatches(electionId, jurisdictionId, roundId)
-  const contestsQuery = useContestsJurisdictionAdmin(electionId, jurisdictionId)
-  const recordBatchResults = useRecordBatchResults(
-    electionId,
-    jurisdictionId,
-    roundId
-  )
-  const { confirm, confirmProps } = useConfirm()
-
-  const [searchQuery, setSearchQuery] = useState('')
-  const [debouncedSearchQuery] = useDebounce(searchQuery)
-  const [selectedBatchId, setSelectedBatchId] = useState<IBatch['id']>()
-  const [selectedTabId, setSelectedTabId] = useState('')
+  const [selectedTabId, setSelectedTabId] = useState(VOTE_TOTALS_TAB_ID)
   const [isEditing, setIsEditing] = useState(false)
   const [
     areAdditionalSheetActionsOpen,
@@ -130,14 +120,8 @@ const BatchRoundDataEntry: React.FC<IProps> = ({
     setAutoSelectLastTabOnceNumSheetsIs,
   ] = useState<number>()
 
-  const batches = batchesQuery.isSuccess ? batchesQuery.data.batches : []
-  const filteredBatches = batches.filter(batch =>
-    batch.name.toLowerCase().includes(debouncedSearchQuery.toLowerCase())
-  )
-  const selectedBatch = batches.find(batch => batch.id === selectedBatchId)
-
-  const initialResultTallySheets = selectedBatch?.resultTallySheets.length
-    ? selectedBatch.resultTallySheets
+  const initialResultTallySheets = batch.resultTallySheets.length
+    ? batch.resultTallySheets
     : [constructEmptyResultTallySheet(0)]
   const formMethods = useForm<IBatchRoundDataEntryFormState>({
     defaultValues: {
@@ -153,7 +137,7 @@ const BatchRoundDataEntry: React.FC<IProps> = ({
     setValue,
     watch,
   } = formMethods
-  // BEWARE! You have to access properties on the formState to subscribe to it:
+  // Important gotcha! You have to access properties on the formState to subscribe to it:
   // https://github.com/react-hook-form/react-hook-form/issues/9002
   const { isDirty, isSubmitting } = formState
   const sheetFieldArrayMethods = useFieldArray<IBatchResultTallySheet>({
@@ -172,32 +156,6 @@ const BatchRoundDataEntry: React.FC<IProps> = ({
     setSelectedTabId(sheetFields[sheetIndex].id || '')
   }
 
-  const resetFormState = () => {
-    reset({ resultTallySheets: initialResultTallySheets })
-    selectVoteTotalsTab()
-    setIsEditing(false)
-  }
-
-  // Reset state whenever a new batch is selected. Use an effect instead of the tabs onChange
-  // handler since actions other than tab clicks can result in tab changes, e.g. searching
-  useEffect(() => {
-    resetFormState()
-  }, [selectedBatchId])
-
-  // Auto-select first batch on initial load
-  useEffect(() => {
-    if (!selectedBatchId && filteredBatches.length > 0) {
-      setSelectedBatchId(filteredBatches[0].id)
-    }
-  }, [filteredBatches, selectedBatchId, setSelectedBatchId])
-
-  // Auto-select first search match
-  useEffect(() => {
-    if (debouncedSearchQuery && filteredBatches.length > 0 && !isDirty) {
-      setSelectedBatchId(filteredBatches[0].id)
-    }
-  }, [debouncedSearchQuery, filteredBatches, isDirty, setSelectedBatchId])
-
   // Auto-select new sheets
   useEffect(() => {
     if (
@@ -214,32 +172,12 @@ const BatchRoundDataEntry: React.FC<IProps> = ({
     sheetFields,
   ])
 
-  if (!batchesQuery.isSuccess || !contestsQuery.isSuccess) {
-    return null
-  }
+  // Communicate up to the parent whether or not there are unsaved changes
+  useEffect(() => {
+    setAreChangesUnsaved(isDirty)
+  }, [isDirty])
 
-  const areResultsFinalized = Boolean(batchesQuery.data.resultsFinalizedAt)
-  // Batch comparison audits only support a single contest
-  const [contest] = contestsQuery.data
-
-  // ---------- Handlers (START) ----------
-
-  const selectBatch = (batchId: string) => {
-    if (isDirty) {
-      confirm({
-        title: 'Unsaved Changes',
-        description:
-          'You have unsaved changes. ' +
-          'Are you sure you want to leave this batch without saving changes?',
-        yesButtonLabel: 'Discard Changes',
-        yesButtonIntent: 'danger',
-        onYesClick: () => setSelectedBatchId(batchId),
-        noButtonLabel: 'Cancel',
-      })
-      return
-    }
-    setSelectedBatchId(batchId)
-  }
+  // -------------------- Handlers (start) --------------------
 
   const enableEditing = () => {
     setIsEditing(true)
@@ -299,7 +237,7 @@ const BatchRoundDataEntry: React.FC<IProps> = ({
 
   const cancelSheetRename = () => {
     setIsRenamingSheet(false)
-    setAreAdditionalSheetActionsOpen(true)
+    setAreAdditionalSheetActionsOpen(false)
     setDraftSheetName('')
   }
 
@@ -326,14 +264,11 @@ const BatchRoundDataEntry: React.FC<IProps> = ({
   const onValidSubmit: SubmitHandler<IBatchRoundDataEntryFormState> = async ({
     resultTallySheets,
   }) => {
-    if (!selectedBatch) {
+    if (!batch) {
       return
     }
     try {
-      await recordBatchResults.mutateAsync({
-        batchId: selectedBatch.id,
-        resultTallySheets,
-      })
+      await saveBatchResults(resultTallySheets)
     } catch {
       // Errors are automatically toasted by the queryClient
       setIsEditing(true)
@@ -362,10 +297,12 @@ const BatchRoundDataEntry: React.FC<IProps> = ({
   }
 
   const discardChanges = () => {
-    resetFormState()
+    reset({ resultTallySheets: initialResultTallySheets })
+    selectVoteTotalsTab()
+    setIsEditing(false)
   }
 
-  // ---------- Handlers (END) ----------
+  // -------------------- Handlers (end) --------------------
 
   const currentSheetName = watch(`resultTallySheets[${currentSheetIndex}].name`)
 
@@ -465,156 +402,127 @@ const BatchRoundDataEntry: React.FC<IProps> = ({
   )
 
   return (
-    <ListAndDetail>
-      <List
-        search={{
-          placeholder: 'Search batches...',
-          setQuery: setSearchQuery,
+    <Detail>
+      <H4>{batch.name}</H4>
+
+      <Tabs
+        id={batch.name}
+        onChange={(newTabId: string) => {
+          setSelectedTabId(newTabId)
         }}
+        // Defaults to false but noting explicitly for clarity. Rendering all tabs at all times
+        // is important for react-hook-form's state management
+        renderActiveTabPanelOnly={false}
+        selectedTabId={selectedTabId}
       >
-        {filteredBatches.map(batch => (
-          <ListItem
-            key={batch.id}
-            onClick={() => selectBatch(batch.id)}
-            selected={batch.id === selectedBatchId}
-          >
-            {batch.name}
-          </ListItem>
-        ))}
-      </List>
-
-      {!selectedBatch ? (
-        <Detail>
-          <p>Select a batch to enter tallies.</p>
-        </Detail>
-      ) : (
-        <Detail>
-          <H4>{selectedBatch.name}</H4>
-
-          <Tabs
-            id={selectedBatch.name}
-            onChange={(newTabId: string) => {
-              setSelectedTabId(newTabId)
-            }}
-            // Defaults to false but noting explicitly for clarity. Rendering all tabs at all times
-            // is important for react-hook-form's state management
-            renderActiveTabPanelOnly={false}
-            selectedTabId={selectedTabId}
-          >
+        <Tab
+          disabled={isRenamingSheet}
+          id={VOTE_TOTALS_TAB_ID}
+          panel={
+            <BatchResultTallySheet
+              contest={contest}
+              formMethods={formMethods}
+              isEditing={isEditing}
+              isTotalsSheet={sheetFields.length > 1}
+              key={
+                sheetFields.length === 1
+                  ? sheetFields[0].id || ''
+                  : VOTE_TOTALS_TAB_ID
+              }
+              savedResults={batch.resultTallySheets[0]?.results || {}}
+              sheetFields={sheetFields}
+              sheetIndex={0}
+            />
+          }
+        >
+          Vote Totals
+        </Tab>
+        {sheetFields.length > 1 &&
+          sheetFields.map((sheetField, i) => (
             <Tab
               disabled={isRenamingSheet}
-              id={VOTE_TOTALS_TAB_ID}
+              id={sheetField.id}
+              key={sheetField.id}
               panel={
                 <BatchResultTallySheet
                   contest={contest}
                   formMethods={formMethods}
-                  index={0}
                   isEditing={isEditing}
-                  isTotalsSheet={sheetFields.length > 1}
-                  key={
-                    sheetFields.length === 1
-                      ? sheetFields[0].id || ''
-                      : VOTE_TOTALS_TAB_ID
-                  }
-                  savedResults={
-                    selectedBatch.resultTallySheets[0]?.results || {}
-                  }
+                  key={sheetField.id || ''}
+                  savedResults={batch.resultTallySheets[i]?.results || {}}
                   sheetFields={sheetFields}
+                  sheetIndex={i}
                 />
               }
             >
-              Vote Totals
+              {watch(`resultTallySheets[${i}].name`)}
             </Tab>
-            {sheetFields.length > 1 &&
-              sheetFields.map((sheetField, i) => (
-                <Tab
-                  disabled={isRenamingSheet}
-                  id={sheetField.id}
-                  key={sheetField.id}
-                  panel={
-                    <BatchResultTallySheet
-                      contest={contest}
-                      formMethods={formMethods}
-                      index={i}
-                      isEditing={isEditing}
-                      key={sheetField.id || ''}
-                      savedResults={
-                        selectedBatch.resultTallySheets[i]?.results || {}
-                      }
-                      sheetFields={sheetFields}
-                    />
-                  }
-                >
-                  {watch(`resultTallySheets[${i}].name`)}
-                </Tab>
-              ))}
-            <Tabs.Expander />
-            {isEditing && sheetActions}
-          </Tabs>
+          ))}
+        <Tabs.Expander />
+        {isEditing && sheetActions}
+      </Tabs>
 
-          <ButtonRow justifyContent="end">
-            {isEditing ? (
-              <>
-                <Button
-                  disabled={isSubmitting || isRenamingSheet}
-                  icon="delete"
-                  intent="danger"
-                  minimal
-                  onClick={discardChanges}
-                >
-                  Discard Changes
-                </Button>
-                <Button
-                  disabled={isRenamingSheet}
-                  icon="tick"
-                  intent="primary"
-                  loading={isSubmitting}
-                  onClick={saveResults}
-                >
-                  Save Tallies
-                </Button>
-              </>
-            ) : (
-              <Button
-                disabled={areResultsFinalized}
-                icon="edit"
-                onClick={enableEditing}
-              >
-                Edit Tallies
-              </Button>
-            )}
-          </ButtonRow>
-        </Detail>
-      )}
-      <Confirm {...confirmProps} />
-    </ListAndDetail>
+      <ButtonRow justifyContent="end">
+        {isEditing ? (
+          <>
+            <Button
+              disabled={isSubmitting || isRenamingSheet}
+              icon="delete"
+              intent="danger"
+              minimal
+              onClick={discardChanges}
+            >
+              Discard Changes
+            </Button>
+            <Button
+              disabled={isRenamingSheet}
+              icon="tick"
+              intent="primary"
+              loading={isSubmitting}
+              onClick={saveResults}
+            >
+              Save Tallies
+            </Button>
+          </>
+        ) : (
+          <Button
+            disabled={areResultsFinalized}
+            icon="edit"
+            onClick={enableEditing}
+          >
+            Edit Tallies
+          </Button>
+        )}
+      </ButtonRow>
+    </Detail>
   )
 }
 
 interface IBatchResultTallySheetProps {
   contest: IContest
   formMethods: UseFormMethods<IBatchRoundDataEntryFormState>
-  index: number
   isEditing: boolean
   isTotalsSheet?: boolean
-  // Require a key to ensure that inputs within this component re-render in response to
-  // useFieldArray updates
-  key: string // eslint-disable-line react/no-unused-prop-types
   savedResults: { [choiceId: string]: number }
   sheetFields: Partial<ArrayField<IBatchResultTallySheet, 'id'>>[]
+  sheetIndex: number
+
+  // Require a key to ensure that inputs within this component reset in response to useFieldArray
+  // updates
+  key: string // eslint-disable-line react/no-unused-prop-types
 }
 
 const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
   contest,
   formMethods,
-  index,
   isEditing,
   isTotalsSheet,
   savedResults,
   sheetFields,
+  sheetIndex,
 }) => {
   const { errors, formState, register, watch } = formMethods
-  // BEWARE! You have to access properties on the formState to subscribe to it:
+  // Important gotcha! You have to access properties on the formState to subscribe to it:
   // https://github.com/react-hook-form/react-hook-form/issues/9002
   const { isSubmitting } = formState
 
@@ -648,12 +556,14 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
                     aria-label={`${choice.name} Votes`}
                     className={classnames(
                       Classes.INPUT,
-                      errors.resultTallySheets?.[index]?.results?.[choice.id] &&
-                        Classes.INTENT_DANGER
+                      errors.resultTallySheets?.[sheetIndex]?.results?.[
+                        choice.id
+                      ] && Classes.INTENT_DANGER
                     )}
-                    defaultValue={`${sheetFields[index]?.results?.[choice.id] ||
-                      0}`}
-                    name={`resultTallySheets[${index}].results[${choice.id}]`}
+                    defaultValue={`${sheetFields[sheetIndex]?.results?.[
+                      choice.id
+                    ] || 0}`}
+                    name={`resultTallySheets[${sheetIndex}].results[${choice.id}]`}
                     readOnly={isSubmitting}
                     ref={register({
                       min: 0,
@@ -667,8 +577,8 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
                     style={{ display: !isEditing ? 'none' : undefined }}
                   />
                   <input
-                    defaultValue={sheetFields[index].name}
-                    name={`resultTallySheets[${index}].name`}
+                    defaultValue={sheetFields[sheetIndex].name}
+                    name={`resultTallySheets[${sheetIndex}].name`}
                     ref={register()}
                     // Including a completely hidden input for name so that it's registered in the
                     // react-hook-form state
@@ -685,4 +595,4 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
   )
 }
 
-export default BatchRoundDataEntry
+export default BatchDetails
