@@ -11,7 +11,7 @@ snapshots[
     "test_sample_extra_batches_by_counting_group 1"
 ] = """######## ELECTION INFO ########\r
 Organization,Election Name,State\r
-Test Org test_sample_extra_batches_by_counting_group,Test Election,CA\r
+Test Org Sample Extra Batches,Test Election,CA\r
 \r
 ######## CONTESTS ########\r
 Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes\r
