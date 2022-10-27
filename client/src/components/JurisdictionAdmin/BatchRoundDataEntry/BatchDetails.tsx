@@ -527,71 +527,73 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
   const { isSubmitting } = formState
 
   return (
-    <BatchResultTallySheetTable>
-      <thead>
-        <tr>
-          <th>Choice</th>
-          <th>Votes</th>
-        </tr>
-      </thead>
-      <tbody>
-        {contest.choices.map(choice => (
-          <tr key={choice.id}>
-            <td>{choice.name}</td>
-            <td>
-              {isTotalsSheet ? (
-                <span>
-                  {sum(
-                    sheetFields.map(
-                      (_, i) =>
-                        watch(
-                          `resultTallySheets[${i}].results[${choice.id}]`
-                        ) || 0
-                    )
-                  )}
-                </span>
-              ) : (
-                <>
-                  <input
-                    aria-label={`${choice.name} Votes`}
-                    className={classnames(
-                      Classes.INPUT,
-                      errors.resultTallySheets?.[sheetIndex]?.results?.[
-                        choice.id
-                      ] && Classes.INTENT_DANGER
-                    )}
-                    defaultValue={`${sheetFields[sheetIndex]?.results?.[
-                      choice.id
-                    ] || 0}`}
-                    name={`resultTallySheets[${sheetIndex}].results[${choice.id}]`}
-                    readOnly={isSubmitting}
-                    ref={register({
-                      min: 0,
-                      required: true,
-                      valueAsNumber: true,
-                    })}
-                    type="number"
-                    // Visually hide this input instead of completely unmounting it to avoid
-                    // interfering with react-hook-form's state management. Unmounting seems to
-                    // interfere with the form's isDirty tracking
-                    style={{ display: !isEditing ? 'none' : undefined }}
-                  />
-                  <input
-                    defaultValue={sheetFields[sheetIndex].name}
-                    name={`resultTallySheets[${sheetIndex}].name`}
-                    ref={register()}
-                    // Including a completely hidden input for name so that it's registered in the
-                    // react-hook-form state
-                    style={{ display: 'none' }}
-                  />
-                  {!isEditing && <span>{savedResults[choice.id] || 0}</span>}
-                </>
-              )}
-            </td>
+    <>
+      <BatchResultTallySheetTable>
+        <thead>
+          <tr>
+            <th>Choice</th>
+            <th>Votes</th>
           </tr>
-        ))}
-      </tbody>
-    </BatchResultTallySheetTable>
+        </thead>
+        <tbody>
+          {contest.choices.map(choice => (
+            <tr key={choice.id}>
+              <td>{choice.name}</td>
+              <td>
+                {isTotalsSheet ? (
+                  <span>
+                    {sum(
+                      sheetFields.map(
+                        (_, i) =>
+                          watch(
+                            `resultTallySheets[${i}].results[${choice.id}]`
+                          ) || 0
+                      )
+                    )}
+                  </span>
+                ) : (
+                  <>
+                    <input
+                      aria-label={`${choice.name} Votes`}
+                      className={classnames(
+                        Classes.INPUT,
+                        errors.resultTallySheets?.[sheetIndex]?.results?.[
+                          choice.id
+                        ] && Classes.INTENT_DANGER
+                      )}
+                      defaultValue={`${sheetFields[sheetIndex]?.results?.[
+                        choice.id
+                      ] || 0}`}
+                      name={`resultTallySheets[${sheetIndex}].results[${choice.id}]`}
+                      readOnly={isSubmitting}
+                      ref={register({
+                        min: 0,
+                        required: true,
+                        valueAsNumber: true,
+                      })}
+                      type="number"
+                      // Visually hide this input instead of completely unmounting it to avoid
+                      // interfering with react-hook-form's state management. Unmounting seems to
+                      // interfere with the form's isDirty tracking
+                      style={{ display: !isEditing ? 'none' : undefined }}
+                    />
+                    {!isEditing && <span>{savedResults[choice.id] || 0}</span>}
+                  </>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </BatchResultTallySheetTable>
+      <input
+        defaultValue={sheetFields[sheetIndex].name}
+        name={`resultTallySheets[${sheetIndex}].name`}
+        ref={register()}
+        // Including a completely hidden input for name so that it's registered in the
+        // react-hook-form state
+        style={{ display: 'none' }}
+      />
+    </>
   )
 }
 
