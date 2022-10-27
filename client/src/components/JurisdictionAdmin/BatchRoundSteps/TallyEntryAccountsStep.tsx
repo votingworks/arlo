@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import {
   H5,
   Button,
@@ -23,8 +23,6 @@ import AsyncButton from '../../Atoms/AsyncButton'
 import CopyToClipboard from '../../Atoms/CopyToClipboard'
 import { downloadTallyEntryLoginLinkPrintout } from '../generateSheets'
 import { ButtonRow, Column, Row } from '../../Atoms/Layout'
-import { assert } from '../../utilities'
-import { range, replaceAtIndex } from '../../../utils/array'
 import CodeInputAtom from '../../Atoms/CodeInput'
 
 const useTurnOnTallyEntryAccounts = (
@@ -98,6 +96,33 @@ const useConfirmTallyEntryLogin = (
       // Do nothing - override default toast behavior.
       // We'll show the message in the form.
     },
+    onSuccess: () => {
+      queryClient.invalidateQueries([
+        'jurisdictions',
+        jurisdictionId,
+        'tallyEntryAccountStatus',
+      ])
+    },
+  })
+}
+
+const useRejectTallyEntryLogin = (
+  electionId: string,
+  jurisdictionId: string
+) => {
+  const postRejectTallyEntryLogin = (body: { tallyEntryUserId: string }) =>
+    fetchApi(
+      `/auth/tallyentry/election/${electionId}/jurisdiction/${jurisdictionId}/reject`,
+      {
+        method: 'POST',
+        body: JSON.stringify(body),
+        headers: { 'Content-Type': 'application/json' },
+      }
+    )
+
+  const queryClient = useQueryClient()
+
+  return useMutation(postRejectTallyEntryLogin, {
     onSuccess: () => {
       queryClient.invalidateQueries([
         'jurisdictions',
@@ -307,13 +332,12 @@ const LoginRequestList = styled.div`
 `
 
 const LoginRequestItem = styled(Card)`
-  display: grid;
+  display: flex;
   gap: 10px;
-  grid-template-columns: 1fr 155px; /* Width of largest button */
+  justify-content: space-between;
   align-items: center;
-  padding: 10px 15px;
-  margin-bottom: 10px;
-  height: 56px; /* Height of tallest item */
+  padding: 10px 5px 10px 15px; /* Leave room for the reject button */
+  height: 56px; /* Height of buttons */
 `
 
 interface IManageTallyEntryAccountsProps {
@@ -332,6 +356,10 @@ const ManageTallyEntryAccounts: React.FC<IManageTallyEntryAccountsProps> = ({
     confirmingLoginRequest,
     setConfirmingLoginRequest,
   ] = useState<ITallyEntryLoginRequest | null>(null)
+  const rejectTallyEntryLogin = useRejectTallyEntryLogin(
+    jurisdiction.election.id,
+    jurisdiction.id
+  )
 
   return (
     <StepPanel>
@@ -382,21 +410,33 @@ const ManageTallyEntryAccounts: React.FC<IManageTallyEntryAccountsProps> = ({
                   ))}
                 </div>
                 {loginRequest.loginConfirmedAt ? (
-                  // Match button spacing
-                  <div style={{ paddingLeft: '11px' }}>
+                  <Row style={{ paddingRight: '10px' }}>
                     <Icon icon="tick" intent="success" />
                     <span style={{ marginLeft: '7px', color: Colors.GREEN2 }}>
                       Logged In
                     </span>
-                  </div>
+                  </Row>
                 ) : (
-                  <Button
-                    icon="key"
-                    intent="primary"
-                    onClick={() => setConfirmingLoginRequest(loginRequest)}
-                  >
-                    Enter Login Code
-                  </Button>
+                  <Row gap="5px">
+                    <Button
+                      icon="key"
+                      intent="primary"
+                      onClick={() => setConfirmingLoginRequest(loginRequest)}
+                    >
+                      Enter Login Code
+                    </Button>
+                    <AsyncButton
+                      minimal
+                      icon="cross"
+                      intent="danger"
+                      aria-label="Reject login request"
+                      onClick={() =>
+                        rejectTallyEntryLogin.mutateAsync({
+                          tallyEntryUserId: loginRequest.tallyEntryUserId,
+                        })
+                      }
+                    />
+                  </Row>
                 )}
               </LoginRequestItem>
             ))}

@@ -13,7 +13,7 @@ def org_id(client: FlaskClient, request) -> str:  # pylint: disable=unused-argum
     # id=str(uuid.uuid4()),
     org = Organization.query.get(org_id)
     if not org:
-        org = Organization(id=org_id, name=f"Test Org {request.node.name}",)
+        org = Organization(id=org_id, name="Test Org Sample Extra Batches",)
         db_session.add(org)
         add_admin_to_org(org_id, DEFAULT_AA_EMAIL)
         db_session.commit()

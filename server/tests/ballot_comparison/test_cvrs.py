@@ -651,13 +651,7 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortio
 CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM
 1,TABULATOR1,BATCH001,1,1-1-1,Election Day,12345,COUNTY,0,1
 """,
-            (
-                "Invalid TabulatorNum/BatchId for row with CvrNumber 1: TABULATOR1, BATCH001."
-                " The TabulatorNum and BatchId fields in the CVR file must match the Tabulator and Batch Name"
-                " fields in the ballot manifest. The closest match we found in the ballot manifest was:"
-                " TABULATOR1, BATCH1. Please check your CVR file and ballot manifest thoroughly to make"
-                " sure these values match - there may be a similar inconsistency in other rows in the CVR file."
-            ),
+            "Couldn't find a matching batch for TabulatorNum: TABULATOR1, BatchId: BATCH001 (CvrNumber: 1). The TabulatorNum and BatchId fields in the CVR file must match the Tabulator and Batch Name fields in the ballot manifest. The closest match we found in the ballot manifest was Tabulator: TABULATOR1, Batch Name: BATCH1. Please check your CVR file and ballot manifest thoroughly to make sure these values match - there may be a similar inconsistency in other rows in the CVR file.",
             "DOMINION",
         ),
         (
@@ -667,13 +661,7 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortio
 CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM
 1,TABULATO1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,0,1
 """,
-            (
-                "Invalid TabulatorNum/BatchId for row with CvrNumber 1: TABULATO1, BATCH1."
-                " The TabulatorNum and BatchId fields in the CVR file must match the Tabulator and Batch Name"
-                " fields in the ballot manifest. The closest match we found in the ballot manifest was:"
-                " TABULATOR1, BATCH1. Please check your CVR file and ballot manifest thoroughly to make"
-                " sure these values match - there may be a similar inconsistency in other rows in the CVR file."
-            ),
+            "Couldn't find a matching batch for TabulatorNum: TABULATO1, BatchId: BATCH1 (CvrNumber: 1). The TabulatorNum and BatchId fields in the CVR file must match the Tabulator and Batch Name fields in the ballot manifest. The closest match we found in the ballot manifest was Tabulator: TABULATOR1, Batch Name: BATCH1. Please check your CVR file and ballot manifest thoroughly to make sure these values match - there may be a similar inconsistency in other rows in the CVR file.",
             "DOMINION",
         ),
         (
@@ -683,13 +671,7 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortio
 CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM
 1,abc,123,1,1-1-1,Election Day,12345,COUNTY,0,1
 """,
-            (
-                "Invalid TabulatorNum/BatchId for row with CvrNumber 1: abc, 123."
-                " The TabulatorNum and BatchId fields in the CVR file must match the Tabulator and Batch Name"
-                " fields in the ballot manifest."
-                " Please check your CVR file and ballot manifest thoroughly to make"
-                " sure these values match - there may be a similar inconsistency in other rows in the CVR file."
-            ),
+            "Couldn't find a matching batch for TabulatorNum: abc, BatchId: 123 (CvrNumber: 1). The TabulatorNum and BatchId fields in the CVR file must match the Tabulator and Batch Name fields in the ballot manifest. Please check your CVR file and ballot manifest thoroughly to make sure these values match - there may be a similar inconsistency in other rows in the CVR file.",
             "DOMINION",
         ),
         (
@@ -816,13 +798,7 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,UniqueVotingIdentifier,REP,D
             """RowNumber,BoxID,BoxPosition,BallotID,PrecinctID,BallotStyleID,PrecinctStyleName,ScanComputerName,Status,Remade,Choice_1_1:Contest 1:Vote For 1:Choice 1-1:Non-Partisan,Choice_210_1:Contest 1:Vote For 1:Choice 1-2:Non-Partisan,Choice_34_1:Contest 2:Vote For 2:Choice 2-1:Non-Partisan,Choice_4_1:Contest 2:Vote For 2:Choice 2-2:Non-Partisan,Choice_173_1:Contest 2:Vote For 2:Choice 2-3:Non-Partisan
 1,BATCH1,1,1-1-1,p,bs,ps,TABULATO1,s,r,0,1,1,1,0
 """,
-            (
-                "Invalid ScanComputerName/BoxID for row with RowNumber 1: TABULATO1, BATCH1."
-                " The ScanComputerName and BoxID fields in the CVR file must match the Tabulator and Batch Name"
-                " fields in the ballot manifest. The closest match we found in the ballot manifest was:"
-                " TABULATOR1, BATCH1. Please check your CVR file and ballot manifest thoroughly to make"
-                " sure these values match - there may be a similar inconsistency in other rows in the CVR file."
-            ),
+            "Couldn't find a matching batch for ScanComputerName: TABULATO1, BoxID: BATCH1 (RowNumber: 1). The ScanComputerName and BoxID fields in the CVR file must match the Tabulator and Batch Name fields in the ballot manifest. The closest match we found in the ballot manifest was Tabulator: TABULATOR1, Batch Name: BATCH1. Please check your CVR file and ballot manifest thoroughly to make sure these values match - there may be a similar inconsistency in other rows in the CVR file.",
             "CLEARBALLOT",
         ),
         (
@@ -995,7 +971,7 @@ def test_cvr_reprocess_after_manifest_reupload(
                 "status": ProcessingStatus.ERRORED,
                 "startedAt": assert_is_date,
                 "completedAt": assert_is_date,
-                "error": "Invalid TabulatorNum/BatchId for row with CvrNumber 7: TABULATOR2, BATCH1. The TabulatorNum and BatchId fields in the CVR file must match the Tabulator and Batch Name fields in the ballot manifest. The closest match we found in the ballot manifest was: TABULATOR2, BATCH2. Please check your CVR file and ballot manifest thoroughly to make sure these values match - there may be a similar inconsistency in other rows in the CVR file.",
+                "error": "Couldn't find a matching batch for TabulatorNum: TABULATOR2, BatchId: BATCH1 (CvrNumber: 7). The TabulatorNum and BatchId fields in the CVR file must match the Tabulator and Batch Name fields in the ballot manifest. The closest match we found in the ballot manifest was Tabulator: TABULATOR2, Batch Name: BATCH2. Please check your CVR file and ballot manifest thoroughly to make sure these values match - there may be a similar inconsistency in other rows in the CVR file.",
                 "workProgress": 0,
                 "workTotal": manifest_num_ballots,
             },
@@ -1421,7 +1397,7 @@ def test_ess_cvr_invalid(
                     "ess_ballots_2.csv",
                 ),
             ],
-            "ess_ballots_2.csv: Invalid Tabulator/Batch for row with Cast Vote Record 15: 0003, BATCH2. The Tabulator and Batch fields in the CVR file must match the Tabulator and Batch Name fields in the ballot manifest. The closest match we found in the ballot manifest was: 0002, BATCH2. Please check your CVR file and ballot manifest thoroughly to make sure these values match - there may be a similar inconsistency in other rows in the CVR file.",
+            "ess_ballots_2.csv: Couldn't find a matching batch for Tabulator: 0003, Batch: BATCH2 (Cast Vote Record: 15). The Tabulator and Batch fields in the CVR file must match the Tabulator and Batch Name fields in the ballot manifest. The closest match we found in the ballot manifest was: Tabulator: 0002, Batch Name: BATCH2. Please check your CVR file and ballot manifest thoroughly to make sure these values match - there may be a similar inconsistency in other rows in the CVR file.",
         ),
         (
             [
@@ -2018,12 +1994,7 @@ def test_hart_cvr_upload_with_invalid_cvrs(
     invalid_cvrs = [
         (
             [build_hart_cvr("bad batch", "1", "1-1-1", "0,1,1,0,0")],
-            (
-                "Error in file: cvr-0.xml. Invalid BatchNumber: bad batch."
-                " The BatchNumber field in the CVR must match the Batch Name field in the ballot manifest."
-                " Please check your CVR files and ballot manifest thoroughly to make sure these values match"
-                " - there may be a similar inconsistency in other files in the CVR export."
-            ),
+            "Error in file: cvr-0.xml. Couldn't find a matching batch for BatchNumber: bad batch. The BatchNumber field in the CVR must match the Batch Name field in the ballot manifest. Please check your CVR files and ballot manifest thoroughly to make sure these values match - there may be a similar inconsistency in other files in the CVR export.",
         ),
         (
             [
@@ -2032,9 +2003,7 @@ def test_hart_cvr_upload_with_invalid_cvrs(
                     "<SheetNumber>1</SheetNumber>", "<SheetNumber>2</SheetNumber>"
                 ),
             ],
-            (
-                "Error in file: cvr-1.xml. Arlo currently only supports Hart CVRs with SheetNumber 1. Got SheetNumber: 2."
-            ),
+            "Error in file: cvr-1.xml. Arlo currently only supports Hart CVRs with SheetNumber 1. Got SheetNumber: 2.",
         ),
     ]
 

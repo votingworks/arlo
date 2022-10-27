@@ -665,6 +665,68 @@ def test_tally_entry_login(
     assert_is_date(tally_entry_me_response["user"]["loginConfirmedAt"])
 
 
+def test_tally_entry_reject_login_request(
+    client: FlaskClient,
+    batch_election_id: str,
+    batch_jurisdiction_id: str,
+    batch_ja_email: str,
+    batch_round_id: str,  # pylint: disable=unused-argument
+):
+    tally_entry_client = app.test_client()
+
+    election_id = batch_election_id
+    jurisdiction_id = batch_jurisdiction_id
+    ja_email = batch_ja_email
+
+    # Turn on tally entry login, generating a login link passphrase
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, ja_email)
+    rv = client.post(
+        f"/auth/tallyentry/election/{election_id}/jurisdiction/{jurisdiction_id}"
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/auth/tallyentry/election/{election_id}/jurisdiction/{jurisdiction_id}"
+    )
+    assert rv.status_code == 200
+    tally_entry_status = json.loads(rv.data)
+
+    # As an un-logged-in user, visit the login link
+    login_link = f"/tallyentry/{tally_entry_status['passphrase']}"
+    rv = tally_entry_client.get(login_link)
+    assert rv.status_code == 302
+
+    # Enter tally entry user details and start login
+    members = [
+        dict(name="Alice", affiliation="DEM"),
+        dict(name="Bob", affiliation=None),
+    ]
+    rv = post_json(tally_entry_client, "/auth/tallyentry/code", dict(members=members))
+    assert_ok(rv)
+
+    # JA sees the login request on their screen
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, ja_email)
+    rv = client.get(
+        f"/auth/tallyentry/election/{election_id}/jurisdiction/{jurisdiction_id}"
+    )
+    assert rv.status_code == 200
+    tally_entry_status = json.loads(rv.data)
+    tally_entry_user_id = tally_entry_status["loginRequests"][0]["tallyEntryUserId"]
+
+    # JA rejects the login request
+    rv = post_json(
+        client,
+        f"/auth/tallyentry/election/{election_id}/jurisdiction/{jurisdiction_id}/reject",
+        dict(tallyEntryUserId=tally_entry_user_id),
+    )
+    assert_ok(rv)
+
+    # Tally entry user is logged out
+    rv = tally_entry_client.get("/api/me")
+    assert rv.status_code == 200
+    assert json.loads(rv.data) == dict(user=None, supportUser=None)
+
+
 def test_tally_entry_wrong_audit_type(
     client: FlaskClient, election_id: str, jurisdiction_id: str, ja_email: str
 ):
