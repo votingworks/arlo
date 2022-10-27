@@ -401,6 +401,7 @@ class Batch(BaseModel):
         uselist=True,
         cascade="all, delete-orphan",
         passive_deletes=True,
+        order_by="BatchResultTallySheet.created_at",
     )
 
     __table_args__ = (UniqueConstraint("jurisdiction_id", "tabulator", "name"),)

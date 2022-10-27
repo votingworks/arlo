@@ -289,6 +289,75 @@ def test_record_batch_results(
         assert batch["id"] not in round_1_batch_ids
 
 
+def test_batch_tally_sheet_order(
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/contest"
+    )
+    assert rv.status_code == 200
+    contests = json.loads(rv.data)["contests"]
+    choice_ids = [choice["id"] for choice in contests[0]["choices"]]
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches"
+    )
+    assert rv.status_code == 200
+    batches = json.loads(rv.data)["batches"]
+
+    batch_id = batches[0]["id"]
+    tally_sheets = [
+        {
+            "name": "AAA",
+            "results": {choice_ids[0]: 1, choice_ids[1]: 1, choice_ids[2]: 1},
+        },
+        {
+            "name": "BBB",
+            "results": {choice_ids[0]: 1, choice_ids[1]: 1, choice_ids[2]: 1},
+        },
+    ]
+
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/{batch_id}/results",
+        tally_sheets,
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches"
+    )
+    assert rv.status_code == 200
+    batches = json.loads(rv.data)["batches"]
+    assert batches[0]["resultTallySheets"] == tally_sheets
+
+    # ZZZ should stay at the front, not get sorted to the back (since the
+    # natural sort order seems to be based on the unique index on tally sheet
+    # name)
+    tally_sheets = [
+        {
+            "name": "ZZZ",
+            "results": {choice_ids[0]: 1, choice_ids[1]: 1, choice_ids[2]: 1},
+        }
+    ] + tally_sheets
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/{batch_id}/results",
+        tally_sheets,
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches"
+    )
+    assert rv.status_code == 200
+    batches = json.loads(rv.data)["batches"]
+    assert batches[0]["resultTallySheets"] == tally_sheets
+
+
 def test_record_batch_results_invalid(
     client: FlaskClient,
     election_id: str,

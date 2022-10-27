@@ -4,7 +4,7 @@ from typing import List
 import uuid
 from flask import jsonify, request
 from werkzeug.exceptions import BadRequest, Conflict
-from sqlalchemy.orm import Query, contains_eager
+from sqlalchemy.orm import Query, joinedload
 from sqlalchemy import func
 
 from . import api
@@ -102,11 +102,9 @@ def list_batches_for_jurisdiction(
         .join(SampledBatchDraw)
         .filter_by(round_id=round.id)
         .filter(Batch.id.notin_(already_audited_batches(jurisdiction, round)))
-        .outerjoin(BatchResultTallySheet)
-        .outerjoin(BatchResult)
         .order_by(func.human_sort(Batch.name))
         .options(
-            contains_eager(Batch.result_tally_sheets).contains_eager(
+            joinedload(Batch.result_tally_sheets).joinedload(
                 BatchResultTallySheet.results
             )
         )
