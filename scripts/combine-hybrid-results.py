@@ -1,11 +1,8 @@
+# pylint: disable=invalid-name
 import sys
-from server.api.cvrs import cvr_contests_metadata
 from server.api.rounds import cvrs_for_contest, sampled_ballot_interpretations_to_cvrs, samples_not_found_by_round, contest_results_by_round, round_sizes
 from server.audit_math import sampler_contest, suite
-from server.audit_math.bravo import compute_cumulative_sample
 from server.models import *  # pylint: disable=wildcard-import
-from server.database import db_session
-
 
 def ballot_comparison_stratum(audit: Election):
     contest = audit.contests[0]
@@ -23,23 +20,20 @@ def ballot_comparison_stratum(audit: Election):
 
 def ballot_polling_stratum(audit: Election, remap):
     contest = audit.contests[0]
-    vote_counts = {choice.id: choice.num_votes for choice in contest.choices}
+    vote_counts = {remap[choice.id]: choice.num_votes for choice in contest.choices}
 
-    remapped_vote_counts = {remap[id1]: vote_counts[id1] for id1 in vote_counts}
-    suite_contest = sampler_contest.from_db_contest(contest)
-
-    sample_results = contest_results_by_round(contest)
-    remapped_sample_results = {}
-
-    for rd in sample_results:
-        remapped_sample_results[rd] = {}
-        for id1 in sample_results[rd]:
-            remapped_sample_results[rd][remap[id1]] = sample_results[rd][id1]
+    sample_results = {
+      round_id: {
+        remap[choice_id]: result
+        for choice_id, result in round_results.items()
+      }
+      for round_id, round_results in contest_results_by_round(contest).items()
+    }
 
     sample_size = sum(round_sizes(contest).values())
 
     return suite.BallotPollingStratum(
-            contest.total_ballots_cast, remapped_vote_counts, remapped_sample_results, sample_size
+            contest.total_ballots_cast, vote_counts, sample_results, sample_size
     )
 
 def combined_contests(cvr_contest, bp_contest, remap):
