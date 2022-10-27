@@ -568,7 +568,7 @@ def test_hybrid_manifest_validation_too_many_votes(
                 "status": "ERRORED",
                 "startedAt": assert_is_date,
                 "completedAt": assert_is_date,
-                "error": "Contest Contest 1 vote counts add up to 130, which is more than the total number of ballots across all jurisdiction manifests (50) times the number of votes allowed (2)",
+                "error": "Contest Contest 1 vote counts add up to 130 votes, which is more than the total number of ballots across all jurisdiction manifests (50 ballots) times the number of votes allowed (2 votes)",
             },
         },
     )
@@ -714,7 +714,7 @@ def test_hybrid_manifest_validation_few_non_cvr_ballots(
                 "status": "ERRORED",
                 "startedAt": assert_is_date,
                 "completedAt": assert_is_date,
-                "error": "For contest Contest 1, choice votes for non-CVR ballots add up to 80, which is more than the total number of non-CVR ballots across all jurisdiction manifests (20) for jurisdictions in this contest's universe times the number of votes allowed (2)",
+                "error": "For contest Contest 1, choice votes for non-CVR ballots add up to 80 votes, which is more than the total number of non-CVR ballots across all jurisdiction manifests (20 ballots) for jurisdictions in this contest's universe times the number of votes allowed (2 votes)",
             },
         },
     )
@@ -757,7 +757,7 @@ def test_hybrid_manifest_validation_too_many_cvr_votes(
                 "status": "ERRORED",
                 "startedAt": assert_is_date,
                 "completedAt": assert_is_date,
-                "error": "For contest Contest 1, the CVRs contain more votes for choice Choice 1-1 (14) than were entered in the contest settings (13).",
+                "error": "For contest Contest 1, the CVRs contain more votes for choice Choice 1-1 (14 votes) than were entered in the contest settings (13 votes).",
             },
         },
     )

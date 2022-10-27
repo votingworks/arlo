@@ -129,7 +129,7 @@ def test_batch_comparison_too_many_votes(
                 "status": "ERRORED",
                 "startedAt": assert_is_date,
                 "completedAt": assert_is_date,
-                "error": "Total votes in batch tallies files for contest choice candidate 1 (5200) is greater than the reported number of votes for that choice (5000).",
+                "error": "Total votes in batch tallies files for contest choice candidate 1 (5,200 votes) is greater than the reported number of votes for that choice (5,000 votes).",
             },
         },
     )
