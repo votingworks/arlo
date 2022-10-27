@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react'
+import styled from 'styled-components'
+import { Callout } from '@blueprintjs/core'
 
 import BatchDetails from './BatchDetails'
 import useContestsJurisdictionAdmin from '../useContestsJurisdictionAdmin'
@@ -16,6 +18,12 @@ import {
   useRecordBatchResults,
 } from '../useBatchResults'
 import { useDebounce } from '../../../utils/debounce'
+
+const Container = styled('div')`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+`
 
 interface IProps {
   electionId: string
@@ -97,47 +105,54 @@ const BatchRoundDataEntry: React.FC<IProps> = ({
   }
 
   return (
-    <ListAndDetail>
-      <List
-        search={{
-          placeholder: 'Search batches...',
-          setQuery: setSearchQuery,
-        }}
-      >
-        {filteredBatches.map(batch => (
-          <ListItem
-            key={batch.id}
-            onClick={() => selectBatch(batch.id)}
-            selected={batch.id === selectedBatchId}
-          >
-            {batch.name}
-          </ListItem>
-        ))}
-      </List>
-
-      {!selectedBatch ? (
-        <Detail>
-          <p>Select a batch to enter tallies.</p>
-        </Detail>
-      ) : (
-        <BatchDetails
-          areResultsFinalized={areResultsFinalized}
-          batch={selectedBatch}
-          contest={contest}
-          key={selectedBatch.id}
-          saveBatchResults={async (
-            resultTallySheets: IBatchResultTallySheet[]
-          ) => {
-            await recordBatchResults.mutateAsync({
-              batchId: selectedBatch.id,
-              resultTallySheets,
-            })
-          }}
-          setAreChangesUnsaved={setAreChangesUnsaved}
-        />
+    <Container>
+      {areResultsFinalized && (
+        <Callout icon="tick-circle" intent="success">
+          Tallies finalized
+        </Callout>
       )}
-      <Confirm {...confirmProps} />
-    </ListAndDetail>
+      <ListAndDetail>
+        <List
+          search={{
+            placeholder: 'Search batches...',
+            setQuery: setSearchQuery,
+          }}
+        >
+          {filteredBatches.map(batch => (
+            <ListItem
+              key={batch.id}
+              onClick={() => selectBatch(batch.id)}
+              selected={batch.id === selectedBatchId}
+            >
+              {batch.name}
+            </ListItem>
+          ))}
+        </List>
+
+        {!selectedBatch ? (
+          <Detail>
+            <p>Select a batch to enter tallies.</p>
+          </Detail>
+        ) : (
+          <BatchDetails
+            areResultsFinalized={areResultsFinalized}
+            batch={selectedBatch}
+            contest={contest}
+            key={selectedBatch.id}
+            saveBatchResults={async (
+              resultTallySheets: IBatchResultTallySheet[]
+            ) => {
+              await recordBatchResults.mutateAsync({
+                batchId: selectedBatch.id,
+                resultTallySheets,
+              })
+            }}
+            setAreChangesUnsaved={setAreChangesUnsaved}
+          />
+        )}
+        <Confirm {...confirmProps} />
+      </ListAndDetail>
+    </Container>
   )
 }
 
