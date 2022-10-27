@@ -1,9 +1,8 @@
 import React from 'react'
-import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { ButtonGroup, Button, H2, H3, Card, Icon } from '@blueprintjs/core'
 import { Inner as InnerAtom } from '../Atoms/Wrapper'
-import { apiDownload, assert } from '../utilities'
+import { apiDownload } from '../utilities'
 import CreateAuditBoards from './CreateAuditBoards'
 import RoundProgress from './RoundProgress'
 import {
@@ -11,11 +10,11 @@ import {
   downloadLabels,
   downloadAuditBoardCredentials,
 } from './generateSheets'
-import { IAuditBoard } from '../useAuditBoards'
+import useAuditBoards, { IAuditBoard } from '../useAuditBoards'
 import QRs from './QRs'
 import RoundDataEntry from './RoundDataEntry'
 import useAuditSettingsJurisdictionAdmin from './useAuditSettingsJurisdictionAdmin'
-import { useAuthDataContext } from '../UserContext'
+import { IJurisdiction } from '../UserContext'
 import { IRound } from '../AuditAdmin/useRoundsAuditAdmin'
 import { IAuditSettings } from '../useAuditSettings'
 import AsyncButton from '../Atoms/AsyncButton'
@@ -37,39 +36,34 @@ const StrongP = styled.p`
 `
 
 export interface IRoundManagementProps {
+  jurisdiction: IJurisdiction
   round: IRound
-  auditBoards: IAuditBoard[]
-  createAuditBoards: (auditBoards: { name: string }[]) => Promise<boolean>
 }
 
 const RoundManagement: React.FC<IRoundManagementProps> = ({
+  jurisdiction,
   round,
-  auditBoards,
-  createAuditBoards,
 }) => {
-  const { electionId, jurisdictionId } = useParams<{
-    electionId: string
-    jurisdictionId: string
-  }>()
-  const auth = useAuthDataContext()
+  const { election } = jurisdiction
+  const [auditBoards, createAuditBoards] = useAuditBoards(
+    election.id,
+    jurisdiction.id,
+    [round]
+  )
   const auditSettings = useAuditSettingsJurisdictionAdmin(
-    electionId,
-    jurisdictionId
+    election.id,
+    jurisdiction.id
   )
   const auditType = auditSettings && auditSettings.auditType
   const sampleCount = useSampleCount(
-    electionId,
-    jurisdictionId,
+    election.id,
+    jurisdiction.id,
     round.id,
     auditType
   )
 
-  if (!auth?.user || !auditSettings || !sampleCount) return null // Still loading
+  if (!auditBoards || !auditSettings || !sampleCount) return null // Still loading
 
-  assert(auth.user.type === 'jurisdiction_admin')
-  const jurisdiction = auth.user.jurisdictions.find(
-    j => j.id === jurisdictionId
-  )!
   const { roundNum } = round
 
   if (round.isAuditComplete) {
@@ -77,7 +71,7 @@ const RoundManagement: React.FC<IRoundManagementProps> = ({
       <Inner>
         <StatusBar>
           <AuditHeading
-            auditName={jurisdiction.election.auditName}
+            auditName={election.auditName}
             jurisdictionName={jurisdiction.name}
           />
         </StatusBar>
@@ -90,7 +84,7 @@ const RoundManagement: React.FC<IRoundManagementProps> = ({
                 intent="primary"
                 onClick={() =>
                   apiDownload(
-                    `/election/${electionId}/jurisdiction/${jurisdictionId}/report`
+                    `/election/${election.id}/jurisdiction/${jurisdiction.id}/report`
                   )
                 }
               >
@@ -105,7 +99,7 @@ const RoundManagement: React.FC<IRoundManagementProps> = ({
 
   const auditHeading = (
     <AuditHeading
-      auditName={jurisdiction.election.auditName}
+      auditName={election.auditName}
       jurisdictionName={jurisdiction.name}
       auditStage={`Round ${roundNum}`}
     />
@@ -136,8 +130,8 @@ const RoundManagement: React.FC<IRoundManagementProps> = ({
         <StatusBar>
           {auditHeading}
           <BatchRoundProgress
-            electionId={electionId}
-            jurisdictionId={jurisdictionId}
+            electionId={election.id}
+            jurisdictionId={jurisdiction.id}
             roundId={round.id}
           />
         </StatusBar>
@@ -185,8 +179,8 @@ const RoundManagement: React.FC<IRoundManagementProps> = ({
           <H3>Prepare Ballots</H3>
           {samplesToAudit}
           <JAFileDownloadButtons
-            electionId={electionId}
-            jurisdictionId={jurisdictionId}
+            electionId={election.id}
+            jurisdictionId={jurisdiction.id}
             jurisdictionName={jurisdiction.name}
             round={round}
             auditSettings={auditSettings}
