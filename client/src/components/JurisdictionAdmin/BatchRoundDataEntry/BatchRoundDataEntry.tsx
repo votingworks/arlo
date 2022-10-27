@@ -23,6 +23,7 @@ const Container = styled('div')`
   display: flex;
   flex-direction: column;
   gap: 12px;
+  width: 100%;
 `
 
 interface IProps {
