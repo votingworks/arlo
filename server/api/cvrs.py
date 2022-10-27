@@ -317,15 +317,16 @@ def parse_clearballot_cvrs(
                     ast.literal_eval(close_matches[0]) if close_matches else None
                 )
                 raise UserError(
-                    "Invalid ScanComputerName/BoxID for row with"
-                    f" RowNumber {row_number}: {scan_computer_name}, {box_id}."
+                    "Couldn't find a matching batch for"
+                    f" ScanComputerName: {scan_computer_name}, BoxID: {box_id}"
+                    f" (RowNumber: {row_number})."
                     " The ScanComputerName and BoxID fields in the CVR file"
                     " must match the Tabulator and Batch Name fields in the"
                     " ballot manifest."
                     + (
                         (
-                            " The closest match we found in the ballot manifest was:"
-                            f" {closest_match[0]}, {closest_match[1]}."
+                            " The closest match we found in the ballot manifest was"
+                            f" Tabulator: {closest_match[0]}, Batch Name: {closest_match[1]}."
                         )
                         if closest_match
                         else ""
@@ -433,15 +434,16 @@ def parse_dominion_cvrs(
                     ast.literal_eval(close_matches[0]) if close_matches else None
                 )
                 raise UserError(
-                    "Invalid TabulatorNum/BatchId for row with"
-                    f" CvrNumber {cvr_number}: {tabulator_number}, {batch_id}."
+                    "Couldn't find a matching batch for"
+                    f" TabulatorNum: {tabulator_number}, BatchId: {batch_id}"
+                    f" (CvrNumber: {cvr_number})."
                     " The TabulatorNum and BatchId fields in the CVR file"
                     " must match the Tabulator and Batch Name fields in the"
                     " ballot manifest."
                     + (
                         (
-                            " The closest match we found in the ballot manifest was:"
-                            f" {closest_match[0]}, {closest_match[1]}."
+                            " The closest match we found in the ballot manifest was"
+                            f" Tabulator: {closest_match[0]}, Batch Name: {closest_match[1]}."
                         )
                         if closest_match
                         else ""
@@ -622,15 +624,16 @@ def parse_ess_cvrs(
                     ast.literal_eval(close_matches[0]) if close_matches else None
                 )
                 raise UserError(
-                    "Invalid Tabulator/Batch for row with"
-                    f" Cast Vote Record {cvr_number}: {tabulator_number}, {batch_name}."
+                    "Couldn't find a matching batch for"
+                    f" Tabulator: {tabulator_number}, Batch: {batch_name}"
+                    f" (Cast Vote Record: {cvr_number})."
                     " The Tabulator and Batch fields in the CVR file"
                     " must match the Tabulator and Batch Name fields in the"
                     " ballot manifest."
                     + (
                         (
                             " The closest match we found in the ballot manifest was:"
-                            f" {closest_match[0]}, {closest_match[1]}."
+                            f" Tabulator: {closest_match[0]}, Batch Name: {closest_match[1]}."
                         )
                         if closest_match
                         else ""
@@ -1029,7 +1032,8 @@ def parse_hart_cvrs(
                     ast.literal_eval(close_matches[0]) if close_matches else None
                 )
                 raise UserError(
-                    f"Error in file: {file_name}. Invalid BatchNumber: {batch_number}."
+                    f"Error in file: {file_name}."
+                    f" Couldn't find a matching batch for BatchNumber: {batch_number}."
                     " The BatchNumber field in the CVR must match the Batch Name field"
                     " in the ballot manifest."
                     + (
