@@ -26,6 +26,7 @@ from ..worker.tasks import (
     UserError,
 )
 from .. import activity_log
+from ..util.string import format_count
 
 
 def validate_all_manifests_uploaded(contest: Contest):
@@ -49,8 +50,9 @@ def validate_batch_tallies(contest):
         if total_votes_by_choice[choice.id] > choice.num_votes:
             raise UserError(
                 f"Total votes in batch tallies files for contest choice {choice.name}"
-                f" ({total_votes_by_choice[choice.id]}) is greater than the"
-                f" reported number of votes for that choice ({choice.num_votes})."
+                f" ({format_count(total_votes_by_choice[choice.id], 'vote', 'votes')})"
+                " is greater than the reported number of votes for that choice"
+                f" ({format_count(choice.num_votes, 'vote', 'votes')})."
             )
 
 
@@ -62,9 +64,10 @@ def validate_hybrid_manifests_and_cvrs(contest: Contest):
     assert contest.votes_allowed is not None
     if total_votes > total_manifest_ballots * contest.votes_allowed:
         raise UserError(
-            f"Contest {contest.name} vote counts add up to {total_votes},"
-            f" which is more than the total number of ballots across all jurisdiction manifests ({total_manifest_ballots})"
-            f" times the number of votes allowed ({contest.votes_allowed})"
+            f"Contest {contest.name} vote counts add up to {format_count(total_votes, 'vote', 'votes')},"
+            f" which is more than the total number of ballots across all"
+            f" jurisdiction manifests ({format_count(total_manifest_ballots, 'ballot', 'ballots')})"
+            f" times the number of votes allowed ({format_count(contest.votes_allowed, 'vote', 'votes')})"
         )
 
     manifest_ballots = hybrid_contest_total_ballots(contest)
@@ -77,7 +80,7 @@ def validate_hybrid_manifests_and_cvrs(contest: Contest):
     )
     if manifest_ballots.cvr < cvr_ballots:
         raise UserError(
-            f"For contest {contest.name}, found {cvr_ballots} ballots in the CVRs,"
+            f"For contest {contest.name}, found {format_count(cvr_ballots, 'ballot', 'ballots')} in the CVRs,"
             f" which is more than the total number of CVR ballots across all jurisdiction manifests ({manifest_ballots.cvr})"
             " for jurisdictions in this contest's universe"
         )
@@ -87,10 +90,12 @@ def validate_hybrid_manifests_and_cvrs(contest: Contest):
     non_cvr_votes = sum(count.non_cvr for count in vote_counts.values())
     if manifest_ballots.non_cvr * contest.votes_allowed < non_cvr_votes:
         raise UserError(
-            f"For contest {contest.name}, choice votes for non-CVR ballots add up to {non_cvr_votes},"
-            f" which is more than the total number of non-CVR ballots across all jurisdiction manifests ({manifest_ballots.non_cvr})"
-            " for jurisdictions in this contest's universe"
-            f" times the number of votes allowed ({contest.votes_allowed})"
+            f"For contest {contest.name}, choice votes for non-CVR ballots add up to"
+            f" {format_count(non_cvr_votes, 'vote', 'votes')},"
+            f" which is more than the total number of non-CVR ballots across all jurisdiction manifests"
+            f" ({format_count(manifest_ballots.non_cvr, 'ballot', 'ballots')})"
+            " for jurisdictions in this contest's universe times the number of votes allowed"
+            f" ({format_count(contest.votes_allowed, 'vote', 'votes')})"
         )
 
     choices_by_id = {choice.id: choice for choice in contest.choices}
@@ -105,8 +110,10 @@ def validate_hybrid_manifests_and_cvrs(contest: Contest):
     if invalid_count:
         choice, count = invalid_count
         raise UserError(
-            f"For contest {contest.name}, the CVRs contain more votes for choice {choice.name} ({count.cvr})"
-            f" than were entered in the contest settings ({choice.num_votes})."
+            f"For contest {contest.name}, the CVRs contain more votes for choice {choice.name}"
+            f" ({format_count(count.cvr, 'vote', 'votes')})"
+            f" than were entered in the contest settings"
+            f" ({format_count(choice.num_votes, 'vote', 'votes')})."
         )
 
 

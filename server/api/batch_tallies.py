@@ -28,6 +28,7 @@ from ..util.csv_parse import (
     CSVColumnType,
     validate_csv_mimetype,
 )
+from ..util.string import format_count
 from ..activity_log.activity_log import UploadFile, activity_base, record_activity
 
 BATCH_NAME = "Batch Name"
@@ -88,10 +89,10 @@ def process_batch_tallies_file(
             total_tallies = sum(int(row[choice.name]) for choice in contest.choices)
             if total_tallies > allowed_tallies:
                 raise UserError(
-                    f'The total votes for batch "{row[BATCH_NAME]}" ({total_tallies} votes)'
+                    f"The total votes for batch \"{row[BATCH_NAME]}\" ({format_count(total_tallies, 'vote', 'votes')})"
                     + f" cannot exceed {allowed_tallies} - the number of ballots from the manifest"
-                    + f" ({num_ballots_by_batch[row[BATCH_NAME]]} ballots) multipled by the number"
-                    + f" of votes allowed for the contest ({contest.votes_allowed} votes per ballot)."
+                    + f" ({format_count(num_ballots_by_batch[row[BATCH_NAME]], 'ballot', 'ballots')}) multipled by the number"
+                    + f" of votes allowed for the contest ({format_count(contest.votes_allowed, 'vote', 'votes')} per ballot)."
                 )
 
         # Save the tallies as a JSON blob in the format needed by the
