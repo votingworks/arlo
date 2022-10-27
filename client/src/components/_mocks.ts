@@ -295,6 +295,17 @@ export const jaApiCalls = {
     },
     response: { status: 'ok' },
   },
+  postRejectTallyEntryLoginRequest: {
+    url: `/auth/tallyentry/election/1/jurisdiction/jurisdiction-id-1/reject`,
+    options: {
+      method: 'POST',
+      body: JSON.stringify({
+        tallyEntryUserId: 'tally-entry-user-id-2',
+      }),
+      headers: { 'Content-Type': 'application/json' },
+    },
+    response: { status: 'ok' },
+  },
 }
 
 export const mockOrganizations = {

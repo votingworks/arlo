@@ -282,7 +282,7 @@ describe('BatchRoundSteps', () => {
     })
   })
 
-  it('on Step 2, polls for login requests and can confirm a request', async () => {
+  it('on Step 2, polls for login requests and can confirm/reject a request', async () => {
     jest.useFakeTimers()
     const expectedCalls = [
       jaApiCalls.getBatches(batchesMocks.emptyInitial),
@@ -311,6 +311,17 @@ describe('BatchRoundSteps', () => {
       jaApiCalls.getTallyEntryAccountStatus(
         tallyEntryAccountStatusMocks.loginRequestsOneConfirmed
       ),
+      jaApiCalls.getTallyEntryAccountStatus(
+        tallyEntryAccountStatusMocks.loginRequestsOneConfirmed
+      ),
+      jaApiCalls.postRejectTallyEntryLoginRequest,
+      jaApiCalls.getTallyEntryAccountStatus({
+        ...tallyEntryAccountStatusMocks.loginRequestsOneConfirmed,
+        loginRequests: [
+          tallyEntryAccountStatusMocks.loginRequestsOneConfirmed
+            .loginRequests[0],
+        ],
+      }),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderComponent('/tally-entry-accounts')
@@ -399,6 +410,15 @@ describe('BatchRoundSteps', () => {
         expect(
           screen.queryByText('Confirm Login: Kevin Jones')
         ).not.toBeInTheDocument()
+      })
+
+      // Reject the request
+      const rejectButton = screen.getByRole('button', {
+        name: 'Reject login request',
+      })
+      userEvent.click(rejectButton)
+      await waitFor(() => {
+        expect(loginRequest2).not.toBeInTheDocument()
       })
 
       jest.useRealTimers()

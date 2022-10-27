@@ -120,27 +120,31 @@ def auth_me():
             )
     elif user_type == UserType.TALLY_ENTRY:
         tally_entry_user = TallyEntryUser.query.get(user_key)
-        jurisdiction = tally_entry_user.jurisdiction
-        if jurisdiction.election.deleted_at is None:
-            # Tally entry users get a reponse from /api/me before their login
-            # code is confirmed by the JA. Thus, it's important to make sure
-            # that we only return data that they are allowed to see during the
-            # login process. Data that is only available after login
-            # confirmation should be accessed via separate endpoints.
-            round = get_current_round(jurisdiction.election)
-            assert round is not None
-            user = dict(
-                type=user_type,
-                id=tally_entry_user.id,
-                loginCode=tally_entry_user.login_code,
-                loginConfirmedAt=isoformat(tally_entry_user.login_confirmed_at),
-                jurisdictionId=jurisdiction.id,
-                jurisdictionName=jurisdiction.name,
-                electionId=jurisdiction.election.id,
-                auditName=jurisdiction.election.audit_name,
-                roundId=round.id,
-                members=serialize_members(tally_entry_user),
-            )
+        # If login was rejected, user is deleted, so clear them from the session
+        if tally_entry_user is None:
+            clear_loggedin_user(session)
+        else:
+            jurisdiction = tally_entry_user.jurisdiction
+            if jurisdiction.election.deleted_at is None:
+                # Tally entry users get a reponse from /api/me before their login
+                # code is confirmed by the JA. Thus, it's important to make sure
+                # that we only return data that they are allowed to see during the
+                # login process. Data that is only available after login
+                # confirmation should be accessed via separate endpoints.
+                round = get_current_round(jurisdiction.election)
+                assert round is not None
+                user = dict(
+                    type=user_type,
+                    id=tally_entry_user.id,
+                    loginCode=tally_entry_user.login_code,
+                    loginConfirmedAt=isoformat(tally_entry_user.login_confirmed_at),
+                    jurisdictionId=jurisdiction.id,
+                    jurisdictionName=jurisdiction.name,
+                    electionId=jurisdiction.election.id,
+                    auditName=jurisdiction.election.audit_name,
+                    roundId=round.id,
+                    members=serialize_members(tally_entry_user),
+                )
 
     support_user_email = get_support_user(session)
     return jsonify(
@@ -472,6 +476,25 @@ def tally_entry_jurisdiction_confirm_login_code(
 
     tally_entry_user.login_confirmed_at = datetime.now(timezone.utc)
 
+    db_session.commit()
+
+    return jsonify(status="ok")
+
+
+@auth.route(
+    "/auth/tallyentry/election/<election_id>/jurisdiction/<jurisdiction_id>/reject",
+    methods=["POST"],
+)
+@restrict_access([UserType.JURISDICTION_ADMIN])
+def tally_entry_jurisdiction_reject_request(
+    election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
+):
+    body = request.get_json()
+    tally_entry_user = TallyEntryUser.query.get(body.get("tallyEntryUserId"))
+    if not tally_entry_user or tally_entry_user.jurisdiction_id != jurisdiction.id:
+        raise BadRequest("Tally entry user not found.")
+
+    db_session.delete(tally_entry_user)
     db_session.commit()
 
     return jsonify(status="ok")
