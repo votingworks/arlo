@@ -1,11 +1,19 @@
-import React from 'react'
-import { H5, FileInput, Button, Callout, AnchorButton } from '@blueprintjs/core'
+import React, { useState } from 'react'
+import {
+  H5,
+  FileInput,
+  Button,
+  Callout,
+  AnchorButton,
+  HTMLSelect,
+} from '@blueprintjs/core'
 import { useForm } from 'react-hook-form'
 import styled from 'styled-components'
 import StatusTag from './StatusTag'
-import { IFileUpload } from '../useFileUpload'
+import { IFileUpload, ICvrsFileUpload } from '../useFileUpload'
 import AsyncButton from './AsyncButton'
 import { assert } from '../utilities'
+import { CvrFileType } from '../useCSV'
 
 const Row = styled.div`
   display: flex;
@@ -27,7 +35,7 @@ export interface IFileUploadProps extends IFileUpload {
   additionalFields?: React.ReactNode
 }
 
-const FileUpload: React.FC<IFileUploadProps> = ({
+export const FileUpload: React.FC<IFileUploadProps> = ({
   title,
   uploadedFile,
   uploadFiles,
@@ -181,4 +189,71 @@ const FileUpload: React.FC<IFileUploadProps> = ({
   )
 }
 
-export default FileUpload
+interface ICvrsFileUploadProps {
+  cvrsUpload: ICvrsFileUpload
+  uploadDisabled?: boolean
+  deleteDisabled?: boolean
+}
+
+export const CvrsFileUpload: React.FC<ICvrsFileUploadProps> = ({
+  cvrsUpload,
+  uploadDisabled,
+  deleteDisabled,
+}) => {
+  assert(cvrsUpload.uploadedFile.isSuccess)
+  const [selectedCvrFileType, setSelectedCvrFileType] = useState<
+    CvrFileType | undefined
+  >(cvrsUpload.uploadedFile.data?.file?.cvrFileType)
+  const [isUploading, setIsUploading] = useState(false)
+
+  const uploadFiles = async (files: File[]) => {
+    setIsUploading(true)
+    try {
+      await cvrsUpload.uploadFiles(files, selectedCvrFileType!)
+    } finally {
+      setIsUploading(false)
+    }
+  }
+
+  const cvrs = cvrsUpload.uploadedFile.data
+
+  return (
+    <>
+      <FileUpload
+        title="Cast Vote Records (CVR)"
+        {...cvrsUpload}
+        uploadFiles={uploadFiles}
+        acceptFileTypes={
+          selectedCvrFileType === CvrFileType.HART ? ['zip', 'csv'] : ['csv']
+        }
+        allowMultipleFiles={
+          selectedCvrFileType === CvrFileType.ESS ||
+          selectedCvrFileType === CvrFileType.HART
+        }
+        uploadDisabled={uploadDisabled || (!cvrs.file && !selectedCvrFileType)}
+        deleteDisabled={deleteDisabled}
+        additionalFields={
+          <div>
+            <label htmlFor="cvrFileType">CVR File Type: </label>
+            <HTMLSelect
+              name="cvrFileType"
+              id="cvrFileType"
+              value={selectedCvrFileType}
+              onChange={e =>
+                setSelectedCvrFileType(e.target.value as CvrFileType)
+              }
+              disabled={uploadDisabled || isUploading || cvrs.file !== null}
+              style={{ width: '195px', marginLeft: '10px' }}
+            >
+              <option></option>
+              <option value={CvrFileType.DOMINION}>Dominion</option>
+              <option value={CvrFileType.CLEARBALLOT}>ClearBallot</option>
+              <option value={CvrFileType.ESS}>ES&amp;S</option>
+              <option value={CvrFileType.HART}>Hart</option>
+            </HTMLSelect>
+          </div>
+        }
+      />
+    </>
+  )
+}

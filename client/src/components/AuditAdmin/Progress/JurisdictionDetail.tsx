@@ -1,31 +1,29 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import React, { useState } from 'react'
+import React from 'react'
 import {
   Classes,
   Dialog,
   H5,
   Card,
   Button,
-  HTMLSelect,
   ButtonGroup,
 } from '@blueprintjs/core'
 import styled from 'styled-components'
 import { Formik, FormikProps } from 'formik'
 import { IJurisdiction, JurisdictionRoundStatus } from '../../useJurisdictions'
-import { CvrFileType, FileProcessingStatus } from '../../useCSV'
+import { FileProcessingStatus } from '../../useCSV'
 import { IRound } from '../useRoundsAuditAdmin'
 import { IAuditSettings } from '../../useAuditSettings'
-import { api, assert } from '../../utilities'
+import { api } from '../../utilities'
 import useAuditBoards from '../../useAuditBoards'
 import useSampleCount from '../../JurisdictionAdmin/useBallots'
 import AsyncButton from '../../Atoms/AsyncButton'
 import { JAFileDownloadButtons } from '../../JurisdictionAdmin/RoundManagement'
-import FileUpload from '../../Atoms/FileUpload'
+import { FileUpload, CvrsFileUpload } from '../../Atoms/FileUpload'
 import {
   useBallotManifest,
   useBatchTallies,
   useCVRs,
-  ICvrsFileUpload,
 } from '../../useFileUpload'
 import AuditBoardsTable from './AuditBoardsTable'
 import DownloadBatchRetrievalListButton from '../../JurisdictionAdmin/BatchRoundSteps/DownloadBatchRetrievalListButton'
@@ -121,73 +119,6 @@ const JurisdictionDetail: React.FC<IJurisdictionDetailProps> = ({
         )}
       </div>
     </Dialog>
-  )
-}
-
-const CvrsFileUpload = ({
-  cvrsUpload,
-  uploadDisabled,
-  deleteDisabled,
-}: {
-  cvrsUpload: ICvrsFileUpload
-  uploadDisabled?: boolean
-  deleteDisabled?: boolean
-}) => {
-  assert(cvrsUpload.uploadedFile.isSuccess)
-  const [selectedCvrFileType, setSelectedCvrFileType] = useState<
-    CvrFileType | undefined
-  >(cvrsUpload.uploadedFile.data?.file?.cvrFileType)
-  const [isUploading, setIsUploading] = useState(false)
-
-  const uploadFiles = async (files: File[]) => {
-    setIsUploading(true)
-    try {
-      await cvrsUpload.uploadFiles(files, selectedCvrFileType!)
-    } finally {
-      setIsUploading(false)
-    }
-  }
-
-  const cvrs = cvrsUpload.uploadedFile.data
-
-  return (
-    <>
-      <FileUpload
-        title="Cast Vote Records (CVR)"
-        {...cvrsUpload}
-        uploadFiles={uploadFiles}
-        acceptFileTypes={
-          selectedCvrFileType === CvrFileType.HART ? ['zip', 'csv'] : ['csv']
-        }
-        allowMultipleFiles={
-          selectedCvrFileType === CvrFileType.ESS ||
-          selectedCvrFileType === CvrFileType.HART
-        }
-        uploadDisabled={uploadDisabled || (!cvrs.file && !selectedCvrFileType)}
-        deleteDisabled={deleteDisabled}
-        additionalFields={
-          <div>
-            <label htmlFor="cvrFileType">CVR File Type: </label>
-            <HTMLSelect
-              name="cvrFileType"
-              id="cvrFileType"
-              value={selectedCvrFileType}
-              onChange={e =>
-                setSelectedCvrFileType(e.target.value as CvrFileType)
-              }
-              disabled={uploadDisabled || isUploading || cvrs.file !== null}
-              style={{ width: '195px', marginLeft: '10px' }}
-            >
-              <option></option>
-              <option value={CvrFileType.DOMINION}>Dominion</option>
-              <option value={CvrFileType.CLEARBALLOT}>ClearBallot</option>
-              <option value={CvrFileType.ESS}>ES&amp;S</option>
-              <option value={CvrFileType.HART}>Hart</option>
-            </HTMLSelect>
-          </div>
-        }
-      />
-    </>
   )
 }
 
