@@ -10,7 +10,7 @@ import {
 import styled from 'styled-components'
 import { useParams, Link } from 'react-router-dom'
 import { Wrapper, Inner } from '../Atoms/Wrapper'
-import FileUpload from '../Atoms/FileUpload'
+import { FileUpload } from '../Atoms/FileUpload'
 import { fetchApi } from '../../utils/api'
 import AsyncButton from '../Atoms/AsyncButton'
 import { FileProcessingStatus } from '../useCSV'

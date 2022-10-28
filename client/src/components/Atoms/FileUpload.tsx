@@ -27,7 +27,7 @@ const Row = styled.div`
 const buttonAndTagWidth = '115px' // Wide enough for the longest text
 
 export interface IFileUploadProps extends IFileUpload {
-  title: string
+  title?: string
   acceptFileTypes: ('csv' | 'zip' | 'xml')[]
   allowMultipleFiles?: boolean
   uploadDisabled?: boolean
@@ -81,7 +81,7 @@ export const FileUpload: React.FC<IFileUploadProps> = ({
 
     if (uploadProgress !== undefined) {
       return (
-        <StatusTag intent="warning" progress={uploadProgress}>
+        <StatusTag intent="warning" large progress={uploadProgress}>
           Uploading
         </StatusTag>
       )
@@ -93,6 +93,7 @@ export const FileUpload: React.FC<IFileUploadProps> = ({
       return (
         <StatusTag
           intent="primary"
+          large
           progress={
             processing.workTotal
               ? processing.workProgress! / processing.workTotal
@@ -105,27 +106,27 @@ export const FileUpload: React.FC<IFileUploadProps> = ({
     }
 
     if (processing.error) {
-      return <StatusTag intent="danger">Upload Failed</StatusTag>
+      return (
+        <StatusTag intent="danger" large>
+          Upload Failed
+        </StatusTag>
+      )
     }
 
-    return <StatusTag intent="success">Uploaded</StatusTag>
+    return (
+      <StatusTag intent="success" large>
+        Uploaded
+      </StatusTag>
+    )
   })()
 
   return (
     <form onSubmit={handleSubmit(onUpload)}>
       {/* Set a height so that the height doesn't change based on the status tag
       being present or not */}
-      <Row style={{ height: '20px' }}>
-        <H5 style={{ marginBottom: 0 }}>{title}</H5>
-        {statusTag}
-      </Row>
-      {processing?.error && (
-        <Row>
-          <Callout intent="danger">
-            <div className="bp3-text-small">{processing.error}</div>
-          </Callout>
-        </Row>
-      )}
+      {/* <Row style={{ height: '20px' }}>
+        {title && <H5 style={{ marginBottom: 0 }}>{title}</H5>}
+      </Row> */}
       {additionalFields && <Row>{additionalFields}</Row>}
       <Row>
         <FileInput
@@ -147,44 +148,54 @@ export const FileUpload: React.FC<IFileUploadProps> = ({
           fill
         />
       </Row>
-      <Row style={{ justifyContent: 'flex-end' }}>
-        {!processing?.completedAt ? (
-          <Button
-            type="submit"
-            intent="primary"
-            icon="upload"
-            disabled={
-              uploadDisabled ||
-              numSelectedFiles === 0 ||
-              formState.isSubmitting ||
-              (processing !== null && !processing.completedAt)
-            }
-            style={{ width: buttonAndTagWidth }}
-          >
-            Upload
-          </Button>
-        ) : (
-          <>
-            <AnchorButton
-              icon="download"
-              href={downloadFileUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ marginRight: '5px', width: buttonAndTagWidth }}
-            >
-              Download
-            </AnchorButton>
-            <AsyncButton
-              icon="delete"
-              onClick={onDelete}
-              disabled={deleteDisabled}
+      <Row style={{ justifyContent: 'space-between' }}>
+        {statusTag || <div />}
+        <div>
+          {!processing?.completedAt ? (
+            <Button
+              type="submit"
+              intent="primary"
+              icon="upload"
+              disabled={
+                uploadDisabled ||
+                numSelectedFiles === 0 ||
+                formState.isSubmitting ||
+                (processing !== null && !processing.completedAt)
+              }
               style={{ width: buttonAndTagWidth }}
             >
-              Delete
-            </AsyncButton>
-          </>
-        )}
+              Upload
+            </Button>
+          ) : (
+            <>
+              <AnchorButton
+                icon="download"
+                href={downloadFileUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ marginRight: '5px', width: buttonAndTagWidth }}
+              >
+                Download
+              </AnchorButton>
+              <AsyncButton
+                icon="delete"
+                onClick={onDelete}
+                disabled={deleteDisabled}
+                style={{ width: buttonAndTagWidth }}
+              >
+                Delete
+              </AsyncButton>
+            </>
+          )}
+        </div>
       </Row>
+      {processing?.error && (
+        <Row>
+          <Callout intent="danger">
+            <div className="bp3-text-small">{processing.error}</div>
+          </Callout>
+        </Row>
+      )}
     </form>
   )
 }

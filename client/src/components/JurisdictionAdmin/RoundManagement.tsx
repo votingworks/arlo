@@ -13,7 +13,6 @@ import {
 import useAuditBoards, { IAuditBoard } from '../useAuditBoards'
 import QRs from './QRs'
 import RoundDataEntry from './RoundDataEntry'
-import useAuditSettingsJurisdictionAdmin from './useAuditSettingsJurisdictionAdmin'
 import { IJurisdiction } from '../UserContext'
 import { IRound } from '../AuditAdmin/useRoundsAuditAdmin'
 import { IAuditSettings } from '../useAuditSettings'
@@ -38,23 +37,21 @@ const StrongP = styled.p`
 export interface IRoundManagementProps {
   jurisdiction: IJurisdiction
   round: IRound
+  auditSettings: IAuditSettings
 }
 
 const RoundManagement: React.FC<IRoundManagementProps> = ({
   jurisdiction,
   round,
+  auditSettings,
 }) => {
   const { election } = jurisdiction
+  const { auditType } = auditSettings
   const [auditBoards, createAuditBoards] = useAuditBoards(
     election.id,
     jurisdiction.id,
     [round]
   )
-  const auditSettings = useAuditSettingsJurisdictionAdmin(
-    election.id,
-    jurisdiction.id
-  )
-  const auditType = auditSettings && auditSettings.auditType
   const sampleCount = useSampleCount(
     election.id,
     jurisdiction.id,
@@ -62,7 +59,7 @@ const RoundManagement: React.FC<IRoundManagementProps> = ({
     auditType
   )
 
-  if (!auditBoards || !auditSettings || !sampleCount) return null // Still loading
+  if (!auditBoards || !sampleCount) return null // Still loading
 
   const { roundNum } = round
 
