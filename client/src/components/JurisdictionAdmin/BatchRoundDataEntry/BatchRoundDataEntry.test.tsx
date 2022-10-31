@@ -1,0 +1,484 @@
+import React from 'react'
+import { render, screen, within, waitFor } from '@testing-library/react'
+import { QueryClientProvider } from 'react-query'
+import userEvent from '@testing-library/user-event'
+import { ToastContainer } from 'react-toastify'
+import { Classes } from '@blueprintjs/core'
+import BatchRoundDataEntry from './BatchRoundDataEntry'
+import { batchesMocks } from '../_mocks'
+import { IBatches, IBatchResultTallySheet } from '../useBatchResults'
+import { IContest } from '../../../types'
+import {
+  withMockFetch,
+  findAndCloseToast,
+  serverError,
+  createQueryClient,
+} from '../../testUtilities'
+import { contestMocks } from '../../AuditAdmin/useSetupMenuItems/_mocks'
+
+const apiCalls = {
+  getJAContests: (response: { contests: IContest[] }) => ({
+    url: `/api/election/1/jurisdiction/1/contest`,
+    response,
+  }),
+  getBatches: (response: IBatches) => ({
+    url: '/api/election/1/jurisdiction/1/round/round-1/batches',
+    response,
+  }),
+  putBatchResults: (
+    batchId: string,
+    resultTallySheets: IBatchResultTallySheet[]
+  ) => ({
+    url: `/api/election/1/jurisdiction/1/round/round-1/batches/${batchId}/results`,
+    options: {
+      method: 'PUT',
+      body: JSON.stringify(resultTallySheets),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    },
+    response: { status: 'ok' },
+  }),
+  finalizeBatchResults: () => ({
+    url: `/api/election/1/jurisdiction/1/round/round-1/batches/finalize`,
+    options: { method: 'POST' },
+    response: { status: 'ok' },
+  }),
+}
+
+const batchesWithResults = (resultTallySheets: IBatchResultTallySheet[]) => [
+  {
+    ...batchesMocks.emptyInitial.batches[0],
+    resultTallySheets,
+  },
+  ...batchesMocks.emptyInitial.batches.slice(1),
+]
+
+const renderComponent = () =>
+  render(
+    <QueryClientProvider client={createQueryClient()}>
+      <BatchRoundDataEntry
+        electionId="1"
+        jurisdictionId="1"
+        roundId="round-1"
+      />
+      <ToastContainer />
+    </QueryClientProvider>
+  )
+
+describe('Batch comparison data entry', () => {
+  it('shows a table of batches and a button to edit results for each batch', async () => {
+    const expectedCalls = [
+      apiCalls.getBatches(batchesMocks.emptyInitial),
+      apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderComponent()
+      await screen.findByRole('tab', { name: 'Vote Totals' })
+
+      for (const batch of ['Batch One', 'Batch Two', 'Batch Three']) {
+        userEvent.click(screen.getByRole('button', { name: batch }))
+        // eslint-disable-next-line no-await-in-loop
+        await screen.findByRole('heading', { name: batch })
+        const batchTable = screen.getByRole('table')
+
+        const headers = within(batchTable).getAllByRole('columnheader')
+        expect(headers).toHaveLength(2)
+        expect(headers[0]).toHaveTextContent('Choice')
+        expect(headers[1]).toHaveTextContent('Votes')
+
+        const rows = within(batchTable).getAllByRole('row')
+        expect(rows).toHaveLength(3)
+
+        const row1 = within(rows[1]).getAllByRole('cell')
+        expect(row1).toHaveLength(2)
+        expect(row1[0]).toHaveTextContent('Choice One')
+        expect(row1[1]).toHaveTextContent('0')
+
+        const row2 = within(rows[2]).getAllByRole('cell')
+        expect(row2).toHaveLength(2)
+        expect(row2[0]).toHaveTextContent('Choice Two')
+        expect(row2[1]).toHaveTextContent('0')
+
+        screen.getByRole('button', { name: /Edit Tallies/ })
+      }
+    })
+  })
+
+  it('edits the results for a batch', async () => {
+    const tallySheet1 = {
+      name: 'Sheet 1',
+      results: {
+        'choice-id-1': 1,
+        'choice-id-2': 2,
+      },
+    }
+    const expectedCalls = [
+      apiCalls.getBatches(batchesMocks.emptyInitial),
+      apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
+      apiCalls.putBatchResults('batch-1', [tallySheet1]),
+      apiCalls.getBatches({
+        ...batchesMocks.emptyInitial,
+        batches: batchesWithResults([tallySheet1]),
+      }),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderComponent()
+      let batchTable = await screen.findByRole('table')
+
+      userEvent.click(screen.getByRole('button', { name: /Edit Tallies/ }))
+
+      let rows = within(batchTable).getAllByRole('row')
+      let row1 = within(rows[1]).getAllByRole('cell')
+      const choice1VotesInput = within(row1[1]).getByRole('spinbutton')
+      userEvent.type(choice1VotesInput, '1')
+      let row2 = within(rows[2]).getAllByRole('cell')
+      let choice2VotesInput = within(row2[1]).getByRole('spinbutton')
+      userEvent.clear(choice2VotesInput)
+
+      // Try saving before filling out all choices
+      const saveButton = screen.getByRole('button', { name: /Save Tallies/ })
+      userEvent.click(saveButton)
+
+      // Should get a validation error
+      choice2VotesInput = within(row2[1]).getByRole('spinbutton')
+      await waitFor(() =>
+        expect(choice2VotesInput).toHaveClass(Classes.INTENT_DANGER)
+      )
+      expect(choice2VotesInput).toHaveFocus()
+
+      // Fill out the rest of the choices
+      userEvent.type(choice2VotesInput, '2')
+      userEvent.click(saveButton)
+      await waitFor(() =>
+        expect(
+          screen.queryByRole('button', { name: /Save Tallies/ })
+        ).not.toBeInTheDocument()
+      )
+
+      batchTable = screen.getByRole('table')
+      rows = within(batchTable).getAllByRole('row')
+      row1 = within(rows[1]).getAllByRole('cell')
+      row2 = within(rows[2]).getAllByRole('cell')
+      expect(row1[1]).toHaveTextContent('1')
+      expect(row2[1]).toHaveTextContent('2')
+    })
+  })
+
+  it('cancels editing the results for a batch', async () => {
+    const expectedCalls = [
+      apiCalls.getBatches(batchesMocks.emptyInitial),
+      apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderComponent()
+      let batchTable = await screen.findByRole('table')
+
+      userEvent.click(screen.getByRole('button', { name: /Edit Tallies/ }))
+
+      let rows = within(batchTable).getAllByRole('row')
+      let row1 = within(rows[1]).getAllByRole('cell')
+      const choice1VotesInput = within(row1[1]).getByRole('spinbutton')
+      userEvent.type(choice1VotesInput, '1')
+      let row2 = within(rows[2]).getAllByRole('cell')
+      const choice2VotesInput = within(row2[1]).getByRole('spinbutton')
+      userEvent.type(choice2VotesInput, '2')
+
+      const discardChangesButton = await screen.findByRole('button', {
+        name: /Discard Changes/,
+      })
+      userEvent.click(discardChangesButton)
+      await waitFor(() =>
+        expect(
+          screen.queryByRole('button', { name: /Discard Changes/ })
+        ).not.toBeInTheDocument()
+      )
+
+      batchTable = await screen.findByRole('table')
+      rows = within(batchTable).getAllByRole('row')
+      row1 = within(rows[1]).getAllByRole('cell')
+      row2 = within(rows[2]).getAllByRole('cell')
+      expect(row1[1]).toHaveTextContent('0')
+      expect(row2[1]).toHaveTextContent('0')
+    })
+  })
+
+  it('edits multiple tally sheets for a batch', async () => {
+    const emptyTallySheet = (name: string) => ({
+      name,
+      results: {
+        'choice-id-1': 0,
+        'choice-id-2': 0,
+      },
+    })
+    const emptyTallySheet1 = emptyTallySheet('Sheet 1')
+    const emptyTallySheet2 = emptyTallySheet('Sheet 2')
+    const emptyTallySheet3 = emptyTallySheet('Sheet 3')
+    const populatedTallySheet1 = {
+      name: 'Sheet 1',
+      results: {
+        'choice-id-1': 1,
+        'choice-id-2': 2,
+      },
+    }
+    const populatedTallySheet3 = {
+      name: 'Sheet Three',
+      results: {
+        'choice-id-1': 3,
+        'choice-id-2': 4,
+      },
+    }
+    const expectedCalls = [
+      apiCalls.getBatches(batchesMocks.emptyInitial),
+      apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
+      apiCalls.putBatchResults('batch-1', [emptyTallySheet1, emptyTallySheet2]),
+      apiCalls.getBatches({
+        ...batchesMocks.emptyInitial,
+        batches: batchesWithResults([emptyTallySheet1, emptyTallySheet2]),
+      }),
+      apiCalls.putBatchResults('batch-1', [
+        populatedTallySheet1,
+        emptyTallySheet2,
+      ]),
+      apiCalls.getBatches({
+        ...batchesMocks.emptyInitial,
+        batches: batchesWithResults([populatedTallySheet1, emptyTallySheet2]),
+      }),
+      apiCalls.putBatchResults('batch-1', [
+        populatedTallySheet1,
+        emptyTallySheet2,
+        emptyTallySheet3,
+      ]),
+      apiCalls.getBatches({
+        ...batchesMocks.emptyInitial,
+        batches: batchesWithResults([
+          populatedTallySheet1,
+          emptyTallySheet2,
+          emptyTallySheet3,
+        ]),
+      }),
+      apiCalls.putBatchResults('batch-1', [
+        populatedTallySheet1,
+        emptyTallySheet2,
+        populatedTallySheet3,
+      ]),
+      apiCalls.getBatches({
+        ...batchesMocks.emptyInitial,
+        batches: batchesWithResults([
+          populatedTallySheet1,
+          emptyTallySheet2,
+          populatedTallySheet3,
+        ]),
+      }),
+      apiCalls.putBatchResults('batch-1', [
+        emptyTallySheet2,
+        populatedTallySheet3,
+      ]),
+      apiCalls.getBatches({
+        ...batchesMocks.emptyInitial,
+        batches: batchesWithResults([emptyTallySheet2, populatedTallySheet3]),
+      }),
+      apiCalls.putBatchResults('batch-1', [
+        { ...populatedTallySheet3, name: 'Sheet 1' },
+      ]),
+      apiCalls.getBatches({
+        ...batchesMocks.emptyInitial,
+        batches: batchesWithResults([
+          { ...populatedTallySheet3, name: 'Sheet 1' },
+        ]),
+      }),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderComponent()
+      let batchTable = await screen.findByRole('table')
+
+      userEvent.click(
+        screen.getByRole('button', { name: /Additional Actions/ })
+      )
+      userEvent.click(screen.getByText('Use Multiple Tally Sheets'))
+
+      let voteTotalsTab = screen.getByRole('tab', { name: 'Vote Totals' })
+      let sheet1Tab = await screen.findByRole('tab', { name: 'Sheet 1' })
+      let sheet2Tab = screen.getByRole('tab', { name: 'Sheet 2' })
+      expect(sheet2Tab).toHaveAttribute('aria-selected', 'true')
+
+      userEvent.click(sheet1Tab)
+      expect(sheet1Tab).toHaveAttribute('aria-selected', 'true')
+      userEvent.click(screen.getByRole('button', { name: /Edit Sheet/ }))
+
+      batchTable = await screen.findByRole('table')
+      const headers = within(batchTable).getAllByRole('columnheader')
+      expect(headers).toHaveLength(2)
+      expect(headers[0]).toHaveTextContent('Choice')
+      expect(headers[1]).toHaveTextContent('Votes')
+      let rows = within(batchTable).getAllByRole('row')
+      expect(rows).toHaveLength(3)
+      let row1 = within(rows[1]).getAllByRole('cell')
+      let row2 = within(rows[2]).getAllByRole('cell')
+      expect(row1).toHaveLength(2)
+      expect(row2).toHaveLength(2)
+      let choice1VotesInput = within(row1[1]).getByRole('spinbutton')
+      expect(choice1VotesInput).toHaveTextContent('')
+      let choice2VotesInput = within(row2[1]).getByRole('spinbutton')
+      expect(choice2VotesInput).toHaveTextContent('')
+
+      // Fill out one choice validly and the other invalidly
+      userEvent.type(choice1VotesInput, '1')
+      userEvent.type(choice2VotesInput, '-1')
+
+      // Should get a validation error
+      userEvent.click(screen.getByRole('button', { name: /Save Sheet/ }))
+      await waitFor(() =>
+        expect(choice2VotesInput).toHaveClass(Classes.INTENT_DANGER)
+      )
+      expect(choice2VotesInput).toHaveFocus()
+
+      // Correct the error
+      userEvent.clear(choice2VotesInput)
+      userEvent.type(choice2VotesInput, '2')
+      userEvent.click(screen.getByRole('button', { name: /Save Sheet/ }))
+      await waitFor(() =>
+        expect(
+          screen.queryByRole('button', { name: /Save Sheet/ })
+        ).not.toBeInTheDocument()
+      )
+
+      // Add another tally sheet
+      userEvent.click(screen.getByRole('button', { name: /Add Sheet/ }))
+      sheet1Tab = screen.getByRole('tab', { name: 'Sheet 1' })
+      sheet2Tab = screen.getByRole('tab', { name: 'Sheet 2' })
+      const sheet3Tab = await screen.findByRole('tab', { name: 'Sheet 3' })
+      expect(sheet3Tab).toHaveAttribute('aria-selected', 'true')
+
+      // Rename the sheet (cancel this first time)
+      userEvent.click(screen.getByRole('button', { name: /Edit Sheet/ }))
+      let sheetNameInput = await screen.findByRole('textbox', {
+        name: 'Sheet Name',
+      })
+      userEvent.clear(sheetNameInput)
+      userEvent.type(sheetNameInput, 'Sheet Three')
+      userEvent.click(screen.getByRole('button', { name: /Discard Changes/ }))
+      screen.getByRole('tab', { name: 'Sheet 3' })
+
+      // Rename the sheet (save this second time and also enter tallies)
+      userEvent.click(screen.getByRole('button', { name: /Edit Sheet/ }))
+      sheetNameInput = await screen.findByRole('textbox', {
+        name: 'Sheet Name',
+      })
+      userEvent.clear(sheetNameInput)
+      userEvent.type(sheetNameInput, 'Sheet Three')
+      batchTable = await screen.findByRole('table')
+      rows = within(batchTable).getAllByRole('row')
+      row1 = within(rows[1]).getAllByRole('cell')
+      row2 = within(rows[2]).getAllByRole('cell')
+      choice1VotesInput = within(row1[1]).getByRole('spinbutton')
+      userEvent.type(choice1VotesInput, '3')
+      choice2VotesInput = within(row2[1]).getByRole('spinbutton')
+      userEvent.type(choice2VotesInput, '4')
+      userEvent.click(screen.getByRole('button', { name: /Save Sheet/ }))
+      await waitFor(() =>
+        expect(
+          screen.queryByRole('button', { name: /Save Sheet/ })
+        ).not.toBeInTheDocument()
+      )
+      await screen.findByRole('tab', { name: 'Sheet Three' })
+
+      // Check that the vote totals tab displays sums after saving
+      voteTotalsTab = screen.getByRole('tab', { name: 'Vote Totals' })
+      userEvent.click(voteTotalsTab)
+      expect(voteTotalsTab).toHaveAttribute('aria-selected', 'true')
+      batchTable = await screen.findByRole('table')
+      rows = within(batchTable).getAllByRole('row')
+      row1 = within(rows[1]).getAllByRole('cell')
+      row2 = within(rows[2]).getAllByRole('cell')
+      expect(row1[1]).toHaveTextContent(`${1 + 3}`)
+      expect(row2[1]).toHaveTextContent(`${2 + 4}`)
+
+      // Delete the first tally sheet
+      sheet1Tab = screen.getByRole('tab', { name: 'Sheet 1' })
+      userEvent.click(sheet1Tab)
+      userEvent.click(
+        screen.getByRole('button', { name: 'Additional Actions' })
+      )
+      userEvent.click(await screen.findByText('Remove Sheet'))
+      await waitFor(() =>
+        expect(
+          screen.queryByRole('tab', { name: 'Sheet 1' })
+        ).not.toBeInTheDocument()
+      )
+
+      // Check that vote totals are updated as expected
+      voteTotalsTab = screen.getByRole('tab', { name: 'Vote Totals' })
+      userEvent.click(voteTotalsTab)
+      expect(voteTotalsTab).toHaveAttribute('aria-selected', 'true')
+      batchTable = await screen.findByRole('table')
+      rows = within(batchTable).getAllByRole('row')
+      row1 = within(rows[1]).getAllByRole('cell')
+      row2 = within(rows[2]).getAllByRole('cell')
+      expect(row1[1]).toHaveTextContent('3')
+      expect(row2[1]).toHaveTextContent('4')
+
+      // Delete the second tally sheet
+      sheet2Tab = screen.getByRole('tab', { name: 'Sheet 2' })
+      userEvent.click(sheet2Tab)
+      userEvent.click(
+        screen.getByRole('button', { name: 'Additional Actions' })
+      )
+      userEvent.click(await screen.findByText('Remove Sheet'))
+      await waitFor(() =>
+        expect(
+          screen.queryByRole('tab', { name: 'Sheet 2' })
+        ).not.toBeInTheDocument()
+      )
+
+      // Check that we return to the single tally sheet UI
+      await waitFor(() =>
+        expect(
+          screen.queryByRole('tab', { name: 'Sheet Three' })
+        ).not.toBeInTheDocument()
+      )
+      voteTotalsTab = screen.getByRole('tab', { name: 'Vote Totals' })
+      expect(voteTotalsTab).toHaveAttribute('aria-selected', 'true')
+    })
+  })
+
+  it('handles errors on save', async () => {
+    const expectedCalls = [
+      apiCalls.getBatches(batchesMocks.emptyInitial),
+      apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
+      serverError(
+        'putBatchResults',
+        apiCalls.putBatchResults('batch-1', [
+          {
+            name: 'Sheet 1',
+            results: {
+              'choice-id-1': 1,
+              'choice-id-2': 2,
+            },
+          },
+        ])
+      ),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderComponent()
+      const batchTable = await screen.findByRole('table')
+      userEvent.click(screen.getByRole('button', { name: /Edit Tallies/ }))
+
+      const rows = within(batchTable).getAllByRole('row')
+      const row1 = within(rows[1]).getAllByRole('cell')
+      const choice1Input = within(row1[1]).getByRole('spinbutton')
+      userEvent.type(choice1Input, '1')
+      const row2 = within(rows[2]).getAllByRole('cell')
+      const choice2Input = within(row2[1]).getByRole('spinbutton')
+      userEvent.type(choice2Input, '2')
+
+      const saveButton = await screen.findByRole('button', {
+        name: /Save/,
+      })
+      userEvent.click(saveButton)
+
+      await findAndCloseToast('something went wrong: putBatchResults')
+      expect(saveButton).toBeInTheDocument()
+    })
+  })
+})

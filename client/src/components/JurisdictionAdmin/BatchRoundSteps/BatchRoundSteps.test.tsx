@@ -437,10 +437,7 @@ describe('BatchRoundSteps', () => {
         current: 'step',
       })
 
-      screen.getByText(
-        'For each batch, enter the number of votes tallied for each candidate/choice.'
-      )
-      screen.getByText('Batch One')
+      expect(screen.getAllByText('Batch One')).toHaveLength(2)
       // TODO fill in comprehensive tests once the tally entry interface is finalized
 
       const finalizeButton = screen.getByRole('button', {
