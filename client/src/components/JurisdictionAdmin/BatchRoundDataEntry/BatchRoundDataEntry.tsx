@@ -19,10 +19,11 @@ import {
 } from '../useBatchResults'
 import { useDebounce } from '../../../utils/debounce'
 
-const Container = styled('div')`
+const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 12px;
+  max-height: 500px;
   width: 100%;
 `
 

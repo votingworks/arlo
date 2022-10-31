@@ -30,18 +30,15 @@ export const ListAndDetail = styled(Card)`
 
 const ListContainer = styled.div`
   border-right: 1px solid ${Colors.LIGHT_GRAY2};
+  overflow-y: auto;
 `
 
-const ListSearch = styled(InputGroup).attrs({
-  leftIcon: 'search',
-  type: 'search',
-})`
-  margin: 16px 12px;
+const ListSearch = styled.div`
+  border-bottom: 1px solid ${Colors.LIGHT_GRAY2};
+  padding: 16px 12px;
 `
 
-const ListItems = styled.ul<{ withTopBorder?: boolean }>`
-  ${props =>
-    props.withTopBorder && `border-top: 1px solid ${Colors.LIGHT_GRAY2};`}
+const ListItems = styled.ul`
   list-style: none;
   margin: 0;
   padding: 0;
@@ -59,14 +56,18 @@ export const List: React.FC<IListProps> = ({ search, children }) => {
   return (
     <ListContainer>
       {search && (
-        <ListSearch
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            search.setQuery(e.target.value)
-          }
-          placeholder={search.placeholder}
-        />
+        <ListSearch>
+          <InputGroup
+            leftIcon="search"
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              search.setQuery(e.target.value)
+            }
+            placeholder={search.placeholder}
+            type="search"
+          />
+        </ListSearch>
       )}
-      <ListItems withTopBorder={Boolean(search)}>{children}</ListItems>
+      <ListItems>{children}</ListItems>
     </ListContainer>
   )
 }
@@ -115,5 +116,6 @@ export const ListItem: React.FC<IListItemProps> = ({
 // ---------- Detail ----------
 
 export const Detail = styled.div`
+  overflow-y: auto;
   padding: 16px;
 `
