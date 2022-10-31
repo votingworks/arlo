@@ -20,8 +20,6 @@ import AsyncButton from './AsyncButton'
 
 // CSVFile is deprecated in favor of FileUpload
 
-const FormSection = styled.div``
-
 export const Select = styled(HTMLSelect)`
   margin-top: 5px;
 `
@@ -91,7 +89,7 @@ const CSVFile: React.FC<IProps> = ({
       }: FormikProps<IValues>) => (
         <form>
           <FormWrapper>
-            <FormSection>
+            <div>
               {title && <H4>{title}</H4>}
               <FormSectionDescription>
                 {description}
@@ -113,7 +111,7 @@ const CSVFile: React.FC<IProps> = ({
                   </>
                 )}
               </FormSectionDescription>
-            </FormSection>
+            </div>
             {showCvrFileType && (
               <div>
                 <label>
@@ -133,7 +131,7 @@ const CSVFile: React.FC<IProps> = ({
             )}
             {isEditing || !file || isProcessing ? (
               <>
-                <FormSection>
+                <div>
                   <FileInput
                     inputProps={{
                       // While this component is named CSVFile, it can accept zip files in the case
@@ -222,11 +220,11 @@ const CSVFile: React.FC<IProps> = ({
                   >
                     Upload File
                   </FormButton>
-                </FormSection>
+                </div>
               </>
             ) : (
               <>
-                <FormSection>
+                <div>
                   <p>
                     <strong>Current file:</strong> {file.name}
                   </p>
@@ -268,7 +266,7 @@ const CSVFile: React.FC<IProps> = ({
                       </AsyncButton>
                     )}
                   </div>
-                </FormSection>
+                </div>
               </>
             )}
           </FormWrapper>
