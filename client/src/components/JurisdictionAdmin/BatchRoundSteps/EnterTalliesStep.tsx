@@ -54,11 +54,7 @@ const EnterTalliesStep: React.FC<IEnterTalliesStepProps> = ({
 
   return (
     <>
-      <StepPanel
-        style={{
-          paddingTop: 0, // Ensure sticky batch table header is flush with top
-        }}
-      >
+      <StepPanel>
         <BatchRoundDataEntry
           electionId={jurisdiction.election.id}
           jurisdictionId={jurisdiction.id}

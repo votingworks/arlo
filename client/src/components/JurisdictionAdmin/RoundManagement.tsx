@@ -30,6 +30,7 @@ const Inner = styled(InnerAtom).attrs({ flexDirection: 'column' })``
 
 const SpacedDiv = styled(Card).attrs({ elevation: 1 })`
   margin-bottom: 30px;
+  width: 100%;
 `
 
 const StrongP = styled.p`
