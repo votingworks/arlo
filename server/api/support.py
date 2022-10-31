@@ -184,6 +184,7 @@ def get_election(election_id: str):
 
 
 @api.route("/support/elections/<election_id>", methods=["DELETE"])
+@restrict_access_support
 def permanently_delete_election(election_id: str):
     election = get_or_404(Election, election_id)
 
