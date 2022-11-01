@@ -275,6 +275,7 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
 
   const formMethods = useForm<IBatchResultTallySheet>({
     defaultValues: selectedSheet,
+    shouldUnregister: false,
   })
   const { errors, formState, handleSubmit, register, reset } = formMethods
   // Important gotcha! You have to access properties on the formState to subscribe to it:
@@ -305,7 +306,7 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
 
   return (
     <>
-      {isEditing && sheets.length > 1 ? (
+      {isEditing && sheets.length > 1 && (
         // A special tab bar with a sheet name form input replacing the selected tab, rendered here
         // instead of in the parent component so that we can create a separate react-hook-form form
         // per sheet (sharing the form across sheets requires diligent resetting)
@@ -336,11 +337,6 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
             Add Sheet
           </Button>
         </Tabs>
-      ) : (
-        // When the above tab bar isn't rendered, still render a hidden input to house the sheet
-        // name. Rendering no input at all interferes with react-hook-form's state management,
-        // specifically its isDirty tracking
-        <input name="name" ref={register()} style={{ display: 'none' }} />
       )}
 
       <div
@@ -365,31 +361,24 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
                     <span>
                       {sum(sheets.map(sheet => sheet.results[choice.id]))}
                     </span>
-                  ) : (
-                    <>
-                      <input
-                        aria-label={`${choice.name} Votes`}
-                        className={classnames(
-                          Classes.INPUT,
-                          errors.results?.[choice.id] && Classes.INTENT_DANGER
-                        )}
-                        name={`results[${choice.id}]`}
-                        readOnly={isSubmitting}
-                        ref={register({
-                          min: 0,
-                          required: true,
-                          valueAsNumber: true,
-                        })}
-                        type="number"
-                        // Visually hide this input instead of completely unmounting it since
-                        // rendering no input at all interferes with react-hook-form's state
-                        // management, specifically its isDirty tracking
-                        style={{ display: !isEditing ? 'none' : undefined }}
-                      />
-                      {!isEditing && (
-                        <span>{selectedSheet?.results[choice.id] || 0}</span>
+                  ) : isEditing ? (
+                    <input
+                      aria-label={`${choice.name} Votes`}
+                      className={classnames(
+                        Classes.INPUT,
+                        errors.results?.[choice.id] && Classes.INTENT_DANGER
                       )}
-                    </>
+                      name={`results[${choice.id}]`}
+                      readOnly={isSubmitting}
+                      ref={register({
+                        min: 0,
+                        required: true,
+                        valueAsNumber: true,
+                      })}
+                      type="number"
+                    />
+                  ) : (
+                    <span>{selectedSheet?.results[choice.id] || 0}</span>
                   )}
                 </td>
               </tr>
