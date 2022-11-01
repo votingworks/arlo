@@ -359,7 +359,9 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
                 <td>
                   {isTotalsSheet ? (
                     <span>
-                      {sum(sheets.map(sheet => sheet.results[choice.id]))}
+                      {sum(
+                        sheets.map(sheet => sheet.results[choice.id] || 0)
+                      ).toLocaleString()}
                     </span>
                   ) : isEditing ? (
                     <input
@@ -378,7 +380,11 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
                       type="number"
                     />
                   ) : (
-                    <span>{selectedSheet?.results[choice.id] || 0}</span>
+                    <span>
+                      {(
+                        selectedSheet?.results[choice.id] || 0
+                      ).toLocaleString()}
+                    </span>
                   )}
                 </td>
               </tr>
