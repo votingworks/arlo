@@ -23,6 +23,18 @@ import { IBatch, IBatchResultTallySheet } from '../useBatchResults'
 import { IContest } from '../../../types'
 import { sum } from '../../../utils/number'
 
+interface ITabsWrapperProps {
+  isAnimationEnabled?: boolean
+}
+
+// More on why this is needed can be found below, where it's used
+const TabsWrapper = styled.div<ITabsWrapperProps>`
+  .${Classes.TAB_INDICATOR_WRAPPER} {
+    ${({ isAnimationEnabled = true }) =>
+      !isAnimationEnabled && 'transition-duration: 0ms;'}
+  }
+`
+
 const BatchResultTallySheetTable = styled(HTMLTable).attrs({
   bordered: true,
   striped: true,
@@ -129,6 +141,7 @@ const BatchDetails: React.FC<IBatchDetailsProps> = ({
   const tabs = tabsFromSheets(sheets)
   const [selectedTabId, setSelectedTabId] = useState(tabs[0].id)
   const [isEditing, setIsEditing] = useState(false)
+  const [isTabsAnimationEnabled, setIsTabsAnimationEnabled] = useState(true)
 
   const currentSheetIndex = sheets.findIndex(
     sheet => sheet.id === selectedTabId
@@ -183,6 +196,18 @@ const BatchDetails: React.FC<IBatchDetailsProps> = ({
     await saveBatchResults(updatedSheets.map(sheetWithoutId))
   }
 
+  const enableEditing = () => {
+    setIsEditing(true)
+  }
+
+  const disableEditing = () => {
+    setIsTabsAnimationEnabled(false)
+    setTimeout(() => {
+      setIsTabsAnimationEnabled(true)
+    }, 250)
+    setIsEditing(false)
+  }
+
   // ---------- Handlers (end) ----------
 
   return (
@@ -190,32 +215,38 @@ const BatchDetails: React.FC<IBatchDetailsProps> = ({
       <H4>{batch.name}</H4>
 
       {/* When editing one of multiple sheets, BatchResultTallySheet renders its own tab bar with
-        a sheet name form input replacing the selected tab, so we hide the true tab bar */}
+        a sheet name form input replacing the selected tab, so we hide this main tab bar */}
       {(!isEditing || sheets.length === 1) && (
-        <Tabs
-          id={batch.name}
-          onChange={(newTabId: string) => {
-            setSelectedTabId(newTabId)
-          }}
-          selectedTabId={selectedTabId}
-        >
-          {tabs.map(tab => (
-            <Tab id={tab.id} key={tab.id}>
-              {tab.name}
-            </Tab>
-          ))}
-          <Tabs.Expander />
-          {sheets.length > 1 && (
-            <Button
-              icon="add"
-              disabled={areResultsFinalized}
-              minimal
-              onClick={addSheet}
-            >
-              Add Sheet
-            </Button>
-          )}
-        </Tabs>
+        // When editing is finished and we render this tab bar again, we don't want to re-animate
+        // selection of the already selected tab. The Tabs `animate` prop doesn't respond well to
+        // being toggled back and forth, so we disable and re-enable animation through our own
+        // wrapper
+        <TabsWrapper isAnimationEnabled={isTabsAnimationEnabled}>
+          <Tabs
+            id={batch.name}
+            onChange={(newTabId: string) => {
+              setSelectedTabId(newTabId)
+            }}
+            selectedTabId={selectedTabId}
+          >
+            {tabs.map(tab => (
+              <Tab id={tab.id} key={tab.id}>
+                {tab.name}
+              </Tab>
+            ))}
+            <Tabs.Expander />
+            {sheets.length > 1 && (
+              <Button
+                icon="add"
+                disabled={areResultsFinalized}
+                minimal
+                onClick={addSheet}
+              >
+                Add Sheet
+              </Button>
+            )}
+          </Tabs>
+        </TabsWrapper>
       )}
 
       <BatchResultTallySheet
@@ -224,11 +255,12 @@ const BatchDetails: React.FC<IBatchDetailsProps> = ({
         batch={batch}
         contest={contest}
         deleteSheet={deleteSheet}
+        disableEditing={disableEditing}
+        enableEditing={enableEditing}
         isEditing={isEditing}
         key={selectedTabId}
         selectedTabId={selectedTabId}
         setAreChangesUnsaved={setAreChangesUnsaved}
-        setIsEditing={setIsEditing}
         sheets={sheets}
         updateSheet={updateCurrentSheet}
       />
@@ -242,10 +274,11 @@ interface IBatchResultTallySheetProps {
   batch: IBatch
   contest: IContest
   deleteSheet: () => Promise<void>
+  disableEditing: () => void
+  enableEditing: () => void
   isEditing: boolean
   selectedTabId: string
   setAreChangesUnsaved: (areChangesUnsaved: boolean) => void
-  setIsEditing: (isEditing: boolean) => void
   sheets: IBatchResultTallySheetWithId[]
   updateSheet: (updatedSheet: IBatchResultTallySheet) => Promise<void>
 
@@ -260,10 +293,11 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
   batch,
   contest,
   deleteSheet,
+  disableEditing,
+  enableEditing,
   isEditing,
   selectedTabId,
   setAreChangesUnsaved,
-  setIsEditing,
   sheets,
   updateSheet,
 }) => {
@@ -289,7 +323,7 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
 
   const discardChanges = () => {
     reset(selectedSheet)
-    setIsEditing(false)
+    disableEditing()
   }
 
   const onValidSubmit: SubmitHandler<IBatchResultTallySheet> = async sheet => {
@@ -301,7 +335,7 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
     }
     // Reset the form's isDirty value back to false
     reset(sheet)
-    setIsEditing(false)
+    disableEditing()
   }
 
   return (
@@ -425,7 +459,7 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
                 <Button
                   disabled={areResultsFinalized}
                   icon="edit"
-                  onClick={() => setIsEditing(true)}
+                  onClick={enableEditing}
                 >
                   {sheets.length === 1 ? 'Edit Tallies' : 'Edit Sheet'}
                 </Button>
