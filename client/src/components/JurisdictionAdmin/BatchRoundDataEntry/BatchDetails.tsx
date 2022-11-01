@@ -149,16 +149,6 @@ const BatchDetails: React.FC<IBatchDetailsProps> = ({
 
   // ---------- Handlers (start) ----------
 
-  const updateCurrentSheet = async (updatedSheet: IBatchResultTallySheet) => {
-    const updatedSheets = sheets.map((sheet, i) =>
-      i === currentSheetIndex ? { ...updatedSheet, id: sheet.id } : sheet
-    )
-
-    // Update client-side state first for immediate UI feedback
-    setSheets(updatedSheets)
-    await saveBatchResults(updatedSheets.map(sheetWithoutId))
-  }
-
   const addSheet = async () => {
     const isSheetNameAlreadyTaken = (sheetName: string) =>
       sheets.some(sheet => sheet.name === sheetName)
@@ -180,7 +170,17 @@ const BatchDetails: React.FC<IBatchDetailsProps> = ({
     await saveBatchResults(updatedSheets.map(sheetWithoutId))
   }
 
-  const deleteSheet = async () => {
+  const updateCurrentSheet = async (updatedSheet: IBatchResultTallySheet) => {
+    const updatedSheets = sheets.map((sheet, i) =>
+      i === currentSheetIndex ? { ...updatedSheet, id: sheet.id } : sheet
+    )
+
+    // Update client-side state first for immediate UI feedback
+    setSheets(updatedSheets)
+    await saveBatchResults(updatedSheets.map(sheetWithoutId))
+  }
+
+  const deleteCurrentSheet = async () => {
     let updatedSheets = sheets.filter((_, i) => i !== currentSheetIndex)
     if (updatedSheets.length === 1) {
       // If we're dropping back to 1 sheet, reset the name of that sheet back to the default
@@ -237,8 +237,8 @@ const BatchDetails: React.FC<IBatchDetailsProps> = ({
             <Tabs.Expander />
             {sheets.length > 1 && (
               <Button
-                icon="add"
                 disabled={areResultsFinalized}
+                icon="add"
                 minimal
                 onClick={addSheet}
               >
@@ -254,7 +254,7 @@ const BatchDetails: React.FC<IBatchDetailsProps> = ({
         areResultsFinalized={areResultsFinalized}
         batch={batch}
         contest={contest}
-        deleteSheet={deleteSheet}
+        deleteSheet={deleteCurrentSheet}
         disableEditing={disableEditing}
         enableEditing={enableEditing}
         isEditing={isEditing}
@@ -367,7 +367,7 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
             )
           )}
           <Tabs.Expander />
-          <Button icon="add" minimal disabled>
+          <Button disabled icon="add" minimal>
             Add Sheet
           </Button>
         </Tabs>
