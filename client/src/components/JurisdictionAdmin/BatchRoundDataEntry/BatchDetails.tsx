@@ -54,6 +54,19 @@ const BatchResultTallySheetTable = styled(HTMLTable).attrs({
   &.${Classes.HTML_TABLE} td {
     vertical-align: middle;
   }
+
+  // Hide arrows/spinners from number inputs
+  // Reference: https://www.w3schools.com/howto/howto_css_hide_arrow_number.asp
+  // Chrome, Edge, Safari
+  &.${Classes.HTML_TABLE} input::-webkit-inner-spin-button,
+  &.${Classes.HTML_TABLE} input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  // Firefox
+  &.${Classes.HTML_TABLE} input[type='number'] {
+    -moz-appearance: textfield;
+  }
 `
 
 const BatchResultTallySheetButtonRow = styled(ButtonRow).attrs({
