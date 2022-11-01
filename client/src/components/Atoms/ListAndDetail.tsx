@@ -123,6 +123,10 @@ export const ListItem: React.FC<IListItemProps> = ({
   )
 }
 
+export const ListSearchNoResults = styled.div`
+  padding: 12px 16px;
+`
+
 // ---------- Detail ----------
 
 export const Detail = styled.div`

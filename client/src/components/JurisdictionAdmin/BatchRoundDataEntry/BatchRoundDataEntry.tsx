@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
-import { Callout, Icon } from '@blueprintjs/core'
+import { Callout } from '@blueprintjs/core'
 
 import BatchDetails from './BatchDetails'
 import useContestsJurisdictionAdmin from '../useContestsJurisdictionAdmin'
@@ -10,6 +10,7 @@ import {
   List,
   ListAndDetail,
   ListItem,
+  ListSearchNoResults,
 } from '../../Atoms/ListAndDetail'
 import {
   IBatch,
@@ -120,6 +121,9 @@ const BatchRoundDataEntry: React.FC<IProps> = ({
             setQuery: setSearchQuery,
           }}
         >
+          {filteredBatches.length === 0 && (
+            <ListSearchNoResults>No batches found</ListSearchNoResults>
+          )}
           {filteredBatches.map(batch => (
             <ListItem
               key={batch.id}
