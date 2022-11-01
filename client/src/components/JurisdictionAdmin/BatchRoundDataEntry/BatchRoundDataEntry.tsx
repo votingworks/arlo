@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
-import { Callout } from '@blueprintjs/core'
+import { Callout, Icon } from '@blueprintjs/core'
 
 import BatchDetails from './BatchDetails'
 import useContestsJurisdictionAdmin from '../useContestsJurisdictionAdmin'
@@ -124,6 +124,9 @@ const BatchRoundDataEntry: React.FC<IProps> = ({
             <ListItem
               key={batch.id}
               onClick={() => selectBatch(batch.id)}
+              rightIcon={
+                batch.resultTallySheets.length > 0 ? 'tick' : undefined
+              }
               selected={batch.id === selectedBatchId}
             >
               {batch.name}

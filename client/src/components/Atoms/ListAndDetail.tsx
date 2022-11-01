@@ -1,6 +1,13 @@
 import React, { ReactNode } from 'react'
 import styled from 'styled-components'
-import { Button, Card, Classes, Colors, InputGroup } from '@blueprintjs/core'
+import {
+  Button,
+  Card,
+  Classes,
+  Colors,
+  IconName,
+  InputGroup,
+} from '@blueprintjs/core'
 
 /**
  * A set of components to render a list-and-detail panel
@@ -91,12 +98,14 @@ const ListItemContainer = styled.li<{ selected?: boolean }>`
 interface IListItemProps {
   children?: ReactNode
   onClick: () => void
+  rightIcon?: IconName
   selected?: boolean
 }
 
 export const ListItem: React.FC<IListItemProps> = ({
   children,
   onClick,
+  rightIcon,
   selected,
 }) => {
   return (
@@ -106,6 +115,7 @@ export const ListItem: React.FC<IListItemProps> = ({
         intent={selected ? 'primary' : undefined}
         minimal
         onClick={onClick}
+        rightIcon={rightIcon}
       >
         {children}
       </Button>
