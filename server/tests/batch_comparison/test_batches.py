@@ -449,7 +449,7 @@ def test_record_batch_results_invalid(
                     "results": {choice_id: 3 for choice_id in choice_ids},
                 },
             ],
-            "Tally sheet names must be unique. Found duplicate: Tally Sheet #1.",
+            "Tally sheet names must be unique. 'Tally Sheet #1' has already been used.",
         ),
         (
             [{"results": {choice_id: 1 for choice_id in choice_ids}}],
