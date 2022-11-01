@@ -1,12 +1,12 @@
 import styled, { css } from 'styled-components'
 
-interface FlexboxProps {
+export interface IFlexboxProps {
   justifyContent?: 'start' | 'center' | 'end' | 'space-between' | 'space-around'
   alignItems?: 'start' | 'center' | 'end' | 'stretch' | 'baseline'
   gap?: string
 }
 
-const Flexbox = styled.div<FlexboxProps>`
+const Flexbox = styled.div<IFlexboxProps>`
   display: flex;
   ${props =>
     props.justifyContent &&

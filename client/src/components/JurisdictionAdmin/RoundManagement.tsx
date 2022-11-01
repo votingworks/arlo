@@ -1,8 +1,8 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
-import { ButtonGroup, Button, H2, H3 } from '@blueprintjs/core'
-import { Wrapper } from '../Atoms/Wrapper'
+import { ButtonGroup, Button, H2, H3, Card, Icon } from '@blueprintjs/core'
+import { Inner as InnerAtom } from '../Atoms/Wrapper'
 import { apiDownload, assert } from '../utilities'
 import CreateAuditBoards from './CreateAuditBoards'
 import RoundProgress from './RoundProgress'
@@ -22,13 +22,13 @@ import AsyncButton from '../Atoms/AsyncButton'
 import useSampleCount from './useBallots'
 import FullHandTallyDataEntry from './FullHandTallyDataEntry'
 import BatchRoundSteps from './BatchRoundSteps/BatchRoundSteps'
+import { StatusBar, AuditHeading } from '../Atoms/StatusBar'
+import BatchRoundProgress from './BatchRoundProgress'
+import { Row, Column } from '../Atoms/Layout'
 
-const PaddedWrapper = styled(Wrapper)`
-  flex-direction: column;
-  padding: 30px 0;
-`
+const Inner = styled(InnerAtom).attrs({ flexDirection: 'column' })``
 
-const SpacedDiv = styled.div`
+const SpacedDiv = styled(Card).attrs({ elevation: 1 })`
   margin-bottom: 30px;
 `
 
@@ -74,66 +74,115 @@ const RoundManagement: React.FC<IRoundManagementProps> = ({
 
   if (round.isAuditComplete) {
     return (
-      <PaddedWrapper>
-        <H2>Congratulations! Your Risk-Limiting Audit is now complete.</H2>
-      </PaddedWrapper>
+      <Inner>
+        <StatusBar>
+          <AuditHeading
+            auditName={jurisdiction.election.auditName}
+            jurisdictionName={jurisdiction.name}
+          />
+        </StatusBar>
+        <Card>
+          <Column alignItems="center" gap="30px" style={{ padding: '100px 0' }}>
+            <Icon icon="tick-circle" intent="primary" iconSize={100} />
+            <Column alignItems="center" gap="10px">
+              <H2>Audit Complete</H2>
+              <AsyncButton
+                intent="primary"
+                onClick={() =>
+                  apiDownload(
+                    `/election/${electionId}/jurisdiction/${jurisdictionId}/report`
+                  )
+                }
+              >
+                Download Audit Report
+              </AsyncButton>
+            </Column>
+          </Column>
+        </Card>
+      </Inner>
     )
   }
 
+  const auditHeading = (
+    <AuditHeading
+      auditName={jurisdiction.election.auditName}
+      jurisdictionName={jurisdiction.name}
+      auditStage={`Round ${roundNum}`}
+    />
+  )
+
   if (sampleCount.ballots === 0 && !round.isFullHandTally) {
     return (
-      <PaddedWrapper>
-        <StrongP>
-          Your jurisdiction has not been assigned any ballots to audit in this
-          round.
-        </StrongP>
-      </PaddedWrapper>
+      <Inner>
+        <StatusBar>{auditHeading}</StatusBar>
+        <Card>
+          <Column alignItems="center" gap="30px" style={{ padding: '100px 0' }}>
+            <Column alignItems="center" gap="10px">
+              <H2>No ballots to audit</H2>
+              <p>
+                Your jurisdiction has not been assigned any ballots to audit in
+                this round.
+              </p>
+            </Column>
+          </Column>
+        </Card>
+      </Inner>
     )
   }
 
   if (auditType === 'BATCH_COMPARISON') {
     return (
-      <PaddedWrapper>
+      <Inner>
+        <StatusBar>
+          {auditHeading}
+          <BatchRoundProgress
+            electionId={electionId}
+            jurisdictionId={jurisdictionId}
+            roundId={round.id}
+          />
+        </StatusBar>
         <BatchRoundSteps jurisdiction={jurisdiction} round={round} />
-      </PaddedWrapper>
+      </Inner>
     )
   }
 
-  const samplesToAudit = (() => {
-    if (round.isFullHandTally)
-      return (
+  const samplesToAudit = (
+    <StrongP>Ballots to audit: {sampleCount.ballots.toLocaleString()}</StrongP>
+  )
+
+  if (auditBoards.length === 0) {
+    return (
+      <Inner>
+        <StatusBar>{auditHeading}</StatusBar>
+        <Card>
+          <H3>Set Up Audit Boards</H3>
+          {samplesToAudit}
+          <CreateAuditBoards createAuditBoards={createAuditBoards} />
+        </Card>
+      </Inner>
+    )
+  }
+
+  if (round.isFullHandTally) {
+    return (
+      <Inner>
+        <StatusBar>{auditHeading}</StatusBar>
+        <hr style={{ margin: 0, marginBottom: '20px' }} />
         <StrongP>
           Please audit all of the ballots in your jurisdiction (
           {jurisdiction.numBallots} ballots)
         </StrongP>
-      )
-    return (
-      <StrongP>
-        Ballots to audit: {sampleCount.ballots.toLocaleString()}
-      </StrongP>
-    )
-  })()
-
-  if (
-    auditBoards.length === 0 &&
-    auditSettings.auditType !== 'BATCH_COMPARISON'
-  ) {
-    return (
-      <PaddedWrapper>
-        <H3>Round {roundNum} Audit Board Setup</H3>
-        {samplesToAudit}
-        <CreateAuditBoards createAuditBoards={createAuditBoards} />
-      </PaddedWrapper>
+        <FullHandTallyDataEntry round={round} />
+      </Inner>
     )
   }
 
   return (
-    <PaddedWrapper>
-      <H3>Round {roundNum} Data Entry</H3>
-      {round.isFullHandTally ? (
-        samplesToAudit
-      ) : (
+    <Inner>
+      <StatusBar>{auditHeading}</StatusBar>
+      <Row gap="15px">
         <SpacedDiv>
+          <H3>Prepare Ballots</H3>
           {samplesToAudit}
           <JAFileDownloadButtons
             electionId={electionId}
@@ -144,17 +193,15 @@ const RoundManagement: React.FC<IRoundManagementProps> = ({
             auditBoards={auditBoards}
           />
         </SpacedDiv>
-      )}
-      <SpacedDiv>
-        {auditSettings.online ? (
-          <RoundProgress auditBoards={auditBoards} />
-        ) : round.isFullHandTally ? (
-          <FullHandTallyDataEntry round={round} />
-        ) : (
-          <RoundDataEntry round={round} />
-        )}
-      </SpacedDiv>
-    </PaddedWrapper>
+        <SpacedDiv style={{ flex: 1 }}>
+          {auditSettings.online ? (
+            <RoundProgress auditBoards={auditBoards} />
+          ) : (
+            <RoundDataEntry round={round} />
+          )}
+        </SpacedDiv>
+      </Row>
+    </Inner>
   )
 }
 

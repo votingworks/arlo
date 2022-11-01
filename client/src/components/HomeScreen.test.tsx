@@ -547,7 +547,9 @@ describe('Home screen', () => {
 
       // Click on a jurisdiction to go to the audit
       userEvent.click(j1Button)
-      await screen.findByText('The audit has not started.')
+      await screen.findByText('Audit Setup')
+      screen.getByText(/Jurisdiction One/)
+      screen.getByText(/audit one/)
     })
   })
 
@@ -592,7 +594,7 @@ describe('Home screen', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView('/')
-      await screen.findByText('Audit Source Data')
+      await screen.findByText('Audit Setup')
     })
   })
 })

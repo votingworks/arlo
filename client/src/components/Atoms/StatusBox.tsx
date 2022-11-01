@@ -11,10 +11,8 @@ import { IAuditSettings } from '../useAuditSettings'
 import {
   IRound,
   drawSampleError,
-  isAuditStarted,
   ISampleSizes,
 } from '../AuditAdmin/useRoundsAuditAdmin'
-import { IAuditBoard } from '../useAuditBoards'
 import { IContest } from '../../types'
 import useSampleSizes from '../AuditAdmin/Setup/Review/useSampleSizes'
 import { mapValues } from '../../utils/objects'
@@ -87,12 +85,6 @@ const StatusBox: React.FC<IStatusBoxProps> = ({
 
 const downloadAuditAdminReport = (electionId: string) =>
   apiDownload(`/election/${electionId}/report`)
-
-const downloadJurisdictionAdminReport = (
-  electionId: string,
-  jurisdictionId: string
-) =>
-  apiDownload(`/election/${electionId}/jurisdiction/${jurisdictionId}/report`)
 
 export const allCvrsUploaded = (jurisdictions: IJurisdiction[]): boolean =>
   jurisdictions.every(
@@ -343,145 +335,6 @@ const AuditAdminAnotherRoundStatusBox = ({
       buttonLabel={`Start Round ${roundNum + 1}`}
       onButtonClick={() => startNextRound(sampleSizes!)}
       auditName={auditSettings.auditName}
-    >
-      {children}
-    </StatusBox>
-  )
-}
-
-interface IJurisdictionAdminProps {
-  rounds: IRound[]
-  ballotManifest: IFileInfo
-  batchTallies: IFileInfo | null
-  cvrs: IFileInfo | null
-  auditBoards: IAuditBoard[]
-  auditType: IAuditSettings['auditType']
-  children?: ReactElement
-  auditName: string
-  isAuditOnline: boolean
-}
-
-export const JurisdictionAdminStatusBox: React.FC<IJurisdictionAdminProps> = ({
-  rounds,
-  ballotManifest,
-  batchTallies,
-  cvrs,
-  auditBoards,
-  auditType,
-  children,
-  auditName,
-  isAuditOnline,
-}: IJurisdictionAdminProps) => {
-  const { electionId, jurisdictionId } = useParams<{
-    electionId: string
-    jurisdictionId: string
-  }>()
-
-  // Audit has not started
-  if (!isAuditStarted(rounds)) {
-    const files: IFileInfo['processing'][] = [ballotManifest.processing]
-    if (auditType === 'BATCH_COMPARISON') files.push(batchTallies!.processing)
-    if (auditType === 'BALLOT_COMPARISON' || auditType === 'HYBRID')
-      files.push(cvrs!.processing)
-
-    const numComplete = files.filter(
-      f => f && f.status === FileProcessingStatus.PROCESSED
-    ).length
-
-    let details
-    // Special case when we have just a ballotManifest
-    if (files.length === 1) {
-      details =
-        numComplete === 1
-          ? [
-              'Ballot manifest successfully uploaded.',
-              'Waiting for Audit Administrator to launch audit.',
-            ]
-          : ['Ballot manifest not uploaded.']
-    }
-    // When we have multiple files
-    else {
-      details = [`${numComplete}/${files.length} files successfully uploaded.`]
-      if (numComplete === files.length)
-        details.push('Waiting for Audit Administrator to launch audit.')
-    }
-
-    return (
-      <StatusBox
-        headline="The audit has not started."
-        details={details}
-        auditName={auditName}
-      >
-        {children}
-      </StatusBox>
-    )
-  }
-
-  const { roundNum, isAuditComplete, isFullHandTally } = rounds[
-    rounds.length - 1
-  ]
-  const inProgressHeadline = `Round ${roundNum} of the audit is in progress.`
-
-  // Round in progress, hasn't set up audit boards
-  if (auditBoards.length === 0 && auditType !== 'BATCH_COMPARISON')
-    return (
-      <StatusBox
-        headline={inProgressHeadline}
-        details={['Audit boards not set up.']}
-        auditName={auditName}
-      >
-        {children}
-      </StatusBox>
-    )
-
-  // Round in progress, audit boards set up
-  if (!isAuditComplete) {
-    if (isFullHandTally)
-      return (
-        <StatusBox
-          headline={inProgressHeadline}
-          details={['Auditing ballots.']}
-          auditName={auditName}
-        >
-          {children}
-        </StatusBox>
-      )
-
-    const numCompleted = auditBoards.filter(
-      ({ currentRoundStatus, signedOffAt }) =>
-        currentRoundStatus.numSampledBallots === 0 || signedOffAt
-    ).length
-    const details = []
-    if (isAuditOnline) {
-      details.push(
-        `${numCompleted} of ${auditBoards.length} audit boards complete.`
-      )
-    }
-    if (numCompleted === auditBoards.length && auditType !== 'BATCH_COMPARISON')
-      details.push(
-        `Waiting for all jurisdictions to complete round ${roundNum}.`
-      )
-    return (
-      <StatusBox
-        headline={inProgressHeadline}
-        details={details}
-        auditName={auditName}
-      >
-        {children}
-      </StatusBox>
-    )
-  }
-
-  // Audit complete
-  return (
-    <StatusBox
-      headline="The audit is complete"
-      details={['Download the audit report.']}
-      buttonLabel="Download Audit Report"
-      onButtonClick={async () =>
-        downloadJurisdictionAdminReport(electionId, jurisdictionId)
-      }
-      auditName={auditName}
     >
       {children}
     </StatusBox>

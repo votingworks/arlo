@@ -1,12 +1,11 @@
 import React from 'react'
-import { ProgressBar, H4, Tag, Intent } from '@blueprintjs/core'
+import { ProgressBar, H4, Tag, Intent, H3 } from '@blueprintjs/core'
 import styled from 'styled-components'
 import { IAuditBoard } from '../useAuditBoards'
 import { sum } from '../../utils/number'
 
 const MainBarWrapper = styled.div`
   margin-bottom: 30px;
-  width: 500px;
   font-size: 16px;
   .bp3-progress-bar {
     height: 12px;
@@ -15,7 +14,6 @@ const MainBarWrapper = styled.div`
 
 const SmallBarWrapper = styled.div`
   margin-bottom: 30px;
-  width: 500px;
   > div:first-child {
     display: flex;
     justify-content: space-between;
@@ -44,7 +42,7 @@ const RoundProgress: React.FC<{ auditBoards: IAuditBoard[] }> = ({
   return (
     <>
       <MainBarWrapper>
-        <H4>Audit Board Progress</H4>
+        <H3>Audit Board Progress</H3>
         <p>
           {auditedBallots} of {sampledBallots} ballots audited{' '}
         </p>

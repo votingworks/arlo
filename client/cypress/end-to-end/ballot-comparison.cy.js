@@ -211,7 +211,7 @@ describe('Ballot Comparison Test Cases', () => {
     // switch back to jurisdiction admin to create audit boards
     cy.logout(auditAdmin)
     cy.loginJurisdictionAdmin(jurisdictionAdmin)
-    cy.contains('Number of Audit Boards')
+    cy.contains('Set Up Audit Boards')
     cy.findByText('Save & Next').click()
     cy.findByText('Download Audit Board Credentials').click()
     cy.logout(jurisdictionAdmin)

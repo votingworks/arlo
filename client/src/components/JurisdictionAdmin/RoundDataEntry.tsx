@@ -1,6 +1,6 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
-import { H5, Card } from '@blueprintjs/core'
+import { H5, H3 } from '@blueprintjs/core'
 import { Field, Formik, FormikProps } from 'formik'
 import styled from 'styled-components'
 import useContestsJurisdictionAdmin from './useContestsJurisdictionAdmin'
@@ -10,13 +10,17 @@ import { IRound } from '../AuditAdmin/useRoundsAuditAdmin'
 import { testNumber } from '../utilities'
 import FormField from '../Atoms/Form/FormField'
 
+const Contest = styled.div`
+  padding: 10px 0;
+`
+
 const BottomButton = styled(FormButton)`
   margin: 30px 0;
 `
 
 const BlockLabel = styled.label`
   display: block;
-  margin: 20px 0;
+  margin: 10px 0;
 `
 
 interface IProps {
@@ -54,13 +58,14 @@ const RoundDataEntry: React.FC<IProps> = ({ round }) => {
     <Formik initialValues={{ results }} enableReinitialize onSubmit={submit}>
       {({ handleSubmit, isSubmitting }: FormikProps<IValues>) => (
         <form>
+          <H3>Enter Tallies</H3>
           <p>
             When you have examined all the ballots assigned to you, enter the
             number of votes recorded for each candidate/choice from the audited
             ballots.
           </p>
           {contests.map(contest => (
-            <Card key={contest.id}>
+            <Contest key={contest.id}>
               <H5>{contest.name}</H5>
               {contest.choices.map(choice => (
                 <BlockLabel
@@ -77,7 +82,7 @@ const RoundDataEntry: React.FC<IProps> = ({ round }) => {
                   />
                 </BlockLabel>
               ))}
-            </Card>
+            </Contest>
           ))}
           <BottomButton
             type="submit"
@@ -86,9 +91,7 @@ const RoundDataEntry: React.FC<IProps> = ({ round }) => {
             disabled={alreadySubmittedResults}
             onClick={handleSubmit}
           >
-            {alreadySubmittedResults
-              ? `Already Submitted Data for Round ${round.roundNum}`
-              : `Submit Data for Round ${round.roundNum}`}
+            {alreadySubmittedResults ? `Tallies Submitted` : `Submit Tallies`}
           </BottomButton>
         </form>
       )}

@@ -91,7 +91,7 @@ describe('Full Hand Tally Data Entry', () => {
     cy.findByRole('heading', { name: 'Audit Progress' })
     cy.logout(auditAdmin)
     cy.loginJurisdictionAdmin(jurisdictionAdmin)
-    cy.contains('Number of Audit Boards')
+    cy.contains('Set Up Audit Boards')
     cy.findByText('Save & Next').click()
 
     // renders properly
