@@ -81,17 +81,28 @@ export const List: React.FC<IListProps> = ({ search, children }) => {
 
 // ---------- ListItem ----------
 
-const ListItemContainer = styled.li<{ selected?: boolean }>`
-  border-bottom: 1px solid ${Colors.LIGHT_GRAY4};
+// Blueprint <Button intent="primary" minimal> hover color
+const SELECTED_LIST_ITEM_COLOR = 'rgba(19, 124, 189, 0.15)'
 
-  button.${Classes.BUTTON} {
+const ListItemContainer = styled.li<{ selected?: boolean }>`
+  .${Classes.BUTTON} {
     background-color: ${props =>
-      props.selected
-        ? 'rgba(19, 124, 189, 0.15)' // Blueprint <Button intent="primary" minimal> hover color
-        : 'transparent'};
+      props.selected ? SELECTED_LIST_ITEM_COLOR : 'transparent'};
+    border-bottom: 1px solid ${Colors.LIGHT_GRAY4};
     border-radius: 0;
     padding: 12px 16px;
     width: 100%;
+  }
+
+  .${Classes.BUTTON}:hover:not(:active) {
+    background-color: ${props =>
+      props.selected ? SELECTED_LIST_ITEM_COLOR : Colors.LIGHT_GRAY4};
+  }
+
+  .${Classes.BUTTON}:active {
+    border-bottom: 1px solid ${Colors.LIGHT_GRAY1};
+    border-top: 1px solid ${Colors.LIGHT_GRAY1};
+    margin-top: -1px;
   }
 `
 
