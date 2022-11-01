@@ -23,6 +23,14 @@ import { IBatch, IBatchResultTallySheet } from '../useBatchResults'
 import { IContest } from '../../../types'
 import { sum } from '../../../utils/number'
 
+const BatchName = styled(H4)`
+  &.${Classes.HEADING} {
+    // Match the height of the batch search bar such that the batch name and search bar are
+    // vertically middle aligned
+    line-height: 30px;
+  }
+`
+
 interface ITabsWrapperProps {
   isAnimationEnabled?: boolean
 }
@@ -225,7 +233,7 @@ const BatchDetails: React.FC<IBatchDetailsProps> = ({
 
   return (
     <Detail>
-      <H4>{batch.name}</H4>
+      <BatchName>{batch.name}</BatchName>
 
       {/* When editing one of multiple sheets, BatchResultTallySheet renders its own tab bar with
         a sheet name form input replacing the selected tab, so we hide this main tab bar */}
