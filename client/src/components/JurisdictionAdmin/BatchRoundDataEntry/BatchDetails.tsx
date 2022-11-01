@@ -437,7 +437,6 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
                   <Button
                     disabled={isSubmitting}
                     icon="delete"
-                    intent="danger"
                     minimal
                     onClick={discardChanges}
                   >
