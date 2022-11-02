@@ -132,7 +132,7 @@ function tabsFromSheets(sheets: IBatchResultTallySheetStateEntry[]): ITab[] {
   ]
 }
 
-interface IBatchDetailsProps {
+interface IBatchDetailProps {
   areResultsFinalized: boolean
   batch: IBatch
   contest: IContest
@@ -147,7 +147,7 @@ interface IBatchDetailsProps {
   key: string // eslint-disable-line react/no-unused-prop-types
 }
 
-const BatchDetails: React.FC<IBatchDetailsProps> = ({
+const BatchDetail: React.FC<IBatchDetailProps> = ({
   areResultsFinalized,
   batch,
   contest,
@@ -564,4 +564,4 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
   )
 }
 
-export default BatchDetails
+export default BatchDetail

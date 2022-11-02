@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { Callout } from '@blueprintjs/core'
 
-import BatchDetails from './BatchDetails'
+import BatchDetail from './BatchDetail'
 import useContestsJurisdictionAdmin from '../../useContestsJurisdictionAdmin'
 import { Confirm, useConfirm } from '../../../Atoms/Confirm'
 import {
@@ -161,7 +161,7 @@ const BatchRoundTallyEntryContent: React.FC<IBatchRoundTallyEntryContentProps> =
           ))}
         </List>
 
-        <BatchDetails
+        <BatchDetail
           areResultsFinalized={areResultsFinalized}
           batch={selectedBatch}
           contest={contest}
