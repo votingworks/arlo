@@ -1,5 +1,5 @@
 import classnames from 'classnames'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import uuidv4 from 'uuidv4'
 import {
@@ -136,10 +136,11 @@ interface IBatchDetailsProps {
   areResultsFinalized: boolean
   batch: IBatch
   contest: IContest
+  isEditing: boolean
   saveBatchResults: (
     resultTallySheets: IBatchResultTallySheet[]
   ) => Promise<void>
-  setAreChangesUnsaved: (areChangesUnsaved: boolean) => void
+  setIsEditing: (isEditing: boolean) => void
 
   // Require a key to ensure that the state within this component resets when a different batch is
   // selected
@@ -150,8 +151,9 @@ const BatchDetails: React.FC<IBatchDetailsProps> = ({
   areResultsFinalized,
   batch,
   contest,
+  isEditing,
   saveBatchResults,
-  setAreChangesUnsaved,
+  setIsEditing,
 }) => {
   const [sheets, setSheets] = useState<IBatchResultTallySheetStateEntry[]>(
     (batch.resultTallySheets.length === 0
@@ -161,7 +163,6 @@ const BatchDetails: React.FC<IBatchDetailsProps> = ({
   )
   const tabs = tabsFromSheets(sheets)
   const [selectedTabId, setSelectedTabId] = useState(tabs[0].id)
-  const [isEditing, setIsEditing] = useState(false)
   const [isTabsAnimationEnabled, setIsTabsAnimationEnabled] = useState(true)
 
   const currentSheetIndex = sheets.findIndex(
@@ -308,7 +309,6 @@ const BatchDetails: React.FC<IBatchDetailsProps> = ({
         isEditing={isEditing}
         key={selectedTabId}
         selectedTabId={selectedTabId}
-        setAreChangesUnsaved={setAreChangesUnsaved}
         sheets={sheets}
         updateSheet={updateCurrentSheet}
       />
@@ -326,7 +326,6 @@ interface IBatchResultTallySheetProps {
   enableEditing: () => void
   isEditing: boolean
   selectedTabId: string
-  setAreChangesUnsaved: (areChangesUnsaved: boolean) => void
   sheets: IBatchResultTallySheetStateEntry[]
   updateSheet: (updatedSheet: IBatchResultTallySheet) => Promise<void>
 
@@ -345,7 +344,6 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
   enableEditing,
   isEditing,
   selectedTabId,
-  setAreChangesUnsaved,
   sheets,
   updateSheet,
 }) => {
@@ -371,15 +369,7 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
   } = formMethods
   // Important gotcha! You have to access properties on the formState to subscribe to it:
   // https://github.com/react-hook-form/react-hook-form/issues/9002
-  const { isSubmitting, isDirty } = formState
-
-  // Communicate up to the parent whether or not there are unsaved changes
-  useEffect(() => {
-    setAreChangesUnsaved(isSelectedSheetNewAndNotSaved || isDirty)
-    return () => {
-      setAreChangesUnsaved(false)
-    }
-  }, [isDirty, isSelectedSheetNewAndNotSaved, setAreChangesUnsaved])
+  const { isSubmitting } = formState
 
   const discardChanges = async () => {
     resetForm()

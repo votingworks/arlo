@@ -51,7 +51,7 @@ const BatchRoundTallyEntry: React.FC<IProps> = ({
   const [searchQuery, setSearchQuery] = useState('')
   const [debouncedSearchQuery] = useDebounce(searchQuery)
   const [selectedBatchId, setSelectedBatchId] = useState<IBatch['id']>()
-  const [areChangesUnsaved, setAreChangesUnsaved] = useState(false)
+  const [isEditing, setIsEditing] = useState(false)
 
   const batches = batchesQuery.isSuccess ? batchesQuery.data.batches : []
   const filteredBatches = batches.filter(batch =>
@@ -68,19 +68,10 @@ const BatchRoundTallyEntry: React.FC<IProps> = ({
 
   // Auto-select first search match
   useEffect(() => {
-    if (
-      debouncedSearchQuery &&
-      filteredBatches.length > 0 &&
-      !areChangesUnsaved
-    ) {
+    if (debouncedSearchQuery && filteredBatches.length > 0 && !isEditing) {
       setSelectedBatchId(filteredBatches[0].id)
     }
-  }, [
-    debouncedSearchQuery,
-    filteredBatches,
-    areChangesUnsaved,
-    setSelectedBatchId,
-  ])
+  }, [debouncedSearchQuery, filteredBatches, setSelectedBatchId])
 
   if (!batchesQuery.isSuccess || !contestsQuery.isSuccess) {
     return null
@@ -91,7 +82,7 @@ const BatchRoundTallyEntry: React.FC<IProps> = ({
   const [contest] = contestsQuery.data
 
   const selectBatch = (batchId: string) => {
-    if (areChangesUnsaved) {
+    if (isEditing) {
       confirm({
         title: 'Unsaved Changes',
         description:
@@ -99,7 +90,10 @@ const BatchRoundTallyEntry: React.FC<IProps> = ({
           'Are you sure you want to leave this batch without saving changes?',
         yesButtonLabel: 'Discard Changes',
         yesButtonIntent: 'danger',
-        onYesClick: () => setSelectedBatchId(batchId),
+        onYesClick: () => {
+          setSelectedBatchId(batchId)
+          setIsEditing(false)
+        },
         noButtonLabel: 'Cancel',
       })
       return
@@ -147,6 +141,7 @@ const BatchRoundTallyEntry: React.FC<IProps> = ({
             areResultsFinalized={areResultsFinalized}
             batch={selectedBatch}
             contest={contest}
+            isEditing={isEditing}
             key={selectedBatch.id}
             saveBatchResults={async (
               resultTallySheets: IBatchResultTallySheet[]
@@ -156,7 +151,7 @@ const BatchRoundTallyEntry: React.FC<IProps> = ({
                 resultTallySheets,
               })
             }}
-            setAreChangesUnsaved={setAreChangesUnsaved}
+            setIsEditing={setIsEditing}
           />
         )}
         <Confirm {...confirmProps} />
