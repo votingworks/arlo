@@ -93,12 +93,12 @@ describe('Batch comparison data entry', () => {
         const row1 = within(rows[1]).getAllByRole('cell')
         expect(row1).toHaveLength(2)
         expect(row1[0]).toHaveTextContent('Choice One')
-        expect(row1[1]).toHaveTextContent('0')
+        expect(row1[1]).toHaveTextContent('')
 
         const row2 = within(rows[2]).getAllByRole('cell')
         expect(row2).toHaveLength(2)
         expect(row2[0]).toHaveTextContent('Choice Two')
-        expect(row2[1]).toHaveTextContent('0')
+        expect(row2[1]).toHaveTextContent('')
 
         screen.getByRole('button', { name: /Edit Tallies/ })
       }
@@ -198,30 +198,34 @@ describe('Batch comparison data entry', () => {
       rows = within(batchTable).getAllByRole('row')
       row1 = within(rows[1]).getAllByRole('cell')
       row2 = within(rows[2]).getAllByRole('cell')
-      expect(row1[1]).toHaveTextContent('0')
-      expect(row2[1]).toHaveTextContent('0')
+      expect(row1[1]).toHaveTextContent('')
+      expect(row2[1]).toHaveTextContent('')
     })
   })
 
   it('edits multiple tally sheets for a batch', async () => {
-    const emptyTallySheet = (name: string) => ({
-      name,
+    const tallySheet1 = {
+      name: 'Sheet 1',
       results: {
         'choice-id-1': 0,
         'choice-id-2': 0,
       },
-    })
-    const emptyTallySheet1 = emptyTallySheet('Sheet 1')
-    const emptyTallySheet2 = emptyTallySheet('Sheet 2')
-    const emptyTallySheet3 = emptyTallySheet('Sheet 3')
-    const populatedTallySheet1 = {
-      name: 'Sheet 1',
+    }
+    const tallySheet2BeforeEdit = {
+      name: 'Sheet 2',
+      results: {
+        'choice-id-1': 1,
+        'choice-id-2': 1,
+      },
+    }
+    const tallySheet2AfterEdit = {
+      name: 'Sheet 2',
       results: {
         'choice-id-1': 1,
         'choice-id-2': 2,
       },
     }
-    const populatedTallySheet3 = {
+    const tallySheet3 = {
       name: 'Sheet Three',
       results: {
         'choice-id-1': 3,
@@ -231,61 +235,40 @@ describe('Batch comparison data entry', () => {
     const expectedCalls = [
       apiCalls.getBatches(batchesMocks.emptyInitial),
       apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
-      apiCalls.putBatchResults('batch-1', [emptyTallySheet1, emptyTallySheet2]),
+      apiCalls.putBatchResults('batch-1', [tallySheet1, tallySheet2BeforeEdit]),
       apiCalls.getBatches({
         ...batchesMocks.emptyInitial,
-        batches: batchesWithResults([emptyTallySheet1, emptyTallySheet2]),
+        batches: batchesWithResults([tallySheet1, tallySheet2BeforeEdit]),
       }),
-      apiCalls.putBatchResults('batch-1', [
-        populatedTallySheet1,
-        emptyTallySheet2,
-      ]),
+      apiCalls.putBatchResults('batch-1', [tallySheet1, tallySheet2AfterEdit]),
       apiCalls.getBatches({
         ...batchesMocks.emptyInitial,
-        batches: batchesWithResults([populatedTallySheet1, emptyTallySheet2]),
+        batches: batchesWithResults([tallySheet1, tallySheet2AfterEdit]),
       }),
       apiCalls.putBatchResults('batch-1', [
-        populatedTallySheet1,
-        emptyTallySheet2,
-        emptyTallySheet3,
-      ]),
-      apiCalls.getBatches({
-        ...batchesMocks.emptyInitial,
-        batches: batchesWithResults([
-          populatedTallySheet1,
-          emptyTallySheet2,
-          emptyTallySheet3,
-        ]),
-      }),
-      apiCalls.putBatchResults('batch-1', [
-        populatedTallySheet1,
-        emptyTallySheet2,
-        populatedTallySheet3,
+        tallySheet1,
+        tallySheet2AfterEdit,
+        tallySheet3,
       ]),
       apiCalls.getBatches({
         ...batchesMocks.emptyInitial,
         batches: batchesWithResults([
-          populatedTallySheet1,
-          emptyTallySheet2,
-          populatedTallySheet3,
+          tallySheet1,
+          tallySheet2AfterEdit,
+          tallySheet3,
         ]),
       }),
+      apiCalls.putBatchResults('batch-1', [tallySheet1, tallySheet3]),
+      apiCalls.getBatches({
+        ...batchesMocks.emptyInitial,
+        batches: batchesWithResults([tallySheet1, tallySheet3]),
+      }),
       apiCalls.putBatchResults('batch-1', [
-        emptyTallySheet2,
-        populatedTallySheet3,
+        { ...tallySheet3, name: 'Sheet 1' },
       ]),
       apiCalls.getBatches({
         ...batchesMocks.emptyInitial,
-        batches: batchesWithResults([emptyTallySheet2, populatedTallySheet3]),
-      }),
-      apiCalls.putBatchResults('batch-1', [
-        { ...populatedTallySheet3, name: 'Sheet 1' },
-      ]),
-      apiCalls.getBatches({
-        ...batchesMocks.emptyInitial,
-        batches: batchesWithResults([
-          { ...populatedTallySheet3, name: 'Sheet 1' },
-        ]),
+        batches: batchesWithResults([{ ...tallySheet3, name: 'Sheet 1' }]),
       }),
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -296,15 +279,6 @@ describe('Batch comparison data entry', () => {
         screen.getByRole('button', { name: /Additional Actions/ })
       )
       userEvent.click(screen.getByText('Use Multiple Tally Sheets'))
-
-      let voteTotalsTab = screen.getByRole('tab', { name: 'Vote Totals' })
-      let sheet1Tab = await screen.findByRole('tab', { name: 'Sheet 1' })
-      let sheet2Tab = screen.getByRole('tab', { name: 'Sheet 2' })
-      expect(sheet2Tab).toHaveAttribute('aria-selected', 'true')
-
-      userEvent.click(sheet1Tab)
-      expect(sheet1Tab).toHaveAttribute('aria-selected', 'true')
-      userEvent.click(screen.getByRole('button', { name: /Edit Sheet/ }))
 
       batchTable = await screen.findByRole('table')
       const headers = within(batchTable).getAllByRole('columnheader')
@@ -335,6 +309,26 @@ describe('Batch comparison data entry', () => {
 
       // Correct the error
       userEvent.clear(choice2VotesInput)
+      userEvent.type(choice2VotesInput, '1')
+      userEvent.click(screen.getByRole('button', { name: /Save Sheet/ }))
+      await waitFor(() =>
+        expect(
+          screen.queryByRole('button', { name: /Save Sheet/ })
+        ).not.toBeInTheDocument()
+      )
+
+      let voteTotalsTab = screen.getByRole('tab', { name: 'Vote Totals' })
+      let sheet1Tab = screen.getByRole('tab', { name: 'Sheet 1' })
+      let sheet2Tab = screen.getByRole('tab', { name: 'Sheet 2' })
+      expect(sheet2Tab).toHaveAttribute('aria-selected', 'true')
+
+      // Edit the sheet
+      userEvent.click(screen.getByRole('button', { name: /Edit Sheet/ }))
+      batchTable = await screen.findByRole('table')
+      rows = within(batchTable).getAllByRole('row')
+      row2 = within(rows[2]).getAllByRole('cell')
+      choice2VotesInput = within(row2[1]).getByRole('spinbutton')
+      userEvent.clear(choice2VotesInput)
       userEvent.type(choice2VotesInput, '2')
       userEvent.click(screen.getByRole('button', { name: /Save Sheet/ }))
       await waitFor(() =>
@@ -343,31 +337,33 @@ describe('Batch comparison data entry', () => {
         ).not.toBeInTheDocument()
       )
 
-      // Add another tally sheet
+      // Add another tally sheet, rename it, but then discard it
       userEvent.click(screen.getByRole('button', { name: /Add Sheet/ }))
-      sheet1Tab = screen.getByRole('tab', { name: 'Sheet 1' })
-      sheet2Tab = screen.getByRole('tab', { name: 'Sheet 2' })
-      const sheet3Tab = await screen.findByRole('tab', { name: 'Sheet 3' })
-      expect(sheet3Tab).toHaveAttribute('aria-selected', 'true')
-
-      // Rename the sheet (cancel this first time)
-      userEvent.click(screen.getByRole('button', { name: /Edit Sheet/ }))
       let sheetNameInput = await screen.findByRole('textbox', {
         name: 'Sheet Name',
       })
       userEvent.clear(sheetNameInput)
       userEvent.type(sheetNameInput, 'Sheet Three')
       userEvent.click(screen.getByRole('button', { name: /Discard Changes/ }))
-      screen.getByRole('tab', { name: 'Sheet 3' })
+      await waitFor(() =>
+        expect(
+          screen.queryByRole('button', { name: /Discard Changes/ })
+        ).not.toBeInTheDocument()
+      )
 
-      // Rename the sheet (save this second time and also enter tallies)
-      userEvent.click(screen.getByRole('button', { name: /Edit Sheet/ }))
+      voteTotalsTab = screen.getByRole('tab', { name: 'Vote Totals' })
+      sheet1Tab = screen.getByRole('tab', { name: 'Sheet 1' })
+      sheet2Tab = screen.getByRole('tab', { name: 'Sheet 2' })
+      expect(sheet2Tab).toHaveAttribute('aria-selected', 'true')
+
+      // Add another tally sheet, rename it, and save it
+      userEvent.click(screen.getByRole('button', { name: /Add Sheet/ }))
       sheetNameInput = await screen.findByRole('textbox', {
         name: 'Sheet Name',
       })
       userEvent.clear(sheetNameInput)
       userEvent.type(sheetNameInput, 'Sheet Three')
-      batchTable = await screen.findByRole('table')
+      batchTable = screen.getByRole('table')
       rows = within(batchTable).getAllByRole('row')
       row1 = within(rows[1]).getAllByRole('cell')
       row2 = within(rows[2]).getAllByRole('cell')
@@ -381,7 +377,7 @@ describe('Batch comparison data entry', () => {
           screen.queryByRole('button', { name: /Save Sheet/ })
         ).not.toBeInTheDocument()
       )
-      await screen.findByRole('tab', { name: 'Sheet Three' })
+      screen.getByRole('tab', { name: 'Sheet Three' })
 
       // Check that the vote totals tab displays sums after saving
       voteTotalsTab = screen.getByRole('tab', { name: 'Vote Totals' })
@@ -394,8 +390,8 @@ describe('Batch comparison data entry', () => {
       expect(row1[1]).toHaveTextContent(`${1 + 3}`)
       expect(row2[1]).toHaveTextContent(`${2 + 4}`)
 
-      // Delete the first tally sheet
-      sheet1Tab = screen.getByRole('tab', { name: 'Sheet 1' })
+      // Delete the second tally sheet
+      sheet1Tab = screen.getByRole('tab', { name: 'Sheet 2' })
       userEvent.click(sheet1Tab)
       userEvent.click(
         screen.getByRole('button', { name: 'Additional Actions' })
@@ -403,7 +399,7 @@ describe('Batch comparison data entry', () => {
       userEvent.click(await screen.findByText('Remove Sheet'))
       await waitFor(() =>
         expect(
-          screen.queryByRole('tab', { name: 'Sheet 1' })
+          screen.queryByRole('tab', { name: 'Sheet 2' })
         ).not.toBeInTheDocument()
       )
 
@@ -418,16 +414,16 @@ describe('Batch comparison data entry', () => {
       expect(row1[1]).toHaveTextContent('3')
       expect(row2[1]).toHaveTextContent('4')
 
-      // Delete the second tally sheet
-      sheet2Tab = screen.getByRole('tab', { name: 'Sheet 2' })
-      userEvent.click(sheet2Tab)
+      // Delete the first tally sheet
+      sheet1Tab = screen.getByRole('tab', { name: 'Sheet 1' })
+      userEvent.click(sheet1Tab)
       userEvent.click(
         screen.getByRole('button', { name: 'Additional Actions' })
       )
       userEvent.click(await screen.findByText('Remove Sheet'))
       await waitFor(() =>
         expect(
-          screen.queryByRole('tab', { name: 'Sheet 2' })
+          screen.queryByRole('tab', { name: 'Sheet 1' })
         ).not.toBeInTheDocument()
       )
 
