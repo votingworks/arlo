@@ -16,6 +16,7 @@ from . import auth
 from ..models import *  # pylint: disable=wildcard-import
 from ..database import db_session
 from .auth_helpers import (
+    allow_public_access,
     get_loggedin_user,
     restrict_access,
     set_loggedin_user,
@@ -82,7 +83,8 @@ def serialize_election(election):
 
 
 @auth.route("/api/me")
-def auth_me():
+@allow_public_access
+def api_me():
     user_type, user_key = get_loggedin_user(session)
     user = None
     if user_type == UserType.AUDIT_ADMIN:
@@ -153,6 +155,7 @@ def auth_me():
 
 
 @auth.route("/auth/logout")
+@allow_public_access
 def logout():
     # Because we have max_age on the oauth requests, we don't need to log out
     # of Auth0.
@@ -161,6 +164,7 @@ def logout():
 
 
 @auth.route("/auth/support/logout")
+@allow_public_access
 def support_logout():
     clear_support_user(session)
     clear_loggedin_user(session)
@@ -168,12 +172,14 @@ def support_logout():
 
 
 @auth.route("/auth/support/start")
+@allow_public_access
 def support_login():
     redirect_uri = urljoin(request.host_url, SUPPORT_OAUTH_CALLBACK_URL)
     return auth0_sa.authorize_redirect(redirect_uri=redirect_uri)
 
 
 @auth.route(SUPPORT_OAUTH_CALLBACK_URL)
+@allow_public_access
 def support_login_callback():
     auth0_sa.authorize_access_token()
     resp = auth0_sa.get("userinfo")
@@ -192,12 +198,14 @@ def support_login_callback():
 
 
 @auth.route("/auth/auditadmin/start")
+@allow_public_access
 def auditadmin_login():
     redirect_uri = urljoin(request.host_url, AUDITADMIN_OAUTH_CALLBACK_URL)
     return auth0_aa.authorize_redirect(redirect_uri=redirect_uri)
 
 
 @auth.route(AUDITADMIN_OAUTH_CALLBACK_URL)
+@allow_public_access
 def auditadmin_login_callback():
     auth0_aa.authorize_access_token()
     resp = auth0_aa.get("userinfo")
@@ -216,6 +224,7 @@ def is_code_expired(timestamp: datetime):
 
 
 @auth.route("/auth/jurisdictionadmin/code", methods=["POST"])
+@allow_public_access
 def jurisdiction_admin_generate_code():
     body = request.get_json()
     user = (
@@ -286,6 +295,7 @@ def record_login(user: User, error: Optional[str] = None):
 
 
 @auth.route("/auth/jurisdictionadmin/login", methods=["POST"])
+@allow_public_access
 def jurisdiction_admin_login():
     body = request.get_json()
     user = (
@@ -332,6 +342,7 @@ def jurisdiction_admin_login():
 
 
 @auth.route("/auditboard/<passphrase>", methods=["GET"])
+@allow_public_access
 def auditboard_passphrase(passphrase: str):
     audit_board = AuditBoard.query.filter_by(passphrase=passphrase).one_or_none()
     if not audit_board:
@@ -348,6 +359,7 @@ def auditboard_passphrase(passphrase: str):
 
 
 @auth.route("/tallyentry/<passphrase>", methods=["GET"])
+@allow_public_access
 def tally_entry_passphrase(passphrase: str):
     jurisdiction = Jurisdiction.query.filter_by(
         tally_entry_passphrase=passphrase
@@ -372,6 +384,7 @@ def tally_entry_passphrase(passphrase: str):
 
 
 @auth.route("/auth/tallyentry/code", methods=["POST"])
+@allow_public_access  # Access control is implemented within the route
 def tally_entry_user_generate_code():
     _, user_key = get_loggedin_user(session)
     tally_entry_user = get_or_404(TallyEntryUser, user_key)
