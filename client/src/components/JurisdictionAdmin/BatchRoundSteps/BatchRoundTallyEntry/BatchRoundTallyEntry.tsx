@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
-import { Callout } from '@blueprintjs/core'
+import { Callout, Classes } from '@blueprintjs/core'
 
 import BatchDetail from './BatchDetail'
 import useContestsJurisdictionAdmin from '../../useContestsJurisdictionAdmin'
@@ -20,22 +20,28 @@ import {
 import { IContest } from '../../../../types'
 import { useDebounce } from '../../../../utils/debounce'
 
-const Container = styled.div`
+const Container = styled.div<{ fullBleed?: boolean }>`
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: ${props => (props.fullBleed ? undefined : '12px')};
   max-height: 500px;
   width: 100%;
+
+  .${Classes.CALLOUT} {
+    border-radius: ${props => (props.fullBleed ? '0' : undefined)};
+  }
 `
 
 interface IProps {
   electionId: string
+  fullBleed?: boolean
   jurisdictionId: string
   roundId: string
 }
 
 const BatchRoundTallyEntry: React.FC<IProps> = ({
   electionId,
+  fullBleed,
   jurisdictionId,
   roundId,
 }) => {
@@ -60,6 +66,7 @@ const BatchRoundTallyEntry: React.FC<IProps> = ({
       batches={batches}
       contest={contest}
       electionId={electionId}
+      fullBleed={fullBleed}
       jurisdictionId={jurisdictionId}
       roundId={roundId}
     />
@@ -71,6 +78,7 @@ interface IBatchRoundTallyEntryContentProps {
   batches: IBatch[]
   contest: IContest
   electionId: string
+  fullBleed?: boolean
   jurisdictionId: string
   roundId: string
 }
@@ -80,6 +88,7 @@ const BatchRoundTallyEntryContent: React.FC<IBatchRoundTallyEntryContentProps> =
   batches,
   contest,
   electionId,
+  fullBleed,
   jurisdictionId,
   roundId,
 }) => {
@@ -131,13 +140,11 @@ const BatchRoundTallyEntryContent: React.FC<IBatchRoundTallyEntryContentProps> =
   }
 
   return (
-    <Container>
+    <Container fullBleed={fullBleed}>
       {areResultsFinalized && (
-        <Callout icon="tick-circle" intent="success">
-          Tallies finalized
-        </Callout>
+        <Callout intent="success">Tallies finalized</Callout>
       )}
-      <ListAndDetail>
+      <ListAndDetail fullBleed={fullBleed}>
         <List
           search={{
             onChange: setSearchQuery,

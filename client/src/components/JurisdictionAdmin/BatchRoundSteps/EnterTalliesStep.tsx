@@ -54,9 +54,10 @@ const EnterTalliesStep: React.FC<IEnterTalliesStepProps> = ({
 
   return (
     <>
-      <StepPanel>
+      <StepPanel noPadding>
         <BatchRoundTallyEntry
           electionId={jurisdiction.election.id}
+          fullBleed
           jurisdictionId={jurisdiction.id}
           roundId={round.id}
         />

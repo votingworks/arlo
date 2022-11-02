@@ -25,12 +25,18 @@ import {
  *  </ListAndDetail>
  */
 
-export const ListAndDetail = styled(Card)`
-  display: grid;
-  grid-template-columns: 240px 1fr;
-  overflow-y: auto;
-  padding: 0;
-  width: 100%;
+export const ListAndDetail = styled(({ fullBleed, ...props }) => (
+  <Card {...props} />
+))<{ fullBleed?: boolean }>`
+  &.${Classes.CARD} {
+    box-shadow: ${props => (props.fullBleed ? 'none' : undefined)};
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    height: ${props => (props.fullBleed ? '100%' : undefined)};
+    overflow-y: auto;
+    padding: 0;
+    width: 100%;
+  }
 `
 
 // ---------- List ----------
