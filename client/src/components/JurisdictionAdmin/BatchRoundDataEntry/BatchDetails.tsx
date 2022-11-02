@@ -412,6 +412,13 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
             selectedTabId === tab.id ? (
               <input
                 aria-label="Sheet Name"
+                // Should be fine accessibility-wise, having read and considered the accessibility
+                // warning under
+                // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#autofocus, since
+                // we're auto-focusing after a relevant user action and the input is clearly
+                // labeled
+                // eslint-disable-next-line jsx-a11y/no-autofocus
+                autoFocus={isSelectedSheetNewAndNotSaved}
                 className={classnames(
                   Classes.INPUT,
                   errors.name && Classes.INTENT_DANGER
@@ -450,7 +457,7 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
             </tr>
           </thead>
           <tbody>
-            {contest.choices.map(choice => (
+            {contest.choices.map((choice, i) => (
               <tr key={choice.id}>
                 <td>{choice.name}</td>
                 <td>
@@ -463,6 +470,13 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
                   ) : isEditing ? (
                     <input
                       aria-label={`${choice.name} Votes`}
+                      // Should be fine accessibility-wise, having read and considered the
+                      // accessibility warning under
+                      // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#autofocus,
+                      // since we're auto-focusing after a relevant user action and the input is
+                      // clearly labeled
+                      // eslint-disable-next-line jsx-a11y/no-autofocus
+                      autoFocus={!isSelectedSheetNewAndNotSaved && i === 0}
                       className={classnames(
                         Classes.INPUT,
                         errors.results?.[choice.id] && Classes.INTENT_DANGER
