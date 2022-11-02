@@ -1,0 +1,56 @@
+{
+  "name": "Small Election",
+  "jurisdictions": [
+    { "name": "Kendall Park" },
+    { "name": "Waurika" },
+    { "name": "Siletz" },
+    { "name": "Worthington Hills" },
+    { "name": "Mount Olive" }
+  ],
+  "contests": [
+    {
+      "name": "Minister of Farming",
+      "votes_allowed": 1,
+      "number_of_winners": 1,
+      "total_ballots_cast": 500,
+      "tally": {
+        "Erin George": 400,
+        "Alex Hall": 10,
+        "Write-In": 1
+      },
+      "jurisdictions": [
+        "Kendall Park",
+        "Waurika",
+        "Siletz",
+        "Worthington Hills",
+        "Mount Olive"
+      ]
+    },
+    {
+      "name": "Master of Magic",
+      "votes_allowed": 1,
+      "number_of_winners": 1,
+      "total_ballots_cast": 1000,
+      "tally": {
+        "Clem Bradley": 700,
+        "Rene Carr": 200,
+        "Blair Atkinson": 1,
+        "Sam Shaw": 0,
+        "Write-In": 10
+      },
+      "jurisdictions": ["Kendall Park", "Waurika", "Worthington Hills"]
+    },
+    {
+      "name": "Secretary of Treasure",
+      "votes_allowed": 1,
+      "number_of_winners": 1,
+      "total_ballots_cast": 500,
+      "tally": {
+        "Denny Vargas": 450,
+        "Jackie Sweet": 20,
+        "Emerson Thornton": 0
+      },
+      "jurisdictions": ["Kendall Park"]
+    }
+  ]
+}

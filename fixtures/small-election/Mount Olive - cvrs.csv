@@ -1,0 +1,17 @@
+Small Election,5.2.16.1,,,,,,,,,,,,,,,,,
+,,,,,,,,Minister of Farming (Vote For=1),Minister of Farming (Vote For=1),Minister of Farming (Vote For=1),Master of Magic (Vote For=1),Master of Magic (Vote For=1),Master of Magic (Vote For=1),Master of Magic (Vote For=1),Master of Magic (Vote For=1),Secretary of Treasure (Vote For=1),Secretary of Treasure (Vote For=1),Secretary of Treasure (Vote For=1)
+,,,,,,,,Erin George,Alex Hall,Write-In,Clem Bradley,Rene Carr,Blair Atkinson,Sam Shaw,Write-In,Denny Vargas,Jackie Sweet,Emerson Thornton
+CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,,,,,,,,,,,
+0,Tabulator A,Batch 1,1,Tabulator A-Batch 1-1,Election Day,precinct-portion-1,ballot-type-1,0,0,0,,,,,,,,
+1,Tabulator A,Batch 1,2,Tabulator A-Batch 1-2,Election Day,precinct-portion-1,ballot-type-1,1,0,0,,,,,,,,
+2,Tabulator A,Batch 1,3,Tabulator A-Batch 1-3,Election Day,precinct-portion-1,ballot-type-1,1,0,0,,,,,,,,
+3,Tabulator A,Batch 1,4,Tabulator A-Batch 1-4,Election Day,precinct-portion-1,ballot-type-1,0,1,0,,,,,,,,
+4,Tabulator A,Batch 1,5,Tabulator A-Batch 1-5,Election Day,precinct-portion-1,ballot-type-1,1,1,1,,,,,,,,
+5,Tabulator A,Batch 1,6,Tabulator A-Batch 1-6,Election Day,precinct-portion-1,ballot-type-1,0,1,0,,,,,,,,
+6,Tabulator A,Batch 1,7,Tabulator A-Batch 1-7,Election Day,precinct-portion-1,ballot-type-1,1,0,0,,,,,,,,
+7,Tabulator A,Batch 1,8,Tabulator A-Batch 1-8,Election Day,precinct-portion-1,ballot-type-1,1,0,0,,,,,,,,
+8,Tabulator A,Batch 1,9,Tabulator A-Batch 1-9,Election Day,precinct-portion-1,ballot-type-1,1,1,1,,,,,,,,
+9,Tabulator A,Batch 1,10,Tabulator A-Batch 1-10,Election Day,precinct-portion-1,ballot-type-1,0,0,0,,,,,,,,
+10,Tabulator A,Batch 1,11,Tabulator A-Batch 1-11,Election Day,precinct-portion-1,ballot-type-1,1,0,0,,,,,,,,
+11,Tabulator A,Batch 1,12,Tabulator A-Batch 1-12,Election Day,precinct-portion-1,ballot-type-1,1,0,0,,,,,,,,
+12,Tabulator A,Batch 1,13,Tabulator A-Batch 1-13,Election Day,precinct-portion-1,ballot-type-1,1,0,0,,,,,,,,
