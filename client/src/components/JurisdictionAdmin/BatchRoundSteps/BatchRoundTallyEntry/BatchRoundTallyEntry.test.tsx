@@ -204,25 +204,25 @@ describe('Batch comparison data entry', () => {
   })
 
   it('edits multiple tally sheets for a batch', async () => {
-    const tallySheet1 = {
+    const tallySheet1BeforeEdit = {
       name: 'Sheet 1',
-      results: {
-        'choice-id-1': 0,
-        'choice-id-2': 0,
-      },
-    }
-    const tallySheet2BeforeEdit = {
-      name: 'Sheet 2',
       results: {
         'choice-id-1': 1,
         'choice-id-2': 1,
       },
     }
-    const tallySheet2AfterEdit = {
-      name: 'Sheet 2',
+    const tallySheet1AfterEdit = {
+      name: 'Sheet 1',
       results: {
         'choice-id-1': 1,
         'choice-id-2': 2,
+      },
+    }
+    const tallySheet2 = {
+      name: 'Sheet 2',
+      results: {
+        'choice-id-1': 0,
+        'choice-id-2': 0,
       },
     }
     const tallySheet3 = {
@@ -235,33 +235,33 @@ describe('Batch comparison data entry', () => {
     const expectedCalls = [
       apiCalls.getBatches(batchesMocks.emptyInitial),
       apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
-      apiCalls.putBatchResults('batch-1', [tallySheet1, tallySheet2BeforeEdit]),
+      apiCalls.putBatchResults('batch-1', [tallySheet1BeforeEdit, tallySheet2]),
       apiCalls.getBatches({
         ...batchesMocks.emptyInitial,
-        batches: batchesWithResults([tallySheet1, tallySheet2BeforeEdit]),
+        batches: batchesWithResults([tallySheet1BeforeEdit, tallySheet2]),
       }),
-      apiCalls.putBatchResults('batch-1', [tallySheet1, tallySheet2AfterEdit]),
+      apiCalls.putBatchResults('batch-1', [tallySheet1AfterEdit, tallySheet2]),
       apiCalls.getBatches({
         ...batchesMocks.emptyInitial,
-        batches: batchesWithResults([tallySheet1, tallySheet2AfterEdit]),
+        batches: batchesWithResults([tallySheet1AfterEdit, tallySheet2]),
       }),
       apiCalls.putBatchResults('batch-1', [
-        tallySheet1,
-        tallySheet2AfterEdit,
+        tallySheet1AfterEdit,
+        tallySheet2,
         tallySheet3,
       ]),
       apiCalls.getBatches({
         ...batchesMocks.emptyInitial,
         batches: batchesWithResults([
-          tallySheet1,
-          tallySheet2AfterEdit,
+          tallySheet1AfterEdit,
+          tallySheet2,
           tallySheet3,
         ]),
       }),
-      apiCalls.putBatchResults('batch-1', [tallySheet1, tallySheet3]),
+      apiCalls.putBatchResults('batch-1', [tallySheet2, tallySheet3]),
       apiCalls.getBatches({
         ...batchesMocks.emptyInitial,
-        batches: batchesWithResults([tallySheet1, tallySheet3]),
+        batches: batchesWithResults([tallySheet2, tallySheet3]),
       }),
       apiCalls.putBatchResults('batch-1', [
         { ...tallySheet3, name: 'Sheet 1' },
@@ -320,7 +320,7 @@ describe('Batch comparison data entry', () => {
       let voteTotalsTab = screen.getByRole('tab', { name: 'Vote Totals' })
       let sheet1Tab = screen.getByRole('tab', { name: 'Sheet 1' })
       let sheet2Tab = screen.getByRole('tab', { name: 'Sheet 2' })
-      expect(sheet2Tab).toHaveAttribute('aria-selected', 'true')
+      expect(sheet1Tab).toHaveAttribute('aria-selected', 'true')
 
       // Edit the sheet
       userEvent.click(screen.getByRole('button', { name: /Edit Sheet/ }))
@@ -390,8 +390,8 @@ describe('Batch comparison data entry', () => {
       expect(row1[1]).toHaveTextContent(`${1 + 3}`)
       expect(row2[1]).toHaveTextContent(`${2 + 4}`)
 
-      // Delete the second tally sheet
-      sheet1Tab = screen.getByRole('tab', { name: 'Sheet 2' })
+      // Delete the first tally sheet
+      sheet1Tab = screen.getByRole('tab', { name: 'Sheet 1' })
       userEvent.click(sheet1Tab)
       userEvent.click(
         screen.getByRole('button', { name: 'Additional Actions' })
@@ -399,7 +399,7 @@ describe('Batch comparison data entry', () => {
       userEvent.click(await screen.findByText('Remove Sheet'))
       await waitFor(() =>
         expect(
-          screen.queryByRole('tab', { name: 'Sheet 2' })
+          screen.queryByRole('tab', { name: 'Sheet 1' })
         ).not.toBeInTheDocument()
       )
 
@@ -414,8 +414,8 @@ describe('Batch comparison data entry', () => {
       expect(row1[1]).toHaveTextContent('3')
       expect(row2[1]).toHaveTextContent('4')
 
-      // Delete the first tally sheet
-      sheet1Tab = screen.getByRole('tab', { name: 'Sheet 1' })
+      // Delete the second tally sheet
+      sheet1Tab = screen.getByRole('tab', { name: 'Sheet 2' })
       userEvent.click(sheet1Tab)
       userEvent.click(
         screen.getByRole('button', { name: 'Additional Actions' })
@@ -423,7 +423,7 @@ describe('Batch comparison data entry', () => {
       userEvent.click(await screen.findByText('Remove Sheet'))
       await waitFor(() =>
         expect(
-          screen.queryByRole('tab', { name: 'Sheet 1' })
+          screen.queryByRole('tab', { name: 'Sheet 2' })
         ).not.toBeInTheDocument()
       )
 
