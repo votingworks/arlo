@@ -408,8 +408,6 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
       // Errors are automatically toasted by the queryClient
       return
     }
-    // Reset the form's isDirty value back to false
-    resetForm(sheet)
     disableEditing()
   }
 
