@@ -86,6 +86,10 @@ const BatchResultTallySheetButtonRow = styled(ButtonRow).attrs({
 
 const VOTE_TOTALS_TAB_ID = 'vote-totals'
 
+// Sheet names are unique but not static. If we were to use sheet names as the IDs and keys
+// underlying tabs and panels, renaming a sheet would cause components to unexpectedly unmount,
+// remount, and reset state. So we add and use our own stable client-side IDs.
+// TODO: Add and use DB-persisted IDs instead
 interface IBatchResultTallySheetStateEntry extends IBatchResultTallySheet {
   id: string
 }
