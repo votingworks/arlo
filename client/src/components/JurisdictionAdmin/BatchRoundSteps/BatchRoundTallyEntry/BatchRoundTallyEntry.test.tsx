@@ -4,17 +4,17 @@ import { QueryClientProvider } from 'react-query'
 import userEvent from '@testing-library/user-event'
 import { ToastContainer } from 'react-toastify'
 import { Classes } from '@blueprintjs/core'
-import BatchRoundDataEntry from './BatchRoundDataEntry'
-import { batchesMocks } from '../_mocks'
-import { IBatches, IBatchResultTallySheet } from '../useBatchResults'
-import { IContest } from '../../../types'
+import BatchRoundTallyEntry from './BatchRoundTallyEntry'
+import { batchesMocks } from '../../_mocks'
+import { IBatches, IBatchResultTallySheet } from '../../useBatchResults'
+import { IContest } from '../../../../types'
 import {
   withMockFetch,
   findAndCloseToast,
   serverError,
   createQueryClient,
-} from '../../testUtilities'
-import { contestMocks } from '../../AuditAdmin/useSetupMenuItems/_mocks'
+} from '../../../testUtilities'
+import { contestMocks } from '../../../AuditAdmin/useSetupMenuItems/_mocks'
 
 const apiCalls = {
   getJAContests: (response: { contests: IContest[] }) => ({
@@ -57,7 +57,7 @@ const batchesWithResults = (resultTallySheets: IBatchResultTallySheet[]) => [
 const renderComponent = () =>
   render(
     <QueryClientProvider client={createQueryClient()}>
-      <BatchRoundDataEntry
+      <BatchRoundTallyEntry
         electionId="1"
         jurisdictionId="1"
         roundId="round-1"

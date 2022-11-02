@@ -17,11 +17,11 @@ import {
 } from '@blueprintjs/core'
 import { SubmitHandler, useForm } from 'react-hook-form'
 
-import { ButtonRow } from '../../Atoms/Layout'
-import { Detail } from '../../Atoms/ListAndDetail'
-import { IBatch, IBatchResultTallySheet } from '../useBatchResults'
-import { IContest } from '../../../types'
-import { sum } from '../../../utils/number'
+import { ButtonRow } from '../../../Atoms/Layout'
+import { Detail } from '../../../Atoms/ListAndDetail'
+import { IBatch, IBatchResultTallySheet } from '../../useBatchResults'
+import { IContest } from '../../../../types'
+import { sum } from '../../../../utils/number'
 
 const BatchName = styled(H4)`
   &.${Classes.HEADING} {

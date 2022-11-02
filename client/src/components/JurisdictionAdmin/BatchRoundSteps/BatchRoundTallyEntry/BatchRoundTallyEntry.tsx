@@ -3,22 +3,22 @@ import styled from 'styled-components'
 import { Callout } from '@blueprintjs/core'
 
 import BatchDetails from './BatchDetails'
-import useContestsJurisdictionAdmin from '../useContestsJurisdictionAdmin'
-import { Confirm, useConfirm } from '../../Atoms/Confirm'
+import useContestsJurisdictionAdmin from '../../useContestsJurisdictionAdmin'
+import { Confirm, useConfirm } from '../../../Atoms/Confirm'
 import {
   Detail,
   List,
   ListAndDetail,
   ListItem,
   ListSearchNoResults,
-} from '../../Atoms/ListAndDetail'
+} from '../../../Atoms/ListAndDetail'
 import {
   IBatch,
   IBatchResultTallySheet,
   useBatches,
   useRecordBatchResults,
-} from '../useBatchResults'
-import { useDebounce } from '../../../utils/debounce'
+} from '../../useBatchResults'
+import { useDebounce } from '../../../../utils/debounce'
 
 const Container = styled.div`
   display: flex;
@@ -34,7 +34,7 @@ interface IProps {
   roundId: string
 }
 
-const BatchRoundDataEntry: React.FC<IProps> = ({
+const BatchRoundTallyEntry: React.FC<IProps> = ({
   electionId,
   jurisdictionId,
   roundId,
@@ -165,4 +165,4 @@ const BatchRoundDataEntry: React.FC<IProps> = ({
   )
 }
 
-export default BatchRoundDataEntry
+export default BatchRoundTallyEntry
