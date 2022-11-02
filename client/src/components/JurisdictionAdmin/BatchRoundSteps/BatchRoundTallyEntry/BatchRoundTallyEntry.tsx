@@ -6,7 +6,6 @@ import BatchDetails from './BatchDetails'
 import useContestsJurisdictionAdmin from '../../useContestsJurisdictionAdmin'
 import { Confirm, useConfirm } from '../../../Atoms/Confirm'
 import {
-  Detail,
   List,
   ListAndDetail,
   ListItem,
@@ -18,6 +17,7 @@ import {
   useBatches,
   useRecordBatchResults,
 } from '../../useBatchResults'
+import { IContest } from '../../../../types'
 import { useDebounce } from '../../../../utils/debounce'
 
 const Container = styled.div`
@@ -41,6 +41,48 @@ const BatchRoundTallyEntry: React.FC<IProps> = ({
 }) => {
   const batchesQuery = useBatches(electionId, jurisdictionId, roundId)
   const contestsQuery = useContestsJurisdictionAdmin(electionId, jurisdictionId)
+
+  if (!batchesQuery.isSuccess || !contestsQuery.isSuccess) {
+    return null
+  }
+
+  const { batches, resultsFinalizedAt } = batchesQuery.data
+  // Batch comparison audits only support a single contest
+  const [contest] = contestsQuery.data
+
+  if (batches.length === 0) {
+    return null
+  }
+
+  return (
+    <BatchRoundTallyEntryContent
+      areResultsFinalized={Boolean(resultsFinalizedAt)}
+      batches={batches}
+      contest={contest}
+      electionId={electionId}
+      jurisdictionId={jurisdictionId}
+      roundId={roundId}
+    />
+  )
+}
+
+interface IBatchRoundTallyEntryContentProps {
+  areResultsFinalized: boolean
+  batches: IBatch[]
+  contest: IContest
+  electionId: string
+  jurisdictionId: string
+  roundId: string
+}
+
+const BatchRoundTallyEntryContent: React.FC<IBatchRoundTallyEntryContentProps> = ({
+  areResultsFinalized,
+  batches,
+  contest,
+  electionId,
+  jurisdictionId,
+  roundId,
+}) => {
   const recordBatchResults = useRecordBatchResults(
     electionId,
     jurisdictionId,
@@ -50,38 +92,23 @@ const BatchRoundTallyEntry: React.FC<IProps> = ({
 
   const [searchQuery, setSearchQuery] = useState('')
   const [debouncedSearchQuery] = useDebounce(searchQuery)
-  const [selectedBatchId, setSelectedBatchId] = useState<IBatch['id'] | null>(
-    null
+  const [selectedBatchId, setSelectedBatchId] = useState<IBatch['id']>(
+    batches[0].id
   )
   const [isEditing, setIsEditing] = useState(false)
 
-  const batches = batchesQuery.isSuccess ? batchesQuery.data.batches : []
   const filteredBatches = batches.filter(batch =>
     batch.name.toLowerCase().includes(debouncedSearchQuery.toLowerCase())
   )
-  const selectedBatch = batches.find(batch => batch.id === selectedBatchId)
-
-  // Auto-select first batch on initial load
-  useEffect(() => {
-    if (!selectedBatchId && filteredBatches.length > 0) {
-      setSelectedBatchId(filteredBatches[0].id)
-    }
-  }, [filteredBatches, selectedBatchId, setSelectedBatchId])
+  const selectedBatch =
+    batches.find(batch => batch.id === selectedBatchId) || batches[0]
 
   // Auto-select first search match
   useEffect(() => {
     if (debouncedSearchQuery && filteredBatches.length > 0 && !isEditing) {
       setSelectedBatchId(filteredBatches[0].id)
     }
-  }, [debouncedSearchQuery, filteredBatches, setSelectedBatchId])
-
-  if (!batchesQuery.isSuccess || !contestsQuery.isSuccess) {
-    return null
-  }
-
-  const areResultsFinalized = Boolean(batchesQuery.data.resultsFinalizedAt)
-  // Batch comparison audits only support a single contest
-  const [contest] = contestsQuery.data
+  }, [debouncedSearchQuery, filteredBatches, isEditing, setSelectedBatchId])
 
   const selectBatch = (batchId: string) => {
     if (isEditing) {
@@ -113,8 +140,8 @@ const BatchRoundTallyEntry: React.FC<IProps> = ({
       <ListAndDetail>
         <List
           search={{
+            onChange: setSearchQuery,
             placeholder: 'Search batches...',
-            setQuery: setSearchQuery,
           }}
         >
           {filteredBatches.length === 0 && (
@@ -127,35 +154,30 @@ const BatchRoundTallyEntry: React.FC<IProps> = ({
               rightIcon={
                 batch.resultTallySheets.length > 0 ? 'tick' : undefined
               }
-              selected={batch.id === selectedBatchId}
+              selected={batch.id === selectedBatch.id}
             >
               {batch.name}
             </ListItem>
           ))}
         </List>
 
-        {!selectedBatch ? (
-          <Detail>
-            <p>Select a batch to enter tallies.</p>
-          </Detail>
-        ) : (
-          <BatchDetails
-            areResultsFinalized={areResultsFinalized}
-            batch={selectedBatch}
-            contest={contest}
-            isEditing={isEditing}
-            key={selectedBatch.id}
-            saveBatchResults={async (
-              resultTallySheets: IBatchResultTallySheet[]
-            ) => {
-              await recordBatchResults.mutateAsync({
-                batchId: selectedBatch.id,
-                resultTallySheets,
-              })
-            }}
-            setIsEditing={setIsEditing}
-          />
-        )}
+        <BatchDetails
+          areResultsFinalized={areResultsFinalized}
+          batch={selectedBatch}
+          contest={contest}
+          isEditing={isEditing}
+          key={selectedBatch.id}
+          saveBatchResults={async (
+            resultTallySheets: IBatchResultTallySheet[]
+          ) => {
+            await recordBatchResults.mutateAsync({
+              batchId: selectedBatch.id,
+              resultTallySheets,
+            })
+          }}
+          setIsEditing={setIsEditing}
+        />
+
         <Confirm {...confirmProps} />
       </ListAndDetail>
     </Container>

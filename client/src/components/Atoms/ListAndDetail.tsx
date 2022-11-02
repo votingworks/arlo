@@ -54,8 +54,8 @@ const ListItems = styled.ul`
 
 interface IListProps {
   search?: {
+    onChange: (query: string) => void
     placeholder: string
-    setQuery: (query: string) => void
   }
 }
 
@@ -67,7 +67,7 @@ export const List: React.FC<IListProps> = ({ search, children }) => {
           <InputGroup
             leftIcon="search"
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              search.setQuery(e.target.value)
+              search.onChange(e.target.value)
             }
             placeholder={search.placeholder}
             type="search"
