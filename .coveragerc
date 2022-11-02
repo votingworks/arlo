@@ -5,6 +5,7 @@ omit =
     server/tests/*
     server/config.py
     scripts/*
+    fixtures/*
 
 [report]
 fail_under = 99.6
