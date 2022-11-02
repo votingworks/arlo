@@ -88,7 +88,6 @@ const VOTE_TOTALS_TAB_ID = 'vote-totals'
 
 interface IBatchResultTallySheetStateEntry extends IBatchResultTallySheet {
   id: string
-  isNewAndNotSaved?: boolean
 }
 
 interface ITab {
@@ -161,6 +160,9 @@ const BatchDetail: React.FC<IBatchDetailProps> = ({
       : batch.resultTallySheets
     ).map(sheetToSheetStateEntry)
   )
+  const [newAndUnsavedSheetId, setNewAndUnsavedSheetId] = useState<
+    string | null
+  >(null)
   const tabs = tabsFromSheets(sheets)
   const [selectedTabId, setSelectedTabId] = useState(tabs[0].id)
   const [isTabsAnimationEnabled, setIsTabsAnimationEnabled] = useState(true)
@@ -183,16 +185,16 @@ const BatchDetail: React.FC<IBatchDetailProps> = ({
         sheets.length + 1 + incrementToAvoidNamingConflict
       )
     }
-    const newSheet: IBatchResultTallySheetStateEntry = {
-      ...sheetToSheetStateEntry(constructEmptySheet(newSheetName)),
-      isNewAndNotSaved: true,
-    }
+    const newSheet = sheetToSheetStateEntry(constructEmptySheet(newSheetName))
     const updatedSheets = [...sheets, newSheet]
 
     // Update client-side state but don't save the new sheet to the backend until tallies are
     // entered
     setSheets(updatedSheets)
-    setSelectedTabId(newSheet.id)
+    setNewAndUnsavedSheetId(newSheet.id)
+    setSelectedTabId(
+      updatedSheets.length === 2 ? updatedSheets[0].id : newSheet.id
+    )
     setIsEditing(true)
   }
 
@@ -203,27 +205,25 @@ const BatchDetail: React.FC<IBatchDetailProps> = ({
 
     const switchingFromSingleSheetToMultipleSheets =
       sheets.length === 2 &&
-      currentSheetIndex === 1 &&
-      sheets[1].isNewAndNotSaved
+      currentSheetIndex === 0 &&
+      newAndUnsavedSheetId === sheets[1].id
     if (switchingFromSingleSheetToMultipleSheets) {
-      // Because we allow switching from a single sheet to multiple sheets even before the first
-      // sheet has been filled out, auto-populate the first sheet with 0s behind the scenes, if
-      // need be, to avoid errors while saving the second sheet
-      const firstSheetResults: { [choiceId: string]: number } = {}
+      // When switching from a single sheet to multiple sheets, we open the first sheet in edit
+      // mode. We need to auto-populate the second sheet with 0s behind the scenes to avoid errors
+      // upon saving the first sheet
+      const secondSheetResults: { [choiceId: string]: number } = {}
       contest.choices.forEach(choice => {
-        firstSheetResults[choice.id] = sheets[0].results[choice.id] ?? 0
+        secondSheetResults[choice.id] = 0
       })
-      updatedSheets[0] = { ...sheets[0], results: firstSheetResults }
+      updatedSheets[1] = { ...sheets[1], results: secondSheetResults }
     }
 
     await saveBatchResults(updatedSheets.map(sheetStateEntryToSheet))
     setSheets(updatedSheets)
+    setNewAndUnsavedSheetId(null)
   }
 
   const removeCurrentSheet = async () => {
-    const isSheetToRemoveNewAndNotSaved =
-      sheets.find((_, i) => i === currentSheetIndex)?.isNewAndNotSaved || false
-
     let updatedSheets = sheets.filter((_, i) => i !== currentSheetIndex)
     if (updatedSheets.length === 1) {
       // If we're dropping back to 1 sheet, reset the name of that sheet back to the default
@@ -236,11 +236,6 @@ const BatchDetail: React.FC<IBatchDetailProps> = ({
       // Auto-select the next sheet (or last sheet if none)
       updatedSheets[Math.min(currentSheetIndex, updatedSheets.length - 1)].id
     )
-    if (isSheetToRemoveNewAndNotSaved) {
-      // Optimization: No need to make an API call to remove the sheet on the backend if it was
-      // never persisted to begin with
-      return
-    }
     try {
       await saveBatchResults(updatedSheets.map(sheetStateEntryToSheet))
     } catch (err) {
@@ -248,6 +243,18 @@ const BatchDetail: React.FC<IBatchDetailProps> = ({
       setSheets(sheets)
       throw err
     }
+  }
+
+  const discardNewAndUnsavedSheets = () => {
+    const updatedSheets = sheets.filter(
+      sheet => newAndUnsavedSheetId !== sheet.id
+    )
+
+    setSheets(updatedSheets)
+    setSelectedTabId(
+      // Auto-select the next sheet (or last sheet if none)
+      updatedSheets[Math.min(currentSheetIndex, updatedSheets.length - 1)].id
+    )
   }
 
   const enableEditing = () => {
@@ -308,11 +315,13 @@ const BatchDetail: React.FC<IBatchDetailProps> = ({
         areResultsFinalized={areResultsFinalized}
         batch={batch}
         contest={contest}
-        removeSheet={removeCurrentSheet}
         disableEditing={disableEditing}
+        discardNewAndUnsavedSheets={discardNewAndUnsavedSheets}
         enableEditing={enableEditing}
         isEditing={isEditing}
         key={selectedTabId}
+        newAndUnsavedSheetId={newAndUnsavedSheetId}
+        removeSheet={removeCurrentSheet}
         selectedTabId={selectedTabId}
         sheets={sheets}
         updateSheet={updateCurrentSheet}
@@ -326,10 +335,12 @@ interface IBatchResultTallySheetProps {
   areResultsFinalized: boolean
   batch: IBatch
   contest: IContest
-  removeSheet: () => Promise<void>
   disableEditing: () => void
+  discardNewAndUnsavedSheets: () => void
   enableEditing: () => void
   isEditing: boolean
+  newAndUnsavedSheetId: string | null
+  removeSheet: () => Promise<void>
   selectedTabId: string
   sheets: IBatchResultTallySheetStateEntry[]
   updateSheet: (updatedSheet: IBatchResultTallySheet) => Promise<void>
@@ -344,10 +355,12 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
   areResultsFinalized,
   batch,
   contest,
-  removeSheet,
   disableEditing,
+  discardNewAndUnsavedSheets,
   enableEditing,
   isEditing,
+  newAndUnsavedSheetId,
+  removeSheet,
   selectedTabId,
   sheets,
   updateSheet,
@@ -357,7 +370,9 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
   const selectedSheet = isTotalsSheet
     ? null
     : sheets.find(sheet => sheet.id === selectedTabId)
-  const isSelectedSheetNewAndNotSaved = selectedSheet?.isNewAndNotSaved
+  const isSelectedSheetNewAndUnsaved = selectedSheet
+    ? selectedSheet.id === newAndUnsavedSheetId
+    : false
 
   const formMethods = useForm<IBatchResultTallySheet>({
     defaultValues: selectedSheet
@@ -379,9 +394,7 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
   const discardChanges = async () => {
     resetForm()
     disableEditing()
-    if (isSelectedSheetNewAndNotSaved) {
-      await removeSheet()
-    }
+    discardNewAndUnsavedSheets()
   }
 
   const onValidSubmit: SubmitHandler<IBatchResultTallySheet> = async sheet => {
@@ -413,7 +426,7 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
                 // we're auto-focusing after a relevant user action and the input is clearly
                 // labeled
                 // eslint-disable-next-line jsx-a11y/no-autofocus
-                autoFocus={isSelectedSheetNewAndNotSaved}
+                autoFocus={isSelectedSheetNewAndUnsaved}
                 className={classnames(
                   Classes.INPUT,
                   errors.name && Classes.INTENT_DANGER
@@ -471,7 +484,7 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
                       // since we're auto-focusing after a relevant user action and the input is
                       // clearly labeled
                       // eslint-disable-next-line jsx-a11y/no-autofocus
-                      autoFocus={!isSelectedSheetNewAndNotSaved && i === 0}
+                      autoFocus={!isSelectedSheetNewAndUnsaved && i === 0}
                       className={classnames(
                         Classes.INPUT,
                         errors.results?.[choice.id] && Classes.INTENT_DANGER
