@@ -538,7 +538,11 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
         <BatchResultTallySheetButtonRow>
           {(() => {
             if (selectedTabId === VOTE_TOTALS_TAB_ID) {
-              return <span>Select a sheet to edit tallies.</span>
+              return areResultsFinalized ? (
+                <span>Select a sheet to view tallies.</span>
+              ) : (
+                <span>Select a sheet to edit tallies.</span>
+              )
             }
             if (isEditing) {
               return (
