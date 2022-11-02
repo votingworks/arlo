@@ -12,6 +12,7 @@ import {
   Menu,
   MenuItem,
   Popover,
+  Spinner,
   Tab,
   Tabs,
 } from '@blueprintjs/core'
@@ -170,6 +171,10 @@ const BatchDetail: React.FC<IBatchDetailProps> = ({
   const tabs = tabsFromSheets(sheets)
   const [selectedTabId, setSelectedTabId] = useState(tabs[0].id)
   const [isTabsAnimationEnabled, setIsTabsAnimationEnabled] = useState(true)
+  const [isRemovingSheet, setIsRemovingSheet] = useState(false)
+  const [areAdditionalActionsOpen, setAreAdditionalActionsOpen] = useState(
+    false
+  )
 
   const currentSheetIndex = sheets.findIndex(
     sheet => sheet.id === selectedTabId
@@ -228,25 +233,22 @@ const BatchDetail: React.FC<IBatchDetailProps> = ({
   }
 
   const removeCurrentSheet = async () => {
+    setIsRemovingSheet(true)
+
     let updatedSheets = sheets.filter((_, i) => i !== currentSheetIndex)
     if (updatedSheets.length === 1) {
       // If we're dropping back to 1 sheet, reset the name of that sheet back to the default
       updatedSheets = [{ ...updatedSheets[0], name: defaultSheetName(1) }]
     }
 
-    // Update client-side state first for immediate UI feedback
+    await saveBatchResults(updatedSheets.map(sheetStateEntryToSheet))
     setSheets(updatedSheets)
     setSelectedTabId(
       // Auto-select the next sheet (or last sheet if none)
       updatedSheets[Math.min(currentSheetIndex, updatedSheets.length - 1)].id
     )
-    try {
-      await saveBatchResults(updatedSheets.map(sheetStateEntryToSheet))
-    } catch (err) {
-      // Revert the optimistic state update if the API call fails
-      setSheets(sheets)
-      throw err
-    }
+    setIsRemovingSheet(false)
+    setAreAdditionalActionsOpen(false)
   }
 
   const discardNewAndUnsavedSheets = () => {
@@ -273,6 +275,14 @@ const BatchDetail: React.FC<IBatchDetailProps> = ({
     setIsEditing(false)
   }
 
+  const openAdditionalActions = () => {
+    setAreAdditionalActionsOpen(true)
+  }
+
+  const closeAdditionalActions = () => {
+    setAreAdditionalActionsOpen(false)
+  }
+
   // ---------- Handlers (end) ----------
 
   return (
@@ -295,14 +305,14 @@ const BatchDetail: React.FC<IBatchDetailProps> = ({
             selectedTabId={selectedTabId}
           >
             {tabs.map(tab => (
-              <Tab id={tab.id} key={tab.id}>
+              <Tab disabled={isRemovingSheet} id={tab.id} key={tab.id}>
                 {tab.name}
               </Tab>
             ))}
             <Tabs.Expander />
             {sheets.length > 1 && (
               <Button
-                disabled={areResultsFinalized}
+                disabled={areResultsFinalized || isRemovingSheet}
                 icon="add"
                 minimal
                 onClick={addSheet}
@@ -316,15 +326,19 @@ const BatchDetail: React.FC<IBatchDetailProps> = ({
 
       <BatchResultTallySheet
         addSheet={addSheet}
+        areAdditionalActionsOpen={areAdditionalActionsOpen}
         areResultsFinalized={areResultsFinalized}
         batch={batch}
+        closeAdditionalActions={closeAdditionalActions}
         contest={contest}
         disableEditing={disableEditing}
         discardNewAndUnsavedSheets={discardNewAndUnsavedSheets}
         enableEditing={enableEditing}
         isEditing={isEditing}
+        isRemovingSheet={isRemovingSheet}
         key={selectedTabId}
         newAndUnsavedSheetId={newAndUnsavedSheetId}
+        openAdditionalActions={openAdditionalActions}
         removeSheet={removeCurrentSheet}
         selectedTabId={selectedTabId}
         sheets={sheets}
@@ -336,14 +350,18 @@ const BatchDetail: React.FC<IBatchDetailProps> = ({
 
 interface IBatchResultTallySheetProps {
   addSheet: () => Promise<void>
+  areAdditionalActionsOpen: boolean
   areResultsFinalized: boolean
   batch: IBatch
+  closeAdditionalActions: () => void
   contest: IContest
   disableEditing: () => void
   discardNewAndUnsavedSheets: () => void
   enableEditing: () => void
   isEditing: boolean
+  isRemovingSheet: boolean
   newAndUnsavedSheetId: string | null
+  openAdditionalActions: () => void
   removeSheet: () => Promise<void>
   selectedTabId: string
   sheets: IBatchResultTallySheetStateEntry[]
@@ -356,14 +374,18 @@ interface IBatchResultTallySheetProps {
 
 const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
   addSheet,
+  areAdditionalActionsOpen,
   areResultsFinalized,
   batch,
+  closeAdditionalActions,
   contest,
   disableEditing,
   discardNewAndUnsavedSheets,
   enableEditing,
   isEditing,
+  isRemovingSheet,
   newAndUnsavedSheetId,
+  openAdditionalActions,
   removeSheet,
   selectedTabId,
   sheets,
@@ -543,7 +565,7 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
             return (
               <ButtonGroup>
                 <Button
-                  disabled={areResultsFinalized}
+                  disabled={areResultsFinalized || isRemovingSheet}
                   icon="edit"
                   onClick={enableEditing}
                 >
@@ -560,19 +582,30 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
                         />
                       ) : (
                         <MenuItem
-                          icon="remove"
+                          disabled={isRemovingSheet}
+                          icon={isRemovingSheet ? undefined : 'remove'}
                           onClick={removeSheet}
-                          text="Remove Sheet"
+                          shouldDismissPopover={false}
+                          text={
+                            isRemovingSheet ? (
+                              <Spinner size={20} />
+                            ) : (
+                              'Remove Sheet'
+                            )
+                          }
                         />
                       )}
                     </Menu>
                   }
+                  isOpen={areAdditionalActionsOpen || isRemovingSheet}
+                  onClose={closeAdditionalActions}
                   position="bottom"
                 >
                   <Button
                     aria-label="Additional Actions"
-                    disabled={areResultsFinalized}
+                    disabled={areResultsFinalized || isRemovingSheet}
                     icon="caret-down"
+                    onClick={openAdditionalActions}
                   />
                 </Popover>
               </ButtonGroup>
