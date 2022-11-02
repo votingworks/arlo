@@ -218,7 +218,13 @@ const BatchDetail: React.FC<IBatchDetailProps> = ({
 
     // Update client-side state first for immediate UI feedback
     setSheets(updatedSheets)
-    await saveBatchResults(updatedSheets.map(sheetStateEntryToSheet))
+    try {
+      await saveBatchResults(updatedSheets.map(sheetStateEntryToSheet))
+    } catch (err) {
+      // Revert the optimistic state update if the API call fails
+      setSheets(sheets)
+      throw err
+    }
   }
 
   const removeCurrentSheet = async () => {
@@ -242,7 +248,13 @@ const BatchDetail: React.FC<IBatchDetailProps> = ({
       // never persisted to begin with
       return
     }
-    await saveBatchResults(updatedSheets.map(sheetStateEntryToSheet))
+    try {
+      await saveBatchResults(updatedSheets.map(sheetStateEntryToSheet))
+    } catch (err) {
+      // Revert the optimistic state update if the API call fails
+      setSheets(sheets)
+      throw err
+    }
   }
 
   const enableEditing = () => {
