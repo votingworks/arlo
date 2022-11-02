@@ -20,28 +20,25 @@ import {
 import { IContest } from '../../../../types'
 import { useDebounce } from '../../../../utils/debounce'
 
-const Container = styled.div<{ fullBleed?: boolean }>`
+const Container = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${props => (props.fullBleed ? undefined : '12px')};
   max-height: 500px;
   width: 100%;
 
   .${Classes.CALLOUT} {
-    border-radius: ${props => (props.fullBleed ? '0' : undefined)};
+    border-radius: 0;
   }
 `
 
 interface IProps {
   electionId: string
-  fullBleed?: boolean
   jurisdictionId: string
   roundId: string
 }
 
 const BatchRoundTallyEntry: React.FC<IProps> = ({
   electionId,
-  fullBleed,
   jurisdictionId,
   roundId,
 }) => {
@@ -66,7 +63,6 @@ const BatchRoundTallyEntry: React.FC<IProps> = ({
       batches={batches}
       contest={contest}
       electionId={electionId}
-      fullBleed={fullBleed}
       jurisdictionId={jurisdictionId}
       roundId={roundId}
     />
@@ -78,7 +74,6 @@ interface IBatchRoundTallyEntryContentProps {
   batches: IBatch[]
   contest: IContest
   electionId: string
-  fullBleed?: boolean
   jurisdictionId: string
   roundId: string
 }
@@ -88,7 +83,6 @@ const BatchRoundTallyEntryContent: React.FC<IBatchRoundTallyEntryContentProps> =
   batches,
   contest,
   electionId,
-  fullBleed,
   jurisdictionId,
   roundId,
 }) => {
@@ -140,11 +134,11 @@ const BatchRoundTallyEntryContent: React.FC<IBatchRoundTallyEntryContentProps> =
   }
 
   return (
-    <Container fullBleed={fullBleed}>
+    <Container>
       {areResultsFinalized && (
         <Callout intent="success">Tallies finalized</Callout>
       )}
-      <ListAndDetail fullBleed={fullBleed}>
+      <ListAndDetail>
         <List
           search={{
             onChange: setSearchQuery,

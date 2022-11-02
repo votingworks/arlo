@@ -2,7 +2,6 @@ import React, { ReactNode } from 'react'
 import styled from 'styled-components'
 import {
   Button,
-  Card,
   Classes,
   Colors,
   IconName,
@@ -25,18 +24,12 @@ import {
  *  </ListAndDetail>
  */
 
-export const ListAndDetail = styled(({ fullBleed, ...props }) => (
-  <Card {...props} />
-))<{ fullBleed?: boolean }>`
-  &.${Classes.CARD} {
-    box-shadow: ${props => (props.fullBleed ? 'none' : undefined)};
-    display: grid;
-    grid-template-columns: 240px 1fr;
-    height: ${props => (props.fullBleed ? '100%' : undefined)};
-    overflow-y: auto;
-    padding: 0;
-    width: 100%;
-  }
+export const ListAndDetail = styled.div`
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  height: 100%;
+  overflow-y: auto;
+  width: 100%;
 `
 
 // ---------- List ----------
