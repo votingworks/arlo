@@ -28,7 +28,6 @@ describe('TallyEntryScreen', () => {
       renderScreen()
       await screen.findByRole('heading', { name: 'Enter Tallies' })
       expect(screen.getAllByText('Batch One')).toHaveLength(2)
-      // TODO fill in comprehensive tests once the tally entry interface is finalized
     })
   })
 })
