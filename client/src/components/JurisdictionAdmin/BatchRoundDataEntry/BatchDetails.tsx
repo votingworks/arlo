@@ -115,15 +115,11 @@ function defaultSheetName(sheetNumber: number) {
   return `Sheet ${sheetNumber}`
 }
 
-function constructEmptySheet(
-  sheetName: string,
-  contest: IContest
-): IBatchResultTallySheet {
-  const results: { [choiceId: string]: number } = {}
-  contest.choices.forEach(choice => {
-    results[choice.id] = 0
-  })
-  return { name: sheetName, results }
+function constructEmptySheet(sheetName: string): IBatchResultTallySheet {
+  return {
+    name: sheetName,
+    results: {},
+  }
 }
 
 function tabsFromSheets(sheets: IBatchResultTallySheetStateEntry[]): ITab[] {
@@ -159,7 +155,7 @@ const BatchDetails: React.FC<IBatchDetailsProps> = ({
 }) => {
   const [sheets, setSheets] = useState<IBatchResultTallySheetStateEntry[]>(
     (batch.resultTallySheets.length === 0
-      ? [constructEmptySheet(defaultSheetName(1), contest)]
+      ? [constructEmptySheet(defaultSheetName(1))]
       : batch.resultTallySheets
     ).map(sheetToSheetStateEntry)
   )
@@ -186,10 +182,10 @@ const BatchDetails: React.FC<IBatchDetailsProps> = ({
         sheets.length + 1 + incrementToAvoidNamingConflict
       )
     }
-    const newSheet = sheetToSheetStateEntry(
-      constructEmptySheet(newSheetName, contest)
-    )
-    newSheet.isNewAndNotSaved = true
+    const newSheet: IBatchResultTallySheetStateEntry = {
+      ...sheetToSheetStateEntry(constructEmptySheet(newSheetName)),
+      isNewAndNotSaved: true,
+    }
     const updatedSheets = [...sheets, newSheet]
 
     // Update client-side state but don't save the new sheet to the backend until tallies are
@@ -203,6 +199,21 @@ const BatchDetails: React.FC<IBatchDetailsProps> = ({
     const updatedSheets = sheets.map((sheet, i) =>
       i === currentSheetIndex ? { ...updatedSheet, id: sheet.id } : sheet
     )
+
+    const switchingFromSingleSheetToMultipleSheets =
+      sheets.length === 2 &&
+      currentSheetIndex === 1 &&
+      sheets[1].isNewAndNotSaved
+    if (switchingFromSingleSheetToMultipleSheets) {
+      // Because we allow switching from a single sheet to multiple sheets even before the first
+      // sheet has been filled out, auto-populate the first sheet with 0s behind the scenes, if
+      // need be, to avoid errors while saving the second sheet
+      const firstSheetResults: { [choiceId: string]: number } = {}
+      contest.choices.forEach(choice => {
+        firstSheetResults[choice.id] = sheets[0].results[choice.id] ?? 0
+      })
+      updatedSheets[0] = { ...sheets[0], results: firstSheetResults }
+    }
 
     // Update client-side state first for immediate UI feedback
     setSheets(updatedSheets)
@@ -468,7 +479,7 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
                   ) : (
                     <span>
                       {(
-                        selectedSheet?.results[choice.id] || 0
+                        selectedSheet?.results[choice.id] ?? ''
                       ).toLocaleString()}
                     </span>
                   )}
