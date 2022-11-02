@@ -216,15 +216,8 @@ const BatchDetail: React.FC<IBatchDetailProps> = ({
       updatedSheets[0] = { ...sheets[0], results: firstSheetResults }
     }
 
-    // Update client-side state first for immediate UI feedback
+    await saveBatchResults(updatedSheets.map(sheetStateEntryToSheet))
     setSheets(updatedSheets)
-    try {
-      await saveBatchResults(updatedSheets.map(sheetStateEntryToSheet))
-    } catch (err) {
-      // Revert the optimistic state update if the API call fails
-      setSheets(sheets)
-      throw err
-    }
   }
 
   const removeCurrentSheet = async () => {
