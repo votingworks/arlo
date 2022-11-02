@@ -224,6 +224,8 @@ def restrict_access(user_types: List[UserType]):
 
             return route(*args, **kwargs)
 
+        wrapper.has_access_control = True  # type: ignore
+
         return wrapper
 
     return restrict_access_decorator
@@ -240,5 +242,21 @@ def restrict_access_support(route: Callable):
             raise Forbidden(description="requires support privileges")
 
         return route(*args, **kwargs)
+
+    wrapper.has_access_control = True  # type: ignore
+
+    return wrapper
+
+
+def allow_public_access(route: Callable):
+    """
+    Flask route decorator that allows public access to a route.
+    """
+
+    @functools.wraps(route)
+    def wrapper(*args, **kwargs):
+        return route(*args, **kwargs)
+
+    wrapper.has_access_control = True  # type: ignore
 
     return wrapper
