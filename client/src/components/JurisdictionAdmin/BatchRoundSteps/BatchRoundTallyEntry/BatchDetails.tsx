@@ -350,7 +350,7 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
   const tabs = tabsFromSheets(sheets)
   const isTotalsSheet = selectedTabId === VOTE_TOTALS_TAB_ID
   const selectedSheet = isTotalsSheet
-    ? undefined
+    ? null
     : sheets.find(sheet => sheet.id === selectedTabId)
   const isSelectedSheetNewAndNotSaved = selectedSheet?.isNewAndNotSaved
 

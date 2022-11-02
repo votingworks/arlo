@@ -50,7 +50,9 @@ const BatchRoundTallyEntry: React.FC<IProps> = ({
 
   const [searchQuery, setSearchQuery] = useState('')
   const [debouncedSearchQuery] = useDebounce(searchQuery)
-  const [selectedBatchId, setSelectedBatchId] = useState<IBatch['id']>()
+  const [selectedBatchId, setSelectedBatchId] = useState<IBatch['id'] | null>(
+    null
+  )
   const [isEditing, setIsEditing] = useState(false)
 
   const batches = batchesQuery.isSuccess ? batchesQuery.data.batches : []
