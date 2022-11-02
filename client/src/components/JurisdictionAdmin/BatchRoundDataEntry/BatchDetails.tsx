@@ -86,8 +86,9 @@ const BatchResultTallySheetButtonRow = styled(ButtonRow).attrs({
 
 const VOTE_TOTALS_TAB_ID = 'vote-totals'
 
-interface IBatchResultTallySheetWithId extends IBatchResultTallySheet {
+interface IBatchResultTallySheetStateEntry extends IBatchResultTallySheet {
   id: string
+  isNewAndNotSaved?: boolean
 }
 
 interface ITab {
@@ -95,16 +96,19 @@ interface ITab {
   name: string
 }
 
-function sheetWithId(
+function sheetToSheetStateEntry(
   sheet: IBatchResultTallySheet
-): IBatchResultTallySheetWithId {
+): IBatchResultTallySheetStateEntry {
   return { ...sheet, id: uuidv4() }
 }
 
-function sheetWithoutId(
-  sheet: IBatchResultTallySheetWithId
+function sheetStateEntryToSheet(
+  sheetStateEntry: IBatchResultTallySheetStateEntry
 ): IBatchResultTallySheet {
-  return { name: sheet.name, results: sheet.results }
+  return {
+    name: sheetStateEntry.name,
+    results: sheetStateEntry.results,
+  }
 }
 
 function defaultSheetName(sheetNumber: number) {
@@ -122,7 +126,7 @@ function constructEmptySheet(
   return { name: sheetName, results }
 }
 
-function tabsFromSheets(sheets: IBatchResultTallySheetWithId[]): ITab[] {
+function tabsFromSheets(sheets: IBatchResultTallySheetStateEntry[]): ITab[] {
   if (sheets.length === 1) {
     return [{ id: sheets[0].id, name: 'Vote Totals' }]
   }
@@ -153,11 +157,11 @@ const BatchDetails: React.FC<IBatchDetailsProps> = ({
   saveBatchResults,
   setAreChangesUnsaved,
 }) => {
-  const [sheets, setSheets] = useState<IBatchResultTallySheetWithId[]>(
+  const [sheets, setSheets] = useState<IBatchResultTallySheetStateEntry[]>(
     (batch.resultTallySheets.length === 0
       ? [constructEmptySheet(defaultSheetName(1), contest)]
       : batch.resultTallySheets
-    ).map(sheetWithId)
+    ).map(sheetToSheetStateEntry)
   )
   const tabs = tabsFromSheets(sheets)
   const [selectedTabId, setSelectedTabId] = useState(tabs[0].id)
@@ -182,13 +186,17 @@ const BatchDetails: React.FC<IBatchDetailsProps> = ({
         sheets.length + 1 + incrementToAvoidNamingConflict
       )
     }
-    const newSheet = sheetWithId(constructEmptySheet(newSheetName, contest))
+    const newSheet = sheetToSheetStateEntry(
+      constructEmptySheet(newSheetName, contest)
+    )
+    newSheet.isNewAndNotSaved = true
     const updatedSheets = [...sheets, newSheet]
 
-    // Update client-side state first for immediate UI feedback
+    // Update client-side state but don't save the new sheet to the backend until tallies are
+    // entered
     setSheets(updatedSheets)
     setSelectedTabId(newSheet.id)
-    await saveBatchResults(updatedSheets.map(sheetWithoutId))
+    setIsEditing(true)
   }
 
   const updateCurrentSheet = async (updatedSheet: IBatchResultTallySheet) => {
@@ -198,10 +206,13 @@ const BatchDetails: React.FC<IBatchDetailsProps> = ({
 
     // Update client-side state first for immediate UI feedback
     setSheets(updatedSheets)
-    await saveBatchResults(updatedSheets.map(sheetWithoutId))
+    await saveBatchResults(updatedSheets.map(sheetStateEntryToSheet))
   }
 
-  const deleteCurrentSheet = async () => {
+  const removeCurrentSheet = async () => {
+    const isSheetToRemoveNewAndNotSaved =
+      sheets.find((_, i) => i === currentSheetIndex)?.isNewAndNotSaved || false
+
     let updatedSheets = sheets.filter((_, i) => i !== currentSheetIndex)
     if (updatedSheets.length === 1) {
       // If we're dropping back to 1 sheet, reset the name of that sheet back to the default
@@ -214,7 +225,12 @@ const BatchDetails: React.FC<IBatchDetailsProps> = ({
       // Auto-select the next sheet (or last sheet if none)
       updatedSheets[Math.min(currentSheetIndex, updatedSheets.length - 1)].id
     )
-    await saveBatchResults(updatedSheets.map(sheetWithoutId))
+    if (isSheetToRemoveNewAndNotSaved) {
+      // Optimization: No need to make an API call to remove the sheet on the backend if it was
+      // never persisted to begin with
+      return
+    }
+    await saveBatchResults(updatedSheets.map(sheetStateEntryToSheet))
   }
 
   const enableEditing = () => {
@@ -275,7 +291,7 @@ const BatchDetails: React.FC<IBatchDetailsProps> = ({
         areResultsFinalized={areResultsFinalized}
         batch={batch}
         contest={contest}
-        deleteSheet={deleteCurrentSheet}
+        removeSheet={removeCurrentSheet}
         disableEditing={disableEditing}
         enableEditing={enableEditing}
         isEditing={isEditing}
@@ -294,13 +310,13 @@ interface IBatchResultTallySheetProps {
   areResultsFinalized: boolean
   batch: IBatch
   contest: IContest
-  deleteSheet: () => Promise<void>
+  removeSheet: () => Promise<void>
   disableEditing: () => void
   enableEditing: () => void
   isEditing: boolean
   selectedTabId: string
   setAreChangesUnsaved: (areChangesUnsaved: boolean) => void
-  sheets: IBatchResultTallySheetWithId[]
+  sheets: IBatchResultTallySheetStateEntry[]
   updateSheet: (updatedSheet: IBatchResultTallySheet) => Promise<void>
 
   // Require a key to ensure that the state within this component resets when a different sheet is
@@ -313,7 +329,7 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
   areResultsFinalized,
   batch,
   contest,
-  deleteSheet,
+  removeSheet,
   disableEditing,
   enableEditing,
   isEditing,
@@ -327,24 +343,39 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
   const selectedSheet = isTotalsSheet
     ? undefined
     : sheets.find(sheet => sheet.id === selectedTabId)
+  const isSelectedSheetNewAndNotSaved = selectedSheet?.isNewAndNotSaved
 
   const formMethods = useForm<IBatchResultTallySheet>({
-    defaultValues: selectedSheet,
+    defaultValues: selectedSheet
+      ? sheetStateEntryToSheet(selectedSheet)
+      : undefined,
     shouldUnregister: false,
   })
-  const { errors, formState, handleSubmit, register, reset } = formMethods
+  const {
+    errors,
+    formState,
+    handleSubmit,
+    register,
+    reset: resetForm,
+  } = formMethods
   // Important gotcha! You have to access properties on the formState to subscribe to it:
   // https://github.com/react-hook-form/react-hook-form/issues/9002
   const { isSubmitting, isDirty } = formState
 
   // Communicate up to the parent whether or not there are unsaved changes
   useEffect(() => {
-    setAreChangesUnsaved(isDirty)
-  }, [isDirty, setAreChangesUnsaved])
+    setAreChangesUnsaved(isSelectedSheetNewAndNotSaved || isDirty)
+    return () => {
+      setAreChangesUnsaved(false)
+    }
+  }, [isDirty, isSelectedSheetNewAndNotSaved, setAreChangesUnsaved])
 
-  const discardChanges = () => {
-    reset(selectedSheet)
+  const discardChanges = async () => {
+    resetForm()
     disableEditing()
+    if (isSelectedSheetNewAndNotSaved) {
+      await removeSheet()
+    }
   }
 
   const onValidSubmit: SubmitHandler<IBatchResultTallySheet> = async sheet => {
@@ -355,7 +386,7 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
       return
     }
     // Reset the form's isDirty value back to false
-    reset(sheet)
+    resetForm(sheet)
     disableEditing()
   }
 
@@ -495,7 +526,7 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
                       ) : (
                         <MenuItem
                           icon="remove"
-                          onClick={deleteSheet}
+                          onClick={removeSheet}
                           text="Remove Sheet"
                         />
                       )}
