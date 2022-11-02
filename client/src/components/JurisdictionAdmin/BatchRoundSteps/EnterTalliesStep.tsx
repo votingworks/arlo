@@ -3,7 +3,7 @@ import { toast } from 'react-toastify'
 import { Button } from '@blueprintjs/core'
 import { IJurisdiction } from '../../UserContext'
 import { IRound } from '../../AuditAdmin/useRoundsAuditAdmin'
-import BatchRoundDataEntry from '../BatchRoundDataEntry'
+import BatchRoundTallyEntry from './BatchRoundTallyEntry'
 import { useBatches, useFinalizeBatchResults } from '../useBatchResults'
 import { useConfirm, Confirm } from '../../Atoms/Confirm'
 import { StepPanel, StepActions } from '../../Atoms/Steps'
@@ -54,12 +54,8 @@ const EnterTalliesStep: React.FC<IEnterTalliesStepProps> = ({
 
   return (
     <>
-      <StepPanel
-        style={{
-          paddingTop: 0, // Ensure sticky batch table header is flush with top
-        }}
-      >
-        <BatchRoundDataEntry
+      <StepPanel noPadding>
+        <BatchRoundTallyEntry
           electionId={jurisdiction.election.id}
           jurisdictionId={jurisdiction.id}
           roundId={round.id}

@@ -1,7 +1,16 @@
 import React from 'react'
-import { H2 } from '@blueprintjs/core'
+import styled from 'styled-components'
+import { Card, H2 } from '@blueprintjs/core'
 import { Inner } from '../Atoms/Wrapper'
-import BatchRoundDataEntry from '../JurisdictionAdmin/BatchRoundDataEntry'
+import BatchRoundTallyEntry from '../JurisdictionAdmin/BatchRoundSteps/BatchRoundTallyEntry'
+
+const Heading = styled(H2)`
+  margin-bottom: 16px;
+`
+
+const BatchRoundTallyEntryContainer = styled(Card)`
+  padding: 0;
+`
 
 interface ITallyEntryScreenProps {
   electionId: string
@@ -16,12 +25,14 @@ const TallyEntryScreen: React.FC<ITallyEntryScreenProps> = ({
 }) => {
   return (
     <Inner flexDirection="column" withTopPadding>
-      <H2>Enter Tallies</H2>
-      <BatchRoundDataEntry
-        electionId={electionId}
-        jurisdictionId={jurisdictionId}
-        roundId={roundId}
-      />
+      <Heading>Enter Tallies</Heading>
+      <BatchRoundTallyEntryContainer>
+        <BatchRoundTallyEntry
+          electionId={electionId}
+          jurisdictionId={jurisdictionId}
+          roundId={roundId}
+        />
+      </BatchRoundTallyEntryContainer>
     </Inner>
   )
 }

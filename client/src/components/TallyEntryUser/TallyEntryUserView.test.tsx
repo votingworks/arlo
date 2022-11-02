@@ -68,8 +68,8 @@ describe('TallyEntryUserView', () => {
     const expectedCalls = [
       tallyEntryApiCalls.getUser(tallyEntryUser.unconfirmed),
       tallyEntryApiCalls.getUser(tallyEntryUser.confirmed),
-      tallyEntryApiCalls.getContests(contestMocks.oneTargeted),
       tallyEntryApiCalls.getBatches(batchesMocks.emptyInitial),
+      tallyEntryApiCalls.getContests(contestMocks.oneTargeted),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()

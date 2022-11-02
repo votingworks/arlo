@@ -21,17 +21,13 @@ const renderScreen = () =>
 describe('TallyEntryScreen', () => {
   it('shows batch tally results', async () => {
     const expectedCalls = [
-      tallyEntryApiCalls.getContests(contestMocks.oneTargeted),
       tallyEntryApiCalls.getBatches(batchesMocks.emptyInitial),
+      tallyEntryApiCalls.getContests(contestMocks.oneTargeted),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderScreen()
       await screen.findByRole('heading', { name: 'Enter Tallies' })
-      screen.getByText(
-        'For each batch, enter the number of votes tallied for each candidate/choice.'
-      )
-      screen.getByText('Batch One')
-      // TODO fill in comprehensive tests once the tally entry interface is finalized
+      expect(screen.getAllByText('Batch One')).toHaveLength(2)
     })
   })
 })

@@ -178,7 +178,7 @@ def validate_batch_results(
     )
     if duplicate_tally_sheet_name:
         raise BadRequest(
-            f"Tally sheet names must be unique. Found duplicate: {duplicate_tally_sheet_name}."
+            f"Tally sheet names must be unique. '{duplicate_tally_sheet_name}' has already been used."
         )
 
     total_votes = sum(
