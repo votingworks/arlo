@@ -39,8 +39,8 @@ interface ITabsWrapperProps {
 // More on why this is needed can be found below, where it's used
 const TabsWrapper = styled.div<ITabsWrapperProps>`
   .${Classes.TAB_INDICATOR_WRAPPER} {
-    ${({ isAnimationEnabled = true }) =>
-      !isAnimationEnabled && 'transition-duration: 0ms;'}
+    transition-duration: ${({ isAnimationEnabled = true }) =>
+      !isAnimationEnabled ? '0ms' : undefined};
   }
 `
 
@@ -88,7 +88,7 @@ const BatchResultTallySheetButtonRow = styled(ButtonRow).attrs({
 const VOTE_TOTALS_TAB_ID = 'vote-totals'
 
 // Sheet names are unique but not static. If we were to use sheet names as the IDs and keys
-// underlying tabs and panels, renaming a sheet would cause components to unexpectedly unmount,
+// assigned to tabs and panels, renaming a sheet would cause components to unexpectedly unmount,
 // remount, and reset state. So we add and use our own stable client-side IDs.
 // TODO: Add and use DB-persisted IDs instead
 interface IBatchResultTallySheetStateEntry extends IBatchResultTallySheet {
@@ -171,10 +171,10 @@ const BatchDetail: React.FC<IBatchDetailProps> = ({
   const tabs = tabsFromSheets(sheets)
   const [selectedTabId, setSelectedTabId] = useState(tabs[0].id)
   const [isTabsAnimationEnabled, setIsTabsAnimationEnabled] = useState(true)
-  const [isRemovingSheet, setIsRemovingSheet] = useState(false)
   const [areAdditionalActionsOpen, setAreAdditionalActionsOpen] = useState(
     false
   )
+  const [isRemovingSheet, setIsRemovingSheet] = useState(false)
 
   const currentSheetIndex = sheets.findIndex(
     sheet => sheet.id === selectedTabId
@@ -202,6 +202,8 @@ const BatchDetail: React.FC<IBatchDetailProps> = ({
     setSheets(updatedSheets)
     setNewAndUnsavedSheetId(newSheet.id)
     setSelectedTabId(
+      // If we've just switched from a single sheet to multiple sheets, select the first sheet
+      // instead of the second
       updatedSheets.length === 2 ? updatedSheets[0].id : newSheet.id
     )
     setIsEditing(true)
@@ -212,11 +214,11 @@ const BatchDetail: React.FC<IBatchDetailProps> = ({
       i === currentSheetIndex ? { ...updatedSheet, id: sheet.id } : sheet
     )
 
-    const switchingFromSingleSheetToMultipleSheets =
+    const isSwitchingFromSingleSheetToMultipleSheets =
       sheets.length === 2 &&
       currentSheetIndex === 0 &&
       newAndUnsavedSheetId === sheets[1].id
-    if (switchingFromSingleSheetToMultipleSheets) {
+    if (isSwitchingFromSingleSheetToMultipleSheets) {
       // When switching from a single sheet to multiple sheets, we open the first sheet in edit
       // mode. We need to auto-populate the second sheet with 0s behind the scenes to avoid errors
       // upon saving the first sheet
@@ -404,6 +406,7 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
     defaultValues: selectedSheet
       ? sheetStateEntryToSheet(selectedSheet)
       : undefined,
+    // Don't unregister inputs when they unmount (the default is switched from true to false in v7)
     shouldUnregister: false,
   })
   const {

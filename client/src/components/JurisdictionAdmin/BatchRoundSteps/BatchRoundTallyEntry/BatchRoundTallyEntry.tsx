@@ -4,13 +4,8 @@ import { Callout, Classes } from '@blueprintjs/core'
 
 import BatchDetail from './BatchDetail'
 import useContestsJurisdictionAdmin from '../../useContestsJurisdictionAdmin'
+import { assert } from '../../../utilities'
 import { Confirm, useConfirm } from '../../../Atoms/Confirm'
-import {
-  List,
-  ListAndDetail,
-  ListItem,
-  ListSearchNoResults,
-} from '../../../Atoms/ListAndDetail'
 import {
   IBatch,
   IBatchResultTallySheet,
@@ -18,6 +13,12 @@ import {
   useRecordBatchResults,
 } from '../../useBatchResults'
 import { IContest } from '../../../../types'
+import {
+  List,
+  ListAndDetail,
+  ListItem,
+  ListSearchNoResults,
+} from '../../../Atoms/ListAndDetail'
 import { useDebounce } from '../../../../utils/debounce'
 
 const Container = styled.div`
@@ -103,8 +104,8 @@ const BatchRoundTallyEntryContent: React.FC<IBatchRoundTallyEntryContentProps> =
   const filteredBatches = batches.filter(batch =>
     batch.name.toLowerCase().includes(debouncedSearchQuery.toLowerCase())
   )
-  const selectedBatch =
-    batches.find(batch => batch.id === selectedBatchId) || batches[0]
+  const selectedBatch = batches.find(batch => batch.id === selectedBatchId)
+  assert(selectedBatch !== undefined)
 
   // Auto-select first search match
   useEffect(() => {

@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import {
   Button,
@@ -106,7 +106,7 @@ const ListItemContainer = styled.li<{ selected?: boolean }>`
 `
 
 interface IListItemProps {
-  children?: ReactNode
+  children?: React.ReactNode
   onClick: () => void
   rightIcon?: IconName
   selected?: boolean
