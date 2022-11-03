@@ -15,7 +15,6 @@ exports[`RoundProgress renders an audit board with auditing complete that has no
        of 
       30
        ballots audited
-       
     </p>
     <div
       class="bp3-progress-bar bp3-intent-success bp3-no-stripes"
@@ -70,7 +69,6 @@ exports[`RoundProgress renders complete round 1`] = `
        of 
       30
        ballots audited
-       
     </p>
     <div
       class="bp3-progress-bar bp3-intent-success bp3-no-stripes"
@@ -125,7 +123,6 @@ exports[`RoundProgress renders incomplete round with an audit board 1`] = `
        of 
       30
        ballots audited
-       
     </p>
     <div
       class="bp3-progress-bar bp3-no-stripes"
@@ -180,7 +177,6 @@ exports[`RoundProgress renders incomplete round with an audit board with no ball
        of 
       30
        ballots audited
-       
     </p>
     <div
       class="bp3-progress-bar bp3-no-stripes"
@@ -247,7 +243,6 @@ exports[`RoundProgress renders incomplete round with auditing in progress 1`] = 
        of 
       30
        ballots audited
-       
     </p>
     <div
       class="bp3-progress-bar bp3-intent-primary bp3-no-stripes"
@@ -302,7 +297,6 @@ exports[`RoundProgress renders incomplete round with two audit boards 1`] = `
        of 
       60
        ballots audited
-       
     </p>
     <div
       class="bp3-progress-bar bp3-no-stripes"
