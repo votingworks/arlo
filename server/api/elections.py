@@ -6,7 +6,13 @@ from werkzeug.exceptions import Conflict, Forbidden
 from . import api
 from ..models import *  # pylint: disable=wildcard-import
 from ..database import db_session
-from ..auth import check_access, UserType, restrict_access, get_loggedin_user
+from ..auth import (
+    check_access,
+    UserType,
+    restrict_access,
+    get_loggedin_user,
+    allow_public_access,
+)
 from ..util.jsonschema import JSONDict, validate
 from ..activity_log import (
     CreateAudit,
@@ -61,6 +67,7 @@ def validate_new_election(election: JSONDict):
 
 
 @api.route("/election", methods=["POST"])
+@allow_public_access  # Access control is implemented within the endpoint
 def create_election():
     election = request.get_json()
 
@@ -110,6 +117,7 @@ def delete_election(election: Election):
 
 
 @api.route("/audit_admins/<audit_admin_id>/organizations", methods=["GET"])
+@allow_public_access  # Access control is implemented within the endpoint
 def list_organizations_and_elections(audit_admin_id: str):
     user_type, user_key = get_loggedin_user(session)
     user = User.query.get(audit_admin_id)

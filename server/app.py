@@ -58,7 +58,16 @@ def shutdown_session(exception=None):  # pylint: disable=unused-argument
     db_session.remove()
 
 
+# Ensure that every endpoint has an access control decorator
+for rule in app.url_map.iter_rules():
+    if not hasattr(app.view_functions[rule.endpoint], "has_access_control"):
+        raise Exception(
+            f"Missing access control decorator for {rule.endpoint}"
+        )  # pragma: no cover
+
+
 configure_sentry(app)
+
 
 # Dispose the database engine after we're finished with app setup. (A new
 # connection will be created when requests start coming in.) This ensures that

@@ -4,7 +4,9 @@ from typing import Any
 from werkzeug.exceptions import Conflict
 from flask import jsonify, request
 
+
 from . import api
+from ..auth.auth_helpers import allow_public_access
 from ..audit_math import bravo, sampler_contest, supersimple
 from ..util.jsonschema import validate
 from ..models import *  # pylint: disable=wildcard-import
@@ -59,6 +61,7 @@ COMPUTE_SAMPLE_SIZES_INPUT_SCHEMA = {
 # Conceptually, this is a GET but we use a POST so that we can specify election results in a body.
 # Specifying election results in a query param could cause us to hit URL size limits
 @api.route("/public/sample-sizes", methods=["POST"])
+@allow_public_access
 def public_compute_sample_sizes():
     contest_for_sampler = parse_compute_sample_sizes_input(request.get_json())
 

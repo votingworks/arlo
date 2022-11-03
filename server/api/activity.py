@@ -3,12 +3,13 @@ from flask.json import jsonify
 from werkzeug.exceptions import Forbidden
 
 from ..models import *  # pylint: disable=wildcard-import
-from ..auth.auth_helpers import UserType, get_loggedin_user
+from ..auth.auth_helpers import UserType, allow_public_access, get_loggedin_user
 from . import api
 from ..util.isoformat import isoformat
 
 
 @api.route("/organizations/<organization_id>/activities", methods=["GET"])
+@allow_public_access  # Access control implemented in the endpoint
 def list_activities(organization_id: str):
     user_type, user_key = get_loggedin_user(session)
     user = User.query.filter_by(email=user_key).one_or_none()
