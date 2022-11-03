@@ -1,5 +1,5 @@
 import React from 'react'
-import { ProgressBar, H4, Tag, Intent, H3 } from '@blueprintjs/core'
+import { ProgressBar, Tag, Intent, H3 } from '@blueprintjs/core'
 import styled from 'styled-components'
 import { IAuditBoard } from '../useAuditBoards'
 import { sum } from '../../utils/number'
@@ -44,7 +44,7 @@ const RoundProgress: React.FC<{ auditBoards: IAuditBoard[] }> = ({
       <MainBarWrapper>
         <H3>Audit Board Progress</H3>
         <p>
-          {auditedBallots} of {sampledBallots} ballots audited{' '}
+          {auditedBallots} of {sampledBallots} ballots audited
         </p>
         <ProgressBar
           value={auditedBallots / sampledBallots}
