@@ -181,7 +181,7 @@ const RoundManagement: React.FC<IRoundManagementProps> = ({
     <Inner>
       <StatusBar>{auditHeading}</StatusBar>
       <Row gap="15px">
-        <Panel style={{ flexShrink: 0 }}>
+        <Panel>
           <H3>Prepare Ballots</H3>
           {samplesToAudit}
           <JAFileDownloadButtons
@@ -193,7 +193,7 @@ const RoundManagement: React.FC<IRoundManagementProps> = ({
             auditBoards={auditBoards}
           />
         </Panel>
-        <Panel style={{ flexGrow: 1 }}>
+        <Panel style={{ flex: 1 }}>
           {auditSettings.online ? (
             <RoundProgress auditBoards={auditBoards} />
           ) : (
