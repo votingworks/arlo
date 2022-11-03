@@ -28,9 +28,8 @@ import { Row, Column } from '../Atoms/Layout'
 
 const Inner = styled(InnerAtom).attrs({ flexDirection: 'column' })``
 
-const SpacedDiv = styled(Card).attrs({ elevation: 1 })`
+const Panel = styled(Card).attrs({ elevation: 1 })`
   margin-bottom: 30px;
-  width: 100%;
 `
 
 const StrongP = styled.p`
@@ -182,7 +181,7 @@ const RoundManagement: React.FC<IRoundManagementProps> = ({
     <Inner>
       <StatusBar>{auditHeading}</StatusBar>
       <Row gap="15px">
-        <SpacedDiv>
+        <Panel>
           <H3>Prepare Ballots</H3>
           {samplesToAudit}
           <JAFileDownloadButtons
@@ -193,14 +192,14 @@ const RoundManagement: React.FC<IRoundManagementProps> = ({
             auditSettings={auditSettings}
             auditBoards={auditBoards}
           />
-        </SpacedDiv>
-        <SpacedDiv style={{ flex: 1 }}>
+        </Panel>
+        <Panel style={{ flex: 1 }}>
           {auditSettings.online ? (
             <RoundProgress auditBoards={auditBoards} />
           ) : (
             <RoundDataEntry round={round} />
           )}
-        </SpacedDiv>
+        </Panel>
       </Row>
     </Inner>
   )
