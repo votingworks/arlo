@@ -781,7 +781,9 @@ round1_sample_results = {
             "Undervote/Blank": 0,
         }
     },
-    "test_cause_NaN_in_expected_prob": {"round1": {"Erin George": 3, "Alex Hall": 0, "Write In": 0}},
+    "test_cause_NaN_in_expected_prob": {
+        "round1": {"Erin George": 3, "Alex Hall": 0, "Write In": 0}
+    },
 }
 
 round1_sizes = {
