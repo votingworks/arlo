@@ -395,6 +395,10 @@ def test_compute_risk(contests):
             ("Biden", "Overvote"): 0.0,
             ("Biden", "Undervote/Blank"): 0.0,
         },
+        "test_caroline": {
+            ("Erin George", "Alex Hall"): 0.13,
+            ("Erin George", "Write In"): 0.13,
+        },
     }
 
     expected_decisions = {
@@ -412,6 +416,7 @@ def test_compute_risk(contests):
         "test12": True,
         "test_small_third_candidate": True,
         "test_ga_presidential": True,
+        "test_caroline": False,
     }
 
     for contest in contests.values():
@@ -457,6 +462,10 @@ def test_compute_risk_empty(contests):
             ("Biden", "Overvote"): 1,
             ("Biden", "Undervote/Blank"): 1,
         },
+        "test_caroline": {
+            ("Erin George", "Alex Hall"): 1,
+            ("Erin George", "Write In"): 1,
+        },
     }
 
     expected_decisions = {
@@ -474,6 +483,7 @@ def test_compute_risk_empty(contests):
         "test12": False,
         "test_small_third_candidate": False,
         "test_ga_presidential": False,
+        "test_caroline": False,
     }
 
     for contest in contests.values():
@@ -716,6 +726,14 @@ bravo_contests = {
         "votesAllowed": 1,
         "numWinners": 1,
     },
+    "test_caroline": {
+        "Erin George": 400,
+        "Alex Hall": 10,
+        "Write In": 1,
+        "ballots": 500,
+        "votesAllowed": 1,
+        "numWinners": 1,
+    },
 }
 
 # Useful test data
@@ -734,6 +752,7 @@ round0_sample_results = {
     "test12": None,
     "test_small_third_candidate": None,
     "test_ga_presidential": None,
+    "test_caroline": None,
 }
 
 round1_sample_results = {
@@ -762,6 +781,7 @@ round1_sample_results = {
             "Undervote/Blank": 0,
         }
     },
+    "test_caroline": {"round1": {"Erin George": 3, "Alex Hall": 0, "Write In": 0}},
 }
 
 round1_sizes = {
@@ -779,6 +799,7 @@ round1_sizes = {
     "test12": {"round1": 150},
     "test_small_third_candidate": {"round1": 1300},
     "test_ga_presidential": {"round1": 4992420},
+    "test_caroline": {"round1": 6},
 }
 
 true_sample_sizes = {
@@ -823,6 +844,12 @@ true_sample_sizes = {
     "test_ga_presidential": {
         "all-ballots": {"type": "all-ballots", "size": 4992420, "prob": None},
     },
+    "test_caroline": {
+        "asn": {"type": "ASN", "size": 6, "prob": 0.67},
+        "0.7": {"type": None, "size": 7, "prob": 0.7},
+        "0.8": {"type": None, "size": 8, "prob": 0.8},
+        "0.9": {"type": None, "size": 11, "prob": 0.9},
+    },
 }
 
 
@@ -846,4 +873,10 @@ round2_sample_sizes = {
     "test12": {},
     "test_small_third_candidate": {},
     "test_ga_presidential": {},
+    "test_caroline": {
+        "asn": {"type": "ASN", "size": 2, "prob": 0.81},
+        "0.7": {"type": None, "size": 2, "prob": 0.7},
+        "0.8": {"type": None, "size": 2, "prob": 0.8},
+        "0.9": {"type": None, "size": 3, "prob": 0.9},
+    },
 }

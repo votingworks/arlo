@@ -247,7 +247,7 @@ def bravo_sample_sizes(
     # math.ceil instead of math.floor can lead to a
     # larger sample.)
     test_stat = Decimal(0)
-    while (
+    while test_stat.is_nan() or (
         test_stat < threshold
         # In extreme cases, the test_stat never reaches the threshold (or at least doesn't do so in
         # a reasonable amount of time). This second check prevents this loop from hanging in those
@@ -256,7 +256,7 @@ def bravo_sample_sizes(
     ):
         x_c = Decimal(stats.binom.ppf(1.0 - p_completion, size, float(p_w2)))
         test_stat = x_c * plus + (size - x_c) * minus
-        if test_stat < threshold:
+        if test_stat.is_nan() or test_stat < threshold:
             size += 1
 
     # The preceding fussiness notwithstanding, we use a simple
