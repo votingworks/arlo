@@ -137,8 +137,9 @@ def test_simple_election(snapshot):
 # We don't snapshot the results of generating fixtures for this election, since
 # we may want to change the spec for other reasons. However, we can still check
 # that the resulting data is valid (using property assertions). It's important
-# to test with a slightly larger election because there are edge cases that only
-# show up at a slightly larger scale.
+# to test this election because there are edge cases that only show up at a
+# slightly larger scale than the simple election above (e.g. using multiple
+# contests, larger numbers of ballots).
 def test_small_election():
     small_election_spec_path = os.path.join(
         os.path.dirname(__file__), "../small-election/small-election.spec.json"
