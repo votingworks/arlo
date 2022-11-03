@@ -30,13 +30,13 @@ resetdb:
 dev-environment: deps initdevdb install-development resetdb
 
 typecheck-server:
-	poetry run mypy server scripts
+	poetry run mypy server scripts fixtures
 
 format-server:
 	poetry run black .
 
 lint-server:
-	poetry run pylint server scripts
+	poetry run pylint server scripts fixtures
 
 test-client:
 	yarn --cwd client lint
