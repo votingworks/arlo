@@ -16,7 +16,7 @@ from typing import (
     Union,
 )
 
-rand = random.Random(12345)
+SEED = 12345
 
 ## Types for the JSON election spec that is provided as input
 
@@ -122,7 +122,9 @@ def generate_ballot_votes(tallies: JurisdictionTallies) -> Iterable[BallotVotes]
 # In batch comparison audits, batch names must be unique within a jurisdiction,
 # so we'll stick to that constraint. However, we'll still add in a tabulator for
 # color.
-def generate_batches(min_size: int, max_size: int) -> Iterable[Tuple[Batch, int]]:
+def generate_batches(
+    min_size: int, max_size: int, rand: random.Random
+) -> Iterable[Tuple[Batch, int]]:
     for batch_number in itertools.count(1):
         tabulator = "ABC"[(batch_number - 1) % 3]
         yield (
@@ -132,11 +134,13 @@ def generate_batches(min_size: int, max_size: int) -> Iterable[Tuple[Batch, int]
 
 
 def generate_cvrs(
-    jurisdiction_tallies: JurisdictionTallies, contests: List[ContestSpec]
+    jurisdiction_tallies: JurisdictionTallies,
+    contests: List[ContestSpec],
+    rand: random.Random,
 ) -> Cvrs:
     min_batch_size = contests[0]["total_ballots_cast"] // 100
     max_batch_size = contests[0]["total_ballots_cast"] // 10
-    batches = generate_batches(min_batch_size, max_batch_size)
+    batches = generate_batches(min_batch_size, max_batch_size, rand)
     contest_votes = list(generate_ballot_votes(jurisdiction_tallies))
     rand.shuffle(contest_votes)
     batch_ballot_numbers = itertools.chain.from_iterable(
@@ -264,7 +268,9 @@ def write_batch_tallies(
         )
 
 
-def random_numbers_that_sum_to_total(total: int, num_numbers: int) -> List[int]:
+def random_numbers_that_sum_to_total(
+    total: int, num_numbers: int, rand: random.Random
+) -> List[int]:
     if num_numbers == 0:
         raise ValueError("num_numbers must be > 0")
     numbers = []
@@ -279,7 +285,7 @@ def random_numbers_that_sum_to_total(total: int, num_numbers: int) -> List[int]:
 
 
 def split_contest_tallies_across_jurisdictions(
-    election_spec: ElectionSpec,
+    election_spec: ElectionSpec, rand: random.Random,
 ) -> Dict[str, JurisdictionTallies]:
     jurisdiction_tallies: Dict[str, JurisdictionTallies] = {
         jurisdiction["name"]: {} for jurisdiction in election_spec["jurisdictions"]
@@ -289,7 +295,7 @@ def split_contest_tallies_across_jurisdictions(
         total_votes = sum(contest["tally"].values())
         invalid_votes = contest["total_ballots_cast"] - total_votes
         jurisdiction_invalid_votes = random_numbers_that_sum_to_total(
-            invalid_votes, len(contest_jurisdictions)
+            invalid_votes, len(contest_jurisdictions), rand
         )
         for jurisdiction, invalid_votes in zip(
             contest_jurisdictions, jurisdiction_invalid_votes
@@ -299,7 +305,7 @@ def split_contest_tallies_across_jurisdictions(
             )
         for choice_name, choice_votes in contest["tally"].items():
             jurisdiction_choice_votes = random_numbers_that_sum_to_total(
-                choice_votes, len(contest_jurisdictions)
+                choice_votes, len(contest_jurisdictions), rand
             )
             for jurisdiction_name, votes in zip(
                 contest_jurisdictions, jurisdiction_choice_votes
@@ -342,6 +348,8 @@ def write_standardized_contests(election_spec: ElectionSpec, output_file: IO):
 
 
 def generate_election(election_spec: ElectionSpec, output_dir_path: str):
+    rand = random.Random(SEED)
+
     jurisdiction_admins = generate_jurisdiction_admins(election_spec["jurisdictions"])
     with open(
         os.path.join(output_dir_path, f"{election_spec['name']} - jurisdictions.csv"),
@@ -357,10 +365,12 @@ def generate_election(election_spec: ElectionSpec, output_dir_path: str):
     ) as standardized_contests_file:
         write_standardized_contests(election_spec, standardized_contests_file)
 
-    jurisdiction_tallies = split_contest_tallies_across_jurisdictions(election_spec)
+    jurisdiction_tallies = split_contest_tallies_across_jurisdictions(
+        election_spec, rand
+    )
 
     for jurisdiction_name, jurisdiction_tally in jurisdiction_tallies.items():
-        cvrs = list(generate_cvrs(jurisdiction_tally, election_spec["contests"]))
+        cvrs = list(generate_cvrs(jurisdiction_tally, election_spec["contests"], rand))
         with open(
             os.path.join(output_dir_path, f"{jurisdiction_name} - cvrs.csv"), "w"
         ) as cvrs_file:

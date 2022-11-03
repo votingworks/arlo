@@ -2,19 +2,29 @@ import json
 import pytest
 from ..generate_election import *  # pylint: disable=wildcard-import
 
+# Each test needs its own seeded RNG since the tests may run in any order, so we
+# can't depend on a single RNG across all tests.
+@pytest.fixture
+def rand():
+    return random.Random(0)
 
-def test_random_numbers_that_sum_to_total():
+
+def test_random_numbers_that_sum_to_total(snapshot, rand):
     for total in range(0, 100, 10):
         for num_numbers in range(1, 10):
-            result = random_numbers_that_sum_to_total(total, num_numbers)
+            result = random_numbers_that_sum_to_total(total, num_numbers, rand)
             assert sum(result) == total
             assert len(result) == num_numbers
             assert all([number >= 0 for number in result])
 
-    assert pytest.raises(ValueError, random_numbers_that_sum_to_total, 0, 0)
-    assert random_numbers_that_sum_to_total(0, 1) == [0]
-    assert random_numbers_that_sum_to_total(0, 2) == [0, 0]
-    assert random_numbers_that_sum_to_total(1, 1) == [1]
+    assert pytest.raises(ValueError, random_numbers_that_sum_to_total, 0, 0, rand)
+    assert random_numbers_that_sum_to_total(0, 1, rand) == [0]
+    assert random_numbers_that_sum_to_total(0, 2, rand) == [0, 0]
+    assert random_numbers_that_sum_to_total(1, 1, rand) == [1]
+
+    # Since we're using a fixed seed, the results should be deterministic
+    snapshot.assert_match(random_numbers_that_sum_to_total(100, 10, rand))
+    snapshot.assert_match(random_numbers_that_sum_to_total(15, 2, rand))
 
 
 def assert_is_valid_jurisdiction_tallies(
@@ -90,7 +100,7 @@ def assert_is_valid_batch_tallies(
 
 # We snapshot the results of generating fixtures for this simple election to
 # ensure that the exact calculations stay correct.
-def test_simple_election(snapshot):
+def test_simple_election(snapshot, rand):
     simple_election_spec: ElectionSpec = {
         "name": "Simple Election",
         "contests": [
@@ -111,13 +121,13 @@ def test_simple_election(snapshot):
     }
 
     jurisdiction_tallies = split_contest_tallies_across_jurisdictions(
-        simple_election_spec
+        simple_election_spec, rand
     )
     assert_is_valid_jurisdiction_tallies(jurisdiction_tallies, simple_election_spec)
     snapshot.assert_match(jurisdiction_tallies)
 
     for tallies in jurisdiction_tallies.values():
-        cvrs = list(generate_cvrs(tallies, simple_election_spec["contests"]))
+        cvrs = list(generate_cvrs(tallies, simple_election_spec["contests"], rand))
         assert_is_valid_cvrs(cvrs, tallies)
         snapshot.assert_match(cvrs)
 
@@ -140,7 +150,7 @@ def test_simple_election(snapshot):
 # to test this election because there are edge cases that only show up at a
 # slightly larger scale than the simple election above (e.g. using multiple
 # contests, larger numbers of ballots).
-def test_small_election():
+def test_small_election(rand):
     small_election_spec_path = os.path.join(
         os.path.dirname(__file__), "../small-election/small-election.spec.json"
     )
@@ -148,12 +158,12 @@ def test_small_election():
         small_election_spec = json.loads(small_election_spec_file.read())
 
     jurisdiction_tallies = split_contest_tallies_across_jurisdictions(
-        small_election_spec
+        small_election_spec, rand
     )
     assert_is_valid_jurisdiction_tallies(jurisdiction_tallies, small_election_spec)
 
     for tallies in jurisdiction_tallies.values():
-        cvrs = list(generate_cvrs(tallies, small_election_spec["contests"]))
+        cvrs = list(generate_cvrs(tallies, small_election_spec["contests"], rand))
         assert_is_valid_cvrs(cvrs, tallies)
 
         manifest = cvrs_to_manifest(cvrs)
