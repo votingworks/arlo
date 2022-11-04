@@ -13,6 +13,7 @@ import {
   findAndCloseToast,
   serverError,
   createQueryClient,
+  hasTextAcrossElements,
 } from '../../../testUtilities'
 import { contestMocks } from '../../../AuditAdmin/useSetupMenuItems/_mocks'
 
@@ -50,6 +51,7 @@ const batchesWithResults = (resultTallySheets: IBatchResultTallySheet[]) => [
   {
     ...batchesMocks.emptyInitial.batches[0],
     resultTallySheets,
+    lastEditedBy: 'ja@example.com',
   },
   ...batchesMocks.emptyInitial.batches.slice(1),
 ]
@@ -162,6 +164,7 @@ describe('Batch comparison data entry', () => {
       row2 = within(rows[2]).getAllByRole('cell')
       expect(row1[1]).toHaveTextContent('1')
       expect(row2[1]).toHaveTextContent('2')
+      screen.getByText(hasTextAcrossElements('Last edited by ja@example.com'))
     })
   })
 
