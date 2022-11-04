@@ -1,14 +1,14 @@
 from datetime import datetime
 import io, csv
-from typing import List
+from typing import List, Optional
 import uuid
-from flask import jsonify, request
+from flask import jsonify, request, session
 from werkzeug.exceptions import BadRequest, Conflict
 from sqlalchemy.orm import Query, joinedload
 from sqlalchemy import func
 
 from . import api
-from ..auth import restrict_access, UserType
+from ..auth import get_loggedin_user, get_support_user, restrict_access, UserType
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
 from .rounds import is_round_complete, end_round, get_current_round
@@ -82,7 +82,25 @@ def serialize_batch(batch: Batch) -> JSONDict:
             }
             for tally_sheet in batch.result_tally_sheets
         ],
+        "lastEditedBy": construct_batch_last_edited_by_string(batch),
     }
+
+
+def construct_batch_last_edited_by_string(batch: Batch) -> Optional[str]:
+    if batch.last_edited_by_support_user_email:
+        return batch.last_edited_by_support_user_email
+    if batch.last_edited_by_user_type == UserType.JURISDICTION_ADMIN:
+        return batch.last_edited_by_user_key  # Email
+    if batch.last_edited_by_user_type == UserType.TALLY_ENTRY:
+        tally_entry_user = TallyEntryUser.query.filter_by(
+            id=batch.last_edited_by_user_key
+        ).one_or_none()
+        if tally_entry_user is not None:
+            members = [tally_entry_user.member_1]
+            if tally_entry_user.member_2 is not None:
+                members.append(tally_entry_user.member_2)
+            return ", ".join(members)
+    return None
 
 
 @api.route(
@@ -223,6 +241,13 @@ def record_batch_results(
         )
         for tally_sheet in batch_results
     ]
+
+    user_type, user_key = get_loggedin_user(session)
+    support_user_email = get_support_user(session)
+    batch.last_edited_by_user_type = user_type
+    batch.last_edited_by_user_key = user_key
+    batch.last_edited_by_support_user_email = support_user_email
+
     db_session.commit()
 
     return jsonify(status="ok")
