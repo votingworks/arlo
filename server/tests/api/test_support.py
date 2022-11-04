@@ -12,11 +12,9 @@ from ...api.support import (
 )
 from ...config import HTTP_ORIGIN
 
-SUPPORT_EMAIL = "support@example.org"
-
 
 def test_support_list_organizations(client: FlaskClient, org_id: str):
-    set_support_user(client, SUPPORT_EMAIL)
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
     rv = client.get("/api/support/organizations")
     orgs = json.loads(rv.data)
     # This will load orgs from all tests, so we can't check its exact length/value
@@ -26,7 +24,7 @@ def test_support_list_organizations(client: FlaskClient, org_id: str):
 
 
 def test_support_create_organization(client: FlaskClient):
-    set_support_user(client, SUPPORT_EMAIL)
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
     rv = post_json(client, "/api/support/organizations", {"name": "New Organization"})
     assert_ok(rv)
 
@@ -44,7 +42,7 @@ def test_support_create_organization(client: FlaskClient):
 
 
 def test_support_create_organization_invalid(client: FlaskClient):
-    set_support_user(client, SUPPORT_EMAIL)
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
     rv = post_json(client, "/api/support/organizations", {"name": ""})
     assert rv.status_code == 400
     assert json.loads(rv.data) == {
@@ -53,7 +51,7 @@ def test_support_create_organization_invalid(client: FlaskClient):
 
 
 def test_support_get_organization(client: FlaskClient, org_id: str, election_id: str):
-    set_support_user(client, SUPPORT_EMAIL)
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
     rv = client.get(f"/api/support/organizations/{org_id}")
     compare_json(
         json.loads(rv.data),
@@ -80,7 +78,7 @@ def test_support_get_organization(client: FlaskClient, org_id: str, election_id:
 
 
 def test_support_delete_organization(client: FlaskClient):
-    set_support_user(client, SUPPORT_EMAIL)
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
     org_id, aa_id = create_org_and_admin("Test Delete Org", "admin-delete@example.com")
     set_logged_in_user(client, UserType.AUDIT_ADMIN, "admin-delete@example.com")
     election_id = create_election(client, organization_id=org_id)
@@ -112,7 +110,7 @@ def test_support_delete_organization(client: FlaskClient):
 
 
 def test_support_rename_organization(client: FlaskClient, org_id: str):
-    set_support_user(client, SUPPORT_EMAIL)
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
 
     rv = patch_json(client, f"/api/support/organizations/{org_id}", {})
     assert rv.status_code == 400
@@ -138,7 +136,7 @@ def test_support_get_election(
     jurisdiction_ids: List[str],
     round_1_id: str,  # pylint: disable=unused-argument
 ):
-    set_support_user(client, SUPPORT_EMAIL)
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
     rv = client.get(f"/api/support/elections/{election_id}")
     compare_json(
         json.loads(rv.data),
@@ -167,7 +165,7 @@ def test_support_permanently_delete_election(
     jurisdictions_file_path = election.jurisdictions_file.storage_path
     manifest_file_path = election.jurisdictions[0].manifest_file.storage_path
 
-    set_support_user(client, SUPPORT_EMAIL)
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
     rv = client.delete(f"/api/support/elections/{election_id}")
     assert_ok(rv)
 
@@ -200,7 +198,7 @@ def test_support_create_audit_admin(  # pylint: disable=invalid-name
 
     new_admin_email = f"new-audit-admin-{org_id}@example.com"
 
-    set_support_user(client, SUPPORT_EMAIL)
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
     rv = post_json(
         client,
         f"/api/support/organizations/{org_id}/audit-admins",
@@ -258,7 +256,7 @@ def test_support_create_audit_admin_already_in_auth0(  # pylint: disable=invalid
 
     new_admin_email = f"new-audit-admin-{org_id}@example.com"
 
-    set_support_user(client, SUPPORT_EMAIL)
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
     rv = post_json(
         client,
         f"/api/support/organizations/{org_id}/audit-admins",
@@ -298,7 +296,7 @@ def test_support_create_audit_admin_already_exists(  # pylint: disable=invalid-n
     db_session.commit()
     user = User.query.get(user_id)
 
-    set_support_user(client, SUPPORT_EMAIL)
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
     rv = client.get(f"/api/support/organizations/{org_id}")
     assert json.loads(rv.data)["auditAdmins"] == [
         {
@@ -329,7 +327,7 @@ def test_support_create_audit_admin_already_exists(  # pylint: disable=invalid-n
 def test_support_create_audit_admin_already_admin(  # pylint: disable=invalid-name,unused-argument
     MockAuth0, MockGetToken, client: FlaskClient, org_id: str,
 ):
-    set_support_user(client, SUPPORT_EMAIL)
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
     rv = post_json(
         client,
         f"/api/support/organizations/{org_id}/audit-admins",
@@ -344,7 +342,7 @@ def test_support_create_audit_admin_already_admin(  # pylint: disable=invalid-na
 def test_support_create_audit_admin_invalid_email(
     client: FlaskClient, org_id: str,
 ):
-    set_support_user(client, SUPPORT_EMAIL)
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
     rv = post_json(
         client,
         f"/api/support/organizations/{org_id}/audit-admins",
@@ -362,7 +360,7 @@ def test_support_create_audit_admin_invalid_email(
 
 
 def test_support_remove_audit_admin(client: FlaskClient):
-    set_support_user(client, SUPPORT_EMAIL)
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
 
     aa_email = "admin-remove@example.com"
     org_id_1, aa_id = create_org_and_admin("Test Remove Org 1", aa_email)
@@ -385,7 +383,7 @@ def test_support_remove_audit_admin(client: FlaskClient):
 
 
 def test_support_remove_audit_admin_invalid(client: FlaskClient, org_id: str):
-    set_support_user(client, SUPPORT_EMAIL)
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
 
     _, aa_id = create_org_and_admin(
         "Test Remove Org Invalid", "other-admin@example.com"
@@ -407,7 +405,7 @@ def test_support_get_jurisdiction(
     jurisdiction_ids: List[str],
     audit_board_round_1_ids: List[str],
 ):
-    set_support_user(client, SUPPORT_EMAIL)
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
     rv = client.get(f"/api/support/jurisdictions/{jurisdiction_ids[0]}")
     compare_json(
         json.loads(rv.data),
@@ -434,7 +432,7 @@ def test_support_get_jurisdiction(
 def test_support_log_in_as_audit_admin(
     client: FlaskClient, election_id: str,  # pylint: disable=unused-argument
 ):
-    set_support_user(client, SUPPORT_EMAIL)
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
 
     with client.session_transaction() as session:  # type: ignore
         original_created_at = session["_created_at"]
@@ -455,7 +453,7 @@ def test_support_log_in_as_audit_admin(
 def test_support_log_in_as_jurisdiction_admin(
     client: FlaskClient, election_id: str,
 ):
-    set_support_user(client, SUPPORT_EMAIL)
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
 
     with client.session_transaction() as session:  # type: ignore
         original_created_at = session["_created_at"]
@@ -476,7 +474,7 @@ def test_support_log_in_as_jurisdiction_admin(
 
 
 def test_support_log_in_to_audit_as_audit_admin(client: FlaskClient, election_id: str):
-    set_support_user(client, SUPPORT_EMAIL)
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
 
     with client.session_transaction() as session:  # type: ignore
         original_created_at = session["_created_at"]
@@ -500,7 +498,7 @@ def test_support_clear_audit_boards(
     jurisdiction_ids: List[str],
     audit_board_round_1_ids: List[str],
 ):
-    set_support_user(client, SUPPORT_EMAIL)
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
 
     # Can't clear if no audit boards
     rv = client.delete(f"/api/support/jurisdictions/{jurisdiction_ids[1]}/audit-boards")
@@ -545,7 +543,7 @@ def test_support_clear_offline_results_ballot_polling(
     election.online = False
     db_session.commit()
 
-    set_support_user(client, SUPPORT_EMAIL)
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
     rv = client.get(f"/api/support/jurisdictions/{jurisdiction_ids[0]}")
     assert json.loads(rv.data)["recordedResultsAt"] is None
 
@@ -658,7 +656,7 @@ def test_support_clear_offline_results_wrong_audit_type(
     jurisdiction_ids: List[str],
     election_settings,  # pylint: disable=unused-argument
 ):
-    set_support_user(client, SUPPORT_EMAIL)
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
 
     # Can't clear results if online
     rv = client.delete(f"/api/support/jurisdictions/{jurisdiction_ids[0]}/results")
@@ -692,7 +690,7 @@ def test_support_clear_offline_results_wrong_audit_type(
 def test_support_undo_round_start(
     client: FlaskClient, election_id: str, round_1_id: str, round_2_id: str,
 ):
-    set_support_user(client, SUPPORT_EMAIL)
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
 
     rv = client.get(f"/api/support/elections/{election_id}")
     rounds = json.loads(rv.data)["rounds"]
@@ -751,7 +749,7 @@ def test_support_reopen_current_round(
             for round_contest in round_from_db.round_contests
         )
 
-    set_support_user(client, SUPPORT_EMAIL)
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
 
     run_audit_round(round_1_id, contest_ids[0], contest_ids, 0.55)
     assert is_round_completed(round_1_id)
@@ -768,7 +766,7 @@ def test_support_reopen_current_round(
 def test_support_reopen_current_round_when_audit_not_started(
     client: FlaskClient, election_id: str,
 ):
-    set_support_user(client, SUPPORT_EMAIL)
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
 
     rv = client.patch(f"/api/support/elections/{election_id}/reopen-current-round")
     assert rv.status_code == 409
@@ -782,7 +780,7 @@ def test_support_reopen_current_round_when_round_in_progress(
     election_id: str,
     round_1_id: str,  # pylint: disable=unused-argument
 ):
-    set_support_user(client, SUPPORT_EMAIL)
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
 
     rv = client.patch(f"/api/support/elections/{election_id}/reopen-current-round")
     assert rv.status_code == 409

@@ -14,6 +14,7 @@ from ..models import *  # pylint: disable=wildcard-import
 from ..api.audit_boards import end_round
 
 
+DEFAULT_SUPPORT_EMAIL = "support@example.org"
 DEFAULT_AA_EMAIL = "admin@example.com"
 
 
