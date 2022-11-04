@@ -80,9 +80,16 @@ const BatchResultTallySheetTable = styled(HTMLTable).attrs({
 
 const BatchResultTallySheetButtonRow = styled(ButtonRow).attrs({
   alignItems: 'center',
-  justifyContent: 'end',
 })`
   min-height: 30px;
+`
+
+const LastEditedByText = styled.span`
+  color: ${Colors.GRAY1};
+`
+
+const RowSpacer = styled.div`
+  flex-grow: 1;
 `
 
 const VOTE_TOTALS_TAB_ID = 'vote-totals'
@@ -539,6 +546,12 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
         </BatchResultTallySheetTable>
 
         <BatchResultTallySheetButtonRow>
+          {batch.lastEditedBy && !isEditing && (
+            <LastEditedByText>
+              Last edited by <strong>{batch.lastEditedBy}</strong>
+            </LastEditedByText>
+          )}
+          <RowSpacer />
           {(() => {
             if (selectedTabId === VOTE_TOTALS_TAB_ID) {
               return areResultsFinalized ? (
