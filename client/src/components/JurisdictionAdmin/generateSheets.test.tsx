@@ -22,12 +22,14 @@ const mockRound = roundMocks.incomplete
 const mockBatches: IBatch[] = [
   {
     id: 'B1',
+    lastEditedBy: null,
     name: 'Batch #1',
     numBallots: 0,
     resultTallySheets: [],
   },
   {
     id: 'B2',
+    lastEditedBy: null,
     name: 'Batch #2',
     numBallots: 0,
     resultTallySheets: [],
@@ -365,12 +367,14 @@ describe('generateSheets', () => {
       const batches: IBatch[] = [
         {
           id: 'B1',
+          lastEditedBy: null,
           name: allStarLyrics,
           numBallots: 0,
           resultTallySheets: [],
         },
         {
           id: 'B2',
+          lastEditedBy: null,
           name: allStarLyrics,
           numBallots: 0,
           resultTallySheets: [],
@@ -408,12 +412,14 @@ describe('generateSheets', () => {
       const batches: IBatch[] = [
         {
           id: 'B1',
+          lastEditedBy: null,
           name: manyAs,
           numBallots: 0,
           resultTallySheets: [],
         },
         {
           id: 'B2',
+          lastEditedBy: null,
           name: manyAs,
           numBallots: 0,
           resultTallySheets: [],
