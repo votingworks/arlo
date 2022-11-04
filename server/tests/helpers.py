@@ -279,14 +279,22 @@ DATETIME_REGEX = re.compile(
     r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}.\d{6})?(\+\d\d:\d\d)?"
 )
 
+UUID_REGEX = re.compile(
+    r"[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}"
+)
+
 
 def scrub_datetime(string: str) -> str:
     return re.sub(DATETIME_REGEX, "DATETIME", string)
 
 
+def scrub_uuid(string: str) -> str:
+    return re.sub(UUID_REGEX, "UUID", string)
+
+
 def assert_match_report(report_bytes: bytes, snapshot):
     report = report_bytes.decode("utf-8")
-    snapshot.assert_match(scrub_datetime(report))
+    snapshot.assert_match(scrub_uuid(scrub_datetime(report)))
 
 
 def assert_is_string(value):
