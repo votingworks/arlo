@@ -24,6 +24,7 @@ from ..api.rounds import (
 )
 from ..api.ballot_manifest import hybrid_contest_total_ballots
 from ..api.cvrs import hybrid_contest_choice_vote_counts
+from ..api.batches import construct_batch_last_edited_by_string
 
 
 def pretty_affiliation(affiliation: Optional[str]) -> str:
@@ -716,6 +717,7 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
             "Audited?",
             "Audit Results",
             "Reported Results",
+            "Last Edited By",
             "Discrepancy",
         ]
     )
@@ -759,6 +761,7 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
                 pretty_boolean(is_audited),
                 pretty_choice_votes(audit_results) if audit_results else "",
                 pretty_choice_votes(reported_results),
+                construct_batch_last_edited_by_string(batch),
                 error["counted_as"] if error else "",
             ]
         )
