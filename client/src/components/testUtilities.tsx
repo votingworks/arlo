@@ -10,6 +10,7 @@ import {
   waitFor,
   RenderResult,
   Queries,
+  Matcher,
 } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { QueryClient, DefaultOptions } from 'react-query'
@@ -258,4 +259,25 @@ export const typeCode = (codeInputElement: HTMLElement, code: string) => {
   code.split('').forEach((digit, index) => {
     userEvent.type(digitInputs[index], digit)
   })
+}
+
+/**
+ * A react-testing-library util for querying by text even when text is split by HTML tags
+ *
+ * <span>Today is <strong>Friday<strong>!</span>
+ *
+ * screen.getByText('Today is Friday!') --> Error
+ * screen.getByText(hasTextAcrossElements('Today is Friday!')) --> No error
+ */
+export function hasTextAcrossElements(text: string): Matcher {
+  return (content: string, node: Element | null) => {
+    function hasText(n: Element) {
+      return n.textContent === text
+    }
+    const nodeHasText = node ? hasText(node) : false
+    const childrenDoNotHaveText = Array.from(node?.children || []).every(
+      child => !hasText(child)
+    )
+    return nodeHasText && childrenDoNotHaveText
+  }
 }
