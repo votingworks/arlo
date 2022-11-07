@@ -429,7 +429,7 @@ describe('JA setup', () => {
         screen.getByRole('option', { name: 'Hart' })
       )
       await screen.findByText(
-        /For Hart, you can also provide an optional scanned ballot information CSV. If provided, the unique identifiers in the CSV will be used as imprinted IDs./
+        /For Hart, you can provide one ZIP file or multiple, one for each tabulator. You can also provide an optional scanned ballot information CSV. If provided, the unique identifiers in the CSV will be used as imprinted IDs./
       )
 
       const fileSelect = screen.getByLabelText('Select files...')
