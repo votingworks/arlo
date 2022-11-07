@@ -1695,6 +1695,27 @@ HART_CVRS = [
     build_hart_cvr("BATCH4", "6", "1-4-6", ",,1,0,0", add_write_in=True),
 ]
 
+HART_CVRS_DUPLICATE_BATCH_NAMES = {
+    "TABULATOR1": [
+        build_hart_cvr("BATCH1", "1", "1-1-1", "0,1,1,0,0"),
+        build_hart_cvr("BATCH1", "2", "1-1-2", "1,0,1,0,0"),
+        build_hart_cvr("BATCH1", "3", "1-1-3", "0,1,1,0,0"),
+        build_hart_cvr("BATCH2", "1", "1-2-1", "1,0,1,0,0"),
+        build_hart_cvr("BATCH2", "2", "1-2-2", "0,1,0,1,0"),
+        build_hart_cvr("BATCH2", "3", "1-2-3", "1,0,0,0,1"),
+    ],
+    "TABULATOR2": [
+        build_hart_cvr("BATCH1", "1", "1-3-1", "1,0,0,1,0"),
+        build_hart_cvr("BATCH1", "2", "1-3-2", "1,0,0,0,1"),
+        build_hart_cvr("BATCH1", "3", "1-3-3", "1,0,0,1,0"),
+        build_hart_cvr("BATCH2", "1", "1-4-1", "1,0,0,0,1"),
+        build_hart_cvr("BATCH2", "2", "1-4-2", "1,1,1,1,1"),
+        build_hart_cvr("BATCH2", "4", "1-4-4", ",,1,0,0"),
+        build_hart_cvr("BATCH2", "5", "1-4-5", ",,1,0,0"),
+        build_hart_cvr("BATCH2", "6", "1-4-6", ",,1,0,0", add_write_in=True),
+    ],
+}
+
 # Modeled after a real scanned ballot information CSV
 HART_SCANNED_BALLOT_INFORMATION = """#FormatVersion 1
 #BatchId,Workstation,VotingType,VotingMethod,ScanSequence,Precinct,PageNumber,UniqueIdentifier,VariationNumber,Language,Party,Status,RejectReason,VoterIntentIssues,vDriveDeviceDataId,CvrId
@@ -1778,8 +1799,86 @@ def test_hart_cvr_upload(
     # Upload CVRs
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
+        data={"cvrs": [(zip_hart_cvrs(HART_CVRS), "cvrs.zip")], "cvrFileType": "HART",},
+    )
+    assert_ok(rv)
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    manifest_num_ballots = jurisdictions[0]["ballotManifest"]["numBallots"]
+
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
+    )
+    compare_json(
+        json.loads(rv.data),
+        {
+            "file": {
+                "name": "cvr-files.zip",
+                "uploadedAt": assert_is_date,
+                "cvrFileType": "HART",
+            },
+            "processing": {
+                "status": ProcessingStatus.PROCESSED,
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": None,
+                "workProgress": manifest_num_ballots,
+                "workTotal": manifest_num_ballots,
+            },
+        },
+    )
+
+    cvr_ballots = (
+        CvrBallot.query.join(Batch)
+        .filter_by(jurisdiction_id=jurisdiction_ids[0])
+        .order_by(CvrBallot.imprinted_id)
+        .all()
+    )
+    assert len(cvr_ballots) == manifest_num_ballots - 1
+    snapshot.assert_match(
+        [
+            dict(
+                batch_name=cvr.batch.name,
+                tabulator=cvr.batch.tabulator,
+                ballot_position=cvr.ballot_position,
+                imprinted_id=cvr.imprinted_id,
+                interpretations=cvr.interpretations,
+            )
+            for cvr in cvr_ballots
+        ]
+    )
+    snapshot.assert_match(
+        Jurisdiction.query.get(jurisdiction_ids[0]).cvr_contests_metadata
+    )
+
+
+def test_hart_cvr_upload_with_multiple_cvr_zip_files(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    # Use the regular manifests which have batches with the same name but different tabulator
+    manifests,  # pylint: disable=unused-argument
+    snapshot,
+):
+    # Upload CVRs
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
         data={
-            "cvrs": [(zip_hart_cvrs(HART_CVRS), "cvr-files.zip")],
+            "cvrs": [
+                (
+                    zip_hart_cvrs(HART_CVRS_DUPLICATE_BATCH_NAMES["TABULATOR1"]),
+                    "TABULATOR1.zip",
+                ),
+                (
+                    zip_hart_cvrs(HART_CVRS_DUPLICATE_BATCH_NAMES["TABULATOR2"]),
+                    "TABULATOR2.zip",
+                ),
+            ],
             "cvrFileType": "HART",
         },
     )
@@ -1925,7 +2024,7 @@ def test_hart_cvr_upload_with_scanned_ballot_information(
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
             data={
                 "cvrs": [
-                    (zip_hart_cvrs(HART_CVRS), "cvr-files.zip"),
+                    (zip_hart_cvrs(HART_CVRS), "cvrs.zip"),
                     (scanned_ballot_information, "scanned-ballot-information.csv"),
                 ],
                 "cvrFileType": "HART",
@@ -2014,9 +2113,85 @@ def test_hart_cvr_upload_with_invalid_cvrs(
         rv = client.put(
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
             data={
-                "cvrs": [(zip_hart_cvrs(invalid_cvr), "cvr-files.zip")],
+                "cvrs": [(zip_hart_cvrs(invalid_cvr), "cvrs.zip")],
                 "cvrFileType": "HART",
             },
+        )
+        assert_ok(rv)
+
+        rv = client.get(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
+        )
+        compare_json(
+            json.loads(rv.data),
+            {
+                "file": {
+                    "name": "cvr-files.zip",
+                    "uploadedAt": assert_is_date,
+                    "cvrFileType": "HART",
+                },
+                "processing": {
+                    "status": ProcessingStatus.ERRORED,
+                    "startedAt": assert_is_date,
+                    "completedAt": assert_is_date,
+                    "error": expected_error,
+                    "workProgress": 0,
+                    "workTotal": manifest_num_ballots,
+                },
+            },
+        )
+
+
+def test_hart_cvr_upload_with_multiple_cvr_zip_files_and_invalid_cvrs(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    # Use the regular manifests which have batches with the same name but different tabulator
+    manifests,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    manifest_num_ballots = jurisdictions[0]["ballotManifest"]["numBallots"]
+
+    invalid_cvr_uploads = [
+        (
+            [
+                (
+                    zip_hart_cvrs(HART_CVRS_DUPLICATE_BATCH_NAMES["TABULATOR1"]),
+                    "TABULATOR1.zip",
+                ),
+                (
+                    zip_hart_cvrs(
+                        [build_hart_cvr("invalid-batch", "1", "1-1-1", "1,1,1,1,1")]
+                    ),
+                    "TABULATOR2.zip",
+                ),
+            ],
+            "Error in file: cvr-0.xml. Couldn't find a matching batch for Tabulator: TABULATOR2, BatchNumber: invalid-batch. The BatchNumber field in the CVR file must match the Batch Name field in the ballot manifest, and if providing multiple ZIP files exported by tabulator, the ZIP file names must match the Tabulator field in the ballot manifest. Please check your CVR files and ballot manifest thoroughly to make sure these values match - there may be a similar inconsistency in other files in the CVR export.",
+        ),
+        (
+            [
+                (
+                    zip_hart_cvrs(HART_CVRS_DUPLICATE_BATCH_NAMES["TABULATOR1"]),
+                    "TABULATOR1.zip",
+                ),
+                (
+                    zip_hart_cvrs(HART_CVRS_DUPLICATE_BATCH_NAMES["TABULATOR1"]),
+                    "forgot-to-rename-this-to-match-tabulator-in-ballot-manifest.zip",
+                ),
+            ],
+            "Error in file: cvr-0.xml. Couldn't find a matching batch for Tabulator: forgot-to-rename-this-to-match-tabulator-in-ballot-manifest, BatchNumber: BATCH1. The BatchNumber field in the CVR file must match the Batch Name field in the ballot manifest, and if providing multiple ZIP files exported by tabulator, the ZIP file names must match the Tabulator field in the ballot manifest. Please check your CVR files and ballot manifest thoroughly to make sure these values match - there may be a similar inconsistency in other files in the CVR export.",
+        ),
+    ]
+
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    for invalid_cvr_upload, expected_error in invalid_cvr_uploads:
+        rv = client.put(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
+            data={"cvrs": invalid_cvr_upload, "cvrFileType": "HART",},
         )
         assert_ok(rv)
 
@@ -2047,7 +2222,7 @@ def test_hart_cvr_upload_with_duplicate_batches_in_manifest(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    # Use the regular manifests which have batches with the same name but diff tabulator
+    # Use the regular manifests which have batches with the same name but different tabulator
     manifests,  # pylint: disable=unused-argument
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -2060,10 +2235,7 @@ def test_hart_cvr_upload_with_duplicate_batches_in_manifest(
     )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={
-            "cvrs": [(zip_hart_cvrs(HART_CVRS), "cvr-files.zip")],
-            "cvrFileType": "HART",
-        },
+        data={"cvrs": [(zip_hart_cvrs(HART_CVRS), "cvrs.zip")], "cvrFileType": "HART",},
     )
     assert_ok(rv)
 
@@ -2082,7 +2254,7 @@ def test_hart_cvr_upload_with_duplicate_batches_in_manifest(
                 "status": ProcessingStatus.ERRORED,
                 "startedAt": assert_is_date,
                 "completedAt": assert_is_date,
-                "error": "Batch names in ballot manifest must be unique. Found duplicate batch name: BATCH1.",
+                "error": "Batch names in ballot manifest must be unique, unless providing multiple ZIP files exported by tabulator. Found duplicate batch name: BATCH1.",
                 "workProgress": 0,
                 "workTotal": manifest_num_ballots,
             },
@@ -2107,7 +2279,7 @@ def test_hart_cvr_upload_basic_input_validation(
 
     test_cases: List[TestCase] = [
         {
-            "cvrs": [(zip_hart_cvrs(HART_CVRS), "cvr-files.csv"),],
+            "cvrs": [(zip_hart_cvrs(HART_CVRS), "cvrs.csv")],
             "expected_status_code": 400,
             "expected_response": {
                 "errors": [
@@ -2120,7 +2292,7 @@ def test_hart_cvr_upload_basic_input_validation(
         },
         {
             "cvrs": [
-                (zip_hart_cvrs(HART_CVRS), "cvr-files.csv"),
+                (zip_hart_cvrs(HART_CVRS), "cvrs.csv"),
                 (
                     string_to_bytes_io(HART_SCANNED_BALLOT_INFORMATION),
                     "scanned-ballot-information.csv",
@@ -2138,10 +2310,10 @@ def test_hart_cvr_upload_basic_input_validation(
         },
         {
             "cvrs": [
-                (zip_hart_cvrs(HART_CVRS), "cvr-files.zip"),
+                (zip_hart_cvrs(HART_CVRS), "cvrs.zip"),
                 (
                     string_to_bytes_io(HART_SCANNED_BALLOT_INFORMATION),
-                    "scanned-ballot-information.zip",
+                    "scanned-ballot-information.jpg",
                 ),
             ],
             "expected_status_code": 400,
@@ -2149,14 +2321,14 @@ def test_hart_cvr_upload_basic_input_validation(
                 "errors": [
                     {
                         "errorType": "Bad Request",
-                        "message": "Please submit either a ZIP file export or a ZIP file export and a CSV.",
+                        "message": "Please submit either all ZIP file exports or ZIP file exports and one CSV.",
                     }
                 ]
             },
         },
         {
             "cvrs": [
-                (zip_hart_cvrs(HART_CVRS), "cvr-files.zip"),
+                (zip_hart_cvrs(HART_CVRS), "cvrs.zip"),
                 (
                     string_to_bytes_io(HART_SCANNED_BALLOT_INFORMATION),
                     "scanned-ballot-information-1.csv",
@@ -2171,7 +2343,7 @@ def test_hart_cvr_upload_basic_input_validation(
                 "errors": [
                     {
                         "errorType": "Bad Request",
-                        "message": "Expected 1 or 2 files but received 3.",
+                        "message": "Please submit either all ZIP file exports or ZIP file exports and one CSV.",
                     }
                 ]
             },
@@ -2180,7 +2352,7 @@ def test_hart_cvr_upload_basic_input_validation(
             "cvrs": [
                 (
                     zip_hart_cvrs(HART_CVRS),
-                    "cvr-files.zip",
+                    "cvrs.zip",
                     # Verify that the Windows ZIP mimetype works
                     "application/x-zip-compressed",
                 ),
