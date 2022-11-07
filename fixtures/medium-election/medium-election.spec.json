@@ -1,0 +1,32 @@
+{
+  "name": "Medium Election",
+  "contests": [
+    {
+      "name": "Lord of Coin",
+      "votes_allowed": 1,
+      "number_of_winners": 1,
+      "total_ballots_cast": 20000,
+      "tally": {
+        "Billie Mitchell": 10000,
+        "Gabe Booth": 7000,
+        "Ray Hart": 500,
+        "Erin Willis": 100,
+        "Write-In": 500
+      },
+      "jurisdictions": [
+        "Black Hallows",
+        "Acton",
+        "Wolford",
+        "Lindow",
+        "Yellowseed"
+      ]
+    }
+  ],
+  "jurisdictions": [
+    { "name": "Black Hallows" },
+    { "name": "Acton" },
+    { "name": "Wolford" },
+    { "name": "Lindow" },
+    { "name": "Yellowseed" }
+  ]
+}
