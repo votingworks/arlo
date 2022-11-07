@@ -376,13 +376,13 @@ def download_batch_inventory_worksheet(election: Election, jurisdiction: Jurisdi
     worksheet.writerow(["Section 1: Check Ballot Groups"])
     instructions = [
         "1. Compare the CVR Ballot Count for each ballot group to your voter check-in data.",
-        "2. Ensure that ballot numbers match. If there is a large discrepancy, contact the SOS.",
+        "2. Ensure that the numbers reconcile. If there is a large discrepancy contact your SOS liaison.",
     ]
     for instruction in instructions:
         worksheet.writerow([instruction])
     worksheet.writerow([])
 
-    worksheet.writerow(["Ballot Group", "CVR Ballot Count", "Checked?"])
+    worksheet.writerow(["Ballot Group", "CVR Ballot Count", "Checked? (Type Yes/No)"])
     for group_name, ballot_count in election_results["ballot_count_by_group"].items():
         worksheet.writerow([group_name, ballot_count, ""])
     worksheet.writerow([])
@@ -390,14 +390,14 @@ def download_batch_inventory_worksheet(election: Election, jurisdiction: Jurisdi
     worksheet.writerow(["Section 2: Check Batches"])
     instructions = [
         "1. Locate each batch in storage.",
-        "2. Confirm the CVR Ballot Count is correct. If there is a large discrepancy, contact the SOS.",
+        "2. Confirm the CVR Ballot Count is correct using associated documentation. Do NOT count the ballots. If there is a large discrepancy contact your SOS liaison.",
         "3. Make sure there are no batches missing from this worksheet.",
     ]
     for instruction in instructions:
         worksheet.writerow([instruction])
     worksheet.writerow([])
 
-    worksheet.writerow(["Batch", "CVR Ballot Count", "Checked?"])
+    worksheet.writerow(["Batch", "CVR Ballot Count", "Checked? (Type Yes/No)"])
     for batch_key, ballot_count in items_list_to_dict(
         election_results["ballot_count_by_batch"]
     ).items():
