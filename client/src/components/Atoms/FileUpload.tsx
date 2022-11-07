@@ -245,7 +245,7 @@ export const CvrsFileUpload: React.FC<ICvrsFileUploadProps> = ({
         deleteDisabled={deleteDisabled}
         additionalFields={
           <div>
-            <label htmlFor="cvrFileType">CVR File Type: </label>
+            <label htmlFor="cvrFileType">Voting system: </label>
             <HTMLSelect
               name="cvrFileType"
               id="cvrFileType"

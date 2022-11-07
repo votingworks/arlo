@@ -48,7 +48,7 @@ const StepListItemContainer = styled.li`
 
 type StepState = 'incomplete' | 'current' | 'complete'
 
-const StepListItemCircle = styled.div<{
+export const StepListItemCircle = styled.div<{
   state: StepState
 }>`
   display: flex;
