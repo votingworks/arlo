@@ -54,13 +54,20 @@ const useBatchInventoryCVR = (
   const queryClient = useQueryClient()
   return {
     uploadedFile: useUploadedFile(key, url, {
-      onFileChange: () =>
+      onFileChange: () => {
         // Tabulator status file is reprocessed when CVR is uploaded
         queryClient.invalidateQueries([
           'batchInventory',
           jurisdictionId,
           'tabulatorStatus',
-        ]),
+        ])
+        // Sign off is reset if CVR is changed
+        queryClient.invalidateQueries([
+          'batchInventory',
+          jurisdictionId,
+          'signOff',
+        ])
+      },
     }),
     uploadFiles: files => {
       const formData = new FormData()
@@ -81,8 +88,18 @@ const useBatchInventoryTabulatorStatus = (
   const url = `/api/election/${electionId}/jurisdiction/${jurisdictionId}/batch-inventory/tabulator-status`
   const uploadFiles = useUploadFiles(key, url)
   const deleteFile = useDeleteFile(key, url)
+  const queryClient = useQueryClient()
   return {
-    uploadedFile: useUploadedFile(key, url),
+    uploadedFile: useUploadedFile(key, url, {
+      onFileChange: () => {
+        // Sign off is reset if tabulator status is changed
+        queryClient.invalidateQueries([
+          'batchInventory',
+          jurisdictionId,
+          'signOff',
+        ])
+      },
+    }),
     uploadFiles: files => {
       const formData = new FormData()
       formData.append('tabulatorStatus', files[0], files[0].name)

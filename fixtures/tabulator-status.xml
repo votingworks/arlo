@@ -1,0 +1,18 @@
+<?xml version="1.0" standalone="yes"?>
+<ExportName>
+   <Terminology Subdivision="District" Subdivisions="Districts" PollingSubdivision="Precinct" PollingSubdivisions="Precincts" ParentSubdivision="Parent District" MultiPollingSubdivisionCollection="Multi-Precinct Collection" />
+   <Report_Info name="Small Election" Report="Tabulator Status" Create="2022-08-11 13:38:55" unofficial="Unofficial">
+      <Information Description="Election Project Name">Small Election</Information>
+      <Information Description="Report Name">Tabulator Status</Information>
+      <Information Description="Creation Date">2022-08-11 13:38:55</Information>
+      <Information Description="Note">Results are unofficial</Information>
+   </Report_Info>
+   <settings>
+      <ch officialResults="0" useCustomTitle="0" showFilters="1" />
+   </settings>
+   <tabulators>
+      <tb id="1" tid="Tabulator A" name="Tabulator A" />
+      <tb id="2" tid="Tabulator B" name="Tabulator B" />
+      <tb id="3" tid="Tabulator C" name="Tabulator C" />
+   </tabulators>
+</ExportName>
