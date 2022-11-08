@@ -121,8 +121,11 @@ describe('BatchInventory', () => {
       apiCalls.putCvr,
       apiCalls.getCvr(cvrProcessed),
       apiCalls.getTabulatorStatus(fileInfoMocks.empty),
+      apiCalls.getSignOff(null),
+      apiCalls.getSignOff(null),
       apiCalls.putTabulatorStatus,
       apiCalls.getTabulatorStatus(tabulatorStatusProcessed),
+      apiCalls.getSignOff(null),
     ]
     await withMockFetch(expectedCalls, async () => {
       render()
