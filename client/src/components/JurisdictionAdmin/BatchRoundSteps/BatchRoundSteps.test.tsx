@@ -438,15 +438,7 @@ describe('BatchRoundSteps', () => {
       })
 
       expect(screen.getAllByText('Batch One')).toHaveLength(2)
-      // TODO fill in comprehensive tests once the tally entry interface is finalized
-
-      const finalizeButton = screen.getByRole('button', {
-        name: /Finalize Tallies/,
-      })
-      userEvent.click(finalizeButton)
-      await findAndCloseToast(
-        'Please enter tallies for all batches before finalizing.'
-      )
+      // Comprehensive tests are in BatchRoundTallyEntry.test.tsx
     })
   })
 
@@ -468,6 +460,7 @@ describe('BatchRoundSteps', () => {
       })
       await screen.findByRole('table')
 
+      screen.getByText('All batches audited')
       const finalizeButton = screen.getByRole('button', {
         name: /Finalize Tallies/,
       })
@@ -481,7 +474,7 @@ describe('BatchRoundSteps', () => {
       userEvent.click(within(dialog).getByRole('button', { name: 'Confirm' }))
 
       await screen.findByText('Tallies finalized')
-      expect(finalizeButton).toBeDisabled()
+      expect(finalizeButton).not.toBeInTheDocument()
     })
   })
 
