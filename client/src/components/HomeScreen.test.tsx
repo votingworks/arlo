@@ -11,9 +11,9 @@ import { aaApiCalls, apiCalls, mockOrganizations, jaApiCalls } from './_mocks'
 import { auditSettings } from './AuditAdmin/useSetupMenuItems/_mocks'
 
 const setupScreenCalls = [
-  aaApiCalls.getRounds([]),
   aaApiCalls.getJurisdictions,
   aaApiCalls.getContests,
+  aaApiCalls.getSettings(auditSettings.blank),
   aaApiCalls.getSettings(auditSettings.blank),
 ]
 
@@ -203,17 +203,18 @@ describe('Home screen', () => {
         auditMathType: 'MACRO',
       }),
       aaApiCalls.getOrganizations(mockOrganizations.oneOrgOneAudit),
+      aaApiCalls.getRounds([]),
       ...setupScreenCalls,
+      aaApiCalls.getJurisdictionFile,
       aaApiCalls.getJurisdictionFile,
       aaApiCalls.getRounds([]),
       ...setupScreenCalls,
-      aaApiCalls.getSettings(auditSettings.blank),
       aaApiCalls.getJurisdictionFile,
       ...setupScreenCalls,
+      aaApiCalls.getJurisdictionFile,
       aaApiCalls.getJurisdictionFile,
       aaApiCalls.getRounds([]),
       ...setupScreenCalls,
-      aaApiCalls.getSettings(auditSettings.blank),
       aaApiCalls.getJurisdictionFile,
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -272,11 +273,12 @@ describe('Home screen', () => {
         auditMathType: 'BRAVO',
       }),
       aaApiCalls.getOrganizations(mockOrganizations.twoOrgs),
+      aaApiCalls.getRounds([]),
       ...setupScreenCalls,
+      aaApiCalls.getJurisdictionFile,
       aaApiCalls.getJurisdictionFile,
       aaApiCalls.getRounds([]),
       ...setupScreenCalls,
-      aaApiCalls.getSettings(auditSettings.blank),
       aaApiCalls.getJurisdictionFile,
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -405,11 +407,12 @@ describe('Home screen', () => {
         auditMathType: 'MACRO',
       }),
       aaApiCalls.getOrganizations(mockOrganizations.oneOrgOneAudit),
+      aaApiCalls.getRounds([]),
       ...setupScreenCalls,
+      aaApiCalls.getJurisdictionFile,
       aaApiCalls.getJurisdictionFile,
       aaApiCalls.getRounds([]),
       ...setupScreenCalls,
-      aaApiCalls.getSettings(auditSettings.blank),
       aaApiCalls.getJurisdictionFile,
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -444,11 +447,12 @@ describe('Home screen', () => {
         auditMathType: 'SUPERSIMPLE',
       }),
       aaApiCalls.getOrganizations(mockOrganizations.oneOrgOneAudit),
+      aaApiCalls.getRounds([]),
       ...setupScreenCalls,
+      aaApiCalls.getJurisdictionFile,
       aaApiCalls.getJurisdictionFile,
       aaApiCalls.getRounds([]),
       ...setupScreenCalls,
-      aaApiCalls.getSettings(auditSettings.blank),
       aaApiCalls.getJurisdictionFile,
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -483,11 +487,12 @@ describe('Home screen', () => {
         auditMathType: 'SUITE',
       }),
       aaApiCalls.getOrganizations(mockOrganizations.oneOrgOneAudit),
+      aaApiCalls.getRounds([]),
       ...setupScreenCalls,
+      aaApiCalls.getJurisdictionFile,
       aaApiCalls.getJurisdictionFile,
       aaApiCalls.getRounds([]),
       ...setupScreenCalls,
-      aaApiCalls.getSettings(auditSettings.blank),
       aaApiCalls.getJurisdictionFile,
     ]
     await withMockFetch(expectedCalls, async () => {

@@ -59,8 +59,7 @@ const render = (view = 'setup') =>
   )
 
 describe('AA setup flow', () => {
-  const loadEach = [
-    aaApiCalls.getRounds([]),
+  const setupApiCalls = [
     aaApiCalls.getJurisdictions,
     aaApiCalls.getContests,
     aaApiCalls.getSettings(auditSettings.all),
@@ -69,11 +68,14 @@ describe('AA setup flow', () => {
   it('sidebar changes stages', async () => {
     const expectedCalls = [
       aaApiCalls.getUser,
-      ...loadEach,
-      ...loadEach,
+      aaApiCalls.getRounds([]),
+      ...setupApiCalls,
       aaApiCalls.getSettings(auditSettings.all),
       aaApiCalls.getJurisdictionFile,
-      ...loadEach,
+      ...setupApiCalls,
+      aaApiCalls.getSettings(auditSettings.all),
+      aaApiCalls.getJurisdictionFile,
+      ...setupApiCalls,
       aaApiCalls.getSettings(auditSettings.all),
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -94,8 +96,11 @@ describe('AA setup flow', () => {
   it('renders sidebar when authenticated on /setup', async () => {
     const expectedCalls = [
       aaApiCalls.getUser,
-      ...loadEach,
-      ...loadEach,
+      aaApiCalls.getRounds([]),
+      ...setupApiCalls,
+      aaApiCalls.getSettings(auditSettings.all),
+      aaApiCalls.getJurisdictionFile,
+      ...setupApiCalls,
       aaApiCalls.getSettings(auditSettings.all),
       aaApiCalls.getJurisdictionFile,
     ]
@@ -109,12 +114,12 @@ describe('AA setup flow', () => {
     })
   })
 
-  it('get empty jurisdiction file intiially', async () => {
+  it('get empty jurisdiction file initially', async () => {
     const expectedCalls = [
       aaApiCalls.getUser,
-      ...loadEach,
-      ...loadEach,
-      aaApiCalls.getSettings(auditSettings.blank),
+      aaApiCalls.getRounds([]),
+      ...setupApiCalls,
+      aaApiCalls.getSettings(auditSettings.all),
       aaApiCalls.getJurisdictionFileWithResponse(jurisdictionFileMocks.empty),
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -127,11 +132,14 @@ describe('AA setup flow', () => {
     })
   })
 
-  it('get jurisdisction file get if exists', async () => {
+  it('get jurisdiction file if exists', async () => {
     const expectedCalls = [
       aaApiCalls.getUser,
-      ...loadEach,
-      ...loadEach,
+      aaApiCalls.getRounds([]),
+      ...setupApiCalls,
+      aaApiCalls.getSettings(auditSettings.all),
+      aaApiCalls.getJurisdictionFile,
+      ...setupApiCalls,
       aaApiCalls.getSettings(auditSettings.all),
       aaApiCalls.getJurisdictionFile,
     ]
@@ -145,14 +153,19 @@ describe('AA setup flow', () => {
     })
   })
 
-  it('jurisdisction file upload success', async () => {
+  it('jurisdiction file upload success', async () => {
     const expectedCalls = [
       aaApiCalls.getUser,
-      ...loadEach,
-      ...loadEach,
-      aaApiCalls.getSettings(auditSettings.blank),
+      aaApiCalls.getRounds([]),
+      ...setupApiCalls,
+      aaApiCalls.getSettings(auditSettings.all),
       aaApiCalls.getJurisdictionFileWithResponse(jurisdictionFileMocks.empty),
       aaApiCalls.putJurisdictionFile,
+      aaApiCalls.getJurisdictionFileWithResponse(
+        jurisdictionFileMocks.processed
+      ),
+      ...setupApiCalls,
+      aaApiCalls.getSettings(auditSettings.all),
       aaApiCalls.getJurisdictionFileWithResponse(
         jurisdictionFileMocks.processed
       ),
@@ -176,12 +189,12 @@ describe('AA setup flow', () => {
     })
   })
 
-  it('jurisdisction file upload with error', async () => {
+  it('jurisdiction file upload with error', async () => {
     const expectedCalls = [
       aaApiCalls.getUser,
-      ...loadEach,
-      ...loadEach,
-      aaApiCalls.getSettings(auditSettings.blank),
+      aaApiCalls.getRounds([]),
+      ...setupApiCalls,
+      aaApiCalls.getSettings(auditSettings.all),
       aaApiCalls.getJurisdictionFileWithResponse(jurisdictionFileMocks.empty),
       aaApiCalls.putJurisdictionErrorFile,
       aaApiCalls.getJurisdictionFileWithResponse(jurisdictionFileMocks.errored),
@@ -206,16 +219,33 @@ describe('AA setup flow', () => {
   })
 
   it('standardized contests file upload success', async () => {
+    const ballotComparisonSetupApiCalls = [
+      aaApiCalls.getJurisdictions,
+      aaApiCalls.getContests,
+      aaApiCalls.getSettings(auditSettings.ballotComparisonAll),
+    ]
     const expectedCalls = [
       aaApiCalls.getUser,
-      ...loadEach,
-      ...loadEach,
-      aaApiCalls.getSettings(auditSettings.blankBallotComparison),
+      aaApiCalls.getRounds([]),
+      ...ballotComparisonSetupApiCalls,
+      aaApiCalls.getSettings(auditSettings.ballotComparisonAll),
       aaApiCalls.getJurisdictionFile,
       aaApiCalls.getStandardizedContestsFileWithResponse(
         standardizedContestsFileMocks.empty
       ),
       aaApiCalls.putStandardizedContestsFile,
+      aaApiCalls.getStandardizedContestsFileWithResponse(
+        standardizedContestsFileMocks.processed
+      ),
+      aaApiCalls.getStandardizedContestsFileWithResponse(
+        standardizedContestsFileMocks.processed
+      ),
+      ...ballotComparisonSetupApiCalls,
+      aaApiCalls.getStandardizedContestsFileWithResponse(
+        standardizedContestsFileMocks.processed
+      ),
+      aaApiCalls.getSettings(auditSettings.ballotComparisonAll),
+      aaApiCalls.getJurisdictionFile,
       aaApiCalls.getStandardizedContestsFileWithResponse(
         standardizedContestsFileMocks.processed
       ),
@@ -239,17 +269,12 @@ describe('AA setup flow', () => {
   })
 
   it('redirects to /progress after audit is launched', async () => {
-    const loadAfterLaunch = [
+    const expectedCalls = [
+      aaApiCalls.getUser,
       aaApiCalls.getRounds(roundMocks.singleIncomplete),
       aaApiCalls.getJurisdictions,
       aaApiCalls.getContests,
       aaApiCalls.getSettings(auditSettings.all),
-    ]
-    const expectedCalls = [
-      aaApiCalls.getUser,
-      ...loadAfterLaunch,
-      ...loadAfterLaunch,
-      ...loadAfterLaunch,
       aaApiCalls.getMapData,
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -261,17 +286,18 @@ describe('AA setup flow', () => {
   })
 
   it('shows an error and undo button if drawing the sample fails', async () => {
-    const loadAfterLaunch = [
-      aaApiCalls.getRounds(roundMocks.drawSampleErrored),
+    const afterLaunchApiCalls = [
       aaApiCalls.getJurisdictions,
       aaApiCalls.getContests,
+      aaApiCalls.getSettings(auditSettings.all),
       aaApiCalls.getSettings(auditSettings.all),
     ]
     const expectedCalls = [
       aaApiCalls.getUser,
-      ...loadAfterLaunch,
-      ...loadAfterLaunch,
-      aaApiCalls.getSettings(auditSettings.all),
+      aaApiCalls.getRounds(roundMocks.drawSampleErrored),
+      ...afterLaunchApiCalls,
+      aaApiCalls.getJurisdictionFile,
+      ...afterLaunchApiCalls,
       aaApiCalls.getJurisdictionFile,
       {
         url: '/api/election/1/round/round-1',
@@ -298,8 +324,8 @@ describe('AA setup flow', () => {
   it('reloads jurisdiction progress after file upload', async () => {
     const expectedCalls = [
       aaApiCalls.getUser,
-      ...loadEach,
-      ...loadEach,
+      aaApiCalls.getRounds([]),
+      ...setupApiCalls,
       aaApiCalls.getMapData,
       jaApiCalls.getBallotManifestFile(manifestMocks.empty),
       jaApiCalls.putManifest,
