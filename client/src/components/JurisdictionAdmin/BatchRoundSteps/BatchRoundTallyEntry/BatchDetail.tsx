@@ -572,6 +572,7 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
             return (
               <ButtonGroup>
                 <Button
+                  intent="primary"
                   disabled={areResultsFinalized || isRemovingSheet}
                   icon="edit"
                   onClick={enableEditing}
@@ -609,6 +610,7 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
                   position="bottom"
                 >
                   <Button
+                    intent="primary"
                     aria-label="Additional Actions"
                     disabled={areResultsFinalized || isRemovingSheet}
                     icon="caret-down"
