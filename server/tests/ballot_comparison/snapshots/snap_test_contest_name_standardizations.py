@@ -20,7 +20,7 @@ Test Org test_standardize_contest_names,Test Election,CA\r
 ######## CONTESTS ########\r
 Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes\r
 Standardized Contest 1,Targeted,1,1,30,Choice 1-1: 14; Choice 1-2: 6\r
-Standardized Contest 2,Opportunistic,1,2,15,Choice 2-1: 13; Choice 2-2: 6; Choice 2-3: 7\r
+Standardized Contest 2,Opportunistic,1,2,15,Choice 2-1: 12; Choice 2-2: 5; Choice 2-3: 7\r
 \r
 ######## CONTEST NAME STANDARDIZATIONS ########\r
 Jurisdiction,Contest Name,CVR Contest Name\r
@@ -47,7 +47,7 @@ J1,TABULATOR1,BATCH2,2,1-2-2,Round 1: 0.125871889047705889,NOT_AUDITED,,Choice 1
 J1,TABULATOR1,BATCH2,3,1-2-3,Round 1: 0.126622033568908859,NOT_AUDITED,,Choice 1-1,,,"Choice 2-1, Choice 2-3",\r
 J1,TABULATOR2,BATCH2,2,2-2-2,Round 1: 0.053992217600758631,NOT_AUDITED,,"Choice 1-1, Choice 1-2",,,"Choice 2-1, Choice 2-2, Choice 2-3",\r
 J1,TABULATOR2,BATCH2,3,2-2-4,Round 1: 0.255119157791673311,NOT_AUDITED,,,,,"Choice 2-1, Choice 2-3",\r
-J1,TABULATOR2,BATCH2,4,2-2-5,"Round 1: 0.064984443990590400, 0.069414660569975443",NOT_AUDITED,,,,,"Choice 2-1, Choice 2-2",\r
+J1,TABULATOR2,BATCH2,4,2-2-5,"Round 1: 0.064984443990590400, 0.069414660569975443",NOT_AUDITED,,,,,,\r
 J1,TABULATOR2,BATCH2,5,2-2-6,Round 1: 0.442956417641278897,NOT_AUDITED,,,,,"Choice 2-1, Choice 2-3",\r
 J1,TABULATOR2,BATCH2,6,,Round 1: 0.300053574780458718,NOT_AUDITED,,,,,,\r
 J2,TABULATOR1,BATCH1,1,1-1-1,Round 1: 0.476019554092109137,NOT_AUDITED,,Choice 1-2,,,,\r

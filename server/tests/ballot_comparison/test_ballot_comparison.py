@@ -645,7 +645,7 @@ def test_ballot_comparison_two_rounds(
         ("J1", "TABULATOR1", "BATCH2", 3): ("1,1,0,1,1", (1, 2)),  # CVR: 1,0,1,0,1
         ("J1", "TABULATOR2", "BATCH2", 2): ("1,1,1,1,1", (None, None)),
         ("J1", "TABULATOR2", "BATCH2", 3): ("blank", (None, 1)),  # CVR: ,,1,0,1
-        ("J1", "TABULATOR2", "BATCH2", 4): (",,1,1,0", (None, None)),
+        ("J1", "TABULATOR2", "BATCH2", 4): ("blank", (None, None)),
         ("J1", "TABULATOR2", "BATCH2", 5): (",,1,0,1", (None, None)),
         ("J1", "TABULATOR2", "BATCH2", 6): ("not found", (2, 2)),  # not in CVR
         ("J2", "TABULATOR1", "BATCH1", 1): ("1,0,1,0,0", (-2, -1)),  # CVR: 0,1,1,1,0
@@ -695,11 +695,12 @@ def test_ballot_comparison_two_rounds(
     assert len(sample_size_options) == 1
     assert sample_size_options[target_contest_id][0] == sample_size
 
-    # For round 2, audit results should match the CVR exactly.
+    # For round 2, audit results should not have any positive discrepancies so
+    # the audit can complete.
     audit_results = {
         ("J2", "TABULATOR1", "BATCH1", 2): ("1,0,1,0,1", (None, None)),
         ("J2", "TABULATOR1", "BATCH2", 3): ("1,0,1,0,1", (None, None)),
-        ("J2", "TABULATOR2", "BATCH2", 4): (",,1,1,0", (None, None)),
+        ("J2", "TABULATOR2", "BATCH2", 4): (",,1,1,0", (None, -1)),
     }
 
     audit_all_ballots(
