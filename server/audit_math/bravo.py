@@ -7,6 +7,7 @@ Note that this library works for one contest at a time, as if each contest being
 targeted is being audited completely independently.
 """
 import math
+import decimal
 from decimal import Decimal
 from collections import defaultdict
 import logging
@@ -15,6 +16,9 @@ from scipy import stats
 
 from .sampler_contest import Contest
 from .ballot_polling_types import SampleSizeOption
+
+# Treat n/0 as Infinity instead of raising an error
+decimal.getcontext().traps[decimal.DivisionByZero] = False
 
 
 def get_expected_sample_size(
