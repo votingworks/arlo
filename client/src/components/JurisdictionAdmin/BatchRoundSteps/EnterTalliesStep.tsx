@@ -1,6 +1,7 @@
 import React from 'react'
 import { toast } from 'react-toastify'
 import { Button } from '@blueprintjs/core'
+import styled from 'styled-components'
 import { IJurisdiction } from '../../UserContext'
 import { IRound } from '../../AuditAdmin/useRoundsAuditAdmin'
 import BatchRoundTallyEntry from './BatchRoundTallyEntry'
@@ -8,6 +9,11 @@ import { useBatches, useFinalizeBatchResults } from '../useBatchResults'
 import { useConfirm, Confirm } from '../../Atoms/Confirm'
 import { StepPanel, StepActions } from '../../Atoms/Steps'
 import LinkButton from '../../Atoms/LinkButton'
+
+const Panel = styled(StepPanel)`
+  padding: 0;
+  height: auto;
+`
 
 interface IEnterTalliesStepProps {
   previousStepUrl: string
@@ -54,13 +60,13 @@ const EnterTalliesStep: React.FC<IEnterTalliesStepProps> = ({
 
   return (
     <>
-      <StepPanel noPadding>
+      <Panel>
         <BatchRoundTallyEntry
           electionId={jurisdiction.election.id}
           jurisdictionId={jurisdiction.id}
           roundId={round.id}
         />
-      </StepPanel>
+      </Panel>
       <StepActions
         left={
           <LinkButton to={previousStepUrl} icon="chevron-left">

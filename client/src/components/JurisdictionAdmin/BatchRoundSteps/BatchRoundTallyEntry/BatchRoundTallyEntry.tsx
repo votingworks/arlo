@@ -24,7 +24,6 @@ import { useDebounce } from '../../../../utils/debounce'
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  max-height: 500px;
   width: 100%;
 
   .${Classes.CALLOUT} {
