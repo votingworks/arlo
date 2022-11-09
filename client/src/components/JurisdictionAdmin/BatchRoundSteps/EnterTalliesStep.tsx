@@ -86,6 +86,15 @@ const EnterTalliesStep: React.FC<IEnterTalliesStepProps> = ({
               </Row>
             </Callout>
           )}
+          {resultsFinalizedAt && (
+            <Callout intent="success">
+              <strong>Tallies finalized</strong>
+              <div>
+                Once all jurisdictions have finalized their tallies, check back
+                here for the results of the audit.
+              </div>
+            </Callout>
+          )}
           <BatchRoundTallyEntry
             electionId={jurisdiction.election.id}
             jurisdictionId={jurisdiction.id}

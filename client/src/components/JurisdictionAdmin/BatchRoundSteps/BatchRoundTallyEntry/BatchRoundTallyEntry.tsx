@@ -135,9 +135,6 @@ const BatchRoundTallyEntryContent: React.FC<IBatchRoundTallyEntryContentProps> =
 
   return (
     <Container>
-      {areResultsFinalized && (
-        <Callout intent="success">Tallies finalized</Callout>
-      )}
       <ListAndDetail>
         <List
           search={{
