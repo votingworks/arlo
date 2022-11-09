@@ -64,8 +64,6 @@ def compute_error(
         if error == 0:
             return None
 
-        # Count negative errors (errors in favor of the winner) as 0 to be conservative
-        error = max(error, 0)
         weighted_error = Decimal(error) / Decimal(V_wl) if V_wl > 0 else Decimal("inf")
         return BatchError(counted_as=error, weighted_error=weighted_error)
 
@@ -163,7 +161,8 @@ def compute_U(
             error = compute_error(
                 reported_results[batch], sample_results[batch], contest
             )
-            U += error["weighted_error"] if error else 0
+            # Count negative errors (errors in favor of the winner) as 0 to be conservative
+            U += error["weighted_error"] if error and error["counted_as"] > 0 else 0
         else:
             U += compute_max_error(reported_results[batch], contest)
 
@@ -296,7 +295,10 @@ def compute_risk(
             continue
 
         error = compute_error(reported_results[batch], sample_results[batch], contest)
-        e_p = error["weighted_error"] if error else Decimal(0)
+        # Count negative errors (errors in favor of the winner) as 0 to be conservative
+        e_p = (
+            error["weighted_error"] if error and error["counted_as"] > 0 else Decimal(0)
+        )
 
         u_p = compute_max_error(reported_results[batch], contest)
 
