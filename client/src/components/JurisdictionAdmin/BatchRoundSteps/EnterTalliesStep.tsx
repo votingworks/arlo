@@ -1,5 +1,4 @@
 import React from 'react'
-import { toast } from 'react-toastify'
 import { Button, Callout, Classes } from '@blueprintjs/core'
 import styled from 'styled-components'
 import { IJurisdiction } from '../../UserContext'
@@ -51,19 +50,15 @@ const EnterTalliesStep: React.FC<IEnterTalliesStepProps> = ({
   )
 
   const onClickFinalize = () => {
-    if (!areAllBatchesAudited) {
-      toast.error('Please enter tallies for all batches before finalizing.')
-    } else {
-      confirm({
-        title: 'Are you sure you want to finalize your tallies?',
-        description:
-          'Before finalizing your tallies, check the tallies you have entered into Arlo against your tally sheets.',
-        yesButtonLabel: 'Confirm',
-        onYesClick: async () => {
-          await finalizeResults.mutateAsync()
-        },
-      })
-    }
+    confirm({
+      title: 'Are you sure you want to finalize your tallies?',
+      description:
+        'Before finalizing your tallies, check the tallies you have entered into Arlo against your tally sheets.',
+      yesButtonLabel: 'Confirm',
+      onYesClick: async () => {
+        await finalizeResults.mutateAsync()
+      },
+    })
   }
 
   return (
