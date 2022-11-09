@@ -74,7 +74,11 @@ describe('TallyEntryUserView', () => {
     await withMockFetch(expectedCalls, async () => {
       renderView()
       await screen.findByRole('heading', { name: 'Login Code' })
-      await screen.findByRole('heading', { name: 'Enter Tallies' })
+      await screen.findByRole(
+        'heading',
+        { name: 'Enter Tallies' },
+        { timeout: 5000 }
+      )
       const logOutLink = screen.getByRole('link', { name: 'Log out' })
       expect(logOutLink).toHaveAttribute('href', '/auth/logout')
     })

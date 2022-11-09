@@ -113,7 +113,7 @@ const CSVFile: React.FC<IProps> = ({
               </FormSectionDescription>
             </div>
             {showCvrFileType && (
-              <div>
+              <p>
                 <label>
                   <span style={{ marginRight: '5px' }}>CVR File Type:</span>
                   <HTMLSelect
@@ -127,7 +127,7 @@ const CSVFile: React.FC<IProps> = ({
                     <option value={CvrFileType.HART}>Hart</option>
                   </HTMLSelect>
                 </label>
-              </div>
+              </p>
             )}
             {isEditing || !file || isProcessing ? (
               <>
