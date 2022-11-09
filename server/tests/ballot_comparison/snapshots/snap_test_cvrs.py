@@ -601,7 +601,7 @@ snapshots["test_dominion_cvr_upload 1"] = [
         "ballot_position": 4,
         "batch_name": "BATCH2",
         "imprinted_id": "2-2-5",
-        "interpretations": ",,1,1,0",
+        "interpretations": ",,0,0,0",
         "tabulator": "TABULATOR2",
     },
     {
@@ -624,8 +624,8 @@ snapshots["test_dominion_cvr_upload 2"] = {
     },
     "Contest 2": {
         "choices": {
-            "Choice 2-1": {"column": 2, "num_votes": 13},
-            "Choice 2-2": {"column": 3, "num_votes": 6},
+            "Choice 2-1": {"column": 2, "num_votes": 12},
+            "Choice 2-2": {"column": 3, "num_votes": 5},
             "Choice 2-3": {"column": 4, "num_votes": 7},
         },
         "total_ballots_cast": 14,

@@ -146,6 +146,9 @@ def pretty_cvr_interpretation(
     if "u" in cvrs_by_choice.values():
         return "Undervote"
 
+    if all(interpretation == "0" for interpretation in cvrs_by_choice.values()):
+        return "Blank"
+
     choice_id_to_name = {choice.id: choice.name for choice in contest.choices}
     return ", ".join(
         choice_id_to_name[choice_id]
