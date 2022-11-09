@@ -1,11 +1,15 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { useParams, Redirect } from 'react-router-dom'
 import uuidv4 from 'uuidv4'
 import { Spinner, H3, Intent } from '@blueprintjs/core'
-import useRoundsAuditAdmin, {
-  isAuditStarted,
+import {
+  useRounds,
   isDrawSampleComplete,
   drawSampleError,
+  isDrawingSample,
+  useStartNextRound,
+  useUndoRoundStart,
+  ISampleSizes,
 } from './useRoundsAuditAdmin'
 import { useJurisdictions } from '../useJurisdictions'
 import useContests from '../useContests'
@@ -28,10 +32,13 @@ const AuditAdminView: React.FC = () => {
   const { electionId, view } = useParams<IParams>()
   const [refreshId, setRefreshId] = useState(uuidv4())
 
-  const [rounds, startNextRound, undoRoundStart] = useRoundsAuditAdmin(
-    electionId,
-    refreshId
-  )
+  const roundsQuery = useRounds(electionId, {
+    refetchInterval: rounds =>
+      rounds && isDrawingSample(rounds) ? 1000 : false,
+  })
+  const startNextRoundMutation = useStartNextRound(electionId)
+  const undoRoundStartMutation = useUndoRoundStart(electionId)
+
   const jurisdictionsQuery = useJurisdictions(electionId, refreshId)
   const [contests] = useContests(electionId, undefined, refreshId)
   const [auditSettings] = useAuditSettings(electionId, refreshId)
@@ -52,15 +59,15 @@ const AuditAdminView: React.FC = () => {
     setRefreshId
   )
 
-  useEffect(refresh, [
-    refresh,
-    isBallotComparison,
-    isHybrid,
-    rounds !== null && isAuditStarted(rounds),
-  ])
-
-  if (!jurisdictionsQuery.isSuccess || !contests || !rounds || !auditSettings)
+  if (
+    !jurisdictionsQuery.isSuccess ||
+    !contests ||
+    !roundsQuery.isSuccess ||
+    !auditSettings
+  )
     return null // Still loading
+
+  const rounds = roundsQuery.data
   const jurisdictions = jurisdictionsQuery.data
 
   const isBatch = auditSettings.auditType === 'BATCH_COMPARISON'
@@ -95,6 +102,22 @@ const AuditAdminView: React.FC = () => {
         </Inner>
       </Wrapper>
     )
+  }
+
+  const startNextRound = async (sampleSizes: ISampleSizes) => {
+    const nextRoundNum =
+      rounds.length === 0 ? 1 : rounds[rounds.length - 1].roundNum + 1
+    await startNextRoundMutation.mutateAsync({
+      sampleSizes,
+      roundNum: nextRoundNum,
+    })
+    return true
+  }
+
+  const undoRoundStart = async () => {
+    const currentRoundId = rounds[rounds.length - 1].id
+    await undoRoundStartMutation.mutateAsync(currentRoundId)
+    return true
   }
 
   switch (view) {

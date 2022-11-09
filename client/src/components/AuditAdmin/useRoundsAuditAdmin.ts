@@ -1,8 +1,14 @@
-import { useState, useEffect } from 'react'
-import { toast } from 'react-toastify'
-import { api, poll } from '../utilities'
+import {
+  UseQueryOptions,
+  UseQueryResult,
+  useQuery,
+  UseMutationResult,
+  useQueryClient,
+  useMutation,
+} from 'react-query'
 import { FileProcessingStatus } from '../useCSV'
 import { ISampleSizeOption } from './Setup/Review/useSampleSizes'
+import { fetchApi, ApiError } from '../../utils/api'
 
 export interface IRound {
   id: string
@@ -24,37 +30,9 @@ export interface ISampleSizes {
   [contestId: string]: ISampleSizeOption
 }
 
-const getRounds = async (electionId: string): Promise<IRound[] | null> => {
-  const response = await api<{ rounds: IRound[] }>(
-    `/election/${electionId}/round`
-  )
-  return response && response.rounds
-}
-
-const postRound = async (
-  electionId: string,
-  roundNum: number,
-  sampleSizes: ISampleSizes
-) => {
-  const response = await api(`/election/${electionId}/round`, {
-    method: 'POST',
-    body: JSON.stringify({
-      roundNum,
-      sampleSizes,
-    }),
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  })
-  return response !== null
-}
-
-const deleteRound = async (electionId: string, roundId: string) => {
-  const response = await api(`/election/${electionId}/round/${roundId}`, {
-    method: 'DELETE',
-  })
-  return response !== null
-}
+export const isDrawingSample = (rounds: IRound[]): boolean =>
+  rounds.length > 0 &&
+  rounds[rounds.length - 1].drawSampleTask.completedAt === null
 
 export const isDrawSampleComplete = (rounds: IRound[]): boolean =>
   rounds[rounds.length - 1].drawSampleTask.completedAt !== null
@@ -65,57 +43,59 @@ export const drawSampleError = (rounds: IRound[]): string | null =>
 export const isAuditStarted = (rounds: IRound[]): boolean =>
   rounds.length > 0 && isDrawSampleComplete(rounds) && !drawSampleError(rounds)
 
-const useRoundsAuditAdmin = (
+export const useRounds = (
   electionId: string,
-  refreshId?: string
-): [
-  IRound[] | null,
-  (sampleSizes: ISampleSizes) => Promise<boolean>,
-  () => Promise<boolean>
-] => {
-  const [rounds, setRounds] = useState<IRound[] | null>(null)
-
-  const startNextRound = async (sampleSizes: ISampleSizes) => {
-    if (rounds === null)
-      throw new Error('Cannot start next round until rounds are loaded')
-    const nextRoundNum =
-      rounds.length === 0 ? 1 : rounds[rounds.length - 1].roundNum + 1
-    if (await postRound(electionId, nextRoundNum, sampleSizes)) {
-      setRounds(await getRounds(electionId))
-      return true
-    }
-    return false
-  }
-
-  const undoRoundStart = async () => {
-    if (rounds === null || rounds.length === 0)
-      throw new Error('Cannot undo round start')
-    if (await deleteRound(electionId, rounds[rounds.length - 1].id)) {
-      setRounds(await getRounds(electionId))
-      return true
-    }
-    return false
-  }
-
-  useEffect(() => {
-    ;(async () => {
-      const isComplete = async () => {
-        const rounds = await getRounds(electionId) // eslint-disable-line no-shadow
-        setRounds(rounds)
-        return (
-          rounds === null || rounds.length === 0 || isDrawSampleComplete(rounds)
-        )
-      }
-      poll(
-        isComplete,
-        () => null,
-        err => toast.error(err.message),
-        10 * 60 * 1000 // Time out sampling after 10 minutes
+  options?: UseQueryOptions<IRound[], ApiError, IRound[], string[]>
+): UseQueryResult<IRound[], ApiError> =>
+  useQuery(
+    ['elections', electionId, 'rounds'],
+    async () => {
+      const response: { rounds: IRound[] } = await fetchApi(
+        `/api/election/${electionId}/round`
       )
-    })()
-  }, [electionId, refreshId])
+      return response.rounds
+    },
+    options
+  )
 
-  return [rounds, startNextRound, undoRoundStart]
+interface ICreateRoundBody {
+  roundNum: number
+  sampleSizes: ISampleSizes
 }
 
-export default useRoundsAuditAdmin
+export const useStartNextRound = (
+  electionId: string
+): UseMutationResult<unknown, ApiError, ICreateRoundBody> => {
+  const postRound = async (body: ICreateRoundBody) =>
+    fetchApi(`/api/election/${electionId}/round`, {
+      method: 'POST',
+      body: JSON.stringify(body),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+
+  const queryClient = useQueryClient()
+
+  return useMutation(postRound, {
+    onSuccess: () =>
+      queryClient.invalidateQueries(['elections', electionId, 'rounds']),
+  })
+}
+
+export const useUndoRoundStart = (
+  electionId: string
+): UseMutationResult<unknown, ApiError, string> => {
+  const deleteRound = async (roundId: string) =>
+    fetchApi(`/api/election/${electionId}/round/${roundId}`, {
+      method: 'DELETE',
+    })
+
+  const queryClient = useQueryClient()
+
+  return useMutation(deleteRound, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(['elections', electionId, 'rounds'])
+    },
+  })
+}
