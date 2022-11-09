@@ -1,6 +1,6 @@
 import React from 'react'
 import { toast } from 'react-toastify'
-import { Button } from '@blueprintjs/core'
+import { Button, Callout, Classes } from '@blueprintjs/core'
 import styled from 'styled-components'
 import { IJurisdiction } from '../../UserContext'
 import { IRound } from '../../AuditAdmin/useRoundsAuditAdmin'
@@ -9,9 +9,14 @@ import { useBatches, useFinalizeBatchResults } from '../useBatchResults'
 import { useConfirm, Confirm } from '../../Atoms/Confirm'
 import { StepPanel, StepActions } from '../../Atoms/Steps'
 import LinkButton from '../../Atoms/LinkButton'
+import { Column, Row } from '../../Atoms/Layout'
 
 const Panel = styled(StepPanel)`
   padding: 0;
+
+  .${Classes.CALLOUT} {
+    border-radius: 0;
+  }
   height: auto;
 `
 
@@ -41,9 +46,12 @@ const EnterTalliesStep: React.FC<IEnterTalliesStepProps> = ({
   if (!batchesQuery.isSuccess) return null // Still loading
 
   const { batches, resultsFinalizedAt } = batchesQuery.data
+  const areAllBatchesAudited = batches.every(
+    batch => batch.resultTallySheets.length > 0
+  )
 
   const onClickFinalize = () => {
-    if (batches.some(batch => batch.resultTallySheets.length === 0)) {
+    if (!areAllBatchesAudited) {
       toast.error('Please enter tallies for all batches before finalizing.')
     } else {
       confirm({
@@ -61,26 +69,40 @@ const EnterTalliesStep: React.FC<IEnterTalliesStepProps> = ({
   return (
     <>
       <Panel>
-        <BatchRoundTallyEntry
-          electionId={jurisdiction.election.id}
-          jurisdictionId={jurisdiction.id}
-          roundId={round.id}
-        />
+        <Column>
+          {areAllBatchesAudited && !resultsFinalizedAt && (
+            <Callout intent="primary" icon={null}>
+              <Row alignItems="center" justifyContent="space-between">
+                <div>
+                  <strong>All batches audited</strong>
+                  <div>
+                    Review your tallies and then finalize them when you&rsquo;re
+                    ready.
+                  </div>
+                </div>
+                <Button
+                  intent="primary"
+                  icon="tick"
+                  onClick={onClickFinalize}
+                  disabled={resultsFinalizedAt !== null}
+                >
+                  Finalize Tallies
+                </Button>
+              </Row>
+            </Callout>
+          )}
+          <BatchRoundTallyEntry
+            electionId={jurisdiction.election.id}
+            jurisdictionId={jurisdiction.id}
+            roundId={round.id}
+          />
+        </Column>
       </Panel>
       <StepActions
         left={
           <LinkButton to={previousStepUrl} icon="chevron-left">
             Back
           </LinkButton>
-        }
-        right={
-          <Button
-            intent="primary"
-            onClick={onClickFinalize}
-            disabled={resultsFinalizedAt !== null}
-          >
-            Finalize Tallies
-          </Button>
         }
       />
       <Confirm {...confirmProps} />
