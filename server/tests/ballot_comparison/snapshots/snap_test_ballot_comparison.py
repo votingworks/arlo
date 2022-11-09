@@ -63,8 +63,8 @@ J2,0002,BATCH2,5,0002000175,Round 1: 0.212277542626930704,AUDITED,Choice 1-1,Cho
 """
 
 snapshots["test_ballot_comparison_multiple_targeted_contests_sample_size 1"] = [
-    ({"key": "supersimple", "prob": None, "size": 14},),
     ({"key": "supersimple", "prob": None, "size": 10},),
+    ({"key": "supersimple", "prob": None, "size": 14},),
 ]
 
 snapshots["test_ballot_comparison_two_rounds 1"] = {

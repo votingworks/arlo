@@ -1002,9 +1002,10 @@ def test_ballot_comparison_multiple_targeted_contests_sample_size(
     round_2_id = json.loads(rv.data)["rounds"][1]["id"]
 
     round_2_sample_sizes = list(
-        RoundContest.query.filter_by(round_id=round_2_id).values(
-            RoundContest.sample_size
-        )
+        RoundContest.query.filter_by(round_id=round_2_id)
+        .join(Contest)
+        .order_by(Contest.name)
+        .values(RoundContest.sample_size)
     )
     snapshot.assert_match(round_2_sample_sizes)
 
