@@ -27,7 +27,7 @@ Batch 10,,
 snapshots[
     "test_batches_human_sort_order 2"
 ] = """######## SAMPLED BATCHES ########\r
-Jurisdiction Name,Batch Name,Ticket Numbers,Audited?,Audit Results,Reported Results,Last Edited By,Discrepancy\r
+Jurisdiction Name,Batch Name,Ticket Numbers,Audited?,Audit Results,Reported Results,Discrepancy,Last Edited By\r
 J1,Batch 1 - 1,"Round 1: 0.9610467367288398089, 0.9743784458526487453",No,,candidate 1: 10; candidate 2: 5; candidate 3: 5,,\r
 J1,Batch 1 - 10,Round 1: 0.109576900310237874,No,,candidate 1: 10; candidate 2: 5; candidate 3: 5,,\r
 J1,Batch 2,"Round 1: 0.474971525750860236, 0.555845039101209884",No,,candidate 1: 10; candidate 2: 5; candidate 3: 5,,\r

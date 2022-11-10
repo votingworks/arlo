@@ -717,8 +717,8 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
             "Audited?",
             "Audit Results",
             "Reported Results",
-            "Last Edited By",
             "Discrepancy",
+            "Last Edited By",
         ]
     )
     for batch in batches:
@@ -761,8 +761,8 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
                 pretty_boolean(is_audited),
                 pretty_choice_votes(audit_results) if audit_results else "",
                 pretty_choice_votes(reported_results),
-                construct_batch_last_edited_by_string(batch),
                 error["counted_as"] if error else "",
+                construct_batch_last_edited_by_string(batch),
             ]
         )
 
