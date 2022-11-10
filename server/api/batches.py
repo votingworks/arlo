@@ -92,14 +92,17 @@ def construct_batch_last_edited_by_string(batch: Batch) -> Optional[str]:
     if batch.last_edited_by_user_type == UserType.JURISDICTION_ADMIN:
         return batch.last_edited_by_user_key  # Email
     if batch.last_edited_by_user_type == UserType.TALLY_ENTRY:
+        tally_entry_user_id = batch.last_edited_by_user_key
         tally_entry_user = TallyEntryUser.query.filter_by(
-            id=batch.last_edited_by_user_key
+            id=tally_entry_user_id
         ).one_or_none()
-        if tally_entry_user is not None:
-            members = [tally_entry_user.member_1]
-            if tally_entry_user.member_2 is not None:
-                members.append(tally_entry_user.member_2)
-            return ", ".join(members)
+        assert (
+            tally_entry_user is not None
+        ), f"Unable to find tally entry user with ID {tally_entry_user_id}"
+        members = [tally_entry_user.member_1]
+        if tally_entry_user.member_2 is not None:
+            members.append(tally_entry_user.member_2)
+        return ", ".join(members)
     return None
 
 
