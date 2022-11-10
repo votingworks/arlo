@@ -253,7 +253,7 @@ export const createQueryClient = (): QueryClient =>
 /**
  * Type a code into a CodeInput element (see Atoms/CodeInput.tsx)
  */
-export const typeCode = (codeInputElement: HTMLElement, code: string) => {
+export const typeCode = (codeInputElement: HTMLElement, code: string): void => {
   const digitInputs = within(codeInputElement).getAllByRole('textbox')
   assert(code.length <= digitInputs.length)
   code.split('').forEach((digit, index) => {
