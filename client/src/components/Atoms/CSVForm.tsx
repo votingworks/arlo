@@ -93,11 +93,6 @@ const CSVFile: React.FC<IProps> = ({
               {title && <H4>{title}</H4>}
               <FormSectionDescription>
                 {description}
-                {values.cvrFileType === CvrFileType.HART &&
-                  ' ' +
-                    'For Hart, you can provide one ZIP file or multiple, one for each tabulator. ' +
-                    'You can also provide an optional scanned ballot information CSV. ' +
-                    'If provided, the unique identifiers in the CSV will be used as imprinted IDs.'}
                 {sampleFileLink && (
                   <>
                     <br />
