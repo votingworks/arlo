@@ -2168,7 +2168,7 @@ def test_hart_cvr_upload_with_multiple_cvr_zip_files_and_invalid_cvrs(
                     "TABULATOR2.zip",
                 ),
             ],
-            "Error in file: cvr-0.xml. Couldn't find a matching batch for Tabulator: TABULATOR2, BatchNumber: invalid-batch. The BatchNumber field in the CVR file must match the Batch Name field in the ballot manifest, and the ZIP file names must match the Tabulator field in the ballot manifest. Please check your CVR files and ballot manifest thoroughly to make sure these values match - there may be a similar inconsistency in other files in the CVR export.",
+            "Error in file: cvr-0.xml from TABULATOR2.zip. Couldn't find a matching batch for Tabulator: TABULATOR2, BatchNumber: invalid-batch. The BatchNumber field in the CVR file must match the Batch Name field in the ballot manifest, and the ZIP file name must match the Tabulator field in the ballot manifest. Please check your CVR files and ballot manifest thoroughly to make sure these values match - there may be a similar inconsistency in other files in the CVR export.",
         ),
         (
             [
@@ -2181,7 +2181,7 @@ def test_hart_cvr_upload_with_multiple_cvr_zip_files_and_invalid_cvrs(
                     "forgot-to-rename-this-to-match-tabulator-in-ballot-manifest.zip",
                 ),
             ],
-            "Error in file: cvr-0.xml. Couldn't find a matching batch for Tabulator: forgot-to-rename-this-to-match-tabulator-in-ballot-manifest, BatchNumber: BATCH1. The BatchNumber field in the CVR file must match the Batch Name field in the ballot manifest, and the ZIP file names must match the Tabulator field in the ballot manifest. Please check your CVR files and ballot manifest thoroughly to make sure these values match - there may be a similar inconsistency in other files in the CVR export.",
+            "Error in file: cvr-0.xml from forgot-to-rename-this-to-match-tabulator-in-ballot-manifest.zip. Couldn't find a matching batch for Tabulator: forgot-to-rename-this-to-match-tabulator-in-ballot-manifest, BatchNumber: BATCH1. The BatchNumber field in the CVR file must match the Batch Name field in the ballot manifest, and the ZIP file name must match the Tabulator field in the ballot manifest. Please check your CVR files and ballot manifest thoroughly to make sure these values match - there may be a similar inconsistency in other files in the CVR export.",
         ),
     ]
 

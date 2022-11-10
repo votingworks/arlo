@@ -1050,11 +1050,11 @@ def parse_hart_cvrs(
                 )
                 if use_cvr_zip_file_names_as_tabulator_names:
                     raise UserError(
-                        f"Error in file: {file_name}. "
+                        f"Error in file: {file_name} from {cvr_zip_file_name}. "
                         "Couldn't find a matching batch for "
                         f"Tabulator: {cvr_zip_file_name.strip('.zip')}, BatchNumber: {batch_number}. "
                         "The BatchNumber field in the CVR file must match the Batch Name field in "
-                        "the ballot manifest, and the ZIP file names must match the Tabulator "
+                        "the ballot manifest, and the ZIP file name must match the Tabulator "
                         "field in the ballot manifest. " + general_guidance
                     )
                 else:
