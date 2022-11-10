@@ -106,8 +106,9 @@ if __name__ == "__main__":
     if audit_2.audit_type != AuditType.BALLOT_POLLING:
         print("Audit 2 must be ballot polling.")
         sys.exit(1)
-    if len(audit_1.contests) != len(audit_2.contests) != 1:
-        print("Both audits must have exactly one contest.")
+    # TODO: Technically they have to be the same contests too
+    if len(audit_1.contests) != len(audit_2.contests):
+        print("Both audits must have the same number of contests")
         sys.exit(1)
 
     choice_id_to_name_audit_1 = dict(
@@ -133,14 +134,21 @@ if __name__ == "__main__":
     no_cvr_stratum = ballot_polling_stratum(audit_2, remap)
     print(no_cvr_stratum)
 
-    overall_contest = combined_contests(
-        sampler_contest.from_db_contest(audit_1.contests[0]),
-        sampler_contest.from_db_contest(audit_2.contests[0]),
-        remap,
-    )
+    for i in range(len(audit_1.contests)):
 
-    # non_cvr_stratum, cvr_stratum = hybrid_contest_strata(contest)
-    p_value, is_complete = suite.compute_risk(
-        audit_1.risk_limit, overall_contest, no_cvr_stratum, cvr_stratum,
-    )
-    print(f"Finished? {is_complete} p-value {p_value}")
+        a1_sampler_contest = sampler_contest.from_db_contest(audit_1.contests[i])
+        a2_sampler_contest = sampler_contest.from_db_contest(audit_2.contests[i])
+
+        #assert a1_sampler_contest.name == a2_sampler_contest.name, f"Both audits must have the same contests! {a1_sampler_contest.name} {a2_sampler_contest.name}"
+
+        overall_contest = combined_contests(
+            a1_sampler_contest,
+            a2_sampler_contest,
+            remap,
+        )
+
+        # non_cvr_stratum, cvr_stratum = hybrid_contest_strata(contest)
+        p_value, is_complete = suite.compute_risk(
+            audit_1.risk_limit, overall_contest, no_cvr_stratum, cvr_stratum,
+        )
+        print(f"{a1_sampler_contest.name}: Finished? {is_complete} p-value {p_value}")
