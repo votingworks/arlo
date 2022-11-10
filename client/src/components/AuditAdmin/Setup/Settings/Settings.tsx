@@ -12,7 +12,11 @@ import { ErrorLabel } from '../../../Atoms/Form/_helpers'
 import { parse as parseNumber } from '../../../../utils/number-schema'
 import FormField from '../../../Atoms/Form/FormField'
 import schema from './schema'
-import useAuditSettings, { IAuditSettings } from '../../../useAuditSettings'
+import {
+  IAuditSettings,
+  useUpdateAuditSettings,
+  useAuditSettings,
+} from '../../../useAuditSettings'
 import { stateOptions } from './states'
 import { range } from '../../../../utils/array'
 
@@ -24,6 +28,7 @@ interface IProps {
   locked: boolean
   nextStage: ISidebarMenuItem
   prevStage: ISidebarMenuItem
+  auditSettings: IAuditSettings
 }
 
 type IValues = Pick<
@@ -35,10 +40,11 @@ const Settings: React.FC<IProps> = ({
   nextStage,
   prevStage,
   locked,
+  auditSettings,
 }: IProps) => {
   const { electionId } = useParams<{ electionId: string }>()
-  const [auditSettings, updateSettings] = useAuditSettings(electionId!)
-  if (!auditSettings) return null // still loading
+  const updateAuditSettings = useUpdateAuditSettings(electionId)
+
   const {
     state,
     electionName,
@@ -49,11 +55,10 @@ const Settings: React.FC<IProps> = ({
   } = auditSettings
 
   const submit = async (values: IValues) => {
-    const response = await updateSettings({
+    await updateAuditSettings.mutateAsync({
       ...values,
       riskLimit: parseNumber(values.riskLimit), // Formik stringifies internally
     })
-    if (!response) return
     /* istanbul ignore else */
     if (nextStage.activate) nextStage.activate()
     else throw new Error('Wrong menuItems passed in: activate() is missing')

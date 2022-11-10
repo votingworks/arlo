@@ -84,6 +84,7 @@ const Setup: React.FC<IProps> = ({
           nextStage={nextStage!}
           prevStage={prevStage!}
           locked={activeStage!.state === 'locked'}
+          auditSettings={auditSettings}
         />
       )
     case 'review':

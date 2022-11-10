@@ -13,7 +13,7 @@ import {
 } from './useRoundsAuditAdmin'
 import { useJurisdictions } from '../useJurisdictions'
 import useContests from '../useContests'
-import useAuditSettings from '../useAuditSettings'
+import { useAuditSettings } from '../useAuditSettings'
 import { ElementType } from '../../types'
 import useSetupMenuItems from './useSetupMenuItems/useSetupMenuItems'
 import { Wrapper, Inner } from '../Atoms/Wrapper'
@@ -41,12 +41,11 @@ const AuditAdminView: React.FC = () => {
 
   const jurisdictionsQuery = useJurisdictions(electionId, refreshId)
   const [contests] = useContests(electionId, undefined, refreshId)
-  const [auditSettings] = useAuditSettings(electionId, refreshId)
+  const auditSettingsQuery = useAuditSettings(electionId)
 
   const isBallotComparison =
-    auditSettings !== null && auditSettings.auditType === 'BALLOT_COMPARISON'
-  const isHybrid =
-    auditSettings !== null && auditSettings.auditType === 'HYBRID'
+    auditSettingsQuery.data?.auditType === 'BALLOT_COMPARISON'
+  const isHybrid = auditSettingsQuery.data?.auditType === 'HYBRID'
   const [stage, setStage] = useState<ElementType<typeof setupStages>>(
     'participants'
   )
@@ -63,12 +62,13 @@ const AuditAdminView: React.FC = () => {
     !jurisdictionsQuery.isSuccess ||
     !contests ||
     !roundsQuery.isSuccess ||
-    !auditSettings
+    !auditSettingsQuery.isSuccess
   )
     return null // Still loading
 
   const rounds = roundsQuery.data
   const jurisdictions = jurisdictionsQuery.data
+  const auditSettings = auditSettingsQuery.data
 
   const isBatch = auditSettings.auditType === 'BATCH_COMPARISON'
   const filteredMenuItems = menuItems.filter(({ id }) => {
