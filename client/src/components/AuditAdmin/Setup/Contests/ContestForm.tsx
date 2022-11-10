@@ -21,7 +21,7 @@ import FormButtonBar from '../../../Atoms/Form/FormButtonBar'
 import FormButton from '../../../Atoms/Form/FormButton'
 import schema from './schema'
 import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
-import useContests from '../../../useContests'
+import { useContests, useUpdateContests } from '../../../useContests'
 import { useJurisdictionsDeprecated } from '../../../useJurisdictions'
 import { IContest, ICandidate } from '../../../../types'
 import DropdownCheckboxList from './DropdownCheckboxList'
@@ -81,12 +81,19 @@ const ContestForm: React.FC<IProps> = ({
   const isBallotPolling = auditType === 'BALLOT_POLLING'
 
   const { electionId } = useParams<{ electionId: string }>()
-  const [contests, updateContests] = useContests(electionId, auditType)
+  const contestsQuery = useContests(electionId)
+  const updateContestsMutation = useUpdateContests(electionId, auditType)
   const jurisdictions = useJurisdictionsDeprecated(electionId)
   const standardizedContests = useStandardizedContests(electionId)
 
-  if ((isHybrid && !standardizedContests) || !jurisdictions || !contests)
+  if (
+    (isHybrid && !standardizedContests) ||
+    !jurisdictions ||
+    !contestsQuery.isSuccess
+  )
     return null // Still loading
+
+  const contests = contestsQuery.data
   const [formContests, restContests] = partition(
     contests,
     c => c.isTargeted === isTargeted
@@ -122,8 +129,9 @@ const ContestForm: React.FC<IProps> = ({
           )!.jurisdictionIds,
         }))
       : values.contests
-    const response = await updateContests(contestsToUpdate.concat(restContests))
-    if (!response) return
+    await updateContestsMutation.mutateAsync(
+      contestsToUpdate.concat(restContests)
+    )
     goToNextStage()
   }
   return (

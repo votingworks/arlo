@@ -12,7 +12,7 @@ import {
   ISampleSizes,
 } from './useRoundsAuditAdmin'
 import { useJurisdictions } from '../useJurisdictions'
-import useContests from '../useContests'
+import { useContests } from '../useContests'
 import { useAuditSettings } from '../useAuditSettings'
 import { ElementType } from '../../types'
 import useSetupMenuItems from './useSetupMenuItems/useSetupMenuItems'
@@ -40,7 +40,7 @@ const AuditAdminView: React.FC = () => {
   const undoRoundStartMutation = useUndoRoundStart(electionId)
 
   const jurisdictionsQuery = useJurisdictions(electionId, refreshId)
-  const [contests] = useContests(electionId, undefined, refreshId)
+  const contestsQuery = useContests(electionId)
   const auditSettingsQuery = useAuditSettings(electionId)
 
   const isBallotComparison =
@@ -60,14 +60,15 @@ const AuditAdminView: React.FC = () => {
 
   if (
     !jurisdictionsQuery.isSuccess ||
-    !contests ||
+    !contestsQuery.isSuccess ||
     !roundsQuery.isSuccess ||
     !auditSettingsQuery.isSuccess
   )
     return null // Still loading
 
-  const rounds = roundsQuery.data
   const jurisdictions = jurisdictionsQuery.data
+  const contests = contestsQuery.data
+  const rounds = roundsQuery.data
   const auditSettings = auditSettingsQuery.data
 
   const isBatch = auditSettings.auditType === 'BATCH_COMPARISON'

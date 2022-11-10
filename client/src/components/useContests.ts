@@ -1,9 +1,17 @@
 import { useEffect, useState } from 'react'
 import uuidv4 from 'uuidv4'
+import {
+  UseQueryResult,
+  useQuery,
+  UseMutationResult,
+  useMutation,
+  useQueryClient,
+} from 'react-query'
 import { api } from './utilities'
 import { IContest } from '../types'
 import { parse as parseNumber } from '../utils/number-schema'
 import { IAuditSettings } from './useAuditSettings'
+import { ApiError, fetchApi } from '../utils/api'
 
 export interface IContestNumbered {
   id: string
@@ -37,24 +45,26 @@ export const numberifyContest = (contest: IContest): IContestNumbered => {
   }
 }
 
-const getContests = async (electionId: string): Promise<IContest[] | null> => {
-  const response = await api<{ contests: IContest[] }>(
-    `/election/${electionId}/contest`
-  )
-  if (!response) return null
-  return response.contests
-}
+const contestsQueryKey = (electionId: string) => [
+  'elections',
+  electionId,
+  'contests',
+]
 
-const useContests = (
+export const useContests = (
+  electionId: string
+): UseQueryResult<IContest[], ApiError> =>
+  useQuery(contestsQueryKey(electionId), async () => {
+    const response = await fetchApi(`/api/election/${electionId}/contest`)
+    return response.contests
+  })
+
+export const useUpdateContests = (
   electionId: string,
-  auditType?: IAuditSettings['auditType'],
-  refreshId?: string
-): [IContest[] | null, (arg0: IContest[]) => Promise<boolean>] => {
-  const [contests, setContests] = useState<IContest[] | null>(null)
-
-  const updateContests = async (newContests: IContest[]): Promise<boolean> => {
-    if (!contests) return false
-    const response = await api(`/election/${electionId}/contest`, {
+  auditType: IAuditSettings['auditType']
+): UseMutationResult<IContest[], ApiError, IContest[]> => {
+  const putContests = (newContests: IContest[]) =>
+    fetchApi(`/api/election/${electionId}/contest`, {
       method: 'PUT',
       // stringify and numberify the contests (all number values are handled as strings clientside, but are required as numbers serverside)
       body: JSON.stringify(
@@ -65,22 +75,14 @@ const useContests = (
             auditType === 'BALLOT_POLLING' ? { totalBallotsCast, ...c } : c
           )
       ),
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
     })
-    if (!response) return false
-    setContests(await getContests(electionId))
-    return true
-  }
 
-  useEffect(() => {
-    ;(async () => {
-      const newContests = await getContests(electionId)
-      setContests(newContests)
-    })()
-  }, [electionId, refreshId])
-  return [contests, updateContests]
+  const queryClient = useQueryClient()
+
+  return useMutation(putContests, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(contestsQueryKey(electionId))
+    },
+  })
 }
-
-export default useContests

@@ -43,7 +43,7 @@ const Settings: React.FC<IProps> = ({
   auditSettings,
 }: IProps) => {
   const { electionId } = useParams<{ electionId: string }>()
-  const updateAuditSettings = useUpdateAuditSettings(electionId)
+  const updateAuditSettingsMutation = useUpdateAuditSettings(electionId)
 
   const {
     state,
@@ -55,7 +55,7 @@ const Settings: React.FC<IProps> = ({
   } = auditSettings
 
   const submit = async (values: IValues) => {
-    await updateAuditSettings.mutateAsync({
+    await updateAuditSettingsMutation.mutateAsync({
       ...values,
       riskLimit: parseNumber(values.riskLimit), // Formik stringifies internally
     })
