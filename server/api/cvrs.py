@@ -995,8 +995,10 @@ def parse_hart_cvrs(
     )
     if not use_cvr_zip_file_names_as_tabulator_names and duplicate_batch_name:
         raise UserError(
-            "Batch names in ballot manifest must be unique, unless providing multiple ZIP files exported by tabulator. "
+            "Batch names in ballot manifest must be unique. "
             f"Found duplicate batch name: {duplicate_batch_name}."
+            "If you have multiple tabulators that use the same batch names, add a Tabulator "
+            "column to the ballot manifest and upload a separate CVR export for each tabulator."
         )
     batches_by_key = {
         (batch.tabulator, batch.name)
@@ -1049,10 +1051,9 @@ def parse_hart_cvrs(
                         f"Error in file: {file_name}. "
                         "Couldn't find a matching batch for "
                         f"Tabulator: {cvr_zip_file_name.strip('.zip')}, BatchNumber: {batch_number}. "
-                        "The BatchNumber field in the CVR file must match the Batch Name field in the ballot manifest, "
-                        "and if providing multiple ZIP files exported by tabulator, "
-                        "the ZIP file names must match the Tabulator field in the ballot manifest. "
-                        + general_guidance
+                        "The BatchNumber field in the CVR file must match the Batch Name field in "
+                        "the ballot manifest, and the ZIP file names must match the Tabulator "
+                        "field in the ballot manifest. " + general_guidance
                     )
                 else:
                     close_matches = difflib.get_close_matches(
