@@ -43,12 +43,18 @@ export const drawSampleError = (rounds: IRound[]): string | null =>
 export const isAuditStarted = (rounds: IRound[]): boolean =>
   rounds.length > 0 && isDrawSampleComplete(rounds) && !drawSampleError(rounds)
 
+const roundsQueryKey = (electionId: string) => [
+  'elections',
+  electionId,
+  'rounds',
+]
+
 export const useRounds = (
   electionId: string,
   options?: UseQueryOptions<IRound[], ApiError, IRound[], string[]>
 ): UseQueryResult<IRound[], ApiError> =>
   useQuery(
-    ['elections', electionId, 'rounds'],
+    roundsQueryKey(electionId),
     async () => {
       const response: { rounds: IRound[] } = await fetchApi(
         `/api/election/${electionId}/round`
@@ -78,8 +84,9 @@ export const useStartNextRound = (
   const queryClient = useQueryClient()
 
   return useMutation(postRound, {
-    onSuccess: () =>
-      queryClient.invalidateQueries(['elections', electionId, 'rounds']),
+    onSuccess: () => {
+      queryClient.invalidateQueries(roundsQueryKey(electionId))
+    },
   })
 }
 
@@ -95,7 +102,7 @@ export const useUndoRoundStart = (
 
   return useMutation(deleteRound, {
     onSuccess: () => {
-      queryClient.invalidateQueries(['elections', electionId, 'rounds'])
+      queryClient.invalidateQueries(roundsQueryKey(electionId))
     },
   })
 }
