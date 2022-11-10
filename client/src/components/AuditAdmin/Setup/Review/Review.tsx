@@ -47,7 +47,6 @@ import {
   useStandardizedContestsFile,
   isFileProcessed,
 } from '../../../useCSV'
-import useContests from '../../../useContests'
 import useContestNameStandardizations, {
   IContestNameStandardizations,
 } from '../../../useContestNameStandardizations'
@@ -68,6 +67,7 @@ interface IProps {
   refresh: () => void
   startNextRound: (sampleSizes: ISampleSizes) => Promise<boolean>
   auditSettings: IAuditSettings
+  contests: IContest[]
 }
 
 const Review: React.FC<IProps> = ({
@@ -76,6 +76,7 @@ const Review: React.FC<IProps> = ({
   refresh,
   startNextRound,
   auditSettings,
+  contests,
 }: IProps) => {
   const { electionId } = useParams<{ electionId: string }>()
   const jurisdictions = useJurisdictionsDeprecated(electionId)
@@ -84,7 +85,6 @@ const Review: React.FC<IProps> = ({
     electionId,
     auditSettings.auditType
   )
-  const [contests] = useContests(electionId)
   const history = useHistory()
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
 
@@ -113,9 +113,7 @@ const Review: React.FC<IProps> = ({
     !!standardizations && !(standardizationNeeded && standardizationOutstanding)
 
   const setupComplete =
-    !!jurisdictions &&
-    !!contests &&
-    isSetupComplete(jurisdictions, contests, auditSettings)
+    !!jurisdictions && isSetupComplete(jurisdictions, contests, auditSettings)
   const shouldLoadSampleSizes = setupComplete && standardizationComplete
   const sampleSizesResponse = useSampleSizes(
     electionId,
@@ -123,7 +121,7 @@ const Review: React.FC<IProps> = ({
     shouldLoadSampleSizes
   )
 
-  if (!jurisdictions || !contests) return null // Still loading
+  if (!jurisdictions) return null // Still loading
 
   const {
     electionName,

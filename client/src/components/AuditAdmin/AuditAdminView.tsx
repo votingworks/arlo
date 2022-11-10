@@ -142,6 +142,7 @@ const AuditAdminView: React.FC = () => {
               menuItems={menuItems}
               auditSettings={auditSettings}
               startNextRound={startNextRound}
+              contests={contests}
             />
           </Inner>
         </Wrapper>

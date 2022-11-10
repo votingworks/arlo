@@ -4,7 +4,7 @@ import Participants from './Participants/Participants'
 import Contests from './Contests/Contests'
 import Settings from './Settings/Settings'
 import Review from './Review/Review'
-import { ElementType } from '../../../types'
+import { ElementType, IContest } from '../../../types'
 import { ISidebarMenuItem } from '../../Atoms/Sidebar'
 import { ISampleSizes } from '../useRoundsAuditAdmin'
 import { IAuditSettings } from '../../useAuditSettings'
@@ -31,6 +31,7 @@ interface IProps {
   refresh: () => void
   auditSettings: IAuditSettings
   startNextRound: (sampleSizes: ISampleSizes) => Promise<boolean>
+  contests: IContest[]
 }
 
 const Setup: React.FC<IProps> = ({
@@ -39,6 +40,7 @@ const Setup: React.FC<IProps> = ({
   refresh,
   auditSettings,
   startNextRound,
+  contests,
 }) => {
   const activeStage = menuItems.find(m => m.id === stage)
   const nextStage: ISidebarMenuItem | undefined =
@@ -96,6 +98,7 @@ const Setup: React.FC<IProps> = ({
           refresh={refresh}
           startNextRound={startNextRound}
           auditSettings={auditSettings}
+          contests={contests}
         />
       )
     /* istanbul ignore next */
