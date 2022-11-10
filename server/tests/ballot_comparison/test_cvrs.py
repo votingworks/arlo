@@ -2254,7 +2254,7 @@ def test_hart_cvr_upload_with_duplicate_batches_in_manifest(
                 "status": ProcessingStatus.ERRORED,
                 "startedAt": assert_is_date,
                 "completedAt": assert_is_date,
-                "error": "Batch names in ballot manifest must be unique. Found duplicate batch name: BATCH1.If you have multiple tabulators that use the same batch names, add a Tabulator column to the ballot manifest and upload a separate CVR export for each tabulator.",
+                "error": "Batch names in ballot manifest must be unique. Found duplicate batch name: BATCH1. If you have multiple tabulators that use the same batch names, add a Tabulator column to the ballot manifest and upload a separate CVR export for each tabulator.",
                 "workProgress": 0,
                 "workTotal": manifest_num_ballots,
             },

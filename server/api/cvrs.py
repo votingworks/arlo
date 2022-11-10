@@ -996,7 +996,7 @@ def parse_hart_cvrs(
     if not use_cvr_zip_file_names_as_tabulator_names and duplicate_batch_name:
         raise UserError(
             "Batch names in ballot manifest must be unique. "
-            f"Found duplicate batch name: {duplicate_batch_name}."
+            f"Found duplicate batch name: {duplicate_batch_name}. "
             "If you have multiple tabulators that use the same batch names, add a Tabulator "
             "column to the ballot manifest and upload a separate CVR export for each tabulator."
         )
