@@ -57,9 +57,7 @@ Cypress.Commands.add('logout', email => {
   cy.intercept('/auth/logout').as('logout')
   cy.intercept('/api/me').as('me')
   if (email) {
-    cy.findAllByText(email)
-      .eq(0)
-      .click()
+    cy.findByRole('button', { name: new RegExp(email) }).click()
   }
   cy.findByRole('link', { name: 'Log out' }).click()
   cy.wait('@logout')
