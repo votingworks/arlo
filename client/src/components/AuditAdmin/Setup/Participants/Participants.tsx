@@ -4,7 +4,7 @@ import FormButtonBar from '../../../Atoms/Form/FormButtonBar'
 import FormButton from '../../../Atoms/Form/FormButton'
 import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
 import FormWrapper from '../../../Atoms/Form/FormWrapper'
-import useAuditSettings from '../../../useAuditSettings'
+import { IAuditSettings } from '../../../useAuditSettings'
 import {
   useJurisdictionsFile,
   useStandardizedContestsFile,
@@ -15,28 +15,30 @@ import CSVFile from '../../../Atoms/CSVForm'
 interface IProps {
   nextStage: ISidebarMenuItem
   refresh: () => void
+  auditType: IAuditSettings['auditType']
 }
 
-const Participants: React.FC<IProps> = ({ nextStage, refresh }: IProps) => {
+const Participants: React.FC<IProps> = ({
+  nextStage,
+  refresh,
+  auditType,
+}: IProps) => {
   const { electionId } = useParams<{ electionId: string }>()
-  const [auditSettings] = useAuditSettings(electionId)
   const [jurisdictionsFile, uploadJurisdictionsFile] = useJurisdictionsFile(
     electionId
   )
   const [
     standardizedContestsFile,
     uploadStandardizedContestsFile,
-  ] = useStandardizedContestsFile(electionId, auditSettings, jurisdictionsFile)
+  ] = useStandardizedContestsFile(electionId, auditType, jurisdictionsFile)
 
-  const isBallotComparison =
-    auditSettings && auditSettings.auditType === 'BALLOT_COMPARISON'
-  const isHybrid = auditSettings && auditSettings.auditType === 'HYBRID'
+  const isBallotComparison = auditType === 'BALLOT_COMPARISON'
+  const isHybrid = auditType === 'HYBRID'
 
   // Once the file uploads are complete, we need to notify the setupMenuItems to
   // refresh and unlock the next stage.
   useEffect(() => {
     if (
-      auditSettings &&
       jurisdictionsFile &&
       isFileProcessed(jurisdictionsFile) &&
       (!(isBallotComparison || isHybrid) ||
@@ -48,7 +50,6 @@ const Participants: React.FC<IProps> = ({ nextStage, refresh }: IProps) => {
   })
 
   if (
-    !auditSettings ||
     !jurisdictionsFile ||
     ((isBallotComparison || isHybrid) && !standardizedContestsFile)
   )

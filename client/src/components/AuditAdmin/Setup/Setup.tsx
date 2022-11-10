@@ -29,7 +29,7 @@ interface IProps {
   stage: ElementType<typeof setupStages>
   menuItems: ISidebarMenuItem[]
   refresh: () => void
-  auditType: IAuditSettings['auditType']
+  auditSettings: IAuditSettings
   startNextRound: (sampleSizes: ISampleSizes) => Promise<boolean>
 }
 
@@ -37,7 +37,7 @@ const Setup: React.FC<IProps> = ({
   stage,
   menuItems,
   refresh,
-  auditType,
+  auditSettings,
   startNextRound,
 }) => {
   const activeStage = menuItems.find(m => m.id === stage)
@@ -45,10 +45,17 @@ const Setup: React.FC<IProps> = ({
     menuItems[menuItems.indexOf(activeStage!) + 1]
   const prevStage: ISidebarMenuItem | undefined =
     menuItems[menuItems.indexOf(activeStage!) - 1]
+  const { auditType } = auditSettings
   switch (stage) {
     case 'participants':
       // prevStage === undefined, so don't send it
-      return <Participants nextStage={nextStage!} refresh={refresh} />
+      return (
+        <Participants
+          nextStage={nextStage!}
+          refresh={refresh}
+          auditType={auditType}
+        />
+      )
     case 'target-contests':
       return (
         <Contests
@@ -87,6 +94,7 @@ const Setup: React.FC<IProps> = ({
           locked={activeStage!.state === 'locked'}
           refresh={refresh}
           startNextRound={startNextRound}
+          auditSettings={auditSettings}
         />
       )
     /* istanbul ignore next */

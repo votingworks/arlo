@@ -140,7 +140,7 @@ const AuditAdminView: React.FC = () => {
               stage={stage}
               refresh={refresh}
               menuItems={menuItems}
-              auditType={auditSettings.auditType}
+              auditSettings={auditSettings}
               startNextRound={startNextRound}
             />
           </Inner>

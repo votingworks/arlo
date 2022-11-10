@@ -38,7 +38,6 @@ import { pluralize } from '../../../../utils/string'
 import { ErrorLabel } from '../../../Atoms/Form/_helpers'
 import { IContest } from '../../../../types'
 import { sum } from '../../../../utils/number'
-import useAuditSettings from '../../../useAuditSettings'
 import {
   useJurisdictionsDeprecated,
   IJurisdiction,
@@ -53,6 +52,7 @@ import useContestNameStandardizations, {
   IContestNameStandardizations,
 } from '../../../useContestNameStandardizations'
 import { isSetupComplete, allCvrsUploaded } from '../../../Atoms/StatusBox'
+import { IAuditSettings } from '../../../useAuditSettings'
 
 const percentFormatter = new Intl.NumberFormat(undefined, {
   style: 'percent',
@@ -67,6 +67,7 @@ interface IProps {
   prevStage: ISidebarMenuItem
   refresh: () => void
   startNextRound: (sampleSizes: ISampleSizes) => Promise<boolean>
+  auditSettings: IAuditSettings
 }
 
 const Review: React.FC<IProps> = ({
@@ -74,14 +75,14 @@ const Review: React.FC<IProps> = ({
   locked,
   refresh,
   startNextRound,
+  auditSettings,
 }: IProps) => {
   const { electionId } = useParams<{ electionId: string }>()
-  const [auditSettings] = useAuditSettings(electionId)
   const jurisdictions = useJurisdictionsDeprecated(electionId)
   const [jurisdictionsFile] = useJurisdictionsFile(electionId)
   const [standardizedContestsFile] = useStandardizedContestsFile(
     electionId,
-    auditSettings
+    auditSettings.auditType
   )
   const [contests] = useContests(electionId)
   const history = useHistory()
@@ -114,7 +115,6 @@ const Review: React.FC<IProps> = ({
   const setupComplete =
     !!jurisdictions &&
     !!contests &&
-    !!auditSettings &&
     isSetupComplete(jurisdictions, contests, auditSettings)
   const shouldLoadSampleSizes = setupComplete && standardizationComplete
   const sampleSizesResponse = useSampleSizes(
@@ -123,7 +123,7 @@ const Review: React.FC<IProps> = ({
     shouldLoadSampleSizes
   )
 
-  if (!jurisdictions || !contests || !auditSettings) return null // Still loading
+  if (!jurisdictions || !contests) return null // Still loading
 
   const {
     electionName,
@@ -138,7 +138,7 @@ const Review: React.FC<IProps> = ({
   )
 
   const cvrsUploaded =
-    !['BALLOT_COMPARISON', 'HYBRID'].includes(auditSettings.auditType) ||
+    !['BALLOT_COMPARISON', 'HYBRID'].includes(auditType) ||
     allCvrsUploaded(participatingJurisdictions)
 
   const numManifestUploadsComplete = participatingJurisdictions.filter(j =>
