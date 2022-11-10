@@ -404,8 +404,11 @@ class Batch(BaseModel):
         order_by="BatchResultTallySheet.created_at",
     )
 
+    # Match our session fields
     last_edited_by_user_type = Column(String(200))
-    last_edited_by_user_key = Column(String(200))
+    last_edited_by_user_key = Column(
+        String(200)
+    )  # An email for jurisdiction admins, a user ID for tally entry users
     last_edited_by_support_user_email = Column(String(200))
 
     __table_args__ = (UniqueConstraint("jurisdiction_id", "tabulator", "name"),)
