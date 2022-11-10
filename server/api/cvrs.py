@@ -1001,9 +1001,11 @@ def parse_hart_cvrs(
             "column to the ballot manifest and upload a separate CVR export for each tabulator."
         )
     batches_by_key = {
-        (batch.tabulator, batch.name)
-        if use_cvr_zip_file_names_as_tabulator_names
-        else batch.name: batch
+        (
+            (batch.tabulator, batch.name)
+            if use_cvr_zip_file_names_as_tabulator_names
+            else batch.name
+        ): batch
         for batch in jurisdiction.batches
     }
 
