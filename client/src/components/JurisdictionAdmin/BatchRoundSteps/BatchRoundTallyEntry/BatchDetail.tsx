@@ -84,10 +84,6 @@ const BatchResultTallySheetButtonRow = styled(ButtonRow).attrs({
   min-height: 30px;
 `
 
-const LastEditedByText = styled.span`
-  color: ${Colors.GRAY1};
-`
-
 const RowSpacer = styled.div`
   flex-grow: 1;
 `
@@ -547,9 +543,9 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
 
         <BatchResultTallySheetButtonRow>
           {batch.lastEditedBy && !isEditing && (
-            <LastEditedByText>
-              Last edited by <strong>{batch.lastEditedBy}</strong>
-            </LastEditedByText>
+            <span className={Classes.TEXT_MUTED}>
+              Last edited by: {batch.lastEditedBy}
+            </span>
           )}
           <RowSpacer />
           {(() => {
