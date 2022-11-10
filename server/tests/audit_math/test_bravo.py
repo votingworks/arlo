@@ -506,6 +506,28 @@ def test_compute_risk_empty(contests):
         )
 
 
+def test_compute_risk_zero_test_statistic():
+    # This case caused a divide by zero error because the test statistic for
+    # cand1/cand4 was 0.
+    contest_data = {
+        "cand1": 700,
+        "cand2": 200,
+        "cand3": 1,
+        "cand4": 0,
+        "cand5": 10,
+        "ballots": 1000,
+        "numWinners": 1,
+        "votesAllowed": 1,
+    }
+    contest = Contest("Contest", contest_data)
+    sample_results = {
+        "Contest": {"cand1": 7, "cand2": 0, "cand3": 0, "cand4": 12, "cand5": 3}
+    }
+    computed_p, res = bravo.compute_risk(5, contest, sample_results)
+    assert computed_p[("cand1", "cand4")] == 1.0
+    assert res is False
+
+
 def test_tied_contest():
     contest_data = {
         "cand1": 500,

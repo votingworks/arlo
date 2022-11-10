@@ -523,7 +523,7 @@ def compute_risk(
 
     finished = True
     for pair in T:
-        raw = 1 / T[pair]
+        raw = 1 / T[pair] if T[pair] > 0 else Decimal(1)
         measurements[pair] = min(float(raw), 1.0)
 
         if raw > alpha:
