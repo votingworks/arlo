@@ -1,6 +1,6 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
-import { H4, Card } from '@blueprintjs/core'
+import { H4, Card, Callout } from '@blueprintjs/core'
 import { Wrapper, Inner } from '../Atoms/Wrapper'
 import useRoundsJurisdictionAdmin from './useRoundsJurisdictionAdmin'
 import {
@@ -8,6 +8,7 @@ import {
   useBatchTallies,
   useCVRs,
   FileProcessingStatus,
+  isFileProcessed,
 } from '../useCSV'
 import useAuditBoards from '../useAuditBoards'
 import useAuditSettingsJurisdictionAdmin from './useAuditSettingsJurisdictionAdmin'
@@ -77,6 +78,14 @@ const JurisdictionAdminView: React.FC = () => {
     j => j.id === jurisdictionId
   )!
 
+  const isManifestUploaded = isFileProcessed(ballotManifest)
+  const isBatchTalliesUploaded =
+    !isBatchComparison || isFileProcessed(batchTallies!)
+  const isCvrsUploaded =
+    !(isBallotComparison || isHybrid) || isFileProcessed(cvrs!)
+  const allFilesUploaded =
+    isManifestUploaded && isBatchTalliesUploaded && isCvrsUploaded
+
   if (!isAuditStarted(rounds)) {
     return (
       <Wrapper>
@@ -89,6 +98,15 @@ const JurisdictionAdminView: React.FC = () => {
             />
           </StatusBar>
           <Column gap="15px">
+            {allFilesUploaded && (
+              <Callout intent="success" icon="tick">
+                <strong>Audit setup complete</strong>
+                <div>
+                  Once your audit administrator starts the audit, check back
+                  here to find out which ballots to audit.
+                </div>
+              </Callout>
+            )}
             {isBatchComparison && isBatchInventoryEnabled && (
               <Card elevation={1}>
                 <H4>Batch Inventory</H4>

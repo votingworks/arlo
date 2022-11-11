@@ -92,6 +92,7 @@ describe('JA setup', () => {
       userEvent.upload(screen.getByLabelText('Select a file...'), manifestFile)
       userEvent.click(uploadButton)
       await screen.findByText('Uploaded at 6/8/2020, 9:39:14 PM.')
+      screen.getByText('Audit setup complete')
 
       // We test delete after submit so that we can check that the input is
       // cleared of the originally submitted file
@@ -126,6 +127,7 @@ describe('JA setup', () => {
       userEvent.upload(talliesInput, talliesFile)
       userEvent.click(talliesButton)
       await screen.findByText('Uploaded at 7/8/2020, 9:39:14 PM.')
+      screen.getByText('Audit setup complete')
     })
   })
 
@@ -252,6 +254,7 @@ describe('JA setup', () => {
         name: 'ClearBallot',
         selected: true,
       })
+      screen.getByText('Audit setup complete')
     })
   })
 
