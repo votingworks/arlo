@@ -89,8 +89,12 @@ def serialize_batch(batch: Batch) -> JSONDict:
 def construct_batch_last_edited_by_string(batch: Batch) -> Optional[str]:
     if batch.last_edited_by_support_user_email:
         return batch.last_edited_by_support_user_email
-    if batch.last_edited_by_jurisdiction_admin_email:
-        return batch.last_edited_by_jurisdiction_admin_email
+    if batch.last_edited_by_user_id:
+        user = batch.last_edited_by_user
+        assert (
+            user is not None
+        ), f"Unable to find user with ID {batch.last_edited_by_user_id}"
+        return user.email
     if batch.last_edited_by_tally_entry_user_id:
         tally_entry_user = batch.last_edited_by_tally_entry_user
         assert (
@@ -248,15 +252,16 @@ def record_batch_results(
     support_user_email = get_support_user(session)
     if support_user_email:
         batch.last_edited_by_support_user_email = support_user_email
-        batch.last_edited_by_jurisdiction_admin_email = None
+        batch.last_edited_by_user_id = None
         batch.last_edited_by_tally_entry_user_id = None
     elif user_type == UserType.JURISDICTION_ADMIN:
+        user = User.query.filter_by(email=user_key).one()
         batch.last_edited_by_support_user_email = None
-        batch.last_edited_by_jurisdiction_admin_email = user_key
+        batch.last_edited_by_user_id = user.id
         batch.last_edited_by_tally_entry_user_id = None
     elif user_type == UserType.TALLY_ENTRY:
         batch.last_edited_by_support_user_email = None
-        batch.last_edited_by_jurisdiction_admin_email = None
+        batch.last_edited_by_user_id = None
         batch.last_edited_by_tally_entry_user_id = user_key
 
     db_session.commit()
