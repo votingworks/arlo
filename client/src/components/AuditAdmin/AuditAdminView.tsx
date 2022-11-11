@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useParams, Redirect } from 'react-router-dom'
-import uuidv4 from 'uuidv4'
 import { Spinner, H3, Intent } from '@blueprintjs/core'
+import { useQueryClient } from 'react-query'
 import {
   useRounds,
   isDrawSampleComplete,
@@ -10,8 +10,9 @@ import {
   useStartNextRound,
   useUndoRoundStart,
   ISampleSizes,
+  roundsQueryKey,
 } from './useRoundsAuditAdmin'
-import { useJurisdictions } from '../useJurisdictions'
+import { useJurisdictions, jurisdictionsQueryKey } from '../useJurisdictions'
 import { useContests } from '../useContests'
 import { useAuditSettings } from '../useAuditSettings'
 import { Wrapper, Inner } from '../Atoms/Wrapper'
@@ -27,7 +28,6 @@ interface IParams {
 
 const AuditAdminView: React.FC = () => {
   const { electionId, view } = useParams<IParams>()
-  const [refreshId] = useState(uuidv4())
 
   const roundsQuery = useRounds(electionId, {
     refetchInterval: rounds =>
@@ -36,9 +36,10 @@ const AuditAdminView: React.FC = () => {
   const startNextRoundMutation = useStartNextRound(electionId)
   const undoRoundStartMutation = useUndoRoundStart(electionId)
 
-  const jurisdictionsQuery = useJurisdictions(electionId, refreshId)
+  const jurisdictionsQuery = useJurisdictions(electionId)
   const contestsQuery = useContests(electionId)
   const auditSettingsQuery = useAuditSettings(electionId)
+  const queryClient = useQueryClient()
 
   if (
     !jurisdictionsQuery.isSuccess ||
@@ -125,7 +126,12 @@ const AuditAdminView: React.FC = () => {
             contests={contests}
             auditSettings={auditSettings}
           >
-            <RefreshTag refresh={refresh} />
+            <RefreshTag
+              refresh={() => {
+                queryClient.invalidateQueries(roundsQueryKey(electionId))
+                queryClient.invalidateQueries(jurisdictionsQueryKey(electionId))
+              }}
+            />
           </AuditAdminStatusBox>
           {!drawSampleError(rounds) && (
             <Inner>

@@ -43,7 +43,7 @@ export const drawSampleError = (rounds: IRound[]): string | null =>
 export const isAuditStarted = (rounds: IRound[]): boolean =>
   rounds.length > 0 && isDrawSampleComplete(rounds) && !drawSampleError(rounds)
 
-const roundsQueryKey = (electionId: string) => [
+export const roundsQueryKey = (electionId: string): string[] => [
   'elections',
   electionId,
   'rounds',
