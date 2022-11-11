@@ -83,7 +83,7 @@ const JurisdictionAdminView: React.FC = () => {
     !isBatchComparison || isFileProcessed(batchTallies!)
   const isCvrsUploaded =
     !(isBallotComparison || isHybrid) || isFileProcessed(cvrs!)
-  const allFilesUploaded =
+  const areAllFilesUploaded =
     isManifestUploaded && isBatchTalliesUploaded && isCvrsUploaded
 
   if (!isAuditStarted(rounds)) {
@@ -98,7 +98,7 @@ const JurisdictionAdminView: React.FC = () => {
             />
           </StatusBar>
           <Column gap="15px">
-            {allFilesUploaded && (
+            {areAllFilesUploaded && (
               <Callout intent="success" icon="tick">
                 <strong>Audit setup complete</strong>
                 <div>
