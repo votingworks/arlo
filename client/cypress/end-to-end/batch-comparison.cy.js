@@ -147,7 +147,10 @@ describe('Batch Comparison', () => {
               // Switch back to tally entry user, who should now be logged in
               cy.setCookie('session', tallyEntryCookie.value, tallyEntryCookie)
               cy.visit('/tally-entry')
-              cy.findByRole('heading', { name: 'Enter Tallies' })
+              cy.findByRole('heading', {
+                name: 'Enter Tallies',
+                current: 'step',
+              })
             })
         })
       })
