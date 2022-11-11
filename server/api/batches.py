@@ -132,6 +132,8 @@ def list_batches_for_jurisdiction(
                 BatchResultTallySheet.results
             )
         )
+        .options(joinedload(Batch.last_edited_by_user))
+        .options(joinedload(Batch.last_edited_by_tally_entry_user))
         .all()
     )
     results_finalized = BatchResultsFinalized.query.filter_by(
