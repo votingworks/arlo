@@ -19,6 +19,7 @@ from sqlalchemy import (
     ForeignKeyConstraint,
     UniqueConstraint,
     PrimaryKeyConstraint,
+    CheckConstraint,
 )
 from sqlalchemy.orm import relationship, backref, validates
 from sqlalchemy.types import TypeDecorator
@@ -404,14 +405,24 @@ class Batch(BaseModel):
         order_by="BatchResultTallySheet.created_at",
     )
 
-    # Match our session fields
-    last_edited_by_user_type = Column(String(200))
-    last_edited_by_user_key = Column(
-        String(200)
-    )  # An email for jurisdiction admins, a user ID for tally entry users
+    # Only one of the following should be populated, enforced via a check constraint defined below
     last_edited_by_support_user_email = Column(String(200))
+    last_edited_by_jurisdiction_admin_email = Column(String(200))
+    last_edited_by_tally_entry_user_id = Column(
+        String(200), ForeignKey("tally_entry_user.id", ondelete="set null")
+    )
 
-    __table_args__ = (UniqueConstraint("jurisdiction_id", "tabulator", "name"),)
+    last_edited_by_tally_entry_user = relationship("TallyEntryUser")
+
+    __table_args__ = (
+        UniqueConstraint("jurisdiction_id", "tabulator", "name"),
+        CheckConstraint(
+            "(cast(last_edited_by_support_user_email is not null as int) +"
+            " cast(last_edited_by_jurisdiction_admin_email is not null as int) +"
+            " cast(last_edited_by_tally_entry_user_id is not null as int)) <= 1",
+            "only_one_of_last_edited_by_fields_is_specified_check",
+        ),
+    )
 
 
 class Contest(BaseModel):

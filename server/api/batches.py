@@ -89,17 +89,16 @@ def serialize_batch(batch: Batch) -> JSONDict:
 def construct_batch_last_edited_by_string(batch: Batch) -> Optional[str]:
     if batch.last_edited_by_support_user_email:
         return batch.last_edited_by_support_user_email
-    if batch.last_edited_by_user_type == UserType.JURISDICTION_ADMIN:
-        return batch.last_edited_by_user_key  # Email
-    if batch.last_edited_by_user_type == UserType.TALLY_ENTRY:
-        tally_entry_user_id = batch.last_edited_by_user_key
-        tally_entry_user = TallyEntryUser.query.filter_by(
-            id=tally_entry_user_id
-        ).one_or_none()
+    if batch.last_edited_by_jurisdiction_admin_email:
+        return batch.last_edited_by_jurisdiction_admin_email
+    if batch.last_edited_by_tally_entry_user_id:
+        tally_entry_user = batch.last_edited_by_tally_entry_user
         assert (
             tally_entry_user is not None
-        ), f"Unable to find tally entry user with ID {tally_entry_user_id}"
-        members = [tally_entry_user.member_1]
+        ), f"Unable to find tally entry user with ID {batch.last_edited_by_tally_entry_user_id}"
+        members = []
+        if tally_entry_user.member_1 is not None:
+            members.append(tally_entry_user.member_1)
         if tally_entry_user.member_2 is not None:
             members.append(tally_entry_user.member_2)
         return ", ".join(members)
@@ -247,9 +246,18 @@ def record_batch_results(
 
     user_type, user_key = get_loggedin_user(session)
     support_user_email = get_support_user(session)
-    batch.last_edited_by_user_type = user_type
-    batch.last_edited_by_user_key = user_key
-    batch.last_edited_by_support_user_email = support_user_email
+    if support_user_email:
+        batch.last_edited_by_support_user_email = support_user_email
+        batch.last_edited_by_jurisdiction_admin_email = None
+        batch.last_edited_by_tally_entry_user_id = None
+    elif user_type == UserType.JURISDICTION_ADMIN:
+        batch.last_edited_by_support_user_email = None
+        batch.last_edited_by_jurisdiction_admin_email = user_key
+        batch.last_edited_by_tally_entry_user_id = None
+    elif user_type == UserType.TALLY_ENTRY:
+        batch.last_edited_by_support_user_email = None
+        batch.last_edited_by_jurisdiction_admin_email = None
+        batch.last_edited_by_tally_entry_user_id = user_key
 
     db_session.commit()
 
