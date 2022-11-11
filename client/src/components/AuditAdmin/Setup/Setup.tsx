@@ -1,13 +1,19 @@
 /* eslint-disable react/prop-types */
-import React from 'react'
+import React, { useState } from 'react'
 import Participants from './Participants/Participants'
 import Contests from './Contests/Contests'
 import Settings from './Settings/Settings'
 import Review from './Review/Review'
 import { ElementType, IContest } from '../../../types'
-import { ISidebarMenuItem } from '../../Atoms/Sidebar'
+import Sidebar from '../../Atoms/Sidebar'
 import { ISampleSizes } from '../useRoundsAuditAdmin'
 import { IAuditSettings } from '../../useAuditSettings'
+import { Inner } from '../../Atoms/Wrapper'
+import {
+  useJurisdictionsFile,
+  useStandardizedContestsFile,
+  isFileProcessed,
+} from '../../useCSV'
 
 export const setupStages = [
   'participants',
@@ -17,7 +23,9 @@ export const setupStages = [
   'review',
 ] as const
 
-export const stageTitles: { [keys in typeof setupStages[number]]: string } = {
+type Stage = ElementType<typeof setupStages>
+
+const stageTitles: { [stage in Stage]: string } = {
   participants: 'Participants',
   'target-contests': 'Target Contests',
   'opportunistic-contests': 'Opportunistic Contests',
@@ -26,85 +34,126 @@ export const stageTitles: { [keys in typeof setupStages[number]]: string } = {
 }
 
 interface IProps {
-  stage: ElementType<typeof setupStages>
-  menuItems: ISidebarMenuItem[]
-  refresh: () => void
+  electionId: string
   auditSettings: IAuditSettings
   startNextRound: (sampleSizes: ISampleSizes) => Promise<boolean>
   contests: IContest[]
+  isAuditStarted: boolean
 }
 
 const Setup: React.FC<IProps> = ({
-  stage,
-  menuItems,
-  refresh,
+  electionId,
   auditSettings,
   startNextRound,
   contests,
+  isAuditStarted,
 }) => {
-  const activeStage = menuItems.find(m => m.id === stage)
-  const nextStage: ISidebarMenuItem | undefined =
-    menuItems[menuItems.indexOf(activeStage!) + 1]
-  const prevStage: ISidebarMenuItem | undefined =
-    menuItems[menuItems.indexOf(activeStage!) - 1]
   const { auditType } = auditSettings
-  switch (stage) {
-    case 'participants':
-      // prevStage === undefined, so don't send it
-      return (
-        <Participants
-          nextStage={nextStage!}
-          refresh={refresh}
-          auditType={auditType}
-        />
-      )
-    case 'target-contests':
-      return (
-        <Contests
-          isTargeted
-          key="targeted"
-          nextStage={nextStage!}
-          prevStage={prevStage!}
-          locked={activeStage!.state === 'locked'}
-          auditType={auditType}
-        />
-      )
-    case 'opportunistic-contests':
-      return (
-        <Contests
-          isTargeted={false}
-          key="opportunistic"
-          nextStage={nextStage!}
-          prevStage={prevStage!}
-          locked={activeStage!.state === 'locked'}
-          auditType={auditType}
-        />
-      )
-    case 'settings':
-      return (
-        <Settings
-          nextStage={nextStage!}
-          prevStage={prevStage!}
-          locked={activeStage!.state === 'locked'}
-          auditSettings={auditSettings}
-        />
-      )
-    case 'review':
-      // nextStage === undefined, so don't send it
-      return (
-        <Review
-          prevStage={prevStage!}
-          locked={activeStage!.state === 'locked'}
-          refresh={refresh}
-          startNextRound={startNextRound}
-          auditSettings={auditSettings}
-          contests={contests}
-        />
-      )
-    /* istanbul ignore next */
-    default:
-      return null
+  const [currentStage, setCurrentStage] = useState<Stage>(
+    isAuditStarted ? 'review' : 'participants'
+  )
+
+  const [jurisdictionsFile] = useJurisdictionsFile(electionId)
+  const [standardizedContestsFile] = useStandardizedContestsFile(
+    electionId,
+    auditType
+  )
+  const needsStandardizedContestsFile =
+    auditType === 'BALLOT_COMPARISON' || auditType === 'HYBRID'
+
+  if (
+    !jurisdictionsFile ||
+    (needsStandardizedContestsFile && !standardizedContestsFile)
+  )
+    return null
+
+  const areFileUploadsComplete =
+    isFileProcessed(jurisdictionsFile) &&
+    (!needsStandardizedContestsFile ||
+      isFileProcessed(standardizedContestsFile!))
+
+  const stages: readonly Stage[] =
+    auditSettings.auditType === 'BATCH_COMPARISON'
+      ? setupStages.filter(stage => stage !== 'opportunistic-contests')
+      : setupStages
+
+  const goToNextStage = () => {
+    setCurrentStage(stages[stages.indexOf(currentStage) + 1])
   }
+
+  const goToPrevStage = () => {
+    setCurrentStage(stages[stages.indexOf(currentStage) - 1])
+  }
+
+  return (
+    <Inner>
+      <Sidebar
+        title="Audit Setup"
+        menuItems={stages.map(stage => ({
+          id: stage,
+          text: stageTitles[stage],
+          active: currentStage === stage,
+          disabled:
+            isAuditStarted ||
+            // If still working on file uploads, disable the rest of the stages
+            (stage !== 'participants' && !areFileUploadsComplete),
+          onClick: () => setCurrentStage(stage),
+        }))}
+      />
+      {(() => {
+        switch (currentStage) {
+          case 'participants':
+            return (
+              <Participants
+                goToNextStage={goToNextStage}
+                auditType={auditType}
+              />
+            )
+          case 'target-contests':
+            return (
+              <Contests
+                isTargeted
+                key="targeted"
+                goToPrevStage={goToPrevStage}
+                goToNextStage={goToNextStage}
+                auditType={auditType}
+              />
+            )
+          case 'opportunistic-contests':
+            return (
+              <Contests
+                isTargeted={false}
+                key="opportunistic"
+                goToPrevStage={goToPrevStage}
+                goToNextStage={goToNextStage}
+                auditType={auditType}
+              />
+            )
+          case 'settings':
+            return (
+              <Settings
+                goToPrevStage={goToPrevStage}
+                goToNextStage={goToNextStage}
+                auditSettings={auditSettings}
+              />
+            )
+          case 'review':
+            return (
+              <Review
+                goToPrevStage={goToPrevStage}
+                startNextRound={startNextRound}
+                auditSettings={auditSettings}
+                contests={contests}
+                locked={isAuditStarted}
+              />
+            )
+          /* istanbul ignore next */
+          default:
+            return null
+        }
+      })()}
+    </Inner>
+  )
 }
 
 export default Setup

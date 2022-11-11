@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom'
 import equal from 'fast-deep-equal'
 import styled from 'styled-components'
 import { Formik, FormikProps, Field, FieldArray, ErrorMessage } from 'formik'
-import { Spinner, HTMLSelect } from '@blueprintjs/core'
+import { HTMLSelect } from '@blueprintjs/core'
 import FormWrapper from '../../../Atoms/Form/FormWrapper'
 import FormSection, {
   FormSectionDescription,
@@ -20,7 +20,6 @@ import {
 import FormButtonBar from '../../../Atoms/Form/FormButtonBar'
 import FormButton from '../../../Atoms/Form/FormButton'
 import schema from './schema'
-import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
 import { useContests, useUpdateContests } from '../../../useContests'
 import { useJurisdictionsDeprecated } from '../../../useJurisdictions'
 import { IContest, ICandidate } from '../../../../types'
@@ -39,17 +38,15 @@ const Select = styled(HTMLSelect)`
 
 interface IProps {
   isTargeted: boolean
-  nextStage: ISidebarMenuItem
-  prevStage: ISidebarMenuItem
-  locked: boolean
+  goToPrevStage: () => void
+  goToNextStage: () => void
   auditType: IAuditSettings['auditType']
 }
 
 const ContestForm: React.FC<IProps> = ({
   isTargeted,
-  nextStage,
-  prevStage,
-  locked,
+  goToPrevStage,
+  goToNextStage,
   auditType,
 }) => {
   const contestValues: IContest[] = [
@@ -99,9 +96,6 @@ const ContestForm: React.FC<IProps> = ({
     c => c.isTargeted === isTargeted
   )
 
-  /* istanbul ignore next */
-  if (isBatch && !isTargeted && nextStage.activate) nextStage.activate() // skip to next stage if on opportunistic contests screen and during a batch audit (until batch audits support multiple contests)
-
   const initialValues = {
     contests: formContests.length ? formContests : contestValues,
   }
@@ -113,11 +107,6 @@ const ContestForm: React.FC<IProps> = ({
     return (
       !isTargeted && (isObjectEmpty(touched) || equal(initialValues, values))
     )
-  }
-
-  const goToNextStage = () => {
-    if (nextStage.activate) nextStage.activate()
-    else throw new Error('Wrong menuItems passed in: activate() is missing')
   }
 
   const submit = async (values: { contests: IContest[] }) => {
@@ -193,7 +182,6 @@ const ContestForm: React.FC<IProps> = ({
                                       e.currentTarget.value
                                     )
                                   }
-                                  disabled={locked}
                                   value={values.contests[i].name}
                                   options={[
                                     { value: '' },
@@ -221,7 +209,6 @@ const ContestForm: React.FC<IProps> = ({
                                 <Field
                                   id={`contests[${i}].name`}
                                   name={`contests[${i}].name`}
-                                  disabled={locked}
                                   component={FormField}
                                 />
                               </label>
@@ -235,7 +222,6 @@ const ContestForm: React.FC<IProps> = ({
                             <Field
                               id={`contests[${i}].numWinners`}
                               name={`contests[${i}].numWinners`}
-                              disabled={locked}
                               component={FormField}
                               validate={testNumber()}
                             />
@@ -249,7 +235,6 @@ const ContestForm: React.FC<IProps> = ({
                             <Field
                               id={`contests[${i}].votesAllowed`}
                               name={`contests[${i}].votesAllowed`}
-                              disabled={locked}
                               component={FormField}
                               validate={testNumber()}
                             />
@@ -272,7 +257,6 @@ const ContestForm: React.FC<IProps> = ({
                                           Name of Candidate/Choice {j + 1}
                                           <Field
                                             name={`contests[${i}].choices[${j}].name`}
-                                            disabled={locked}
                                             component={FlexField}
                                           />
                                         </InputLabel>
@@ -280,37 +264,33 @@ const ContestForm: React.FC<IProps> = ({
                                           Votes for Candidate/Choice {j + 1}
                                           <Field
                                             name={`contests[${i}].choices[${j}].numVotes`}
-                                            disabled={locked}
                                             component={FlexField}
                                             validate={testNumber()}
                                           />
                                         </InputLabel>
-                                        {contest.choices.length > 2 &&
-                                          !locked && (
-                                            <Action
-                                              onClick={() =>
-                                                choicesArrayHelpers.remove(j)
-                                              }
-                                            >
-                                              Remove choice {j + 1}
-                                            </Action>
-                                          )}
+                                        {contest.choices.length > 2 && (
+                                          <Action
+                                            onClick={() =>
+                                              choicesArrayHelpers.remove(j)
+                                            }
+                                          >
+                                            Remove choice {j + 1}
+                                          </Action>
+                                        )}
                                       </InputFieldRow>
                                     </React.Fragment>
                                   )
                                 )}
-                                {!locked && (
-                                  <Action
-                                    onClick={() =>
-                                      choicesArrayHelpers.push({
-                                        name: '',
-                                        numVotes: '',
-                                      })
-                                    }
-                                  >
-                                    Add a new candidate/choice
-                                  </Action>
-                                )}
+                                <Action
+                                  onClick={() =>
+                                    choicesArrayHelpers.push({
+                                      name: '',
+                                      numVotes: '',
+                                    })
+                                  }
+                                >
+                                  Add a new candidate/choice
+                                </Action>
                               </TwoColumnSection>
                             </FormSection>
                           )}
@@ -328,7 +308,6 @@ const ContestForm: React.FC<IProps> = ({
                                 id={`contests[${i}].totalBallotsCast`}
                                 name={`contests[${i}].totalBallotsCast`}
                                 validate={testNumber()}
-                                disabled={locked}
                                 component={FormField}
                               />
                             </label>
@@ -381,26 +360,21 @@ const ContestForm: React.FC<IProps> = ({
               )}
             />
           </FormWrapper>
-          {nextStage.state === 'processing' ? (
-            <Spinner />
-          ) : (
-            <FormButtonBar>
-              <FormButton onClick={prevStage.activate}>Back</FormButton>
-              <FormButton
-                type="submit"
-                intent="primary"
-                loading={isSubmitting}
-                disabled={nextStage.state === 'locked'}
-                onClick={e => {
-                  e.preventDefault()
-                  if (isOpportunisticFormClean(touched, values)) goToNextStage()
-                  else handleSubmit()
-                }}
-              >
-                Save &amp; Next
-              </FormButton>
-            </FormButtonBar>
-          )}
+          <FormButtonBar>
+            <FormButton onClick={goToPrevStage}>Back</FormButton>
+            <FormButton
+              type="submit"
+              intent="primary"
+              loading={isSubmitting}
+              onClick={e => {
+                e.preventDefault()
+                if (isOpportunisticFormClean(touched, values)) goToNextStage()
+                else handleSubmit()
+              }}
+            >
+              Save &amp; Next
+            </FormButton>
+          </FormButtonBar>
         </form>
       )}
     </Formik>

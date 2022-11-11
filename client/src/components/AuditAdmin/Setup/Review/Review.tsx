@@ -21,7 +21,6 @@ import { Formik, FormikProps, getIn, Field } from 'formik'
 import styled from 'styled-components'
 import FormButtonBar from '../../../Atoms/Form/FormButtonBar'
 import FormButton from '../../../Atoms/Form/FormButton'
-import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
 import H2Title from '../../../Atoms/H2Title'
 import { testNumber } from '../../../utilities'
 import FormSection, {
@@ -63,17 +62,15 @@ interface IFormOptions {
 
 interface IProps {
   locked: boolean
-  prevStage: ISidebarMenuItem
-  refresh: () => void
+  goToPrevStage: () => void
   startNextRound: (sampleSizes: ISampleSizes) => Promise<boolean>
   auditSettings: IAuditSettings
   contests: IContest[]
 }
 
 const Review: React.FC<IProps> = ({
-  prevStage,
   locked,
-  refresh,
+  goToPrevStage,
   startNextRound,
   auditSettings,
   contests,
@@ -439,7 +436,6 @@ const Review: React.FC<IProps> = ({
           sampleSizes: IFormOptions
         }) => {
           if (await startNextRound(sampleSizes)) {
-            refresh()
             history.push(`/election/${electionId}/progress`)
           } else {
             // TEST TODO when withMockFetch works with error handling
@@ -689,7 +685,9 @@ const Review: React.FC<IProps> = ({
         )
       })()}
       <FormButtonBar>
-        <FormButton onClick={prevStage.activate}>Back</FormButton>
+        <FormButton disabled={locked} onClick={goToPrevStage}>
+          Back
+        </FormButton>
         <FormButton
           intent="primary"
           disabled={

@@ -2,10 +2,9 @@ import React from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { Formik, FormikProps, Field, ErrorMessage } from 'formik'
-import { RadioGroup, Radio, Spinner, HTMLSelect } from '@blueprintjs/core'
+import { RadioGroup, Radio, HTMLSelect } from '@blueprintjs/core'
 import FormButtonBar from '../../../Atoms/Form/FormButtonBar'
 import FormButton from '../../../Atoms/Form/FormButton'
-import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
 import FormWrapper from '../../../Atoms/Form/FormWrapper'
 import FormSection from '../../../Atoms/Form/FormSection'
 import { ErrorLabel } from '../../../Atoms/Form/_helpers'
@@ -15,7 +14,6 @@ import schema from './schema'
 import {
   IAuditSettings,
   useUpdateAuditSettings,
-  useAuditSettings,
 } from '../../../useAuditSettings'
 import { stateOptions } from './states'
 import { range } from '../../../../utils/array'
@@ -25,9 +23,8 @@ const Select = styled(HTMLSelect)`
 `
 
 interface IProps {
-  locked: boolean
-  nextStage: ISidebarMenuItem
-  prevStage: ISidebarMenuItem
+  goToPrevStage: () => void
+  goToNextStage: () => void
   auditSettings: IAuditSettings
 }
 
@@ -37,9 +34,8 @@ type IValues = Pick<
 >
 
 const Settings: React.FC<IProps> = ({
-  nextStage,
-  prevStage,
-  locked,
+  goToPrevStage,
+  goToNextStage,
   auditSettings,
 }: IProps) => {
   const { electionId } = useParams<{ electionId: string }>()
@@ -59,9 +55,7 @@ const Settings: React.FC<IProps> = ({
       ...values,
       riskLimit: parseNumber(values.riskLimit), // Formik stringifies internally
     })
-    /* istanbul ignore else */
-    if (nextStage.activate) nextStage.activate()
-    else throw new Error('Wrong menuItems passed in: activate() is missing')
+    goToNextStage()
   }
 
   const initialValues = {
@@ -99,7 +93,6 @@ const Settings: React.FC<IProps> = ({
                     onChange={(e: React.FormEvent<HTMLSelectElement>) =>
                       setFieldValue('state', e.currentTarget.value)
                     }
-                    disabled={locked}
                     value={values.state}
                     options={[{ value: '' }, ...stateOptions]}
                   />
@@ -115,7 +108,6 @@ const Settings: React.FC<IProps> = ({
                   id="election-name"
                   aria-labelledby="election-name-label"
                   name="electionName"
-                  disabled={locked}
                   component={FormField}
                 />
               </label>
@@ -134,7 +126,6 @@ const Settings: React.FC<IProps> = ({
                       )
                     }
                     selectedValue={values.online ? 'online' : 'offline'}
-                    disabled={locked}
                   >
                     <Radio value="online">Online</Radio>
                     <Radio value="offline">Offline</Radio>
@@ -150,7 +141,6 @@ const Settings: React.FC<IProps> = ({
                     id="risk-limit"
                     data-testid="risk-limit"
                     name="riskLimit"
-                    disabled={locked}
                     component={Select}
                     value={values.riskLimit}
                     onChange={(e: React.FormEvent<HTMLSelectElement>) =>
@@ -179,27 +169,21 @@ const Settings: React.FC<IProps> = ({
                   aria-labelledby="random-seed-label"
                   type="text"
                   name="randomSeed"
-                  disabled={locked}
                   component={FormField}
                 />
               </label>
             </FormSection>
           </FormWrapper>
-          {nextStage.state === 'processing' ? (
-            <Spinner />
-          ) : (
-            <FormButtonBar>
-              <FormButton onClick={prevStage.activate}>Back</FormButton>
-              <FormButton
-                intent="primary"
-                loading={isSubmitting}
-                disabled={nextStage.state === 'locked'}
-                onClick={handleSubmit}
-              >
-                Save &amp; Next
-              </FormButton>
-            </FormButtonBar>
-          )}
+          <FormButtonBar>
+            <FormButton onClick={goToPrevStage}>Back</FormButton>
+            <FormButton
+              intent="primary"
+              loading={isSubmitting}
+              onClick={handleSubmit}
+            >
+              Save &amp; Next
+            </FormButton>
+          </FormButtonBar>
         </form>
       )}
     </Formik>

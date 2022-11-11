@@ -1,8 +1,7 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useParams } from 'react-router-dom'
 import FormButtonBar from '../../../Atoms/Form/FormButtonBar'
 import FormButton from '../../../Atoms/Form/FormButton'
-import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
 import FormWrapper from '../../../Atoms/Form/FormWrapper'
 import { IAuditSettings } from '../../../useAuditSettings'
 import {
@@ -13,14 +12,12 @@ import {
 import CSVFile from '../../../Atoms/CSVForm'
 
 interface IProps {
-  nextStage: ISidebarMenuItem
-  refresh: () => void
+  goToNextStage: () => void
   auditType: IAuditSettings['auditType']
 }
 
 const Participants: React.FC<IProps> = ({
-  nextStage,
-  refresh,
+  goToNextStage,
   auditType,
 }: IProps) => {
   const { electionId } = useParams<{ electionId: string }>()
@@ -35,25 +32,16 @@ const Participants: React.FC<IProps> = ({
   const isBallotComparison = auditType === 'BALLOT_COMPARISON'
   const isHybrid = auditType === 'HYBRID'
 
-  // Once the file uploads are complete, we need to notify the setupMenuItems to
-  // refresh and unlock the next stage.
-  useEffect(() => {
-    if (
-      jurisdictionsFile &&
-      isFileProcessed(jurisdictionsFile) &&
-      (!(isBallotComparison || isHybrid) ||
-        (standardizedContestsFile &&
-          isFileProcessed(standardizedContestsFile))) &&
-      nextStage.state === 'locked'
-    )
-      refresh()
-  })
-
   if (
     !jurisdictionsFile ||
     ((isBallotComparison || isHybrid) && !standardizedContestsFile)
   )
     return null // Still loading
+
+  const areFileUploadsComplete =
+    isFileProcessed(jurisdictionsFile) &&
+    (!(isBallotComparison || isHybrid) ||
+      isFileProcessed(standardizedContestsFile!))
 
   return (
     <FormWrapper
@@ -91,8 +79,8 @@ const Participants: React.FC<IProps> = ({
         <FormButton
           type="submit"
           intent="primary"
-          disabled={nextStage.state === 'locked'}
-          onClick={() => nextStage.activate && nextStage.activate()}
+          disabled={!areFileUploadsComplete}
+          onClick={goToNextStage}
         >
           Next
         </FormButton>

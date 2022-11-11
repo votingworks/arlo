@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Menu, Spinner, IMenuItemProps } from '@blueprintjs/core'
+import { Menu, IMenuItemProps } from '@blueprintjs/core'
 import H2Title from './H2Title'
 
 const Wrapper = styled.div`
@@ -12,17 +12,14 @@ const Wrapper = styled.div`
   }
 `
 
-export interface ISidebarMenuItem {
+export interface ISidebarMenuItem
+  extends Pick<IMenuItemProps, 'text' | 'active' | 'disabled' | 'onClick'> {
   id: string
-  activate?: (e?: unknown | null, force?: boolean) => void
-  title: string
-  active: boolean
-  state: 'live' | 'processing' | 'locked'
 }
 
 interface IProps {
-  menuItems: ISidebarMenuItem[]
   title: string
+  menuItems: ISidebarMenuItem[]
 }
 
 const Sidebar: React.FC<IProps> = ({ menuItems, title }) => (
@@ -30,20 +27,10 @@ const Sidebar: React.FC<IProps> = ({ menuItems, title }) => (
     <H2Title>{title}</H2Title>
     <Menu>
       {menuItems.map((item, i) => {
-        const itemProps: IMenuItemProps = {
-          active: item.active,
-          text: item.title,
-          disabled: item.state !== 'live',
-          labelElement:
-            item.state === 'processing' ? (
-              <Spinner size={Spinner.SIZE_SMALL} />
-            ) : null,
-        }
-        if (item.activate) itemProps.onClick = item.activate
         return (
           <React.Fragment key={item.id}>
             {i > 0 && <Menu.Divider />}
-            <Menu.Item {...itemProps} />
+            <Menu.Item {...item} />
           </React.Fragment>
         )
       })}

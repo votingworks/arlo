@@ -14,13 +14,10 @@ import {
 import { useJurisdictions } from '../useJurisdictions'
 import { useContests } from '../useContests'
 import { useAuditSettings } from '../useAuditSettings'
-import { ElementType } from '../../types'
-import useSetupMenuItems from './useSetupMenuItems/useSetupMenuItems'
 import { Wrapper, Inner } from '../Atoms/Wrapper'
 import { AuditAdminStatusBox } from '../Atoms/StatusBox'
-import Sidebar from '../Atoms/Sidebar'
 import { RefreshTag } from '../Atoms/RefreshTag'
-import Setup, { setupStages } from './Setup/Setup'
+import Setup from './Setup/Setup'
 import Progress from './Progress/Progress'
 
 interface IParams {
@@ -30,7 +27,7 @@ interface IParams {
 
 const AuditAdminView: React.FC = () => {
   const { electionId, view } = useParams<IParams>()
-  const [refreshId, setRefreshId] = useState(uuidv4())
+  const [refreshId] = useState(uuidv4())
 
   const roundsQuery = useRounds(electionId, {
     refetchInterval: rounds =>
@@ -42,21 +39,6 @@ const AuditAdminView: React.FC = () => {
   const jurisdictionsQuery = useJurisdictions(electionId, refreshId)
   const contestsQuery = useContests(electionId)
   const auditSettingsQuery = useAuditSettings(electionId)
-
-  const isBallotComparison =
-    auditSettingsQuery.data?.auditType === 'BALLOT_COMPARISON'
-  const isHybrid = auditSettingsQuery.data?.auditType === 'HYBRID'
-  const [stage, setStage] = useState<ElementType<typeof setupStages>>(
-    'participants'
-  )
-  const [menuItems, refresh] = useSetupMenuItems(
-    stage,
-    setStage,
-    electionId,
-    !!isBallotComparison,
-    !!isHybrid,
-    setRefreshId
-  )
 
   if (
     !jurisdictionsQuery.isSuccess ||
@@ -70,16 +52,6 @@ const AuditAdminView: React.FC = () => {
   const contests = contestsQuery.data
   const rounds = roundsQuery.data
   const auditSettings = auditSettingsQuery.data
-
-  const isBatch = auditSettings.auditType === 'BATCH_COMPARISON'
-  const filteredMenuItems = menuItems.filter(({ id }) => {
-    switch (id as ElementType<typeof setupStages>) {
-      case 'opportunistic-contests':
-        return !isBatch
-      default:
-        return true
-    }
-  })
 
   if (rounds.length > 0 && !isDrawSampleComplete(rounds)) {
     return (
@@ -132,20 +104,14 @@ const AuditAdminView: React.FC = () => {
             jurisdictions={jurisdictions}
             contests={contests}
             auditSettings={auditSettings}
-          >
-            <RefreshTag refresh={refresh} />
-          </AuditAdminStatusBox>
-          <Inner>
-            <Sidebar title="Audit Setup" menuItems={filteredMenuItems} />
-            <Setup
-              stage={stage}
-              refresh={refresh}
-              menuItems={menuItems}
-              auditSettings={auditSettings}
-              startNextRound={startNextRound}
-              contests={contests}
-            />
-          </Inner>
+          />
+          <Setup
+            electionId={electionId}
+            auditSettings={auditSettings}
+            startNextRound={startNextRound}
+            contests={contests}
+            isAuditStarted={rounds.length > 0}
+          />
         </Wrapper>
       )
     case 'progress':
