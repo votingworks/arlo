@@ -6,6 +6,7 @@ import H2Title from './H2Title'
 const Wrapper = styled.div`
   margin-right: 30px;
   width: 250px;
+  flex-shrink: 0;
 
   ul.bp3-menu {
     padding-left: 0;
