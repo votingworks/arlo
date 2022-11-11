@@ -9,11 +9,11 @@ import Sidebar from '../../Atoms/Sidebar'
 import { ISampleSizes } from '../useRoundsAuditAdmin'
 import { IAuditSettings } from '../../useAuditSettings'
 import { Inner } from '../../Atoms/Wrapper'
+import { isFileProcessed } from '../../useCSV'
 import {
   useJurisdictionsFile,
   useStandardizedContestsFile,
-  isFileProcessed,
-} from '../../useCSV'
+} from '../../useFileUpload'
 
 export const setupStages = [
   'participants',
@@ -53,24 +53,25 @@ const Setup: React.FC<IProps> = ({
     isAuditStarted ? 'review' : 'participants'
   )
 
-  const [jurisdictionsFile] = useJurisdictionsFile(electionId)
-  const [standardizedContestsFile] = useStandardizedContestsFile(
-    electionId,
-    auditType
-  )
-  const needsStandardizedContestsFile =
+  const jurisdictionsFileUpload = useJurisdictionsFile(electionId)
+  const isStandardizedContestsFileEnabled =
     auditType === 'BALLOT_COMPARISON' || auditType === 'HYBRID'
+  const standardizedContestsFileUpload = useStandardizedContestsFile(
+    electionId,
+    { enabled: isStandardizedContestsFileEnabled }
+  )
 
   if (
-    !jurisdictionsFile ||
-    (needsStandardizedContestsFile && !standardizedContestsFile)
+    !jurisdictionsFileUpload.uploadedFile.isSuccess ||
+    (isStandardizedContestsFileEnabled &&
+      !standardizedContestsFileUpload.uploadedFile.isSuccess)
   )
     return null
 
   const areFileUploadsComplete =
-    isFileProcessed(jurisdictionsFile) &&
-    (!needsStandardizedContestsFile ||
-      isFileProcessed(standardizedContestsFile!))
+    isFileProcessed(jurisdictionsFileUpload.uploadedFile.data) &&
+    (!isStandardizedContestsFileEnabled ||
+      isFileProcessed(standardizedContestsFileUpload.uploadedFile.data!))
 
   const stages: readonly Stage[] =
     auditSettings.auditType === 'BATCH_COMPARISON'
@@ -106,7 +107,12 @@ const Setup: React.FC<IProps> = ({
             return (
               <Participants
                 goToNextStage={goToNextStage}
-                auditType={auditType}
+                jurisdictionsFileUpload={jurisdictionsFileUpload}
+                standardizedContestsFileUpload={
+                  isStandardizedContestsFileEnabled
+                    ? standardizedContestsFileUpload
+                    : undefined
+                }
               />
             )
           case 'target-contests':

@@ -1,61 +1,51 @@
 import React from 'react'
-import { useParams } from 'react-router-dom'
 import FormButtonBar from '../../../Atoms/Form/FormButtonBar'
 import FormButton from '../../../Atoms/Form/FormButton'
 import FormWrapper from '../../../Atoms/Form/FormWrapper'
-import { IAuditSettings } from '../../../useAuditSettings'
-import {
-  useJurisdictionsFile,
-  useStandardizedContestsFile,
-  isFileProcessed,
-} from '../../../useCSV'
+import { isFileProcessed } from '../../../useCSV'
 import CSVFile from '../../../Atoms/CSVForm'
+import { IFileUpload } from '../../../useFileUpload'
+import { assert } from '../../../utilities'
 
 interface IProps {
   goToNextStage: () => void
-  auditType: IAuditSettings['auditType']
+  jurisdictionsFileUpload: IFileUpload
+  // Undefined if standardized contests file is not enabled
+  standardizedContestsFileUpload?: IFileUpload
 }
 
 const Participants: React.FC<IProps> = ({
   goToNextStage,
-  auditType,
+  jurisdictionsFileUpload,
+  standardizedContestsFileUpload,
 }: IProps) => {
-  const { electionId } = useParams<{ electionId: string }>()
-  const [jurisdictionsFile, uploadJurisdictionsFile] = useJurisdictionsFile(
-    electionId
+  assert(jurisdictionsFileUpload.uploadedFile.isSuccess)
+  assert(
+    standardizedContestsFileUpload === undefined ||
+      standardizedContestsFileUpload.uploadedFile.isSuccess
   )
-  const [
-    standardizedContestsFile,
-    uploadStandardizedContestsFile,
-  ] = useStandardizedContestsFile(electionId, auditType, jurisdictionsFile)
-
-  const isBallotComparison = auditType === 'BALLOT_COMPARISON'
-  const isHybrid = auditType === 'HYBRID'
-
-  if (
-    !jurisdictionsFile ||
-    ((isBallotComparison || isHybrid) && !standardizedContestsFile)
-  )
-    return null // Still loading
 
   const areFileUploadsComplete =
-    isFileProcessed(jurisdictionsFile) &&
-    (!(isBallotComparison || isHybrid) ||
-      isFileProcessed(standardizedContestsFile!))
+    isFileProcessed(jurisdictionsFileUpload.uploadedFile.data) &&
+    (standardizedContestsFileUpload === undefined ||
+      isFileProcessed(standardizedContestsFileUpload.uploadedFile.data!))
 
   return (
     <FormWrapper
       title={
-        isBallotComparison || isHybrid
-          ? 'Participants & Contests'
-          : 'Participants'
+        standardizedContestsFileUpload === undefined
+          ? 'Participants'
+          : 'Participants & Contests'
       }
     >
       <CSVFile
-        csvFile={jurisdictionsFile}
-        uploadCSVFiles={uploadJurisdictionsFile}
+        csvFile={jurisdictionsFileUpload.uploadedFile.data}
+        uploadCSVFiles={async files => {
+          await jurisdictionsFileUpload.uploadFiles(files)
+          return true
+        }}
         title={
-          isBallotComparison || isHybrid
+          standardizedContestsFileUpload !== undefined
             ? 'Participating Jurisdictions'
             : undefined
         }
@@ -63,15 +53,18 @@ const Participants: React.FC<IProps> = ({
         sampleFileLink="/sample_jurisdiction_filesheet.csv"
         enabled
       />
-      {(isBallotComparison || isHybrid) && (
+      {standardizedContestsFileUpload !== undefined && (
         <div style={{ marginTop: '30px' }}>
           <CSVFile
-            csvFile={standardizedContestsFile!}
-            uploadCSVFiles={uploadStandardizedContestsFile}
+            csvFile={standardizedContestsFileUpload.uploadedFile.data!}
+            uploadCSVFiles={async files => {
+              await standardizedContestsFileUpload.uploadFiles(files)
+              return true
+            }}
             title="Standardized Contests"
             description='Click "Browse" to choose the appropriate file from your computer. This file should be a comma-separated list of all the contests on the ballot, the vote choices available in each, and the jurisdiction(s) where each contest appeared on the ballot.'
             sampleFileLink="/sample_standardized_contests.csv"
-            enabled={isFileProcessed(jurisdictionsFile)}
+            enabled={isFileProcessed(jurisdictionsFileUpload.uploadedFile.data)}
           />
         </div>
       )}
