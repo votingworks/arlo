@@ -89,22 +89,16 @@ def serialize_batch(batch: Batch) -> JSONDict:
 def construct_batch_last_edited_by_string(batch: Batch) -> Optional[str]:
     if batch.last_edited_by_support_user_email:
         return batch.last_edited_by_support_user_email
-    if batch.last_edited_by_user_id:
-        user = batch.last_edited_by_user
-        assert (
-            user is not None
-        ), f"Unable to find user with ID {batch.last_edited_by_user_id}"
-        return user.email
-    if batch.last_edited_by_tally_entry_user_id:
-        tally_entry_user = batch.last_edited_by_tally_entry_user
-        assert (
-            tally_entry_user is not None
-        ), f"Unable to find tally entry user with ID {batch.last_edited_by_tally_entry_user_id}"
+    if batch.last_edited_by_user:
+        return batch.last_edited_by_user.email
+    if batch.last_edited_by_tally_entry_user:
+        member_1 = batch.last_edited_by_tally_entry_user.member_1
+        member_2 = batch.last_edited_by_tally_entry_user.member_2
         members = []
-        if tally_entry_user.member_1 is not None:
-            members.append(tally_entry_user.member_1)
-        if tally_entry_user.member_2 is not None:
-            members.append(tally_entry_user.member_2)
+        if member_1 is not None:
+            members.append(member_1)
+        if member_2 is not None:
+            members.append(member_2)
         return ", ".join(members)
     return None
 
