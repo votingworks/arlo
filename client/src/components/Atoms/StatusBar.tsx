@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Divider, Classes, Colors } from '@blueprintjs/core'
+import { Divider, Classes } from '@blueprintjs/core'
 import {
   Row,
   // IFlexboxProps is needed by TS in order to export StatusBar
