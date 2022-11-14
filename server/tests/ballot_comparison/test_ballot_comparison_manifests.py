@@ -311,3 +311,42 @@ def test_ballot_comparison_manifest_missing_tabulator(
             },
         },
     )
+
+
+def test_ballot_comparison_manifest_unexpected_cvr_column(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
+        data={
+            "manifest": (
+                io.BytesIO(
+                    b"Container,Tabulator,Batch Name,Number of Ballots,CVR\n"
+                    b"CONTAINER1,TABULATOR1,BATCH1,50,Yes\n"
+                ),
+                "manifest.csv",
+            )
+        },
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
+    )
+    compare_json(
+        json.loads(rv.data),
+        {
+            "file": {"name": "manifest.csv", "uploadedAt": assert_is_date},
+            "processing": {
+                "completedAt": assert_is_date,
+                "error": "Found unexpected columns. Allowed columns: Batch Name, Container, Number of Ballots, Tabulator.",
+                "startedAt": assert_is_date,
+                "status": "ERRORED",
+            },
+        },
+    )
