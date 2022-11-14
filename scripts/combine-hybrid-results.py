@@ -11,9 +11,7 @@ from server.audit_math import sampler_contest, suite
 from server.models import *  # pylint: disable=wildcard-import
 
 
-def ballot_comparison_stratum(audit: Election):
-    contest = next(iter(audit.contests))
-
+def ballot_comparison_stratum(contest):
     # for type check
     assert contest.total_ballots_cast
 
@@ -30,8 +28,7 @@ def ballot_comparison_stratum(audit: Election):
     )
 
 
-def ballot_polling_stratum(audit: Election, remap):
-    contest = next(iter(audit.contests))
+def ballot_polling_stratum(contest, remap):
     # for type checker
     assert contest.total_ballots_cast
 
@@ -69,9 +66,8 @@ def combined_contests(cvr_contest, bp_contest, remap):
             bp_candidates[cand] + cvr_candidates[remap[cand]]
         )
 
-    # hardcoded for now...
-    contest_info_dict["numWinners"] = 1
-    contest_info_dict["votesAllowed"] = 1
+    contest_info_dict["numWinners"] = cvr_contest.num_winners 
+    contest_info_dict["votesAllowed"] = cvr_contest.votes_allowed 
 
     contest_info_dict["ballots"] = bp_contest.ballots + cvr_contest.ballots
 
@@ -129,12 +125,14 @@ if __name__ == "__main__":
             if choice_id_to_name_audit_1[id1] == choice_id_to_name_audit_2[id2]:
                 remap[id2] = id1
 
-    cvr_stratum = ballot_comparison_stratum(audit_1)
-    print(cvr_stratum)
-    no_cvr_stratum = ballot_polling_stratum(audit_2, remap)
-    print(no_cvr_stratum)
+    print(remap)
+
 
     for i in range(len(audit_1.contests)):
+        cvr_stratum = ballot_comparison_stratum(audit_1.contests[i])
+        print(cvr_stratum)
+        no_cvr_stratum = ballot_polling_stratum(audit_2.contests[i], remap)
+        print(no_cvr_stratum)
 
         a1_sampler_contest = sampler_contest.from_db_contest(audit_1.contests[i])
         a2_sampler_contest = sampler_contest.from_db_contest(audit_2.contests[i])
