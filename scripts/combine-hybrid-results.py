@@ -66,8 +66,8 @@ def combined_contests(cvr_contest, bp_contest, remap):
             bp_candidates[cand] + cvr_candidates[remap[cand]]
         )
 
-    contest_info_dict["numWinners"] = cvr_contest.num_winners 
-    contest_info_dict["votesAllowed"] = cvr_contest.votes_allowed 
+    contest_info_dict["numWinners"] = cvr_contest.num_winners
+    contest_info_dict["votesAllowed"] = cvr_contest.votes_allowed
 
     contest_info_dict["ballots"] = bp_contest.ballots + cvr_contest.ballots
 
@@ -127,7 +127,6 @@ if __name__ == "__main__":
 
     print(remap)
 
-
     for i in range(len(audit_1.contests)):
         cvr_stratum = ballot_comparison_stratum(audit_1.contests[i])
         print(cvr_stratum)
@@ -137,12 +136,10 @@ if __name__ == "__main__":
         a1_sampler_contest = sampler_contest.from_db_contest(audit_1.contests[i])
         a2_sampler_contest = sampler_contest.from_db_contest(audit_2.contests[i])
 
-        #assert a1_sampler_contest.name == a2_sampler_contest.name, f"Both audits must have the same contests! {a1_sampler_contest.name} {a2_sampler_contest.name}"
+        # assert a1_sampler_contest.name == a2_sampler_contest.name, f"Both audits must have the same contests! {a1_sampler_contest.name} {a2_sampler_contest.name}"
 
         overall_contest = combined_contests(
-            a1_sampler_contest,
-            a2_sampler_contest,
-            remap,
+            a1_sampler_contest, a2_sampler_contest, remap,
         )
 
         # non_cvr_stratum, cvr_stratum = hybrid_contest_strata(contest)
