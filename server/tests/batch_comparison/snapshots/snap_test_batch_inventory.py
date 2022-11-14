@@ -42,9 +42,9 @@ Election Day,Tabulator 2 - BATCH2,6\r
 
 snapshots[
     "test_batch_inventory_happy_path 3"
-] = """Batch Name,Choice 1-1,Choice 1-2,Write-in\r
-Tabulator 1 - BATCH1,1,2,0\r
-Tabulator 1 - BATCH2,2,1,0\r
-Tabulator 2 - BATCH1,1,1,0\r
-Tabulator 2 - BATCH2,1,0,3\r
+] = """Batch Name,Choice 1-1,Choice 1-2\r
+Tabulator 1 - BATCH1,1,2\r
+Tabulator 1 - BATCH2,2,1\r
+Tabulator 2 - BATCH1,2,1\r
+Tabulator 2 - BATCH2,2,0\r
 """

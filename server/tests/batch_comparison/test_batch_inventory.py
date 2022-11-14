@@ -3,25 +3,25 @@ from flask.testing import FlaskClient
 from ..helpers import *  # pylint: disable=wildcard-import
 from ...models import BatchInventoryData
 
-TEST_CVR = """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,,,
-,,,,,,,,Contest 1 (Vote For=1),Contest 1 (Vote For=1),Contest 1 (Vote For=1),Contest 1 (Vote For=1),Contest 2 (Vote For=2),Contest 2 (Vote For=2),Contest 2 (Vote For=2)
-,,,,,,,,Choice 1-1,Choice 1-2,Write In Alice Adams,Write-in Bob Bates,Choice 2-1,Choice 2-2,Choice 2-3
-CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM,,,LBR,IND,,
-1,TABULATOR1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,0,1,0,0,1,1,0
-2,TABULATOR1,BATCH1,2,1-1-2,Election Day,12345,COUNTY,1,0,0,0,1,0,1
-3,TABULATOR1,BATCH1,3,1-1-3,Election Day,12345,COUNTY,0,1,0,0,1,1,0
-4,TABULATOR1,BATCH2,1,1-2-1,Election Day,12345,COUNTY,1,0,0,0,1,0,1
-5,TABULATOR1,BATCH2,2,1-2-2,Election Day,12345,COUNTY,0,1,0,0,1,1,0
-6,TABULATOR1,BATCH2,3,1-2-3,Election Day,12345,COUNTY,1,0,0,0,1,0,1
-7,TABULATOR2,BATCH1,1,2-1-1,Election Day,12345,COUNTY,0,1,0,0,1,1,0
-8,TABULATOR2,BATCH1,2,2-1-2,Mail,12345,COUNTY,1,0,0,0,1,0,1
-9,TABULATOR2,BATCH1,3,2-1-3,Mail,12345,COUNTY,1,0,1,0,1,1,0
-10,TABULATOR2,BATCH2,1,2-2-1,Election Day,12345,COUNTY,0,0,0,1,1,0,1
-11,TABULATOR2,BATCH2,2,2-2-2,Election Day,12345,COUNTY,0,0,1,0,1,1,0
-12,TABULATOR2,BATCH2,3,2-2-3,Election Day,12345,COUNTY,0,0,0,1,1,0,1
-13,TABULATOR2,BATCH2,4,2-2-4,Election Day,12345,CITY,1,0,0,0,1,0,1
-14,TABULATOR2,BATCH2,5,2-2-5,Election Day,12345,CITY,,,,,1,1,0
-15,TABULATOR2,BATCH2,6,2-2-6,Election Day,12345,CITY,,,,,1,0,1
+TEST_CVR = """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
+,,,,,,,,Contest 1 (Vote For=1),Contest 1 (Vote For=1),Contest 2 (Vote For=2),Contest 2 (Vote For=2),Contest 2 (Vote For=2)
+,,,,,,,,Choice 1-1,Choice 1-2,Choice 2-1,Choice 2-2,Choice 2-3
+CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM,LBR,IND,,
+1,TABULATOR1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,0,1,1,1,0
+2,TABULATOR1,BATCH1,2,1-1-2,Election Day,12345,COUNTY,1,0,1,0,1
+3,TABULATOR1,BATCH1,3,1-1-3,Election Day,12345,COUNTY,0,1,1,1,0
+4,TABULATOR1,BATCH2,1,1-2-1,Election Day,12345,COUNTY,1,0,1,0,1
+5,TABULATOR1,BATCH2,2,1-2-2,Election Day,12345,COUNTY,0,1,1,1,0
+6,TABULATOR1,BATCH2,3,1-2-3,Election Day,12345,COUNTY,1,0,1,0,1
+7,TABULATOR2,BATCH1,1,2-1-1,Election Day,12345,COUNTY,0,1,1,1,0
+8,TABULATOR2,BATCH1,2,2-1-2,Mail,12345,COUNTY,1,0,1,0,1
+9,TABULATOR2,BATCH1,3,2-1-3,Mail,12345,COUNTY,1,0,1,1,0
+10,TABULATOR2,BATCH2,1,2-2-1,Election Day,12345,COUNTY,1,0,1,0,1
+11,TABULATOR2,BATCH2,2,2-2-2,Election Day,12345,COUNTY,1,1,1,1,0
+12,TABULATOR2,BATCH2,3,2-2-3,Election Day,12345,COUNTY,1,0,1,0,1
+13,TABULATOR2,BATCH2,4,2-2-4,Election Day,12345,CITY,,,1,0,1
+14,TABULATOR2,BATCH2,5,2-2-5,Election Day,12345,CITY,,,1,1,0
+15,TABULATOR2,BATCH2,6,2-2-6,Election Day,12345,CITY,,,1,0,1
 """
 
 TEST_TABULATOR_STATUS = """<?xml version="1.0" standalone="yes"?>
@@ -57,9 +57,8 @@ def contest_id(client: FlaskClient, election_id: str, jurisdiction_ids: List[str
         "isTargeted": True,
         "choices": [
             # Double the actual number of votes in TEST_CVR
-            {"id": str(uuid.uuid4()), "name": "Choice 1-1", "numVotes": 10},
+            {"id": str(uuid.uuid4()), "name": "Choice 1-1", "numVotes": 14},
             {"id": str(uuid.uuid4()), "name": "Choice 1-2", "numVotes": 8},
-            {"id": str(uuid.uuid4()), "name": "Write-in", "numVotes": 6},
         ],
         "numWinners": 1,
         "votesAllowed": 1,
@@ -268,7 +267,7 @@ def test_batch_inventory_invalid_file_uploads(
         ),
         (
             TEST_CVR.replace("Choice 1-1", "Choice X"),
-            "CVR contest choice names don't match the choice names for this audit. CVR contest choice names: Choice X, Choice 1-2. Audit contest choice names: Choice 1-1, Choice 1-2.",
+            "Could not find contest choices in CVR file: Choice 1-1.",
         ),
     ]
     for invalid_cvr, expected_error in invalid_cvrs:
@@ -339,12 +338,12 @@ def test_batch_inventory_invalid_file_uploads(
             "cvr": (
                 io.BytesIO(
                     TEST_CVR.replace(
-                        """1,TABULATOR1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,0,1,0,0,1,1,0
-2,TABULATOR1,BATCH1,2,1-1-2,Election Day,12345,COUNTY,1,0,0,0,1,0,1
-3,TABULATOR1,BATCH1,3,1-1-3,Election Day,12345,COUNTY,0,1,0,0,1,1,0
-4,TABULATOR1,BATCH2,1,1-2-1,Election Day,12345,COUNTY,1,0,0,0,1,0,1
-5,TABULATOR1,BATCH2,2,1-2-2,Election Day,12345,COUNTY,0,1,0,0,1,1,0
-6,TABULATOR1,BATCH2,3,1-2-3,Election Day,12345,COUNTY,1,0,0,0,1,0,1
+                        """1,TABULATOR1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,0,1,1,1,0
+2,TABULATOR1,BATCH1,2,1-1-2,Election Day,12345,COUNTY,1,0,1,0,1
+3,TABULATOR1,BATCH1,3,1-1-3,Election Day,12345,COUNTY,0,1,1,1,0
+4,TABULATOR1,BATCH2,1,1-2-1,Election Day,12345,COUNTY,1,0,1,0,1
+5,TABULATOR1,BATCH2,2,1-2-2,Election Day,12345,COUNTY,0,1,1,1,0
+6,TABULATOR1,BATCH2,3,1-2-3,Election Day,12345,COUNTY,1,0,1,0,1
 """,
                         "",
                     ).encode()
