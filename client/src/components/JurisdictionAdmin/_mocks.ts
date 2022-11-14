@@ -121,18 +121,21 @@ export const batchesMocks = mocksOfType<IBatches>()({
     batches: [
       {
         id: 'batch-1',
+        lastEditedBy: null,
         name: 'Batch One',
         numBallots: 100,
         resultTallySheets: [],
       },
       {
         id: 'batch-2',
+        lastEditedBy: null,
         name: 'Batch Two',
         numBallots: 100,
         resultTallySheets: [],
       },
       {
         id: 'batch-3',
+        lastEditedBy: null,
         name: 'Batch Three',
         numBallots: 100,
         resultTallySheets: [],
@@ -144,6 +147,7 @@ export const batchesMocks = mocksOfType<IBatches>()({
     batches: [
       {
         id: 'batch-1',
+        lastEditedBy: 'ja@example.com',
         name: 'Batch One',
         numBallots: 100,
         resultTallySheets: [
@@ -158,6 +162,7 @@ export const batchesMocks = mocksOfType<IBatches>()({
       },
       {
         id: 'batch-2',
+        lastEditedBy: 'ja@example.com',
         name: 'Batch Two',
         numBallots: 100,
         resultTallySheets: [
@@ -172,6 +177,7 @@ export const batchesMocks = mocksOfType<IBatches>()({
       },
       {
         id: 'batch-3',
+        lastEditedBy: 'ja@example.com',
         name: 'Batch Three',
         numBallots: 100,
         resultTallySheets: [

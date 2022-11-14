@@ -42,6 +42,7 @@ def test_list_batches(
         batches[0],
         {
             "id": assert_is_id,
+            "lastEditedBy": None,
             "name": "Batch 1",
             "numBallots": 500,
             "resultTallySheets": [],
@@ -57,6 +58,7 @@ def test_list_batches(
         batches[0],
         {
             "id": assert_is_id,
+            "lastEditedBy": None,
             "name": "Batch 1",
             "numBallots": 500,
             "resultTallySheets": [],
@@ -130,6 +132,7 @@ def test_record_batch_results(
     round_1_batch_ids = {batch["id"] for batch in batches}
     for batch in batches:
         assert batch["resultTallySheets"] == []
+        assert batch["lastEditedBy"] is None
 
     results = {
         batches[0]["id"]: {choice_ids[0]: 400, choice_ids[1]: 50, choice_ids[2]: 40,},
@@ -153,6 +156,7 @@ def test_record_batch_results(
         assert batch["resultTallySheets"] == [
             {"name": "Tally Sheet #1", "results": results[batch["id"]]}
         ]
+        assert batch["lastEditedBy"] == default_ja_email(election_id)
     assert resp["resultsFinalizedAt"] is None
 
     # Update results for one batch
@@ -183,6 +187,7 @@ def test_record_batch_results(
     assert batches[2]["resultTallySheets"] == [
         {"name": "Tally Sheet #1", "results": updated_batch_2_results}
     ]
+    assert batches[2]["lastEditedBy"] == default_ja_email(election_id)
     assert resp["resultsFinalizedAt"] is not None
 
     # Round shouldn't be over yet, since we haven't recorded results for all jurisdictions with sampled batches
@@ -226,6 +231,7 @@ def test_record_batch_results(
     assert rv.status_code == 200
     batches = json.loads(rv.data)["batches"]
     assert batches[0]["resultTallySheets"] == tally_sheets
+    assert batches[0]["lastEditedBy"] == "Alice, Bob"
 
     # Finalize results
     set_logged_in_user(
@@ -289,6 +295,48 @@ def test_record_batch_results(
         assert batch["id"] not in round_1_batch_ids
 
 
+def test_record_batch_results_as_support_user(
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
+):
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/contest"
+    )
+    assert rv.status_code == 200
+    contests = json.loads(rv.data)["contests"]
+    choice_ids = [choice["id"] for choice in contests[0]["choices"]]
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches"
+    )
+    assert rv.status_code == 200
+    batches = json.loads(rv.data)["batches"]
+    batch = batches[0]
+    assert batch["resultTallySheets"] == []
+    assert batch["lastEditedBy"] is None
+
+    results = {choice_ids[0]: 1, choice_ids[1]: 2, choice_ids[2]: 3}
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/{batch['id']}/results",
+        [{"name": "Sheet 1", "results": results}],
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches"
+    )
+    resp = json.loads(rv.data)
+    batches = resp["batches"]
+    batch = batches[0]
+    assert batch["resultTallySheets"] == [{"name": "Sheet 1", "results": results}]
+    assert batch["lastEditedBy"] == DEFAULT_SUPPORT_EMAIL
+
+
 def test_batch_tally_sheet_order(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
 ):
@@ -333,6 +381,7 @@ def test_batch_tally_sheet_order(
     assert rv.status_code == 200
     batches = json.loads(rv.data)["batches"]
     assert batches[0]["resultTallySheets"] == tally_sheets
+    assert batches[0]["lastEditedBy"] == default_ja_email(election_id)
 
     # ZZZ should stay at the front, not get sorted to the back (since the
     # natural sort order seems to be based on the unique index on tally sheet
@@ -356,6 +405,7 @@ def test_batch_tally_sheet_order(
     assert rv.status_code == 200
     batches = json.loads(rv.data)["batches"]
     assert batches[0]["resultTallySheets"] == tally_sheets
+    assert batches[0]["lastEditedBy"] == default_ja_email(election_id)
 
 
 def test_record_batch_results_invalid(

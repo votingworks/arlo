@@ -1,14 +1,14 @@
 from datetime import datetime
 import io, csv
-from typing import List
+from typing import List, Optional
 import uuid
-from flask import jsonify, request
+from flask import jsonify, request, session
 from werkzeug.exceptions import BadRequest, Conflict
 from sqlalchemy.orm import Query, joinedload
 from sqlalchemy import func
 
 from . import api
-from ..auth import restrict_access, UserType
+from ..auth import get_loggedin_user, get_support_user, restrict_access, UserType
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
 from .rounds import is_round_complete, end_round, get_current_round
@@ -82,7 +82,25 @@ def serialize_batch(batch: Batch) -> JSONDict:
             }
             for tally_sheet in batch.result_tally_sheets
         ],
+        "lastEditedBy": construct_batch_last_edited_by_string(batch),
     }
+
+
+def construct_batch_last_edited_by_string(batch: Batch) -> Optional[str]:
+    if batch.last_edited_by_support_user_email:
+        return batch.last_edited_by_support_user_email
+    if batch.last_edited_by_user:
+        return batch.last_edited_by_user.email
+    if batch.last_edited_by_tally_entry_user:
+        member_1 = batch.last_edited_by_tally_entry_user.member_1
+        member_2 = batch.last_edited_by_tally_entry_user.member_2
+        members = []
+        if member_1 is not None:
+            members.append(member_1)
+        if member_2 is not None:
+            members.append(member_2)
+        return ", ".join(members)
+    return None
 
 
 @api.route(
@@ -108,6 +126,8 @@ def list_batches_for_jurisdiction(
                 BatchResultTallySheet.results
             )
         )
+        .options(joinedload(Batch.last_edited_by_user))
+        .options(joinedload(Batch.last_edited_by_tally_entry_user))
         .all()
     )
     results_finalized = BatchResultsFinalized.query.filter_by(
@@ -223,6 +243,23 @@ def record_batch_results(
         )
         for tally_sheet in batch_results
     ]
+
+    user_type, user_key = get_loggedin_user(session)
+    support_user_email = get_support_user(session)
+    if support_user_email:
+        batch.last_edited_by_support_user_email = support_user_email
+        batch.last_edited_by_user_id = None
+        batch.last_edited_by_tally_entry_user_id = None
+    elif user_type == UserType.JURISDICTION_ADMIN:
+        user = User.query.filter_by(email=user_key).one()
+        batch.last_edited_by_support_user_email = None
+        batch.last_edited_by_user_id = user.id
+        batch.last_edited_by_tally_entry_user_id = None
+    elif user_type == UserType.TALLY_ENTRY:
+        batch.last_edited_by_support_user_email = None
+        batch.last_edited_by_user_id = None
+        batch.last_edited_by_tally_entry_user_id = user_key
+
     db_session.commit()
 
     return jsonify(status="ok")
