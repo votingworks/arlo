@@ -28,9 +28,6 @@ class UserType(str, enum.Enum):
     # TallyEntryUser.id as their login key. A tally entry user (or users, if
     # there are multiple people working together), will log by navigating
     # /tallyentry/<passphrase>.
-    # Once a tally entry user has entered tallies, they shouldn't be fully
-    # deleted, only soft deleted, so that we can continue to display who last
-    # edited a batch.
     TALLY_ENTRY = "tally_entry"
 
 
