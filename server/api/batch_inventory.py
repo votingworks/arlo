@@ -153,20 +153,7 @@ def process_batch_inventory_cvr_file(jurisdiction_id: str):
 def process_batch_inventory_tabulator_status_file(jurisdiction_id: str):
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction_id)
     file = retrieve_file(batch_inventory_data.tabulator_status_file.storage_path)
-    contents = file.read().decode("utf-8")
-
-    if contents.startswith("<html"):
-        raise UserError(
-            "This looks like the HTML version of the tabulator status report."
-            ' Please upload the XML version (which has a file name ending in ".xml").'
-        )
-    if contents.startswith("<Workbook"):
-        raise UserError(
-            "This looks like the Excel version of the tabulator status report."
-            ' Please upload the plain XML version (which has a file name ending in ".xml" and does not contain the words "To Excel").'
-        )
-
-    cvr_xml = ElementTree.fromstring(contents)
+    cvr_xml = ElementTree.parse(file)
 
     tabulators = cvr_xml.findall("tabulators/tb")
     tabulator_id_to_name = {
