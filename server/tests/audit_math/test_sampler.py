@@ -5,6 +5,9 @@ from ...audit_math.sampler_contest import Contest
 
 SEED = "12345678901234567890abcdefghijklmnopqrstuvwxyz😊"
 RISK_LIMIT = 0.1
+CONTEST_NAME = "Contest"
+CLOSE_CONTEST_NAME = "Close Contest"
+OTHER_CONTEST_NAME = "Other Contest"
 
 
 @pytest.fixture
@@ -14,12 +17,12 @@ def macro_batches():
     # 10 batches will have max error of .08
     for i in range(10):
         batches[("Jx 1", "pct {}".format(i))] = {
-            "test1": {"cand1": 40, "cand2": 10, "ballots": 50}
+            CONTEST_NAME: {"cand1": 40, "cand2": 10, "ballots": 50}
         }
         # 10 batches will have max error of .04
     for i in range(11, 20):
         batches[("Jx 1", "pct {}".format(i))] = {
-            "test1": {"cand1": 20, "cand2": 30, "ballots": 50}
+            CONTEST_NAME: {"cand1": 20, "cand2": 30, "ballots": 50}
         }
 
     return batches
@@ -30,23 +33,23 @@ def close_macro_batches():
     batches = {}
 
     batches[("Jx 1", "pct {}".format(1))] = {
-        "test1": {"cand1": 100, "cand2": 0, "ballots": 100}
+        CLOSE_CONTEST_NAME: {"cand1": 100, "cand2": 0, "ballots": 100}
     }
     batches[("Jx 1", "pct {}".format(2))] = {
-        "test1": {"cand1": 100, "cand2": 0, "ballots": 100}
+        CLOSE_CONTEST_NAME: {"cand1": 100, "cand2": 0, "ballots": 100}
     }
     batches[("Jx 1", "pct {}".format(3))] = {
-        "test1": {"cand1": 0, "cand2": 100, "ballots": 100}
+        CLOSE_CONTEST_NAME: {"cand1": 0, "cand2": 100, "ballots": 100}
     }
     batches[("Jx 1", "pct {}".format(4))] = {
-        "test1": {"cand1": 0, "cand2": 98, "ballots": 100}
+        CLOSE_CONTEST_NAME: {"cand1": 0, "cand2": 98, "ballots": 98}
     }
     return batches
 
 
 @pytest.fixture
 def macro_contest():
-    name = "test1"
+    name = CONTEST_NAME
 
     info_dict = {
         "cand1": 600,
@@ -61,7 +64,7 @@ def macro_contest():
 
 @pytest.fixture
 def close_macro_contest():
-    name = "recount"
+    name = CLOSE_CONTEST_NAME
 
     info_dict = {
         "cand1": 200,
@@ -106,7 +109,11 @@ def test_draw_more_samples(snapshot):
 def test_draw_macro_sample(macro_batches, macro_contest, snapshot):
     # Test getting a sample
     sample = sampler.draw_ppeb_sample(
-        SEED, macro_contest, 10, 0, batch_results=macro_batches
+        SEED,
+        macro_contest,
+        10,
+        previously_sampled_batch_keys=[],
+        batch_results=macro_batches,
     )
     snapshot.assert_match(sample)
 
@@ -114,37 +121,60 @@ def test_draw_macro_sample(macro_batches, macro_contest, snapshot):
 def test_draw_more_macro_sample(macro_batches, macro_contest, snapshot):
     # Test getting a sample
     sample = sampler.draw_ppeb_sample(
-        SEED, macro_contest, 5, 0, batch_results=macro_batches,
+        SEED,
+        macro_contest,
+        5,
+        previously_sampled_batch_keys=[],
+        batch_results=macro_batches,
     )
     snapshot.assert_match(sample)
 
     sample = sampler.draw_ppeb_sample(
-        SEED, macro_contest, 5, num_sampled=5, batch_results=macro_batches
+        SEED,
+        macro_contest,
+        5,
+        previously_sampled_batch_keys=[
+            ("Jx 1", "pct8"),
+            ("Jx 1", "pct6"),
+            ("Jx 1", "pct8"),
+            ("Jx 1", "pct0"),
+            ("Jx 1", "pct9"),
+        ],
+        batch_results=macro_batches,
     )
     snapshot.assert_match(sample)
 
 
-def test_macro_recount_sample(close_macro_batches, close_macro_contest, snapshot):
-
-    sample = sampler.draw_ppeb_sample(
-        SEED, close_macro_contest, 5, 0, batch_results=close_macro_batches,
-    )
-    snapshot.assert_match(sample)
-
-    # Now do a full recount
+def test_draw_macro_full_hand_tally(close_macro_batches, close_macro_contest, snapshot):
     sample = sampler.draw_ppeb_sample(
         SEED,
         close_macro_contest,
-        1000,
-        num_sampled=5,
+        len(close_macro_batches),  # All batches
+        previously_sampled_batch_keys=[],
+        batch_results=close_macro_batches,
+    )
+    snapshot.assert_match(sample)
+
+    sample = sampler.draw_ppeb_sample(
+        SEED,
+        close_macro_contest,
+        len(close_macro_batches),  # All batches
+        previously_sampled_batch_keys=[("Jx 1", "pct 1")],
+        batch_results=close_macro_batches,
+    )
+    snapshot.assert_match(sample)
+
+    sample = sampler.draw_ppeb_sample(
+        SEED,
+        close_macro_contest,
+        len(close_macro_batches),  # All batches
+        previously_sampled_batch_keys=[("Jx 1", "pct 2"), ("Jx 1", "pct 4")],
         batch_results=close_macro_batches,
     )
     snapshot.assert_match(sample)
 
 
 def test_draw_macro_multiple_contests(macro_batches, snapshot):
-    name = "test2"
-
     info_dict = {
         "cand1": 400,
         "cand2": 100,
@@ -152,20 +182,47 @@ def test_draw_macro_multiple_contests(macro_batches, snapshot):
         "numWinners": 1,
         "votesAllowed": 1,
     }
-
-    other_contest = Contest(name, info_dict)
+    other_contest = Contest(OTHER_CONTEST_NAME, info_dict)
 
     for batch in macro_batches:
         pct = int(batch[1].split(" ")[-1])
         if pct < 10:
-            macro_batches[batch]["test2"] = {"cand1": 40, "cand2": 10, "ballots": 50}
+            macro_batches[batch][OTHER_CONTEST_NAME] = {
+                "cand1": 40,
+                "cand2": 10,
+                "ballots": 50,
+            }
 
     # By including a contest that isn't contained in every batch, those batches
     # will get a maximum possible error (U) of zero for that contest.
     sample = sampler.draw_ppeb_sample(
-        SEED, other_contest, 10, 0, batch_results=macro_batches
+        SEED,
+        other_contest,
+        10,
+        previously_sampled_batch_keys=[],
+        batch_results=macro_batches,
     )
     snapshot.assert_match(sample)
+
+
+def test_draw_macro_contest_not_in_any_batches(macro_batches):
+    info_dict = {
+        "cand1": 400,
+        "cand2": 100,
+        "ballots": 500,
+        "numWinners": 1,
+        "votesAllowed": 1,
+    }
+    other_contest = Contest(OTHER_CONTEST_NAME, info_dict)
+
+    sample = sampler.draw_ppeb_sample(
+        SEED,
+        other_contest,
+        10,
+        previously_sampled_batch_keys=[],
+        batch_results=macro_batches,
+    )
+    assert sample == []
 
 
 def random_manifest():

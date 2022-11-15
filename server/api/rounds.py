@@ -899,29 +899,29 @@ def sample_batches(
     assert len(contest_sample_sizes) == 1
     contest, sample_size = contest_sample_sizes[0]
 
-    num_previously_sampled = (
-        SampledBatchDraw.query.join(Batch)
-        .join(Jurisdiction)
-        .filter_by(election_id=election.id)
-        .count()
-    )
-
     # Create a mapping from batch keys used in the sampling back to batch ids
     batches = (
         Batch.query.join(Jurisdiction)
         .filter_by(election_id=election.id)
-        .values(Jurisdiction.name, Batch.name, Batch.id)
+        .with_entities(Jurisdiction.name, Batch.name, Batch.id)
     )
     batch_key_to_id = {
         (jurisdiction_name, batch_name): batch_id
         for jurisdiction_name, batch_name, batch_id in batches
     }
 
+    previously_sampled_batch_keys: List[Tuple[str, str]] = list(
+        SampledBatchDraw.query.join(Batch)
+        .join(Jurisdiction)
+        .filter_by(election_id=election.id)
+        .with_entities(Jurisdiction.name, Batch.name)
+    )
+
     sample = sampler.draw_ppeb_sample(
         str(election.random_seed),
         sampler_contest.from_db_contest(contest),
         sample_size["size"],
-        num_previously_sampled,
+        previously_sampled_batch_keys,
         batch_tallies(election),
     )
 

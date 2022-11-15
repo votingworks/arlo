@@ -67,12 +67,15 @@ def draw_sample(
     )
 
 
+BatchKey = Tuple[str, str]  # (jurisdiction name, batch name)
+
+
 def draw_ppeb_sample(
     seed: str,
     contest: Contest,
     sample_size: int,
-    num_sampled: int,
-    batch_results: Dict[Tuple[Any, Any], Dict[str, Dict[str, int]]],
+    previously_sampled_batch_keys: List[BatchKey],
+    batch_results: Dict[BatchKey, Dict[str, Dict[str, int]]],
 ) -> List[Tuple[Any, Tuple[Any, Any]]]:
     """
     Draws sample with replacement of size <sample_size> from the
@@ -84,7 +87,8 @@ def draw_ppeb_sample(
     Inputs:
         seed    - the random seed to use in sampling
         sample_size - number of ballots to randomly draw
-        num_sampled - number of ballots that have already been sampled
+        previously_sampled_batch_keys - the keys (jurisdiction name, batch name) of batches sampled
+            in previous rounds
         batch_results - the result of the election, per batch:
                         {
                             'batch': {
@@ -115,7 +119,6 @@ def draw_ppeb_sample(
 
     U = macro.compute_U(batch_results, cast(Dict, {}), contest)
 
-    # This can only be the case if we've already recounted
     if U == 0:
         return []
 
@@ -125,20 +128,24 @@ def draw_ppeb_sample(
         for batch in batch_results
     ]
 
+    is_full_hand_tally = sample_size >= len(batch_results)
+    num_previously_sampled_batches = len(previously_sampled_batch_keys)
+
     sample: List = (
-        cast(
+        # When the sample size indicates a full hand tally, ensure that we draw all batches, minus
+        # batches already audited in previous rounds
+        sorted(list(batch_results.keys() - previously_sampled_batch_keys))
+        if is_full_hand_tally
+        # Otherwise, sample as usual
+        else cast(
             List[Tuple[Any, Any]],
             generator.choice(
                 list(batch_results.keys()),
-                sample_size + num_sampled,
+                sample_size + num_previously_sampled_batches,
                 p=weighted_errors,
                 replace=True,
             ),
         )
-        # When the sample size indicates a full hand recount, ensure we draw
-        # each batch once and only once
-        if sample_size < len(batch_results)
-        else list(batch_results.keys())
     )
 
     # Now create "ticket numbers" for each item in the sample
@@ -172,4 +179,8 @@ def draw_ppeb_sample(
         else:
             tickets[batch_tuple] = [ticket]
 
-    return sample_tuples[num_sampled:]
+    return (
+        sample_tuples
+        if is_full_hand_tally
+        else sample_tuples[num_previously_sampled_batches:]
+    )
