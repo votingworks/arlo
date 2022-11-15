@@ -140,7 +140,6 @@ const Setup: React.FC<IProps> = ({
               <Settings
                 goToPrevStage={goToPrevStage}
                 goToNextStage={goToNextStage}
-                auditSettings={auditSettings}
               />
             )
           case 'review':

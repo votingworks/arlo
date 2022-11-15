@@ -2,37 +2,52 @@ import React from 'react'
 import { waitFor, screen } from '@testing-library/react'
 import { Route } from 'react-router-dom'
 import userEvent from '@testing-library/user-event'
-import relativeStages from '../_mocks'
+import { QueryClientProvider } from 'react-query'
 import Settings from './Settings'
-import { renderWithRouter, withMockFetch } from '../../../testUtilities'
+import {
+  renderWithRouter,
+  withMockFetch,
+  createQueryClient,
+} from '../../../testUtilities'
 import { aaApiCalls, auditSettings } from '../../../_mocks'
 
-const { nextStage, prevStage } = relativeStages('settings')
-
-const renderSettings = () =>
-  renderWithRouter(
-    <Route path="/election/:electionId/setup">
-      <Settings locked={false} nextStage={nextStage} prevStage={prevStage} />
-    </Route>,
-    { route: '/election/1/setup' }
-  )
+const renderSettings = () => {
+  const goToNextStage = jest.fn()
+  const goToPrevStage = jest.fn()
+  return {
+    goToNextStage,
+    goToPrevStage,
+    ...renderWithRouter(
+      <QueryClientProvider client={createQueryClient()}>
+        <Route path="/election/:electionId/setup">
+          <Settings
+            goToNextStage={goToNextStage}
+            goToPrevStage={goToPrevStage}
+          />
+        </Route>
+      </QueryClientProvider>,
+      { route: '/election/1/setup' }
+    ),
+  }
+}
 
 describe('Setup > Settings', () => {
   it('updates settings', async () => {
+    const updatedSettings = {
+      ...auditSettings.blank,
+      state: 'CA',
+      electionName: 'Election Name',
+      online: true,
+      riskLimit: 5,
+      randomSeed: '12345',
+    }
     const expectedCalls = [
       aaApiCalls.getSettings(auditSettings.blank),
-      aaApiCalls.getSettings(auditSettings.blank),
-      aaApiCalls.putSettings({
-        ...auditSettings.blank,
-        state: 'CA',
-        electionName: 'Election Name',
-        online: true,
-        riskLimit: 5,
-        randomSeed: '12345',
-      }),
+      aaApiCalls.putSettings(updatedSettings),
+      aaApiCalls.getSettings(updatedSettings),
     ]
     await withMockFetch(expectedCalls, async () => {
-      renderSettings()
+      const { goToNextStage } = renderSettings()
 
       await screen.findByRole('heading', { name: 'Audit Settings' })
 
@@ -75,7 +90,7 @@ describe('Setup > Settings', () => {
       userEvent.click(screen.getByRole('button', { name: 'Save & Next' }))
 
       await waitFor(() => {
-        expect(nextStage.activate).toHaveBeenCalled()
+        expect(goToNextStage).toHaveBeenCalled()
       })
     })
   })

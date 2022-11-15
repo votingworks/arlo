@@ -14,6 +14,7 @@ import schema from './schema'
 import {
   IAuditSettings,
   useUpdateAuditSettings,
+  useAuditSettings,
 } from '../../../useAuditSettings'
 import { stateOptions } from './states'
 import { range } from '../../../../utils/array'
@@ -25,7 +26,6 @@ const Select = styled(HTMLSelect)`
 interface IProps {
   goToPrevStage: () => void
   goToNextStage: () => void
-  auditSettings: IAuditSettings
 }
 
 type IValues = Pick<
@@ -36,10 +36,13 @@ type IValues = Pick<
 const Settings: React.FC<IProps> = ({
   goToPrevStage,
   goToNextStage,
-  auditSettings,
 }: IProps) => {
   const { electionId } = useParams<{ electionId: string }>()
+  const auditSettingsQuery = useAuditSettings(electionId)
   const updateAuditSettingsMutation = useUpdateAuditSettings(electionId)
+
+  if (!auditSettingsQuery.isSuccess) return null
+  const auditSettings = auditSettingsQuery.data
 
   const {
     state,
