@@ -3,15 +3,15 @@ import { BrowserRouter as Router, useParams } from 'react-router-dom'
 import { render, fireEvent, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { AuditAdminStatusBox } from './StatusBox'
-import {
-  auditSettings,
-  jurisdictionMocks,
-  roundMocks,
-} from '../AuditAdmin/useSetupMenuItems/_mocks'
-import { contestMocks } from '../AuditAdmin/Setup/Contests/_mocks'
 import { IAuditSettings } from '../useAuditSettings'
 import { withMockFetch } from '../testUtilities'
-import { aaApiCalls } from '../_mocks'
+import {
+  aaApiCalls,
+  auditSettings,
+  jurisdictionMocks,
+  contestMocks,
+  roundMocks,
+} from '../_mocks'
 import { sampleSizeMock } from '../AuditAdmin/Setup/Review/_mocks'
 import { FileProcessingStatus } from '../useCSV'
 
@@ -182,7 +182,7 @@ describe('StatusBox', () => {
             startNextRound={jest.fn()}
             undoRoundStart={jest.fn()}
             jurisdictions={jurisdictionMocks.allManifests}
-            contests={contestMocks.filledTargeted.contests}
+            contests={contestMocks.filledTargeted}
             auditSettings={auditSettings.all}
           />
         </Router>
@@ -200,7 +200,7 @@ describe('StatusBox', () => {
             startNextRound={jest.fn()}
             undoRoundStart={jest.fn()}
             jurisdictions={jurisdictionMocks.noneStarted}
-            contests={contestMocks.filledTargeted.contests}
+            contests={contestMocks.filledTargeted}
             auditSettings={auditSettings.all}
           />
         </Router>
@@ -218,7 +218,7 @@ describe('StatusBox', () => {
             startNextRound={jest.fn()}
             undoRoundStart={jest.fn()}
             jurisdictions={jurisdictionMocks.oneComplete}
-            contests={contestMocks.filledTargeted.contests}
+            contests={contestMocks.filledTargeted}
             auditSettings={auditSettings.all}
           />
         </Router>
@@ -245,7 +245,7 @@ describe('StatusBox', () => {
               startNextRound={startNextRoundMock}
               undoRoundStart={jest.fn()}
               jurisdictions={jurisdictionMocks.allComplete}
-              contests={contestMocks.filledTargeted.contests}
+              contests={contestMocks.filledTargeted}
               auditSettings={auditSettings.ballotComparisonAll}
             />
           </Router>
@@ -289,7 +289,7 @@ describe('StatusBox', () => {
               startNextRound={startNextRoundMock}
               undoRoundStart={jest.fn()}
               jurisdictions={jurisdictionMocks.allComplete}
-              contests={contestMocks.filledTargeted.contests}
+              contests={contestMocks.filledTargeted}
               auditSettings={auditSettings.batchComparisonAll}
             />
           </Router>
@@ -327,7 +327,7 @@ describe('StatusBox', () => {
               startNextRound={jest.fn()}
               undoRoundStart={jest.fn()}
               jurisdictions={jurisdictionMocks.allComplete}
-              contests={contestMocks.filledTargeted.contests}
+              contests={contestMocks.filledTargeted}
               auditSettings={auditSettings.ballotComparisonAll}
             />
           </Router>
@@ -346,7 +346,7 @@ describe('StatusBox', () => {
             startNextRound={jest.fn()}
             undoRoundStart={jest.fn()}
             jurisdictions={jurisdictionMocks.allComplete}
-            contests={contestMocks.filledTargeted.contests}
+            contests={contestMocks.filledTargeted}
             auditSettings={auditSettings.all}
           />
         </Router>
@@ -365,7 +365,7 @@ describe('StatusBox', () => {
             startNextRound={jest.fn()}
             undoRoundStart={jest.fn()}
             jurisdictions={jurisdictionMocks.allComplete}
-            contests={contestMocks.filledTargeted.contests}
+            contests={contestMocks.filledTargeted}
             auditSettings={auditSettings.all}
           />
         </Router>
@@ -395,7 +395,7 @@ describe('StatusBox', () => {
             startNextRound={jest.fn()}
             undoRoundStart={jest.fn()}
             jurisdictions={jurisdictionMocks.noneStarted}
-            contests={contestMocks.filledTargeted.contests}
+            contests={contestMocks.filledTargeted}
             auditSettings={auditSettings.all}
           />
         </Router>

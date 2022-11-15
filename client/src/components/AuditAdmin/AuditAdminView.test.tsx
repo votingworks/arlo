@@ -5,6 +5,14 @@ import { Route, RouteProps } from 'react-router-dom'
 import { QueryClientProvider } from 'react-query'
 import AuditAdminView from './AuditAdminView'
 import {
+  withMockFetch,
+  renderWithRouter,
+  createQueryClient,
+} from '../testUtilities'
+import AuthDataProvider, { useAuthDataContext } from '../UserContext'
+import {
+  aaApiCalls,
+  jaApiCalls,
   jurisdictionFileMocks,
   standardizedContestsFileMocks,
   auditSettings,
@@ -12,29 +20,11 @@ import {
   manifestFile,
   manifestMocks,
   jurisdictionMocks,
-} from './useSetupMenuItems/_mocks'
-import {
-  withMockFetch,
-  renderWithRouter,
-  createQueryClient,
-} from '../testUtilities'
-import AuthDataProvider, { useAuthDataContext } from '../UserContext'
-import getJurisdictionFileStatus from './useSetupMenuItems/getJurisdictionFileStatus'
-import getRoundStatus from './useSetupMenuItems/getRoundStatus'
-import { aaApiCalls, jaApiCalls } from '../_mocks'
+} from '../_mocks'
 import {
   jurisdictionFile,
-  jurisdictionErrorFile,
   standardizedContestsFile,
 } from './Setup/Participants/_mocks'
-
-const getJurisdictionFileStatusMock = getJurisdictionFileStatus as jest.Mock
-const getRoundStatusMock = getRoundStatus as jest.Mock
-
-jest.mock('./useSetupMenuItems/getJurisdictionFileStatus')
-jest.mock('./useSetupMenuItems/getRoundStatus')
-getJurisdictionFileStatusMock.mockReturnValue('PROCESSED')
-getRoundStatusMock.mockReturnValue(false)
 
 jest.mock('axios')
 
@@ -212,7 +202,7 @@ describe('AA setup flow', () => {
       userEvent.click(jurisdictionButton)
       await screen.findByText('You must upload a file')
 
-      userEvent.upload(jurisdisctionInput, jurisdictionErrorFile)
+      userEvent.upload(jurisdisctionInput, jurisdictionFile)
       userEvent.click(jurisdictionButton)
       await screen.findByText('Invalid CSV')
     })

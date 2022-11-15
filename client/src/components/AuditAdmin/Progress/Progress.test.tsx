@@ -5,18 +5,19 @@ import { Intent } from '@blueprintjs/core'
 import { QueryClientProvider } from 'react-query'
 import { Route } from 'react-router-dom'
 import {
+  withMockFetch,
+  renderWithRouter,
+  createQueryClient,
+} from '../../testUtilities'
+import {
+  aaApiCalls,
+  jaApiCalls,
   jurisdictionMocks,
   auditSettings,
   roundMocks,
   auditBoardMocks,
   manifestMocks,
-} from '../useSetupMenuItems/_mocks'
-import {
-  withMockFetch,
-  renderWithRouter,
-  createQueryClient,
-} from '../../testUtilities'
-import { aaApiCalls, jaApiCalls } from '../../_mocks'
+} from '../../_mocks'
 import Progress, { IProgressProps } from './Progress'
 import { dummyBallots } from '../../AuditBoard/_mocks'
 import * as utilities from '../../utilities'

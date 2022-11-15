@@ -2,7 +2,7 @@ import { renderHook, act } from '@testing-library/react-hooks'
 import { waitFor } from '@testing-library/react'
 import * as utilities from './utilities'
 import useAuditSettings from './useAuditSettings'
-import { auditSettings } from './AuditAdmin/useSetupMenuItems/_mocks'
+import { auditSettings } from './_mocks'
 
 const apiMock: jest.SpyInstance<
   ReturnType<typeof utilities.api>,

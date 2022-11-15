@@ -7,11 +7,11 @@ import { regexpEscape } from '../../../testUtilities'
 import * as utilities from '../../../utilities'
 import Contests from './Contests'
 import relativeStages from '../_mocks'
-import { contestsInputMocks, contestMocks } from './_mocks'
+import { contestsInputMocks } from './_mocks'
 import { numberifyContest, IContestNumbered } from '../../../useContests'
 import { IJurisdiction } from '../../../useJurisdictions'
 import { IContest } from '../../../../types'
-import { jurisdictionMocks } from '../../useSetupMenuItems/_mocks'
+import { contestMocks, jurisdictionMocks } from '../../../_mocks'
 
 const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
 const apiMock: jest.SpyInstance<
@@ -43,7 +43,10 @@ const generateApiMock = (
 }
 
 apiMock.mockImplementation(
-  generateApiMock(contestMocks.emptyTargeted, { jurisdictions: [] })
+  generateApiMock(
+    { contests: contestMocks.emptyTargeted },
+    { jurisdictions: [] }
+  )
 )
 
 jest.mock('react-router-dom', () => ({
@@ -98,7 +101,10 @@ describe('Audit Setup > Contests', () => {
 
   it('renders empty opportunistic state correctly', async () => {
     apiMock.mockImplementation(
-      generateApiMock(contestMocks.emptyOpportunistic, { jurisdictions: [] })
+      generateApiMock(
+        { contests: contestMocks.emptyOpportunistic },
+        { jurisdictions: [] }
+      )
     )
     const { container, findByText } = render(
       <Contests
@@ -114,7 +120,10 @@ describe('Audit Setup > Contests', () => {
 
   it('renders filled targeted state correctly', async () => {
     apiMock.mockImplementation(
-      generateApiMock(contestMocks.filledTargeted, { jurisdictions: [] })
+      generateApiMock(
+        { contests: contestMocks.filledTargeted },
+        { jurisdictions: [] }
+      )
     )
     const { container, findByText } = render(
       <Contests
@@ -130,7 +139,10 @@ describe('Audit Setup > Contests', () => {
 
   it('renders filled opportunistic state correctly', async () => {
     apiMock.mockImplementation(
-      generateApiMock(contestMocks.filledOpportunistic, { jurisdictions: [] })
+      generateApiMock(
+        { contests: contestMocks.filledOpportunistic },
+        { jurisdictions: [] }
+      )
     )
     const { container, findByText } = render(
       <Contests
@@ -178,7 +190,10 @@ describe('Audit Setup > Contests', () => {
 
   it('adds and removes choices', async () => {
     apiMock.mockImplementation(
-      generateApiMock(contestMocks.emptyTargeted, { jurisdictions: [] })
+      generateApiMock(
+        { contests: contestMocks.emptyTargeted },
+        { jurisdictions: [] }
+      )
     )
     const { findByText, getByText, getAllByText, queryAllByText } = render(
       <Contests
@@ -208,9 +223,12 @@ describe('Audit Setup > Contests', () => {
 
   it('is able to submit the form successfully', async () => {
     apiMock.mockImplementation(
-      generateApiMock(contestMocks.emptyTargeted, {
-        jurisdictions: jurisdictionMocks.noManifests,
-      })
+      generateApiMock(
+        { contests: contestMocks.emptyTargeted },
+        {
+          jurisdictions: jurisdictionMocks.noManifests,
+        }
+      )
     )
     const { findByText, getByLabelText, getByText } = render(
       <Contests
@@ -455,19 +473,28 @@ describe('Audit Setup > Contests', () => {
   it('sends all contests to server (both targeted and opportunistic) even though form only edits one set at a time', async () => {
     apiMock
       .mockImplementationOnce(
-        generateApiMock(contestMocks.filledOpportunistic, {
-          jurisdictions: jurisdictionMocks.noManifests,
-        })
+        generateApiMock(
+          { contests: contestMocks.filledOpportunistic },
+          {
+            jurisdictions: jurisdictionMocks.noManifests,
+          }
+        )
       )
       .mockImplementationOnce(
-        generateApiMock(contestMocks.filledOpportunistic, {
-          jurisdictions: jurisdictionMocks.noManifests,
-        })
+        generateApiMock(
+          { contests: contestMocks.filledOpportunistic },
+          {
+            jurisdictions: jurisdictionMocks.noManifests,
+          }
+        )
       )
       .mockImplementationOnce(
-        generateApiMock(contestMocks.filledOpportunistic, {
-          jurisdictions: jurisdictionMocks.noManifests,
-        })
+        generateApiMock(
+          { contests: contestMocks.filledOpportunistic },
+          {
+            jurisdictions: jurisdictionMocks.noManifests,
+          }
+        )
       )
       .mockImplementation(
         generateApiMock(
@@ -510,14 +537,12 @@ describe('Audit Setup > Contests', () => {
         expect(
           JSON.parse(apiMock.mock.calls[3][1]!.body as string)[0]
         ).toMatchObject(
-          regexify(numberifyContest(contestMocks.filledTargeted.contests[0]))
+          regexify(numberifyContest(contestMocks.filledTargeted[0]))
         )
         expect(
           JSON.parse(apiMock.mock.calls[3][1]!.body as string)[1]
         ).toMatchObject(
-          regexify(
-            numberifyContest(contestMocks.filledOpportunistic.contests[0])
-          )
+          regexify(numberifyContest(contestMocks.filledOpportunistic[0]))
         )
       }
       expect(nextStage.activate).toHaveBeenCalledTimes(1)
@@ -526,9 +551,12 @@ describe('Audit Setup > Contests', () => {
 
   it('selects, deselections, and submits jurisdictions', async () => {
     apiMock.mockImplementation(
-      generateApiMock(contestMocks.filledTargeted, {
-        jurisdictions: jurisdictionMocks.noManifests,
-      })
+      generateApiMock(
+        { contests: contestMocks.filledTargeted },
+        {
+          jurisdictions: jurisdictionMocks.noManifests,
+        }
+      )
     )
     const { getByText, findByText, findByLabelText } = render(
       <Contests

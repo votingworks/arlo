@@ -10,7 +10,12 @@ import {
   fullHandTallyBatchResultMock,
 } from './_mocks'
 import { IBatch } from './useBatchResults'
-import { jaApiCalls } from '../_mocks'
+import {
+  jaApiCalls,
+  auditSettings,
+  auditBoardMocks,
+  contestMocks,
+} from '../_mocks'
 import { IAuditSettings } from '../useAuditSettings'
 import { IFullHandTallyBatchResults } from './useFullHandTallyResults'
 import RoundManagement, { IRoundManagementProps } from './RoundManagement'
@@ -22,11 +27,6 @@ import {
 import AuthDataProvider from '../UserContext'
 import { dummyBallots } from '../AuditBoard/_mocks'
 import { IContest } from '../../types'
-import {
-  auditSettings,
-  auditBoardMocks,
-  contestMocks,
-} from '../AuditAdmin/useSetupMenuItems/_mocks'
 
 const mockSavePDF = jest.fn()
 jest.mock('jspdf', () => {

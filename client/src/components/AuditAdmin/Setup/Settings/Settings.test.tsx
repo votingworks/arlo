@@ -5,8 +5,7 @@ import userEvent from '@testing-library/user-event'
 import relativeStages from '../_mocks'
 import Settings from './Settings'
 import { renderWithRouter, withMockFetch } from '../../../testUtilities'
-import { aaApiCalls } from '../../../_mocks'
-import { auditSettings } from '../../useSetupMenuItems/_mocks'
+import { aaApiCalls, auditSettings } from '../../../_mocks'
 
 const { nextStage, prevStage } = relativeStages('settings')
 

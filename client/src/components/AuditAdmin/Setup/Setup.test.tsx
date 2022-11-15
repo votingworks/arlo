@@ -1,14 +1,13 @@
 import React from 'react'
 import { useParams, MemoryRouter } from 'react-router-dom'
 import { render, waitFor, screen } from '@testing-library/react'
-import { auditSettings, jurisdictionMocks } from '../useSetupMenuItems/_mocks'
 import * as utilities from '../../utilities'
 import Setup from './Setup'
 import relativeStages from './_mocks'
-import { contestMocks } from './Contests/_mocks'
 import useContests from '../../useContests'
 import useAuditSettings from '../../useAuditSettings'
 import { useJurisdictionsDeprecated } from '../../useJurisdictions'
+import { contestMocks, jurisdictionMocks, auditSettings } from '../../_mocks'
 
 const apiMock: jest.SpyInstance<
   ReturnType<typeof utilities.api>,
@@ -23,7 +22,7 @@ useJurisdictionsMock.mockImplementation(() => jurisdictionMocks.noManifests)
 const useContestsMock = useContests as jest.Mock
 jest.mock('../../useContests')
 useContestsMock.mockImplementation(() => [
-  contestMocks.filledTargetedWithJurisdictionId.contests,
+  contestMocks.filledTargetedWithJurisdictionId,
   jest.fn(),
 ])
 
@@ -155,7 +154,7 @@ describe('Setup', () => {
 
   it('renders Opportunistic Contests stage', async () => {
     useContestsMock.mockImplementation(() => [
-      contestMocks.emptyOpportunistic.contests,
+      contestMocks.emptyOpportunistic,
       jest.fn(),
     ])
     const { container } = render(
@@ -175,7 +174,7 @@ describe('Setup', () => {
 
   it('renders Opportunistic Contests stage with locked next stage', async () => {
     useContestsMock.mockImplementation(() => [
-      contestMocks.emptyOpportunistic.contests,
+      contestMocks.emptyOpportunistic,
       jest.fn(),
     ])
     const { container } = render(
@@ -197,7 +196,7 @@ describe('Setup', () => {
 
   it('renders Opportunistic Contests stage with processing next stage', async () => {
     useContestsMock.mockImplementation(() => [
-      contestMocks.emptyOpportunistic.contests,
+      contestMocks.emptyOpportunistic,
       jest.fn(),
     ])
     const { container } = render(
@@ -264,7 +263,7 @@ describe('Setup', () => {
 
   it('renders Review & Launch stage', async () => {
     useContestsMock.mockImplementation(() => [
-      contestMocks.filledTargetedWithJurisdictionId.contests,
+      contestMocks.filledTargetedWithJurisdictionId,
       jest.fn(),
     ])
     const { container } = render(

@@ -9,8 +9,7 @@ import {
   downloadTallyEntryLoginLinkPrintout,
 } from './generateSheets'
 import { IAuditBoard } from '../useAuditBoards'
-import { jaApiCalls } from '../_mocks'
-import { auditBoardMocks } from '../AuditAdmin/useSetupMenuItems/_mocks'
+import { jaApiCalls, auditBoardMocks } from '../_mocks'
 import { dummyBallots, dummyBallotsMultipage } from '../AuditBoard/_mocks'
 import { withMockFetch } from '../testUtilities'
 import { roundMocks, tallyEntryAccountStatusMocks } from './_mocks'

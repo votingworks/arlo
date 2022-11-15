@@ -7,8 +7,13 @@ import {
   createQueryClient,
 } from './testUtilities'
 import App from '../App'
-import { aaApiCalls, apiCalls, mockOrganizations, jaApiCalls } from './_mocks'
-import { auditSettings } from './AuditAdmin/useSetupMenuItems/_mocks'
+import {
+  aaApiCalls,
+  apiCalls,
+  mockOrganizations,
+  jaApiCalls,
+  auditSettings,
+} from './_mocks'
 
 const setupScreenCalls = [
   aaApiCalls.getJurisdictions,

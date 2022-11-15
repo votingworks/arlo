@@ -11,6 +11,8 @@ import JurisdictionDetail, {
   IJurisdictionDetailProps,
 } from './JurisdictionDetail'
 import {
+  aaApiCalls,
+  jaApiCalls,
   jurisdictionMocks,
   roundMocks,
   auditSettings,
@@ -22,8 +24,7 @@ import {
   cvrsFile,
   talliesFile,
   contestMocks,
-} from '../useSetupMenuItems/_mocks'
-import { aaApiCalls, jaApiCalls } from '../../_mocks'
+} from '../../_mocks'
 import { withMockFetch, createQueryClient } from '../../testUtilities'
 import { dummyBallots } from '../../AuditBoard/_mocks'
 import { batchesMocks } from '../../JurisdictionAdmin/_mocks'

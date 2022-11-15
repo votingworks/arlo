@@ -5,10 +5,7 @@ import { useParams } from 'react-router-dom'
 import { QueryClientProvider } from 'react-query'
 import RoundDataEntry from './RoundDataEntry'
 import { IContest } from '../../types'
-import {
-  contestMocks,
-  roundMocks,
-} from '../AuditAdmin/useSetupMenuItems/_mocks'
+import { contestMocks, roundMocks } from '../_mocks'
 import { resultsMocks, INullResultValues } from './_mocks'
 import {
   withMockFetch,

@@ -4,10 +4,9 @@ import { Route } from 'react-router-dom'
 import userEvent from '@testing-library/user-event'
 import relativeStages from '../_mocks'
 import Participants from './Participants'
-import { jurisdictionFile, jurisdictionErrorFile } from './_mocks'
-import { auditSettings } from '../../useSetupMenuItems/_mocks'
+import { jurisdictionFile } from './_mocks'
 import { renderWithRouter, withMockFetch } from '../../../testUtilities'
-import { aaApiCalls } from '../../../_mocks'
+import { aaApiCalls, auditSettings } from '../../../_mocks'
 import { IFileInfo, FileProcessingStatus } from '../../../useCSV'
 
 const { nextStage } = relativeStages('participants')
@@ -383,7 +382,7 @@ describe('Audit Setup > Participants', () => {
       aaApiCalls.getSettings(auditSettings.blankBallotComparison),
       apiCalls.getJurisdictionsFile(fileMocks.processed),
       apiCalls.getStandardizedContestsFile(fileMocks.processed),
-      apiCalls.putJurisdictionsFile(jurisdictionErrorFile),
+      apiCalls.putJurisdictionsFile(jurisdictionFile),
       apiCalls.getJurisdictionsFile(fileMocks.processing),
       apiCalls.getJurisdictionsFile(fileMocks.processed),
       apiCalls.getStandardizedContestsFile(fileMocks.errored),
@@ -398,7 +397,7 @@ describe('Audit Setup > Participants', () => {
       )
       userEvent.upload(
         screen.getByLabelText('Select a file...'),
-        jurisdictionErrorFile
+        jurisdictionFile
       )
       userEvent.click(screen.getByRole('button', { name: 'Upload File' }))
 

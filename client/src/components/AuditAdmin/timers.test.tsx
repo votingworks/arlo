@@ -8,8 +8,6 @@ import { Route } from 'react-router-dom'
 import FakeTimers from '@sinonjs/fake-timers'
 import userEvent from '@testing-library/user-event'
 import { QueryClientProvider } from 'react-query'
-import getJurisdictionFileStatus from './useSetupMenuItems/getJurisdictionFileStatus'
-import getRoundStatus from './useSetupMenuItems/getRoundStatus'
 import AuthDataProvider, { useAuthDataContext } from '../UserContext'
 import AuditAdminView from './AuditAdminView'
 import {
@@ -17,17 +15,8 @@ import {
   withMockFetch,
   createQueryClient,
 } from '../testUtilities'
-import { aaApiCalls } from '../_mocks'
-import { auditSettings, roundMocks } from './useSetupMenuItems/_mocks'
+import { aaApiCalls, auditSettings, roundMocks } from '../_mocks'
 import { sampleSizeMock } from './Setup/Review/_mocks'
-
-const getJurisdictionFileStatusMock = getJurisdictionFileStatus as jest.Mock
-const getRoundStatusMock = getRoundStatus as jest.Mock
-
-jest.mock('./useSetupMenuItems/getJurisdictionFileStatus')
-jest.mock('./useSetupMenuItems/getRoundStatus')
-getJurisdictionFileStatusMock.mockReturnValue('PROCESSED')
-getRoundStatusMock.mockReturnValue(false)
 
 // AuditAdminView will only be rendered once the user is logged in, so
 // we simulate that.

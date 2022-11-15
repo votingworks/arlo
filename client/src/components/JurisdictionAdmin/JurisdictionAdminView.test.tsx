@@ -7,6 +7,7 @@ import AuthDataProvider, { useAuthDataContext } from '../UserContext'
 import JurisdictionAdminView from './JurisdictionAdminView'
 import { renderWithRouter, withMockFetch, serverError } from '../testUtilities'
 import {
+  jaApiCalls,
   auditSettings,
   manifestMocks,
   talliesMocks,
@@ -15,8 +16,7 @@ import {
   cvrsMocks,
   cvrsFile,
   roundMocks,
-} from '../AuditAdmin/useSetupMenuItems/_mocks'
-import { jaApiCalls } from '../_mocks'
+} from '../_mocks'
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'), // use actual for all non-hook parts

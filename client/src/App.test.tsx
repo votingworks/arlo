@@ -9,12 +9,10 @@ import {
   mockOrganizations,
   tallyEntryApiCalls,
   tallyEntryUser,
-} from './components/_mocks'
-import {
   auditSettings,
   manifestMocks,
   talliesMocks,
-} from './components/AuditAdmin/useSetupMenuItems/_mocks'
+} from './components/_mocks'
 
 jest.unmock('react-toastify')
 

@@ -14,7 +14,7 @@ import {
   serverError,
   createQueryClient,
 } from '../../../testUtilities'
-import { contestMocks } from '../../../AuditAdmin/useSetupMenuItems/_mocks'
+import { contestMocks } from '../../../_mocks'
 
 const apiCalls = {
   getJAContests: (response: { contests: IContest[] }) => ({

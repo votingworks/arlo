@@ -6,12 +6,6 @@ import { toast } from 'react-toastify'
 import relativeStages from '../_mocks'
 import Review from './Review'
 import { settingsMock, sampleSizeMock } from './_mocks'
-import { contestMocks } from '../Contests/_mocks'
-import {
-  jurisdictionMocks,
-  fileProcessingMocks,
-  auditSettings,
-} from '../../useSetupMenuItems/_mocks'
 import { withMockFetch, renderWithRouter } from '../../../testUtilities'
 import { IJurisdiction } from '../../../useJurisdictions'
 import { IContest } from '../../../../types'
@@ -19,6 +13,12 @@ import { IAuditSettings } from '../../../useAuditSettings'
 import { ISampleSizesResponse } from './useSampleSizes'
 import { FileProcessingStatus } from '../../../useCSV'
 import { IContestNameStandardizations } from '../../../useContestNameStandardizations'
+import {
+  fileProcessingMocks,
+  jurisdictionMocks,
+  contestMocks,
+  auditSettings,
+} from '../../../_mocks'
 
 const apiCalls = {
   getSettings: (response: IAuditSettings) => ({
@@ -65,9 +65,9 @@ const apiCalls = {
       processing: fileProcessingMocks.processed,
     },
   },
-  getContests: (response: { contests: IContest[] }) => ({
+  getContests: (contests: IContest[]) => ({
     url: '/api/election/1/contest',
-    response,
+    response: { contests },
   }),
   getStandardizations: (response: IContestNameStandardizations) => ({
     url: '/api/election/1/contest/standardizations',
