@@ -224,4 +224,38 @@ describe('CodeInput', () => {
     typeCode(codeInput, '0')
     screen.getByText('Value: 0')
   })
+
+  it('handles pasting codes', () => {
+    render(<ControlledCodeInput />)
+    const codeInput = screen.getByLabelText('Code:')
+    const digitInputs = within(codeInput).getAllByRole('textbox')
+
+    const paste = (element: HTMLElement, text: string) => {
+      // The types are weird, but this works. Fixed in user-event v14, if we
+      // ever upgrade.
+      userEvent.paste(element, text, {
+        clipboardData: ({ getData: () => text } as unknown) as DataTransfer,
+      } as MouseEventInit)
+    }
+
+    // Supports pasting a complete code
+    paste(digitInputs[0], '123')
+    screen.getByText('Value: 123')
+    expect(digitInputs[2]).toHaveFocus()
+
+    // Supports pasting a partial code
+    paste(digitInputs[0], '45')
+    screen.getByText('Value: 45')
+    expect(digitInputs[1]).toHaveFocus()
+
+    // Rejects pasting a code that's too long
+    paste(digitInputs[0], '6789')
+    screen.getByText('Value: 45')
+    expect(digitInputs[0]).toHaveFocus()
+
+    // Rejects pasting a code that contains non-digits
+    paste(digitInputs[0], 'abc')
+    screen.getByText('Value: 45')
+    expect(digitInputs[0]).toHaveFocus()
+  })
 })
