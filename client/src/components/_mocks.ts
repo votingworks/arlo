@@ -1819,7 +1819,7 @@ export const aaApiCalls = {
   },
   getContests: {
     url: '/api/election/1/contest',
-    response: contestMocks.filledTargeted,
+    response: { contests: contestMocks.filledTargeted },
   },
   getSettings: (response: IAuditSettings) => ({
     url: '/api/election/1/settings',

@@ -3,19 +3,19 @@
 exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
 <div>
   <div
-    class="sc-kEYyzF gOPOqs"
+    class="sc-bdVaJa bKocXA"
   >
     <div
-      class="bp3-callout sc-hSdWYo gMDgEE"
+      class="bp3-callout sc-bxivhb dweKfW"
     >
       <div
-        class="sc-kkGfuU gzyJPg"
+        class="sc-bwzfXH ijTqJq"
       >
         <div
           class="text"
         >
           <h3
-            class="bp3-heading sc-iAyFgw fUjqOI"
+            class="bp3-heading sc-htpNat hodhlw"
           >
             Test Audit
           </h3>
@@ -30,26 +30,17 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
           <p>
             0 of 2 jurisdictions have completed file uploads.
           </p>
-          <span
-            class="bp3-tag sc-jWBwVP fvZRn"
-          >
-            <span
-              class="bp3-text-overflow-ellipsis bp3-fill"
-            >
-              Will refresh in 5 minutes
-            </span>
-          </span>
         </div>
       </div>
     </div>
     <div
-      class="sc-kkGfuU gzyJPg"
+      class="sc-bwzfXH ijTqJq"
     >
       <div
-        class="sc-cvbbAY vOHMb"
+        class="sc-jWBwVP ddoaKU"
       >
         <h2
-          class="bp3-heading sc-ifAKCX cmZyyF"
+          class="bp3-heading sc-dnqmqq dMLSzf"
         >
           Audit Setup
         </h2>
@@ -61,6 +52,7 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
           >
             <a
               class="bp3-menu-item bp3-active bp3-intent-primary bp3-popover-dismiss"
+              id="participants"
             >
               <div
                 class="bp3-text-overflow-ellipsis bp3-fill"
@@ -76,91 +68,14 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
             class=""
           >
             <a
-              class="bp3-menu-item bp3-disabled"
-              tabindex="-1"
+              class="bp3-menu-item bp3-popover-dismiss"
+              id="target-contests"
             >
               <div
                 class="bp3-text-overflow-ellipsis bp3-fill"
               >
                 Target Contests
               </div>
-              <span
-                class="bp3-menu-item-label"
-              >
-                <div
-                  class="bp3-spinner"
-                >
-                  <div
-                    class="bp3-spinner-animation"
-                  >
-                    <svg
-                      height="20"
-                      stroke-width="16.00"
-                      viewBox="-3.00 -3.00 106.00 106.00"
-                      width="20"
-                    >
-                      <path
-                        class="bp3-spinner-track"
-                        d="M 50,50 m 0,-45 a 45,45 0 1 1 0,90 a 45,45 0 1 1 0,-90"
-                      />
-                      <path
-                        class="bp3-spinner-head"
-                        d="M 50,50 m 0,-45 a 45,45 0 1 1 0,90 a 45,45 0 1 1 0,-90"
-                        pathLength="280"
-                        stroke-dasharray="280 280"
-                        stroke-dashoffset="210"
-                      />
-                    </svg>
-                  </div>
-                </div>
-              </span>
-            </a>
-          </li>
-          <li
-            class="bp3-menu-divider"
-          />
-          <li
-            class=""
-          >
-            <a
-              class="bp3-menu-item bp3-disabled"
-              tabindex="-1"
-            >
-              <div
-                class="bp3-text-overflow-ellipsis bp3-fill"
-              >
-                Opportunistic Contests
-              </div>
-              <span
-                class="bp3-menu-item-label"
-              >
-                <div
-                  class="bp3-spinner"
-                >
-                  <div
-                    class="bp3-spinner-animation"
-                  >
-                    <svg
-                      height="20"
-                      stroke-width="16.00"
-                      viewBox="-3.00 -3.00 106.00 106.00"
-                      width="20"
-                    >
-                      <path
-                        class="bp3-spinner-track"
-                        d="M 50,50 m 0,-45 a 45,45 0 1 1 0,90 a 45,45 0 1 1 0,-90"
-                      />
-                      <path
-                        class="bp3-spinner-head"
-                        d="M 50,50 m 0,-45 a 45,45 0 1 1 0,90 a 45,45 0 1 1 0,-90"
-                        pathLength="280"
-                        stroke-dasharray="280 280"
-                        stroke-dashoffset="210"
-                      />
-                    </svg>
-                  </div>
-                </div>
-              </span>
             </a>
           </li>
           <li
@@ -171,6 +86,24 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
           >
             <a
               class="bp3-menu-item bp3-popover-dismiss"
+              id="opportunistic-contests"
+            >
+              <div
+                class="bp3-text-overflow-ellipsis bp3-fill"
+              >
+                Opportunistic Contests
+              </div>
+            </a>
+          </li>
+          <li
+            class="bp3-menu-divider"
+          />
+          <li
+            class=""
+          >
+            <a
+              class="bp3-menu-item bp3-popover-dismiss"
+              id="settings"
             >
               <div
                 class="bp3-text-overflow-ellipsis bp3-fill"
@@ -187,6 +120,7 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
           >
             <a
               class="bp3-menu-item bp3-popover-dismiss"
+              id="review"
             >
               <div
                 class="bp3-text-overflow-ellipsis bp3-fill"
@@ -198,20 +132,20 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
         </ul>
       </div>
       <div
-        class="sc-EHOje bjGJmd"
+        class="sc-iwsKbI WPIFj"
       >
         <h2
-          class="bp3-heading sc-ifAKCX cmZyyF"
+          class="bp3-heading sc-dnqmqq dMLSzf"
         >
           Participants
         </h2>
         <form>
           <div
-            class="sc-EHOje bjGJmd"
+            class="sc-iwsKbI WPIFj"
           >
             <div>
               <div
-                class="sc-gzVnrw kvvweo"
+                class="sc-gqjmRU fOytwc"
               >
                 Click "Browse" to choose the appropriate file from your computer. This file should be a comma-separated list of all the jurisdictions participating in the audit, plus email addresses for audit administrators in each participating jurisdiction.
                 <br />
@@ -234,7 +168,7 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
                 file name
               </p>
               <p
-                class="sc-dnqmqq jvyRYy"
+                class="sc-jTzLTM llAJhK"
               >
                 Uploaded at
                  
@@ -243,7 +177,7 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
               </p>
               <div>
                 <button
-                  class="bp3-button sc-bxivhb WkpPV"
+                  class="bp3-button sc-htoDjs dESvso"
                   type="button"
                 >
                   <span
@@ -257,10 +191,10 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
           </div>
         </form>
         <div
-          class="sc-bdVaJa kcYonD"
+          class="sc-EHOje kPsGPf"
         >
           <button
-            class="bp3-button bp3-intent-primary sc-bxivhb WkpPV"
+            class="bp3-button bp3-intent-primary sc-htoDjs dESvso"
             type="submit"
           >
             <span

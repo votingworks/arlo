@@ -50,24 +50,15 @@ const render = (view = 'setup') =>
 
 describe('AA setup flow', () => {
   const setupApiCalls = [
+    aaApiCalls.getRounds([]),
     aaApiCalls.getJurisdictions,
     aaApiCalls.getContests,
     aaApiCalls.getSettings(auditSettings.all),
+    aaApiCalls.getJurisdictionFile,
   ]
 
   it('sidebar changes stages', async () => {
-    const expectedCalls = [
-      aaApiCalls.getUser,
-      aaApiCalls.getRounds([]),
-      ...setupApiCalls,
-      aaApiCalls.getSettings(auditSettings.all),
-      aaApiCalls.getJurisdictionFile,
-      ...setupApiCalls,
-      aaApiCalls.getSettings(auditSettings.all),
-      aaApiCalls.getJurisdictionFile,
-      ...setupApiCalls,
-      aaApiCalls.getSettings(auditSettings.all),
-    ]
+    const expectedCalls = [aaApiCalls.getUser, ...setupApiCalls]
     await withMockFetch(expectedCalls, async () => {
       const { queryAllByText, getByText } = render()
 
@@ -84,16 +75,7 @@ describe('AA setup flow', () => {
   })
 
   it('renders sidebar when authenticated on /setup', async () => {
-    const expectedCalls = [
-      aaApiCalls.getUser,
-      aaApiCalls.getRounds([]),
-      ...setupApiCalls,
-      aaApiCalls.getSettings(auditSettings.all),
-      aaApiCalls.getJurisdictionFile,
-      ...setupApiCalls,
-      aaApiCalls.getSettings(auditSettings.all),
-      aaApiCalls.getJurisdictionFile,
-    ]
+    const expectedCalls = [aaApiCalls.getUser, ...setupApiCalls]
     await withMockFetch(expectedCalls, async () => {
       const { container, queryAllByText } = render()
 
@@ -108,7 +90,8 @@ describe('AA setup flow', () => {
     const expectedCalls = [
       aaApiCalls.getUser,
       aaApiCalls.getRounds([]),
-      ...setupApiCalls,
+      aaApiCalls.getJurisdictions,
+      aaApiCalls.getContests,
       aaApiCalls.getSettings(auditSettings.all),
       aaApiCalls.getJurisdictionFileWithResponse(jurisdictionFileMocks.empty),
     ]
@@ -123,16 +106,7 @@ describe('AA setup flow', () => {
   })
 
   it('get jurisdiction file if exists', async () => {
-    const expectedCalls = [
-      aaApiCalls.getUser,
-      aaApiCalls.getRounds([]),
-      ...setupApiCalls,
-      aaApiCalls.getSettings(auditSettings.all),
-      aaApiCalls.getJurisdictionFile,
-      ...setupApiCalls,
-      aaApiCalls.getSettings(auditSettings.all),
-      aaApiCalls.getJurisdictionFile,
-    ]
+    const expectedCalls = [aaApiCalls.getUser, ...setupApiCalls]
     await withMockFetch(expectedCalls, async () => {
       const { queryByText, queryAllByText } = render()
 
@@ -147,18 +121,15 @@ describe('AA setup flow', () => {
     const expectedCalls = [
       aaApiCalls.getUser,
       aaApiCalls.getRounds([]),
-      ...setupApiCalls,
+      aaApiCalls.getJurisdictions,
+      aaApiCalls.getContests,
       aaApiCalls.getSettings(auditSettings.all),
       aaApiCalls.getJurisdictionFileWithResponse(jurisdictionFileMocks.empty),
       aaApiCalls.putJurisdictionFile,
       aaApiCalls.getJurisdictionFileWithResponse(
         jurisdictionFileMocks.processed
       ),
-      ...setupApiCalls,
-      aaApiCalls.getSettings(auditSettings.all),
-      aaApiCalls.getJurisdictionFileWithResponse(
-        jurisdictionFileMocks.processed
-      ),
+      aaApiCalls.getJurisdictions,
     ]
     await withMockFetch(expectedCalls, async () => {
       const { queryAllByText } = render()
@@ -183,11 +154,13 @@ describe('AA setup flow', () => {
     const expectedCalls = [
       aaApiCalls.getUser,
       aaApiCalls.getRounds([]),
-      ...setupApiCalls,
+      aaApiCalls.getJurisdictions,
+      aaApiCalls.getContests,
       aaApiCalls.getSettings(auditSettings.all),
       aaApiCalls.getJurisdictionFileWithResponse(jurisdictionFileMocks.empty),
       aaApiCalls.putJurisdictionErrorFile,
       aaApiCalls.getJurisdictionFileWithResponse(jurisdictionFileMocks.errored),
+      aaApiCalls.getJurisdictions,
     ]
     await withMockFetch(expectedCalls, async () => {
       const { queryAllByText } = render()
@@ -210,32 +183,19 @@ describe('AA setup flow', () => {
 
   it('standardized contests file upload success', async () => {
     const ballotComparisonSetupApiCalls = [
+      aaApiCalls.getRounds([]),
       aaApiCalls.getJurisdictions,
       aaApiCalls.getContests,
       aaApiCalls.getSettings(auditSettings.ballotComparisonAll),
+      aaApiCalls.getJurisdictionFile,
     ]
     const expectedCalls = [
       aaApiCalls.getUser,
-      aaApiCalls.getRounds([]),
       ...ballotComparisonSetupApiCalls,
-      aaApiCalls.getSettings(auditSettings.ballotComparisonAll),
-      aaApiCalls.getJurisdictionFile,
       aaApiCalls.getStandardizedContestsFileWithResponse(
         standardizedContestsFileMocks.empty
       ),
       aaApiCalls.putStandardizedContestsFile,
-      aaApiCalls.getStandardizedContestsFileWithResponse(
-        standardizedContestsFileMocks.processed
-      ),
-      aaApiCalls.getStandardizedContestsFileWithResponse(
-        standardizedContestsFileMocks.processed
-      ),
-      ...ballotComparisonSetupApiCalls,
-      aaApiCalls.getStandardizedContestsFileWithResponse(
-        standardizedContestsFileMocks.processed
-      ),
-      aaApiCalls.getSettings(auditSettings.ballotComparisonAll),
-      aaApiCalls.getJurisdictionFile,
       aaApiCalls.getStandardizedContestsFileWithResponse(
         standardizedContestsFileMocks.processed
       ),
@@ -280,24 +240,21 @@ describe('AA setup flow', () => {
       aaApiCalls.getJurisdictions,
       aaApiCalls.getContests,
       aaApiCalls.getSettings(auditSettings.all),
-      aaApiCalls.getSettings(auditSettings.all),
     ]
     const expectedCalls = [
       aaApiCalls.getUser,
       aaApiCalls.getRounds(roundMocks.drawSampleErrored),
       ...afterLaunchApiCalls,
-      aaApiCalls.getJurisdictionFile,
-      ...afterLaunchApiCalls,
-      aaApiCalls.getJurisdictionFile,
       {
         url: '/api/election/1/round/round-1',
         options: { method: 'DELETE' },
         response: { status: 'ok' },
       },
       aaApiCalls.getRounds(roundMocks.empty),
+      aaApiCalls.getMapData,
     ]
     await withMockFetch(expectedCalls, async () => {
-      render()
+      const { history } = render('progress')
       await screen.findByRole('heading', {
         name: 'Arlo could not draw the sample',
       })
@@ -305,6 +262,7 @@ describe('AA setup flow', () => {
         'Please contact our support team for help resolving this issue.'
       )
       screen.getByText('Error: something went wrong')
+      expect(history.location.pathname).toEqual('/election/1/progress')
 
       userEvent.click(screen.getByRole('button', { name: 'Undo Audit Launch' }))
       await screen.findByText('The audit has not started.')
@@ -315,7 +273,9 @@ describe('AA setup flow', () => {
     const expectedCalls = [
       aaApiCalls.getUser,
       aaApiCalls.getRounds([]),
-      ...setupApiCalls,
+      aaApiCalls.getJurisdictions,
+      aaApiCalls.getContests,
+      aaApiCalls.getSettings(auditSettings.all),
       aaApiCalls.getMapData,
       jaApiCalls.getBallotManifestFile(manifestMocks.empty),
       jaApiCalls.putManifest,
