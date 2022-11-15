@@ -1,26 +1,30 @@
 import React from 'react'
-import { screen, waitFor } from '@testing-library/react'
-import { Route } from 'react-router-dom'
+import { screen, waitFor, render } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import relativeStages from '../_mocks'
-import Participants from './Participants'
+import { QueryClientProvider } from 'react-query'
+import Participants, { IParticipantsProps } from './Participants'
 import { jurisdictionFile } from './_mocks'
-import { renderWithRouter, withMockFetch } from '../../../testUtilities'
-import { aaApiCalls, auditSettings } from '../../../_mocks'
+import { withMockFetch, createQueryClient } from '../../../testUtilities'
 import { IFileInfo, FileProcessingStatus } from '../../../useCSV'
-
-const { nextStage } = relativeStages('participants')
-const refreshMock = jest.fn()
 
 jest.mock('axios')
 
-const renderParticipants = () =>
-  renderWithRouter(
-    <Route path="/election/:electionId/setup">
-      <Participants nextStage={nextStage} refresh={refreshMock} />
-    </Route>,
-    { route: '/election/1/setup' }
-  )
+const renderParticipants = (props: Partial<IParticipantsProps> = {}) => {
+  const goToNextStage = jest.fn()
+  return {
+    goToNextStage,
+    ...render(
+      <QueryClientProvider client={createQueryClient()}>
+        <Participants
+          electionId="1"
+          goToNextStage={goToNextStage}
+          isStandardizedContestsFileEnabled={false}
+          {...props}
+        />
+      </QueryClientProvider>
+    ),
+  }
+}
 
 const fileMocks = {
   empty: { file: null, processing: null },
@@ -98,22 +102,13 @@ const apiCalls = {
 }
 
 describe('Audit Setup > Participants', () => {
-  beforeEach(() => {
-    ;(nextStage.activate as jest.Mock).mockClear()
-    refreshMock.mockClear()
-  })
-
   it('heading should be participants & contests for ballot comparison', async () => {
     const expectedCalls = [
-      aaApiCalls.getSettings(auditSettings.blankBallotComparison),
       apiCalls.getJurisdictionsFile(fileMocks.empty),
       apiCalls.getStandardizedContestsFile(fileMocks.empty),
     ]
     await withMockFetch(expectedCalls, async () => {
-      nextStage.state = 'locked'
-
-      renderParticipants()
-
+      renderParticipants({ isStandardizedContestsFileEnabled: true })
       await screen.findByRole('heading', { name: 'Participants & Contests' })
     })
   })
@@ -121,7 +116,6 @@ describe('Audit Setup > Participants', () => {
   it('submits participants file', async () => {
     const anotherFile = new File([], 'another file')
     const expectedCalls = [
-      aaApiCalls.getSettings(auditSettings.blank),
       apiCalls.getJurisdictionsFile(fileMocks.empty),
       apiCalls.putJurisdictionsFile(jurisdictionFile),
       apiCalls.getJurisdictionsFile(fileMocks.processed),
@@ -129,9 +123,7 @@ describe('Audit Setup > Participants', () => {
       apiCalls.getJurisdictionsFile(fileMocks.processed),
     ]
     await withMockFetch(expectedCalls, async () => {
-      nextStage.state = 'locked'
-
-      renderParticipants()
+      const { goToNextStage } = renderParticipants()
 
       await screen.findByRole('heading', { name: 'Participants' })
 
@@ -147,10 +139,6 @@ describe('Audit Setup > Participants', () => {
       await screen.findByText('Current file:')
       screen.getByText('file name')
 
-      // Fake that setupMenuItems noticed the change and unlocked the next stage
-      expect(refreshMock).toHaveBeenCalled()
-      nextStage.state = 'live'
-
       // Replace the file in the input
       userEvent.click(screen.getByRole('button', { name: 'Replace File' }))
       userEvent.upload(screen.getByLabelText('Select a file...'), anotherFile)
@@ -159,14 +147,13 @@ describe('Audit Setup > Participants', () => {
 
       // Next button should be enabled now
       userEvent.click(screen.getByRole('button', { name: 'Next' }))
-      expect(nextStage.activate).toHaveBeenCalled()
+      expect(goToNextStage).toHaveBeenCalled()
     })
   })
 
   it('submits participants and standardized contests file for ballot comparison audits', async () => {
     const contestsFile = new File([], 'contests file')
     const expectedCalls = [
-      aaApiCalls.getSettings(auditSettings.blankBallotComparison),
       apiCalls.getJurisdictionsFile(fileMocks.empty),
       apiCalls.getStandardizedContestsFile(fileMocks.empty),
       apiCalls.putJurisdictionsFile(jurisdictionFile),
@@ -176,7 +163,7 @@ describe('Audit Setup > Participants', () => {
       apiCalls.getStandardizedContestsFile(fileMocks.processed),
     ]
     await withMockFetch(expectedCalls, async () => {
-      renderParticipants()
+      renderParticipants({ isStandardizedContestsFileEnabled: true })
 
       await screen.findByRole('heading', {
         name: 'Participating Jurisdictions',
@@ -223,7 +210,6 @@ describe('Audit Setup > Participants', () => {
   it('submits participants and standardized contests file for hybrid audits', async () => {
     const contestsFile = new File([], 'contests file')
     const expectedCalls = [
-      aaApiCalls.getSettings(auditSettings.blankHybrid),
       apiCalls.getJurisdictionsFile(fileMocks.empty),
       apiCalls.getStandardizedContestsFile(fileMocks.empty),
       apiCalls.putJurisdictionsFile(jurisdictionFile),
@@ -233,7 +219,7 @@ describe('Audit Setup > Participants', () => {
       apiCalls.getStandardizedContestsFile(fileMocks.processed),
     ]
     await withMockFetch(expectedCalls, async () => {
-      renderParticipants()
+      renderParticipants({ isStandardizedContestsFileEnabled: true })
 
       await screen.findByRole('heading', {
         name: 'Participating Jurisdictions',
@@ -279,12 +265,11 @@ describe('Audit Setup > Participants', () => {
 
   it('displays errors', async () => {
     const expectedCalls = [
-      aaApiCalls.getSettings(auditSettings.blankBallotComparison),
       apiCalls.getJurisdictionsFile(fileMocks.errored),
       apiCalls.getStandardizedContestsFile(fileMocks.empty),
     ]
     await withMockFetch(expectedCalls, async () => {
-      renderParticipants()
+      renderParticipants({ isStandardizedContestsFileEnabled: true })
 
       await screen.findByText('Current file:')
       screen.getByText('file name')
@@ -303,12 +288,11 @@ describe('Audit Setup > Participants', () => {
 
   it('displays errors - hybrid', async () => {
     const expectedCalls = [
-      aaApiCalls.getSettings(auditSettings.blankHybrid),
       apiCalls.getJurisdictionsFile(fileMocks.errored),
       apiCalls.getStandardizedContestsFile(fileMocks.empty),
     ]
     await withMockFetch(expectedCalls, async () => {
-      renderParticipants()
+      renderParticipants({ isStandardizedContestsFileEnabled: true })
 
       await screen.findByText('Current file:')
       screen.getByText('file name')
@@ -326,10 +310,7 @@ describe('Audit Setup > Participants', () => {
   })
 
   it('do not show standardized contests for ballot polling', async () => {
-    const expectedCalls = [
-      aaApiCalls.getSettings(auditSettings.blank),
-      apiCalls.getJurisdictionsFile(fileMocks.empty),
-    ]
+    const expectedCalls = [apiCalls.getJurisdictionsFile(fileMocks.empty)]
     await withMockFetch(expectedCalls, async () => {
       renderParticipants()
 
@@ -348,7 +329,6 @@ describe('Audit Setup > Participants', () => {
   it('displays errors on replacing standardized contests with invalid upload', async () => {
     const contestsFile = new File([], 'contests file')
     const expectedCalls = [
-      aaApiCalls.getSettings(auditSettings.blankBallotComparison),
       apiCalls.getJurisdictionsFile(fileMocks.processed),
       apiCalls.getStandardizedContestsFile(fileMocks.processed),
       apiCalls.putStandardizedContestsFile(contestsFile),
@@ -356,7 +336,7 @@ describe('Audit Setup > Participants', () => {
       apiCalls.getStandardizedContestsFile(fileMocks.errored),
     ]
     await withMockFetch(expectedCalls, async () => {
-      renderParticipants()
+      renderParticipants({ isStandardizedContestsFileEnabled: true })
       expect(await screen.findAllByText(/Uploaded/)).toHaveLength(2)
 
       // Replace & upload errored standardized contests
@@ -379,7 +359,6 @@ describe('Audit Setup > Participants', () => {
 
   it('displays errors after reprocessing standardized contests', async () => {
     const expectedCalls = [
-      aaApiCalls.getSettings(auditSettings.blankBallotComparison),
       apiCalls.getJurisdictionsFile(fileMocks.processed),
       apiCalls.getStandardizedContestsFile(fileMocks.processed),
       apiCalls.putJurisdictionsFile(jurisdictionFile),
@@ -388,7 +367,7 @@ describe('Audit Setup > Participants', () => {
       apiCalls.getStandardizedContestsFile(fileMocks.errored),
     ]
     await withMockFetch(expectedCalls, async () => {
-      renderParticipants()
+      renderParticipants({ isStandardizedContestsFileEnabled: true })
       expect(await screen.findAllByText(/Uploaded/)).toHaveLength(2)
 
       // Upload a new jurisdictions file

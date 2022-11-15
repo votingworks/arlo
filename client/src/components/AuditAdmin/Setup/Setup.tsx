@@ -106,13 +106,11 @@ const Setup: React.FC<IProps> = ({
           case 'participants':
             return (
               <Participants
-                goToNextStage={goToNextStage}
-                jurisdictionsFileUpload={jurisdictionsFileUpload}
-                standardizedContestsFileUpload={
+                electionId={electionId}
+                isStandardizedContestsFileEnabled={
                   isStandardizedContestsFileEnabled
-                    ? standardizedContestsFileUpload
-                    : undefined
                 }
+                goToNextStage={goToNextStage}
               />
             )
           case 'target-contests':
@@ -138,6 +136,7 @@ const Setup: React.FC<IProps> = ({
           case 'settings':
             return (
               <Settings
+                electionId={electionId}
                 goToPrevStage={goToPrevStage}
                 goToNextStage={goToNextStage}
               />

@@ -2,40 +2,47 @@ import React from 'react'
 import FormButtonBar from '../../../Atoms/Form/FormButtonBar'
 import FormButton from '../../../Atoms/Form/FormButton'
 import FormWrapper from '../../../Atoms/Form/FormWrapper'
-import { isFileProcessed } from '../../../useCSV'
 import CSVFile from '../../../Atoms/CSVForm'
-import { IFileUpload } from '../../../useFileUpload'
-import { assert } from '../../../utilities'
+import {
+  useJurisdictionsFile,
+  useStandardizedContestsFile,
+} from '../../../useFileUpload'
+import { isFileProcessed } from '../../../useCSV'
 
-interface IProps {
+export interface IParticipantsProps {
+  electionId: string
+  isStandardizedContestsFileEnabled: boolean
   goToNextStage: () => void
-  jurisdictionsFileUpload: IFileUpload
-  // Undefined if standardized contests file is not enabled
-  standardizedContestsFileUpload?: IFileUpload
 }
 
-const Participants: React.FC<IProps> = ({
+const Participants: React.FC<IParticipantsProps> = ({
+  electionId,
+  isStandardizedContestsFileEnabled,
   goToNextStage,
-  jurisdictionsFileUpload,
-  standardizedContestsFileUpload,
-}: IProps) => {
-  assert(jurisdictionsFileUpload.uploadedFile.isSuccess)
-  assert(
-    standardizedContestsFileUpload === undefined ||
-      standardizedContestsFileUpload.uploadedFile.isSuccess
+}: IParticipantsProps) => {
+  const jurisdictionsFileUpload = useJurisdictionsFile(electionId)
+  const standardizedContestsFileUpload = useStandardizedContestsFile(
+    electionId,
+    { enabled: isStandardizedContestsFileEnabled }
   )
+  if (
+    !jurisdictionsFileUpload.uploadedFile.isSuccess ||
+    (isStandardizedContestsFileEnabled &&
+      !standardizedContestsFileUpload.uploadedFile.isSuccess)
+  )
+    return null
 
   const areFileUploadsComplete =
     isFileProcessed(jurisdictionsFileUpload.uploadedFile.data) &&
-    (standardizedContestsFileUpload === undefined ||
+    (!isStandardizedContestsFileEnabled ||
       isFileProcessed(standardizedContestsFileUpload.uploadedFile.data!))
 
   return (
     <FormWrapper
       title={
-        standardizedContestsFileUpload === undefined
-          ? 'Participants'
-          : 'Participants & Contests'
+        isStandardizedContestsFileEnabled
+          ? 'Participants & Contests'
+          : 'Participants'
       }
     >
       <CSVFile
@@ -45,7 +52,7 @@ const Participants: React.FC<IProps> = ({
           return true
         }}
         title={
-          standardizedContestsFileUpload !== undefined
+          isStandardizedContestsFileEnabled
             ? 'Participating Jurisdictions'
             : undefined
         }
@@ -53,7 +60,7 @@ const Participants: React.FC<IProps> = ({
         sampleFileLink="/sample_jurisdiction_filesheet.csv"
         enabled
       />
-      {standardizedContestsFileUpload !== undefined && (
+      {isStandardizedContestsFileEnabled && (
         <div style={{ marginTop: '30px' }}>
           <CSVFile
             csvFile={standardizedContestsFileUpload.uploadedFile.data!}

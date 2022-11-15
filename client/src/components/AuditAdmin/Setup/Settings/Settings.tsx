@@ -24,6 +24,7 @@ const Select = styled(HTMLSelect)`
 `
 
 interface IProps {
+  electionId: string
   goToPrevStage: () => void
   goToNextStage: () => void
 }
@@ -34,10 +35,10 @@ type IValues = Pick<
 >
 
 const Settings: React.FC<IProps> = ({
+  electionId,
   goToPrevStage,
   goToNextStage,
 }: IProps) => {
-  const { electionId } = useParams<{ electionId: string }>()
   const auditSettingsQuery = useAuditSettings(electionId)
   const updateAuditSettingsMutation = useUpdateAuditSettings(electionId)
 

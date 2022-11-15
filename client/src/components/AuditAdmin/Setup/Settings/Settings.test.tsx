@@ -1,14 +1,9 @@
 import React from 'react'
-import { waitFor, screen } from '@testing-library/react'
-import { Route } from 'react-router-dom'
+import { waitFor, screen, render } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { QueryClientProvider } from 'react-query'
 import Settings from './Settings'
-import {
-  renderWithRouter,
-  withMockFetch,
-  createQueryClient,
-} from '../../../testUtilities'
+import { withMockFetch, createQueryClient } from '../../../testUtilities'
 import { aaApiCalls, auditSettings } from '../../../_mocks'
 
 const renderSettings = () => {
@@ -17,16 +12,14 @@ const renderSettings = () => {
   return {
     goToNextStage,
     goToPrevStage,
-    ...renderWithRouter(
+    ...render(
       <QueryClientProvider client={createQueryClient()}>
-        <Route path="/election/:electionId/setup">
-          <Settings
-            goToNextStage={goToNextStage}
-            goToPrevStage={goToPrevStage}
-          />
-        </Route>
-      </QueryClientProvider>,
-      { route: '/election/1/setup' }
+        <Settings
+          electionId="1"
+          goToNextStage={goToNextStage}
+          goToPrevStage={goToPrevStage}
+        />
+      </QueryClientProvider>
     ),
   }
 }
