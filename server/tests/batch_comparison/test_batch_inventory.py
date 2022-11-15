@@ -509,7 +509,7 @@ def test_batch_inventory_wrong_tabulator_status_file(
     assert tabulator_status["processing"]["status"] == ProcessingStatus.ERRORED
     assert (
         tabulator_status["processing"]["error"]
-        == 'This looks like the Excel version of the tabulator status report. Please upload the plain XML version (which has a file name ending in ".xml" and does not contain the words "To Excel").'
+        == 'We could not parse this file. Please make sure you upload the plain XML version of the tabulator status report. The file name should end in ".xml" and should not contain the words "To Excel".'
     )
 
     # Upload tabulator status HTML version
@@ -612,7 +612,7 @@ p { line-height=100%}
     assert tabulator_status["processing"]["status"] == ProcessingStatus.ERRORED
     assert (
         tabulator_status["processing"]["error"]
-        == 'This looks like the HTML version of the tabulator status report. Please upload the XML version (which has a file name ending in ".xml").'
+        == 'We could not parse this file. Please make sure you upload the plain XML version of the tabulator status report. The file name should end in ".xml" and should not contain the words "To Excel".'
     )
 
 
