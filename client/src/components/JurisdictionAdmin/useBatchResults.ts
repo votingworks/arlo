@@ -12,6 +12,7 @@ export interface IBatchResultTallySheet {
 
 export interface IBatch {
   id: string
+  lastEditedBy: string | null
   name: string
   numBallots: number
   resultTallySheets: IBatchResultTallySheet[]

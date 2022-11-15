@@ -103,10 +103,6 @@ def process_ballot_manifest_file(
             AuditType.BALLOT_COMPARISON,
             AuditType.HYBRID,
         ]
-        # Hybrid audits need a CVR column to tell us which batches have CVRS
-        # (for which we use ballot comparison math) and which don't (for which
-        # we use ballot polling math).
-        use_cvr = jurisdiction.election.audit_type == AuditType.HYBRID
         columns = [
             CSVColumnType(CONTAINER, CSVValueType.TEXT, required=False),
             CSVColumnType(
@@ -117,8 +113,12 @@ def process_ballot_manifest_file(
             ),
             CSVColumnType(BATCH_NAME, CSVValueType.TEXT, unique=True),
             CSVColumnType(NUMBER_OF_BALLOTS, CSVValueType.NUMBER),
-            CSVColumnType(CVR, CSVValueType.YES_NO, required=use_cvr),
         ]
+        # Hybrid audits need a CVR column to tell us which batches have CVRS
+        # (for which we use ballot comparison math) and which don't (for which
+        # we use ballot polling math).
+        if jurisdiction.election.audit_type == AuditType.HYBRID:
+            columns.append(CSVColumnType(CVR, CSVValueType.YES_NO, required=True))
 
         manifest_file = retrieve_file(jurisdiction.manifest_file.storage_path)
         manifest_csv = parse_csv(manifest_file, columns)

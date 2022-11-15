@@ -2,7 +2,6 @@ from collections import defaultdict
 import csv
 from datetime import datetime, timezone
 import io
-import re
 from typing import TypedDict, Dict, Tuple
 import uuid
 from xml.etree import ElementTree
@@ -57,13 +56,6 @@ def items_list_to_dict(items):
     }
 
 
-WRITE_IN_REGEX = re.compile(r"write[- ]?in", re.IGNORECASE)
-
-
-def is_write_in(choice_name: str) -> bool:
-    return WRITE_IN_REGEX.match(choice_name) is not None
-
-
 @background_task
 def process_batch_inventory_cvr_file(jurisdiction_id: str):
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction_id)
@@ -91,23 +83,12 @@ def process_batch_inventory_cvr_file(jurisdiction_id: str):
     if len(choice_indices) == 0:
         raise UserError(f"Could not find contest in CVR file: {contest.name}.")
 
-    write_in_choice = next(
-        (choice for choice in contest.choices if is_write_in(choice.name)), None
+    missing_choices = set(choice.name for choice in contest.choices) - set(
+        choice_indices.keys()
     )
-
-    contest_choice_names = [
-        choice.name for choice in contest.choices if not is_write_in(choice.name)
-    ]
-    cvr_choice_names = [
-        choice_name
-        for choice_name in choice_indices.keys()
-        if not is_write_in(choice_name)
-    ]
-    if set(contest_choice_names) != set(cvr_choice_names):
+    if len(missing_choices) > 0:
         raise UserError(
-            "CVR contest choice names don't match the choice names for this audit."
-            f" CVR contest choice names: {', '.join(cvr_choice_names)}."
-            f" Audit contest choice names: {', '.join(contest_choice_names)}."
+            f"Could not find contest choices in CVR file: {', '.join(missing_choices)}."
         )
 
     header_indices = get_header_indices(headers_and_affiliations)
@@ -135,12 +116,12 @@ def process_batch_inventory_cvr_file(jurisdiction_id: str):
         batch_to_counting_group[batch_key] = counting_group
 
         choice_votes = {
-            choice_name: parse_vote(
+            choice.name: parse_vote(
                 column_value(
-                    row, choice_name, cvr_number, choice_indices, required=False
+                    row, choice.name, cvr_number, choice_indices, required=False
                 )
             )
-            for choice_name in choice_indices.keys()
+            for choice in contest.choices
         }
 
         # Skip overvotes
@@ -148,10 +129,6 @@ def process_batch_inventory_cvr_file(jurisdiction_id: str):
             continue
 
         for choice_name, vote in choice_votes.items():
-            # Aggregate all write-in votes for the specified write-in choice
-            # from the contest definition
-            if is_write_in(choice_name) and write_in_choice is not None:
-                choice_name = write_in_choice.name
             batch_tallies[batch_key][choice_name] += vote
 
     election_results: ElectionResults = dict(
@@ -176,7 +153,20 @@ def process_batch_inventory_cvr_file(jurisdiction_id: str):
 def process_batch_inventory_tabulator_status_file(jurisdiction_id: str):
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction_id)
     file = retrieve_file(batch_inventory_data.tabulator_status_file.storage_path)
-    cvr_xml = ElementTree.parse(file)
+    contents = file.read().decode("utf-8")
+
+    if contents.startswith("<html"):
+        raise UserError(
+            "This looks like the HTML version of the tabulator status report."
+            ' Please upload the XML version (which has a file name ending in ".xml").'
+        )
+    if contents.startswith("<Workbook"):
+        raise UserError(
+            "This looks like the Excel version of the tabulator status report."
+            ' Please upload the plain XML version (which has a file name ending in ".xml" and does not contain the words "To Excel").'
+        )
+
+    cvr_xml = ElementTree.fromstring(contents)
 
     tabulators = cvr_xml.findall("tabulators/tb")
     tabulator_id_to_name = {

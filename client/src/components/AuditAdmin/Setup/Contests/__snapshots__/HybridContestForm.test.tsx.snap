@@ -14,7 +14,7 @@ exports[`Audit Setup > Contests (Hybrid) Audit Setup > Contests 1`] = `
         Target Contests
       </h2>
       <div
-        class="bp3-card bp3-elevation-2 sc-elJkPf iwLbDp"
+        class="bp3-card bp3-elevation-2 sc-jtRfpW hscCOW"
       >
         <div
           class="sc-bZQynM bGsEQi"
@@ -40,7 +40,7 @@ exports[`Audit Setup > Contests (Hybrid) Audit Setup > Contests 1`] = `
                Name
               <br />
               <div
-                class="bp3-html-select sc-jtRfpW gAuylS"
+                class="bp3-html-select sc-kTUwUJ duHEIX"
               >
                 <select
                   field="[object Object]"
@@ -156,18 +156,18 @@ exports[`Audit Setup > Contests (Hybrid) Audit Setup > Contests 1`] = `
             Enter the name of each candidate choice that appears on the ballot for this contest.
           </div>
           <div
-            class="sc-iELTvK bfpsxz"
+            class="sc-cmTdod bBCjmf"
           >
             <div
-              class="sc-cmTdod kSjajG"
+              class="sc-jwKygS cQNSvr"
             >
               <label
-                class="bp3-label sc-btzYZH ilSSKh"
+                class="bp3-label sc-lhVmIH cLaobU"
               >
                 Name of Candidate/Choice 
                 1
                 <div
-                  class="sc-jwKygS ivhutu sc-gqjmRU egaEhI"
+                  class="sc-btzYZH bLZsDM sc-gqjmRU egaEhI"
                 >
                   <div
                     class="bp3-input-group sc-VigVT hfLuvB"
@@ -182,12 +182,12 @@ exports[`Audit Setup > Contests (Hybrid) Audit Setup > Contests 1`] = `
                 </div>
               </label>
               <label
-                class="bp3-label sc-btzYZH ilSSKh"
+                class="bp3-label sc-lhVmIH cLaobU"
               >
                 Votes for Candidate/Choice 
                 1
                 <div
-                  class="sc-jwKygS ivhutu sc-gqjmRU egaEhI"
+                  class="sc-btzYZH bLZsDM sc-gqjmRU egaEhI"
                 >
                   <div
                     class="bp3-input-group sc-VigVT hfLuvB"
@@ -203,15 +203,15 @@ exports[`Audit Setup > Contests (Hybrid) Audit Setup > Contests 1`] = `
               </label>
             </div>
             <div
-              class="sc-cmTdod kSjajG"
+              class="sc-jwKygS cQNSvr"
             >
               <label
-                class="bp3-label sc-btzYZH ilSSKh"
+                class="bp3-label sc-lhVmIH cLaobU"
               >
                 Name of Candidate/Choice 
                 2
                 <div
-                  class="sc-jwKygS ivhutu sc-gqjmRU egaEhI"
+                  class="sc-btzYZH bLZsDM sc-gqjmRU egaEhI"
                 >
                   <div
                     class="bp3-input-group sc-VigVT hfLuvB"
@@ -226,12 +226,12 @@ exports[`Audit Setup > Contests (Hybrid) Audit Setup > Contests 1`] = `
                 </div>
               </label>
               <label
-                class="bp3-label sc-btzYZH ilSSKh"
+                class="bp3-label sc-lhVmIH cLaobU"
               >
                 Votes for Candidate/Choice 
                 2
                 <div
-                  class="sc-jwKygS ivhutu sc-gqjmRU egaEhI"
+                  class="sc-btzYZH bLZsDM sc-gqjmRU egaEhI"
                 >
                   <div
                     class="bp3-input-group sc-VigVT hfLuvB"
@@ -247,7 +247,7 @@ exports[`Audit Setup > Contests (Hybrid) Audit Setup > Contests 1`] = `
               </label>
             </div>
             <p
-              class="sc-lhVmIH ijDAgt"
+              class="sc-bYSBpT eWfGJY"
             >
               Add a new candidate/choice
             </p>
@@ -255,7 +255,7 @@ exports[`Audit Setup > Contests (Hybrid) Audit Setup > Contests 1`] = `
         </div>
       </div>
       <div
-        class="sc-cIShpX hnSaSy"
+        class="sc-kafWEX iDgbXh"
       >
         <button
           class="bp3-button sc-dnqmqq iQfLYL"
@@ -273,7 +273,7 @@ exports[`Audit Setup > Contests (Hybrid) Audit Setup > Contests 1`] = `
       </div>
     </div>
     <div
-      class="sc-cIShpX hnSaSy"
+      class="sc-kafWEX iDgbXh"
     >
       <button
         class="bp3-button sc-dnqmqq iQfLYL"

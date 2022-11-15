@@ -14,6 +14,7 @@ from ..models import *  # pylint: disable=wildcard-import
 from ..api.audit_boards import end_round
 
 
+DEFAULT_SUPPORT_EMAIL = "support@example.org"
 DEFAULT_AA_EMAIL = "admin@example.com"
 
 
@@ -278,14 +279,28 @@ DATETIME_REGEX = re.compile(
     r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}.\d{6})?(\+\d\d:\d\d)?"
 )
 
+TEST_JURISDICTION_ADMIN_EMAIL_REGEX = re.compile(
+    r"jurisdiction.admin-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}@example.com"
+)
+
 
 def scrub_datetime(string: str) -> str:
     return re.sub(DATETIME_REGEX, "DATETIME", string)
 
 
+def scrub_test_jurisdiction_admin_email_uuid(string: str) -> str:
+    return re.sub(
+        TEST_JURISDICTION_ADMIN_EMAIL_REGEX,
+        "jurisdiction.admin-UUID@example.com",
+        string,
+    )
+
+
 def assert_match_report(report_bytes: bytes, snapshot):
     report = report_bytes.decode("utf-8")
-    snapshot.assert_match(scrub_datetime(report))
+    snapshot.assert_match(
+        scrub_test_jurisdiction_admin_email_uuid(scrub_datetime(report))
+    )
 
 
 def assert_is_string(value):
