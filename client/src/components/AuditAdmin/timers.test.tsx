@@ -15,7 +15,7 @@ import {
   withMockFetch,
   createQueryClient,
 } from '../testUtilities'
-import { aaApiCalls, auditSettings, roundMocks } from '../_mocks'
+import { aaApiCalls, auditSettings, roundMocks, contestMocks } from '../_mocks'
 import { sampleSizeMock } from './Setup/Review/_mocks'
 
 // AuditAdminView will only be rendered once the user is logged in, so
@@ -40,7 +40,7 @@ const renderWithRoute = (route: string, component: ReactElement) =>
 const loadEach = [
   aaApiCalls.getRounds([]),
   aaApiCalls.getJurisdictions,
-  aaApiCalls.getContests,
+  aaApiCalls.getContests(contestMocks.filledTargeted),
   aaApiCalls.getSettings(auditSettings.all),
 ]
 
@@ -82,7 +82,7 @@ describe.skip('timers', () => {
     const loadAfterLaunch = [
       aaApiCalls.getRounds(roundMocks.drawSampleInProgress),
       aaApiCalls.getJurisdictions,
-      aaApiCalls.getContests,
+      aaApiCalls.getContests(contestMocks.filledTargeted),
       aaApiCalls.getSettings(auditSettings.all),
     ]
     const expectedCalls = [
@@ -115,7 +115,7 @@ describe.skip('timers', () => {
       aaApiCalls.getSettings(auditSettings.all),
       aaApiCalls.getJurisdictions,
       aaApiCalls.getJurisdictionFile,
-      aaApiCalls.getContests,
+      aaApiCalls.getContests(contestMocks.filledTargeted),
       aaApiCalls.getSampleSizes,
       { ...aaApiCalls.getSampleSizes, response: sampleSizeMock.ballotPolling },
     ]

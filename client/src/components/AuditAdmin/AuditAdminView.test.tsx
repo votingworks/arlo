@@ -20,6 +20,7 @@ import {
   manifestFile,
   manifestMocks,
   jurisdictionMocks,
+  contestMocks,
 } from '../_mocks'
 import {
   jurisdictionFile,
@@ -52,7 +53,7 @@ describe('AA setup flow', () => {
   const setupApiCalls = [
     aaApiCalls.getRounds([]),
     aaApiCalls.getJurisdictions,
-    aaApiCalls.getContests,
+    aaApiCalls.getContests(contestMocks.filledTargeted),
     aaApiCalls.getSettings(auditSettings.all),
     aaApiCalls.getJurisdictionFile,
   ]
@@ -91,7 +92,7 @@ describe('AA setup flow', () => {
       aaApiCalls.getUser,
       aaApiCalls.getRounds([]),
       aaApiCalls.getJurisdictions,
-      aaApiCalls.getContests,
+      aaApiCalls.getContests(contestMocks.filledTargeted),
       aaApiCalls.getSettings(auditSettings.all),
       aaApiCalls.getJurisdictionFileWithResponse(jurisdictionFileMocks.empty),
     ]
@@ -122,7 +123,7 @@ describe('AA setup flow', () => {
       aaApiCalls.getUser,
       aaApiCalls.getRounds([]),
       aaApiCalls.getJurisdictions,
-      aaApiCalls.getContests,
+      aaApiCalls.getContests(contestMocks.filledTargeted),
       aaApiCalls.getSettings(auditSettings.all),
       aaApiCalls.getJurisdictionFileWithResponse(jurisdictionFileMocks.empty),
       aaApiCalls.putJurisdictionFile,
@@ -155,7 +156,7 @@ describe('AA setup flow', () => {
       aaApiCalls.getUser,
       aaApiCalls.getRounds([]),
       aaApiCalls.getJurisdictions,
-      aaApiCalls.getContests,
+      aaApiCalls.getContests(contestMocks.filledTargeted),
       aaApiCalls.getSettings(auditSettings.all),
       aaApiCalls.getJurisdictionFileWithResponse(jurisdictionFileMocks.empty),
       aaApiCalls.putJurisdictionErrorFile,
@@ -185,7 +186,7 @@ describe('AA setup flow', () => {
     const ballotComparisonSetupApiCalls = [
       aaApiCalls.getRounds([]),
       aaApiCalls.getJurisdictions,
-      aaApiCalls.getContests,
+      aaApiCalls.getContests(contestMocks.filledTargeted),
       aaApiCalls.getSettings(auditSettings.ballotComparisonAll),
       aaApiCalls.getJurisdictionFile,
     ]
@@ -223,7 +224,7 @@ describe('AA setup flow', () => {
       aaApiCalls.getUser,
       aaApiCalls.getRounds(roundMocks.singleIncomplete),
       aaApiCalls.getJurisdictions,
-      aaApiCalls.getContests,
+      aaApiCalls.getContests(contestMocks.filledTargeted),
       aaApiCalls.getSettings(auditSettings.all),
       aaApiCalls.getMapData,
     ]
@@ -238,7 +239,7 @@ describe('AA setup flow', () => {
   it('shows an error and undo button if drawing the sample fails', async () => {
     const afterLaunchApiCalls = [
       aaApiCalls.getJurisdictions,
-      aaApiCalls.getContests,
+      aaApiCalls.getContests(contestMocks.filledTargeted),
       aaApiCalls.getSettings(auditSettings.all),
     ]
     const expectedCalls = [
@@ -274,7 +275,7 @@ describe('AA setup flow', () => {
       aaApiCalls.getUser,
       aaApiCalls.getRounds([]),
       aaApiCalls.getJurisdictions,
-      aaApiCalls.getContests,
+      aaApiCalls.getContests(contestMocks.filledTargeted),
       aaApiCalls.getSettings(auditSettings.all),
       aaApiCalls.getMapData,
       jaApiCalls.getBallotManifestFile(manifestMocks.empty),

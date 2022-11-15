@@ -13,11 +13,12 @@ import {
   mockOrganizations,
   jaApiCalls,
   auditSettings,
+  contestMocks,
 } from './_mocks'
 
 const setupScreenCalls = [
   aaApiCalls.getJurisdictions,
-  aaApiCalls.getContests,
+  aaApiCalls.getContests(contestMocks.filledTargeted),
   aaApiCalls.getSettings(auditSettings.blank),
   aaApiCalls.getSettings(auditSettings.blank),
 ]

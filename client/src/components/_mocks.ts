@@ -1817,10 +1817,10 @@ export const aaApiCalls = {
     url: '/api/election/1/standardized-contests/file',
     response: { file: null, processing: null },
   },
-  getContests: {
+  getContests: (contests: IContest[]) => ({
     url: '/api/election/1/contest',
-    response: { contests: contestMocks.filledTargeted },
-  },
+    response: { contests },
+  }),
   getSettings: (response: IAuditSettings) => ({
     url: '/api/election/1/settings',
     response,
