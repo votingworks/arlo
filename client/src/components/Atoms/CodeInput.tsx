@@ -105,6 +105,13 @@ const CodeInput: React.FC<ICodeInputProps> = ({
           onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>) =>
             onDigitKeyDown(index, event.key)
           }
+          onPaste={(event: React.ClipboardEvent<HTMLInputElement>) => {
+            const pasteText = event.clipboardData.getData('text')
+            if (pasteText.match(/^\d*$/) && pasteText.length <= length) {
+              onChange(pasteText)
+              focusDigitInput(pasteText.length - 1)
+            }
+          }}
         />
       ))}
     </Row>
