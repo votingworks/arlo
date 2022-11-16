@@ -361,12 +361,14 @@ def reject_final_total_row(csv: CSVDictIterator, columns: List[CSVColumnType]):
                 column_values[column.name].append(value)
         yield row
 
-    for values in column_values.values():
-        if sum(values[:-1]) == values[-1] and values[-1] != 0:
-            raise CSVParseError(
-                "It looks like the last row in the CSV might be a total row."
-                " Please remove this row from the CSV."
-            )
+    if len(column_values.values()) > 0 and all(
+        sum(values[:-1]) == values[-1] and values[-1] != 0
+        for values in column_values.values()
+    ):
+        raise CSVParseError(
+            "It looks like the last row in the CSV might be a total row."
+            " Please remove this row from the CSV."
+        )
 
 
 def convert_rows_to_dicts(csv: CSVIterator) -> CSVDictIterator:
