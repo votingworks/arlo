@@ -1,10 +1,23 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React from 'react'
-import { useParams } from 'react-router-dom'
 import equal from 'fast-deep-equal'
 import styled from 'styled-components'
-import { Formik, FormikProps, Field, FieldArray, ErrorMessage } from 'formik'
-import { HTMLSelect } from '@blueprintjs/core'
+import {
+  Formik,
+  FormikProps,
+  Field,
+  FieldArray,
+  ErrorMessage,
+  getIn,
+} from 'formik'
+import {
+  HTMLSelect,
+  Menu,
+  Checkbox,
+  Popover,
+  Position,
+} from '@blueprintjs/core'
+import uuidv4 from 'uuidv4'
 import FormWrapper from '../../../Atoms/Form/FormWrapper'
 import FormSection, {
   FormSectionDescription,
@@ -22,34 +35,175 @@ import FormButton from '../../../Atoms/Form/FormButton'
 import schema from './schema'
 import { useContests, useUpdateContests } from '../../../useContests'
 import { useJurisdictionsDeprecated } from '../../../useJurisdictions'
-import { IContest, ICandidate } from '../../../../types'
-import DropdownCheckboxList from './DropdownCheckboxList'
+import { IContest } from '../../../../types'
 import Card from '../../../Atoms/SpacedCard'
 import { testNumber } from '../../../utilities'
 import { isObjectEmpty } from '../../../../utils/objects'
-import { IAuditSettings } from '../../../useAuditSettings'
 import useStandardizedContests from '../../../useStandardizedContests'
 import { ErrorLabel } from '../../../Atoms/Form/_helpers'
 import { partition } from '../../../../utils/array'
+import { AuditType } from '../../../useAuditSettings'
+import { parse as parseNumber } from '../../../../utils/number-schema'
+
+const CustomMenuItem = styled.li`
+  .bp3-menu-item {
+    display: inline-block;
+    width: 100%;
+  }
+  .bp3-checkbox {
+    float: right;
+    margin: 0;
+  }
+`
+
+type ICheckboxList = {
+  title: string
+  value: string
+  checked: boolean
+}[]
+
+interface IDropdownCheckboxListProps {
+  formikBag: {
+    values: FormikProps<{ contests: IContestValues[] }>['values']
+    setFieldValue: FormikProps<{ contests: IContestValues[] }>['setFieldValue']
+  }
+  text: string
+  optionList: ICheckboxList
+  contestIndex: number
+}
+
+const DropdownCheckboxList: React.FC<IDropdownCheckboxListProps> = ({
+  formikBag: { values, setFieldValue },
+  text,
+  optionList,
+  contestIndex,
+}) => {
+  const jurisdictionList = values.contests[contestIndex].jurisdictionIds
+  const updateList = (value: string, checked: boolean) => {
+    const itemIndex = jurisdictionList.indexOf(value)
+    /* istanbul ignore else */
+    if (checked && itemIndex === -1) {
+      jurisdictionList.push(value)
+    } else if (!checked && itemIndex > -1) {
+      jurisdictionList.splice(itemIndex, 1)
+    }
+    setFieldValue(`contests[${contestIndex}].jurisdictionIds`, jurisdictionList)
+  }
+  const selectAll = (checked: boolean) => {
+    if (checked) {
+      setFieldValue(
+        `contests[${contestIndex}].jurisdictionIds`,
+        optionList.map(v => v.value)
+      )
+    } else {
+      setFieldValue(`contests[${contestIndex}].jurisdictionIds`, [])
+    }
+  }
+  const menu = (
+    <Menu>
+      <CustomMenuItem key="select-all">
+        {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+        <label className="bp3-menu-item">
+          Select all
+          <Checkbox
+            inline
+            checked={
+              getIn(values, `contests[${contestIndex}].jurisdictionIds`)
+                .length === optionList.length
+            }
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              selectAll(e.currentTarget.checked)
+            }
+          />
+        </label>
+      </CustomMenuItem>
+      {optionList.map(v => (
+        <CustomMenuItem key={v.value}>
+          {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+          <label className="bp3-menu-item">
+            {v.title}
+            <Checkbox
+              inline
+              checked={jurisdictionList.indexOf(v.value) > -1}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                updateList(v.value, e.currentTarget.checked)
+              }
+            />
+          </label>
+        </CustomMenuItem>
+      ))}
+    </Menu>
+  )
+  return (
+    <Popover position={Position.BOTTOM} content={menu}>
+      <FormButton>{text}</FormButton>
+    </Popover>
+  )
+}
 
 const Select = styled(HTMLSelect)`
   margin-top: 5px;
 `
 
 interface IProps {
+  electionId: string
   isTargeted: boolean
+  auditType: AuditType
   goToPrevStage: () => void
   goToNextStage: () => void
-  auditType: IAuditSettings['auditType']
 }
 
+interface IChoiceValues {
+  id: string
+  name: string
+  numVotes: string
+  numVotesCvr?: number
+  numVotesNonCvr?: number
+}
+
+export interface IContestValues {
+  id: string
+  name: string
+  isTargeted: boolean
+  numWinners: string
+  votesAllowed: string
+  choices: IChoiceValues[]
+  totalBallotsCast: string
+  jurisdictionIds: string[]
+}
+
+const contestToValues = (contest: IContest): IContestValues => ({
+  ...contest,
+  numWinners: contest.numWinners.toString(),
+  votesAllowed: contest.votesAllowed.toString(),
+  choices: contest.choices.map(choice => ({
+    ...choice,
+    numVotes: choice.numVotes.toString(),
+  })),
+  totalBallotsCast: contest.totalBallotsCast.toString(),
+})
+
+const contestFromValues = (contest: IContestValues): IContest => ({
+  ...contest,
+  id: contest.id || uuidv4(), // preserve given id if present, generate new one if empty string
+  totalBallotsCast: parseNumber(contest.totalBallotsCast),
+  numWinners: parseNumber(contest.numWinners),
+  votesAllowed: parseNumber(contest.votesAllowed),
+  choices: contest.choices.map(choice => ({
+    ...choice,
+    id: choice.id || uuidv4(),
+    numVotes: parseNumber(choice.numVotes),
+  })),
+})
+
 const ContestForm: React.FC<IProps> = ({
+  electionId,
   isTargeted,
   goToPrevStage,
   goToNextStage,
   auditType,
 }) => {
-  const contestValues: IContest[] = [
+  const contestValues: IContestValues[] = [
     {
       id: '',
       name: '',
@@ -77,7 +231,6 @@ const ContestForm: React.FC<IProps> = ({
   const isHybrid = auditType === 'HYBRID'
   const isBallotPolling = auditType === 'BALLOT_POLLING'
 
-  const { electionId } = useParams<{ electionId: string }>()
   const contestsQuery = useContests(electionId)
   const updateContestsMutation = useUpdateContests(electionId, auditType)
   const jurisdictions = useJurisdictionsDeprecated(electionId)
@@ -97,19 +250,21 @@ const ContestForm: React.FC<IProps> = ({
   )
 
   const initialValues = {
-    contests: formContests.length ? formContests : contestValues,
+    contests: formContests.length
+      ? formContests.map(contestToValues)
+      : contestValues,
   }
 
   const isOpportunisticFormClean = (
     touched: Record<string, unknown>,
-    values: { contests: IContest[] }
+    values: { contests: IContestValues[] }
   ) => {
     return (
       !isTargeted && (isObjectEmpty(touched) || equal(initialValues, values))
     )
   }
 
-  const submit = async (values: { contests: IContest[] }) => {
+  const submit = async (values: { contests: IContestValues[] }) => {
     const contestsToUpdate = isHybrid
       ? values.contests.map(contest => ({
           ...contest,
@@ -119,7 +274,7 @@ const ContestForm: React.FC<IProps> = ({
         }))
       : values.contests
     await updateContestsMutation.mutateAsync(
-      contestsToUpdate.concat(restContests)
+      contestsToUpdate.map(contestFromValues).concat(restContests)
     )
     goToNextStage()
   }
@@ -136,7 +291,7 @@ const ContestForm: React.FC<IProps> = ({
         handleSubmit,
         setFieldValue,
         isSubmitting,
-      }: FormikProps<{ contests: IContest[] }>) => (
+      }: FormikProps<{ contests: IContestValues[] }>) => (
         <form data-testid="form-one">
           <FormWrapper
             title={isTargeted ? 'Target Contests' : 'Opportunistic Contests'}
@@ -145,7 +300,7 @@ const ContestForm: React.FC<IProps> = ({
               name="contests"
               render={contestsArrayHelpers => (
                 <>
-                  {values.contests.map((contest: IContest, i: number) => {
+                  {values.contests.map((contest: IContestValues, i: number) => {
                     const jurisdictionOptions = jurisdictions.map(j => ({
                       title: j.name,
                       value: j.id,
@@ -249,7 +404,7 @@ const ContestForm: React.FC<IProps> = ({
                             >
                               <TwoColumnSection>
                                 {contest.choices.map(
-                                  (choice: ICandidate, j: number) => (
+                                  (choice: IChoiceValues, j: number) => (
                                     /* eslint-disable react/no-array-index-key */
                                     <React.Fragment key={j}>
                                       <InputFieldRow>

@@ -4,7 +4,7 @@ import { Colors } from '@blueprintjs/core'
 import { getBallots, IBallot } from './useBallots'
 import { IAuditBoard } from '../useAuditBoards'
 import { IBatch } from './useBatchResults'
-import { ICandidate } from '../../types'
+import { IChoice } from '../../types'
 import { IRound } from '../AuditAdmin/useRoundsAuditAdmin'
 import { blankLine } from '../../utils/string'
 
@@ -352,7 +352,7 @@ export const downloadAuditBoardCredentials = async (
 
 export const downloadBatchTallySheets = async (
   batches: IBatch[],
-  contestChoices: ICandidate[],
+  contestChoices: IChoice[],
   jurisdictionName: string,
   auditName: string
 ): Promise<string> => {

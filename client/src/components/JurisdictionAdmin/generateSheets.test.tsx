@@ -14,7 +14,7 @@ import { dummyBallots, dummyBallotsMultipage } from '../AuditBoard/_mocks'
 import { withMockFetch } from '../testUtilities'
 import { roundMocks, tallyEntryAccountStatusMocks } from './_mocks'
 import { IBatch } from './useBatchResults'
-import { ICandidate } from '../../types'
+import { IChoice } from '../../types'
 
 const mockJurisdiction = jaApiCalls.getUser.response.user.jurisdictions[0]
 const mockRound = roundMocks.incomplete
@@ -35,7 +35,7 @@ const mockBatches: IBatch[] = [
   },
 ]
 
-function constructContestChoices(numChoices: number): ICandidate[] {
+function constructContestChoices(numChoices: number): IChoice[] {
   const choices = []
   for (let i = 0; i < numChoices; i += 1) {
     choices.push({ id: `C${i + 1}`, name: `Candidate #${i + 1}`, numVotes: 0 })
@@ -379,7 +379,7 @@ describe('generateSheets', () => {
           resultTallySheets: [],
         },
       ]
-      const contestChoices: ICandidate[] = [
+      const contestChoices: IChoice[] = [
         { id: 'C1', name: allStarLyrics, numVotes: 0 },
         { id: 'C2', name: allStarLyrics, numVotes: 0 },
         { id: 'C3', name: allStarLyrics, numVotes: 0 },
@@ -424,7 +424,7 @@ describe('generateSheets', () => {
           resultTallySheets: [],
         },
       ]
-      const contestChoices: ICandidate[] = [
+      const contestChoices: IChoice[] = [
         { id: 'C1', name: manyAs, numVotes: 0 },
         { id: 'C2', name: manyAs, numVotes: 0 },
       ]

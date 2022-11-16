@@ -116,21 +116,23 @@ const Setup: React.FC<IProps> = ({
           case 'target-contests':
             return (
               <Contests
-                isTargeted
                 key="targeted"
+                electionId={electionId}
+                isTargeted
+                auditType={auditType}
                 goToPrevStage={goToPrevStage}
                 goToNextStage={goToNextStage}
-                auditType={auditType}
               />
             )
           case 'opportunistic-contests':
             return (
               <Contests
-                isTargeted={false}
                 key="opportunistic"
+                electionId={electionId}
+                isTargeted={false}
+                auditType={auditType}
                 goToPrevStage={goToPrevStage}
                 goToNextStage={goToNextStage}
-                auditType={auditType}
               />
             )
           case 'settings':

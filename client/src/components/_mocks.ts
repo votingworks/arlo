@@ -1,6 +1,4 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import { readFileSync } from 'fs'
-import { join } from 'path'
 import { IFileInfo, FileProcessingStatus, CvrFileType } from './useCSV'
 import { IAuditBoard } from './useAuditBoards'
 import { IAuditSettings } from './useAuditSettings'
@@ -18,6 +16,7 @@ import { INewAudit } from './HomeScreen'
 import { mocksOfType } from './testUtilities'
 import { ITallyEntryAccountStatus } from './JurisdictionAdmin/BatchRoundSteps/TallyEntryAccountsStep'
 import { JurisdictionRoundStatus, ICvrFileInfo } from './useJurisdictions'
+import { IStandardizedContest } from './useStandardizedContests'
 
 export const manifestFile = new File(
   ['fake manifest - contents dont matter'],
@@ -1005,9 +1004,9 @@ export const contestMocks: {
       id: 'contest-id-1',
       name: 'Contest 1',
       isTargeted: true,
-      totalBallotsCast: '30',
-      numWinners: '1',
-      votesAllowed: '1',
+      totalBallotsCast: 30,
+      numWinners: 1,
+      votesAllowed: 1,
       jurisdictionIds: [
         'jurisdiction-id-1',
         'jurisdiction-id-2',
@@ -1017,12 +1016,12 @@ export const contestMocks: {
         {
           id: 'choice-id-1',
           name: 'Choice One',
-          numVotes: '10',
+          numVotes: 10,
         },
         {
           id: 'choice-id-2',
           name: 'Choice Two',
-          numVotes: '20',
+          numVotes: 20,
         },
       ],
     },
@@ -1030,66 +1029,20 @@ export const contestMocks: {
       id: 'contest-id-2',
       name: 'Contest 2',
       isTargeted: false,
-      totalBallotsCast: '400',
-      numWinners: '2',
-      votesAllowed: '2',
+      totalBallotsCast: 400,
+      numWinners: 2,
+      votesAllowed: 2,
       jurisdictionIds: ['jurisdiction-id-1', 'jurisdiction-id-2'],
       choices: [
         {
           id: 'choice-id-3',
           name: 'Choice Three',
-          numVotes: '300',
+          numVotes: 300,
         },
         {
           id: 'choice-id-4',
           name: 'Choice Four',
-          numVotes: '100',
-        },
-      ],
-    },
-  ],
-  emptyTargeted: [
-    {
-      id: '',
-      name: '',
-      isTargeted: true,
-      totalBallotsCast: '',
-      numWinners: '1',
-      votesAllowed: '1',
-      jurisdictionIds: [],
-      choices: [
-        {
-          id: '',
-          name: '',
-          numVotes: '',
-        },
-        {
-          id: '',
-          name: '',
-          numVotes: '',
-        },
-      ],
-    },
-  ],
-  emptyOpportunistic: [
-    {
-      id: '',
-      name: '',
-      isTargeted: false,
-      totalBallotsCast: '',
-      numWinners: '1',
-      votesAllowed: '1',
-      jurisdictionIds: [],
-      choices: [
-        {
-          id: '',
-          name: '',
-          numVotes: '',
-        },
-        {
-          id: '',
-          name: '',
-          numVotes: '',
+          numVotes: 100,
         },
       ],
     },
@@ -1099,22 +1052,22 @@ export const contestMocks: {
       id: 'contest-id',
       name: 'Contest Name',
       isTargeted: true,
-      totalBallotsCast: '30',
-      numWinners: '1',
-      votesAllowed: '1',
+      numWinners: 1,
+      votesAllowed: 1,
       jurisdictionIds: [jurisdictionMocks.noManifests[0].id],
       choices: [
         {
           id: 'choice-id-1',
           name: 'Choice One',
-          numVotes: '10',
+          numVotes: 10,
         },
         {
           id: 'choice-id-2',
           name: 'Choice Two',
-          numVotes: '20',
+          numVotes: 20,
         },
       ],
+      totalBallotsCast: 30,
     },
   ],
   filledOpportunistic: [
@@ -1122,20 +1075,20 @@ export const contestMocks: {
       id: 'contest-id',
       name: 'Contest Name',
       isTargeted: false,
-      totalBallotsCast: '30',
-      numWinners: '1',
-      votesAllowed: '1',
+      totalBallotsCast: 30,
+      numWinners: 1,
+      votesAllowed: 1,
       jurisdictionIds: [],
       choices: [
         {
           id: 'choice-id-3',
           name: 'Choice Three',
-          numVotes: '10',
+          numVotes: 10,
         },
         {
           id: 'choice-id-4',
           name: 'Choice Four',
-          numVotes: '20',
+          numVotes: 20,
         },
       ],
     },
@@ -1145,20 +1098,20 @@ export const contestMocks: {
       id: 'contest-id',
       name: 'Contest Name',
       isTargeted: true,
-      totalBallotsCast: '30',
-      numWinners: '1',
-      votesAllowed: '1',
+      totalBallotsCast: 30,
+      numWinners: 1,
+      votesAllowed: 1,
       jurisdictionIds: ['jurisdiction-id-1', 'jurisdiction-id-2'],
       choices: [
         {
           id: 'choice-id-1',
           name: 'Choice One',
-          numVotes: '10',
+          numVotes: 10,
         },
         {
           id: 'choice-id-2',
           name: 'Choice Two',
-          numVotes: '20',
+          numVotes: 20,
         },
       ],
     },
@@ -1168,20 +1121,20 @@ export const contestMocks: {
       id: 'contest-id',
       name: 'Contest Name',
       isTargeted: false,
-      totalBallotsCast: '30',
-      numWinners: '1',
-      votesAllowed: '1',
+      totalBallotsCast: 30,
+      numWinners: 1,
+      votesAllowed: 1,
       jurisdictionIds: ['jurisdiction-id-1', 'jurisdiction-id-2'],
       choices: [
         {
           id: 'choice-id-3',
           name: 'Choice Three',
-          numVotes: '10',
+          numVotes: 10,
         },
         {
           id: 'choice-id-4',
           name: 'Choice Four',
-          numVotes: '20',
+          numVotes: 20,
         },
       ],
     },
@@ -1191,22 +1144,22 @@ export const contestMocks: {
       id: 'contest-id',
       name: 'Contest 1',
       isTargeted: true,
-      totalBallotsCast: '30',
-      numWinners: '1',
-      votesAllowed: '1',
+      totalBallotsCast: 30,
+      numWinners: 1,
+      votesAllowed: 1,
       jurisdictionIds: ['jurisdiction-id-1', 'jurisdiction-id-2'],
       choices: [
         {
           id: 'choice-id-1',
           name: 'Choice One',
-          numVotes: '10',
+          numVotes: 10,
           numVotesCvr: 6,
           numVotesNonCvr: 4,
         },
         {
           id: 'choice-id-2',
           name: 'Choice Two',
-          numVotes: '20',
+          numVotes: 20,
           numVotesCvr: 12,
           numVotesNonCvr: 8,
         },
@@ -1216,22 +1169,22 @@ export const contestMocks: {
       id: 'contest-id-2',
       name: 'Contest 2',
       isTargeted: false,
-      totalBallotsCast: '300000',
-      numWinners: '2',
-      votesAllowed: '2',
+      totalBallotsCast: 300000,
+      numWinners: 2,
+      votesAllowed: 2,
       jurisdictionIds: ['jurisdiction-id-1', 'jurisdiction-id-2'],
       choices: [
         {
           id: 'choice-id-3',
           name: 'Choice Three',
-          numVotes: '10',
+          numVotes: 10,
           numVotesCvr: 6,
           numVotesNonCvr: 4,
         },
         {
           id: 'choice-id-4',
           name: 'Choice Four',
-          numVotes: '20',
+          numVotes: 20,
           numVotesCvr: 12,
           numVotesNonCvr: 8,
         },
@@ -1821,6 +1774,17 @@ export const aaApiCalls = {
     url: '/api/election/1/contest',
     response: { contests },
   }),
+  putContests: (contests: IContest[]) => ({
+    url: '/api/election/1/contest',
+    options: {
+      method: 'PUT',
+      body: JSON.stringify(contests),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    },
+    response: { status: 'ok' },
+  }),
   getSettings: (response: IAuditSettings) => ({
     url: '/api/election/1/settings',
     response,
@@ -1833,6 +1797,12 @@ export const aaApiCalls = {
       headers: { 'Content-Type': 'application/json' },
     },
     response: { status: 'ok' },
+  }),
+  getStandardizedContests: (
+    standardizedContests: IStandardizedContest[] | null
+  ) => ({
+    url: '/api/election/1/standardized-contests',
+    response: standardizedContests,
   }),
   getSampleSizes: {
     url: '/api/election/1/sample-sizes/1',

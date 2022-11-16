@@ -4,14 +4,15 @@ import ContestForm from './ContestForm'
 import ContestSelect from './ContestSelect'
 import { IAuditSettings } from '../../../useAuditSettings'
 
-interface IProps {
+export interface IContestsProps {
+  electionId: string
+  auditType: IAuditSettings['auditType']
   isTargeted: boolean
   goToNextStage: () => void
   goToPrevStage: () => void
-  auditType: IAuditSettings['auditType']
 }
 
-const Contests: React.FC<IProps> = (props: IProps) => {
+const Contests: React.FC<IContestsProps> = (props: IContestsProps) => {
   return props.auditType === 'BALLOT_COMPARISON' ? (
     <ContestSelect {...props} />
   ) : (

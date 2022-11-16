@@ -16,6 +16,7 @@ import useContestsBallotComparison, {
 } from '../../../useContestsBallotComparison'
 
 interface IProps {
+  electionId: string
   isTargeted: boolean
   goToPrevStage: () => void
   goToNextStage: () => void
@@ -32,11 +33,11 @@ interface IFormValues {
 }
 
 const ContestSelect: React.FC<IProps> = ({
+  electionId,
   isTargeted,
   goToPrevStage,
   goToNextStage,
 }) => {
-  const { electionId } = useParams<{ electionId: string }>()
   const standardizedContests = useStandardizedContests(electionId)
   const [contests, updateContests] = useContestsBallotComparison(electionId)
   const [filter, setFilter] = useState('')
