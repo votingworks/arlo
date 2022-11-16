@@ -17,10 +17,11 @@ import {
 } from './_mocks'
 
 const setupScreenCalls = [
+  aaApiCalls.getRounds([]),
   aaApiCalls.getJurisdictions,
   aaApiCalls.getContests(contestMocks.filledTargeted),
   aaApiCalls.getSettings(auditSettings.blank),
-  aaApiCalls.getSettings(auditSettings.blank),
+  aaApiCalls.getJurisdictionFile,
 ]
 
 const renderView = (route: string) =>
@@ -209,19 +210,7 @@ describe('Home screen', () => {
         auditMathType: 'MACRO',
       }),
       aaApiCalls.getOrganizations(mockOrganizations.oneOrgOneAudit),
-      aaApiCalls.getRounds([]),
       ...setupScreenCalls,
-      aaApiCalls.getJurisdictionFile,
-      aaApiCalls.getJurisdictionFile,
-      aaApiCalls.getRounds([]),
-      ...setupScreenCalls,
-      aaApiCalls.getJurisdictionFile,
-      ...setupScreenCalls,
-      aaApiCalls.getJurisdictionFile,
-      aaApiCalls.getJurisdictionFile,
-      aaApiCalls.getRounds([]),
-      ...setupScreenCalls,
-      aaApiCalls.getJurisdictionFile,
     ]
     await withMockFetch(expectedCalls, async () => {
       const { history } = renderView('/')
@@ -279,13 +268,7 @@ describe('Home screen', () => {
         auditMathType: 'BRAVO',
       }),
       aaApiCalls.getOrganizations(mockOrganizations.twoOrgs),
-      aaApiCalls.getRounds([]),
       ...setupScreenCalls,
-      aaApiCalls.getJurisdictionFile,
-      aaApiCalls.getJurisdictionFile,
-      aaApiCalls.getRounds([]),
-      ...setupScreenCalls,
-      aaApiCalls.getJurisdictionFile,
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView('/')
@@ -413,13 +396,7 @@ describe('Home screen', () => {
         auditMathType: 'MACRO',
       }),
       aaApiCalls.getOrganizations(mockOrganizations.oneOrgOneAudit),
-      aaApiCalls.getRounds([]),
       ...setupScreenCalls,
-      aaApiCalls.getJurisdictionFile,
-      aaApiCalls.getJurisdictionFile,
-      aaApiCalls.getRounds([]),
-      ...setupScreenCalls,
-      aaApiCalls.getJurisdictionFile,
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView('/')
@@ -453,13 +430,7 @@ describe('Home screen', () => {
         auditMathType: 'SUPERSIMPLE',
       }),
       aaApiCalls.getOrganizations(mockOrganizations.oneOrgOneAudit),
-      aaApiCalls.getRounds([]),
       ...setupScreenCalls,
-      aaApiCalls.getJurisdictionFile,
-      aaApiCalls.getJurisdictionFile,
-      aaApiCalls.getRounds([]),
-      ...setupScreenCalls,
-      aaApiCalls.getJurisdictionFile,
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView('/')
@@ -493,13 +464,7 @@ describe('Home screen', () => {
         auditMathType: 'SUITE',
       }),
       aaApiCalls.getOrganizations(mockOrganizations.oneOrgOneAudit),
-      aaApiCalls.getRounds([]),
       ...setupScreenCalls,
-      aaApiCalls.getJurisdictionFile,
-      aaApiCalls.getJurisdictionFile,
-      aaApiCalls.getRounds([]),
-      ...setupScreenCalls,
-      aaApiCalls.getJurisdictionFile,
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView('/')
