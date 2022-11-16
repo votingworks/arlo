@@ -110,7 +110,6 @@ const AuditAdminView: React.FC = () => {
             electionId={electionId}
             auditSettings={auditSettings}
             startNextRound={startNextRound}
-            contests={contests}
             isAuditStarted={rounds.length > 0}
           />
         </Wrapper>

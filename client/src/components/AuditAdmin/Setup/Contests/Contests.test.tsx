@@ -1,5 +1,5 @@
 import React from 'react'
-import { fireEvent, waitFor, render, screen } from '@testing-library/react'
+import { waitFor, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import uuidv4 from 'uuidv4'
 import { QueryClientProvider } from 'react-query'
@@ -11,7 +11,7 @@ import {
 import * as utilities from '../../../utilities'
 import Contests, { IContestsProps } from './Contests'
 import { contestsInputMocks } from './_mocks'
-import { contestMocks, jurisdictionMocks, aaApiCalls } from '../../../_mocks'
+import { contestMocks, aaApiCalls } from '../../../_mocks'
 
 jest.mock('uuidv4')
 

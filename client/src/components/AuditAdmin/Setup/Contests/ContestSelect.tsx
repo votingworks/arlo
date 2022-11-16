@@ -1,6 +1,5 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useState } from 'react'
-import { useParams } from 'react-router-dom'
 import { Formik, FormikProps } from 'formik'
 import { Checkbox, NumericInput } from '@blueprintjs/core'
 import { Cell } from 'react-table'

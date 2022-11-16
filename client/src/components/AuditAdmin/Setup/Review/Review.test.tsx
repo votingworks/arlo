@@ -1,12 +1,6 @@
 import React from 'react'
 import userEvent from '@testing-library/user-event'
-import {
-  screen,
-  fireEvent,
-  waitFor,
-  within,
-  render,
-} from '@testing-library/react'
+import { screen, fireEvent, waitFor, within } from '@testing-library/react'
 import { QueryClientProvider } from 'react-query'
 import Review from './Review'
 import { settingsMock, sampleSizeMock } from './_mocks'

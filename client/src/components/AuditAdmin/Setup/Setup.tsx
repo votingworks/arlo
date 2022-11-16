@@ -4,7 +4,7 @@ import Participants from './Participants/Participants'
 import Contests from './Contests/Contests'
 import Settings from './Settings/Settings'
 import Review from './Review/Review'
-import { ElementType, IContest } from '../../../types'
+import { ElementType } from '../../../types'
 import Sidebar from '../../Atoms/Sidebar'
 import { ISampleSizes } from '../useRoundsAuditAdmin'
 import { IAuditSettings } from '../../useAuditSettings'
@@ -37,7 +37,6 @@ interface IProps {
   electionId: string
   auditSettings: IAuditSettings
   startNextRound: (sampleSizes: ISampleSizes) => Promise<boolean>
-  contests: IContest[]
   isAuditStarted: boolean
 }
 
@@ -45,7 +44,6 @@ const Setup: React.FC<IProps> = ({
   electionId,
   auditSettings,
   startNextRound,
-  contests,
   isAuditStarted,
 }) => {
   const { auditType } = auditSettings
