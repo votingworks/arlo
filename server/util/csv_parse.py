@@ -361,7 +361,7 @@ def reject_final_total_row(csv: CSVDictIterator, columns: List[CSVColumnType]):
                 numeric_column_values[column.name].append(value)
         yield row
 
-    if len(numeric_column_values.values()) > 0 and all(
+    if len(numeric_column_values) > 0 and all(
         sum(values[:-1]) == values[-1] and values[-1] != 0
         for values in numeric_column_values.values()
     ):
