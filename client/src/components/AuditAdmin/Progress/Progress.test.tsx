@@ -5,18 +5,19 @@ import { Intent } from '@blueprintjs/core'
 import { QueryClientProvider } from 'react-query'
 import { Route } from 'react-router-dom'
 import {
-  jurisdictionMocks,
-  auditSettings,
-  roundMocks,
-  auditBoardMocks,
-  manifestMocks,
-} from '../useSetupMenuItems/_mocks'
-import {
   withMockFetch,
   renderWithRouter,
   createQueryClient,
 } from '../../testUtilities'
-import { aaApiCalls, jaApiCalls } from '../../_mocks'
+import {
+  aaApiCalls,
+  jaApiCalls,
+  jurisdictionMocks,
+  auditSettingsMocks,
+  roundMocks,
+  auditBoardMocks,
+  manifestMocks,
+} from '../../_mocks'
 import Progress, { IProgressProps } from './Progress'
 import { dummyBallots } from '../../AuditBoard/_mocks'
 import * as utilities from '../../utilities'
@@ -54,7 +55,7 @@ const render = (props: Partial<IProgressProps> = {}) =>
           <Progress
             {...routeProps}
             jurisdictions={jurisdictionMocks.oneManifest}
-            auditSettings={auditSettings.all}
+            auditSettings={auditSettingsMocks.all}
             round={null}
             {...props}
           />
@@ -231,7 +232,7 @@ describe('Progress screen', () => {
     await withMockFetch(expectedCalls, async () => {
       const { container } = render({
         jurisdictions: jurisdictionMocks.twoManifestsOneTallies,
-        auditSettings: auditSettings.batchComparisonAll,
+        auditSettings: auditSettingsMocks.batchComparisonAll,
       })
 
       expect(container.querySelectorAll('.d3-component').length).toBe(1)
@@ -281,7 +282,7 @@ describe('Progress screen', () => {
     await withMockFetch(expectedCalls, async () => {
       const { container } = render({
         jurisdictions: jurisdictionMocks.allManifestsSomeCVRs,
-        auditSettings: auditSettings.ballotComparisonAll,
+        auditSettings: auditSettingsMocks.ballotComparisonAll,
       })
 
       expect(container.querySelectorAll('.d3-component').length).toBe(1)
@@ -326,7 +327,7 @@ describe('Progress screen', () => {
     await withMockFetch(expectedCalls, async () => {
       const { container } = render({
         jurisdictions: jurisdictionMocks.hybridTwoManifestsOneCvr,
-        auditSettings: auditSettings.hybridAll,
+        auditSettings: auditSettingsMocks.hybridAll,
       })
 
       expect(container.querySelectorAll('.d3-component').length).toBe(1)
@@ -381,7 +382,7 @@ describe('Progress screen', () => {
     await withMockFetch(expectedCalls, async () => {
       const { container } = render({
         jurisdictions: jurisdictionMocks.oneComplete,
-        auditSettings: auditSettings.batchComparisonAll,
+        auditSettings: auditSettingsMocks.batchComparisonAll,
         round: roundMocks.singleIncomplete[0],
       })
 
@@ -621,7 +622,7 @@ describe('Progress screen', () => {
     await withMockFetch(expectedCalls, async () => {
       const { container } = render({
         jurisdictions: jurisdictionMocks.twoManifestsOneTallies,
-        auditSettings: auditSettings.batchComparisonAll,
+        auditSettings: auditSettingsMocks.batchComparisonAll,
       })
 
       expect(container.querySelectorAll('.d3-component').length).toBe(1)
@@ -668,7 +669,7 @@ describe('Progress screen', () => {
     await withMockFetch(expectedCalls, async () => {
       const { container } = render({
         jurisdictions: jurisdictionMocks.uploadingWithAlabamaJurisdictions,
-        auditSettings: auditSettings.batchComparisonAll,
+        auditSettings: auditSettingsMocks.batchComparisonAll,
       })
 
       expect(container.querySelectorAll('.d3-component').length).toBe(1)

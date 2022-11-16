@@ -1,14 +1,12 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useState } from 'react'
-import { useParams } from 'react-router-dom'
 import { Formik, FormikProps } from 'formik'
-import { Checkbox, Spinner, NumericInput } from '@blueprintjs/core'
+import { Checkbox, NumericInput } from '@blueprintjs/core'
 import { Cell } from 'react-table'
 import uuidv4 from 'uuidv4'
 import FormWrapper from '../../../Atoms/Form/FormWrapper'
 import FormButtonBar from '../../../Atoms/Form/FormButtonBar'
 import FormButton from '../../../Atoms/Form/FormButton'
-import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
 import useStandardizedContests from '../../../useStandardizedContests'
 import { useJurisdictionsDeprecated } from '../../../useJurisdictions'
 import { Table, FilterInput } from '../../../Atoms/Table'
@@ -17,9 +15,10 @@ import useContestsBallotComparison, {
 } from '../../../useContestsBallotComparison'
 
 interface IProps {
+  electionId: string
   isTargeted: boolean
-  nextStage: ISidebarMenuItem
-  prevStage: ISidebarMenuItem
+  goToPrevStage: () => void
+  goToNextStage: () => void
 }
 
 interface IFormValues {
@@ -33,11 +32,11 @@ interface IFormValues {
 }
 
 const ContestSelect: React.FC<IProps> = ({
+  electionId,
   isTargeted,
-  nextStage,
-  prevStage,
+  goToPrevStage,
+  goToNextStage,
 }) => {
-  const { electionId } = useParams<{ electionId: string }>()
   const standardizedContests = useStandardizedContests(electionId)
   const [contests, updateContests] = useContestsBallotComparison(electionId)
   const [filter, setFilter] = useState('')
@@ -76,9 +75,7 @@ const ContestSelect: React.FC<IProps> = ({
     // TEST TODO
     /* istanbul ignore next */
     if (!response) return
-    /* istanbul ignore else */
-    if (nextStage.activate) nextStage.activate()
-    else throw new Error('Wrong menuItems passed in: activate() is missing')
+    goToNextStage()
   }
 
   const filteredStandardizedContests = standardizedContests.filter(
@@ -199,22 +196,17 @@ const ContestSelect: React.FC<IProps> = ({
               ]}
             />
           </FormWrapper>
-          {nextStage.state === 'processing' ? (
-            <Spinner />
-          ) : (
-            <FormButtonBar>
-              <FormButton onClick={prevStage.activate}>Back</FormButton>
-              <FormButton
-                type="submit"
-                intent="primary"
-                loading={isSubmitting}
-                disabled={nextStage.state === 'locked'}
-                onClick={handleSubmit}
-              >
-                Save &amp; Next
-              </FormButton>
-            </FormButtonBar>
-          )}
+          <FormButtonBar>
+            <FormButton onClick={goToPrevStage}>Back</FormButton>
+            <FormButton
+              type="submit"
+              intent="primary"
+              loading={isSubmitting}
+              onClick={handleSubmit}
+            >
+              Save &amp; Next
+            </FormButton>
+          </FormButtonBar>
         </form>
       )}
     </Formik>

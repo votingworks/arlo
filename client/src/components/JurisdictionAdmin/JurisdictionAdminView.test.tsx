@@ -7,7 +7,8 @@ import AuthDataProvider, { useAuthDataContext } from '../UserContext'
 import JurisdictionAdminView from './JurisdictionAdminView'
 import { renderWithRouter, withMockFetch, serverError } from '../testUtilities'
 import {
-  auditSettings,
+  jaApiCalls,
+  auditSettingsMocks,
   manifestMocks,
   talliesMocks,
   manifestFile,
@@ -15,8 +16,7 @@ import {
   cvrsMocks,
   cvrsFile,
   roundMocks,
-} from '../AuditAdmin/useSetupMenuItems/_mocks'
-import { jaApiCalls } from '../_mocks'
+} from '../_mocks'
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'), // use actual for all non-hook parts
@@ -57,7 +57,7 @@ describe('JA setup', () => {
   it('renders setup screen', async () => {
     const expectedCalls = [
       jaApiCalls.getUser,
-      jaApiCalls.getSettings(auditSettings.batchComparisonAll),
+      jaApiCalls.getSettings(auditSettingsMocks.batchComparisonAll),
       jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile(manifestMocks.empty),
       jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
@@ -73,7 +73,7 @@ describe('JA setup', () => {
   it('submits ballot manifest and deletes it', async () => {
     const expectedCalls = [
       jaApiCalls.getUser,
-      jaApiCalls.getSettings(auditSettings.all),
+      jaApiCalls.getSettings(auditSettingsMocks.all),
       jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile(manifestMocks.empty),
       jaApiCalls.putManifest,
@@ -108,7 +108,7 @@ describe('JA setup', () => {
   it('submits batch tallies', async () => {
     const expectedCalls = [
       jaApiCalls.getUser,
-      jaApiCalls.getSettings(auditSettings.batchComparisonAll),
+      jaApiCalls.getSettings(auditSettingsMocks.batchComparisonAll),
       jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
       jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
@@ -134,7 +134,7 @@ describe('JA setup', () => {
   it('toasts error when uploading batch tallies', async () => {
     const expectedCalls = [
       jaApiCalls.getUser,
-      jaApiCalls.getSettings(auditSettings.batchComparisonAll),
+      jaApiCalls.getSettings(auditSettingsMocks.batchComparisonAll),
       jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
       jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
@@ -153,7 +153,7 @@ describe('JA setup', () => {
   it('displays errors on invalid batch tallies upload', async () => {
     const expectedCalls = [
       jaApiCalls.getUser,
-      jaApiCalls.getSettings(auditSettings.batchComparisonAll),
+      jaApiCalls.getSettings(auditSettingsMocks.batchComparisonAll),
       jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
       jaApiCalls.getBatchTalliesFile(talliesMocks.processed),
@@ -183,7 +183,7 @@ describe('JA setup', () => {
   it('displays errors after reprocessing batch tallies on replacing manifest', async () => {
     const expectedCalls = [
       jaApiCalls.getUser,
-      jaApiCalls.getSettings(auditSettings.batchComparisonAll),
+      jaApiCalls.getSettings(auditSettingsMocks.batchComparisonAll),
       jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile(manifestMocks.empty),
       jaApiCalls.getBatchTalliesFile(talliesMocks.processed),
@@ -212,7 +212,7 @@ describe('JA setup', () => {
   it('submits CVRs', async () => {
     const expectedCalls = [
       jaApiCalls.getUser,
-      jaApiCalls.getSettings(auditSettings.ballotComparisonAll),
+      jaApiCalls.getSettings(auditSettingsMocks.ballotComparisonAll),
       jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
       jaApiCalls.getCVRSfile(cvrsMocks.empty),
@@ -261,7 +261,7 @@ describe('JA setup', () => {
   it('after deleting CVRs, keeps last selected CVR file type ', async () => {
     const expectedCalls = [
       jaApiCalls.getUser,
-      jaApiCalls.getSettings(auditSettings.ballotComparisonAll),
+      jaApiCalls.getSettings(auditSettingsMocks.ballotComparisonAll),
       jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
       jaApiCalls.getCVRSfile(cvrsMocks.processed),
@@ -281,7 +281,7 @@ describe('JA setup', () => {
   it('displays errors on invalid CVRs upload', async () => {
     const expectedCalls = [
       jaApiCalls.getUser,
-      jaApiCalls.getSettings(auditSettings.ballotComparisonAll),
+      jaApiCalls.getSettings(auditSettingsMocks.ballotComparisonAll),
       jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
       jaApiCalls.getCVRSfile(cvrsMocks.processed),
@@ -325,7 +325,7 @@ describe('JA setup', () => {
 
     const expectedCalls = [
       jaApiCalls.getUser,
-      jaApiCalls.getSettings(auditSettings.ballotComparisonAll),
+      jaApiCalls.getSettings(auditSettingsMocks.ballotComparisonAll),
       jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
       jaApiCalls.getCVRSfile(cvrsMocks.empty),
@@ -364,7 +364,7 @@ describe('JA setup', () => {
 
     const expectedCalls = [
       jaApiCalls.getUser,
-      jaApiCalls.getSettings(auditSettings.ballotComparisonAll),
+      jaApiCalls.getSettings(auditSettingsMocks.ballotComparisonAll),
       jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
       jaApiCalls.getCVRSfile(cvrsMocks.empty),
@@ -413,7 +413,7 @@ describe('JA setup', () => {
 
     const expectedCalls = [
       jaApiCalls.getUser,
-      jaApiCalls.getSettings(auditSettings.ballotComparisonAll),
+      jaApiCalls.getSettings(auditSettingsMocks.ballotComparisonAll),
       jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
       jaApiCalls.getCVRSfile(cvrsMocks.empty),
@@ -443,7 +443,7 @@ describe('JA setup', () => {
   it('displays errors after reprocessing CVRs on replacing manifest', async () => {
     const expectedCalls = [
       jaApiCalls.getUser,
-      jaApiCalls.getSettings(auditSettings.ballotComparisonAll),
+      jaApiCalls.getSettings(auditSettingsMocks.ballotComparisonAll),
       jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile(manifestMocks.empty),
       jaApiCalls.getCVRSfile(cvrsMocks.processed),
@@ -472,7 +472,7 @@ describe('JA setup', () => {
   it('shows error with incorrect file', async () => {
     const expectedCalls = [
       jaApiCalls.getUser,
-      jaApiCalls.getSettings(auditSettings.batchComparisonAll),
+      jaApiCalls.getSettings(auditSettingsMocks.batchComparisonAll),
       jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile(manifestMocks.empty),
       jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
@@ -505,7 +505,7 @@ describe('JA setup', () => {
   it('replaces manifest file', async () => {
     const expectedCalls = [
       jaApiCalls.getUser,
-      jaApiCalls.getSettings(auditSettings.batchComparisonAll),
+      jaApiCalls.getSettings(auditSettingsMocks.batchComparisonAll),
       jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
       jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
@@ -538,7 +538,7 @@ describe('JA setup', () => {
   it('stays on the file upload screen when sample is being drawn', async () => {
     const expectedCalls = [
       jaApiCalls.getUser,
-      jaApiCalls.getSettings(auditSettings.all),
+      jaApiCalls.getSettings(auditSettingsMocks.all),
       jaApiCalls.getRounds(roundMocks.drawSampleInProgress),
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
     ]
@@ -551,7 +551,7 @@ describe('JA setup', () => {
   it('stays on the file upload screen when drawing sample errors', async () => {
     const expectedCalls = [
       jaApiCalls.getUser,
-      jaApiCalls.getSettings(auditSettings.all),
+      jaApiCalls.getSettings(auditSettingsMocks.all),
       jaApiCalls.getRounds(roundMocks.drawSampleErrored),
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
     ]
@@ -580,7 +580,7 @@ describe('JA setup', () => {
           },
         },
       },
-      jaApiCalls.getSettings(auditSettings.batchComparisonAll),
+      jaApiCalls.getSettings(auditSettingsMocks.batchComparisonAll),
       jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile(manifestMocks.empty),
       jaApiCalls.getBatchTalliesFile(talliesMocks.empty),

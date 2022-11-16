@@ -3,15 +3,15 @@ import { BrowserRouter as Router, useParams } from 'react-router-dom'
 import { render, fireEvent, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { AuditAdminStatusBox } from './StatusBox'
-import {
-  auditSettings,
-  jurisdictionMocks,
-  roundMocks,
-} from '../AuditAdmin/useSetupMenuItems/_mocks'
-import { contestMocks } from '../AuditAdmin/Setup/Contests/_mocks'
 import { IAuditSettings } from '../useAuditSettings'
 import { withMockFetch } from '../testUtilities'
-import { aaApiCalls } from '../_mocks'
+import {
+  aaApiCalls,
+  auditSettingsMocks,
+  jurisdictionMocks,
+  contestMocks,
+  roundMocks,
+} from '../_mocks'
 import { sampleSizeMock } from '../AuditAdmin/Setup/Review/_mocks'
 import { FileProcessingStatus } from '../useCSV'
 
@@ -43,7 +43,7 @@ describe('StatusBox', () => {
             undoRoundStart={jest.fn()}
             jurisdictions={[]}
             contests={[]}
-            auditSettings={auditSettings.blank!}
+            auditSettings={auditSettingsMocks.blank!}
           />
         </Router>
       )
@@ -65,7 +65,7 @@ describe('StatusBox', () => {
             undoRoundStart={jest.fn()}
             jurisdictions={jurisdictionMocks.oneManifest}
             contests={[]}
-            auditSettings={auditSettings.blank!}
+            auditSettings={auditSettingsMocks.blank!}
           />
         </Router>
       )
@@ -83,7 +83,7 @@ describe('StatusBox', () => {
             undoRoundStart={jest.fn()}
             jurisdictions={jurisdictionMocks.allManifests}
             contests={[]}
-            auditSettings={auditSettings.blank!}
+            auditSettings={auditSettingsMocks.blank!}
           />
         </Router>
       )
@@ -104,8 +104,8 @@ describe('StatusBox', () => {
               contests={[]}
               auditSettings={
                 auditType === 'BALLOT_COMPARISON'
-                  ? auditSettings.blankBallotComparison
-                  : auditSettings.blankHybrid
+                  ? auditSettingsMocks.blankBallotComparison
+                  : auditSettingsMocks.blankHybrid
               }
             />
           </Router>
@@ -126,8 +126,8 @@ describe('StatusBox', () => {
               contests={[]}
               auditSettings={
                 auditType === 'BALLOT_COMPARISON'
-                  ? auditSettings.blankBallotComparison
-                  : auditSettings.blankHybrid
+                  ? auditSettingsMocks.blankBallotComparison
+                  : auditSettingsMocks.blankHybrid
               }
             />
           </Router>
@@ -147,7 +147,7 @@ describe('StatusBox', () => {
             undoRoundStart={jest.fn()}
             jurisdictions={jurisdictionMocks.twoManifestsOneTallies}
             contests={[]}
-            auditSettings={auditSettings.blankBatch}
+            auditSettings={auditSettingsMocks.blankBatch}
           />
         </Router>
       )
@@ -165,7 +165,7 @@ describe('StatusBox', () => {
             undoRoundStart={jest.fn()}
             jurisdictions={jurisdictionMocks.allManifestsAllTallies}
             contests={[]}
-            auditSettings={auditSettings.blankBatch}
+            auditSettings={auditSettingsMocks.blankBatch}
           />
         </Router>
       )
@@ -182,8 +182,8 @@ describe('StatusBox', () => {
             startNextRound={jest.fn()}
             undoRoundStart={jest.fn()}
             jurisdictions={jurisdictionMocks.allManifests}
-            contests={contestMocks.filledTargeted.contests}
-            auditSettings={auditSettings.all}
+            contests={contestMocks.filledTargeted}
+            auditSettings={auditSettingsMocks.all}
           />
         </Router>
       )
@@ -200,8 +200,8 @@ describe('StatusBox', () => {
             startNextRound={jest.fn()}
             undoRoundStart={jest.fn()}
             jurisdictions={jurisdictionMocks.noneStarted}
-            contests={contestMocks.filledTargeted.contests}
-            auditSettings={auditSettings.all}
+            contests={contestMocks.filledTargeted}
+            auditSettings={auditSettingsMocks.all}
           />
         </Router>
       )
@@ -218,8 +218,8 @@ describe('StatusBox', () => {
             startNextRound={jest.fn()}
             undoRoundStart={jest.fn()}
             jurisdictions={jurisdictionMocks.oneComplete}
-            contests={contestMocks.filledTargeted.contests}
-            auditSettings={auditSettings.all}
+            contests={contestMocks.filledTargeted}
+            auditSettings={auditSettingsMocks.all}
           />
         </Router>
       )
@@ -245,8 +245,8 @@ describe('StatusBox', () => {
               startNextRound={startNextRoundMock}
               undoRoundStart={jest.fn()}
               jurisdictions={jurisdictionMocks.allComplete}
-              contests={contestMocks.filledTargeted.contests}
-              auditSettings={auditSettings.ballotComparisonAll}
+              contests={contestMocks.filledTargeted}
+              auditSettings={auditSettingsMocks.ballotComparisonAll}
             />
           </Router>
         )
@@ -289,8 +289,8 @@ describe('StatusBox', () => {
               startNextRound={startNextRoundMock}
               undoRoundStart={jest.fn()}
               jurisdictions={jurisdictionMocks.allComplete}
-              contests={contestMocks.filledTargeted.contests}
-              auditSettings={auditSettings.batchComparisonAll}
+              contests={contestMocks.filledTargeted}
+              auditSettings={auditSettingsMocks.batchComparisonAll}
             />
           </Router>
         )
@@ -327,8 +327,8 @@ describe('StatusBox', () => {
               startNextRound={jest.fn()}
               undoRoundStart={jest.fn()}
               jurisdictions={jurisdictionMocks.allComplete}
-              contests={contestMocks.filledTargeted.contests}
-              auditSettings={auditSettings.ballotComparisonAll}
+              contests={contestMocks.filledTargeted}
+              auditSettings={auditSettingsMocks.ballotComparisonAll}
             />
           </Router>
         )
@@ -346,8 +346,8 @@ describe('StatusBox', () => {
             startNextRound={jest.fn()}
             undoRoundStart={jest.fn()}
             jurisdictions={jurisdictionMocks.allComplete}
-            contests={contestMocks.filledTargeted.contests}
-            auditSettings={auditSettings.all}
+            contests={contestMocks.filledTargeted}
+            auditSettings={auditSettingsMocks.all}
           />
         </Router>
       )
@@ -365,8 +365,8 @@ describe('StatusBox', () => {
             startNextRound={jest.fn()}
             undoRoundStart={jest.fn()}
             jurisdictions={jurisdictionMocks.allComplete}
-            contests={contestMocks.filledTargeted.contests}
-            auditSettings={auditSettings.all}
+            contests={contestMocks.filledTargeted}
+            auditSettings={auditSettingsMocks.all}
           />
         </Router>
       )
@@ -395,8 +395,8 @@ describe('StatusBox', () => {
             startNextRound={jest.fn()}
             undoRoundStart={jest.fn()}
             jurisdictions={jurisdictionMocks.noneStarted}
-            contests={contestMocks.filledTargeted.contests}
-            auditSettings={auditSettings.all}
+            contests={contestMocks.filledTargeted}
+            auditSettings={auditSettingsMocks.all}
           />
         </Router>
       )

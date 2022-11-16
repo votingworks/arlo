@@ -5,36 +5,27 @@ import { Route, RouteProps } from 'react-router-dom'
 import { QueryClientProvider } from 'react-query'
 import AuditAdminView from './AuditAdminView'
 import {
-  jurisdictionFileMocks,
-  standardizedContestsFileMocks,
-  auditSettings,
-  roundMocks,
-  manifestFile,
-  manifestMocks,
-  jurisdictionMocks,
-} from './useSetupMenuItems/_mocks'
-import {
   withMockFetch,
   renderWithRouter,
   createQueryClient,
 } from '../testUtilities'
 import AuthDataProvider, { useAuthDataContext } from '../UserContext'
-import getJurisdictionFileStatus from './useSetupMenuItems/getJurisdictionFileStatus'
-import getRoundStatus from './useSetupMenuItems/getRoundStatus'
-import { aaApiCalls, jaApiCalls } from '../_mocks'
+import {
+  aaApiCalls,
+  jaApiCalls,
+  jurisdictionFileMocks,
+  standardizedContestsFileMocks,
+  auditSettingsMocks,
+  roundMocks,
+  manifestFile,
+  manifestMocks,
+  jurisdictionMocks,
+  contestMocks,
+} from '../_mocks'
 import {
   jurisdictionFile,
-  jurisdictionErrorFile,
   standardizedContestsFile,
 } from './Setup/Participants/_mocks'
-
-const getJurisdictionFileStatusMock = getJurisdictionFileStatus as jest.Mock
-const getRoundStatusMock = getRoundStatus as jest.Mock
-
-jest.mock('./useSetupMenuItems/getJurisdictionFileStatus')
-jest.mock('./useSetupMenuItems/getRoundStatus')
-getJurisdictionFileStatusMock.mockReturnValue('PROCESSED')
-getRoundStatusMock.mockReturnValue(false)
 
 jest.mock('axios')
 
@@ -59,23 +50,16 @@ const render = (view = 'setup') =>
   )
 
 describe('AA setup flow', () => {
-  const loadEach = [
+  const setupApiCalls = [
     aaApiCalls.getRounds([]),
     aaApiCalls.getJurisdictions,
-    aaApiCalls.getContests,
-    aaApiCalls.getSettings(auditSettings.all),
+    aaApiCalls.getContests(contestMocks.filledTargeted),
+    aaApiCalls.getSettings(auditSettingsMocks.all),
+    aaApiCalls.getJurisdictionFile,
   ]
 
   it('sidebar changes stages', async () => {
-    const expectedCalls = [
-      aaApiCalls.getUser,
-      ...loadEach,
-      ...loadEach,
-      aaApiCalls.getSettings(auditSettings.all),
-      aaApiCalls.getJurisdictionFile,
-      ...loadEach,
-      aaApiCalls.getSettings(auditSettings.all),
-    ]
+    const expectedCalls = [aaApiCalls.getUser, ...setupApiCalls]
     await withMockFetch(expectedCalls, async () => {
       const { queryAllByText, getByText } = render()
 
@@ -92,13 +76,7 @@ describe('AA setup flow', () => {
   })
 
   it('renders sidebar when authenticated on /setup', async () => {
-    const expectedCalls = [
-      aaApiCalls.getUser,
-      ...loadEach,
-      ...loadEach,
-      aaApiCalls.getSettings(auditSettings.all),
-      aaApiCalls.getJurisdictionFile,
-    ]
+    const expectedCalls = [aaApiCalls.getUser, ...setupApiCalls]
     await withMockFetch(expectedCalls, async () => {
       const { container, queryAllByText } = render()
 
@@ -109,12 +87,13 @@ describe('AA setup flow', () => {
     })
   })
 
-  it('get empty jurisdiction file intiially', async () => {
+  it('get empty jurisdiction file initially', async () => {
     const expectedCalls = [
       aaApiCalls.getUser,
-      ...loadEach,
-      ...loadEach,
-      aaApiCalls.getSettings(auditSettings.blank),
+      aaApiCalls.getRounds([]),
+      aaApiCalls.getJurisdictions,
+      aaApiCalls.getContests(contestMocks.filledTargeted),
+      aaApiCalls.getSettings(auditSettingsMocks.all),
       aaApiCalls.getJurisdictionFileWithResponse(jurisdictionFileMocks.empty),
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -127,14 +106,8 @@ describe('AA setup flow', () => {
     })
   })
 
-  it('get jurisdisction file get if exists', async () => {
-    const expectedCalls = [
-      aaApiCalls.getUser,
-      ...loadEach,
-      ...loadEach,
-      aaApiCalls.getSettings(auditSettings.all),
-      aaApiCalls.getJurisdictionFile,
-    ]
+  it('get jurisdiction file if exists', async () => {
+    const expectedCalls = [aaApiCalls.getUser, ...setupApiCalls]
     await withMockFetch(expectedCalls, async () => {
       const { queryByText, queryAllByText } = render()
 
@@ -145,17 +118,19 @@ describe('AA setup flow', () => {
     })
   })
 
-  it('jurisdisction file upload success', async () => {
+  it('jurisdiction file upload success', async () => {
     const expectedCalls = [
       aaApiCalls.getUser,
-      ...loadEach,
-      ...loadEach,
-      aaApiCalls.getSettings(auditSettings.blank),
+      aaApiCalls.getRounds([]),
+      aaApiCalls.getJurisdictions,
+      aaApiCalls.getContests(contestMocks.filledTargeted),
+      aaApiCalls.getSettings(auditSettingsMocks.all),
       aaApiCalls.getJurisdictionFileWithResponse(jurisdictionFileMocks.empty),
       aaApiCalls.putJurisdictionFile,
       aaApiCalls.getJurisdictionFileWithResponse(
         jurisdictionFileMocks.processed
       ),
+      aaApiCalls.getJurisdictions,
     ]
     await withMockFetch(expectedCalls, async () => {
       const { queryAllByText } = render()
@@ -176,15 +151,17 @@ describe('AA setup flow', () => {
     })
   })
 
-  it('jurisdisction file upload with error', async () => {
+  it('jurisdiction file upload with error', async () => {
     const expectedCalls = [
       aaApiCalls.getUser,
-      ...loadEach,
-      ...loadEach,
-      aaApiCalls.getSettings(auditSettings.blank),
+      aaApiCalls.getRounds([]),
+      aaApiCalls.getJurisdictions,
+      aaApiCalls.getContests(contestMocks.filledTargeted),
+      aaApiCalls.getSettings(auditSettingsMocks.all),
       aaApiCalls.getJurisdictionFileWithResponse(jurisdictionFileMocks.empty),
       aaApiCalls.putJurisdictionErrorFile,
       aaApiCalls.getJurisdictionFileWithResponse(jurisdictionFileMocks.errored),
+      aaApiCalls.getJurisdictions,
     ]
     await withMockFetch(expectedCalls, async () => {
       const { queryAllByText } = render()
@@ -199,19 +176,23 @@ describe('AA setup flow', () => {
       userEvent.click(jurisdictionButton)
       await screen.findByText('You must upload a file')
 
-      userEvent.upload(jurisdisctionInput, jurisdictionErrorFile)
+      userEvent.upload(jurisdisctionInput, jurisdictionFile)
       userEvent.click(jurisdictionButton)
       await screen.findByText('Invalid CSV')
     })
   })
 
   it('standardized contests file upload success', async () => {
+    const ballotComparisonSetupApiCalls = [
+      aaApiCalls.getRounds([]),
+      aaApiCalls.getJurisdictions,
+      aaApiCalls.getContests(contestMocks.filledTargeted),
+      aaApiCalls.getSettings(auditSettingsMocks.ballotComparisonAll),
+      aaApiCalls.getJurisdictionFile,
+    ]
     const expectedCalls = [
       aaApiCalls.getUser,
-      ...loadEach,
-      ...loadEach,
-      aaApiCalls.getSettings(auditSettings.blankBallotComparison),
-      aaApiCalls.getJurisdictionFile,
+      ...ballotComparisonSetupApiCalls,
       aaApiCalls.getStandardizedContestsFileWithResponse(
         standardizedContestsFileMocks.empty
       ),
@@ -239,17 +220,12 @@ describe('AA setup flow', () => {
   })
 
   it('redirects to /progress after audit is launched', async () => {
-    const loadAfterLaunch = [
-      aaApiCalls.getRounds(roundMocks.singleIncomplete),
-      aaApiCalls.getJurisdictions,
-      aaApiCalls.getContests,
-      aaApiCalls.getSettings(auditSettings.all),
-    ]
     const expectedCalls = [
       aaApiCalls.getUser,
-      ...loadAfterLaunch,
-      ...loadAfterLaunch,
-      ...loadAfterLaunch,
+      aaApiCalls.getRounds(roundMocks.singleIncomplete),
+      aaApiCalls.getJurisdictions,
+      aaApiCalls.getContests(contestMocks.filledTargeted),
+      aaApiCalls.getSettings(auditSettingsMocks.all),
       aaApiCalls.getMapData,
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -261,27 +237,25 @@ describe('AA setup flow', () => {
   })
 
   it('shows an error and undo button if drawing the sample fails', async () => {
-    const loadAfterLaunch = [
-      aaApiCalls.getRounds(roundMocks.drawSampleErrored),
+    const afterLaunchApiCalls = [
       aaApiCalls.getJurisdictions,
-      aaApiCalls.getContests,
-      aaApiCalls.getSettings(auditSettings.all),
+      aaApiCalls.getContests(contestMocks.filledTargeted),
+      aaApiCalls.getSettings(auditSettingsMocks.all),
     ]
     const expectedCalls = [
       aaApiCalls.getUser,
-      ...loadAfterLaunch,
-      ...loadAfterLaunch,
-      aaApiCalls.getSettings(auditSettings.all),
-      aaApiCalls.getJurisdictionFile,
+      aaApiCalls.getRounds(roundMocks.drawSampleErrored),
+      ...afterLaunchApiCalls,
       {
         url: '/api/election/1/round/round-1',
         options: { method: 'DELETE' },
         response: { status: 'ok' },
       },
       aaApiCalls.getRounds(roundMocks.empty),
+      aaApiCalls.getMapData,
     ]
     await withMockFetch(expectedCalls, async () => {
-      render()
+      const { history } = render('progress')
       await screen.findByRole('heading', {
         name: 'Arlo could not draw the sample',
       })
@@ -289,6 +263,7 @@ describe('AA setup flow', () => {
         'Please contact our support team for help resolving this issue.'
       )
       screen.getByText('Error: something went wrong')
+      expect(history.location.pathname).toEqual('/election/1/progress')
 
       userEvent.click(screen.getByRole('button', { name: 'Undo Audit Launch' }))
       await screen.findByText('The audit has not started.')
@@ -298,8 +273,10 @@ describe('AA setup flow', () => {
   it('reloads jurisdiction progress after file upload', async () => {
     const expectedCalls = [
       aaApiCalls.getUser,
-      ...loadEach,
-      ...loadEach,
+      aaApiCalls.getRounds([]),
+      aaApiCalls.getJurisdictions,
+      aaApiCalls.getContests(contestMocks.filledTargeted),
+      aaApiCalls.getSettings(auditSettingsMocks.all),
       aaApiCalls.getMapData,
       jaApiCalls.getBallotManifestFile(manifestMocks.empty),
       jaApiCalls.putManifest,

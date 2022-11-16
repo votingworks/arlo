@@ -1,22 +1,24 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { useParams, Redirect } from 'react-router-dom'
-import uuidv4 from 'uuidv4'
 import { Spinner, H3, Intent } from '@blueprintjs/core'
-import useRoundsAuditAdmin, {
-  isAuditStarted,
+import { useQueryClient } from 'react-query'
+import {
+  useRounds,
   isDrawSampleComplete,
   drawSampleError,
+  isDrawingSample,
+  useStartNextRound,
+  useUndoRoundStart,
+  ISampleSizes,
+  roundsQueryKey,
 } from './useRoundsAuditAdmin'
-import { useJurisdictions } from '../useJurisdictions'
-import useContests from '../useContests'
-import useAuditSettings from '../useAuditSettings'
-import { ElementType } from '../../types'
-import useSetupMenuItems from './useSetupMenuItems/useSetupMenuItems'
+import { useJurisdictions, jurisdictionsQueryKey } from '../useJurisdictions'
+import { useContests } from '../useContests'
+import { useAuditSettings } from '../useAuditSettings'
 import { Wrapper, Inner } from '../Atoms/Wrapper'
 import { AuditAdminStatusBox } from '../Atoms/StatusBox'
-import Sidebar from '../Atoms/Sidebar'
 import { RefreshTag } from '../Atoms/RefreshTag'
-import Setup, { setupStages } from './Setup/Setup'
+import Setup from './Setup/Setup'
 import Progress from './Progress/Progress'
 
 interface IParams {
@@ -26,52 +28,31 @@ interface IParams {
 
 const AuditAdminView: React.FC = () => {
   const { electionId, view } = useParams<IParams>()
-  const [refreshId, setRefreshId] = useState(uuidv4())
 
-  const [rounds, startNextRound, undoRoundStart] = useRoundsAuditAdmin(
-    electionId,
-    refreshId
-  )
-  const jurisdictionsQuery = useJurisdictions(electionId, refreshId)
-  const [contests] = useContests(electionId, undefined, refreshId)
-  const [auditSettings] = useAuditSettings(electionId, refreshId)
-
-  const isBallotComparison =
-    auditSettings !== null && auditSettings.auditType === 'BALLOT_COMPARISON'
-  const isHybrid =
-    auditSettings !== null && auditSettings.auditType === 'HYBRID'
-  const [stage, setStage] = useState<ElementType<typeof setupStages>>(
-    'participants'
-  )
-  const [menuItems, refresh] = useSetupMenuItems(
-    stage,
-    setStage,
-    electionId,
-    !!isBallotComparison,
-    !!isHybrid,
-    setRefreshId
-  )
-
-  useEffect(refresh, [
-    refresh,
-    isBallotComparison,
-    isHybrid,
-    rounds !== null && isAuditStarted(rounds),
-  ])
-
-  if (!jurisdictionsQuery.isSuccess || !contests || !rounds || !auditSettings)
-    return null // Still loading
-  const jurisdictions = jurisdictionsQuery.data
-
-  const isBatch = auditSettings.auditType === 'BATCH_COMPARISON'
-  const filteredMenuItems = menuItems.filter(({ id }) => {
-    switch (id as ElementType<typeof setupStages>) {
-      case 'opportunistic-contests':
-        return !isBatch
-      default:
-        return true
-    }
+  const roundsQuery = useRounds(electionId, {
+    refetchInterval: rounds =>
+      rounds && isDrawingSample(rounds) ? 1000 : false,
   })
+  const startNextRoundMutation = useStartNextRound(electionId)
+  const undoRoundStartMutation = useUndoRoundStart(electionId)
+
+  const jurisdictionsQuery = useJurisdictions(electionId)
+  const contestsQuery = useContests(electionId)
+  const auditSettingsQuery = useAuditSettings(electionId)
+  const queryClient = useQueryClient()
+
+  if (
+    !jurisdictionsQuery.isSuccess ||
+    !contestsQuery.isSuccess ||
+    !roundsQuery.isSuccess ||
+    !auditSettingsQuery.isSuccess
+  )
+    return null // Still loading
+
+  const jurisdictions = jurisdictionsQuery.data
+  const contests = contestsQuery.data
+  const rounds = roundsQuery.data
+  const auditSettings = auditSettingsQuery.data
 
   if (rounds.length > 0 && !isDrawSampleComplete(rounds)) {
     return (
@@ -97,6 +78,22 @@ const AuditAdminView: React.FC = () => {
     )
   }
 
+  const startNextRound = async (sampleSizes: ISampleSizes) => {
+    const nextRoundNum =
+      rounds.length === 0 ? 1 : rounds[rounds.length - 1].roundNum + 1
+    await startNextRoundMutation.mutateAsync({
+      sampleSizes,
+      roundNum: nextRoundNum,
+    })
+    return true
+  }
+
+  const undoRoundStart = async () => {
+    const currentRoundId = rounds[rounds.length - 1].id
+    await undoRoundStartMutation.mutateAsync(currentRoundId)
+    return true
+  }
+
   switch (view) {
     case 'setup':
       return (
@@ -108,19 +105,13 @@ const AuditAdminView: React.FC = () => {
             jurisdictions={jurisdictions}
             contests={contests}
             auditSettings={auditSettings}
-          >
-            <RefreshTag refresh={refresh} />
-          </AuditAdminStatusBox>
-          <Inner>
-            <Sidebar title="Audit Setup" menuItems={filteredMenuItems} />
-            <Setup
-              stage={stage}
-              refresh={refresh}
-              menuItems={menuItems}
-              auditType={auditSettings.auditType}
-              startNextRound={startNextRound}
-            />
-          </Inner>
+          />
+          <Setup
+            electionId={electionId}
+            auditSettings={auditSettings}
+            startNextRound={startNextRound}
+            isAuditStarted={rounds.length > 0}
+          />
         </Wrapper>
       )
     case 'progress':
@@ -134,7 +125,12 @@ const AuditAdminView: React.FC = () => {
             contests={contests}
             auditSettings={auditSettings}
           >
-            <RefreshTag refresh={refresh} />
+            <RefreshTag
+              refresh={() => {
+                queryClient.invalidateQueries(roundsQueryKey(electionId))
+                queryClient.invalidateQueries(jurisdictionsQueryKey(electionId))
+              }}
+            />
           </AuditAdminStatusBox>
           {!drawSampleError(rounds) && (
             <Inner>

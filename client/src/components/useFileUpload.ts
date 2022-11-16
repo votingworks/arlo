@@ -8,6 +8,7 @@ import axios, { AxiosRequestConfig } from 'axios'
 import { useState, useRef } from 'react'
 import { IFileInfo, CvrFileType } from './useCSV'
 import { fetchApi, ApiError, addCSRFToken } from '../utils/api'
+import { jurisdictionsQueryKey } from './useJurisdictions'
 
 interface IUseFileUploadProps {
   url: string
@@ -96,6 +97,57 @@ export const useDeleteFile = (key: string[], url: string) => {
   return useMutation<void, ApiError, void>(deleteFile, {
     onSuccess: () => queryClient.invalidateQueries(key),
   })
+}
+
+export const useJurisdictionsFile = (electionId: string): IFileUpload => {
+  const url = `/api/election/${electionId}/jurisdiction/file`
+  const key = ['elections', electionId, 'jurisdictions-file']
+  const uploadFiles = useUploadFiles(key, url)
+  const deleteFile = useDeleteFile(key, url)
+  const queryClient = useQueryClient()
+  return {
+    uploadedFile: useUploadedFile(key, url, {
+      onFileChange: () => {
+        // When the jurisdictions file changes, the standardized contest file is reprocessed
+        queryClient.invalidateQueries([
+          'elections',
+          electionId,
+          'standardized-contests-file',
+        ])
+        // We need to reload the jurisdictions list
+        queryClient.invalidateQueries(jurisdictionsQueryKey(electionId))
+      },
+    }),
+    uploadFiles: async (files: File[]) => {
+      const formData = new FormData()
+      formData.append('jurisdictions', files[0])
+      await uploadFiles.mutateAsync(formData)
+    },
+    uploadProgress: uploadFiles.progress,
+    deleteFile: () => deleteFile.mutateAsync(),
+    downloadFileUrl: `${url}/csv`,
+  }
+}
+
+export const useStandardizedContestsFile = (
+  electionId: string,
+  options: { enabled: boolean } = { enabled: true }
+): IFileUpload => {
+  const url = `/api/election/${electionId}/standardized-contests/file`
+  const key = ['elections', electionId, 'standardized-contests-file']
+  const uploadFiles = useUploadFiles(key, url)
+  const deleteFile = useDeleteFile(key, url)
+  return {
+    uploadedFile: useUploadedFile(key, url, options),
+    uploadFiles: async (files: File[]) => {
+      const formData = new FormData()
+      formData.append('standardized-contests', files[0])
+      await uploadFiles.mutateAsync(formData)
+    },
+    uploadProgress: uploadFiles.progress,
+    deleteFile: () => deleteFile.mutateAsync(),
+    downloadFileUrl: `${url}/csv`,
+  }
 }
 
 export const useBallotManifest = (

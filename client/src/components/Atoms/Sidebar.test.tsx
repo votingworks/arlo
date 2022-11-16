@@ -5,31 +5,28 @@ import Sidebar, { ISidebarMenuItem } from './Sidebar'
 const mockMenuItems: ISidebarMenuItem[] = [
   {
     id: '1',
-    title: 'Item One',
-    activate: jest.fn(),
+    text: 'Item One',
+    onClick: jest.fn(),
     active: false,
-    state: 'live',
   },
   {
     id: '2',
-    title: 'Item Two',
-    activate: jest.fn(),
+    text: 'Item Two',
+    onClick: jest.fn(),
     active: false,
-    state: 'locked',
+    disabled: true,
   },
   {
     id: '3',
-    title: 'Item Three',
-    activate: jest.fn(),
+    text: 'Item Three',
+    onClick: jest.fn(),
     active: false,
-    state: 'processing',
   },
   {
     id: '4',
-    title: 'Item Four',
-    activate: jest.fn(),
+    text: 'Item Four',
+    onClick: jest.fn(),
     active: true,
-    state: 'live',
   },
 ]
 

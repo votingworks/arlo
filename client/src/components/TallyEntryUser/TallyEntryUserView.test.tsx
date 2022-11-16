@@ -7,8 +7,12 @@ import {
   renderWithRouter,
   createQueryClient,
 } from '../testUtilities'
-import { tallyEntryApiCalls, tallyEntryUser, apiCalls } from '../_mocks'
-import { contestMocks } from '../AuditAdmin/useSetupMenuItems/_mocks'
+import {
+  tallyEntryApiCalls,
+  tallyEntryUser,
+  apiCalls,
+  contestMocks,
+} from '../_mocks'
 import { batchesMocks } from '../JurisdictionAdmin/_mocks'
 
 const renderView = ({ route = '/tally-entry' }: { route?: string } = {}) =>

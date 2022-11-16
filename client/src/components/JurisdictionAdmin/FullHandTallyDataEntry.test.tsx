@@ -14,13 +14,13 @@ import {
   IFullHandTallyBatchResults,
 } from './useFullHandTallyResults'
 import FullHandTallyDataEntry from './FullHandTallyDataEntry'
-import { contestMocks } from '../AuditAdmin/useSetupMenuItems/_mocks'
 import {
   withMockFetch,
   renderWithRouter,
   createQueryClient,
 } from '../testUtilities'
 import { IContest } from '../../types'
+import { contestMocks } from '../_mocks'
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'), // use actual for all non-hook parts

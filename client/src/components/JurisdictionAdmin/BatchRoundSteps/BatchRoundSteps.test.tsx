@@ -16,13 +16,12 @@ import {
   typeCode,
 } from '../../testUtilities'
 import BatchRoundSteps from './BatchRoundSteps'
-import { jaApiCalls } from '../../_mocks'
+import { jaApiCalls, contestMocks } from '../../_mocks'
 import {
   roundMocks,
   batchesMocks,
   tallyEntryAccountStatusMocks,
 } from '../_mocks'
-import { contestMocks } from '../../AuditAdmin/useSetupMenuItems/_mocks'
 
 jest.mock('copy-to-clipboard', () => jest.fn(() => true))
 

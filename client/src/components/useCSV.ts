@@ -176,15 +176,13 @@ export const useJurisdictionsFile = (
 
 export const useStandardizedContestsFile = (
   electionId: string,
-  auditSettings: IAuditSettings | null,
+  auditType: IAuditSettings['auditType'],
   jurisdictionsFile?: IFileInfo | null
 ): [IFileInfo | null, (csv: File[]) => Promise<boolean>] => {
   const [csv, uploadCSV] = useCSV(
     `/election/${electionId}/standardized-contests/file`,
     'standardized-contests',
-    !!auditSettings &&
-      (auditSettings.auditType === 'BALLOT_COMPARISON' ||
-        auditSettings.auditType === 'HYBRID'),
+    auditType === 'BALLOT_COMPARISON' || auditType === 'HYBRID',
     jurisdictionsFile
   )
   // Delete not supported

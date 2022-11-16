@@ -9,12 +9,10 @@ import {
   mockOrganizations,
   tallyEntryApiCalls,
   tallyEntryUser,
-} from './components/_mocks'
-import {
-  auditSettings,
+  auditSettingsMocks,
   manifestMocks,
   talliesMocks,
-} from './components/AuditAdmin/useSetupMenuItems/_mocks'
+} from './components/_mocks'
 
 jest.unmock('react-toastify')
 
@@ -109,7 +107,7 @@ describe('App', () => {
     it('renders jurisdiction screen when logged in as JA', async () => {
       const expectedCalls = [
         jaApiCalls.getUser,
-        jaApiCalls.getSettings(auditSettings.batchComparisonAll),
+        jaApiCalls.getSettings(auditSettingsMocks.batchComparisonAll),
         jaApiCalls.getRounds([]),
         jaApiCalls.getBallotManifestFile(manifestMocks.empty),
         jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
