@@ -58,8 +58,8 @@ def manifests(
                 io.BytesIO(
                     b"Container,Batch Name,Number of Ballots\n"
                     b"Election Day,Batch 1,500\n"
-                    b"Election Day,Batch 2,500\n"
-                    b"Advanced Voting,Batch 3,500\n"
+                    b"Elections Day,Batch 2,500\n"
+                    b"Advance Voting,Batch 3,500\n"
                     b"Advanced Voting,Batch 4,500\n"
                     b"Advanced Voting,Batch 5,250\n"
                     b"Provisional,Batch 6,250\n"
