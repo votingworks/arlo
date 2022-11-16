@@ -31,7 +31,7 @@ const Sidebar: React.FC<IProps> = ({ menuItems, title }) => (
         return (
           <React.Fragment key={item.id}>
             {i > 0 && <Menu.Divider />}
-            <Menu.Item {...item} />
+            <Menu.Item {...item} role="link" />
           </React.Fragment>
         )
       })}

@@ -33,14 +33,14 @@ const stageTitles: { [stage in Stage]: string } = {
   review: 'Review & Launch',
 }
 
-interface IProps {
+export interface ISetupProps {
   electionId: string
   auditSettings: IAuditSettings
   startNextRound: (sampleSizes: ISampleSizes) => Promise<boolean>
   isAuditStarted: boolean
 }
 
-const Setup: React.FC<IProps> = ({
+const Setup: React.FC<ISetupProps> = ({
   electionId,
   auditSettings,
   startNextRound,
@@ -93,7 +93,7 @@ const Setup: React.FC<IProps> = ({
           text: stageTitles[stage],
           active: currentStage === stage,
           disabled:
-            isAuditStarted ||
+            (isAuditStarted && stage !== 'review') ||
             // If still working on file uploads, disable the rest of the stages
             (stage !== 'participants' && !areFileUploadsComplete),
           onClick: () => setCurrentStage(stage),

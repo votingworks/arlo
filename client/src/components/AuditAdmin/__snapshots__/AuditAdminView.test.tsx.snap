@@ -53,6 +53,7 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
             <a
               class="bp3-menu-item bp3-active bp3-intent-primary bp3-popover-dismiss"
               id="participants"
+              role="link"
             >
               <div
                 class="bp3-text-overflow-ellipsis bp3-fill"
@@ -70,6 +71,7 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
             <a
               class="bp3-menu-item bp3-popover-dismiss"
               id="target-contests"
+              role="link"
             >
               <div
                 class="bp3-text-overflow-ellipsis bp3-fill"
@@ -87,6 +89,7 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
             <a
               class="bp3-menu-item bp3-popover-dismiss"
               id="opportunistic-contests"
+              role="link"
             >
               <div
                 class="bp3-text-overflow-ellipsis bp3-fill"
@@ -104,6 +107,7 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
             <a
               class="bp3-menu-item bp3-popover-dismiss"
               id="settings"
+              role="link"
             >
               <div
                 class="bp3-text-overflow-ellipsis bp3-fill"
@@ -121,6 +125,7 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
             <a
               class="bp3-menu-item bp3-popover-dismiss"
               id="review"
+              role="link"
             >
               <div
                 class="bp3-text-overflow-ellipsis bp3-fill"

@@ -19,6 +19,7 @@ exports[`Sidebar renders all options 1`] = `
         <a
           class="bp3-menu-item bp3-popover-dismiss"
           id="1"
+          role="link"
         >
           <div
             class="bp3-text-overflow-ellipsis bp3-fill"
@@ -36,6 +37,7 @@ exports[`Sidebar renders all options 1`] = `
         <a
           class="bp3-menu-item bp3-disabled"
           id="2"
+          role="link"
           tabindex="-1"
         >
           <div
@@ -54,6 +56,7 @@ exports[`Sidebar renders all options 1`] = `
         <a
           class="bp3-menu-item bp3-popover-dismiss"
           id="3"
+          role="link"
         >
           <div
             class="bp3-text-overflow-ellipsis bp3-fill"
@@ -71,6 +74,7 @@ exports[`Sidebar renders all options 1`] = `
         <a
           class="bp3-menu-item bp3-active bp3-intent-primary bp3-popover-dismiss"
           id="4"
+          role="link"
         >
           <div
             class="bp3-text-overflow-ellipsis bp3-fill"
