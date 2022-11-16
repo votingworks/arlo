@@ -299,7 +299,7 @@ def record_login(user: User, error: Optional[str] = None):
 def jurisdiction_admin_login():
     body = request.get_json()
     user = (
-        User.query.filter_by(email=body.get("email"))
+        User.query.filter_by(email=body.get("email").lower())
         .join(JurisdictionAdministration)
         .with_for_update()
         .one_or_none()

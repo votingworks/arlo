@@ -287,7 +287,9 @@ def test_jurisdiction_admin_login(mock_smtp, client: FlaskClient, ja_email: str)
     assert code in message.get_body(("html")).get_content()
 
     rv = post_json(
-        client, "/auth/jurisdictionadmin/login", dict(email=ja_email, code=code)
+        client,
+        "/auth/jurisdictionadmin/login",
+        dict(email=ja_email.upper(), code=code),  # Login should not be case sensitive
     )
     assert_ok(rv)
 
