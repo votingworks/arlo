@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useParams, useHistory, Link } from 'react-router-dom'
+import { useHistory, Link } from 'react-router-dom'
 import {
   H4,
   Callout,
@@ -37,20 +37,18 @@ import { pluralize } from '../../../../utils/string'
 import { ErrorLabel } from '../../../Atoms/Form/_helpers'
 import { IContest } from '../../../../types'
 import { sum } from '../../../../utils/number'
-import {
-  useJurisdictionsDeprecated,
-  IJurisdiction,
-} from '../../../useJurisdictions'
-import {
-  useJurisdictionsFile,
-  useStandardizedContestsFile,
-  isFileProcessed,
-} from '../../../useCSV'
+import { useJurisdictions, IJurisdiction } from '../../../useJurisdictions'
+import { isFileProcessed } from '../../../useCSV'
 import useContestNameStandardizations, {
   IContestNameStandardizations,
 } from '../../../useContestNameStandardizations'
 import { isSetupComplete, allCvrsUploaded } from '../../../Atoms/StatusBox'
-import { IAuditSettings } from '../../../useAuditSettings'
+import { useAuditSettings } from '../../../useAuditSettings'
+import { useContests } from '../../../useContests'
+import {
+  useJurisdictionsFile,
+  useStandardizedContestsFile,
+} from '../../../useFileUpload'
 
 const percentFormatter = new Intl.NumberFormat(undefined, {
   style: 'percent',
@@ -61,34 +59,39 @@ interface IFormOptions {
 }
 
 interface IProps {
+  electionId: string
   locked: boolean
   goToPrevStage: () => void
   startNextRound: (sampleSizes: ISampleSizes) => Promise<boolean>
-  auditSettings: IAuditSettings
-  contests: IContest[]
 }
 
 const Review: React.FC<IProps> = ({
+  electionId,
   locked,
   goToPrevStage,
   startNextRound,
-  auditSettings,
-  contests,
 }: IProps) => {
-  const { electionId } = useParams<{ electionId: string }>()
-  const jurisdictions = useJurisdictionsDeprecated(electionId)
-  const [jurisdictionsFile] = useJurisdictionsFile(electionId)
-  const [standardizedContestsFile] = useStandardizedContestsFile(
+  const auditSettingsQuery = useAuditSettings(electionId)
+  const jurisdictionsQuery = useJurisdictions(electionId)
+  const jurisdictionsFileUpload = useJurisdictionsFile(electionId)
+  const isStandardizedContestsFileEnabled =
+    auditSettingsQuery.data?.auditType === 'BALLOT_COMPARISON' ||
+    auditSettingsQuery.data?.auditType === 'HYBRID'
+  const standardizedContestsFileUpload = useStandardizedContestsFile(
     electionId,
-    auditSettings.auditType
+    { enabled: isStandardizedContestsFileEnabled }
   )
+  const contestsQuery = useContests(electionId)
   const history = useHistory()
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
 
   const [
     standardizations,
     updateStandardizations,
-  ] = useContestNameStandardizations(electionId, auditSettings)
+  ] = useContestNameStandardizations(
+    electionId,
+    auditSettingsQuery.data || null
+  )
   const [
     isStandardizationsDialogOpen,
     setIsStandardizationsDialogOpen,
@@ -110,7 +113,14 @@ const Review: React.FC<IProps> = ({
     !!standardizations && !(standardizationNeeded && standardizationOutstanding)
 
   const setupComplete =
-    !!jurisdictions && isSetupComplete(jurisdictions, contests, auditSettings)
+    jurisdictionsQuery.isSuccess &&
+    contestsQuery.isSuccess &&
+    auditSettingsQuery.isSuccess &&
+    isSetupComplete(
+      jurisdictionsQuery.data,
+      contestsQuery.data,
+      auditSettingsQuery.data
+    )
   const shouldLoadSampleSizes = setupComplete && standardizationComplete
   const sampleSizesResponse = useSampleSizes(
     electionId,
@@ -118,15 +128,21 @@ const Review: React.FC<IProps> = ({
     shouldLoadSampleSizes
   )
 
-  if (!jurisdictions) return null // Still loading
-
+  if (
+    !jurisdictionsQuery.isSuccess ||
+    !contestsQuery.isSuccess ||
+    !auditSettingsQuery.isSuccess
+  )
+    return null // Still loading
+  const jurisdictions = jurisdictionsQuery.data
+  const contests = contestsQuery.data
   const {
     electionName,
     randomSeed,
     riskLimit,
     online,
     auditType,
-  } = auditSettings
+  } = auditSettingsQuery.data
 
   const participatingJurisdictions = jurisdictions.filter(({ id }) =>
     contests.some(c => c.jurisdictionIds.includes(id))
@@ -192,13 +208,11 @@ const Review: React.FC<IProps> = ({
               <td>Participating Jurisdictions:</td>
               <td>
                 <a
-                  href={`/api/election/${electionId}/jurisdiction/file/csv`}
+                  href={jurisdictionsFileUpload.downloadFileUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  {jurisdictionsFile && jurisdictionsFile.file
-                    ? jurisdictionsFile.file.name
-                    : ''}
+                  {jurisdictionsFileUpload.uploadedFile.data?.file?.name || ''}
                 </a>
               </td>
             </tr>
@@ -207,13 +221,12 @@ const Review: React.FC<IProps> = ({
                 <td>Standardized Contests:</td>
                 <td>
                   <a
-                    href={`/api/election/${electionId}/standardized-contests/file/csv`}
+                    href={standardizedContestsFileUpload.downloadFileUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    {standardizedContestsFile && standardizedContestsFile.file
-                      ? standardizedContestsFile.file.name
-                      : ''}
+                    {standardizedContestsFileUpload.uploadedFile.data?.file
+                      ?.name || ''}
                   </a>
                 </td>
               </tr>

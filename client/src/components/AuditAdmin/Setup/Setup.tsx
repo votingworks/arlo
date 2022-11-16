@@ -146,10 +146,9 @@ const Setup: React.FC<IProps> = ({
           case 'review':
             return (
               <Review
+                electionId={electionId}
                 goToPrevStage={goToPrevStage}
                 startNextRound={startNextRound}
-                auditSettings={auditSettings}
-                contests={contests}
                 locked={isAuditStarted}
               />
             )
