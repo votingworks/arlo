@@ -19,7 +19,7 @@ import {
   fileProcessingMocks,
   jurisdictionMocks,
   contestMocks,
-  auditSettings,
+  auditSettingsMocks,
 } from '../../../_mocks'
 
 const apiCalls = {
@@ -280,7 +280,7 @@ describe('Audit Setup > Review & Launch', () => {
 
   it('for hybrid audits, shows the CVR/non-CVR vote totals and sample sizes, including a custom option', async () => {
     const expectedCalls = [
-      apiCalls.getSettings(auditSettings.hybridAll),
+      apiCalls.getSettings(auditSettingsMocks.hybridAll),
       apiCalls.getJurisdictions({
         jurisdictions: jurisdictionMocks.allManifestsWithCVRs,
       }),
@@ -366,7 +366,7 @@ describe('Audit Setup > Review & Launch', () => {
 
   it('for hybrid audits, doesnt show the CVR/non-CVR vote totals when sample sizes errors', async () => {
     const expectedCalls = [
-      apiCalls.getSettings(auditSettings.hybridAll),
+      apiCalls.getSettings(auditSettingsMocks.hybridAll),
       apiCalls.getJurisdictions({
         jurisdictions: jurisdictionMocks.allManifestsWithCVRs,
       }),
@@ -417,7 +417,7 @@ describe('Audit Setup > Review & Launch', () => {
 
   it('when CVRs arent all uploaded for ballot comparison audits, hides contest settings and sample sizes', async () => {
     const expectedCalls = [
-      apiCalls.getSettings(auditSettings.ballotComparisonAll),
+      apiCalls.getSettings(auditSettingsMocks.ballotComparisonAll),
       apiCalls.getJurisdictions({
         jurisdictions: jurisdictionMocks.allManifestsSomeCVRs,
       }),
@@ -579,7 +579,7 @@ describe('Audit Setup > Review & Launch', () => {
 
   it('has links to download jurisdictions and standardized contests file', async () => {
     const expectedCalls = [
-      apiCalls.getSettings(auditSettings.ballotComparisonAll),
+      apiCalls.getSettings(auditSettingsMocks.ballotComparisonAll),
       apiCalls.getJurisdictions({
         jurisdictions: jurisdictionMocks.allManifests,
       }),
@@ -641,7 +641,7 @@ describe('Audit Setup > Review & Launch', () => {
 
   it('custom sample size validation - ballot comparison', async () => {
     const expectedCalls = [
-      apiCalls.getSettings(auditSettings.ballotComparisonAll),
+      apiCalls.getSettings(auditSettingsMocks.ballotComparisonAll),
       apiCalls.getJurisdictions({
         jurisdictions: jurisdictionMocks.allManifestsWithCVRs,
       }),
@@ -675,7 +675,7 @@ describe('Audit Setup > Review & Launch', () => {
 
   it('shows the selected sample size after launch', async () => {
     const expectedCalls = [
-      apiCalls.getSettings(auditSettings.all),
+      apiCalls.getSettings(auditSettingsMocks.all),
       apiCalls.getJurisdictions({
         jurisdictions: jurisdictionMocks.allManifests,
       }),
@@ -730,7 +730,7 @@ describe('Audit Setup > Review & Launch', () => {
       'jurisdiction-id-2': ['Contest One', 'Contest Two'],
     }
     const expectedCalls = [
-      apiCalls.getSettings(auditSettings.ballotComparisonAll),
+      apiCalls.getSettings(auditSettingsMocks.ballotComparisonAll),
       apiCalls.getJurisdictions({
         jurisdictions: jurisdictionMocks.allManifestsWithCVRs,
       }),
@@ -869,7 +869,7 @@ describe('Audit Setup > Review & Launch', () => {
 
   it('in ballot polling, shows a warning when selected sample size is a full hand tally', async () => {
     const expectedCalls = [
-      apiCalls.getSettings(auditSettings.all),
+      apiCalls.getSettings(auditSettingsMocks.all),
       apiCalls.getJurisdictions({
         jurisdictions: jurisdictionMocks.allManifests,
       }),
@@ -900,7 +900,7 @@ describe('Audit Setup > Review & Launch', () => {
 
   it('in ballot polling, shows an error when one of multiple target contests is a full hand tally', async () => {
     const expectedCalls = [
-      apiCalls.getSettings(auditSettings.all),
+      apiCalls.getSettings(auditSettingsMocks.all),
       apiCalls.getJurisdictions({
         jurisdictions: jurisdictionMocks.allManifests,
       }),
@@ -948,7 +948,7 @@ describe('Audit Setup > Review & Launch', () => {
 
   it('shows a warning when custom sample size is a full hand tally', async () => {
     const expectedCalls = [
-      apiCalls.getSettings(auditSettings.all),
+      apiCalls.getSettings(auditSettingsMocks.all),
       apiCalls.getJurisdictions({
         jurisdictions: jurisdictionMocks.allManifests,
       }),
@@ -984,7 +984,7 @@ describe('Audit Setup > Review & Launch', () => {
 
   it('in a ballot comparison audit, shows an error when sample size is a full hand tally', async () => {
     const expectedCalls = [
-      apiCalls.getSettings(auditSettings.ballotComparisonAll),
+      apiCalls.getSettings(auditSettingsMocks.ballotComparisonAll),
       apiCalls.getJurisdictions({
         jurisdictions: jurisdictionMocks.allManifestsWithCVRs,
       }),
@@ -1016,7 +1016,7 @@ describe('Audit Setup > Review & Launch', () => {
 
   it('in a batch comparison audit, shows a warning when sample size is a full hand tally', async () => {
     const expectedCalls = [
-      apiCalls.getSettings(auditSettings.batchComparisonAll),
+      apiCalls.getSettings(auditSettingsMocks.batchComparisonAll),
       apiCalls.getJurisdictions({
         jurisdictions: jurisdictionMocks.allManifestsAllTallies,
       }),

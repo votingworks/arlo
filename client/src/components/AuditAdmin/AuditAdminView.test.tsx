@@ -15,7 +15,7 @@ import {
   jaApiCalls,
   jurisdictionFileMocks,
   standardizedContestsFileMocks,
-  auditSettings,
+  auditSettingsMocks,
   roundMocks,
   manifestFile,
   manifestMocks,
@@ -54,7 +54,7 @@ describe('AA setup flow', () => {
     aaApiCalls.getRounds([]),
     aaApiCalls.getJurisdictions,
     aaApiCalls.getContests(contestMocks.filledTargeted),
-    aaApiCalls.getSettings(auditSettings.all),
+    aaApiCalls.getSettings(auditSettingsMocks.all),
     aaApiCalls.getJurisdictionFile,
   ]
 
@@ -93,7 +93,7 @@ describe('AA setup flow', () => {
       aaApiCalls.getRounds([]),
       aaApiCalls.getJurisdictions,
       aaApiCalls.getContests(contestMocks.filledTargeted),
-      aaApiCalls.getSettings(auditSettings.all),
+      aaApiCalls.getSettings(auditSettingsMocks.all),
       aaApiCalls.getJurisdictionFileWithResponse(jurisdictionFileMocks.empty),
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -124,7 +124,7 @@ describe('AA setup flow', () => {
       aaApiCalls.getRounds([]),
       aaApiCalls.getJurisdictions,
       aaApiCalls.getContests(contestMocks.filledTargeted),
-      aaApiCalls.getSettings(auditSettings.all),
+      aaApiCalls.getSettings(auditSettingsMocks.all),
       aaApiCalls.getJurisdictionFileWithResponse(jurisdictionFileMocks.empty),
       aaApiCalls.putJurisdictionFile,
       aaApiCalls.getJurisdictionFileWithResponse(
@@ -157,7 +157,7 @@ describe('AA setup flow', () => {
       aaApiCalls.getRounds([]),
       aaApiCalls.getJurisdictions,
       aaApiCalls.getContests(contestMocks.filledTargeted),
-      aaApiCalls.getSettings(auditSettings.all),
+      aaApiCalls.getSettings(auditSettingsMocks.all),
       aaApiCalls.getJurisdictionFileWithResponse(jurisdictionFileMocks.empty),
       aaApiCalls.putJurisdictionErrorFile,
       aaApiCalls.getJurisdictionFileWithResponse(jurisdictionFileMocks.errored),
@@ -187,7 +187,7 @@ describe('AA setup flow', () => {
       aaApiCalls.getRounds([]),
       aaApiCalls.getJurisdictions,
       aaApiCalls.getContests(contestMocks.filledTargeted),
-      aaApiCalls.getSettings(auditSettings.ballotComparisonAll),
+      aaApiCalls.getSettings(auditSettingsMocks.ballotComparisonAll),
       aaApiCalls.getJurisdictionFile,
     ]
     const expectedCalls = [
@@ -225,7 +225,7 @@ describe('AA setup flow', () => {
       aaApiCalls.getRounds(roundMocks.singleIncomplete),
       aaApiCalls.getJurisdictions,
       aaApiCalls.getContests(contestMocks.filledTargeted),
-      aaApiCalls.getSettings(auditSettings.all),
+      aaApiCalls.getSettings(auditSettingsMocks.all),
       aaApiCalls.getMapData,
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -240,7 +240,7 @@ describe('AA setup flow', () => {
     const afterLaunchApiCalls = [
       aaApiCalls.getJurisdictions,
       aaApiCalls.getContests(contestMocks.filledTargeted),
-      aaApiCalls.getSettings(auditSettings.all),
+      aaApiCalls.getSettings(auditSettingsMocks.all),
     ]
     const expectedCalls = [
       aaApiCalls.getUser,
@@ -276,7 +276,7 @@ describe('AA setup flow', () => {
       aaApiCalls.getRounds([]),
       aaApiCalls.getJurisdictions,
       aaApiCalls.getContests(contestMocks.filledTargeted),
-      aaApiCalls.getSettings(auditSettings.all),
+      aaApiCalls.getSettings(auditSettingsMocks.all),
       aaApiCalls.getMapData,
       jaApiCalls.getBallotManifestFile(manifestMocks.empty),
       jaApiCalls.putManifest,

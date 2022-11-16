@@ -15,7 +15,12 @@ import {
   withMockFetch,
   createQueryClient,
 } from '../testUtilities'
-import { aaApiCalls, auditSettings, roundMocks, contestMocks } from '../_mocks'
+import {
+  aaApiCalls,
+  auditSettingsMocks,
+  roundMocks,
+  contestMocks,
+} from '../_mocks'
 import { sampleSizeMock } from './Setup/Review/_mocks'
 
 // AuditAdminView will only be rendered once the user is logged in, so
@@ -41,7 +46,7 @@ const loadEach = [
   aaApiCalls.getRounds([]),
   aaApiCalls.getJurisdictions,
   aaApiCalls.getContests(contestMocks.filledTargeted),
-  aaApiCalls.getSettings(auditSettings.all),
+  aaApiCalls.getSettings(auditSettingsMocks.all),
 ]
 
 // TODO: Fix these tests after switching to Vite
@@ -83,7 +88,7 @@ describe.skip('timers', () => {
       aaApiCalls.getRounds(roundMocks.drawSampleInProgress),
       aaApiCalls.getJurisdictions,
       aaApiCalls.getContests(contestMocks.filledTargeted),
-      aaApiCalls.getSettings(auditSettings.all),
+      aaApiCalls.getSettings(auditSettingsMocks.all),
     ]
     const expectedCalls = [
       aaApiCalls.getUser,
@@ -109,10 +114,10 @@ describe.skip('timers', () => {
       aaApiCalls.getUser,
       ...loadEach,
       ...loadEach,
-      aaApiCalls.getSettings(auditSettings.all),
+      aaApiCalls.getSettings(auditSettingsMocks.all),
       aaApiCalls.getJurisdictionFile,
       ...loadEach,
-      aaApiCalls.getSettings(auditSettings.all),
+      aaApiCalls.getSettings(auditSettingsMocks.all),
       aaApiCalls.getJurisdictions,
       aaApiCalls.getJurisdictionFile,
       aaApiCalls.getContests(contestMocks.filledTargeted),

@@ -12,7 +12,7 @@ import {
   apiCalls,
   mockOrganizations,
   jaApiCalls,
-  auditSettings,
+  auditSettingsMocks,
   contestMocks,
 } from './_mocks'
 
@@ -20,7 +20,7 @@ const setupScreenCalls = [
   aaApiCalls.getRounds([]),
   aaApiCalls.getJurisdictions,
   aaApiCalls.getContests(contestMocks.filledTargeted),
-  aaApiCalls.getSettings(auditSettings.blank),
+  aaApiCalls.getSettings(auditSettingsMocks.blank),
   aaApiCalls.getJurisdictionFile,
 ]
 
@@ -494,7 +494,7 @@ describe('Home screen', () => {
   it('shows a list of audits for jurisdiction admins', async () => {
     const expectedCalls = [
       jaApiCalls.getUser,
-      jaApiCalls.getSettings(auditSettings.blank),
+      jaApiCalls.getSettings(auditSettingsMocks.blank),
       jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile({ file: null, processing: null }),
     ]
@@ -564,7 +564,7 @@ describe('Home screen', () => {
   it('redirects to audit screen if only one election exists for JA', async () => {
     const expectedCalls = [
       jaApiCalls.getUserWithOneElection,
-      jaApiCalls.getSettings(auditSettings.blank),
+      jaApiCalls.getSettings(auditSettingsMocks.blank),
       jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile({ file: null, processing: null }),
     ]

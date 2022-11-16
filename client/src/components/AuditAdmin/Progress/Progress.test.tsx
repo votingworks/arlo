@@ -13,7 +13,7 @@ import {
   aaApiCalls,
   jaApiCalls,
   jurisdictionMocks,
-  auditSettings,
+  auditSettingsMocks,
   roundMocks,
   auditBoardMocks,
   manifestMocks,
@@ -55,7 +55,7 @@ const render = (props: Partial<IProgressProps> = {}) =>
           <Progress
             {...routeProps}
             jurisdictions={jurisdictionMocks.oneManifest}
-            auditSettings={auditSettings.all}
+            auditSettings={auditSettingsMocks.all}
             round={null}
             {...props}
           />
@@ -232,7 +232,7 @@ describe('Progress screen', () => {
     await withMockFetch(expectedCalls, async () => {
       const { container } = render({
         jurisdictions: jurisdictionMocks.twoManifestsOneTallies,
-        auditSettings: auditSettings.batchComparisonAll,
+        auditSettings: auditSettingsMocks.batchComparisonAll,
       })
 
       expect(container.querySelectorAll('.d3-component').length).toBe(1)
@@ -282,7 +282,7 @@ describe('Progress screen', () => {
     await withMockFetch(expectedCalls, async () => {
       const { container } = render({
         jurisdictions: jurisdictionMocks.allManifestsSomeCVRs,
-        auditSettings: auditSettings.ballotComparisonAll,
+        auditSettings: auditSettingsMocks.ballotComparisonAll,
       })
 
       expect(container.querySelectorAll('.d3-component').length).toBe(1)
@@ -327,7 +327,7 @@ describe('Progress screen', () => {
     await withMockFetch(expectedCalls, async () => {
       const { container } = render({
         jurisdictions: jurisdictionMocks.hybridTwoManifestsOneCvr,
-        auditSettings: auditSettings.hybridAll,
+        auditSettings: auditSettingsMocks.hybridAll,
       })
 
       expect(container.querySelectorAll('.d3-component').length).toBe(1)
@@ -382,7 +382,7 @@ describe('Progress screen', () => {
     await withMockFetch(expectedCalls, async () => {
       const { container } = render({
         jurisdictions: jurisdictionMocks.oneComplete,
-        auditSettings: auditSettings.batchComparisonAll,
+        auditSettings: auditSettingsMocks.batchComparisonAll,
         round: roundMocks.singleIncomplete[0],
       })
 
@@ -622,7 +622,7 @@ describe('Progress screen', () => {
     await withMockFetch(expectedCalls, async () => {
       const { container } = render({
         jurisdictions: jurisdictionMocks.twoManifestsOneTallies,
-        auditSettings: auditSettings.batchComparisonAll,
+        auditSettings: auditSettingsMocks.batchComparisonAll,
       })
 
       expect(container.querySelectorAll('.d3-component').length).toBe(1)
@@ -669,7 +669,7 @@ describe('Progress screen', () => {
     await withMockFetch(expectedCalls, async () => {
       const { container } = render({
         jurisdictions: jurisdictionMocks.uploadingWithAlabamaJurisdictions,
-        auditSettings: auditSettings.batchComparisonAll,
+        auditSettings: auditSettingsMocks.batchComparisonAll,
       })
 
       expect(container.querySelectorAll('.d3-component').length).toBe(1)

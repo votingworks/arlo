@@ -15,7 +15,13 @@ import { IContest } from '../types'
 import { INewAudit } from './HomeScreen'
 import { mocksOfType } from './testUtilities'
 import { ITallyEntryAccountStatus } from './JurisdictionAdmin/BatchRoundSteps/TallyEntryAccountsStep'
-import { JurisdictionRoundStatus, ICvrFileInfo } from './useJurisdictions'
+import {
+  JurisdictionRoundStatus,
+  ICvrFileInfo,
+  IBallotManifestInfo,
+  IBatchTalliesFileInfo,
+  IJurisdiction,
+} from './useJurisdictions'
 import { IStandardizedContest } from './useStandardizedContests'
 
 export const manifestFile = new File(
@@ -34,7 +40,7 @@ export const cvrsFile = new File(
   { type: 'text/csv' }
 )
 
-export const auditSettings = mocksOfType<IAuditSettings>()({
+export const auditSettingsMocks = mocksOfType<IAuditSettings>()({
   blank: {
     state: null,
     electionName: null,
@@ -268,7 +274,7 @@ export const roundMocks = mocksOfType<IRound[]>()({
   ],
 })
 
-export const jurisdictionFileMocks: { [key: string]: IFileInfo } = {
+export const jurisdictionFileMocks = mocksOfType<IFileInfo>()({
   empty: {
     file: null,
     processing: null,
@@ -297,9 +303,9 @@ export const jurisdictionFileMocks: { [key: string]: IFileInfo } = {
       status: FileProcessingStatus.ERRORED,
     },
   },
-}
+})
 
-export const standardizedContestsFileMocks: { [key: string]: IFileInfo } = {
+export const standardizedContestsFileMocks = mocksOfType<IFileInfo>()({
   empty: {
     file: null,
     processing: null,
@@ -328,9 +334,9 @@ export const standardizedContestsFileMocks: { [key: string]: IFileInfo } = {
       status: FileProcessingStatus.ERRORED,
     },
   },
-}
+})
 
-export const manifestMocks = {
+export const manifestMocks = mocksOfType<IBallotManifestInfo>()({
   empty: {
     file: null,
     processing: null,
@@ -373,9 +379,9 @@ export const manifestMocks = {
     numBallots: null,
     numBatches: null,
   },
-}
+})
 
-export const talliesMocks = {
+export const talliesMocks = mocksOfType<IBatchTalliesFileInfo>()({
   empty: {
     file: null,
     processing: null,
@@ -414,9 +420,9 @@ export const talliesMocks = {
     },
     numBallots: null,
   },
-}
+})
 
-export const cvrsMocks: { [key: string]: ICvrFileInfo } = {
+export const cvrsMocks = mocksOfType<ICvrFileInfo>()({
   empty: {
     file: null,
     processing: null,
@@ -468,9 +474,9 @@ export const cvrsMocks: { [key: string]: ICvrFileInfo } = {
     },
     numBallots: null,
   },
-}
+})
 
-export const jurisdictionMocks = {
+export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
   empty: [],
   // Setup - Ballot polling
   noManifests: [
@@ -993,11 +999,9 @@ export const jurisdictionMocks = {
       },
     },
   ],
-}
+})
 
-export const contestMocks: {
-  [key: string]: IContest[]
-} = {
+export const contestMocks = mocksOfType<IContest[]>()({
   empty: [],
   oneTargeted: [
     {
@@ -1191,7 +1195,7 @@ export const contestMocks: {
       ],
     },
   ],
-}
+})
 
 export const fileProcessingMocks = mocksOfType<IFileInfo['processing']>()({
   null: null,
@@ -1766,10 +1770,10 @@ export const aaApiCalls = {
       },
     },
   },
-  getStandardizedContestsFile: {
+  getStandardizedContestsFile: (response: IFileInfo | null) => ({
     url: '/api/election/1/standardized-contests/file',
-    response: { file: null, processing: null },
-  },
+    response,
+  }),
   getContests: (contests: IContest[]) => ({
     url: '/api/election/1/contest',
     response: { contests },

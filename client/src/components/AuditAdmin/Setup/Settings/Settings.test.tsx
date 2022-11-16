@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { QueryClientProvider } from 'react-query'
 import Settings from './Settings'
 import { withMockFetch, createQueryClient } from '../../../testUtilities'
-import { aaApiCalls, auditSettings } from '../../../_mocks'
+import { aaApiCalls, auditSettingsMocks } from '../../../_mocks'
 
 const renderSettings = () => {
   const goToNextStage = jest.fn()
@@ -27,7 +27,7 @@ const renderSettings = () => {
 describe('Setup > Settings', () => {
   it('updates settings', async () => {
     const updatedSettings = {
-      ...auditSettings.blank,
+      ...auditSettingsMocks.blank,
       state: 'CA',
       electionName: 'Election Name',
       online: true,
@@ -35,7 +35,7 @@ describe('Setup > Settings', () => {
       randomSeed: '12345',
     }
     const expectedCalls = [
-      aaApiCalls.getSettings(auditSettings.blank),
+      aaApiCalls.getSettings(auditSettingsMocks.blank),
       aaApiCalls.putSettings(updatedSettings),
       aaApiCalls.getSettings(updatedSettings),
     ]
@@ -90,7 +90,7 @@ describe('Setup > Settings', () => {
 
   it('hides online/offline toggle for batch comparison audits', async () => {
     const expectedCalls = [
-      aaApiCalls.getSettings(auditSettings.batchComparisonAll),
+      aaApiCalls.getSettings(auditSettingsMocks.batchComparisonAll),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderSettings()
@@ -105,7 +105,7 @@ describe('Setup > Settings', () => {
 
   it('hides online/offline toggle for ballot comparison audits', async () => {
     const expectedCalls = [
-      aaApiCalls.getSettings(auditSettings.ballotComparisonAll),
+      aaApiCalls.getSettings(auditSettingsMocks.ballotComparisonAll),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderSettings()
@@ -119,7 +119,7 @@ describe('Setup > Settings', () => {
   })
 
   it('hides online/offline toggle for hybrid audits', async () => {
-    const expectedCalls = [aaApiCalls.getSettings(auditSettings.hybridAll)]
+    const expectedCalls = [aaApiCalls.getSettings(auditSettingsMocks.hybridAll)]
     await withMockFetch(expectedCalls, async () => {
       renderSettings()
 
@@ -132,7 +132,7 @@ describe('Setup > Settings', () => {
   })
 
   it('displays error when no selection done', async () => {
-    const expectedCalls = [aaApiCalls.getSettings(auditSettings.blank)]
+    const expectedCalls = [aaApiCalls.getSettings(auditSettingsMocks.blank)]
     await withMockFetch(expectedCalls, async () => {
       renderSettings()
 
