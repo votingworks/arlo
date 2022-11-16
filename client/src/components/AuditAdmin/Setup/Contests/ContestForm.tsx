@@ -168,7 +168,7 @@ export interface IContestValues {
   numWinners: string
   votesAllowed: string
   choices: IChoiceValues[]
-  totalBallotsCast: string
+  totalBallotsCast?: string
   jurisdictionIds: string[]
 }
 
@@ -180,7 +180,7 @@ const contestToValues = (contest: IContest): IContestValues => ({
     ...choice,
     numVotes: choice.numVotes.toString(),
   })),
-  totalBallotsCast: contest.totalBallotsCast.toString(),
+  totalBallotsCast: contest.totalBallotsCast?.toString(),
 })
 
 const contestFromValues = (contest: IContestValues): IContest => ({

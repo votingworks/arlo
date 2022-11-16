@@ -1,16 +1,15 @@
 import React from 'react'
-import { Route } from 'react-router-dom'
-import { fireEvent, screen, waitFor } from '@testing-library/react'
+import { screen, waitFor, render } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { QueryClientProvider } from 'react-query'
 import {
-  renderWithRouter,
   withMockFetch,
   regexpEscape,
+  createQueryClient,
 } from '../../../testUtilities'
-import relativeStages from '../_mocks'
-import Contests from './Contests'
-import { IContestNumbered } from '../../../useContests'
+import Contests, { IContestsProps } from './Contests'
 import { aaApiCalls } from '../../../_mocks'
+import { IContest } from '../../../../types'
 
 const hybridContestsInputMocks = {
   inputs: [
@@ -65,21 +64,26 @@ const hybridContestsInputMocks = {
   ],
 }
 
-const { nextStage, prevStage } = relativeStages('target-contests')
-
-const render = (isTargeted = true) =>
-  renderWithRouter(
-    <Route path="/election/:electionId/setup">
-      <Contests
-        auditType="HYBRID"
-        locked={false}
-        isTargeted={isTargeted}
-        nextStage={nextStage}
-        prevStage={prevStage}
-      />
-    </Route>,
-    { route: '/election/1/setup' }
-  )
+const renderContests = (props: Partial<IContestsProps> = {}) => {
+  const goToNextStage = jest.fn()
+  const goToPrevStage = jest.fn()
+  return {
+    goToNextStage,
+    goToPrevStage,
+    ...render(
+      <QueryClientProvider client={createQueryClient()}>
+        <Contests
+          electionId="1"
+          auditType="HYBRID"
+          isTargeted
+          goToNextStage={goToNextStage}
+          goToPrevStage={goToPrevStage}
+          {...props}
+        />
+      </QueryClientProvider>
+    ),
+  }
+}
 
 const apiCalls = {
   getStandardizedContests: {
@@ -96,11 +100,11 @@ const apiCalls = {
       { name: 'Contest 3', jurisdictionIds: ['jurisdiction-id-2'] },
     ],
   },
-  getContests: (contests: Omit<IContestNumbered, 'totalBallotsCast'>[]) => ({
+  getContests: (contests: Omit<IContest, 'totalBallotsCast'>[]) => ({
     url: '/api/election/1/contest',
     response: { contests },
   }),
-  putContests: (contests: Omit<IContestNumbered, 'totalBallotsCast'>[]) => ({
+  putContests: (contests: Omit<IContest, 'totalBallotsCast'>[]) => ({
     url: '/api/election/1/contest',
     options: {
       method: 'PUT',
@@ -109,13 +113,6 @@ const apiCalls = {
     },
     response: { status: 'ok' },
   }),
-}
-
-function typeInto(input: Element, value: string): void {
-  // TODO: do more, like `focusIn`, `focusOut`, `input`, etc?
-  fireEvent.focus(input)
-  fireEvent.change(input, { target: { value } })
-  fireEvent.blur(input)
 }
 
 const mockUuid = jest.fn()
@@ -172,7 +169,7 @@ describe('Audit Setup > Contests (Hybrid)', () => {
       apiCalls.getStandardizedContests,
     ]
     await withMockFetch(expectedCalls, async () => {
-      const { container } = render()
+      const { container } = renderContests()
       await screen.findByRole('heading', { name: 'Target Contests' })
       expect(container).toMatchSnapshot()
     })
@@ -188,24 +185,24 @@ describe('Audit Setup > Contests (Hybrid)', () => {
       apiCalls.getContests(contests),
     ]
     await withMockFetch(expectedCalls, async () => {
-      const { getByLabelText } = render()
+      const { goToNextStage } = renderContests()
       await screen.findByRole('heading', { name: 'Target Contests' })
       userEvent.selectOptions(
         screen.getByLabelText(/Contest Name/),
         'Contest 1.\'"'
       )
       hybridContestsInputMocks.inputs.forEach(inputData => {
-        const input = getByLabelText(new RegExp(regexpEscape(inputData.key)), {
-          selector: 'input',
-        }) as HTMLInputElement
-        typeInto(input, inputData.value)
-        expect(input.value).toBe(inputData.value)
+        const input = screen.getByLabelText(
+          new RegExp(regexpEscape(inputData.key)),
+          { selector: 'input' }
+        )
+        userEvent.type(input, inputData.value)
       })
       expect(
         screen.queryByText('Total Ballot Cards Cast')
       ).not.toBeInTheDocument()
       userEvent.click(screen.getByRole('button', { name: 'Save & Next' }))
-      await waitFor(() => expect(nextStage.activate).toHaveBeenCalled())
+      await waitFor(() => expect(goToNextStage).toHaveBeenCalled())
     })
   })
 
@@ -227,7 +224,7 @@ describe('Audit Setup > Contests (Hybrid)', () => {
       apiCalls.getContests(contests.slice(1)),
     ]
     await withMockFetch(expectedCalls, async () => {
-      render()
+      const { goToNextStage } = renderContests()
       await screen.findByRole('heading', { name: 'Target Contests' })
       userEvent.click(screen.getByRole('button', { name: 'Remove Contest 1' }))
       await waitFor(() =>
@@ -236,7 +233,7 @@ describe('Audit Setup > Contests (Hybrid)', () => {
         ).not.toBeInTheDocument()
       )
       userEvent.click(screen.getByRole('button', { name: 'Save & Next' }))
-      await waitFor(() => expect(nextStage.activate).toHaveBeenCalled())
+      await waitFor(() => expect(goToNextStage).toHaveBeenCalled())
     })
   })
 
@@ -250,22 +247,24 @@ describe('Audit Setup > Contests (Hybrid)', () => {
       apiCalls.getContests(contests),
     ]
     await withMockFetch(expectedCalls, async () => {
-      const { getByLabelText } = render()
+      const { goToNextStage } = renderContests()
       await screen.findByRole('heading', { name: 'Target Contests' })
       userEvent.selectOptions(
         screen.getByLabelText(/Contest Name/),
         'Contest 1.\'"'
       )
       hybridContestsInputMocks.inputs.forEach(inputData => {
-        const input = getByLabelText(new RegExp(regexpEscape(inputData.key)), {
-          selector: 'input',
-        }) as HTMLInputElement
-        typeInto(input, inputData.value)
-        expect(input.value).toBe(inputData.value)
+        const input = screen.getByLabelText(
+          new RegExp(regexpEscape(inputData.key)),
+          {
+            selector: 'input',
+          }
+        )
+        userEvent.type(input, inputData.value)
       })
       expect(screen.queryByText('Contest Universe')).not.toBeInTheDocument()
       userEvent.click(screen.getByRole('button', { name: 'Save & Next' }))
-      await waitFor(() => expect(nextStage.activate).toHaveBeenCalled())
+      await waitFor(() => expect(goToNextStage).toHaveBeenCalled())
     })
   })
 
@@ -276,7 +275,7 @@ describe('Audit Setup > Contests (Hybrid)', () => {
       apiCalls.getStandardizedContests,
     ]
     await withMockFetch(expectedCalls, async () => {
-      render()
+      renderContests()
       await screen.findByRole('heading', { name: 'Target Contests' })
       userEvent.click(screen.getByRole('button', { name: 'Save & Next' }))
       await waitFor(() => {
@@ -292,11 +291,10 @@ describe('Audit Setup > Contests (Hybrid)', () => {
       apiCalls.getStandardizedContests,
     ]
     await withMockFetch(expectedCalls, async () => {
-      render(false)
-
+      const { goToNextStage } = renderContests({ isTargeted: false })
       await screen.findByRole('heading', { name: 'Opportunistic Contests' })
       userEvent.click(screen.getByRole('button', { name: 'Save & Next' }))
-      await waitFor(() => expect(nextStage.activate).toHaveBeenCalled())
+      await waitFor(() => expect(goToNextStage).toHaveBeenCalled())
     })
   })
 
@@ -307,14 +305,12 @@ describe('Audit Setup > Contests (Hybrid)', () => {
       apiCalls.getStandardizedContests,
     ]
     await withMockFetch(expectedCalls, async () => {
-      const { getByLabelText } = render(false)
+      renderContests({ isTargeted: false })
 
       await screen.findByRole('heading', { name: 'Opportunistic Contests' })
 
-      typeInto(
-        getByLabelText('Votes Allowed', {
-          selector: 'input',
-        }) as Element,
+      userEvent.type(
+        screen.getByLabelText('Votes Allowed', { selector: 'input' }),
         '2'
       )
 
