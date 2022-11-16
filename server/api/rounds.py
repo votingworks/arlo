@@ -952,7 +952,7 @@ def sample_batches(
             bmd_batch_ids = {
                 batch_id
                 for batch_id, container in batch_ids_with_container
-                if container in ["Advanced Voting", "Election Day"]
+                if container in ["Advanced Voting", "Election Day", "Elections Day"]
             }
             hmpb_batch_ids = {
                 batch_id
