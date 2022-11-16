@@ -8,6 +8,9 @@ from . import macro
 from .sampler_contest import Contest
 
 
+BatchKey = Tuple[str, str]  # (jurisdiction name, batch name)
+
+
 def draw_sample(
     seed: str,
     manifest: Dict[Any, List[int]],
@@ -65,9 +68,6 @@ def draw_sample(
             )
         )[num_sampled:],
     )
-
-
-BatchKey = Tuple[str, str]  # (jurisdiction name, batch name)
 
 
 def draw_ppeb_sample(

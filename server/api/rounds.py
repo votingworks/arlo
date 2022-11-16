@@ -203,7 +203,7 @@ def samples_not_found_by_round(contest: Contest) -> Dict[str, int]:
 
 
 # { batch_key: { contest_id: { choice_id: votes }}}
-BatchTallies = Dict[Tuple[str, str], Dict[str, Dict[str, int]]]
+BatchTallies = Dict[sampler.BatchKey, Dict[str, Dict[str, int]]]
 
 
 def batch_tallies(election: Election) -> BatchTallies:
@@ -268,7 +268,7 @@ def sampled_batch_results(election: Election,) -> BatchTallies:
     }
 
 
-def sampled_batches_by_ticket_number(election: Election) -> Dict[str, Tuple[str, str]]:
+def sampled_batches_by_ticket_number(election: Election) -> Dict[str, sampler.BatchKey]:
     batches_by_ticket_number = (
         SampledBatchDraw.query.join(Batch)
         .join(Jurisdiction)
@@ -732,7 +732,7 @@ class SampleSize(TypedDict):
 
 class BallotDraw(NamedTuple):
     # ballot_key: ((jurisdiction name, batch name), ballot_position)
-    ballot_key: Tuple[Tuple[str, str], int]
+    ballot_key: Tuple[sampler.BatchKey, int]
     contest_id: str
     ticket_number: str
 
@@ -910,7 +910,7 @@ def sample_batches(
         for jurisdiction_name, batch_name, batch_id in batches
     }
 
-    previously_sampled_batch_keys: List[Tuple[str, str]] = list(
+    previously_sampled_batch_keys: List[sampler.BatchKey] = list(
         SampledBatchDraw.query.join(Batch)
         .join(Jurisdiction)
         .filter_by(election_id=election.id)
