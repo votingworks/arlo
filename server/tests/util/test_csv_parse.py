@@ -382,6 +382,28 @@ def test_parse_csv_total_row():
         == "It looks like the last row in the CSV might be a total row. Please remove this row from the CSV."
     )
 
+    with pytest.raises(CSVParseError) as error:
+        list(
+            parse_csv(
+                (
+                    "Batch Name,Candidate 1,Candidate 2\n"
+                    "Batch A,20,10\n"
+                    "Batch B,30,20\n"
+                    "Batch C,40,30\n"
+                    "---,90,60\n"
+                ),
+                [
+                    CSVColumnType("Batch Name", CSVValueType.TEXT, unique=True),
+                    CSVColumnType("Candidate 1", CSVValueType.NUMBER),
+                    CSVColumnType("Candidate 2", CSVValueType.NUMBER),
+                ],
+            )
+        )
+        assert (
+            str(error.value)
+            == "It looks like the last row in the CSV might be a total row. Please remove this row from the CSV."
+        )
+
     # Shouldn't raise an error for a column with all 0s
     parsed = list(
         parse_csv(
@@ -393,6 +415,30 @@ def test_parse_csv_total_row():
         {"Batch Name": "Batch A", "Number of Ballots": 0},
         {"Batch Name": "Batch B", "Number of Ballots": 0},
         {"Batch Name": "XXX", "Number of Ballots": 0},
+    ]
+
+    # Shouldn't raise an error if some but not all columns' last value looks like a total
+    parsed = list(
+        parse_csv(
+            (
+                # Candidate 2's column could mistakenly be perceived as having a total value since
+                # 0 + 10 = 10
+                "Batch Name,Candidate 1,Candidate 2\n"
+                "Batch A,20,0\n"
+                "Batch B,30,10\n"
+                "Batch C,40,10\n"
+            ),
+            [
+                CSVColumnType("Batch Name", CSVValueType.TEXT, unique=True),
+                CSVColumnType("Candidate 1", CSVValueType.NUMBER),
+                CSVColumnType("Candidate 2", CSVValueType.NUMBER),
+            ],
+        )
+    )
+    assert parsed == [
+        {"Batch Name": "Batch A", "Candidate 1": 20, "Candidate 2": 0},
+        {"Batch Name": "Batch B", "Candidate 1": 30, "Candidate 2": 10},
+        {"Batch Name": "Batch C", "Candidate 1": 40, "Candidate 2": 10},
     ]
 
 
