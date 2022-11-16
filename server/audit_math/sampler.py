@@ -119,6 +119,7 @@ def draw_ppeb_sample(
 
     U = macro.compute_U(batch_results, cast(Dict, {}), contest)
 
+    # Should only be possible if the specified contest isn't in any batches
     if U == 0:
         return []
 
