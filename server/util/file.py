@@ -115,9 +115,8 @@ def store_uploaded_file_chunk(
     file_dir_path = os.path.join(chunked_upload_dir_path(chunked_upload_id), file_name)
     os.makedirs(file_dir_path, exist_ok=True)
     chunk_path = os.path.join(file_dir_path, chunk_number)
-    print("Uploading", chunk_path)
     with open(chunk_path, "wb") as chunk_file:
-        chunk_file.write(chunk_contents.read())
+        shutil.copyfileobj(chunk_contents, chunk_file)
 
 
 # Concatenate a list of files into a single file on disk
@@ -125,7 +124,7 @@ def concatenate_files(file_names: Iterable[str], output_path: str):
     with open(output_path, "wb") as output_file:
         for file_name in file_names:
             with open(file_name, "rb") as input_file:
-                output_file.write(input_file.read())
+                shutil.copyfileobj(input_file, output_file)
 
 
 # Open the files from a chunked upload as a dict of file_name -> file_stream
