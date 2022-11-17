@@ -29,6 +29,8 @@ from werkzeug.exceptions import BadRequest, NotFound, Conflict
 from sqlalchemy import func, and_
 from sqlalchemy.orm import Session
 
+from server.util.isoformat import isoformat
+
 from . import api
 from ..database import db_session, engine as db_engine
 from ..models import *  # pylint: disable=wildcard-import
@@ -40,6 +42,7 @@ from ..worker.tasks import (
     create_background_task,
 )
 from ..util.file import (
+    create_presigned_s3_upload,
     retrieve_file,
     serialize_file,
     serialize_file_processing,
@@ -1382,6 +1385,41 @@ def get_cvrs(
     )
 
 
+@api.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/cvrs/s3-upload",
+    methods=["GET"],
+)
+def start_presigned_s3_upload_for_cvrs(
+    election: Election, jurisdiction: Jurisdiction
+):
+    storage_path = (
+        f"audits/{election.id}/jurisdictions/{jurisdiction.id}"
+        f"/cvrs_{isoformat(datetime.now(timezone.utc))}"
+    )
+    upload = create_presigned_s3_upload(storage_path)
+    if upload is None:
+        return jsonify(None)
+    return jsonify(storage_path=storage_path, **upload)
+
+@api.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/cvrs/s3-upload",
+    methods=["POST"],
+)
+def complete_presigned_s3_upload_for_cvrs(
+    election: Election, jurisdiction: Jurisdiction
+):
+    storage_path = request.json.get("storage_path")
+    if not storage_path:
+        raise BadRequest("Missing required JSON parameter: storage_path")
+    if not storage_path.startswith(f"audits/{election.id}/jurisdictions/{jurisdiction.id}"):
+        raise BadRequest("Invalid storage path")
+
+
+
+@api.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/cvrs/s3-upload/complete",
+    methods=["POST"],
+)
 @api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/cvrs/csv", methods=["GET"],
 )

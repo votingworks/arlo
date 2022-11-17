@@ -59,7 +59,8 @@ def store_file(file: IO[bytes], storage_path: str) -> str:
 
 def retrieve_file(storage_path: str) -> BinaryIO:
     if config.FILE_UPLOAD_STORAGE_PATH.startswith("s3://"):
-        assert storage_path.startswith("s3://")
+        if not storage_path.startswith(config.FILE_UPLOAD_STORAGE_PATH):
+            raise Exception("Invalid file storage path")
         parsed_path = urlparse(storage_path)
         bucket_name = parsed_path.netloc
         key = parsed_path.path[1:]
@@ -100,3 +101,20 @@ def unzip_files(zip_file: BinaryIO) -> Dict[str, BinaryIO]:
             file_name: open(os.path.join(extract_dir.name, file_name), "rb")
             for file_name in zip_archive.namelist()
         }
+
+
+def create_presigned_s3_upload(storage_prefix: str) -> Optional[JSONDict]:
+    if config.FILE_UPLOAD_STORAGE_PATH.startswith("s3://"):
+        bucket_name = urlparse(config.FILE_UPLOAD_STORAGE_PATH).netloc
+        return s3().generate_presigned_post(
+            bucket_name,
+            # The ${filename} placeholder allows the client to specify the filename
+            f"{storage_prefix}/${{filename}}",
+            # The S3 docs instruct that this condition should also be set to
+            # ensure the uploaded file starts with the given prefix
+            # https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-HTTPPOSTConstructPolicy.html
+            Conditions=[["starts-with", "$key", storage_prefix]],
+            ExpiresIn=60 * 10,  # 10 minutes
+        )
+    else:
+        return None
