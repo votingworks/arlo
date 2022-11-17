@@ -173,6 +173,16 @@ def test_draw_macro_full_hand_tally(close_macro_batches, close_macro_contest, sn
     )
     snapshot.assert_match(sample)
 
+    sample = sampler.draw_ppeb_sample(
+        SEED,
+        close_macro_contest,
+        # The sample size is less than all batches, but the cumulative sample size is all batches
+        len(close_macro_batches) - 2,
+        previously_sampled_batch_keys=[("Jx 1", "pct 2"), ("Jx 1", "pct 4")],
+        batch_results=close_macro_batches,
+    )
+    snapshot.assert_match(sample)
+
 
 def test_draw_macro_multiple_contests(macro_batches, snapshot):
     info_dict = {

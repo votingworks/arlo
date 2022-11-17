@@ -129,17 +129,18 @@ def draw_ppeb_sample(
         for batch in batch_results
     ]
 
-    is_full_hand_tally = sample_size >= len(batch_results)
     num_previously_sampled_batches = len(previously_sampled_batch_keys)
+    cumulative_sample_size = num_previously_sampled_batches + sample_size
+    is_full_hand_tally_needed = cumulative_sample_size >= len(batch_results)
 
     sampled_batch_keys_including_previously_sampled: List[BatchKey] = (
         (
             previously_sampled_batch_keys
-            # When the sample size indicates a full hand tally, ensure that we draw all batches,
-            # minus batches already audited in previous rounds
+            # When the cumulative sample size indicates that a full hand tally is needed, ensure
+            # that we draw all batches, minus batches already audited in previous rounds
             + sorted(list(batch_results.keys() - previously_sampled_batch_keys))
         )
-        if is_full_hand_tally
+        if is_full_hand_tally_needed
         # Otherwise, sample as usual
         else cast(
             List[BatchKey],

@@ -25,6 +25,11 @@ snapshots["test_draw_macro_full_hand_tally 3"] = [
     ("0.851346057402501613", ("Jx 1", "pct 3")),
 ]
 
+snapshots["test_draw_macro_full_hand_tally 4"] = [
+    ("0.370405751560609643", ("Jx 1", "pct 1")),
+    ("0.851346057402501613", ("Jx 1", "pct 3")),
+]
+
 snapshots["test_draw_macro_multiple_contests 1"] = [
     ("0.202823455933455274", ("Jx 1", "pct 5")),
     ("0.328034953571610594", ("Jx 1", "pct 4")),

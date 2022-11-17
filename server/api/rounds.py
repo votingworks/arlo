@@ -689,8 +689,8 @@ def full_hand_tally_sizes(election: Election):
     return dict(contests_query.values(Contest.id, Contest.total_ballots_cast))
 
 
-# Returns True if the sample size for any targeted contest in the given round
-# requires a full hand tally
+# Returns True if the cumulative sample size up to the specified round for any targeted contest
+# indicates that a full hand tally is needed
 def needs_full_hand_tally(round: Round, election: Election) -> bool:
     full_hand_tally_size = full_hand_tally_sizes(election)
     cumulative_sample_sizes = dict(
