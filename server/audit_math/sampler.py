@@ -132,17 +132,20 @@ def draw_ppeb_sample(
     is_full_hand_tally = sample_size >= len(batch_results)
     num_previously_sampled_batches = len(previously_sampled_batch_keys)
 
-    sample: List = (
-        # When the sample size indicates a full hand tally, ensure that we draw all batches, minus
-        # batches already audited in previous rounds
-        sorted(list(batch_results.keys() - previously_sampled_batch_keys))
+    sampled_batches_including_previously_sampled: List = (
+        (
+            previously_sampled_batch_keys
+            # When the sample size indicates a full hand tally, ensure that we draw all batches,
+            # minus batches already audited in previous rounds
+            + sorted(list(batch_results.keys() - previously_sampled_batch_keys))
+        )
         if is_full_hand_tally
         # Otherwise, sample as usual
         else cast(
             List[Tuple[Any, Any]],
             generator.choice(
                 list(batch_results.keys()),
-                sample_size + num_previously_sampled_batches,
+                num_previously_sampled_batches + sample_size,
                 p=weighted_errors,
                 replace=True,
             ),
@@ -155,9 +158,11 @@ def draw_ppeb_sample(
     counts: Dict[Any, int] = {}
     tickets: Dict[Any, List[str]] = {}
 
-    sample_tuples: List[Tuple[Any, Tuple[Any, Any]]] = []
+    sampled_batches_including_previously_sampled_with_ticket_numbers: List[
+        Tuple[Any, Tuple[Any, Any]]
+    ] = []
 
-    for batch in sample:
+    for batch in sampled_batches_including_previously_sampled:
         # For some reason np converts the tuple to a list in sampling
         batch_tuple = tuple(batch)
         count = counts.get(batch_tuple, 0) + 1
@@ -172,7 +177,9 @@ def draw_ppeb_sample(
         ticket = consistent_sampler.trim(ticket, 18)  # type: ignore
 
         # I can't seem tomake mypy realize the tuple is what we expect
-        sample_tuples.append((ticket, batch_tuple))  # type: ignore
+        sampled_batches_including_previously_sampled_with_ticket_numbers.append(
+            (ticket, batch_tuple)  # type: ignore
+        )
         counts[batch_tuple] = count
 
         if batch_tuple in tickets:
@@ -180,8 +187,6 @@ def draw_ppeb_sample(
         else:
             tickets[batch_tuple] = [ticket]
 
-    return (
-        sample_tuples
-        if is_full_hand_tally
-        else sample_tuples[num_previously_sampled_batches:]
-    )
+    return sampled_batches_including_previously_sampled_with_ticket_numbers[
+        num_previously_sampled_batches:
+    ]
