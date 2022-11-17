@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useHistory, Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import {
   H4,
   Callout,
@@ -82,7 +82,6 @@ const Review: React.FC<IProps> = ({
     { enabled: isStandardizedContestsFileEnabled }
   )
   const contestsQuery = useContests(electionId)
-  const history = useHistory()
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
 
   const [
@@ -448,11 +447,7 @@ const Review: React.FC<IProps> = ({
         }: {
           sampleSizes: IFormOptions
         }) => {
-          if (await startNextRound(sampleSizes)) {
-            history.push(`/election/${electionId}/progress`)
-          } else {
-            // TEST TODO when withMockFetch works with error handling
-          }
+          await startNextRound(sampleSizes)
         }
 
         const targetedContests = contests.filter(contest => contest.isTargeted)

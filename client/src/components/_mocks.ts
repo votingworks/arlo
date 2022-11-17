@@ -6,7 +6,7 @@ import {
   jurisdictionFile,
   standardizedContestsFile,
 } from './AuditAdmin/Setup/Participants/_mocks'
-import { IRound } from './AuditAdmin/useRoundsAuditAdmin'
+import { IRound, ISampleSizes } from './AuditAdmin/useRoundsAuditAdmin'
 import { IBallot } from './JurisdictionAdmin/useBallots'
 import { IBatches } from './JurisdictionAdmin/useBatchResults'
 import { IOrganization, ITallyEntryUser, IMember } from './UserContext'
@@ -23,6 +23,7 @@ import {
   IJurisdiction,
 } from './useJurisdictions'
 import { IStandardizedContest } from './useStandardizedContests'
+import { ISampleSizesResponse } from './AuditAdmin/Setup/Review/useSampleSizes'
 
 export const manifestFile = new File(
   ['fake manifest - contents dont matter'],
@@ -1695,6 +1696,20 @@ export const aaApiCalls = {
     url: '/api/election/1/round',
     response: { rounds },
   }),
+  postRound: (sampleSizes: ISampleSizes) => ({
+    url: '/api/election/1/round',
+    response: { status: 'ok' },
+    options: {
+      body: JSON.stringify({
+        roundNum: 1,
+        sampleSizes,
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      method: 'POST',
+    },
+  }),
   getJurisdictions: {
     url: '/api/election/1/jurisdiction',
     response: {
@@ -1808,19 +1823,10 @@ export const aaApiCalls = {
     url: '/api/election/1/standardized-contests',
     response: standardizedContests,
   }),
-  getSampleSizes: {
+  getSampleSizes: (response: ISampleSizesResponse) => ({
     url: '/api/election/1/sample-sizes/1',
-    response: {
-      sampleSizes: null,
-      selected: null,
-      task: {
-        status: 'READY_TO_PROCESS',
-        startedAt: null,
-        completedAt: null,
-        error: null,
-      },
-    },
-  },
+    response,
+  }),
   putJurisdictionFile: {
     url: '/api/election/1/jurisdiction/file',
     options: {

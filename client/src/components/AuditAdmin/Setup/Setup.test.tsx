@@ -16,6 +16,7 @@ import {
   contestMocks,
 } from '../../_mocks'
 import Setup, { ISetupProps } from './Setup'
+import { sampleSizeMock } from './Review/_mocks'
 
 const renderSetup = (props: Partial<ISetupProps> = {}) =>
   renderWithRouter(
@@ -256,7 +257,7 @@ describe('Setup', () => {
       aaApiCalls.getSettings(auditSettingsMocks.all),
       aaApiCalls.getJurisdictions,
       aaApiCalls.getContests(contestMocks.filledTargeted),
-      aaApiCalls.getSampleSizes,
+      aaApiCalls.getSampleSizes(sampleSizeMock.ballotPolling),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderSetup({ isAuditStarted: true })

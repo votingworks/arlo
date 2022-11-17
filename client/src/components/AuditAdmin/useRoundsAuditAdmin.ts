@@ -35,6 +35,7 @@ export const isDrawingSample = (rounds: IRound[]): boolean =>
   rounds[rounds.length - 1].drawSampleTask.completedAt === null
 
 export const isDrawSampleComplete = (rounds: IRound[]): boolean =>
+  rounds.length > 0 &&
   rounds[rounds.length - 1].drawSampleTask.completedAt !== null
 
 export const drawSampleError = (rounds: IRound[]): string | null =>
