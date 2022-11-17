@@ -8,6 +8,9 @@ from . import macro
 from .sampler_contest import Contest
 
 
+BatchKey = Tuple[str, str]  # (jurisdiction name, batch name)
+
+
 def draw_sample(
     seed: str,
     manifest: Dict[Any, List[int]],
@@ -71,9 +74,9 @@ def draw_ppeb_sample(
     seed: str,
     contest: Contest,
     sample_size: int,
-    num_sampled: int,
-    batch_results: Dict[Tuple[Any, Any], Dict[str, Dict[str, int]]],
-) -> List[Tuple[Any, Tuple[Any, Any]]]:
+    previously_sampled_batch_keys: List[BatchKey],
+    batch_results: Dict[BatchKey, Dict[str, Dict[str, int]]],
+) -> List[Tuple[Any, BatchKey]]:
     """
     Draws sample with replacement of size <sample_size> from the
     provided ballot manifest using proportional-with-error-bound (PPEB) sampling.
@@ -84,7 +87,8 @@ def draw_ppeb_sample(
     Inputs:
         seed    - the random seed to use in sampling
         sample_size - number of ballots to randomly draw
-        num_sampled - number of ballots that have already been sampled
+        previously_sampled_batch_keys - the keys (jurisdiction name, batch name) of batches sampled
+            in previous rounds
         batch_results - the result of the election, per batch:
                         {
                             'batch': {
@@ -115,7 +119,7 @@ def draw_ppeb_sample(
 
     U = macro.compute_U(batch_results, cast(Dict, {}), contest)
 
-    # This can only be the case if we've already recounted
+    # Should only be possible if the specified contest isn't in any batches
     if U == 0:
         return []
 
@@ -125,20 +129,33 @@ def draw_ppeb_sample(
         for batch in batch_results
     ]
 
-    sample: List = (
-        cast(
-            List[Tuple[Any, Any]],
-            generator.choice(
-                list(batch_results.keys()),
-                sample_size + num_sampled,
-                p=weighted_errors,
-                replace=True,
+    num_previously_sampled_batches = len(previously_sampled_batch_keys)
+    cumulative_sample_size = num_previously_sampled_batches + sample_size
+    is_full_hand_tally_needed = cumulative_sample_size >= len(batch_results)
+
+    sampled_batch_keys_including_previously_sampled: List[BatchKey] = (
+        (
+            previously_sampled_batch_keys
+            # When the cumulative sample size indicates that a full hand tally is needed, ensure
+            # that we draw all batches, minus batches already audited in previous rounds
+            + sorted(list(batch_results.keys() - previously_sampled_batch_keys))
+        )
+        if is_full_hand_tally_needed
+        # Otherwise, sample as usual
+        else cast(
+            List[BatchKey],
+            (
+                # For some reason, NumPy converts the tuple to a list in sampling, so we convert
+                # back to a tuple
+                tuple(sampled_batch_key)
+                for sampled_batch_key in generator.choice(
+                    list(batch_results.keys()),
+                    num_previously_sampled_batches + sample_size,
+                    p=weighted_errors,
+                    replace=True,
+                )
             ),
         )
-        # When the sample size indicates a full hand recount, ensure we draw
-        # each batch once and only once
-        if sample_size < len(batch_results)
-        else list(batch_results.keys())
     )
 
     # Now create "ticket numbers" for each item in the sample
@@ -147,29 +164,32 @@ def draw_ppeb_sample(
     counts: Dict[Any, int] = {}
     tickets: Dict[Any, List[str]] = {}
 
-    sample_tuples: List[Tuple[Any, Tuple[Any, Any]]] = []
+    sampled_batch_keys_including_previously_sampled_with_ticket_numbers: List[
+        Tuple[Any, BatchKey]
+    ] = []
 
-    for batch in sample:
-        # For some reason np converts the tuple to a list in sampling
-        batch_tuple = tuple(batch)
-        count = counts.get(batch_tuple, 0) + 1
+    for batch_key in sampled_batch_keys_including_previously_sampled:
+        count = counts.get(batch_key, 0) + 1
 
         ticket = (
-            consistent_sampler.first_fraction(batch_tuple, seed)  # type: ignore
+            consistent_sampler.first_fraction(batch_key, seed)  # type: ignore
             if count == 1
-            else consistent_sampler.next_fraction(tickets.get(batch_tuple)[-1])  # type: ignore
+            else consistent_sampler.next_fraction(tickets.get(batch_key)[-1])  # type: ignore
         )
 
         # Trim the ticket number
         ticket = consistent_sampler.trim(ticket, 18)  # type: ignore
 
-        # I can't seem tomake mypy realize the tuple is what we expect
-        sample_tuples.append((ticket, batch_tuple))  # type: ignore
-        counts[batch_tuple] = count
+        sampled_batch_keys_including_previously_sampled_with_ticket_numbers.append(
+            (ticket, batch_key)
+        )
+        counts[batch_key] = count
 
-        if batch_tuple in tickets:
-            tickets[batch_tuple].append(ticket)
+        if batch_key in tickets:
+            tickets[batch_key].append(ticket)
         else:
-            tickets[batch_tuple] = [ticket]
+            tickets[batch_key] = [ticket]
 
-    return sample_tuples[num_sampled:]
+    return sampled_batch_keys_including_previously_sampled_with_ticket_numbers[
+        num_previously_sampled_batches:
+    ]
