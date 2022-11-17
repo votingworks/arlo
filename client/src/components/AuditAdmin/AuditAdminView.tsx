@@ -1,5 +1,5 @@
-import React from 'react'
-import { useParams, Redirect } from 'react-router-dom'
+import React, { useRef } from 'react'
+import { useParams, Redirect, useHistory } from 'react-router-dom'
 import { Spinner, H3, Intent } from '@blueprintjs/core'
 import { useQueryClient } from 'react-query'
 import {
@@ -11,6 +11,7 @@ import {
   useUndoRoundStart,
   ISampleSizes,
   roundsQueryKey,
+  IRound,
 } from './useRoundsAuditAdmin'
 import { useJurisdictions, jurisdictionsQueryKey } from '../useJurisdictions'
 import { useContests } from '../useContests'
@@ -29,9 +30,27 @@ interface IParams {
 const AuditAdminView: React.FC = () => {
   const { electionId, view } = useParams<IParams>()
 
+  const queryClient = useQueryClient()
+  const history = useHistory()
+  const lastFetchedRounds = useRef<IRound[] | null>(null)
   const roundsQuery = useRounds(electionId, {
     refetchInterval: rounds =>
       rounds && isDrawingSample(rounds) ? 1000 : false,
+    onSuccess: rounds => {
+      // If we ever see the round status change from drawing to complete,
+      // redirect to the progress view and reload jurisdiction progress.
+      // This is a bit of a hacky way to do it, but there's not really a better
+      // way supported with react-query.
+      if (
+        lastFetchedRounds.current &&
+        !isDrawSampleComplete(lastFetchedRounds.current) &&
+        isDrawSampleComplete(rounds)
+      ) {
+        queryClient.invalidateQueries(jurisdictionsQueryKey(electionId))
+        history.push(`/election/${electionId}/progress`)
+      }
+      lastFetchedRounds.current = rounds
+    },
   })
   const startNextRoundMutation = useStartNextRound(electionId)
   const undoRoundStartMutation = useUndoRoundStart(electionId)
@@ -39,7 +58,6 @@ const AuditAdminView: React.FC = () => {
   const jurisdictionsQuery = useJurisdictions(electionId)
   const contestsQuery = useContests(electionId)
   const auditSettingsQuery = useAuditSettings(electionId)
-  const queryClient = useQueryClient()
 
   if (
     !jurisdictionsQuery.isSuccess ||
@@ -54,7 +72,7 @@ const AuditAdminView: React.FC = () => {
   const rounds = roundsQuery.data
   const auditSettings = auditSettingsQuery.data
 
-  if (rounds.length > 0 && !isDrawSampleComplete(rounds)) {
+  if (isDrawingSample(rounds)) {
     return (
       <Wrapper>
         <Inner>

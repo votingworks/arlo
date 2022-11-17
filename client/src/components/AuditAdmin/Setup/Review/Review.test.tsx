@@ -35,20 +35,6 @@ const apiCalls = {
     url: '/api/election/1/round',
     response: { rounds: [] },
   },
-  postRound: (sampleSizes: { [contestId: string]: number }) => ({
-    url: '/api/election/1/round',
-    response: { status: 'ok' },
-    options: {
-      body: JSON.stringify({
-        roundNum: 1,
-        sampleSizes,
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      method: 'POST',
-    },
-  }),
   getJurisdictions: (response: { jurisdictions: IJurisdiction[] }) => ({
     url: '/api/election/1/jurisdiction',
     response,
@@ -917,8 +903,9 @@ describe('Audit Setup > Review & Launch', () => {
         ...sampleSizeMock.ballotPolling,
         sampleSizes: {
           ...sampleSizeMock.ballotPolling.sampleSizes,
-          'contest-id-2':
-            sampleSizeMock.ballotPolling.sampleSizes['contest-id'],
+          'contest-id-2': sampleSizeMock.ballotPolling.sampleSizes![
+            'contest-id'
+          ],
         },
       }),
     ]

@@ -121,8 +121,8 @@ describe.skip('timers', () => {
       aaApiCalls.getJurisdictions,
       aaApiCalls.getJurisdictionFile,
       aaApiCalls.getContests(contestMocks.filledTargeted),
-      aaApiCalls.getSampleSizes,
-      { ...aaApiCalls.getSampleSizes, response: sampleSizeMock.ballotPolling },
+      aaApiCalls.getSampleSizes(sampleSizeMock.calculating),
+      aaApiCalls.getSampleSizes(sampleSizeMock.ballotPolling),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderWithRoute('/election/1/setup', <AuditAdminViewWithAuth />)

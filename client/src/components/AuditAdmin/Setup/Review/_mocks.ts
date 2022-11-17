@@ -1,5 +1,7 @@
 import { IAuditSettings } from '../../../useAuditSettings'
 import { FileProcessingStatus } from '../../../useCSV'
+import { mocksOfType } from '../../../testUtilities'
+import { ISampleSizesResponse } from './useSampleSizes'
 
 export const settingsMock: {
   [key in 'empty' | 'full' | 'offline' | 'batch']: IAuditSettings
@@ -46,6 +48,13 @@ export const settingsMock: {
   },
 }
 
+const taskInProgressMock = {
+  status: FileProcessingStatus.PROCESSING,
+  startedAt: '2019-07-18T16:34:07.000+00:00',
+  completedAt: null,
+  error: null,
+}
+
 const taskCompleteMock = {
   status: FileProcessingStatus.PROCESSED,
   startedAt: '2019-07-18T16:34:07.000+00:00',
@@ -53,7 +62,12 @@ const taskCompleteMock = {
   error: null,
 }
 
-export const sampleSizeMock = {
+export const sampleSizeMock = mocksOfType<ISampleSizesResponse>()({
+  calculating: {
+    sampleSizes: null,
+    selected: null,
+    task: taskInProgressMock,
+  },
   batchComparison: {
     sampleSizes: {
       'contest-id': [{ prob: null, size: 4, key: 'macro' }],
@@ -80,6 +94,6 @@ export const sampleSizeMock = {
     selected: null,
     task: taskCompleteMock,
   },
-}
+})
 
 export default settingsMock

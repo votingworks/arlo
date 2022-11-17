@@ -26,6 +26,7 @@ import {
   jurisdictionFile,
   standardizedContestsFile,
 } from './Setup/Participants/_mocks'
+import { sampleSizeMock } from './Setup/Review/_mocks'
 
 jest.mock('axios')
 
@@ -222,17 +223,34 @@ describe('AA setup flow', () => {
   it('redirects to /progress after audit is launched', async () => {
     const expectedCalls = [
       aaApiCalls.getUser,
+      ...setupApiCalls,
+      aaApiCalls.getSampleSizes(sampleSizeMock.ballotPolling),
+      aaApiCalls.postRound({
+        'contest-id': sampleSizeMock.ballotPolling.sampleSizes![
+          'contest-id'
+        ][0],
+      }),
       aaApiCalls.getRounds(roundMocks.singleIncomplete),
       aaApiCalls.getJurisdictions,
-      aaApiCalls.getContests(contestMocks.filledTargeted),
-      aaApiCalls.getSettings(auditSettingsMocks.all),
       aaApiCalls.getMapData,
     ]
     await withMockFetch(expectedCalls, async () => {
-      const { history } = render('')
-      await waitFor(() => {
-        expect(history.location.pathname).toEqual('/election/1/progress')
-      })
+      const { history } = render('setup')
+      await screen.findByRole('heading', { name: 'Audit Setup' })
+      userEvent.click(screen.getByRole('link', { name: 'Review & Launch' }))
+      await screen.findByRole('heading', { name: 'Review & Launch' })
+      userEvent.click(screen.getByRole('button', { name: 'Launch Audit' }))
+      const dialog = (
+        await screen.findByRole('heading', {
+          name: 'Are you sure you want to launch the audit?',
+        })
+      ).closest('div.bp3-dialog') as HTMLElement
+      userEvent.click(
+        within(dialog).getByRole('button', { name: 'Launch Audit' })
+      )
+
+      await screen.findByRole('heading', { name: 'Audit Progress' })
+      expect(history.location.pathname).toEqual('/election/1/progress')
     })
   })
 
