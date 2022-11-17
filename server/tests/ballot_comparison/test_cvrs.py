@@ -2095,15 +2095,6 @@ def test_hart_cvr_upload_with_invalid_cvrs(
             [build_hart_cvr("bad batch", "1", "1-1-1", "0,1,1,0,0")],
             "Error in file: cvr-0.xml. Couldn't find a matching batch for BatchNumber: bad batch. The BatchNumber field in the CVR must match the Batch Name field in the ballot manifest. Please check your CVR files and ballot manifest thoroughly to make sure these values match - there may be a similar inconsistency in other files in the CVR export.",
         ),
-        (
-            [
-                build_hart_cvr("BATCH1", "2", "1-1-2", "0,1,1,0,0"),
-                build_hart_cvr("BATCH1", "1", "1-1-1", "0,1,1,0,0").replace(
-                    "<SheetNumber>1</SheetNumber>", "<SheetNumber>2</SheetNumber>"
-                ),
-            ],
-            "Error in file: cvr-1.xml. Arlo currently only supports Hart CVRs with SheetNumber 1. Got SheetNumber: 2.",
-        ),
     ]
 
     set_logged_in_user(
