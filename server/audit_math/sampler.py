@@ -144,6 +144,8 @@ def draw_ppeb_sample(
         else cast(
             List[BatchKey],
             (
+                # For some reason, NumPy converts the tuple to a list in sampling, so we convert
+                # back to a tuple
                 tuple(sampled_batch_key)
                 for sampled_batch_key in generator.choice(
                     list(batch_results.keys()),
