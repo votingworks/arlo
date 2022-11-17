@@ -3,7 +3,7 @@ import shutil
 import io
 import os
 import tempfile
-from typing import IO, BinaryIO, Dict, Optional
+from typing import IO, BinaryIO, Dict, Iterable, Optional
 from urllib.parse import urlparse
 from zipfile import ZipFile
 import boto3
@@ -100,3 +100,51 @@ def unzip_files(zip_file: BinaryIO) -> Dict[str, BinaryIO]:
             file_name: open(os.path.join(extract_dir.name, file_name), "rb")
             for file_name in zip_archive.namelist()
         }
+
+
+def chunked_upload_dir_path(chunked_upload_id: str):
+    tempdir_path = tempfile.gettempdir()
+    return os.path.join(tempdir_path, chunked_upload_id)
+
+
+# Store each chunk in a separate file
+# /tmp/<chunked_upload_id>/<file_name>/<chunk_number>
+def store_uploaded_file_chunk(
+    chunked_upload_id: str, file_name: str, chunk_number: str, chunk_contents: BinaryIO
+):
+    file_dir_path = os.path.join(chunked_upload_dir_path(chunked_upload_id), file_name)
+    os.makedirs(file_dir_path, exist_ok=True)
+    chunk_path = os.path.join(file_dir_path, chunk_number)
+    print("Uploading", chunk_path)
+    with open(chunk_path, "wb") as chunk_file:
+        chunk_file.write(chunk_contents.read())
+
+
+# Concatenate a list of files into a single file on disk
+def concatenate_files(file_names: Iterable[str], output_path: str):
+    with open(output_path, "wb") as output_file:
+        for file_name in file_names:
+            with open(file_name, "rb") as input_file:
+                output_file.write(input_file.read())
+
+
+# Open the files from a chunked upload as a dict of file_name -> file_stream
+# This matches the format of how we load files from Flask's request.files
+def open_chunked_upload_files(chunked_upload_id: str) -> Dict[str, BinaryIO]:
+    upload_dir_path = chunked_upload_dir_path(chunked_upload_id)
+    files = {}
+    for file_dir in os.scandir(upload_dir_path):
+        # Sort the chunks by name *as numbers*
+        chunk_file_names = sorted(os.listdir(file_dir.path), key=int)
+        chunk_file_paths = [
+            os.path.join(file_dir.path, chunk_file_name)
+            for chunk_file_name in chunk_file_names
+        ]
+        concatenated_file_path = os.path.join(file_dir.path, "concatenated")
+        concatenate_files(chunk_file_paths, concatenated_file_path)
+        files[file_dir.name] = open(concatenated_file_path, "rb")
+    return files
+
+
+def clean_up_chunked_upload(chunked_upload_id: str):
+    shutil.rmtree(chunked_upload_dir_path(chunked_upload_id))

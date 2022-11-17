@@ -1,9 +1,11 @@
 import axios, { AxiosRequestConfig } from 'axios'
 import { toast } from 'react-toastify'
 import { useEffect, useState } from 'react'
+import uuidv4 from 'uuidv4'
 import { api, useInterval } from './utilities'
 import { IAuditSettings } from './useAuditSettings'
-import { addCSRFToken } from '../utils/api'
+import { addCSRFToken, fetchApi } from '../utils/api'
+import { sum } from '../utils/number'
 
 export enum FileProcessingStatus {
   READY_TO_PROCESS = 'READY_TO_PROCESS',
@@ -47,6 +49,52 @@ export const isFileProcessed = (file: IFileInfo): boolean =>
 const loadCSVFile = async (url: string): Promise<IFileInfo | null> =>
   api<IFileInfo>(url)
 
+const MEGABYTE = 1000 * 1000
+const MIN_FILE_SIZE_TO_CHUNK = 100 * MEGABYTE
+const CHUNK_SIZE = 5 * MEGABYTE
+
+const uploadFileInChunks = async (chunksUrl: string, file: File) => {
+  const totalChunks = Math.ceil(file.size / CHUNK_SIZE)
+  for (let chunkNumber = 0; chunkNumber < totalChunks; chunkNumber += 1) {
+    const chunk = file.slice(
+      chunkNumber * CHUNK_SIZE,
+      (chunkNumber + 1) * CHUNK_SIZE
+    )
+    const formData = new FormData()
+    formData.append('fileName', file.name)
+    formData.append('chunkNumber', chunkNumber.toString())
+    formData.append('chunkContents', chunk)
+    // eslint-disable-next-line no-await-in-loop
+    await fetchApi(chunksUrl, {
+      method: 'PUT',
+      body: formData,
+    })
+  }
+}
+
+const uploadFilesInChunks = async (
+  url: string,
+  files: File[],
+  trackProgress: (progress: number) => void,
+  cvrFileType: CvrFileType
+) => {
+  // TODO track progress
+  const chunkedUploadId = uuidv4()
+  const apiUrl = `/api${url}`
+  const chunksUrl = `${apiUrl}/chunks/${chunkedUploadId}`
+  for (const file of files) {
+    // eslint-disable-next-line no-await-in-loop
+    await uploadFileInChunks(chunksUrl, file)
+  }
+  const formData = new FormData()
+  formData.append('chunkedUploadId', chunkedUploadId)
+  formData.append('cvrFileType', cvrFileType)
+  await fetchApi(apiUrl, {
+    method: 'PUT',
+    body: formData,
+  })
+}
+
 const putCSVFiles = async (
   url: string,
   files: File[],
@@ -54,6 +102,15 @@ const putCSVFiles = async (
   trackProgress: (progress: number) => void,
   cvrFileType?: CvrFileType
 ): Promise<boolean> => {
+  const totalFileSize = sum(files.map(f => f.size))
+  if (
+    (cvrFileType === CvrFileType.HART || cvrFileType === CvrFileType.ESS) &&
+    totalFileSize >= MIN_FILE_SIZE_TO_CHUNK
+  ) {
+    await uploadFilesInChunks(url, files, trackProgress, cvrFileType)
+    return true
+  }
+
   const formData: FormData = new FormData()
   for (const f of files) formData.append(formKey, f, f.name)
   if (cvrFileType) formData.append('cvrFileType', cvrFileType)

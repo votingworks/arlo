@@ -40,10 +40,13 @@ from ..worker.tasks import (
     create_background_task,
 )
 from ..util.file import (
+    clean_up_chunked_upload,
+    open_chunked_upload_files,
     retrieve_file,
     serialize_file,
     serialize_file_processing,
     store_file,
+    store_uploaded_file_chunk,
     timestamp_filename,
     unzip_files,
     zip_files,
@@ -1280,12 +1283,17 @@ def validate_cvr_upload(
     if not jurisdiction.manifest_file_id:
         raise Conflict("Must upload ballot manifest before uploading CVR file.")
 
-    if "cvrs" not in request.files:
-        raise BadRequest("Missing required file parameter 'cvrs'")
-
     cvr_file_type = request.form.get("cvrFileType")
     if cvr_file_type not in [cvr_file_type.value for cvr_file_type in CvrFileType]:
         raise BadRequest("Invalid file type")
+
+    # TODO for chunked uploads, we need to validate the mimetype elsewhere
+    # Maybe on the frontend?
+    if request.form.get("chunkedUploadId") is not None:
+        return
+
+    if "cvrs" not in request.files:
+        raise BadRequest("Missing required file parameter 'cvrs'")
 
     if cvr_file_type == CvrFileType.HART:
         files = request.files.getlist("cvrs")
@@ -1321,6 +1329,25 @@ def clear_cvr_data(jurisdiction: Jurisdiction):
 
 
 @api.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/cvrs/chunks/<chunked_upload_id>",
+    methods=["PUT"],
+)
+@restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
+def upload_cvr_chunk(
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    chunked_upload_id,
+):
+    store_uploaded_file_chunk(
+        chunked_upload_id,
+        request.form["fileName"],
+        request.form["chunkNumber"],
+        request.files["chunkContents"].stream,
+    )
+    return jsonify(status="ok")
+
+
+@api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/cvrs", methods=["PUT"],
 )
 @restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
@@ -1332,9 +1359,15 @@ def upload_cvrs(
 
     if request.form["cvrFileType"] in [CvrFileType.ESS, CvrFileType.HART]:
         file_name = "cvr-files.zip"
-        zip_file = zip_files(
-            {file.filename: file.stream for file in request.files.getlist("cvrs")}
-        )
+        if request.form["chunkedUploadId"]:
+            zip_file = zip_files(
+                open_chunked_upload_files(request.form["chunkedUploadId"])
+            )
+            clean_up_chunked_upload(request.form["chunkedUploadId"])
+        else:
+            zip_file = zip_files(
+                {file.filename: file.stream for file in request.files.getlist("cvrs")}
+            )
         storage_path = store_file(
             zip_file,
             f"audits/{election.id}/jurisdictions/{jurisdiction.id}/"
