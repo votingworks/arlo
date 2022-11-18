@@ -493,6 +493,28 @@ def list_jurisdictions(election: Election):
         serialize_jurisdiction(election, jurisdiction, round_status[jurisdiction.id])
         for jurisdiction in jurisdictions
     ]
+
+    contest_index = 0
+    candidate_vote_totals = {}
+    candidate_ids_to_names = {
+        choice.id: choice.name for choice in election.contests[contest_index].choices
+    }
+    for jurisdiction in jurisdictions:
+        batch_tallies = jurisdiction.batch_tallies
+        if batch_tallies is None:
+            continue
+        for tallies_by_contest_id in batch_tallies.values():
+            tallies = tallies_by_contest_id[election.contests[contest_index].id]
+            for candidate_id, votes in tallies.items():
+                if candidate_id == "ballots":
+                    continue
+                candidate_name = candidate_ids_to_names[candidate_id]
+                if candidate_name not in candidate_vote_totals:
+                    candidate_vote_totals[candidate_name] = votes
+                else:
+                    candidate_vote_totals[candidate_name] += votes
+    print(candidate_vote_totals)
+
     return jsonify({"jurisdictions": json_jurisdictions})
 
 
