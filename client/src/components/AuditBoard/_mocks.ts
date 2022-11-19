@@ -1,9 +1,9 @@
 import { BallotStatus, Interpretation } from '../../types'
 import { IAuditBoard } from '../UserContext'
-import { contestMocks } from '../AuditAdmin/Setup/Contests/_mocks'
 import { IBallot } from '../JurisdictionAdmin/useBallots'
+import { contestMocks } from '../_mocks'
 
-export const contest = contestMocks.filledTargeted.contests[0]
+export const contest = contestMocks.filledTargeted[0]
 
 export const dummyBoards = (): IAuditBoard[] => [
   {

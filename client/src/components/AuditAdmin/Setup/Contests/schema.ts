@@ -1,6 +1,6 @@
 import * as Yup from 'yup'
 import number, { parse as parseNumber } from '../../../../utils/number-schema'
-import { ICandidate } from '../../../../types'
+import { IChoice } from '../../../../types'
 import { IAuditSettings } from '../../../useAuditSettings'
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -33,7 +33,7 @@ const contestsSchema = (auditType: IAuditSettings['auditType']) =>
                   const ballots = parseNumber(value)
                   const { choices } = this.parent
                   const totalVotes = choices.reduce(
-                    (sum: number, choiceValue: ICandidate) =>
+                    (sum: number, choiceValue: IChoice) =>
                       sum + (parseNumber(choiceValue.numVotes) || 0),
                     0
                   )

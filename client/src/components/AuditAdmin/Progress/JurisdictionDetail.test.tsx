@@ -11,9 +11,11 @@ import JurisdictionDetail, {
   IJurisdictionDetailProps,
 } from './JurisdictionDetail'
 import {
+  aaApiCalls,
+  jaApiCalls,
   jurisdictionMocks,
   roundMocks,
-  auditSettings,
+  auditSettingsMocks,
   manifestMocks,
   cvrsMocks,
   auditBoardMocks,
@@ -22,8 +24,7 @@ import {
   cvrsFile,
   talliesFile,
   contestMocks,
-} from '../useSetupMenuItems/_mocks'
-import { aaApiCalls, jaApiCalls } from '../../_mocks'
+} from '../../_mocks'
 import { withMockFetch, createQueryClient } from '../../testUtilities'
 import { dummyBallots } from '../../AuditBoard/_mocks'
 import { batchesMocks } from '../../JurisdictionAdmin/_mocks'
@@ -58,7 +59,7 @@ const render = (props: Partial<IJurisdictionDetailProps>) =>
         jurisdiction={jurisdictionMocks.noManifests[0]}
         electionId="1"
         round={null}
-        auditSettings={auditSettings.all}
+        auditSettings={auditSettingsMocks.all}
         {...props}
       />
     </QueryClientProvider>
@@ -131,7 +132,7 @@ describe('JurisdictionDetail', () => {
           ...jurisdictionMocks.noManifests[0],
           cvrs: cvrsMocks.empty,
         },
-        auditSettings: auditSettings.ballotComparisonAll,
+        auditSettings: auditSettingsMocks.ballotComparisonAll,
       })
 
       screen.getByRole('heading', { name: 'Jurisdiction Files' })
@@ -239,7 +240,7 @@ describe('JurisdictionDetail', () => {
           ...jurisdictionMocks.allManifests[0],
           cvrs: cvrsMocks.empty,
         },
-        auditSettings: auditSettings.ballotComparisonAll,
+        auditSettings: auditSettingsMocks.ballotComparisonAll,
       })
 
       const cvrsCard = (
@@ -282,7 +283,7 @@ describe('JurisdictionDetail', () => {
           ...jurisdictionMocks.allManifests[0],
           cvrs: cvrsMocks.empty,
         },
-        auditSettings: auditSettings.ballotComparisonAll,
+        auditSettings: auditSettingsMocks.ballotComparisonAll,
       })
 
       const cvrsCard = (
@@ -337,7 +338,7 @@ describe('JurisdictionDetail', () => {
           ...jurisdictionMocks.allManifests[0],
           cvrs: cvrsMocks.empty,
         },
-        auditSettings: auditSettings.ballotComparisonAll,
+        auditSettings: auditSettingsMocks.ballotComparisonAll,
       })
 
       const cvrsCard = (
@@ -378,7 +379,7 @@ describe('JurisdictionDetail', () => {
     await withMockFetch(expectedCalls, async () => {
       render({
         jurisdiction: jurisdictionMocks.noManifestsNoTallies[0],
-        auditSettings: auditSettings.batchComparisonAll,
+        auditSettings: auditSettingsMocks.batchComparisonAll,
       })
 
       screen.getByRole('heading', { name: 'Jurisdiction Files' })
@@ -536,7 +537,7 @@ describe('JurisdictionDetail', () => {
     await withMockFetch(expectedCalls, async () => {
       render({
         jurisdiction: jurisdictionMocks.noneStartedBallotComparison[0],
-        auditSettings: auditSettings.ballotComparisonAll,
+        auditSettings: auditSettingsMocks.ballotComparisonAll,
         round: roundMocks.singleIncomplete[0],
       })
 
@@ -572,7 +573,7 @@ describe('JurisdictionDetail', () => {
     await withMockFetch(expectedCalls, async () => {
       render({
         jurisdiction: jurisdictionMocks.oneComplete[0],
-        auditSettings: auditSettings.batchComparisonAll,
+        auditSettings: auditSettingsMocks.batchComparisonAll,
         round: roundMocks.singleIncomplete[0],
       })
 
@@ -653,7 +654,7 @@ describe('JurisdictionDetail', () => {
     await withMockFetch(expectedCalls, async () => {
       render({
         jurisdiction: jurisdictionMocks.oneComplete[0],
-        auditSettings: auditSettings.batchComparisonAll,
+        auditSettings: auditSettingsMocks.batchComparisonAll,
         round: roundMocks.singleIncomplete[0],
       })
       await screen.findByText('No ballots sampled')
@@ -669,7 +670,7 @@ describe('JurisdictionDetail', () => {
     await withMockFetch(expectedCalls, async () => {
       render({
         jurisdiction: jurisdictionMocks.allComplete[0],
-        auditSettings: auditSettings.all,
+        auditSettings: auditSettingsMocks.all,
         round: roundMocks.singleIncomplete[0],
       })
       await screen.findByText('Data entry complete')
@@ -687,7 +688,7 @@ describe('JurisdictionDetail', () => {
     await withMockFetch(expectedCalls, async () => {
       render({
         jurisdiction: jurisdictionMocks.allComplete[0],
-        auditSettings: auditSettings.batchComparisonAll,
+        auditSettings: auditSettingsMocks.batchComparisonAll,
         round: roundMocks.singleIncomplete[0],
       })
 
@@ -715,7 +716,7 @@ describe('JurisdictionDetail', () => {
       ]
       await withMockFetch(expectedCalls, async () => {
         render({
-          auditSettings: auditSettings.all,
+          auditSettings: auditSettingsMocks.all,
           jurisdiction,
           round: roundMocks.singleIncomplete[0],
         })
@@ -741,7 +742,7 @@ describe('JurisdictionDetail', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       render({
-        auditSettings: auditSettings.all,
+        auditSettings: auditSettingsMocks.all,
         jurisdiction: jurisdictionMocks.allComplete[0],
         round: roundMocks.singleIncomplete[0],
       })
@@ -772,7 +773,7 @@ describe('JurisdictionDetail', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       render({
-        auditSettings: auditSettings.offlineAll,
+        auditSettings: auditSettingsMocks.offlineAll,
         jurisdiction: jurisdictionMocks.allComplete[0],
         round: roundMocks.singleIncomplete[0],
       })

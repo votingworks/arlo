@@ -203,7 +203,7 @@ def samples_not_found_by_round(contest: Contest) -> Dict[str, int]:
 
 
 # { batch_key: { contest_id: { choice_id: votes }}}
-BatchTallies = Dict[Tuple[str, str], Dict[str, Dict[str, int]]]
+BatchTallies = Dict[sampler.BatchKey, Dict[str, Dict[str, int]]]
 
 
 def batch_tallies(election: Election) -> BatchTallies:
@@ -268,7 +268,7 @@ def sampled_batch_results(election: Election,) -> BatchTallies:
     }
 
 
-def sampled_batches_by_ticket_number(election: Election) -> Dict[str, Tuple[str, str]]:
+def sampled_batches_by_ticket_number(election: Election) -> Dict[str, sampler.BatchKey]:
     batches_by_ticket_number = (
         SampledBatchDraw.query.join(Batch)
         .join(Jurisdiction)
@@ -689,8 +689,8 @@ def full_hand_tally_sizes(election: Election):
     return dict(contests_query.values(Contest.id, Contest.total_ballots_cast))
 
 
-# Returns True if the sample size for any targeted contest in the given round
-# requires a full hand tally
+# Returns True if the cumulative sample size up to the specified round for any targeted contest
+# indicates that a full hand tally is needed
 def needs_full_hand_tally(round: Round, election: Election) -> bool:
     full_hand_tally_size = full_hand_tally_sizes(election)
     cumulative_sample_sizes = dict(
@@ -732,7 +732,7 @@ class SampleSize(TypedDict):
 
 class BallotDraw(NamedTuple):
     # ballot_key: ((jurisdiction name, batch name), ballot_position)
-    ballot_key: Tuple[Tuple[str, str], int]
+    ballot_key: Tuple[sampler.BatchKey, int]
     contest_id: str
     ticket_number: str
 
@@ -899,29 +899,29 @@ def sample_batches(
     assert len(contest_sample_sizes) == 1
     contest, sample_size = contest_sample_sizes[0]
 
-    num_previously_sampled = (
-        SampledBatchDraw.query.join(Batch)
-        .join(Jurisdiction)
-        .filter_by(election_id=election.id)
-        .count()
-    )
-
     # Create a mapping from batch keys used in the sampling back to batch ids
     batches = (
         Batch.query.join(Jurisdiction)
         .filter_by(election_id=election.id)
-        .values(Jurisdiction.name, Batch.name, Batch.id)
+        .with_entities(Jurisdiction.name, Batch.name, Batch.id)
     )
     batch_key_to_id = {
         (jurisdiction_name, batch_name): batch_id
         for jurisdiction_name, batch_name, batch_id in batches
     }
 
+    previously_sampled_batch_keys: List[sampler.BatchKey] = list(
+        SampledBatchDraw.query.join(Batch)
+        .join(Jurisdiction)
+        .filter_by(election_id=election.id)
+        .with_entities(Jurisdiction.name, Batch.name)
+    )
+
     sample = sampler.draw_ppeb_sample(
         str(election.random_seed),
         sampler_contest.from_db_contest(contest),
         sample_size["size"],
-        num_previously_sampled,
+        previously_sampled_batch_keys,
         batch_tallies(election),
     )
 
@@ -952,7 +952,13 @@ def sample_batches(
             bmd_batch_ids = {
                 batch_id
                 for batch_id, container in batch_ids_with_container
-                if container in ["Advanced Voting", "Election Day"]
+                if container
+                in [
+                    "Advanced Voting",
+                    "Advance Voting",
+                    "Election Day",
+                    "Elections Day",
+                ]
             }
             hmpb_batch_ids = {
                 batch_id

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useParams, useHistory, Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import {
   H4,
   Callout,
@@ -21,7 +21,6 @@ import { Formik, FormikProps, getIn, Field } from 'formik'
 import styled from 'styled-components'
 import FormButtonBar from '../../../Atoms/Form/FormButtonBar'
 import FormButton from '../../../Atoms/Form/FormButton'
-import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
 import H2Title from '../../../Atoms/H2Title'
 import { testNumber } from '../../../utilities'
 import FormSection, {
@@ -38,21 +37,18 @@ import { pluralize } from '../../../../utils/string'
 import { ErrorLabel } from '../../../Atoms/Form/_helpers'
 import { IContest } from '../../../../types'
 import { sum } from '../../../../utils/number'
-import useAuditSettings from '../../../useAuditSettings'
-import {
-  useJurisdictionsDeprecated,
-  IJurisdiction,
-} from '../../../useJurisdictions'
-import {
-  useJurisdictionsFile,
-  useStandardizedContestsFile,
-  isFileProcessed,
-} from '../../../useCSV'
-import useContests from '../../../useContests'
+import { useJurisdictions, IJurisdiction } from '../../../useJurisdictions'
+import { isFileProcessed } from '../../../useCSV'
 import useContestNameStandardizations, {
   IContestNameStandardizations,
 } from '../../../useContestNameStandardizations'
 import { isSetupComplete, allCvrsUploaded } from '../../../Atoms/StatusBox'
+import { useAuditSettings } from '../../../useAuditSettings'
+import { useContests } from '../../../useContests'
+import {
+  useJurisdictionsFile,
+  useStandardizedContestsFile,
+} from '../../../useFileUpload'
 
 const percentFormatter = new Intl.NumberFormat(undefined, {
   style: 'percent',
@@ -63,34 +59,38 @@ interface IFormOptions {
 }
 
 interface IProps {
+  electionId: string
   locked: boolean
-  prevStage: ISidebarMenuItem
-  refresh: () => void
+  goToPrevStage: () => void
   startNextRound: (sampleSizes: ISampleSizes) => Promise<boolean>
 }
 
 const Review: React.FC<IProps> = ({
-  prevStage,
+  electionId,
   locked,
-  refresh,
+  goToPrevStage,
   startNextRound,
 }: IProps) => {
-  const { electionId } = useParams<{ electionId: string }>()
-  const [auditSettings] = useAuditSettings(electionId)
-  const jurisdictions = useJurisdictionsDeprecated(electionId)
-  const [jurisdictionsFile] = useJurisdictionsFile(electionId)
-  const [standardizedContestsFile] = useStandardizedContestsFile(
+  const auditSettingsQuery = useAuditSettings(electionId)
+  const jurisdictionsQuery = useJurisdictions(electionId)
+  const jurisdictionsFileUpload = useJurisdictionsFile(electionId)
+  const isStandardizedContestsFileEnabled =
+    auditSettingsQuery.data?.auditType === 'BALLOT_COMPARISON' ||
+    auditSettingsQuery.data?.auditType === 'HYBRID'
+  const standardizedContestsFileUpload = useStandardizedContestsFile(
     electionId,
-    auditSettings
+    { enabled: isStandardizedContestsFileEnabled }
   )
-  const [contests] = useContests(electionId)
-  const history = useHistory()
+  const contestsQuery = useContests(electionId)
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
 
   const [
     standardizations,
     updateStandardizations,
-  ] = useContestNameStandardizations(electionId, auditSettings)
+  ] = useContestNameStandardizations(
+    electionId,
+    auditSettingsQuery.data || null
+  )
   const [
     isStandardizationsDialogOpen,
     setIsStandardizationsDialogOpen,
@@ -112,10 +112,14 @@ const Review: React.FC<IProps> = ({
     !!standardizations && !(standardizationNeeded && standardizationOutstanding)
 
   const setupComplete =
-    !!jurisdictions &&
-    !!contests &&
-    !!auditSettings &&
-    isSetupComplete(jurisdictions, contests, auditSettings)
+    jurisdictionsQuery.isSuccess &&
+    contestsQuery.isSuccess &&
+    auditSettingsQuery.isSuccess &&
+    isSetupComplete(
+      jurisdictionsQuery.data,
+      contestsQuery.data,
+      auditSettingsQuery.data
+    )
   const shouldLoadSampleSizes = setupComplete && standardizationComplete
   const sampleSizesResponse = useSampleSizes(
     electionId,
@@ -123,22 +127,28 @@ const Review: React.FC<IProps> = ({
     shouldLoadSampleSizes
   )
 
-  if (!jurisdictions || !contests || !auditSettings) return null // Still loading
-
+  if (
+    !jurisdictionsQuery.isSuccess ||
+    !contestsQuery.isSuccess ||
+    !auditSettingsQuery.isSuccess
+  )
+    return null // Still loading
+  const jurisdictions = jurisdictionsQuery.data
+  const contests = contestsQuery.data
   const {
     electionName,
     randomSeed,
     riskLimit,
     online,
     auditType,
-  } = auditSettings
+  } = auditSettingsQuery.data
 
   const participatingJurisdictions = jurisdictions.filter(({ id }) =>
     contests.some(c => c.jurisdictionIds.includes(id))
   )
 
   const cvrsUploaded =
-    !['BALLOT_COMPARISON', 'HYBRID'].includes(auditSettings.auditType) ||
+    !['BALLOT_COMPARISON', 'HYBRID'].includes(auditType) ||
     allCvrsUploaded(participatingJurisdictions)
 
   const numManifestUploadsComplete = participatingJurisdictions.filter(j =>
@@ -197,13 +207,11 @@ const Review: React.FC<IProps> = ({
               <td>Participating Jurisdictions:</td>
               <td>
                 <a
-                  href={`/api/election/${electionId}/jurisdiction/file/csv`}
+                  href={jurisdictionsFileUpload.downloadFileUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  {jurisdictionsFile && jurisdictionsFile.file
-                    ? jurisdictionsFile.file.name
-                    : ''}
+                  {jurisdictionsFileUpload.uploadedFile.data?.file?.name || ''}
                 </a>
               </td>
             </tr>
@@ -212,13 +220,12 @@ const Review: React.FC<IProps> = ({
                 <td>Standardized Contests:</td>
                 <td>
                   <a
-                    href={`/api/election/${electionId}/standardized-contests/file/csv`}
+                    href={standardizedContestsFileUpload.downloadFileUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    {standardizedContestsFile && standardizedContestsFile.file
-                      ? standardizedContestsFile.file.name
-                      : ''}
+                    {standardizedContestsFileUpload.uploadedFile.data?.file
+                      ?.name || ''}
                   </a>
                 </td>
               </tr>
@@ -440,12 +447,7 @@ const Review: React.FC<IProps> = ({
         }: {
           sampleSizes: IFormOptions
         }) => {
-          if (await startNextRound(sampleSizes)) {
-            refresh()
-            history.push(`/election/${electionId}/progress`)
-          } else {
-            // TEST TODO when withMockFetch works with error handling
-          }
+          await startNextRound(sampleSizes)
         }
 
         const targetedContests = contests.filter(contest => contest.isTargeted)
@@ -691,7 +693,9 @@ const Review: React.FC<IProps> = ({
         )
       })()}
       <FormButtonBar>
-        <FormButton onClick={prevStage.activate}>Back</FormButton>
+        <FormButton disabled={locked} onClick={goToPrevStage}>
+          Back
+        </FormButton>
         <FormButton
           intent="primary"
           disabled={

@@ -99,21 +99,23 @@ interface FetchRequest {
   }
 }
 
-const isEqualRequestBody = (
-  body1?: BodyInit | null,
-  body2?: BodyInit | null
-) => {
-  const unpackFormData = (body?: BodyInit | null) => {
-    if (body instanceof FormData) {
-      return [...body.entries()].map(([key, value]) => [
-        key,
-        value instanceof File ? { name: value.name, type: value.type } : value,
-      ])
-    }
-    return body
+const requestBodyToJSON = (body?: BodyInit | null) => {
+  if (body instanceof FormData) {
+    return [...body.entries()].map(([key, value]) => [
+      key,
+      value instanceof File ? { name: value.name, type: value.type } : value,
+    ])
   }
-  return equal(unpackFormData(body1), unpackFormData(body2))
+  if (typeof body === 'string') {
+    return JSON.parse(body)
+  }
+  return body
 }
+
+const normalizeRequestOptions = (options: RequestInit) => ({
+  ...options,
+  body: requestBodyToJSON(options.body),
+})
 
 export const withMockFetch = async (
   requests: FetchRequest[],
@@ -128,12 +130,15 @@ export const withMockFetch = async (
       return new Response(JSON.stringify(null))
     }
 
-    const expectedOptions = expectedRequest.options || {}
+    const actualOptions = normalizeRequestOptions(options)
+    const expectedOptions = normalizeRequestOptions(
+      expectedRequest.options || {}
+    )
     if (
       expectedRequest.url === url &&
-      expectedOptions.method === options.method &&
-      equal(expectedOptions.headers, options.headers) &&
-      isEqualRequestBody(expectedOptions.body, options.body)
+      expectedOptions.method === actualOptions.method &&
+      equal(expectedOptions.headers, actualOptions.headers) &&
+      equal(expectedOptions.body, actualOptions.body)
     ) {
       return expectedRequest.error
         ? new Response(
@@ -186,11 +191,11 @@ export const withMockFetch = async (
 
   const actualRequests = mockFetch.mock.calls.map(([url, options]) => ({
     url,
-    options,
+    options: options && normalizeRequestOptions(options),
   }))
   const expectedRequests = requests.map(({ url, options }) => ({
     url,
-    options,
+    options: options && normalizeRequestOptions(options),
   }))
   expect(actualRequests).toEqual(expectedRequests)
 }

@@ -1,28 +1,32 @@
 import React from 'react'
-import { Route } from 'react-router-dom'
-import { screen, within, waitFor } from '@testing-library/react'
+import { screen, within, waitFor, render } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { renderWithRouter, withMockFetch } from '../../../testUtilities'
-import relativeStages from '../_mocks'
-import Contests from './Contests'
+import { QueryClientProvider } from 'react-query'
+import { withMockFetch, createQueryClient } from '../../../testUtilities'
+import Contests, { IContestsProps } from './Contests'
 import { IContest, INewContest } from '../../../useContestsBallotComparison'
 import { aaApiCalls } from '../../../_mocks'
 
-const { nextStage, prevStage } = relativeStages('target-contests')
-
-const render = (isTargeted = true) =>
-  renderWithRouter(
-    <Route path="/election/:electionId/setup">
-      <Contests
-        auditType="BALLOT_COMPARISON"
-        locked={false}
-        isTargeted={isTargeted}
-        nextStage={nextStage}
-        prevStage={prevStage}
-      />
-    </Route>,
-    { route: '/election/1/setup' }
-  )
+const renderContests = (props: Partial<IContestsProps> = {}) => {
+  const goToNextStage = jest.fn()
+  const goToPrevStage = jest.fn()
+  return {
+    goToNextStage,
+    goToPrevStage,
+    ...render(
+      <QueryClientProvider client={createQueryClient()}>
+        <Contests
+          electionId="1"
+          auditType="BALLOT_COMPARISON"
+          isTargeted
+          goToNextStage={goToNextStage}
+          goToPrevStage={goToPrevStage}
+          {...props}
+        />
+      </QueryClientProvider>
+    ),
+  }
+}
 
 const apiCalls = {
   getStandardizedContests: {
@@ -95,7 +99,7 @@ describe('Audit Setup > Contests (Ballot Comparison)', () => {
       apiCalls.getContests(newContests),
     ]
     await withMockFetch(expectedCalls, async () => {
-      render()
+      const { goToNextStage } = renderContests()
       await screen.findByRole('heading', { name: 'Target Contests' })
 
       const headers = screen.getAllByRole('columnheader')
@@ -166,7 +170,7 @@ describe('Audit Setup > Contests (Ballot Comparison)', () => {
 
       // Submit the form
       userEvent.click(screen.getByRole('button', { name: 'Save & Next' }))
-      await waitFor(() => expect(nextStage.activate).toHaveBeenCalled())
+      await waitFor(() => expect(goToNextStage).toHaveBeenCalled())
     })
   })
 
@@ -195,7 +199,7 @@ describe('Audit Setup > Contests (Ballot Comparison)', () => {
       ),
     ]
     await withMockFetch(expectedCalls, async () => {
-      render(false)
+      const { goToNextStage } = renderContests({ isTargeted: false })
       await screen.findByRole('heading', { name: 'Opportunistic Contests' })
 
       const rows = screen.getAllByRole('row')
@@ -226,7 +230,7 @@ describe('Audit Setup > Contests (Ballot Comparison)', () => {
 
       // Submit the form
       userEvent.click(screen.getByRole('button', { name: 'Save & Next' }))
-      await waitFor(() => expect(nextStage.activate).toHaveBeenCalled())
+      await waitFor(() => expect(goToNextStage).toHaveBeenCalled())
     })
   })
 
@@ -237,7 +241,7 @@ describe('Audit Setup > Contests (Ballot Comparison)', () => {
       aaApiCalls.getJurisdictions,
     ]
     await withMockFetch(expectedCalls, async () => {
-      render()
+      renderContests()
       await screen.findByRole('heading', { name: 'Target Contests' })
 
       // Reverse sort by Contest Name

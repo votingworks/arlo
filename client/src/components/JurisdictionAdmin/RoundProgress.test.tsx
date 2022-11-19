@@ -1,7 +1,7 @@
 import React from 'react'
 import { render } from '@testing-library/react'
 import RoundProgress from './RoundProgress'
-import { auditBoardMocks } from '../AuditAdmin/useSetupMenuItems/_mocks'
+import { auditBoardMocks } from '../_mocks'
 
 describe('RoundProgress', () => {
   it('renders nothing with no audit boards', () => {

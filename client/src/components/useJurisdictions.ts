@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
-import { useQuery } from 'react-query'
+import { useQuery, UseQueryResult } from 'react-query'
 import { api } from './utilities'
 import { IFileInfo, FileProcessingStatus } from './useCSV'
-import { fetchApi } from '../utils/api'
+import { fetchApi, ApiError } from '../utils/api'
 
 export interface IBallotManifestInfo extends IFileInfo {
   numBallots: number | null
@@ -126,15 +126,19 @@ export const useJurisdictionsDeprecated = (
   return jurisdictions
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export const useJurisdictions = (electionId: string, refreshId?: string) => {
-  return useQuery(
-    ['elections', electionId, 'jurisdictions', { refreshId }],
-    async () => {
-      const response: { jurisdictions: IJurisdiction[] } = await fetchApi(
-        `/api/election/${electionId}/jurisdiction`
-      )
-      return response && response.jurisdictions
-    }
-  )
+export const jurisdictionsQueryKey = (electionId: string): string[] => [
+  'elections',
+  electionId,
+  'jurisdictions',
+]
+
+export const useJurisdictions = (
+  electionId: string
+): UseQueryResult<IJurisdiction[], ApiError> => {
+  return useQuery(jurisdictionsQueryKey(electionId), async () => {
+    const response: { jurisdictions: IJurisdiction[] } = await fetchApi(
+      `/api/election/${electionId}/jurisdiction`
+    )
+    return response.jurisdictions
+  })
 }

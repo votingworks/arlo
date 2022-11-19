@@ -1,24 +1,26 @@
 import React from 'react'
 import userEvent from '@testing-library/user-event'
 import { screen, fireEvent, waitFor, within } from '@testing-library/react'
-import { useParams } from 'react-router-dom'
-import { toast } from 'react-toastify'
-import relativeStages from '../_mocks'
+import { QueryClientProvider } from 'react-query'
 import Review from './Review'
 import { settingsMock, sampleSizeMock } from './_mocks'
-import { contestMocks } from '../Contests/_mocks'
 import {
-  jurisdictionMocks,
-  fileProcessingMocks,
-  auditSettings,
-} from '../../useSetupMenuItems/_mocks'
-import { withMockFetch, renderWithRouter } from '../../../testUtilities'
+  withMockFetch,
+  renderWithRouter,
+  createQueryClient,
+} from '../../../testUtilities'
 import { IJurisdiction } from '../../../useJurisdictions'
 import { IContest } from '../../../../types'
 import { IAuditSettings } from '../../../useAuditSettings'
 import { ISampleSizesResponse } from './useSampleSizes'
 import { FileProcessingStatus } from '../../../useCSV'
 import { IContestNameStandardizations } from '../../../useContestNameStandardizations'
+import {
+  fileProcessingMocks,
+  jurisdictionMocks,
+  contestMocks,
+  auditSettingsMocks,
+} from '../../../_mocks'
 
 const apiCalls = {
   getSettings: (response: IAuditSettings) => ({
@@ -33,20 +35,6 @@ const apiCalls = {
     url: '/api/election/1/round',
     response: { rounds: [] },
   },
-  postRound: (sampleSizes: { [contestId: string]: number }) => ({
-    url: '/api/election/1/round',
-    response: { status: 'ok' },
-    options: {
-      body: JSON.stringify({
-        roundNum: 1,
-        sampleSizes,
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      method: 'POST',
-    },
-  }),
   getJurisdictions: (response: { jurisdictions: IJurisdiction[] }) => ({
     url: '/api/election/1/jurisdiction',
     response,
@@ -65,9 +53,9 @@ const apiCalls = {
       processing: fileProcessingMocks.processed,
     },
   },
-  getContests: (response: { contests: IContest[] }) => ({
+  getContests: (contests: IContest[]) => ({
     url: '/api/election/1/contest',
-    response,
+    response: { contests },
   }),
   getStandardizations: (response: IContestNameStandardizations) => ({
     url: '/api/election/1/contest/standardizations',
@@ -88,44 +76,27 @@ const apiCalls = {
   }),
 }
 
-const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
+const renderView = (props = {}) => {
+  const goToPrevStage = jest.fn()
+  const startNextRound = jest.fn().mockResolvedValue(true)
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'), // use actual for all non-hook parts
-  useParams: jest.fn(),
-}))
-const routeMock = useParams as jest.Mock
-routeMock.mockReturnValue({
-  electionId: '1',
-  view: 'setup',
-})
+  return {
+    goToPrevStage,
+    startNextRound,
 
-const { prevStage } = relativeStages('review')
-
-const refreshMock = jest.fn()
-const startNextRoundMock = jest.fn().mockResolvedValue(true)
-
-const renderView = (props = {}) =>
-  renderWithRouter(
-    <Review
-      locked={false}
-      prevStage={prevStage}
-      refresh={refreshMock}
-      startNextRound={startNextRoundMock}
-      {...props}
-    />,
-    {
-      route: '/election/1/setup',
-    }
-  )
-
-beforeEach(() => {
-  refreshMock.mockClear()
-  startNextRoundMock.mockClear()
-  toastSpy.mockClear()
-  routeMock.mockClear()
-  ;(prevStage.activate as jest.Mock).mockClear()
-})
+    ...renderWithRouter(
+      <QueryClientProvider client={createQueryClient()}>
+        <Review
+          electionId="1"
+          startNextRound={startNextRound}
+          locked={false}
+          goToPrevStage={goToPrevStage}
+          {...props}
+        />
+      </QueryClientProvider>
+    ),
+  }
+}
 
 describe('Audit Setup > Review & Launch', () => {
   it('renders empty state', async () => {
@@ -295,7 +266,7 @@ describe('Audit Setup > Review & Launch', () => {
 
   it('for hybrid audits, shows the CVR/non-CVR vote totals and sample sizes, including a custom option', async () => {
     const expectedCalls = [
-      apiCalls.getSettings(auditSettings.hybridAll),
+      apiCalls.getSettings(auditSettingsMocks.hybridAll),
       apiCalls.getJurisdictions({
         jurisdictions: jurisdictionMocks.allManifestsWithCVRs,
       }),
@@ -316,7 +287,7 @@ describe('Audit Setup > Review & Launch', () => {
       }),
     ]
     await withMockFetch(expectedCalls, async () => {
-      renderView()
+      const { startNextRound } = renderView()
       await screen.findByText('Review & Launch')
 
       // Vote totals in contest section
@@ -366,7 +337,7 @@ describe('Audit Setup > Review & Launch', () => {
       userEvent.click(confirmLaunchButton)
 
       await waitFor(() => {
-        expect(startNextRoundMock).toHaveBeenCalledWith({
+        expect(startNextRound).toHaveBeenCalledWith({
           'contest-id': {
             key: 'custom',
             sizeCvr: 10,
@@ -375,14 +346,13 @@ describe('Audit Setup > Review & Launch', () => {
             prob: null,
           },
         })
-        expect(refreshMock).toHaveBeenCalled()
       })
     })
   })
 
   it('for hybrid audits, doesnt show the CVR/non-CVR vote totals when sample sizes errors', async () => {
     const expectedCalls = [
-      apiCalls.getSettings(auditSettings.hybridAll),
+      apiCalls.getSettings(auditSettingsMocks.hybridAll),
       apiCalls.getJurisdictions({
         jurisdictions: jurisdictionMocks.allManifestsWithCVRs,
       }),
@@ -433,7 +403,7 @@ describe('Audit Setup > Review & Launch', () => {
 
   it('when CVRs arent all uploaded for ballot comparison audits, hides contest settings and sample sizes', async () => {
     const expectedCalls = [
-      apiCalls.getSettings(auditSettings.ballotComparisonAll),
+      apiCalls.getSettings(auditSettingsMocks.ballotComparisonAll),
       apiCalls.getJurisdictions({
         jurisdictions: jurisdictionMocks.allManifestsSomeCVRs,
       }),
@@ -479,7 +449,7 @@ describe('Audit Setup > Review & Launch', () => {
       apiCalls.getSampleSizeOptions(sampleSizeMock.ballotPolling),
     ]
     await withMockFetch(expectedCalls, async () => {
-      renderView()
+      const { startNextRound } = renderView()
       await screen.findByText('Review & Launch')
       const launchButton = screen.getByText('Launch Audit')
       userEvent.click(launchButton)
@@ -487,10 +457,9 @@ describe('Audit Setup > Review & Launch', () => {
       const confirmLaunchButton = screen.getAllByText('Launch Audit')[1]
       userEvent.click(confirmLaunchButton)
       await waitFor(() => {
-        expect(startNextRoundMock).toHaveBeenCalledWith({
+        expect(startNextRound).toHaveBeenCalledWith({
           'contest-id': { key: 'asn', size: 20, prob: 0.54 },
         })
-        expect(refreshMock).toHaveBeenCalled()
       })
     })
   })
@@ -532,7 +501,7 @@ describe('Audit Setup > Review & Launch', () => {
       apiCalls.getSampleSizeOptions(sampleSizeMock.ballotPolling),
     ]
     await withMockFetch(expectedCalls, async () => {
-      renderView()
+      const { startNextRound } = renderView()
       const newSampleSize = await screen.findByText(
         '21 samples (70% chance of reaching risk limit and completing the audit in one round)'
       )
@@ -543,10 +512,9 @@ describe('Audit Setup > Review & Launch', () => {
       const confirmLaunchButton = screen.getAllByText('Launch Audit')[1]
       userEvent.click(confirmLaunchButton)
       await waitFor(() => {
-        expect(startNextRoundMock).toHaveBeenCalledWith({
+        expect(startNextRound).toHaveBeenCalledWith({
           'contest-id': { key: '0.7', size: 21, prob: 0.7 },
         })
-        expect(refreshMock).toHaveBeenCalled()
       })
     })
   })
@@ -562,7 +530,7 @@ describe('Audit Setup > Review & Launch', () => {
       apiCalls.getSampleSizeOptions(sampleSizeMock.ballotPolling),
     ]
     await withMockFetch(expectedCalls, async () => {
-      renderView()
+      const { startNextRound } = renderView()
       const newSampleSize = await screen.findByText(
         'Enter your own sample size (not recommended)'
       )
@@ -588,17 +556,16 @@ describe('Audit Setup > Review & Launch', () => {
       const confirmLaunchButton = screen.getAllByText('Launch Audit')[1]
       userEvent.click(confirmLaunchButton)
       await waitFor(() => {
-        expect(startNextRoundMock).toHaveBeenCalledWith({
+        expect(startNextRound).toHaveBeenCalledWith({
           'contest-id': { key: 'custom', size: 5, prob: null },
         })
-        expect(refreshMock).toHaveBeenCalled()
       })
     })
   })
 
   it('has links to download jurisdictions and standardized contests file', async () => {
     const expectedCalls = [
-      apiCalls.getSettings(auditSettings.ballotComparisonAll),
+      apiCalls.getSettings(auditSettingsMocks.ballotComparisonAll),
       apiCalls.getJurisdictions({
         jurisdictions: jurisdictionMocks.allManifests,
       }),
@@ -660,7 +627,7 @@ describe('Audit Setup > Review & Launch', () => {
 
   it('custom sample size validation - ballot comparison', async () => {
     const expectedCalls = [
-      apiCalls.getSettings(auditSettings.ballotComparisonAll),
+      apiCalls.getSettings(auditSettingsMocks.ballotComparisonAll),
       apiCalls.getJurisdictions({
         jurisdictions: jurisdictionMocks.allManifestsWithCVRs,
       }),
@@ -694,7 +661,7 @@ describe('Audit Setup > Review & Launch', () => {
 
   it('shows the selected sample size after launch', async () => {
     const expectedCalls = [
-      apiCalls.getSettings(auditSettings.all),
+      apiCalls.getSettings(auditSettingsMocks.all),
       apiCalls.getJurisdictions({
         jurisdictions: jurisdictionMocks.allManifests,
       }),
@@ -749,7 +716,7 @@ describe('Audit Setup > Review & Launch', () => {
       'jurisdiction-id-2': ['Contest One', 'Contest Two'],
     }
     const expectedCalls = [
-      apiCalls.getSettings(auditSettings.ballotComparisonAll),
+      apiCalls.getSettings(auditSettingsMocks.ballotComparisonAll),
       apiCalls.getJurisdictions({
         jurisdictions: jurisdictionMocks.allManifestsWithCVRs,
       }),
@@ -888,7 +855,7 @@ describe('Audit Setup > Review & Launch', () => {
 
   it('in ballot polling, shows a warning when selected sample size is a full hand tally', async () => {
     const expectedCalls = [
-      apiCalls.getSettings(auditSettings.all),
+      apiCalls.getSettings(auditSettingsMocks.all),
       apiCalls.getJurisdictions({
         jurisdictions: jurisdictionMocks.allManifests,
       }),
@@ -919,27 +886,26 @@ describe('Audit Setup > Review & Launch', () => {
 
   it('in ballot polling, shows an error when one of multiple target contests is a full hand tally', async () => {
     const expectedCalls = [
-      apiCalls.getSettings(auditSettings.all),
+      apiCalls.getSettings(auditSettingsMocks.all),
       apiCalls.getJurisdictions({
         jurisdictions: jurisdictionMocks.allManifests,
       }),
       apiCalls.getJurisdictionFile,
-      apiCalls.getContests({
-        contests: [
-          contestMocks.filledTargeted.contests[0],
-          {
-            ...contestMocks.filledTargeted.contests[0],
-            name: 'Contest 2',
-            id: 'contest-id-2',
-          },
-        ],
-      }),
+      apiCalls.getContests([
+        contestMocks.filledTargeted[0],
+        {
+          ...contestMocks.filledTargeted[0],
+          name: 'Contest 2',
+          id: 'contest-id-2',
+        },
+      ]),
       apiCalls.getSampleSizeOptions({
         ...sampleSizeMock.ballotPolling,
         sampleSizes: {
           ...sampleSizeMock.ballotPolling.sampleSizes,
-          'contest-id-2':
-            sampleSizeMock.ballotPolling.sampleSizes['contest-id'],
+          'contest-id-2': sampleSizeMock.ballotPolling.sampleSizes![
+            'contest-id'
+          ],
         },
       }),
     ]
@@ -969,7 +935,7 @@ describe('Audit Setup > Review & Launch', () => {
 
   it('shows a warning when custom sample size is a full hand tally', async () => {
     const expectedCalls = [
-      apiCalls.getSettings(auditSettings.all),
+      apiCalls.getSettings(auditSettingsMocks.all),
       apiCalls.getJurisdictions({
         jurisdictions: jurisdictionMocks.allManifests,
       }),
@@ -1005,7 +971,7 @@ describe('Audit Setup > Review & Launch', () => {
 
   it('in a ballot comparison audit, shows an error when sample size is a full hand tally', async () => {
     const expectedCalls = [
-      apiCalls.getSettings(auditSettings.ballotComparisonAll),
+      apiCalls.getSettings(auditSettingsMocks.ballotComparisonAll),
       apiCalls.getJurisdictions({
         jurisdictions: jurisdictionMocks.allManifestsWithCVRs,
       }),
@@ -1037,7 +1003,7 @@ describe('Audit Setup > Review & Launch', () => {
 
   it('in a batch comparison audit, shows a warning when sample size is a full hand tally', async () => {
     const expectedCalls = [
-      apiCalls.getSettings(auditSettings.batchComparisonAll),
+      apiCalls.getSettings(auditSettingsMocks.batchComparisonAll),
       apiCalls.getJurisdictions({
         jurisdictions: jurisdictionMocks.allManifestsAllTallies,
       }),

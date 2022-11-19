@@ -15,17 +15,6 @@ export const jurisdictionFile = new File(
   { type: 'text/csv' }
 )
 
-export const jurisdictionErrorFile = new File(
-  [
-    readFileSync(
-      join(__dirname, '../../useSetupMenuItems/test_error_jurisdiction.csv'),
-      'utf8'
-    ),
-  ],
-  'jurisdictions.csv',
-  { type: 'text/csv' }
-)
-
 export const standardizedContestsFile = new File(
   [
     readFileSync(

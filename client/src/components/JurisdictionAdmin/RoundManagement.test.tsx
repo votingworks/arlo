@@ -10,7 +10,12 @@ import {
   fullHandTallyBatchResultMock,
 } from './_mocks'
 import { IBatch } from './useBatchResults'
-import { jaApiCalls } from '../_mocks'
+import {
+  jaApiCalls,
+  auditSettingsMocks,
+  auditBoardMocks,
+  contestMocks,
+} from '../_mocks'
 import { IAuditSettings } from '../useAuditSettings'
 import { IFullHandTallyBatchResults } from './useFullHandTallyResults'
 import RoundManagement, { IRoundManagementProps } from './RoundManagement'
@@ -22,11 +27,6 @@ import {
 import AuthDataProvider from '../UserContext'
 import { dummyBallots } from '../AuditBoard/_mocks'
 import { IContest } from '../../types'
-import {
-  auditSettings,
-  auditBoardMocks,
-  contestMocks,
-} from '../AuditAdmin/useSetupMenuItems/_mocks'
 
 const mockSavePDF = jest.fn()
 jest.mock('jspdf', () => {
@@ -89,7 +89,7 @@ describe('RoundManagement', () => {
 
   it('renders audit board setup for ballot audit', async () => {
     const expectedCalls = [
-      apiCalls.getSettings(auditSettings.all),
+      apiCalls.getSettings(auditSettingsMocks.all),
       jaApiCalls.getUser,
       apiCalls.getBallotCount,
     ]
@@ -109,7 +109,7 @@ describe('RoundManagement', () => {
 
   it('renders message when audit complete', async () => {
     const expectedCalls = [
-      apiCalls.getSettings(auditSettings.all),
+      apiCalls.getSettings(auditSettingsMocks.all),
       jaApiCalls.getUser,
       apiCalls.getBallotCount,
     ]
@@ -127,7 +127,7 @@ describe('RoundManagement', () => {
 
   it('renders audit board progress for online ballot audit', async () => {
     const expectedCalls = [
-      apiCalls.getSettings(auditSettings.all),
+      apiCalls.getSettings(auditSettingsMocks.all),
       jaApiCalls.getUser,
       apiCalls.getBallotCount,
     ]
@@ -156,7 +156,7 @@ describe('RoundManagement', () => {
 
   it('renders tally entry form for offline ballot audit', async () => {
     const expectedCalls = [
-      apiCalls.getSettings(auditSettings.offlineAll),
+      apiCalls.getSettings(auditSettingsMocks.offlineAll),
       jaApiCalls.getUser,
       apiCalls.getBallotCount,
       apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
@@ -186,7 +186,7 @@ describe('RoundManagement', () => {
 
   it('renders batch audit 3-step flow', async () => {
     const expectedCalls = [
-      apiCalls.getSettings(auditSettings.batchComparisonAll),
+      apiCalls.getSettings(auditSettingsMocks.batchComparisonAll),
       jaApiCalls.getUser,
       apiCalls.getBatches(batchesMocks.emptyInitial),
       apiCalls.getBatches(batchesMocks.emptyInitial),
@@ -209,7 +209,7 @@ describe('RoundManagement', () => {
 
   it('shows a message when no ballots assigned', async () => {
     const expectedCalls = [
-      apiCalls.getSettings(auditSettings.all),
+      apiCalls.getSettings(auditSettingsMocks.all),
       jaApiCalls.getUser,
       jaApiCalls.getBallotCount([]),
     ]
@@ -231,7 +231,7 @@ describe('RoundManagement', () => {
 
   it('shows a message when no batches assigned', async () => {
     const expectedCalls = [
-      apiCalls.getSettings(auditSettings.batchComparisonAll),
+      apiCalls.getSettings(auditSettingsMocks.batchComparisonAll),
       jaApiCalls.getUser,
       apiCalls.getBatches({ batches: [] }),
     ]
@@ -253,7 +253,7 @@ describe('RoundManagement', () => {
 
   it('shows full hand tally data entry when all ballots sampled', async () => {
     const expectedCalls = [
-      apiCalls.getSettings(auditSettings.offlineAll),
+      apiCalls.getSettings(auditSettingsMocks.offlineAll),
       jaApiCalls.getUser,
       apiCalls.getBallotCount,
       apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),

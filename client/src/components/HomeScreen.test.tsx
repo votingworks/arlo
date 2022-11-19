@@ -7,14 +7,21 @@ import {
   createQueryClient,
 } from './testUtilities'
 import App from '../App'
-import { aaApiCalls, apiCalls, mockOrganizations, jaApiCalls } from './_mocks'
-import { auditSettings } from './AuditAdmin/useSetupMenuItems/_mocks'
+import {
+  aaApiCalls,
+  apiCalls,
+  mockOrganizations,
+  jaApiCalls,
+  auditSettingsMocks,
+  contestMocks,
+} from './_mocks'
 
 const setupScreenCalls = [
   aaApiCalls.getRounds([]),
   aaApiCalls.getJurisdictions,
-  aaApiCalls.getContests,
-  aaApiCalls.getSettings(auditSettings.blank),
+  aaApiCalls.getContests(contestMocks.filledTargeted),
+  aaApiCalls.getSettings(auditSettingsMocks.blank),
+  aaApiCalls.getJurisdictionFile,
 ]
 
 const renderView = (route: string) =>
@@ -204,17 +211,6 @@ describe('Home screen', () => {
       }),
       aaApiCalls.getOrganizations(mockOrganizations.oneOrgOneAudit),
       ...setupScreenCalls,
-      aaApiCalls.getJurisdictionFile,
-      aaApiCalls.getRounds([]),
-      ...setupScreenCalls,
-      aaApiCalls.getSettings(auditSettings.blank),
-      aaApiCalls.getJurisdictionFile,
-      ...setupScreenCalls,
-      aaApiCalls.getJurisdictionFile,
-      aaApiCalls.getRounds([]),
-      ...setupScreenCalls,
-      aaApiCalls.getSettings(auditSettings.blank),
-      aaApiCalls.getJurisdictionFile,
     ]
     await withMockFetch(expectedCalls, async () => {
       const { history } = renderView('/')
@@ -273,11 +269,6 @@ describe('Home screen', () => {
       }),
       aaApiCalls.getOrganizations(mockOrganizations.twoOrgs),
       ...setupScreenCalls,
-      aaApiCalls.getJurisdictionFile,
-      aaApiCalls.getRounds([]),
-      ...setupScreenCalls,
-      aaApiCalls.getSettings(auditSettings.blank),
-      aaApiCalls.getJurisdictionFile,
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView('/')
@@ -406,11 +397,6 @@ describe('Home screen', () => {
       }),
       aaApiCalls.getOrganizations(mockOrganizations.oneOrgOneAudit),
       ...setupScreenCalls,
-      aaApiCalls.getJurisdictionFile,
-      aaApiCalls.getRounds([]),
-      ...setupScreenCalls,
-      aaApiCalls.getSettings(auditSettings.blank),
-      aaApiCalls.getJurisdictionFile,
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView('/')
@@ -445,11 +431,6 @@ describe('Home screen', () => {
       }),
       aaApiCalls.getOrganizations(mockOrganizations.oneOrgOneAudit),
       ...setupScreenCalls,
-      aaApiCalls.getJurisdictionFile,
-      aaApiCalls.getRounds([]),
-      ...setupScreenCalls,
-      aaApiCalls.getSettings(auditSettings.blank),
-      aaApiCalls.getJurisdictionFile,
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView('/')
@@ -484,11 +465,6 @@ describe('Home screen', () => {
       }),
       aaApiCalls.getOrganizations(mockOrganizations.oneOrgOneAudit),
       ...setupScreenCalls,
-      aaApiCalls.getJurisdictionFile,
-      aaApiCalls.getRounds([]),
-      ...setupScreenCalls,
-      aaApiCalls.getSettings(auditSettings.blank),
-      aaApiCalls.getJurisdictionFile,
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView('/')
@@ -518,7 +494,7 @@ describe('Home screen', () => {
   it('shows a list of audits for jurisdiction admins', async () => {
     const expectedCalls = [
       jaApiCalls.getUser,
-      jaApiCalls.getSettings(auditSettings.blank),
+      jaApiCalls.getSettings(auditSettingsMocks.blank),
       jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile({ file: null, processing: null }),
     ]
@@ -588,7 +564,7 @@ describe('Home screen', () => {
   it('redirects to audit screen if only one election exists for JA', async () => {
     const expectedCalls = [
       jaApiCalls.getUserWithOneElection,
-      jaApiCalls.getSettings(auditSettings.blank),
+      jaApiCalls.getSettings(auditSettingsMocks.blank),
       jaApiCalls.getRounds([]),
       jaApiCalls.getBallotManifestFile({ file: null, processing: null }),
     ]

@@ -1,10 +1,9 @@
 import React from 'react'
 import { QueryClientProvider } from 'react-query'
 import { render, screen } from '@testing-library/react'
-import { tallyEntryApiCalls } from '../_mocks'
+import { tallyEntryApiCalls, contestMocks } from '../_mocks'
 import TallyEntryScreen from './TallyEntryScreen'
 import { withMockFetch, createQueryClient } from '../testUtilities'
-import { contestMocks } from '../AuditAdmin/useSetupMenuItems/_mocks'
 import { batchesMocks } from '../JurisdictionAdmin/_mocks'
 
 const renderScreen = () =>

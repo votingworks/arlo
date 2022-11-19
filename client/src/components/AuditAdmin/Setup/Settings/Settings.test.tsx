@@ -1,39 +1,46 @@
 import React from 'react'
-import { waitFor, screen } from '@testing-library/react'
-import { Route } from 'react-router-dom'
+import { waitFor, screen, render } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import relativeStages from '../_mocks'
+import { QueryClientProvider } from 'react-query'
 import Settings from './Settings'
-import { renderWithRouter, withMockFetch } from '../../../testUtilities'
-import { aaApiCalls } from '../../../_mocks'
-import { auditSettings } from '../../useSetupMenuItems/_mocks'
+import { withMockFetch, createQueryClient } from '../../../testUtilities'
+import { aaApiCalls, auditSettingsMocks } from '../../../_mocks'
 
-const { nextStage, prevStage } = relativeStages('settings')
-
-const renderSettings = () =>
-  renderWithRouter(
-    <Route path="/election/:electionId/setup">
-      <Settings locked={false} nextStage={nextStage} prevStage={prevStage} />
-    </Route>,
-    { route: '/election/1/setup' }
-  )
+const renderSettings = () => {
+  const goToNextStage = jest.fn()
+  const goToPrevStage = jest.fn()
+  return {
+    goToNextStage,
+    goToPrevStage,
+    ...render(
+      <QueryClientProvider client={createQueryClient()}>
+        <Settings
+          electionId="1"
+          goToNextStage={goToNextStage}
+          goToPrevStage={goToPrevStage}
+        />
+      </QueryClientProvider>
+    ),
+  }
+}
 
 describe('Setup > Settings', () => {
   it('updates settings', async () => {
+    const updatedSettings = {
+      ...auditSettingsMocks.blank,
+      state: 'CA',
+      electionName: 'Election Name',
+      online: true,
+      riskLimit: 5,
+      randomSeed: '12345',
+    }
     const expectedCalls = [
-      aaApiCalls.getSettings(auditSettings.blank),
-      aaApiCalls.getSettings(auditSettings.blank),
-      aaApiCalls.putSettings({
-        ...auditSettings.blank,
-        state: 'CA',
-        electionName: 'Election Name',
-        online: true,
-        riskLimit: 5,
-        randomSeed: '12345',
-      }),
+      aaApiCalls.getSettings(auditSettingsMocks.blank),
+      aaApiCalls.putSettings(updatedSettings),
+      aaApiCalls.getSettings(updatedSettings),
     ]
     await withMockFetch(expectedCalls, async () => {
-      renderSettings()
+      const { goToNextStage } = renderSettings()
 
       await screen.findByRole('heading', { name: 'Audit Settings' })
 
@@ -76,14 +83,14 @@ describe('Setup > Settings', () => {
       userEvent.click(screen.getByRole('button', { name: 'Save & Next' }))
 
       await waitFor(() => {
-        expect(nextStage.activate).toHaveBeenCalled()
+        expect(goToNextStage).toHaveBeenCalled()
       })
     })
   })
 
   it('hides online/offline toggle for batch comparison audits', async () => {
     const expectedCalls = [
-      aaApiCalls.getSettings(auditSettings.batchComparisonAll),
+      aaApiCalls.getSettings(auditSettingsMocks.batchComparisonAll),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderSettings()
@@ -98,7 +105,7 @@ describe('Setup > Settings', () => {
 
   it('hides online/offline toggle for ballot comparison audits', async () => {
     const expectedCalls = [
-      aaApiCalls.getSettings(auditSettings.ballotComparisonAll),
+      aaApiCalls.getSettings(auditSettingsMocks.ballotComparisonAll),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderSettings()
@@ -112,7 +119,7 @@ describe('Setup > Settings', () => {
   })
 
   it('hides online/offline toggle for hybrid audits', async () => {
-    const expectedCalls = [aaApiCalls.getSettings(auditSettings.hybridAll)]
+    const expectedCalls = [aaApiCalls.getSettings(auditSettingsMocks.hybridAll)]
     await withMockFetch(expectedCalls, async () => {
       renderSettings()
 
@@ -125,7 +132,7 @@ describe('Setup > Settings', () => {
   })
 
   it('displays error when no selection done', async () => {
-    const expectedCalls = [aaApiCalls.getSettings(auditSettings.blank)]
+    const expectedCalls = [aaApiCalls.getSettings(auditSettingsMocks.blank)]
     await withMockFetch(expectedCalls, async () => {
       renderSettings()
 

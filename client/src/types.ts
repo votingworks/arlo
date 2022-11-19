@@ -8,10 +8,10 @@ export interface IErrorResponse {
   }[]
 }
 
-export interface ICandidate {
+export interface IChoice {
   id: string
   name: string
-  numVotes: number | string
+  numVotes: number
   numVotesCvr?: number
   numVotesNonCvr?: number
 }
@@ -20,10 +20,10 @@ export interface IContest {
   id: string
   isTargeted: boolean
   name: string
-  numWinners: string
-  votesAllowed: string
-  choices: ICandidate[]
-  totalBallotsCast: string
+  numWinners: number
+  votesAllowed: number
+  choices: IChoice[]
+  totalBallotsCast: number
   jurisdictionIds: string[]
 }
 

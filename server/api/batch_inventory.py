@@ -149,26 +149,24 @@ def process_batch_inventory_cvr_file(jurisdiction_id: str):
         )
 
 
+TABULATOR_STATUS_PARSE_ERROR = (
+    "We could not parse this file. Please make sure you upload the plain XML version of the tabulator status report."
+    ' The file name should end in ".xml" and should not contain the words "To Excel".'
+)
+
+
 @background_task
 def process_batch_inventory_tabulator_status_file(jurisdiction_id: str):
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction_id)
     file = retrieve_file(batch_inventory_data.tabulator_status_file.storage_path)
-    contents = file.read().decode("utf-8")
-
-    if contents.startswith("<html"):
-        raise UserError(
-            "This looks like the HTML version of the tabulator status report."
-            ' Please upload the XML version (which has a file name ending in ".xml").'
-        )
-    if contents.startswith("<Workbook"):
-        raise UserError(
-            "This looks like the Excel version of the tabulator status report."
-            ' Please upload the plain XML version (which has a file name ending in ".xml" and does not contain the words "To Excel").'
-        )
-
-    cvr_xml = ElementTree.fromstring(contents)
+    try:
+        cvr_xml = ElementTree.parse(file)
+    except Exception as error:
+        raise UserError(TABULATOR_STATUS_PARSE_ERROR) from error
 
     tabulators = cvr_xml.findall("tabulators/tb")
+    if len(tabulators) == 0:
+        raise UserError(TABULATOR_STATUS_PARSE_ERROR)
     tabulator_id_to_name = {
         tabulator.get("tid"): tabulator.get("name") for tabulator in tabulators
     }
