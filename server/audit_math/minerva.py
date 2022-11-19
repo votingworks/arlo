@@ -19,7 +19,7 @@ from .sampler_contest import Contest
 from ..config import MINERVA_MULTIPLE
 
 
-def make_arlo_contest(tally, num_winners=1, votes_allowed=1):
+def make_arlo_contest(tally, num_winners=1, votes_allowed=1) -> Contest:
     """Return an Arlo Contest with the given tally (a dictionary of candidate_name:vote_counts)
     Treat "_undervote_" candidate as undervotes
     For testing purposes.
@@ -52,7 +52,7 @@ def make_sample_results(
 
     return sample_results
 
-def fix_landslide_arlo_contest(contest: Contest, alpha: int) -> Contest:
+def fix_landslide_arlo_contest(contest: Contest, alpha: float) -> Contest:
     """Add one vote to all candidates who received zero votes
 
     Athena's wald_k_min throws a ValueError if it finds a margin between candidates of 0 or 1.
