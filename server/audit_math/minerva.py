@@ -11,6 +11,7 @@ TODO: if necessary pull out risks for individual contests
 
 """
 import logging
+import math
 from typing import List, Dict, Tuple, Optional
 
 from athena.audit import Audit as AthenaAudit  # type: ignore
@@ -51,6 +52,32 @@ def make_sample_results(
 
     return sample_results
 
+def fix_landslide_arlo_contest(contest: Contest, alpha: int) -> Contest:
+    """Add one vote to all candidates who received zero votes
+
+    Athena's wald_k_min throws a ValueError if it finds a margin between candidates of 0 or 1.
+    By ensuring all candidates have 1 vote, we can calculate first round sizes between candidates.
+    If the margin is already a landslide, the difference of one vote shouldn't significantly
+    affect the number of rounds needed to verify the winner.
+
+    Warning will be generated if the round size is *increased* by the small size of the contest.
+    Round size will never decrease because of a small contest, only increase.
+    """
+    new_candidate_dict = dict(contest.candidates)
+    num_votes = sum(new_candidate_dict.values())
+
+    # Experimentally found by calculating first round sizes for a variety of risks and landslide total votes and graphing
+    # the point at which too few total votes grew the round sizes.
+    # The relationship seems to be: when the risk factor is cut in half, minimum votes required goes up by 5
+    risky_amount = math.ceil((3 + math.log(20, 2) - math.log(alpha, 2)) * 5)
+    if num_votes <= risky_amount:
+        logging.warning("Landslide contests with few total votes may produce larger first round sizes than expected")
+        logging.warning(f"Landslide contest with {num_votes} total votes is being run.")
+    for key, val in contest.margins["losers"].items():
+        if val['s_l'] == 0:
+            logging.debug(f"landslide margin detected, fixing candidate {key} from 0 to 1")
+            new_candidate_dict[key] += 1
+    return make_arlo_contest(new_candidate_dict)
 
 def make_athena_audit(arlo_contest, alpha):
     """Make an Athena audit object, with associated contest and election, from an Arlo contest
@@ -141,6 +168,9 @@ def get_sample_size(
         round_size_options = [-1 for quant in quants]
     else:
         try:
+            # Check for a landslide condition.
+            if max(val['s_l'] for val in contest.margins["losers"].values()) == 0:
+                contest = fix_landslide_arlo_contest(contest, alpha)
             audit = make_athena_audit(contest, alpha)
             round_size_options = audit.find_next_round_size(quants)[
                 "future_round_sizes"
@@ -149,10 +179,6 @@ def get_sample_size(
             if str(e) == "Incorrect reported winners":
                 # Tied election
                 round_size_options = [contest.ballots for quant in quants]
-            else:
-                # E.g. str(e) == "Margin needs to be different than 0 or 1" ?
-                # Handle landslides. TODO: this works for a 10% risk limit.
-                round_size_options = [4 for quant in quants]
 
     return {
         str(quant): {"type": None, "size": size, "prob": quant}
@@ -191,7 +217,9 @@ def collect_risks(
         #    raise ValueError(f"{round_size=} not equal to sum({obs=})")
         audit.set_observations(round_size, sum(obs), obs)
 
-        # TODO: check for the audit being over, after which it will throw an error
+        # Check for the audit being over, otherwise athena will throw an error
+        if audit.status[audit.active_contest].risks[-1] < alpha:
+            break
         logging.debug(
             f"minerva  collect_risks: {audit.status[audit.active_contest].risks[-1]=}"
         )

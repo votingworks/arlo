@@ -1,4 +1,5 @@
 # pylint: disable=invalid-name
+import logging
 import pytest
 
 from pytest import approx
@@ -87,6 +88,82 @@ def test_get_sample_size_landslide():
         "0.9": {"type": None, "size": 4, "prob": 0.9},
     }
 
+
+def test_get_sample_size_landslide_other_risks():
+    d2 = minerva.make_arlo_contest({"a": 100, "b": 0})
+    res = minerva.get_sample_size(10, d2, None, [])
+    assert res == {
+        "0.7": {"type": None, "size": 4, "prob": 0.7},
+        "0.8": {"type": None, "size": 4, "prob": 0.8},
+        "0.9": {"type": None, "size": 4, "prob": 0.9},
+    }
+
+    assert d2.margins == {
+        'winners': {
+            'a': {'p_w': 1, 's_w': 1, 'swl': {'b': 1}}
+        },
+        'losers': {
+            'b': {'p_l': 0, 's_l': 0}
+        }
+    }
+
+    d2 = minerva.make_arlo_contest({"a": 100, "b": 0, "c": 0})
+    res = minerva.get_sample_size(10, d2, None, [])
+    assert res == {
+        "0.7": {"type": None, "size": 5, "prob": 0.7},
+        "0.8": {"type": None, "size": 5, "prob": 0.8},
+        "0.9": {"type": None, "size": 5, "prob": 0.9},
+    }
+
+    assert d2.margins == {
+        'winners': {
+            'a': {'p_w': 1, 's_w': 1, 'swl': {'b': 1, 'c': 1}}
+        },
+        'losers': {
+            'b': {'p_l': 0, 's_l': 0},
+            'c': {'p_l': 0, 's_l': 0}
+        }
+    }
+
+    d2 = minerva.make_arlo_contest({"a": 100, "b": 0})
+    res = minerva.get_sample_size(5, d2, None, [])
+    assert res == {
+        "0.7": {"type": None, "size": 5, "prob": 0.7},
+        "0.8": {"type": None, "size": 5, "prob": 0.8},
+        "0.9": {"type": None, "size": 5, "prob": 0.9},
+    }
+
+    assert d2.margins == {
+        'winners': {
+            'a': {'p_w': 1, 's_w': 1, 'swl': {'b': 1}}
+        },
+        'losers': {
+            'b': {'p_l': 0, 's_l': 0}
+        }
+    }
+
+    d2 = minerva.make_arlo_contest({"a": 1000, "b": 0})
+    res = minerva.get_sample_size(1, d2, None, [])
+    assert res == {
+        "0.7": {"type": None, "size": 7, "prob": 0.7},
+        "0.8": {"type": None, "size": 7, "prob": 0.8},
+        "0.9": {"type": None, "size": 7, "prob": 0.9},
+    }
+    assert d2.margins == {
+        'winners': {
+            'a': {'p_w': 1, 's_w': 1, 'swl': {'b': 1}}
+        },
+        'losers': {
+            'b': {'p_l': 0, 's_l': 0}
+        }
+    }
+
+
+def test_get_sample_size_landslide_low_votes(caplog):
+    caplog.set_level(logging.WARN)
+    d2 = minerva.make_arlo_contest({"a": 10, "b": 0})
+    res = minerva.get_sample_size(1, d2, None, [])
+    assert [record.levelname for record in caplog.records].count("WARNING") > 0
 
 def test_get_sample_size_big():
     # Binary search result, just over approximation threshold of 1.5% margin
