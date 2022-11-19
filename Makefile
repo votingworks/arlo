@@ -40,6 +40,8 @@ format-server:
 lint-server:
 	poetry run pylint server scripts fixtures
 
+preflight: typecheck-server format-server lint-server
+
 test-client:
 	yarn --cwd client lint
 	yarn --cwd client test

@@ -52,6 +52,7 @@ def make_sample_results(
 
     return sample_results
 
+
 def fix_landslide_arlo_contest(contest: Contest, alpha: float) -> Contest:
     """Add one vote to all candidates who received zero votes
 
@@ -71,13 +72,18 @@ def fix_landslide_arlo_contest(contest: Contest, alpha: float) -> Contest:
     # The relationship seems to be: when the risk factor is cut in half, minimum votes required goes up by 5
     risky_amount = math.ceil((3 + math.log(20, 2) - math.log(alpha, 2)) * 5)
     if num_votes <= risky_amount:
-        logging.warning("Landslide contests with few total votes may produce larger first round sizes than expected")
+        logging.warning(
+            "Landslide contests with few total votes may produce larger first round sizes than expected"
+        )
         logging.warning(f"Landslide contest with {num_votes} total votes is being run.")
     for key, val in contest.margins["losers"].items():
-        if val['s_l'] == 0:
-            logging.debug(f"landslide margin detected, fixing candidate {key} from 0 to 1")
+        if val["s_l"] == 0:
+            logging.debug(
+                f"landslide margin detected, fixing candidate {key} from 0 to 1"
+            )
             new_candidate_dict[key] += 1
     return make_arlo_contest(new_candidate_dict)
+
 
 def make_athena_audit(arlo_contest, alpha):
     """Make an Athena audit object, with associated contest and election, from an Arlo contest
@@ -169,7 +175,7 @@ def get_sample_size(
     else:
         try:
             # Check for a landslide condition.
-            if max(val['s_l'] for val in contest.margins["losers"].values()) == 0:
+            if max(val["s_l"] for val in contest.margins["losers"].values()) == 0:
                 contest = fix_landslide_arlo_contest(contest, alpha)
             audit = make_athena_audit(contest, alpha)
             round_size_options = audit.find_next_round_size(quants)[
