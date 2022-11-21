@@ -155,13 +155,6 @@ describe('Batch Comparison', () => {
         })
       })
 
-    cy.findAllByRole('columnheader')
-      .eq(0)
-      .contains('Choice')
-    cy.findAllByRole('columnheader')
-      .eq(1)
-      .contains('Votes')
-
     const auditBatch = (batchName, { vader, palpatine }) => {
       cy.findByRole('button', { name: batchName }).click()
       cy.findByRole('button', { name: /Edit Tallies/ }).click()
