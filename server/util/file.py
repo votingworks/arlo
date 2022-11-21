@@ -3,7 +3,7 @@ import shutil
 import io
 import os
 import tempfile
-from typing import IO, BinaryIO, Dict, Optional
+from typing import BinaryIO, Dict, IO, List, Optional, Tuple
 from urllib.parse import urlparse
 from zipfile import ZipFile
 import boto3
@@ -92,11 +92,10 @@ def zip_files(files: Dict[str, BinaryIO]) -> IO[bytes]:
     return zip_file
 
 
-def unzip_files(zip_file: BinaryIO) -> Dict[str, BinaryIO]:
-    extract_dir = tempfile.TemporaryDirectory()
+# Returns 1) the path of the temporary directory to which files were extracted and 2) the names of
+# the extracted files. Consumers are responsible for deleting the temporary directory.
+def unzip_files(zip_file: BinaryIO,) -> Tuple[str, List[str]]:
+    extract_dir = tempfile.mkdtemp()
     with ZipFile(zip_file, "r") as zip_archive:
-        zip_archive.extractall(extract_dir.name)
-        return {
-            file_name: open(os.path.join(extract_dir.name, file_name), "rb")
-            for file_name in zip_archive.namelist()
-        }
+        zip_archive.extractall(extract_dir)
+        return extract_dir, zip_archive.namelist()
