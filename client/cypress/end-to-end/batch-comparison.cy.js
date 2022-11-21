@@ -143,6 +143,7 @@ describe('Batch Comparison', () => {
                   })
                 })
               cy.findByRole('button', { name: 'Confirm' }).click()
+              cy.logout(jurisdictionAdmin)
 
               // Switch back to tally entry user, who should now be logged in
               cy.setCookie('session', tallyEntryCookie.value, tallyEntryCookie)
