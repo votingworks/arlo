@@ -1033,6 +1033,7 @@ def parse_hart_cvrs(
 
     def parse_cvr_ballots() -> Iterable[CvrBallot]:
         for (cvr_zip_file_name, cvr_file_name), cvr_file_path in cvr_file_paths.items():
+            cvr_zip_file_name_without_extension = cvr_zip_file_name[:-4]
             cvr_file = open(cvr_file_path, "rb")
             cvr_xml = ET.parse(cvr_file)
             cvr_file.close()
@@ -1041,7 +1042,7 @@ def parse_hart_cvrs(
             batch_sequence = find(cvr_xml, "BatchSequence").text
 
             db_batch = batches_by_key.get(
-                (cvr_zip_file_name.strip(".zip"), batch_number)
+                (cvr_zip_file_name_without_extension, batch_number)
                 if use_cvr_zip_file_names_as_tabulator_names
                 else batch_number
             )
@@ -1067,7 +1068,8 @@ def parse_hart_cvrs(
                     raise UserError(
                         f"Error in file: {cvr_file_name} from {cvr_zip_file_name}. "
                         "Couldn't find a matching batch for "
-                        f"Tabulator: {cvr_zip_file_name.strip('.zip')}, BatchNumber: {batch_number}. "
+                        f"Tabulator: {cvr_zip_file_name_without_extension}, "
+                        f"BatchNumber: {batch_number}. "
                         "The BatchNumber field in the CVR file must match the Batch Name field in "
                         "the ballot manifest, and the ZIP file name must match the Tabulator "
                         "field in the ballot manifest. " + general_guidance
