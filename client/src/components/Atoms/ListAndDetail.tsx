@@ -28,15 +28,17 @@ export const ListAndDetail = styled.div`
   display: grid;
   grid-template-columns: 240px 1fr;
   height: 100%;
-  overflow-y: auto;
   width: 100%;
 `
 
 // ---------- List ----------
 
 const ListContainer = styled.div`
+  display: flex;
+  flex-direction: column;
   border-right: 1px solid ${Colors.LIGHT_GRAY2};
-  overflow-y: auto;
+  height: 0; /* Remove from the height calculation of the parent */
+  min-height: 100%; /* Take up the full height of the parent (based on the detail panel) */
 `
 
 const ListSearch = styled.div`
@@ -49,6 +51,7 @@ const ListItems = styled.ul`
   margin: 0;
   padding: 0;
   padding-bottom: 40px;
+  overflow-y: auto; /* Scroll the items if there are too many to fit */
 `
 
 interface IListProps {
@@ -140,6 +143,5 @@ export const ListSearchNoResults = styled.div`
 // ---------- Detail ----------
 
 export const Detail = styled.div`
-  overflow-y: auto;
   padding: 16px;
 `
