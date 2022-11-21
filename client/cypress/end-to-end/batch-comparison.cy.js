@@ -172,9 +172,7 @@ describe('Batch Comparison', () => {
     cy.logout()
 
     cy.loginJurisdictionAdmin(jurisdictionAdmin)
-    cy.findByRole('link', { name: 'Enter Tallies' })
-      .should('be.enabled')
-      .click()
+    cy.findByRole('heading', { name: 'Enter Tallies', current: 'step' })
     auditBatch('Batch 10', { vader: 3000, palpatine: 0 })
     cy.findByRole('button', { name: /Finalize Tallies/ }).click()
     cy.findByRole('button', { name: /Confirm/ }).click()
