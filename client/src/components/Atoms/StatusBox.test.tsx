@@ -2,9 +2,10 @@ import React from 'react'
 import { BrowserRouter as Router, useParams } from 'react-router-dom'
 import { render, fireEvent, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { QueryClientProvider } from 'react-query'
 import { AuditAdminStatusBox } from './StatusBox'
 import { IAuditSettings } from '../useAuditSettings'
-import { withMockFetch } from '../testUtilities'
+import { withMockFetch, createQueryClient } from '../testUtilities'
 import {
   aaApiCalls,
   auditSettingsMocks,
@@ -239,16 +240,18 @@ describe('StatusBox', () => {
       await withMockFetch(expectedCalls, async () => {
         const startNextRoundMock = jest.fn()
         render(
-          <Router>
-            <AuditAdminStatusBox
-              rounds={roundMocks.needAnother}
-              startNextRound={startNextRoundMock}
-              undoRoundStart={jest.fn()}
-              jurisdictions={jurisdictionMocks.allComplete}
-              contests={contestMocks.filledTargeted}
-              auditSettings={auditSettingsMocks.ballotComparisonAll}
-            />
-          </Router>
+          <QueryClientProvider client={createQueryClient()}>
+            <Router>
+              <AuditAdminStatusBox
+                rounds={roundMocks.needAnother}
+                startNextRound={startNextRoundMock}
+                undoRoundStart={jest.fn()}
+                jurisdictions={jurisdictionMocks.allComplete}
+                contests={contestMocks.filledTargeted}
+                auditSettings={auditSettingsMocks.ballotComparisonAll}
+              />
+            </Router>
+          </QueryClientProvider>
         )
         screen.getByText(
           'Round 1 of the audit is complete - another round is needed'
@@ -284,16 +287,18 @@ describe('StatusBox', () => {
       await withMockFetch(expectedCalls, async () => {
         const startNextRoundMock = jest.fn()
         render(
-          <Router>
-            <AuditAdminStatusBox
-              rounds={roundMocks.needAnother}
-              startNextRound={startNextRoundMock}
-              undoRoundStart={jest.fn()}
-              jurisdictions={jurisdictionMocks.allComplete}
-              contests={contestMocks.filledTargeted}
-              auditSettings={auditSettingsMocks.batchComparisonAll}
-            />
-          </Router>
+          <QueryClientProvider client={createQueryClient()}>
+            <Router>
+              <AuditAdminStatusBox
+                rounds={roundMocks.needAnother}
+                startNextRound={startNextRoundMock}
+                undoRoundStart={jest.fn()}
+                jurisdictions={jurisdictionMocks.allComplete}
+                contests={contestMocks.filledTargeted}
+                auditSettings={auditSettingsMocks.batchComparisonAll}
+              />
+            </Router>
+          </QueryClientProvider>
         )
         screen.getByText(
           'Round 1 of the audit is complete - another round is needed'
@@ -322,16 +327,18 @@ describe('StatusBox', () => {
       ]
       await withMockFetch(expectedCalls, async () => {
         render(
-          <Router>
-            <AuditAdminStatusBox
-              rounds={roundMocks.needAnother}
-              startNextRound={jest.fn()}
-              undoRoundStart={jest.fn()}
-              jurisdictions={jurisdictionMocks.allComplete}
-              contests={contestMocks.filledTargeted}
-              auditSettings={auditSettingsMocks.ballotComparisonAll}
-            />
-          </Router>
+          <QueryClientProvider client={createQueryClient()}>
+            <Router>
+              <AuditAdminStatusBox
+                rounds={roundMocks.needAnother}
+                startNextRound={jest.fn()}
+                undoRoundStart={jest.fn()}
+                jurisdictions={jurisdictionMocks.allComplete}
+                contests={contestMocks.filledTargeted}
+                auditSettings={auditSettingsMocks.ballotComparisonAll}
+              />
+            </Router>
+          </QueryClientProvider>
         )
         await screen.findByText(
           'Error computing sample sizes: something went wrong'
