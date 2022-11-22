@@ -840,7 +840,7 @@ def parse_hart_cvrs(
     flag_temporary_directory_for_removal(wrapper_zip_file_extract_dir)
     wrapper_zip_file.close()
 
-    cvr_zip_files: Dict[str, BinaryIO] = {}
+    cvr_zip_files: Dict[str, BinaryIO] = {}  # { file_name: file }
     scanned_ballot_information_file: Union[BinaryIO, None] = None
     for file_name in file_names:
         if file_name.lower().endswith(".zip"):
@@ -911,13 +911,17 @@ def parse_hart_cvrs(
         else {}
     )
 
-    cvr_file_paths: Dict[Tuple[str, str], str] = {}
+    cvr_file_paths: Dict[
+        Tuple[str, str], str
+    ] = {}  # { (zip_file_name, file_name): file_path }
     for cvr_zip_file_name, cvr_zip_file in cvr_zip_files.items():
         cvr_zip_file_extract_dir, cvr_file_names = unzip_files(cvr_zip_file)
         flag_temporary_directory_for_removal(cvr_zip_file_extract_dir)
         for cvr_file_name in cvr_file_names:
             # Ignore extraneous files, like the WriteIn directory
             if cvr_file_name.lower().endswith(".xml"):
+                # Don't open the files here and just prepare the paths so that they can be opened
+                # and closed one at a time later to avoid hitting "Too many open files" errors
                 cvr_file_paths[(cvr_zip_file_name, cvr_file_name)] = os.path.join(
                     cvr_zip_file_extract_dir, cvr_file_name
                 )
