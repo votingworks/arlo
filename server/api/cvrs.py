@@ -1016,14 +1016,7 @@ def parse_hart_cvrs(
             cvr_guid = find(cvr_xml, "CvrGuid").text
             batch_number = find(cvr_xml, "BatchNumber").text
             batch_sequence = find(cvr_xml, "BatchSequence").text
-            sheet_number = find(cvr_xml, "SheetNumber").text
             file.close()
-            if sheet_number != "1":
-                raise UserError(
-                    f"Error in file: {file_name}."
-                    " Arlo currently only supports Hart CVRs with SheetNumber 1."
-                    f" Got SheetNumber: {sheet_number}."
-                )
 
             db_batch = batches_by_key.get(
                 (cvr_zip_file_name.strip(".zip"), batch_number)
