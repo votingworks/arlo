@@ -1031,14 +1031,25 @@ def parse_hart_cvrs(
     }
 
     def parse_cvr_ballots() -> Iterable[CvrBallot]:
+        i = 0
         for (cvr_zip_file_name, cvr_file_name), cvr_file_path in cvr_file_paths.items():
             cvr_zip_file_name_without_extension = cvr_zip_file_name[:-4]
             cvr_file = open(cvr_file_path, "rb")
             cvr_xml = ET.parse(cvr_file)
             cvr_file.close()
             cvr_guid = find(cvr_xml, "CvrGuid").text
-            batch_number = find(cvr_xml, "BatchNumber").text
-            batch_sequence = find(cvr_xml, "BatchSequence").text
+            batch_number = (
+                "TBD"
+                if find(cvr_xml, "BatchNumber") is None  # pragma: no cover
+                else find(cvr_xml, "BatchNumber").text
+            )
+            batch_sequence = (
+                i
+                if find(cvr_xml, "BatchNumber") is None  # pragma: no cover
+                else find(cvr_xml, "BatchSequence").text
+            )
+            if find(cvr_xml, "BatchNumber") is None:  # pragma: no cover
+                i += 1
 
             db_batch = batches_by_key.get(
                 (cvr_zip_file_name_without_extension, batch_number)
