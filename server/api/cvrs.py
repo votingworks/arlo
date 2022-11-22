@@ -9,7 +9,6 @@ from xml.etree import ElementTree as ET
 from typing import (
     IO,
     BinaryIO,
-    Callable,
     Dict,
     Iterable,
     Iterator,
@@ -462,8 +461,7 @@ def parse_dominion_cvrs(
 
 
 def parse_ess_cvrs(
-    jurisdiction: Jurisdiction,
-    flag_temporary_directory_for_removal: Callable[[str], None],
+    jurisdiction: Jurisdiction, working_directory: str,
 ) -> Tuple[CVR_CONTESTS_METADATA, Iterable[CvrBallot]]:
     # Parsing ES&S CVRs is more complicated than, say, Dominion.
     # There are two main data sources:
@@ -485,8 +483,7 @@ def parse_ess_cvrs(
     # 5. Concatenate the parsed CVRBallot lists and join that to the parsed interpretation
 
     zip_file = retrieve_file(jurisdiction.cvr_file.storage_path)
-    extract_dir, file_names = unzip_files(zip_file)
-    flag_temporary_directory_for_removal(extract_dir)
+    file_names = unzip_files(zip_file, working_directory)
     zip_file.close()
 
     def decode_file(file: IO[bytes], file_name: str) -> TextIO:
@@ -498,7 +495,7 @@ def parse_ess_cvrs(
 
     text_files = {
         file_name: decode_file(
-            open(os.path.join(extract_dir, file_name), "rb"), file_name
+            open(os.path.join(working_directory, file_name), "rb"), file_name
         )
         for file_name in file_names
     }
@@ -810,8 +807,7 @@ def parse_ess_cvrs(
 
 
 def parse_hart_cvrs(
-    jurisdiction: Jurisdiction,
-    flag_temporary_directory_for_removal: Callable[[str], None],
+    jurisdiction: Jurisdiction, working_directory: str,
 ) -> Tuple[CVR_CONTESTS_METADATA, Iterable[CvrBallot]]:
     """
     A Hart CVR export is a ZIP file containing an individual XML file for each ballot's CVR.
@@ -836,8 +832,7 @@ def parse_hart_cvrs(
     6. Parse the interpretations.
     """
     wrapper_zip_file = retrieve_file(jurisdiction.cvr_file.storage_path)
-    wrapper_zip_file_extract_dir, file_names = unzip_files(wrapper_zip_file)
-    flag_temporary_directory_for_removal(wrapper_zip_file_extract_dir)
+    file_names = unzip_files(wrapper_zip_file, working_directory)
     wrapper_zip_file.close()
 
     cvr_zip_files: Dict[str, BinaryIO] = {}  # { file_name: file }
@@ -845,11 +840,11 @@ def parse_hart_cvrs(
     for file_name in file_names:
         if file_name.lower().endswith(".zip"):
             cvr_zip_files[file_name] = open(
-                os.path.join(wrapper_zip_file_extract_dir, file_name), "rb"
+                os.path.join(working_directory, file_name), "rb"
             )
         if file_name.lower().endswith(".csv"):
             scanned_ballot_information_file = open(
-                os.path.join(wrapper_zip_file_extract_dir, file_name), "rb"
+                os.path.join(working_directory, file_name), "rb"
             )
 
     if len(cvr_zip_files) == 0:
@@ -915,15 +910,15 @@ def parse_hart_cvrs(
         Tuple[str, str], str
     ] = {}  # { (zip_file_name, file_name): file_path }
     for cvr_zip_file_name, cvr_zip_file in cvr_zip_files.items():
-        cvr_zip_file_extract_dir, cvr_file_names = unzip_files(cvr_zip_file)
-        flag_temporary_directory_for_removal(cvr_zip_file_extract_dir)
+        sub_working_directory = tempfile.mkdtemp(dir=working_directory)
+        cvr_file_names = unzip_files(cvr_zip_file, sub_working_directory)
         for cvr_file_name in cvr_file_names:
             # Ignore extraneous files, like the WriteIn directory
             if cvr_file_name.lower().endswith(".xml"):
                 # Don't open the files here and just prepare the paths so that they can be opened
                 # and closed one at a time later to avoid hitting "Too many open files" errors
                 cvr_file_paths[(cvr_zip_file_name, cvr_file_name)] = os.path.join(
-                    cvr_zip_file_extract_dir, cvr_file_name
+                    sub_working_directory, cvr_file_name
                 )
 
     namespace = "http://tempuri.org/CVRDesign.xsd"
@@ -1109,15 +1104,11 @@ def process_cvr_file(
 ):
     jurisdiction = Jurisdiction.query.get(jurisdiction_id)
 
-    temporary_directories_to_be_removed = []
-
-    def flag_temporary_directory_for_removal(path: str):
-        temporary_directories_to_be_removed.append(path)
+    working_directory = tempfile.mkdtemp()
 
     def clean_up_file_system():
-        for temporary_directory in temporary_directories_to_be_removed:
-            if os.path.exists(temporary_directory):
-                shutil.rmtree(temporary_directory)
+        if os.path.exists(working_directory):
+            shutil.rmtree(working_directory)
 
     def process() -> None:
         # Ideally, the CVR should have the same number of ballots as the
@@ -1133,13 +1124,9 @@ def process_cvr_file(
             elif jurisdiction.cvr_file_type == CvrFileType.CLEARBALLOT:
                 return parse_clearballot_cvrs(jurisdiction)
             elif jurisdiction.cvr_file_type == CvrFileType.ESS:
-                return parse_ess_cvrs(
-                    jurisdiction, flag_temporary_directory_for_removal
-                )
+                return parse_ess_cvrs(jurisdiction, working_directory)
             elif jurisdiction.cvr_file_type == CvrFileType.HART:
-                return parse_hart_cvrs(
-                    jurisdiction, flag_temporary_directory_for_removal
-                )
+                return parse_hart_cvrs(jurisdiction, working_directory)
             else:
                 raise Exception(
                     f"Unsupported CVR file type: {jurisdiction.cvr_file_type}"
