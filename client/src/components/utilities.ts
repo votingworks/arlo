@@ -75,6 +75,32 @@ export const downloadFile = (fileBlob: Blob, fileName?: string): void => {
   document.body.removeChild(a)
 }
 
+// Deprecated - use react-query's refetch interval
+export const poll = (
+  condition: () => Promise<boolean>,
+  callback: () => void,
+  errback: (arg0: Error) => void,
+  timeout = 120000,
+  interval = 1000
+): void => {
+  const endTime = Date.now() + timeout
+  ;(async function p() {
+    const time = Date.now()
+    try {
+      const done = await condition()
+      if (done) {
+        callback()
+      } else if (time < endTime) {
+        setTimeout(p, interval)
+      } else {
+        errback(new Error(`Timed out`))
+      }
+    } catch (err) {
+      errback(err)
+    }
+  })()
+}
+
 const numberSchema = number()
   .typeError('Must be a number')
   .integer('Must be an integer')

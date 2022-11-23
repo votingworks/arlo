@@ -299,12 +299,13 @@ const AuditAdminAnotherRoundStatusBox = ({
   startNextRound,
   children,
 }: IAuditAdminAnotherRoundStatusBoxProps) => {
-  const sampleSizesQuery = useSampleSizes(electionId, roundNum + 1)
+  const sampleSizesResponse = useSampleSizes(electionId, roundNum + 1, true)
   // The server should autoselect one option per contest, so we pick the first
   // item in the options array for each contest
   const sampleSizes =
-    sampleSizesQuery.data?.sampleSizes &&
-    mapValues(sampleSizesQuery.data.sampleSizes, options => options[0])
+    sampleSizesResponse &&
+    sampleSizesResponse.sampleSizes &&
+    mapValues(sampleSizesResponse.sampleSizes, options => options[0])
   const ballotsOrBatches =
     auditSettings.auditType === 'BATCH_COMPARISON' ? 'batches' : 'ballots'
 
@@ -312,11 +313,14 @@ const AuditAdminAnotherRoundStatusBox = ({
     <StatusBox
       headline={`Round ${roundNum} of the audit is complete - another round is needed`}
       details={(() => {
-        if (!sampleSizesQuery.data?.task.completedAt)
+        if (
+          sampleSizesResponse === null ||
+          sampleSizesResponse.task.completedAt === null
+        )
           return ['Loading sample sizes...']
-        if (sampleSizesQuery.data.task.error !== null)
+        if (sampleSizesResponse.task.error !== null)
           return [
-            `Error computing sample sizes: ${sampleSizesQuery.data.task.error}`,
+            `Error computing sample sizes: ${sampleSizesResponse.task.error}`,
           ]
         return [
           `Round ${roundNum + 1} Sample Sizes`,

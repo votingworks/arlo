@@ -1,6 +1,7 @@
-import { UseQueryOptions, useQuery, UseQueryResult } from 'react-query'
+import { useEffect, useState } from 'react'
+import { toast } from 'react-toastify'
+import { api, poll } from '../../../utilities'
 import { FileProcessingStatus } from '../../../useCSV'
-import { fetchApi, ApiError } from '../../../../utils/api'
 
 export interface ISampleSizeOption {
   size: number | null
@@ -30,15 +31,43 @@ export interface ISampleSizesResponse {
   }
 }
 
+const getSampleSizeOptions = async (
+  electionId: string,
+  roundNumber: number
+): Promise<ISampleSizesResponse | null> =>
+  api(`/election/${electionId}/sample-sizes/${roundNumber}`)
+
 const useSampleSizes = (
   electionId: string,
   roundNumber: number,
-  options: UseQueryOptions<ISampleSizesResponse, ApiError> = {}
-): UseQueryResult<ISampleSizesResponse, ApiError> =>
-  useQuery<ISampleSizesResponse, ApiError>(
-    ['elections', electionId, 'sample-sizes', roundNumber],
-    () => fetchApi(`/api/election/${electionId}/sample-sizes/${roundNumber}`),
-    options
-  )
+  shouldFetch: boolean
+): ISampleSizesResponse | null => {
+  const [
+    sampleSizeOptions,
+    setSampleSizeOptions,
+  ] = useState<ISampleSizesResponse | null>(null)
+
+  useEffect(() => {
+    ;(async () => {
+      const isComplete = async () => {
+        const response = await getSampleSizeOptions(electionId, roundNumber)
+        if (response && response.task.completedAt !== null) {
+          setSampleSizeOptions(response)
+          return true
+        }
+        return false
+      }
+      if (shouldFetch)
+        poll(
+          isComplete,
+          () => null,
+          err => toast.error(err.message),
+          5 * 60 * 1000 // Time out loading sample sizes after 5 minutes
+        )
+    })()
+  }, [electionId, roundNumber, shouldFetch])
+
+  return sampleSizeOptions
+}
 
 export default useSampleSizes
