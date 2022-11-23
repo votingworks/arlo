@@ -6,7 +6,7 @@ if [[ $DATABASE_URL ]]; then
 
     # Reset the db if we're deploying the vuln scanning app
     if [[ $SCANNING_INSTANCE ]]; then
-        $FLASK_ENV python -m scripts.resetdb
+       ~/.local/bin/poetry python -m scripts.resetdb
     fi
 else
     echo "DATABASE_URL not set, skipping migrations"
