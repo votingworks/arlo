@@ -3,9 +3,14 @@ import { BrowserRouter as Router, useParams } from 'react-router-dom'
 import { render, fireEvent, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { QueryClientProvider } from 'react-query'
+import { ToastContainer } from 'react-toastify'
 import { AuditAdminStatusBox } from './StatusBox'
 import { IAuditSettings } from '../useAuditSettings'
-import { withMockFetch, createQueryClient } from '../testUtilities'
+import {
+  withMockFetch,
+  createQueryClient,
+  findAndCloseToast,
+} from '../testUtilities'
 import {
   aaApiCalls,
   auditSettingsMocks,
@@ -230,11 +235,15 @@ describe('StatusBox', () => {
     })
 
     it('renders round complete, need another round state', async () => {
+      jest.useFakeTimers()
       const expectedCalls = [
         {
-          ...aaApiCalls.getSampleSizes,
+          ...aaApiCalls.getSampleSizes(sampleSizeMock.calculating),
           url: '/api/election/1/sample-sizes/2',
-          response: sampleSizeMock.ballotComparison,
+        },
+        {
+          ...aaApiCalls.getSampleSizes(sampleSizeMock.ballotComparison),
+          url: '/api/election/1/sample-sizes/2',
         },
       ]
       await withMockFetch(expectedCalls, async () => {
@@ -250,23 +259,28 @@ describe('StatusBox', () => {
                 contests={contestMocks.filledTargeted}
                 auditSettings={auditSettingsMocks.ballotComparisonAll}
               />
+              <ToastContainer />
             </Router>
           </QueryClientProvider>
         )
         screen.getByText(
           'Round 1 of the audit is complete - another round is needed'
         )
-        screen.getByText('Loading sample sizes...')
-        screen.getByRole('button', { name: 'Start Round 2' })
+        await screen.findByText('Loading sample sizes...')
+
+        const startRound2Button = screen.getByRole('button', {
+          name: 'Start Round 2',
+        })
+        userEvent.click(startRound2Button)
+        await findAndCloseToast('Sample sizes are still loading')
+
+        jest.advanceTimersByTime(1000)
+
         await screen.findByText('Round 2 Sample Sizes')
         screen.getByText(/Contest Name: 15 ballots/)
 
-        fireEvent.click(screen.getByRole('button', { name: 'Start Round 2' }), {
-          bubbles: true,
-        })
-        expect(
-          screen.getByRole('button', { name: 'Start Round 2' })
-        ).toBeDisabled()
+        userEvent.click(startRound2Button)
+        expect(startRound2Button).toBeDisabled()
         await waitFor(() => expect(startNextRoundMock).toHaveBeenCalledTimes(1))
         expect(startNextRoundMock).toHaveBeenCalledWith({
           'contest-id': sampleSizeMock.ballotComparison.sampleSizes![
@@ -274,14 +288,14 @@ describe('StatusBox', () => {
           ][0],
         })
       })
+      jest.useRealTimers()
     })
 
     it('renders round complete, need another round state for batch comparison audits', async () => {
       const expectedCalls = [
         {
-          ...aaApiCalls.getSampleSizes,
+          ...aaApiCalls.getSampleSizes(sampleSizeMock.batchComparison),
           url: '/api/election/1/sample-sizes/2',
-          response: sampleSizeMock.batchComparison,
         },
       ]
       await withMockFetch(expectedCalls, async () => {
