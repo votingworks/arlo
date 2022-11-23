@@ -31,6 +31,12 @@ resetdb:
 
 dev-environment: deps initdevdb install-development resetdb
 
+install-cypress:
+	apt-get install -y libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb
+	apt-get install fonts-liberation xdg-utils
+	apt install -y chromium-browser
+	yarn add cypress@10.7.0 -E --dev
+
 typecheck-server:
 	poetry run mypy server scripts fixtures
 
