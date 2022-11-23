@@ -3,6 +3,12 @@
 echo "Attempting to run migrations"
 if [[ $DATABASE_URL ]]; then
     alembic upgrade head
+
+    # Reset the db if we're deploying the vuln scanning app
+    if [[ $SCANNING_INSTANCE ]]; then
+        poetry run python -m scripts.resetdb
+    fi
+
 else
     echo "DATABASE_URL not set, skipping migrations"
 fi
