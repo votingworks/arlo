@@ -3,6 +3,7 @@ import shutil
 import io
 import os
 import tempfile
+import sys
 from typing import BinaryIO, Dict, IO, List, Optional
 from urllib.parse import urlparse
 from zipfile import ZipFile
@@ -44,12 +45,22 @@ def s3():  # pylint: disable=invalid-name
     )
 
 
+class Progress:
+    def __init__(self):
+        self.bytes_processed = 0
+
+    def __call__(self, new_bytes_processed):
+        self.bytes_processed += new_bytes_processed
+        sys.stdout.write("\r%d bytes processed" % self.bytes_processed)
+        sys.stdout.flush()
+
+
 def store_file(file: IO[bytes], storage_path: str) -> str:
     assert not os.path.isabs(storage_path)
     full_path = os.path.join(config.FILE_UPLOAD_STORAGE_PATH, storage_path)
     if config.FILE_UPLOAD_STORAGE_PATH.startswith("s3://"):
         bucket_name = urlparse(config.FILE_UPLOAD_STORAGE_PATH).netloc
-        s3().upload_fileobj(file, bucket_name, storage_path)
+        s3().upload_fileobj(file, bucket_name, storage_path, Callback=Progress())
     else:
         os.makedirs(os.path.dirname(full_path), exist_ok=True)
         with open(full_path, "wb") as system_file:
