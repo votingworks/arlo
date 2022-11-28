@@ -262,6 +262,7 @@ const BatchDetail: React.FC<IBatchDetailProps> = ({
     )
 
     setSheets(updatedSheets)
+    setNewAndUnsavedSheetId(null)
     setSelectedTabId(
       // Auto-select the next sheet (or last sheet if none)
       updatedSheets[Math.min(currentSheetIndex, updatedSheets.length - 1)].id
