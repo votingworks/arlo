@@ -256,7 +256,7 @@ const BatchDetail: React.FC<IBatchDetailProps> = ({
     setAreAdditionalActionsOpen(false)
   }
 
-  const discardNewAndUnsavedSheets = () => {
+  const discardNewAndUnsavedSheet = () => {
     const updatedSheets = sheets.filter(
       sheet => newAndUnsavedSheetId !== sheet.id
     )
@@ -338,7 +338,7 @@ const BatchDetail: React.FC<IBatchDetailProps> = ({
         closeAdditionalActions={closeAdditionalActions}
         contest={contest}
         disableEditing={disableEditing}
-        discardNewAndUnsavedSheets={discardNewAndUnsavedSheets}
+        discardNewAndUnsavedSheet={discardNewAndUnsavedSheet}
         enableEditing={enableEditing}
         isEditing={isEditing}
         isRemovingSheet={isRemovingSheet}
@@ -362,7 +362,7 @@ interface IBatchResultTallySheetProps {
   closeAdditionalActions: () => void
   contest: IContest
   disableEditing: () => void
-  discardNewAndUnsavedSheets: () => void
+  discardNewAndUnsavedSheet: () => void
   enableEditing: () => void
   isEditing: boolean
   isRemovingSheet: boolean
@@ -386,7 +386,7 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
   closeAdditionalActions,
   contest,
   disableEditing,
-  discardNewAndUnsavedSheets,
+  discardNewAndUnsavedSheet,
   enableEditing,
   isEditing,
   isRemovingSheet,
@@ -427,7 +427,7 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
   const discardChanges = async () => {
     resetForm()
     disableEditing()
-    discardNewAndUnsavedSheets()
+    discardNewAndUnsavedSheet()
   }
 
   const onValidSubmit: SubmitHandler<IBatchResultTallySheet> = async sheet => {
