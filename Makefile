@@ -11,7 +11,7 @@ deps:
 	curl -sSL https://install.python-poetry.org | python3.8 -	
 	sudo npm install -g yarn
 	sudo apt install -y postgresql
-	sudo service postgresql start
+	sudo systemctl start postgresql
 
 # this should only be used for development
 initdevdb:

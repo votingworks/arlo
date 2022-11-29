@@ -13,8 +13,8 @@
 	// "forwardPorts": [],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "make dev-environment",
-
+	// ubuntu in docker doesn't come with systemctl. Gotta start it with service instead!
+	"postCreateCommand": "make deps && sudo service postgresql start && make initdevdb && make install-development && make resetdb"
 	// Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
 	// "remoteUser": "vscode"
 }
