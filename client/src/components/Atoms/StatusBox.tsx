@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { Callout, H3, H4, Button } from '@blueprintjs/core'
 import { Formik } from 'formik'
+import { toast } from 'react-toastify'
 import { apiDownload } from '../utilities'
 import { Inner } from './Wrapper'
 import { IJurisdiction, JurisdictionRoundStatus } from '../useJurisdictions'
@@ -299,7 +300,10 @@ const AuditAdminAnotherRoundStatusBox = ({
   startNextRound,
   children,
 }: IAuditAdminAnotherRoundStatusBoxProps) => {
-  const sampleSizesQuery = useSampleSizes(electionId, roundNum + 1)
+  const sampleSizesQuery = useSampleSizes(electionId, roundNum + 1, {
+    refetchInterval: sampleSizesResponse =>
+      sampleSizesResponse?.task.completedAt === null ? 1000 : false,
+  })
   // The server should autoselect one option per contest, so we pick the first
   // item in the options array for each contest
   const sampleSizes =
@@ -329,7 +333,13 @@ const AuditAdminAnotherRoundStatusBox = ({
         ]
       })()}
       buttonLabel={`Start Round ${roundNum + 1}`}
-      onButtonClick={() => startNextRound(sampleSizes!)}
+      onButtonClick={async () => {
+        if (!sampleSizes) {
+          toast.info('Sample sizes are still loading')
+          return false
+        }
+        return startNextRound(sampleSizes)
+      }}
       auditName={auditSettings.auditName}
     >
       {children}
