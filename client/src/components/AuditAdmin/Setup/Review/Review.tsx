@@ -121,11 +121,12 @@ const Review: React.FC<IProps> = ({
       auditSettingsQuery.data
     )
   const shouldLoadSampleSizes = setupComplete && standardizationComplete
-  const sampleSizesResponse = useSampleSizes(
-    electionId,
-    1,
-    shouldLoadSampleSizes
-  )
+  const sampleSizesQuery = useSampleSizes(electionId, 1, {
+    enabled: shouldLoadSampleSizes,
+    refetchInterval: sampleSizesResponse =>
+      sampleSizesResponse?.task.completedAt === null ? 1000 : false,
+    refetchOnMount: 'always',
+  })
 
   if (
     !jurisdictionsQuery.isSuccess ||
@@ -414,13 +415,10 @@ const Review: React.FC<IProps> = ({
             </p>
           )
 
-        if (sampleSizesResponse && sampleSizesResponse.task.error !== null)
-          return <ErrorLabel>{sampleSizesResponse.task.error}</ErrorLabel>
+        if (sampleSizesQuery.data?.task.error)
+          return <ErrorLabel>{sampleSizesQuery.data.task.error}</ErrorLabel>
 
-        if (
-          sampleSizesResponse === null ||
-          sampleSizesResponse.sampleSizes === null
-        )
+        if (!sampleSizesQuery.data?.sampleSizes)
           return (
             <div style={{ display: 'flex' }}>
               <Spinner size={Spinner.SIZE_SMALL} />
@@ -430,24 +428,21 @@ const Review: React.FC<IProps> = ({
             </div>
           )
 
+        const { sampleSizes, selected } = sampleSizesQuery.data
+
         // Add custom option to sample size options from backend
-        const sampleSizeOptions = mapValues(
-          sampleSizesResponse.sampleSizes,
-          options => [...options, { key: 'custom', size: null, prob: null }]
-        )
+        const sampleSizeOptions = mapValues(sampleSizes, options => [
+          ...options,
+          { key: 'custom', size: null, prob: null },
+        ])
 
         // If the audit was already launched, show which sample size got selected.
         // Otherwise default select the first option.
         const initialValues: IFormOptions =
-          sampleSizesResponse.selected ||
-          mapValues(sampleSizeOptions, options => options[0])
+          selected || mapValues(sampleSizeOptions, options => options[0])
 
-        const submit = async ({
-          sampleSizes,
-        }: {
-          sampleSizes: IFormOptions
-        }) => {
-          await startNextRound(sampleSizes)
+        const submit = async (values: { sampleSizes: IFormOptions }) => {
+          await startNextRound(values.sampleSizes)
         }
 
         const targetedContests = contests.filter(contest => contest.isTargeted)
@@ -699,8 +694,7 @@ const Review: React.FC<IProps> = ({
         <FormButton
           intent="primary"
           disabled={
-            sampleSizesResponse === null ||
-            sampleSizesResponse.sampleSizes === null ||
+            !sampleSizesQuery.data?.sampleSizes ||
             locked ||
             !setupComplete ||
             !standardizationComplete

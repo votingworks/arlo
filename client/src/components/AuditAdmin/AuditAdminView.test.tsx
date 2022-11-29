@@ -220,6 +220,25 @@ describe('AA setup flow', () => {
     })
   })
 
+  it('shows a spinner while sample is being drawn', async () => {
+    const expectedCalls = [
+      aaApiCalls.getUser,
+      aaApiCalls.getRounds(roundMocks.drawSampleInProgress),
+      aaApiCalls.getJurisdictions,
+      aaApiCalls.getContests(contestMocks.filledTargeted),
+      aaApiCalls.getSettings(auditSettingsMocks.all),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      render('progress')
+      await screen.findByRole('heading', {
+        name: 'Drawing a random sample of ballots...',
+      })
+      screen.getByText(
+        'For large elections, this can take a couple of minutes.'
+      )
+    })
+  })
+
   it('redirects to /progress after audit is launched', async () => {
     const expectedCalls = [
       aaApiCalls.getUser,

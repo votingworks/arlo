@@ -3,6 +3,8 @@ import uuid
 import tempfile
 import csv
 import itertools
+import os
+import shutil
 from xml.etree import ElementTree as ET
 from typing import (
     IO,
@@ -459,7 +461,7 @@ def parse_dominion_cvrs(
 
 
 def parse_ess_cvrs(
-    jurisdiction: Jurisdiction,
+    jurisdiction: Jurisdiction, working_directory: str,
 ) -> Tuple[CVR_CONTESTS_METADATA, Iterable[CvrBallot]]:
     # Parsing ES&S CVRs is more complicated than, say, Dominion.
     # There are two main data sources:
@@ -481,17 +483,22 @@ def parse_ess_cvrs(
     # 5. Concatenate the parsed CVRBallot lists and join that to the parsed interpretation
 
     zip_file = retrieve_file(jurisdiction.cvr_file.storage_path)
-    files = unzip_files(zip_file)
+    file_names = unzip_files(zip_file, working_directory)
     zip_file.close()
 
-    def decode_file(file: IO[bytes], name: str) -> TextIO:
+    def decode_file(file: IO[bytes], file_name: str) -> TextIO:
         try:
             validate_not_empty(file)
             return decode_csv(file)
         except UserError as error:
-            raise UserError(f"{name}: {error}") from error
+            raise UserError(f"{file_name}: {error}") from error
 
-    text_files = {name: decode_file(file, name) for name, file in files.items()}
+    text_files = {
+        file_name: decode_file(
+            open(os.path.join(working_directory, file_name), "rb"), file_name
+        )
+        for file_name in file_names
+    }
 
     def is_ballots_file(file: TextIO):
         first_line = file.readline()
@@ -800,7 +807,7 @@ def parse_ess_cvrs(
 
 
 def parse_hart_cvrs(
-    jurisdiction: Jurisdiction,
+    jurisdiction: Jurisdiction, working_directory: str,
 ) -> Tuple[CVR_CONTESTS_METADATA, Iterable[CvrBallot]]:
     """
     A Hart CVR export is a ZIP file containing an individual XML file for each ballot's CVR.
@@ -825,16 +832,20 @@ def parse_hart_cvrs(
     6. Parse the interpretations.
     """
     wrapper_zip_file = retrieve_file(jurisdiction.cvr_file.storage_path)
-    files = unzip_files(wrapper_zip_file)
+    file_names = unzip_files(wrapper_zip_file, working_directory)
     wrapper_zip_file.close()
 
-    cvr_zip_files: Dict[str, BinaryIO] = {}
+    cvr_zip_files: Dict[str, BinaryIO] = {}  # { file_name: file }
     scanned_ballot_information_file: Union[BinaryIO, None] = None
-    for file_name, file in files.items():
+    for file_name in file_names:
         if file_name.lower().endswith(".zip"):
-            cvr_zip_files[file_name] = file
+            cvr_zip_files[file_name] = open(
+                os.path.join(working_directory, file_name), "rb"
+            )
         if file_name.lower().endswith(".csv"):
-            scanned_ballot_information_file = file
+            scanned_ballot_information_file = open(
+                os.path.join(working_directory, file_name), "rb"
+            )
 
     if len(cvr_zip_files) == 0:
         raise UserError("Expected a file with a .zip extension.")
@@ -895,12 +906,20 @@ def parse_hart_cvrs(
         else {}
     )
 
-    cvr_files: Dict[Tuple[str, str], BinaryIO] = {}
+    cvr_file_paths: Dict[
+        Tuple[str, str], str
+    ] = {}  # { (zip_file_name, file_name): file_path }
     for cvr_zip_file_name, cvr_zip_file in cvr_zip_files.items():
-        for cvr_file_name, cvr_file in unzip_files(cvr_zip_file).items():
+        sub_working_directory = tempfile.mkdtemp(dir=working_directory)
+        cvr_file_names = unzip_files(cvr_zip_file, sub_working_directory)
+        for cvr_file_name in cvr_file_names:
             # Ignore extraneous files, like the WriteIn directory
             if cvr_file_name.lower().endswith(".xml"):
-                cvr_files[(cvr_zip_file_name, cvr_file_name)] = cvr_file
+                # Don't open the files here and just prepare the paths so that they can be opened
+                # and closed one at a time later to avoid hitting "Too many open files" errors
+                cvr_file_paths[(cvr_zip_file_name, cvr_file_name)] = os.path.join(
+                    sub_working_directory, cvr_file_name
+                )
 
     namespace = "http://tempuri.org/CVRDesign.xsd"
 
@@ -932,8 +951,10 @@ def parse_hart_cvrs(
     # Parse contests and choice names
     # { contest_name: choice_names }
     contest_choices = defaultdict(set)
-    for file in cvr_files.values():
-        cvr_xml = ET.parse(file)
+    for cvr_file_path in cvr_file_paths.values():
+        cvr_file = open(cvr_file_path, "rb")
+        cvr_xml = ET.parse(cvr_file_path)
+        cvr_file.close()
         for contest, choice_names in parse_contest_results(cvr_xml).items():
             contest_choices[contest].update(choice_names)
 
@@ -1010,23 +1031,17 @@ def parse_hart_cvrs(
     }
 
     def parse_cvr_ballots() -> Iterable[CvrBallot]:
-        for (cvr_zip_file_name, file_name), file in cvr_files.items():
-            file.seek(0)
-            cvr_xml = ET.parse(file)
+        for (cvr_zip_file_name, cvr_file_name), cvr_file_path in cvr_file_paths.items():
+            cvr_zip_file_name_without_extension = cvr_zip_file_name[:-4]
+            cvr_file = open(cvr_file_path, "rb")
+            cvr_xml = ET.parse(cvr_file)
+            cvr_file.close()
             cvr_guid = find(cvr_xml, "CvrGuid").text
             batch_number = find(cvr_xml, "BatchNumber").text
             batch_sequence = find(cvr_xml, "BatchSequence").text
-            sheet_number = find(cvr_xml, "SheetNumber").text
-            file.close()
-            if sheet_number != "1":
-                raise UserError(
-                    f"Error in file: {file_name}."
-                    " Arlo currently only supports Hart CVRs with SheetNumber 1."
-                    f" Got SheetNumber: {sheet_number}."
-                )
 
             db_batch = batches_by_key.get(
-                (cvr_zip_file_name.strip(".zip"), batch_number)
+                (cvr_zip_file_name_without_extension, batch_number)
                 if use_cvr_zip_file_names_as_tabulator_names
                 else batch_number
             )
@@ -1050,9 +1065,10 @@ def parse_hart_cvrs(
                 )
                 if use_cvr_zip_file_names_as_tabulator_names:
                     raise UserError(
-                        f"Error in file: {file_name} from {cvr_zip_file_name}. "
+                        f"Error in file: {cvr_file_name} from {cvr_zip_file_name}. "
                         "Couldn't find a matching batch for "
-                        f"Tabulator: {cvr_zip_file_name.strip('.zip')}, BatchNumber: {batch_number}. "
+                        f"Tabulator: {cvr_zip_file_name_without_extension}, "
+                        f"BatchNumber: {batch_number}. "
                         "The BatchNumber field in the CVR file must match the Batch Name field in "
                         "the ballot manifest, and the ZIP file name must match the Tabulator "
                         "field in the ballot manifest. " + general_guidance
@@ -1065,7 +1081,7 @@ def parse_hart_cvrs(
                         ast.literal_eval(close_matches[0]) if close_matches else None
                     )
                     raise UserError(
-                        f"Error in file: {file_name}. "
+                        f"Error in file: {cvr_file_name}. "
                         f"Couldn't find a matching batch for BatchNumber: {batch_number}. "
                         "The BatchNumber field in the CVR must match the Batch Name field in the ballot manifest. "
                         + (
@@ -1088,6 +1104,12 @@ def process_cvr_file(
 ):
     jurisdiction = Jurisdiction.query.get(jurisdiction_id)
 
+    working_directory = tempfile.mkdtemp()
+
+    def clean_up_file_system():
+        if os.path.exists(working_directory):
+            shutil.rmtree(working_directory)
+
     def process() -> None:
         # Ideally, the CVR should have the same number of ballots as the
         # manifest, so we can use that as an approximation of the file parsing
@@ -1102,9 +1124,9 @@ def process_cvr_file(
             elif jurisdiction.cvr_file_type == CvrFileType.CLEARBALLOT:
                 return parse_clearballot_cvrs(jurisdiction)
             elif jurisdiction.cvr_file_type == CvrFileType.ESS:
-                return parse_ess_cvrs(jurisdiction)
+                return parse_ess_cvrs(jurisdiction, working_directory)
             elif jurisdiction.cvr_file_type == CvrFileType.HART:
-                return parse_hart_cvrs(jurisdiction)
+                return parse_hart_cvrs(jurisdiction, working_directory)
             else:
                 raise Exception(
                     f"Unsupported CVR file type: {jurisdiction.cvr_file_type}"
@@ -1268,6 +1290,7 @@ def process_cvr_file(
             session,
         )
         session.commit()
+        clean_up_file_system()
 
 
 # Raises if invalid

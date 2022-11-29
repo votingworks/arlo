@@ -21,16 +21,6 @@ import {
 } from '../../../Atoms/ListAndDetail'
 import { useDebounce } from '../../../../utils/debounce'
 
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-
-  .${Classes.CALLOUT} {
-    border-radius: 0;
-  }
-`
-
 interface IProps {
   electionId: string
   jurisdictionId: string
@@ -134,51 +124,47 @@ const BatchRoundTallyEntryContent: React.FC<IBatchRoundTallyEntryContentProps> =
   }
 
   return (
-    <Container>
-      <ListAndDetail>
-        <List
-          search={{
-            onChange: setSearchQuery,
-            placeholder: 'Search batches...',
-          }}
-        >
-          {filteredBatches.length === 0 && (
-            <ListSearchNoResults>No batches found</ListSearchNoResults>
-          )}
-          {filteredBatches.map(batch => (
-            <ListItem
-              key={batch.id}
-              onClick={() => selectBatch(batch.id)}
-              rightIcon={
-                batch.resultTallySheets.length > 0 ? 'tick' : undefined
-              }
-              selected={batch.id === selectedBatch.id}
-            >
-              {batch.name}
-            </ListItem>
-          ))}
-        </List>
+    <ListAndDetail>
+      <List
+        search={{
+          onChange: setSearchQuery,
+          placeholder: 'Search batches...',
+        }}
+      >
+        {filteredBatches.length === 0 && (
+          <ListSearchNoResults>No batches found</ListSearchNoResults>
+        )}
+        {filteredBatches.map(batch => (
+          <ListItem
+            key={batch.id}
+            onClick={() => selectBatch(batch.id)}
+            rightIcon={batch.resultTallySheets.length > 0 ? 'tick' : undefined}
+            selected={batch.id === selectedBatch.id}
+          >
+            {batch.name}
+          </ListItem>
+        ))}
+      </List>
 
-        <BatchDetail
-          areResultsFinalized={areResultsFinalized}
-          batch={selectedBatch}
-          contest={contest}
-          isEditing={isEditing}
-          key={selectedBatch.id}
-          saveBatchResults={async (
-            resultTallySheets: IBatchResultTallySheet[]
-          ) => {
-            await recordBatchResults.mutateAsync({
-              batchId: selectedBatch.id,
-              resultTallySheets,
-            })
-          }}
-          setIsEditing={setIsEditing}
-        />
+      <BatchDetail
+        areResultsFinalized={areResultsFinalized}
+        batch={selectedBatch}
+        contest={contest}
+        isEditing={isEditing}
+        key={selectedBatch.id}
+        saveBatchResults={async (
+          resultTallySheets: IBatchResultTallySheet[]
+        ) => {
+          await recordBatchResults.mutateAsync({
+            batchId: selectedBatch.id,
+            resultTallySheets,
+          })
+        }}
+        setIsEditing={setIsEditing}
+      />
 
-        <Confirm {...confirmProps} />
-      </ListAndDetail>
-    </Container>
+      <Confirm {...confirmProps} />
+    </ListAndDetail>
   )
 }
 

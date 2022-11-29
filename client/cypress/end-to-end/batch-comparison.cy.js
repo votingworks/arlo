@@ -143,24 +143,15 @@ describe('Batch Comparison', () => {
                   })
                 })
               cy.findByRole('button', { name: 'Confirm' }).click()
+              cy.logout(jurisdictionAdmin)
 
               // Switch back to tally entry user, who should now be logged in
               cy.setCookie('session', tallyEntryCookie.value, tallyEntryCookie)
               cy.visit('/tally-entry')
-              cy.findByRole('heading', {
-                name: 'Enter Tallies',
-                current: 'step',
-              })
+              cy.findByRole('heading', { name: 'Enter Tallies' })
             })
         })
       })
-
-    cy.findAllByRole('columnheader')
-      .eq(0)
-      .contains('Choice')
-    cy.findAllByRole('columnheader')
-      .eq(1)
-      .contains('Votes')
 
     const auditBatch = (batchName, { vader, palpatine }) => {
       cy.findByRole('button', { name: batchName }).click()
@@ -182,7 +173,7 @@ describe('Batch Comparison', () => {
     cy.logout()
 
     cy.loginJurisdictionAdmin(jurisdictionAdmin)
-    cy.findByRole('heading', { name: 'Enter Tallies' }).click()
+    cy.findByRole('heading', { name: 'Enter Tallies', current: 'step' })
     auditBatch('Batch 10', { vader: 3000, palpatine: 0 })
     cy.findByRole('button', { name: /Finalize Tallies/ }).click()
     cy.findByRole('button', { name: /Confirm/ }).click()

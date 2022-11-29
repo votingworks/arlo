@@ -20,6 +20,7 @@ import {
   jurisdictionMocks,
   contestMocks,
   auditSettingsMocks,
+  aaApiCalls,
 } from '../../../_mocks'
 
 const apiCalls = {
@@ -1023,5 +1024,29 @@ describe('Audit Setup > Review & Launch', () => {
       ).closest('.bp3-callout') as HTMLElement
       expect(warning).toHaveClass('bp3-intent-warning')
     })
+  })
+
+  it('shows a spinner while sample sizes are computed', async () => {
+    jest.useFakeTimers()
+    const expectedCalls = [
+      apiCalls.getSettings(settingsMock.full),
+      apiCalls.getJurisdictions({
+        jurisdictions: jurisdictionMocks.allManifests,
+      }),
+      apiCalls.getJurisdictionFile,
+      apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
+      aaApiCalls.getSampleSizes(sampleSizeMock.calculating),
+      aaApiCalls.getSampleSizes(sampleSizeMock.ballotPolling),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderView()
+      await screen.findByRole('heading', { name: 'Sample Size' })
+      screen.getByText('Loading sample size options...')
+      jest.advanceTimersByTime(1000)
+      await screen.findByText(
+        'Choose the initial sample size for each contest you would like to use for Round 1 of the audit from the options below.'
+      )
+    })
+    jest.useRealTimers()
   })
 })

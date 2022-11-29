@@ -1,6 +1,6 @@
 import { waitFor } from '@testing-library/react'
 import { toast } from 'react-toastify'
-import { api, testNumber, poll, downloadFile } from './utilities'
+import { api, testNumber, downloadFile } from './utilities'
 
 const response = () =>
   new Response(new Blob([JSON.stringify({ success: true })]))
@@ -119,80 +119,6 @@ describe('utilities.ts', () => {
   describe('testNumber', () => {
     it('uses default message', () => {
       expect(testNumber(50)(100)).resolves.toBe('Must be smaller than 50')
-    })
-  })
-
-  describe('poll', () => {
-    it('iterates', async () => {
-      const j = (function* idMaker() {
-        let index = 0
-        while (true) yield (index += 1)
-      })()
-      let result = ''
-      const condition = async () => j.next().value > 2
-      const callback = () => {
-        result = 'callback completed'
-      }
-      const error = () => {
-        result = 'an error'
-      }
-      poll(condition, callback, error, undefined, 1)
-      await waitFor(() => {
-        expect(result).toBe('callback completed')
-      })
-    })
-
-    it('times out', async () => {
-      let result = ''
-      const condition = async () => false
-      const callback = () => {
-        result = 'callback completed'
-      }
-      const error = () => {
-        result = 'an error'
-      }
-      poll(condition, callback, error, 50, 10)
-      await waitFor(() => {
-        expect(result).toBe('an error')
-      })
-    })
-
-    it('times out with spies', async () => {
-      const startDate: number = Date.now()
-      const lateDate: number = startDate + 130000
-      const dateSpy = jest
-        .spyOn(Date, 'now')
-        .mockReturnValueOnce(startDate)
-        .mockReturnValueOnce(lateDate)
-      let result = ''
-      const condition = async () => false
-      const callback = () => {
-        result = 'callback completed'
-      }
-      const error = () => {
-        result = 'an error'
-      }
-      poll(condition, callback, error)
-      await waitFor(() => {
-        expect(result).toBe('an error')
-        expect(dateSpy).toBeCalledTimes(2)
-      })
-      dateSpy.mockRestore()
-    })
-
-    it('handles errors in condition()', async () => {
-      let result: Error
-      const condition = async () => {
-        throw new Error('error')
-      }
-      const callback = jest.fn()
-      const error = (err: Error) => {
-        result = err
-      }
-      poll(condition, callback, error, 50, 10)
-      await waitFor(() => {
-        expect(result.message).toBe('error')
-      })
     })
   })
 

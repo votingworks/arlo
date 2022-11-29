@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Callout, Classes } from '@blueprintjs/core'
+import { Button, Callout, Classes, Colors } from '@blueprintjs/core'
 import styled from 'styled-components'
 import { IJurisdiction } from '../../UserContext'
 import { IRound } from '../../AuditAdmin/useRoundsAuditAdmin'
@@ -12,9 +12,12 @@ import { Column, Row } from '../../Atoms/Layout'
 
 const Panel = styled(StepPanel)`
   padding: 0;
+  border-top: 1px solid ${Colors.LIGHT_GRAY2}; /* Match ListAndDetail */
+  border-bottom: 1px solid ${Colors.LIGHT_GRAY2};
 
   .${Classes.CALLOUT} {
     border-radius: 0;
+    border-bottom: 1px solid ${Colors.LIGHT_GRAY2};
   }
   height: auto;
 `
