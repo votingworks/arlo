@@ -5,6 +5,9 @@ from pytest import approx
 from ...audit_math import minerva
 from ...audit_math.sampler_contest import Contest
 
+RISK_LIMIT = 10
+ALPHA = RISK_LIMIT / 100
+
 
 @pytest.fixture
 def contests():
@@ -22,7 +25,7 @@ def contests():
 
 def test_get_sample_size():
     c3 = minerva.make_arlo_contest({"a": 600, "b": 400, "c": 100, "_undervote_": 100})
-    res = minerva.get_sample_size(10, c3, None, [])
+    res = minerva.get_sample_size(RISK_LIMIT, c3, None, [])
     assert res == {
         "0.7": {"type": None, "size": 134, "prob": 0.7},
         "0.8": {"type": None, "size": 166, "prob": 0.8},
@@ -30,7 +33,7 @@ def test_get_sample_size():
     }
 
     c3 = minerva.make_arlo_contest({"a": 600, "b": 400, "c": 100, "_undervote_": 100})
-    res = minerva.get_sample_size(10, c3, None, [])
+    res = minerva.get_sample_size(RISK_LIMIT, c3, None, [])
     assert res == {
         "0.7": {"type": None, "size": 134, "prob": 0.7},
         "0.8": {"type": None, "size": 166, "prob": 0.8},
@@ -38,7 +41,7 @@ def test_get_sample_size():
     }
 
     d1 = minerva.make_arlo_contest({"a": 600, "b": 200, "c": 100})
-    res = minerva.get_sample_size(10, d1, None, [])
+    res = minerva.get_sample_size(RISK_LIMIT, d1, None, [])
     assert res == {
         "0.7": {"type": None, "size": 20, "prob": 0.7},
         "0.8": {"type": None, "size": 25, "prob": 0.8},
@@ -46,7 +49,7 @@ def test_get_sample_size():
     }
 
     d2 = minerva.make_arlo_contest({"a": 100, "b": 1})
-    res = minerva.get_sample_size(10, d2, None, [])
+    res = minerva.get_sample_size(RISK_LIMIT, d2, None, [])
     assert res == {
         "0.7": {"type": None, "size": 4, "prob": 0.7},
         "0.8": {"type": None, "size": 4, "prob": 0.8},
@@ -54,7 +57,7 @@ def test_get_sample_size():
     }
 
     d3 = minerva.make_arlo_contest({"a": 500, "b": 500})
-    res = minerva.get_sample_size(10, d3, None, [])
+    res = minerva.get_sample_size(RISK_LIMIT, d3, None, [])
     assert res == {
         "0.7": {"type": None, "size": 1000, "prob": 0.7},
         "0.8": {"type": None, "size": 1000, "prob": 0.8},
@@ -62,7 +65,7 @@ def test_get_sample_size():
     }
 
     d4 = minerva.make_arlo_contest({"a": 300, "b": 200, "c": 200, "_undervote_": 300})
-    res = minerva.get_sample_size(10, d4, None, [])
+    res = minerva.get_sample_size(RISK_LIMIT, d4, None, [])
     assert res == {
         "0.7": {"type": None, "size": 222, "prob": 0.7},
         "0.8": {"type": None, "size": 276, "prob": 0.8},
@@ -70,7 +73,7 @@ def test_get_sample_size():
     }
 
     d5 = minerva.make_arlo_contest({"a": 300})
-    res = minerva.get_sample_size(10, d5, None, [])
+    res = minerva.get_sample_size(RISK_LIMIT, d5, None, [])
     assert res == {
         "0.7": {"type": None, "size": -1, "prob": 0.7},
         "0.8": {"type": None, "size": -1, "prob": 0.8},
@@ -80,7 +83,7 @@ def test_get_sample_size():
 
 def test_get_sample_size_landslide():
     d2 = minerva.make_arlo_contest({"a": 100, "b": 0})
-    res = minerva.get_sample_size(10, d2, None, [])
+    res = minerva.get_sample_size(RISK_LIMIT, d2, None, [])
     assert res == {
         "0.7": {"type": None, "size": 4, "prob": 0.7},
         "0.8": {"type": None, "size": 4, "prob": 0.8},
@@ -90,7 +93,7 @@ def test_get_sample_size_landslide():
 
 def test_get_sample_size_landslide_third_party():
     c = minerva.make_arlo_contest({"a": 1000, "b": 900, "c": 0})
-    res = minerva.get_sample_size(10, c, None, None)
+    res = minerva.get_sample_size(RISK_LIMIT, c, None, None)
     assert res == {
         "0.7": {"prob": 0.7, "size": 1464, "type": None},
         "0.8": {"prob": 0.8, "size": 1868, "type": None},
@@ -98,7 +101,7 @@ def test_get_sample_size_landslide_third_party():
     }
 
     c = minerva.make_arlo_contest({"a": 100, "b": 0, "c": 0})
-    res = minerva.get_sample_size(10, c, None, None)
+    res = minerva.get_sample_size(RISK_LIMIT, c, None, None)
     assert res == {
         "0.7": {"prob": 0.7, "size": 4, "type": None},
         "0.8": {"prob": 0.8, "size": 4, "type": None},
@@ -109,7 +112,7 @@ def test_get_sample_size_landslide_third_party():
 def test_get_sample_size_big():
     # Binary search result, just over approximation threshold of 1.5% margin
     c = minerva.make_arlo_contest({"a": 5076, "b": 4925})
-    res = minerva.get_sample_size(10, c, None, [])
+    res = minerva.get_sample_size(RISK_LIMIT, c, None, [])
     assert res == {
         "0.7": {"type": None, "size": 17663, "prob": 0.7},
         "0.8": {"type": None, "size": 22233, "prob": 0.8},
@@ -123,7 +126,7 @@ def test_get_sample_size_bigger_approx():
     # and take 2 minutes on an Intel(R) Xeon(R) CPU X3450 @ 2.67GHz:
     #  time python -m athena --type minerva -n t -b 502 498 -p .9 .8 .7 --approx 0.001
     c = minerva.make_arlo_contest({"a": 502000, "b": 498000})
-    res = minerva.get_sample_size(10, c, None, [])
+    res = minerva.get_sample_size(RISK_LIMIT, c, None, [])
     assert res == {
         "0.7": {"type": None, "size": 250047, "prob": 0.7},
         "0.8": {"type": None, "size": 315475, "prob": 0.8},
@@ -133,7 +136,7 @@ def test_get_sample_size_bigger_approx():
 
 def test_get_sample_size_second_round():
     c = minerva.make_arlo_contest({"a": 502000, "b": 498000})
-    res = minerva.get_sample_size(10, c, None, [])
+    res = minerva.get_sample_size(RISK_LIMIT, c, None, [])
     assert res == {
         "0.7": {"type": None, "size": 250047, "prob": 0.7},
         "0.8": {"type": None, "size": 315475, "prob": 0.8},
@@ -150,7 +153,7 @@ def test_get_sample_size_second_round():
 def test_compute_risk_2r():
     c = minerva.make_arlo_contest({"a": 600, "b": 400, "c": 100, "_undervote_": 100})
     res = minerva.compute_risk(
-        10,
+        RISK_LIMIT,
         c,
         minerva.make_sample_results(c, [[40, 40, 3], [70, 30, 10]]),
         {1: 83, 2: 200},
@@ -162,7 +165,7 @@ def test_get_sample_size_2win():
     d2 = minerva.make_arlo_contest(
         {"a": 400, "b": 400, "c": 200, "d": 100}, num_winners=2
     )
-    res = minerva.get_sample_size(10, d2, None, [])
+    res = minerva.get_sample_size(RISK_LIMIT, d2, None, [])
     assert res == {
         "0.7": {"prob": 0.7, "size": 79, "type": None},
         "0.8": {"prob": 0.8, "size": 87, "type": None},
@@ -173,16 +176,16 @@ def test_get_sample_size_2win():
 def test_collect_risks():
     c3 = minerva.make_arlo_contest({"a": 600, "b": 400, "c": 100, "_undervote_": 100})
     res = minerva.collect_risks(
-        0.1, c3, [120], minerva.make_sample_results(c3, [[56, 40, 3]])
+        ALPHA, c3, [120], minerva.make_sample_results(c3, [[56, 40, 3]])
     )
     assert res == {("winner", "loser"): approx(0.0933945799801079)}
     res = minerva.collect_risks(
-        0.1, c3, [83], minerva.make_sample_results(c3, [[40, 40, 3]])
+        ALPHA, c3, [83], minerva.make_sample_results(c3, [[40, 40, 3]])
     )
     assert res == {("winner", "loser"): pytest.approx(0.5596434615209632)}
     with pytest.raises(ValueError, match="Incorrect number of valid ballots entered"):
         minerva.collect_risks(
-            0.1, c3, [82], minerva.make_sample_results(c3, [[40, 40, 3]])
+            ALPHA, c3, [82], minerva.make_sample_results(c3, [[40, 40, 3]])
         )
 
 
@@ -198,7 +201,7 @@ def test_compute_risk_delta():
         num_winners=2,
     )
     res = minerva.compute_risk(
-        10, c, minerva.make_sample_results(c, [[384, 276, 234, 1]]), {1: 923}
+        RISK_LIMIT, c, minerva.make_sample_results(c, [[384, 276, 234, 1]]), {1: 923}
     )
     assert res == ({("winner", "loser"): approx(0.039858047805999164)}, True)
 
@@ -208,7 +211,7 @@ def test_compute_risk_2win():
         {"a": 400, "b": 400, "c": 200, "d": 100}, num_winners=2
     )
     res = minerva.compute_risk(
-        10, c, minerva.make_sample_results(c, [[40, 40, 18, 2]]), {1: 100}
+        RISK_LIMIT, c, minerva.make_sample_results(c, [[40, 40, 18, 2]]), {1: 100}
     )
     assert res == ({("winner", "loser"): approx(0.0064653703790821795)}, True)
 
@@ -218,7 +221,7 @@ def test_compute_risk_2win_2():
         {"a": 400, "b": 400, "c": 200, "d": 100}, num_winners=2
     )
     res = minerva.compute_risk(
-        10, c, minerva.make_sample_results(c, [[30, 30, 30, 10]]), {1: 100}
+        RISK_LIMIT, c, minerva.make_sample_results(c, [[30, 30, 30, 10]]), {1: 100}
     )
     assert res == ({("winner", "loser"): approx(0.552702598296842)}, False)
 
@@ -228,7 +231,7 @@ def test_compute_risk_2win_2_2r():
         {"a": 400, "b": 400, "c": 200, "d": 100}, num_winners=2
     )
     res = minerva.compute_risk(
-        10,
+        RISK_LIMIT,
         c,
         minerva.make_sample_results(c, [[30, 30, 30, 10], [50, 50, 25, 25]]),
         {1: 100, 2: 150},
@@ -239,11 +242,11 @@ def test_compute_risk_2win_2_2r():
 def test_compute_risk():
     c3 = minerva.make_arlo_contest({"a": 600, "b": 400, "c": 100, "_undervote_": 100})
     res = minerva.compute_risk(
-        10, c3, minerva.make_sample_results(c3, [[56, 40, 3]]), {1: 100, 2: 150}
+        RISK_LIMIT, c3, minerva.make_sample_results(c3, [[56, 40, 3]]), {1: 100, 2: 150}
     )
     assert res == ({("winner", "loser"): approx(0.0933945799801079)}, True)
     res = minerva.compute_risk(
-        10, c3, minerva.make_sample_results(c3, [[40, 40, 3]]), {1: 100, 2: 150}
+        RISK_LIMIT, c3, minerva.make_sample_results(c3, [[40, 40, 3]]), {1: 100, 2: 150}
     )
     assert res == ({("winner", "loser"): approx(0.5596434615209632)}, False)
 
@@ -255,7 +258,7 @@ def test_compute_risk_close_narrow():
         {"a": 5100000, "b": 4900000, "c": 100, "_undervote_": 100000}
     )
     res = minerva.compute_risk(
-        10, c, minerva.make_sample_results(c, [[5100, 4990, 1]]), {1: 10091}
+        RISK_LIMIT, c, minerva.make_sample_results(c, [[5100, 4990, 1]]), {1: 10091}
     )
     assert res == ({("winner", "loser"): 0.16896200607848647}, False)
 
@@ -267,7 +270,7 @@ def test_compute_risk_close_narrow_2():
         {"a": 5100000, "b": 4900000, "c": 100, "_undervote_": 100000}
     )
     res = minerva.compute_risk(
-        10,
+        RISK_LIMIT,
         c,
         minerva.make_sample_results(c, [[5100, 4990, 1], [5100, 4900, 0]]),
         {1: 10091, 2: 10000},
@@ -283,7 +286,7 @@ def test_compute_risk_close_narrow_3():
         {"a": 5100000, "b": 4900000, "c": 100, "_undervote_": 100000}
     )
     res = minerva.compute_risk(
-        10,
+        RISK_LIMIT,
         c,
         minerva.make_sample_results(c, [[50100, 49900, 1], [51000, 49000, 0]]),
         {1: 100001, 2: 100000},
@@ -297,7 +300,7 @@ def test_compute_risk_too_low():
 
     c = minerva.make_arlo_contest({"a": 2453876, "b": 2358432, "_undervote_": 114911})
     res = minerva.compute_risk(
-        10, c, minerva.make_sample_results(c, [[17605, 0]]), {1: 17605}
+        RISK_LIMIT, c, minerva.make_sample_results(c, [[17605, 0]]), {1: 17605}
     )
     assert res == ({("winner", "loser"): 0.0}, True)
 
