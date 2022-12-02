@@ -88,6 +88,24 @@ def test_get_sample_size_landslide():
     }
 
 
+def test_get_sample_size_landslide_third_party():
+    c = minerva.make_arlo_contest({"a": 1000, "b": 900, "c": 0})
+    res = minerva.get_sample_size(10, c, None, None)
+    assert res == {
+        "0.7": {"prob": 0.7, "size": 1464, "type": None},
+        "0.8": {"prob": 0.8, "size": 1868, "type": None},
+        "0.9": {"prob": 0.9, "size": 2488, "type": None},
+    }
+
+    c = minerva.make_arlo_contest({"a": 100, "b": 0, "c": 0})
+    res = minerva.get_sample_size(10, c, None, None)
+    assert res == {
+        "0.7": {"prob": 0.7, "size": 4, "type": None},
+        "0.8": {"prob": 0.8, "size": 4, "type": None},
+        "0.9": {"prob": 0.9, "size": 4, "type": None},
+    }
+
+
 def test_get_sample_size_big():
     # Binary search result, just over approximation threshold of 1.5% margin
     c = minerva.make_arlo_contest({"a": 5076, "b": 4925})

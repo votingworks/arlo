@@ -37,6 +37,39 @@ def make_arlo_contest(tally, num_winners=1, votes_allowed=1):
     )
 
 
+def fix_third_party_landslides(contest: Contest) -> Contest:
+    """Take an arlo contest and return a contest with all 0-vote candidates removed.
+
+    Use this function to clean contests before running minerva math on them. Athena
+    will throw a ValueError if it finds a margin between candidates of 0 or 1.
+    """
+
+    name = contest.name
+    ballots = contest.ballots
+    num_winners = contest.num_winners
+    votes_allowed = contest.votes_allowed
+    votes = {}
+    last_loser_candidate = None
+    for candidate, vote_total in contest.candidates.items():
+        if vote_total > 0:
+            votes[candidate] = vote_total
+        else:
+            last_loser_candidate = candidate
+    # If only one candidate received votes, make sure to add
+    # one of the losing parties back into the race.
+    if len(votes.keys()) == 1 and last_loser_candidate is not None:
+        votes[last_loser_candidate] = 0
+    return Contest(
+        name,
+        {
+            "ballots": ballots,
+            "numWinners": num_winners,
+            "votesAllowed": votes_allowed,
+            **votes,
+        },
+    )
+
+
 def make_sample_results(
     contest: Contest, votes_per_round: List[List]
 ) -> Dict[str, Dict[str, int]]:
@@ -141,6 +174,7 @@ def get_sample_size(
         round_size_options = [-1 for quant in quants]
     else:
         try:
+            contest = fix_third_party_landslides(contest)
             audit = make_athena_audit(contest, alpha)
             round_size_options = audit.find_next_round_size(quants)[
                 "future_round_sizes"
