@@ -44,10 +44,6 @@ def fix_third_party_landslides(contest: Contest) -> Contest:
     will throw a ValueError if it finds a margin between candidates of 0 or 1.
     """
 
-    name = contest.name
-    ballots = contest.ballots
-    num_winners = contest.num_winners
-    votes_allowed = contest.votes_allowed
     votes = {}
     last_loser_candidate = None
     for candidate, vote_total in contest.candidates.items():
@@ -60,11 +56,11 @@ def fix_third_party_landslides(contest: Contest) -> Contest:
     if len(votes.keys()) == 1 and last_loser_candidate is not None:
         votes[last_loser_candidate] = 0
     return Contest(
-        name,
+        contest.name,
         {
-            "ballots": ballots,
-            "numWinners": num_winners,
-            "votesAllowed": votes_allowed,
+            "ballots": contest.ballots,
+            "numWinners": contest.num_winners,
+            "votesAllowed": contest.votes_allowed,
             **votes,
         },
     )
