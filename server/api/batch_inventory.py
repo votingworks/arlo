@@ -104,9 +104,23 @@ def process_batch_inventory_cvr_file(jurisdiction_id: str):
         return int(vote if vote != "" else 0)
 
     for row_index, row in enumerate(cvrs):
-        cvr_number = column_value(row, "CvrNumber", row_index + 1, header_indices)
-        tabulator_number = column_value(row, "TabulatorNum", cvr_number, header_indices)
-        batch_id = column_value(row, "BatchId", cvr_number, header_indices)
+        cvr_number = column_value(
+            row,
+            "CvrNumber",
+            row_index + 1,
+            header_indices,
+            remove_leading_equal_sign=True,
+        )
+        tabulator_number = column_value(
+            row,
+            "TabulatorNum",
+            cvr_number,
+            header_indices,
+            remove_leading_equal_sign=True,
+        )
+        batch_id = column_value(
+            row, "BatchId", cvr_number, header_indices, remove_leading_equal_sign=True,
+        )
         counting_group = column_value(row, "CountingGroup", cvr_number, header_indices)
 
         batch_key = (tabulator_number, batch_id)

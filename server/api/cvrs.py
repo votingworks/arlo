@@ -225,6 +225,7 @@ def column_value(
     header_indices: Dict[str, int],
     required: bool = True,
     file_name: str = None,
+    remove_leading_equal_sign: bool = False,
 ):
     index = header_indices.get(header)
     if index is None:
@@ -242,6 +243,15 @@ def column_value(
             if file_name is not None
             else f"Missing required column {header} in row {row_number}."
         )
+    # Dominion sometimes exports CVR CSVs with equal signs in front of certain columns' values,
+    # e.g. ="3",="1002",="1",="10",="1002-1-10","Mail-in",...
+    if (
+        remove_leading_equal_sign
+        and value
+        and value.startswith('="')
+        and value.endswith('"')
+    ):
+        value = value[2:-1]
     return value
 
 
@@ -396,12 +406,34 @@ def parse_dominion_cvrs(
 
     def parse_cvr_rows() -> Iterable[CvrBallot]:
         for row_index, row in enumerate(cvrs):
-            cvr_number = column_value(row, "CvrNumber", row_index + 1, header_indices)
-            tabulator_number = column_value(
-                row, "TabulatorNum", cvr_number, header_indices
+            cvr_number = column_value(
+                row,
+                "CvrNumber",
+                row_index + 1,
+                header_indices,
+                remove_leading_equal_sign=True,
             )
-            batch_id = column_value(row, "BatchId", cvr_number, header_indices)
-            record_id = column_value(row, "RecordId", cvr_number, header_indices)
+            tabulator_number = column_value(
+                row,
+                "TabulatorNum",
+                cvr_number,
+                header_indices,
+                remove_leading_equal_sign=True,
+            )
+            batch_id = column_value(
+                row,
+                "BatchId",
+                cvr_number,
+                header_indices,
+                remove_leading_equal_sign=True,
+            )
+            record_id = column_value(
+                row,
+                "RecordId",
+                cvr_number,
+                header_indices,
+                remove_leading_equal_sign=True,
+            )
 
             # When parsing ImprintedId, fall back to UniqueVotingIdentifer
             # (but only if that column is present in the CVR at all)
@@ -411,8 +443,13 @@ def parse_dominion_cvrs(
                 cvr_number,
                 header_indices,
                 required="UniqueVotingIdentifier" not in header_indices,
+                remove_leading_equal_sign=True,
             ) or column_value(
-                row, "UniqueVotingIdentifier", cvr_number, header_indices,
+                row,
+                "UniqueVotingIdentifier",
+                cvr_number,
+                header_indices,
+                remove_leading_equal_sign=True,
             )
 
             interpretations = row[first_contest_column:]

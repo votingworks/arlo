@@ -314,6 +314,79 @@ def test_dominion_cvr_unique_voting_identifier(
     )
 
 
+DOMINION_CVRS_WITH_LEADING_EQUAL_SIGNS = """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
+,,,,,,,Contest 1 (Vote For=1),Contest 1 (Vote For=1),Contest 2 (Vote For=2),Contest 2 (Vote For=2),Contest 2 (Vote For=2)
+,,,,,,,Choice 1-1,Choice 1-2,Choice 2-1,Choice 2-2,Choice 2-3
+CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,PrecinctPortion,BallotType,REP,DEM,LBR,IND,,
+="1",="TABULATOR1",="BATCH1",="1",="1-1-1",12345,COUNTY,0,1,1,1,0
+="2",="TABULATOR1",="BATCH1",="2",="1-1-2",12345,COUNTY,1,0,1,0,1
+="3",="TABULATOR1",="BATCH1",="3",="1-1-3",12345,COUNTY,0,1,1,1,0
+="4",="TABULATOR1",="BATCH2",="1",="1-2-1",12345,COUNTY,1,0,1,0,1
+="5",="TABULATOR1",="BATCH2",="2",="1-2-2",12345,COUNTY,0,1,1,1,0
+="6",="TABULATOR1",="BATCH2",="3",="1-2-3",12345,COUNTY,1,0,1,0,1
+="7",="TABULATOR2",="BATCH1",="1",="2-1-1",12345,COUNTY,1,0,1,1,0
+="8",="TABULATOR2",="BATCH1",="2",="2-1-2",12345,COUNTY,1,0,1,0,1
+="9",="TABULATOR2",="BATCH1",="3",="2-1-3",12345,COUNTY,1,0,1,1,0
+="10",="TABULATOR2",="BATCH2",="1",="2-2-1",12345,COUNTY,1,0,1,0,1
+="11",="TABULATOR2",="BATCH2",="2",="2-2-2",12345,COUNTY,1,1,1,1,1
+="12",="TABULATOR2",="BATCH2",="4",="2-2-4",12345,CITY,,,1,0,1
+="13",="TABULATOR2",="BATCH2",="5",="2-2-5",12345,CITY,,,0,0,0
+="14",="TABULATOR2",="BATCH2",="6",="2-2-6",12345,CITY,,,1,0,1
+"""
+
+
+def test_dominion_cvrs_with_leading_equal_signs(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    manifests,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
+        data={
+            "cvrs": (
+                io.BytesIO(DOMINION_CVRS_WITH_LEADING_EQUAL_SIGNS.encode()),
+                "cvrs.csv",
+            ),
+            "cvrFileType": "DOMINION",
+        },
+    )
+    assert_ok(rv)
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    manifest_num_ballots = jurisdictions[0]["ballotManifest"]["numBallots"]
+
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
+    )
+    compare_json(
+        json.loads(rv.data),
+        {
+            "file": {
+                "name": "cvrs.csv",
+                "uploadedAt": assert_is_date,
+                "cvrFileType": "DOMINION",
+            },
+            "processing": {
+                "status": ProcessingStatus.PROCESSED,
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": None,
+                "workProgress": manifest_num_ballots,
+                "workTotal": manifest_num_ballots,
+            },
+        },
+    )
+
+
 def test_cvrs_clear(
     client: FlaskClient,
     election_id: str,
