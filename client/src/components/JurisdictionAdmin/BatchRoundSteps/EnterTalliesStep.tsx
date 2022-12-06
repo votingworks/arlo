@@ -14,6 +14,7 @@ const Panel = styled(StepPanel)`
   padding: 0;
   border-top: 1px solid ${Colors.LIGHT_GRAY2}; /* Match ListAndDetail */
   border-bottom: 1px solid ${Colors.LIGHT_GRAY2};
+  justify-content: start;
 
   .${Classes.CALLOUT} {
     border-radius: 0;
