@@ -11,6 +11,7 @@ const Heading = styled(H2)`
 
 const BatchRoundTallyEntryContainer = styled(Card)`
   margin-top: 10px;
+  overflow-x: scroll;
   padding: 0;
 `
 
