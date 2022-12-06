@@ -44,6 +44,12 @@ const TabsWrapper = styled.div<ITabsWrapperProps>`
   }
 `
 
+const AddSheetButton = styled(Button)`
+  .${Classes.BUTTON_TEXT} {
+    white-space: nowrap;
+  }
+`
+
 const BatchResultTallySheetTable = styled(HTMLTable).attrs({
   bordered: true,
   striped: true,
@@ -317,14 +323,14 @@ const BatchDetail: React.FC<IBatchDetailProps> = ({
             ))}
             <Tabs.Expander />
             {sheets.length > 1 && (
-              <Button
+              <AddSheetButton
                 disabled={areResultsFinalized || isRemovingSheet}
                 icon="add"
                 minimal
                 onClick={addSheet}
               >
                 Add Sheet
-              </Button>
+              </AddSheetButton>
             )}
           </Tabs>
         </TabsWrapper>
@@ -476,9 +482,9 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
             )
           )}
           <Tabs.Expander />
-          <Button disabled icon="add" minimal>
+          <AddSheetButton disabled icon="add" minimal>
             Add Sheet
-          </Button>
+          </AddSheetButton>
         </Tabs>
       )}
 
