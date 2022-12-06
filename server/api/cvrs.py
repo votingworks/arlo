@@ -648,7 +648,14 @@ def parse_ess_cvrs(
                     # the db. Based on the data we've seen, this creates a large
                     # enough gap between ids to order them without creating any
                     # duplicates.
-                    record_id = floor(int(tabulator_cvr, 16) / 10 ** 10)
+                    try:
+                        record_id = floor(int(tabulator_cvr, 16) / 10 ** 10)
+                    except ValueError:
+                        raise UserError(  # pylint: disable=raise-missing-from
+                            "Tabulator CVR should be a ten-digit number or a sixteen-character hexadecimal string."
+                            f" Got {tabulator_cvr} for Cast Vote Record {cvr_number}."
+                            " If you opened this file in Excel, it may have changed the format of this field."
+                        )
 
             db_batch = batches_by_key.get((tabulator_number, batch_name))
             if db_batch:

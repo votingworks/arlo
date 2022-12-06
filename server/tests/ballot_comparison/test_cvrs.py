@@ -1457,6 +1457,23 @@ def test_ess_cvr_invalid(
         ),
         (
             [
+                (
+                    io.BytesIO(
+                        # Sometimes we see scientific notation instead of hex
+                        replace_line(
+                            ESS_TYPE_2_BALLOTS,
+                            2,
+                            "1,BATCH1,Not Reviewed,,,,N,REP 405,Election Day,4.78822E+15,7074480632,Card,Election Day,28,405,21,0001,",
+                        ).encode()
+                    ),
+                    "ess_ballots_1.csv",
+                ),
+                (io.BytesIO(ESS_CVR.encode()), "ess_cvr.csv",),
+            ],
+            "ess_ballots_1.csv: Tabulator CVR should be a ten-digit number or a sixteen-character hexadecimal string. Got 4.78822E+15 for Cast Vote Record 1. If you opened this file in Excel, it may have changed the format of this field.",
+        ),
+        (
+            [
                 (io.BytesIO(ESS_BALLOTS_1.encode()), "ess_ballots_1.csv",),
                 (io.BytesIO(ESS_CVR.encode()), "ess_cvr.csv",),
                 (
