@@ -228,8 +228,14 @@ def test_sample_extra_batches_by_counting_group(
     )
     assert_ok(rv)
 
-    # Check the audit report
+    # Check that the audit is complete since we don't use risk measurements to determine completion
+    # for audits with extra batches; these audits always finish after one round
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/round")
+    is_audit_complete = json.loads(rv.data)["rounds"][0]["isAuditComplete"]
+    assert is_audit_complete
+
+    # Check the audit report
     rv = client.get(f"/api/election/{election_id}/report")
     assert_match_report(rv.data, snapshot)
 
@@ -337,3 +343,71 @@ def test_sample_extra_batches_with_no_extra_batches_to_sample(
     assert {batch["name"] for batch in j2_batches} == set(
         expected_regular_sampled_batch_names
     )
+
+
+def test_sample_extra_batches_min_percentage_of_jurisdiction_ballots_selected(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    contest_id: str,
+    batch_tallies,  # pylint: disable=unused-argument
+    election_settings,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
+        data={
+            "manifest": (
+                io.BytesIO(
+                    b"Container,Batch Name,Number of Ballots\n"
+                    b"Absentee by Mail,Batch 1,500\n"  # HMPB group
+                    b"Election Day,Batch 2,500\n"  # BMD group
+                    b"Container 3,Batch 3,500\n"
+                    b"Container 4,Batch 4,500\n"
+                    b"Container 5,Batch 5,100\n"
+                    b"Container 6,Batch 6,100\n"
+                    b"Container 7,Batch 7,100\n"
+                    b"Container 8,Batch 8,100\n"
+                    b"Container 9,Batch 9,1000000\n"  # Must be selected to hit the 2% selection threshold
+                ),
+                "manifest.csv",
+            )
+        },
+    )
+    assert_ok(rv)
+
+    # Start the audit
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
+    assert rv.status_code == 200
+
+    custom_zero_sample_size = {"key": "custom", "size": 0, "prob": None}
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {"roundNum": 1, "sampleSizes": {contest_id: custom_zero_sample_size}},
+    )
+    assert_ok(rv)
+
+    rv = client.get(f"/api/election/{election_id}/round")
+    rounds = json.loads(rv.data)["rounds"]
+    round1_id = rounds[0]["id"]
+
+    # Check that the relevant batches were selected
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round1_id}/batches"
+    )
+    assert rv.status_code == 200
+    j1_batches = json.loads(rv.data)["batches"]
+    j1_batch_names = {batch["name"] for batch in j1_batches}
+    assert len(j1_batch_names) >= 3
+    assert "Batch 1" in j1_batch_names  # HMPB group
+    assert "Batch 2" in j1_batch_names  # BMD group
+    assert (
+        "Batch 9" in j1_batch_names
+    )  # Must be selected to hit the 2% selection threshold
