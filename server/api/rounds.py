@@ -74,6 +74,10 @@ def active_targeted_contests(election: Election) -> List[Contest]:
 def is_audit_complete(round: Round):
     if not round.ended_at:
         return None
+    # Don't use risk measurements to determine completion for audits with extra batches and always
+    # complete these audits after one round
+    if is_enabled_sample_extra_batches_by_counting_group(round.election):
+        return True
     targeted_round_contests = (
         RoundContest.query.filter_by(round_id=round.id)
         .join(Contest)
@@ -942,16 +946,23 @@ def sample_batches(
     ):
         rand = random.Random(str(election.random_seed))
         for jurisdiction in contest.jurisdictions:
-            batch_ids_with_container = (
+            batch_ids_with_container_and_num_ballots = (
                 Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
-                .with_entities(Batch.id, Batch.container)
+                .with_entities(Batch.id, Batch.container, Batch.num_ballots)
                 .all()
             )
+            batch_ids = [
+                batch_id for batch_id, _, _ in batch_ids_with_container_and_num_ballots
+            ]
+            batch_id_to_num_ballots = {
+                batch_id: num_ballots
+                for batch_id, _, num_ballots in batch_ids_with_container_and_num_ballots
+            }
             # To simplify this experiment, we specify the counting group in the
             # container column of the ballot manifest
             bmd_batch_ids = {
                 batch_id
-                for batch_id, container in batch_ids_with_container
+                for batch_id, container, _ in batch_ids_with_container_and_num_ballots
                 if container
                 in [
                     "Advanced Voting",
@@ -962,7 +973,7 @@ def sample_batches(
             }
             hmpb_batch_ids = {
                 batch_id
-                for batch_id, container in batch_ids_with_container
+                for batch_id, container, _ in batch_ids_with_container_and_num_ballots
                 if container in ["Absentee by Mail", "Provisional"]
             }
             sampled_batch_ids = {
@@ -970,9 +981,11 @@ def sample_batches(
                 for _, batch_key in sample
                 if batch_key[0] == jurisdiction.name
             }
+            extra_batch_ids = set()
             # If we didn't sample any BMD batches, add one to the sample
             if len(bmd_batch_ids & sampled_batch_ids) == 0 and len(bmd_batch_ids) > 0:
                 extra_bmd_batch_id = rand.choice(list(bmd_batch_ids))
+                extra_batch_ids.add(extra_bmd_batch_id)
                 db_session.add(
                     SampledBatchDraw(
                         batch_id=extra_bmd_batch_id,
@@ -983,9 +996,45 @@ def sample_batches(
             # If we didn't sample any HMPB batches, add one to the sample
             if len(hmpb_batch_ids & sampled_batch_ids) == 0 and len(hmpb_batch_ids) > 0:
                 extra_hmpb_batch_id = rand.choice(list(hmpb_batch_ids))
+                extra_batch_ids.add(extra_hmpb_batch_id)
                 db_session.add(
                     SampledBatchDraw(
                         batch_id=extra_hmpb_batch_id,
+                        round_id=round.id,
+                        ticket_number=EXTRA_TICKET_NUMBER,
+                    )
+                )
+
+            # Continue adding batches until the percentage of jurisdiction ballots selected is at
+            # least 2%
+            min_percentage_of_jurisdiction_ballots_selected = 0.02
+
+            def compute_percentage_of_jurisdiction_ballots_selected(
+                selected_batch_ids, num_jurisdiction_ballots
+            ):
+                num_jurisdiction_ballots_selected = sum(
+                    [
+                        batch_id_to_num_ballots[batch_id]
+                        for batch_id in selected_batch_ids
+                    ]
+                )
+                return num_jurisdiction_ballots_selected / num_jurisdiction_ballots
+
+            while (
+                compute_percentage_of_jurisdiction_ballots_selected(
+                    sampled_batch_ids.union(extra_batch_ids),
+                    jurisdiction.manifest_num_ballots,
+                )
+                < min_percentage_of_jurisdiction_ballots_selected
+            ):
+                remaining_batch_ids = (
+                    set(batch_ids) - sampled_batch_ids - extra_batch_ids
+                )
+                extra_batch_id = rand.choice(list(remaining_batch_ids))
+                extra_batch_ids.add(extra_batch_id)
+                db_session.add(
+                    SampledBatchDraw(
+                        batch_id=extra_batch_id,
                         round_id=round.id,
                         ticket_number=EXTRA_TICKET_NUMBER,
                     )

@@ -485,7 +485,7 @@ const Review: React.FC<IProps> = ({
                       <Card key={contest.id}>
                         <FormSectionDescription>
                           <H5>{contest.name}</H5>
-                          {currentOption.size &&
+                          {currentOption.size !== null &&
                             currentOption.size >= fullHandTallySize && (
                               <Callout
                                 intent={
