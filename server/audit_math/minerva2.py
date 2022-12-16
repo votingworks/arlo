@@ -3,7 +3,7 @@ Library for performing a Minerva2 / PROVIDENCE ballot polling risk-limiting audi
 as described by Broadrick et al https://arxiv.org/abs/2210.08717
 """
 import logging
-from typing import Dict
+from typing import Dict, List
 
 from r2b2.minerva2 import Minerva2
 from r2b2.contest import Contest as R2B2_Contest, ContestType
@@ -13,14 +13,39 @@ from .ballot_polling_types import SampleSizeOption
 
 
 def make_r2b2_contest(arlo_contest: Contest):
-    reported_winners = arlo_contest.winners.keys()
+    """Make an R2B2 contest object from an Arlo contest
+
+    >>> arlo = minerva.make_arlo_contest({"a": 500, "b": 200, "c": 50})
+    >>> r2b2_contest = minerva2.make_r2b2_contest(arlo)
+    >>> r2b2_contest
+    Contest
+    -------
+    Contest Ballots: 750
+    Reported Tallies:
+        a               500
+        b               200
+        c               50
+    Reported Winners: ['a']
+    Contest Type: ContestType.PLURALITY
+    >>> r2b2_contest.tally
+    {'a': 500, 'b': 200, 'c': 50}
+    """
+    reported_winners = list(arlo_contest.winners.keys())
     return R2B2_Contest(
         arlo_contest.ballots,
         arlo_contest.candidates,
         arlo_contest.num_winners,
         reported_winners,
-        ContestType.PLURALITY,
+        ContestType.MAJORITY,
     )
+
+
+def make_minerva2_audit(arlo_contest: Contest, alpha: float):
+    """Make an R2B2 Audit object from an Arlo contest
+    TODO: Fill this in
+    """
+    r2b2_contest = make_r2b2_contest(arlo_contest)
+    return Minerva2(alpha, 1.0, r2b2_contest)
 
 
 def get_sample_size(
@@ -28,6 +53,7 @@ def get_sample_size(
     contest: Contest,
     sample_results: Dict[str, Dict[str, str]],
     round_sizes: Dict[int, int],
+    quants: List[float] = None,
 ) -> Dict[str, SampleSizeOption]:
     """
     Computes sample size for the next round, parameterized by likelihood that the
@@ -41,12 +67,30 @@ def get_sample_size(
 
     Outputs:
         samples:        dictionary mapping confirmation likelihood to next sample size
-
-    >>> c3 = make_arlo_contest({"a": 600, "b": 400, "c": 100, "_undervote_": 100})
-    >>> get_sample_size(10, c3, None, [])
-    {'0.7': {'type': None, 'size': 134, 'prob': 0.7}, '0.8': {'type': None, 'size': 166, 'prob': 0.8}, '0.9': {'type': None, 'size': 215, 'prob': 0.9}}
-    >>> get_sample_size(20, c3, None, [])
-    {'0.7': {'type': None, 'size': 87, 'prob': 0.7}, '0.8': {'type': None, 'size': 110, 'prob': 0.8}, '0.9': {'type': None, 'size': 156, 'prob': 0.9}}
-    >>> get_sample_size(10, c3, make_sample_results(c3, [[55, 40, 3]]), {1: 100})
-    {'0.9': {'type': None, 'size': 225, 'prob': 0.9}}
     """
+    # Problem: r2b2's design assumes that the Minerva2 audit object is control of the entire
+    # audit. The interface doesn't seem to easily allow us to just drop in halfway through,
+    # passing in the previous results and round sizes.
+
+    # Generally, there should only be one audit happening at once, right?
+    # I could store the results in a db, store it in a global variable?
+    if quants is None:
+        quants = [0.9]
+    alpha = risk_limit / 100
+    audit = make_minerva2_audit(contest, alpha)
+
+    if round_sizes is not None:
+        # dicts are sorted now so this should be chill beans
+        for round, size in round_sizes.items():
+            logging.debug(f"round: {round}")
+            mapping = sample_results[str(round)]
+            audit.execute_round(size, mapping)
+            logging.debug(audit)
+    return {
+        str(quant): {
+            "type": None,
+            "size": audit.next_sample_size(sprob=quant),
+            "prob": quant,
+        }
+        for quant in quants
+    }
