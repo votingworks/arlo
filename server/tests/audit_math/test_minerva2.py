@@ -14,6 +14,8 @@ def test_make_r2b2_contest():
     for k in arlo.candidates:
         assert arlo.candidates[k] == r2b2_contest.tally[k]
 
+# Credit to the r2b2 team for some of these tests, using some of the values they
+# have in their tests just to verify that I'm getting similar responses.
 def test_get_sample_size():
     arlo1 = minerva.make_arlo_contest({'a': 60000, 'b': 40000})
     arlo2 = minerva.make_arlo_contest({'a': 51000, 'b': 49000})
