@@ -54,3 +54,13 @@ def test_get_sample_size_multiple_rounds():
     round_schedule[2] = 200
     arlo_result = minerva2.get_sample_size(RISK_LIMIT, arlo, sample_results, round_schedule)["0.9"]["size"]
     assert r2b2_result == arlo_result
+
+def test_compute_risk():
+    contest1 = rContest(100000, {'A': 60000, 'B': 40000}, 1, ['A'], ContestType.MAJORITY)
+    minerva1 = Minerva2(ALPHA, 1.0, contest1)
+    minerva1.execute_round(100, {"A": 54, "B": 100 - 54})
+    arlo = minerva.make_arlo_contest({"A": 60000, "B": 40000})
+    sample_results = {1: {"A": 54, "B": 100 - 54}}
+    round_schedule = {1: 100}
+    risk = minerva2.compute_risk(RISK_LIMIT, arlo, sample_results, round_schedule)
+    assert minerva1.get_risk_level() == risk[0][("winner", "loser")]

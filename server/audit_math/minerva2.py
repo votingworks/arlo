@@ -3,7 +3,7 @@ Library for performing a Minerva2 / PROVIDENCE ballot polling risk-limiting audi
 as described by Broadrick et al https://arxiv.org/abs/2210.08717
 """
 import logging
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 from r2b2.minerva2 import Minerva2
 from r2b2.contest import Contest as R2B2_Contest, ContestType
@@ -48,10 +48,26 @@ def make_minerva2_audit(arlo_contest: Contest, alpha: float):
     return Minerva2(alpha, 1.0, r2b2_contest)
 
 
+def _run_minerva2_audit(
+    audit: Minerva2,
+    sample_results: Dict[int, Dict[int, str]],
+    round_sizes: Dict[int, int],
+):
+    """Take a Minerva2 audit and run the sample results on it."""
+    if round_sizes is not None:
+        # dicts are sorted since Python 3.7 so this should be chill beans
+        for round, size in round_sizes.items():
+            logging.debug(f"round: {round}")
+            mapping = sample_results[round]
+            audit.execute_round(size, mapping)
+            logging.debug(audit)
+
+
+# TODO: sample_results uses str to index and round_sizes uses int. Unify these two.
 def get_sample_size(
     risk_limit: int,
     contest: Contest,
-    sample_results: Dict[str, Dict[str, str]],
+    sample_results: Dict[int, Dict[int, str]],
     round_sizes: Dict[int, int],
     quants: List[float] = None,
 ) -> Dict[str, SampleSizeOption]:
@@ -80,12 +96,7 @@ def get_sample_size(
     audit = make_minerva2_audit(contest, alpha)
 
     if round_sizes is not None:
-        # dicts are sorted now so this should be chill beans
-        for round, size in round_sizes.items():
-            logging.debug(f"round: {round}")
-            mapping = sample_results[str(round)]
-            audit.execute_round(size, mapping)
-            logging.debug(audit)
+        _run_minerva2_audit(audit, sample_results, round_sizes)
     return {
         str(quant): {
             "type": None,
@@ -94,3 +105,45 @@ def get_sample_size(
         }
         for quant in quants
     }
+
+
+def compute_risk(
+    risk_limit: int,
+    contest: Contest,
+    sample_results: Dict[int, Dict[int, str]],
+    round_sizes: Dict[int, int],
+) -> Tuple[Dict[Tuple[str, str], float], bool]:
+    """
+    Computes the risk-value of <sample_results> based on results in <contest>.
+
+    Computes sample size for the next round, parameterized by likelihood that the
+    sample will confirm the election result, assuming accurate results.
+
+    Inputs:
+        risk_limit:     maximum risk as an integer percentage
+        contest:        a sampler_contest object of the contest being measured
+        sample_results: map round ids to mapping of candidates to incremental votes
+        round_sizes:    map round ids to incremental round sizes
+
+    Outputs:
+        samples:        dictionary mapping confirmation likelihood to next sample size
+
+    Outputs:
+        measurements:   the p-value of the hypotheses that the election
+                        result is correct based on the sample
+        confirmed:      a boolean indicating whether the audit can stop
+    """
+    alpha = risk_limit / 100
+    if alpha <= 0 or alpha >= 1:
+        raise ValueError("The risk-limit must be greater than zero and less than 100!")
+
+    audit = make_minerva2_audit(contest, alpha)
+
+    if round_sizes is not None:
+        _run_minerva2_audit(audit, sample_results, round_sizes)
+
+    # FIXME: for now we're returning only the max p_value for the deciding pair,
+    # since other audits only return a single p_value,
+    # and rounds.py throws it out right away p_value = max(p_values.values())
+    risk = audit.get_risk_level()
+    return {("winner", "loser"): risk}, risk <= alpha
