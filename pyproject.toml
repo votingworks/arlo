@@ -29,7 +29,7 @@ scipy = "~1.6.0"
 Flask-SeaSurf = "^0.3.0"
 boto3 = "^1.20.8"
 r2b2 = {git = "https://github.com/gwexploratoryaudits/r2b2", rev = "128874b"}
-MarkupSafe = "==2.0.1"
+MarkupSafe = "==2.0.1" # Related to this problem: https://stackoverflow.com/questions/72191560/importerror-cannot-import-name-soft-unicode-from-markupsafe
 
 [tool.poetry.dev-dependencies]
 filelock = "^3.0.12"
