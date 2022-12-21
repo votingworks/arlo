@@ -6,7 +6,7 @@ from typing import Dict, Tuple, Optional
 
 from ..models import AuditMathType
 from .sampler_contest import Contest
-from . import bravo, minerva
+from . import bravo, minerva, minerva2
 from .ballot_polling_types import SampleSizeOption
 
 # { round_id: { choice_id: num_votes }}
@@ -37,6 +37,10 @@ def get_sample_size(
 
     if math_type == AuditMathType.MINERVA:
         return minerva.get_sample_size(risk_limit, contest, sample_results, round_sizes)
+    elif math_type == AuditMathType.MINERVA2:
+        return minerva2.get_sample_size(
+            risk_limit, contest, sample_results, round_sizes
+        )
     else:
         # Default to BRAVO math
         return bravo.get_sample_size(risk_limit, contest, sample_results, round_sizes)
@@ -61,6 +65,8 @@ def compute_risk(
 
     if math_type == AuditMathType.MINERVA:
         return minerva.compute_risk(risk_limit, contest, sample_results, round_sizes)
+    elif math_type == AuditMathType.MINERVA2:
+        return minerva2.compute_risk(risk_limit, contest, sample_results, round_sizes)
     else:
         # Default to BRAVO
         return bravo.compute_risk(risk_limit, contest, sample_results)

@@ -3,13 +3,33 @@ Library for performing a Minerva2 / PROVIDENCE ballot polling risk-limiting audi
 as described by Broadrick et al https://arxiv.org/abs/2210.08717
 """
 import logging
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional
 
 from r2b2.minerva2 import Minerva2
 from r2b2.contest import Contest as R2B2_Contest, ContestType
 
 from .sampler_contest import Contest
 from .ballot_polling_types import SampleSizeOption
+
+
+# The AUDIT_CACHE is used to store in-progress minerva2 audits. By keeping track of
+# audits, we can reduce the amount of work needed when functions like
+# get_sample_size or compute_risk are called.
+AUDIT_CACHE = dict()  # type: ignore
+
+
+def get_from_audit_cache(
+    sample_results: Dict[int, Dict[int, str]], round_sizes: Dict[int, int],
+) -> Optional[Minerva2]:
+    # TODO: Implement
+    pass
+
+
+def set_audit_cache(
+    sample_results: Dict[int, Dict[int, str]], round_sizes: Dict[int, int],
+):
+    # TODO: Implement
+    pass
 
 
 def make_r2b2_contest(arlo_contest: Contest):
@@ -50,7 +70,7 @@ def make_minerva2_audit(arlo_contest: Contest, alpha: float):
 
 def _run_minerva2_audit(
     audit: Minerva2,
-    sample_results: Dict[int, Dict[int, str]],
+    sample_results: Dict[int, Dict[str, int]],
     round_sizes: Dict[int, int],
 ):
     """Take a Minerva2 audit and run the sample results on it."""
@@ -67,7 +87,7 @@ def _run_minerva2_audit(
 def get_sample_size(
     risk_limit: int,
     contest: Contest,
-    sample_results: Dict[int, Dict[int, str]],
+    sample_results: Dict[int, Dict[str, int]],
     round_sizes: Dict[int, int],
     quants: List[float] = None,
 ) -> Dict[str, SampleSizeOption]:
@@ -110,7 +130,7 @@ def get_sample_size(
 def compute_risk(
     risk_limit: int,
     contest: Contest,
-    sample_results: Dict[int, Dict[int, str]],
+    sample_results: Dict[int, Dict[str, int]],
     round_sizes: Dict[int, int],
 ) -> Tuple[Dict[Tuple[str, str], float], bool]:
     """
