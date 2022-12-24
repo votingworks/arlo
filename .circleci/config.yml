@@ -44,6 +44,11 @@ jobs:
       - create-data-model
 
       - run:
+          name: print poetry version
+          command: |
+            poetry --version
+
+      - run:
           name: typecheck server
           command: |
             make typecheck-server
