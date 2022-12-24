@@ -39,14 +39,15 @@ jobs:
       - checkout
       - setup_remote_docker:
           docker_layer_caching: true
-      - python/install-packages:
-          pkg-manager: poetry
-      - create-data-model
 
       - run:
           name: print poetry version
           command: |
             poetry --version
+
+      - python/install-packages:
+          pkg-manager: poetry
+      - create-data-model
 
       - run:
           name: typecheck server
