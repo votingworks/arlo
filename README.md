@@ -22,7 +22,7 @@ As part of the audit, Arlo:
 
 Arlo currently supports multiple risk-limiting audit methods, including:
 
-- ballot polling (BRAVO & Minerva)
+- ballot polling (BRAVO, Minerva, and Minerva2)
 - batch comparison
 - ballot comparison
 - hybrid (SUITE, combining ballot polling & ballot comparison)

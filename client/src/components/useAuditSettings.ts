@@ -20,7 +20,7 @@ export interface IAuditSettings {
   randomSeed: string | null
   riskLimit: number | null
   auditType: AuditType
-  auditMathType: 'BRAVO' | 'MINERVA' | 'SUPERSIMPLE' | 'MACRO' | 'SUITE'
+  auditMathType: 'BRAVO' | 'MINERVA' | 'MINERVA2' | 'SUPERSIMPLE' | 'MACRO' | 'SUITE'
   auditName: string
 }
 

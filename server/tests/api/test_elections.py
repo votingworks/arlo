@@ -221,7 +221,7 @@ def test_create_election_bad_bp_type(client: FlaskClient, org_id: str):
     assert json.loads(rv.data) == {
         "errors": [
             {
-                "message": "'NOT A REAL TYPE' is not one of ['BRAVO', 'MINERVA', 'SUPERSIMPLE', 'MACRO', 'SUITE']",
+                "message": "'NOT A REAL TYPE' is not one of ['BRAVO', 'MINERVA', 'MINERVA2', 'SUPERSIMPLE', 'MACRO', 'SUITE']",
                 "errorType": "Bad Request",
             }
         ]
