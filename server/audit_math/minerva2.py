@@ -70,7 +70,7 @@ def make_minerva2_audit(arlo_contest: Contest, alpha: float):
 
 def _run_minerva2_audit(
     audit: Minerva2,
-    sample_results: Dict[int, Dict[str, int]],
+    sample_results: Dict[str, Dict[str, int]],
     round_sizes: Dict[int, int],
 ):
     """Take a Minerva2 audit and run the sample results on it."""
@@ -78,16 +78,29 @@ def _run_minerva2_audit(
         # dicts are sorted since Python 3.7 so this should be chill beans
         for round, size in round_sizes.items():
             logging.debug(f"round: {round}")
-            mapping = sample_results[round]
-            audit.execute_round(size, mapping)
-            logging.debug(audit)
+            try:
+                # Well this is dumb. round_sizes is indexed by the number of the round
+                # that we're on, but sample_results is indexed by the round_id. Fortunately
+                # whatever is calling us knows both the number AND the id so we should be
+                # able to unify it, but we need to do it from that end.
+                k = f"r{round}"
+                mapping = sample_results[k]
+                audit.execute_round(size, mapping)
+                logging.debug(audit)
+            except KeyError as e:
+                logging.error(e)
+                logging.error(sample_results)
+                logging.error(k)
+                logging.error(round_sizes)
+                raise e
+
 
 
 # TODO: sample_results uses str to index and round_sizes uses int. Unify these two.
 def get_sample_size(
     risk_limit: int,
     contest: Contest,
-    sample_results: Dict[int, Dict[str, int]],
+    sample_results: Dict[str, Dict[str, int]],
     round_sizes: Dict[int, int],
     quants: List[float] = None,
 ) -> Dict[str, SampleSizeOption]:
@@ -130,7 +143,7 @@ def get_sample_size(
 def compute_risk(
     risk_limit: int,
     contest: Contest,
-    sample_results: Dict[int, Dict[str, int]],
+    sample_results: Dict[str, Dict[str, int]],
     round_sizes: Dict[int, int],
 ) -> Tuple[Dict[Tuple[str, str], float], bool]:
     """
