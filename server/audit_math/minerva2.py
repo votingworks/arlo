@@ -11,6 +11,8 @@ from r2b2.contest import Contest as R2B2_Contest, ContestType
 from .sampler_contest import Contest
 from .ballot_polling_types import SampleSizeOption
 
+# TODO: Use the sample_results type defined in ballot_polling.
+# TODO: Make round_sizes and sample_results key agree.
 
 # The AUDIT_CACHE is used to store in-progress minerva2 audits. By keeping track of
 # audits, we can reduce the amount of work needed when functions like
@@ -83,7 +85,7 @@ def _run_minerva2_audit(
                 # that we're on, but sample_results is indexed by the round_id. Fortunately
                 # whatever is calling us knows both the number AND the id so we should be
                 # able to unify it, but we need to do it from that end.
-                k = f"r{round}"
+                k = round
                 mapping = sample_results[k]
                 audit.execute_round(size, mapping)
                 logging.debug(audit)
