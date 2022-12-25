@@ -124,7 +124,7 @@ def test_get_sample_size_second_round():
 
     sample = {"r1": {"a": 10, "b": 10}}
 
-    assert minerva.get_sample_size(20, c, sample, {1: 20}) == {
+    assert minerva.get_sample_size(20, c, sample, {1: ("r1", 20)}) == {
         "0.9": {"type": None, "size": 45, "prob": 0.9}
     }
 
@@ -135,7 +135,7 @@ def test_compute_risk_2r():
         10,
         c,
         minerva.make_sample_results(c, [[40, 40, 3], [70, 30, 10]]),
-        {1: 83, 2: 200},
+        {1: ("r0", 83), 2: ("r1", 200)},
     )
     assert res == ({("winner", "loser"): approx(0.006382031505998192)}, True)
 
@@ -180,7 +180,7 @@ def test_compute_risk_delta():
         num_winners=2,
     )
     res = minerva.compute_risk(
-        10, c, minerva.make_sample_results(c, [[384, 276, 234, 1]]), {1: 923}
+        10, c, minerva.make_sample_results(c, [[384, 276, 234, 1]]), {1: ("r0", 923)}
     )
     assert res == ({("winner", "loser"): approx(0.039858047805999164)}, True)
 
@@ -190,7 +190,7 @@ def test_compute_risk_2win():
         {"a": 400, "b": 400, "c": 200, "d": 100}, num_winners=2
     )
     res = minerva.compute_risk(
-        10, c, minerva.make_sample_results(c, [[40, 40, 18, 2]]), {1: 100}
+        10, c, minerva.make_sample_results(c, [[40, 40, 18, 2]]), {1: ("r0", 100)}
     )
     assert res == ({("winner", "loser"): approx(0.0064653703790821795)}, True)
 
@@ -200,7 +200,7 @@ def test_compute_risk_2win_2():
         {"a": 400, "b": 400, "c": 200, "d": 100}, num_winners=2
     )
     res = minerva.compute_risk(
-        10, c, minerva.make_sample_results(c, [[30, 30, 30, 10]]), {1: 100}
+        10, c, minerva.make_sample_results(c, [[30, 30, 30, 10]]), {1: ("r0", 100)}
     )
     assert res == ({("winner", "loser"): approx(0.552702598296842)}, False)
 
@@ -213,7 +213,7 @@ def test_compute_risk_2win_2_2r():
         10,
         c,
         minerva.make_sample_results(c, [[30, 30, 30, 10], [50, 50, 25, 25]]),
-        {1: 100, 2: 150},
+        {1: ("r0", 100), 2: ("r1", 150)},
     )
     assert res == ({("winner", "loser"): approx(0.083535346859948)}, True)
 
@@ -221,11 +221,11 @@ def test_compute_risk_2win_2_2r():
 def test_compute_risk():
     c3 = minerva.make_arlo_contest({"a": 600, "b": 400, "c": 100, "_undervote_": 100})
     res = minerva.compute_risk(
-        10, c3, minerva.make_sample_results(c3, [[56, 40, 3]]), {1: 100, 2: 150}
+        10, c3, minerva.make_sample_results(c3, [[56, 40, 3]]), {1: ("r0", 100), 2: ("r1", 150)}
     )
     assert res == ({("winner", "loser"): approx(0.0933945799801079)}, True)
     res = minerva.compute_risk(
-        10, c3, minerva.make_sample_results(c3, [[40, 40, 3]]), {1: 100, 2: 150}
+        10, c3, minerva.make_sample_results(c3, [[40, 40, 3]]), {1: ("r0", 100), 2: ("r1", 150)}
     )
     assert res == ({("winner", "loser"): approx(0.5596434615209632)}, False)
 
@@ -237,7 +237,7 @@ def test_compute_risk_close_narrow():
         {"a": 5100000, "b": 4900000, "c": 100, "_undervote_": 100000}
     )
     res = minerva.compute_risk(
-        10, c, minerva.make_sample_results(c, [[5100, 4990, 1]]), {1: 10091}
+        10, c, minerva.make_sample_results(c, [[5100, 4990, 1]]), {1: ("r0", 10091)}
     )
     assert res == ({("winner", "loser"): 0.16896200607848647}, False)
 
@@ -252,7 +252,7 @@ def test_compute_risk_close_narrow_2():
         10,
         c,
         minerva.make_sample_results(c, [[5100, 4990, 1], [5100, 4900, 0]]),
-        {1: 10091, 2: 10000},
+        {1: ("r0", 10091), 2: ("r1", 10000)},
     )
     assert res == ({("winner", "loser"): approx(0.03907953348498701)}, True)
 
@@ -268,7 +268,7 @@ def test_compute_risk_close_narrow_3():
         10,
         c,
         minerva.make_sample_results(c, [[50100, 49900, 1], [51000, 49000, 0]]),
-        {1: 100001, 2: 100000},
+        {1: ("r0", 100001), 2: ("r1", 100000)},
     )
     assert res == ({("winner", "loser"): 0.0016102827517693026}, True)
 
@@ -279,7 +279,7 @@ def test_compute_risk_too_low():
 
     c = minerva.make_arlo_contest({"a": 2453876, "b": 2358432, "_undervote_": 114911})
     res = minerva.compute_risk(
-        10, c, minerva.make_sample_results(c, [[17605, 0]]), {1: 17605}
+        10, c, minerva.make_sample_results(c, [[17605, 0]]), {1: ("r0", 17605)}
     )
     assert res == ({("winner", "loser"): 0.0}, True)
 

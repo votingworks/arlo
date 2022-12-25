@@ -21,14 +21,14 @@ AUDIT_CACHE = dict()  # type: ignore
 
 
 def get_from_audit_cache(
-    sample_results: Dict[int, Dict[int, str]], round_sizes: Dict[int, int],
+    sample_results: Dict[int, Dict[int, str]], round_sizes: Dict[int, Tuple[str, int]],
 ) -> Optional[Minerva2]:
     # TODO: Implement
     pass
 
 
 def set_audit_cache(
-    sample_results: Dict[int, Dict[int, str]], round_sizes: Dict[int, int],
+    sample_results: Dict[int, Dict[int, str]], round_sizes: Dict[int, Tuple[str, int]],
 ):
     # TODO: Implement
     pass
@@ -73,29 +73,16 @@ def make_minerva2_audit(arlo_contest: Contest, alpha: float):
 def _run_minerva2_audit(
     audit: Minerva2,
     sample_results: Dict[str, Dict[str, int]],
-    round_sizes: Dict[int, int],
+    round_sizes: Dict[int, Tuple[str, int]],
 ):
     """Take a Minerva2 audit and run the sample results on it."""
     if round_sizes is not None:
-        # dicts are sorted since Python 3.7 so this should be chill beans
-        for round, size in round_sizes.items():
-            logging.debug(f"round: {round}")
-            try:
-                # Well this is dumb. round_sizes is indexed by the number of the round
-                # that we're on, but sample_results is indexed by the round_id. Fortunately
-                # whatever is calling us knows both the number AND the id so we should be
-                # able to unify it, but we need to do it from that end.
-                k = round
-                mapping = sample_results[k]
-                audit.execute_round(size, mapping)
-                logging.debug(audit)
-            except KeyError as e:
-                logging.error(e)
-                logging.error(sample_results)
-                logging.error(k)
-                logging.error(round_sizes)
-                raise e
-
+        for _, tup in sorted(round_sizes.items()):
+            round_id = tup[0]
+            size = tup[1]
+            mapping = sample_results[round_id]
+            audit.execute_round(size, mapping)
+            logging.debug(audit)
 
 
 # TODO: sample_results uses str to index and round_sizes uses int. Unify these two.
@@ -103,7 +90,7 @@ def get_sample_size(
     risk_limit: int,
     contest: Contest,
     sample_results: Dict[str, Dict[str, int]],
-    round_sizes: Dict[int, int],
+    round_sizes: Dict[str, Dict[int, int]],
     quants: List[float] = None,
 ) -> Dict[str, SampleSizeOption]:
     """
@@ -146,7 +133,7 @@ def compute_risk(
     risk_limit: int,
     contest: Contest,
     sample_results: Dict[str, Dict[str, int]],
-    round_sizes: Dict[int, int],
+    round_sizes: Dict[int, Tuple[str, int]],
 ) -> Tuple[Dict[Tuple[str, str], float], bool]:
     """
     Computes the risk-value of <sample_results> based on results in <contest>.

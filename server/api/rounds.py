@@ -288,15 +288,18 @@ def sampled_batches_by_ticket_number(election: Election) -> Dict[str, sampler.Ba
     }
 
 
-def round_sizes(contest: Contest) -> Dict[str, int]:
+def round_sizes(contest: Contest) -> Dict[int, Tuple[str, int]]:
     # For targeted contests, return the number of ballots sampled for that contest
     if contest.is_targeted:
-        return dict(
+        results = (
             Round.query.join(SampledBallotDraw)
             .filter_by(contest_id=contest.id)
-            .group_by(Round.id)
-            .values(Round.id, func.count(SampledBallotDraw.ticket_number))
+            .group_by(Round.id, Round.round_num)
+            .values(
+                Round.round_num, Round.id, func.count(SampledBallotDraw.ticket_number)
+            )
         )
+        return {round_num: (i, c) for round_num, i, c in results}
     # For opportunistic contests, return the number of sampled ballots in
     # jurisdictions in that contest's universe
     else:
@@ -308,13 +311,14 @@ def round_sizes(contest: Contest) -> Dict[str, int]:
             .with_entities(SampledBallot.id)
             .subquery()
         )
-        return dict(
+        results = (
             Round.query.join(SampledBallotDraw)
             .join(SampledBallot)
             .filter(SampledBallot.id.in_(contest_jurisdiction_ballots))
-            .group_by(Round.id)
-            .values(Round.id, func.count(SampledBallot.id.distinct()))
+            .group_by(Round.id, Round.round_num)
+            .values(Round.round_num, Round.id, func.count(SampledBallot.id.distinct()))
         )
+        return {round_num: (i, c) for round_num, i, c in results}
 
 
 def cvrs_for_contest(contest: Contest) -> sampler_contest.CVRS:

@@ -20,7 +20,7 @@ def get_sample_size(
     contest: Contest,
     sample_results: BALLOT_POLLING_SAMPLE_RESULTS,
     math_type: AuditMathType,
-    round_sizes: Dict[int, int],
+    round_sizes: Dict[int, Tuple[str, int]]
 ) -> Dict[str, SampleSizeOption]:
     """
     Compute sample size using the specified math.
@@ -52,7 +52,7 @@ def compute_risk(
     sample_results: Dict[str, Dict[str, int]],
     samples_not_found: Dict[str, int],
     math_type: AuditMathType,
-    round_sizes: Dict[int, int],
+    round_sizes: Dict[int, Tuple[str, int]],
 ) -> Tuple[Dict[Tuple[str, str], float], bool]:
     sample_results = {  # Make a copy so we don't mutate the original results
         round_id: dict(round_results)

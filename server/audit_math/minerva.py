@@ -89,7 +89,7 @@ def get_sample_size(
     risk_limit: int,
     contest: Contest,
     sample_results: Optional[Dict[str, Dict[str, int]]],
-    round_sizes: Dict[int, int],
+    round_sizes: Dict[int, Tuple[str, int]],
 ) -> Dict[str, "SampleSizeOption"]:  # type: ignore
     """
     Computes sample size for the next round, parameterized by likelihood that the
@@ -99,7 +99,7 @@ def get_sample_size(
         risk_limit:     maximum risk as an integer percentage
         contest:        a sampler_contest object of the contest being audited
         sample_results: map round ids to mapping of candidates to incremental votes
-        round_sizes:    map round ids to incremental round sizes
+        round_sizes:    map round nums to tuples of round ids and incremental round sizes
 
     Outputs:
         samples:        dictionary mapping confirmation likelihood to next sample size
@@ -109,7 +109,7 @@ def get_sample_size(
     {'0.7': {'type': None, 'size': 134, 'prob': 0.7}, '0.8': {'type': None, 'size': 166, 'prob': 0.8}, '0.9': {'type': None, 'size': 215, 'prob': 0.9}}
     >>> get_sample_size(20, c3, None, [])
     {'0.7': {'type': None, 'size': 87, 'prob': 0.7}, '0.8': {'type': None, 'size': 110, 'prob': 0.8}, '0.9': {'type': None, 'size': 156, 'prob': 0.9}}
-    >>> get_sample_size(10, c3, make_sample_results(c3, [[55, 40, 3]]), {1: 100})
+    >>> get_sample_size(10, c3, make_sample_results(c3, [[55, 40, 3]]), {1: ("r1", 100)})
     {'0.9': {'type': None, 'size': 225, 'prob': 0.9}}
     """
 
@@ -123,7 +123,7 @@ def get_sample_size(
         # approach which simply defines all round sizes uniformly based on the first
         # round size.
 
-        first_round_size = round_sizes[1]
+        _, first_round_size = round_sizes[1]
         prev_round_count = len(round_sizes)
         round_num = prev_round_count + 1
 
@@ -212,7 +212,7 @@ def compute_risk(
     risk_limit: int,
     contest: Contest,
     sample_results: Dict[str, Dict[str, int]],
-    round_sizes: Dict[int, int],
+    round_sizes: Dict[int, Tuple[str, int]],
 ) -> Tuple[Dict[Tuple[str, str], float], bool]:
     """
     Computes the risk-value of <sample_results> based on results in <contest>.
@@ -224,7 +224,7 @@ def compute_risk(
         risk_limit:     maximum risk as an integer percentage
         contest:        a sampler_contest object of the contest being measured
         sample_results: map round ids to mapping of candidates to incremental votes
-        round_sizes:    map round ids to incremental round sizes
+        round_sizes:    map round nums to tuples of round ids and incremental round sizes
 
     Outputs:
         samples:        dictionary mapping confirmation likelihood to next sample size
@@ -240,7 +240,7 @@ def compute_risk(
         0.0 < alpha < 1.0
     ), "The risk-limit must be greater than zero and less than one!"
 
-    prev_round_schedule = [value for key, value in sorted(round_sizes.items())]
+    prev_round_schedule = [value[1] for key, value in sorted(round_sizes.items())]
     logging.debug(f"{round_sizes=}, {prev_round_schedule=}")
 
     risks = collect_risks(alpha, contest, prev_round_schedule, sample_results)
