@@ -12,7 +12,7 @@ from .sampler_contest import Contest
 from .ballot_polling_types import SampleSizeOption
 
 # TODO: Use the sample_results type defined in ballot_polling.
-# TODO: Make round_sizes and sample_results key agree.
+# TODO: see if I can make mappings more intuitive. Named tuples? Defining typings?
 
 # The AUDIT_CACHE is used to store in-progress minerva2 audits. By keeping track of
 # audits, we can reduce the amount of work needed when functions like
@@ -63,8 +63,8 @@ def make_r2b2_contest(arlo_contest: Contest):
 
 
 def make_minerva2_audit(arlo_contest: Contest, alpha: float):
-    """Make an R2B2 Audit object from an Arlo contest
-    TODO: Fill this in
+    """Make an R2B2 Minerva Audit object from an Arlo contest.
+    This audit object will run the minerva2 audit.
     """
     r2b2_contest = make_r2b2_contest(arlo_contest)
     return Minerva2(alpha, 1.0, r2b2_contest)
@@ -75,23 +75,34 @@ def _run_minerva2_audit(
     sample_results: Dict[str, Dict[str, int]],
     round_sizes: Dict[int, Tuple[str, int]],
 ):
-    """Take a Minerva2 audit and run the sample results on it."""
+    """Take a Minerva2 audit and run the sample results on it.
+    The audit object passed in is modified, this function doesn't return anything.
+    
+    Inputs:
+        audit:          Minerva2 audit object
+        sample_results: map round ids to mapping of candidates to incremental votes
+        round_sizes:    map round nums to tuples of round ids and incremental round sizes
+    """
     if round_sizes is not None:
-        for _, tup in sorted(round_sizes.items()):
-            round_id = tup[0]
-            size = tup[1]
+        # Note: we need the key to sort the dict, even though we don't use
+        # it in the loop explicitly.
+        logging.debug("running sample_results on audit object")
+        logging.debug(f"sample_results: {sample_results}")
+        logging.debug(f"round_sizes: {round_sizes}")
+        logging.debug(audit)
+        for _, round_info_tuple in sorted(round_sizes.items()):
+            round_id = round_info_tuple[0]
+            size = round_info_tuple[1]
             mapping = sample_results[round_id]
             audit.execute_round(size, mapping)
             logging.debug(audit)
 
 
-# TODO: sample_results uses str to index and round_sizes uses int. Unify these two.
 def get_sample_size(
     risk_limit: int,
     contest: Contest,
     sample_results: Dict[str, Dict[str, int]],
-    round_sizes: Dict[str, Dict[int, int]],
-    quants: List[float] = None,
+    round_sizes: Dict[int, Tuple[str, int]],
 ) -> Dict[str, SampleSizeOption]:
     """
     Computes sample size for the next round, parameterized by likelihood that the
@@ -101,19 +112,12 @@ def get_sample_size(
         risk_limit:     maximum risk as an integer percentage
         contest:        a sampler_contest object of the contest being audited
         sample_results: map round ids to mapping of candidates to incremental votes
-        round_sizes:    map round ids to incremental round sizes
+        round_sizes:    map round nums to tuples of round ids and incremental round sizes
 
     Outputs:
         samples:        dictionary mapping confirmation likelihood to next sample size
     """
-    # Problem: r2b2's design assumes that the Minerva2 audit object is control of the entire
-    # audit. The interface doesn't seem to easily allow us to just drop in halfway through,
-    # passing in the previous results and round sizes.
-
-    # Generally, there should only be one audit happening at once, right?
-    # I could store the results in a db, store it in a global variable?
-    if quants is None:
-        quants = [0.9]
+    quants = [.7, .8, .9]
     alpha = risk_limit / 100
     audit = make_minerva2_audit(contest, alpha)
 
@@ -145,7 +149,7 @@ def compute_risk(
         risk_limit:     maximum risk as an integer percentage
         contest:        a sampler_contest object of the contest being measured
         sample_results: map round ids to mapping of candidates to incremental votes
-        round_sizes:    map round ids to incremental round sizes
+        round_sizes:    map round nums to tuples of round ids and incremental round sizes
 
     Outputs:
         samples:        dictionary mapping confirmation likelihood to next sample size
