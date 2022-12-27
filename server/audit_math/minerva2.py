@@ -19,18 +19,10 @@ from .ballot_polling_types import SampleSizeOption, BALLOT_POLLING_ROUND_SIZES, 
 def make_r2b2_contest(arlo_contest: Contest):
     """Make an R2B2 contest object from an Arlo contest
 
-    >>> arlo = minerva.make_arlo_contest({"a": 500, "b": 200, "c": 50})
-    >>> r2b2_contest = minerva2.make_r2b2_contest(arlo)
+    >>> arlo = Contest("contest", {"a": 500, "b": 200, "c": 50, "ballots": 750, "numWinners": 1, "votesAllowed": 1})
+    >>> r2b2_contest = make_r2b2_contest(arlo)
     >>> r2b2_contest
-    Contest
-    -------
-    Contest Ballots: 750
-    Reported Tallies:
-        a               500
-        b               200
-        c               50
-    Reported Winners: ['a']
-    Contest Type: ContestType.PLURALITY
+    Contest: [750, {'a': 500, 'b': 200, 'c': 50}, 1, ['a'], <ContestType.MAJORITY: 1>]
     >>> r2b2_contest.tally
     {'a': 500, 'b': 200, 'c': 50}
     """
