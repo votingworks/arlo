@@ -7,7 +7,11 @@ from typing import Dict, Tuple, Optional
 from ..models import AuditMathType
 from .sampler_contest import Contest
 from . import bravo, minerva, minerva2
-from .ballot_polling_types import SampleSizeOption, BALLOT_POLLING_ROUND_SIZES, BALLOT_POLLING_SAMPLE_RESULTS
+from .ballot_polling_types import (
+    SampleSizeOption,
+    BALLOT_POLLING_ROUND_SIZES,
+    BALLOT_POLLING_SAMPLE_RESULTS,
+)
 
 
 def get_sample_size(

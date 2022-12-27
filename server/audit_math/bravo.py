@@ -14,7 +14,11 @@ from typing import Dict, Tuple, Optional, TypedDict
 from scipy import stats
 
 from .sampler_contest import Contest
-from .ballot_polling_types import SampleSizeOption, BALLOT_POLLING_ROUND_SIZES, BALLOT_POLLING_SAMPLE_RESULTS
+from .ballot_polling_types import (
+    SampleSizeOption,
+    BALLOT_POLLING_ROUND_SIZES,
+    BALLOT_POLLING_SAMPLE_RESULTS,
+)
 
 
 def get_expected_sample_size(

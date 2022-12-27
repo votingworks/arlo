@@ -10,7 +10,11 @@ from r2b2.minerva2 import Minerva2
 from r2b2.contest import Contest as R2B2_Contest, ContestType
 
 from .sampler_contest import Contest
-from .ballot_polling_types import SampleSizeOption, BALLOT_POLLING_ROUND_SIZES, BALLOT_POLLING_SAMPLE_RESULTS
+from .ballot_polling_types import (
+    SampleSizeOption,
+    BALLOT_POLLING_ROUND_SIZES,
+    BALLOT_POLLING_SAMPLE_RESULTS,
+)
 
 # TODO: Use the sample_results type defined in ballot_polling.
 # TODO: see if I can make mappings more intuitive. Named tuples? Defining typings?
@@ -51,13 +55,13 @@ def _run_minerva2_audit(
 ):
     """Take a Minerva2 audit and run the sample results on it.
     The audit object passed in is modified, this function doesn't return anything.
-    
+
     Inputs:
         audit:          Minerva2 audit object
         sample_results: map round ids to mapping of candidates to incremental votes
         round_sizes:    map round nums to tuples of round ids and incremental round sizes
     """
-    if round_sizes is not None:
+    if round_sizes is not None and sample_results:
         # Note: we need the key to sort the dict, even though we don't use
         # it in the loop explicitly.
         logging.debug("running sample_results on audit object")
@@ -65,7 +69,7 @@ def _run_minerva2_audit(
         logging.debug(f"round_sizes: {round_sizes}")
         logging.debug(audit)
         # r2b2's audit object expects the votes each candidate receives to be cumulative
-        mapping = defaultdict(int)
+        mapping: Dict[str, int] = defaultdict(int)
         size = 0
         for _, round_info_tuple in sorted(round_sizes.items()):
             round_id = round_info_tuple[0]
@@ -96,7 +100,7 @@ def get_sample_size(
     Outputs:
         samples:        dictionary mapping confirmation likelihood to next sample size
     """
-    quants = [.7, .8, .9]
+    quants = [0.7, 0.8, 0.9]
     alpha = risk_limit / 100
     audit = make_minerva2_audit(contest, alpha)
 

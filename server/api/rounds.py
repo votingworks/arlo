@@ -178,8 +178,12 @@ def count_audited_votes(election: Election, round: Round):
             db_session.add(result)
 
 
-def contest_results_by_round(contest: Contest) -> Optional[ballot_polling_types.BALLOT_POLLING_SAMPLE_RESULTS]:
-    results_by_round: ballot_polling_types.BALLOT_POLLING_SAMPLE_RESULTS = defaultdict(lambda: defaultdict(int))
+def contest_results_by_round(
+    contest: Contest,
+) -> Optional[ballot_polling_types.BALLOT_POLLING_SAMPLE_RESULTS]:
+    results_by_round: ballot_polling_types.BALLOT_POLLING_SAMPLE_RESULTS = defaultdict(
+        lambda: defaultdict(int)
+    )
     for result in contest.results:
         results_by_round[result.round_id][result.contest_choice_id] = result.result
     return results_by_round if len(results_by_round) > 0 else None
@@ -208,7 +212,9 @@ def samples_not_found_by_round(contest: Contest) -> Dict[str, int]:
 
 
 # { batch_key: { contest_id: { choice_id: votes }}}
-BatchTallies = Dict[sampler.BatchKey, ballot_polling_types.BALLOT_POLLING_SAMPLE_RESULTS]
+BatchTallies = Dict[
+    sampler.BatchKey, ballot_polling_types.BALLOT_POLLING_SAMPLE_RESULTS
+]
 
 
 def batch_tallies(election: Election) -> BatchTallies:

@@ -29,7 +29,6 @@ def election_settings(client: FlaskClient, election_id: str):
     assert_ok(rv)
 
 
-
 def test_minerva2_sample_size(
     client: FlaskClient,
     election_id: str,
