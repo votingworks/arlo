@@ -1,7 +1,14 @@
-from typing import Literal, Optional, TypedDict
+from typing import Dict, Literal, Optional, Tuple, TypedDict
 
 
 class SampleSizeOption(TypedDict):
     type: Optional[Literal["ASN", "all-ballots"]]
     size: int
     prob: Optional[float]
+
+# TODO: Look into why this was named how it was.
+# { round_id: { choice_id: num_votes }}
+BALLOT_POLLING_SAMPLE_RESULTS = Dict[str, Dict[str, int]]
+
+# { round_num: [ round_id, round_size ]}
+BALLOT_POLLING_ROUND_SIZES = Dict[int, Tuple[str, int]]

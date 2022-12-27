@@ -25,6 +25,7 @@ from ..util.collections import group_by
 from ..audit_math import (
     sampler,
     ballot_polling,
+    ballot_polling_types,
     macro,
     supersimple,
     sampler_contest,
@@ -177,8 +178,8 @@ def count_audited_votes(election: Election, round: Round):
             db_session.add(result)
 
 
-def contest_results_by_round(contest: Contest) -> Optional[Dict[str, Dict[str, int]]]:
-    results_by_round: Dict[str, Dict[str, int]] = defaultdict(lambda: defaultdict(int))
+def contest_results_by_round(contest: Contest) -> Optional[ballot_polling_types.BALLOT_POLLING_SAMPLE_RESULTS]:
+    results_by_round: ballot_polling_types.BALLOT_POLLING_SAMPLE_RESULTS = defaultdict(lambda: defaultdict(int))
     for result in contest.results:
         results_by_round[result.round_id][result.contest_choice_id] = result.result
     return results_by_round if len(results_by_round) > 0 else None
@@ -207,7 +208,7 @@ def samples_not_found_by_round(contest: Contest) -> Dict[str, int]:
 
 
 # { batch_key: { contest_id: { choice_id: votes }}}
-BatchTallies = Dict[sampler.BatchKey, Dict[str, Dict[str, int]]]
+BatchTallies = Dict[sampler.BatchKey, ballot_polling_types.BALLOT_POLLING_SAMPLE_RESULTS]
 
 
 def batch_tallies(election: Election) -> BatchTallies:
@@ -288,7 +289,7 @@ def sampled_batches_by_ticket_number(election: Election) -> Dict[str, sampler.Ba
     }
 
 
-def round_sizes(contest: Contest) -> Dict[int, Tuple[str, int]]:
+def round_sizes(contest: Contest) -> ballot_polling_types.BALLOT_POLLING_ROUND_SIZES:
     # For targeted contests, return the number of ballots sampled for that contest
     if contest.is_targeted:
         results = (

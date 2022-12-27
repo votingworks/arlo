@@ -7,20 +7,15 @@ from typing import Dict, Tuple, Optional
 from ..models import AuditMathType
 from .sampler_contest import Contest
 from . import bravo, minerva, minerva2
-from .ballot_polling_types import SampleSizeOption
-
-# { round_id: { choice_id: num_votes }}
-BALLOT_POLLING_SAMPLE_RESULTS = Optional[  # pylint: disable=invalid-name
-    Dict[str, Dict[str, int]]
-]
+from .ballot_polling_types import SampleSizeOption, BALLOT_POLLING_ROUND_SIZES, BALLOT_POLLING_SAMPLE_RESULTS
 
 
 def get_sample_size(
     risk_limit: int,
     contest: Contest,
-    sample_results: BALLOT_POLLING_SAMPLE_RESULTS,
+    sample_results: Optional[BALLOT_POLLING_SAMPLE_RESULTS],
     math_type: AuditMathType,
-    round_sizes: Dict[int, Tuple[str, int]]
+    round_sizes: Optional[BALLOT_POLLING_ROUND_SIZES],
 ) -> Dict[str, SampleSizeOption]:
     """
     Compute sample size using the specified math.
@@ -49,10 +44,10 @@ def get_sample_size(
 def compute_risk(
     risk_limit: int,
     contest: Contest,
-    sample_results: Dict[str, Dict[str, int]],
+    sample_results: BALLOT_POLLING_SAMPLE_RESULTS,
     samples_not_found: Dict[str, int],
     math_type: AuditMathType,
-    round_sizes: Dict[int, Tuple[str, int]],
+    round_sizes: BALLOT_POLLING_ROUND_SIZES,
 ) -> Tuple[Dict[Tuple[str, str], float], bool]:
     sample_results = {  # Make a copy so we don't mutate the original results
         round_id: dict(round_results)

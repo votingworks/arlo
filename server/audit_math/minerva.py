@@ -15,6 +15,7 @@ from typing import List, Dict, Tuple, Optional
 
 from athena.audit import Audit as AthenaAudit  # type: ignore
 from .sampler_contest import Contest
+from .ballot_polling_types import SampleSizeOption, BALLOT_POLLING_ROUND_SIZES, BALLOT_POLLING_SAMPLE_RESULTS
 from ..config import MINERVA_MULTIPLE
 
 
@@ -39,7 +40,7 @@ def make_arlo_contest(tally, num_winners=1, votes_allowed=1):
 
 def make_sample_results(
     contest: Contest, votes_per_round: List[List]
-) -> Dict[str, Dict[str, int]]:
+) -> BALLOT_POLLING_SAMPLE_RESULTS:
     """Make up sample_results for testing given Arlo contest based on votes.
     Note that athena's API relies on Python requiring dictionaries (of candidates and sample results)
     to be ordered since 3.7.
@@ -88,9 +89,9 @@ def make_athena_audit(arlo_contest, alpha):
 def get_sample_size(
     risk_limit: int,
     contest: Contest,
-    sample_results: Optional[Dict[str, Dict[str, int]]],
-    round_sizes: Dict[int, Tuple[str, int]],
-) -> Dict[str, "SampleSizeOption"]:  # type: ignore
+    sample_results: Optional[BALLOT_POLLING_SAMPLE_RESULTS],
+    round_sizes: BALLOT_POLLING_ROUND_SIZES,
+) -> Dict[str, SampleSizeOption]:  # type: ignore
     """
     Computes sample size for the next round, parameterized by likelihood that the
     sample will confirm the election result, assuming accurate results.
@@ -164,7 +165,7 @@ def collect_risks(
     alpha: float,
     arlo_contest: Contest,
     round_schedule: List[int],
-    sample_results: Dict[str, Dict[str, int]],
+    sample_results: BALLOT_POLLING_SAMPLE_RESULTS,
 ) -> Dict[Tuple[str, str], float]:
     """
     Collect risk levels for each pair of candidates.
@@ -211,8 +212,8 @@ def collect_risks(
 def compute_risk(
     risk_limit: int,
     contest: Contest,
-    sample_results: Dict[str, Dict[str, int]],
-    round_sizes: Dict[int, Tuple[str, int]],
+    sample_results: BALLOT_POLLING_SAMPLE_RESULTS,
+    round_sizes: BALLOT_POLLING_ROUND_SIZES,
 ) -> Tuple[Dict[Tuple[str, str], float], bool]:
     """
     Computes the risk-value of <sample_results> based on results in <contest>.

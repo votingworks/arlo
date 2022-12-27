@@ -2,36 +2,18 @@
 Library for performing a Minerva2 / PROVIDENCE ballot polling risk-limiting audit,
 as described by Broadrick et al https://arxiv.org/abs/2210.08717
 """
+from collections import defaultdict
 import logging
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, Optional, Tuple
 
 from r2b2.minerva2 import Minerva2
 from r2b2.contest import Contest as R2B2_Contest, ContestType
 
 from .sampler_contest import Contest
-from .ballot_polling_types import SampleSizeOption
+from .ballot_polling_types import SampleSizeOption, BALLOT_POLLING_ROUND_SIZES, BALLOT_POLLING_SAMPLE_RESULTS
 
 # TODO: Use the sample_results type defined in ballot_polling.
 # TODO: see if I can make mappings more intuitive. Named tuples? Defining typings?
-
-# The AUDIT_CACHE is used to store in-progress minerva2 audits. By keeping track of
-# audits, we can reduce the amount of work needed when functions like
-# get_sample_size or compute_risk are called.
-AUDIT_CACHE = dict()  # type: ignore
-
-
-def get_from_audit_cache(
-    sample_results: Dict[int, Dict[int, str]], round_sizes: Dict[int, Tuple[str, int]],
-) -> Optional[Minerva2]:
-    # TODO: Implement
-    pass
-
-
-def set_audit_cache(
-    sample_results: Dict[int, Dict[int, str]], round_sizes: Dict[int, Tuple[str, int]],
-):
-    # TODO: Implement
-    pass
 
 
 def make_r2b2_contest(arlo_contest: Contest):
@@ -72,8 +54,8 @@ def make_minerva2_audit(arlo_contest: Contest, alpha: float):
 
 def _run_minerva2_audit(
     audit: Minerva2,
-    sample_results: Dict[str, Dict[str, int]],
-    round_sizes: Dict[int, Tuple[str, int]],
+    sample_results: Optional[BALLOT_POLLING_SAMPLE_RESULTS],
+    round_sizes: Optional[BALLOT_POLLING_ROUND_SIZES],
 ):
     """Take a Minerva2 audit and run the sample results on it.
     The audit object passed in is modified, this function doesn't return anything.
@@ -90,10 +72,15 @@ def _run_minerva2_audit(
         logging.debug(f"sample_results: {sample_results}")
         logging.debug(f"round_sizes: {round_sizes}")
         logging.debug(audit)
+        # r2b2's audit object expects the votes each candidate receives to be cumulative
+        mapping = defaultdict(int)
+        size = 0
         for _, round_info_tuple in sorted(round_sizes.items()):
             round_id = round_info_tuple[0]
-            size = round_info_tuple[1]
-            mapping = sample_results[round_id]
+            size += round_info_tuple[1]
+            round_vote_mapping = sample_results[round_id]
+            for k, v in round_vote_mapping.items():
+                mapping[k] += v
             audit.execute_round(size, mapping)
             logging.debug(audit)
 
@@ -101,8 +88,8 @@ def _run_minerva2_audit(
 def get_sample_size(
     risk_limit: int,
     contest: Contest,
-    sample_results: Dict[str, Dict[str, int]],
-    round_sizes: Dict[int, Tuple[str, int]],
+    sample_results: Optional[BALLOT_POLLING_SAMPLE_RESULTS],
+    round_sizes: Optional[BALLOT_POLLING_ROUND_SIZES],
 ) -> Dict[str, SampleSizeOption]:
     """
     Computes sample size for the next round, parameterized by likelihood that the
@@ -121,7 +108,7 @@ def get_sample_size(
     alpha = risk_limit / 100
     audit = make_minerva2_audit(contest, alpha)
 
-    if round_sizes is not None:
+    if round_sizes:
         _run_minerva2_audit(audit, sample_results, round_sizes)
     return {
         str(quant): {
@@ -136,8 +123,8 @@ def get_sample_size(
 def compute_risk(
     risk_limit: int,
     contest: Contest,
-    sample_results: Dict[str, Dict[str, int]],
-    round_sizes: Dict[int, Tuple[str, int]],
+    sample_results: BALLOT_POLLING_SAMPLE_RESULTS,
+    round_sizes: BALLOT_POLLING_ROUND_SIZES,
 ) -> Tuple[Dict[Tuple[str, str], float], bool]:
     """
     Computes the risk-value of <sample_results> based on results in <contest>.
@@ -165,8 +152,7 @@ def compute_risk(
 
     audit = make_minerva2_audit(contest, alpha)
 
-    if round_sizes is not None:
-        _run_minerva2_audit(audit, sample_results, round_sizes)
+    _run_minerva2_audit(audit, sample_results, round_sizes)
 
     # FIXME: for now we're returning only the max p_value for the deciding pair,
     # since other audits only return a single p_value,
