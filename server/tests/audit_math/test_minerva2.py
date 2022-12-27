@@ -1,8 +1,9 @@
 from r2b2.minerva2 import Minerva2
 from r2b2.contest import Contest as rContest, ContestType
-from pytest import approx
+from pytest import approx, raises
 
-from ...audit_math import minerva2, minerva
+from ...audit_math import minerva2, minerva, ballot_polling
+from ...models import AuditMathType
 
 ALPHA = 0.1
 RISK_LIMIT = 10
@@ -99,7 +100,12 @@ def test_compute_risk():
     sample_results = {"1": {"A": 54, "B": 100 - 54}}
     round_schedule = {1: ("1", 100)}
     risk = minerva2.compute_risk(RISK_LIMIT, arlo, sample_results, round_schedule)
+    ballot_polling_risk = ballot_polling.compute_risk(RISK_LIMIT, arlo, sample_results, {}, AuditMathType.MINERVA2, round_schedule)
+    assert ballot_polling_risk == risk
     assert minerva1.get_risk_level() == risk[0][("winner", "loser")]
+
+    with raises(ValueError, match="The risk-limit must be greater than zero and less than 100!"):
+        risk = minerva2.compute_risk(1000, arlo, sample_results, round_schedule)
 
 def test_compute_risk_2win():
     c = minerva.make_arlo_contest(
@@ -120,7 +126,7 @@ def test_compute_risk_multi_round():
     )
     sample_results = {"1": {"A": 54, "B": 100 - 54}}
     round_schedule = {1: ("1", 100)}
-    sample_results["2"] = {"A": 50, "B": 100 - 50} 
+    sample_results["2"] = {"A": 55, "B": 100 - 55}
     round_schedule[2] = ("2", 100)
     res = minerva2.compute_risk(
         10,
@@ -128,4 +134,5 @@ def test_compute_risk_multi_round():
         sample_results,
         round_schedule
     )
-    assert res == ({("winner", "loser"): approx(0.083535346859948)}, True)
+    assert res == ({("winner", "loser"): 0.3614293635757271}, False)
+    # TODO: Look into this, does the risk make sense?
