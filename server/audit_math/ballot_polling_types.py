@@ -9,7 +9,7 @@ class SampleSizeOption(TypedDict):
 
 # TODO: Look into why this was named how it was.
 # { round_id: { choice_id: num_votes }}
-BALLOT_POLLING_SAMPLE_RESULTS = Dict[ # pylint: disable=invalid-name
+BALLOT_POLLING_SAMPLE_RESULTS = Dict[  # pylint: disable=invalid-name
     str, Dict[str, int]
 ]
 
