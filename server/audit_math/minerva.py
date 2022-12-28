@@ -15,7 +15,11 @@ from typing import List, Dict, Tuple, Optional
 
 from athena.audit import Audit as AthenaAudit  # type: ignore
 from .sampler_contest import Contest
-from .ballot_polling_types import SampleSizeOption, BALLOT_POLLING_ROUND_SIZES, BALLOT_POLLING_SAMPLE_RESULTS
+from .ballot_polling_types import (
+    SampleSizeOption,
+    BALLOT_POLLING_ROUND_SIZES,
+    BALLOT_POLLING_SAMPLE_RESULTS,
+)
 from ..config import MINERVA_MULTIPLE
 
 
@@ -90,7 +94,7 @@ def get_sample_size(
     risk_limit: int,
     contest: Contest,
     sample_results: Optional[BALLOT_POLLING_SAMPLE_RESULTS],
-    round_sizes: BALLOT_POLLING_ROUND_SIZES,
+    round_sizes: Optional[BALLOT_POLLING_ROUND_SIZES],
 ) -> Dict[str, SampleSizeOption]:  # type: ignore
     """
     Computes sample size for the next round, parameterized by likelihood that the
@@ -114,7 +118,7 @@ def get_sample_size(
     {'0.9': {'type': None, 'size': 225, 'prob': 0.9}}
     """
 
-    if sample_results is not None:
+    if sample_results is not None and round_sizes:
         # Construct round schedule as a function of only first round size.
         # and other information set at the start of the audit.
 
