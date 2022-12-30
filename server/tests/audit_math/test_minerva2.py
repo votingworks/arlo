@@ -1,8 +1,8 @@
 from r2b2.minerva2 import Minerva2
 from r2b2.contest import Contest as rContest, ContestType
-from pytest import approx, raises
+import pytest
 
-from ...audit_math import minerva2, minerva, ballot_polling
+from ...audit_math import bravo, minerva2, minerva, ballot_polling
 from ...models import AuditMathType
 
 ALPHA = 0.1
@@ -109,7 +109,7 @@ def test_compute_risk():
     assert ballot_polling_risk == risk
     assert minerva1.get_risk_level() == risk[0][("winner", "loser")]
 
-    with raises(
+    with pytest.raises(
         ValueError, match="The risk-limit must be greater than zero and less than 100!"
     ):
         risk = minerva2.compute_risk(1000, arlo, sample_results, round_schedule)
@@ -125,14 +125,14 @@ def test_compute_risk_2win():
         minerva.make_sample_results(contest, [[40, 40, 18, 2]]),
         {1: ("r0", 100)},
     )
-    assert res == ({("winner", "loser"): approx(0.0064653703790821795)}, True)
+    assert res == ({("winner", "loser"): pytest.approx(0.0064653703790821795)}, True)
     res = minerva2.compute_risk(
         10,
         contest,
         minerva.make_sample_results(contest, [[30, 30, 30, 10]]),
         {1: ("r0", 100)},
     )
-    assert res == ({("winner", "loser"): approx(0.552702598296842)}, False)
+    assert res == ({("winner", "loser"): pytest.approx(0.552702598296842)}, False)
 
 
 def test_compute_risk_multi_round():
@@ -141,6 +141,90 @@ def test_compute_risk_multi_round():
     round_schedule = {1: ("1", 100)}
     sample_results["2"] = {"A": 55, "B": 100 - 55}
     round_schedule[2] = ("2", 100)
-    res = minerva2.compute_risk(10, contest, sample_results, round_schedule)
+    res = minerva2.compute_risk(RISK_LIMIT, contest, sample_results, round_schedule)
     assert res == ({("winner", "loser"): 0.3614293635757271}, False)
-    # TODO: Look into this, does the risk make sense?
+
+
+def test_compare_minervas():
+    contest = minerva.make_arlo_contest({"A": 450, "B": 400})
+    sample_results = {"1": {"A": 54, "B": 100 - 54}}
+    round_schedule = {1: ("1", 100)}
+    m_1 = minerva.compute_risk(RISK_LIMIT, contest, sample_results, round_schedule)
+    m_2 = minerva2.compute_risk(RISK_LIMIT, contest, sample_results, round_schedule)
+    # Minerva2's round 1 stopping condition is equivalent to Minerva, so risks should be the same.
+    assert m_1 == m_2
+
+    sample_results["2"] = {"A": 55, "B": 100 - 55}
+    round_schedule[2] = ("2", 100)
+    m_1 = minerva.compute_risk(RISK_LIMIT, contest, sample_results, round_schedule)
+    m_2 = minerva2.compute_risk(RISK_LIMIT, contest, sample_results, round_schedule)
+    assert m_1[0][("winner", "loser")] < m_2[0][("winner", "loser")]
+
+
+def test_compare_bravo():
+    contest = minerva.make_arlo_contest({"A": 450, "B": 400})
+    sample_results = {"1": {"A": 54, "B": 100 - 54}}
+    round_schedule = {1: ("1", 100)}
+    m_1 = minerva2.compute_risk(RISK_LIMIT, contest, sample_results, round_schedule)
+    b_1 = bravo.compute_risk(RISK_LIMIT, contest, sample_results)
+    assert m_1[0][("winner", "loser")] < b_1[0][("A", "B")]
+    sample_results["2"] = {"A": 55, "B": 100 - 55}
+    round_schedule[2] = ("2", 100)
+    m_1 = minerva2.compute_risk(RISK_LIMIT, contest, sample_results, round_schedule)
+    b_1 = bravo.compute_risk(RISK_LIMIT, contest, sample_results)
+    assert m_1[0][("winner", "loser")] < b_1[0][("A", "B")]
+    sample_results["3"] = {"A": 8, "B": 2}
+    round_schedule[3] = ("3", 10)
+    m_1 = minerva2.compute_risk(RISK_LIMIT, contest, sample_results, round_schedule)
+    b_1 = bravo.compute_risk(RISK_LIMIT, contest, sample_results)
+    assert m_1[0][("winner", "loser")] < b_1[0][("A", "B")]
+    sample_results["4"] = {"A": 36, "B": 14}
+    round_schedule[4] = ("4", 50)
+    m_1 = minerva2.compute_risk(RISK_LIMIT, contest, sample_results, round_schedule)
+    b_1 = bravo.compute_risk(RISK_LIMIT, contest, sample_results)
+    assert m_1[0][("winner", "loser")] < b_1[0][("A", "B")]
+
+
+def test_abnormal_rounds():
+    contest = minerva.make_arlo_contest({"A": 500, "B": 100})
+    sample_results = {"1": {"A": 0, "B": 100}}
+    round_schedule = {1: ("1", 100)}
+    m_2 = minerva2.compute_risk(RISK_LIMIT, contest, sample_results, round_schedule)
+    assert not m_2[1]
+    sample_results["2"] = {"A": 500, "B": 0}
+    round_schedule[2] = ("2", 500)
+    m_2 = minerva2.compute_risk(RISK_LIMIT, contest, sample_results, round_schedule)
+    assert m_2[1]
+
+    contest = minerva.make_arlo_contest({"A": 5000, "B": 1000, "C": 1000, "D": 1000})
+    sample_results = {"1": {"A": 1000, "B": 1000, "C": 1000, "D": 1000}}
+    round_schedule = {1: ("1", 4000)}
+    m_2 = minerva2.compute_risk(RISK_LIMIT, contest, sample_results, round_schedule)
+    assert not m_2[1]
+    sample_results = {"1": {"A": 1000, "B": 0, "C": 0, "D": 0}}
+    round_schedule = {1: ("1", 1000)}
+    m_2 = minerva2.compute_risk(RISK_LIMIT, contest, sample_results, round_schedule)
+    assert m_2[1]
+
+
+@pytest.mark.skip(
+    reason="Both minerva's don't report the race as finished, should this be fixed?"
+)
+def test_tight_margins_full_count():
+    contest = minerva.make_arlo_contest({"A": 101, "B": 100})
+    sample_results = {"1": {"A": 0, "B": 100}}
+    round_schedule = {1: ("1", 100)}
+    m_2 = minerva2.compute_risk(RISK_LIMIT, contest, sample_results, round_schedule)
+    assert not m_2[1]
+    sample_results["2"] = {"A": 101, "B": 0}
+    round_schedule[2] = ("2", 101)
+    m_2 = minerva2.compute_risk(RISK_LIMIT, contest, sample_results, round_schedule)
+    assert m_2[1]
+
+    contest = minerva.make_arlo_contest({"A": 1001, "B": 1000, "C": 1000, "D": 1000})
+    sample_results = {"1": {"A": 1001, "B": 1000, "C": 1000, "D": 1000}}
+    round_schedule = {1: ("1", 4001)}
+    m_2 = minerva2.compute_risk(RISK_LIMIT, contest, sample_results, round_schedule)
+    m_1 = minerva.compute_risk(RISK_LIMIT, contest, sample_results, round_schedule)
+    assert m_2[1]
+    assert m_1[1]
