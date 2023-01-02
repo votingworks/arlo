@@ -7,7 +7,6 @@ class SampleSizeOption(TypedDict):
     prob: Optional[float]
 
 
-# TODO: Look into why this was named how it was.
 # { round_id: { choice_id: num_votes }}
 BALLOT_POLLING_SAMPLE_RESULTS = Dict[  # pylint: disable=invalid-name
     str, Dict[str, int]
