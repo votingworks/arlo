@@ -15,10 +15,11 @@ from typing import List, Dict, Tuple, Optional
 
 from athena.audit import Audit as AthenaAudit  # type: ignore
 from .sampler_contest import Contest
-from .ballot_polling_types import (
+from .ballot_polling_types import ( # pylint: disable=unused-import
     SampleSizeOption,
     BALLOT_POLLING_ROUND_SIZES,
     BALLOT_POLLING_SAMPLE_RESULTS,
+    RoundInfo,
 )
 from ..config import MINERVA_MULTIPLE
 
