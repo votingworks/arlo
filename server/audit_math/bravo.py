@@ -394,7 +394,9 @@ def get_sample_size(
     quants = [0.7, 0.8, 0.9]
 
     if round_sizes:
-        num_sampled = sum([sizes for _, sizes in round_sizes.values()])
+        num_sampled = sum(
+            [round_info.round_size for round_info in round_sizes.values()]
+        )
         # If we've already sampled all the ballots, we should never be here
         if num_sampled >= contest.ballots:
             raise ValueError("All ballots have already been audited!")

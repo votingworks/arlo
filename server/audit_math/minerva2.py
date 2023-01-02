@@ -68,9 +68,9 @@ def _run_minerva2_audit(
         # r2b2's audit object expects the votes each candidate receives to be cumulative
         mapping: Dict[str, int] = defaultdict(int)
         size = 0
-        for _, round_info_tuple in sorted(round_sizes.items()):
-            round_id = round_info_tuple[0]
-            size += round_info_tuple[1]
+        for _, round_info in sorted(round_sizes.items()):
+            round_id = round_info.round_id
+            size += round_info.round_size
             round_vote_mapping = sample_results[round_id]
             for k, v in round_vote_mapping.items():
                 mapping[k] += v

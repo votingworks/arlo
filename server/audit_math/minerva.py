@@ -128,7 +128,7 @@ def get_sample_size(
         # approach which simply defines all round sizes uniformly based on the first
         # round size.
 
-        _, first_round_size = round_sizes[1]
+        first_round_size = round_sizes[1].round_size
         prev_round_count = len(round_sizes)
         round_num = prev_round_count + 1
 
@@ -245,7 +245,9 @@ def compute_risk(
         0.0 < alpha < 1.0
     ), "The risk-limit must be greater than zero and less than one!"
 
-    prev_round_schedule = [value[1] for key, value in sorted(round_sizes.items())]
+    prev_round_schedule = [
+        round_info.round_size for _, round_info in sorted(round_sizes.items())
+    ]
     logging.debug(f"{round_sizes=}, {prev_round_schedule=}")
 
     risks = collect_risks(alpha, contest, prev_round_schedule, sample_results)
