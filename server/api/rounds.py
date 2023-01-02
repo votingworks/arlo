@@ -306,7 +306,10 @@ def round_sizes(contest: Contest) -> ballot_polling_types.BALLOT_POLLING_ROUND_S
                 Round.round_num, Round.id, func.count(SampledBallotDraw.ticket_number)
             )
         )
-        return {round_num: (i, c) for round_num, i, c in results}
+        return {
+            round_num: ballot_polling_types.RoundInfo(i, c)
+            for round_num, i, c in results
+        }
     # For opportunistic contests, return the number of sampled ballots in
     # jurisdictions in that contest's universe
     else:
@@ -325,7 +328,10 @@ def round_sizes(contest: Contest) -> ballot_polling_types.BALLOT_POLLING_ROUND_S
             .group_by(Round.id, Round.round_num)
             .values(Round.round_num, Round.id, func.count(SampledBallot.id.distinct()))
         )
-        return {round_num: (i, c) for round_num, i, c in results}
+        return {
+            round_num: ballot_polling_types.RoundInfo(i, c)
+            for round_num, i, c in results
+        }
 
 
 def cvrs_for_contest(contest: Contest) -> sampler_contest.CVRS:

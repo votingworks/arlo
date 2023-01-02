@@ -1,5 +1,4 @@
-from collections import namedtuple
-from typing import Dict, Literal, Optional, TypedDict
+from typing import Dict, Literal, NamedTuple, Optional, TypedDict
 
 
 class SampleSizeOption(TypedDict):
@@ -8,7 +7,7 @@ class SampleSizeOption(TypedDict):
     prob: Optional[float]
 
 
-RoundInfo = namedtuple("RoundInfo", ["round_id", "round_size"])
+RoundInfo = NamedTuple("RoundInfo", [("round_id", str), ("round_size", int)])
 
 # { round_id: { choice_id: num_votes }}
 BALLOT_POLLING_SAMPLE_RESULTS = Dict[  # pylint: disable=invalid-name

@@ -114,7 +114,7 @@ def get_sample_size(
     {'0.7': {'type': None, 'size': 134, 'prob': 0.7}, '0.8': {'type': None, 'size': 166, 'prob': 0.8}, '0.9': {'type': None, 'size': 215, 'prob': 0.9}}
     >>> get_sample_size(20, c3, None, [])
     {'0.7': {'type': None, 'size': 87, 'prob': 0.7}, '0.8': {'type': None, 'size': 110, 'prob': 0.8}, '0.9': {'type': None, 'size': 156, 'prob': 0.9}}
-    >>> get_sample_size(10, c3, make_sample_results(c3, [[55, 40, 3]]), {1: ("r1", 100)})
+    >>> get_sample_size(10, c3, make_sample_results(c3, [[55, 40, 3]]), {1: RoundInfo("r1", 100)})
     {'0.9': {'type': None, 'size': 225, 'prob': 0.9}}
     """
 
