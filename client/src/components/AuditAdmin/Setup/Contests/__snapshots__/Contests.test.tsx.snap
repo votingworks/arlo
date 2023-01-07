@@ -126,7 +126,7 @@ exports[`Audit Setup > Contests renders empty opportunistic state correctly 1`] 
               class="sc-bYSBpT hroDAy"
             >
               <label
-                class="bp3-label sc-jtRfpW lkNSpp"
+                class="bp3-label sc-jtRfpW xkJJK"
               >
                 Name of Candidate/Choice 
                 1
@@ -146,7 +146,7 @@ exports[`Audit Setup > Contests renders empty opportunistic state correctly 1`] 
                 </div>
               </label>
               <label
-                class="bp3-label sc-jtRfpW lkNSpp"
+                class="bp3-label sc-jtRfpW xkJJK"
               >
                 Votes for Candidate/Choice 
                 1
@@ -170,7 +170,7 @@ exports[`Audit Setup > Contests renders empty opportunistic state correctly 1`] 
               class="sc-bYSBpT hroDAy"
             >
               <label
-                class="bp3-label sc-jtRfpW lkNSpp"
+                class="bp3-label sc-jtRfpW xkJJK"
               >
                 Name of Candidate/Choice 
                 2
@@ -190,7 +190,7 @@ exports[`Audit Setup > Contests renders empty opportunistic state correctly 1`] 
                 </div>
               </label>
               <label
-                class="bp3-label sc-jtRfpW lkNSpp"
+                class="bp3-label sc-jtRfpW xkJJK"
               >
                 Votes for Candidate/Choice 
                 2
@@ -211,7 +211,7 @@ exports[`Audit Setup > Contests renders empty opportunistic state correctly 1`] 
               </label>
             </div>
             <p
-              class="sc-kTUwUJ hRSfTz"
+              class="sc-kTUwUJ kWFRUA"
             >
               Add a new candidate/choice
             </p>
@@ -458,7 +458,7 @@ exports[`Audit Setup > Contests renders empty targeted state correctly 1`] = `
               class="sc-bYSBpT hroDAy"
             >
               <label
-                class="bp3-label sc-jtRfpW lkNSpp"
+                class="bp3-label sc-jtRfpW xkJJK"
               >
                 Name of Candidate/Choice 
                 1
@@ -478,7 +478,7 @@ exports[`Audit Setup > Contests renders empty targeted state correctly 1`] = `
                 </div>
               </label>
               <label
-                class="bp3-label sc-jtRfpW lkNSpp"
+                class="bp3-label sc-jtRfpW xkJJK"
               >
                 Votes for Candidate/Choice 
                 1
@@ -502,7 +502,7 @@ exports[`Audit Setup > Contests renders empty targeted state correctly 1`] = `
               class="sc-bYSBpT hroDAy"
             >
               <label
-                class="bp3-label sc-jtRfpW lkNSpp"
+                class="bp3-label sc-jtRfpW xkJJK"
               >
                 Name of Candidate/Choice 
                 2
@@ -522,7 +522,7 @@ exports[`Audit Setup > Contests renders empty targeted state correctly 1`] = `
                 </div>
               </label>
               <label
-                class="bp3-label sc-jtRfpW lkNSpp"
+                class="bp3-label sc-jtRfpW xkJJK"
               >
                 Votes for Candidate/Choice 
                 2
@@ -543,7 +543,7 @@ exports[`Audit Setup > Contests renders empty targeted state correctly 1`] = `
               </label>
             </div>
             <p
-              class="sc-kTUwUJ hRSfTz"
+              class="sc-kTUwUJ kWFRUA"
             >
               Add a new candidate/choice
             </p>
@@ -790,7 +790,7 @@ exports[`Audit Setup > Contests renders filled opportunistic state correctly 1`]
               class="sc-bYSBpT hroDAy"
             >
               <label
-                class="bp3-label sc-jtRfpW lkNSpp"
+                class="bp3-label sc-jtRfpW xkJJK"
               >
                 Name of Candidate/Choice 
                 1
@@ -810,7 +810,7 @@ exports[`Audit Setup > Contests renders filled opportunistic state correctly 1`]
                 </div>
               </label>
               <label
-                class="bp3-label sc-jtRfpW lkNSpp"
+                class="bp3-label sc-jtRfpW xkJJK"
               >
                 Votes for Candidate/Choice 
                 1
@@ -834,7 +834,7 @@ exports[`Audit Setup > Contests renders filled opportunistic state correctly 1`]
               class="sc-bYSBpT hroDAy"
             >
               <label
-                class="bp3-label sc-jtRfpW lkNSpp"
+                class="bp3-label sc-jtRfpW xkJJK"
               >
                 Name of Candidate/Choice 
                 2
@@ -854,7 +854,7 @@ exports[`Audit Setup > Contests renders filled opportunistic state correctly 1`]
                 </div>
               </label>
               <label
-                class="bp3-label sc-jtRfpW lkNSpp"
+                class="bp3-label sc-jtRfpW xkJJK"
               >
                 Votes for Candidate/Choice 
                 2
@@ -875,7 +875,7 @@ exports[`Audit Setup > Contests renders filled opportunistic state correctly 1`]
               </label>
             </div>
             <p
-              class="sc-kTUwUJ hRSfTz"
+              class="sc-kTUwUJ kWFRUA"
             >
               Add a new candidate/choice
             </p>
@@ -1122,7 +1122,7 @@ exports[`Audit Setup > Contests renders filled targeted state correctly 1`] = `
               class="sc-bYSBpT hroDAy"
             >
               <label
-                class="bp3-label sc-jtRfpW lkNSpp"
+                class="bp3-label sc-jtRfpW xkJJK"
               >
                 Name of Candidate/Choice 
                 1
@@ -1142,7 +1142,7 @@ exports[`Audit Setup > Contests renders filled targeted state correctly 1`] = `
                 </div>
               </label>
               <label
-                class="bp3-label sc-jtRfpW lkNSpp"
+                class="bp3-label sc-jtRfpW xkJJK"
               >
                 Votes for Candidate/Choice 
                 1
@@ -1166,7 +1166,7 @@ exports[`Audit Setup > Contests renders filled targeted state correctly 1`] = `
               class="sc-bYSBpT hroDAy"
             >
               <label
-                class="bp3-label sc-jtRfpW lkNSpp"
+                class="bp3-label sc-jtRfpW xkJJK"
               >
                 Name of Candidate/Choice 
                 2
@@ -1186,7 +1186,7 @@ exports[`Audit Setup > Contests renders filled targeted state correctly 1`] = `
                 </div>
               </label>
               <label
-                class="bp3-label sc-jtRfpW lkNSpp"
+                class="bp3-label sc-jtRfpW xkJJK"
               >
                 Votes for Candidate/Choice 
                 2
@@ -1207,7 +1207,7 @@ exports[`Audit Setup > Contests renders filled targeted state correctly 1`] = `
               </label>
             </div>
             <p
-              class="sc-kTUwUJ hRSfTz"
+              class="sc-kTUwUJ kWFRUA"
             >
               Add a new candidate/choice
             </p>
