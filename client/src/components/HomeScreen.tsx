@@ -517,7 +517,7 @@ const CreateAudit = ({ organizations }: { organizations: IOrganization[] }) => {
                         <Radio value="BRAVO">BRAVO</Radio>
                         <Radio value="MINERVA">Minerva (Not recommended)</Radio>
                         <Radio value="PROVIDENCE">
-                          Minerva 2 (Not recommended)
+                          Providence (Not recommended)
                         </Radio>
                       </RadioGroup>
                     </label>
