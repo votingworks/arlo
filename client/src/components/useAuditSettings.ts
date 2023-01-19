@@ -23,7 +23,7 @@ export interface IAuditSettings {
   auditMathType:
     | 'BRAVO'
     | 'MINERVA'
-    | 'MINERVA2'
+    | 'PROVIDENCE'
     | 'SUPERSIMPLE'
     | 'MACRO'
     | 'SUITE'

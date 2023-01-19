@@ -1,12 +1,12 @@
 """
-Library for performing a Minerva2 / PROVIDENCE ballot polling risk-limiting audit,
+Library for performing a Providence ballot polling risk-limiting audit,
 as described by Broadrick et al https://arxiv.org/abs/2210.08717
 """
 from collections import defaultdict
 import logging
 from typing import Dict, Optional, Tuple
 
-from r2b2.minerva2 import Minerva2
+from r2b2.minerva2 import Minerva2 as Providence
 from r2b2.contest import Contest as R2B2_Contest, ContestType
 
 from .sampler_contest import Contest
@@ -37,24 +37,24 @@ def make_r2b2_contest(arlo_contest: Contest):
     )
 
 
-def make_minerva2_audit(arlo_contest: Contest, alpha: float):
+def make_providence_audit(arlo_contest: Contest, alpha: float):
     """Make an R2B2 Minerva Audit object from an Arlo contest.
-    This audit object will run the minerva2 audit.
+    This audit object will run the providence audit.
     """
     r2b2_contest = make_r2b2_contest(arlo_contest)
-    return Minerva2(alpha, 1.0, r2b2_contest)
+    return Providence(alpha, 1.0, r2b2_contest)
 
 
-def _run_minerva2_audit(
-    audit: Minerva2,
+def _run_providence_audit(
+    audit: Providence,
     sample_results: Optional[BALLOT_POLLING_SAMPLE_RESULTS],
     round_sizes: Optional[BALLOT_POLLING_ROUND_SIZES],
 ):
-    """Take a Minerva2 audit and run the sample results on it.
+    """Take a Providence audit and run the sample results on it.
     The audit object passed in is modified, this function doesn't return anything.
 
     Inputs:
-        audit:          Minerva2 audit object
+        audit:          Providence audit object
         sample_results: map round ids to mapping of candidates to incremental votes
         round_sizes:    map round nums to tuples of round ids and incremental round sizes
     """
@@ -99,10 +99,10 @@ def get_sample_size(
     """
     quants = [0.7, 0.8, 0.9]
     alpha = risk_limit / 100
-    audit = make_minerva2_audit(contest, alpha)
+    audit = make_providence_audit(contest, alpha)
 
     if round_sizes:
-        _run_minerva2_audit(audit, sample_results, round_sizes)
+        _run_providence_audit(audit, sample_results, round_sizes)
     return {
         str(quant): {
             "type": None,
@@ -143,9 +143,9 @@ def compute_risk(
     if alpha <= 0 or alpha >= 1:
         raise ValueError("The risk-limit must be greater than zero and less than 100!")
 
-    audit = make_minerva2_audit(contest, alpha)
+    audit = make_providence_audit(contest, alpha)
 
-    _run_minerva2_audit(audit, sample_results, round_sizes)
+    _run_providence_audit(audit, sample_results, round_sizes)
 
     # FIXME: for now we're returning only the max p_value for the deciding pair,
     # since other audits only return a single p_value,

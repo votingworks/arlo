@@ -11,7 +11,7 @@ def election_id(client: FlaskClient, org_id: str, request):
         client,
         audit_name=f"Test Audit {request.node.name}",
         audit_type=AuditType.BALLOT_POLLING,
-        audit_math_type=AuditMathType.MINERVA2,
+        audit_math_type=AuditMathType.PROVIDENCE,
         organization_id=org_id,
     )
 
@@ -29,7 +29,7 @@ def election_settings(client: FlaskClient, election_id: str):
     assert_ok(rv)
 
 
-def test_minerva2_sample_size(
+def test_providence_sample_size(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],  # pylint: disable=unused-argument

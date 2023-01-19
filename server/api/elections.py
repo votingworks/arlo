@@ -54,7 +54,7 @@ def validate_new_election(election: JSONDict):
         AuditType.BALLOT_POLLING: [
             AuditMathType.BRAVO,
             AuditMathType.MINERVA,
-            AuditMathType.MINERVA2,
+            AuditMathType.PROVIDENCE,
         ],
         AuditType.BALLOT_COMPARISON: [AuditMathType.SUPERSIMPLE],
         AuditType.BATCH_COMPARISON: [AuditMathType.MACRO],
