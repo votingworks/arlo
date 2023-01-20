@@ -2,7 +2,6 @@
 PATH := $(PATH):$(HOME)/.local/bin
 
 deps:
-	sudo add-apt-repository -y ppa:deadsnakes/ppa
 	sudo apt update
 	sudo apt install -y python3.8 python3.8-venv libpython3.8-dev libpq-dev graphicsmagick
 	# Install node: https://github.com/nodesource/distributions/blob/master/README.md#deb		
