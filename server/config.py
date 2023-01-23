@@ -64,6 +64,16 @@ SESSION_LIFETIME = timedelta(hours=8)
 # Max time a session can be used after the last request
 SESSION_INACTIVITY_TIMEOUT = timedelta(hours=1)
 
+SESSION_TYPE = 'sqlalchemy'
+SESSION_SQLALCHEMY = DATABASE_URL
+SESSION_SQLALCHEMY_TABLE = "sessions"
+SESSION_COOKIE_SECURE = True
+
+# TODO do we need to set this per-org/audit? The default enables it for all
+# subdomains.
+# SESSION_COOKIE_DOMAIN = None 
+
+PERMANENT_SESSION_LIFETIME = timedelta(hours=8) 
 
 HTTP_ORIGIN = read_env_var(
     "ARLO_HTTP_ORIGIN",

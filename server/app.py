@@ -2,6 +2,7 @@ from urllib.parse import urlparse
 from flask import Flask
 from flask_talisman import Talisman
 from flask_seasurf import SeaSurf
+from flask.ext.session import Session
 from werkzeug.wrappers import Request
 from werkzeug.middleware.proxy_fix import ProxyFix
 
@@ -10,12 +11,15 @@ from .config import (
     FLASK_ENV,
     HTTP_ORIGIN,
     STATIC_FOLDER,
+    SESSION_TYPE,
+    PERMANENT_SESSION_LIFETIME,
 )
 from .database import init_db, db_session, engine
 from .api import api
 from .auth import auth
 from .auth.auth_routes import oauth
 from .sentry import configure_sentry
+
 
 if FLASK_ENV not in ["development", "test"]:
     # Restrict which hosts we trust when not in dev/test. This works by causing
@@ -44,6 +48,9 @@ app.secret_key = SESSION_SECRET
 init_db()
 
 oauth.init_app(app)
+
+sess = Session()
+sess.init_app(app)
 
 app.register_blueprint(api, url_prefix="/api")
 app.register_blueprint(auth)
