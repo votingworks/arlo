@@ -47,6 +47,8 @@ def set_loggedin_user(
         session[_CREATED_AT] = datetime.now(timezone.utc).isoformat()
     session[_LAST_REQUEST_AT] = datetime.now(timezone.utc).isoformat()
 
+    # TODO stash this session in the DB
+
 
 def get_loggedin_user(session) -> Union[Tuple[UserType, str], Tuple[None, None]]:
     check_session_expiration(session)
@@ -57,8 +59,11 @@ def get_loggedin_user(session) -> Union[Tuple[UserType, str], Tuple[None, None]]
 def clear_loggedin_user(session):
     session[_USER] = None
 
+    # TODO remove stashed session from DB
+
 
 def check_session_expiration(session):
+    # TODO this probably goes away as we can rely on Flask-Session for it?
     if (
         _CREATED_AT not in session
         or _LAST_REQUEST_AT not in session

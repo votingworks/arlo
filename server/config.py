@@ -73,6 +73,7 @@ SESSION_COOKIE_SECURE = True
 # subdomains.
 # SESSION_COOKIE_DOMAIN = None 
 
+# TODO how is this different from SESSION_LIFETIME? Do we need both?
 PERMANENT_SESSION_LIFETIME = timedelta(hours=8) 
 
 HTTP_ORIGIN = read_env_var(

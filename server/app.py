@@ -2,7 +2,7 @@ from urllib.parse import urlparse
 from flask import Flask
 from flask_talisman import Talisman
 from flask_seasurf import SeaSurf
-from flask.ext.session import Session
+from flask_session import Session
 from werkzeug.wrappers import Request
 from werkzeug.middleware.proxy_fix import ProxyFix
 
@@ -49,8 +49,7 @@ init_db()
 
 oauth.init_app(app)
 
-sess = Session()
-sess.init_app(app)
+Session(app)
 
 app.register_blueprint(api, url_prefix="/api")
 app.register_blueprint(auth)
