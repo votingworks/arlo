@@ -47,5 +47,5 @@ noauth = {git = "https://github.com/votingworks/nOAuth.git", rev = "main"}
 markupsafe = "~2.0.1"
 
 [build-system]
-requires = ["poetry-core >=1.2.0, <=1.2.2"]
+requires = ["poetry-core >=1.2.0, <=1.2.2", "setuptools"]
 build-backend = "poetry.core.masonry.api"
