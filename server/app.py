@@ -2,7 +2,7 @@ from urllib.parse import urlparse
 from flask import Flask
 from flask_talisman import Talisman
 from flask_seasurf import SeaSurf
-from flask_session import Session
+from flask_session import Session # type: ignore
 from werkzeug.wrappers import Request
 from werkzeug.middleware.proxy_fix import ProxyFix
 

@@ -15,13 +15,15 @@ from sqlalchemy import (
     JSON,
     Boolean,
     Enum,
+    Sequence,
+    LargeBinary,
     ForeignKey,
     ForeignKeyConstraint,
     UniqueConstraint,
     PrimaryKeyConstraint,
     CheckConstraint,
 )
-from sqlalchemy.orm import relationship, backref, validates
+from sqlalchemy.orm import relationship, backref, validates, synonym
 from sqlalchemy.types import TypeDecorator
 from sqlalchemy.dialects import postgresql
 from .database import Base  # pylint: disable=cyclic-import
@@ -94,6 +96,17 @@ class BaseModel(Base):
         onupdate=lambda: dt.now(timezone.utc),
         nullable=False,
     )
+
+class sessions(Base):
+    id = Column(Integer, primary_key=True)
+    session_id = Column('session_id', String(200), unique=True) 
+    data = Column(LargeBinary(), nullable=False)
+    expiry = Column(UTCDateTime, nullable=False)
+
+#    user = relationship(
+#        "User",
+#        order_by="User.id",
+#    )
 
 
 # on-delete-cascade is done in SQLAlchemy like this:
