@@ -31,11 +31,12 @@ export const InputLabel = styled(Label)`
   display: inline-block;
   flex-grow: 2;
   width: unset;
+  flex-basis: 50%;
 `
 
 export const Action = styled.p`
   margin: 5px 0 0 0;
-  width: 100%;
+  width: max-content;
   color: #000088;
   &:hover {
     cursor: pointer;
