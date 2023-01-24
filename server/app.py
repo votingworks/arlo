@@ -13,6 +13,7 @@ from .config import (
     STATIC_FOLDER,
     SESSION_TYPE,
     PERMANENT_SESSION_LIFETIME,
+    DATABASE_URL,
 )
 from .database import init_db, db_session, engine
 from .api import api
@@ -52,6 +53,7 @@ init_db()
 oauth.init_app(app)
 
 app.config['SESSION_TYPE'] = SESSION_TYPE
+app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 sess = Session(app)
 
 app.register_blueprint(api, url_prefix="/api")
