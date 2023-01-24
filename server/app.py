@@ -45,11 +45,14 @@ Talisman(
 csrf = SeaSurf(app)
 app.secret_key = SESSION_SECRET
 
+print(app.secret_key)
+
 init_db()
 
 oauth.init_app(app)
 
-Session(app)
+app.config['SESSION_TYPE'] = SESSION_TYPE
+sess = Session(app)
 
 app.register_blueprint(api, url_prefix="/api")
 app.register_blueprint(auth)
