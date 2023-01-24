@@ -10,7 +10,7 @@ alembic = "1.6.5"
 Authlib = "0.15.4"
 chardet = "^3.0.4"
 cryptorandom = "0.3"
-Flask = "^1.1.2"
+Flask = "1.1.4"
 flask-talisman = "^0.8.1"
 jsonschema = "^3.2.0"
 numpy = "1.22.0"
@@ -44,6 +44,7 @@ pytest-alembic = "^0.2.5"
 pytest-xdist = "2.3.0"
 sqlalchemy-stubs = "^0.3"
 noauth = {git = "https://github.com/votingworks/nOAuth.git", rev = "main"}
+markupsafe = "~2.0.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
