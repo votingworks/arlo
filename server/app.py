@@ -6,7 +6,6 @@ from werkzeug.wrappers import Request
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from .config import (
-    SESSION_SECRET,
     FLASK_ENV,
     HTTP_ORIGIN,
     STATIC_FOLDER,
@@ -16,6 +15,7 @@ from .api import api
 from .auth import auth
 from .auth.auth_routes import oauth
 from .sentry import configure_sentry
+from .websession import ArloSessionInterface
 
 if FLASK_ENV not in ["development", "test"]:
     # Restrict which hosts we trust when not in dev/test. This works by causing
@@ -39,9 +39,10 @@ Talisman(
     },
 )
 csrf = SeaSurf(app)
-app.secret_key = SESSION_SECRET
 
 init_db()
+
+app.session_interface = ArloSessionInterface()
 
 oauth.init_app(app)
 

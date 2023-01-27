@@ -323,6 +323,7 @@ def test_jurisdictions_file_dont_clobber_other_elections(
     client: FlaskClient, election_id, org_id
 ):
     election = Election.query.get(election_id)
+    db_session.expunge(election)
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, user_key=DEFAULT_AA_EMAIL)
     other_election_id = create_election(

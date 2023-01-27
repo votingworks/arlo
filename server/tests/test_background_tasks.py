@@ -278,7 +278,7 @@ def test_task_db_error(capture_exception, caplog, db_session):
             "startedAt": assert_is_date,
             "completedAt": assert_is_date,
             "error": asserts_startswith(
-                '(psycopg2.errors.NotNullViolation) null value in column "audit_name" violates not-null constraint'
+                '(psycopg2.errors.NotNullViolation) null value in column "audit_name"'
             ),
         },
     )
@@ -299,7 +299,7 @@ def test_task_db_error(capture_exception, caplog, db_session):
             f"TASK_ERROR {{'id': '{task.id}', "
             "'task_name': 'db_error',"
             f" 'payload': {{}},"
-            " 'error': '(psycopg2.errors.NotNullViolation) null value in column \"audit_name\" violates not-null constraint"
+            " 'error': '(psycopg2.errors.NotNullViolation) null value in column \"audit_name\""
         ),
     )
 

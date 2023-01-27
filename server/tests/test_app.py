@@ -12,6 +12,11 @@ def test_index(client: FlaskClient):
     assert b"Arlo, by VotingWorks" in rv.data
 
 
+def test_logo(client: FlaskClient):
+    rv = client.get("/public/votingworks-logo.png")
+    assert b"\211PNG" in rv.data
+
+
 def test_static_logo(client: FlaskClient):
     rv = client.get("/votingworks-logo.png")
     assert rv.status_code == 200
