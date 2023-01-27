@@ -52,13 +52,6 @@ STATIC_FOLDER = os.path.normpath(
     )
 )
 
-SESSION_SECRET = read_env_var(
-    "ARLO_SESSION_SECRET",
-    env_defaults=dict(
-        development="arlo-dev-session-secret", test="arlo-test-session-secret"
-    ),
-)
-
 # Max time a session can be used after it's created
 SESSION_LIFETIME = timedelta(hours=8)
 # Max time a session can be used after the last request

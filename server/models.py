@@ -96,6 +96,11 @@ class BaseModel(Base):
     )
 
 
+class WebSession(BaseModel):
+    id = Column(String(200), primary_key=True)
+    data = Column(JSON)
+
+
 # on-delete-cascade is done in SQLAlchemy like this:
 # https://stackoverflow.com/questions/5033547/sqlalchemy-cascade-delete
 

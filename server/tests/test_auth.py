@@ -518,14 +518,16 @@ def test_audit_board_log_in(
     client: FlaskClient, election_id: str, audit_board_id: str,
 ):
     audit_board = AuditBoard.query.get(audit_board_id)
+    db_session.expunge(audit_board)
+
     rv = client.get(f"/auditboard/{audit_board.passphrase}")
     assert rv.status_code == 302
     location = urlparse(rv.location)
-    assert location.path == f"/election/{election_id}/audit-board/{audit_board.id}"
+    assert location.path == f"/election/{election_id}/audit-board/{audit_board_id}"
 
     with client.session_transaction() as session:  # type: ignore
         assert session["_user"]["type"] == UserType.AUDIT_BOARD
-        assert session["_user"]["key"] == audit_board.id
+        assert session["_user"]["key"] == audit_board_id
         assert_is_date(session["_created_at"])
         assert (
             datetime.now(timezone.utc) - datetime.fromisoformat(session["_created_at"])
@@ -551,6 +553,9 @@ def test_tally_entry_login(
     ja_email = batch_ja_email
     election = Election.query.get(election_id)
     jurisdiction = Jurisdiction.query.get(jurisdiction_id)
+
+    db_session.expunge(election)
+    db_session.expunge(jurisdiction)
 
     # Tally entry login starts out turned off
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, ja_email)
@@ -1139,6 +1144,8 @@ def test_auth_me_audit_admin(client: FlaskClient, aa_email: str):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, aa_email)
 
     user = User.query.filter_by(email=aa_email).one()
+    db_session.expunge(user)
+
     rv = client.get("/api/me")
     assert json.loads(rv.data) == {
         "user": {"type": "audit_admin", "email": aa_email, "id": user.id},
@@ -1151,6 +1158,7 @@ def test_auth_me_jurisdiction_admin(
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, ja_email)
     election = Election.query.get(election_id)
+    db_session.expunge(election)
 
     rv = client.get("/api/me")
     assert json.loads(rv.data) == {
@@ -1227,13 +1235,13 @@ def test_session_expires_on_inactivity(client: FlaskClient, aa_email: str):
 
 def test_session_expires_after_lifetime(client: FlaskClient, aa_email: str):
     original_lifetime = config.SESSION_LIFETIME
-    config.SESSION_LIFETIME = timedelta(milliseconds=100)
+    config.SESSION_LIFETIME = timedelta(milliseconds=1000)
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, aa_email)
     rv = client.get("/api/me")
     assert json.loads(rv.data)["user"] is not None
 
-    time.sleep(0.5)
+    time.sleep(1)
 
     rv = client.get("/api/me")
     assert json.loads(rv.data)["user"] is None
@@ -1268,7 +1276,7 @@ def test_support_session_expires_on_inactivity(client: FlaskClient, aa_email: st
 
 def test_support_session_expires_after_lifetime(client: FlaskClient, aa_email: str):
     original_lifetime = config.SESSION_LIFETIME
-    config.SESSION_LIFETIME = timedelta(milliseconds=500)
+    config.SESSION_LIFETIME = timedelta(milliseconds=1000)
 
     set_support_user(client, SA_EMAIL)
     rv = client.get("/api/support/organizations")
@@ -1279,7 +1287,7 @@ def test_support_session_expires_after_lifetime(client: FlaskClient, aa_email: s
     assert json.loads(rv.data)["user"] is not None
     assert json.loads(rv.data)["supportUser"] is not None
 
-    time.sleep(0.5)
+    time.sleep(1)
 
     rv = client.get("/api/support/organizations")
     assert rv.status_code == 403

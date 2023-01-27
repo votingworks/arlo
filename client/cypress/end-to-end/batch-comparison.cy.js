@@ -126,8 +126,11 @@ describe('Batch Comparison', () => {
           cy.findByRole('heading', { name: 'Login Code' })
             .next()
             .invoke('text')
-            .then(loginCode => {
-              cy.logout()
+   	    .then(loginCode => {
+              // this will cause a new session to be allocated, so it's resilient to any type of session management, client or server.
+              // importantly it won't invalidate the previous session, which is important since we want to go back to it later.
+              cy.clearCookie('session')
+              cy.visit('/')
 
               // Switch back to jurisdiction admin account and confirm the login code
               cy.loginJurisdictionAdmin(jurisdictionAdmin)

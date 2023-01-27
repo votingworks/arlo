@@ -385,11 +385,14 @@ def test_list_organizations_not_authorized(
     jurisdiction_ids: List[str],  # pylint: disable=unused-argument
 ):
     aa_user = User.query.filter_by(email=DEFAULT_AA_EMAIL).one()
+    db_session.expunge(aa_user)
+
     clear_logged_in_user(client)
     rv = client.get(f"/api/audit_admins/{aa_user.id}/organizations")
     assert rv.status_code == 403
 
     ja_user = User.query.filter_by(email=default_ja_email(election_id)).one()
+    db_session.expunge(ja_user)
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )

@@ -295,6 +295,7 @@ def test_support_create_audit_admin_already_exists(  # pylint: disable=invalid-n
     user_id = create_user(email=aa_email).id
     db_session.commit()
     user = User.query.get(user_id)
+    db_session.expunge(user)
 
     set_support_user(client, DEFAULT_SUPPORT_EMAIL)
     rv = client.get(f"/api/support/organizations/{org_id}")
@@ -622,13 +623,14 @@ def test_support_clear_offline_results_ballot_polling(
         .order_by(Contest.created_at)
         .all()
     )
-    rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results"
-    )
-    assert json.loads(rv.data) == {
+    expected_data = {
         contest.id: {choice.id: None for choice in contest.choices}
         for contest in contests
     }
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results"
+    )
+    assert json.loads(rv.data) == expected_data
 
     rv = client.get(f"/api/support/jurisdictions/{jurisdiction_ids[0]}")
     assert json.loads(rv.data)["recordedResultsAt"] is None

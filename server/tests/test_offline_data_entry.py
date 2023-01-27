@@ -28,14 +28,16 @@ def test_offline_results_empty(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
     contests = Contest.query.filter(Contest.id.in_(contest_ids)).all()
+    expected_return_data = {
+        contest.id: {choice.id: None for choice in contest.choices}
+        for contest in contests
+    }
+
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results",
     )
     assert rv.status_code == 200
-    assert json.loads(rv.data) == {
-        contest.id: {choice.id: None for choice in contest.choices}
-        for contest in contests
-    }
+    assert json.loads(rv.data) == expected_return_data
 
 
 def test_run_offline_audit(
