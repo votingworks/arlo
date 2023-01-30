@@ -38,7 +38,7 @@ def make_r2b2_contest(arlo_contest: Contest):
 
 
 def make_providence_audit(arlo_contest: Contest, alpha: float):
-    """Make an R2B2 Minerva Audit object from an Arlo contest.
+    """Make an R2B2 Providence Audit object from an Arlo contest.
     This audit object will run the providence audit.
     """
     r2b2_contest = make_r2b2_contest(arlo_contest)
@@ -61,10 +61,6 @@ def _run_providence_audit(
     if round_sizes is not None and sample_results:
         # Note: we need the key to sort the dict, even though we don't use
         # it in the loop explicitly.
-        logging.debug("running sample_results on audit object")
-        logging.debug(f"sample_results: {sample_results}")
-        logging.debug(f"round_sizes: {round_sizes}")
-        logging.debug(audit)
         # r2b2's audit object expects the votes each candidate receives to be cumulative
         mapping: Dict[str, int] = defaultdict(int)
         size = 0
