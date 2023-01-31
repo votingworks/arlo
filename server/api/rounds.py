@@ -307,8 +307,8 @@ def round_sizes(contest: Contest) -> ballot_polling_types.BALLOT_POLLING_ROUND_S
             )
         )
         return {
-            round_num: ballot_polling_types.RoundInfo(i, c)
-            for round_num, i, c in results
+            round_num: ballot_polling_types.RoundInfo(round_id, count)
+            for round_num, round_id, count in results
         }
     # For opportunistic contests, return the number of sampled ballots in
     # jurisdictions in that contest's universe
@@ -329,8 +329,8 @@ def round_sizes(contest: Contest) -> ballot_polling_types.BALLOT_POLLING_ROUND_S
             .values(Round.round_num, Round.id, func.count(SampledBallot.id.distinct()))
         )
         return {
-            round_num: ballot_polling_types.RoundInfo(i, c)
-            for round_num, i, c in results
+            round_num: ballot_polling_types.RoundInfo(round_id, count)
+            for round_num, round_id, count in results
         }
 
 

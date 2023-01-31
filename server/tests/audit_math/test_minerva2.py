@@ -1,4 +1,4 @@
-from r2b2.minerva2 import Minerva2
+from r2b2.minerva2 import Minerva2 as Providence
 from r2b2.contest import Contest as rContest, ContestType
 import pytest
 
@@ -81,9 +81,9 @@ def test_get_sample_size_multiple_rounds():
     contest1 = rContest(
         100000, {"A": 60000, "B": 40000}, 1, ["A"], ContestType.MAJORITY
     )
-    minerva1 = Minerva2(ALPHA, 1.0, contest1)
-    minerva1.execute_round(100, {"A": 54, "B": 46})
-    r2b2_result = minerva1.next_sample_size()
+    providence_audit_1 = Providence(ALPHA, 1.0, contest1)
+    providence_audit_1.execute_round(100, {"A": 54, "B": 46})
+    r2b2_result = providence_audit_1.next_sample_size()
     arlo = minerva.make_arlo_contest({"A": 60000, "B": 40000})
     sample_results = {"1": {"A": 54, "B": 100 - 54}}
     round_schedule = {1: RoundInfo("1", 100)}
@@ -92,8 +92,8 @@ def test_get_sample_size_multiple_rounds():
     )["0.9"]["size"]
     assert r2b2_result == arlo_result
 
-    minerva1.execute_round(200, {"A": 113, "B": 200 - 113})
-    r2b2_result = minerva1.next_sample_size()
+    providence_audit_1.execute_round(200, {"A": 113, "B": 200 - 113})
+    r2b2_result = providence_audit_1.next_sample_size()
     sample_results["2"] = {"A": 113 - 54, "B": 200 - 113 - (100 - 54)}
     round_schedule[2] = RoundInfo("2", 100)
     arlo_result = providence.get_sample_size(
@@ -106,8 +106,8 @@ def test_compute_risk():
     contest1 = rContest(
         100000, {"A": 60000, "B": 40000}, 1, ["A"], ContestType.MAJORITY
     )
-    minerva1 = Minerva2(ALPHA, 1.0, contest1)
-    minerva1.execute_round(100, {"A": 54, "B": 100 - 54})
+    providence_audit_1 = Providence(ALPHA, 1.0, contest1)
+    providence_audit_1.execute_round(100, {"A": 54, "B": 100 - 54})
     arlo = minerva.make_arlo_contest({"A": 60000, "B": 40000})
     sample_results = {"1": {"A": 54, "B": 100 - 54}}
     round_schedule = {1: RoundInfo("1", 100)}
@@ -116,7 +116,7 @@ def test_compute_risk():
         RISK_LIMIT, arlo, sample_results, {}, AuditMathType.PROVIDENCE, round_schedule
     )
     assert ballot_polling_risk == risk
-    assert minerva1.get_risk_level() == risk[0][("winner", "loser")]
+    assert providence_audit_1.get_risk_level() == risk[0][("winner", "loser")]
 
     with pytest.raises(
         ValueError, match="The risk-limit must be greater than zero and less than 100!"
@@ -160,7 +160,7 @@ def test_compare_minervas():
     round_schedule = {1: RoundInfo("1", 100)}
     m_1 = minerva.compute_risk(RISK_LIMIT, contest, sample_results, round_schedule)
     m_2 = providence.compute_risk(RISK_LIMIT, contest, sample_results, round_schedule)
-    # Minerva2's round 1 stopping condition is equivalent to Minerva, so risks should be the same.
+    # Providence's round 1 stopping condition is equivalent to Minerva, so risks should be the same.
     assert m_1 == m_2
 
     sample_results["2"] = {"A": 55, "B": 100 - 55}

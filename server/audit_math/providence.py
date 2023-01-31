@@ -16,6 +16,8 @@ from .ballot_polling_types import (
     BALLOT_POLLING_SAMPLE_RESULTS,
 )
 
+logger = logging.getLogger("arlo.audit_math.providence")
+
 
 def make_r2b2_contest(arlo_contest: Contest):
     """Make an R2B2 contest object from an Arlo contest
@@ -61,6 +63,10 @@ def _run_providence_audit(
     if round_sizes is not None and sample_results:
         # Note: we need the key to sort the dict, even though we don't use
         # it in the loop explicitly.
+        logger.debug("running sample_results on audit object")
+        logger.debug(f"sample_results: {sample_results}")
+        logger.debug(f"round_sizes: {round_sizes}")
+        logger.debug(audit)
         # r2b2's audit object expects the votes each candidate receives to be cumulative
         mapping: Dict[str, int] = defaultdict(int)
         size = 0

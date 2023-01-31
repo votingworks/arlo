@@ -41,7 +41,6 @@ def test_providence_sample_size(
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
     assert rv.status_code == 200
-    print(rv.data)
 
     sample_size_options = json.loads(rv.data)["sampleSizes"][contest_ids[0]]
     assert len(sample_size_options) == 3
