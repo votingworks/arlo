@@ -128,6 +128,7 @@ class AuditType(str, enum.Enum):
 class AuditMathType(str, enum.Enum):
     BRAVO = "BRAVO"
     MINERVA = "MINERVA"
+    PROVIDENCE = "PROVIDENCE"
     SUPERSIMPLE = "SUPERSIMPLE"
     MACRO = "MACRO"
     SUITE = "SUITE"

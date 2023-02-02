@@ -6,6 +6,7 @@ import pytest
 
 from ...audit_math import bravo
 from ...audit_math.sampler_contest import Contest
+from ...audit_math.ballot_polling_types import RoundInfo
 from ...audit_math import ballot_polling
 from ...models import AuditMathType
 
@@ -270,7 +271,7 @@ def test_get_sample_size(contests):
 
         else:
             computed = bravo.get_sample_size(
-                RISK_LIMIT, contests[contest], round0_sample_results[contest], {"0": 0}
+                RISK_LIMIT, contests[contest], round0_sample_results[contest], None
             )
             expected = true_sample_sizes[contest]
             assert computed == expected, f"{contest} failed"
@@ -542,7 +543,7 @@ def test_tied_contest():
     sample_results = {}
 
     sample_options = bravo.get_sample_size(
-        RISK_LIMIT, contest, sample_results, {"0": 0}
+        RISK_LIMIT, contest, sample_results, {0: RoundInfo("0", 0)}
     )
 
     assert "all-ballots" in sample_options
@@ -621,7 +622,7 @@ def test_bravo_sample_size_considers_all_candidate_pairs():
         # margin in the reported election results) but not candidates 1 and 3
         "round1": {"candidate1": 200, "candidate2": 120, "candidate3": 200},
     }
-    round_sizes = {"round1": 520}
+    round_sizes = {0: RoundInfo("round1", 520)}
 
     sample_size = bravo.get_sample_size(
         RISK_LIMIT, contest, sample_results, round_sizes
@@ -809,21 +810,21 @@ round1_sample_results = {
 }
 
 round1_sizes = {
-    "test1": {"round1": 119},
-    "test2": {"round1": 48},
-    "test3": {"round1": 0},
-    "test4": {"round1": 100},
-    "test5": {"round1": 1000},
-    "test6": {"round1": 200},
-    "test7": {"round1": 70},
-    "test8": {"round1": 100},
-    "test9": {"round1": 2},
-    "test10": {"round1": 100},
-    "test11": {"round1": 0},
-    "test12": {"round1": 150},
-    "test_small_third_candidate": {"round1": 1300},
-    "test_ga_presidential": {"round1": 4992420},
-    "test_cause_NaN_in_expected_prob": {"round1": 6},
+    "test1": {0: RoundInfo("round1", 119)},
+    "test2": {0: RoundInfo("round1", 48)},
+    "test3": {0: RoundInfo("round1", 0)},
+    "test4": {0: RoundInfo("round1", 100)},
+    "test5": {0: RoundInfo("round1", 1000)},
+    "test6": {0: RoundInfo("round1", 200)},
+    "test7": {0: RoundInfo("round1", 70)},
+    "test8": {0: RoundInfo("round1", 100)},
+    "test9": {0: RoundInfo("round1", 2)},
+    "test10": {0: RoundInfo("round1", 100)},
+    "test11": {0: RoundInfo("round1", 0)},
+    "test12": {0: RoundInfo("round1", 150)},
+    "test_small_third_candidate": {0: RoundInfo("round1", 1300)},
+    "test_ga_presidential": {0: RoundInfo("round1", 4992420)},
+    "test_cause_NaN_in_expected_prob": {0: RoundInfo("round1", 6)},
 }
 
 true_sample_sizes = {

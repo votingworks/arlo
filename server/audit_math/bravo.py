@@ -14,7 +14,11 @@ from typing import Dict, Tuple, Optional, TypedDict
 from scipy import stats
 
 from .sampler_contest import Contest
-from .ballot_polling_types import SampleSizeOption
+from .ballot_polling_types import (
+    SampleSizeOption,
+    BALLOT_POLLING_ROUND_SIZES,
+    BALLOT_POLLING_SAMPLE_RESULTS,
+)
 
 
 def get_expected_sample_size(
@@ -338,8 +342,8 @@ def compute_cumulative_sample(sample_results):
 def get_sample_size(
     risk_limit: int,
     contest: Contest,
-    sample_results: Optional[Dict[str, Dict[str, int]]],
-    round_sizes: Optional[Dict[int, int]],
+    sample_results: Optional[BALLOT_POLLING_SAMPLE_RESULTS],
+    round_sizes: Optional[BALLOT_POLLING_ROUND_SIZES],
 ) -> Dict[str, SampleSizeOption]:
     """
     Computes initial sample size parameterized by likelihood that the
@@ -390,7 +394,9 @@ def get_sample_size(
     quants = [0.7, 0.8, 0.9]
 
     if round_sizes:
-        num_sampled = sum(round_sizes.values())
+        num_sampled = sum(
+            [round_info.round_size for round_info in round_sizes.values()]
+        )
         # If we've already sampled all the ballots, we should never be here
         if num_sampled >= contest.ballots:
             raise ValueError("All ballots have already been audited!")

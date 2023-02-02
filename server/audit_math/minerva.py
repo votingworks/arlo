@@ -15,6 +15,12 @@ from typing import List, Dict, Tuple, Optional
 
 from athena.audit import Audit as AthenaAudit  # type: ignore
 from .sampler_contest import Contest
+from .ballot_polling_types import (  # pylint: disable=unused-import
+    SampleSizeOption,
+    BALLOT_POLLING_ROUND_SIZES,
+    BALLOT_POLLING_SAMPLE_RESULTS,
+    RoundInfo,
+)
 from ..config import MINERVA_MULTIPLE
 
 
@@ -39,7 +45,7 @@ def make_arlo_contest(tally, num_winners=1, votes_allowed=1):
 
 def make_sample_results(
     contest: Contest, votes_per_round: List[List]
-) -> Dict[str, Dict[str, int]]:
+) -> BALLOT_POLLING_SAMPLE_RESULTS:
     """Make up sample_results for testing given Arlo contest based on votes.
     Note that athena's API relies on Python requiring dictionaries (of candidates and sample results)
     to be ordered since 3.7.
@@ -88,9 +94,9 @@ def make_athena_audit(arlo_contest, alpha):
 def get_sample_size(
     risk_limit: int,
     contest: Contest,
-    sample_results: Optional[Dict[str, Dict[str, int]]],
-    round_sizes: Dict[int, int],
-) -> Dict[str, "SampleSizeOption"]:  # type: ignore
+    sample_results: Optional[BALLOT_POLLING_SAMPLE_RESULTS],
+    round_sizes: Optional[BALLOT_POLLING_ROUND_SIZES],
+) -> Dict[str, SampleSizeOption]:  # type: ignore
     """
     Computes sample size for the next round, parameterized by likelihood that the
     sample will confirm the election result, assuming accurate results.
@@ -99,7 +105,7 @@ def get_sample_size(
         risk_limit:     maximum risk as an integer percentage
         contest:        a sampler_contest object of the contest being audited
         sample_results: map round ids to mapping of candidates to incremental votes
-        round_sizes:    map round ids to incremental round sizes
+        round_sizes:    map round nums to tuples of round ids and incremental round sizes
 
     Outputs:
         samples:        dictionary mapping confirmation likelihood to next sample size
@@ -109,11 +115,11 @@ def get_sample_size(
     {'0.7': {'type': None, 'size': 134, 'prob': 0.7}, '0.8': {'type': None, 'size': 166, 'prob': 0.8}, '0.9': {'type': None, 'size': 215, 'prob': 0.9}}
     >>> get_sample_size(20, c3, None, [])
     {'0.7': {'type': None, 'size': 87, 'prob': 0.7}, '0.8': {'type': None, 'size': 110, 'prob': 0.8}, '0.9': {'type': None, 'size': 156, 'prob': 0.9}}
-    >>> get_sample_size(10, c3, make_sample_results(c3, [[55, 40, 3]]), {1: 100})
+    >>> get_sample_size(10, c3, make_sample_results(c3, [[55, 40, 3]]), {1: RoundInfo("r1", 100)})
     {'0.9': {'type': None, 'size': 225, 'prob': 0.9}}
     """
 
-    if sample_results is not None:
+    if sample_results is not None and round_sizes:
         # Construct round schedule as a function of only first round size.
         # and other information set at the start of the audit.
 
@@ -123,7 +129,7 @@ def get_sample_size(
         # approach which simply defines all round sizes uniformly based on the first
         # round size.
 
-        first_round_size = round_sizes[1]
+        first_round_size = round_sizes[1].round_size
         prev_round_count = len(round_sizes)
         round_num = prev_round_count + 1
 
@@ -164,7 +170,7 @@ def collect_risks(
     alpha: float,
     arlo_contest: Contest,
     round_schedule: List[int],
-    sample_results: Dict[str, Dict[str, int]],
+    sample_results: BALLOT_POLLING_SAMPLE_RESULTS,
 ) -> Dict[Tuple[str, str], float]:
     """
     Collect risk levels for each pair of candidates.
@@ -211,8 +217,8 @@ def collect_risks(
 def compute_risk(
     risk_limit: int,
     contest: Contest,
-    sample_results: Dict[str, Dict[str, int]],
-    round_sizes: Dict[int, int],
+    sample_results: BALLOT_POLLING_SAMPLE_RESULTS,
+    round_sizes: BALLOT_POLLING_ROUND_SIZES,
 ) -> Tuple[Dict[Tuple[str, str], float], bool]:
     """
     Computes the risk-value of <sample_results> based on results in <contest>.
@@ -224,7 +230,7 @@ def compute_risk(
         risk_limit:     maximum risk as an integer percentage
         contest:        a sampler_contest object of the contest being measured
         sample_results: map round ids to mapping of candidates to incremental votes
-        round_sizes:    map round ids to incremental round sizes
+        round_sizes:    map round nums to tuples of round ids and incremental round sizes
 
     Outputs:
         samples:        dictionary mapping confirmation likelihood to next sample size
@@ -240,7 +246,9 @@ def compute_risk(
         0.0 < alpha < 1.0
     ), "The risk-limit must be greater than zero and less than one!"
 
-    prev_round_schedule = [value for key, value in sorted(round_sizes.items())]
+    prev_round_schedule = [
+        round_info.round_size for _, round_info in sorted(round_sizes.items())
+    ]
     logging.debug(f"{round_sizes=}, {prev_round_schedule=}")
 
     risks = collect_risks(alpha, contest, prev_round_schedule, sample_results)
