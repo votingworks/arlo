@@ -515,10 +515,8 @@ const CreateAudit = ({ organizations }: { organizations: IOrganization[] }) => {
                         selectedValue={values.auditMathType}
                       >
                         <Radio value="BRAVO">BRAVO</Radio>
-                        <Radio value="MINERVA">Minerva (Not recommended)</Radio>
-                        <Radio value="PROVIDENCE">
-                          Providence (Not recommended)
-                        </Radio>
+                        <Radio value="PROVIDENCE">Providence (Beta)</Radio>
+                        <Radio value="MINERVA">Minerva (Beta)</Radio>
                       </RadioGroup>
                     </label>
                   </BallotPollingWrapper>
