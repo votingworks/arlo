@@ -415,24 +415,23 @@ const Audit = ({ electionId }: { electionId: string }) => {
           <Tag large style={{ marginRight: '10px' }}>
             {prettyAuditType(auditType)}
           </Tag>
-          <AnchorButton style={{ marginRight: '10px' }}
+          <AnchorButton
+            style={{ marginRight: '10px' }}
             href={`/api/support/elections/${id}/login`}
             icon="log-in"
             intent="primary"
           >
             Log in as audit admin
           </AnchorButton>
-          {(rounds.length > 0) && <AsyncButton
-                intent="primary"
-                icon="download"
-                onClick={() =>
-                  apiDownload(
-                    `/election/${electionId}/report`
-                  )
-                }
-              >
-                Download Audit Report
-          </AsyncButton>}
+          {rounds.length > 0 && (
+            <AsyncButton
+              intent="primary"
+              icon="download"
+              onClick={() => apiDownload(`/election/${electionId}/report`)}
+            >
+              Download Audit Report
+            </AsyncButton>
+          )}
         </div>
         <div style={{ marginBottom: '10px' }}>
           <RoundsTable electionId={electionId} rounds={rounds} />
