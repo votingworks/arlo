@@ -19,6 +19,8 @@ import { useForm } from 'react-hook-form'
 import { useAuthDataContext } from '../UserContext'
 import LinkButton from '../Atoms/LinkButton'
 import { Wrapper, Inner } from '../Atoms/Wrapper'
+import AsyncButton from '../Atoms/AsyncButton'
+import { apiDownload } from '../utilities'
 import {
   useOrganizations,
   useOrganization,
@@ -409,13 +411,24 @@ const Audit = ({ electionId }: { electionId: string }) => {
           <Tag large style={{ marginRight: '10px' }}>
             {prettyAuditType(auditType)}
           </Tag>
-          <AnchorButton
+          <AnchorButton style={{ marginRight: '10px' }}
             href={`/api/support/elections/${id}/login`}
             icon="log-in"
             intent="primary"
           >
             Log in as audit admin
           </AnchorButton>
+          <AsyncButton
+                intent="primary"
+                icon="download"
+                onClick={() =>
+                  apiDownload(
+                    `/election/${electionId}/report`
+                  )
+                }
+              >
+                Download Audit Report
+          </AsyncButton>
         </div>
         <div style={{ marginBottom: '10px' }}>
           <RoundsTable electionId={electionId} rounds={rounds} />
