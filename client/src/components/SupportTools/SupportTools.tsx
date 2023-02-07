@@ -422,7 +422,7 @@ const Audit = ({ electionId }: { electionId: string }) => {
           >
             Log in as audit admin
           </AnchorButton>
-          <AsyncButton
+          {(rounds.length > 0) && <AsyncButton
                 intent="primary"
                 icon="download"
                 onClick={() =>
@@ -432,7 +432,7 @@ const Audit = ({ electionId }: { electionId: string }) => {
                 }
               >
                 Download Audit Report
-          </AsyncButton>
+          </AsyncButton>}
         </div>
         <div style={{ marginBottom: '10px' }}>
           <RoundsTable electionId={electionId} rounds={rounds} />
