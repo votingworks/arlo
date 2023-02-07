@@ -80,6 +80,10 @@ const Column = styled.div`
   padding-right: 30px;
 `
 
+const AuditContainer = styled.div`
+  width: 60%;
+`
+
 const ButtonList = styled(ButtonGroup).attrs({
   vertical: true,
   minimal: true,
@@ -400,7 +404,7 @@ const Audit = ({ electionId }: { electionId: string }) => {
   return (
     <div>
       <H2>{auditName}</H2>
-      <Column>
+      <AuditContainer>
         <div
           style={{
             alignItems: 'center',
@@ -445,7 +449,7 @@ const Audit = ({ electionId }: { electionId: string }) => {
             </LinkButton>
           ))}
         </ButtonList>
-      </Column>
+      </AuditContainer>
     </div>
   )
 }
