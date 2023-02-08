@@ -16,8 +16,8 @@ const DownloadBatchRetrievalListButton: React.FC<IDownloadBatchRetrievalListButt
   ...buttonProps
 }) => (
   <AsyncButton
-    icon="download"
     {...buttonProps}
+    icon="download"
     onClick={() =>
       apiDownload(
         `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/batches/retrieval-list`
