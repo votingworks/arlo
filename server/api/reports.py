@@ -246,6 +246,25 @@ def pretty_choice_votes(
     )
 
 
+def batch_vote_deltas(
+    reported_results: Dict[str, int], audited_results: Dict[str, int],
+) -> Dict[str, int]:
+    return {
+        choice_id: reported_results[choice_id] - audited_results[choice_id]
+        for choice_id in reported_results.keys()
+    }
+
+
+def pretty_batch_vote_deltas(vote_deltas: Dict[str, int],) -> str:
+    return pretty_choice_votes(
+        {
+            choice_id: add_sign(vote_delta)
+            for choice_id, vote_delta in vote_deltas.items()
+            if vote_delta != 0
+        }
+    )
+
+
 def heading(heading: str):
     return [f"######## {heading} ########"]
 
@@ -801,6 +820,7 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
             "Audited?",
             "Audit Results",
             "Reported Results",
+            "Vote Delta",
             "Discrepancy",
             "Last Edited By",
         ]
@@ -845,6 +865,11 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
                 pretty_boolean(is_audited),
                 pretty_choice_votes(audit_results) if audit_results else "",
                 pretty_choice_votes(reported_results),
+                pretty_batch_vote_deltas(
+                    batch_vote_deltas(reported_results, audit_results)
+                )
+                if audit_results
+                else "",
                 error["counted_as"] if error else "",
                 construct_batch_last_edited_by_string(batch),
             ]
