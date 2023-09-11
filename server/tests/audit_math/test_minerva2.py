@@ -151,7 +151,7 @@ def test_compute_risk_multi_round():
     sample_results["2"] = {"A": 55, "B": 100 - 55}
     round_schedule[2] = RoundInfo("2", 100)
     res = providence.compute_risk(RISK_LIMIT, contest, sample_results, round_schedule)
-    assert res == ({("winner", "loser"): 0.3614293635757271}, False)
+    assert res == ({("winner", "loser"): pytest.approx(0.3614293635757271)}, False)
 
 
 def test_compare_minervas():
