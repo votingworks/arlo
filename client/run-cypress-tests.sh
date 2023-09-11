@@ -12,4 +12,11 @@ fi
 trap 'kill 0' SIGINT SIGHUP EXIT
 cd "$(dirname "${BASH_SOURCE[0]}")"
 FLASK_ENV=test ../run-dev.sh &
-yarn run cypress run --browser chrome
+
+until $(curl --output /dev/null --silent --head --fail http://localhost:3000/api/me); do
+    echo 'Waiting for dev server...'
+    sleep 1
+done
+echo 'Dev server ready'
+
+yarn run cypress run
