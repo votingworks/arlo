@@ -51,6 +51,7 @@ export interface IJurisdictionBase {
 }
 
 export interface IJurisdiction extends IJurisdictionBase {
+  organization: IOrganizationBase
   election: IElectionBase
   jurisdictionAdmins: IJurisdictionAdmin[]
   auditBoards: IAuditBoard[]

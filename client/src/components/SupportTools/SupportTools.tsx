@@ -1,5 +1,5 @@
 import React from 'react'
-import { Redirect, Route, Switch } from 'react-router-dom'
+import { Redirect, Route, Switch, Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import styled from 'styled-components'
 import {
@@ -37,6 +37,7 @@ import { useConfirm, Confirm } from '../Atoms/Confirm'
 import AuditBoardsTable from '../AuditAdmin/Progress/AuditBoardsTable'
 import RoundsTable from './RoundsTable'
 import { List, LinkItem } from './List'
+import Breadcrumbs from './Breadcrumbs'
 
 const Table = styled(HTMLTable)`
   margin: 10px 0;
@@ -402,10 +403,20 @@ const Audit = ({ electionId }: { electionId: string }) => {
 
   if (!election.isSuccess) return null
 
-  const { id, auditName, auditType, jurisdictions, rounds } = election.data
+  const {
+    id,
+    auditName,
+    auditType,
+    organization,
+    jurisdictions,
+    rounds,
+  } = election.data
 
   return (
     <div>
+      <Breadcrumbs>
+        <Link to={`/support/orgs/${organization.id}`}>{organization.name}</Link>
+      </Breadcrumbs>
       <H2>{auditName}</H2>
       <Column>
         <div
@@ -455,6 +466,7 @@ const Jurisdiction = ({ jurisdictionId }: { jurisdictionId: string }) => {
 
   const {
     name,
+    organization,
     election,
     jurisdictionAdmins,
     auditBoards,
@@ -489,6 +501,10 @@ const Jurisdiction = ({ jurisdictionId }: { jurisdictionId: string }) => {
 
   return (
     <div style={{ width: '100%' }}>
+      <Breadcrumbs>
+        <Link to={`/support/orgs/${organization.id}`}>{organization.name}</Link>
+        <Link to={`/support/audits/${election.id}`}>{election.auditName}</Link>
+      </Breadcrumbs>
       <H2>{name}</H2>
       <div style={{ display: 'flex', width: '100%' }}>
         <Column>

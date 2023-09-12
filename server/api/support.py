@@ -210,6 +210,7 @@ def get_election(election_id: str):
         auditName=election.audit_name,
         auditType=election.audit_type,
         online=election.online,
+        organization=dict(id=election.organization.id, name=election.organization.name),
         jurisdictions=[
             dict(id=jurisdiction.id, name=jurisdiction.name)
             for jurisdiction in election.jurisdictions
@@ -345,6 +346,10 @@ def get_jurisdiction(jurisdiction_id: str):
     return jsonify(
         id=jurisdiction.id,
         name=jurisdiction.name,
+        organization=dict(
+            id=jurisdiction.election.organization.id,
+            name=jurisdiction.election.organization.name,
+        ),
         election=dict(
             id=jurisdiction.election.id,
             auditName=jurisdiction.election.audit_name,
