@@ -10,14 +10,10 @@ import {
   H2,
   AnchorButton,
   Tag,
-  ButtonGroup,
-  Alignment,
-  Colors,
   Intent,
 } from '@blueprintjs/core'
 import { useForm } from 'react-hook-form'
 import { useAuthDataContext } from '../UserContext'
-import LinkButton from '../Atoms/LinkButton'
 import { Wrapper, Inner } from '../Atoms/Wrapper'
 import {
   useOrganizations,
@@ -39,6 +35,24 @@ import {
 import { useConfirm, Confirm } from '../Atoms/Confirm'
 import AuditBoardsTable from '../AuditAdmin/Progress/AuditBoardsTable'
 import RoundsTable from './RoundsTable'
+import { List, LinkItem } from './List'
+
+const Table = styled(HTMLTable)`
+  margin: 10px 0;
+  width: 100%;
+  table-layout: fixed;
+  td:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  td:last-child:not(:first-child) {
+    padding-right: 15px;
+    text-align: right;
+  }
+  tr td {
+    vertical-align: baseline;
+  }
+`
 
 const SupportTools: React.FC = () => {
   const auth = useAuthDataContext()
@@ -78,21 +92,9 @@ const Column = styled.div`
   padding-right: 30px;
 `
 
-const ButtonList = styled(ButtonGroup).attrs({
-  vertical: true,
-  minimal: true,
-  large: true,
-  alignText: Alignment.LEFT,
-})`
-  margin-bottom: 30px;
-  border: 1px solid ${Colors.LIGHT_GRAY3};
+const Row = styled.div`
+  display: flex;
   width: 100%;
-  .bp3-button {
-    border-radius: 0;
-    &:not(:first-child) {
-      border-top: 1px solid ${Colors.LIGHT_GRAY3};
-    }
-  }
 `
 
 const Organizations = () => {
@@ -138,37 +140,19 @@ const Organizations = () => {
           Create Organization
         </Button>
       </form>
-      <ButtonList>
+      <List>
         {organizations.data.map(organization => (
-          <LinkButton
+          <LinkItem
             key={organization.id}
             to={`/support/orgs/${organization.id}`}
-            intent={Intent.PRIMARY}
           >
             {organization.name}
-          </LinkButton>
+          </LinkItem>
         ))}
-      </ButtonList>
+      </List>
     </Column>
   )
 }
-
-const Table = styled(HTMLTable)`
-  margin: 10px 0;
-  width: 100%;
-  table-layout: fixed;
-  td:first-child {
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  td:last-child:not(:first-child) {
-    padding-right: 15px;
-    text-align: right;
-  }
-  tr td {
-    vertical-align: baseline;
-  }
-`
 
 const Organization = ({ organizationId }: { organizationId: string }) => {
   const organization = useOrganization(organizationId)
@@ -287,19 +271,18 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
       <div style={{ display: 'flex', width: '100%' }}>
         <Column>
           <H3>Audits</H3>
-          <ButtonList>
+          <List style={{ marginBottom: '30px' }}>
             {elections
               .filter(election => !election.deletedAt)
               .map(election => (
-                <LinkButton
+                <LinkItem
                   key={election.id}
                   to={`/support/audits/${election.id}`}
-                  intent={Intent.PRIMARY}
                 >
                   {election.auditName}
-                </LinkButton>
+                </LinkItem>
               ))}
-          </ButtonList>
+          </List>
           <H3>Deleted Audits</H3>
           <Table striped>
             <tbody>
@@ -421,17 +404,16 @@ const Audit = ({ electionId }: { electionId: string }) => {
           <RoundsTable electionId={electionId} rounds={rounds} />
         </div>
         <H3>Jurisdictions</H3>
-        <ButtonList>
+        <List>
           {jurisdictions.map(jurisdiction => (
-            <LinkButton
-              key={jurisdiction.id}
+            <LinkItem
               to={`/support/jurisdictions/${jurisdiction.id}`}
-              intent={Intent.PRIMARY}
+              key={jurisdiction.id}
             >
               {jurisdiction.name}
-            </LinkButton>
+            </LinkItem>
           ))}
-        </ButtonList>
+        </List>
       </Column>
     </div>
   )
