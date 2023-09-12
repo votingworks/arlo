@@ -36,7 +36,11 @@ export interface IRound {
   roundNum: number
 }
 
-export interface IElection extends IElectionBase {
+export interface IElectionWithOrg extends IElectionBase {
+  organization: IOrganizationBase
+}
+
+export interface IElection extends IElectionWithOrg {
   jurisdictions: IJurisdictionBase[]
   rounds: IRound[]
 }
@@ -62,6 +66,11 @@ export interface IAuditBoard {
   name: string
   signedOffAt: string | null
 }
+
+export const useActiveElections = () =>
+  useQuery<IElectionWithOrg[], Error>(['elections', 'active'], () =>
+    fetchApi('/api/support/elections/active')
+  )
 
 export const useOrganizations = () =>
   useQuery<IOrganizationBase[], Error>(['organizations'], () =>
@@ -173,6 +182,7 @@ export const useDeleteElection = () => {
   return useMutation(deleteElection, {
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries(['organizations', variables.organizationId])
+      queryClient.invalidateQueries(['elections', 'active'])
     },
   })
 }

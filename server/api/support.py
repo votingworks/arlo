@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 import uuid
 import secrets
 from typing import Optional
@@ -7,6 +8,7 @@ from auth0.v3.authentication import GetToken
 from auth0.v3.management import Auth0
 from auth0.v3.exceptions import Auth0Error
 from werkzeug.exceptions import BadRequest, Conflict
+from sqlalchemy.orm import contains_eager
 
 
 from . import api
@@ -64,6 +66,43 @@ def auth0_create_audit_admin(email: str) -> Optional[str]:
             users = auth0.users_by_email.search_users_by_email(email.lower())
             return str(users[0]["user_id"])
         raise error
+
+
+@api.route("/support/elections/active", methods=["GET"])
+@restrict_access_support
+def list_active_elections():
+    elections = (
+        Election.query.filter(
+            Election.id.in_(
+                ActivityLogRecord.query.filter(
+                    ActivityLogRecord.timestamp
+                    > datetime.now(timezone.utc) - timedelta(days=14)
+                )
+                .with_entities(
+                    ActivityLogRecord.info["base"]["election_id"].as_string()
+                )
+                .subquery()
+            )
+        )
+        .join(Organization)
+        .order_by(Organization.name, Election.audit_name)
+        .options(contains_eager(Election.organization),)
+    )
+    return jsonify(
+        [
+            dict(
+                id=election.id,
+                auditName=election.audit_name,
+                auditType=election.audit_type,
+                online=election.online,
+                deletedAt=isoformat(election.deleted_at),
+                organization=dict(
+                    id=election.organization.id, name=election.organization.name
+                ),
+            )
+            for election in elections
+        ]
+    )
 
 
 @api.route("/support/organizations", methods=["GET"])

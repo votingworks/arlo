@@ -31,6 +31,7 @@ import {
   useRemoveAuditAdmin,
   useDeleteElection,
   IElectionBase,
+  useActiveElections,
 } from './support-api'
 import { useConfirm, Confirm } from '../Atoms/Confirm'
 import AuditBoardsTable from '../AuditAdmin/Progress/AuditBoardsTable'
@@ -65,7 +66,10 @@ const SupportTools: React.FC = () => {
         <div style={{ margin: '30px 0', width: '100%' }}>
           <Switch>
             <Route exact path="/support">
-              <Organizations />
+              <Row>
+                <ActiveAudits />
+                <Organizations />
+              </Row>
             </Route>
             <Route path="/support/orgs/:organizationId">
               {({ match }) => (
@@ -96,6 +100,28 @@ const Row = styled.div`
   display: flex;
   width: 100%;
 `
+
+const ActiveAudits = () => {
+  const elections = useActiveElections()
+
+  if (!elections.isSuccess) return null
+
+  return (
+    <Column>
+      <H2>Active Audits</H2>
+      <List>
+        {elections.data.map(election => (
+          <LinkItem key={election.id} to={`/support/audits/${election.id}`}>
+            <div>
+              <div style={{ color: 'black' }}>{election.organization.name}</div>
+              <div className="bp3-text-large">{election.auditName}</div>
+            </div>
+          </LinkItem>
+        ))}
+      </List>
+    </Column>
+  )
+}
 
 const Organizations = () => {
   const organizations = useOrganizations()
