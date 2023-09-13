@@ -448,6 +448,13 @@ const Audit = ({ electionId }: { electionId: string }) => {
               key={jurisdiction.id}
             >
               {jurisdiction.name}
+              <AnchorButton
+                href={`/api/support/jurisdictions/${jurisdiction.id}/login`}
+                icon="log-in"
+                onClick={(e: React.MouseEvent) => e.stopPropagation()}
+              >
+                Log in
+              </AnchorButton>
             </LinkItem>
           ))}
         </List>

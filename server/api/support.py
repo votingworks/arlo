@@ -471,6 +471,27 @@ def log_in_to_audit_as_audit_admin(election_id: str):
     return redirect(f"/election/{election_id}")
 
 
+@api.route("/support/jurisdictions/<jurisdiction_id>/login", methods=["GET"])
+@restrict_access_support
+def log_in_to_audit_as_jurisdiction_admin(jurisdiction_id: str):
+    jurisdiction = get_or_404(Jurisdiction, jurisdiction_id)
+    jurisdiction_admins = [
+        jurisdiction_administration.user
+        for jurisdiction_administration in jurisdiction.jurisdiction_administrations
+    ]
+    if len(jurisdiction_admins) == 0:
+        raise Conflict("Jurisdiction has no jurisdiction admins.")
+    set_loggedin_user(
+        session,
+        UserType.JURISDICTION_ADMIN,
+        jurisdiction_admins[0].email,
+        from_support_user=True,
+    )
+    return redirect(
+        f"/election/{jurisdiction.election_id}/jurisdiction/{jurisdiction_id}"
+    )
+
+
 @api.route("/support/rounds/<round_id>", methods=["DELETE"])
 @restrict_access_support
 def support_undo_round_start(round_id: str):
