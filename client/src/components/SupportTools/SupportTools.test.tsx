@@ -21,6 +21,7 @@ import {
   IJurisdictionBase,
   IJurisdiction,
   IRound,
+  IElectionWithOrg,
 } from './support-api'
 
 const mockOrganizationBase: IOrganizationBase = {
@@ -66,8 +67,13 @@ const mockOrganization: IOrganization = {
   ],
 }
 
-const mockElection: IElection = {
+const mockElectionWithOrg: IElectionWithOrg = {
   ...mockElectionBase,
+  organization: mockOrganizationBase,
+}
+
+const mockElection: IElection = {
+  ...mockElectionWithOrg,
   jurisdictions: [
     mockJurisdictionBase,
     {
@@ -80,6 +86,7 @@ const mockElection: IElection = {
 
 const mockJurisdiction: IJurisdiction = {
   ...mockJurisdictionBase,
+  organization: mockOrganizationBase,
   election: mockElectionBase,
   jurisdictionAdmins: [
     { email: 'jurisdiction-admin-1@example.org' },
@@ -135,6 +142,10 @@ const apiCalls = {
     options: { method: 'DELETE' },
     response: { status: 'ok' },
   },
+  getActiveElections: (response: IElectionWithOrg[]) => ({
+    url: '/api/support/elections/active',
+    response,
+  }),
   getElection: (response: IElection) => ({
     url: '/api/support/elections/election-id-1',
     response,
@@ -193,10 +204,43 @@ const renderRoute = (route: string) =>
     { route }
   )
 
+beforeAll(() => {
+  // eslint-disable-next-line no-console
+  console.error = jest.fn()
+})
+
 describe('Support Tools', () => {
+  it('home screen shows active audits', async () => {
+    const expectedCalls = [
+      supportApiCalls.getUser,
+      apiCalls.getActiveElections([
+        mockElectionWithOrg,
+        {
+          ...mockElectionWithOrg,
+          id: 'election-id-2',
+          auditName: 'Audit 2',
+        },
+      ]),
+      apiCalls.getOrganizations([]),
+      apiCalls.getElection(mockElection),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      const { history } = renderRoute('/support')
+
+      await screen.findByRole('heading', { name: 'Active Audits' })
+      screen.getByRole('link', { name: 'Organization 1 Audit 2' })
+      userEvent.click(
+        screen.getByRole('link', { name: 'Organization 1 Audit 1' })
+      )
+      await screen.findByRole('heading', { name: 'Audit 1' })
+      expect(history.location.pathname).toEqual('/support/audits/election-id-1')
+    })
+  })
+
   it('home screen shows a list of orgs', async () => {
     const expectedCalls = [
       supportApiCalls.getUser,
+      apiCalls.getActiveElections([]),
       apiCalls.getOrganizations([
         mockOrganizationBase,
         { id: 'organization-id-2', name: 'Organization 2' },
@@ -207,9 +251,8 @@ describe('Support Tools', () => {
       const { history } = renderRoute('/support')
 
       await screen.findByRole('heading', { name: 'Organizations' })
-
-      screen.getByRole('button', { name: 'Organization 2' })
-      userEvent.click(screen.getByRole('button', { name: 'Organization 1' }))
+      screen.getByRole('link', { name: 'Organization 2' })
+      userEvent.click(screen.getByRole('link', { name: 'Organization 1' }))
 
       await screen.findByRole('heading', { name: 'Organization 1' })
       expect(history.location.pathname).toEqual(
@@ -221,6 +264,7 @@ describe('Support Tools', () => {
   it('home screen handles error', async () => {
     const expectedCalls = [
       supportApiCalls.getUser,
+      apiCalls.getActiveElections([]),
       serverError('getOrganizations', apiCalls.getOrganizations([])),
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -232,6 +276,7 @@ describe('Support Tools', () => {
   it('home screen shows a form to create a new org', async () => {
     const expectedCalls = [
       supportApiCalls.getUser,
+      apiCalls.getActiveElections([]),
       apiCalls.getOrganizations([]),
       apiCalls.postOrganization,
       apiCalls.getOrganizations([
@@ -251,13 +296,14 @@ describe('Support Tools', () => {
         screen.getByRole('button', { name: /Create Organization/ })
       )
 
-      await screen.findByRole('button', { name: 'New Organization' })
+      await screen.findByRole('link', { name: 'New Organization' })
     })
   })
 
   it('home screen handles error on create org', async () => {
     const expectedCalls = [
       supportApiCalls.getUser,
+      apiCalls.getActiveElections([]),
       apiCalls.getOrganizations([]),
       serverError('postOrganization', apiCalls.postOrganization),
     ]
@@ -290,13 +336,13 @@ describe('Support Tools', () => {
       await screen.findByRole('heading', { name: 'Organization 1' })
 
       screen.getByRole('heading', { name: 'Audits' })
-      screen.getByRole('button', { name: 'Audit 2' })
-      screen.getByRole('button', { name: 'Audit 1' })
+      screen.getByRole('link', { name: 'Audit 2' })
+      screen.getByRole('link', { name: 'Audit 1' })
 
       screen.getByRole('heading', { name: 'Deleted Audits' })
       screen.getByRole('row', { name: /Audit 3/ })
 
-      userEvent.click(screen.getByRole('button', { name: 'Audit 1' }))
+      userEvent.click(screen.getByRole('link', { name: 'Audit 1' }))
       await screen.findByRole('heading', { name: 'Audit 1' })
       expect(history.location.pathname).toEqual('/support/audits/election-id-1')
     })
@@ -593,6 +639,7 @@ describe('Support Tools', () => {
       supportApiCalls.getUser,
       apiCalls.getOrganization(mockOrganization),
       apiCalls.deleteOrganization,
+      apiCalls.getActiveElections([]),
       apiCalls.getOrganizations([]),
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -665,21 +712,36 @@ describe('Support Tools', () => {
 
       await screen.findByRole('heading', { name: 'Audit 1' })
 
-      const loginButton = screen.getByRole('button', {
+      const organizationLink = screen.getByRole('link', {
+        name: /Organization 1/,
+      })
+      expect(organizationLink).toHaveAttribute(
+        'href',
+        '/support/orgs/organization-id-1'
+      )
+
+      const adminLoginButton = screen.getByRole('button', {
         name: /Log in as audit admin/,
       })
-      expect(loginButton).toHaveAttribute(
+      expect(adminLoginButton).toHaveAttribute(
         'href',
         '/api/support/elections/election-id-1/login'
       )
 
       screen.getByText('Ballot Polling')
 
-      const jurisdictionButton = screen.getByRole('button', {
-        name: 'Jurisdiction 1',
+      const jurisdictionLink = screen.getByRole('link', {
+        name: /Jurisdiction 1/,
       })
-      screen.getByRole('button', { name: 'Jurisdiction 2' })
-      userEvent.click(jurisdictionButton)
+      const jurisdictionLoginButton = within(
+        jurisdictionLink
+      ).getByRole('button', { name: /Log in/ })
+      expect(jurisdictionLoginButton).toHaveAttribute(
+        'href',
+        '/api/support/jurisdictions/jurisdiction-id-1/login'
+      )
+      screen.getByRole('link', { name: /Jurisdiction 2/ })
+      userEvent.click(jurisdictionLink)
 
       await screen.findByRole('heading', { name: 'Jurisdiction 1' })
       expect(history.location.pathname).toEqual(
@@ -834,6 +896,17 @@ describe('Support Tools', () => {
       screen.getByRole('heading', { name: 'Current Round Audit Boards' })
       screen.getByText('Audit Board #1')
       screen.getByText('Audit Board #2')
+
+      const organizationLink = screen.getByRole('link', {
+        name: /Organization 1/,
+      })
+      expect(organizationLink).toHaveAttribute(
+        'href',
+        '/support/orgs/organization-id-1'
+      )
+
+      const auditLink = screen.getByRole('link', { name: /Audit 1/ })
+      expect(auditLink).toHaveAttribute('href', '/support/audits/election-id-1')
     })
   })
 
