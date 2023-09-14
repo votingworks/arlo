@@ -107,3 +107,55 @@ export const useUndoRoundStart = (
     },
   })
 }
+
+const samplePreviewQueryKey = (electionId: string): string[] => [
+  'elections',
+  electionId,
+  'sample-preview',
+]
+
+export const useComputeSamplePreview = (
+  electionId: string
+): UseMutationResult<unknown, ApiError, ISampleSizes> => {
+  const postSamplePreview = async (sampleSizes: ISampleSizes) =>
+    fetchApi(`/api/election/${electionId}/sample-preview`, {
+      method: 'POST',
+      body: JSON.stringify({ sampleSizes }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+
+  const queryClient = useQueryClient()
+  return useMutation(postSamplePreview, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(samplePreviewQueryKey(electionId))
+    },
+  })
+}
+
+interface ISamplePreviewJurisdiction {
+  name: string
+  numSamples: number
+  numUnique: number
+}
+
+interface ISamplePreview {
+  jurisdictions: ISamplePreviewJurisdiction[] | null
+  task: {
+    status: FileProcessingStatus
+    startedAt: string | null
+    completedAt: string | null
+    error: string | null
+  }
+}
+
+export const useSamplePreview = (
+  electionId: string,
+  options: UseQueryOptions<ISamplePreview, ApiError> = {}
+): UseQueryResult<ISamplePreview, ApiError> =>
+  useQuery<ISamplePreview, ApiError>(
+    samplePreviewQueryKey(electionId),
+    async () => fetchApi(`/api/election/${electionId}/sample-preview`),
+    options
+  )

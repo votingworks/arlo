@@ -30,7 +30,10 @@ import SettingsTable from './SettingsTable'
 import ConfirmLaunch from './ConfirmLaunch'
 import FormField from '../../../Atoms/Form/FormField'
 import useSampleSizes, { ISampleSizeOption } from './useSampleSizes'
-import { ISampleSizes } from '../../useRoundsAuditAdmin'
+import {
+  ISampleSizes,
+  useComputeSamplePreview,
+} from '../../useRoundsAuditAdmin'
 import { mapValues } from '../../../../utils/objects'
 import { FlexTable } from '../../../Atoms/Table'
 import { pluralize } from '../../../../utils/string'
@@ -49,6 +52,7 @@ import {
   useJurisdictionsFile,
   useStandardizedContestsFile,
 } from '../../../useFileUpload'
+import SamplePreview from './SamplePreview'
 
 const percentFormatter = new Intl.NumberFormat(undefined, {
   style: 'percent',
@@ -82,7 +86,11 @@ const Review: React.FC<IProps> = ({
     { enabled: isStandardizedContestsFileEnabled }
   )
   const contestsQuery = useContests(electionId)
+  const computeSamplePreview = useComputeSamplePreview(electionId)
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
+  const [isSamplePreviewModalOpen, setIsSamplePreviewModalOpen] = useState(
+    false
+  )
 
   const [
     standardizations,
@@ -445,6 +453,13 @@ const Review: React.FC<IProps> = ({
           await startNextRound(values.sampleSizes)
         }
 
+        const onClickPreviewSample = async (values: {
+          sampleSizes: IFormOptions
+        }) => {
+          await computeSamplePreview.mutateAsync(values.sampleSizes)
+          setIsSamplePreviewModalOpen(true)
+        }
+
         const targetedContests = contests.filter(contest => contest.isTargeted)
 
         return (
@@ -682,28 +697,41 @@ const Review: React.FC<IProps> = ({
                       : undefined
                   }
                 />
+                <FormButtonBar>
+                  <FormButton disabled={locked} onClick={goToPrevStage}>
+                    Back
+                  </FormButton>
+                  <FormButton
+                    disabled={!sampleSizesQuery.data?.sampleSizes || locked}
+                    onClick={() => onClickPreviewSample(values)}
+                  >
+                    Preview Sample
+                  </FormButton>
+                  <FormButton
+                    intent="primary"
+                    disabled={
+                      !sampleSizesQuery.data?.sampleSizes ||
+                      locked ||
+                      !setupComplete ||
+                      !standardizationComplete
+                    }
+                    onClick={() => setIsConfirmDialogOpen(true)}
+                  >
+                    Launch Audit
+                  </FormButton>
+                </FormButtonBar>
               </form>
             )}
           </Formik>
         )
       })()}
-      <FormButtonBar>
-        <FormButton disabled={locked} onClick={goToPrevStage}>
-          Back
-        </FormButton>
-        <FormButton
-          intent="primary"
-          disabled={
-            !sampleSizesQuery.data?.sampleSizes ||
-            locked ||
-            !setupComplete ||
-            !standardizationComplete
-          }
-          onClick={() => setIsConfirmDialogOpen(true)}
-        >
-          Launch Audit
-        </FormButton>
-      </FormButtonBar>
+      {isSamplePreviewModalOpen && (
+        <SamplePreview
+          electionId={electionId}
+          auditType={auditType}
+          onClose={() => setIsSamplePreviewModalOpen(false)}
+        />
+      )}
     </div>
   )
 }
