@@ -42,7 +42,12 @@ interface ILinkItemProps {
 export const LinkItem: React.FC<ILinkItemProps> = ({ to, children, style }) => {
   const history = useHistory()
   return (
-    <ItemContainer role="link" onClick={() => history.push(to)} style={style}>
+    <ItemContainer
+      role="link"
+      tabIndex={0}
+      onClick={() => history.push(to)}
+      style={style}
+    >
       {children}
     </ItemContainer>
   )
