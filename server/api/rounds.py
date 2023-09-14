@@ -3,7 +3,6 @@ import uuid
 from collections import defaultdict
 from typing import (
     Optional,
-    NamedTuple,
     List,
     Tuple,
     Dict,
@@ -751,171 +750,23 @@ class SampleSize(TypedDict):
     sizeNonCvr: int  # Only in hybrid audits
 
 
-class BallotDraw(NamedTuple):
-    # ballot_key: ((jurisdiction name, batch name), ballot_position)
-    ballot_key: Tuple[sampler.BatchKey, int]
+class BallotDraw(TypedDict):
+    batch_id: str
+    ballot_position: int
     contest_id: str
     ticket_number: str
 
 
-@background_task
-def draw_sample(round_id: str, election_id: str):
-    round = Round.query.filter_by(id=round_id, election_id=election_id).one()
-    election = round.election
-
-    contest_sample_sizes = [
-        (round_contest.contest, round_contest.sample_size)
-        for round_contest in round.round_contests
-        if round_contest.sample_size
-    ]
-
-    # Special case: if we are in a full hand tally, we don't need to actually
-    # draw a sample. Instead, we force an offline audit.
-    if is_full_hand_tally(round, election):
-        election.online = False
-        return
-
-    if election.audit_type == AuditType.BATCH_COMPARISON:
-        sample_batches(election, round, contest_sample_sizes)
-    elif election.audit_type in [AuditType.BALLOT_POLLING, AuditType.BALLOT_COMPARISON]:
-        sample_ballots(election, round, contest_sample_sizes)
-    else:
-        assert election.audit_type == AuditType.HYBRID
-        sample_ballots(election, round, contest_sample_sizes, filter_has_cvrs=True)
-        sample_ballots(election, round, contest_sample_sizes, filter_has_cvrs=False)
+class BatchDraw(TypedDict):
+    batch_id: str
+    ticket_number: str
 
 
-def sample_ballots(
+def compute_sample_batches(
     election: Election,
-    round: Round,
+    round_num: int,
     contest_sample_sizes: List[Tuple[Contest, SampleSize]],
-    # For hybrid audits only, Batch.has_cvrs will be true/false if the batch
-    # contains ballots with CVRs or not (based on the manifest).
-    # filter_has_cvrs will constrain the ballots to sample based on
-    # Batch.has_cvrs. Since Batch.has_cvrs is None for all other audit types,
-    # the default filter is None.
-    filter_has_cvrs: bool = None,
-):
-    participating_jurisdictions = {
-        jurisdiction
-        for (contest, _) in contest_sample_sizes
-        for jurisdiction in contest.jurisdictions
-    }
-
-    # Audits must be deterministic and repeatable for the same real world
-    # inputs. So the sampler expects the same input for the same real world
-    # data. Thus, we use the jurisdiction name and batch keys
-    # (deterministic real world ids) instead of the jurisdiction and batch
-    # ids (non-deterministic uuids that we generate for each audit).
-    batch_id_to_key = {
-        batch.id: (jurisdiction.name, batch.tabulator, batch.name)
-        for jurisdiction in participating_jurisdictions
-        for batch in jurisdiction.batches
-    }
-    batch_key_to_id = {
-        batch_key: batch_id for batch_id, batch_key in batch_id_to_key.items()
-    }
-
-    def draw_sample_for_contest(
-        contest: Contest, sample_size: SampleSize
-    ) -> List[BallotDraw]:
-        # Compute the total number of ballot samples in all rounds leading up to
-        # this one. Note that this corresponds to the number of SampledBallotDraws,
-        # not SampledBallots.
-        num_previously_sampled = (
-            SampledBallotDraw.query.filter_by(contest_id=contest.id)
-            .join(SampledBallot)
-            .join(Batch)
-            .filter_by(has_cvrs=filter_has_cvrs)
-            .count()
-        )
-
-        # Create the pool of ballots to sample (aka manifest) by combining the
-        # manifests from every jurisdiction in the contest's universe.
-        manifest = {
-            batch_id_to_key[batch.id]: list(range(1, batch.num_ballots + 1))
-            for jurisdiction in contest.jurisdictions
-            for batch in jurisdiction.batches
-            if batch.has_cvrs == filter_has_cvrs
-        }
-
-        if filter_has_cvrs is None:
-            sample_size_num = sample_size["size"]
-        elif filter_has_cvrs:
-            sample_size_num = sample_size["sizeCvr"]
-        else:
-            sample_size_num = sample_size["sizeNonCvr"]
-
-        # Do the math! i.e. compute the actual sample
-        sample = sampler.draw_sample(
-            str(election.random_seed),
-            dict(manifest),
-            sample_size_num,
-            num_previously_sampled,
-            # In hybrid audits, sample without replacement for the non-CVR
-            # ballots, and with replacement for the CVR ballots.
-            # All other audit types sample with replacement.
-            with_replacement=(True if filter_has_cvrs is None else filter_has_cvrs),
-        )
-        return [
-            BallotDraw(
-                ballot_key=ballot_key,
-                contest_id=contest.id,
-                ticket_number=ticket_number,
-            )
-            for (ticket_number, ballot_key, _) in sample
-        ]
-
-    # Draw a sample for each contest
-    samples = [
-        draw_sample_for_contest(contest, sample_size)
-        for contest, sample_size in contest_sample_sizes
-    ]
-
-    # Group all sample draws by ballot
-    sample_draws_by_ballot = group_by(
-        [sample_draw for sample in samples for sample_draw in sample],
-        key=lambda sample_draw: sample_draw.ballot_key,
-    )
-
-    # Record which ballots are sampled in the db.
-    # Note that a ballot may be sampled more than once (within a round or
-    # across multiple rounds). We create one SampledBallot for each real-world
-    # ballot that gets sampled, and record each time it gets sampled with a
-    # SampledBallotDraw. That way we can ensure that we don't need to actually
-    # look at a real-world ballot that we've already audited, even if it gets
-    # sampled again.
-    for ballot_key, sample_draws in sample_draws_by_ballot.items():
-        batch_key, ballot_position = ballot_key
-        batch_id = batch_key_to_id[batch_key]
-
-        sampled_ballot = SampledBallot.query.filter_by(
-            batch_id=batch_id, ballot_position=ballot_position
-        ).first()
-        if not sampled_ballot:
-            sampled_ballot = SampledBallot(
-                id=str(uuid.uuid4()),
-                batch_id=batch_id,
-                ballot_position=ballot_position,
-                status=BallotStatus.NOT_AUDITED,
-            )
-            db_session.add(sampled_ballot)
-
-        for sample_draw in sample_draws:
-            sampled_ballot_draw = SampledBallotDraw(
-                ballot_id=sampled_ballot.id,
-                round_id=round.id,
-                contest_id=sample_draw.contest_id,
-                ticket_number=sample_draw.ticket_number,
-            )
-            db_session.add(sampled_ballot_draw)
-
-
-def sample_batches(
-    election: Election,
-    round: Round,
-    contest_sample_sizes: List[Tuple[Contest, SampleSize]],
-):
+) -> List[BatchDraw]:
     # We only support one contest for batch audits
     assert len(contest_sample_sizes) == 1
     contest, sample_size = contest_sample_sizes[0]
@@ -946,21 +797,15 @@ def sample_batches(
         batch_tallies(election),
     )
 
-    for (ticket_number, batch_key) in sample:
-        sampled_batch_draw = SampledBatchDraw(
-            batch_id=batch_key_to_id[batch_key],
-            round_id=round.id,
-            ticket_number=ticket_number,
-        )
-        db_session.add(sampled_batch_draw)
+    sample_batches = [
+        BatchDraw(batch_id=batch_key_to_id[batch_key], ticket_number=ticket_number)
+        for ticket_number, batch_key in sample
+    ]
 
     # Experimental feature
     # Add extra batches on top of the original sample that will be audited, but
     # not counted in the final risk measurement.
-    if (
-        is_enabled_sample_extra_batches_by_counting_group(election)
-        and round.round_num == 1
-    ):
+    if is_enabled_sample_extra_batches_by_counting_group(election) and round_num == 1:
         rand = random.Random(str(election.random_seed))
         for jurisdiction in contest.jurisdictions:
             batch_ids_with_container_and_num_ballots = (
@@ -1003,22 +848,18 @@ def sample_batches(
             if len(bmd_batch_ids & sampled_batch_ids) == 0 and len(bmd_batch_ids) > 0:
                 extra_bmd_batch_id = rand.choice(list(bmd_batch_ids))
                 extra_batch_ids.add(extra_bmd_batch_id)
-                db_session.add(
-                    SampledBatchDraw(
-                        batch_id=extra_bmd_batch_id,
-                        round_id=round.id,
-                        ticket_number=EXTRA_TICKET_NUMBER,
+                sample_batches.append(
+                    BatchDraw(
+                        batch_id=extra_bmd_batch_id, ticket_number=EXTRA_TICKET_NUMBER
                     )
                 )
             # If we didn't sample any HMPB batches, add one to the sample
             if len(hmpb_batch_ids & sampled_batch_ids) == 0 and len(hmpb_batch_ids) > 0:
                 extra_hmpb_batch_id = rand.choice(list(hmpb_batch_ids))
                 extra_batch_ids.add(extra_hmpb_batch_id)
-                db_session.add(
-                    SampledBatchDraw(
-                        batch_id=extra_hmpb_batch_id,
-                        round_id=round.id,
-                        ticket_number=EXTRA_TICKET_NUMBER,
+                sample_batches.append(
+                    BatchDraw(
+                        batch_id=extra_hmpb_batch_id, ticket_number=EXTRA_TICKET_NUMBER
                     )
                 )
 
@@ -1030,10 +871,7 @@ def sample_batches(
                 selected_batch_ids, num_jurisdiction_ballots
             ):
                 num_jurisdiction_ballots_selected = sum(
-                    [
-                        batch_id_to_num_ballots[batch_id]
-                        for batch_id in selected_batch_ids
-                    ]
+                    batch_id_to_num_ballots[batch_id] for batch_id in selected_batch_ids
                 )
                 return num_jurisdiction_ballots_selected / num_jurisdiction_ballots
 
@@ -1049,47 +887,239 @@ def sample_batches(
                 )
                 extra_batch_id = rand.choice(list(remaining_batch_ids))
                 extra_batch_ids.add(extra_batch_id)
-                db_session.add(
-                    SampledBatchDraw(
-                        batch_id=extra_batch_id,
-                        round_id=round.id,
-                        ticket_number=EXTRA_TICKET_NUMBER,
+                sample_batches.append(
+                    BatchDraw(
+                        batch_id=extra_batch_id, ticket_number=EXTRA_TICKET_NUMBER
                     )
                 )
+
+    return sample_batches
+
+
+def compute_sample_ballots(
+    election: Election,
+    contest_sample_sizes: List[Tuple[Contest, SampleSize]],
+    # For hybrid audits only, Batch.has_cvrs will be true/false if the batch
+    # contains ballots with CVRs or not (based on the manifest).
+    # filter_has_cvrs will constrain the ballots to sample based on
+    # Batch.has_cvrs. Since Batch.has_cvrs is None for all other audit types,
+    # the default filter is None.
+    filter_has_cvrs: bool = None,
+) -> List[BallotDraw]:
+    participating_jurisdictions = {
+        jurisdiction
+        for (contest, _) in contest_sample_sizes
+        for jurisdiction in contest.jurisdictions
+    }
+
+    # Audits must be deterministic and repeatable for the same real world
+    # inputs. So the sampler expects the same input for the same real world
+    # data. Thus, we use the jurisdiction name and batch keys
+    # (deterministic real world ids) instead of the jurisdiction and batch
+    # ids (non-deterministic uuids that we generate for each audit).
+    batch_id_to_key = {
+        batch.id: (jurisdiction.name, batch.tabulator, batch.name)
+        for jurisdiction in participating_jurisdictions
+        for batch in jurisdiction.batches
+    }
+    batch_key_to_id = {
+        batch_key: batch_id for batch_id, batch_key in batch_id_to_key.items()
+    }
+
+    def compute_sample_for_contest(
+        contest: Contest, sample_size: SampleSize
+    ) -> List[BallotDraw]:
+        # Compute the total number of ballot samples in all rounds leading up to
+        # this one. Note that this corresponds to the number of SampledBallotDraws,
+        # not SampledBallots.
+        num_previously_sampled = (
+            SampledBallotDraw.query.filter_by(contest_id=contest.id)
+            .join(SampledBallot)
+            .join(Batch)
+            .filter_by(has_cvrs=filter_has_cvrs)
+            .count()
+        )
+
+        # Create the pool of ballots to sample (aka manifest) by combining the
+        # manifests from every jurisdiction in the contest's universe.
+        manifest = {
+            batch_id_to_key[batch.id]: list(range(1, batch.num_ballots + 1))
+            for jurisdiction in contest.jurisdictions
+            for batch in jurisdiction.batches
+            if batch.has_cvrs == filter_has_cvrs
+        }
+
+        if filter_has_cvrs is None:
+            sample_size_num = sample_size["size"]
+        elif filter_has_cvrs:
+            sample_size_num = sample_size["sizeCvr"]
+        else:
+            sample_size_num = sample_size["sizeNonCvr"]
+
+        # Do the math! i.e. compute the actual sample
+        sample = sampler.draw_sample(
+            str(election.random_seed),
+            dict(manifest),
+            sample_size_num,
+            num_previously_sampled,
+            # In hybrid audits, sample without replacement for the non-CVR
+            # ballots, and with replacement for the CVR ballots.
+            # All other audit types sample with replacement.
+            with_replacement=(True if filter_has_cvrs is None else filter_has_cvrs),
+        )
+        return [
+            BallotDraw(
+                batch_id=batch_key_to_id[batch_key],
+                ballot_position=ballot_position,
+                contest_id=contest.id,
+                ticket_number=ticket_number,
+            )
+            for (ticket_number, (batch_key, ballot_position), _) in sample
+        ]
+
+    # Draw a sample for each contest
+    samples = [
+        sample
+        for contest, sample_size in contest_sample_sizes
+        for sample in compute_sample_for_contest(contest, sample_size)
+    ]
+    return samples
+
+
+@background_task
+def draw_sample(round_id: str, election_id: str):
+    round = Round.query.filter_by(id=round_id, election_id=election_id).one()
+    election = round.election
+
+    contest_sample_sizes = [
+        (round_contest.contest, round_contest.sample_size)
+        for round_contest in round.round_contests
+        if round_contest.sample_size
+    ]
+
+    # Special case: if we are in a full hand tally, we don't need to actually
+    # draw a sample. Instead, we force an offline audit.
+    if is_full_hand_tally(round, election):
+        election.online = False
+        return
+
+    if election.audit_type == AuditType.BATCH_COMPARISON:
+        draw_sample_batches(election, round, contest_sample_sizes)
+    elif election.audit_type in [AuditType.BALLOT_POLLING, AuditType.BALLOT_COMPARISON]:
+        draw_sample_ballots(election, round, contest_sample_sizes)
+    else:
+        assert election.audit_type == AuditType.HYBRID
+        draw_sample_ballots(election, round, contest_sample_sizes, filter_has_cvrs=True)
+        draw_sample_ballots(
+            election, round, contest_sample_sizes, filter_has_cvrs=False
+        )
+
+
+def draw_sample_batches(
+    election: Election,
+    round: Round,
+    contest_sample_sizes: List[Tuple[Contest, SampleSize]],
+):
+    sample = compute_sample_batches(election, round.round_num, contest_sample_sizes)
+    for batch_draw in sample:
+        sampled_batch_draw = SampledBatchDraw(
+            batch_id=batch_draw["batch_id"],
+            round_id=round.id,
+            ticket_number=batch_draw["ticket_number"],
+        )
+        db_session.add(sampled_batch_draw)
+
+
+def draw_sample_ballots(
+    election: Election,
+    round: Round,
+    contest_sample_sizes: List[Tuple[Contest, SampleSize]],
+    # For hybrid audits only, Batch.has_cvrs will be true/false if the batch
+    # contains ballots with CVRs or not (based on the manifest).
+    # filter_has_cvrs will constrain the ballots to sample based on
+    # Batch.has_cvrs. Since Batch.has_cvrs is None for all other audit types,
+    # the default filter is None.
+    filter_has_cvrs: bool = None,
+):
+    sample = compute_sample_ballots(election, contest_sample_sizes, filter_has_cvrs)
+
+    # Group all sample draws by ballot
+    sample_draws_by_ballot: Dict[Tuple[str, int], List[BallotDraw]] = group_by(
+        sample,
+        key=lambda sample_draw: (
+            sample_draw["batch_id"],
+            sample_draw["ballot_position"],
+        ),
+    )
+
+    # Record which ballots are sampled in the db.
+    # Note that a ballot may be sampled more than once (within a round or
+    # across multiple rounds). We create one SampledBallot for each real-world
+    # ballot that gets sampled, and record each time it gets sampled with a
+    # SampledBallotDraw. That way we can ensure that we don't need to actually
+    # look at a real-world ballot that we've already audited, even if it gets
+    # sampled again.
+    for ballot_key, sample_draws in sample_draws_by_ballot.items():
+        batch_id, ballot_position = ballot_key
+
+        sampled_ballot = SampledBallot.query.filter_by(
+            batch_id=batch_id, ballot_position=ballot_position
+        ).first()
+        if not sampled_ballot:
+            sampled_ballot = SampledBallot(
+                id=str(uuid.uuid4()),
+                batch_id=batch_id,
+                ballot_position=ballot_position,
+                status=BallotStatus.NOT_AUDITED,
+            )
+            db_session.add(sampled_ballot)
+
+        for sample_draw in sample_draws:
+            sampled_ballot_draw = SampledBallotDraw(
+                ballot_id=sampled_ballot.id,
+                round_id=round.id,
+                contest_id=sample_draw["contest_id"],
+                ticket_number=sample_draw["ticket_number"],
+            )
+            db_session.add(sampled_ballot_draw)
+
+
+def create_selected_sample_sizes_schema(audit_type: AuditType):
+    return {
+        "type": "object",
+        "patternProperties": {
+            "^.*$": {
+                "type": "object",
+                "properties": {
+                    "key": {"type": "string"},
+                    "prob": {"anyOf": [{"type": "number"}, {"type": "null"}]},
+                    **(
+                        {
+                            "sizeCvr": {"type": "integer"},
+                            "sizeNonCvr": {"type": "integer"},
+                            "size": {"type": "integer"},
+                        }
+                        if audit_type == AuditType.HYBRID
+                        else {"size": {"type": "integer"}}
+                    ),
+                },
+                "additionalProperties": False,
+                "required": (
+                    ["sizeCvr", "sizeNonCvr", "size", "key", "prob"]
+                    if audit_type == AuditType.HYBRID
+                    else ["size", "key", "prob"]
+                ),
+            }
+        },
+    }
 
 
 def create_round_schema(audit_type: AuditType):
     return {
         "type": "object",
         "properties": {
-            "roundNum": {"type": "integer", "minimum": 1,},
-            "sampleSizes": {
-                "type": "object",
-                "patternProperties": {
-                    "^.*$": {
-                        "type": "object",
-                        "properties": {
-                            "key": {"type": "string"},
-                            "prob": {"anyOf": [{"type": "number"}, {"type": "null"}]},
-                            **(
-                                {
-                                    "sizeCvr": {"type": "integer"},
-                                    "sizeNonCvr": {"type": "integer"},
-                                    "size": {"type": "integer"},
-                                }
-                                if audit_type == AuditType.HYBRID
-                                else {"size": {"type": "integer"}}
-                            ),
-                        },
-                        "additionalProperties": False,
-                        "required": (
-                            ["sizeCvr", "sizeNonCvr", "size", "key", "prob"]
-                            if audit_type == AuditType.HYBRID
-                            else ["size", "key", "prob"]
-                        ),
-                    }
-                },
-            },
+            "roundNum": {"type": "integer", "minimum": 1},
+            "sampleSizes": create_selected_sample_sizes_schema(audit_type),
         },
         "additionalProperties": False,
         "required": ["roundNum", "sampleSizes"],
