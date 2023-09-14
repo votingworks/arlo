@@ -1,3 +1,4 @@
+from datetime import timedelta
 import os.path
 from unittest.mock import Mock, patch
 from urllib.parse import urlparse
@@ -130,8 +131,45 @@ def test_support_rename_organization(client: FlaskClient, org_id: str):
     assert new_name == "New Org Name"
 
 
+def test_support_list_active_elections(
+    client: FlaskClient, org_id: str, election_id: str
+):
+    older_election_id = create_election(client, organization_id=org_id)
+
+    older_election_activities = ActivityLogRecord.query.filter(
+        ActivityLogRecord.info["base"]["election_id"].as_string() == older_election_id
+    ).all()
+    for activity in older_election_activities:
+        activity.timestamp = activity.timestamp - timedelta(days=14)
+    db_session.commit()
+
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
+    rv = client.get("/api/support/elections/active")
+    elections = json.loads(rv.data)
+
+    other_election = next(
+        (election for election in elections if election["id"] == older_election_id),
+        None,
+    )
+    assert other_election is None
+
+    election = next(election for election in elections if election["id"] == election_id)
+    assert election == {
+        "id": election_id,
+        "auditName": "Test Audit test_support_list_active_elections",
+        "auditType": "BALLOT_POLLING",
+        "online": True,
+        "deletedAt": None,
+        "organization": {
+            "id": org_id,
+            "name": "Test Org test_support_list_active_elections",
+        },
+    }
+
+
 def test_support_get_election(
     client: FlaskClient,
+    org_id: str,
     election_id: str,
     jurisdiction_ids: List[str],
     round_1_id: str,  # pylint: disable=unused-argument
@@ -145,6 +183,10 @@ def test_support_get_election(
             "auditName": "Test Audit test_support_get_election",
             "auditType": "BALLOT_POLLING",
             "online": True,
+            "organization": {
+                "id": org_id,
+                "name": "Test Org test_support_get_election",
+            },
             "jurisdictions": [
                 {"id": jurisdiction_ids[0], "name": "J1",},
                 {"id": jurisdiction_ids[1], "name": "J2",},
@@ -402,6 +444,7 @@ def test_support_remove_audit_admin_invalid(client: FlaskClient, org_id: str):
 
 def test_support_get_jurisdiction(
     client: FlaskClient,
+    org_id: str,
     election_id: str,
     jurisdiction_ids: List[str],
     audit_board_round_1_ids: List[str],
@@ -413,6 +456,10 @@ def test_support_get_jurisdiction(
         {
             "id": jurisdiction_ids[0],
             "name": "J1",
+            "organization": {
+                "id": org_id,
+                "name": "Test Org test_support_get_jurisdiction",
+            },
             "election": {
                 "id": election_id,
                 "auditName": "Test Audit test_support_get_jurisdiction",
@@ -489,6 +536,30 @@ def test_support_log_in_to_audit_as_audit_admin(client: FlaskClient, election_id
     with client.session_transaction() as session:  # type: ignore
         assert session["_user"]["type"] == UserType.AUDIT_ADMIN
         assert session["_user"]["key"] == DEFAULT_AA_EMAIL
+        assert session["_created_at"] == original_created_at
+        assert session["_last_request_at"] != original_last_request_at
+
+
+def test_support_log_in_to_audit_as_jurisdiction_admin(
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+):
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
+
+    with client.session_transaction() as session:  # type: ignore
+        original_created_at = session["_created_at"]
+        original_last_request_at = session["_last_request_at"]
+
+    rv = client.get(f"/api/support/jurisdictions/{jurisdiction_ids[0]}/login")
+    assert rv.status_code == 302
+    assert (
+        urlparse(rv.location).path
+        == f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}"
+    )
+    assert urlparse(rv.location).port == urlparse(HTTP_ORIGIN).port
+
+    with client.session_transaction() as session:  # type: ignore
+        assert session["_user"]["type"] == UserType.JURISDICTION_ADMIN
+        assert session["_user"]["key"] == default_ja_email(election_id)
         assert session["_created_at"] == original_created_at
         assert session["_last_request_at"] != original_last_request_at
 

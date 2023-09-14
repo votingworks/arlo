@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 import uuid
 import secrets
 from typing import Optional
@@ -7,6 +8,7 @@ from auth0.v3.authentication import GetToken
 from auth0.v3.management import Auth0
 from auth0.v3.exceptions import Auth0Error
 from werkzeug.exceptions import BadRequest, Conflict
+from sqlalchemy.orm import contains_eager
 
 
 from . import api
@@ -64,6 +66,43 @@ def auth0_create_audit_admin(email: str) -> Optional[str]:
             users = auth0.users_by_email.search_users_by_email(email.lower())
             return str(users[0]["user_id"])
         raise error
+
+
+@api.route("/support/elections/active", methods=["GET"])
+@restrict_access_support
+def list_active_elections():
+    elections = (
+        Election.query.filter(
+            Election.id.in_(
+                ActivityLogRecord.query.filter(
+                    ActivityLogRecord.timestamp
+                    > datetime.now(timezone.utc) - timedelta(days=14)
+                )
+                .with_entities(
+                    ActivityLogRecord.info["base"]["election_id"].as_string()
+                )
+                .subquery()
+            )
+        )
+        .join(Organization)
+        .order_by(Organization.name, Election.audit_name)
+        .options(contains_eager(Election.organization),)
+    )
+    return jsonify(
+        [
+            dict(
+                id=election.id,
+                auditName=election.audit_name,
+                auditType=election.audit_type,
+                online=election.online,
+                deletedAt=isoformat(election.deleted_at),
+                organization=dict(
+                    id=election.organization.id, name=election.organization.name
+                ),
+            )
+            for election in elections
+        ]
+    )
 
 
 @api.route("/support/organizations", methods=["GET"])
@@ -171,6 +210,7 @@ def get_election(election_id: str):
         auditName=election.audit_name,
         auditType=election.audit_type,
         online=election.online,
+        organization=dict(id=election.organization.id, name=election.organization.name),
         jurisdictions=[
             dict(id=jurisdiction.id, name=jurisdiction.name)
             for jurisdiction in election.jurisdictions
@@ -306,6 +346,10 @@ def get_jurisdiction(jurisdiction_id: str):
     return jsonify(
         id=jurisdiction.id,
         name=jurisdiction.name,
+        organization=dict(
+            id=jurisdiction.election.organization.id,
+            name=jurisdiction.election.organization.name,
+        ),
         election=dict(
             id=jurisdiction.election.id,
             auditName=jurisdiction.election.audit_name,
@@ -425,6 +469,27 @@ def log_in_to_audit_as_audit_admin(election_id: str):
         session, UserType.AUDIT_ADMIN, audit_admins[0].email, from_support_user=True
     )
     return redirect(f"/election/{election_id}")
+
+
+@api.route("/support/jurisdictions/<jurisdiction_id>/login", methods=["GET"])
+@restrict_access_support
+def log_in_to_audit_as_jurisdiction_admin(jurisdiction_id: str):
+    jurisdiction = get_or_404(Jurisdiction, jurisdiction_id)
+    jurisdiction_admins = [
+        jurisdiction_administration.user
+        for jurisdiction_administration in jurisdiction.jurisdiction_administrations
+    ]
+    if len(jurisdiction_admins) == 0:
+        raise Conflict("Jurisdiction has no jurisdiction admins.")
+    set_loggedin_user(
+        session,
+        UserType.JURISDICTION_ADMIN,
+        jurisdiction_admins[0].email,
+        from_support_user=True,
+    )
+    return redirect(
+        f"/election/{jurisdiction.election_id}/jurisdiction/{jurisdiction_id}"
+    )
 
 
 @api.route("/support/rounds/<round_id>", methods=["DELETE"])

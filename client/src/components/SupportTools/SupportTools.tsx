@@ -1,5 +1,5 @@
 import React from 'react'
-import { Redirect, Route, Switch } from 'react-router-dom'
+import { Redirect, Route, Switch, Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import styled from 'styled-components'
 import {
@@ -10,14 +10,10 @@ import {
   H2,
   AnchorButton,
   Tag,
-  ButtonGroup,
-  Alignment,
-  Colors,
   Intent,
 } from '@blueprintjs/core'
 import { useForm } from 'react-hook-form'
 import { useAuthDataContext } from '../UserContext'
-import LinkButton from '../Atoms/LinkButton'
 import { Wrapper, Inner } from '../Atoms/Wrapper'
 import {
   useOrganizations,
@@ -35,10 +31,30 @@ import {
   useRemoveAuditAdmin,
   useDeleteElection,
   IElectionBase,
+  useActiveElections,
 } from './support-api'
 import { useConfirm, Confirm } from '../Atoms/Confirm'
 import AuditBoardsTable from '../AuditAdmin/Progress/AuditBoardsTable'
 import RoundsTable from './RoundsTable'
+import { List, LinkItem } from './List'
+import Breadcrumbs from './Breadcrumbs'
+
+const Table = styled(HTMLTable)`
+  margin: 10px 0;
+  width: 100%;
+  table-layout: fixed;
+  td:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  td:last-child:not(:first-child) {
+    padding-right: 15px;
+    text-align: right;
+  }
+  tr td {
+    vertical-align: baseline;
+  }
+`
 
 const SupportTools: React.FC = () => {
   const auth = useAuthDataContext()
@@ -51,7 +67,10 @@ const SupportTools: React.FC = () => {
         <div style={{ margin: '30px 0', width: '100%' }}>
           <Switch>
             <Route exact path="/support">
-              <Organizations />
+              <Row>
+                <ActiveAudits />
+                <Organizations />
+              </Row>
             </Route>
             <Route path="/support/orgs/:organizationId">
               {({ match }) => (
@@ -78,22 +97,32 @@ const Column = styled.div`
   padding-right: 30px;
 `
 
-const ButtonList = styled(ButtonGroup).attrs({
-  vertical: true,
-  minimal: true,
-  large: true,
-  alignText: Alignment.LEFT,
-})`
-  margin-bottom: 30px;
-  border: 1px solid ${Colors.LIGHT_GRAY3};
+const Row = styled.div`
+  display: flex;
   width: 100%;
-  .bp3-button {
-    border-radius: 0;
-    &:not(:first-child) {
-      border-top: 1px solid ${Colors.LIGHT_GRAY3};
-    }
-  }
 `
+
+const ActiveAudits = () => {
+  const elections = useActiveElections()
+
+  if (!elections.isSuccess) return null
+
+  return (
+    <Column>
+      <H2>Active Audits</H2>
+      <List>
+        {elections.data.map(election => (
+          <LinkItem key={election.id} to={`/support/audits/${election.id}`}>
+            <div>
+              <div style={{ color: 'black' }}>{election.organization.name}</div>
+              <div className="bp3-text-large">{election.auditName}</div>
+            </div>
+          </LinkItem>
+        ))}
+      </List>
+    </Column>
+  )
+}
 
 const Organizations = () => {
   const organizations = useOrganizations()
@@ -138,37 +167,19 @@ const Organizations = () => {
           Create Organization
         </Button>
       </form>
-      <ButtonList>
+      <List>
         {organizations.data.map(organization => (
-          <LinkButton
+          <LinkItem
             key={organization.id}
             to={`/support/orgs/${organization.id}`}
-            intent={Intent.PRIMARY}
           >
             {organization.name}
-          </LinkButton>
+          </LinkItem>
         ))}
-      </ButtonList>
+      </List>
     </Column>
   )
 }
-
-const Table = styled(HTMLTable)`
-  margin: 10px 0;
-  width: 100%;
-  table-layout: fixed;
-  td:first-child {
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  td:last-child:not(:first-child) {
-    padding-right: 15px;
-    text-align: right;
-  }
-  tr td {
-    vertical-align: baseline;
-  }
-`
 
 const Organization = ({ organizationId }: { organizationId: string }) => {
   const organization = useOrganization(organizationId)
@@ -287,19 +298,18 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
       <div style={{ display: 'flex', width: '100%' }}>
         <Column>
           <H3>Audits</H3>
-          <ButtonList>
+          <List style={{ marginBottom: '30px' }}>
             {elections
               .filter(election => !election.deletedAt)
               .map(election => (
-                <LinkButton
+                <LinkItem
                   key={election.id}
                   to={`/support/audits/${election.id}`}
-                  intent={Intent.PRIMARY}
                 >
                   {election.auditName}
-                </LinkButton>
+                </LinkItem>
               ))}
-          </ButtonList>
+          </List>
           <H3>Deleted Audits</H3>
           <Table striped>
             <tbody>
@@ -393,10 +403,20 @@ const Audit = ({ electionId }: { electionId: string }) => {
 
   if (!election.isSuccess) return null
 
-  const { id, auditName, auditType, jurisdictions, rounds } = election.data
+  const {
+    id,
+    auditName,
+    auditType,
+    organization,
+    jurisdictions,
+    rounds,
+  } = election.data
 
   return (
     <div>
+      <Breadcrumbs>
+        <Link to={`/support/orgs/${organization.id}`}>{organization.name}</Link>
+      </Breadcrumbs>
       <H2>{auditName}</H2>
       <Column>
         <div
@@ -421,17 +441,23 @@ const Audit = ({ electionId }: { electionId: string }) => {
           <RoundsTable electionId={electionId} rounds={rounds} />
         </div>
         <H3>Jurisdictions</H3>
-        <ButtonList>
+        <List>
           {jurisdictions.map(jurisdiction => (
-            <LinkButton
-              key={jurisdiction.id}
+            <LinkItem
               to={`/support/jurisdictions/${jurisdiction.id}`}
-              intent={Intent.PRIMARY}
+              key={jurisdiction.id}
             >
               {jurisdiction.name}
-            </LinkButton>
+              <AnchorButton
+                href={`/api/support/jurisdictions/${jurisdiction.id}/login`}
+                icon="log-in"
+                onClick={(e: React.MouseEvent) => e.stopPropagation()}
+              >
+                Log in
+              </AnchorButton>
+            </LinkItem>
           ))}
-        </ButtonList>
+        </List>
       </Column>
     </div>
   )
@@ -447,6 +473,7 @@ const Jurisdiction = ({ jurisdictionId }: { jurisdictionId: string }) => {
 
   const {
     name,
+    organization,
     election,
     jurisdictionAdmins,
     auditBoards,
@@ -481,6 +508,10 @@ const Jurisdiction = ({ jurisdictionId }: { jurisdictionId: string }) => {
 
   return (
     <div style={{ width: '100%' }}>
+      <Breadcrumbs>
+        <Link to={`/support/orgs/${organization.id}`}>{organization.name}</Link>
+        <Link to={`/support/audits/${election.id}`}>{election.auditName}</Link>
+      </Breadcrumbs>
       <H2>{name}</H2>
       <div style={{ display: 'flex', width: '100%' }}>
         <Column>
