@@ -7,6 +7,12 @@ from snapshottest import Snapshot
 
 snapshots = Snapshot()
 
+snapshots["test_hybrid_sample_preview 1"] = [
+    {"name": "J1", "numSamples": 13, "numUnique": 12},
+    {"name": "J2", "numSamples": 10, "numUnique": 9},
+    {"name": "J3", "numSamples": 0, "numUnique": 0},
+]
+
 snapshots["test_hybrid_sample_size 1"] = [
     {"key": "suite", "prob": None, "size": 23, "sizeCvr": 14, "sizeNonCvr": 9}
 ]
