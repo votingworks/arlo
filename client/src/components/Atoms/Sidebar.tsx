@@ -9,7 +9,14 @@ const Wrapper = styled.div`
   flex-shrink: 0;
 
   ul.bp3-menu {
-    padding-left: 0;
+    padding: 0;
+    .bp3-menu-item {
+      padding: 10px 15px;
+      border-radius: 0;
+    }
+    .bp3-menu-divider {
+      margin: 0;
+    }
   }
 `
 

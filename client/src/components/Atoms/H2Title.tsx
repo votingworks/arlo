@@ -4,7 +4,7 @@ import styled from 'styled-components'
 
 /* stylelint-disable declaration-no-important */
 const StyledH2 = styled(H2)`
-  margin: 40px 0 25px 0;
+  margin: 25px 0 10px 0;
   font-size: 21px !important;
 `
 /* stylelint-enable */

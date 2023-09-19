@@ -16,6 +16,8 @@ import {
   Checkbox,
   Popover,
   Position,
+  Button,
+  Colors,
 } from '@blueprintjs/core'
 import uuidv4 from 'uuidv4'
 import FormWrapper from '../../../Atoms/Form/FormWrapper'
@@ -292,7 +294,15 @@ const ContestForm: React.FC<IProps> = ({
         setFieldValue,
         isSubmitting,
       }: FormikProps<{ contests: IContestValues[] }>) => (
-        <form data-testid="form-one">
+        <form
+          data-testid="form-one"
+          style={{ width: '100%' }}
+          onSubmit={e => {
+            e.preventDefault()
+            if (isOpportunisticFormClean(touched, values)) goToNextStage()
+            else handleSubmit()
+          }}
+        >
           <FormWrapper
             title={isTargeted ? 'Target Contests' : 'Opportunistic Contests'}
           >
@@ -308,13 +318,17 @@ const ContestForm: React.FC<IProps> = ({
                     }))
                     return (
                       /* eslint-disable react/no-array-index-key */
-                      <Card key={i}>
+                      <Card
+                        key={i}
+                        elevation={0}
+                        style={{ background: Colors.LIGHT_GRAY5 }}
+                      >
                         <FormSection
                           label={`Contest ${
                             values.contests.length > 1 ? i + 1 : ''
                           } Info`}
+                          style={{ marginTop: 0 }}
                         >
-                          <br />
                           {isHybrid && standardizedContests ? (
                             <div>
                               <FormSectionDescription>
@@ -472,6 +486,7 @@ const ContestForm: React.FC<IProps> = ({
                           <FormSection
                             label="Contest Universe"
                             description="Select the jurisdictions where this contest appeared on the ballot."
+                            style={{ marginBottom: 0 }}
                           >
                             <DropdownCheckboxList
                               text="Select Jurisdictions"
@@ -486,49 +501,54 @@ const ContestForm: React.FC<IProps> = ({
                           </FormSection>
                         )}
                         {values.contests.length > 1 && (
-                          <FormButtonBar right>
-                            <FormButton
+                          <div
+                            style={{
+                              display: 'flex',
+                              justifyContent: 'flex-end',
+                            }}
+                          >
+                            <Button
+                              icon="remove"
                               intent="danger"
+                              minimal
                               onClick={() => contestsArrayHelpers.remove(i)}
                             >
-                              Remove Contest {i + 1}
-                            </FormButton>
-                          </FormButtonBar>
+                              Remove Contest
+                            </Button>
+                          </div>
                         )}
                       </Card>
                     )
                   })}
                   {!isBatch && ( // TODO support multiple contests in batch comparison audits
-                    <FormButtonBar>
-                      <FormButton
+                    <div style={{ paddingTop: '15px' }}>
+                      <Button
+                        icon="add"
                         type="button"
                         onClick={() =>
                           contestsArrayHelpers.push({ ...contestValues[0] })
                         }
                       >
-                        Add another {isTargeted ? 'targeted' : 'opportunistic'}{' '}
-                        contest
-                      </FormButton>
-                    </FormButtonBar>
+                        Add Contest
+                      </Button>
+                    </div>
                   )}
                 </>
               )}
             />
           </FormWrapper>
-          <FormButtonBar>
-            <FormButton onClick={goToPrevStage}>Back</FormButton>
-            <FormButton
+          <FormButtonBar style={{ marginTop: '15px' }}>
+            <Button onClick={goToPrevStage} icon="arrow-left">
+              Back
+            </Button>
+            <Button
               type="submit"
               intent="primary"
+              rightIcon="arrow-right"
               loading={isSubmitting}
-              onClick={e => {
-                e.preventDefault()
-                if (isOpportunisticFormClean(touched, values)) goToNextStage()
-                else handleSubmit()
-              }}
             >
               Save &amp; Next
-            </FormButton>
+            </Button>
           </FormButtonBar>
         </form>
       )}

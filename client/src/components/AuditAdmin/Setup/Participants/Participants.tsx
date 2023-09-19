@@ -1,6 +1,6 @@
 import React from 'react'
+import { Button } from '@blueprintjs/core'
 import FormButtonBar from '../../../Atoms/Form/FormButtonBar'
-import FormButton from '../../../Atoms/Form/FormButton'
 import FormWrapper from '../../../Atoms/Form/FormWrapper'
 import CSVFile from '../../../Atoms/CSVForm'
 import {
@@ -75,15 +75,15 @@ const Participants: React.FC<IParticipantsProps> = ({
           />
         </div>
       )}
-      <FormButtonBar>
-        <FormButton
-          type="submit"
+      <FormButtonBar style={{ marginTop: '20px' }}>
+        <Button
           intent="primary"
+          rightIcon="arrow-right"
           disabled={!areFileUploadsComplete}
           onClick={goToNextStage}
         >
           Next
-        </FormButton>
+        </Button>
       </FormButtonBar>
     </FormWrapper>
   )

@@ -4,6 +4,9 @@ import styled from 'styled-components'
 
 export const Section = styled.div`
   margin: 20px 0 30px 0;
+  h5 {
+    margin-bottom: 3px;
+  }
 `
 
 export const FormSectionDescription = styled.div`
@@ -14,15 +17,17 @@ interface IProps {
   label?: string
   description?: string
   children: ReactNode
+  style?: React.CSSProperties
 }
 
 const FormSection: React.FC<IProps> = ({
   label,
   description,
   children,
+  style,
 }: IProps) => {
   return (
-    <Section>
+    <Section style={style}>
       {label ? <H5>{label}</H5> : undefined}
       {description ? (
         <FormSectionDescription>{description}</FormSectionDescription>
