@@ -37,7 +37,6 @@ describe('Ballot Polling', () => {
     })
     cy.contains('Uploaded')
 
-    cy.wait(100) // gets stuck in an infinite loop without a 100ms wait here
     cy.findByText('Next').click()
     cy.get('input[name="contests[0].name"]').type('Contest')
     cy.get('input[name="contests[0].choices[0].name"]').type('A')
@@ -122,7 +121,7 @@ describe('Ballot Polling', () => {
     })
     cy.contains('Uploaded')
 
-    cy.get('button[type="submit"]')
+    cy.findByRole('button', { name: /Next/ })
       .should('not.have.class', 'bp3-disabled')
       .click()
     cy.get('input[name="contests[0].name"]').type('Contest')

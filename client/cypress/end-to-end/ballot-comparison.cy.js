@@ -85,7 +85,7 @@ describe('Ballot Comparison Test Cases', () => {
     )
     cy.findAllByText('Upload File').click()
     cy.findAllByText(/Uploaded/).should('have.length', 2)
-    cy.get('button[type="submit"]')
+    cy.findByRole('button', { name: /Next/ })
       .should('not.have.class', 'bp3-disabled')
       .click()
     cy.findAllByText('Target Contests').should('have.length', 2)
