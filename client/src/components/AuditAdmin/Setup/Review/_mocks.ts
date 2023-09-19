@@ -48,14 +48,14 @@ export const settingsMock: {
   },
 }
 
-const taskInProgressMock = {
+export const taskInProgressMock = {
   status: FileProcessingStatus.PROCESSING,
   startedAt: '2019-07-18T16:34:07.000+00:00',
   completedAt: null,
   error: null,
 }
 
-const taskCompleteMock = {
+export const taskCompleteMock = {
   status: FileProcessingStatus.PROCESSED,
   startedAt: '2019-07-18T16:34:07.000+00:00',
   completedAt: '2019-07-18T16:35:07.000+00:00',

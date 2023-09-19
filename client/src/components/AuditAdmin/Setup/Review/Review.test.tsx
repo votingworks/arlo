@@ -3,7 +3,12 @@ import userEvent from '@testing-library/user-event'
 import { screen, fireEvent, waitFor, within } from '@testing-library/react'
 import { QueryClientProvider } from 'react-query'
 import Review from './Review'
-import { settingsMock, sampleSizeMock } from './_mocks'
+import {
+  settingsMock,
+  sampleSizeMock,
+  taskInProgressMock,
+  taskCompleteMock,
+} from './_mocks'
 import {
   withMockFetch,
   renderWithRouter,
@@ -22,6 +27,7 @@ import {
   auditSettingsMocks,
   aaApiCalls,
 } from '../../../_mocks'
+import { ISamplePreview, ISampleSizes } from '../../useRoundsAuditAdmin'
 
 const apiCalls = {
   getSettings: (response: IAuditSettings) => ({
@@ -30,6 +36,19 @@ const apiCalls = {
   }),
   getSampleSizeOptions: (response: ISampleSizesResponse) => ({
     url: '/api/election/1/sample-sizes/1',
+    response,
+  }),
+  postComputeSamplePreview: (sampleSizes: ISampleSizes) => ({
+    url: '/api/election/1/sample-preview',
+    response: { status: 'ok' },
+    options: {
+      method: 'POST',
+      body: JSON.stringify({ sampleSizes }),
+      headers: { 'Content-Type': 'application/json' },
+    },
+  }),
+  getSamplePreview: (response: ISamplePreview) => ({
+    url: '/api/election/1/sample-preview',
     response,
   }),
   getRounds: {
@@ -1023,6 +1042,67 @@ describe('Audit Setup > Review & Launch', () => {
         )
       ).closest('.bp3-callout') as HTMLElement
       expect(warning).toHaveClass('bp3-intent-warning')
+    })
+  })
+
+  it('has a button to show a sample preview', async () => {
+    const expectedCalls = [
+      apiCalls.getSettings(auditSettingsMocks.all),
+      apiCalls.getJurisdictions({
+        jurisdictions: jurisdictionMocks.allManifests,
+      }),
+      apiCalls.getJurisdictionFile,
+      apiCalls.getContests(contestMocks.filledTargeted),
+      apiCalls.getSampleSizeOptions(sampleSizeMock.ballotPolling),
+      apiCalls.postComputeSamplePreview({
+        'contest-id': sampleSizeMock.ballotPolling.sampleSizes![
+          'contest-id'
+        ][0],
+      }),
+      apiCalls.getSamplePreview({
+        jurisdictions: null,
+        task: taskInProgressMock,
+      }),
+      apiCalls.getSamplePreview({
+        jurisdictions: jurisdictionMocks.noneStarted.map(j => ({
+          name: j.name,
+          numSamples: j.currentRoundStatus!.numSamples,
+          numUnique: j.currentRoundStatus!.numUnique,
+        })),
+        task: taskCompleteMock,
+      }),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderView()
+      await screen.findByRole('heading', { name: 'Sample Size' })
+      userEvent.click(screen.getByRole('button', { name: 'Preview Sample' }))
+
+      const dialog = (
+        await screen.findByRole('heading', { name: 'Sample Preview' })
+      ).closest('div.bp3-dialog') as HTMLElement
+      within(dialog).getByText('Drawing a random sample of ballots...')
+
+      const previewTable = await within(dialog).findByRole('table')
+      expect(
+        within(previewTable)
+          .getAllByRole('columnheader')
+          .map(header => header.textContent)
+      ).toEqual(['Jurisdiction', 'Samples', 'Unique Ballots'])
+      expect(
+        within(previewTable)
+          .getAllByRole('row')
+          .slice(1)
+          .map(row =>
+            within(row)
+              .getAllByRole('cell')
+              .map(cell => cell.textContent)
+          )
+      ).toEqual([
+        ['Jurisdiction 1', '11', '10'],
+        ['Jurisdiction 2', '22', '20'],
+        ['Jurisdiction 3', '0', '0'],
+        ['Total', '33', '30'],
+      ])
     })
   })
 

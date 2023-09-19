@@ -140,7 +140,7 @@ interface ISamplePreviewJurisdiction {
   numUnique: number
 }
 
-interface ISamplePreview {
+export interface ISamplePreview {
   jurisdictions: ISamplePreviewJurisdiction[] | null
   task: {
     status: FileProcessingStatus
