@@ -118,111 +118,15 @@ const renderView = (props = {}) => {
   }
 }
 
+const getLabeledText = (
+  container: { getByText: typeof screen['getByText'] },
+  label: string
+) => {
+  return container.getByText(label).nextSibling!
+}
+
 describe('Audit Setup > Review & Launch', () => {
-  it('renders empty state', async () => {
-    const expectedCalls = [
-      apiCalls.getSettings(settingsMock.full),
-      apiCalls.getJurisdictions({
-        jurisdictions: jurisdictionMocks.allManifests,
-      }),
-      apiCalls.getJurisdictionFile,
-      apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
-      apiCalls.getSampleSizeOptions(sampleSizeMock.ballotPolling),
-    ]
-    await withMockFetch(expectedCalls, async () => {
-      const { container } = renderView()
-      await screen.findByText('Review & Launch')
-      expect(container).toMatchSnapshot()
-    })
-  })
-
-  it('renders full state', async () => {
-    const expectedCalls = [
-      apiCalls.getSettings(settingsMock.full),
-      apiCalls.getJurisdictions({
-        jurisdictions: jurisdictionMocks.allManifests,
-      }),
-      apiCalls.getJurisdictionFile,
-      apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
-      apiCalls.getSampleSizeOptions(sampleSizeMock.ballotPolling),
-    ]
-    await withMockFetch(expectedCalls, async () => {
-      const { container } = renderView()
-      await screen.findByText('Review & Launch')
-      expect(container).toMatchSnapshot()
-    })
-  })
-
-  it('renders full state with offline setting', async () => {
-    const expectedCalls = [
-      apiCalls.getSettings(settingsMock.offline),
-      apiCalls.getJurisdictions({
-        jurisdictions: jurisdictionMocks.allManifests,
-      }),
-      apiCalls.getJurisdictionFile,
-      apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
-      apiCalls.getSampleSizeOptions(sampleSizeMock.ballotPolling),
-    ]
-    await withMockFetch(expectedCalls, async () => {
-      const { container } = renderView()
-      await screen.findByText('Review & Launch')
-      expect(container).toMatchSnapshot()
-    })
-  })
-
-  it('renders full state with batch comparison and no tallies files uploaded', async () => {
-    const expectedCalls = [
-      apiCalls.getSettings(settingsMock.batch),
-      apiCalls.getJurisdictions({
-        jurisdictions: jurisdictionMocks.allManifests,
-      }),
-      apiCalls.getJurisdictionFile,
-      apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
-    ]
-    await withMockFetch(expectedCalls, async () => {
-      const { container } = renderView()
-      await screen.findByText('View jurisdiction upload progress.')
-      expect(container).toMatchSnapshot()
-    })
-  })
-
-  it('renders full state with batch comparison and all tallies files uploaded', async () => {
-    const expectedCalls = [
-      apiCalls.getSettings(settingsMock.batch),
-      apiCalls.getJurisdictions({
-        jurisdictions: jurisdictionMocks.allManifestsAllTallies,
-      }),
-      apiCalls.getJurisdictionFile,
-      apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
-      apiCalls.getSampleSizeOptions(sampleSizeMock.batchComparison),
-    ]
-    await withMockFetch(expectedCalls, async () => {
-      const { container } = renderView()
-      await screen.findByText(
-        'Choose the initial sample size for each contest you would like to use for Round 1 of the audit from the options below.'
-      )
-      expect(container).toMatchSnapshot()
-    })
-  })
-
-  it('renders full state with jurisdictions with targeted and opportunistic contests', async () => {
-    const expectedCalls = [
-      apiCalls.getSettings(settingsMock.full),
-      apiCalls.getJurisdictions({
-        jurisdictions: jurisdictionMocks.allManifests,
-      }),
-      apiCalls.getJurisdictionFile,
-      apiCalls.getContests(contestMocks.filledTargetedAndOpportunistic),
-      apiCalls.getSampleSizeOptions(sampleSizeMock.ballotPolling),
-    ]
-    await withMockFetch(expectedCalls, async () => {
-      const { container } = renderView()
-      await screen.findByText('Review & Launch')
-      expect(container).toMatchSnapshot()
-    })
-  })
-
-  it('shows the contest settings', async () => {
+  it('in a ballot polling audit, shows a setup summary and sample size options', async () => {
     const expectedCalls = [
       apiCalls.getSettings(settingsMock.full),
       apiCalls.getJurisdictions({
@@ -234,12 +138,25 @@ describe('Audit Setup > Review & Launch', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
-      await screen.findByText('Review & Launch')
+      await screen.findByRole('heading', { name: 'Review & Launch' })
 
-      screen.getByRole('heading', { name: 'Contests' })
+      const jurisdictionsSection = screen
+        .getByRole('heading', { name: 'Participants' })
+        .closest('section')!
+      expect(
+        getLabeledText(within(jurisdictionsSection), 'Jurisdictions')
+      ).toHaveTextContent('3')
+      expect(
+        within(jurisdictionsSection).getByRole('link', {
+          name: 'jurisdictions.csv',
+        })
+      ).toHaveAttribute('href', '/api/election/1/jurisdiction/file/csv')
 
-      const contest1 = screen
-        .getAllByRole('heading', { name: 'Contest 1' })[0]
+      const contestsSection = screen
+        .getByRole('heading', { name: 'Contests' })
+        .closest('section')!
+      const contest1 = within(contestsSection)
+        .getByRole('heading', { name: 'Contest 1' })
         .closest('div.bp3-card') as HTMLElement
 
       // Contest settings
@@ -248,7 +165,6 @@ describe('Audit Setup > Review & Launch', () => {
         '1 winner - 1 vote allowed - 30 total ballots cast'
       )
 
-      // Choice vote counts table
       const choices = within(contest1)
         .getByRole('columnheader', {
           name: 'Choice',
@@ -261,7 +177,6 @@ describe('Audit Setup > Review & Launch', () => {
       within(choiceRows[2]).getByRole('cell', { name: 'Choice Two' })
       within(choiceRows[2]).getByRole('cell', { name: '20' })
 
-      // Contest universe
       const universe = within(contest1)
         .getByRole('columnheader', {
           name: 'Contest universe: 2/3\xa0jurisdictions',
@@ -272,15 +187,124 @@ describe('Audit Setup > Review & Launch', () => {
       within(universeRows[1]).getByRole('cell', { name: 'Jurisdiction 1' })
       within(universeRows[2]).getByRole('cell', { name: 'Jurisdiction 2' })
 
-      const contest2 = screen
-        .getAllByRole('heading', { name: 'Contest 2' })[0]
+      const contest2 = within(contestsSection)
+        .getByRole('heading', { name: 'Contest 2' })
         .closest('div.bp3-card') as HTMLElement
 
-      // Contest settings
       within(contest2).getByText('Opportunistic Contest')
       within(contest2).getByText(
         '2 winners - 2 votes allowed - 300,000 total ballots cast'
       )
+
+      const settingsSection = screen
+        .getByRole('heading', {
+          name: 'Audit Settings',
+        })
+        .closest('section')!
+      expect(
+        getLabeledText(within(settingsSection), 'Election Name')
+      ).toHaveTextContent('Test Election')
+      expect(
+        getLabeledText(within(settingsSection), 'Audit Type')
+      ).toHaveTextContent('Ballot Polling')
+      expect(
+        getLabeledText(within(settingsSection), 'Risk Limit')
+      ).toHaveTextContent('10%')
+      expect(
+        getLabeledText(within(settingsSection), 'Random Seed')
+      ).toHaveTextContent('12345')
+      expect(
+        getLabeledText(within(settingsSection), 'Audit Board Data Entry')
+      ).toHaveTextContent('Online')
+
+      const sampleSizeSection = screen
+        .getByRole('heading', {
+          name: 'Sample Size',
+        })
+        .closest('section')!
+      expect(
+        within(sampleSizeSection).getByLabelText(
+          '20 samples (BRAVO Average Sample Number - 54% chance of completing the audit in one round)'
+        )
+      ).toBeChecked()
+      within(sampleSizeSection).getByLabelText(
+        '21 samples (70% chance of completing the audit in one round)'
+      )
+      within(sampleSizeSection).getByLabelText(
+        '22 samples (50% chance of completing the audit in one round)'
+      )
+      within(sampleSizeSection).getByLabelText(
+        '31 samples (90% chance of completing the audit in one round)'
+      )
+      within(sampleSizeSection).getByLabelText(
+        'Enter your own sample size (not recommended)'
+      )
+
+      expect(screen.getByRole('button', { name: 'Launch Audit' })).toBeEnabled()
+      expect(
+        screen.getByRole('button', { name: 'Preview Sample' })
+      ).toBeEnabled()
+    })
+  })
+
+  it('in a batch comparison audit, does not show sample size options when jurisdictions havent all uploaded batch tallies', async () => {
+    const expectedCalls = [
+      apiCalls.getSettings(settingsMock.batch),
+      apiCalls.getJurisdictions({
+        jurisdictions: jurisdictionMocks.allManifests,
+      }),
+      apiCalls.getJurisdictionFile,
+      apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderView()
+      await screen.findByRole('heading', { name: 'Review & Launch' })
+      const sampleSizeSection = screen
+        .getByRole('heading', {
+          name: 'Sample Size',
+        })
+        .closest('section')!
+      within(sampleSizeSection).getByRole('link', {
+        name: 'View jurisdiction file upload progress',
+      })
+      expect(
+        within(sampleSizeSection).queryByRole('radio')
+      ).not.toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: 'Launch Audit' })
+      ).toBeDisabled()
+      expect(
+        screen.getByRole('button', { name: 'Preview Sample' })
+      ).toBeDisabled()
+    })
+  })
+
+  it('in a batch comparison audit, shows sample size options once all tallies files uploaded', async () => {
+    const expectedCalls = [
+      apiCalls.getSettings(settingsMock.batch),
+      apiCalls.getJurisdictions({
+        jurisdictions: jurisdictionMocks.allManifestsAllTallies,
+      }),
+      apiCalls.getJurisdictionFile,
+      apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
+      apiCalls.getSampleSizeOptions(sampleSizeMock.batchComparison),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderView()
+      await screen.findByRole('heading', { name: 'Review & Launch' })
+      const sampleSizeSection = screen
+        .getByRole('heading', {
+          name: 'Sample Size',
+        })
+        .closest('section')!
+      within(sampleSizeSection).getByLabelText('4 samples')
+      within(sampleSizeSection).getByLabelText(
+        'Enter your own sample size (not recommended)'
+      )
+      expect(screen.getByRole('button', { name: 'Launch Audit' })).toBeEnabled()
+      expect(
+        screen.getByRole('button', { name: 'Preview Sample' })
+      ).toBeEnabled()
     })
   })
 
@@ -449,11 +473,12 @@ describe('Audit Setup > Review & Launch', () => {
 
       screen.getByRole('heading', { name: 'Sample Size' })
       screen.getByText(
-        'All jurisdiction files must be uploaded and all audit settings' +
-          ' must be configured in order to calculate the sample size.'
+        /All jurisdiction files must be uploaded and all audit settings must be configured in order to calculate the sample size./
       )
       expect(
-        screen.getByRole('link', { name: 'View jurisdiction upload progress.' })
+        screen.getByRole('link', {
+          name: 'View jurisdiction file upload progress',
+        })
       ).toHaveAttribute('href', '/election/1/progress')
     })
   })
@@ -522,8 +547,8 @@ describe('Audit Setup > Review & Launch', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       const { startNextRound } = renderView()
-      const newSampleSize = await screen.findByText(
-        '21 samples (70% chance of reaching risk limit and completing the audit in one round)'
+      const newSampleSize = await screen.findByLabelText(
+        '21 samples (70% chance of completing the audit in one round)'
       )
       userEvent.click(newSampleSize)
       const launchButton = await screen.findByText('Launch Audit')
@@ -627,11 +652,10 @@ describe('Audit Setup > Review & Launch', () => {
       apiCalls.getSampleSizeOptions(sampleSizeMock.batchComparison),
     ]
     await withMockFetch(expectedCalls, async () => {
-      const { container } = renderView()
+      renderView()
       await screen.findByText(
         'Choose the initial sample size for each contest you would like to use for Round 1 of the audit from the options below.'
       )
-      expect(container).toMatchSnapshot()
       const newSampleSize = await screen.findByText(
         'Enter your own sample size (not recommended)'
       )
@@ -661,11 +685,10 @@ describe('Audit Setup > Review & Launch', () => {
       apiCalls.getSampleSizeOptions(sampleSizeMock.ballotComparison),
     ]
     await withMockFetch(expectedCalls, async () => {
-      const { container } = renderView()
+      renderView()
       await screen.findByText(
         'Choose the initial sample size for each contest you would like to use for Round 1 of the audit from the options below.'
       )
-      expect(container).toMatchSnapshot()
       const newSampleSize = await screen.findByText(
         'Enter your own sample size (not recommended)'
       )
@@ -700,16 +723,16 @@ describe('Audit Setup > Review & Launch', () => {
       expect(options).toHaveLength(5)
       options.forEach(option => expect(option).toBeDisabled())
       expect(options[0].closest('label')).toHaveTextContent(
-        'BRAVO Average Sample Number: 20 samples (54% chance of reaching risk limit and completing the audit in one round)'
+        '20 samples (BRAVO Average Sample Number - 54% chance of completing the audit in one round)'
       )
       expect(options[1].closest('label')).toHaveTextContent(
-        '21 samples (70% chance of reaching risk limit and completing the audit in one round)'
+        '21 samples (70% chance of completing the audit in one round)'
       )
       expect(options[2].closest('label')).toHaveTextContent(
-        '22 samples (50% chance of reaching risk limit and completing the audit in one round)'
+        '22 samples (50% chance of completing the audit in one round)'
       )
       expect(options[3].closest('label')).toHaveTextContent(
-        '31 samples (90% chance of reaching risk limit and completing the audit in one round)'
+        '31 samples (90% chance of completing the audit in one round)'
       )
       expect(options[4].closest('label')).toHaveTextContent(
         'Enter your own sample size (not recommended)'
@@ -1122,6 +1145,9 @@ describe('Audit Setup > Review & Launch', () => {
       renderView()
       await screen.findByRole('heading', { name: 'Sample Size' })
       screen.getByText('Loading sample size options...')
+      expect(
+        screen.getByRole('button', { name: 'Preview Sample' })
+      ).toBeDisabled()
       jest.advanceTimersByTime(1000)
       await screen.findByText(
         'Choose the initial sample size for each contest you would like to use for Round 1 of the audit from the options below.'

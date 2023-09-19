@@ -18,7 +18,7 @@ export const settingsMock: {
   },
   full: {
     state: 'AL',
-    electionName: 'Election Name',
+    electionName: 'Test Election',
     online: true,
     randomSeed: '12345',
     riskLimit: 10,
@@ -28,7 +28,7 @@ export const settingsMock: {
   },
   offline: {
     state: 'AL',
-    electionName: 'Election Name',
+    electionName: 'Test Election',
     online: false,
     randomSeed: '12345',
     riskLimit: 10,
@@ -38,7 +38,7 @@ export const settingsMock: {
   },
   batch: {
     state: 'AL',
-    electionName: 'Election Name',
+    electionName: 'Test Election',
     online: false,
     randomSeed: '12345',
     riskLimit: 10,
