@@ -87,10 +87,10 @@ describe('Setup', () => {
       expectEnabledMenuItem('Audit Settings')
       expectEnabledMenuItem('Review & Launch')
 
-      userEvent.click(screen.getByRole('button', { name: 'Next' }))
+      userEvent.click(screen.getByRole('button', { name: /Next/ }))
       await screen.findByRole('heading', { name: 'Target Contests' })
 
-      userEvent.click(screen.getByRole('button', { name: 'Back' }))
+      userEvent.click(screen.getByRole('button', { name: /Back/ }))
       await screen.findByRole('heading', { name: 'Participants' })
     })
   })
@@ -166,7 +166,7 @@ describe('Setup', () => {
       userEvent.click(getMenuItem('Target Contests'))
       await screen.findByRole('heading', { name: 'Target Contests' })
 
-      userEvent.click(screen.getByRole('button', { name: 'Back' }))
+      userEvent.click(screen.getByRole('button', { name: /Back/ }))
       await screen.findByRole('heading', { name: 'Participants' })
     })
   })
@@ -188,7 +188,7 @@ describe('Setup', () => {
       userEvent.click(getMenuItem('Opportunistic Contests'))
       await screen.findByRole('heading', { name: 'Opportunistic Contests' })
 
-      userEvent.click(screen.getByRole('button', { name: 'Back' }))
+      userEvent.click(screen.getByRole('button', { name: /Back/ }))
       await screen.findByRole('heading', { name: 'Target Contests' })
     })
   })
@@ -226,7 +226,7 @@ describe('Setup', () => {
       userEvent.click(getMenuItem('Audit Settings'))
       await screen.findByRole('heading', { name: 'Audit Settings' })
 
-      userEvent.click(screen.getByRole('button', { name: 'Back' }))
+      userEvent.click(screen.getByRole('button', { name: /Back/ }))
       await screen.findByRole('heading', { name: 'Opportunistic Contests' })
     })
   })
@@ -246,7 +246,7 @@ describe('Setup', () => {
       userEvent.click(getMenuItem('Review & Launch'))
       await screen.findByRole('heading', { name: 'Review & Launch' })
 
-      userEvent.click(screen.getByRole('button', { name: 'Back' }))
+      userEvent.click(screen.getByRole('button', { name: /Back/ }))
       await screen.findByRole('heading', { name: 'Audit Settings' })
     })
   })

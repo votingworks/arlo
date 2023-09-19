@@ -98,7 +98,9 @@ describe('Audit Setup > Contests', () => {
     await withMockFetch(expectedCalls, async () => {
       renderContests()
 
-      userEvent.click(await screen.findByText('Add another targeted contest'))
+      userEvent.click(
+        await screen.findByRole('button', { name: /Add Contest/ })
+      )
 
       expect(
         screen.getAllByText(
@@ -108,7 +110,9 @@ describe('Audit Setup > Contests', () => {
       expect(screen.getByText('Contest 1 Name')).toBeTruthy()
       expect(screen.getByText('Contest 2 Name')).toBeTruthy()
 
-      userEvent.click(screen.getByText('Remove Contest 2'))
+      userEvent.click(
+        screen.getAllByRole('button', { name: /Remove Contest/ })[1]
+      )
 
       expect(
         screen.getAllByText(
@@ -118,7 +122,7 @@ describe('Audit Setup > Contests', () => {
       expect(screen.getByText('Contest Name')).toBeTruthy()
       await waitFor(() => {
         expect(screen.queryByText('Contest 2')).not.toBeInTheDocument()
-        expect(screen.queryByText('Remove Contest 1')).not.toBeInTheDocument()
+        expect(screen.queryByText('Remove Contest')).not.toBeInTheDocument()
       })
     })
   })
@@ -191,7 +195,7 @@ describe('Audit Setup > Contests', () => {
         screen.getByRole('checkbox', { name: 'Jurisdiction One' })
       )
 
-      userEvent.click(screen.getByText('Save & Next'))
+      userEvent.click(screen.getByText(/Save & Next/))
       await waitFor(() => {
         expect(goToNextStage).toHaveBeenCalledTimes(1)
       })
@@ -208,7 +212,7 @@ describe('Audit Setup > Contests', () => {
       const { goToNextStage } = renderContests({ isTargeted: false })
 
       await screen.findByText('Opportunistic Contests')
-      userEvent.click(screen.getByText('Save & Next'))
+      userEvent.click(screen.getByText(/Save & Next/))
       await waitFor(() => {
         expect(goToNextStage).toHaveBeenCalledTimes(1)
       })
@@ -225,7 +229,7 @@ describe('Audit Setup > Contests', () => {
       const { goToNextStage } = renderContests()
 
       await screen.findByText('Target Contests')
-      userEvent.click(screen.getByText('Save & Next'))
+      userEvent.click(screen.getByText(/Save & Next/))
       await waitFor(() => {
         expect(screen.queryAllByText('Required').length).toBe(6)
       })
@@ -248,7 +252,7 @@ describe('Audit Setup > Contests', () => {
         }),
         '2'
       )
-      userEvent.click(screen.getByText('Save & Next'))
+      userEvent.click(screen.getByText(/Save & Next/))
       await waitFor(() => {
         expect(screen.queryAllByText('Required').length).toBe(6)
       })
@@ -289,7 +293,7 @@ describe('Audit Setup > Contests', () => {
         }
       )
 
-      userEvent.click(screen.getByText('Save & Next'))
+      userEvent.click(screen.getByText(/Save & Next/))
       expect(goToNextStage).toHaveBeenCalledTimes(0)
     })
   })
@@ -422,7 +426,7 @@ describe('Audit Setup > Contests', () => {
         screen.getByRole('checkbox', { name: 'Jurisdiction One' })
       )
 
-      userEvent.click(screen.getByRole('button', { name: 'Save & Next' }))
+      userEvent.click(screen.getByRole('button', { name: /Save & Next/ }))
       await waitFor(() => {
         expect(goToNextStage).toHaveBeenCalledTimes(1)
       })
@@ -456,7 +460,7 @@ describe('Audit Setup > Contests', () => {
       userEvent.click(jurisdictionTwo)
       userEvent.click(jurisdictionOne)
 
-      userEvent.click(screen.getByText('Save & Next'))
+      userEvent.click(screen.getByText(/Save & Next/))
       await waitFor(() => {
         expect(goToNextStage).toHaveBeenCalledTimes(1)
       })

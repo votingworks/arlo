@@ -127,7 +127,7 @@ describe('Audit Setup > Participants', () => {
 
       await screen.findByRole('heading', { name: 'Participants' })
 
-      expect(screen.getByRole('button', { name: 'Next' })).toBeDisabled()
+      expect(screen.getByRole('button', { name: /Next/ })).toBeDisabled()
 
       // Upload a file
       userEvent.upload(
@@ -146,7 +146,7 @@ describe('Audit Setup > Participants', () => {
       await screen.findByText('Current file:')
 
       // Next button should be enabled now
-      userEvent.click(screen.getByRole('button', { name: 'Next' }))
+      userEvent.click(screen.getByRole('button', { name: /Next/ }))
       expect(goToNextStage).toHaveBeenCalled()
     })
   })
