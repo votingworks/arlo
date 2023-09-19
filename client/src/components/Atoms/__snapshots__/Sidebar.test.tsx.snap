@@ -3,10 +3,10 @@
 exports[`Sidebar renders all options 1`] = `
 <div>
   <div
-    class="sc-bwzfXH jpzdgy"
+    class="sc-bwzfXH gPyCT"
   >
     <h2
-      class="bp3-heading sc-bdVaJa ibVpPq"
+      class="bp3-heading sc-bdVaJa jWWgSF"
     >
       Test Sidebar
     </h2>
