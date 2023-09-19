@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { Formik, FormikProps, Field, ErrorMessage } from 'formik'
-import { RadioGroup, Radio, HTMLSelect } from '@blueprintjs/core'
+import { RadioGroup, Radio, HTMLSelect, Button } from '@blueprintjs/core'
 import FormButtonBar from '../../../Atoms/Form/FormButtonBar'
 import FormButton from '../../../Atoms/Form/FormButton'
 import FormWrapper from '../../../Atoms/Form/FormWrapper'
@@ -17,10 +17,6 @@ import {
 } from '../../../useAuditSettings'
 import { stateOptions } from './states'
 import { range } from '../../../../utils/array'
-
-const Select = styled(HTMLSelect)`
-  margin-left: 5px;
-`
 
 interface IProps {
   electionId: string
@@ -82,7 +78,11 @@ const Settings: React.FC<IProps> = ({
         values,
         isSubmitting,
       }: FormikProps<IValues>) => (
-        <form data-testid="form-one">
+        <form
+          data-testid="form-one"
+          style={{ width: '100%' }}
+          onSubmit={handleSubmit}
+        >
           <FormWrapper title="Audit Settings">
             <FormSection label="State">
               {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
@@ -90,7 +90,7 @@ const Settings: React.FC<IProps> = ({
                 <p>Choose your state from the options below.</p>
                 <div>
                   <Field
-                    component={Select}
+                    component={HTMLSelect}
                     id="state"
                     name="state"
                     onChange={(e: React.FormEvent<HTMLSelectElement>) =>
@@ -144,7 +144,7 @@ const Settings: React.FC<IProps> = ({
                     id="risk-limit"
                     data-testid="risk-limit"
                     name="riskLimit"
-                    component={Select}
+                    component={HTMLSelect}
                     value={values.riskLimit}
                     onChange={(e: React.FormEvent<HTMLSelectElement>) =>
                       setFieldValue('riskLimit', e.currentTarget.value)
@@ -178,14 +178,17 @@ const Settings: React.FC<IProps> = ({
             </FormSection>
           </FormWrapper>
           <FormButtonBar>
-            <FormButton onClick={goToPrevStage}>Back</FormButton>
-            <FormButton
+            <Button onClick={goToPrevStage} icon="arrow-left">
+              Back
+            </Button>
+            <Button
+              type="submit"
               intent="primary"
+              rightIcon="arrow-right"
               loading={isSubmitting}
-              onClick={handleSubmit}
             >
               Save &amp; Next
-            </FormButton>
+            </Button>
           </FormButtonBar>
         </form>
       )}

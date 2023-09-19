@@ -201,7 +201,7 @@ describe('Audit Setup > Contests (Hybrid)', () => {
       expect(
         screen.queryByText('Total Ballot Cards Cast')
       ).not.toBeInTheDocument()
-      userEvent.click(screen.getByRole('button', { name: 'Save & Next' }))
+      userEvent.click(screen.getByRole('button', { name: /Save & Next/ }))
       await waitFor(() => expect(goToNextStage).toHaveBeenCalled())
     })
   })
@@ -226,13 +226,15 @@ describe('Audit Setup > Contests (Hybrid)', () => {
     await withMockFetch(expectedCalls, async () => {
       const { goToNextStage } = renderContests()
       await screen.findByRole('heading', { name: 'Target Contests' })
-      userEvent.click(screen.getByRole('button', { name: 'Remove Contest 1' }))
+      userEvent.click(
+        screen.getAllByRole('button', { name: /Remove Contest/ })[0]
+      )
       await waitFor(() =>
         expect(
           screen.queryByRole('heading', { name: 'Contest 1' })
         ).not.toBeInTheDocument()
       )
-      userEvent.click(screen.getByRole('button', { name: 'Save & Next' }))
+      userEvent.click(screen.getByRole('button', { name: /Save & Next/ }))
       await waitFor(() => expect(goToNextStage).toHaveBeenCalled())
     })
   })
@@ -263,7 +265,7 @@ describe('Audit Setup > Contests (Hybrid)', () => {
         userEvent.type(input, inputData.value)
       })
       expect(screen.queryByText('Contest Universe')).not.toBeInTheDocument()
-      userEvent.click(screen.getByRole('button', { name: 'Save & Next' }))
+      userEvent.click(screen.getByRole('button', { name: /Save & Next/ }))
       await waitFor(() => expect(goToNextStage).toHaveBeenCalled())
     })
   })
@@ -277,7 +279,7 @@ describe('Audit Setup > Contests (Hybrid)', () => {
     await withMockFetch(expectedCalls, async () => {
       renderContests()
       await screen.findByRole('heading', { name: 'Target Contests' })
-      userEvent.click(screen.getByRole('button', { name: 'Save & Next' }))
+      userEvent.click(screen.getByRole('button', { name: /Save & Next/ }))
       await waitFor(() => {
         expect(screen.queryAllByText('Required').length).toBe(5)
       })
@@ -293,7 +295,7 @@ describe('Audit Setup > Contests (Hybrid)', () => {
     await withMockFetch(expectedCalls, async () => {
       const { goToNextStage } = renderContests({ isTargeted: false })
       await screen.findByRole('heading', { name: 'Opportunistic Contests' })
-      userEvent.click(screen.getByRole('button', { name: 'Save & Next' }))
+      userEvent.click(screen.getByRole('button', { name: /Save & Next/ }))
       await waitFor(() => expect(goToNextStage).toHaveBeenCalled())
     })
   })
@@ -314,7 +316,7 @@ describe('Audit Setup > Contests (Hybrid)', () => {
         '2'
       )
 
-      userEvent.click(screen.getByRole('button', { name: 'Save & Next' }))
+      userEvent.click(screen.getByRole('button', { name: /Save & Next/ }))
 
       await waitFor(() => {
         expect(screen.queryAllByText('Required').length).toBe(5)

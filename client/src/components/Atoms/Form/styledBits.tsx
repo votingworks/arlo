@@ -2,10 +2,6 @@ import { HTMLSelect, Label } from '@blueprintjs/core'
 import styled from 'styled-components'
 import FormField from './FormField'
 
-export const Select = styled(HTMLSelect)`
-  margin-left: 5px;
-`
-
 export const TwoColumnSection = styled.div`
   display: flex;
   flex-direction: column;
@@ -17,7 +13,6 @@ export const InputFieldRow = styled.div`
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  margin-bottom: 25px;
   width: 100%;
 `
 

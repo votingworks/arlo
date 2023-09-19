@@ -31,7 +31,7 @@ describe('Batch Comparison', () => {
     cy.findByText('Upload File').click()
     cy.contains('Uploaded')
 
-    cy.get('button[type="submit"]')
+    cy.findByRole('button', { name: /Next/ })
       .should('not.have.class', 'bp3-disabled')
       .click()
     cy.findAllByText('Target Contests').should('have.length', 2)
@@ -126,7 +126,7 @@ describe('Batch Comparison', () => {
           cy.findByRole('heading', { name: 'Login Code' })
             .next()
             .invoke('text')
-   	    .then(loginCode => {
+            .then(loginCode => {
               // this will cause a new session to be allocated, so it's resilient to any type of session management, client or server.
               // importantly it won't invalidate the previous session, which is important since we want to go back to it later.
               cy.clearCookie('session')

@@ -1176,3 +1176,76 @@ def test_ballot_comparison_ess(
     assert_match_report(rv.data, snapshot)
 
     check_discrepancies(rv.data, audit_results)
+
+
+def test_ballot_comparison_sample_preview(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    manifests,  # pylint: disable=unused-argument
+    cvrs,  # pylint: disable=unused-argument
+    election_settings,  # pylint: disable=unused-argument
+    snapshot,
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+
+    contest_id = str(uuid.uuid4())
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/contest",
+        [
+            {
+                "id": contest_id,
+                "name": "Contest 1",
+                "numWinners": 1,
+                "jurisdictionIds": jurisdiction_ids[:2],
+                "isTargeted": True,
+            }
+        ],
+    )
+    assert_ok(rv)
+
+    # Start computing a sample preview
+    rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
+    sample_size_options = json.loads(rv.data)["sampleSizes"]
+    sample_size = sample_size_options[contest_id][0]
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/sample-preview",
+        {"sampleSizes": {contest_id: sample_size}},
+    )
+    assert_ok(rv)
+
+    # Check the computed sample preview
+    rv = client.get(f"/api/election/{election_id}/sample-preview")
+    assert rv.status_code == 200
+    sample_preview = json.loads(rv.data)
+    compare_json(
+        sample_preview["task"],
+        {
+            "status": "PROCESSED",
+            "startedAt": assert_is_date,
+            "completedAt": assert_is_date,
+            "error": None,
+        },
+    )
+    assert len(sample_preview["jurisdictions"]) == len(jurisdiction_ids)
+    snapshot.assert_match(sample_preview["jurisdictions"])
+
+    # Make sure it matches the sample drawn when we start a round
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {"roundNum": 1, "sampleSizes": {contest_id: sample_size}},
+    )
+    assert_ok(rv)
+
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    assert rv.status_code == 200
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+
+    for i, jurisdiction in enumerate(jurisdictions):
+        preview = sample_preview["jurisdictions"][i]
+        assert preview["name"] == jurisdiction["name"]
+        assert preview["numSamples"] == jurisdiction["currentRoundStatus"]["numSamples"]
+        assert preview["numUnique"] == jurisdiction["currentRoundStatus"]["numUnique"]

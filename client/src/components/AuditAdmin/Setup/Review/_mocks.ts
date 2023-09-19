@@ -18,7 +18,7 @@ export const settingsMock: {
   },
   full: {
     state: 'AL',
-    electionName: 'Election Name',
+    electionName: 'Test Election',
     online: true,
     randomSeed: '12345',
     riskLimit: 10,
@@ -28,7 +28,7 @@ export const settingsMock: {
   },
   offline: {
     state: 'AL',
-    electionName: 'Election Name',
+    electionName: 'Test Election',
     online: false,
     randomSeed: '12345',
     riskLimit: 10,
@@ -38,7 +38,7 @@ export const settingsMock: {
   },
   batch: {
     state: 'AL',
-    electionName: 'Election Name',
+    electionName: 'Test Election',
     online: false,
     randomSeed: '12345',
     riskLimit: 10,
@@ -48,14 +48,14 @@ export const settingsMock: {
   },
 }
 
-const taskInProgressMock = {
+export const taskInProgressMock = {
   status: FileProcessingStatus.PROCESSING,
   startedAt: '2019-07-18T16:34:07.000+00:00',
   completedAt: null,
   error: null,
 }
 
-const taskCompleteMock = {
+export const taskCompleteMock = {
   status: FileProcessingStatus.PROCESSED,
   startedAt: '2019-07-18T16:34:07.000+00:00',
   completedAt: '2019-07-18T16:35:07.000+00:00',

@@ -20,7 +20,7 @@ exports[`Sign Off handles inputs 1`] = `
       </p>
       <form>
         <div
-          class="sc-bdVaJa kKNzTG"
+          class="sc-bdVaJa kWNzXK"
         >
           <h5
             class="bp3-heading"
@@ -41,7 +41,7 @@ exports[`Sign Off handles inputs 1`] = `
           />
         </div>
         <div
-          class="sc-bdVaJa kKNzTG"
+          class="sc-bdVaJa kWNzXK"
         >
           <h5
             class="bp3-heading"
@@ -125,7 +125,7 @@ exports[`Sign Off renders correctly 1`] = `
       </p>
       <form>
         <div
-          class="sc-bdVaJa kKNzTG"
+          class="sc-bdVaJa kWNzXK"
         >
           <h5
             class="bp3-heading"
@@ -146,7 +146,7 @@ exports[`Sign Off renders correctly 1`] = `
           />
         </div>
         <div
-          class="sc-bdVaJa kKNzTG"
+          class="sc-bdVaJa kWNzXK"
         >
           <h5
             class="bp3-heading"

@@ -80,7 +80,7 @@ describe('Setup > Settings', () => {
         '12345'
       )
 
-      userEvent.click(screen.getByRole('button', { name: 'Save & Next' }))
+      userEvent.click(screen.getByRole('button', { name: /Save & Next/ }))
 
       await waitFor(() => {
         expect(goToNextStage).toHaveBeenCalled()
@@ -139,7 +139,7 @@ describe('Setup > Settings', () => {
       await screen.findByRole('heading', { name: 'Audit Settings' })
     })
 
-    userEvent.click(screen.getByRole('button', { name: 'Save & Next' }))
+    userEvent.click(screen.getByRole('button', { name: /Save & Next/ }))
 
     await waitFor(() => {
       expect(screen.queryAllByText('Required').length).toBe(3)

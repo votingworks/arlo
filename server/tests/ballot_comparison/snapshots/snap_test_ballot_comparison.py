@@ -67,6 +67,12 @@ snapshots["test_ballot_comparison_multiple_targeted_contests_sample_size 1"] = [
     ({"key": "supersimple", "prob": None, "size": 14},),
 ]
 
+snapshots["test_ballot_comparison_sample_preview 1"] = [
+    {"name": "J1", "numSamples": 9, "numUnique": 8},
+    {"name": "J2", "numSamples": 11, "numUnique": 9},
+    {"name": "J3", "numSamples": 0, "numUnique": 0},
+]
+
 snapshots["test_ballot_comparison_two_rounds 1"] = {
     "key": "supersimple",
     "prob": None,
@@ -185,6 +191,12 @@ J2,TABULATOR1,BATCH1,2,1-1-2,"Round 2: 0.511105635717372621, 0.58347220139966351
 J2,TABULATOR1,BATCH2,3,1-2-3,Round 2: 0.556310137163677574,AUDITED,Choice 1-1,Choice 1-1,,,"Choice 2-1, Choice 2-3","Choice 2-1, Choice 2-3",,\r
 J2,TABULATOR2,BATCH2,4,2-2-5,Round 2: 0.583133559190710795,AUDITED,CONTEST_NOT_ON_BALLOT,Blank,,,"Choice 2-1, Choice 2-2",Blank,Choice 2-1: -1; Choice 2-2: -1,-1\r
 """
+
+snapshots["test_sample_preview 1"] = [
+    {"name": "J1", "numSamples": 9, "numUnique": 8},
+    {"name": "J2", "numSamples": 11, "numUnique": 9},
+    {"name": "J3", "numSamples": 0, "numUnique": 0},
+]
 
 snapshots["test_set_contest_metadata_on_contest_creation 1"] = {
     "choices": [

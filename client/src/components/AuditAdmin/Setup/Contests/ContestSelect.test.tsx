@@ -169,7 +169,7 @@ describe('Audit Setup > Contests (Ballot Comparison)', () => {
       expect(within(rows[3]).getByRole('checkbox')).not.toBeChecked()
 
       // Submit the form
-      userEvent.click(screen.getByRole('button', { name: 'Save & Next' }))
+      userEvent.click(screen.getByRole('button', { name: /Save & Next/ }))
       await waitFor(() => expect(goToNextStage).toHaveBeenCalled())
     })
   })
@@ -229,7 +229,7 @@ describe('Audit Setup > Contests (Ballot Comparison)', () => {
       expect(within(rows[3]).getByRole('checkbox')).toBeChecked()
 
       // Submit the form
-      userEvent.click(screen.getByRole('button', { name: 'Save & Next' }))
+      userEvent.click(screen.getByRole('button', { name: /Save & Next/ }))
       await waitFor(() => expect(goToNextStage).toHaveBeenCalled())
     })
   })

@@ -169,6 +169,12 @@ snapshots["test_batch_comparison_round_2 9"] = {
     "status": "NOT_STARTED",
 }
 
+snapshots["test_batch_comparison_sample_preview 1"] = [
+    {"name": "J1", "numSamples": 4, "numUnique": 3},
+    {"name": "J2", "numSamples": 2, "numUnique": 1},
+    {"name": "J3", "numSamples": 0, "numUnique": 0},
+]
+
 snapshots["test_batch_comparison_sample_size 1"] = [
     {"key": "macro", "prob": None, "size": 6}
 ]

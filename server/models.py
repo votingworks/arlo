@@ -215,6 +215,16 @@ class Election(BaseModel):
     # they change their mind, but flag it so that we can restrict access
     deleted_at = Column(UTCDateTime)
 
+    # Cache for a preview of sampled ballots/batches since we have to compute it
+    # in the background
+    sample_preview = Column(JSON)
+    sample_preview_task_id = Column(
+        String(200), ForeignKey("background_task.id", ondelete="set null")
+    )
+    sample_preview_task = relationship(
+        "BackgroundTask", single_parent=True, cascade="all, delete-orphan"
+    )
+
     __table_args__ = (UniqueConstraint("organization_id", "audit_name"),)
 
 
