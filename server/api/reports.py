@@ -1,5 +1,5 @@
 import io, csv
-from typing import Dict, List, Optional, Tuple, cast as typing_cast
+from typing import Dict, List, Optional, Tuple, Union, cast as typing_cast
 from collections import defaultdict, Counter
 from sqlalchemy import func, and_
 from sqlalchemy.dialects.postgresql import aggregate_order_by
@@ -158,6 +158,72 @@ def pretty_cvr_interpretation(
     )
 
 
+# { contest_choice_id: vote delta }
+ContestVoteDeltas = Dict[str, int]
+
+
+def ballot_vote_deltas(
+    contest: Contest,
+    reported_cvr: Optional[supersimple.CVR],
+    audited_cvr: Optional[supersimple.CVR],
+) -> Optional[ContestVoteDeltas]:
+    if reported_cvr is None or audited_cvr is None:
+        return None
+
+    reported = reported_cvr.get(contest.id)
+    audited = audited_cvr.get(contest.id)
+
+    if reported is None or audited is None:
+        return None
+
+    deltas = {}
+    for choice in contest.choices:
+        reported_vote = (
+            0 if reported[choice.id] in ["o", "u"] else int(reported[choice.id])
+        )
+        audited_vote = (
+            0 if audited[choice.id] in ["o", "u"] else int(audited[choice.id])
+        )
+        deltas[choice.id] = reported_vote - audited_vote
+
+    return deltas
+
+
+def contest_vote_deltas(
+    contest: Contest,
+    reported_cvrs: supersimple.CVRS,
+    audited_cvrs: supersimple.SAMPLECVRS,
+) -> Dict[str, Optional[ContestVoteDeltas]]:
+    return {
+        ballot_id: ballot_vote_deltas(
+            contest, reported_cvrs.get(ballot_id), audited_cvr["cvr"]
+        )
+        for ballot_id, audited_cvr in audited_cvrs.items()
+    }
+
+
+def add_sign(value: int) -> str:
+    return f"+{value}" if value > 0 else str(value)
+
+
+def pretty_vote_deltas(
+    ballot: SampledBallot,
+    contest: Contest,
+    vote_deltas: Dict[str, Optional[ContestVoteDeltas]],
+) -> str:
+    ballot_vote_deltas = vote_deltas.get(ballot.id)
+    if ballot_vote_deltas is None:
+        return ""
+
+    return pretty_choice_votes(
+        {
+            choice.name: add_sign(ballot_vote_deltas[choice.id])
+            for choice in contest.choices
+            if ballot_vote_deltas[choice.id] != 0
+        }
+    )
+
+
 def pretty_discrepancy(
     ballot: SampledBallot, contest_discrepancies: Dict[str, supersimple.Discrepancy],
 ) -> str:
@@ -168,7 +234,7 @@ def pretty_discrepancy(
 
 
 def pretty_choice_votes(
-    choice_votes: Dict[str, int], not_found: Optional[int] = None
+    choice_votes: Dict[str, Union[int, str]], not_found: Optional[int] = None
 ) -> str:
     return "; ".join(
         [f"{name}: {votes}" for name, votes in choice_votes.items()]
@@ -177,6 +243,25 @@ def pretty_choice_votes(
             if not_found is not None
             else []
         )
+    )
+
+
+def batch_vote_deltas(
+    reported_results: Dict[str, int], audited_results: Dict[str, int],
+) -> Dict[str, int]:
+    return {
+        choice_id: reported_results[choice_id] - audited_results[choice_id]
+        for choice_id in reported_results.keys()
+    }
+
+
+def pretty_batch_vote_deltas(vote_deltas: Dict[str, int],) -> str:
+    return pretty_choice_votes(
+        {
+            choice_id: add_sign(vote_delta)
+            for choice_id, vote_delta in vote_deltas.items()
+            if vote_delta != 0
+        }
     )
 
 
@@ -407,7 +492,7 @@ def round_rows(election: Election):
             ]
             + (
                 [
-                    pretty_choice_votes(cvr_choice_votes),
+                    pretty_choice_votes(dict(cvr_choice_votes)),
                     pretty_choice_votes(non_cvr_choice_vote),
                 ]
                 if election.audit_type == AuditType.HYBRID
@@ -600,6 +685,7 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
             result_columns.append(f"Audit Result: {contest.name}")
             if show_cvrs:
                 result_columns.append(f"CVR Result: {contest.name}")
+                result_columns.append(f"Vote Delta: {contest.name}")
                 result_columns.append(f"Discrepancy: {contest.name}")
 
     rows.append(
@@ -617,11 +703,23 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
         cvrs_by_contest = {
             contest.id: cvrs_for_contest(contest) for contest in election.contests
         }
+        audited_cvrs_by_contest = {
+            contest.id: sampled_ballot_interpretations_to_cvrs(contest)
+            for contest in election.contests
+        }
         discrepancies_by_contest = {
             contest.id: supersimple.compute_discrepancies(
                 sampler_contest.from_db_contest(contest),
                 cvrs_by_contest[contest.id],
-                sampled_ballot_interpretations_to_cvrs(contest),
+                audited_cvrs_by_contest[contest.id],
+            )
+            for contest in election.contests
+        }
+        vote_deltas_by_contest = {
+            contest.id: contest_vote_deltas(
+                contest,
+                cvrs_by_contest[contest.id],
+                audited_cvrs_by_contest[contest.id],
             )
             for contest in election.contests
         }
@@ -647,6 +745,11 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
                         ballot, contest, cvrs_by_contest[contest.id]
                     )
                     result_values.append(cvr_interpretation)
+                    result_values.append(
+                        pretty_vote_deltas(
+                            ballot, contest, vote_deltas_by_contest[contest.id]
+                        )
+                    )
                     result_values.append(
                         pretty_discrepancy(ballot, discrepancies_by_contest[contest.id])
                     )
@@ -717,6 +820,7 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
             "Audited?",
             "Audit Results",
             "Reported Results",
+            "Vote Delta",
             "Discrepancy",
             "Last Edited By",
         ]
@@ -761,6 +865,11 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
                 pretty_boolean(is_audited),
                 pretty_choice_votes(audit_results) if audit_results else "",
                 pretty_choice_votes(reported_results),
+                pretty_batch_vote_deltas(
+                    batch_vote_deltas(reported_results, audit_results)
+                )
+                if audit_results
+                else "",
                 error["counted_as"] if error else "",
                 construct_batch_last_edited_by_string(batch),
             ]
