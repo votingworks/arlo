@@ -462,6 +462,14 @@ def audit_all_ballots(
                 has_invalid_write_in=has_invalid_write_in,
             )
 
+        elif interpretation_str == "not on ballot":
+            audit_ballot(
+                ballot, target_contest_id, Interpretation.CONTEST_NOT_ON_BALLOT,
+            )
+            audit_ballot(
+                ballot, opportunistic_contest_id, Interpretation.CONTEST_NOT_ON_BALLOT,
+            )
+
         else:
             (
                 vote_choice_1_1,
@@ -644,9 +652,9 @@ def test_ballot_comparison_two_rounds(
         ("J1", "TABULATOR1", "BATCH2", 2): ("0,1,1,1,0", (None, None)),
         ("J1", "TABULATOR1", "BATCH2", 3): ("1,1,0,1,1", (1, 2)),  # CVR: 1,0,1,0,1
         ("J1", "TABULATOR2", "BATCH2", 2): ("1,1,1,1,1", (None, None)),
-        ("J1", "TABULATOR2", "BATCH2", 3): ("blank", (None, 1)),  # CVR: ,,1,0,1
+        ("J1", "TABULATOR2", "BATCH2", 3): ("1,0,,,", (-1, 1)),  # CVR: ,,1,0,1
         ("J1", "TABULATOR2", "BATCH2", 4): ("blank", (None, None)),
-        ("J1", "TABULATOR2", "BATCH2", 5): (",,1,0,1", (None, None)),
+        ("J1", "TABULATOR2", "BATCH2", 5): ("not on ballot", (None, 1)),  # CVR: ,,1,0,1
         ("J1", "TABULATOR2", "BATCH2", 6): ("not found", (2, 2)),  # not in CVR
         ("J2", "TABULATOR1", "BATCH1", 1): ("1,0,1,0,0", (-2, -1)),  # CVR: 0,1,1,1,0
         ("J2", "TABULATOR1", "BATCH1", 3): ("0,1,1,1,0", (None, None)),
