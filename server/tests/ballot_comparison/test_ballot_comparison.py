@@ -539,8 +539,8 @@ def check_discrepancies(report_data, audit_results):
         )
         parse_discrepancy = lambda d: int(d) if d != "" else None
         assert (
-            parse_discrepancy(row["Discrepancy: Contest 1"]),
-            parse_discrepancy(row["Discrepancy: Contest 2"]),
+            parse_discrepancy(row["Change in Margin: Contest 1"]),
+            parse_discrepancy(row["Change in Margin: Contest 2"]),
         ) == expected_discrepancies, "Discrepancy mismatch for {}".format(ballot)
 
 

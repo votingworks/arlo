@@ -51,7 +51,7 @@ Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Ti
 1,Contest 1,Targeted,14,No,,DATETIME,,Choice 1-1: 0; Choice 1-2: 0\r
 \r
 ######## SAMPLED BALLOTS ########\r
-Jurisdiction Name,Container,Tabulator,Batch Name,Ballot Position,Imprinted ID,Ticket Numbers: Contest 1,Audited?,Audit Result: Contest 1,CVR Result: Contest 1,Vote Delta: Contest 1,Discrepancy: Contest 1\r
+Jurisdiction Name,Container,Tabulator,Batch Name,Ballot Position,Imprinted ID,Ticket Numbers: Contest 1,Audited?,Audit Result: Contest 1,CVR Result: Contest 1,Change in Results: Contest 1,Change in Margin: Contest 1\r
 J1,CONTAINER0,TABULATOR2,BATCH8,47,2-8-47,Round 1: 0.006763450800570999,NOT_AUDITED,,Blank,,\r
 J1,CONTAINER1,TABULATOR2,BATCH1,15,2-1-15,Round 1: 0.006700879199748225,NOT_AUDITED,,Blank,,\r
 J1,CONTAINER1,TABULATOR2,BATCH2,44,2-2-44,Round 1: 0.000676487665235813,NOT_AUDITED,,Blank,,\r

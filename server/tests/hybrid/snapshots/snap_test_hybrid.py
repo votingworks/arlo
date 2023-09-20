@@ -60,7 +60,7 @@ Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Ti
 1,Contest 2,Opportunistic,,No,1.0,DATETIME,DATETIME,Choice 2-1: 9; Choice 2-2: 4; Choice 2-3: 3,Choice 2-1: 4; Choice 2-2: 3; Choice 2-3: 3,Choice 2-1: 5; Choice 2-2: 1; Choice 2-3: 0\r
 \r
 ######## SAMPLED BALLOTS ########\r
-Jurisdiction Name,Tabulator,Batch Name,Ballot Position,Imprinted ID,Ticket Numbers: Contest 1,Audited?,Audit Result: Contest 1,CVR Result: Contest 1,Vote Delta: Contest 1,Discrepancy: Contest 1,Audit Result: Contest 2,CVR Result: Contest 2,Vote Delta: Contest 2,Discrepancy: Contest 2\r
+Jurisdiction Name,Tabulator,Batch Name,Ballot Position,Imprinted ID,Ticket Numbers: Contest 1,Audited?,Audit Result: Contest 1,CVR Result: Contest 1,Change in Results: Contest 1,Change in Margin: Contest 1,Audit Result: Contest 2,CVR Result: Contest 2,Change in Results: Contest 2,Change in Margin: Contest 2\r
 J1,TABULATOR1,BATCH1,1,1-1-1,Round 1: 0.243550726331576894,AUDITED,"Choice 1-2, INVALID_WRITE_IN",Choice 1-2,,,"Choice 2-1, Choice 2-2, INVALID_WRITE_IN","Choice 2-1, Choice 2-2",,\r
 J1,TABULATOR1,BATCH2,2,1-2-2,Round 1: 0.125871889047705889,AUDITED,"Choice 1-1, Choice 1-2",Choice 1-2,Choice 1-1: -1,-1,Choice 2-2,"Choice 2-1, Choice 2-2",Choice 2-1: +1,1\r
 J1,TABULATOR1,BATCH2,3,1-2-3,Round 1: 0.126622033568908859,AUDITED,Choice 1-1,Choice 1-1,,,"Choice 2-1, Choice 2-3","Choice 2-1, Choice 2-3",,\r

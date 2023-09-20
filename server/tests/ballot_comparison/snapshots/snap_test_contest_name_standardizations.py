@@ -41,7 +41,7 @@ Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Ti
 1,Standardized Contest 2,Opportunistic,,No,,DATETIME,,Choice 2-1: 0; Choice 2-2: 0; Choice 2-3: 0\r
 \r
 ######## SAMPLED BALLOTS ########\r
-Jurisdiction Name,Tabulator,Batch Name,Ballot Position,Imprinted ID,Ticket Numbers: Standardized Contest 1,Audited?,Audit Result: Standardized Contest 1,CVR Result: Standardized Contest 1,Vote Delta: Standardized Contest 1,Discrepancy: Standardized Contest 1,Audit Result: Standardized Contest 2,CVR Result: Standardized Contest 2,Vote Delta: Standardized Contest 2,Discrepancy: Standardized Contest 2\r
+Jurisdiction Name,Tabulator,Batch Name,Ballot Position,Imprinted ID,Ticket Numbers: Standardized Contest 1,Audited?,Audit Result: Standardized Contest 1,CVR Result: Standardized Contest 1,Change in Results: Standardized Contest 1,Change in Margin: Standardized Contest 1,Audit Result: Standardized Contest 2,CVR Result: Standardized Contest 2,Change in Results: Standardized Contest 2,Change in Margin: Standardized Contest 2\r
 J1,TABULATOR1,BATCH1,1,1-1-1,Round 1: 0.243550726331576894,NOT_AUDITED,,Choice 1-2,,,,"Choice 2-1, Choice 2-2",,\r
 J1,TABULATOR1,BATCH2,2,1-2-2,Round 1: 0.125871889047705889,NOT_AUDITED,,Choice 1-2,,,,"Choice 2-1, Choice 2-2",,\r
 J1,TABULATOR1,BATCH2,3,1-2-3,Round 1: 0.126622033568908859,NOT_AUDITED,,Choice 1-1,,,,"Choice 2-1, Choice 2-3",,\r
