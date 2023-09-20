@@ -166,15 +166,21 @@ def ballot_vote_deltas(
     contest: Contest,
     reported_cvr: Optional[supersimple.CVR],
     audited_cvr: Optional[supersimple.CVR],
-) -> Optional[ContestVoteDeltas]:
-    if reported_cvr is None or audited_cvr is None:
-        return None
+) -> Optional[Union[str, ContestVoteDeltas]]:
+    if audited_cvr is None:
+        return "Ballot not found"
+    if reported_cvr is None:
+        return "Ballot not in CVR"
 
     reported = reported_cvr.get(contest.id)
     audited = audited_cvr.get(contest.id)
 
-    if reported is None or audited is None:
+    if audited is None and reported is None:
         return None
+    if audited is None:
+        audited = {choice.id: "0" for choice in contest.choices}
+    if reported is None:
+        reported = {choice.id: "0" for choice in contest.choices}
 
     deltas = {}
     for choice in contest.choices:
@@ -193,7 +199,7 @@ def contest_vote_deltas(
     contest: Contest,
     reported_cvrs: supersimple.CVRS,
     audited_cvrs: supersimple.SAMPLECVRS,
-) -> Dict[str, Optional[ContestVoteDeltas]]:
+) -> Dict[str, Optional[Union[str, ContestVoteDeltas]]]:
     return {
         ballot_id: ballot_vote_deltas(
             contest, reported_cvrs.get(ballot_id), audited_cvr["cvr"]
@@ -209,11 +215,13 @@ def add_sign(value: int) -> str:
 def pretty_vote_deltas(
     ballot: SampledBallot,
     contest: Contest,
-    vote_deltas: Dict[str, Optional[ContestVoteDeltas]],
+    vote_deltas: Dict[str, Optional[Union[str, ContestVoteDeltas]]],
 ) -> str:
     ballot_vote_deltas = vote_deltas.get(ballot.id)
     if ballot_vote_deltas is None:
         return ""
+    if isinstance(ballot_vote_deltas, str):
+        return ballot_vote_deltas
 
     return pretty_choice_votes(
         {
