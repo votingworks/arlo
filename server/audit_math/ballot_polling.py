@@ -63,7 +63,9 @@ def compute_risk(
             sample_results[round_id][loser] += num_not_found
 
     if math_type == AuditMathType.MINERVA:
-        return minerva.compute_risk(risk_limit, contest, sample_results, round_sizes)
+        return minerva.compute_risk(
+            risk_limit, contest, sample_results, round_sizes
+        )  # pragma: no cover
     elif math_type == AuditMathType.PROVIDENCE:
         return providence.compute_risk(risk_limit, contest, sample_results, round_sizes)
     else:

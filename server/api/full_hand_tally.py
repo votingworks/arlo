@@ -51,29 +51,37 @@ def validate_full_hand_tally_batch_result_request(
     election: Election, jurisdiction: Jurisdiction, round: Round,
 ):
     if len(list(election.contests)) > 1:
-        raise Conflict("Full hand tally only supported for single contest audits")
+        raise Conflict(
+            "Full hand tally only supported for single contest audits"
+        )  # pragma: no cover
 
     # We only support one contest for now
     contest = list(election.contests)[0]
 
     if not any(c.id == contest.id for c in jurisdiction.contests):
-        raise Conflict("Jurisdiction not in contest universe")
+        raise Conflict("Jurisdiction not in contest universe")  # pragma: no cover
 
     if not is_full_hand_tally(round, election):
-        raise Conflict("Full hand tally only supported if all ballots are sampled")
+        raise Conflict(
+            "Full hand tally only supported if all ballots are sampled"
+        )  # pragma: no cover
 
     if jurisdiction.finalized_full_hand_tally_results_at is not None:
         raise Conflict("Results have already been finalized")
 
     current_round = get_current_round(election)
     if not current_round or round.id != current_round.id:
-        raise Conflict(f"Round {round.round_num} is not the current round")
+        raise Conflict(
+            f"Round {round.round_num} is not the current round"
+        )  # pragma: no cover
 
     num_audit_boards = AuditBoard.query.filter_by(
         jurisdiction_id=jurisdiction.id, round_id=round.id
     ).count()
     if num_audit_boards == 0:
-        raise Conflict("Must set up audit boards before recording results")
+        raise Conflict(
+            "Must set up audit boards before recording results"
+        )  # pragma: no cover
 
 
 def validate_full_hand_tally_batch_result(

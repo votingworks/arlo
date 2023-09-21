@@ -8,7 +8,7 @@ omit =
     fixtures/*
 
 [report]
-fail_under = 99.6
+fail_under = 100
 precision = 2
 skip_covered = true
 show_missing = true

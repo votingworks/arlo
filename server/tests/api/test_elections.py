@@ -228,6 +228,29 @@ def test_create_election_bad_bp_type(client: FlaskClient, org_id: str):
     }
 
 
+def test_create_election_mismatched_type(client: FlaskClient, org_id: str):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = post_json(
+        client,
+        "/api/election",
+        {
+            "auditName": "Test Audit",
+            "auditType": AuditType.BALLOT_POLLING,
+            "auditMathType": AuditMathType.MACRO,
+            "organizationId": org_id,
+        },
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "message": "Audit math type 'MACRO' cannot be used with audit type 'BALLOT_POLLING'",
+                "errorType": "Conflict",
+            }
+        ]
+    }
+
+
 def test_create_election_in_org_duplicate_audit_name(client: FlaskClient, org_id: str):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
 

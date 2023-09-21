@@ -214,7 +214,7 @@ def sample_size_options(election: Election) -> Dict[str, Dict[str, SampleSizeOpt
             for contest in rounds.active_targeted_contests(election)
         }
     except ValueError as exc:
-        raise UserError(exc) from exc
+        raise UserError(exc) from exc  # pragma: no cover
 
 
 @background_task

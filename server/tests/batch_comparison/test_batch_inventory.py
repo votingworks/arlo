@@ -455,6 +455,29 @@ def test_batch_inventory_happy_path_cvrs_with_leading_equal_signs(
     assert rv.data.decode("utf-8") == TEST_TABULATOR_STATUS
 
 
+def test_batch_inventory_download_before_upload(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    contest_id: str,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+
+    # Try to download CVR file
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr/file"
+    )
+    assert rv.status_code == 404
+
+    # Try to download tabulator status file
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/tabulator-status/file"
+    )
+    assert rv.status_code == 404
+
+
 def test_batch_inventory_invalid_file_uploads(
     client: FlaskClient,
     election_id: str,

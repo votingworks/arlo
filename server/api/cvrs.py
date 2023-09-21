@@ -235,7 +235,8 @@ def column_value(
                 if file_name is not None
                 else f"Missing required column {header}."
             )
-        return None
+        # We haven't seen CVRs with entirely optional columns, so it's hard to test this case
+        return None  # pragma: no cover
     value = row[index] if index < len(row) else None
     if required and (value is None or value == ""):
         raise UserError(
@@ -891,8 +892,7 @@ def parse_hart_cvrs(
                 os.path.join(working_directory, file_name), "rb"
             )
 
-    if len(cvr_zip_files) == 0:
-        raise UserError("Expected a file with a .zip extension.")
+    assert len(cvr_zip_files) != 0  # Validated during file upload
     use_cvr_zip_file_names_as_tabulator_names = len(cvr_zip_files) > 1
 
     def construct_cvr_guid_to_unique_identifier_mapping(

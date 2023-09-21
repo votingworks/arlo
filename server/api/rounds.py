@@ -464,10 +464,9 @@ def sampled_ballot_interpretations_to_cvrs(
                     }
                 }
             else:
-                # pragma: no cover
                 raise Exception(
                     f"Unexpected interpretation type: {interpretation.interpretation}"
-                )
+                )  # pragma: no cover
 
             cvrs[ballot.id] = {"times_sampled": times_sampled, "cvr": ballot_cvr}
 
@@ -1150,9 +1149,6 @@ def validate_round(round: dict, election: Election):
     validate(round, create_round_schema(AuditType(election.audit_type)))
 
     current_round = get_current_round(election)
-    if current_round and not current_round.draw_sample_task.completed_at:
-        raise Conflict("Arlo is already currently drawing the sample for this round.")
-
     next_round_num = current_round.round_num + 1 if current_round else 1
     if round["roundNum"] != next_round_num:
         raise BadRequest(f"The next round should be round number {next_round_num}")

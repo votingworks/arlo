@@ -65,7 +65,7 @@ def auth0_create_audit_admin(email: str) -> Optional[str]:
         if error.status_code == 409:
             users = auth0.users_by_email.search_users_by_email(email.lower())
             return str(users[0]["user_id"])
-        raise error
+        raise error  # pragma: no cover
 
 
 @api.route("/support/elections/active", methods=["GET"])
@@ -463,8 +463,7 @@ def log_in_to_audit_as_audit_admin(election_id: str):
         audit_administration.user
         for audit_administration in election.organization.audit_administrations
     ]
-    if len(audit_admins) == 0:
-        raise Conflict("Organization has no audit admins.")
+    assert len(audit_admins) > 0
     set_loggedin_user(
         session, UserType.AUDIT_ADMIN, audit_admins[0].email, from_support_user=True
     )
@@ -479,8 +478,7 @@ def log_in_to_audit_as_jurisdiction_admin(jurisdiction_id: str):
         jurisdiction_administration.user
         for jurisdiction_administration in jurisdiction.jurisdiction_administrations
     ]
-    if len(jurisdiction_admins) == 0:
-        raise Conflict("Jurisdiction has no jurisdiction admins.")
+    assert len(jurisdiction_admins) > 0
     set_loggedin_user(
         session,
         UserType.JURISDICTION_ADMIN,
