@@ -166,15 +166,21 @@ def ballot_vote_deltas(
     contest: Contest,
     reported_cvr: Optional[supersimple.CVR],
     audited_cvr: Optional[supersimple.CVR],
-) -> Optional[ContestVoteDeltas]:
-    if reported_cvr is None or audited_cvr is None:
-        return None
+) -> Optional[Union[str, ContestVoteDeltas]]:
+    if audited_cvr is None:
+        return "Ballot not found"
+    if reported_cvr is None:
+        return "Ballot not in CVR"
 
     reported = reported_cvr.get(contest.id)
     audited = audited_cvr.get(contest.id)
 
-    if reported is None or audited is None:
+    if audited is None and reported is None:
         return None
+    if audited is None:
+        audited = {choice.id: "0" for choice in contest.choices}
+    if reported is None:
+        reported = {choice.id: "0" for choice in contest.choices}
 
     deltas = {}
     for choice in contest.choices:
@@ -193,7 +199,7 @@ def contest_vote_deltas(
     contest: Contest,
     reported_cvrs: supersimple.CVRS,
     audited_cvrs: supersimple.SAMPLECVRS,
-) -> Dict[str, Optional[ContestVoteDeltas]]:
+) -> Dict[str, Optional[Union[str, ContestVoteDeltas]]]:
     return {
         ballot_id: ballot_vote_deltas(
             contest, reported_cvrs.get(ballot_id), audited_cvr["cvr"]
@@ -209,11 +215,13 @@ def add_sign(value: int) -> str:
 def pretty_vote_deltas(
     ballot: SampledBallot,
     contest: Contest,
-    vote_deltas: Dict[str, Optional[ContestVoteDeltas]],
+    vote_deltas: Dict[str, Optional[Union[str, ContestVoteDeltas]]],
 ) -> str:
     ballot_vote_deltas = vote_deltas.get(ballot.id)
     if ballot_vote_deltas is None:
         return ""
+    if isinstance(ballot_vote_deltas, str):
+        return ballot_vote_deltas
 
     return pretty_choice_votes(
         {
@@ -247,15 +255,19 @@ def pretty_choice_votes(
 
 
 def batch_vote_deltas(
-    reported_results: Dict[str, int], audited_results: Dict[str, int],
-) -> Dict[str, int]:
+    reported_results: Dict[str, int], audited_results: Optional[Dict[str, int]],
+) -> Union[str, Dict[str, int]]:
+    if audited_results is None:
+        return "Batch not audited"
     return {
         choice_id: reported_results[choice_id] - audited_results[choice_id]
         for choice_id in reported_results.keys()
     }
 
 
-def pretty_batch_vote_deltas(vote_deltas: Dict[str, int],) -> str:
+def pretty_batch_vote_deltas(vote_deltas: Union[str, Dict[str, int]],) -> str:
+    if isinstance(vote_deltas, str):
+        return vote_deltas
     return pretty_choice_votes(
         {
             choice_id: add_sign(vote_delta)
@@ -685,8 +697,8 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
             result_columns.append(f"Audit Result: {contest.name}")
             if show_cvrs:
                 result_columns.append(f"CVR Result: {contest.name}")
-                result_columns.append(f"Vote Delta: {contest.name}")
-                result_columns.append(f"Discrepancy: {contest.name}")
+                result_columns.append(f"Change in Results: {contest.name}")
+                result_columns.append(f"Change in Margin: {contest.name}")
 
     rows.append(
         ["Jurisdiction Name"]
@@ -820,8 +832,8 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
             "Audited?",
             "Audit Results",
             "Reported Results",
-            "Vote Delta",
-            "Discrepancy",
+            "Change in Results",
+            "Change in Margin",
             "Last Edited By",
         ]
     )
@@ -867,9 +879,7 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
                 pretty_choice_votes(reported_results),
                 pretty_batch_vote_deltas(
                     batch_vote_deltas(reported_results, audit_results)
-                )
-                if audit_results
-                else "",
+                ),
                 error["counted_as"] if error else "",
                 construct_batch_last_edited_by_string(batch),
             ]
