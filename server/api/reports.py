@@ -697,8 +697,8 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
             result_columns.append(f"Audit Result: {contest.name}")
             if show_cvrs:
                 result_columns.append(f"CVR Result: {contest.name}")
-                result_columns.append(f"Vote Delta: {contest.name}")
-                result_columns.append(f"Discrepancy: {contest.name}")
+                result_columns.append(f"Change in Results: {contest.name}")
+                result_columns.append(f"Change in Margin: {contest.name}")
 
     rows.append(
         ["Jurisdiction Name"]
@@ -832,8 +832,8 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
             "Audited?",
             "Audit Results",
             "Reported Results",
-            "Vote Delta",
-            "Discrepancy",
+            "Change in Results",
+            "Change in Margin",
             "Last Edited By",
         ]
     )
