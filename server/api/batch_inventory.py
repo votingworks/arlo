@@ -283,7 +283,7 @@ def download_batch_inventory_cvr(
     election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
-    if not batch_inventory_data.cvr_file:
+    if not batch_inventory_data or not batch_inventory_data.cvr_file:
         raise NotFound()
 
     return csv_response(
@@ -374,7 +374,7 @@ def download_batch_inventory_tabulator_status(
     election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
-    if not batch_inventory_data.tabulator_status_file:
+    if not batch_inventory_data or not batch_inventory_data.tabulator_status_file:
         raise NotFound()
 
     return csv_response(

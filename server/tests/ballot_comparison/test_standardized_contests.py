@@ -61,6 +61,13 @@ def test_upload_standardized_contests(
     assert rv.data.decode("utf-8") == standardized_contests_file
 
 
+def test_download_standardized_contests_file_before_upload(
+    client: FlaskClient, election_id: str
+):
+    rv = client.get(f"/api/election/{election_id}/standardized-contests/file/csv")
+    assert rv.status_code == 404
+
+
 def test_standardized_contests_replace(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
 ):

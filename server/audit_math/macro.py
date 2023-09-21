@@ -222,7 +222,7 @@ def get_sample_sizes(
     U = compute_U(reported_results, sample_results, contest)
 
     if U == 0:
-        return 1
+        return 1  # pragma: no cover
     elif U < 0 or U == Decimal("inf"):
         # This means we have a tie
         return len(reported_results)
@@ -230,7 +230,7 @@ def get_sample_sizes(
         # In this case, there is just enough potential error left to cause an
         # outcome change. Since U is so close to being less than one, we probably
         # only need to look at one more batch.
-        return 1
+        return 1  # pragma: no cover
 
     retval = int(
         (alpha.ln() / ((1 - (1 / U))).ln()).quantize(Decimal(1), ROUND_CEILING)

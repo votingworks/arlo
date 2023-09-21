@@ -103,6 +103,18 @@ def test_parse_csv_composite_unique_key():
     assert len(list(parsed)) == 4
 
 
+def test_parse_csv_no_unique_key():
+    parsed = parse_csv(
+        ("Column 1,Column 2\n" "A,1\n" "B,2\n" "A,1\n"),
+        [
+            CSVColumnType("Column 1", CSVValueType.TEXT),
+            CSVColumnType("Column 2", CSVValueType.NUMBER),
+        ],
+    )
+
+    assert len(list(parsed)) == 3
+
+
 # Cases where we are strict
 
 

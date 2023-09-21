@@ -720,6 +720,14 @@ def test_tally_entry_reject_login_request(
     tally_entry_status = json.loads(rv.data)
     tally_entry_user_id = tally_entry_status["loginRequests"][0]["tallyEntryUserId"]
 
+    # Error case: rejecting with the wrong user ID
+    rv = post_json(
+        client,
+        f"/auth/tallyentry/election/{election_id}/jurisdiction/{jurisdiction_id}/reject",
+        dict(tallyEntryUserId="not a real id"),
+    )
+    assert rv.status_code == 400
+
     # JA rejects the login request
     rv = post_json(
         client,

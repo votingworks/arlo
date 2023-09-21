@@ -184,7 +184,7 @@ def find_assertions(
                     frontier.replace_descendents(newn.best_ancestor)
                 else:
                     frontier.insert_node(newn)
-    return False
+    return False  # pragma: no cover
 
 
 def compute_raire_assertions(
