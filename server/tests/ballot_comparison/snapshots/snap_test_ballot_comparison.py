@@ -117,8 +117,8 @@ J2,Audit Board #1,,,,\r
 \r
 ######## ROUNDS ########\r
 Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes\r
-1,Contest 1,Targeted,20,No,1.0,DATETIME,DATETIME,Choice 1-1: 9; Choice 1-2: 7\r
-1,Contest 2,Opportunistic,,No,1.0,DATETIME,DATETIME,Choice 2-1: 13; Choice 2-2: 7; Choice 2-3: 9\r
+1,Contest 1,Targeted,20,No,1.0,DATETIME,DATETIME,Choice 1-1: 10; Choice 1-2: 7\r
+1,Contest 2,Opportunistic,,No,1.0,DATETIME,DATETIME,Choice 2-1: 12; Choice 2-2: 7; Choice 2-3: 8\r
 \r
 ######## SAMPLED BALLOTS ########\r
 Jurisdiction Name,Tabulator,Batch Name,Ballot Position,Imprinted ID,Ticket Numbers: Contest 1,Audited?,Audit Result: Contest 1,CVR Result: Contest 1,Vote Delta: Contest 1,Discrepancy: Contest 1,Audit Result: Contest 2,CVR Result: Contest 2,Vote Delta: Contest 2,Discrepancy: Contest 2\r
@@ -126,9 +126,9 @@ J1,TABULATOR1,BATCH1,1,1-1-1,Round 1: 0.243550726331576894,AUDITED,"Choice 1-2, 
 J1,TABULATOR1,BATCH2,2,1-2-2,Round 1: 0.125871889047705889,AUDITED,Choice 1-2,Choice 1-2,,,"Choice 2-1, Choice 2-2","Choice 2-1, Choice 2-2",,\r
 J1,TABULATOR1,BATCH2,3,1-2-3,Round 1: 0.126622033568908859,AUDITED,"Choice 1-1, Choice 1-2",Choice 1-1,Choice 1-2: -1,1,"Choice 2-2, Choice 2-3","Choice 2-1, Choice 2-3",Choice 2-1: +1; Choice 2-2: -1,2\r
 J1,TABULATOR2,BATCH2,2,2-2-2,Round 1: 0.053992217600758631,AUDITED,"Choice 1-1, Choice 1-2","Choice 1-1, Choice 1-2",,,"Choice 2-1, Choice 2-2, Choice 2-3","Choice 2-1, Choice 2-2, Choice 2-3",,\r
-J1,TABULATOR2,BATCH2,3,2-2-4,Round 1: 0.255119157791673311,AUDITED,BLANK,Blank,,,BLANK,"Choice 2-1, Choice 2-3",Choice 2-1: +1; Choice 2-3: +1,1\r
+J1,TABULATOR2,BATCH2,3,2-2-4,Round 1: 0.255119157791673311,AUDITED,Choice 1-1,Blank,,-1,CONTEST_NOT_ON_BALLOT,"Choice 2-1, Choice 2-3",,1\r
 J1,TABULATOR2,BATCH2,4,2-2-5,"Round 1: 0.064984443990590400, 0.069414660569975443",AUDITED,BLANK,Blank,,,BLANK,Blank,,\r
-J1,TABULATOR2,BATCH2,5,2-2-6,Round 1: 0.442956417641278897,AUDITED,CONTEST_NOT_ON_BALLOT,Blank,,,"Choice 2-1, Choice 2-3","Choice 2-1, Choice 2-3",,\r
+J1,TABULATOR2,BATCH2,5,2-2-6,Round 1: 0.442956417641278897,AUDITED,CONTEST_NOT_ON_BALLOT,Blank,,,CONTEST_NOT_ON_BALLOT,"Choice 2-1, Choice 2-3",,1\r
 J1,TABULATOR2,BATCH2,6,,Round 1: 0.300053574780458718,NOT_FOUND,,,,2,,,,2\r
 J2,TABULATOR1,BATCH1,1,1-1-1,Round 1: 0.476019554092109137,AUDITED,"Choice 1-1, INVALID_WRITE_IN",Choice 1-2,Choice 1-1: -1; Choice 1-2: +1,-2,"Choice 2-1, INVALID_WRITE_IN","Choice 2-1, Choice 2-2",Choice 2-2: +1,-1\r
 J2,TABULATOR1,BATCH1,3,1-1-3,Round 1: 0.242392535590495322,AUDITED,Choice 1-2,Choice 1-2,,,"Choice 2-1, Choice 2-2","Choice 2-1, Choice 2-2",,\r
@@ -163,10 +163,10 @@ J2,Audit Board #1,,,,\r
 \r
 ######## ROUNDS ########\r
 Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes\r
-1,Contest 1,Targeted,20,No,1.0,DATETIME,DATETIME,Choice 1-1: 9; Choice 1-2: 7\r
-1,Contest 2,Opportunistic,,No,1.0,DATETIME,DATETIME,Choice 2-1: 13; Choice 2-2: 7; Choice 2-3: 9\r
+1,Contest 1,Targeted,20,No,1.0,DATETIME,DATETIME,Choice 1-1: 10; Choice 1-2: 7\r
+1,Contest 2,Opportunistic,,No,1.0,DATETIME,DATETIME,Choice 2-1: 12; Choice 2-2: 7; Choice 2-3: 8\r
 2,Contest 1,Targeted,10,Yes,0,DATETIME,DATETIME,Choice 1-1: 6; Choice 1-2: 2\r
-2,Contest 2,Opportunistic,,No,1.0,DATETIME,DATETIME,Choice 2-1: 7; Choice 2-2: 3; Choice 2-3: 7\r
+2,Contest 2,Opportunistic,,No,1.0,DATETIME,DATETIME,Choice 2-1: 6; Choice 2-2: 3; Choice 2-3: 6\r
 \r
 ######## SAMPLED BALLOTS ########\r
 Jurisdiction Name,Tabulator,Batch Name,Ballot Position,Imprinted ID,Ticket Numbers: Contest 1,Audited?,Audit Result: Contest 1,CVR Result: Contest 1,Vote Delta: Contest 1,Discrepancy: Contest 1,Audit Result: Contest 2,CVR Result: Contest 2,Vote Delta: Contest 2,Discrepancy: Contest 2\r
@@ -174,9 +174,9 @@ J1,TABULATOR1,BATCH1,1,1-1-1,Round 1: 0.243550726331576894,AUDITED,"Choice 1-2, 
 J1,TABULATOR1,BATCH2,2,1-2-2,Round 1: 0.125871889047705889,AUDITED,Choice 1-2,Choice 1-2,,,"Choice 2-1, Choice 2-2","Choice 2-1, Choice 2-2",,\r
 J1,TABULATOR1,BATCH2,3,1-2-3,"Round 1: 0.126622033568908859, Round 2: 0.570682515619614792",AUDITED,"Choice 1-1, Choice 1-2",Choice 1-1,Choice 1-2: -1,1,"Choice 2-2, Choice 2-3","Choice 2-1, Choice 2-3",Choice 2-1: +1; Choice 2-2: -1,2\r
 J1,TABULATOR2,BATCH2,2,2-2-2,"Round 1: 0.053992217600758631, Round 2: 0.528652598036440834",AUDITED,"Choice 1-1, Choice 1-2","Choice 1-1, Choice 1-2",,,"Choice 2-1, Choice 2-2, Choice 2-3","Choice 2-1, Choice 2-2, Choice 2-3",,\r
-J1,TABULATOR2,BATCH2,3,2-2-4,Round 1: 0.255119157791673311,AUDITED,BLANK,Blank,,,BLANK,"Choice 2-1, Choice 2-3",Choice 2-1: +1; Choice 2-3: +1,1\r
+J1,TABULATOR2,BATCH2,3,2-2-4,Round 1: 0.255119157791673311,AUDITED,Choice 1-1,Blank,,-1,CONTEST_NOT_ON_BALLOT,"Choice 2-1, Choice 2-3",,1\r
 J1,TABULATOR2,BATCH2,4,2-2-5,"Round 1: 0.064984443990590400, 0.069414660569975443",AUDITED,BLANK,Blank,,,BLANK,Blank,,\r
-J1,TABULATOR2,BATCH2,5,2-2-6,"Round 1: 0.442956417641278897, Round 2: 0.492638838970333256",AUDITED,CONTEST_NOT_ON_BALLOT,Blank,,,"Choice 2-1, Choice 2-3","Choice 2-1, Choice 2-3",,\r
+J1,TABULATOR2,BATCH2,5,2-2-6,"Round 1: 0.442956417641278897, Round 2: 0.492638838970333256",AUDITED,CONTEST_NOT_ON_BALLOT,Blank,,,CONTEST_NOT_ON_BALLOT,"Choice 2-1, Choice 2-3",,1\r
 J1,TABULATOR2,BATCH2,6,,"Round 1: 0.300053574780458718, Round 2: 0.539920212714138536",NOT_FOUND,,,,2,,,,2\r
 J2,TABULATOR1,BATCH1,1,1-1-1,Round 1: 0.476019554092109137,AUDITED,"Choice 1-1, INVALID_WRITE_IN",Choice 1-2,Choice 1-1: -1; Choice 1-2: +1,-2,"Choice 2-1, INVALID_WRITE_IN","Choice 2-1, Choice 2-2",Choice 2-2: +1,-1\r
 J2,TABULATOR1,BATCH1,3,1-1-3,Round 1: 0.242392535590495322,AUDITED,Choice 1-2,Choice 1-2,,,"Choice 2-1, Choice 2-2","Choice 2-1, Choice 2-2",,\r
@@ -191,12 +191,6 @@ J2,TABULATOR1,BATCH1,2,1-1-2,"Round 2: 0.511105635717372621, 0.58347220139966351
 J2,TABULATOR1,BATCH2,3,1-2-3,Round 2: 0.556310137163677574,AUDITED,Choice 1-1,Choice 1-1,,,"Choice 2-1, Choice 2-3","Choice 2-1, Choice 2-3",,\r
 J2,TABULATOR2,BATCH2,4,2-2-5,Round 2: 0.583133559190710795,AUDITED,CONTEST_NOT_ON_BALLOT,Blank,,,"Choice 2-1, Choice 2-2",Blank,Choice 2-1: -1; Choice 2-2: -1,-1\r
 """
-
-snapshots["test_sample_preview 1"] = [
-    {"name": "J1", "numSamples": 9, "numUnique": 8},
-    {"name": "J2", "numSamples": 11, "numUnique": 9},
-    {"name": "J3", "numSamples": 0, "numUnique": 0},
-]
 
 snapshots["test_set_contest_metadata_on_contest_creation 1"] = {
     "choices": [

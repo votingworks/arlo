@@ -440,15 +440,34 @@ def sampled_ballot_interpretations_to_cvrs(
                 ),
                 None,
             )
-            if interpretation is None:  # Contest not on ballot
+            if (
+                interpretation is None  # Legacy case for contest not on ballot
+                or interpretation.interpretation == Interpretation.CONTEST_NOT_ON_BALLOT
+            ):
                 ballot_cvr = {}
-            else:
+            elif interpretation.interpretation == Interpretation.BLANK:
                 ballot_cvr = {
                     contest.id: {choice.id: "0" for choice in contest.choices}
                 }
-                if interpretation.interpretation == Interpretation.VOTE:
-                    for choice in interpretation.selected_choices:
-                        ballot_cvr[contest.id][choice.id] = "1"
+            elif interpretation.interpretation == Interpretation.VOTE:
+                ballot_cvr = {
+                    contest.id: {
+                        choice.id: (
+                            "1"
+                            if any(
+                                selected_choice.id == choice.id
+                                for selected_choice in interpretation.selected_choices
+                            )
+                            else "0"
+                        )
+                        for choice in contest.choices
+                    }
+                }
+            else:
+                # pragma: no cover
+                raise Exception(
+                    f"Unexpected interpretation type: {interpretation.interpretation}"
+                )
 
             cvrs[ballot.id] = {"times_sampled": times_sampled, "cvr": ballot_cvr}
 
