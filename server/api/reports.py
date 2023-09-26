@@ -5,6 +5,7 @@ from sqlalchemy import func, and_
 from sqlalchemy.dialects.postgresql import aggregate_order_by
 from werkzeug.exceptions import Conflict
 
+
 from . import api
 from ..models import *  # pylint: disable=wildcard-import
 from ..auth import restrict_access, UserType
@@ -25,6 +26,7 @@ from ..api.rounds import (
 from ..api.ballot_manifest import hybrid_contest_total_ballots
 from ..api.cvrs import hybrid_contest_choice_vote_counts
 from ..api.batches import construct_batch_last_edited_by_string
+from ..api.discrepancies import ContestVoteDeltas, ballot_vote_deltas, batch_vote_deltas
 
 
 def pretty_affiliation(affiliation: Optional[str]) -> str:
@@ -158,43 +160,6 @@ def pretty_cvr_interpretation(
     )
 
 
-# { contest_choice_id: vote delta }
-ContestVoteDeltas = Dict[str, int]
-
-
-def ballot_vote_deltas(
-    contest: Contest,
-    reported_cvr: Optional[supersimple.CVR],
-    audited_cvr: Optional[supersimple.CVR],
-) -> Optional[Union[str, ContestVoteDeltas]]:
-    if audited_cvr is None:
-        return "Ballot not found"
-    if reported_cvr is None:
-        return "Ballot not in CVR"
-
-    reported = reported_cvr.get(contest.id)
-    audited = audited_cvr.get(contest.id)
-
-    if audited is None and reported is None:
-        return None
-    if audited is None:
-        audited = {choice.id: "0" for choice in contest.choices}
-    if reported is None:
-        reported = {choice.id: "0" for choice in contest.choices}
-
-    deltas = {}
-    for choice in contest.choices:
-        reported_vote = (
-            0 if reported[choice.id] in ["o", "u"] else int(reported[choice.id])
-        )
-        audited_vote = (
-            0 if audited[choice.id] in ["o", "u"] else int(audited[choice.id])
-        )
-        deltas[choice.id] = reported_vote - audited_vote
-
-    return deltas
-
-
 def contest_vote_deltas(
     contest: Contest,
     reported_cvrs: supersimple.CVRS,
@@ -252,17 +217,6 @@ def pretty_choice_votes(
             else []
         )
     )
-
-
-def batch_vote_deltas(
-    reported_results: Dict[str, int], audited_results: Optional[Dict[str, int]],
-) -> Union[str, Dict[str, int]]:
-    if audited_results is None:
-        return "Batch not audited"
-    return {
-        choice_id: reported_results[choice_id] - audited_results[choice_id]
-        for choice_id in reported_results.keys()
-    }
 
 
 def pretty_batch_vote_deltas(vote_deltas: Union[str, Dict[str, int]],) -> str:
