@@ -211,9 +211,7 @@ def samples_not_found_by_round(contest: Contest) -> Dict[str, int]:
 
 
 # { batch_key: { contest_id: { choice_id: votes }}}
-BatchTallies = Dict[
-    sampler.BatchKey, ballot_polling_types.BALLOT_POLLING_SAMPLE_RESULTS
-]
+BatchTallies = Dict[macro.BatchKey, macro.BatchResults]
 
 
 def batch_tallies(election: Election) -> BatchTallies:
@@ -230,7 +228,7 @@ def batch_tallies(election: Election) -> BatchTallies:
     }
 
 
-def sampled_batch_results(election: Election,) -> BatchTallies:
+def sampled_batch_results(election: Election) -> BatchTallies:
     results_by_batch_and_choice = (
         Batch.query.filter(
             Batch.id.in_(

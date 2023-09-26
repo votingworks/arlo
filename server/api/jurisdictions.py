@@ -1,3 +1,4 @@
+from collections import Counter
 import logging
 from typing import Dict, List, Optional, Mapping, cast as typing_cast
 import enum
@@ -9,11 +10,19 @@ from sqlalchemy import func
 from sqlalchemy.orm import joinedload
 from werkzeug.exceptions import Conflict, BadRequest
 
+
 from . import api
 from ..models import *  # pylint: disable=wildcard-import
 from ..database import db_session
 from ..auth import restrict_access, UserType
-from .rounds import get_current_round, is_full_hand_tally
+from .rounds import (
+    batch_tallies,
+    cvrs_for_contest,
+    get_current_round,
+    is_full_hand_tally,
+    sampled_ballot_interpretations_to_cvrs,
+    sampled_batch_results,
+)
 from .ballot_manifest import hybrid_jurisdiction_total_ballots
 from .contests import set_contest_metadata
 from .standardized_contests import process_standardized_contests_file
@@ -36,6 +45,7 @@ from ..util.csv_parse import (
     validate_csv_mimetype,
 )
 from ..util.csv_download import csv_response
+from ..api.discrepancies import ballot_vote_deltas, batch_vote_deltas
 
 logger = logging.getLogger("arlo")
 
@@ -120,7 +130,7 @@ def process_jurisdictions_file(election_id: str):
 
 
 def serialize_jurisdiction(
-    election: Election, jurisdiction: Jurisdiction, round_status: Optional[JSONDict]
+    election: Election, jurisdiction: Jurisdiction, round_status: Optional[JSONDict],
 ) -> JSONDict:
     json_jurisdiction: JSONDict = {
         "id": jurisdiction.id,
@@ -227,20 +237,17 @@ def ballot_round_status(election: Election, round: Round) -> Dict[str, JSONDict]
         SampledBallot.query.join(SampledBallotDraw)
         .filter_by(round_id=round.id)
         .distinct(SampledBallot.id)
+        .with_entities(SampledBallot.id)
         .subquery()
     )
     ballot_count_by_jurisdiction = dict(
-        SampledBallot.query.join(
-            ballots_in_round, SampledBallot.id == ballots_in_round.columns.id
-        )
+        SampledBallot.query.filter(SampledBallot.id.in_(ballots_in_round))
         .join(Batch)
         .group_by(Batch.jurisdiction_id)
         .values(Batch.jurisdiction_id, func.count())
     )
     audited_ballot_count_by_jurisdiction = dict(
-        SampledBallot.query.join(
-            ballots_in_round, SampledBallot.id == ballots_in_round.columns.id
-        )
+        SampledBallot.query.filter(SampledBallot.id.in_(ballots_in_round))
         .filter(SampledBallot.status != BallotStatus.NOT_AUDITED)
         .join(Batch)
         .group_by(Batch.jurisdiction_id)
@@ -372,6 +379,35 @@ def ballot_round_status(election: Election, round: Round) -> Dict[str, JSONDict]
         for jurisdiction in election.jurisdictions
     }
 
+    # Add numDiscrepancies only for ballot comparison
+    if election.audit_type == AuditType.BALLOT_COMPARISON:
+        discrepancy_count_by_jurisdiction: Dict[str, int] = Counter()
+        sampled_ballot_id_to_jurisdiction_id = dict(
+            SampledBallot.query.filter(SampledBallot.id.in_(ballots_in_round))
+            .join(Batch)
+            .with_entities(SampledBallot.id, Batch.jurisdiction_id)
+        )
+        for contest in election.contests:
+            reported_results = cvrs_for_contest(contest)
+            audited_results = sampled_ballot_interpretations_to_cvrs(contest)
+            for ballot_id, audited_result in audited_results.items():
+                vote_deltas = ballot_vote_deltas(
+                    contest, reported_results.get(ballot_id), audited_result["cvr"],
+                )
+                if vote_deltas and ballot_id in sampled_ballot_id_to_jurisdiction_id:
+                    jurisdiction_id = sampled_ballot_id_to_jurisdiction_id[ballot_id]
+                    discrepancy_count_by_jurisdiction[jurisdiction_id] += 1
+
+        def num_discrepancies(jurisdiction: Jurisdiction) -> Optional[int]:
+            if status(jurisdiction) != JurisdictionStatus.COMPLETE:
+                return None
+            return discrepancy_count_by_jurisdiction[jurisdiction.id]
+
+        for jurisdiction in election.jurisdictions:
+            statuses[jurisdiction.id]["numDiscrepancies"] = num_discrepancies(
+                jurisdiction
+            )
+
     # Special case: when we're in a full hand tally, also add a count of batches
     # submitted.
     if full_hand_tally:
@@ -434,6 +470,33 @@ def batch_round_status(election: Election, round: Round) -> Dict[str, JSONDict]:
         ).values(BatchResultsFinalized.jurisdiction_id)
     }
 
+    discrepancy_count_by_jurisdiction: Dict[str, int] = Counter()
+    reported_results = batch_tallies(election)
+    audited_results = sampled_batch_results(election)
+    batch_keys_in_round = set(
+        SampledBatchDraw.query.filter_by(round_id=round.id)
+        .join(Batch)
+        .join(Jurisdiction)
+        .with_entities(Jurisdiction.name, Batch.name)
+        .all()
+    )
+    jurisdiction_name_to_id = dict(
+        Jurisdiction.query.filter_by(election_id=election.id).with_entities(
+            Jurisdiction.name, Jurisdiction.id
+        )
+    )
+    assert len(list(election.contests)) == 1
+    contest = list(election.contests)[0]
+    for batch_key, audited_result in audited_results.items():
+        if batch_key in batch_keys_in_round:
+            vote_deltas = batch_vote_deltas(
+                reported_results[batch_key][contest.id], audited_result[contest.id]
+            )
+            if vote_deltas:
+                jurisdiction_name, _ = batch_key
+                jurisdiction_id = jurisdiction_name_to_id[jurisdiction_name]
+                discrepancy_count_by_jurisdiction[jurisdiction_id] += 1
+
     def num_samples(jurisdiction_id: str) -> int:
         return sample_count_by_jurisdiction.get(jurisdiction_id, 0)
 
@@ -461,6 +524,11 @@ def batch_round_status(election: Election, round: Round) -> Dict[str, JSONDict]:
         else:
             return JurisdictionStatus.COMPLETE
 
+    def num_discrepancies(jurisdiction_id: str) -> Optional[int]:
+        if status(jurisdiction_id) != JurisdictionStatus.COMPLETE:
+            return None
+        return discrepancy_count_by_jurisdiction[jurisdiction_id]
+
     return {
         jurisdiction.id: {
             "status": status(jurisdiction.id),
@@ -468,6 +536,7 @@ def batch_round_status(election: Election, round: Round) -> Dict[str, JSONDict]:
             "numSamplesAudited": num_samples_audited(jurisdiction.id),
             "numUnique": num_batches(jurisdiction.id),
             "numUniqueAudited": num_batches_audited(jurisdiction.id),
+            "numDiscrepancies": num_discrepancies(jurisdiction.id),
         }
         for jurisdiction in election.jurisdictions
     }
@@ -489,6 +558,7 @@ def list_jurisdictions(election: Election):
         )
         .all()
     )
+
     json_jurisdictions = [
         serialize_jurisdiction(election, jurisdiction, round_status[jurisdiction.id])
         for jurisdiction in jurisdictions

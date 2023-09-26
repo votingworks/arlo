@@ -1,10 +1,10 @@
 from typing import Dict, Optional, Union
 
-from ..audit_math import supersimple
+from ..audit_math import supersimple, macro
 from ..models import *  # pylint: disable=wildcard-import,unused-wildcard-import
 
 
-# { contest_choice_id: vote delta }
+# { choice_id: vote delta }
 ContestVoteDeltas = Dict[str, int]
 
 
@@ -45,11 +45,12 @@ def ballot_vote_deltas(
 
 
 def batch_vote_deltas(
-    reported_results: Dict[str, int], audited_results: Dict[str, int],
+    reported_results: macro.ChoiceVotes, audited_results: macro.ChoiceVotes
 ) -> Optional[ContestVoteDeltas]:
     deltas = {
         choice_id: reported_results[choice_id] - audited_results[choice_id]
         for choice_id in reported_results.keys()
+        if choice_id != "ballots"
     }
 
     if all(delta == 0 for delta in deltas.values()):
