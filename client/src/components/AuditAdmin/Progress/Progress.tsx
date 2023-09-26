@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { Column, Cell, TableInstance } from 'react-table'
-import { Button, Switch, ITagProps } from '@blueprintjs/core'
+import { Button, Switch, ITagProps, Icon } from '@blueprintjs/core'
 import H2Title from '../../Atoms/H2Title'
 import {
   JurisdictionRoundStatus,
@@ -256,6 +256,21 @@ const Progress: React.FC<IProgressProps> = ({
   }
 
   if (round) {
+    if (auditType === 'BALLOT_COMPARISON' || auditType === 'BATCH_COMPARISON') {
+      columns.push({
+        Header: 'Discrepancies',
+        accessor: ({ currentRoundStatus: s }) => s && s.numDiscrepancies,
+        Cell: ({ value }: { value: number | null }) => {
+          if (!value) return null
+          return (
+            <>
+              <Icon icon="flag" intent="danger" /> {value.toLocaleString()}
+            </>
+          )
+        },
+        Footer: totalFooter('Discrepancies'),
+      })
+    }
     columns.push(
       {
         Header: `${ballotsOrBatches} Audited`,
