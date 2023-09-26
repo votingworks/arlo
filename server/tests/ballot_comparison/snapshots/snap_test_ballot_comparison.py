@@ -80,6 +80,7 @@ snapshots["test_ballot_comparison_two_rounds 1"] = {
 }
 
 snapshots["test_ballot_comparison_two_rounds 2"] = {
+    "numDiscrepancies": None,
     "numSamples": 9,
     "numSamplesAudited": 0,
     "numUnique": 8,
@@ -88,6 +89,7 @@ snapshots["test_ballot_comparison_two_rounds 2"] = {
 }
 
 snapshots["test_ballot_comparison_two_rounds 3"] = {
+    "numDiscrepancies": None,
     "numSamples": 11,
     "numSamplesAudited": 0,
     "numUnique": 9,
@@ -95,8 +97,26 @@ snapshots["test_ballot_comparison_two_rounds 3"] = {
     "status": "NOT_STARTED",
 }
 
+snapshots["test_ballot_comparison_two_rounds 4"] = {
+    "numDiscrepancies": 7,
+    "numSamples": 9,
+    "numSamplesAudited": 9,
+    "numUnique": 8,
+    "numUniqueAudited": 8,
+    "status": "COMPLETE",
+}
+
+snapshots["test_ballot_comparison_two_rounds 5"] = {
+    "numDiscrepancies": 4,
+    "numSamples": 11,
+    "numSamplesAudited": 11,
+    "numUnique": 9,
+    "numUniqueAudited": 9,
+    "status": "COMPLETE",
+}
+
 snapshots[
-    "test_ballot_comparison_two_rounds 4"
+    "test_ballot_comparison_two_rounds 6"
 ] = """######## ELECTION INFO ########\r
 Organization,Election Name,State\r
 Test Org test_ballot_comparison_two_rounds,Test Election,CA\r
@@ -141,8 +161,26 @@ J2,TABULATOR2,BATCH2,5,2-2-6,Round 1: 0.462119987445142117,AUDITED,CONTEST_NOT_O
 J2,TABULATOR2,BATCH2,6,,Round 1: 0.414184312862040881,AUDITED,Choice 1-1,,Ballot not in CVR,2,"Choice 2-1, Choice 2-3",,Ballot not in CVR,2\r
 """
 
+snapshots["test_ballot_comparison_two_rounds 7"] = {
+    "numDiscrepancies": 5,
+    "numSamples": 4,
+    "numSamplesAudited": 4,
+    "numUnique": 4,
+    "numUniqueAudited": 4,
+    "status": "COMPLETE",
+}
+
+snapshots["test_ballot_comparison_two_rounds 8"] = {
+    "numDiscrepancies": 1,
+    "numSamples": 6,
+    "numSamplesAudited": 6,
+    "numUnique": 5,
+    "numUniqueAudited": 5,
+    "status": "COMPLETE",
+}
+
 snapshots[
-    "test_ballot_comparison_two_rounds 5"
+    "test_ballot_comparison_two_rounds 9"
 ] = """######## ELECTION INFO ########\r
 Organization,Election Name,State\r
 Test Org test_ballot_comparison_two_rounds,Test Election,CA\r
@@ -159,6 +197,8 @@ Test Audit test_ballot_comparison_two_rounds,BALLOT_COMPARISON,SUPERSIMPLE,10%,1
 ######## AUDIT BOARDS ########\r
 Jurisdiction Name,Audit Board Name,Member 1 Name,Member 1 Affiliation,Member 2 Name,Member 2 Affiliation\r
 J1,Audit Board #1,,,,\r
+J1,Audit Board #1,,,,\r
+J2,Audit Board #1,,,,\r
 J2,Audit Board #1,,,,\r
 \r
 ######## ROUNDS ########\r

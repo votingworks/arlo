@@ -1,9 +1,47 @@
+import csv
 import io
-from typing import List
+from typing import Dict, List
 from flask.testing import FlaskClient
 
 from ...models import *  # pylint: disable=wildcard-import
 from ..helpers import *  # pylint: disable=wildcard-import
+
+
+def parse_vote_deltas(
+    vote_deltas: str, choices: List[dict]
+) -> Optional[Dict[str, int]]:
+    if vote_deltas == "":
+        return None
+    deltas = {
+        choice_name: int(delta)
+        for choice_name, delta in [
+            delta.split(": ") for delta in vote_deltas.split("; ")
+        ]
+    }
+    return {choice["name"]: deltas.get(choice["name"], 0) for choice in choices}
+
+
+def check_discrepancies(
+    report_data: bytes, expected_discrepancies: dict, choices: List[dict],
+):
+    report = report_data.decode("utf-8")
+    report_batches = list(
+        csv.DictReader(
+            io.StringIO(report.split("######## SAMPLED BATCHES ########\r\n")[1])
+        )
+    )
+    for jurisdiction_name, jurisdiction_discrepancies in expected_discrepancies.items():
+        for batch_name, batch_discrepancies in jurisdiction_discrepancies.items():
+            row = next(
+                row
+                for row in report_batches
+                if row["Jurisdiction Name"] == jurisdiction_name
+                and row["Batch Name"] == batch_name
+            )
+            assert (
+                parse_vote_deltas(row["Change in Results"], choices)
+                == batch_discrepancies
+            ), "Discrepancy mismatch for {}".format((jurisdiction_name, batch_name))
 
 
 def test_batch_comparison_only_one_contest_allowed(
@@ -235,7 +273,7 @@ def test_batch_comparison_round_2(
 
     # Record some batch results
     choice_ids = [choice["id"] for choice in contests[0]["choices"]]
-    batch_results = {
+    batch_results_j1 = {
         # Use multiple tally sheets to make sure they get aggregated correctly
         batches[0]["id"]: [
             {choice_ids[0]: 200, choice_ids[1]: 40, choice_ids[2]: 0,},
@@ -246,7 +284,20 @@ def test_batch_comparison_round_2(
         batches[2]["id"]: [{choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 40,}],
     }
 
-    for batch_id, results in batch_results.items():
+    assert batches[0]["name"] == "Batch 1"
+    assert batches[1]["name"] == "Batch 6"
+    assert batches[2]["name"] == "Batch 8"
+    # Batch tallies (from conftest.py)
+    # Batch 1: 500,250,250
+    # Batch 6: 100,50,50
+    # Batch 8: 100,50,50
+    expected_discrepancies_j1 = {
+        "Batch 1": {"candidate 1": 100, "candidate 2": 200, "candidate 3": 210},
+        "Batch 6": {"candidate 1": 0, "candidate 2": 0, "candidate 3": 10},
+        "Batch 8": {"candidate 1": 0, "candidate 2": 0, "candidate 3": 10},
+    }
+
+    for batch_id, results in batch_results_j1.items():
         set_logged_in_user(
             client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
         )
@@ -280,6 +331,9 @@ def test_batch_comparison_round_2(
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
+    assert jurisdictions[0]["currentRoundStatus"]["numDiscrepancies"] == len(
+        expected_discrepancies_j1
+    )
     snapshot.assert_match(jurisdictions[0]["currentRoundStatus"])
     snapshot.assert_match(jurisdictions[1]["currentRoundStatus"])
 
@@ -294,15 +348,21 @@ def test_batch_comparison_round_2(
     batches = json.loads(rv.data)["batches"]
     assert len(batches) == 1
 
+    batch_results_j2 = {
+        batches[0]["id"]: {choice_ids[0]: 100, choice_ids[1]: 100, choice_ids[2]: 40}
+    }
+
+    assert batches[0]["name"] == "Batch 3"
+    # Batch tallies
+    # Batch 3,500,250,250
+    expected_discrepancies_j2 = {
+        "Batch 3": {"candidate 1": 400, "candidate 2": 150, "candidate 3": 210}
+    }
+
     rv = put_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/batches/{batches[0]['id']}/results",
-        [
-            {
-                "name": "Tally Sheet #1",
-                "results": {choice_ids[0]: 100, choice_ids[1]: 100, choice_ids[2]: 40,},
-            }
-        ],
+        [{"name": "Tally Sheet #1", "results": batch_results_j2[batches[0]["id"]],}],
     )
     assert_ok(rv)
 
@@ -316,6 +376,9 @@ def test_batch_comparison_round_2(
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
+    assert jurisdictions[1]["currentRoundStatus"]["numDiscrepancies"] == len(
+        expected_discrepancies_j2
+    )
     snapshot.assert_match(jurisdictions[0]["currentRoundStatus"])
     snapshot.assert_match(jurisdictions[1]["currentRoundStatus"])
 
@@ -341,6 +404,8 @@ def test_batch_comparison_round_2(
     # Check jurisdiction status after starting the new round
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
+    assert jurisdictions[0]["currentRoundStatus"]["numDiscrepancies"] is None
+    assert jurisdictions[1]["currentRoundStatus"]["numDiscrepancies"] is None
     snapshot.assert_match(jurisdictions[0]["currentRoundStatus"])
     snapshot.assert_match(jurisdictions[1]["currentRoundStatus"])
 
@@ -368,6 +433,11 @@ def test_batch_comparison_round_2(
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/report")
     assert_match_report(rv.data, snapshot)
+    check_discrepancies(
+        rv.data,
+        {"J1": expected_discrepancies_j1, "J2": expected_discrepancies_j2},
+        contests[0]["choices"],
+    )
 
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -439,7 +509,7 @@ def test_batch_comparison_batches_sampled_multiple_times(
 
     # Record batch results that match batch tallies exactly
     choice_ids = [choice["id"] for choice in contests[0]["choices"]]
-    batch_results = {
+    batch_results_j1 = {
         # Batch 1
         batches[0]["id"]: [
             # Use multiple tally sheets to make sure we aggregate them correctly
@@ -454,7 +524,7 @@ def test_batch_comparison_batches_sampled_multiple_times(
         batches[2]["id"]: [{choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 50,}],
     }
 
-    for batch_id, results in batch_results.items():
+    for batch_id, results in batch_results_j1.items():
         rv = put_json(
             client,
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/{batch_id}/results",
@@ -482,12 +552,12 @@ def test_batch_comparison_batches_sampled_multiple_times(
     batches = json.loads(rv.data)["batches"]
 
     # Record batch results that match batch tallies exactly
-    round_2_batch_results = {
+    batch_results_j2 = {
         # Batch 3
         batches[0]["id"]: {choice_ids[0]: 500, choice_ids[1]: 250, choice_ids[2]: 250,}
     }
 
-    for batch_id, sheet_results in round_2_batch_results.items():
+    for batch_id, sheet_results in batch_results_j2.items():
         rv = put_json(
             client,
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/batches/{batch_id}/results",
@@ -501,8 +571,16 @@ def test_batch_comparison_batches_sampled_multiple_times(
     )
     assert_ok(rv)
 
-    # Audit should be complete
+    # Check jurisdiction status
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    assert jurisdictions[0]["currentRoundStatus"]["numDiscrepancies"] == 0
+    assert jurisdictions[1]["currentRoundStatus"]["numDiscrepancies"] == 0
+    snapshot.assert_match(jurisdictions[0]["currentRoundStatus"])
+    snapshot.assert_match(jurisdictions[1]["currentRoundStatus"])
+
+    # Audit should be complete
     rv = client.get(f"/api/election/{election_id}/round")
     rounds = json.loads(rv.data)["rounds"]
     assert rounds[0]["endedAt"] is not None
@@ -511,6 +589,13 @@ def test_batch_comparison_batches_sampled_multiple_times(
     # Test the audit report
     rv = client.get(f"/api/election/{election_id}/report")
     assert_match_report(rv.data, snapshot)
+    expected_discrepancies = {
+        "J1": {"Batch 1": None, "Batch 6": None, "Batch 8": None},
+        "J2": {"Batch 3": None},
+    }
+    check_discrepancies(
+        rv.data, expected_discrepancies, contests[0]["choices"],
+    )
 
 
 def test_batch_comparison_sample_all_batches(
