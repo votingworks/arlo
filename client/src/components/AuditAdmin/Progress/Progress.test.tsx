@@ -119,7 +119,7 @@ describe('Progress screen', () => {
     })
   })
 
-  it('shows round status', async () => {
+  it('shows round status for ballot polling', async () => {
     const expectedCalls = [aaApiCalls.getMapData]
     await withMockFetch(expectedCalls, async () => {
       const { container } = render({
@@ -144,7 +144,7 @@ describe('Progress screen', () => {
       expect(headers[4]).toHaveTextContent('Ballots Remaining')
 
       const rows = screen.getAllByRole('row')
-      expect(rows).toHaveLength(jurisdictionMocks.oneManifest.length + 2) // includes headers and footers
+      expect(rows).toHaveLength(jurisdictionMocks.oneComplete.length + 2) // includes headers and footers
       const row1 = within(rows[1]).getAllByRole('cell')
       expect(row1[0]).toHaveTextContent('Jurisdiction 1')
       expectStatusTag(row1[1], 'In progress', 'warning')
@@ -156,7 +156,7 @@ describe('Progress screen', () => {
       expectStatusTag(row2[1], 'Not started', 'none')
       expect(row2[2]).toHaveTextContent('2,117')
       expect(row2[3]).toHaveTextContent('0')
-      expect(row2[4]).toHaveTextContent('0')
+      expect(row2[4]).toHaveTextContent('20')
       const row3 = within(rows[3]).getAllByRole('cell')
       expect(row3[0]).toHaveTextContent('Jurisdiction 3')
       expectStatusTag(row3[1], 'Complete', 'success')
@@ -170,6 +170,126 @@ describe('Progress screen', () => {
       expect(footers[2]).toHaveTextContent('6,351')
       expect(footers[3]).toHaveTextContent('34')
       expect(footers[4]).toHaveTextContent('26')
+    })
+  })
+
+  it('shows round status for ballot comparison', async () => {
+    const expectedCalls = [aaApiCalls.getMapData]
+    await withMockFetch(expectedCalls, async () => {
+      const { container } = render({
+        auditSettings: auditSettingsMocks.ballotComparisonAll,
+        jurisdictions: jurisdictionMocks.allComplete,
+        round: roundMocks.singleIncomplete[0],
+      })
+
+      expect(container.querySelectorAll('.d3-component').length).toBe(1)
+
+      await waitFor(() => {
+        expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
+      })
+
+      screen.getByText('Audit Progress')
+
+      const headers = screen.getAllByRole('columnheader')
+      expect(headers).toHaveLength(6)
+      expect(headers[0]).toHaveTextContent('Jurisdiction')
+      expect(headers[1]).toHaveTextContent('Status')
+      expect(headers[2]).toHaveTextContent('Ballots in Manifest')
+      expect(headers[3]).toHaveTextContent('Discrepancies')
+      expect(headers[4]).toHaveTextContent('Ballots Audited')
+      expect(headers[5]).toHaveTextContent('Ballots Remaining')
+
+      const rows = screen.getAllByRole('row')
+      expect(rows).toHaveLength(jurisdictionMocks.oneComplete.length + 2) // includes headers and footers
+      const row1 = within(rows[1]).getAllByRole('cell')
+      expect(row1[0]).toHaveTextContent('Jurisdiction 1')
+      expectStatusTag(row1[1], 'Complete', 'success')
+      expect(row1[2]).toHaveTextContent('2,117')
+      expect(row1[3]).toHaveTextContent('')
+      expect(row1[4]).toHaveTextContent('10')
+      expect(row1[5]).toHaveTextContent('0')
+      const row2 = within(rows[2]).getAllByRole('cell')
+      expect(row2[0]).toHaveTextContent('Jurisdiction 2')
+      expectStatusTag(row2[1], 'Complete', 'success')
+      expect(row2[2]).toHaveTextContent('2,117')
+      expect(row2[3]).toHaveTextContent('2')
+      expect(row2[4]).toHaveTextContent('20')
+      expect(row2[5]).toHaveTextContent('0')
+      const row3 = within(rows[3]).getAllByRole('cell')
+      expect(row3[0]).toHaveTextContent('Jurisdiction 3')
+      expectStatusTag(row3[1], 'Complete', 'success')
+      expect(row3[2]).toHaveTextContent('2,117')
+      expect(row3[3]).toHaveTextContent('1')
+      expect(row3[4]).toHaveTextContent('30')
+      expect(row3[5]).toHaveTextContent('0')
+
+      const footers = within(rows[4]).getAllByRole('cell')
+      expect(footers[0]).toHaveTextContent('Total')
+      expect(footers[1]).toHaveTextContent('3/3 complete')
+      expect(footers[2]).toHaveTextContent('6,351')
+      expect(footers[3]).toHaveTextContent('3')
+      expect(footers[4]).toHaveTextContent('60')
+      expect(footers[5]).toHaveTextContent('0')
+    })
+  })
+
+  it('shows round status for batch comparison', async () => {
+    const expectedCalls = [aaApiCalls.getMapData]
+    await withMockFetch(expectedCalls, async () => {
+      const { container } = render({
+        auditSettings: auditSettingsMocks.batchComparisonAll,
+        jurisdictions: jurisdictionMocks.oneComplete,
+        round: roundMocks.singleIncomplete[0],
+      })
+
+      expect(container.querySelectorAll('.d3-component').length).toBe(1)
+
+      await waitFor(() => {
+        expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
+      })
+
+      screen.getByText('Audit Progress')
+
+      const headers = screen.getAllByRole('columnheader')
+      expect(headers).toHaveLength(6)
+      expect(headers[0]).toHaveTextContent('Jurisdiction')
+      expect(headers[1]).toHaveTextContent('Status')
+      expect(headers[2]).toHaveTextContent('Ballots in Manifest')
+      expect(headers[3]).toHaveTextContent('Discrepancies')
+      expect(headers[4]).toHaveTextContent('Batches Audited')
+      expect(headers[5]).toHaveTextContent('Batches Remaining')
+
+      const rows = screen.getAllByRole('row')
+      expect(rows).toHaveLength(jurisdictionMocks.oneComplete.length + 2) // includes headers and footers
+      const row1 = within(rows[1]).getAllByRole('cell')
+      expect(row1[0]).toHaveTextContent('Jurisdiction 1')
+      expectStatusTag(row1[1], 'In progress', 'warning')
+      expect(row1[2]).toHaveTextContent('2,117')
+      expect(row1[3]).toHaveTextContent('')
+      expect(row1[4]).toHaveTextContent('4')
+      expect(row1[5]).toHaveTextContent('6')
+      const row2 = within(rows[2]).getAllByRole('cell')
+      expect(row2[0]).toHaveTextContent('Jurisdiction 2')
+      expectStatusTag(row2[1], 'Not started', 'none')
+      expect(row2[2]).toHaveTextContent('2,117')
+      expect(row2[3]).toHaveTextContent('')
+      expect(row2[4]).toHaveTextContent('0')
+      expect(row2[5]).toHaveTextContent('0')
+      const row3 = within(rows[3]).getAllByRole('cell')
+      expect(row3[0]).toHaveTextContent('Jurisdiction 3')
+      expectStatusTag(row3[1], 'Complete', 'success')
+      expect(row3[2]).toHaveTextContent('2,117')
+      expect(row3[3]).toHaveTextContent('1')
+      expect(row3[4]).toHaveTextContent('30')
+      expect(row3[5]).toHaveTextContent('0')
+
+      const footers = within(rows[4]).getAllByRole('cell')
+      expect(footers[0]).toHaveTextContent('Total')
+      expect(footers[1]).toHaveTextContent('1/3 complete')
+      expect(footers[2]).toHaveTextContent('6,351')
+      expect(footers[3]).toHaveTextContent('1')
+      expect(footers[4]).toHaveTextContent('34')
+      expect(footers[5]).toHaveTextContent('26')
     })
   })
 

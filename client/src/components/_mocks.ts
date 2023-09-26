@@ -664,6 +664,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
         numUnique: 10,
         numSamplesAudited: 5,
         numSamples: 11,
+        numDiscrepancies: null,
       },
     },
     {
@@ -677,6 +678,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
         numUnique: 20,
         numSamplesAudited: 0,
         numSamples: 22,
+        numDiscrepancies: null,
       },
     },
     {
@@ -690,6 +692,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
         numUnique: 30,
         numSamplesAudited: 31,
         numSamples: 31,
+        numDiscrepancies: 1,
       },
     },
   ],
@@ -705,6 +708,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
         numUnique: 10,
         numSamplesAudited: 11,
         numSamples: 11,
+        numDiscrepancies: 0,
       },
     },
     {
@@ -718,6 +722,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
         numUnique: 20,
         numSamplesAudited: 22,
         numSamples: 22,
+        numDiscrepancies: 2,
       },
     },
     {
@@ -731,6 +736,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
         numUnique: 30,
         numSamplesAudited: 31,
         numSamples: 31,
+        numDiscrepancies: 1,
       },
     },
   ],
@@ -793,6 +799,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
         numUnique: 10,
         numSamplesAudited: 0,
         numSamples: 11,
+        numDiscrepancies: null,
       },
     },
     {
@@ -806,6 +813,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
         numUnique: 20,
         numSamplesAudited: 0,
         numSamples: 22,
+        numDiscrepancies: null,
       },
     },
     {
@@ -819,6 +827,7 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
         numUnique: 30,
         numSamplesAudited: 31,
         numSamples: 31,
+        numDiscrepancies: 0,
       },
     },
   ],
