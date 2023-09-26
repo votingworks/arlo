@@ -38,15 +38,21 @@ def ballot_vote_deltas(
         )
         deltas[choice.id] = reported_vote - audited_vote
 
+    if all(delta == 0 for delta in deltas.values()):
+        return None
+
     return deltas
 
 
 def batch_vote_deltas(
-    reported_results: Dict[str, int], audited_results: Optional[Dict[str, int]],
-) -> Union[str, Dict[str, int]]:
-    if audited_results is None:
-        return "Batch not audited"
-    return {
+    reported_results: Dict[str, int], audited_results: Dict[str, int],
+) -> Optional[ContestVoteDeltas]:
+    deltas = {
         choice_id: reported_results[choice_id] - audited_results[choice_id]
         for choice_id in reported_results.keys()
     }
+
+    if all(delta == 0 for delta in deltas.values()):
+        return None
+
+    return deltas
