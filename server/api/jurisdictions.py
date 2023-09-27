@@ -216,21 +216,41 @@ def round_status_by_jurisdiction(
         return ballot_round_status(election, round)
 
 
-def ballot_round_status(election: Election, round: Round) -> Dict[str, JSONDict]:
+class JurisdictionAuditBoardStatus(str, enum.Enum):
+    NOT_SET_UP = "NOT_SET_UP"
+    IN_PROGRESS = "IN_PROGRESS"
+    SIGNED_OFF = "SIGNED_OFF"
+
+
+def jurisdiction_audit_board_status(
+    jurisdictions: List[Jurisdiction], round: Round
+) -> Dict[str, JurisdictionAuditBoardStatus]:
     audit_boards_set_up = dict(
         AuditBoard.query.filter_by(round_id=round.id)
         .group_by(AuditBoard.jurisdiction_id)
         .values(AuditBoard.jurisdiction_id, func.count())
     )
-    audit_boards_with_ballots_not_signed_off = (
-        dict(
-            AuditBoard.query.filter_by(round_id=round.id, signed_off_at=None)
-            .join(SampledBallot)
-            .group_by(AuditBoard.jurisdiction_id)
-            .values(AuditBoard.jurisdiction_id, func.count(AuditBoard.id.distinct()))
+    audit_boards_with_ballots_not_signed_off = dict(
+        AuditBoard.query.filter_by(round_id=round.id, signed_off_at=None)
+        .join(SampledBallot)
+        .group_by(AuditBoard.jurisdiction_id)
+        .values(AuditBoard.jurisdiction_id, func.count(AuditBoard.id.distinct()))
+    )
+    return {
+        jurisdiction.id: (
+            JurisdictionAuditBoardStatus.NOT_SET_UP
+            if audit_boards_set_up.get(jurisdiction.id, 0) == 0
+            else JurisdictionAuditBoardStatus.IN_PROGRESS
+            if audit_boards_with_ballots_not_signed_off.get(jurisdiction.id, 0) > 0
+            else JurisdictionAuditBoardStatus.SIGNED_OFF
         )
-        if election.online
-        else {}
+        for jurisdiction in jurisdictions
+    }
+
+
+def ballot_round_status(election: Election, round: Round) -> Dict[str, JSONDict]:
+    audit_board_status = jurisdiction_audit_board_status(
+        list(election.jurisdictions), round
     )
 
     ballots_in_round = (
@@ -319,21 +339,23 @@ def ballot_round_status(election: Election, round: Round) -> Dict[str, JSONDict]
     # - if online, all of the audit boards have signed off on their ballots
     # - if offline, the offline results have been recorded for all contests
     def status(jurisdiction: Jurisdiction) -> JurisdictionStatus:
-        num_set_up = audit_boards_set_up.get(jurisdiction.id, 0)
         num_sampled = num_samples(jurisdiction)
 
         # Special case: jurisdictions that don't get any ballots assigned are
         # COMPLETE from the get-go
         if num_sampled == 0:
             return JurisdictionStatus.COMPLETE
-        if num_set_up == 0:
+        if (
+            audit_board_status[jurisdiction.id]
+            == JurisdictionAuditBoardStatus.NOT_SET_UP
+        ):
             return JurisdictionStatus.NOT_STARTED
 
         if election.online:
-            num_not_signed_off = audit_boards_with_ballots_not_signed_off.get(
-                jurisdiction.id, 0
-            )
-            if num_not_signed_off > 0:
+            if (
+                audit_board_status[jurisdiction.id]
+                == JurisdictionAuditBoardStatus.IN_PROGRESS
+            ):
                 return JurisdictionStatus.IN_PROGRESS
         elif full_hand_tally:
             if jurisdiction.finalized_full_hand_tally_results_at is None:
