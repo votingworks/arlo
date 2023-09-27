@@ -8,7 +8,7 @@ from datetime import datetime
 from flask import jsonify, request
 from jsonschema import validate
 from werkzeug.exceptions import BadRequest, Conflict
-from sqlalchemy import func, not_
+from sqlalchemy import and_, func, not_
 
 
 from . import api
@@ -58,6 +58,119 @@ from ..activity_log import (
     EndRound,
 )
 from ..feature_flags import is_enabled_sample_extra_batches_by_counting_group
+
+
+def is_round_ready_to_finish(election: Election, round: Round) -> bool:
+    # For batch audits, check that all jurisdictions with sampled batches this
+    # round have finalized batch results
+    if election.audit_type == AuditType.BATCH_COMPARISON:
+        num_jurisdictions_not_finalized: int = (
+            Jurisdiction.query.filter_by(election_id=election.id)
+            .filter(
+                Jurisdiction.id.in_(
+                    SampledBatchDraw.query.filter_by(round_id=round.id)
+                    .join(Batch)
+                    .with_entities(Batch.jurisdiction_id)
+                    .subquery()
+                )
+            )
+            .filter(
+                Jurisdiction.id.notin_(
+                    BatchResultsFinalized.query.filter_by(round_id=round.id)
+                    .with_entities(BatchResultsFinalized.jurisdiction_id)
+                    .subquery()
+                )
+            )
+            .with_entities(Jurisdiction.id)
+            .count()
+        )
+        return num_jurisdictions_not_finalized == 0
+
+    # For online audits, check that all the audit boards are finished auditing
+    if election.online:
+        num_jurisdictions_without_audit_boards_set_up: int = (
+            # For each jurisdiction...
+            Jurisdiction.query.filter_by(election_id=election.id)
+            # Where there are ballots that haven't been audited...
+            .join(Jurisdiction.batches)
+            .join(Batch.ballots)
+            .filter(SampledBallot.status == BallotStatus.NOT_AUDITED)
+            # And those ballots got sampled this round...
+            .join(SampledBallot.draws)
+            .filter_by(round_id=round.id)
+            # Count the number of audit boards set up.
+            .outerjoin(
+                AuditBoard,
+                and_(
+                    AuditBoard.jurisdiction_id == Jurisdiction.id,
+                    AuditBoard.round_id == round.id,
+                ),
+            )
+            .group_by(Jurisdiction.id)
+            # Finally, count how many jurisdictions have no audit boards set up.
+            .having(func.count(AuditBoard.id) == 0)
+            .count()
+        )
+        num_audit_boards_with_ballots_not_signed_off: int = (
+            AuditBoard.query.filter_by(round_id=round.id, signed_off_at=None)
+            .join(SampledBallot)
+            .group_by(AuditBoard.id)
+            .count()
+        )
+        return (
+            num_jurisdictions_without_audit_boards_set_up == 0
+            and num_audit_boards_with_ballots_not_signed_off == 0
+        )
+
+    # For offline audits, check that we have results recorded for every
+    # jurisdiction that had ballots sampled
+    else:
+        num_jurisdictions_without_results: int
+        # Special case: if we are in a full hand tally, we just check every
+        # jurisdiction in the targeted contest's universe
+        if is_full_hand_tally(round, election):
+            num_jurisdictions_without_results = (
+                Contest.query.filter_by(election_id=election.id, is_targeted=True)
+                .join(Contest.jurisdictions)
+                .outerjoin(
+                    JurisdictionResult,
+                    and_(
+                        JurisdictionResult.jurisdiction_id == Jurisdiction.id,
+                        JurisdictionResult.contest_id == Contest.id,
+                        JurisdictionResult.round_id == round.id,
+                    ),
+                )
+                .group_by(Jurisdiction.id, Contest.id)
+                .having(func.count(JurisdictionResult.result) == 0)
+                .count()
+            )
+        else:
+            num_jurisdictions_without_results = (
+                # For each jurisdiction...
+                Jurisdiction.query.filter_by(election_id=election.id)
+                # Where ballots were sampled...
+                .join(Jurisdiction.batches)
+                .join(Batch.ballots)
+                # And those ballots were sampled this round...
+                .join(SampledBallot.draws)
+                .filter_by(round_id=round.id)
+                .join(SampledBallotDraw.contest)
+                # Count the number of results recorded for each contest.
+                .outerjoin(
+                    JurisdictionResult,
+                    and_(
+                        JurisdictionResult.jurisdiction_id == Jurisdiction.id,
+                        JurisdictionResult.contest_id == Contest.id,
+                        JurisdictionResult.round_id == round.id,
+                    ),
+                )
+                # Finally, count the number of jurisdiction/contest pairs for which
+                # there is no result recorded
+                .group_by(Jurisdiction.id, Contest.id)
+                .having(func.count(JurisdictionResult.result) == 0)
+                .count()
+            )
+        return num_jurisdictions_without_results == 0
 
 
 def is_audit_complete(round: Round):
@@ -210,22 +323,6 @@ def calculate_risk_measurements(election: Election, round: Round):
 
         round_contest.end_p_value = p_value
         round_contest.is_complete = is_complete
-
-
-def end_round(election: Election, round: Round):
-    count_audited_votes(election, round)
-    calculate_risk_measurements(election, round)
-    round.ended_at = datetime.now(timezone.utc)
-
-    db_session.flush()  # Ensure round contest results are queryable by is_audit_complete
-    record_activity(
-        EndRound(
-            timestamp=round.ended_at,
-            base=activity_base(election),
-            round_num=round.round_num,
-            is_audit_complete=is_audit_complete(round),
-        )
-    )
 
 
 @background_task
@@ -517,6 +614,31 @@ def create_round(election: Election):
     db_session.commit()
 
     return jsonify({"status": "ok"})
+
+
+@api.route("/election/<election_id>/round/<round_id>/finish", methods=["POST"])
+@restrict_access([UserType.AUDIT_ADMIN])
+def finish_round(election: Election, round: Round):
+    if not is_round_ready_to_finish(election, round):
+        raise Conflict("Auditing is still in progress")
+
+    count_audited_votes(election, round)
+    calculate_risk_measurements(election, round)
+    round.ended_at = datetime.now(timezone.utc)
+
+    db_session.flush()  # Ensure round contest results are queryable by is_audit_complete
+    record_activity(
+        EndRound(
+            timestamp=round.ended_at,
+            base=activity_base(election),
+            round_num=round.round_num,
+            is_audit_complete=is_audit_complete(round),
+        )
+    )
+
+    db_session.commit()
+
+    return jsonify(status="ok")
 
 
 def serialize_round(round: Round) -> dict:

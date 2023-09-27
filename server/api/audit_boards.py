@@ -10,8 +10,7 @@ from . import api
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
 from ..auth import restrict_access, UserType
-from .rounds import end_round
-from .shared import get_current_round, is_round_complete
+from .shared import get_current_round
 from ..util.jsonschema import validate, JSONDict
 from ..util.binpacking import BalancedBucketList, Bucket
 from ..util.isoformat import isoformat
@@ -379,7 +378,7 @@ def validate_sign_off(sign_off_request: JSONDict, audit_board: AuditBoard):
 def sign_off_audit_board(
     election: Election,
     jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
-    round: Round,
+    round: Round,  # pylint: disable=unused-argument
     audit_board: AuditBoard,
 ):
     validate_sign_off(request.get_json(), audit_board)
@@ -396,9 +395,6 @@ def sign_off_audit_board(
             audit_board_name=audit_board.name,
         )
     )
-
-    if is_round_complete(election, round):
-        end_round(election, round)
 
     db_session.commit()
 
