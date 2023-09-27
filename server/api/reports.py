@@ -3,7 +3,7 @@ from typing import Dict, List, Optional, Tuple, Union, cast as typing_cast
 from collections import defaultdict, Counter
 from sqlalchemy import func, and_
 from sqlalchemy.dialects.postgresql import aggregate_order_by
-from werkzeug.exceptions import Conflict
+from werkzeug.exceptions import Conflict, BadRequest
 
 
 from . import api
@@ -875,4 +875,29 @@ def jursdiction_admin_audit_report(election: Election, jurisdiction: Jurisdictio
     return csv_response(
         csv_io,
         filename=f"audit-report-{jurisdiction_timestamp_name(election, jurisdiction)}.csv",
+    )
+
+
+@api.route("/election/<election_id>/discrepancy-report", methods=["GET"])
+@restrict_access([UserType.AUDIT_ADMIN])
+def audit_admin_discrepancy_report(election: Election):
+    if len(list(election.rounds)) == 0:
+        raise Conflict("Cannot generate report until audit starts")
+
+    if election.audit_type == AuditType.BALLOT_COMPARISON:
+        rows = sampled_ballot_rows(election)
+    elif election.audit_type == AuditType.BATCH_COMPARISON:
+        rows = sampled_batch_rows(election)
+    else:
+        raise BadRequest("Discrepancy report not supported for this audit type")
+
+    csv_io = io.StringIO()
+    report = csv.writer(csv_io)
+    report.writerows(
+        rows[1:]  # Remove section heading, since this report only has one section
+    )
+
+    csv_io.seek(0)
+    return csv_response(
+        csv_io, filename=f"discrepancy-report-{election_timestamp_name(election)}.csv",
     )
