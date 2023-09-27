@@ -5,6 +5,7 @@ from sqlalchemy import func, and_
 from sqlalchemy.dialects.postgresql import aggregate_order_by
 from werkzeug.exceptions import Conflict
 
+
 from . import api
 from ..models import *  # pylint: disable=wildcard-import
 from ..auth import restrict_access, UserType
@@ -25,6 +26,7 @@ from ..api.rounds import (
 from ..api.ballot_manifest import hybrid_contest_total_ballots
 from ..api.cvrs import hybrid_contest_choice_vote_counts
 from ..api.batches import construct_batch_last_edited_by_string
+from ..api.discrepancies import ContestVoteDeltas, ballot_vote_deltas, batch_vote_deltas
 
 
 def pretty_affiliation(affiliation: Optional[str]) -> str:
@@ -158,76 +160,23 @@ def pretty_cvr_interpretation(
     )
 
 
-# { contest_choice_id: vote delta }
-ContestVoteDeltas = Dict[str, int]
-
-
-def ballot_vote_deltas(
-    contest: Contest,
-    reported_cvr: Optional[supersimple.CVR],
-    audited_cvr: Optional[supersimple.CVR],
-) -> Optional[Union[str, ContestVoteDeltas]]:
-    if audited_cvr is None:
-        return "Ballot not found"
-    if reported_cvr is None:
-        return "Ballot not in CVR"
-
-    reported = reported_cvr.get(contest.id)
-    audited = audited_cvr.get(contest.id)
-
-    if audited is None and reported is None:
-        return None
-    if audited is None:
-        audited = {choice.id: "0" for choice in contest.choices}
-    if reported is None:
-        reported = {choice.id: "0" for choice in contest.choices}
-
-    deltas = {}
-    for choice in contest.choices:
-        reported_vote = (
-            0 if reported[choice.id] in ["o", "u"] else int(reported[choice.id])
-        )
-        audited_vote = (
-            0 if audited[choice.id] in ["o", "u"] else int(audited[choice.id])
-        )
-        deltas[choice.id] = reported_vote - audited_vote
-
-    return deltas
-
-
-def contest_vote_deltas(
-    contest: Contest,
-    reported_cvrs: supersimple.CVRS,
-    audited_cvrs: supersimple.SAMPLECVRS,
-) -> Dict[str, Optional[Union[str, ContestVoteDeltas]]]:
-    return {
-        ballot_id: ballot_vote_deltas(
-            contest, reported_cvrs.get(ballot_id), audited_cvr["cvr"]
-        )
-        for ballot_id, audited_cvr in audited_cvrs.items()
-    }
-
-
 def add_sign(value: int) -> str:
     return f"+{value}" if value > 0 else str(value)
 
 
 def pretty_vote_deltas(
-    ballot: SampledBallot,
-    contest: Contest,
-    vote_deltas: Dict[str, Optional[Union[str, ContestVoteDeltas]]],
+    contest: Contest, vote_deltas: Optional[Union[str, ContestVoteDeltas]],
 ) -> str:
-    ballot_vote_deltas = vote_deltas.get(ballot.id)
-    if ballot_vote_deltas is None:
+    if vote_deltas is None:
         return ""
-    if isinstance(ballot_vote_deltas, str):
-        return ballot_vote_deltas
+    if isinstance(vote_deltas, str):
+        return vote_deltas
 
     return pretty_choice_votes(
         {
-            choice.name: add_sign(ballot_vote_deltas[choice.id])
+            choice.name: add_sign(vote_deltas[choice.id])
             for choice in contest.choices
-            if ballot_vote_deltas[choice.id] != 0
+            if vote_deltas[choice.id] != 0
         }
     )
 
@@ -251,29 +200,6 @@ def pretty_choice_votes(
             if not_found is not None
             else []
         )
-    )
-
-
-def batch_vote_deltas(
-    reported_results: Dict[str, int], audited_results: Optional[Dict[str, int]],
-) -> Union[str, Dict[str, int]]:
-    if audited_results is None:
-        return "Batch not audited"
-    return {
-        choice_id: reported_results[choice_id] - audited_results[choice_id]
-        for choice_id in reported_results.keys()
-    }
-
-
-def pretty_batch_vote_deltas(vote_deltas: Union[str, Dict[str, int]],) -> str:
-    if isinstance(vote_deltas, str):
-        return vote_deltas
-    return pretty_choice_votes(
-        {
-            choice_id: add_sign(vote_delta)
-            for choice_id, vote_delta in vote_deltas.items()
-            if vote_delta != 0
-        }
     )
 
 
@@ -727,14 +653,6 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
             )
             for contest in election.contests
         }
-        vote_deltas_by_contest = {
-            contest.id: contest_vote_deltas(
-                contest,
-                cvrs_by_contest[contest.id],
-                audited_cvrs_by_contest[contest.id],
-            )
-            for contest in election.contests
-        }
 
     for ballot in ballots:
         (
@@ -757,11 +675,13 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
                         ballot, contest, cvrs_by_contest[contest.id]
                     )
                     result_values.append(cvr_interpretation)
-                    result_values.append(
-                        pretty_vote_deltas(
-                            ballot, contest, vote_deltas_by_contest[contest.id]
-                        )
+                    audited_result = audited_cvrs_by_contest[contest.id].get(ballot.id)
+                    vote_deltas = audited_result and ballot_vote_deltas(
+                        contest,
+                        cvrs_by_contest[contest.id].get(ballot.id),
+                        audited_result["cvr"],
                     )
+                    result_values.append(pretty_vote_deltas(contest, vote_deltas))
                     result_values.append(
                         pretty_discrepancy(ballot, discrepancies_by_contest[contest.id])
                     )
@@ -838,22 +758,25 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
         ]
     )
     for batch in batches:
-        reported_results = {
-            choice.name: batch.jurisdiction.batch_tallies[batch.name][contest.id][
-                choice.id
-            ]
+        reported_results = batch.jurisdiction.batch_tallies[batch.name][contest.id]
+        reported_results_by_name = {
+            choice.name: reported_results[choice.id]
+            for choice in contest.choices
             for choice in contest.choices
         }
 
         is_audited = batch.id in audit_results_by_batch
         audit_results = (
             {
-                choice.name: audit_results_by_batch[batch.id].get(choice.id, 0)
+                choice.id: audit_results_by_batch[batch.id].get(choice.id, 0)
                 for choice in contest.choices
             }
             if is_audited
             else None
         )
+        audit_results_by_name = audit_results and {
+            choice.name: audit_results[choice.id] for choice in contest.choices
+        }
         error = (
             macro.compute_error(
                 batch.jurisdiction.batch_tallies[batch.name],
@@ -875,10 +798,18 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
                 batch.name,
                 pretty_batch_ticket_numbers(batch, round_id_to_num),
                 pretty_boolean(is_audited),
-                pretty_choice_votes(audit_results) if audit_results else "",
-                pretty_choice_votes(reported_results),
-                pretty_batch_vote_deltas(
-                    batch_vote_deltas(reported_results, audit_results)
+                (
+                    pretty_choice_votes(audit_results_by_name)
+                    if audit_results_by_name
+                    else ""
+                ),
+                pretty_choice_votes(reported_results_by_name),
+                (
+                    pretty_vote_deltas(
+                        contest, batch_vote_deltas(reported_results, audit_results)
+                    )
+                    if audit_results
+                    else ""
                 ),
                 error["counted_as"] if error else "",
                 construct_batch_last_edited_by_string(batch),

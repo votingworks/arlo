@@ -15,6 +15,10 @@ from typing import Dict, Tuple, TypeVar, TypedDict, Optional, List, cast
 from .sampler_contest import Contest
 
 BatchKey = TypeVar("BatchKey")
+# { choice_id: num_votes }
+ChoiceVotes = Dict[str, int]
+# { contest_id: ChoiceVotes }
+BatchResults = Dict[str, ChoiceVotes]
 
 
 class BatchError(TypedDict):
@@ -23,9 +27,7 @@ class BatchError(TypedDict):
 
 
 def compute_error(
-    batch_results: Dict[str, Dict[str, int]],
-    sampled_results: Dict[str, Dict[str, int]],
-    contest: Contest,
+    batch_results: BatchResults, sampled_results: BatchResults, contest: Contest,
 ) -> Optional[BatchError]:
     """
     Computes the error in this batch
@@ -78,9 +80,7 @@ def compute_error(
     return max(errors, key=lambda error: error["weighted_error"])
 
 
-def compute_max_error(
-    batch_results: Dict[str, Dict[str, int]], contest: Contest
-) -> Decimal:
+def compute_max_error(batch_results: BatchResults, contest: Contest) -> Decimal:
     """
     Computes the maximum possible error in this batch for this contest
 
@@ -129,8 +129,8 @@ def compute_max_error(
 
 
 def compute_U(
-    reported_results: Dict[BatchKey, Dict[str, Dict[str, int]]],
-    sample_results: Dict[BatchKey, Dict[str, Dict[str, int]]],
+    reported_results: Dict[BatchKey, BatchResults],
+    sample_results: Dict[BatchKey, BatchResults],
     contest: Contest,
 ) -> Decimal:
     """
@@ -172,8 +172,8 @@ def compute_U(
 def get_sample_sizes(
     risk_limit: int,
     contest: Contest,
-    reported_results: Dict[BatchKey, Dict[str, Dict[str, int]]],
-    sample_results: Dict[BatchKey, Dict[str, Dict[str, int]]],
+    reported_results: Dict[BatchKey, BatchResults],
+    sample_results: Dict[BatchKey, BatchResults],
 ) -> int:
     """
     Computes initial sample sizes parameterized by likelihood that the
@@ -242,8 +242,8 @@ def get_sample_sizes(
 def compute_risk(
     risk_limit: int,
     contest: Contest,
-    reported_results: Dict[BatchKey, Dict[str, Dict[str, int]]],
-    sample_results: Dict[BatchKey, Dict[str, Dict[str, int]]],
+    reported_results: Dict[BatchKey, BatchResults],
+    sample_results: Dict[BatchKey, BatchResults],
     sample_ticket_numbers: Dict[str, BatchKey],
 ) -> Tuple[float, bool]:
     """

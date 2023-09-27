@@ -1,3 +1,4 @@
+from collections import Counter
 import io
 import json
 import csv
@@ -400,6 +401,15 @@ def test_contest_names_dont_match_cvr_contests(
     )
 
 
+def ballot_key(ballot: SampledBallot):
+    return (
+        ballot.batch.jurisdiction.name,
+        ballot.batch.tabulator,
+        ballot.batch.name,
+        ballot.ballot_position,
+    )
+
+
 def audit_all_ballots(
     round_id: str,
     audit_results,
@@ -415,14 +425,6 @@ def audit_all_ballots(
         Contest.query.get(opportunistic_contest_id).choices,
         key=lambda choice: str(choice.name),
     )
-
-    def ballot_key(ballot: SampledBallot):
-        return (
-            ballot.batch.jurisdiction.name,
-            ballot.batch.tabulator,
-            ballot.batch.name,
-            ballot.ballot_position,
-        )
 
     round = Round.query.get(round_id)
     sampled_ballots = (
@@ -515,6 +517,9 @@ def audit_all_ballots(
                 has_invalid_write_in=has_invalid_write_in,
             )
 
+    audit_boards = AuditBoard.query.filter_by(round_id=round.id).all()
+    for audit_board in audit_boards:
+        audit_board.signed_off_at = datetime.now(timezone.utc)
     end_round(round.election, round)
     db_session.commit()
 
@@ -542,6 +547,21 @@ def check_discrepancies(report_data, audit_results):
             parse_discrepancy(row["Change in Margin: Contest 1"]),
             parse_discrepancy(row["Change in Margin: Contest 2"]),
         ) == expected_discrepancies, "Discrepancy mismatch for {}".format(ballot)
+
+
+# Counts the expected discrepancies in the audit results by jurisdiction
+def count_discrepancies(audit_results):
+    count = Counter()
+    for ballot, (_, expected_discrepancies) in audit_results.items():
+        jurisdiction_name, _, _, _ = ballot
+        count[jurisdiction_name] += len(
+            [
+                discrepancy
+                for discrepancy in expected_discrepancies
+                if discrepancy is not None
+            ]
+        )
+    return count
 
 
 def test_ballot_comparison_two_rounds(
@@ -647,7 +667,7 @@ def test_ballot_comparison_two_rounds(
     # specify our audit results.
     # Tabulator, Batch, Ballot, Choice 1-1, Choice 1-2, Choice 2-1, Choice 2-2, Choice 2-3
     # We also specify the expected discrepancies.
-    audit_results = {
+    round_1_audit_results = {
         ("J1", "TABULATOR1", "BATCH1", 1): ("0,1,1,1,0", (None, None)),
         ("J1", "TABULATOR1", "BATCH2", 2): ("0,1,1,1,0", (None, None)),
         ("J1", "TABULATOR1", "BATCH2", 3): ("1,1,0,1,1", (1, 2)),  # CVR: 1,0,1,0,1
@@ -668,15 +688,31 @@ def test_ballot_comparison_two_rounds(
     }
 
     audit_all_ballots(
-        round_1_id, audit_results, target_contest_id, opportunistic_contest_id
+        round_1_id, round_1_audit_results, target_contest_id, opportunistic_contest_id
     )
 
-    # Check the audit report
+    # Check jurisdiction status after auditing
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    assert jurisdictions[0]["currentRoundStatus"]["status"] == "COMPLETE"
+    assert jurisdictions[1]["currentRoundStatus"]["status"] == "COMPLETE"
+    discrepancy_counts = count_discrepancies(round_1_audit_results)
+    assert (
+        jurisdictions[0]["currentRoundStatus"]["numDiscrepancies"]
+        == discrepancy_counts[jurisdictions[0]["name"]]
+    )
+    assert (
+        jurisdictions[1]["currentRoundStatus"]["numDiscrepancies"]
+        == discrepancy_counts[jurisdictions[1]["name"]]
+    )
+    snapshot.assert_match(jurisdictions[0]["currentRoundStatus"])
+    snapshot.assert_match(jurisdictions[1]["currentRoundStatus"])
+
+    # Check the audit report
     rv = client.get(f"/api/election/{election_id}/report")
     assert_match_report(rv.data, snapshot)
-
-    check_discrepancies(rv.data, audit_results)
+    check_discrepancies(rv.data, round_1_audit_results)
 
     # Start a second round
     rv = client.get(f"/api/election/{election_id}/sample-sizes/2")
@@ -703,21 +739,66 @@ def test_ballot_comparison_two_rounds(
     assert len(sample_size_options) == 1
     assert sample_size_options[target_contest_id][0] == sample_size
 
+    # JAs create audit boards
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    for jurisdiction_id in target_contest["jurisdictionIds"]:
+        rv = post_json(
+            client,
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_2_id}/audit-board",
+            [{"name": "Audit Board #1"}],
+        )
+        assert_ok(rv)
+
     # For round 2, audit results should not have any positive discrepancies so
     # the audit can complete.
-    audit_results = {
+    round_2_audit_results = {
         ("J2", "TABULATOR1", "BATCH1", 2): ("1,0,1,0,1", (None, None)),
         ("J2", "TABULATOR1", "BATCH2", 3): ("1,0,1,0,1", (None, None)),
         ("J2", "TABULATOR2", "BATCH2", 4): (",,1,1,0", (None, -1)),
     }
 
     audit_all_ballots(
-        round_2_id, audit_results, target_contest_id, opportunistic_contest_id
+        round_2_id, round_2_audit_results, target_contest_id, opportunistic_contest_id
     )
+
+    # Check jurisdiction status after auditing
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    assert jurisdictions[0]["currentRoundStatus"]["status"] == "COMPLETE"
+    assert jurisdictions[1]["currentRoundStatus"]["status"] == "COMPLETE"
+    round_2_sampled_ballot_keys = [
+        ballot_key(ballot)
+        for ballot in SampledBallot.query.join(SampledBallotDraw)
+        .filter_by(round_id=round_2_id)
+        .all()
+    ]
+    discrepancy_counts = count_discrepancies(
+        {
+            **{
+                ballot: result
+                for ballot, result in round_1_audit_results.items()
+                if ballot in round_2_sampled_ballot_keys
+            },
+            **round_2_audit_results,
+        }
+    )
+    assert (
+        jurisdictions[0]["currentRoundStatus"]["numDiscrepancies"]
+        == discrepancy_counts[jurisdictions[0]["name"]]
+    )
+    assert (
+        jurisdictions[1]["currentRoundStatus"]["numDiscrepancies"]
+        == discrepancy_counts[jurisdictions[1]["name"]]
+    )
+    snapshot.assert_match(jurisdictions[0]["currentRoundStatus"])
+    snapshot.assert_match(jurisdictions[1]["currentRoundStatus"])
 
     rv = client.get(f"/api/election/{election_id}/report")
     assert_match_report(rv.data, snapshot)
-    check_discrepancies(rv.data, audit_results)
+    check_discrepancies(rv.data, round_2_audit_results)
 
 
 # This function can be used to generate the correct audit results in case you
