@@ -10,13 +10,14 @@ from sqlalchemy import func
 from sqlalchemy.orm import joinedload
 from werkzeug.exceptions import Conflict, BadRequest
 
-
 from . import api
 from ..models import *  # pylint: disable=wildcard-import
 from ..database import db_session
 from ..auth import restrict_access, UserType
-from .rounds import (
+from .shared import (
+    ballot_vote_deltas,
     batch_tallies,
+    batch_vote_deltas,
     cvrs_for_contest,
     get_current_round,
     is_full_hand_tally,
@@ -45,7 +46,6 @@ from ..util.csv_parse import (
     validate_csv_mimetype,
 )
 from ..util.csv_download import csv_response
-from ..api.discrepancies import ballot_vote_deltas, batch_vote_deltas
 
 logger = logging.getLogger("arlo")
 

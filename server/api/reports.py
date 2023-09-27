@@ -17,16 +17,18 @@ from ..util.csv_download import (
 from ..util.isoformat import isoformat
 from ..util.collections import group_by
 from ..audit_math import supersimple, sampler_contest, macro
-from ..api.rounds import (
+from ..api.ballot_manifest import hybrid_contest_total_ballots
+from ..api.cvrs import hybrid_contest_choice_vote_counts
+from ..api.batches import construct_batch_last_edited_by_string
+from ..api.shared import (
+    ContestVoteDeltas,
+    ballot_vote_deltas,
+    batch_vote_deltas,
     cvrs_for_contest,
     is_full_hand_tally,
     sampled_ballot_interpretations_to_cvrs,
     samples_not_found_by_round,
 )
-from ..api.ballot_manifest import hybrid_contest_total_ballots
-from ..api.cvrs import hybrid_contest_choice_vote_counts
-from ..api.batches import construct_batch_last_edited_by_string
-from ..api.discrepancies import ContestVoteDeltas, ballot_vote_deltas, batch_vote_deltas
 
 
 def pretty_affiliation(affiliation: Optional[str]) -> str:

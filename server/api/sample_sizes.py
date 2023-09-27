@@ -4,9 +4,11 @@ from collections import Counter, defaultdict
 from flask import jsonify
 from werkzeug.exceptions import BadRequest
 
+
 from . import api
 from ..models import *  # pylint: disable=wildcard-import
 from ..database import db_session
+from .shared import BatchTallies
 from ..auth import restrict_access, UserType
 from ..audit_math import (
     ballot_polling,
@@ -37,7 +39,7 @@ def validate_all_manifests_uploaded(contest: Contest):
 def validate_batch_tallies(contest):
     total_votes_by_choice: Dict[str, int] = defaultdict(int)
     for jurisdiction in contest.jurisdictions:
-        batch_tallies = typing_cast(rounds.BatchTallies, jurisdiction.batch_tallies)
+        batch_tallies = typing_cast(BatchTallies, jurisdiction.batch_tallies)
         if batch_tallies is None:
             raise UserError(
                 "Some jurisdictions haven't uploaded their batch tallies files yet."

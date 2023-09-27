@@ -7,7 +7,8 @@ from sqlalchemy import func
 from . import api
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
-from .rounds import is_round_complete, end_round, get_current_round
+from .shared import is_round_complete, get_current_round
+from .rounds import end_round
 from ..auth import restrict_access, UserType
 from ..util.jsonschema import JSONDict, validate
 from ..activity_log.activity_log import RecordResults, activity_base, record_activity

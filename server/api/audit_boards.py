@@ -10,7 +10,8 @@ from . import api
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
 from ..auth import restrict_access, UserType
-from .rounds import get_current_round, is_round_complete, end_round
+from .rounds import end_round
+from .shared import get_current_round, is_round_complete
 from ..util.jsonschema import validate, JSONDict
 from ..util.binpacking import BalancedBucketList, Bucket
 from ..util.isoformat import isoformat
