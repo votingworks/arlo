@@ -51,39 +51,26 @@ export const FilterInput: React.FC<IFilterInputProps> = ({
   </div>
 )
 
-interface IDownloadCSVButtonProps {
-  tableId: string
+export const downloadTableAsCSV = (
+  tableId: string,
   fileName?: string
-}
-
-export const DownloadCSVButton: React.FC<IDownloadCSVButtonProps> = ({
-  tableId,
-  fileName,
-}) => {
-  const onClick = () => {
-    const table = document.querySelector(`#${tableId}`)!
-    const headers = Array.from(table.querySelectorAll('th')).map(
-      header => header.innerText
-    )
-    const bodyAndFooter = Array.from(
-      table.querySelectorAll('tbody tr, tfoot tr')
-    ).map(row =>
-      Array.from(row.querySelectorAll('td')).map(cell => cell.innerText)
-    )
-    const tableRows = [headers].concat(bodyAndFooter)
-    const quotedRows = tableRows.map(row =>
-      row.map(cell => `"${cell.replace(/"/g, '""')}"`)
-    )
-    const csvString = quotedRows.map(row => row.join(',')).join('\n')
-    const csvBlob = new Blob([csvString], { type: 'text/csv' })
-    downloadFile(csvBlob, fileName)
-  }
-
-  return (
-    <Button icon="download" onClick={onClick}>
-      Download as CSV
-    </Button>
+): void => {
+  const table = document.querySelector(`#${tableId}`)!
+  const headers = Array.from(table.querySelectorAll('th')).map(
+    header => header.innerText
   )
+  const bodyAndFooter = Array.from(
+    table.querySelectorAll('tbody tr, tfoot tr')
+  ).map(row =>
+    Array.from(row.querySelectorAll('td')).map(cell => cell.innerText)
+  )
+  const tableRows = [headers].concat(bodyAndFooter)
+  const quotedRows = tableRows.map(row =>
+    row.map(cell => `"${cell.replace(/"/g, '""')}"`)
+  )
+  const csvString = quotedRows.map(row => row.join(',')).join('\n')
+  const csvBlob = new Blob([csvString], { type: 'text/csv' })
+  downloadFile(csvBlob, fileName)
 }
 
 // eslint-disable-next-line @typescript-eslint/ban-types

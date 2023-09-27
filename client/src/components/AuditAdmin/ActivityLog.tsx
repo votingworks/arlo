@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
 import { useQuery } from 'react-query'
-import { HTMLSelect, H3 } from '@blueprintjs/core'
+import { HTMLSelect, H3, Button } from '@blueprintjs/core'
 import { IOrganization, useAuthDataContext, IAuditAdmin } from '../UserContext'
 import { Wrapper, Inner } from '../Atoms/Wrapper'
-import { StyledTable, DownloadCSVButton } from '../Atoms/Table'
+import { StyledTable, downloadTableAsCSV } from '../Atoms/Table'
 import { fetchApi } from '../../utils/api'
 
 interface IActivity {
@@ -130,10 +130,17 @@ const ActivityLogOrgsLoaded = ({
                   />
                 </label>
               )}
-              <DownloadCSVButton
-                tableId="activityLog"
-                fileName={`arlo-activity-${organization.name}.csv`}
-              />
+              <Button
+                icon="download"
+                onClick={() => {
+                  downloadTableAsCSV(
+                    'activityLog',
+                    `arlo-activity-${organization.name}.csv`
+                  )
+                }}
+              >
+                Download as CSV
+              </Button>
             </div>
           </div>
           <StyledTable id="activityLog" style={{ tableLayout: 'auto' }}>

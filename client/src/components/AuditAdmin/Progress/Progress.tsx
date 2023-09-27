@@ -15,7 +15,7 @@ import {
   Table,
   sortByRank,
   FilterInput,
-  DownloadCSVButton,
+  downloadTableAsCSV,
 } from '../../Atoms/Table'
 import { IRound } from '../useRoundsAuditAdmin'
 import StatusTag from '../../Atoms/StatusTag'
@@ -341,12 +341,19 @@ const Progress: React.FC<IProgressProps> = ({
             style={{ marginRight: '20px', marginBottom: 0 }}
           />
         )}
-        <DownloadCSVButton
-          tableId="progress-table"
-          fileName={`audit-progress-${
-            auditSettings.auditName
-          }-${new Date().toISOString()}.csv`}
-        />
+        <Button
+          icon="download"
+          onClick={() => {
+            downloadTableAsCSV(
+              'progress-table',
+              `audit-progress-${
+                auditSettings.auditName
+              }-${new Date().toISOString()}.csv`
+            )
+          }}
+        >
+          Download Table as CSV
+        </Button>
       </TableControls>
       <Table
         data={filteredJurisdictions}
