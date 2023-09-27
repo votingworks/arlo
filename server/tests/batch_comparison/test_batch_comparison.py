@@ -438,6 +438,14 @@ def test_batch_comparison_round_2(
         {"J1": expected_discrepancies_j1, "J2": expected_discrepancies_j2},
         contests[0]["choices"],
     )
+    audit_report = rv.data.decode("utf-8")
+
+    # Check the discrepancy report
+    rv = client.get(f"/api/election/{election_id}/discrepancy-report")
+    assert (
+        rv.data.decode("utf-8")
+        == audit_report.split("######## SAMPLED BATCHES ########\r\n")[1]
+    )
 
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -595,6 +603,14 @@ def test_batch_comparison_batches_sampled_multiple_times(
     }
     check_discrepancies(
         rv.data, expected_discrepancies, contests[0]["choices"],
+    )
+    audit_report = rv.data.decode("utf-8")
+
+    # Check the discrepancy report
+    rv = client.get(f"/api/election/{election_id}/discrepancy-report")
+    assert (
+        rv.data.decode("utf-8")
+        == audit_report.split("######## SAMPLED BATCHES ########\r\n")[1]
     )
 
 

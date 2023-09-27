@@ -94,6 +94,17 @@ def test_report_before_audit_starts(
         ]
     }
 
+    rv = client.get(f"/api/election/{election_id}/discrepancy-report")
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Cannot generate report until audit starts",
+            }
+        ]
+    }
+
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
@@ -106,6 +117,24 @@ def test_report_before_audit_starts(
             {
                 "errorType": "Conflict",
                 "message": "Cannot generate report until audit starts",
+            }
+        ]
+    }
+
+
+def test_discrepancy_report_wrong_audit_type(
+    client: FlaskClient,
+    election_id: str,
+    round_1_id: str,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/discrepancy-report")
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Bad Request",
+                "message": "Discrepancy report not supported for this audit type",
             }
         ]
     }

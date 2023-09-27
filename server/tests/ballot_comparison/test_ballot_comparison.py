@@ -713,6 +713,14 @@ def test_ballot_comparison_two_rounds(
     rv = client.get(f"/api/election/{election_id}/report")
     assert_match_report(rv.data, snapshot)
     check_discrepancies(rv.data, round_1_audit_results)
+    audit_report = rv.data.decode("utf-8")
+
+    # Check the discrepancy report
+    rv = client.get(f"/api/election/{election_id}/discrepancy-report")
+    assert (
+        rv.data.decode("utf-8")
+        == audit_report.split("######## SAMPLED BALLOTS ########\r\n")[1]
+    )
 
     # Start a second round
     rv = client.get(f"/api/election/{election_id}/sample-sizes/2")
@@ -799,6 +807,14 @@ def test_ballot_comparison_two_rounds(
     rv = client.get(f"/api/election/{election_id}/report")
     assert_match_report(rv.data, snapshot)
     check_discrepancies(rv.data, round_2_audit_results)
+    audit_report = rv.data.decode("utf-8")
+
+    # Check the discrepancy report
+    rv = client.get(f"/api/election/{election_id}/discrepancy-report")
+    assert (
+        rv.data.decode("utf-8")
+        == audit_report.split("######## SAMPLED BALLOTS ########\r\n")[1]
+    )
 
 
 # This function can be used to generate the correct audit results in case you
@@ -1263,8 +1279,15 @@ def test_ballot_comparison_ess(
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/report")
     assert_match_report(rv.data, snapshot)
-
     check_discrepancies(rv.data, audit_results)
+    audit_report = rv.data.decode("utf-8")
+
+    # Check the discrepancy report
+    rv = client.get(f"/api/election/{election_id}/discrepancy-report")
+    assert (
+        rv.data.decode("utf-8")
+        == audit_report.split("######## SAMPLED BALLOTS ########\r\n")[1]
+    )
 
 
 def test_ballot_comparison_sample_preview(
