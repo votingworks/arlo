@@ -11,7 +11,6 @@ from ..auth.auth_helpers import UserType
 from ..auth import auth_helpers
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
-from ..api.audit_boards import end_round
 
 
 DEFAULT_SUPPORT_EMAIL = "support@example.org"
@@ -190,7 +189,6 @@ def run_audit_round(
     vote_ratio: float,
     invalid_write_in_ratio: float = 0,
 ):
-    round = Round.query.get(round_id)
     contest = Contest.query.get(target_contest_id)
     other_contest_ids = set(contest_ids) - {target_contest_id}
     ballot_draws = (
@@ -234,7 +232,11 @@ def run_audit_round(
                 other_contest_id,
                 Interpretation.CONTEST_NOT_ON_BALLOT,
             )
-    end_round(round.election, round)
+
+    audit_boards = AuditBoard.query.filter_by(round_id=round_id).all()
+    for audit_board in audit_boards:
+        audit_board.signed_off_at = datetime.now(timezone.utc)
+
     db_session.commit()
 
 
@@ -244,7 +246,6 @@ def run_audit_round_all_blanks(
     contest_ids: List[str],
     invalid_write_in_ratio: float = 0,
 ):
-    round = Round.query.get(round_id)
     contest = Contest.query.get(target_contest_id)
     other_contest_ids = set(contest_ids) - {target_contest_id}
     ballot_draws = (
@@ -271,7 +272,6 @@ def run_audit_round_all_blanks(
                 other_contest_id,
                 Interpretation.CONTEST_NOT_ON_BALLOT,
             )
-    end_round(round.election, round)
     db_session.commit()
 
 

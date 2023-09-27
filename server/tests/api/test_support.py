@@ -658,32 +658,29 @@ def test_support_clear_offline_results_ballot_polling(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = post_json(
-        client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
-        [{"name": "Audit Board #1"}],
-    )
-    assert_ok(rv)
-    contests = (
-        Contest.query.filter_by(election_id=election_id)
-        .order_by(Contest.created_at)
-        .all()
-    )
-    rv = put_json(
-        client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results",
-        {
-            contest.id: {choice.id: 1 for choice in contest.choices}
-            for contest in contests
-        },
-    )
-    assert_ok(rv)
-    rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results"
-    )
-
-    rv = client.get(f"/api/support/jurisdictions/{jurisdiction_ids[0]}")
-    assert_is_date(json.loads(rv.data)["recordedResultsAt"])
+    for jurisdiction_id in jurisdiction_ids[:2]:
+        rv = post_json(
+            client,
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_1_id}/audit-board",
+            [{"name": "Audit Board #1"}],
+        )
+        assert_ok(rv)
+        contests = (
+            Contest.query.filter_by(election_id=election_id)
+            .order_by(Contest.created_at)
+            .all()
+        )
+        rv = put_json(
+            client,
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_1_id}/results",
+            {
+                contest.id: {choice.id: 1 for choice in contest.choices}
+                for contest in contests
+            },
+        )
+        assert_ok(rv)
+        rv = client.get(f"/api/support/jurisdictions/{jurisdiction_ids[0]}")
+        assert_is_date(json.loads(rv.data)["recordedResultsAt"])
 
     # Clear results
     rv = client.delete(f"/api/support/jurisdictions/{jurisdiction_ids[0]}/results")
@@ -707,8 +704,18 @@ def test_support_clear_offline_results_ballot_polling(
     assert json.loads(rv.data)["recordedResultsAt"] is None
 
     # End the round
-    election = Election.query.get(election_id)
-    end_round(election, election.rounds[0])
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results",
+        {
+            contest.id: {choice.id: 1 for choice in contest.choices}
+            for contest in contests
+        },
+    )
+    assert_ok(rv)
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.post(f"/api/election/{election_id}/round/{round_1_id}/finish")
+    assert_ok(rv)
 
     # Can't clear results after round ends
     rv = client.delete(f"/api/support/jurisdictions/{jurisdiction_ids[0]}/results")
@@ -824,7 +831,9 @@ def test_support_reopen_current_round(
 
     set_support_user(client, DEFAULT_SUPPORT_EMAIL)
 
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     run_audit_round(round_1_id, contest_ids[0], contest_ids, 0.55)
+    rv = client.post(f"/api/election/{election_id}/round/{round_1_id}/finish")
     assert is_round_completed(round_1_id)
 
     rv = client.patch(f"/api/support/elections/{election_id}/reopen-current-round")
@@ -832,7 +841,9 @@ def test_support_reopen_current_round(
     assert not is_round_completed(round_1_id)
 
     # Verify that the round can be completed again
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     run_audit_round(round_1_id, contest_ids[0], contest_ids, 0.55)
+    rv = client.post(f"/api/election/{election_id}/round/{round_1_id}/finish")
     assert is_round_completed(round_1_id)
 
 

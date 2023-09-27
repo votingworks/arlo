@@ -397,6 +397,10 @@ def test_batch_comparison_round_2(
     snapshot.assert_match(jurisdictions[0]["currentRoundStatus"])
     snapshot.assert_match(jurisdictions[1]["currentRoundStatus"])
 
+    # End the round
+    rv = client.post(f"/api/election/{election_id}/round/{round_1_id}/finish")
+    assert_ok(rv)
+
     # Start a second round
     rv = client.get(f"/api/election/{election_id}/sample-sizes/2")
     sample_size_options = json.loads(rv.data)["sampleSizes"]
@@ -603,6 +607,10 @@ def test_batch_comparison_batches_sampled_multiple_times(
     assert jurisdictions[1]["currentRoundStatus"]["numDiscrepancies"] == 0
     snapshot.assert_match(jurisdictions[0]["currentRoundStatus"])
     snapshot.assert_match(jurisdictions[1]["currentRoundStatus"])
+
+    # End the round
+    rv = client.post(f"/api/election/{election_id}/round/{round_1_id}/finish")
+    assert_ok(rv)
 
     # Audit should be complete
     rv = client.get(f"/api/election/{election_id}/round")

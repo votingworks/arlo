@@ -142,12 +142,10 @@ def test_run_offline_audit(
     assert rv.status_code == 200
     assert json.loads(rv.data) == jurisdiction_2_results
 
-    # Round should be over
-    rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round"
-    )
-    rounds = json.loads(rv.data)["rounds"]
-    assert rounds[0]["endedAt"] is not None
+    # End the round
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.post(f"/api/election/{election_id}/round/{round_id}/finish")
+    assert_ok(rv)
 
     snapshot.assert_match(
         {
@@ -288,7 +286,11 @@ def test_offline_results_bad_round(
         )
         assert_ok(rv)
 
+    # End the round
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.post(f"/api/election/{election_id}/round/{round_1_id}/finish")
+    assert_ok(rv)
+
     rv = client.get(f"/api/election/{election_id}/sample-sizes/2")
     sample_size_options = json.loads(rv.data)["sampleSizes"]
     rv = post_json(

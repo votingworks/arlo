@@ -642,6 +642,9 @@ def test_audit_boards_sign_off_happy_path(
     audit_board_round_1_ids: List[str],
 ):
     def run_audit_board_flow(jurisdiction_id: str, audit_board_id: str):
+        set_logged_in_user(
+            client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+        )
         member_1, member_2 = set_up_audit_board(
             client,
             election_id,
@@ -660,16 +663,18 @@ def test_audit_boards_sign_off_happy_path(
 
     run_audit_board_flow(jurisdiction_ids[0], audit_board_round_1_ids[0])
 
-    # After one audit board signs off, shouldn't end the round yet
-    round = Round.query.get(round_1_id)
-    assert round.ended_at is None
+    # After one audit board signs off, shouldn't allow ending the round yet
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.post(f"/api/election/{election_id}/round/{round_1_id}/finish")
+    assert rv.status_code == 409
 
     run_audit_board_flow(jurisdiction_ids[0], audit_board_round_1_ids[1])
 
-    # After second audit board signs off, shouldn't end the round yet because
-    # the other jurisdictions still didn't set up audit boards
-    round = Round.query.get(round_1_id)
-    assert round.ended_at is None
+    # After second audit board signs off, shouldn't allow ending the round yet
+    # because the other jurisdictions still didn't set up audit boards
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.post(f"/api/election/{election_id}/round/{round_1_id}/finish")
+    assert rv.status_code == 409
 
     # Create an audit board for the other jurisdiction that had some ballots sampled
     email = "ja1@example.com"
@@ -701,9 +706,11 @@ def test_audit_boards_sign_off_happy_path(
 
     run_audit_board_flow(jurisdiction_ids[1], audit_board["id"])
 
-    # Now the round should be over
-    round = Round.query.get(round_1_id)
-    assert round.ended_at is not None
+    # Now the round should be endable
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.post(f"/api/election/{election_id}/round/{round_1_id}/finish")
+    assert_ok(rv)
+
     results = (
         RoundContestResult.query.filter_by(round_id=round_1_id)
         .order_by(RoundContestResult.result)
@@ -1180,6 +1187,8 @@ def test_reopen_audit_board_error_cases(
     }
 
     run_audit_round(round_1_id, contest_ids[0], contest_ids, 0.55)
+    rv = client.post(f"/api/election/{election_id}/round/{round_1_id}/finish")
+    assert_ok(rv)
 
     rv = client.delete(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/sign-off"

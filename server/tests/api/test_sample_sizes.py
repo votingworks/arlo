@@ -72,6 +72,8 @@ def test_sample_sizes_round_2(
     snapshot,
 ):
     run_audit_round(round_1_id, contest_ids[0], contest_ids, 0.5)
+    rv = client.post(f"/api/election/{election_id}/round/{round_1_id}/finish")
+    assert_ok(rv)
 
     # Requesting round 1 sizes should return previous sample sizes
     rv = client.get(f"/api/election/{election_id}/sample-sizes/1")

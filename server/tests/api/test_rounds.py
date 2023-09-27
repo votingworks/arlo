@@ -104,6 +104,8 @@ def test_rounds_create_two(
     snapshot,
 ):
     run_audit_round(round_1_id, contest_ids[0], contest_ids, 0.5)
+    rv = client.post(f"/api/election/{election_id}/round/{round_1_id}/finish")
+    assert_ok(rv)
 
     rv = client.get(f"/api/election/{election_id}/sample-sizes/2")
     sample_size_options = json.loads(rv.data)["sampleSizes"]
@@ -184,6 +186,8 @@ def test_rounds_complete_audit(
     client: FlaskClient, election_id: str, contest_ids: List[str], round_1_id: str,
 ):
     run_audit_round(round_1_id, contest_ids[0], contest_ids, 0.7)
+    rv = client.post(f"/api/election/{election_id}/round/{round_1_id}/finish")
+    assert_ok(rv)
 
     expected_rounds = {
         "rounds": [
@@ -213,6 +217,8 @@ def test_rounds_round_2_required_if_all_blanks(
     client: FlaskClient, election_id: str, contest_ids: List[str], round_1_id: str,
 ):
     run_audit_round_all_blanks(round_1_id, contest_ids[0], contest_ids)
+    rv = client.post(f"/api/election/{election_id}/round/{round_1_id}/finish")
+    assert_ok(rv)
     rv = client.get(f"/api/election/{election_id}/round")
     rounds = json.loads(rv.data)["rounds"]
     assert len(rounds) == 1
@@ -226,6 +232,8 @@ def test_rounds_end_logic_unaffected_by_invalid_write_ins_1(
     run_audit_round(
         round_1_id, contest_ids[0], contest_ids, 0.7, invalid_write_in_ratio=1
     )
+    rv = client.post(f"/api/election/{election_id}/round/{round_1_id}/finish")
+    assert_ok(rv)
     rv = client.get(f"/api/election/{election_id}/round")
     rounds = json.loads(rv.data)["rounds"]
     assert len(rounds) == 1
@@ -239,6 +247,8 @@ def test_rounds_end_logic_unaffected_by_invalid_write_ins_2(
     run_audit_round(
         round_1_id, contest_ids[0], contest_ids, 0.5, invalid_write_in_ratio=1
     )
+    rv = client.post(f"/api/election/{election_id}/round/{round_1_id}/finish")
+    assert_ok(rv)
     rv = client.get(f"/api/election/{election_id}/round")
     rounds = json.loads(rv.data)["rounds"]
     assert len(rounds) == 1
@@ -252,6 +262,8 @@ def test_rounds_end_logic_unaffected_by_invalid_write_ins_3(
     run_audit_round_all_blanks(
         round_1_id, contest_ids[0], contest_ids, invalid_write_in_ratio=1
     )
+    rv = client.post(f"/api/election/{election_id}/round/{round_1_id}/finish")
+    assert_ok(rv)
     rv = client.get(f"/api/election/{election_id}/round")
     rounds = json.loads(rv.data)["rounds"]
     assert len(rounds) == 1

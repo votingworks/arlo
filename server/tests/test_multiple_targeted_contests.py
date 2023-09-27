@@ -102,9 +102,14 @@ def test_multiple_targeted_contests_two_rounds(
     # audit any for Contest 2, which should still trigger a second round.
     run_audit_round(round_1.id, contest_ids[0], contest_ids, 0.7)
 
+    # End the round
+    rv = client.post(f"/api/election/{election_id}/round/{round_1.id}/finish")
+    assert_ok(rv)
+
+    # The audit should not be complete
     rv = client.get(f"/api/election/{election_id}/round")
     rounds = json.loads(rv.data)["rounds"]
-    assert rounds[0]["endedAt"] is not None
+    assert_is_date(rounds[0]["endedAt"])
     assert rounds[0]["isAuditComplete"] is False
 
     # Check that the right number of ballots were sampled for each contest
@@ -146,7 +151,6 @@ def test_multiple_targeted_contests_two_rounds(
 
     rv = client.get(f"/api/election/{election_id}/sample-sizes/2")
     sample_size_options = json.loads(rv.data)["sampleSizes"]
-    print(sample_size_options)
 
     rv = post_json(
         client,
@@ -163,26 +167,32 @@ def test_multiple_targeted_contests_two_rounds(
 
     rv = client.get(f"/api/election/{election_id}/round")
     rounds = json.loads(rv.data)["rounds"]
+    round_2_id = rounds[1]["id"]
 
     # Check that we used the correct sample size (90% prob for Contest 2)
     # Should only have samples for Contest 2
     contest_2_ballots = SampledBallotDraw.query.filter_by(
-        round_id=rounds[1]["id"], contest_id=contest_ids[1]
+        round_id=round_2_id, contest_id=contest_ids[1]
     ).count()
     snapshot.assert_match(contest_2_ballots)
 
     # Run the second round, auditing all the ballots for the second contest to complete the audit
     run_audit_round(rounds[1]["id"], contest_ids[1], contest_ids[1:], 0.7)
 
+    # End the round
+    rv = client.post(f"/api/election/{election_id}/round/{round_2_id}/finish")
+    assert_ok(rv)
+
+    # The audit should be complete
     rv = client.get(f"/api/election/{election_id}/round")
     rounds = json.loads(rv.data)["rounds"]
-    assert rounds[1]["endedAt"] is not None
+    assert_is_date(rounds[1]["endedAt"])
     assert rounds[1]["isAuditComplete"] is True
 
     # Make sure the votes got counted correctly
     round_contests = {
         round_contest.contest_id: round_contest
-        for round_contest in RoundContest.query.filter_by(round_id=rounds[1]["id"])
+        for round_contest in RoundContest.query.filter_by(round_id=round_2_id)
         .order_by(RoundContest.created_at)
         .all()
     }

@@ -7,8 +7,6 @@ from flask.testing import FlaskClient
 
 from .helpers import *  # pylint: disable=wildcard-import
 from ..models import *  # pylint: disable=wildcard-import
-from ..api.shared import is_round_complete
-from ..api.rounds import end_round
 
 
 @pytest.fixture
@@ -328,22 +326,13 @@ def test_all_ballots_audit(
         {"finalizedAt": assert_is_date, "results": updated_jurisdiction_1_results,},
     )
 
-    # Simulate trying to end the round
-    election = Election.query.get(election_id)
-    round = Round.query.get(round_id)
-    if is_round_complete(election, round):
-        end_round(election, round)
-    db_session.commit()
-
-    # Round shouldn't be over yet, since we haven't recorded results for all jurisdictions with sampled ballots
-    rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round"
-    )
-    rounds = json.loads(rv.data)["rounds"]
-    assert rounds[0]["endedAt"] is None
+    # Trying to end the round should fail, since we haven't recorded results for
+    # all jurisdictions with sampled ballots
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.post(f"/api/election/{election_id}/round/{round_id}/finish")
+    assert rv.status_code == 409
 
     # Check jurisdiction progress
-    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
     jurisdiction_sample_size = int(selected_sample_sizes[contest_id]["size"] / 2)
@@ -423,19 +412,10 @@ def test_all_ballots_audit(
         {"finalizedAt": assert_is_date, "results": jurisdiction_2_results,},
     )
 
-    # Simulate trying to end the round
-    election = Election.query.get(election_id)
-    round = Round.query.get(round_id)
-    if is_round_complete(election, round):
-        end_round(election, round)
-    db_session.commit()
-
-    # Round should be over
-    rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round"
-    )
-    rounds = json.loads(rv.data)["rounds"]
-    assert rounds[0]["endedAt"] is not None
+    # End the round
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.post(f"/api/election/{election_id}/round/{round_id}/finish")
+    assert_ok(rv)
 
     snapshot.assert_match(
         {
@@ -444,6 +424,9 @@ def test_all_ballots_audit(
         }
     )
 
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/report"
     )
@@ -876,15 +859,12 @@ def test_full_hand_tally_results_unfinalize(
     )
     assert_ok(rv)
 
-    # Simulate trying to end the round
-    election = Election.query.get(election_id)
-    round = Round.query.get(round_1_id)
-    if is_round_complete(election, round):
-        end_round(election, round)
-    db_session.commit()
+    # End the round
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.post(f"/api/election/{election_id}/round/{round_1_id}/finish")
+    assert_ok(rv)
 
     # AA tries to unfinalize results but can't
-    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.delete(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/full-hand-tally/finalize"
     )
