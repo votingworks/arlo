@@ -474,7 +474,9 @@ def test_hybrid_two_rounds(
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/report")
     assert_match_report(rv.data, snapshot)
-    check_discrepancies(rv.data, audit_results)
+    audit_report = rv.data.decode("utf-8")
+    ballots_section = audit_report.split("######## SAMPLED BALLOTS ########\r\n")[1]
+    check_discrepancies(ballots_section, audit_results)
 
     # Get round two sample size
     rv = client.get(f"/api/election/{election_id}/sample-sizes/2")

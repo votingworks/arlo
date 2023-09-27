@@ -22,14 +22,9 @@ def parse_vote_deltas(
 
 
 def check_discrepancies(
-    report_data: bytes, expected_discrepancies: dict, choices: List[dict],
+    report: str, expected_discrepancies: dict, choices: List[dict],
 ):
-    report = report_data.decode("utf-8")
-    report_batches = list(
-        csv.DictReader(
-            io.StringIO(report.split("######## SAMPLED BATCHES ########\r\n")[1])
-        )
-    )
+    report_batches = list(csv.DictReader(io.StringIO(report)))
     for jurisdiction_name, jurisdiction_discrepancies in expected_discrepancies.items():
         for batch_name, batch_discrepancies in jurisdiction_discrepancies.items():
             row = next(
@@ -41,7 +36,7 @@ def check_discrepancies(
             assert (
                 parse_vote_deltas(row["Change in Results"], choices)
                 == batch_discrepancies
-            ), "Discrepancy mismatch for {}".format((jurisdiction_name, batch_name))
+            ), f"Discrepancy mismatch for {(jurisdiction_name, batch_name)}"
 
 
 def test_batch_comparison_only_one_contest_allowed(
@@ -366,6 +361,26 @@ def test_batch_comparison_round_2(
     )
     assert_ok(rv)
 
+    # Check the discrepancy report - only the first jurisdiction should have
+    # audit results so far since the second jurisdiction hasn't finalized yet
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/discrepancy-report")
+    discrepancy_report = rv.data.decode("utf-8")
+    check_discrepancies(
+        discrepancy_report, {"J1": expected_discrepancies_j1}, contests[0]["choices"]
+    )
+    for row in csv.DictReader(io.StringIO(discrepancy_report)):
+        if row["Jurisdiction Name"] == "J2":
+            assert row["Audited?"] == "No"
+            assert row["Audit Results"] == ""
+            assert row["Reported Results"] == ""
+            assert row["Change in Results"] == ""
+            assert row["Change in Margin"] == ""
+
+    # Finalize the results
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
     rv = post_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/batches/finalize",
@@ -433,18 +448,19 @@ def test_batch_comparison_round_2(
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/report")
     assert_match_report(rv.data, snapshot)
-    check_discrepancies(
-        rv.data,
-        {"J1": expected_discrepancies_j1, "J2": expected_discrepancies_j2},
-        contests[0]["choices"],
-    )
     audit_report = rv.data.decode("utf-8")
 
     # Check the discrepancy report
     rv = client.get(f"/api/election/{election_id}/discrepancy-report")
+    discrepancy_report = rv.data.decode("utf-8")
     assert (
-        rv.data.decode("utf-8")
+        discrepancy_report
         == audit_report.split("######## SAMPLED BATCHES ########\r\n")[1]
+    )
+    check_discrepancies(
+        discrepancy_report,
+        {"J1": expected_discrepancies_j1, "J2": expected_discrepancies_j2},
+        contests[0]["choices"],
     )
 
     set_logged_in_user(
@@ -597,20 +613,21 @@ def test_batch_comparison_batches_sampled_multiple_times(
     # Test the audit report
     rv = client.get(f"/api/election/{election_id}/report")
     assert_match_report(rv.data, snapshot)
+    audit_report = rv.data.decode("utf-8")
+
+    # Check the discrepancy report
+    rv = client.get(f"/api/election/{election_id}/discrepancy-report")
+    discrepancy_report = rv.data.decode("utf-8")
+    assert (
+        discrepancy_report
+        == audit_report.split("######## SAMPLED BATCHES ########\r\n")[1]
+    )
     expected_discrepancies = {
         "J1": {"Batch 1": None, "Batch 6": None, "Batch 8": None},
         "J2": {"Batch 3": None},
     }
     check_discrepancies(
-        rv.data, expected_discrepancies, contests[0]["choices"],
-    )
-    audit_report = rv.data.decode("utf-8")
-
-    # Check the discrepancy report
-    rv = client.get(f"/api/election/{election_id}/discrepancy-report")
-    assert (
-        rv.data.decode("utf-8")
-        == audit_report.split("######## SAMPLED BATCHES ########\r\n")[1]
+        discrepancy_report, expected_discrepancies, contests[0]["choices"],
     )
 
 

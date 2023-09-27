@@ -1,3 +1,4 @@
+import csv
 import io
 import json
 from collections import defaultdict
@@ -264,7 +265,21 @@ def test_ballot_comparison_container_manifest(
     # Check that Container is included in the audit report
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/report")
-    assert_match_report(rv.data, snapshot)
+    audit_report = rv.data.decode("utf-8")
+    ballots_section = audit_report.split("######## SAMPLED BALLOTS ########\r\n")[1]
+    ballot_rows = list(csv.DictReader(io.StringIO(ballots_section)))
+    for ballot in ballots:
+        ballot_row = next(
+            row
+            for row in ballot_rows
+            if (
+                row["Jurisdiction Name"] == "J1"
+                and row["Tabulator"] == ballot["batch"]["tabulator"]
+                and row["Batch Name"] == ballot["batch"]["name"]
+                and row["Ballot Position"] == str(ballot["position"])
+            )
+        )
+        assert ballot_row["Container"] == ballot["batch"]["container"]
 
 
 def test_ballot_comparison_manifest_missing_tabulator(

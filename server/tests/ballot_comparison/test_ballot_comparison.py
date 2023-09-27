@@ -517,21 +517,13 @@ def audit_all_ballots(
                 has_invalid_write_in=has_invalid_write_in,
             )
 
-    audit_boards = AuditBoard.query.filter_by(round_id=round.id).all()
-    for audit_board in audit_boards:
-        audit_board.signed_off_at = datetime.now(timezone.utc)
     end_round(round.election, round)
     db_session.commit()
 
 
 # Check expected discrepancies against audit report
-def check_discrepancies(report_data, audit_results):
-    report = report_data.decode("utf-8")
-    report_ballots = list(
-        csv.DictReader(
-            io.StringIO(report.split("######## SAMPLED BALLOTS ########\r\n")[1])
-        )
-    )
+def check_discrepancies(report: str, audit_results):
+    report_ballots = list(csv.DictReader(io.StringIO(report)))
     for ballot, (_, expected_discrepancies) in audit_results.items():
         jurisdiction, tabulator, batch, position = ballot
         row = next(
@@ -546,7 +538,7 @@ def check_discrepancies(report_data, audit_results):
         assert (
             parse_discrepancy(row["Change in Margin: Contest 1"]),
             parse_discrepancy(row["Change in Margin: Contest 2"]),
-        ) == expected_discrepancies, "Discrepancy mismatch for {}".format(ballot)
+        ) == expected_discrepancies, f"Discrepancy mismatch for {ballot}"
 
 
 # Counts the expected discrepancies in the audit results by jurisdiction
@@ -667,7 +659,7 @@ def test_ballot_comparison_two_rounds(
     # specify our audit results.
     # Tabulator, Batch, Ballot, Choice 1-1, Choice 1-2, Choice 2-1, Choice 2-2, Choice 2-3
     # We also specify the expected discrepancies.
-    round_1_audit_results = {
+    round_1_audit_results_j1 = {
         ("J1", "TABULATOR1", "BATCH1", 1): ("0,1,1,1,0", (None, None)),
         ("J1", "TABULATOR1", "BATCH2", 2): ("0,1,1,1,0", (None, None)),
         ("J1", "TABULATOR1", "BATCH2", 3): ("1,1,0,1,1", (1, 2)),  # CVR: 1,0,1,0,1
@@ -676,6 +668,9 @@ def test_ballot_comparison_two_rounds(
         ("J1", "TABULATOR2", "BATCH2", 4): ("blank", (None, None)),
         ("J1", "TABULATOR2", "BATCH2", 5): ("not on ballot", (None, 1)),  # CVR: ,,1,0,1
         ("J1", "TABULATOR2", "BATCH2", 6): ("not found", (2, 2)),  # not in CVR
+    }
+
+    round_1_audit_results_j2 = {
         ("J2", "TABULATOR1", "BATCH1", 1): ("1,0,1,0,0", (-2, -1)),  # CVR: 0,1,1,1,0
         ("J2", "TABULATOR1", "BATCH1", 3): ("0,1,1,1,0", (None, None)),
         ("J2", "TABULATOR1", "BATCH2", 1): ("1,0,1,0,1", (None, None)),
@@ -686,12 +681,54 @@ def test_ballot_comparison_two_rounds(
         ("J2", "TABULATOR2", "BATCH2", 5): (",,1,0,1", (None, None)),
         ("J2", "TABULATOR2", "BATCH2", 6): ("1,0,1,0,1", (2, 2)),  # not in CVR
     }
+    round_1_audit_results = {**round_1_audit_results_j1, **round_1_audit_results_j2}
 
     audit_all_ballots(
-        round_1_id, round_1_audit_results, target_contest_id, opportunistic_contest_id
+        round_1_id, round_1_audit_results, target_contest_id, opportunistic_contest_id,
     )
 
-    # Check jurisdiction status after auditing
+    # Only sign off J1
+    audit_boards = AuditBoard.query.filter_by(jurisdiction_id=jurisdiction_ids[0]).all()
+    for audit_board in audit_boards:
+        audit_board.signed_off_at = datetime.now(timezone.utc)
+    db_session.commit()
+
+    # Check jurisdiction status after auditing J1
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    assert jurisdictions[0]["currentRoundStatus"]["status"] == "COMPLETE"
+    assert jurisdictions[1]["currentRoundStatus"]["status"] == "IN_PROGRESS"
+    discrepancy_counts = count_discrepancies(round_1_audit_results_j1)
+    assert (
+        jurisdictions[0]["currentRoundStatus"]["numDiscrepancies"]
+        == discrepancy_counts[jurisdictions[0]["name"]]
+    )
+    assert jurisdictions[1]["currentRoundStatus"]["numDiscrepancies"] is None
+    snapshot.assert_match(jurisdictions[0]["currentRoundStatus"])
+    snapshot.assert_match(jurisdictions[1]["currentRoundStatus"])
+
+    # Check the discrepancy report - only the first jurisdiction should have
+    # audit results so far since the second jurisdiction hasn't signed off yet
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/discrepancy-report")
+    discrepancy_report = rv.data.decode("utf-8")
+    check_discrepancies(discrepancy_report, round_1_audit_results_j1)
+    for row in csv.DictReader(io.StringIO(discrepancy_report)):
+        if row["Jurisdiction Name"] == "J2":
+            assert row["Audited?"] == "NOT_AUDITED"
+            assert row["Audit Result: Contest 1"] == ""
+            assert row["CVR Result: Contest 1"] == ""
+            assert row["Change in Results: Contest 1"] == ""
+            assert row["Change in Margin: Contest 1"] == ""
+
+    # Sign off J2
+    audit_boards = AuditBoard.query.filter_by(jurisdiction_id=jurisdiction_ids[1]).all()
+    for audit_board in audit_boards:
+        audit_board.signed_off_at = datetime.now(timezone.utc)
+    db_session.commit()
+
+    # Check jurisdiction status after auditing J2
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
@@ -712,15 +749,16 @@ def test_ballot_comparison_two_rounds(
     # Check the audit report
     rv = client.get(f"/api/election/{election_id}/report")
     assert_match_report(rv.data, snapshot)
-    check_discrepancies(rv.data, round_1_audit_results)
     audit_report = rv.data.decode("utf-8")
 
     # Check the discrepancy report
     rv = client.get(f"/api/election/{election_id}/discrepancy-report")
+    discrepancy_report = rv.data.decode("utf-8")
     assert (
-        rv.data.decode("utf-8")
+        discrepancy_report
         == audit_report.split("######## SAMPLED BALLOTS ########\r\n")[1]
     )
+    check_discrepancies(discrepancy_report, round_1_audit_results)
 
     # Start a second round
     rv = client.get(f"/api/election/{election_id}/sample-sizes/2")
@@ -770,6 +808,12 @@ def test_ballot_comparison_two_rounds(
     audit_all_ballots(
         round_2_id, round_2_audit_results, target_contest_id, opportunistic_contest_id
     )
+    audit_boards = AuditBoard.query.filter(
+        AuditBoard.jurisdiction_id.in_(jurisdiction_ids)
+    ).all()
+    for audit_board in audit_boards:
+        audit_board.signed_off_at = datetime.now(timezone.utc)
+    db_session.commit()
 
     # Check jurisdiction status after auditing
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -806,15 +850,16 @@ def test_ballot_comparison_two_rounds(
 
     rv = client.get(f"/api/election/{election_id}/report")
     assert_match_report(rv.data, snapshot)
-    check_discrepancies(rv.data, round_2_audit_results)
     audit_report = rv.data.decode("utf-8")
 
     # Check the discrepancy report
     rv = client.get(f"/api/election/{election_id}/discrepancy-report")
+    discrepancy_report = rv.data.decode("utf-8")
     assert (
-        rv.data.decode("utf-8")
+        discrepancy_report
         == audit_report.split("######## SAMPLED BALLOTS ########\r\n")[1]
     )
+    check_discrepancies(discrepancy_report, round_2_audit_results)
 
 
 # This function can be used to generate the correct audit results in case you
@@ -1274,20 +1319,27 @@ def test_ballot_comparison_ess(
     audit_all_ballots(
         round_1_id, audit_results, target_contest["id"], opportunistic_contest["id"]
     )
+    audit_boards = AuditBoard.query.filter(
+        AuditBoard.jurisdiction_id.in_(jurisdiction_ids)
+    ).all()
+    for audit_board in audit_boards:
+        audit_board.signed_off_at = datetime.now(timezone.utc)
+    db_session.commit()
 
     # Check the audit report
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/report")
     assert_match_report(rv.data, snapshot)
-    check_discrepancies(rv.data, audit_results)
     audit_report = rv.data.decode("utf-8")
 
     # Check the discrepancy report
     rv = client.get(f"/api/election/{election_id}/discrepancy-report")
+    discrepancy_report = rv.data.decode("utf-8")
     assert (
-        rv.data.decode("utf-8")
+        discrepancy_report
         == audit_report.split("######## SAMPLED BALLOTS ########\r\n")[1]
     )
+    check_discrepancies(discrepancy_report, audit_results)
 
 
 def test_ballot_comparison_sample_preview(
