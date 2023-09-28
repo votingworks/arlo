@@ -140,6 +140,10 @@ describe('Progress screen', () => {
             ...jurisdictionMocks.noManifests[0],
             expectedBallotManifestNumBallots: 30,
           },
+          {
+            ...jurisdictionMocks.allManifests[2],
+            expectedBallotManifestNumBallots: null,
+          },
         ],
       })
 
@@ -152,7 +156,7 @@ describe('Progress screen', () => {
       expect(headers[4]).toHaveTextContent('Difference From Expected Ballots')
 
       const rows = screen.getAllByRole('row')
-      expect(rows).toHaveLength(jurisdictionMocks.oneManifest.length + 2) // includes headers and footers
+      expect(rows).toHaveLength(4 + 2) // includes headers and footers
       const row1 = within(rows[1]).getAllByRole('cell')
       expect(row1[2]).toHaveTextContent('2,117')
       expect(row1[3]).toHaveTextContent('2,127')
@@ -165,9 +169,13 @@ describe('Progress screen', () => {
       expect(row3[2]).toHaveTextContent('')
       expect(row3[3]).toHaveTextContent('30')
       expect(row3[4]).toHaveTextContent('')
+      const row4 = within(rows[4]).getAllByRole('cell')
+      expect(row4[2]).toHaveTextContent('2,117')
+      expect(row4[3]).toHaveTextContent('')
+      expect(row4[4]).toHaveTextContent('')
 
-      const footers = within(rows[4]).getAllByRole('cell')
-      expect(footers[2]).toHaveTextContent('4,234')
+      const footers = within(rows[5]).getAllByRole('cell')
+      expect(footers[2]).toHaveTextContent('6,351')
       expect(footers[3]).toHaveTextContent('4,254')
       expect(footers[4]).toHaveTextContent('30')
     })
