@@ -355,12 +355,12 @@ const Progress: React.FC<IProgressProps> = ({
           <Button
             icon="download"
             onClick={() => {
-              downloadTableAsCSV(
-                'progress-table',
-                `audit-progress-${
+              downloadTableAsCSV({
+                tableId: 'progress-table',
+                fileName: `audit-progress-${
                   auditSettings.auditName
-                }-${new Date().toISOString()}.csv`
-              )
+                }-${new Date().toISOString()}.csv`,
+              })
             }}
           >
             Download Table as CSV

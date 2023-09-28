@@ -133,10 +133,10 @@ const ActivityLogOrgsLoaded = ({
               <Button
                 icon="download"
                 onClick={() => {
-                  downloadTableAsCSV(
-                    'activityLog',
-                    `arlo-activity-${organization.name}.csv`
-                  )
+                  downloadTableAsCSV({
+                    tableId: 'activityLog',
+                    fileName: `arlo-activity-${organization.name}.csv`,
+                  })
                 }}
               >
                 Download as CSV

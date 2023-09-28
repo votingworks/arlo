@@ -51,10 +51,13 @@ export const FilterInput: React.FC<IFilterInputProps> = ({
   </div>
 )
 
-export const downloadTableAsCSV = (
-  tableId: string,
-  fileName?: string
-): void => {
+export const downloadTableAsCSV = ({
+  tableId,
+  fileName,
+}: {
+  tableId: string
+  fileName: string
+}): void => {
   const table = document.querySelector(`#${tableId}`)!
   const headers = Array.from(table.querySelectorAll('th')).map(
     header => header.innerText
