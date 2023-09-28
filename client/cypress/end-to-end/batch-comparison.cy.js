@@ -185,6 +185,7 @@ describe('Batch Comparison', () => {
     cy.logout(jurisdictionAdmin)
     cy.loginAuditAdmin(auditAdmin)
     cy.findByText(`TestAudit${id}`).click()
+    cy.findByRole('button', { name: 'Finish Round 1' }).click()
     cy.contains('Congratulations - the audit is complete!')
   })
 })

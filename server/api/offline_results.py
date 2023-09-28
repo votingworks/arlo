@@ -7,8 +7,7 @@ from sqlalchemy import func
 from . import api
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
-from .shared import is_round_complete, get_current_round
-from .rounds import end_round
+from .shared import get_current_round
 from ..auth import restrict_access, UserType
 from ..util.jsonschema import JSONDict, validate
 from ..activity_log.activity_log import RecordResults, activity_base, record_activity
@@ -123,9 +122,6 @@ def record_offline_results(
             jurisdiction_name=jurisdiction.name,
         )
     )
-
-    if is_round_complete(election, round):
-        end_round(election, round)
 
     db_session.commit()
 

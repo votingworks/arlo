@@ -517,9 +517,6 @@ def audit_all_ballots(
                 has_invalid_write_in=has_invalid_write_in,
             )
 
-    end_round(round.election, round)
-    db_session.commit()
-
 
 # Check expected discrepancies against audit report
 def check_discrepancies(report: str, audit_results):
@@ -746,6 +743,10 @@ def test_ballot_comparison_two_rounds(
     snapshot.assert_match(jurisdictions[0]["currentRoundStatus"])
     snapshot.assert_match(jurisdictions[1]["currentRoundStatus"])
 
+    # End the round
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
+    assert_ok(rv)
+
     # Check the audit report
     rv = client.get(f"/api/election/{election_id}/report")
     assert_match_report(rv.data, snapshot)
@@ -848,6 +849,11 @@ def test_ballot_comparison_two_rounds(
     snapshot.assert_match(jurisdictions[0]["currentRoundStatus"])
     snapshot.assert_match(jurisdictions[1]["currentRoundStatus"])
 
+    # End the round
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
+    assert_ok(rv)
+
+    # Check the audit report
     rv = client.get(f"/api/election/{election_id}/report")
     assert_match_report(rv.data, snapshot)
     audit_report = rv.data.decode("utf-8")
@@ -1129,9 +1135,8 @@ def test_ballot_comparison_multiple_targeted_contests_sample_size(
         audit_ballot(ballot, contest_1_id, Interpretation.VOTE, [contest_1.choices[0]])
         audit_ballot(ballot, contest_2_id, Interpretation.VOTE, [contest_2.choices[0]])
 
-    round = Round.query.get(round_1_id)
-    end_round(round.election, round)
-    db_session.commit()
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
+    assert_ok(rv)
 
     rv = client.get(f"/api/election/{election_id}/sample-sizes/2")
     sample_size_options = json.loads(rv.data)["sampleSizes"]
@@ -1326,8 +1331,12 @@ def test_ballot_comparison_ess(
         audit_board.signed_off_at = datetime.now(timezone.utc)
     db_session.commit()
 
-    # Check the audit report
+    # End the round
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
+    assert_ok(rv)
+
+    # Check the audit report
     rv = client.get(f"/api/election/{election_id}/report")
     assert_match_report(rv.data, snapshot)
     audit_report = rv.data.decode("utf-8")

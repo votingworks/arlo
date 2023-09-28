@@ -1719,6 +1719,11 @@ export const aaApiCalls = {
       method: 'POST',
     },
   }),
+  postFinishRound: {
+    url: '/api/election/1/round/current/finish',
+    options: { method: 'POST' },
+    response: { status: 'ok' },
+  },
   getJurisdictions: {
     url: '/api/election/1/jurisdiction',
     response: {

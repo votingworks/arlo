@@ -397,6 +397,10 @@ def test_batch_comparison_round_2(
     snapshot.assert_match(jurisdictions[0]["currentRoundStatus"])
     snapshot.assert_match(jurisdictions[1]["currentRoundStatus"])
 
+    # End the round
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
+    assert_ok(rv)
+
     # Start a second round
     rv = client.get(f"/api/election/{election_id}/sample-sizes/2")
     sample_size_options = json.loads(rv.data)["sampleSizes"]
@@ -604,6 +608,10 @@ def test_batch_comparison_batches_sampled_multiple_times(
     snapshot.assert_match(jurisdictions[0]["currentRoundStatus"])
     snapshot.assert_match(jurisdictions[1]["currentRoundStatus"])
 
+    # End the round
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
+    assert_ok(rv)
+
     # Audit should be complete
     rv = client.get(f"/api/election/{election_id}/round")
     rounds = json.loads(rv.data)["rounds"]
@@ -677,9 +685,11 @@ def test_batch_comparison_sample_all_batches(
 
 
 def test_batch_comparison_undo_start_round_1(
-    client: FlaskClient, election_id: str, round_1_id: str
+    client: FlaskClient,
+    election_id: str,
+    round_1_id: str,  # pylint: disable=unused-argument
 ):
-    rv = client.delete(f"/api/election/{election_id}/round/{round_1_id}")
+    rv = client.delete(f"/api/election/{election_id}/round/current")
     assert_ok(rv)
 
     rv = client.get(f"/api/election/{election_id}/round")

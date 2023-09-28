@@ -52,7 +52,6 @@ def test_multi_winner_sample_size(
 def run_multi_winner_audit_round(
     round_id: str, target_contest_id: str, vote1_ratio: float, vote2_ratio: float,
 ):
-    round = Round.query.get(round_id)
     contest = Contest.query.get(target_contest_id)
     ballot_draws = (
         SampledBallotDraw.query.filter_by(round_id=round_id)
@@ -84,7 +83,6 @@ def run_multi_winner_audit_round(
             Interpretation.VOTE,
             [contest.choices[2]],
         )
-    end_round(round.election, round)
     db_session.commit()
 
 
@@ -116,6 +114,9 @@ def test_multi_winner_two_rounds(
 
     run_multi_winner_audit_round(round_1_id, contest_id, 0.5, 0.3)
 
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
+    assert_ok(rv)
+
     rv = client.get(f"/api/election/{election_id}/round")
     assert json.loads(rv.data)["rounds"][0]["isAuditComplete"] is False
 
@@ -136,6 +137,9 @@ def test_multi_winner_two_rounds(
     round_2_id = json.loads(rv.data)["rounds"][1]["id"]
 
     run_multi_winner_audit_round(round_2_id, contest_id, 0.7, 0.3)
+
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
+    assert_ok(rv)
 
     rv = client.get(f"/api/election/{election_id}/round")
     assert json.loads(rv.data)["rounds"][1]["isAuditComplete"] is True

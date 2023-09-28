@@ -223,9 +223,12 @@ def round_2_id(
     round_1_id: str,
     audit_board_round_1_ids: List[str],  # pylint: disable=unused-argument
 ) -> str:
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     run_audit_round(round_1_id, contest_ids[0], contest_ids, 0.55)
 
-    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
+    assert_ok(rv)
+
     rv = client.get(f"/api/election/{election_id}/sample-sizes/2")
     sample_size_options = json.loads(rv.data)["sampleSizes"]
 

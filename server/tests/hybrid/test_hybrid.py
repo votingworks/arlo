@@ -470,8 +470,17 @@ def test_hybrid_two_rounds(
         round_1_id, audit_results, target_contest_id, opportunistic_contest_id
     )
 
-    # Check the audit report
+    audit_boards = AuditBoard.query.filter_by(round_id=round_1_id).all()
+    for audit_board in audit_boards:
+        audit_board.signed_off_at = datetime.now(timezone.utc)
+    db_session.commit()
+
+    # End the round
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
+    assert_ok(rv)
+
+    # Check the audit report
     rv = client.get(f"/api/election/{election_id}/report")
     assert_match_report(rv.data, snapshot)
     audit_report = rv.data.decode("utf-8")

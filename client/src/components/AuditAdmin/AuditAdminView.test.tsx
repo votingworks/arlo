@@ -284,7 +284,7 @@ describe('AA setup flow', () => {
       aaApiCalls.getRounds(roundMocks.drawSampleErrored),
       ...afterLaunchApiCalls,
       {
-        url: '/api/election/1/round/round-1',
+        url: '/api/election/1/round/current',
         options: { method: 'DELETE' },
         response: { status: 'ok' },
       },
@@ -360,5 +360,27 @@ describe('AA setup flow', () => {
       row1 = within(rows[1]).getAllByRole('cell')
       within(row1[1]).getByText('Manifest uploaded')
     })
+  })
+})
+
+it('finishes a round', async () => {
+  const expectedCalls = [
+    aaApiCalls.getUser,
+    aaApiCalls.getRounds(roundMocks.singleIncomplete),
+    {
+      ...aaApiCalls.getJurisdictions,
+      response: { jurisdictions: jurisdictionMocks.allComplete },
+    },
+    aaApiCalls.getContests(contestMocks.filledTargeted),
+    aaApiCalls.getSettings(auditSettingsMocks.all),
+    aaApiCalls.getMapData,
+    aaApiCalls.postFinishRound,
+    aaApiCalls.getRounds(roundMocks.singleComplete),
+  ]
+  await withMockFetch(expectedCalls, async () => {
+    render('progress')
+    await screen.findByRole('heading', { name: 'Audit Progress' })
+    userEvent.click(screen.getByRole('button', { name: 'Finish Round 1' }))
+    await screen.findByText('Congratulations - the audit is complete!')
   })
 })
