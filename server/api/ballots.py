@@ -10,7 +10,7 @@ from werkzeug.exceptions import BadRequest, NotFound, Conflict
 from . import api
 from ..auth import restrict_access, UserType
 from ..database import db_session
-from .rounds import get_current_round
+from .shared import get_current_round
 from ..models import *  # pylint: disable=wildcard-import
 from ..util.csv_download import csv_response, jurisdiction_timestamp_name
 from ..util.jsonschema import JSONDict, validate

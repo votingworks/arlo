@@ -170,6 +170,10 @@ describe('Progress screen', () => {
       expect(footers[2]).toHaveTextContent('6,351')
       expect(footers[3]).toHaveTextContent('34')
       expect(footers[4]).toHaveTextContent('26')
+
+      expect(
+        screen.queryByRole('button', { name: /Download Discrepancy Report/ })
+      ).not.toBeInTheDocument()
     })
   })
 
@@ -230,6 +234,22 @@ describe('Progress screen', () => {
       expect(footers[3]).toHaveTextContent('3')
       expect(footers[4]).toHaveTextContent('60')
       expect(footers[5]).toHaveTextContent('0')
+
+      const downloadReportButton = screen.getByRole('button', {
+        name: /Download Discrepancy Report/,
+      })
+      const mockDownloadWindow: { onbeforeunload?: () => void } = {}
+      window.open = jest.fn().mockReturnValue(mockDownloadWindow)
+      userEvent.click(downloadReportButton)
+      expect(downloadReportButton).toBeDisabled()
+      await waitFor(() => {
+        expect(window.open).toHaveBeenCalledTimes(1)
+        expect(window.open).toBeCalledWith(`/api/election/1/discrepancy-report`)
+      })
+      mockDownloadWindow.onbeforeunload!()
+      await waitFor(() => {
+        expect(downloadReportButton).toBeEnabled()
+      })
     })
   })
 
@@ -290,6 +310,22 @@ describe('Progress screen', () => {
       expect(footers[3]).toHaveTextContent('1')
       expect(footers[4]).toHaveTextContent('34')
       expect(footers[5]).toHaveTextContent('26')
+
+      const downloadReportButton = screen.getByRole('button', {
+        name: /Download Discrepancy Report/,
+      })
+      const mockDownloadWindow: { onbeforeunload?: () => void } = {}
+      window.open = jest.fn().mockReturnValue(mockDownloadWindow)
+      userEvent.click(downloadReportButton)
+      expect(downloadReportButton).toBeDisabled()
+      await waitFor(() => {
+        expect(window.open).toHaveBeenCalledTimes(1)
+        expect(window.open).toBeCalledWith(`/api/election/1/discrepancy-report`)
+      })
+      mockDownloadWindow.onbeforeunload!()
+      await waitFor(() => {
+        expect(downloadReportButton).toBeEnabled()
+      })
     })
   })
 
@@ -544,7 +580,9 @@ describe('Progress screen', () => {
         expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
       })
 
-      userEvent.click(screen.getByRole('button', { name: /Download as CSV/ }))
+      userEvent.click(
+        screen.getByRole('button', { name: /Download Table as CSV/ })
+      )
       expect(downloadFileMock).toHaveBeenCalled()
       expect(downloadFileMock.mock.calls[0][1]).toMatch(
         /audit-progress-Test Audit-/

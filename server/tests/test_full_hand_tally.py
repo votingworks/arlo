@@ -7,7 +7,8 @@ from flask.testing import FlaskClient
 
 from .helpers import *  # pylint: disable=wildcard-import
 from ..models import *  # pylint: disable=wildcard-import
-from ..api.rounds import is_round_complete, end_round
+from ..api.shared import is_round_complete
+from ..api.rounds import end_round
 
 
 @pytest.fixture

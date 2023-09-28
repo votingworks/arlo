@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
@@ -15,7 +16,7 @@ import {
   Table,
   sortByRank,
   FilterInput,
-  DownloadCSVButton,
+  downloadTableAsCSV,
 } from '../../Atoms/Table'
 import { IRound } from '../useRoundsAuditAdmin'
 import StatusTag from '../../Atoms/StatusTag'
@@ -23,6 +24,8 @@ import { IAuditSettings } from '../../useAuditSettings'
 import { FileProcessingStatus, IFileInfo } from '../../useCSV'
 import ProgressMap from './ProgressMap'
 import { sum } from '../../../utils/number'
+import { apiDownload } from '../../utilities'
+import AsyncButton from '../../Atoms/AsyncButton'
 
 const Wrapper = styled.div`
   flex-grow: 1;
@@ -36,6 +39,7 @@ const TableControls = styled.div`
   align-items: center;
   justify-content: space-between;
   margin-bottom: 0.5rem;
+  gap: 20px;
 `
 
 const formatNumber = ({ value }: { value: number | null }) =>
@@ -64,11 +68,17 @@ const Progress: React.FC<IProgressProps> = ({
     string | null
   >(null)
 
-  // gives prop validation error if used as auditSettings.auditType
   const { auditType } = auditSettings
 
   const ballotsOrBatches =
     auditType === 'BATCH_COMPARISON' ? 'Batches' : 'Ballots'
+
+  const showDiscrepancies =
+    round &&
+    (auditType === 'BALLOT_COMPARISON' || auditType === 'BATCH_COMPARISON')
+  const someJurisdictionHasDiscrepancies = jurisdictions.some(
+    jurisdiction => (jurisdiction.currentRoundStatus?.numDiscrepancies || 0) > 0
+  )
 
   const columns: Column<IJurisdiction>[] = [
     {
@@ -256,7 +266,7 @@ const Progress: React.FC<IProgressProps> = ({
   }
 
   if (round) {
-    if (auditType === 'BALLOT_COMPARISON' || auditType === 'BATCH_COMPARISON') {
+    if (showDiscrepancies) {
       columns.push({
         Header: 'Discrepancies',
         accessor: ({ currentRoundStatus: s }) => s && s.numDiscrepancies,
@@ -326,7 +336,7 @@ const Progress: React.FC<IProgressProps> = ({
         jurisdiction.
       </p>
       <TableControls>
-        <div style={{ flexGrow: 1, marginRight: '20px' }}>
+        <div style={{ flexGrow: 1 }}>
           <FilterInput
             placeholder="Filter by jurisdiction name..."
             value={filter}
@@ -338,15 +348,40 @@ const Progress: React.FC<IProgressProps> = ({
             checked={isShowingUnique}
             label={`Count unique sampled ${ballotsOrBatches.toLowerCase()}`}
             onChange={() => setIsShowingUnique(!isShowingUnique)}
-            style={{ marginRight: '20px', marginBottom: 0 }}
+            style={{ marginBottom: 0 }}
           />
         )}
-        <DownloadCSVButton
-          tableId="progress-table"
-          fileName={`audit-progress-${
-            auditSettings.auditName
-          }-${new Date().toISOString()}.csv`}
-        />
+        <div>
+          <Button
+            icon="download"
+            onClick={() => {
+              downloadTableAsCSV({
+                tableId: 'progress-table',
+                fileName: `audit-progress-${
+                  auditSettings.auditName
+                }-${new Date().toISOString()}.csv`,
+              })
+            }}
+          >
+            Download Table as CSV
+          </Button>
+          {showDiscrepancies && (
+            <AsyncButton
+              onClick={() =>
+                apiDownload(`/election/${electionId}/discrepancy-report`)
+              }
+              icon={
+                <Icon
+                  icon="flag"
+                  intent={someJurisdictionHasDiscrepancies ? 'danger' : 'none'}
+                />
+              }
+              style={{ marginLeft: '5px' }}
+            >
+              Download Discrepancy Report
+            </AsyncButton>
+          )}
+        </div>
       </TableControls>
       <Table
         data={filteredJurisdictions}

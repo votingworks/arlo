@@ -11,7 +11,8 @@ from . import api
 from ..auth import get_loggedin_user, get_support_user, restrict_access, UserType
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
-from .rounds import is_round_complete, end_round, get_current_round
+from .rounds import end_round
+from .shared import is_round_complete, get_current_round
 from ..util.csv_download import csv_response, jurisdiction_timestamp_name
 from ..util.jsonschema import JSONDict, validate
 from ..util.isoformat import isoformat

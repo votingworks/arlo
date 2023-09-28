@@ -3,7 +3,7 @@ from typing import Dict, List, Optional, Tuple, Union, cast as typing_cast
 from collections import defaultdict, Counter
 from sqlalchemy import func, and_
 from sqlalchemy.dialects.postgresql import aggregate_order_by
-from werkzeug.exceptions import Conflict
+from werkzeug.exceptions import Conflict, BadRequest
 
 
 from . import api
@@ -17,16 +17,22 @@ from ..util.csv_download import (
 from ..util.isoformat import isoformat
 from ..util.collections import group_by
 from ..audit_math import supersimple, sampler_contest, macro
-from ..api.rounds import (
+from .ballot_manifest import hybrid_contest_total_ballots
+from .cvrs import hybrid_contest_choice_vote_counts
+from .batches import construct_batch_last_edited_by_string
+from .jurisdictions import (
+    JurisdictionAuditBoardStatus,
+    jurisdiction_audit_board_status,
+)
+from .shared import (
+    ContestVoteDeltas,
+    ballot_vote_deltas,
+    batch_vote_deltas,
     cvrs_for_contest,
     is_full_hand_tally,
     sampled_ballot_interpretations_to_cvrs,
     samples_not_found_by_round,
 )
-from ..api.ballot_manifest import hybrid_contest_total_ballots
-from ..api.cvrs import hybrid_contest_choice_vote_counts
-from ..api.batches import construct_batch_last_edited_by_string
-from ..api.discrepancies import ContestVoteDeltas, ballot_vote_deltas, batch_vote_deltas
 
 
 def pretty_affiliation(affiliation: Optional[str]) -> str:
@@ -617,8 +623,15 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
     show_tabulator = one_batch and one_batch.tabulator is not None
     show_cvrs = election.audit_type in [AuditType.BALLOT_COMPARISON, AuditType.HYBRID]
 
+    audit_board_status = (
+        jurisdiction_audit_board_status(list(election.jurisdictions), rounds[-1])
+        if election.audit_type == AuditType.BALLOT_COMPARISON
+        else None
+    )
+
     result_columns = []
     if election.online:
+        result_columns.append("Audited?")
         for contest in election.contests:
             result_columns.append(f"Audit Result: {contest.name}")
             if show_cvrs:
@@ -633,7 +646,6 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
         + ["Batch Name", "Ballot Position"]
         + (["Imprinted ID"] if show_cvrs else [])
         + [f"Ticket Numbers: {contest.name}" for contest in targeted_contests]
-        + (["Audited?"] if election.online else [])
         + result_columns
     )
 
@@ -666,25 +678,39 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
 
         result_values = []
         if election.online:
-            for contest in election.contests:
-                result_values.append(
-                    pretty_ballot_interpretation(interpretations, contest)
-                )
-                if show_cvrs:
-                    cvr_interpretation = pretty_cvr_interpretation(
-                        ballot, contest, cvrs_by_contest[contest.id]
-                    )
-                    result_values.append(cvr_interpretation)
-                    audited_result = audited_cvrs_by_contest[contest.id].get(ballot.id)
-                    vote_deltas = audited_result and ballot_vote_deltas(
-                        contest,
-                        cvrs_by_contest[contest.id].get(ballot.id),
-                        audited_result["cvr"],
-                    )
-                    result_values.append(pretty_vote_deltas(contest, vote_deltas))
+            # Hide audit results if the jurisdiction hasn't signed off (this
+            # will only impact the discrepancy report, since the audit report
+            # can only be generated at the end of the audit).
+            if audit_board_status and (
+                audit_board_status[batch.jurisdiction_id]
+                != JurisdictionAuditBoardStatus.SIGNED_OFF
+            ):
+                result_values = ["NOT_AUDITED"] + ([""] * (len(result_columns) - 1))
+            else:
+                result_values.append(ballot.status)
+                for contest in election.contests:
                     result_values.append(
-                        pretty_discrepancy(ballot, discrepancies_by_contest[contest.id])
+                        pretty_ballot_interpretation(interpretations, contest)
                     )
+                    if show_cvrs:
+                        cvr_interpretation = pretty_cvr_interpretation(
+                            ballot, contest, cvrs_by_contest[contest.id]
+                        )
+                        result_values.append(cvr_interpretation)
+                        audited_result = audited_cvrs_by_contest[contest.id].get(
+                            ballot.id
+                        )
+                        vote_deltas = audited_result and ballot_vote_deltas(
+                            contest,
+                            cvrs_by_contest[contest.id].get(ballot.id),
+                            audited_result["cvr"],
+                        )
+                        result_values.append(pretty_vote_deltas(contest, vote_deltas))
+                        result_values.append(
+                            pretty_discrepancy(
+                                ballot, discrepancies_by_contest[contest.id]
+                            )
+                        )
 
         rows.append(
             [jurisdiction_name]
@@ -693,7 +719,6 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
             + [batch.name, ballot.ballot_position,]
             + ([imprinted_id] if show_cvrs else [])
             + pretty_ballot_ticket_numbers(ticket_numbers, targeted_contests)
-            + ([ballot.status] if election.online else [])
             + result_values
         )
     return rows
@@ -742,6 +767,12 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
         for batch_id, choice_results in group_by(
             audit_result_tuples, lambda tuple: tuple[0]
         ).items()
+    }
+    finalized_jurisdiction_ids = {
+        jurisdiction_id
+        for jurisdiction_id, in BatchResultsFinalized.query.values(
+            BatchResultsFinalized.jurisdiction_id
+        )
     }
 
     rows.append(
@@ -792,11 +823,13 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
             else None
         )
 
-        rows.append(
-            [
-                batch.jurisdiction.name,
-                batch.name,
-                pretty_batch_ticket_numbers(batch, round_id_to_num),
+        row_base = [
+            batch.jurisdiction.name,
+            batch.name,
+            pretty_batch_ticket_numbers(batch, round_id_to_num),
+        ]
+        if batch.jurisdiction.id in finalized_jurisdiction_ids:
+            row = row_base + [
                 pretty_boolean(is_audited),
                 (
                     pretty_choice_votes(audit_results_by_name)
@@ -814,7 +847,12 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
                 error["counted_as"] if error else "",
                 construct_batch_last_edited_by_string(batch),
             ]
-        )
+        else:
+            # Hide audit results if the jurisdiction hasn't finalized (this will
+            # only impact the discrepancy report, since the audit report can
+            # only be generated at the end of the audit).
+            row = row_base + [pretty_boolean(False)] + ([""] * 5)
+        rows.append(row)
 
     return rows
 
@@ -873,4 +911,29 @@ def jursdiction_admin_audit_report(election: Election, jurisdiction: Jurisdictio
     return csv_response(
         csv_io,
         filename=f"audit-report-{jurisdiction_timestamp_name(election, jurisdiction)}.csv",
+    )
+
+
+@api.route("/election/<election_id>/discrepancy-report", methods=["GET"])
+@restrict_access([UserType.AUDIT_ADMIN])
+def audit_admin_discrepancy_report(election: Election):
+    if len(list(election.rounds)) == 0:
+        raise Conflict("Cannot generate report until audit starts")
+
+    if election.audit_type == AuditType.BALLOT_COMPARISON:
+        rows = sampled_ballot_rows(election)
+    elif election.audit_type == AuditType.BATCH_COMPARISON:
+        rows = sampled_batch_rows(election)
+    else:
+        raise BadRequest("Discrepancy report not supported for this audit type")
+
+    csv_io = io.StringIO()
+    report = csv.writer(csv_io)
+    report.writerows(
+        rows[1:]  # Remove section heading, since this report only has one section
+    )
+
+    csv_io.seek(0)
+    return csv_response(
+        csv_io, filename=f"discrepancy-report-{election_timestamp_name(election)}.csv",
     )
