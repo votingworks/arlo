@@ -245,6 +245,11 @@ class Jurisdiction(BaseModel):
 
     name = Column(String(200), nullable=False)
 
+    # Optionally, audit admins can provide an expected number of ballots for the
+    # jurisdiction's manifest based on a different source of truth (e.g.
+    # e-pollbooks) as a sanity check.
+    expected_manifest_num_ballots = Column(Integer)
+
     # The ballot manifest file is uploaded by each jurisdiction to tell us
     # which ballots are available to audit.
     manifest_file_id = Column(String(200), ForeignKey("file.id", ondelete="set null"))
