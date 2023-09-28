@@ -477,7 +477,7 @@ def test_hybrid_two_rounds(
 
     # End the round
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.post(f"/api/election/{election_id}/round/{round_1_id}/finish")
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
     assert_ok(rv)
 
     # Check the audit report

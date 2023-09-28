@@ -329,7 +329,7 @@ def test_all_ballots_audit(
     # Trying to end the round should fail, since we haven't recorded results for
     # all jurisdictions with sampled ballots
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.post(f"/api/election/{election_id}/round/{round_id}/finish")
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
     assert rv.status_code == 409
 
     # Check jurisdiction progress
@@ -414,7 +414,7 @@ def test_all_ballots_audit(
 
     # End the round
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.post(f"/api/election/{election_id}/round/{round_id}/finish")
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
     assert_ok(rv)
 
     snapshot.assert_match(
@@ -861,7 +861,7 @@ def test_full_hand_tally_results_unfinalize(
 
     # End the round
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.post(f"/api/election/{election_id}/round/{round_1_id}/finish")
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
     assert_ok(rv)
 
     # AA tries to unfinalize results but can't

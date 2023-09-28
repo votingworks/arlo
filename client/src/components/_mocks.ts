@@ -1720,7 +1720,7 @@ export const aaApiCalls = {
     },
   }),
   postFinishRound: {
-    url: '/api/election/1/round/round-1/finish',
+    url: '/api/election/1/round/current/finish',
     options: { method: 'POST' },
     response: { status: 'ok' },
   },

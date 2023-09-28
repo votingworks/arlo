@@ -398,7 +398,7 @@ def test_batch_comparison_round_2(
     snapshot.assert_match(jurisdictions[1]["currentRoundStatus"])
 
     # End the round
-    rv = client.post(f"/api/election/{election_id}/round/{round_1_id}/finish")
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
     assert_ok(rv)
 
     # Start a second round
@@ -609,7 +609,7 @@ def test_batch_comparison_batches_sampled_multiple_times(
     snapshot.assert_match(jurisdictions[1]["currentRoundStatus"])
 
     # End the round
-    rv = client.post(f"/api/election/{election_id}/round/{round_1_id}/finish")
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
     assert_ok(rv)
 
     # Audit should be complete

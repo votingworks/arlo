@@ -245,7 +245,7 @@ def test_record_batch_results(
 
     # End the round
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.post(f"/api/election/{election_id}/round/{round_1_id}/finish")
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
     assert_ok(rv)
 
     snapshot.assert_match(
@@ -659,7 +659,7 @@ def test_unfinalize_batch_results(
     )
     assert_ok(rv)
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.post(f"/api/election/{election_id}/round/{round_1_id}/finish")
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
     assert_ok(rv)
 
     # Can't unfinalize after round ends
@@ -720,7 +720,7 @@ def test_record_batch_results_bad_round(
         )
         assert_ok(rv)
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.post(f"/api/election/{election_id}/round/{round_1_id}/finish")
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
     assert_ok(rv)
 
     rv = client.get(f"/api/election/{election_id}/sample-sizes/2")

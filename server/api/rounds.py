@@ -616,23 +616,26 @@ def create_round(election: Election):
     return jsonify({"status": "ok"})
 
 
-@api.route("/election/<election_id>/round/<round_id>/finish", methods=["POST"])
+@api.route("/election/<election_id>/round/current/finish", methods=["POST"])
 @restrict_access([UserType.AUDIT_ADMIN])
-def finish_round(election: Election, round: Round):
-    if not is_round_ready_to_finish(election, round):
+def finish_round(election: Election):
+    current_round = get_current_round(election)
+    if not current_round:
+        raise Conflict("Audit not started")
+    if not is_round_ready_to_finish(election, current_round):
         raise Conflict("Auditing is still in progress")
 
-    count_audited_votes(election, round)
-    calculate_risk_measurements(election, round)
-    round.ended_at = datetime.now(timezone.utc)
+    count_audited_votes(election, current_round)
+    calculate_risk_measurements(election, current_round)
+    current_round.ended_at = datetime.now(timezone.utc)
 
     db_session.flush()  # Ensure round contest results are queryable by is_audit_complete
     record_activity(
         EndRound(
-            timestamp=round.ended_at,
+            timestamp=current_round.ended_at,
             base=activity_base(election),
-            round_num=round.round_num,
-            is_audit_complete=is_audit_complete(round),
+            round_num=current_round.round_num,
+            is_audit_complete=is_audit_complete(current_round),
         )
     )
 

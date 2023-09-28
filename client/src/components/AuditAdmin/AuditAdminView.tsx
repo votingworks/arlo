@@ -109,8 +109,7 @@ const AuditAdminView: React.FC = () => {
   }
 
   const finishRound = async () => {
-    const currentRoundId = rounds[rounds.length - 1].id
-    await finishRoundMutation.mutateAsync(currentRoundId)
+    await finishRoundMutation.mutateAsync()
   }
 
   const undoRoundStart = async () => {

@@ -114,7 +114,7 @@ def test_multi_winner_two_rounds(
 
     run_multi_winner_audit_round(round_1_id, contest_id, 0.5, 0.3)
 
-    rv = client.post(f"/api/election/{election_id}/round/{round_1_id}/finish")
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
     assert_ok(rv)
 
     rv = client.get(f"/api/election/{election_id}/round")
@@ -138,7 +138,7 @@ def test_multi_winner_two_rounds(
 
     run_multi_winner_audit_round(round_2_id, contest_id, 0.7, 0.3)
 
-    rv = client.post(f"/api/election/{election_id}/round/{round_2_id}/finish")
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
     assert_ok(rv)
 
     rv = client.get(f"/api/election/{election_id}/round")

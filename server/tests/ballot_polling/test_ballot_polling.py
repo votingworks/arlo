@@ -42,7 +42,7 @@ def test_not_found_ballots(
     db_session.commit()
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.post(f"/api/election/{election_id}/round/{round_1_id}/finish")
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
     assert_ok(rv)
 
     all_audited_p_values = dict(
@@ -66,7 +66,7 @@ def test_not_found_ballots(
         draw.sampled_ballot.status = BallotStatus.NOT_FOUND
 
     # End the round
-    rv = client.post(f"/api/election/{election_id}/round/{round_1_id}/finish")
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
     assert_ok(rv)
 
     not_found_p_values = dict(

@@ -93,9 +93,9 @@ export const useStartNextRound = (
 
 export const useFinishRound = (
   electionId: string
-): UseMutationResult<unknown, ApiError, string> => {
-  const postFinishRound = async (roundId: string) =>
-    fetchApi(`/api/election/${electionId}/round/${roundId}/finish`, {
+): UseMutationResult<unknown, ApiError, void> => {
+  const postFinishRound = async () =>
+    fetchApi(`/api/election/${electionId}/round/current/finish`, {
       method: 'POST',
     })
 

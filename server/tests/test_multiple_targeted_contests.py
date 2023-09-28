@@ -103,7 +103,7 @@ def test_multiple_targeted_contests_two_rounds(
     run_audit_round(round_1.id, contest_ids[0], contest_ids, 0.7)
 
     # End the round
-    rv = client.post(f"/api/election/{election_id}/round/{round_1.id}/finish")
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
     assert_ok(rv)
 
     # The audit should not be complete
@@ -180,7 +180,7 @@ def test_multiple_targeted_contests_two_rounds(
     run_audit_round(rounds[1]["id"], contest_ids[1], contest_ids[1:], 0.7)
 
     # End the round
-    rv = client.post(f"/api/election/{election_id}/round/{round_2_id}/finish")
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
     assert_ok(rv)
 
     # The audit should be complete

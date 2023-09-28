@@ -226,7 +226,7 @@ def round_2_id(
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     run_audit_round(round_1_id, contest_ids[0], contest_ids, 0.55)
 
-    rv = client.post(f"/api/election/{election_id}/round/{round_1_id}/finish")
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
     assert_ok(rv)
 
     rv = client.get(f"/api/election/{election_id}/sample-sizes/2")

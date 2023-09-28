@@ -714,7 +714,7 @@ def test_support_clear_offline_results_ballot_polling(
     )
     assert_ok(rv)
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.post(f"/api/election/{election_id}/round/{round_1_id}/finish")
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
     assert_ok(rv)
 
     # Can't clear results after round ends
@@ -833,7 +833,7 @@ def test_support_reopen_current_round(
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     run_audit_round(round_1_id, contest_ids[0], contest_ids, 0.55)
-    rv = client.post(f"/api/election/{election_id}/round/{round_1_id}/finish")
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
     assert is_round_completed(round_1_id)
 
     rv = client.patch(f"/api/support/elections/{election_id}/reopen-current-round")
@@ -843,7 +843,7 @@ def test_support_reopen_current_round(
     # Verify that the round can be completed again
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     run_audit_round(round_1_id, contest_ids[0], contest_ids, 0.55)
-    rv = client.post(f"/api/election/{election_id}/round/{round_1_id}/finish")
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
     assert is_round_completed(round_1_id)
 
 

@@ -230,7 +230,7 @@ def test_sample_extra_batches_by_counting_group(
 
     # End the round
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.post(f"/api/election/{election_id}/round/{round_1_id}/finish")
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
     assert_ok(rv)
 
     # Check that the audit is complete since we don't use risk measurements to determine completion

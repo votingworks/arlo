@@ -144,7 +144,7 @@ def test_run_offline_audit(
 
     # End the round
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.post(f"/api/election/{election_id}/round/{round_id}/finish")
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
     assert_ok(rv)
 
     snapshot.assert_match(
@@ -288,7 +288,7 @@ def test_offline_results_bad_round(
 
     # End the round
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.post(f"/api/election/{election_id}/round/{round_1_id}/finish")
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
     assert_ok(rv)
 
     rv = client.get(f"/api/election/{election_id}/sample-sizes/2")

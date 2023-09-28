@@ -744,7 +744,7 @@ def test_ballot_comparison_two_rounds(
     snapshot.assert_match(jurisdictions[1]["currentRoundStatus"])
 
     # End the round
-    rv = client.post(f"/api/election/{election_id}/round/{round_1_id}/finish")
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
     assert_ok(rv)
 
     # Check the audit report
@@ -850,7 +850,7 @@ def test_ballot_comparison_two_rounds(
     snapshot.assert_match(jurisdictions[1]["currentRoundStatus"])
 
     # End the round
-    rv = client.post(f"/api/election/{election_id}/round/{round_2_id}/finish")
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
     assert_ok(rv)
 
     # Check the audit report
@@ -1135,7 +1135,7 @@ def test_ballot_comparison_multiple_targeted_contests_sample_size(
         audit_ballot(ballot, contest_1_id, Interpretation.VOTE, [contest_1.choices[0]])
         audit_ballot(ballot, contest_2_id, Interpretation.VOTE, [contest_2.choices[0]])
 
-    rv = client.post(f"/api/election/{election_id}/round/{round_1_id}/finish")
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
     assert_ok(rv)
 
     rv = client.get(f"/api/election/{election_id}/sample-sizes/2")
@@ -1333,7 +1333,7 @@ def test_ballot_comparison_ess(
 
     # End the round
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.post(f"/api/election/{election_id}/round/{round_1_id}/finish")
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
     assert_ok(rv)
 
     # Check the audit report

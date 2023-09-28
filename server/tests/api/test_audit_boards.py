@@ -665,7 +665,7 @@ def test_audit_boards_sign_off_happy_path(
 
     # After one audit board signs off, shouldn't allow ending the round yet
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.post(f"/api/election/{election_id}/round/{round_1_id}/finish")
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
     assert rv.status_code == 409
 
     run_audit_board_flow(jurisdiction_ids[0], audit_board_round_1_ids[1])
@@ -673,7 +673,7 @@ def test_audit_boards_sign_off_happy_path(
     # After second audit board signs off, shouldn't allow ending the round yet
     # because the other jurisdictions still didn't set up audit boards
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.post(f"/api/election/{election_id}/round/{round_1_id}/finish")
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
     assert rv.status_code == 409
 
     # Create an audit board for the other jurisdiction that had some ballots sampled
@@ -708,7 +708,7 @@ def test_audit_boards_sign_off_happy_path(
 
     # Now the round should be endable
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.post(f"/api/election/{election_id}/round/{round_1_id}/finish")
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
     assert_ok(rv)
 
     results = (
@@ -1187,7 +1187,7 @@ def test_reopen_audit_board_error_cases(
     }
 
     run_audit_round(round_1_id, contest_ids[0], contest_ids, 0.55)
-    rv = client.post(f"/api/election/{election_id}/round/{round_1_id}/finish")
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
     assert_ok(rv)
 
     rv = client.delete(
