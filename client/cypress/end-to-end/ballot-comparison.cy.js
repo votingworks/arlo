@@ -323,5 +323,11 @@ describe('Ballot Comparison Test Cases', () => {
       .should('not.be.disabled')
       .click()
     cy.contains(/Auditing Complete/)
+    cy.findByRole('link', { name: 'Log out' }).click()
+
+    cy.loginAuditAdmin(auditAdmin)
+    cy.findByText(`TestAudit${id}`).click()
+    cy.findByRole('button', { name: 'Finish Round 1' }).click()
+    cy.findByText('Congratulations - the audit is complete!')
   })
 })

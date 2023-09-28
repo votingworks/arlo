@@ -95,6 +95,7 @@ describe('Ballot Polling', () => {
     cy.logout(jurisdictionAdmin)
     cy.loginAuditAdmin(auditAdmin)
     cy.findByText(`TestAudit${id}`).click()
+    cy.findByRole('button', { name: 'Finish Round 1' }).click()
     cy.contains('Congratulations - the audit is complete!')
 
     // Delete the audit
@@ -231,6 +232,12 @@ describe('Ballot Polling', () => {
         .should('not.be.disabled')
         .click()
       cy.contains(/Auditing Complete/)
+      cy.findByRole('link', { name: 'Log out' }).click()
+
+      cy.loginAuditAdmin(auditAdmin)
+      cy.findByText(`TestAudit${id}`).click()
+      cy.findByRole('button', { name: 'Finish Round 1' }).click()
+      cy.findByText('Congratulations - the audit is complete!')
     })
   })
 })
