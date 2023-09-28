@@ -1,8 +1,7 @@
 import React, { ReactElement } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
-import { Callout, H3, H4, Button } from '@blueprintjs/core'
-import { Formik } from 'formik'
+import { Callout, H3, H4 } from '@blueprintjs/core'
 import { toast } from 'react-toastify'
 import { apiDownload } from '../utilities'
 import { Inner } from './Wrapper'
@@ -17,6 +16,7 @@ import {
 import { IContest } from '../../types'
 import useSampleSizes from '../AuditAdmin/Setup/Review/useSampleSizes'
 import { mapValues } from '../../utils/objects'
+import AsyncButton from './AsyncButton'
 
 const SpacedH3 = styled(H3)`
   &.bp3-heading {
@@ -39,8 +39,7 @@ interface IStatusBoxProps {
   headline: string
   details: string[]
   auditName: string
-  buttonLabel?: string
-  onButtonClick?: () => void
+  action?: ReactElement
   children?: ReactElement
 }
 
@@ -48,8 +47,7 @@ const StatusBox: React.FC<IStatusBoxProps> = ({
   headline,
   details,
   auditName,
-  buttonLabel,
-  onButtonClick,
+  action,
   children,
 }: IStatusBoxProps) => {
   return (
@@ -63,29 +61,11 @@ const StatusBox: React.FC<IStatusBoxProps> = ({
           ))}
           {children}
         </div>
-        {buttonLabel && onButtonClick && (
-          <Formik initialValues={{}} onSubmit={onButtonClick}>
-            {({ handleSubmit, isSubmitting }) => (
-              <div>
-                <Button
-                  intent="success"
-                  loading={isSubmitting}
-                  type="submit"
-                  onClick={handleSubmit as React.FormEventHandler}
-                >
-                  {buttonLabel}
-                </Button>
-              </div>
-            )}
-          </Formik>
-        )}
+        <div>{action}</div>
       </Inner>
     </Wrapper>
   )
 }
-
-const downloadAuditAdminReport = (electionId: string) =>
-  apiDownload(`/election/${electionId}/report`)
 
 export const allCvrsUploaded = (jurisdictions: IJurisdiction[]): boolean =>
   jurisdictions.every(
@@ -195,8 +175,15 @@ export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
           `Error: ${drawSampleError(rounds)}`,
         ]}
         auditName={auditSettings.auditName}
-        buttonLabel={rounds.length === 1 ? 'Undo Audit Launch' : undefined}
-        onButtonClick={rounds.length === 1 ? undoRoundStart : undefined}
+        action={
+          rounds.length === 1 ? (
+            <AsyncButton onClick={undoRoundStart} intent="primary">
+              Undo Audit Launch
+            </AsyncButton>
+          ) : (
+            undefined
+          )
+        }
       >
         {children}
       </StatusBox>
@@ -235,8 +222,15 @@ export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
             ` have completed round ${roundNum}`,
         ]}
         auditName={auditSettings.auditName}
-        buttonLabel={canUndoLaunch ? 'Undo Audit Launch' : undefined}
-        onButtonClick={canUndoLaunch ? undoRoundStart : undefined}
+        action={
+          canUndoLaunch ? (
+            <AsyncButton onClick={undoRoundStart} intent="primary">
+              Undo Audit Launch
+            </AsyncButton>
+          ) : (
+            undefined
+          )
+        }
       >
         <>
           {/* Special case: when a sample size has been drawn that requires a full hand tally
@@ -272,11 +266,17 @@ export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
   // Round complete, audit complete
   return (
     <StatusBox
+      auditName={auditSettings.auditName}
       headline="Congratulations - the audit is complete!"
       details={[]}
-      buttonLabel="Download Audit Report"
-      onButtonClick={async () => downloadAuditAdminReport(electionId)}
-      auditName={auditSettings.auditName}
+      action={
+        <AsyncButton
+          intent="primary"
+          onClick={() => apiDownload(`/election/${electionId}/report`)}
+        >
+          Download Audit Report
+        </AsyncButton>
+      }
     >
       {children}
     </StatusBox>
@@ -314,6 +314,7 @@ const AuditAdminAnotherRoundStatusBox = ({
 
   return (
     <StatusBox
+      auditName={auditSettings.auditName}
       headline={`Round ${roundNum} of the audit is complete - another round is needed`}
       details={(() => {
         if (!sampleSizesQuery.data?.task.completedAt)
@@ -332,15 +333,20 @@ const AuditAdminAnotherRoundStatusBox = ({
           }),
         ]
       })()}
-      buttonLabel={`Start Round ${roundNum + 1}`}
-      onButtonClick={async () => {
-        if (!sampleSizes) {
-          toast.info('Sample sizes are still loading')
-          return false
-        }
-        return startNextRound(sampleSizes)
-      }}
-      auditName={auditSettings.auditName}
+      action={
+        <AsyncButton
+          intent="primary"
+          onClick={async () => {
+            if (!sampleSizes) {
+              toast.info('Sample sizes are still loading')
+            } else {
+              await startNextRound(sampleSizes)
+            }
+          }}
+        >
+          Start Round {roundNum + 1}
+        </AsyncButton>
+      }
     >
       {children}
     </StatusBox>
