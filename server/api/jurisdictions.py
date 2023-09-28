@@ -152,6 +152,7 @@ def serialize_jurisdiction(
             "numBallots": jurisdiction.manifest_num_ballots,
             "numBatches": jurisdiction.manifest_num_batches,
         },
+        "expectedBallotManifestNumBallots": jurisdiction.expected_manifest_num_ballots,
         "currentRoundStatus": round_status,
     }
 

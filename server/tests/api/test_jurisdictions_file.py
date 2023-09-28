@@ -401,7 +401,8 @@ def test_jurisdictions_file_expected_num_ballots(client: FlaskClient, election_i
     )
     assert_ok(rv)
 
-    election = Election.query.filter_by(id=election_id).one()
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
     assert [
-        (j.name, j.expected_manifest_num_ballots) for j in election.jurisdictions
+        (j["name"], j["expectedBallotManifestNumBallots"]) for j in jurisdictions
     ] == [("J1", 20), ("J2", None), ("J3", 10), ("J4", 500)]
