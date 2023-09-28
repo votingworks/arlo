@@ -119,6 +119,60 @@ describe('Progress screen', () => {
     })
   })
 
+  it('shows expected number of ballots in manifest and difference if provided', async () => {
+    const expectedCalls = [aaApiCalls.getMapData]
+    await withMockFetch(expectedCalls, async () => {
+      render({
+        jurisdictions: [
+          {
+            ...jurisdictionMocks.allManifests[0],
+            expectedBallotManifestNumBallots:
+              jurisdictionMocks.allManifests[0].ballotManifest!.numBallots! +
+              10,
+          },
+          {
+            ...jurisdictionMocks.allManifests[1],
+            expectedBallotManifestNumBallots:
+              jurisdictionMocks.allManifests[1].ballotManifest!.numBallots! -
+              20,
+          },
+          {
+            ...jurisdictionMocks.noManifests[0],
+            expectedBallotManifestNumBallots: 30,
+          },
+        ],
+      })
+
+      await screen.findByRole('heading', { name: 'Audit Progress' })
+
+      const headers = screen.getAllByRole('columnheader')
+      expect(headers).toHaveLength(5)
+      expect(headers[2]).toHaveTextContent('Ballots in Manifest')
+      expect(headers[3]).toHaveTextContent('Expected Ballots in Manifest')
+      expect(headers[4]).toHaveTextContent('Difference From Expected Ballots')
+
+      const rows = screen.getAllByRole('row')
+      expect(rows).toHaveLength(jurisdictionMocks.oneManifest.length + 2) // includes headers and footers
+      const row1 = within(rows[1]).getAllByRole('cell')
+      expect(row1[2]).toHaveTextContent('2,117')
+      expect(row1[3]).toHaveTextContent('2,127')
+      expect(row1[4]).toHaveTextContent('10')
+      const row2 = within(rows[2]).getAllByRole('cell')
+      expect(row2[2]).toHaveTextContent('2,117')
+      expect(row2[3]).toHaveTextContent('2,097')
+      expect(row2[4]).toHaveTextContent('20')
+      const row3 = within(rows[3]).getAllByRole('cell')
+      expect(row3[2]).toHaveTextContent('')
+      expect(row3[3]).toHaveTextContent('30')
+      expect(row3[4]).toHaveTextContent('')
+
+      const footers = within(rows[4]).getAllByRole('cell')
+      expect(footers[2]).toHaveTextContent('4,234')
+      expect(footers[3]).toHaveTextContent('4,254')
+      expect(footers[4]).toHaveTextContent('30')
+    })
+  })
+
   it('shows round status for ballot polling', async () => {
     const expectedCalls = [aaApiCalls.getMapData]
     await withMockFetch(expectedCalls, async () => {
