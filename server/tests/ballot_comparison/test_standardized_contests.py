@@ -183,7 +183,7 @@ def test_standardized_contests_no_jurisdictions(
                 "status": ProcessingStatus.ERRORED,
                 "startedAt": assert_is_date,
                 "completedAt": assert_is_date,
-                "error": "All cells must have values. Got empty cell at column Jurisdictions, row 2.",
+                "error": "A value is required for the cell at column Jurisdictions, row 2.",
             },
         },
     )

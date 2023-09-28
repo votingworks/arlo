@@ -39,7 +39,10 @@ class CSVValueType(str, Enum):
 class CSVColumnType(NamedTuple):
     name: str
     value_type: CSVValueType
-    required: bool = True
+    # Must the the column header be present?
+    required_column: bool = True
+    # Can a row in the column be empty?
+    allow_empty_rows: bool = False
     unique: bool = False
 
 
@@ -67,7 +70,7 @@ def parse_csv(file: BinaryIO, columns: List[CSVColumnType]) -> CSVDictIterator:
     csv = skip_empty_trailing_columns(csv)
     csv = validate_and_normalize_headers(csv, columns)
     dict_csv = convert_rows_to_dicts(csv)
-    dict_csv = reject_empty_cells(dict_csv)
+    dict_csv = reject_empty_cells(dict_csv, columns)
     dict_csv = reject_total_rows(dict_csv)
     dict_csv = validate_and_parse_values(dict_csv, columns)
     dict_csv = reject_duplicate_values(dict_csv, columns)
@@ -216,7 +219,7 @@ def validate_and_normalize_headers(
         raise CSVParseError("Column headers must be unique.")
 
     allowed_headers = {c.name for c in columns}
-    required_headers = {c.name for c in columns if c.required}
+    required_headers = {c.name for c in columns if c.required_column}
 
     missing_headers = required_headers - set(normalized_headers)
     if len(missing_headers) > 0:
@@ -245,7 +248,11 @@ def skip_empty_rows(csv: CSVDictIterator) -> CSVDictIterator:
             yield row
 
 
-def reject_empty_cells(csv: CSVDictIterator) -> CSVDictIterator:
+def reject_empty_cells(
+    csv: CSVDictIterator, columns: List[CSVColumnType]
+) -> CSVDictIterator:
+    columns_by_header = {column.name: column for column in columns}
+
     for r, row in enumerate(csv):  # pylint: disable=invalid-name
         # Skip empty rows, we filter them out later
         if is_empty_row(row):
@@ -253,10 +260,9 @@ def reject_empty_cells(csv: CSVDictIterator) -> CSVDictIterator:
             continue
 
         for header, value in row.items():  # pylint: disable=invalid-name
-            if value == "":
+            if value == "" and not columns_by_header[header].allow_empty_rows:
                 raise CSVParseError(
-                    "All cells must have values."
-                    f" Got empty cell at column {header}, row {r+2}."
+                    f"A value is required for the cell at column {header}, row {r+2}."
                 )
         yield row
 
@@ -269,6 +275,9 @@ def validate_and_parse_values(
     def parse_and_validate_value(header, value, r):  # pylint: disable=invalid-name
         where = f"column {header}, row {r+2}"
         column = columns_by_header[header]
+
+        if column.allow_empty_rows and value == "":
+            return None
 
         if column.value_type is CSVValueType.NUMBER:
             try:

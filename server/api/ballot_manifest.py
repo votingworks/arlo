@@ -104,11 +104,11 @@ def process_ballot_manifest_file(
             AuditType.HYBRID,
         ]
         columns = [
-            CSVColumnType(CONTAINER, CSVValueType.TEXT, required=False),
+            CSVColumnType(CONTAINER, CSVValueType.TEXT, required_column=False),
             CSVColumnType(
                 TABULATOR,
                 CSVValueType.TEXT,
-                required=use_tabulator,
+                required_column=use_tabulator,
                 unique=use_tabulator,
             ),
             CSVColumnType(BATCH_NAME, CSVValueType.TEXT, unique=True),
@@ -118,7 +118,9 @@ def process_ballot_manifest_file(
         # (for which we use ballot comparison math) and which don't (for which
         # we use ballot polling math).
         if jurisdiction.election.audit_type == AuditType.HYBRID:
-            columns.append(CSVColumnType(CVR, CSVValueType.YES_NO, required=True))
+            columns.append(
+                CSVColumnType(CVR, CSVValueType.YES_NO, required_column=True)
+            )
 
         manifest_file = retrieve_file(jurisdiction.manifest_file.storage_path)
         manifest_csv = parse_csv(manifest_file, columns)
