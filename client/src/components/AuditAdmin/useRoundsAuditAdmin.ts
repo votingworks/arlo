@@ -91,6 +91,23 @@ export const useStartNextRound = (
   })
 }
 
+export const useFinishRound = (
+  electionId: string
+): UseMutationResult<unknown, ApiError, string> => {
+  const postFinishRound = async (roundId: string) =>
+    fetchApi(`/api/election/${electionId}/round/${roundId}/finish`, {
+      method: 'POST',
+    })
+
+  const queryClient = useQueryClient()
+
+  return useMutation(postFinishRound, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(roundsQueryKey(electionId))
+    },
+  })
+}
+
 export const useUndoRoundStart = (
   electionId: string
 ): UseMutationResult<unknown, ApiError, string> => {

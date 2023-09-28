@@ -12,6 +12,7 @@ import {
   ISampleSizes,
   roundsQueryKey,
   IRound,
+  useFinishRound,
 } from './useRoundsAuditAdmin'
 import { useJurisdictions, jurisdictionsQueryKey } from '../useJurisdictions'
 import { useContests } from '../useContests'
@@ -53,6 +54,7 @@ const AuditAdminView: React.FC = () => {
     },
   })
   const startNextRoundMutation = useStartNextRound(electionId)
+  const finishRoundMutation = useFinishRound(electionId)
   const undoRoundStartMutation = useUndoRoundStart(electionId)
 
   const jurisdictionsQuery = useJurisdictions(electionId)
@@ -106,6 +108,11 @@ const AuditAdminView: React.FC = () => {
     return true
   }
 
+  const finishRound = async () => {
+    const currentRoundId = rounds[rounds.length - 1].id
+    await finishRoundMutation.mutateAsync(currentRoundId)
+  }
+
   const undoRoundStart = async () => {
     const currentRoundId = rounds[rounds.length - 1].id
     await undoRoundStartMutation.mutateAsync(currentRoundId)
@@ -119,6 +126,7 @@ const AuditAdminView: React.FC = () => {
           <AuditAdminStatusBox
             rounds={rounds}
             startNextRound={startNextRound}
+            finishRound={finishRound}
             undoRoundStart={undoRoundStart}
             jurisdictions={jurisdictions}
             contests={contests}
@@ -138,6 +146,7 @@ const AuditAdminView: React.FC = () => {
           <AuditAdminStatusBox
             rounds={rounds}
             startNextRound={startNextRound}
+            finishRound={finishRound}
             undoRoundStart={undoRoundStart}
             jurisdictions={jurisdictions}
             contests={contests}

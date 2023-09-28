@@ -114,6 +114,7 @@ export const isSetupComplete = (
 interface IAuditAdminProps {
   rounds: IRound[]
   startNextRound: (sampleSizes: ISampleSizes) => Promise<boolean>
+  finishRound: () => Promise<void>
   undoRoundStart: () => Promise<boolean>
   jurisdictions: IJurisdiction[]
   contests: IContest[]
@@ -124,6 +125,7 @@ interface IAuditAdminProps {
 export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
   rounds,
   startNextRound,
+  finishRound,
   undoRoundStart,
   jurisdictions,
   contests,
@@ -206,6 +208,8 @@ export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
         currentRoundStatus.status === JurisdictionRoundStatus.COMPLETE
     ).length
 
+    const canFinishRound = numCompleted === jurisdictions.length
+
     const canUndoLaunch =
       roundNum === 1 &&
       jurisdictions.every(
@@ -223,8 +227,12 @@ export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
         ]}
         auditName={auditSettings.auditName}
         action={
-          canUndoLaunch ? (
-            <AsyncButton onClick={undoRoundStart} intent="primary">
+          canFinishRound ? (
+            <AsyncButton onClick={finishRound} intent="primary">
+              Finish Round {roundNum}
+            </AsyncButton>
+          ) : canUndoLaunch ? (
+            <AsyncButton onClick={undoRoundStart}>
               Undo Audit Launch
             </AsyncButton>
           ) : (
