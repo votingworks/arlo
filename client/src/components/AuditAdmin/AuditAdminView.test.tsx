@@ -362,3 +362,25 @@ describe('AA setup flow', () => {
     })
   })
 })
+
+it('finishes a round', async () => {
+  const expectedCalls = [
+    aaApiCalls.getUser,
+    aaApiCalls.getRounds(roundMocks.singleIncomplete),
+    {
+      ...aaApiCalls.getJurisdictions,
+      response: { jurisdictions: jurisdictionMocks.allComplete },
+    },
+    aaApiCalls.getContests(contestMocks.filledTargeted),
+    aaApiCalls.getSettings(auditSettingsMocks.all),
+    aaApiCalls.getMapData,
+    aaApiCalls.postFinishRound,
+    aaApiCalls.getRounds(roundMocks.singleComplete),
+  ]
+  await withMockFetch(expectedCalls, async () => {
+    render('progress')
+    await screen.findByRole('heading', { name: 'Audit Progress' })
+    userEvent.click(screen.getByRole('button', { name: 'Finish Round 1' }))
+    await screen.findByText('Congratulations - the audit is complete!')
+  })
+})
