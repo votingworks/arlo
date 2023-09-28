@@ -685,9 +685,11 @@ def test_batch_comparison_sample_all_batches(
 
 
 def test_batch_comparison_undo_start_round_1(
-    client: FlaskClient, election_id: str, round_1_id: str
+    client: FlaskClient,
+    election_id: str,
+    round_1_id: str,  # pylint: disable=unused-argument
 ):
-    rv = client.delete(f"/api/election/{election_id}/round/{round_1_id}")
+    rv = client.delete(f"/api/election/{election_id}/round/current")
     assert_ok(rv)
 
     rv = client.get(f"/api/election/{election_id}/round")

@@ -677,20 +677,18 @@ def list_rounds_jurisdiction_admin(
     return jsonify({"rounds": [serialize_round(r) for r in election.rounds]})
 
 
-@api.route("/election/<election_id>/round/<round_id>", methods=["DELETE"])
+@api.route("/election/<election_id>/round/current", methods=["DELETE"])
 @restrict_access([UserType.AUDIT_ADMIN])
-def undo_round_start(election: Election, round: Round):
+def undo_round_start(election: Election):
     current_round = get_current_round(election)
-    if not current_round or current_round.id != round.id:
-        raise Conflict(
-            "Cannot undo starting this round because it is not the current round."
-        )
+    if not current_round:
+        raise Conflict("Audit not started")
 
-    if len(list(round.audit_boards)) > 0:
+    if len(list(current_round.audit_boards)) > 0:
         raise Conflict(
             "Cannot undo starting this round because some jurisdictions have already created audit boards."
         )
 
-    delete_round_and_corresponding_sampled_ballots(round)
+    delete_round_and_corresponding_sampled_ballots(current_round)
 
     return jsonify(status="ok")

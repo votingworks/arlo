@@ -115,7 +115,7 @@ interface IAuditAdminProps {
   rounds: IRound[]
   startNextRound: (sampleSizes: ISampleSizes) => Promise<boolean>
   finishRound: () => Promise<void>
-  undoRoundStart: () => Promise<boolean>
+  undoRoundStart: () => Promise<void>
   jurisdictions: IJurisdiction[]
   contests: IContest[]
   auditSettings: IAuditSettings

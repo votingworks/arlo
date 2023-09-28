@@ -284,7 +284,7 @@ describe('AA setup flow', () => {
       aaApiCalls.getRounds(roundMocks.drawSampleErrored),
       ...afterLaunchApiCalls,
       {
-        url: '/api/election/1/round/round-1',
+        url: '/api/election/1/round/current',
         options: { method: 'DELETE' },
         response: { status: 'ok' },
       },

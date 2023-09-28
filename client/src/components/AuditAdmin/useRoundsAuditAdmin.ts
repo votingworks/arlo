@@ -110,9 +110,9 @@ export const useFinishRound = (
 
 export const useUndoRoundStart = (
   electionId: string
-): UseMutationResult<unknown, ApiError, string> => {
-  const deleteRound = async (roundId: string) =>
-    fetchApi(`/api/election/${electionId}/round/${roundId}`, {
+): UseMutationResult<unknown, ApiError, void> => {
+  const deleteRound = async () =>
+    fetchApi(`/api/election/${electionId}/round/current`, {
       method: 'DELETE',
     })
 

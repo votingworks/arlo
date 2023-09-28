@@ -430,8 +430,20 @@ def test_finish_round_before_launch(client: FlaskClient, election_id: str):
     }
 
 
-def test_undo_start_round_1(client: FlaskClient, election_id: str, round_1_id: str):
-    rv = client.delete(f"/api/election/{election_id}/round/{round_1_id}")
+def test_undo_start_round_before_launch(client: FlaskClient, election_id: str):
+    rv = client.delete(f"/api/election/{election_id}/round/current")
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [{"message": "Audit not started", "errorType": "Conflict",}]
+    }
+
+
+def test_undo_start_round_1(
+    client: FlaskClient,
+    election_id: str,
+    round_1_id: str,  # pylint: disable=unused-argument
+):
+    rv = client.delete(f"/api/election/{election_id}/round/current")
     assert_ok(rv)
 
     rv = client.get(f"/api/election/{election_id}/round")
@@ -457,11 +469,11 @@ def test_undo_start_round_1(client: FlaskClient, election_id: str, round_1_id: s
 def test_undo_start_round_1_with_audit_boards(
     client: FlaskClient,
     election_id: str,
-    round_1_id: str,
+    round_1_id: str,  # pylint: disable=unused-argument
     audit_board_round_1_ids: List[str],  # pylint: disable=unused-argument
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.delete(f"/api/election/{election_id}/round/{round_1_id}")
+    rv = client.delete(f"/api/election/{election_id}/round/current")
     assert rv.status_code == 409
     assert json.loads(rv.data) == {
         "errors": [
@@ -476,18 +488,7 @@ def test_undo_start_round_1_with_audit_boards(
 def test_undo_start_round_2(
     client: FlaskClient, election_id: str, round_1_id: str, round_2_id: str
 ):
-    rv = client.delete(f"/api/election/{election_id}/round/{round_1_id}")
-    assert rv.status_code == 409
-    assert json.loads(rv.data) == {
-        "errors": [
-            {
-                "message": "Cannot undo starting this round because it is not the current round.",
-                "errorType": "Conflict",
-            }
-        ]
-    }
-
-    rv = client.delete(f"/api/election/{election_id}/round/{round_2_id}")
+    rv = client.delete(f"/api/election/{election_id}/round/current")
     assert_ok(rv)
 
     rv = client.get(f"/api/election/{election_id}/round")
