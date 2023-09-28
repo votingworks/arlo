@@ -375,3 +375,33 @@ def test_jurisdictions_file_dont_clobber_other_elections(
         )
         == 1
     )
+
+
+def test_jurisdictions_file_expected_num_ballots(client: FlaskClient, election_id: str):
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/file",
+        data={
+            "jurisdictions": (
+                io.BytesIO(
+                    b"Jurisdiction,Admin Email,Expected Number of Ballots\n"
+                    # If multiple rows for the same jurisdiction, the last one wins
+                    b"J1,a1@example.com,10\n"
+                    b"J1,a2@example.com,20\n"
+                    # Value is optional
+                    b"J2,a1@example.com,\n"
+                    # If no value in some rows for jurisdiction, the last value wins
+                    b"J3,a1@example.com,10\n"
+                    b"J3,a2@example.com,\n"
+                    b"J4,a1@example.com,\n"
+                    b"J4,a2@example.com,500\n"
+                ),
+                "jurisdictions.csv",
+            )
+        },
+    )
+    assert_ok(rv)
+
+    election = Election.query.filter_by(id=election_id).one()
+    assert [
+        (j.name, j.expected_manifest_num_ballots) for j in election.jurisdictions
+    ] == [("J1", 20), ("J2", None), ("J3", 10), ("J4", 500)]
