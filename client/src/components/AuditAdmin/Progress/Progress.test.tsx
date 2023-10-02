@@ -46,7 +46,7 @@ const expectStatusTag = (cell: HTMLElement, status: string, intent: Intent) => {
   else expect(statusTag).toHaveClass(`bp3-intent-${intent}`)
 }
 
-const render = (props: Partial<IProgressProps> = {}) =>
+const render = (props: Partial<IProgressProps> = {}, searchParams = '') =>
   renderWithRouter(
     <QueryClientProvider client={createQueryClient()}>
       <Route
@@ -62,7 +62,7 @@ const render = (props: Partial<IProgressProps> = {}) =>
         )}
       />
     </QueryClientProvider>,
-    { route: '/election/1/progress' }
+    { route: `/election/1/progress${searchParams}` }
   )
 
 describe('Progress screen', () => {
@@ -667,13 +667,12 @@ describe('Progress screen', () => {
   it('filters by jurisdiction name', async () => {
     const expectedCalls = [aaApiCalls.getMapData]
     await withMockFetch(expectedCalls, async () => {
-      const { container } = render()
-
-      expect(container.querySelectorAll('.d3-component').length).toBe(1)
-
+      const { container, history } = render()
       await waitFor(() => {
         expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
       })
+
+      expect(history.location.search).toEqual('')
 
       const filter = screen.getByPlaceholderText(
         'Filter by jurisdiction name...'
@@ -681,25 +680,30 @@ describe('Progress screen', () => {
       userEvent.type(filter, '1')
       expect(screen.getAllByRole('row')).toHaveLength(1 + 2) // includes headers and footers
       screen.getByRole('cell', { name: 'Jurisdiction 1' })
+      expect(history.location.search).toEqual('?filter=1')
 
       userEvent.clear(filter)
+      expect(history.location.search).toEqual('')
       userEvent.type(filter, 'Jurisdiction')
       expect(screen.getAllByRole('row')).toHaveLength(
         jurisdictionMocks.oneManifest.length + 2
       )
+      expect(history.location.search).toEqual('?filter=Jurisdiction')
     })
   })
 
   it('sorts', async () => {
     const expectedCalls = [aaApiCalls.getMapData]
     await withMockFetch(expectedCalls, async () => {
-      const { container } = render()
+      const { container, history } = render()
 
       expect(container.querySelectorAll('.d3-component').length).toBe(1)
 
       await waitFor(() => {
         expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
       })
+
+      expect(history.location.search).toEqual('')
 
       // Toggle sorting by name
       // First click doesn't change order because they are sorted by name by default
@@ -709,14 +713,23 @@ describe('Progress screen', () => {
       userEvent.click(nameHeader)
       let rows = screen.getAllByRole('row')
       within(rows[1]).getByRole('cell', { name: 'Jurisdiction 1' })
+      await waitFor(() => {
+        expect(history.location.search).toEqual('?sort=Jurisdiction&dir=asc')
+      })
 
       userEvent.click(nameHeader)
       rows = screen.getAllByRole('row')
       within(rows[1]).getByRole('cell', { name: 'Jurisdiction 3' })
+      await waitFor(() => {
+        expect(history.location.search).toEqual('?sort=Jurisdiction&dir=desc')
+      })
 
       userEvent.click(nameHeader)
       rows = screen.getAllByRole('row')
       within(rows[1]).getByRole('cell', { name: 'Jurisdiction 1' })
+      await waitFor(() => {
+        expect(history.location.search).toEqual('')
+      })
 
       // Toggle sorting by status
       const statusHeader = screen.getByRole('columnheader', {
@@ -725,16 +738,47 @@ describe('Progress screen', () => {
       userEvent.click(statusHeader)
       rows = screen.getAllByRole('row')
       within(rows[1]).getByText('No manifest uploaded')
+      await waitFor(() => {
+        expect(history.location.search).toEqual('?sort=Status&dir=asc')
+      })
 
       userEvent.click(statusHeader)
       rows = screen.getAllByRole('row')
       within(rows[1]).getByRole('cell', { name: 'Manifest uploaded' })
+      await waitFor(() => {
+        expect(history.location.search).toEqual('?sort=Status&dir=desc')
+      })
 
       userEvent.click(statusHeader)
       rows = screen.getAllByRole('row')
       within(rows[1]).getByRole('cell', {
         name: 'Manifest upload failed',
       })
+      await waitFor(() => {
+        expect(history.location.search).toEqual('')
+      })
+    })
+  })
+
+  it('loads initial sort/filter state from URL search params', async () => {
+    const expectedCalls = [aaApiCalls.getMapData]
+    await withMockFetch(expectedCalls, async () => {
+      const { container } = render(
+        {
+          jurisdictions: jurisdictionMocks.oneManifest.map((j, i) => ({
+            ...j,
+            name: `${j.name} ${i % 2 === 0 ? 'Odd' : 'Even'}`,
+          })),
+        },
+        '?sort=Jurisdiction&dir=desc&filter=Odd'
+      )
+      await waitFor(() => {
+        expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
+      })
+
+      const rows = screen.getAllByRole('row')
+      expect(rows.length).toEqual(2 + 2) // includes headers and footers
+      within(rows[1]).getByRole('cell', { name: 'Jurisdiction 3 Odd' })
     })
   })
 
