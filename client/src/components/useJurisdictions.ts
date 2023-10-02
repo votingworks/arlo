@@ -40,6 +40,7 @@ export interface IJurisdiction {
   id: string
   name: string
   ballotManifest: IBallotManifestInfo
+  expectedBallotManifestNumBallots: number | null
   batchTallies?: IBatchTalliesFileInfo
   cvrs?: ICvrFileInfo
   currentRoundStatus: {

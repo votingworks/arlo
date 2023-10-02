@@ -33,6 +33,7 @@ def test_jurisdictions_list_no_manifest(
                     "numBallots": None,
                     "numBatches": None,
                 },
+                "expectedBallotManifestNumBallots": None,
                 "currentRoundStatus": None,
             },
             {
@@ -44,6 +45,7 @@ def test_jurisdictions_list_no_manifest(
                     "numBallots": None,
                     "numBatches": None,
                 },
+                "expectedBallotManifestNumBallots": None,
                 "currentRoundStatus": None,
             },
             {
@@ -55,6 +57,7 @@ def test_jurisdictions_list_no_manifest(
                     "numBallots": None,
                     "numBatches": None,
                 },
+                "expectedBallotManifestNumBallots": None,
                 "currentRoundStatus": None,
             },
         ]
@@ -95,6 +98,7 @@ def test_jurisdictions_list_with_manifest(
                     "numBallots": 23 + 101 + 122 + 400,
                     "numBatches": 4,
                 },
+                "expectedBallotManifestNumBallots": None,
                 "currentRoundStatus": None,
             },
             {
@@ -106,6 +110,7 @@ def test_jurisdictions_list_with_manifest(
                     "numBallots": None,
                     "numBatches": None,
                 },
+                "expectedBallotManifestNumBallots": None,
                 "currentRoundStatus": None,
             },
             {
@@ -117,6 +122,7 @@ def test_jurisdictions_list_with_manifest(
                     "numBallots": None,
                     "numBatches": None,
                 },
+                "expectedBallotManifestNumBallots": None,
                 "currentRoundStatus": None,
             },
         ]
@@ -171,6 +177,7 @@ def test_duplicate_batch_name(client, election_id, jurisdiction_ids):
                     "numBallots": None,
                     "numBatches": None,
                 },
+                "expectedBallotManifestNumBallots": None,
                 "currentRoundStatus": None,
             },
             {
@@ -182,6 +189,7 @@ def test_duplicate_batch_name(client, election_id, jurisdiction_ids):
                     "numBallots": None,
                     "numBatches": None,
                 },
+                "expectedBallotManifestNumBallots": None,
                 "currentRoundStatus": None,
             },
             {
@@ -193,6 +201,7 @@ def test_duplicate_batch_name(client, election_id, jurisdiction_ids):
                     "numBallots": None,
                     "numBatches": None,
                 },
+                "expectedBallotManifestNumBallots": None,
                 "currentRoundStatus": None,
             },
         ]

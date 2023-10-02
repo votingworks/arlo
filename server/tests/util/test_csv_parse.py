@@ -15,8 +15,8 @@ from ...util.csv_parse import (
 BALLOT_MANIFEST_COLUMNS = [
     CSVColumnType("Batch Name", CSVValueType.TEXT, unique=True),
     CSVColumnType("Number of Ballots", CSVValueType.NUMBER),
-    CSVColumnType("Tabulator", CSVValueType.TEXT, required=False),
-    CSVColumnType("CVR", CSVValueType.YES_NO, required=False),
+    CSVColumnType("Tabulator", CSVValueType.TEXT, required_column=False),
+    CSVColumnType("CVR", CSVValueType.YES_NO, required_column=False),
 ]
 
 BALLOT_MANIFEST_COLUMNS_COMPOSITE_KEY = [
@@ -86,6 +86,29 @@ def test_parse_csv_optional_columns():
             "Tabulator": "2",
             "CVR": False,
         },
+    ]
+
+
+def test_parse_csv_allow_empty_rows():
+    parsed = list(
+        parse_csv(
+            ("Column 1,Column 2\n" "A,\n" ",2\n" "A,1\n"),
+            [
+                CSVColumnType("Column 1", CSVValueType.TEXT, allow_empty_rows=True),
+                CSVColumnType(
+                    "Column 2",
+                    CSVValueType.NUMBER,
+                    required_column=False,
+                    allow_empty_rows=True,
+                ),
+            ],
+        )
+    )
+
+    assert parsed == [
+        {"Column 1": "A", "Column 2": None},
+        {"Column 1": None, "Column 2": 2},
+        {"Column 1": "A", "Column 2": 1},
     ]
 
 
@@ -215,7 +238,7 @@ def test_parse_csv_empty_cell_in_column():
         )
     assert (
         str(error.value)
-        == "All cells must have values. Got empty cell at column Number of Ballots, row 2."
+        == "A value is required for the cell at column Number of Ballots, row 2."
     )
 
     with pytest.raises(CSVParseError) as error:
@@ -226,7 +249,7 @@ def test_parse_csv_empty_cell_in_column():
         )
     assert (
         str(error.value)
-        == "All cells must have values. Got empty cell at column Number of Ballots, row 2."
+        == "A value is required for the cell at column Number of Ballots, row 2."
     )
 
     # If a non-required column is present, then all its cells must have values too
@@ -239,7 +262,7 @@ def test_parse_csv_empty_cell_in_column():
         )
     assert (
         str(error.value)
-        == "All cells must have values. Got empty cell at column Tabulator, row 2."
+        == "A value is required for the cell at column Tabulator, row 2."
     )
 
 

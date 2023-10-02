@@ -51,10 +51,17 @@ logger = logging.getLogger("arlo")
 
 JURISDICTION_NAME = "Jurisdiction"
 ADMIN_EMAIL = "Admin Email"
+EXPECTED_NUM_BALLOTS = "Expected Number of Ballots"
 
 JURISDICTIONS_COLUMNS = [
-    CSVColumnType("Jurisdiction", CSVValueType.TEXT, unique=True),
-    CSVColumnType("Admin Email", CSVValueType.EMAIL, unique=True),
+    CSVColumnType(JURISDICTION_NAME, CSVValueType.TEXT, unique=True),
+    CSVColumnType(ADMIN_EMAIL, CSVValueType.EMAIL, unique=True),
+    CSVColumnType(
+        EXPECTED_NUM_BALLOTS,
+        CSVValueType.NUMBER,
+        required_column=False,
+        allow_empty_rows=True,
+    ),
 ]
 
 
@@ -77,6 +84,7 @@ def process_jurisdictions_file(election_id: str):
     for row in jurisdictions_csv:
         name = row[JURISDICTION_NAME]
         email = row[ADMIN_EMAIL]
+        expected_num_ballots = row.get(EXPECTED_NUM_BALLOTS)
 
         # Find or create the user for this jurisdiction.
         user = User.query.filter_by(email=email.lower()).one_or_none()
@@ -92,9 +100,12 @@ def process_jurisdictions_file(election_id: str):
 
         if not jurisdiction:
             jurisdiction = Jurisdiction(
-                id=str(uuid.uuid4()), election=election, name=name
+                id=str(uuid.uuid4()), election=election, name=name,
             )
             db_session.add(jurisdiction)
+
+        if expected_num_ballots is not None:
+            jurisdiction.expected_manifest_num_ballots = expected_num_ballots
 
         # Link the user to the jurisdiction as an admin.
         admin = JurisdictionAdministration(jurisdiction=jurisdiction, user=user)
@@ -141,6 +152,7 @@ def serialize_jurisdiction(
             "numBallots": jurisdiction.manifest_num_ballots,
             "numBatches": jurisdiction.manifest_num_batches,
         },
+        "expectedBallotManifestNumBallots": jurisdiction.expected_manifest_num_ballots,
         "currentRoundStatus": round_status,
     }
 

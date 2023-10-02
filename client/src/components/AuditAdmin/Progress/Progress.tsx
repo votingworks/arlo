@@ -223,6 +223,31 @@ const Progress: React.FC<IProgressProps> = ({
   ]
 
   if (!round) {
+    const hasExpectedNumBallots = jurisdictions.some(
+      jurisdiction => jurisdiction.expectedBallotManifestNumBallots !== null
+    )
+    if (hasExpectedNumBallots) {
+      columns.push({
+        Header: 'Expected Ballots in Manifest',
+        accessor: ({ expectedBallotManifestNumBallots }) =>
+          expectedBallotManifestNumBallots,
+        Cell: formatNumber,
+        Footer: totalFooter('Expected Ballots in Manifest'),
+      })
+      columns.push({
+        Header: 'Difference From Expected Ballots',
+        accessor: ({
+          ballotManifest: { numBallots },
+          expectedBallotManifestNumBallots,
+        }) =>
+          numBallots !== null && expectedBallotManifestNumBallots !== null
+            ? Math.abs(numBallots - expectedBallotManifestNumBallots)
+            : null,
+        Cell: formatNumber,
+        Footer: totalFooter('Difference From Expected Ballots'),
+      })
+    }
+
     if (auditType === 'BATCH_COMPARISON') {
       columns.push({
         Header: 'Batches in Manifest',
@@ -329,12 +354,6 @@ const Progress: React.FC<IProgressProps> = ({
           auditType={auditType}
         />
       )}
-      <p>
-        Click on a column name to sort by that column&apos;s data. To reverse
-        sort, click on the column name again.
-        <br /> To view a single jurisdiction&apos;s data, click the name of the
-        jurisdiction.
-      </p>
       <TableControls>
         <div style={{ flexGrow: 1 }}>
           <FilterInput
