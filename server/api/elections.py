@@ -84,6 +84,8 @@ def create_election():
         AuditType.HYBRID: True,
     }[election["auditType"]]
 
+    organization = get_or_404(Organization, election["organizationId"])
+
     election = Election(
         id=str(uuid.uuid4()),
         audit_name=election["auditName"],
@@ -91,6 +93,7 @@ def create_election():
         audit_math_type=election["auditMathType"],
         organization_id=election["organizationId"],
         online=online,
+        state=organization.default_state,
     )
 
     check_access([UserType.AUDIT_ADMIN], election)
