@@ -1,5 +1,5 @@
-import React from 'react'
-import { useTable, useSortBy, Column, Row } from 'react-table'
+import React, { useEffect } from 'react'
+import { useTable, useSortBy, Column, Row, SortingRule } from 'react-table'
 import styled from 'styled-components'
 import { Icon, HTMLTable, Button } from '@blueprintjs/core'
 import { downloadFile } from '../utilities'
@@ -81,6 +81,8 @@ interface ITableProps<T extends object> {
   data: T[]
   columns: Column<T>[]
   id?: string
+  initialSortBy?: SortingRule<T>[]
+  onSortByChange?: (sortBy: SortingRule<T>[]) => void
 }
 
 /**
@@ -91,6 +93,8 @@ export const Table = <T extends object>({
   data,
   columns,
   id,
+  initialSortBy,
+  onSortByChange,
 }: ITableProps<T>): React.ReactElement => {
   const {
     getTableProps,
@@ -98,14 +102,20 @@ export const Table = <T extends object>({
     headers,
     rows,
     prepareRow,
+    state: { sortBy },
   } = useTable(
     {
       data: React.useMemo(() => data, [data]),
       columns: React.useMemo(() => columns, [columns]),
       autoResetSortBy: false,
+      initialState: initialSortBy && { sortBy: initialSortBy },
     },
     useSortBy
   )
+
+  useEffect(() => {
+    if (onSortByChange) onSortByChange(sortBy)
+  }, [sortBy, onSortByChange])
 
   /* eslint-disable react/jsx-key */
   /* All the keys are added automatically by react-table */

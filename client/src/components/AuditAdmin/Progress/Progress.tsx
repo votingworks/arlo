@@ -1,8 +1,8 @@
 /* eslint-disable react/prop-types */
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
-import { Column, Cell, TableInstance } from 'react-table'
+import { Column, Cell, TableInstance, SortingRule } from 'react-table'
 import { Button, Switch, ITagProps, Icon } from '@blueprintjs/core'
 import H2Title from '../../Atoms/H2Title'
 import {
@@ -24,8 +24,9 @@ import { IAuditSettings } from '../../useAuditSettings'
 import { FileProcessingStatus, IFileInfo } from '../../useCSV'
 import ProgressMap from './ProgressMap'
 import { sum } from '../../../utils/number'
-import { apiDownload } from '../../utilities'
+import { apiDownload, assert } from '../../utilities'
 import AsyncButton from '../../Atoms/AsyncButton'
+import useSearchParams from '../../useSearchParams'
 
 const Wrapper = styled.div`
   flex-grow: 1;
@@ -62,7 +63,13 @@ const Progress: React.FC<IProgressProps> = ({
   round,
 }: IProgressProps) => {
   const { electionId } = useParams<{ electionId: string }>()
-  const [filter, setFilter] = useState<string>('')
+  // Store sort and filter state in URL search params to allow it to persist
+  // across page refreshes
+  const [sortAndFilterState, setSortAndFilterState] = useSearchParams<{
+    sort?: string
+    dir?: string // asc | desc
+    filter?: string
+  }>()
   const [isShowingUnique, setIsShowingUnique] = useState<boolean>(true)
   const [jurisdictionDetailId, setJurisdictionDetailId] = useState<
     string | null
@@ -83,7 +90,7 @@ const Progress: React.FC<IProgressProps> = ({
   const columns: Column<IJurisdiction>[] = [
     {
       Header: 'Jurisdiction',
-      accessor: 'name',
+      accessor: ({ name }) => name,
       // eslint-disable-next-line react/display-name
       Cell: ({ row: { original: jurisdiction } }: Cell<IJurisdiction>) => (
         <Button
@@ -339,8 +346,30 @@ const Progress: React.FC<IProgressProps> = ({
     }
   }
 
+  const filter = sortAndFilterState?.filter || ''
   const filteredJurisdictions = jurisdictions.filter(({ name }) =>
     name.toLowerCase().includes(filter.toLowerCase())
+  )
+
+  const initialSortBy = sortAndFilterState?.sort
+    ? [
+        {
+          id: sortAndFilterState.sort,
+          desc: sortAndFilterState.dir === 'desc',
+        },
+      ]
+    : undefined
+  const onSortByChange = useCallback(
+    (newSortBy: SortingRule<unknown>[]) => {
+      assert(newSortBy.length <= 1)
+      const sortBy = newSortBy[0]
+      setSortAndFilterState({
+        ...sortAndFilterState,
+        sort: sortBy?.id,
+        dir: sortBy && (sortBy.desc ? 'desc' : 'asc'),
+      })
+    },
+    [sortAndFilterState, setSortAndFilterState]
   )
 
   return (
@@ -359,7 +388,12 @@ const Progress: React.FC<IProgressProps> = ({
           <FilterInput
             placeholder="Filter by jurisdiction name..."
             value={filter}
-            onChange={value => setFilter(value)}
+            onChange={value =>
+              setSortAndFilterState({
+                ...sortAndFilterState,
+                filter: value || undefined,
+              })
+            }
           />
         </div>
         {round && (
@@ -406,6 +440,8 @@ const Progress: React.FC<IProgressProps> = ({
         data={filteredJurisdictions}
         columns={columns}
         id="progress-table"
+        initialSortBy={initialSortBy}
+        onSortByChange={onSortByChange}
       />
       {jurisdictionDetailId && (
         <JurisdictionDetail
