@@ -9,6 +9,7 @@ export interface IOrganizationBase {
 }
 
 export interface IOrganization extends IOrganizationBase {
+  defaultState: string | null
   elections: IElectionBase[]
   auditAdmins: IAuditAdmin[]
 }
@@ -98,8 +99,11 @@ export const useOrganization = (organizationId: string) =>
     fetchApi(`/api/support/organizations/${organizationId}`)
   )
 
-export const useRenameOrganization = (organizationId: string) => {
-  const renameOrganization = (body: { name: string }) =>
+export const useUpdateOrganization = (organizationId: string) => {
+  const updateOrganization = (body: {
+    name: string
+    defaultState: string | null
+  }) =>
     fetchApi(`/api/support/organizations/${organizationId}`, {
       method: 'PATCH',
       body: JSON.stringify(body),
@@ -108,7 +112,7 @@ export const useRenameOrganization = (organizationId: string) => {
 
   const queryClient = useQueryClient()
 
-  return useMutation(renameOrganization, {
+  return useMutation(updateOrganization, {
     onSuccess: () =>
       queryClient.invalidateQueries(['organizations', organizationId]),
   })
