@@ -11,6 +11,7 @@ import {
   AnchorButton,
   Tag,
   Intent,
+  HTMLSelect,
 } from '@blueprintjs/core'
 import { useForm } from 'react-hook-form'
 import { useAuthDataContext } from '../UserContext'
@@ -27,7 +28,7 @@ import {
   useClearAuditBoards,
   useClearOfflineResults,
   useDeleteOrganization,
-  useRenameOrganization,
+  useUpdateOrganization,
   useRemoveAuditAdmin,
   useDeleteElection,
   IElectionBase,
@@ -38,6 +39,7 @@ import AuditBoardsTable from '../AuditAdmin/Progress/AuditBoardsTable'
 import RoundsTable from './RoundsTable'
 import { List, LinkItem } from './List'
 import Breadcrumbs from './Breadcrumbs'
+import { stateOptions, states } from '../AuditAdmin/Setup/Settings/states'
 
 const Table = styled(HTMLTable)`
   margin: 10px 0;
@@ -186,7 +188,7 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
   const createAuditAdmin = useCreateAuditAdmin(organizationId)
   const removeAuditAdmin = useRemoveAuditAdmin(organizationId)
   const deleteOrganization = useDeleteOrganization(organizationId)
-  const renameOrganization = useRenameOrganization(organizationId)
+  const updateOrganization = useUpdateOrganization(organizationId)
   const deleteElection = useDeleteElection()
   const { confirm, confirmProps } = useConfirm()
 
@@ -197,9 +199,9 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
     formState: formStateCreateAdmin,
   } = useForm<IAuditAdmin>()
   const {
-    register: registerRename,
-    handleSubmit: handleSubmitRename,
-  } = useForm<{ name: string }>()
+    register: registerEditOrg,
+    handleSubmit: handleSubmitEditOrg,
+  } = useForm<{ name: string; defaultState?: string | null }>()
 
   if (!organization.isSuccess) return null
 
@@ -212,7 +214,7 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
     }
   }
 
-  const { name, elections, auditAdmins } = organization.data
+  const { name, defaultState, elections, auditAdmins } = organization.data
 
   const onClickRemoveAuditAdmin = (auditAdmin: IAuditAdmin) =>
     confirm({
@@ -236,28 +238,53 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
       },
     })
 
-  const onClickRenameOrg = () =>
+  const onClickEditOrg = () =>
     confirm({
-      title: 'Rename',
+      title: 'Edit Organization',
       description: (
         <form>
-          <label htmlFor="name">
-            <p>Enter a new name for this organization: </p>
-            <input
-              type="text"
-              name="name"
-              id="name"
-              className={Classes.INPUT}
-              ref={registerRename}
-              style={{ width: '100%' }}
-            />
+          <label
+            htmlFor="name"
+            style={{ display: 'block', marginBottom: '3px' }}
+          >
+            Name:
           </label>
+          <input
+            type="text"
+            name="name"
+            id="name"
+            className={Classes.INPUT}
+            defaultValue={name}
+            ref={registerEditOrg}
+            style={{ width: '100%', marginBottom: '15px' }}
+          />
+          <label
+            htmlFor="defaultState"
+            style={{ display: 'block', marginBottom: '3px' }}
+          >
+            Default State:
+          </label>
+          <HTMLSelect
+            name="defaultState"
+            id="defaultState"
+            defaultValue={defaultState || undefined}
+            elementRef={registerEditOrg}
+          >
+            <option value=""></option>
+            {stateOptions.map(({ value, label }) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </HTMLSelect>
         </form>
       ),
       yesButtonLabel: 'Submit',
-      // eslint-disable-next-line no-shadow
-      onYesClick: handleSubmitRename(async ({ name }: { name: string }) => {
-        await renameOrganization.mutateAsync({ name })
+      onYesClick: handleSubmitEditOrg(async values => {
+        await updateOrganization.mutateAsync({
+          name: values.name,
+          defaultState: values.defaultState || null,
+        })
       }),
     })
 
@@ -280,10 +307,10 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
         <Button
           icon="edit"
           minimal
-          onClick={onClickRenameOrg}
+          onClick={onClickEditOrg}
           style={{ marginLeft: '10px' }}
         >
-          Rename
+          Edit
         </Button>
         <Button
           icon="delete"
@@ -294,6 +321,7 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
           Delete
         </Button>
       </div>
+      <p>Default State: {defaultState ? states[defaultState] : 'None'}</p>
 
       <div style={{ display: 'flex', width: '100%' }}>
         <Column>

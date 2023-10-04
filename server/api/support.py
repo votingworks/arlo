@@ -147,6 +147,7 @@ def get_organization(organization_id: str):
     return jsonify(
         id=organization.id,
         name=organization.name,
+        defaultState=organization.default_state,
         elections=[
             dict(
                 id=election.id,
@@ -184,19 +185,23 @@ def delete_organization(organization_id: str):
 
 @api.route("/support/organizations/<organization_id>", methods=["PATCH"])
 @restrict_access_support
-def rename_organization(organization_id: str):
+def update_organization(organization_id: str):
     organization = get_or_404(Organization, organization_id)
     body = request.get_json()
     validate(
         body,
         {
             "type": "object",
-            "properties": {"name": {"type": "string"}},
-            "required": ["name"],
+            "properties": {
+                "name": {"type": "string"},
+                "defaultState": {"anyOf": [{"type": "string"}, {"type": "null"}]},
+            },
+            "required": ["name", "defaultState"],
             "additionalProperties": False,
         },
     )
     organization.name = body["name"]
+    organization.default_state = body["defaultState"]
     db_session.commit()
     return jsonify(status="ok")
 

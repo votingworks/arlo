@@ -108,6 +108,8 @@ class WebSession(BaseModel):
 class Organization(BaseModel):
     id = Column(String(200), primary_key=True)
     name = Column(String(200), nullable=False, unique=True)
+    # Default setting for US state for this org's audits
+    default_state = Column(String(100))
 
     elections = relationship(
         "Election",

@@ -59,6 +59,7 @@ def test_support_get_organization(client: FlaskClient, org_id: str, election_id:
         {
             "id": org_id,
             "name": "Test Org test_support_get_organization",
+            "defaultState": None,
             "elections": [
                 {
                     "id": election_id,
@@ -110,7 +111,7 @@ def test_support_delete_organization(client: FlaskClient):
     assert Election.query.get(election_id) is None
 
 
-def test_support_rename_organization(client: FlaskClient, org_id: str):
+def test_support_update_organization(client: FlaskClient, org_id: str):
     set_support_user(client, DEFAULT_SUPPORT_EMAIL)
 
     rv = patch_json(client, f"/api/support/organizations/{org_id}", {})
@@ -122,13 +123,40 @@ def test_support_rename_organization(client: FlaskClient, org_id: str):
     }
 
     rv = patch_json(
-        client, f"/api/support/organizations/{org_id}", dict(name="New Org Name")
+        client,
+        f"/api/support/organizations/{org_id}",
+        dict(name="New Org Name", defaultState=None),
     )
     assert_ok(rv)
 
     rv = client.get(f"/api/support/organizations/{org_id}")
-    new_name = json.loads(rv.data)["name"]
-    assert new_name == "New Org Name"
+    new_org = json.loads(rv.data)
+    assert new_org["name"] == "New Org Name"
+    assert new_org["defaultState"] is None
+
+    rv = patch_json(
+        client,
+        f"/api/support/organizations/{org_id}",
+        dict(name="New Org Name 2", defaultState="CA"),
+    )
+    assert_ok(rv)
+
+    rv = client.get(f"/api/support/organizations/{org_id}")
+    new_org = json.loads(rv.data)
+    assert new_org["name"] == "New Org Name 2"
+    assert new_org["defaultState"] == "CA"
+
+    rv = patch_json(
+        client,
+        f"/api/support/organizations/{org_id}",
+        dict(name="New Org Name 2", defaultState=None),
+    )
+    assert_ok(rv)
+
+    rv = client.get(f"/api/support/organizations/{org_id}")
+    new_org = json.loads(rv.data)
+    assert new_org["name"] == "New Org Name 2"
+    assert new_org["defaultState"] is None
 
 
 def test_support_list_active_elections(

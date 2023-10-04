@@ -44,6 +44,7 @@ const mockJurisdictionBase: IJurisdictionBase = {
 
 const mockOrganization: IOrganization = {
   ...mockOrganizationBase,
+  defaultState: null,
   elections: [
     mockElectionBase,
     {
@@ -123,15 +124,18 @@ const apiCalls = {
     url: '/api/support/organizations/organization-id-1',
     response,
   }),
-  renameOrganization: {
+  updateOrganization: (body: {
+    name: string
+    defaultState: string | null
+  }) => ({
     url: '/api/support/organizations/organization-id-1',
     options: {
       method: 'PATCH',
-      body: JSON.stringify({ name: 'New Org Name' }),
+      body: JSON.stringify(body),
       headers: { 'Content-Type': 'application/json' },
     },
     response: { status: 'ok' },
-  },
+  }),
   deleteOrganization: {
     url: '/api/support/organizations/organization-id-1',
     options: { method: 'DELETE' },
@@ -570,63 +574,85 @@ describe('Support Tools', () => {
     })
   })
 
-  it('org screen has a button to rename the org', async () => {
+  it('org screen has a button to edit the org', async () => {
     const expectedCalls = [
       supportApiCalls.getUser,
       apiCalls.getOrganization(mockOrganization),
-      apiCalls.renameOrganization,
+      apiCalls.updateOrganization({ name: 'New Org Name', defaultState: null }),
       apiCalls.getOrganization({ ...mockOrganization, name: 'New Org Name' }),
+      apiCalls.updateOrganization({ name: 'New Org Name', defaultState: 'CA' }),
+      apiCalls.getOrganization({
+        ...mockOrganization,
+        name: 'New Org Name',
+        defaultState: 'CA',
+      }),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderRoute('/support/orgs/organization-id-1')
 
       await screen.findByRole('heading', { name: 'Organization 1' })
+      screen.getByText('Default State: None')
 
-      userEvent.click(screen.getByRole('button', { name: /Rename/ }))
+      userEvent.click(screen.getByRole('button', { name: /Edit/ }))
 
-      // Confirm dialog should open
-      const dialog = (
+      let dialog = (
         await screen.findByRole('heading', {
-          name: /Rename/,
+          name: /Edit Organization/,
         })
       ).closest('.bp3-dialog')! as HTMLElement
-      userEvent.type(
-        within(dialog).getByLabelText(
-          'Enter a new name for this organization:'
-        ),
-        'New Org Name'
-      )
+      const nameInput = within(dialog).getByLabelText('Name:')
+      userEvent.clear(nameInput)
+      userEvent.type(nameInput, 'New Org Name')
       userEvent.click(within(dialog).getByRole('button', { name: 'Submit' }))
 
       await screen.findByRole('heading', { name: 'New Org Name' })
+      screen.getByText('Default State: None')
+
+      userEvent.click(screen.getByRole('button', { name: /Edit/ }))
+      dialog = (
+        await screen.findByRole('heading', {
+          name: /Edit Organization/,
+        })
+      ).closest('.bp3-dialog')! as HTMLElement
+      userEvent.selectOptions(
+        within(dialog).getByLabelText('Default State:'),
+        'California'
+      )
+      userEvent.click(within(dialog).getByRole('button', { name: 'Submit' }))
+
+      await screen.findByText('Default State: California')
+      screen.getByRole('heading', { name: 'New Org Name' })
     })
   })
 
-  it('org screen handles errors on rename', async () => {
+  it('org screen handles errors on edit', async () => {
     const expectedCalls = [
       supportApiCalls.getUser,
       apiCalls.getOrganization(mockOrganization),
-      serverError('renameOrganization', apiCalls.renameOrganization),
+      serverError(
+        'renameOrganization',
+        apiCalls.updateOrganization({
+          name: 'New Org Name',
+          defaultState: null,
+        })
+      ),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderRoute('/support/orgs/organization-id-1')
 
       await screen.findByRole('heading', { name: 'Organization 1' })
 
-      userEvent.click(screen.getByRole('button', { name: /Rename/ }))
+      userEvent.click(screen.getByRole('button', { name: /Edit/ }))
 
       // Confirm dialog should open
       const dialog = (
         await screen.findByRole('heading', {
-          name: /Rename/,
+          name: /Edit Organization/,
         })
       ).closest('.bp3-dialog')! as HTMLElement
-      userEvent.type(
-        within(dialog).getByLabelText(
-          'Enter a new name for this organization:'
-        ),
-        'New Org Name'
-      )
+      const nameInput = within(dialog).getByLabelText('Name:')
+      userEvent.clear(nameInput)
+      userEvent.type(nameInput, 'New Org Name')
       userEvent.click(within(dialog).getByRole('button', { name: 'Submit' }))
 
       await findAndCloseToast('something went wrong: renameOrganization')

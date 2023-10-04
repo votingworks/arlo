@@ -125,6 +125,29 @@ def test_create_election_new_hybrid_audit(client: FlaskClient, org_id: str):
     assert Election.query.get(election_id).online is True
 
 
+def test_create_election_default_state(client: FlaskClient, org_id: str):
+    org = Organization.query.get(org_id)
+    org.default_state = "CA"
+    db_session.commit()
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = post_json(
+        client,
+        "/api/election",
+        {
+            "auditName": "Test Audit Default State",
+            "organizationId": org_id,
+            "auditType": AuditType.BALLOT_POLLING,
+            "auditMathType": AuditMathType.BRAVO,
+        },
+    )
+    response = json.loads(rv.data)
+    election_id = response.get("electionId", None)
+    assert election_id, response
+    election = Election.query.get(election_id)
+    assert election.state == "CA"
+
+
 def test_create_election_in_org_with_logged_in_admin_without_access(
     client: FlaskClient, org_id: str
 ):
