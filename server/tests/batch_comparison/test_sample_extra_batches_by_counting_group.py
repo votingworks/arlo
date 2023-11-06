@@ -9,11 +9,10 @@ from ..helpers import *  # pylint: disable=wildcard-import
 @pytest.fixture
 def org_id(client: FlaskClient, request) -> str:  # pylint: disable=unused-argument
     # Enable the feature flag
-    org_id = "a67791e3-90a0-4d4e-a5e7-929f82bf4ce6"  # VotingWorks Internal Sandbox
-    # id=str(uuid.uuid4()),
+    org_id = "test_org_sample_extra_batches_by_counting_group"
     org = Organization.query.get(org_id)
     if not org:
-        org = Organization(id=org_id, name="Test Org Sample Extra Batches",)
+        org = Organization(id=org_id, name="Test Org Sample Extra Batches")
         db_session.add(org)
         add_admin_to_org(org_id, DEFAULT_AA_EMAIL)
         db_session.commit()
