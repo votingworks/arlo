@@ -1,5 +1,5 @@
 import io, json
-from typing import BinaryIO, Dict, List, TypedDict
+from typing import BinaryIO, Dict, List, TypedDict, Tuple
 from flask.testing import FlaskClient
 
 from ...models import *  # pylint: disable=wildcard-import
@@ -1809,63 +1809,80 @@ HART_CVRS_DUPLICATE_BATCH_NAMES = {
 # Modeled after a real scanned ballot information CSV
 HART_SCANNED_BALLOT_INFORMATION = """#FormatVersion 1
 #BatchId,Workstation,VotingType,VotingMethod,ScanSequence,Precinct,PageNumber,UniqueIdentifier,VariationNumber,Language,Party,Status,RejectReason,VoterIntentIssues,vDriveDeviceDataId,CvrId
-1,"A0123456789","Absentee Voting","Paper",1,"001",1,"unique-identifier-01",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-1-1"
-1,"A0123456789","Absentee Voting","Paper",1,"001",2,"unique-identifier-01",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-1-1"
-1,"A0123456789","Absentee Voting","Paper",2,"001",1,"unique-identifier-02",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-1-2"
-1,"A0123456789","Absentee Voting","Paper",2,"001",2,"unique-identifier-02",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-1-2"
-1,"A0123456789","Absentee Voting","Paper",3,"001",1,"unique-identifier-03",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-1-3"
-1,"A0123456789","Absentee Voting","Paper",3,"001",2,"unique-identifier-03",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-1-3"
-1,"A0123456789","Absentee Voting","Paper",4,"001",1,"unique-identifier-04",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-2-1"
-1,"A0123456789","Absentee Voting","Paper",4,"001",2,"unique-identifier-04",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-2-1"
-1,"A0123456789","Absentee Voting","Paper",5,"001",1,"unique-identifier-05",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-2-2"
-1,"A0123456789","Absentee Voting","Paper",5,"001",2,"unique-identifier-05",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-2-2"
-1,"A0123456789","Absentee Voting","Paper",6,"001",1,"unique-identifier-06",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-2-3"
-1,"A0123456789","Absentee Voting","Paper",6,"001",2,"unique-identifier-06",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-2-3"
-1,"A0123456789","Absentee Voting","Paper",7,"001",1,"unique-identifier-07",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-3-1"
-1,"A0123456789","Absentee Voting","Paper",7,"001",2,"unique-identifier-07",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-3-1"
-1,"A0123456789","Absentee Voting","Paper",8,"001",1,"unique-identifier-08",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-3-2"
-1,"A0123456789","Absentee Voting","Paper",8,"001",2,"unique-identifier-08",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-3-2"
-1,"A0123456789","Absentee Voting","Paper",9,"001",1,"unique-identifier-09",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-3-3"
-1,"A0123456789","Absentee Voting","Paper",9,"001",2,"unique-identifier-09",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-3-3"
-1,"A0123456789","Absentee Voting","Paper",10,"001",1,"unique-identifier-10",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-4-1"
-1,"A0123456789","Absentee Voting","Paper",10,"001",2,"unique-identifier-10",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-4-1"
-1,"A0123456789","Absentee Voting","Paper",11,"001",1,"unique-identifier-11",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-4-2"
-1,"A0123456789","Absentee Voting","Paper",11,"001",2,"unique-identifier-11",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-4-2"
-1,"A0123456789","Absentee Voting","Paper",12,"001",1,"unique-identifier-12",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-4-4"
-1,"A0123456789","Absentee Voting","Paper",12,"001",2,"unique-identifier-12",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-4-4"
-1,"A0123456789","Absentee Voting","Paper",13,"001",1,"unique-identifier-13",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-4-5"
-1,"A0123456789","Absentee Voting","Paper",13,"001",2,"unique-identifier-13",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-4-5"
-1,"A0123456789","Absentee Voting","Paper",14,"001",1,"unique-identifier-14",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-4-6"
-1,"A0123456789","Absentee Voting","Paper",14,"001",2,"unique-identifier-14",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-4-6"
+1,"TABULATOR1","Absentee Voting","Paper",1,"001",1,"unique-identifier-01",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-1-1"
+1,"TABULATOR1","Absentee Voting","Paper",1,"001",2,"unique-identifier-01",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-1-1"
+1,"TABULATOR1","Absentee Voting","Paper",2,"001",1,"unique-identifier-02",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-1-2"
+1,"TABULATOR1","Absentee Voting","Paper",2,"001",2,"unique-identifier-02",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-1-2"
+1,"TABULATOR1","Absentee Voting","Paper",3,"001",1,"unique-identifier-03",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-1-3"
+1,"TABULATOR1","Absentee Voting","Paper",3,"001",2,"unique-identifier-03",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-1-3"
+1,"TABULATOR1","Absentee Voting","Paper",4,"001",1,"unique-identifier-04",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-2-1"
+1,"TABULATOR1","Absentee Voting","Paper",4,"001",2,"unique-identifier-04",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-2-1"
+1,"TABULATOR1","Absentee Voting","Paper",5,"001",1,"unique-identifier-05",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-2-2"
+1,"TABULATOR1","Absentee Voting","Paper",5,"001",2,"unique-identifier-05",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-2-2"
+1,"TABULATOR1","Absentee Voting","Paper",6,"001",1,"unique-identifier-06",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-2-3"
+1,"TABULATOR1","Absentee Voting","Paper",6,"001",2,"unique-identifier-06",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-2-3"
+1,"TABULATOR2","Absentee Voting","Paper",7,"001",1,"unique-identifier-07",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-3-1"
+1,"TABULATOR2","Absentee Voting","Paper",7,"001",2,"unique-identifier-07",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-3-1"
+1,"TABULATOR2","Absentee Voting","Paper",8,"001",1,"unique-identifier-08",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-3-2"
+1,"TABULATOR2","Absentee Voting","Paper",8,"001",2,"unique-identifier-08",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-3-2"
+1,"TABULATOR2","Absentee Voting","Paper",9,"001",1,"unique-identifier-09",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-3-3"
+1,"TABULATOR2","Absentee Voting","Paper",9,"001",2,"unique-identifier-09",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-3-3"
+1,"TABULATOR2","Absentee Voting","Paper",10,"001",1,"unique-identifier-10",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-4-1"
+1,"TABULATOR2","Absentee Voting","Paper",10,"001",2,"unique-identifier-10",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-4-1"
+1,"TABULATOR2","Absentee Voting","Paper",11,"001",1,"unique-identifier-11",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-4-2"
+1,"TABULATOR2","Absentee Voting","Paper",11,"001",2,"unique-identifier-11",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-4-2"
+1,"TABULATOR2","Absentee Voting","Paper",12,"001",1,"unique-identifier-12",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-4-4"
+1,"TABULATOR2","Absentee Voting","Paper",12,"001",2,"unique-identifier-12",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-4-4"
+1,"TABULATOR2","Absentee Voting","Paper",13,"001",1,"unique-identifier-13",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-4-5"
+1,"TABULATOR2","Absentee Voting","Paper",13,"001",2,"unique-identifier-13",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-4-5"
+1,"TABULATOR2","Absentee Voting","Paper",14,"001",1,"unique-identifier-14",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-4-6"
+1,"TABULATOR2","Absentee Voting","Paper",14,"001",2,"unique-identifier-14",0,"English",,"Scanned",,False,"ABCD-1234(ABCD[1234*AB","1-4-6"
 """
 
 HART_SCANNED_BALLOT_INFORMATION_MINIMAL = """#FormatVersion 1
-#CvrId,UniqueIdentifier
-"1-1-1","unique-identifier-01"
-"1-1-2","unique-identifier-02"
-"1-1-3","unique-identifier-03"
-"1-2-1","unique-identifier-04"
-"1-2-2","unique-identifier-05"
-"1-2-3","unique-identifier-06"
-"1-3-1","unique-identifier-07"
-"1-3-2","unique-identifier-08"
-"1-3-3","unique-identifier-09"
-"1-4-1","unique-identifier-10"
-"1-4-2","unique-identifier-11"
-"1-4-4","unique-identifier-12"
-"1-4-5","unique-identifier-13"
-"1-4-6","unique-identifier-14"
+#CvrId,UniqueIdentifier,Workstation
+"1-1-1","unique-identifier-01","TABULATOR1"
+"1-1-2","unique-identifier-02","TABULATOR1"
+"1-1-3","unique-identifier-03","TABULATOR1"
+"1-2-1","unique-identifier-04","TABULATOR1"
+"1-2-2","unique-identifier-05","TABULATOR1"
+"1-2-3","unique-identifier-06","TABULATOR1"
+"1-3-1","unique-identifier-07","TABULATOR2"
+"1-3-2","unique-identifier-08","TABULATOR2"
+"1-3-3","unique-identifier-09","TABULATOR2"
+"1-4-1","unique-identifier-10","TABULATOR2"
+"1-4-2","unique-identifier-11","TABULATOR2"
+"1-4-4","unique-identifier-12","TABULATOR2"
+"1-4-5","unique-identifier-13","TABULATOR2"
+"1-4-6","unique-identifier-14","TABULATOR2"
 """
 
-HART_SCANNED_BALLOT_INFORMATION_MISSING_RECORDS = """#FormatVersion 1
-#CvrId,UniqueIdentifier
-"1-1-2","unique-identifier-02"
-"1-2-1","unique-identifier-04"
-"1-2-3","unique-identifier-06"
-"1-3-2","unique-identifier-08"
-"1-4-1","unique-identifier-10"
-"1-4-4","unique-identifier-12"
-"1-4-6","unique-identifier-14"
+HART_SCANNED_BALLOT_INFORMATION_MINIMAL_TABULATOR_1 = """#FormatVersion 1
+#CvrId,UniqueIdentifier,Workstation
+"1-1-1","unique-identifier-01","TABULATOR1"
+"1-1-2","unique-identifier-02","TABULATOR1"
+"1-1-3","unique-identifier-03","TABULATOR1"
+"1-2-1","unique-identifier-04","TABULATOR1"
+"1-2-2","unique-identifier-05","TABULATOR1"
+"1-2-3","unique-identifier-06","TABULATOR1"
+"""
+
+
+HART_SCANNED_BALLOT_INFORMATION_MINIMAL_TABULATOR_2 = """#FormatVersion 1
+#CvrId,UniqueIdentifier,Workstation
+"1-3-1","unique-identifier-07","TABULATOR2"
+"1-3-2","unique-identifier-08","TABULATOR2"
+"1-3-3","unique-identifier-09","TABULATOR2"
+"1-4-1","unique-identifier-10","TABULATOR2"
+"1-4-2","unique-identifier-11","TABULATOR2"
+"1-4-4","unique-identifier-12","TABULATOR2"
+"1-4-5","unique-identifier-13","TABULATOR2"
+"1-4-6","unique-identifier-14","TABULATOR2"
+"""
+
+HART_SCANNED_BALLOT_INFORMATION_CONFLICTING_WITH_MINIMAL = """#FormatVersion 1
+#CvrId,UniqueIdentifier,Workstation
+"1-1-1","unique-identifier-01","CONFLICTING"
 """
 
 
@@ -1947,87 +1964,6 @@ def test_hart_cvr_upload(
     )
 
 
-def test_hart_cvr_upload_with_multiple_cvr_zip_files(
-    client: FlaskClient,
-    election_id: str,
-    jurisdiction_ids: List[str],
-    # Use the regular manifests which have batches with the same name but different tabulator
-    manifests,  # pylint: disable=unused-argument
-    snapshot,
-):
-    # Upload CVRs
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={
-            "cvrs": [
-                (
-                    zip_hart_cvrs(HART_CVRS_DUPLICATE_BATCH_NAMES["TABULATOR1"]),
-                    "TABULATOR1.zip",
-                ),
-                (
-                    zip_hart_cvrs(HART_CVRS_DUPLICATE_BATCH_NAMES["TABULATOR2"]),
-                    "TABULATOR2.zip",
-                ),
-            ],
-            "cvrFileType": "HART",
-        },
-    )
-    assert_ok(rv)
-
-    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.get(f"/api/election/{election_id}/jurisdiction")
-    jurisdictions = json.loads(rv.data)["jurisdictions"]
-    manifest_num_ballots = jurisdictions[0]["ballotManifest"]["numBallots"]
-
-    set_logged_in_user(
-        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
-    )
-    rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
-    )
-    compare_json(
-        json.loads(rv.data),
-        {
-            "file": {
-                "name": "cvr-files.zip",
-                "uploadedAt": assert_is_date,
-                "cvrFileType": "HART",
-            },
-            "processing": {
-                "status": ProcessingStatus.PROCESSED,
-                "startedAt": assert_is_date,
-                "completedAt": assert_is_date,
-                "error": None,
-                "workProgress": manifest_num_ballots,
-                "workTotal": manifest_num_ballots,
-            },
-        },
-    )
-
-    cvr_ballots = (
-        CvrBallot.query.join(Batch)
-        .filter_by(jurisdiction_id=jurisdiction_ids[0])
-        .order_by(CvrBallot.imprinted_id)
-        .all()
-    )
-    assert len(cvr_ballots) == manifest_num_ballots - 1
-    snapshot.assert_match(
-        [
-            dict(
-                batch_name=cvr.batch.name,
-                tabulator=cvr.batch.tabulator,
-                ballot_position=cvr.ballot_position,
-                imprinted_id=cvr.imprinted_id,
-                interpretations=cvr.interpretations,
-            )
-            for cvr in cvr_ballots
-        ]
-    )
-    snapshot.assert_match(
-        Jurisdiction.query.get(jurisdiction_ids[0]).cvr_contests_metadata
-    )
-
-
 def test_hart_cvr_upload_with_scanned_ballot_information(
     client: FlaskClient,
     election_id: str,
@@ -2044,78 +1980,117 @@ def test_hart_cvr_upload_with_scanned_ballot_information(
     )
 
     class TestCase(TypedDict):
-        scanned_ballot_information_file_contents: str
+        scanned_ballot_information_file_contents: List[str]
         expected_processing_status: ProcessingStatus
         expected_processing_error: Optional[str]
-        expected_processing_work_progress: int
 
     test_cases: List[TestCase] = [
         {
-            "scanned_ballot_information_file_contents": HART_SCANNED_BALLOT_INFORMATION,
+            "scanned_ballot_information_file_contents": [
+                HART_SCANNED_BALLOT_INFORMATION
+            ],
             "expected_processing_status": ProcessingStatus.PROCESSED,
             "expected_processing_error": None,
-            "expected_processing_work_progress": manifest_num_ballots,
         },
         {
-            "scanned_ballot_information_file_contents": HART_SCANNED_BALLOT_INFORMATION_MINIMAL,
+            "scanned_ballot_information_file_contents": [
+                HART_SCANNED_BALLOT_INFORMATION_MINIMAL
+            ],
             "expected_processing_status": ProcessingStatus.PROCESSED,
             "expected_processing_error": None,
-            "expected_processing_work_progress": manifest_num_ballots,
         },
         {
-            "scanned_ballot_information_file_contents": HART_SCANNED_BALLOT_INFORMATION_MISSING_RECORDS,
+            "scanned_ballot_information_file_contents": [
+                HART_SCANNED_BALLOT_INFORMATION_MINIMAL_TABULATOR_1
+            ],
             "expected_processing_status": ProcessingStatus.PROCESSED,
             "expected_processing_error": None,
-            "expected_processing_work_progress": manifest_num_ballots,
         },
         {
-            "scanned_ballot_information_file_contents": "",
+            "scanned_ballot_information_file_contents": [
+                HART_SCANNED_BALLOT_INFORMATION_MINIMAL_TABULATOR_1,
+                HART_SCANNED_BALLOT_INFORMATION_MINIMAL_TABULATOR_2,
+            ],
+            "expected_processing_status": ProcessingStatus.PROCESSED,
+            "expected_processing_error": None,
+        },
+        {
+            "scanned_ballot_information_file_contents": [
+                HART_SCANNED_BALLOT_INFORMATION_MINIMAL,
+                HART_SCANNED_BALLOT_INFORMATION_MINIMAL_TABULATOR_1,
+                HART_SCANNED_BALLOT_INFORMATION_MINIMAL_TABULATOR_2,
+            ],
+            "expected_processing_status": ProcessingStatus.PROCESSED,
+            "expected_processing_error": None,
+        },
+        {
+            "scanned_ballot_information_file_contents": [
+                HART_SCANNED_BALLOT_INFORMATION_MINIMAL,
+                HART_SCANNED_BALLOT_INFORMATION_CONFLICTING_WITH_MINIMAL,
+            ],
+            "expected_processing_status": ProcessingStatus.ERRORED,
+            "expected_processing_error": "Found conflicting information in scanned ballot information CSVs for CVR 1-1-1. {'CvrId': '1-1-1', 'UniqueIdentifier': 'unique-identifier-01', 'Workstation': 'CONFLICTING'} does not equal {'CvrId': '1-1-1', 'UniqueIdentifier': 'unique-identifier-01', 'Workstation': 'TABULATOR1'}.",
+        },
+        {
+            "scanned_ballot_information_file_contents": [""],
             "expected_processing_status": ProcessingStatus.ERRORED,
             "expected_processing_error": "CSV cannot be empty.",
-            "expected_processing_work_progress": 0,
         },
         {
-            "scanned_ballot_information_file_contents": "CvrId,UniqueIdentifier\n",
+            "scanned_ballot_information_file_contents": [
+                "CvrId,UniqueIdentifier,Workstation\n"
+            ],
             "expected_processing_status": ProcessingStatus.ERRORED,
             "expected_processing_error": "Expected first line of scanned ballot information CSV to contain '#FormatVersion'.",
-            "expected_processing_work_progress": 0,
         },
         {
-            "scanned_ballot_information_file_contents": "#FormatVersion 1\n",
+            "scanned_ballot_information_file_contents": ["#FormatVersion 1\n"],
             "expected_processing_status": ProcessingStatus.ERRORED,
             "expected_processing_error": "Please submit a valid CSV file with columns separated by commas.",
-            "expected_processing_work_progress": 0,
         },
         {
-            "scanned_ballot_information_file_contents": "#FormatVersion 1\nCvrId,UniqueIdentifier\n",
+            "scanned_ballot_information_file_contents": [
+                "#FormatVersion 1\nCvrId,UniqueIdentifier,Workstation\n"
+            ],
             "expected_processing_status": ProcessingStatus.ERRORED,
             "expected_processing_error": "CSV must contain at least one row after headers.",
-            "expected_processing_work_progress": 0,
         },
         {
-            "scanned_ballot_information_file_contents": "#FormatVersion 1\nCvrGuid,UniqueIdentifier\ncvr-id-1,unique-identifier-1\n",
+            "scanned_ballot_information_file_contents": [
+                "#FormatVersion 1\nMissing,UniqueIdentifier,Workstation\ncvr-id-1,unique-identifier-1,workstation-1\n"
+            ],
             "expected_processing_status": ProcessingStatus.ERRORED,
             "expected_processing_error": "Missing required column CvrId in scanned ballot information CSV.",
-            "expected_processing_work_progress": 0,
         },
         {
-            "scanned_ballot_information_file_contents": "#FormatVersion 1\nCvrId,UniqueId\ncvr-id-1,unique-identifier-1\n",
+            "scanned_ballot_information_file_contents": [
+                "#FormatVersion 1\nCvrId,Missing,Workstation\ncvr-id-1,unique-identifier-1,workstation-1\n"
+            ],
             "expected_processing_status": ProcessingStatus.ERRORED,
             "expected_processing_error": "Missing required column UniqueIdentifier in scanned ballot information CSV.",
-            "expected_processing_work_progress": 0,
+        },
+        {
+            "scanned_ballot_information_file_contents": [
+                "#FormatVersion 1\nCvrId,UniqueIdentifier,Missing\ncvr-id-1,unique-identifier-1,workstation-1\n"
+            ],
+            "expected_processing_status": ProcessingStatus.ERRORED,
+            "expected_processing_error": "Missing required column Workstation in scanned ballot information CSV.",
         },
     ]
 
     for test_case in test_cases:
-        scanned_ballot_information = string_to_bytes_io(
-            test_case["scanned_ballot_information_file_contents"]
-        )
+        scanned_ballot_information_files = [
+            (string_to_bytes_io(file_contents), f"scanned-ballot-information-{i}.csv")
+            for i, file_contents in enumerate(
+                test_case["scanned_ballot_information_file_contents"]
+            )
+        ]
         rv = client.put(
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
             data={
                 "cvrs": [
                     (zip_hart_cvrs(HART_CVRS), "cvrs.zip"),
-                    (scanned_ballot_information, "scanned-ballot-information.csv"),
+                    *scanned_ballot_information_files,
                 ],
                 "cvrFileType": "HART",
             },
@@ -2138,7 +2113,12 @@ def test_hart_cvr_upload_with_scanned_ballot_information(
                     "startedAt": assert_is_date,
                     "completedAt": assert_is_date,
                     "error": test_case["expected_processing_error"],
-                    "workProgress": test_case["expected_processing_work_progress"],
+                    "workProgress": (
+                        0
+                        if test_case["expected_processing_status"]
+                        == ProcessingStatus.ERRORED
+                        else manifest_num_ballots
+                    ),
                     "workTotal": manifest_num_ballots,
                 },
             },
@@ -2169,7 +2149,169 @@ def test_hart_cvr_upload_with_scanned_ballot_information(
             )
 
 
-def test_hart_cvr_upload_with_invalid_cvrs(
+def test_hart_cvr_upload_with_duplicate_batch_names(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    # Use the regular manifests which have batches with the same name but different tabulator
+    manifests,  # pylint: disable=unused-argument
+    snapshot,
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    manifest_num_ballots = jurisdictions[0]["ballotManifest"]["numBallots"]
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+
+    class TestCase(TypedDict):
+        files: List[Tuple[BinaryIO, str]]
+        expected_processing_status: ProcessingStatus
+        expected_processing_error: Optional[str]
+
+    test_cases: List[TestCase] = [
+        {
+            # Extracting tabulator info from a scanned ballot information CSV
+            "files": [
+                (
+                    zip_hart_cvrs(
+                        [
+                            *HART_CVRS_DUPLICATE_BATCH_NAMES["TABULATOR1"],
+                            *HART_CVRS_DUPLICATE_BATCH_NAMES["TABULATOR2"],
+                        ]
+                    ),
+                    "cvrs.zip",
+                ),
+                (
+                    string_to_bytes_io(HART_SCANNED_BALLOT_INFORMATION),
+                    "scanned-ballot-information.csv",
+                ),
+            ],
+            "expected_processing_status": ProcessingStatus.PROCESSED,
+            "expected_processing_error": None,
+        },
+        {
+            # Extracting tabulator info from multiple scanned ballot information CSVs
+            "files": [
+                (
+                    zip_hart_cvrs(
+                        [
+                            *HART_CVRS_DUPLICATE_BATCH_NAMES["TABULATOR1"],
+                            *HART_CVRS_DUPLICATE_BATCH_NAMES["TABULATOR2"],
+                        ]
+                    ),
+                    "cvrs.zip",
+                ),
+                (
+                    string_to_bytes_io(
+                        HART_SCANNED_BALLOT_INFORMATION_MINIMAL_TABULATOR_1
+                    ),
+                    "scanned-ballot-information-1.csv",
+                ),
+                (
+                    string_to_bytes_io(
+                        HART_SCANNED_BALLOT_INFORMATION_MINIMAL_TABULATOR_2
+                    ),
+                    "scanned-ballot-information-2.csv",
+                ),
+            ],
+            "expected_processing_status": ProcessingStatus.PROCESSED,
+            "expected_processing_error": None,
+        },
+        {
+            # Extracting tabulator info from CVR ZIP file names
+            "files": [
+                (
+                    zip_hart_cvrs(HART_CVRS_DUPLICATE_BATCH_NAMES["TABULATOR1"]),
+                    "TABULATOR1.zip",
+                ),
+                (
+                    zip_hart_cvrs(HART_CVRS_DUPLICATE_BATCH_NAMES["TABULATOR2"]),
+                    "TABULATOR2.zip",
+                ),
+            ],
+            "expected_processing_status": ProcessingStatus.PROCESSED,
+            "expected_processing_error": None,
+        },
+        {
+            # Failing to extract tabulator info
+            "files": [
+                (
+                    zip_hart_cvrs(
+                        [
+                            *HART_CVRS_DUPLICATE_BATCH_NAMES["TABULATOR1"],
+                            *HART_CVRS_DUPLICATE_BATCH_NAMES["TABULATOR2"],
+                        ]
+                    ),
+                    "cvrs.zip",
+                ),
+            ],
+            "expected_processing_status": ProcessingStatus.ERRORED,
+            "expected_processing_error": "Couldn't find a tabulator name for CVR 1-1-1. Because the batch names in your ballot manifest are not unique, tabulator names are needed. These can be provided by uploading scanned ballot information CSVs or a CVR ZIP file per tabulator, where the ZIP file names are tabulator names.",
+        },
+    ]
+
+    for test_case in test_cases:
+        rv = client.put(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
+            data={"cvrs": test_case["files"], "cvrFileType": "HART",},
+        )
+        assert_ok(rv)
+
+        rv = client.get(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
+        )
+        compare_json(
+            json.loads(rv.data),
+            {
+                "file": {
+                    "cvrFileType": "HART",
+                    "name": "cvr-files.zip",
+                    "uploadedAt": assert_is_date,
+                },
+                "processing": {
+                    "status": test_case["expected_processing_status"],
+                    "startedAt": assert_is_date,
+                    "completedAt": assert_is_date,
+                    "error": test_case["expected_processing_error"],
+                    "workProgress": (
+                        0
+                        if test_case["expected_processing_status"]
+                        == ProcessingStatus.ERRORED
+                        else manifest_num_ballots
+                    ),
+                    "workTotal": manifest_num_ballots,
+                },
+            },
+        )
+
+        if test_case["expected_processing_status"] == ProcessingStatus.PROCESSED:
+            cvr_ballots = (
+                CvrBallot.query.join(Batch)
+                .filter_by(jurisdiction_id=jurisdiction_ids[0])
+                .order_by(CvrBallot.imprinted_id)
+                .all()
+            )
+            assert len(cvr_ballots) == manifest_num_ballots - 1
+            snapshot.assert_match(
+                [
+                    dict(
+                        batch_name=cvr.batch.name,
+                        tabulator=cvr.batch.tabulator,
+                        ballot_position=cvr.ballot_position,
+                        imprinted_id=cvr.imprinted_id,
+                        interpretations=cvr.interpretations,
+                    )
+                    for cvr in cvr_ballots
+                ]
+            )
+            snapshot.assert_match(
+                Jurisdiction.query.get(jurisdiction_ids[0]).cvr_contests_metadata
+            )
+
+
+def test_hart_cvr_upload_no_batch_match(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
@@ -2183,7 +2325,7 @@ def test_hart_cvr_upload_with_invalid_cvrs(
     invalid_cvrs = [
         (
             [build_hart_cvr("bad batch", "1", "1-1-1", "0,1,1,0,0")],
-            "Error in file: cvr-0.xml. Couldn't find a matching batch for BatchNumber: bad batch. The BatchNumber field in the CVR must match the Batch Name field in the ballot manifest. Please check your CVR files and ballot manifest thoroughly to make sure these values match - there may be a similar inconsistency in other files in the CVR export.",
+            "Error in file: cvr-0.xml from cvrs.zip. Couldn't find a matching batch for BatchNumber: bad batch. The BatchNumber values in CVR files should match the Batch Name values in the ballot manifest.",
         ),
     ]
 
@@ -2223,7 +2365,7 @@ def test_hart_cvr_upload_with_invalid_cvrs(
         )
 
 
-def test_hart_cvr_upload_with_multiple_cvr_zip_files_and_invalid_cvrs(
+def test_hart_cvr_upload_no_tabulator_plus_batch_match(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
@@ -2235,7 +2377,20 @@ def test_hart_cvr_upload_with_multiple_cvr_zip_files_and_invalid_cvrs(
     jurisdictions = json.loads(rv.data)["jurisdictions"]
     manifest_num_ballots = jurisdictions[0]["ballotManifest"]["numBallots"]
 
-    invalid_cvr_uploads = [
+    cvr_uploads = [
+        (
+            [
+                (
+                    zip_hart_cvrs(HART_CVRS_DUPLICATE_BATCH_NAMES["TABULATOR1"]),
+                    "TABULATOR1.zip",
+                ),
+                (
+                    zip_hart_cvrs(HART_CVRS_DUPLICATE_BATCH_NAMES["TABULATOR2"]),
+                    "forgot-to-rename-this-to-match-tabulator-in-ballot-manifest.zip",
+                ),
+            ],
+            "Error in file: cvr-0.xml from forgot-to-rename-this-to-match-tabulator-in-ballot-manifest.zip. Couldn't find a matching batch for Tabulator: forgot-to-rename-this-to-match-tabulator-in-ballot-manifest, BatchNumber: BATCH1. Either the Workstation values in scanned ballot information CSVs, if provided, or CVR ZIP file names, if multiple, should match the Tabulator values in the ballot manifest. Likewise, the BatchNumber values in CVR files should match the Batch Name values in the ballot manifest.",
+        ),
         (
             [
                 (
@@ -2249,30 +2404,21 @@ def test_hart_cvr_upload_with_multiple_cvr_zip_files_and_invalid_cvrs(
                     "TABULATOR2.zip",
                 ),
             ],
-            "Error in file: cvr-0.xml from TABULATOR2.zip. Couldn't find a matching batch for Tabulator: TABULATOR2, BatchNumber: invalid-batch. The BatchNumber field in the CVR file must match the Batch Name field in the ballot manifest, and the ZIP file name must match the Tabulator field in the ballot manifest. Please check your CVR files and ballot manifest thoroughly to make sure these values match - there may be a similar inconsistency in other files in the CVR export.",
+            "Error in file: cvr-0.xml from TABULATOR2.zip. Couldn't find a matching batch for Tabulator: TABULATOR2, BatchNumber: invalid-batch. Either the Workstation values in scanned ballot information CSVs, if provided, or CVR ZIP file names, if multiple, should match the Tabulator values in the ballot manifest. Likewise, the BatchNumber values in CVR files should match the Batch Name values in the ballot manifest.",
         ),
         (
-            [
-                (
-                    zip_hart_cvrs(HART_CVRS_DUPLICATE_BATCH_NAMES["TABULATOR1"]),
-                    "TABULATOR1.zip",
-                ),
-                (
-                    zip_hart_cvrs(HART_CVRS_DUPLICATE_BATCH_NAMES["TABULATOR1"]),
-                    "forgot-to-rename-this-to-match-tabulator-in-ballot-manifest.zip",
-                ),
-            ],
-            "Error in file: cvr-0.xml from forgot-to-rename-this-to-match-tabulator-in-ballot-manifest.zip. Couldn't find a matching batch for Tabulator: forgot-to-rename-this-to-match-tabulator-in-ballot-manifest, BatchNumber: BATCH1. The BatchNumber field in the CVR file must match the Batch Name field in the ballot manifest, and the ZIP file name must match the Tabulator field in the ballot manifest. Please check your CVR files and ballot manifest thoroughly to make sure these values match - there may be a similar inconsistency in other files in the CVR export.",
+            [(zip_hart_cvrs(HART_CVRS), "cvrs.zip")],
+            "Couldn't find a tabulator name for CVR 1-1-1. Because the batch names in your ballot manifest are not unique, tabulator names are needed. These can be provided by uploading scanned ballot information CSVs or a CVR ZIP file per tabulator, where the ZIP file names are tabulator names.",
         ),
     ]
 
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    for invalid_cvr_upload, expected_error in invalid_cvr_uploads:
+    for cvr_upload, expected_error in cvr_uploads:
         rv = client.put(
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-            data={"cvrs": invalid_cvr_upload, "cvrFileType": "HART",},
+            data={"cvrs": cvr_upload, "cvrFileType": "HART",},
         )
         assert_ok(rv)
 
@@ -2299,50 +2445,6 @@ def test_hart_cvr_upload_with_multiple_cvr_zip_files_and_invalid_cvrs(
         )
 
 
-def test_hart_cvr_upload_with_duplicate_batches_in_manifest(
-    client: FlaskClient,
-    election_id: str,
-    jurisdiction_ids: List[str],
-    # Use the regular manifests which have batches with the same name but different tabulator
-    manifests,  # pylint: disable=unused-argument
-):
-    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.get(f"/api/election/{election_id}/jurisdiction")
-    jurisdictions = json.loads(rv.data)["jurisdictions"]
-    manifest_num_ballots = jurisdictions[0]["ballotManifest"]["numBallots"]
-
-    set_logged_in_user(
-        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
-    )
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={"cvrs": [(zip_hart_cvrs(HART_CVRS), "cvrs.zip")], "cvrFileType": "HART",},
-    )
-    assert_ok(rv)
-
-    rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
-    )
-    compare_json(
-        json.loads(rv.data),
-        {
-            "file": {
-                "name": "cvr-files.zip",
-                "uploadedAt": assert_is_date,
-                "cvrFileType": "HART",
-            },
-            "processing": {
-                "status": ProcessingStatus.ERRORED,
-                "startedAt": assert_is_date,
-                "completedAt": assert_is_date,
-                "error": "Batch names in ballot manifest must be unique. Found duplicate batch name: BATCH1. If you have multiple tabulators that use the same batch names, add a Tabulator column to the ballot manifest and upload a separate CVR export for each tabulator.",
-                "workProgress": 0,
-                "workTotal": manifest_num_ballots,
-            },
-        },
-    )
-
-
 def test_hart_cvr_upload_basic_input_validation(
     client: FlaskClient,
     election_id: str,
@@ -2366,7 +2468,7 @@ def test_hart_cvr_upload_basic_input_validation(
                 "errors": [
                     {
                         "errorType": "Bad Request",
-                        "message": "Please submit a ZIP file export.",
+                        "message": "Please submit at least one ZIP file.",
                     }
                 ]
             },
@@ -2384,7 +2486,7 @@ def test_hart_cvr_upload_basic_input_validation(
                 "errors": [
                     {
                         "errorType": "Bad Request",
-                        "message": "Please submit a ZIP file export.",
+                        "message": "Please submit at least one ZIP file.",
                     }
                 ]
             },
@@ -2402,29 +2504,7 @@ def test_hart_cvr_upload_basic_input_validation(
                 "errors": [
                     {
                         "errorType": "Bad Request",
-                        "message": "Please submit either all ZIP file exports or ZIP file exports and one CSV.",
-                    }
-                ]
-            },
-        },
-        {
-            "cvrs": [
-                (zip_hart_cvrs(HART_CVRS), "cvrs.zip"),
-                (
-                    string_to_bytes_io(HART_SCANNED_BALLOT_INFORMATION),
-                    "scanned-ballot-information-1.csv",
-                ),
-                (
-                    string_to_bytes_io(HART_SCANNED_BALLOT_INFORMATION),
-                    "scanned-ballot-information-2.csv",
-                ),
-            ],
-            "expected_status_code": 400,
-            "expected_response": {
-                "errors": [
-                    {
-                        "errorType": "Bad Request",
-                        "message": "Please submit either all ZIP file exports or ZIP file exports and one CSV.",
+                        "message": "Please submit only ZIP files and CSVs.",
                     }
                 ]
             },

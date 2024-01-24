@@ -135,13 +135,13 @@ const JurisdictionAdminView: React.FC = () => {
                 description={
                   isHybrid
                     ? `Click "Browse" to choose the appropriate Ballot
-                  Manifest file from your computer. This file should be a
+                  Manifest file from your computer. This should be a
                   comma-separated list of all the ballot batches/containers used
                   to store ballots for this particular election, plus a count of
                   how many ballot cards (individual pieces of paper) are stored
                   in each container, and whether each batch has cast vote records.`
                     : `Click "Browse" to choose the appropriate Ballot
-                Manifest file from your computer. This file should be a
+                Manifest file from your computer. This should be a
                 comma-separated list of all the ballot boxes/containers used
                 to store ballots for this particular election, plus a count of
                 how many ballot cards (individual pieces of paper) are stored
@@ -173,7 +173,7 @@ const JurisdictionAdminView: React.FC = () => {
                   deleteCSVFile={deleteBatchTallies}
                   title="Candidate Totals by Batch"
                   description='Click "Browse" to choose the appropriate Candidate
-                  Totals by Batch file from your computer. This file should be a
+                  Totals by Batch file from your computer. This should be a
                   comma-separated list of all the ballot boxes/containers used
                   to store ballots for this particular election, plus a count of
                   how many votes were counted for each candidate in each of
@@ -201,11 +201,11 @@ const JurisdictionAdminView: React.FC = () => {
                   description={
                     isHybrid
                       ? `Click "Browse" to choose the appropriate Cast Vote
-                  Records (CVR) file from your computer. This file should be an export
+                  Records (CVR) file(s) from your computer. This should be an export
                   of all the ballots centrally counted by your tabulator(s),
                   but should not include precinct-count ballots.`
                       : `Click "Browse" to choose the appropriate Cast Vote
-                  Records (CVR) file from your computer. This file should be an export
+                  Records (CVR) file(s) from your computer. This should be an export
                   of all the ballots counted by your tabulator(s).`
                   }
                   showCvrFileType

@@ -857,21 +857,26 @@ def parse_hart_cvrs(
     """
     A Hart CVR export is a ZIP file containing an individual XML file for each ballot's CVR.
 
-    Either a single ZIP file can be provided or multiple, one for each tabulator. The latter is
-    necessary when batch names are not unique across tabulators. Hart XML files don't contain
-    tabulator info, but Hart does allow exporting CVRs by tabulator. When multiple files are
-    provided, we use zip file names (with ".zip" removed) as tabulator names. (These tabulator
-    names need to match the ballot manifest, of course.)
+    Either a single ZIP file can be provided or multiple, one for each tabulator. When multiple
+    ZIP files are provided, the ZIP file names (with ".zip" removed) will be used as tabulator
+    names.
 
-    Separate from the ZIP file(s), an optional scanned ballot information CSV can be provided. If
-    provided, the `UniqueIdentifier`s in it will be used as imprinted IDs. Otherwise, `CvrGuid`s
-    will be used.
+    Separate from the ZIP files, optional scanned ballot information CSVs can be provided. If
+    provided, the "Workstation" values in them will be used as tabulator names, and the
+    "UniqueIdentifier" values in them will be used as imprinted IDs. Otherwise, "CvrGuid" values
+    will be used as imprinted IDs.
+
+    If both multiple ZIP files are provided and scanned ballot information CSVs are provided, the
+    ZIP file names will take precedence over the "Workstation" values as tabulator names.
+
+    Note that tabulator names are only used if batch names in the ballot manifest are not unique,
+    and we have to key batches in the ballot manifest by tabulator name plus batch name.
 
     Our parsing steps:
     1. Unzip the wrapper ZIP file.
-    2. Expect either [ CVR ZIP file(s) ] or [ CVR ZIP file(s) and a CSV ].
-    3. If a CSV is found, parse it as a scanned ballot information CSV.
-    4. Unzip the CVR ZIP file(s).
+    2. Expect either [ CVR ZIP files ] or [ CVR ZIP files and CSVs ].
+    3. If CSVs are found, parse them as scanned ballot information CSVs.
+    4. Unzip the CVR ZIP files.
     5. Parse the contest and choice names. We have to do this in a separate pass since our storage
        scheme for interpretations requires knowing all of the contest and choice names up front.
     6. Parse the interpretations.
@@ -881,23 +886,22 @@ def parse_hart_cvrs(
     wrapper_zip_file.close()
 
     cvr_zip_files: Dict[str, BinaryIO] = {}  # { file_name: file }
-    scanned_ballot_information_file: Union[BinaryIO, None] = None
+    scanned_ballot_information_files: List[BinaryIO] = []
     for file_name in file_names:
         if file_name.lower().endswith(".zip"):
             cvr_zip_files[file_name] = open(
                 os.path.join(working_directory, file_name), "rb"
             )
         if file_name.lower().endswith(".csv"):
-            scanned_ballot_information_file = open(
-                os.path.join(working_directory, file_name), "rb"
+            scanned_ballot_information_files.append(
+                open(os.path.join(working_directory, file_name), "rb")
             )
 
     assert len(cvr_zip_files) != 0  # Validated during file upload
-    use_cvr_zip_file_names_as_tabulator_names = len(cvr_zip_files) > 1
 
-    def construct_cvr_guid_to_unique_identifier_mapping(
+    def parse_scanned_ballot_information_file(
         scanned_ballot_information_file: BinaryIO,
-    ) -> Dict[str, str]:
+    ) -> List[Dict[str, str]]:
         validate_not_empty(scanned_ballot_information_file)
         text_file = decode_csv(scanned_ballot_information_file)
 
@@ -921,12 +925,12 @@ def parse_hart_cvrs(
             headers_row[0] = headers_row[0].lstrip("#")
         header_indices = get_header_indices(headers_row)
 
-        cvr_guid_to_unique_identifier_mapping: Dict[str, str] = {}
+        scanned_ballot_information_rows: List[Dict[str, str]] = []
         for i, row in enumerate(scanned_ballot_information_csv):
             row_number = (
                 i + 3
             )  # Account for zero indexing, #FormatVersion row, and header row
-            cvr_guid = column_value(
+            cvr_id = column_value(
                 row,
                 "CvrId",
                 row_number,
@@ -940,15 +944,44 @@ def parse_hart_cvrs(
                 header_indices,
                 file_name="scanned ballot information CSV",
             )
-            cvr_guid_to_unique_identifier_mapping[cvr_guid] = unique_identifier
+            workstation = column_value(
+                row,
+                "Workstation",
+                row_number,
+                header_indices,
+                file_name="scanned ballot information CSV",
+            )
+            scanned_ballot_information_rows.append(
+                {
+                    "CvrId": cvr_id,
+                    "UniqueIdentifier": unique_identifier,
+                    "Workstation": workstation,
+                }
+            )
 
-        return cvr_guid_to_unique_identifier_mapping
+        return scanned_ballot_information_rows
 
-    cvr_guid_to_unique_identifier_mapping = (
-        construct_cvr_guid_to_unique_identifier_mapping(scanned_ballot_information_file)
-        if scanned_ballot_information_file is not None
-        else {}
-    )
+    scanned_ballot_information_by_cvr_id: Dict[str, Dict[str, str]] = {}
+    for scanned_ballot_information_file in scanned_ballot_information_files:
+        scanned_ballot_information_rows = parse_scanned_ballot_information_file(
+            scanned_ballot_information_file
+        )
+        for row in scanned_ballot_information_rows:
+            cvr_id = row["CvrId"]
+            existing_scanned_ballot_information = (
+                scanned_ballot_information_by_cvr_id[cvr_id]
+                if cvr_id in scanned_ballot_information_by_cvr_id
+                else None
+            )
+            if (
+                existing_scanned_ballot_information
+                and existing_scanned_ballot_information != row
+            ):
+                raise UserError(
+                    f"Found conflicting information in scanned ballot information CSVs for CVR {cvr_id}. "
+                    f"{row} does not equal {existing_scanned_ballot_information}."
+                )
+            scanned_ballot_information_by_cvr_id[cvr_id] = row
 
     cvr_file_paths: Dict[
         Tuple[str, str], str
@@ -1050,29 +1083,16 @@ def parse_hart_cvrs(
 
         return ",".join(interpretations)
 
-    # When only one CVR zip file is provided, we use just the batch name as the unique identifier
-    # for a batch and expect batch names to be unique across tabulators.
-    # Otherwise, when more than one CVR zip file is provided, we use the zip file names as
-    # tabulator names, and batch names need not be unique.
-    # For the former, check that the batch names are actually unique before proceeding.
-    duplicate_batch_name = find_first_duplicate(
-        batch.name for batch in jurisdiction.batches
+    use_tabulator_in_batch_key = (
+        find_first_duplicate(batch.name for batch in jurisdiction.batches) is not None
     )
-    if not use_cvr_zip_file_names_as_tabulator_names and duplicate_batch_name:
-        raise UserError(
-            "Batch names in ballot manifest must be unique. "
-            f"Found duplicate batch name: {duplicate_batch_name}. "
-            "If you have multiple tabulators that use the same batch names, add a Tabulator "
-            "column to the ballot manifest and upload a separate CVR export for each tabulator."
-        )
     batches_by_key = {
         (
-            (batch.tabulator, batch.name)
-            if use_cvr_zip_file_names_as_tabulator_names
-            else batch.name
+            (batch.tabulator, batch.name) if use_tabulator_in_batch_key else batch.name
         ): batch
         for batch in jurisdiction.batches
     }
+    use_cvr_zip_file_names_as_tabulator_names = len(cvr_zip_files) > 1
 
     def parse_cvr_ballots() -> Iterable[CvrBallot]:
         for (cvr_zip_file_name, cvr_file_name), cvr_file_path in cvr_file_paths.items():
@@ -1084,14 +1104,27 @@ def parse_hart_cvrs(
             batch_number = find(cvr_xml, "BatchNumber").text
             batch_sequence = find(cvr_xml, "BatchSequence").text
 
-            db_batch = batches_by_key.get(
-                (cvr_zip_file_name_without_extension, batch_number)
-                if use_cvr_zip_file_names_as_tabulator_names
-                else batch_number
-            )
+            if use_tabulator_in_batch_key:
+                if use_cvr_zip_file_names_as_tabulator_names:
+                    tabulator = cvr_zip_file_name_without_extension
+                elif cvr_guid in scanned_ballot_information_by_cvr_id:
+                    tabulator = scanned_ballot_information_by_cvr_id[cvr_guid][
+                        "Workstation"
+                    ]
+                else:
+                    raise UserError(
+                        f"Couldn't find a tabulator name for CVR {cvr_guid}. "
+                        "Because the batch names in your ballot manifest are not unique, tabulator names are needed. "
+                        "These can be provided by uploading scanned ballot information CSVs or a CVR ZIP file per tabulator, "
+                        "where the ZIP file names are tabulator names."
+                    )
+                batch_key = (tabulator, batch_number)
+            else:
+                batch_key = batch_number
+            db_batch = batches_by_key.get(batch_key)
             imprinted_id = (
-                cvr_guid_to_unique_identifier_mapping[cvr_guid]
-                if cvr_guid in cvr_guid_to_unique_identifier_mapping
+                scanned_ballot_information_by_cvr_id[cvr_guid]["UniqueIdentifier"]
+                if cvr_guid in scanned_ballot_information_by_cvr_id
                 else cvr_guid
             )
             if db_batch:
@@ -1102,20 +1135,13 @@ def parse_hart_cvrs(
                     interpretations=parse_interpretations(cvr_xml),
                 )
             else:
-                general_guidance = (
-                    "Please check your CVR files and ballot manifest thoroughly to make sure "
-                    "these values match - there may be a similar inconsistency in other files in "
-                    "the CVR export."
-                )
-                if use_cvr_zip_file_names_as_tabulator_names:
+                if use_tabulator_in_batch_key:
                     raise UserError(
                         f"Error in file: {cvr_file_name} from {cvr_zip_file_name}. "
-                        "Couldn't find a matching batch for "
-                        f"Tabulator: {cvr_zip_file_name_without_extension}, "
-                        f"BatchNumber: {batch_number}. "
-                        "The BatchNumber field in the CVR file must match the Batch Name field in "
-                        "the ballot manifest, and the ZIP file name must match the Tabulator "
-                        "field in the ballot manifest. " + general_guidance
+                        f"Couldn't find a matching batch for Tabulator: {tabulator}, BatchNumber: {batch_number}. "
+                        "Either the Workstation values in scanned ballot information CSVs, if provided, or "
+                        "CVR ZIP file names, if multiple, should match the Tabulator values in the ballot manifest. "
+                        "Likewise, the BatchNumber values in CVR files should match the Batch Name values in the ballot manifest."
                     )
                 else:
                     close_matches = difflib.get_close_matches(
@@ -1125,15 +1151,14 @@ def parse_hart_cvrs(
                         ast.literal_eval(close_matches[0]) if close_matches else None
                     )
                     raise UserError(
-                        f"Error in file: {cvr_file_name}. "
+                        f"Error in file: {cvr_file_name} from {cvr_zip_file_name}. "
                         f"Couldn't find a matching batch for BatchNumber: {batch_number}. "
-                        "The BatchNumber field in the CVR must match the Batch Name field in the ballot manifest. "
+                        "The BatchNumber values in CVR files should match the Batch Name values in the ballot manifest."
                         + (
-                            f"The closest match we found in the ballot manifest was: {closest_match}. "
+                            f" The closest match we found in the ballot manifest was: {closest_match}."
                             if closest_match
                             else ""
                         )
-                        + general_guidance
                     )
 
     return contests_metadata, parse_cvr_ballots()
@@ -1355,23 +1380,18 @@ def validate_cvr_upload(
         raise BadRequest("Invalid file type")
 
     if cvr_file_type == CvrFileType.HART:
+
+        def is_zip_file(file):
+            return file.mimetype in ["application/zip", "application/x-zip-compressed"]
+
         files = request.files.getlist("cvrs")
-        num_zip_files = 0
-        num_csv_files = 0
-        for file in files:
-            if file.mimetype in ["application/zip", "application/x-zip-compressed"]:
-                num_zip_files += 1
-            elif does_file_have_csv_mimetype(file):
-                num_csv_files += 1
-        if num_zip_files == 0:
-            raise BadRequest("Please submit a ZIP file export.")
-        if not (
-            (num_zip_files == len(files))
-            or (num_zip_files == len(files) - 1 and num_csv_files == 1)
+        if not all(
+            is_zip_file(file) or does_file_have_csv_mimetype(file) for file in files
         ):
-            raise BadRequest(
-                "Please submit either all ZIP file exports or ZIP file exports and one CSV."
-            )
+            raise BadRequest("Please submit only ZIP files and CSVs.")
+        if not any(is_zip_file(file) for file in files):
+            raise BadRequest("Please submit at least one ZIP file.")
+
     else:
         validate_csv_mimetype(request.files["cvrs"])
 
