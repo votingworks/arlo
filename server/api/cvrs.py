@@ -858,7 +858,8 @@ def parse_hart_cvrs(
     A Hart CVR export is a ZIP file containing an individual XML file for each ballot's CVR.
 
     Either a single ZIP file can be provided or multiple, one for each tabulator. When multiple
-    files are provided, the ZIP file names (with ".zip" removed) will be used as tabulator names.
+    ZIP files are provided, the ZIP file names (with ".zip" removed) will be used as tabulator
+    names.
 
     Separate from the ZIP files, optional scanned ballot information CSVs can be provided. If
     provided, the "Workstation" values in them will be used as tabulator names, and the
@@ -1082,11 +1083,13 @@ def parse_hart_cvrs(
 
         return ",".join(interpretations)
 
-    duplicate_batch_name = find_first_duplicate(
-        batch.name for batch in jurisdiction.batches
+    use_tabulator_in_batch_key = (
+        find_first_duplicate(batch.name for batch in jurisdiction.batches) is not None
     )
     batches_by_key = {
-        ((batch.tabulator, batch.name) if duplicate_batch_name else batch.name): batch
+        (
+            (batch.tabulator, batch.name) if use_tabulator_in_batch_key else batch.name
+        ): batch
         for batch in jurisdiction.batches
     }
     use_cvr_zip_file_names_as_tabulator_names = len(cvr_zip_files) > 1
@@ -1101,7 +1104,7 @@ def parse_hart_cvrs(
             batch_number = find(cvr_xml, "BatchNumber").text
             batch_sequence = find(cvr_xml, "BatchSequence").text
 
-            if duplicate_batch_name:
+            if use_tabulator_in_batch_key:
                 if use_cvr_zip_file_names_as_tabulator_names:
                     tabulator = cvr_zip_file_name_without_extension
                 elif cvr_guid in scanned_ballot_information_by_cvr_id:
@@ -1132,7 +1135,7 @@ def parse_hart_cvrs(
                     interpretations=parse_interpretations(cvr_xml),
                 )
             else:
-                if duplicate_batch_name:
+                if use_tabulator_in_batch_key:
                     raise UserError(
                         f"Error in file: {cvr_file_name} from {cvr_zip_file_name}. "
                         f"Couldn't find a matching batch for Tabulator: {tabulator}, BatchNumber: {batch_number}. "
