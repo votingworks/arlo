@@ -1,4 +1,4 @@
-import { HTMLSelect, Label } from '@blueprintjs/core'
+import { Label } from '@blueprintjs/core'
 import styled from 'styled-components'
 import FormField from './FormField'
 
