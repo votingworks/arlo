@@ -37,6 +37,12 @@ CONTEST_SCHEMA = {
             "items": {"type": "string"},
             "minItems": 1,
         },
+        "cvrChoiceNamesByJurisdiction": {
+            "type": "object",
+            "patternProperties": {
+                "^.*$": {"type": "array", "items": {"type": "string"}},
+            },
+        },
     },
     "additionalProperties": False,
     "required": [
@@ -93,7 +99,7 @@ def serialize_contest(contest: Contest) -> JSONDict:
                 vote_counts and vote_counts[str(choice["id"])].non_cvr
             )
 
-    return {
+    serialized_contest = {
         "id": contest.id,
         "name": contest.name,
         "isTargeted": contest.is_targeted,
@@ -103,6 +109,21 @@ def serialize_contest(contest: Contest) -> JSONDict:
         "votesAllowed": contest.votes_allowed,
         "jurisdictionIds": [j.id for j in contest.jurisdictions],
     }
+
+    if contest.election.audit_type == AuditType.BALLOT_COMPARISON:
+        cvr_choice_names_by_jurisdiction = {}
+        for jurisdiction in contest.jurisdictions:
+            metadata = cvrs.cvr_contests_metadata(jurisdiction)
+            if metadata is not None and contest.name in metadata:
+                cvr_choices_in_jurisdiction = metadata[contest.name]["choices"]
+                cvr_choice_names_by_jurisdiction[jurisdiction.id] = list(
+                    cvr_choices_in_jurisdiction.keys()
+                )
+        serialized_contest[
+            "cvrChoiceNamesByJurisdiction"
+        ] = cvr_choice_names_by_jurisdiction
+
+    return serialized_contest
 
 
 def deserialize_contest_choice(
