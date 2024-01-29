@@ -156,12 +156,12 @@ def set_contest_metadata_from_cvrs(contest: Contest):
     assert first_jurisdiction_metadata is not None
     contest.votes_allowed = first_jurisdiction_metadata[contest.name]["votes_allowed"]
 
-    # ES&S/Hart CVRs may only have some of the contest choices in each
-    # jurisdiction, so we union choice names across jurisdictions, adding up the
-    # votes. In Dominion/ClearBallot CVRs, this should have no impact, since the
-    # choice names will be the same across jurisdictions. This is safe to do
-    # because contest choice names are set by the state, so the same choice
-    # should have the same name across jurisdictions.
+    # ES&S/Hart CVRs may only contain a subset of contest choices in each
+    # jurisdiction, so we union choice names across jurisdictions.
+    # Dominion/ClearBallot CVRs, on the other hand, should contain all contest
+    # choices in all jurisdictions, whether the choices were voted for or not.
+    # That said, we have seen casing inconsistencies with choice names across
+    # jurisdictions in Dominion CVRs. Separate safeguards exist for that case.
     choices: Dict[str, int] = defaultdict(lambda: 0)
     for jurisdiction in contest.jurisdictions:
         metadata = cvr_contests_metadata(jurisdiction)
