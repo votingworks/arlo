@@ -2,7 +2,9 @@
   "addons": ["heroku-postgresql:hobby-free"],
   "buildpacks": [
     { "url": "heroku/nodejs" },
-    { "url": "https://github.com/moneymeets/python-poetry-buildpack.git" },
+    {
+      "url": "https://github.com/moneymeets/python-poetry-buildpack.git#0bbaf48423f0caac527e185b1517abac1610dc46"
+    },
     { "url": "heroku/python" },
     { "url": "heroku-community/cli" }
   ],
