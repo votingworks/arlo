@@ -25,6 +25,7 @@ export interface IContest {
   choices: IChoice[]
   totalBallotsCast: number
   jurisdictionIds: string[]
+  cvrChoiceNamesByJurisdiction?: { [jurisdictionId: string]: string[] }
 }
 
 export enum Interpretation {

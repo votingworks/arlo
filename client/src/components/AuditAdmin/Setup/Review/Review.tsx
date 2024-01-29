@@ -48,8 +48,11 @@ import {
 } from '../../../useFileUpload'
 import SamplePreview from './SamplePreview'
 import StandardizeContestNamesDialog from './StandardizeContestNames'
-import LinkButton from '../../../Atoms/LinkButton'
 import LabeledValue from './LabeledValue'
+import {
+  ContestChoiceNameConsistencyError,
+  contestChoiceNameConsistencyError,
+} from './ContestChoiceNameConsistencyError'
 
 const percentFormatter = new Intl.NumberFormat(undefined, {
   style: 'percent',
@@ -136,7 +139,18 @@ const Review: React.FC<IProps> = ({
       contestsQuery.data,
       auditSettingsQuery.data
     )
-  const shouldLoadSampleSizes = setupComplete && standardizationComplete
+
+  const contestChoiceNameConsistencyErrors = (contestsQuery.data ?? []).map(
+    contestChoiceNameConsistencyError
+  )
+  const areAllContestChoiceNamesConsistent = contestChoiceNameConsistencyErrors.every(
+    error => !error
+  )
+
+  const shouldLoadSampleSizes =
+    setupComplete &&
+    standardizationComplete &&
+    areAllContestChoiceNamesConsistent
   const sampleSizesQuery = useSampleSizes(electionId, 1, {
     enabled: shouldLoadSampleSizes,
     refetchInterval: sampleSizesResponse =>
@@ -268,7 +282,7 @@ const Review: React.FC<IProps> = ({
             <br />
           </>
         )}
-        {contests.map(contest => (
+        {contests.map((contest, i) => (
           <Card key={contest.id} style={{ background: Colors.LIGHT_GRAY5 }}>
             <div
               style={{
@@ -277,7 +291,7 @@ const Review: React.FC<IProps> = ({
                 alignItems: 'baseline',
               }}
             >
-              <H5>{contest.name}</H5>
+              <H5 id={contest.id}>{contest.name}</H5>
               <Tag
                 intent={contest.isTargeted ? Intent.SUCCESS : Intent.PRIMARY}
                 style={{ marginLeft: '10px', flexShrink: 0 }}
@@ -296,6 +310,14 @@ const Review: React.FC<IProps> = ({
                 {Number(contest.totalBallotsCast).toLocaleString()} total
                 ballots cast
               </p>
+            )}
+            {cvrsUploaded && contestChoiceNameConsistencyErrors[i] && (
+              <Callout intent="warning" style={{ marginBottom: '10px' }}>
+                <ContestChoiceNameConsistencyError
+                  error={contestChoiceNameConsistencyErrors[i]!}
+                  jurisdictionNamesById={jurisdictionsById}
+                />
+              </Callout>
             )}
             <div style={{ display: 'flex' }}>
               {!cvrsUploaded ? (
@@ -498,6 +520,35 @@ const Review: React.FC<IProps> = ({
                           </>
                         )
 
+                      if (!areAllContestChoiceNamesConsistent) {
+                        return (
+                          <>
+                            <p>
+                              The following contests have inconsistent choice
+                              names:
+                            </p>
+                            <ul>
+                              {contests
+                                .filter(
+                                  (_, i) =>
+                                    contestChoiceNameConsistencyErrors[i]
+                                )
+                                .map(contest => (
+                                  <li key={contest.id}>
+                                    <a href={`#${contest.id}`}>
+                                      {contest.name}
+                                    </a>
+                                  </li>
+                                ))}
+                            </ul>
+                            <p>
+                              Address these inconsistencies by updating your CVR
+                              files in order to calculate the sample size.
+                            </p>
+                          </>
+                        )
+                      }
+
                       if (sampleSizesQuery.data?.task.error)
                         return (
                           <ErrorLabel>
@@ -559,7 +610,8 @@ const Review: React.FC<IProps> = ({
                             locked ||
                             !sampleSizeOptions ||
                             !setupComplete ||
-                            !standardizationComplete
+                            !standardizationComplete ||
+                            !areAllContestChoiceNamesConsistent
                           }
                           onClick={() => setIsConfirmDialogOpen(true)}
                         >
