@@ -59,7 +59,6 @@ def test_set_contest_metadata_on_manifest_and_cvr_upload(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     contest_id = str(uuid.uuid4())
@@ -79,14 +78,13 @@ def test_set_contest_metadata_on_manifest_and_cvr_upload(
     assert_ok(rv)
 
     # Contest metadata isn't set when creating contest if no manifest/CVRs
-    contest = Contest.query.get(contest_id)
-    assert contest.total_ballots_cast is None
-    assert contest.votes_allowed is None
-    assert contest.choices == []
+    rv = client.get(f"/api/election/{election_id}/contest")
+    contest = json.loads(rv.data)["contests"][0]
+    assert contest["choices"] == []
+    assert contest["cvrChoiceNamesByJurisdiction"] == {}
+    assert contest["totalBallotsCast"] is None
+    assert contest["votesAllowed"] is None
 
-    set_logged_in_user(
-        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
-    )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
         data={
@@ -105,10 +103,12 @@ def test_set_contest_metadata_on_manifest_and_cvr_upload(
     assert_ok(rv)
 
     # Contest total ballots isn't set when only some manifests uploaded
-    contest = Contest.query.get(contest_id)
-    assert contest.total_ballots_cast is None
-    assert contest.votes_allowed is None
-    assert contest.choices == []
+    rv = client.get(f"/api/election/{election_id}/contest")
+    contest = json.loads(rv.data)["contests"][0]
+    assert contest["choices"] == []
+    assert contest["cvrChoiceNamesByJurisdiction"] == {}
+    assert contest["totalBallotsCast"] is None
+    assert contest["votesAllowed"] is None
 
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/ballot-manifest",
@@ -128,10 +128,12 @@ def test_set_contest_metadata_on_manifest_and_cvr_upload(
     assert_ok(rv)
 
     # Contest total ballots is set when all manifests uploaded
-    contest = Contest.query.get(contest_id)
-    assert contest.total_ballots_cast == 30
-    assert contest.votes_allowed is None
-    assert contest.choices == []
+    rv = client.get(f"/api/election/{election_id}/contest")
+    contest = json.loads(rv.data)["contests"][0]
+    assert contest["choices"] == []
+    assert contest["cvrChoiceNamesByJurisdiction"] == {}
+    assert contest["totalBallotsCast"] == 30
+    assert contest["votesAllowed"] is None
 
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
@@ -143,10 +145,14 @@ def test_set_contest_metadata_on_manifest_and_cvr_upload(
     assert_ok(rv)
 
     # Contest votes allowed/choices isn't set when only some CVRs uploaded
-    contest = Contest.query.get(contest_id)
-    assert contest.total_ballots_cast == 30  # Set from manifest
-    assert contest.votes_allowed is None
-    assert contest.choices == []
+    rv = client.get(f"/api/election/{election_id}/contest")
+    contest = json.loads(rv.data)["contests"][0]
+    assert contest["choices"] == []
+    assert contest["cvrChoiceNamesByJurisdiction"] == {
+        jurisdiction_ids[0]: ["Choice 2-1", "Choice 2-2", "Choice 2-3"]
+    }
+    assert contest["totalBallotsCast"] == 30
+    assert contest["votesAllowed"] is None
 
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/cvrs",
@@ -158,21 +164,27 @@ def test_set_contest_metadata_on_manifest_and_cvr_upload(
     assert_ok(rv)
 
     # Contest votes allowed/choices is set when all CVRs uploaded
-    contest = Contest.query.get(contest_id)
-    snapshot.assert_match(
-        dict(
-            # Set from manifest
-            total_ballots_cast=contest.total_ballots_cast,
-            # Set from CVRs
-            votes_allowed=contest.votes_allowed,
-            choices=[
-                dict(name=choice.name, num_votes=choice.num_votes)
-                for choice in contest.choices
-            ],
-        )
-    )
+    rv = client.get(f"/api/election/{election_id}/contest")
+    contest = json.loads(rv.data)["contests"][0]
+    assert [
+        {"name": choice["name"], "numVotes": choice["numVotes"]}
+        for choice in contest["choices"]
+    ] == [
+        {"name": "Choice 2-1", "numVotes": 24},
+        {"name": "Choice 2-2", "numVotes": 10},
+        {"name": "Choice 2-3", "numVotes": 14},
+    ]
+    assert contest["cvrChoiceNamesByJurisdiction"] == {
+        jurisdiction_ids[0]: ["Choice 2-1", "Choice 2-2", "Choice 2-3"],
+        jurisdiction_ids[1]: ["Choice 2-1", "Choice 2-2", "Choice 2-3"],
+    }
+    assert contest["totalBallotsCast"] == 30
+    assert contest["votesAllowed"] == 2
 
+    #
     # Contest metadata changes on new manifest/CVR upload
+    #
+
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
         data={
@@ -189,7 +201,7 @@ def test_set_contest_metadata_on_manifest_and_cvr_upload(
     )
     assert_ok(rv)
 
-    new_cvr = "\n".join(TEST_CVRS.splitlines()[:10])
+    new_cvr = "\n".join(TEST_CVRS.splitlines()[:10]).replace("Choice", "CHOICE")
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
         data={
@@ -199,19 +211,25 @@ def test_set_contest_metadata_on_manifest_and_cvr_upload(
     )
     assert_ok(rv)
 
-    contest = Contest.query.get(contest_id)
-    snapshot.assert_match(
-        dict(
-            # Set from manifest
-            total_ballots_cast=contest.total_ballots_cast,
-            # Set from CVRs
-            votes_allowed=contest.votes_allowed,
-            choices=[
-                dict(name=choice.name, num_votes=choice.num_votes)
-                for choice in contest.choices
-            ],
-        )
-    )
+    rv = client.get(f"/api/election/{election_id}/contest")
+    contest = json.loads(rv.data)["contests"][0]
+    assert [
+        {"name": choice["name"], "numVotes": choice["numVotes"]}
+        for choice in contest["choices"]
+    ] == [
+        {"name": "CHOICE 2-1", "numVotes": 6},
+        {"name": "CHOICE 2-2", "numVotes": 3},
+        {"name": "CHOICE 2-3", "numVotes": 3},
+        {"name": "Choice 2-1", "numVotes": 12},
+        {"name": "Choice 2-2", "numVotes": 5},
+        {"name": "Choice 2-3", "numVotes": 7},
+    ]
+    assert contest["cvrChoiceNamesByJurisdiction"] == {
+        jurisdiction_ids[0]: ["CHOICE 2-1", "CHOICE 2-2", "CHOICE 2-3"],
+        jurisdiction_ids[1]: ["Choice 2-1", "Choice 2-2", "Choice 2-3"],
+    }
+    assert contest["totalBallotsCast"] == 24
+    assert contest["votesAllowed"] == 2
 
 
 def test_set_contest_metadata_on_jurisdiction_change(

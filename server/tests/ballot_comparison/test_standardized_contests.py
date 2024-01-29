@@ -552,6 +552,9 @@ def test_reupload_standardized_contests_after_contests_selected(
                         {"id": assert_is_id, "name": "Choice 1-2", "numVotes": 3},
                     ],
                     "jurisdictionIds": [jurisdiction_ids[0]],
+                    "cvrChoiceNamesByJurisdiction": {
+                        jurisdiction_ids[0]: ["Choice 1-1", "Choice 1-2"],
+                    },
                 },
                 {
                     "id": contest_2_id,
@@ -562,6 +565,9 @@ def test_reupload_standardized_contests_after_contests_selected(
                     "votesAllowed": None,
                     "choices": [],
                     "jurisdictionIds": [jurisdiction_ids[0], jurisdiction_ids[2]],
+                    "cvrChoiceNamesByJurisdiction": {
+                        jurisdiction_ids[0]: ["Choice 2-1", "Choice 2-2", "Choice 2-3"],
+                    },
                 },
             ]
         },
@@ -600,6 +606,10 @@ def test_reupload_standardized_contests_after_contests_selected(
                         {"id": assert_is_id, "name": "Choice 1-2", "numVotes": 6},
                     ],
                     "jurisdictionIds": jurisdiction_ids[:2],
+                    "cvrChoiceNamesByJurisdiction": {
+                        jurisdiction_ids[0]: ["Choice 1-1", "Choice 1-2"],
+                        jurisdiction_ids[1]: ["Choice 1-1", "Choice 1-2"],
+                    },
                 }
             ]
         },
