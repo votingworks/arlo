@@ -49,7 +49,7 @@ import {
 import SamplePreview from './SamplePreview'
 import StandardizeContestNamesDialog from './StandardizeContestNames'
 import LabeledValue from './LabeledValue'
-import ContestChoiceNameConsistencyError from './ContestChoiceNameConsistencyError'
+import CvrChoiceNameConsistencyError from './CvrChoiceNameConsistencyError'
 
 const percentFormatter = new Intl.NumberFormat(undefined, {
   style: 'percent',
@@ -137,17 +137,14 @@ const Review: React.FC<IProps> = ({
       auditSettingsQuery.data
     )
 
-  const contestChoiceNameConsistencyErrors = (contestsQuery.data ?? []).map(
-    ({ cvrChoiceNameConsistencyError }) => cvrChoiceNameConsistencyError
-  )
-  const areAllContestChoiceNamesConsistent = contestChoiceNameConsistencyErrors.every(
-    error => !error
-  )
+  const areChoiceNamesConsistentForAllContests = (
+    contestsQuery.data ?? []
+  ).every(contest => !contest.cvrChoiceNameConsistencyError)
 
   const shouldLoadSampleSizes =
     setupComplete &&
     standardizationComplete &&
-    areAllContestChoiceNamesConsistent
+    areChoiceNamesConsistentForAllContests
   const sampleSizesQuery = useSampleSizes(electionId, 1, {
     enabled: shouldLoadSampleSizes,
     refetchInterval: sampleSizesResponse =>
@@ -279,7 +276,7 @@ const Review: React.FC<IProps> = ({
             <br />
           </>
         )}
-        {contests.map((contest, i) => (
+        {contests.map(contest => (
           <Card key={contest.id} style={{ background: Colors.LIGHT_GRAY5 }}>
             <div
               style={{
@@ -308,10 +305,10 @@ const Review: React.FC<IProps> = ({
                 ballots cast
               </p>
             )}
-            {cvrsUploaded && contestChoiceNameConsistencyErrors[i] && (
+            {cvrsUploaded && contest.cvrChoiceNameConsistencyError && (
               <Callout intent="warning" style={{ marginBottom: '10px' }}>
-                <ContestChoiceNameConsistencyError
-                  error={contestChoiceNameConsistencyErrors[i]!}
+                <CvrChoiceNameConsistencyError
+                  error={contest.cvrChoiceNameConsistencyError}
                   jurisdictionNamesById={jurisdictionsById}
                 />
               </Callout>
@@ -517,7 +514,7 @@ const Review: React.FC<IProps> = ({
                           </>
                         )
 
-                      if (!areAllContestChoiceNamesConsistent) {
+                      if (!areChoiceNamesConsistentForAllContests) {
                         return (
                           <>
                             <p>
@@ -527,8 +524,8 @@ const Review: React.FC<IProps> = ({
                             <ul>
                               {contests
                                 .filter(
-                                  (_, i) =>
-                                    contestChoiceNameConsistencyErrors[i]
+                                  contest =>
+                                    contest.cvrChoiceNameConsistencyError
                                 )
                                 .map(contest => (
                                   <li key={contest.id}>
@@ -608,7 +605,7 @@ const Review: React.FC<IProps> = ({
                             !sampleSizeOptions ||
                             !setupComplete ||
                             !standardizationComplete ||
-                            !areAllContestChoiceNamesConsistent
+                            !areChoiceNamesConsistentForAllContests
                           }
                           onClick={() => setIsConfirmDialogOpen(true)}
                         >

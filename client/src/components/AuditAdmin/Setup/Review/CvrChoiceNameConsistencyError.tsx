@@ -7,7 +7,7 @@ interface IProps {
   jurisdictionNamesById: { [jurisdictionId: string]: { name: string } }
 }
 
-const ContestChoiceNameConsistencyError: React.FC<IProps> = ({
+const CvrChoiceNameConsistencyError: React.FC<IProps> = ({
   error,
   jurisdictionNamesById,
 }) => {
@@ -45,4 +45,4 @@ const ContestChoiceNameConsistencyError: React.FC<IProps> = ({
   )
 }
 
-export default ContestChoiceNameConsistencyError
+export default CvrChoiceNameConsistencyError
