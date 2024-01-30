@@ -7,7 +7,11 @@ from sqlalchemy import and_
 
 from ...models import *  # pylint: disable=wildcard-import
 from ..helpers import *  # pylint: disable=wildcard-import
-from .conftest import TEST_CVRS
+from .conftest import (
+    TEST_CVRS,
+    TEST_CVRS_WITH_CHOICE_REMOVED,
+    TEST_CVRS_WITH_EXTRA_CHOICE,
+)
 from ..ballot_comparison.test_cvrs import (
     ESS_BALLOTS_1,
     ESS_BALLOTS_2,
@@ -56,9 +60,7 @@ def test_set_contest_metadata_on_contest_creation(
 
 
 def test_set_contest_metadata_on_manifest_and_cvr_upload(
-    client: FlaskClient,
-    election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str],
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     contest_id = str(uuid.uuid4())
@@ -81,7 +83,6 @@ def test_set_contest_metadata_on_manifest_and_cvr_upload(
     rv = client.get(f"/api/election/{election_id}/contest")
     contest = json.loads(rv.data)["contests"][0]
     assert contest["choices"] == []
-    assert contest["cvrChoiceNamesByJurisdiction"] == {}
     assert contest["totalBallotsCast"] is None
     assert contest["votesAllowed"] is None
 
@@ -106,7 +107,6 @@ def test_set_contest_metadata_on_manifest_and_cvr_upload(
     rv = client.get(f"/api/election/{election_id}/contest")
     contest = json.loads(rv.data)["contests"][0]
     assert contest["choices"] == []
-    assert contest["cvrChoiceNamesByJurisdiction"] == {}
     assert contest["totalBallotsCast"] is None
     assert contest["votesAllowed"] is None
 
@@ -131,7 +131,6 @@ def test_set_contest_metadata_on_manifest_and_cvr_upload(
     rv = client.get(f"/api/election/{election_id}/contest")
     contest = json.loads(rv.data)["contests"][0]
     assert contest["choices"] == []
-    assert contest["cvrChoiceNamesByJurisdiction"] == {}
     assert contest["totalBallotsCast"] == 30
     assert contest["votesAllowed"] is None
 
@@ -148,9 +147,6 @@ def test_set_contest_metadata_on_manifest_and_cvr_upload(
     rv = client.get(f"/api/election/{election_id}/contest")
     contest = json.loads(rv.data)["contests"][0]
     assert contest["choices"] == []
-    assert contest["cvrChoiceNamesByJurisdiction"] == {
-        jurisdiction_ids[0]: ["Choice 2-1", "Choice 2-2", "Choice 2-3"]
-    }
     assert contest["totalBallotsCast"] == 30
     assert contest["votesAllowed"] is None
 
@@ -174,10 +170,6 @@ def test_set_contest_metadata_on_manifest_and_cvr_upload(
         {"name": "Choice 2-2", "numVotes": 10},
         {"name": "Choice 2-3", "numVotes": 14},
     ]
-    assert contest["cvrChoiceNamesByJurisdiction"] == {
-        jurisdiction_ids[0]: ["Choice 2-1", "Choice 2-2", "Choice 2-3"],
-        jurisdiction_ids[1]: ["Choice 2-1", "Choice 2-2", "Choice 2-3"],
-    }
     assert contest["totalBallotsCast"] == 30
     assert contest["votesAllowed"] == 2
 
@@ -201,7 +193,7 @@ def test_set_contest_metadata_on_manifest_and_cvr_upload(
     )
     assert_ok(rv)
 
-    new_cvr = "\n".join(TEST_CVRS.splitlines()[:10]).replace("Choice", "CHOICE")
+    new_cvr = "\n".join(TEST_CVRS.splitlines()[:10])
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
         data={
@@ -217,19 +209,132 @@ def test_set_contest_metadata_on_manifest_and_cvr_upload(
         {"name": choice["name"], "numVotes": choice["numVotes"]}
         for choice in contest["choices"]
     ] == [
-        {"name": "CHOICE 2-1", "numVotes": 6},
-        {"name": "CHOICE 2-2", "numVotes": 3},
-        {"name": "CHOICE 2-3", "numVotes": 3},
-        {"name": "Choice 2-1", "numVotes": 12},
-        {"name": "Choice 2-2", "numVotes": 5},
-        {"name": "Choice 2-3", "numVotes": 7},
+        {"name": "Choice 2-1", "numVotes": 18},
+        {"name": "Choice 2-2", "numVotes": 8},
+        {"name": "Choice 2-3", "numVotes": 10},
     ]
-    assert contest["cvrChoiceNamesByJurisdiction"] == {
-        jurisdiction_ids[0]: ["CHOICE 2-1", "CHOICE 2-2", "CHOICE 2-3"],
-        jurisdiction_ids[1]: ["Choice 2-1", "Choice 2-2", "Choice 2-3"],
-    }
     assert contest["totalBallotsCast"] == 24
     assert contest["votesAllowed"] == 2
+
+
+def test_cvr_choice_name_validation(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    manifests,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    contest_id = str(uuid.uuid4())
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/contest",
+        [
+            {
+                "id": contest_id,
+                "isTargeted": True,
+                "jurisdictionIds": jurisdiction_ids[:2],
+                "name": "Contest 1",
+                "numWinners": 1,
+            }
+        ],
+    )
+    assert_ok(rv)
+
+    rv = client.get(f"/api/election/{election_id}/contest")
+    contest = json.loads(rv.data)["contests"][0]
+    assert "cvrChoiceNameConsistencyError" not in contest
+
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
+        data={
+            "cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",),
+            "cvrFileType": "DOMINION",
+        },
+    )
+    assert_ok(rv)
+
+    rv = client.get(f"/api/election/{election_id}/contest")
+    contest = json.loads(rv.data)["contests"][0]
+    assert "cvrChoiceNameConsistencyError" not in contest
+
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/cvrs",
+        data={
+            "cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",),
+            "cvrFileType": "DOMINION",
+        },
+    )
+    assert_ok(rv)
+
+    rv = client.get(f"/api/election/{election_id}/contest")
+    contest = json.loads(rv.data)["contests"][0]
+    assert "cvrChoiceNameConsistencyError" not in contest
+
+    modified_cvrs = TEST_CVRS.replace("Choice", "CHOICE")
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/cvrs",
+        data={
+            "cvrs": (io.BytesIO(modified_cvrs.encode()), "cvrs.csv",),
+            "cvrFileType": "DOMINION",
+        },
+    )
+    assert_ok(rv)
+
+    rv = client.get(f"/api/election/{election_id}/contest")
+    contest = json.loads(rv.data)["contests"][0]
+    assert contest["cvrChoiceNameConsistencyError"] == {
+        "anomalousCvrChoiceNamesByJurisdiction": {
+            jurisdiction_ids[1]: ["CHOICE 1-1", "CHOICE 1-2"],
+        },
+        "cvrChoiceNamesInJurisdictionWithMostCvrChoices": ["Choice 1-1", "Choice 1-2",],
+        "jurisdictionIdWithMostCvrChoices": jurisdiction_ids[0],
+    }
+
+    modified_cvrs = TEST_CVRS.replace("Choice 1-1", "CHOICE 1-1")
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/cvrs",
+        data={
+            "cvrs": (io.BytesIO(modified_cvrs.encode()), "cvrs.csv",),
+            "cvrFileType": "DOMINION",
+        },
+    )
+    assert_ok(rv)
+
+    rv = client.get(f"/api/election/{election_id}/contest")
+    contest = json.loads(rv.data)["contests"][0]
+    assert contest["cvrChoiceNameConsistencyError"] == {
+        "anomalousCvrChoiceNamesByJurisdiction": {jurisdiction_ids[1]: ["CHOICE 1-1"],},
+        "cvrChoiceNamesInJurisdictionWithMostCvrChoices": ["Choice 1-1", "Choice 1-2",],
+        "jurisdictionIdWithMostCvrChoices": jurisdiction_ids[0],
+    }
+
+    modified_cvrs = TEST_CVRS_WITH_CHOICE_REMOVED
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/cvrs",
+        data={
+            "cvrs": (io.BytesIO(modified_cvrs.encode()), "cvrs.csv",),
+            "cvrFileType": "DOMINION",
+        },
+    )
+    assert_ok(rv)
+
+    rv = client.get(f"/api/election/{election_id}/contest")
+    contest = json.loads(rv.data)["contests"][0]
+    assert "cvrChoiceNameConsistencyError" not in contest
+
+    modified_cvrs = TEST_CVRS_WITH_EXTRA_CHOICE
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/cvrs",
+        data={
+            "cvrs": (io.BytesIO(modified_cvrs.encode()), "cvrs.csv",),
+            "cvrFileType": "DOMINION",
+        },
+    )
+    assert_ok(rv)
+
+    rv = client.get(f"/api/election/{election_id}/contest")
+    contest = json.loads(rv.data)["contests"][0]
+    assert "cvrChoiceNameConsistencyError" not in contest
 
 
 def test_set_contest_metadata_on_jurisdiction_change(

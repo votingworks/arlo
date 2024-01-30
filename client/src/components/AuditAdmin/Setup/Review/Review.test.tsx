@@ -1185,9 +1185,15 @@ describe('Audit Setup > Review & Launch', () => {
             { id: 'choice-id-3', name: 'CHOICE 1', numVotes: 5 },
             { id: 'choice-id-4', name: 'CHOICE 2', numVotes: 10 },
           ],
-          cvrChoiceNamesByJurisdiction: {
-            'jurisdiction-id-1': ['Choice 1', 'Choice 2'],
-            'jurisdiction-id-2': ['CHOICE 1', 'CHOICE 2'],
+          cvrChoiceNameConsistencyError: {
+            anomalousCvrChoiceNamesByJurisdiction: {
+              'jurisdiction-id-2': ['CHOICE 1', 'CHOICE 2'],
+            },
+            jurisdictionIdWithMostCvrChoices: 'jurisdiction-id-1',
+            cvrChoiceNamesInJurisdictionWithMostCvrChoices: [
+              'Choice 1',
+              'Choice 2',
+            ],
           },
         },
         {
@@ -1198,9 +1204,15 @@ describe('Audit Setup > Review & Launch', () => {
             { id: 'choice-id-2', name: 'Choice 2', numVotes: 10 },
             { id: 'choice-id-3', name: 'Choice 3', numVotes: 15 },
           ],
-          cvrChoiceNamesByJurisdiction: {
-            'jurisdiction-id-1': ['Choice 1', 'Choice 2'],
-            'jurisdiction-id-2': ['Choice 3'],
+          cvrChoiceNameConsistencyError: {
+            anomalousCvrChoiceNamesByJurisdiction: {
+              'jurisdiction-id-2': ['Choice 3'],
+            },
+            jurisdictionIdWithMostCvrChoices: 'jurisdiction-id-1',
+            cvrChoiceNamesInJurisdictionWithMostCvrChoices: [
+              'Choice 1',
+              'Choice 2',
+            ],
           },
         },
         {
@@ -1210,22 +1222,7 @@ describe('Audit Setup > Review & Launch', () => {
             { id: 'choice-id-1', name: 'Choice 1', numVotes: 10 },
             { id: 'choice-id-2', name: 'Choice 2', numVotes: 20 },
           ],
-          cvrChoiceNamesByJurisdiction: {
-            'jurisdiction-id-1': ['Choice 1', 'Choice 2'],
-            'jurisdiction-id-2': ['Choice 1', 'Choice 2'],
-          },
-        },
-        {
-          // Consistent choice names
-          ...testContest(4),
-          choices: [
-            { id: 'choice-id-1', name: 'Choice 1', numVotes: 10 },
-            { id: 'choice-id-2', name: 'Choice 2', numVotes: 20 },
-          ],
-          cvrChoiceNamesByJurisdiction: {
-            'jurisdiction-id-1': ['Choice 1', 'Choice 2'],
-            'jurisdiction-id-2': ['Choice 1'],
-          },
+          cvrChoiceNameConsistencyError: undefined,
         },
       ]),
       apiCalls.getStandardizedContestsFile,
