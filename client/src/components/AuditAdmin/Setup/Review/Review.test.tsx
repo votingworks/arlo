@@ -13,6 +13,7 @@ import {
   withMockFetch,
   renderWithRouter,
   createQueryClient,
+  hasTextAcrossElements,
 } from '../../../testUtilities'
 import { IJurisdiction } from '../../../useJurisdictions'
 import { IContest } from '../../../../types'
@@ -1154,5 +1155,116 @@ describe('Audit Setup > Review & Launch', () => {
       )
     })
     jest.useRealTimers()
+  })
+
+  it('prevents sample size calculation if CVR choice names are inconsistent across jurisdictions in a ballot comparison audit', async () => {
+    function testContest(contestIndex: number): Omit<IContest, 'choices'> {
+      return {
+        id: `contest-id-${contestIndex}`,
+        isTargeted: true,
+        jurisdictionIds: ['jurisdiction-id-1', 'jurisdiction-id-2'],
+        name: `Contest ${contestIndex}`,
+        numWinners: 1,
+        totalBallotsCast: 30,
+        votesAllowed: 1,
+      }
+    }
+    const expectedCalls = [
+      apiCalls.getSettings(auditSettingsMocks.ballotComparisonAll),
+      apiCalls.getJurisdictions({
+        jurisdictions: jurisdictionMocks.allManifestsWithCVRs,
+      }),
+      apiCalls.getJurisdictionFile,
+      apiCalls.getContests([
+        {
+          // Inconsistent choice names
+          ...testContest(1),
+          choices: [
+            { id: 'choice-id-1', name: 'Choice 1', numVotes: 5 },
+            { id: 'choice-id-2', name: 'Choice 2', numVotes: 10 },
+            { id: 'choice-id-3', name: 'CHOICE 1', numVotes: 5 },
+            { id: 'choice-id-4', name: 'CHOICE 2', numVotes: 10 },
+          ],
+          cvrChoiceNameConsistencyError: {
+            anomalousCvrChoiceNamesByJurisdiction: {
+              'jurisdiction-id-2': ['CHOICE 1', 'CHOICE 2'],
+            },
+            jurisdictionIdWithMostCvrChoices: 'jurisdiction-id-1',
+            cvrChoiceNamesInJurisdictionWithMostCvrChoices: [
+              'Choice 1',
+              'Choice 2',
+            ],
+          },
+        },
+        {
+          // Inconsistent choice names per our heuristic
+          ...testContest(2),
+          choices: [
+            { id: 'choice-id-1', name: 'Choice 1', numVotes: 5 },
+            { id: 'choice-id-2', name: 'Choice 2', numVotes: 10 },
+            { id: 'choice-id-3', name: 'Choice 3', numVotes: 15 },
+          ],
+          cvrChoiceNameConsistencyError: {
+            anomalousCvrChoiceNamesByJurisdiction: {
+              'jurisdiction-id-2': ['Choice 3'],
+            },
+            jurisdictionIdWithMostCvrChoices: 'jurisdiction-id-1',
+            cvrChoiceNamesInJurisdictionWithMostCvrChoices: [
+              'Choice 1',
+              'Choice 2',
+            ],
+          },
+        },
+        {
+          // Consistent choice names
+          ...testContest(3),
+          choices: [
+            { id: 'choice-id-1', name: 'Choice 1', numVotes: 10 },
+            { id: 'choice-id-2', name: 'Choice 2', numVotes: 20 },
+          ],
+          cvrChoiceNameConsistencyError: undefined,
+        },
+      ]),
+      apiCalls.getStandardizedContestsFile,
+      apiCalls.getStandardizations({
+        cvrContestNames: {},
+        standardizations: {},
+      }),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderView()
+
+      await screen.findByText(
+        hasTextAcrossElements(
+          'Some choice names in Jurisdiction 2 do not match other counties.' +
+            'Choice names in Jurisdiction 2 without matches: CHOICE 1 · CHOICE 2' +
+            'Choice names in Jurisdiction 1: Choice 1 · Choice 2'
+        )
+      )
+      screen.getByText(
+        hasTextAcrossElements(
+          'Some choice names in Jurisdiction 2 do not match other counties.' +
+            'Choice names in Jurisdiction 2 without matches: Choice 3' +
+            'Choice names in Jurisdiction 1: Choice 1 · Choice 2'
+        )
+      )
+
+      screen.getByText('The following contests have inconsistent choice names:')
+      screen.getByRole('link', { name: 'Contest 1' })
+      screen.getByRole('link', { name: 'Contest 2' })
+      expect(
+        screen.queryByRole('link', { name: 'Contest 3' })
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('link', { name: 'Contest 4' })
+      ).not.toBeInTheDocument()
+      screen.getByText(
+        'Address these inconsistencies by updating your CVR files in order to calculate the sample size.'
+      )
+
+      expect(
+        screen.getByRole('button', { name: 'Launch Audit' })
+      ).toBeDisabled()
+    })
   })
 })

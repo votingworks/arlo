@@ -1,5 +1,5 @@
 import typing
-from typing import List
+from typing import Dict, List, Optional
 from flask import request, jsonify
 from werkzeug.exceptions import BadRequest, Conflict
 
@@ -36,6 +36,28 @@ CONTEST_SCHEMA = {
             "type": "array",
             "items": {"type": "string"},
             "minItems": 1,
+        },
+        "cvrChoiceNameConsistencyError": {
+            "type": "object",
+            "properties": {
+                "anomalousCvrChoiceNamesByJurisdiction": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^.*$": {"type": "array", "items": {"type": "string"}},
+                    },
+                },
+                "cvrChoiceNamesInJurisdictionWithMostCvrChoices": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                },
+                "jurisdictionIdWithMostCvrChoices": {"type": "string"},
+            },
+            "additionalProperties": False,
+            "required": [
+                "anomalousCvrChoiceNamesByJurisdiction",
+                "cvrChoiceNamesInJurisdictionWithMostCvrChoices",
+                "jurisdictionIdWithMostCvrChoices",
+            ],
         },
     },
     "additionalProperties": False,
@@ -93,7 +115,7 @@ def serialize_contest(contest: Contest) -> JSONDict:
                 vote_counts and vote_counts[str(choice["id"])].non_cvr
             )
 
-    return {
+    serialized_contest = {
         "id": contest.id,
         "name": contest.name,
         "isTargeted": contest.is_targeted,
@@ -103,6 +125,65 @@ def serialize_contest(contest: Contest) -> JSONDict:
         "votesAllowed": contest.votes_allowed,
         "jurisdictionIds": [j.id for j in contest.jurisdictions],
     }
+
+    # Validate CVR choice names across jurisdictions in ballot comparison audits. Load error
+    # details, if any, onto the contest object.
+    if contest.election.audit_type == AuditType.BALLOT_COMPARISON:
+        cvr_choice_names_by_jurisdiction: Dict[str, List[str]] = {}
+        jurisdiction_id_with_most_cvr_choices: Optional[str] = None
+
+        for jurisdiction in contest.jurisdictions:
+            metadata = cvrs.cvr_contests_metadata(jurisdiction)
+            if metadata is not None and contest.name in metadata:
+                cvr_choice_names = list(metadata[contest.name]["choices"].keys())
+                cvr_choice_names.sort()
+                cvr_choice_names_by_jurisdiction[jurisdiction.id] = cvr_choice_names
+
+                if jurisdiction_id_with_most_cvr_choices is None or len(
+                    cvr_choice_names
+                ) > len(
+                    cvr_choice_names_by_jurisdiction[
+                        jurisdiction_id_with_most_cvr_choices
+                    ]
+                ):
+                    jurisdiction_id_with_most_cvr_choices = jurisdiction.id
+
+        if len(cvr_choice_names_by_jurisdiction) > 1:
+            assert jurisdiction_id_with_most_cvr_choices is not None
+
+            anomalous_cvr_choice_names_by_jurisdiction = {}
+            for (
+                jurisdiction_id,
+                cvr_choice_names,
+            ) in cvr_choice_names_by_jurisdiction.items():
+                if jurisdiction_id == jurisdiction_id_with_most_cvr_choices:
+                    continue
+
+                anomalous_cvr_choice_names = list(
+                    set(cvr_choice_names)
+                    - set(
+                        cvr_choice_names_by_jurisdiction[
+                            jurisdiction_id_with_most_cvr_choices
+                        ]
+                    )
+                )
+                anomalous_cvr_choice_names.sort()
+
+                if len(anomalous_cvr_choice_names) > 0:
+                    anomalous_cvr_choice_names_by_jurisdiction[
+                        jurisdiction_id
+                    ] = anomalous_cvr_choice_names
+
+            if len(anomalous_cvr_choice_names_by_jurisdiction) > 0:
+                serialized_contest["cvrChoiceNameConsistencyError"] = {
+                    "anomalousCvrChoiceNamesByJurisdiction": anomalous_cvr_choice_names_by_jurisdiction,
+                    "cvrChoiceNamesInJurisdictionWithMostCvrChoices": cvr_choice_names_by_jurisdiction[
+                        jurisdiction_id_with_most_cvr_choices
+                    ],
+                    "jurisdictionIdWithMostCvrChoices": jurisdiction_id_with_most_cvr_choices,
+                }
+
+    return serialized_contest
 
 
 def deserialize_contest_choice(

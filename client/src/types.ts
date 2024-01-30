@@ -16,6 +16,14 @@ export interface IChoice {
   numVotesNonCvr?: number
 }
 
+export interface ICvrChoiceNameConsistencyError {
+  anomalousCvrChoiceNamesByJurisdiction: {
+    [jurisdictionId: string]: string[]
+  }
+  cvrChoiceNamesInJurisdictionWithMostCvrChoices: string[]
+  jurisdictionIdWithMostCvrChoices: string
+}
+
 export interface IContest {
   id: string
   isTargeted: boolean
@@ -25,6 +33,7 @@ export interface IContest {
   choices: IChoice[]
   totalBallotsCast: number
   jurisdictionIds: string[]
+  cvrChoiceNameConsistencyError?: ICvrChoiceNameConsistencyError
 }
 
 export enum Interpretation {

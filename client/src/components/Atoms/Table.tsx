@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { useTable, useSortBy, Column, Row, SortingRule } from 'react-table'
 import styled from 'styled-components'
-import { Icon, HTMLTable, Button } from '@blueprintjs/core'
+import { Icon, HTMLTable } from '@blueprintjs/core'
 import { downloadFile } from '../utilities'
 
 export const StyledTable = styled.table`

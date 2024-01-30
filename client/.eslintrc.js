@@ -81,12 +81,12 @@ module.exports = {
         devDependencies: true,
       },
     ],
-    'no-unused-vars': [1, { argsIgnorePattern: '^_' }],
-    '@typescript-eslint/no-unused-vars': [1, { argsIgnorePattern: '^_' }],
+    'no-unused-vars': [2, { argsIgnorePattern: '^_' }],
+    '@typescript-eslint/no-unused-vars': [2, { argsIgnorePattern: '^_' }],
     'react/destructuring-assignment': 'off',
     'react/jsx-boolean-value': [2, 'never'],
     'react/jsx-filename-extension': [
-      1,
+      2,
       {
         extensions: ['.js', '.jsx', '.ts', '.tsx'],
       },

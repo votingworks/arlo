@@ -48,8 +48,8 @@ import {
 } from '../../../useFileUpload'
 import SamplePreview from './SamplePreview'
 import StandardizeContestNamesDialog from './StandardizeContestNames'
-import LinkButton from '../../../Atoms/LinkButton'
 import LabeledValue from './LabeledValue'
+import CvrChoiceNameConsistencyError from './CvrChoiceNameConsistencyError'
 
 const percentFormatter = new Intl.NumberFormat(undefined, {
   style: 'percent',
@@ -136,7 +136,15 @@ const Review: React.FC<IProps> = ({
       contestsQuery.data,
       auditSettingsQuery.data
     )
-  const shouldLoadSampleSizes = setupComplete && standardizationComplete
+
+  const areChoiceNamesConsistentForAllContests = (
+    contestsQuery.data ?? []
+  ).every(contest => !contest.cvrChoiceNameConsistencyError)
+
+  const shouldLoadSampleSizes =
+    setupComplete &&
+    standardizationComplete &&
+    areChoiceNamesConsistentForAllContests
   const sampleSizesQuery = useSampleSizes(electionId, 1, {
     enabled: shouldLoadSampleSizes,
     refetchInterval: sampleSizesResponse =>
@@ -277,7 +285,7 @@ const Review: React.FC<IProps> = ({
                 alignItems: 'baseline',
               }}
             >
-              <H5>{contest.name}</H5>
+              <H5 id={contest.id}>{contest.name}</H5>
               <Tag
                 intent={contest.isTargeted ? Intent.SUCCESS : Intent.PRIMARY}
                 style={{ marginLeft: '10px', flexShrink: 0 }}
@@ -296,6 +304,14 @@ const Review: React.FC<IProps> = ({
                 {Number(contest.totalBallotsCast).toLocaleString()} total
                 ballots cast
               </p>
+            )}
+            {cvrsUploaded && contest.cvrChoiceNameConsistencyError && (
+              <Callout intent="warning" style={{ marginBottom: '10px' }}>
+                <CvrChoiceNameConsistencyError
+                  error={contest.cvrChoiceNameConsistencyError}
+                  jurisdictionNamesById={jurisdictionsById}
+                />
+              </Callout>
             )}
             <div style={{ display: 'flex' }}>
               {!cvrsUploaded ? (
@@ -498,6 +514,35 @@ const Review: React.FC<IProps> = ({
                           </>
                         )
 
+                      if (!areChoiceNamesConsistentForAllContests) {
+                        return (
+                          <>
+                            <p>
+                              The following contests have inconsistent choice
+                              names:
+                            </p>
+                            <ul>
+                              {contests
+                                .filter(
+                                  contest =>
+                                    contest.cvrChoiceNameConsistencyError
+                                )
+                                .map(contest => (
+                                  <li key={contest.id}>
+                                    <a href={`#${contest.id}`}>
+                                      {contest.name}
+                                    </a>
+                                  </li>
+                                ))}
+                            </ul>
+                            <p>
+                              Address these inconsistencies by updating your CVR
+                              files in order to calculate the sample size.
+                            </p>
+                          </>
+                        )
+                      }
+
                       if (sampleSizesQuery.data?.task.error)
                         return (
                           <ErrorLabel>
@@ -559,7 +604,8 @@ const Review: React.FC<IProps> = ({
                             locked ||
                             !sampleSizeOptions ||
                             !setupComplete ||
-                            !standardizationComplete
+                            !standardizationComplete ||
+                            !areChoiceNamesConsistentForAllContests
                           }
                           onClick={() => setIsConfirmDialogOpen(true)}
                         >
