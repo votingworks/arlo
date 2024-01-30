@@ -7,8 +7,9 @@ deps:
 	# Install node: https://github.com/nodesource/distributions/blob/master/README.md#deb		
 	curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
 	sudo apt-get install -y nodejs
-	# Install poetry: https://python-poetry.org/docs/master/#osx--linux--bashonwindows-install-instructions 
-	curl -sSL https://install.python-poetry.org | POETRY_VERSION=1.1.13 python3.8 -
+	# Install poetry: https://python-poetry.org/docs/master/#osx--linux--bashonwindows-install-instructions
+	# Keep the local dev POETRY_VERSION in sync with the Heroku config var
+	curl -sSL https://install.python-poetry.org | POETRY_VERSION=1.1.15 python3.8 -
 	sudo npm install -g yarn
 	sudo apt install -y postgresql
 	sudo systemctl start postgresql
