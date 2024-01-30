@@ -49,10 +49,7 @@ import {
 import SamplePreview from './SamplePreview'
 import StandardizeContestNamesDialog from './StandardizeContestNames'
 import LabeledValue from './LabeledValue'
-import {
-  ContestChoiceNameConsistencyError,
-  contestChoiceNameConsistencyError,
-} from './ContestChoiceNameConsistencyError'
+import ContestChoiceNameConsistencyError from './ContestChoiceNameConsistencyError'
 
 const percentFormatter = new Intl.NumberFormat(undefined, {
   style: 'percent',
@@ -141,7 +138,7 @@ const Review: React.FC<IProps> = ({
     )
 
   const contestChoiceNameConsistencyErrors = (contestsQuery.data ?? []).map(
-    contestChoiceNameConsistencyError
+    ({ cvrChoiceNameConsistencyError }) => cvrChoiceNameConsistencyError
   )
   const areAllContestChoiceNamesConsistent = contestChoiceNameConsistencyErrors.every(
     error => !error
