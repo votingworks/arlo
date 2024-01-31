@@ -701,14 +701,14 @@ snapshots["test_ess_cvr_type_2_upload 1"] = [
         "ballot_position": 3,
         "batch_name": "BATCH1",
         "imprinted_id": "06348ce7b6d146d2",
-        "interpretations": "u,u,1,0,0",
+        "interpretations": "u,u,o,o,o",
         "tabulator": "0001",
     },
     {
         "ballot_position": 4,
         "batch_name": "BATCH1",
         "imprinted_id": "09809965339bad95",
-        "interpretations": "o,o,1,0,0",
+        "interpretations": "o,o,u,u,u",
         "tabulator": "0001",
     },
     {
@@ -745,7 +745,7 @@ snapshots["test_ess_cvr_type_2_upload 2"] = {
     },
     "Contest 2": {
         "choices": {
-            "Choice 2-1": {"column": 2, "num_votes": 8},
+            "Choice 2-1": {"column": 2, "num_votes": 6},
             "Choice 2-2": {"column": 3, "num_votes": 4},
             "Choice 2-3": {"column": 4, "num_votes": 2},
         },
@@ -794,7 +794,7 @@ snapshots["test_ess_cvr_upload 1"] = [
         "ballot_position": 3,
         "batch_name": "BATCH1",
         "imprinted_id": "0001013417",
-        "interpretations": "u,u,1,0,0",
+        "interpretations": "u,u,o,o,o",
         "tabulator": "0001",
     },
     {
@@ -836,7 +836,7 @@ snapshots["test_ess_cvr_upload 1"] = [
         "ballot_position": 1,
         "batch_name": "BATCH1",
         "imprinted_id": "0002003171",
-        "interpretations": "o,o,1,0,0",
+        "interpretations": "o,o,u,u,u",
         "tabulator": "0002",
     },
     {
@@ -866,7 +866,7 @@ snapshots["test_ess_cvr_upload 2"] = {
     },
     "Contest 2": {
         "choices": {
-            "Choice 2-1": {"column": 2, "num_votes": 8},
+            "Choice 2-1": {"column": 2, "num_votes": 6},
             "Choice 2-2": {"column": 3, "num_votes": 4},
             "Choice 2-3": {"column": 4, "num_votes": 2},
         },

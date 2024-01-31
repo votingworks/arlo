@@ -6,6 +6,17 @@ from ...models import *  # pylint: disable=wildcard-import
 from ..helpers import *  # pylint: disable=wildcard-import
 from ...util.file import zip_files
 from .conftest import TEST_CVRS
+from ...api.cvrs import fix_ess_ballots_file_quoting
+
+
+def relevant_cvr_fields(cvr: CvrBallot) -> Dict[str, Any]:
+    return dict(
+        batch_name=cvr.batch.name,
+        tabulator=cvr.batch.tabulator,
+        ballot_position=cvr.ballot_position,
+        imprinted_id=cvr.imprinted_id,
+        interpretations=cvr.interpretations,
+    )
 
 
 def test_dominion_cvr_upload(
@@ -64,25 +75,17 @@ def test_dominion_cvr_upload(
         },
     )
 
-    cvr_ballots = (
-        CvrBallot.query.join(Batch)
-        .filter_by(jurisdiction_id=jurisdiction_ids[0])
-        .order_by(CvrBallot.imprinted_id)
-        .all()
-    )
+    cvr_ballots = [
+        relevant_cvr_fields(cvr)
+        for cvr in (
+            CvrBallot.query.join(Batch)
+            .filter_by(jurisdiction_id=jurisdiction_ids[0])
+            .order_by(CvrBallot.imprinted_id)
+            .all()
+        )
+    ]
     assert len(cvr_ballots) == manifest_num_ballots - 1
-    snapshot.assert_match(
-        [
-            dict(
-                batch_name=cvr.batch.name,
-                tabulator=cvr.batch.tabulator,
-                ballot_position=cvr.ballot_position,
-                imprinted_id=cvr.imprinted_id,
-                interpretations=cvr.interpretations,
-            )
-            for cvr in cvr_ballots
-        ]
-    )
+    snapshot.assert_match(cvr_ballots)
     snapshot.assert_match(
         Jurisdiction.query.get(jurisdiction_ids[0]).cvr_contests_metadata
     )
@@ -192,25 +195,17 @@ def test_cvrs_counting_group(
         },
     )
 
-    cvr_ballots = (
-        CvrBallot.query.join(Batch)
-        .filter_by(jurisdiction_id=jurisdiction_ids[0])
-        .order_by(CvrBallot.imprinted_id)
-        .all()
-    )
+    cvr_ballots = [
+        relevant_cvr_fields(cvr)
+        for cvr in (
+            CvrBallot.query.join(Batch)
+            .filter_by(jurisdiction_id=jurisdiction_ids[0])
+            .order_by(CvrBallot.imprinted_id)
+            .all()
+        )
+    ]
     assert len(cvr_ballots) == manifest_num_ballots
-    snapshot.assert_match(
-        [
-            dict(
-                batch_name=cvr.batch.name,
-                tabulator=cvr.batch.tabulator,
-                ballot_position=cvr.ballot_position,
-                imprinted_id=cvr.imprinted_id,
-                interpretations=cvr.interpretations,
-            )
-            for cvr in cvr_ballots
-        ]
-    )
+    snapshot.assert_match(cvr_ballots)
     snapshot.assert_match(
         Jurisdiction.query.get(jurisdiction_ids[0]).cvr_contests_metadata
     )
@@ -290,25 +285,17 @@ def test_dominion_cvr_unique_voting_identifier(
         },
     )
 
-    cvr_ballots = (
-        CvrBallot.query.join(Batch)
-        .filter_by(jurisdiction_id=jurisdiction_ids[0])
-        .order_by(CvrBallot.imprinted_id)
-        .all()
-    )
+    cvr_ballots = [
+        relevant_cvr_fields(cvr)
+        for cvr in (
+            CvrBallot.query.join(Batch)
+            .filter_by(jurisdiction_id=jurisdiction_ids[0])
+            .order_by(CvrBallot.imprinted_id)
+            .all()
+        )
+    ]
     assert len(cvr_ballots) == manifest_num_ballots
-    snapshot.assert_match(
-        [
-            dict(
-                batch_name=cvr.batch.name,
-                tabulator=cvr.batch.tabulator,
-                ballot_position=cvr.ballot_position,
-                imprinted_id=cvr.imprinted_id,
-                interpretations=cvr.interpretations,
-            )
-            for cvr in cvr_ballots
-        ]
-    )
+    snapshot.assert_match(cvr_ballots)
     snapshot.assert_match(
         Jurisdiction.query.get(jurisdiction_ids[0]).cvr_contests_metadata
     )
@@ -667,25 +654,17 @@ def test_cvrs_newlines(
         },
     )
 
-    cvr_ballots = (
-        CvrBallot.query.join(Batch)
-        .filter_by(jurisdiction_id=jurisdiction_ids[0])
-        .order_by(CvrBallot.imprinted_id)
-        .all()
-    )
+    cvr_ballots = [
+        relevant_cvr_fields(cvr)
+        for cvr in (
+            CvrBallot.query.join(Batch)
+            .filter_by(jurisdiction_id=jurisdiction_ids[0])
+            .order_by(CvrBallot.imprinted_id)
+            .all()
+        )
+    ]
     assert len(cvr_ballots) == manifest_num_ballots
-    snapshot.assert_match(
-        [
-            dict(
-                batch_name=cvr.batch.name,
-                tabulator=cvr.batch.tabulator,
-                ballot_position=cvr.ballot_position,
-                imprinted_id=cvr.imprinted_id,
-                interpretations=cvr.interpretations,
-            )
-            for cvr in cvr_ballots
-        ]
-    )
+    snapshot.assert_match(cvr_ballots)
     snapshot.assert_match(
         Jurisdiction.query.get(jurisdiction_ids[0]).cvr_contests_metadata
     )
@@ -1192,25 +1171,17 @@ def test_clearballot_cvr_upload(
         },
     )
 
-    cvr_ballots = (
-        CvrBallot.query.join(Batch)
-        .filter_by(jurisdiction_id=jurisdiction_ids[0])
-        .order_by(CvrBallot.imprinted_id)
-        .all()
-    )
+    cvr_ballots = [
+        relevant_cvr_fields(cvr)
+        for cvr in (
+            CvrBallot.query.join(Batch)
+            .filter_by(jurisdiction_id=jurisdiction_ids[0])
+            .order_by(CvrBallot.imprinted_id)
+            .all()
+        )
+    ]
     assert len(cvr_ballots) == manifest_num_ballots - 1
-    snapshot.assert_match(
-        [
-            dict(
-                batch_name=cvr.batch.name,
-                tabulator=cvr.batch.tabulator,
-                ballot_position=cvr.ballot_position,
-                imprinted_id=cvr.imprinted_id,
-                interpretations=cvr.interpretations,
-            )
-            for cvr in cvr_ballots
-        ]
-    )
+    snapshot.assert_match(cvr_ballots)
     snapshot.assert_match(
         Jurisdiction.query.get(jurisdiction_ids[0]).cvr_contests_metadata
     )
@@ -1269,8 +1240,8 @@ def test_clearballot_cvr_upload_invalid(
 ESS_CVR = """Cast Vote Record,Precinct,Ballot Style,Contest 1,Contest 2
 1,p,bs,Choice 1-2,Choice 2-1
 2,p,bs,Choice 1-1,Choice 2-1
-3,p,bs,undervote,Choice 2-1
-4,p,bs,overvote,Choice 2-1
+3,p,bs,undervote,overvote
+4,p,bs,overvote,undervote
 5,p,bs,Choice 1-2,Choice 2-1
 6,p,bs,Choice 1-1,Choice 2-1
 7,p,bs,Choice 1-2,Choice 2-1
@@ -1296,10 +1267,14 @@ Cast Vote Record,Batch,Ballot Status,Original Ballot Exception,Remaining Ballot 
 7,BATCH2,Not Reviewed,,,,N,Election Day,0001000415,p
 1,BATCH1,Not Reviewed,,,,N,Election Day,0001013415,p
 2,BATCH1,Not Reviewed,,,,N,Election Day,0001013416,p
-3,BATCH1,Not Reviewed,Undervote,,,N,Election Day,0001013417,p
-4,BATCH1,Not Reviewed,Overvote,,,N,Election Day,0002003171,p
+3,BATCH1,Not Reviewed,"Undervote, Overvote","Undervote, Overvote",,N,Election Day,0001013417,p
+4,BATCH1,Not Reviewed,"Overvote, Undervote","Overvote, Undervote",,N,Election Day,0002003171,p
 Total : 7,,,,,,,,,
 """
+
+ESS_BALLOTS_1_MISQUOTED = ESS_BALLOTS_1.replace(
+    '"Overvote, Undervote"', "Overvote, Undervote"
+).replace('"Undervote, Overvote"', "Undervote, Overvote")
 
 ESS_BALLOTS_2 = """Ballots,,,,,,,,,
 GEN2111,,,,,,,,,
@@ -1316,6 +1291,39 @@ Cast Vote Record,Batch,Ballot Status,Original Ballot Exception,Remaining Ballot 
 15,BATCH2,Not Reviewed,,,,N,Election Day,0002000175,p
 Total : 7,,,,,,,,,
 """
+
+
+def test_fix_ess_ballots_file_quoting():
+    test_cases: List[Tuple[str, str]] = [
+        # Lines that require updating
+        ("...,Overvote, Undervote,...", '...,"Overvote, Undervote",...',),
+        (
+            "...,Overvote, Undervote,Overvote, Undervote,Overvote, Undervote,...",
+            '...,"Overvote, Undervote","Overvote, Undervote","Overvote, Undervote",...',
+        ),
+        (
+            "...,Overvote, Undervote,Overvote,Overvote, Undervote,...",
+            '...,"Overvote, Undervote",Overvote,"Overvote, Undervote",...',
+        ),
+        (
+            "...,Overvote, Undervote, Some other kind of vote,Overvote, Undervote,...",
+            '...,"Overvote, Undervote, Some other kind of vote","Overvote, Undervote",...',
+        ),
+        (
+            "...,Overvote, Undervote, Some other kind of vote,Overvote,Overvote, Undervote,...",
+            '...,"Overvote, Undervote, Some other kind of vote",Overvote,"Overvote, Undervote",...',
+        ),
+        # Lines that don't require updating
+        ("...,Overvote,Undervote,...", "...,Overvote,Undervote,...",),
+        (
+            'A line,that actually,"does not need, any updating", whatsoever,even though it,might seem like it',
+            'A line,that actually,"does not need, any updating", whatsoever,even though it,might seem like it',
+        ),
+    ]
+    for input, expected_output in test_cases:
+        assert fix_ess_ballots_file_quoting(input) == expected_output
+        # Calling the function on a corrected line should yield no further changes
+        assert fix_ess_ballots_file_quoting(expected_output) == expected_output
 
 
 def test_ess_cvr_upload(
@@ -1369,28 +1377,80 @@ def test_ess_cvr_upload(
         },
     )
 
-    cvr_ballots = (
-        CvrBallot.query.join(Batch)
-        .filter_by(jurisdiction_id=jurisdiction_ids[0])
-        .order_by(CvrBallot.imprinted_id)
-        .all()
-    )
+    cvr_ballots = [
+        relevant_cvr_fields(cvr)
+        for cvr in (
+            CvrBallot.query.join(Batch)
+            .filter_by(jurisdiction_id=jurisdiction_ids[0])
+            .order_by(CvrBallot.imprinted_id)
+            .all()
+        )
+    ]
     assert len(cvr_ballots) == manifest_num_ballots - 1
-    snapshot.assert_match(
-        [
-            dict(
-                batch_name=cvr.batch.name,
-                tabulator=cvr.batch.tabulator,
-                ballot_position=cvr.ballot_position,
-                imprinted_id=cvr.imprinted_id,
-                interpretations=cvr.interpretations,
-            )
-            for cvr in cvr_ballots
-        ]
+    snapshot.assert_match(cvr_ballots)
+    cvr_contests_metadata = Jurisdiction.query.get(
+        jurisdiction_ids[0]
+    ).cvr_contests_metadata
+    snapshot.assert_match(cvr_contests_metadata)
+
+    # Upload CVRs again, this time misquoted
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
+        data={
+            "cvrs": [
+                (io.BytesIO(ESS_CVR.encode()), "ess_cvr.csv",),
+                (io.BytesIO(ESS_BALLOTS_2.encode()), "ess_ballots_2.csv",),
+                (io.BytesIO(ESS_BALLOTS_1_MISQUOTED.encode()), "ess_ballots_1.csv",),
+            ],
+            "cvrFileType": "ESS",
+        },
     )
-    snapshot.assert_match(
-        Jurisdiction.query.get(jurisdiction_ids[0]).cvr_contests_metadata
+    assert_ok(rv)
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    manifest_num_ballots = jurisdictions[0]["ballotManifest"]["numBallots"]
+
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
+    )
+    compare_json(
+        json.loads(rv.data),
+        {
+            "file": {
+                "name": "cvr-files.zip",
+                "uploadedAt": assert_is_date,
+                "cvrFileType": "ESS",
+            },
+            "processing": {
+                "status": ProcessingStatus.PROCESSED,
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": None,
+                "workProgress": manifest_num_ballots,
+                "workTotal": manifest_num_ballots,
+            },
+        },
+    )
+
+    cvr_ballots_after_second_upload = [
+        relevant_cvr_fields(cvr)
+        for cvr in (
+            CvrBallot.query.join(Batch)
+            .filter_by(jurisdiction_id=jurisdiction_ids[0])
+            .order_by(CvrBallot.imprinted_id)
+            .all()
+        )
+    ]
+    assert cvr_ballots_after_second_upload == cvr_ballots
+    cvr_contests_metadata_after_second_upload = Jurisdiction.query.get(
+        jurisdiction_ids[0]
+    ).cvr_contests_metadata
+    assert cvr_contests_metadata_after_second_upload == cvr_contests_metadata
 
 
 def test_ess_cvr_invalid(
@@ -1611,8 +1671,8 @@ def test_ess_cvr_invalid(
 ESS_TYPE_2_BALLOTS = """Cast Vote Record,Batch,Ballot Status,Original Ballot Exception,Remaining Ballot Exception,Write-in Type,Results Report,Ballot Style,Reporting Group,Tabulator CVR,Audit Number,Type,Poll Place,Poll Place ID,Precinct,Precinct ID,Machine,Adjudicated By,
 1,BATCH1,Not Reviewed,,,,N,REP 405,Election Day,02bc1dc7bc1e7774,7074480632,Card,Election Day,28,405,21,0001,
 2,BATCH1,Not Reviewed,,,,N,REP 405,Election Day,039b31b93d9a8099,7074480632,Card,Election Day,28,405,21,0001,
-3,BATCH1,Not Reviewed,"Undervote, Overvote",,,N,REP 405,Election Day,06348ce7b6d146d2,7074480632,Card,Election Day,28,405,21,0001,
-4,BATCH1,Not Reviewed,Overvote,,,N,REP 405,Election Day,09809965339bad95,7074480632,Card,Election Day,28,405,21,0001,
+3,BATCH1,Not Reviewed,"Undervote, Overvote","Undervote, Overvote",,N,REP 405,Election Day,06348ce7b6d146d2,7074480632,Card,Election Day,28,405,21,0001,
+4,BATCH1,Not Reviewed,"Overvote, Undervote","Overvote, Undervote",,N,REP 405,Election Day,09809965339bad95,7074480632,Card,Election Day,28,405,21,0001,
 5,BATCH1,Not Reviewed,,,,N,REP 405,Election Day,0002003172,7074480632,Card,Election Day,28,405,21,0002,
 6,BATCH1,Not Reviewed,,,,N,REP 405,Election Day,0002003173,7074480632,Card,Election Day,28,405,21,0002,
 7,BATCH2,Not Reviewed,,,,N,REP 405,Election Day,19882855d197f6c2,7074480632,Card,Election Day,28,405,21,0001,
@@ -1624,6 +1684,10 @@ ESS_TYPE_2_BALLOTS = """Cast Vote Record,Batch,Ballot Status,Original Ballot Exc
 13,BATCH2,Not Reviewed,,,,N,REP 405,Election Day,0002000174,7074480632,Card,Election Day,28,405,21,0002,
 15,BATCH2,Not Reviewed,,,,N,REP 405,Election Day,0002000175,7074480632,Card,Election Day,28,405,21,0002,
 """
+
+ESS_TYPE_2_BALLOTS_MISQUOTED = ESS_TYPE_2_BALLOTS.replace(
+    '"Overvote, Undervote"', "Overvote, Undervote"
+).replace('"Undervote, Overvote"', "Undervote, Overvote")
 
 
 def test_ess_cvr_type_2_upload(
@@ -1676,28 +1740,79 @@ def test_ess_cvr_type_2_upload(
         },
     )
 
-    cvr_ballots = (
-        CvrBallot.query.join(Batch)
-        .filter_by(jurisdiction_id=jurisdiction_ids[0])
-        .order_by(CvrBallot.imprinted_id)
-        .all()
-    )
+    cvr_ballots = [
+        relevant_cvr_fields(cvr)
+        for cvr in (
+            CvrBallot.query.join(Batch)
+            .filter_by(jurisdiction_id=jurisdiction_ids[0])
+            .order_by(CvrBallot.imprinted_id)
+            .all()
+        )
+    ]
     assert len(cvr_ballots) == manifest_num_ballots - 1
-    snapshot.assert_match(
-        [
-            dict(
-                batch_name=cvr.batch.name,
-                tabulator=cvr.batch.tabulator,
-                ballot_position=cvr.ballot_position,
-                imprinted_id=cvr.imprinted_id,
-                interpretations=cvr.interpretations,
-            )
-            for cvr in cvr_ballots
-        ]
+    snapshot.assert_match(cvr_ballots)
+    cvr_contests_metadata = Jurisdiction.query.get(
+        jurisdiction_ids[0]
+    ).cvr_contests_metadata
+    snapshot.assert_match(cvr_contests_metadata)
+
+    # Upload CVRs again, this time misquoted
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
+        data={
+            "cvrs": [
+                (io.BytesIO(ESS_CVR.encode()), "ess_cvr.csv",),
+                (io.BytesIO(ESS_TYPE_2_BALLOTS_MISQUOTED.encode()), "ess_ballots.csv",),
+            ],
+            "cvrFileType": "ESS",
+        },
     )
-    snapshot.assert_match(
-        Jurisdiction.query.get(jurisdiction_ids[0]).cvr_contests_metadata
+    assert_ok(rv)
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    manifest_num_ballots = jurisdictions[0]["ballotManifest"]["numBallots"]
+
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
+    )
+    compare_json(
+        json.loads(rv.data),
+        {
+            "file": {
+                "name": "cvr-files.zip",
+                "uploadedAt": assert_is_date,
+                "cvrFileType": "ESS",
+            },
+            "processing": {
+                "status": ProcessingStatus.PROCESSED,
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": None,
+                "workProgress": manifest_num_ballots,
+                "workTotal": manifest_num_ballots,
+            },
+        },
+    )
+
+    cvr_ballots_after_second_upload = [
+        relevant_cvr_fields(cvr)
+        for cvr in (
+            CvrBallot.query.join(Batch)
+            .filter_by(jurisdiction_id=jurisdiction_ids[0])
+            .order_by(CvrBallot.imprinted_id)
+            .all()
+        )
+    ]
+    assert cvr_ballots_after_second_upload == cvr_ballots
+    cvr_contests_metadata_after_second_upload = Jurisdiction.query.get(
+        jurisdiction_ids[0]
+    ).cvr_contests_metadata
+    assert cvr_contests_metadata_after_second_upload == cvr_contests_metadata
 
 
 def build_hart_cvr(
@@ -1940,25 +2055,17 @@ def test_hart_cvr_upload(
         },
     )
 
-    cvr_ballots = (
-        CvrBallot.query.join(Batch)
-        .filter_by(jurisdiction_id=jurisdiction_ids[0])
-        .order_by(CvrBallot.imprinted_id)
-        .all()
-    )
+    cvr_ballots = [
+        relevant_cvr_fields(cvr)
+        for cvr in (
+            CvrBallot.query.join(Batch)
+            .filter_by(jurisdiction_id=jurisdiction_ids[0])
+            .order_by(CvrBallot.imprinted_id)
+            .all()
+        )
+    ]
     assert len(cvr_ballots) == manifest_num_ballots - 1
-    snapshot.assert_match(
-        [
-            dict(
-                batch_name=cvr.batch.name,
-                tabulator=cvr.batch.tabulator,
-                ballot_position=cvr.ballot_position,
-                imprinted_id=cvr.imprinted_id,
-                interpretations=cvr.interpretations,
-            )
-            for cvr in cvr_ballots
-        ]
-    )
+    snapshot.assert_match(cvr_ballots)
     snapshot.assert_match(
         Jurisdiction.query.get(jurisdiction_ids[0]).cvr_contests_metadata
     )
@@ -2125,25 +2232,17 @@ def test_hart_cvr_upload_with_scanned_ballot_information(
         )
 
         if test_case["expected_processing_status"] == ProcessingStatus.PROCESSED:
-            cvr_ballots = (
-                CvrBallot.query.join(Batch)
-                .filter_by(jurisdiction_id=jurisdiction_ids[0])
-                .order_by(CvrBallot.imprinted_id)
-                .all()
-            )
+            cvr_ballots = [
+                relevant_cvr_fields(cvr)
+                for cvr in (
+                    CvrBallot.query.join(Batch)
+                    .filter_by(jurisdiction_id=jurisdiction_ids[0])
+                    .order_by(CvrBallot.imprinted_id)
+                    .all()
+                )
+            ]
             assert len(cvr_ballots) == manifest_num_ballots - 1
-            snapshot.assert_match(
-                [
-                    dict(
-                        batch_name=cvr.batch.name,
-                        tabulator=cvr.batch.tabulator,
-                        ballot_position=cvr.ballot_position,
-                        imprinted_id=cvr.imprinted_id,
-                        interpretations=cvr.interpretations,
-                    )
-                    for cvr in cvr_ballots
-                ]
-            )
+            snapshot.assert_match(cvr_ballots)
             snapshot.assert_match(
                 Jurisdiction.query.get(jurisdiction_ids[0]).cvr_contests_metadata
             )
@@ -2287,25 +2386,17 @@ def test_hart_cvr_upload_with_duplicate_batch_names(
         )
 
         if test_case["expected_processing_status"] == ProcessingStatus.PROCESSED:
-            cvr_ballots = (
-                CvrBallot.query.join(Batch)
-                .filter_by(jurisdiction_id=jurisdiction_ids[0])
-                .order_by(CvrBallot.imprinted_id)
-                .all()
-            )
+            cvr_ballots = [
+                relevant_cvr_fields(cvr)
+                for cvr in (
+                    CvrBallot.query.join(Batch)
+                    .filter_by(jurisdiction_id=jurisdiction_ids[0])
+                    .order_by(CvrBallot.imprinted_id)
+                    .all()
+                )
+            ]
             assert len(cvr_ballots) == manifest_num_ballots - 1
-            snapshot.assert_match(
-                [
-                    dict(
-                        batch_name=cvr.batch.name,
-                        tabulator=cvr.batch.tabulator,
-                        ballot_position=cvr.ballot_position,
-                        imprinted_id=cvr.imprinted_id,
-                        interpretations=cvr.interpretations,
-                    )
-                    for cvr in cvr_ballots
-                ]
-            )
+            snapshot.assert_match(cvr_ballots)
             snapshot.assert_match(
                 Jurisdiction.query.get(jurisdiction_ids[0]).cvr_contests_metadata
             )
