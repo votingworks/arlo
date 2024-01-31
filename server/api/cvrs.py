@@ -498,6 +498,24 @@ def parse_dominion_cvrs(
     return contests_metadata, parse_cvr_rows()
 
 
+def fix_ess_ballots_file_quoting(line: str) -> str:
+    """
+    ESS ballots files sometimes contain unquoted values, notably in the two "Ballot Exception"
+    columns, e.g.,
+    ...,Overvote, Undervote,...
+    which should read
+    ...,"Overvote, Undervote",...
+    This function detects and fixes this issue at the individual line level.
+    """
+    unquoted_value_regex = re.compile(r",([a-zA-Z ]+(?:, [a-zA-Z ]+)+),")
+    properly_quoted_line = re.sub(unquoted_value_regex, r',"\1",', line)
+    # Sub twice in case of overlap, e.g., with
+    # ,Overvote, Undervote,Overvote, Undervote,
+    # the third comma overlaps
+    properly_quoted_line = re.sub(unquoted_value_regex, r',"\1",', properly_quoted_line)
+    return properly_quoted_line
+
+
 def parse_ess_cvrs(
     jurisdiction: Jurisdiction, working_directory: str,
 ) -> Tuple[CVR_CONTESTS_METADATA, Iterable[CvrBallot]]:
@@ -573,7 +591,10 @@ def parse_ess_cvrs(
         ballots_file: TextIO,
     ) -> Iterator[Tuple[str, CvrBallot]]:  # (CVR number, ballot)
         validate_comma_delimited(ballots_file)
-        ballots_csv = csv.reader(ballots_file, delimiter=",")
+        ballots_file_cleaned = (
+            fix_ess_ballots_file_quoting(line) for line in ballots_file
+        )
+        ballots_csv = csv.reader(ballots_file_cleaned, delimiter=",")
 
         # There are two formats of the ballots file that we support based on
         # different versions of the ES&S system
