@@ -275,19 +275,23 @@ def test_batch_comparison_round_2(
             {choice_ids[0]: 150, choice_ids[1]: 10, choice_ids[2]: 0,},
             {choice_ids[0]: 50, choice_ids[1]: 0, choice_ids[2]: 40,},
         ],
-        batches[1]["id"]: [{choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 40,}],
+        batches[1]["id"]: [{choice_ids[0]: 400, choice_ids[1]: 50, choice_ids[2]: 40,}],
         batches[2]["id"]: [{choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 40,}],
+        batches[3]["id"]: [{choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 40,}],
     }
 
     assert batches[0]["name"] == "Batch 1"
-    assert batches[1]["name"] == "Batch 6"
-    assert batches[2]["name"] == "Batch 8"
+    assert batches[1]["name"] == "Batch 3"
+    assert batches[2]["name"] == "Batch 6"
+    assert batches[3]["name"] == "Batch 8"
     # Batch tallies (from conftest.py)
     # Batch 1: 500,250,250
+    # Batch 3: 500,250,250
     # Batch 6: 100,50,50
     # Batch 8: 100,50,50
     expected_discrepancies_j1 = {
         "Batch 1": {"candidate 1": 100, "candidate 2": 200, "candidate 3": 210},
+        "Batch 3": {"candidate 1": 100, "candidate 2": 200, "candidate 3": 210},
         "Batch 6": {"candidate 1": 0, "candidate 2": 0, "candidate 3": 10},
         "Batch 8": {"candidate 1": 0, "candidate 2": 0, "candidate 3": 10},
     }
@@ -546,10 +550,14 @@ def test_batch_comparison_batches_sampled_multiple_times(
             {choice_ids[0]: 150, choice_ids[1]: 50, choice_ids[2]: 0,},
             {choice_ids[0]: 50, choice_ids[1]: 0, choice_ids[2]: 200,},
         ],
+        # Batch 3
+        batches[1]["id"]: [
+            {choice_ids[0]: 500, choice_ids[1]: 250, choice_ids[2]: 250,}
+        ],
         # Batch 8
-        batches[1]["id"]: [{choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 50,}],
-        # Batch 6
         batches[2]["id"]: [{choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 50,}],
+        # Batch 6
+        batches[3]["id"]: [{choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 50,}],
     }
 
     for batch_id, results in batch_results_j1.items():

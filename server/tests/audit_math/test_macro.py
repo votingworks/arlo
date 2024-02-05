@@ -165,10 +165,10 @@ def test_get_sizes_extra_contests(contests, batches) -> None:
             batches[batch]["test2"] = {"cand1": 40, "cand2": 10, "ballots": 50}
 
     expected_first_round = {
-        "Contest A": 29,
-        "Contest B": 15,
-        "Contest C": 10,
-        name: 3,
+        "Contest A": 30,
+        "Contest B": 16,
+        "Contest C": 11,
+        name: 4,
     }
 
     # This should give us zeros for error
@@ -187,9 +187,9 @@ def test_get_sizes_extra_contests(contests, batches) -> None:
 
 def test_get_sample_sizes(contests, batches) -> None:
     expected_first_round = {
-        "Contest A": 29,
-        "Contest B": 15,
-        "Contest C": 10,
+        "Contest A": 30,
+        "Contest B": 16,
+        "Contest C": 11,
     }
 
     sample: Dict = {}
@@ -215,9 +215,9 @@ def test_get_sample_sizes(contests, batches) -> None:
         sample_ticket_numbers[str(i)] = "Batch {}".format(i)
 
     expected_second_round = {
-        "Contest A": 26,
-        "Contest B": 12,
-        "Contest C": 7,
+        "Contest A": 27,
+        "Contest B": 13,
+        "Contest C": 8,
     }
 
     for contest in contests:
@@ -241,9 +241,9 @@ def test_get_sample_sizes(contests, batches) -> None:
         sample_ticket_numbers[str(i)] = "Batch {}".format(i)
 
     expected_third_round = {
-        "Contest A": 25,
-        "Contest B": 12,
-        "Contest C": 6,
+        "Contest A": 26,
+        "Contest B": 13,
+        "Contest C": 7,
     }
 
     for contest in contests:
