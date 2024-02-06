@@ -160,7 +160,7 @@ describe('Progress screen', () => {
       const row1 = within(rows[1]).getAllByRole('cell')
       expect(row1[2]).toHaveTextContent('2,117')
       expect(row1[3]).toHaveTextContent('2,127')
-      expect(row1[4]).toHaveTextContent('10')
+      expect(row1[4]).toHaveTextContent('-10')
       const row2 = within(rows[2]).getAllByRole('cell')
       expect(row2[2]).toHaveTextContent('2,117')
       expect(row2[3]).toHaveTextContent('2,097')
@@ -177,7 +177,7 @@ describe('Progress screen', () => {
       const footers = within(rows[5]).getAllByRole('cell')
       expect(footers[2]).toHaveTextContent('6,351')
       expect(footers[3]).toHaveTextContent('4,254')
-      expect(footers[4]).toHaveTextContent('30')
+      expect(footers[4]).toHaveTextContent('10')
     })
   })
 

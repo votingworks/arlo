@@ -248,7 +248,7 @@ const Progress: React.FC<IProgressProps> = ({
           expectedBallotManifestNumBallots,
         }) =>
           numBallots !== null && expectedBallotManifestNumBallots !== null
-            ? Math.abs(numBallots - expectedBallotManifestNumBallots)
+            ? numBallots - expectedBallotManifestNumBallots
             : null,
         Cell: formatNumber,
         Footer: totalFooter('Difference From Expected Ballots'),
