@@ -232,8 +232,10 @@ def get_sample_sizes(
         # only need to look at one more batch.
         return 1  # pragma: no cover
 
-    retval = int(
-        (alpha.ln() / ((1 - (1 / U))).ln()).quantize(Decimal(1), ROUND_CEILING)
+    retval = (
+        int((alpha.ln() / ((1 - (1 / U))).ln()).quantize(Decimal(1), ROUND_CEILING))
+        # Add one per a recommendation from Mark Lindeman
+        + 1
     )
 
     return min(retval, len(reported_results))

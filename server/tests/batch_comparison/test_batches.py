@@ -5,7 +5,7 @@ from flask.testing import FlaskClient
 from ...models import *  # pylint: disable=wildcard-import
 from ..helpers import *  # pylint: disable=wildcard-import
 
-J1_BATCHES_ROUND_1 = 3
+J1_BATCHES_ROUND_1 = 4
 J2_BATCHES_ROUND_1 = 1
 
 
@@ -136,8 +136,9 @@ def test_record_batch_results(
 
     results = {
         batches[0]["id"]: {choice_ids[0]: 400, choice_ids[1]: 50, choice_ids[2]: 40,},
-        batches[1]["id"]: {choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 40,},
-        batches[2]["id"]: {choice_ids[0]: 0, choice_ids[1]: 50, choice_ids[2]: 20,},
+        batches[1]["id"]: {choice_ids[0]: 400, choice_ids[1]: 50, choice_ids[2]: 40,},
+        batches[2]["id"]: {choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 40,},
+        batches[3]["id"]: {choice_ids[0]: 0, choice_ids[1]: 50, choice_ids[2]: 20,},
     }
     for batch_id, result in results.items():
         rv = put_json(
@@ -286,7 +287,7 @@ def test_record_batch_results(
     )
     assert rv.status_code == 200
     batches = json.loads(rv.data)["batches"]
-    assert len(batches) == 2
+    assert len(batches) == 1
     # Batches that were sampled in round 1 should be filtered out
     for batch in batches:
         assert batch["id"] not in round_1_batch_ids
