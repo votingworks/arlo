@@ -177,7 +177,6 @@ describe('Progress screen', () => {
       const footers = within(rows[5]).getAllByRole('cell')
       expect(footers[2]).toHaveTextContent('6,351')
       expect(footers[3]).toHaveTextContent('4,254')
-      expect(footers[4]).toHaveTextContent('10')
     })
   })
 
