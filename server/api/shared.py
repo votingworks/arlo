@@ -528,6 +528,7 @@ class BallotDraw(TypedDict):
 
 class BatchDraw(TypedDict):
     batch_id: str
+    contest_id: str
     ticket_number: str
 
 
@@ -567,7 +568,11 @@ def compute_sample_batches(
     )
 
     sample_batches = [
-        BatchDraw(batch_id=batch_key_to_id[batch_key], ticket_number=ticket_number)
+        BatchDraw(
+            batch_id=batch_key_to_id[batch_key],
+            contest_id=contest.id,
+            ticket_number=ticket_number,
+        )
         for ticket_number, batch_key in sample
     ]
 
@@ -619,7 +624,9 @@ def compute_sample_batches(
                 extra_batch_ids.add(extra_bmd_batch_id)
                 sample_batches.append(
                     BatchDraw(
-                        batch_id=extra_bmd_batch_id, ticket_number=EXTRA_TICKET_NUMBER
+                        batch_id=extra_bmd_batch_id,
+                        contest_id=contest.id,
+                        ticket_number=EXTRA_TICKET_NUMBER,
                     )
                 )
             # If we didn't sample any HMPB batches, add one to the sample
@@ -628,7 +635,9 @@ def compute_sample_batches(
                 extra_batch_ids.add(extra_hmpb_batch_id)
                 sample_batches.append(
                     BatchDraw(
-                        batch_id=extra_hmpb_batch_id, ticket_number=EXTRA_TICKET_NUMBER
+                        batch_id=extra_hmpb_batch_id,
+                        contest_id=contest.id,
+                        ticket_number=EXTRA_TICKET_NUMBER,
                     )
                 )
 
@@ -658,7 +667,9 @@ def compute_sample_batches(
                 extra_batch_ids.add(extra_batch_id)
                 sample_batches.append(
                     BatchDraw(
-                        batch_id=extra_batch_id, ticket_number=EXTRA_TICKET_NUMBER
+                        batch_id=extra_batch_id,
+                        contest_id=contest.id,
+                        ticket_number=EXTRA_TICKET_NUMBER,
                     )
                 )
 
