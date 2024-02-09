@@ -877,13 +877,21 @@ class SampledBatchDraw(BaseModel):
         String(200), ForeignKey("batch.id", ondelete="cascade"), nullable=False,
     )
     batch = relationship("Batch")
+
     round_id = Column(
         String(200), ForeignKey("round.id", ondelete="cascade"), nullable=False
     )
 
+    contest_id = Column(
+        String(200), ForeignKey("contest.id", ondelete="cascade"), nullable=False
+    )
+    contest = relationship("Contest")
+
     ticket_number = Column(String(200), nullable=False)
 
-    __table_args__ = (PrimaryKeyConstraint("batch_id", "round_id", "ticket_number"),)
+    __table_args__ = (
+        PrimaryKeyConstraint("batch_id", "round_id", "contest_id", "ticket_number"),
+    )
 
 
 # (Experimental) To we add extra batches on top of the sample, give them a
