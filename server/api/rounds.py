@@ -364,6 +364,7 @@ def draw_sample_batches(
         sampled_batch_draw = SampledBatchDraw(
             batch_id=batch_draw["batch_id"],
             round_id=round.id,
+            contest_id=batch_draw["contest_id"],
             ticket_number=batch_draw["ticket_number"],
         )
         db_session.add(sampled_batch_draw)
