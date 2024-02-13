@@ -38,8 +38,7 @@ const BatchRoundTallyEntry: React.FC<IProps> = ({
   }
 
   const { batches, resultsFinalizedAt } = batchesQuery.data
-  // Batch comparison audits only support a single contest
-  const [contest] = contestsQuery.data
+  const contests = contestsQuery.data
 
   if (batches.length === 0) {
     return null
@@ -49,7 +48,7 @@ const BatchRoundTallyEntry: React.FC<IProps> = ({
     <BatchRoundTallyEntryContent
       areResultsFinalized={Boolean(resultsFinalizedAt)}
       batches={batches}
-      contest={contest}
+      contests={contests}
       electionId={electionId}
       jurisdictionId={jurisdictionId}
       roundId={roundId}
@@ -60,7 +59,7 @@ const BatchRoundTallyEntry: React.FC<IProps> = ({
 interface IBatchRoundTallyEntryContentProps {
   areResultsFinalized: boolean
   batches: IBatch[]
-  contest: IContest
+  contests: IContest[]
   electionId: string
   jurisdictionId: string
   roundId: string
@@ -69,7 +68,7 @@ interface IBatchRoundTallyEntryContentProps {
 const BatchRoundTallyEntryContent: React.FC<IBatchRoundTallyEntryContentProps> = ({
   areResultsFinalized,
   batches,
-  contest,
+  contests,
   electionId,
   jurisdictionId,
   roundId,
@@ -147,7 +146,7 @@ const BatchRoundTallyEntryContent: React.FC<IBatchRoundTallyEntryContentProps> =
       <BatchDetail
         areResultsFinalized={areResultsFinalized}
         batch={selectedBatch}
-        contest={contest}
+        contests={contests}
         isEditing={isEditing}
         key={selectedBatch.id}
         saveBatchResults={async (

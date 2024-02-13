@@ -8,6 +8,7 @@ import {
   Classes,
   Colors,
   H4,
+  H5,
   HTMLTable,
   Menu,
   MenuItem,
@@ -62,6 +63,10 @@ const BatchResultTallySheetTable = styled(HTMLTable).attrs({
     width: 100%;
   }
 
+  &.${Classes.HTML_TABLE} thead tr:not(:last-child) {
+    border-bottom: 1px solid ${Colors.LIGHT_GRAY1};
+  }
+
   &.${Classes.HTML_TABLE} tbody tr {
     height: 56px;
   }
@@ -81,6 +86,12 @@ const BatchResultTallySheetTable = styled(HTMLTable).attrs({
   // Firefox
   &.${Classes.HTML_TABLE} input[type='number'] {
     -moz-appearance: textfield;
+  }
+`
+
+const ContestName = styled(H5)`
+  &.${Classes.HEADING} {
+    margin: 0;
   }
 `
 
@@ -148,7 +159,7 @@ function tabsFromSheets(sheets: IBatchResultTallySheetStateEntry[]): ITab[] {
 interface IBatchDetailProps {
   areResultsFinalized: boolean
   batch: IBatch
-  contest: IContest
+  contests: IContest[]
   isEditing: boolean
   saveBatchResults: (
     resultTallySheets: IBatchResultTallySheet[]
@@ -163,7 +174,7 @@ interface IBatchDetailProps {
 const BatchDetail: React.FC<IBatchDetailProps> = ({
   areResultsFinalized,
   batch,
-  contest,
+  contests,
   isEditing,
   saveBatchResults,
   setIsEditing,
@@ -232,9 +243,11 @@ const BatchDetail: React.FC<IBatchDetailProps> = ({
       // mode. We need to auto-populate the second sheet with 0s behind the scenes to avoid errors
       // upon saving the first sheet
       const secondSheetResults: { [choiceId: string]: number } = {}
-      contest.choices.forEach(choice => {
-        secondSheetResults[choice.id] = 0
-      })
+      contests
+        .flatMap(contest => contest.choices)
+        .forEach(choice => {
+          secondSheetResults[choice.id] = 0
+        })
       updatedSheets[1] = { ...sheets[1], results: secondSheetResults }
     }
 
@@ -342,7 +355,7 @@ const BatchDetail: React.FC<IBatchDetailProps> = ({
         areResultsFinalized={areResultsFinalized}
         batch={batch}
         closeAdditionalActions={closeAdditionalActions}
-        contest={contest}
+        contests={contests}
         disableEditing={disableEditing}
         discardNewAndUnsavedSheet={discardNewAndUnsavedSheet}
         enableEditing={enableEditing}
@@ -366,7 +379,7 @@ interface IBatchResultTallySheetProps {
   areResultsFinalized: boolean
   batch: IBatch
   closeAdditionalActions: () => void
-  contest: IContest
+  contests: IContest[]
   disableEditing: () => void
   discardNewAndUnsavedSheet: () => void
   enableEditing: () => void
@@ -390,7 +403,7 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
   areResultsFinalized,
   batch,
   closeAdditionalActions,
-  contest,
+  contests,
   disableEditing,
   discardNewAndUnsavedSheet,
   enableEditing,
@@ -494,59 +507,66 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
         aria-labelledby={`${Classes.TAB_PANEL}_${batch.name}_${selectedTabId}`}
         role="tabpanel"
       >
-        <BatchResultTallySheetTable>
-          <thead>
-            <tr>
-              <th>Choice</th>
-              <th>Votes</th>
-            </tr>
-          </thead>
-          <tbody>
-            {contest.choices.map((choice, i) => (
-              <tr key={choice.id}>
-                <td>{choice.name}</td>
-                <td>
-                  {isTotalsSheet ? (
-                    <span>
-                      {sum(
-                        sheets.map(sheet => sheet.results[choice.id] ?? 0)
-                      ).toLocaleString()}
-                    </span>
-                  ) : isEditing ? (
-                    <input
-                      aria-label={`${choice.name} Votes`}
-                      // Should be fine accessibility-wise, having read and considered the
-                      // accessibility warning under
-                      // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#autofocus,
-                      // since we're auto-focusing after a relevant user action and the input is
-                      // clearly labeled
-                      // eslint-disable-next-line jsx-a11y/no-autofocus
-                      autoFocus={!isSelectedSheetNewAndUnsaved && i === 0}
-                      className={classnames(
-                        Classes.INPUT,
-                        errors.results?.[choice.id] && Classes.INTENT_DANGER
-                      )}
-                      name={`results[${choice.id}]`}
-                      readOnly={isSubmitting}
-                      ref={register({
-                        min: 0,
-                        required: true,
-                        valueAsNumber: true,
-                      })}
-                      type="number"
-                    />
-                  ) : (
-                    <span>
-                      {(
-                        selectedSheet?.results[choice.id] ?? ''
-                      ).toLocaleString()}
-                    </span>
-                  )}
-                </td>
+        {contests.map(contest => (
+          <BatchResultTallySheetTable key={contest.id}>
+            <thead>
+              <tr>
+                <th>
+                  <ContestName>{contest.name}</ContestName>
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </BatchResultTallySheetTable>
+              <tr>
+                <th>Choice</th>
+                <th>Votes</th>
+              </tr>
+            </thead>
+            <tbody>
+              {contest.choices.map((choice, i) => (
+                <tr key={choice.id}>
+                  <td>{choice.name}</td>
+                  <td>
+                    {isTotalsSheet ? (
+                      <span>
+                        {sum(
+                          sheets.map(sheet => sheet.results[choice.id] ?? 0)
+                        ).toLocaleString()}
+                      </span>
+                    ) : isEditing ? (
+                      <input
+                        aria-label={`${choice.name} Votes`}
+                        // Should be fine accessibility-wise, having read and considered the
+                        // accessibility warning under
+                        // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#autofocus,
+                        // since we're auto-focusing after a relevant user action and the input is
+                        // clearly labeled
+                        // eslint-disable-next-line jsx-a11y/no-autofocus
+                        autoFocus={!isSelectedSheetNewAndUnsaved && i === 0}
+                        className={classnames(
+                          Classes.INPUT,
+                          errors.results?.[choice.id] && Classes.INTENT_DANGER
+                        )}
+                        name={`results[${choice.id}]`}
+                        readOnly={isSubmitting}
+                        ref={register({
+                          min: 0,
+                          required: true,
+                          valueAsNumber: true,
+                        })}
+                        type="number"
+                      />
+                    ) : (
+                      <span>
+                        {(
+                          selectedSheet?.results[choice.id] ?? ''
+                        ).toLocaleString()}
+                      </span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </BatchResultTallySheetTable>
+        ))}
 
         <BatchResultTallySheetButtonRow>
           {batch.lastEditedBy && !isEditing && (
