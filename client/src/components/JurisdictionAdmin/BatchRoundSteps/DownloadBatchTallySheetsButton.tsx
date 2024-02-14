@@ -37,13 +37,12 @@ const DownloadBatchTallySheetsButton = ({
     }
 
     const { batches } = batchesQuery.data
-    // Batch comparison audits only support a single contest
-    const [contest] = contestsQuery.data
+    const contests = contestsQuery.data
 
     try {
       await downloadBatchTallySheets(
         batches,
-        contest.choices,
+        contests,
         jurisdictionName,
         auditName
       )

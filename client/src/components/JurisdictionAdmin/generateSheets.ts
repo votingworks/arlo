@@ -4,7 +4,6 @@ import { Colors } from '@blueprintjs/core'
 import { getBallots, IBallot } from './useBallots'
 import { IAuditBoard } from '../useAuditBoards'
 import { IBatch } from './useBatchResults'
-import { IChoice } from '../../types'
 import { IRound } from '../AuditAdmin/useRoundsAuditAdmin'
 import { blankLine } from '../../utils/string'
 
@@ -350,9 +349,14 @@ export const downloadAuditBoardCredentials = async (
   return doc.output() // returned for test snapshots
 }
 
+export interface IMinimalContest {
+  choices: { name: string }[]
+  name: string
+}
+
 export const downloadBatchTallySheets = async (
   batches: IBatch[],
-  contestChoices: IChoice[],
+  contests: IMinimalContest[],
   jurisdictionName: string,
   auditName: string
 ): Promise<string> => {
@@ -423,38 +427,52 @@ export const downloadBatchTallySheets = async (
     // Assume up until this point that we won't spill onto a second page. From here onward, no
     // longer make that assumption
 
-    // autoTable automatically adds page breaks
-    autoTable(doc, {
-      head: [['Candidates/Choices', 'Enter Stack Totals']],
-      body: contestChoices.map(choice => [
-        choice.name,
-        '', // Stack totals left blank for the audit board to fill out
-      ]),
-      startY: y,
-      margin: { bottom: pageMargin, left: pageMargin, right: pageMargin },
-      rowPageBreak: 'avoid',
-      theme: 'grid',
-      styles: {
-        cellPadding: tableCellPadding,
-        fillColor: 'white',
-        fontSize: defaultFontSize,
-        fontStyle: 'normal',
-        lineColor: 'black',
-        lineWidth: drawingLineWidth,
-        minCellWidth: tableCellMinWidth,
-        textColor: 'black',
-      },
-      headStyles: {
-        fontStyle: 'bold',
-      },
-    })
+    for (const [contestIndex, contest] of contests.entries()) {
+      // autoTable automatically adds page breaks
+      autoTable(doc, {
+        head: [
+          [{ content: contest.name, colSpan: 2 }],
+          ['Candidates/Choices', 'Enter Stack Totals'],
+        ],
+        body: contest.choices.map(choice => [
+          choice.name,
+          '', // Stack totals left blank for the audit board to fill out
+        ]),
+        startY: y,
+        margin: {
+          bottom: pageMargin,
+          left: pageMargin,
+          right: pageMargin,
+          top: pageMargin,
+        },
+        rowPageBreak: 'avoid',
+        theme: 'grid',
+        styles: {
+          cellPadding: tableCellPadding,
+          fillColor: 'white',
+          fontSize: defaultFontSize,
+          fontStyle: 'normal',
+          lineColor: 'black',
+          lineWidth: drawingLineWidth,
+          minCellWidth: tableCellMinWidth,
+          textColor: 'black',
+        },
+        headStyles: {
+          fontStyle: 'bold',
+        },
+      })
+
+      // https://github.com/simonbengtsson/jsPDF-AutoTable/issues/728
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      y = (doc as any).lastAutoTable.finalY
+      if (contestIndex < contests.length - 1) {
+        y += sectionBottomMargin
+      }
+    }
 
     // Reset drawing settings, since autoTable seems to adjust them internally
     doc.setLineWidth(drawingLineWidth).setDrawColor('black')
 
-    // https://github.com/simonbengtsson/jsPDF-AutoTable/issues/728
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    y = (doc as any).lastAutoTable.finalY
     y += doc.getLineHeight() + sectionBottomMargin
 
     y = addPageBreakIfNecessary({
