@@ -7,6 +7,7 @@ import {
   downloadLabels,
   downloadBatchTallySheets,
   downloadTallyEntryLoginLinkPrintout,
+  IMinimalContest,
 } from './generateSheets'
 import { IAuditBoard } from '../useAuditBoards'
 import { jaApiCalls, auditBoardMocks } from '../_mocks'
@@ -14,7 +15,6 @@ import { dummyBallots, dummyBallotsMultipage } from '../AuditBoard/_mocks'
 import { withMockFetch } from '../testUtilities'
 import { roundMocks, tallyEntryAccountStatusMocks } from './_mocks'
 import { IBatch } from './useBatchResults'
-import { IChoice } from '../../types'
 
 const mockJurisdiction = jaApiCalls.getUser.response.user.jurisdictions[0]
 const mockRound = roundMocks.incomplete
@@ -35,12 +35,15 @@ const mockBatches: IBatch[] = [
   },
 ]
 
-function constructContestChoices(numChoices: number): IChoice[] {
+function constructMinimalContest(
+  contestName: string,
+  numChoices: number
+): IMinimalContest {
   const choices = []
   for (let i = 0; i < numChoices; i += 1) {
-    choices.push({ id: `C${i + 1}`, name: `Candidate #${i + 1}`, numVotes: 0 })
+    choices.push({ name: `${contestName} Candidate ${i + 1}` })
   }
-  return choices
+  return { name: contestName, choices }
 }
 
 const mockSavePDF = jest.fn()
@@ -327,7 +330,7 @@ describe('generateSheets', () => {
     it('Generates batch tally sheets', async () => {
       const pdf = await downloadBatchTallySheets(
         mockBatches,
-        constructContestChoices(2),
+        [constructMinimalContest('Contest 1', 2)],
         mockJurisdiction.name,
         mockJurisdiction.election.auditName
       )
@@ -345,7 +348,7 @@ describe('generateSheets', () => {
     it('Handles single-batch case', async () => {
       const pdf = await downloadBatchTallySheets(
         [mockBatches[0]],
-        constructContestChoices(2),
+        [constructMinimalContest('Contest 1', 2)],
         mockJurisdiction.name,
         mockJurisdiction.election.auditName
       )
@@ -379,18 +382,14 @@ describe('generateSheets', () => {
           resultTallySheets: [],
         },
       ]
-      const contestChoices: IChoice[] = [
-        { id: 'C1', name: allStarLyrics, numVotes: 0 },
-        { id: 'C2', name: allStarLyrics, numVotes: 0 },
-        { id: 'C3', name: allStarLyrics, numVotes: 0 },
-        { id: 'C4', name: allStarLyrics, numVotes: 0 },
-        { id: 'C5', name: allStarLyrics, numVotes: 0 },
-        { id: 'C6', name: allStarLyrics, numVotes: 0 },
-      ]
+      const contest: IMinimalContest = {
+        name: allStarLyrics,
+        choices: [{ name: allStarLyrics }, { name: allStarLyrics }],
+      }
       const jurisdictionName = allStarLyrics
       const pdf = await downloadBatchTallySheets(
         batches,
-        contestChoices,
+        [contest],
         jurisdictionName,
         'Test Audit'
       )
@@ -424,14 +423,14 @@ describe('generateSheets', () => {
           resultTallySheets: [],
         },
       ]
-      const contestChoices: IChoice[] = [
-        { id: 'C1', name: manyAs, numVotes: 0 },
-        { id: 'C2', name: manyAs, numVotes: 0 },
-      ]
+      const contest: IMinimalContest = {
+        name: manyAs,
+        choices: [{ name: manyAs }, { name: manyAs }],
+      }
       const jurisdictionName = manyAs
       const pdf = await downloadBatchTallySheets(
         batches,
-        contestChoices,
+        [contest],
         jurisdictionName,
         'Test Audit'
       )
@@ -446,12 +445,96 @@ describe('generateSheets', () => {
       )
     })
 
+    it('Handles contest with many choices', async () => {
+      const pdf = await downloadBatchTallySheets(
+        mockBatches,
+        [constructMinimalContest('Contest 1', 20)],
+        mockJurisdiction.name,
+        mockJurisdiction.election.auditName
+      )
+      await expect(Buffer.from(pdf)).toMatchPdfSnapshot({
+        tolerance: diffTolerance,
+      })
+      expect(mockSavePDF).toHaveBeenCalledWith(
+        'Batch Tally Sheets - Jurisdiction One - audit one.pdf',
+        {
+          returnPromise: true,
+        }
+      )
+    })
+
+    it('Handles two contests', async () => {
+      const pdf = await downloadBatchTallySheets(
+        mockBatches,
+        [
+          constructMinimalContest('Contest 1', 2),
+          constructMinimalContest('Contest 2', 2),
+        ],
+        mockJurisdiction.name,
+        mockJurisdiction.election.auditName
+      )
+      await expect(Buffer.from(pdf)).toMatchPdfSnapshot({
+        tolerance: diffTolerance,
+      })
+      expect(mockSavePDF).toHaveBeenCalledWith(
+        'Batch Tally Sheets - Jurisdiction One - audit one.pdf',
+        {
+          returnPromise: true,
+        }
+      )
+    })
+
+    it('Handles two contests with many choices', async () => {
+      const pdf = await downloadBatchTallySheets(
+        mockBatches,
+        [
+          constructMinimalContest('Contest 1', 20),
+          constructMinimalContest('Contest 2', 20),
+        ],
+        mockJurisdiction.name,
+        mockJurisdiction.election.auditName
+      )
+      await expect(Buffer.from(pdf)).toMatchPdfSnapshot({
+        tolerance: diffTolerance,
+      })
+      expect(mockSavePDF).toHaveBeenCalledWith(
+        'Batch Tally Sheets - Jurisdiction One - audit one.pdf',
+        {
+          returnPromise: true,
+        }
+      )
+    })
+
+    it('Handles more than two contests', async () => {
+      const pdf = await downloadBatchTallySheets(
+        mockBatches,
+        [
+          constructMinimalContest('Contest 1', 2),
+          constructMinimalContest('Contest 2', 2),
+          constructMinimalContest('Contest 3', 2),
+          constructMinimalContest('Contest 4', 2),
+          constructMinimalContest('Contest 5', 2),
+        ],
+        mockJurisdiction.name,
+        mockJurisdiction.election.auditName
+      )
+      await expect(Buffer.from(pdf)).toMatchPdfSnapshot({
+        tolerance: diffTolerance,
+      })
+      expect(mockSavePDF).toHaveBeenCalledWith(
+        'Batch Tally Sheets - Jurisdiction One - audit one.pdf',
+        {
+          returnPromise: true,
+        }
+      )
+    })
+
     // Cover all possible after-table page breaks
     for (let i = 0; i < 10; i += 1) {
       it(`Adds page break after table if necessary - ${i + 1}`, async () => {
         const pdf = await downloadBatchTallySheets(
           mockBatches,
-          constructContestChoices(6 + i),
+          [constructMinimalContest('Contest 1', 5 + i)],
           mockJurisdiction.name,
           mockJurisdiction.election.auditName
         )

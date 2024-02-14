@@ -4,7 +4,6 @@ import { Colors } from '@blueprintjs/core'
 import { getBallots, IBallot } from './useBallots'
 import { IAuditBoard } from '../useAuditBoards'
 import { IBatch } from './useBatchResults'
-import { IChoice } from '../../types'
 import { IRound } from '../AuditAdmin/useRoundsAuditAdmin'
 import { blankLine } from '../../utils/string'
 
@@ -350,9 +349,14 @@ export const downloadAuditBoardCredentials = async (
   return doc.output() // returned for test snapshots
 }
 
+export interface IMinimalContest {
+  choices: { name: string }[]
+  name: string
+}
+
 export const downloadBatchTallySheets = async (
   batches: IBatch[],
-  contestChoices: IChoice[],
+  contests: IMinimalContest[],
   jurisdictionName: string,
   auditName: string
 ): Promise<string> => {
@@ -420,42 +424,64 @@ export const downloadBatchTallySheets = async (
     doc.text('Yes', sealedCheckboxX + checkboxSize + checkboxRightMargin, y)
     y += sectionBottomMargin
 
+    //
     // Assume up until this point that we won't spill onto a second page. From here onward, no
-    // longer make that assumption
+    // longer make that assumption.
+    //
 
-    // autoTable automatically adds page breaks
-    autoTable(doc, {
-      head: [['Candidates/Choices', 'Enter Stack Totals']],
-      body: contestChoices.map(choice => [
-        choice.name,
-        '', // Stack totals left blank for the audit board to fill out
-      ]),
-      startY: y,
-      margin: { bottom: pageMargin, left: pageMargin, right: pageMargin },
-      rowPageBreak: 'avoid',
-      theme: 'grid',
-      styles: {
-        cellPadding: tableCellPadding,
-        fillColor: 'white',
-        fontSize: defaultFontSize,
-        fontStyle: 'normal',
-        lineColor: 'black',
-        lineWidth: drawingLineWidth,
-        minCellWidth: tableCellMinWidth,
-        textColor: 'black',
-      },
-      headStyles: {
-        fontStyle: 'bold',
-      },
-    })
+    for (const [contestIndex, contest] of contests.entries()) {
+      // autoTable automatically adds page breaks
+      autoTable(doc, {
+        head: [
+          [{ content: contest.name, colSpan: 2 }],
+          ['Candidates/Choices', 'Enter Stack Totals'],
+        ],
+        body: contest.choices.map(choice => [
+          choice.name,
+          '', // Stack totals left blank for the audit board to fill out
+        ]),
+        startY: y,
+        margin: {
+          bottom: pageMargin,
+          left: pageMargin,
+          right: pageMargin,
+          top: pageMargin,
+        },
+        rowPageBreak: 'avoid',
+        theme: 'grid',
+        styles: {
+          cellPadding: tableCellPadding,
+          fillColor: 'white',
+          fontSize: defaultFontSize,
+          fontStyle: 'normal',
+          lineColor: 'black',
+          lineWidth: drawingLineWidth,
+          minCellWidth: tableCellMinWidth,
+          textColor: 'black',
+        },
+        headStyles: {
+          fontStyle: 'bold',
+        },
+        didParseCell(data) {
+          // The best way to apply a style to the first (and only first) header row
+          if (data.cell.section === 'head' && data.row.index === 0) {
+            // eslint-disable-next-line no-param-reassign
+            data.cell.styles.fillColor = Colors.LIGHT_GRAY1
+          }
+        },
+      })
+
+      // https://github.com/simonbengtsson/jsPDF-AutoTable/issues/728
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      y = (doc as any).lastAutoTable.finalY
+      y += sectionBottomMargin
+      if (contestIndex === contests.length - 1) {
+        y += doc.getLineHeight()
+      }
+    }
 
     // Reset drawing settings, since autoTable seems to adjust them internally
     doc.setLineWidth(drawingLineWidth).setDrawColor('black')
-
-    // https://github.com/simonbengtsson/jsPDF-AutoTable/issues/728
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    y = (doc as any).lastAutoTable.finalY
-    y += doc.getLineHeight() + sectionBottomMargin
 
     y = addPageBreakIfNecessary({
       doc,
@@ -544,28 +570,28 @@ export const downloadBatchTallySheets = async (
     doc.line(pageMargin, y, pageWidth - pageMargin, y)
     y += doc.getLineHeight() + sectionBottomMargin
 
-    doc.setFont('Helvetica', 'bold').setFontSize(defaultFontSize)
+    //
+    // Check-in/out station steps
+    //
 
+    // Add a page break if the entire section doesn't fit on the current page so that it isn't
+    // split across pages
+    const checkInOutStationStepsSectionHeight =
+      (doc.getLineHeight() + pBottomMargin) * 4
     y = addPageBreakIfNecessary({
       doc,
       y,
       yMax,
-      heightOfNextAddition: doc.getLineHeight() + pBottomMargin,
+      heightOfNextAddition: checkInOutStationStepsSectionHeight,
       pageMargin,
     })
+
+    doc.setFont('Helvetica', 'bold').setFontSize(defaultFontSize)
 
     doc.text('Check-In/Out Station Steps:', pageMargin, y)
     y += doc.getLineHeight() + pBottomMargin
 
     doc.setFont('Helvetica', 'normal').setFontSize(defaultFontSize)
-
-    y = addPageBreakIfNecessary({
-      doc,
-      y,
-      yMax,
-      heightOfNextAddition: doc.getLineHeight() + pBottomMargin,
-      pageMargin,
-    })
 
     doc.rect(
       pageMargin,
@@ -580,14 +606,6 @@ export const downloadBatchTallySheets = async (
     )
     y += doc.getLineHeight() + pBottomMargin
 
-    y = addPageBreakIfNecessary({
-      doc,
-      y,
-      yMax,
-      heightOfNextAddition: doc.getLineHeight() + pBottomMargin,
-      pageMargin,
-    })
-
     doc.rect(
       pageMargin,
       y - checkboxSize + checkboxTopMargin,
@@ -600,14 +618,6 @@ export const downloadBatchTallySheets = async (
       y
     )
     y += doc.getLineHeight() + pBottomMargin
-
-    y = addPageBreakIfNecessary({
-      doc,
-      y,
-      yMax,
-      heightOfNextAddition: doc.getLineHeight() + pBottomMargin,
-      pageMargin,
-    })
 
     doc.text(
       `${blankLine(5)} Initials of check-in/out station member`,
