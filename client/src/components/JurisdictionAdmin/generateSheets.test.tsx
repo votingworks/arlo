@@ -383,14 +383,8 @@ describe('generateSheets', () => {
         },
       ]
       const contest: IMinimalContest = {
-        name: 'All Star Contest',
-        choices: [
-          { name: allStarLyrics },
-          { name: allStarLyrics },
-          { name: allStarLyrics },
-          { name: allStarLyrics },
-          { name: allStarLyrics },
-        ],
+        name: allStarLyrics,
+        choices: [{ name: allStarLyrics }, { name: allStarLyrics }],
       }
       const jurisdictionName = allStarLyrics
       const pdf = await downloadBatchTallySheets(
@@ -430,7 +424,7 @@ describe('generateSheets', () => {
         },
       ]
       const contest: IMinimalContest = {
-        name: 'Many As Contest',
+        name: manyAs,
         choices: [{ name: manyAs }, { name: manyAs }],
       }
       const jurisdictionName = manyAs
