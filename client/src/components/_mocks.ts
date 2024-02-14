@@ -1064,6 +1064,85 @@ export const jurisdictionMocks = mocksOfType<IJurisdiction[]>()({
 
 export const contestMocks = mocksOfType<IContest[]>()({
   empty: [],
+  one: [
+    {
+      id: 'contest-id-1',
+      name: 'Contest 1',
+      isTargeted: true,
+      totalBallotsCast: 30,
+      numWinners: 1,
+      votesAllowed: 1,
+      jurisdictionIds: [
+        'jurisdiction-id-1',
+        'jurisdiction-id-2',
+        'jurisdiction-id-3',
+      ],
+      choices: [
+        {
+          id: 'choice-id-1',
+          name: 'Choice One',
+          numVotes: 10,
+        },
+        {
+          id: 'choice-id-2',
+          name: 'Choice Two',
+          numVotes: 20,
+        },
+      ],
+    },
+  ],
+  two: [
+    {
+      id: 'contest-id-1',
+      name: 'Contest 1',
+      isTargeted: true,
+      totalBallotsCast: 30,
+      numWinners: 1,
+      votesAllowed: 1,
+      jurisdictionIds: [
+        'jurisdiction-id-1',
+        'jurisdiction-id-2',
+        'jurisdiction-id-3',
+      ],
+      choices: [
+        {
+          id: 'choice-id-1',
+          name: 'Choice One',
+          numVotes: 10,
+        },
+        {
+          id: 'choice-id-2',
+          name: 'Choice Two',
+          numVotes: 20,
+        },
+      ],
+    },
+    {
+      id: 'contest-id-2',
+      name: 'Contest 2',
+      isTargeted: true,
+      totalBallotsCast: 30,
+      numWinners: 1,
+      votesAllowed: 1,
+      jurisdictionIds: [
+        'jurisdiction-id-1',
+        'jurisdiction-id-2',
+        'jurisdiction-id-3',
+      ],
+      choices: [
+        {
+          id: 'choice-id-3',
+          name: 'Choice Three',
+          numVotes: 10,
+        },
+        {
+          id: 'choice-id-4',
+          name: 'Choice Four',
+          numVotes: 20,
+        },
+      ],
+    },
+  ],
   oneTargeted: [
     {
       id: 'contest-id-1',

@@ -67,7 +67,7 @@ describe('BatchRoundSteps', () => {
   it('navigates between steps using buttons or links', async () => {
     const expectedCalls = [
       jaApiCalls.getBatches(batchesMocks.emptyInitial),
-      jaApiCalls.getJurisdictionContests(contestMocks.oneTargeted),
+      jaApiCalls.getJurisdictionContests(contestMocks.one),
       jaApiCalls.getTallyEntryAccountStatus(
         tallyEntryAccountStatusMocks.turnedOff
       ),
@@ -135,7 +135,7 @@ describe('BatchRoundSteps', () => {
   it('defaults to Enter Tallies step if any tallies have been entered', async () => {
     const expectedCalls = [
       jaApiCalls.getBatches(batchesMocks.complete),
-      jaApiCalls.getJurisdictionContests(contestMocks.oneTargeted),
+      jaApiCalls.getJurisdictionContests(contestMocks.one),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderComponent()
@@ -152,7 +152,7 @@ describe('BatchRoundSteps', () => {
 
     const expectedCalls = [
       jaApiCalls.getBatches(batchesMocks.emptyInitial),
-      jaApiCalls.getJurisdictionContests(contestMocks.oneTargeted),
+      jaApiCalls.getJurisdictionContests(contestMocks.one),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderComponent('/prepare-batches')
@@ -197,7 +197,7 @@ describe('BatchRoundSteps', () => {
   it('handles failures to generate batch tally sheets PDF', async () => {
     const expectedCalls = [
       jaApiCalls.getBatches(batchesMocks.emptyInitial),
-      jaApiCalls.getJurisdictionContests(contestMocks.oneTargeted),
+      jaApiCalls.getJurisdictionContests(contestMocks.one),
     ]
     mockSavePDF.mockImplementationOnce(() => Promise.reject(new Error('Whoa!')))
     await withMockFetch(expectedCalls, async () => {
@@ -427,7 +427,7 @@ describe('BatchRoundSteps', () => {
   it('shows Step 3: Enter Tallies', async () => {
     const expectedCalls = [
       jaApiCalls.getBatches(batchesMocks.emptyInitial),
-      jaApiCalls.getJurisdictionContests(contestMocks.oneTargeted),
+      jaApiCalls.getJurisdictionContests(contestMocks.one),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderComponent('/enter-tallies')
@@ -447,7 +447,7 @@ describe('BatchRoundSteps', () => {
         ...batchesMocks.complete,
         resultsFinalizedAt: null,
       }),
-      jaApiCalls.getJurisdictionContests(contestMocks.oneTargeted),
+      jaApiCalls.getJurisdictionContests(contestMocks.one),
       jaApiCalls.finalizeBatchResults,
       jaApiCalls.getBatches(batchesMocks.complete),
     ]
@@ -483,7 +483,7 @@ describe('BatchRoundSteps', () => {
         ...batchesMocks.complete,
         resultsFinalizedAt: null,
       }),
-      jaApiCalls.getJurisdictionContests(contestMocks.oneTargeted),
+      jaApiCalls.getJurisdictionContests(contestMocks.one),
       serverError('finalizeBatchResults', jaApiCalls.finalizeBatchResults),
     ]
     await withMockFetch(expectedCalls, async () => {
