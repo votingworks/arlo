@@ -390,7 +390,6 @@ describe('generateSheets', () => {
           { name: allStarLyrics },
           { name: allStarLyrics },
           { name: allStarLyrics },
-          { name: allStarLyrics },
         ],
       }
       const jurisdictionName = allStarLyrics
@@ -452,6 +451,24 @@ describe('generateSheets', () => {
       )
     })
 
+    it('Handles contest with many choices', async () => {
+      const pdf = await downloadBatchTallySheets(
+        mockBatches,
+        [constructMinimalContest('Contest 1', 20)],
+        mockJurisdiction.name,
+        mockJurisdiction.election.auditName
+      )
+      await expect(Buffer.from(pdf)).toMatchPdfSnapshot({
+        tolerance: diffTolerance,
+      })
+      expect(mockSavePDF).toHaveBeenCalledWith(
+        'Batch Tally Sheets - Jurisdiction One - audit one.pdf',
+        {
+          returnPromise: true,
+        }
+      )
+    })
+
     it('Handles two contests', async () => {
       const pdf = await downloadBatchTallySheets(
         mockBatches,
@@ -473,7 +490,7 @@ describe('generateSheets', () => {
       )
     })
 
-    it('Handles two large contests', async () => {
+    it('Handles two contests with many choices', async () => {
       const pdf = await downloadBatchTallySheets(
         mockBatches,
         [
