@@ -57,7 +57,7 @@ from ..activity_log import (
     StartRound,
     EndRound,
 )
-from ..feature_flags import is_enabled_sample_extra_batches_by_counting_group
+from ..feature_flags import is_enabled_automatically_end_audit_after_one_round
 
 
 def is_round_ready_to_finish(election: Election, round: Round) -> bool:
@@ -176,9 +176,7 @@ def is_round_ready_to_finish(election: Election, round: Round) -> bool:
 def is_audit_complete(round: Round):
     if not round.ended_at:
         return None
-    # Don't use risk measurements to determine completion for audits with extra batches and always
-    # complete these audits after one round
-    if is_enabled_sample_extra_batches_by_counting_group(round.election):
+    if is_enabled_automatically_end_audit_after_one_round(round.election):
         return True
     targeted_round_contests = (
         RoundContest.query.filter_by(round_id=round.id)
