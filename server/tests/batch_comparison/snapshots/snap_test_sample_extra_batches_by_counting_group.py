@@ -8,10 +8,10 @@ from snapshottest import Snapshot
 snapshots = Snapshot()
 
 snapshots[
-    "test_sample_extra_batches_by_counting_group 1"
+    "test_sample_extra_batches_by_counting_group[TEST-ORG/sample-extra-batches-by-counting-group/automatically-end-audit-after-one-round] 1"
 ] = """######## ELECTION INFO ########\r
 Organization,Election Name,State\r
-Test Org Sample Extra Batches,Test Election,CA\r
+TEST-ORG/sample-extra-batches-by-counting-group/automatically-end-audit-after-one-round,Test Election,CA\r
 \r
 ######## CONTESTS ########\r
 Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes\r
@@ -19,7 +19,7 @@ Contest 1,Targeted,1,2,5000,candidate 1: 5000; candidate 2: 2500; candidate 3: 2
 \r
 ######## AUDIT SETTINGS ########\r
 Audit Name,Audit Type,Audit Math Type,Risk Limit,Random Seed,Online Data Entry?\r
-Test Audit test_sample_extra_batches_by_counting_group,BATCH_COMPARISON,MACRO,10%,1234567890,No\r
+Test Audit test_sample_extra_batches_by_counting_group[TEST-ORG/sample-extra-batches-by-counting-group/automatically-end-audit-after-one-round],BATCH_COMPARISON,MACRO,10%,1234567890,No\r
 \r
 ######## ROUNDS ########\r
 Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes\r
