@@ -422,6 +422,20 @@ def test_rounds_bad_sample_sizes(
         }
 
 
+def test_finish_round_after_round_already_finished(
+    client: FlaskClient, election_id: str, contest_ids: List[str], round_1_id: str
+):
+    run_audit_round(round_1_id, contest_ids[0], contest_ids, 0.5)
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
+    assert_ok(rv)
+
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [{"message": "Round already finished", "errorType": "Conflict",}]
+    }
+
+
 def test_finish_round_before_launch(client: FlaskClient, election_id: str):
     rv = client.post(f"/api/election/{election_id}/round/current/finish")
     assert rv.status_code == 409

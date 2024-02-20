@@ -623,6 +623,8 @@ def finish_round(election: Election):
         raise Conflict("Audit not started")
     if not is_round_ready_to_finish(election, current_round):
         raise Conflict("Auditing is still in progress")
+    if current_round.ended_at:
+        raise Conflict("Round already finished")
 
     count_audited_votes(election, current_round)
     calculate_risk_measurements(election, current_round)
