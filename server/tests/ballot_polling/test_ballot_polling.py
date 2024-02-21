@@ -51,7 +51,9 @@ def test_not_found_ballots(
         )
     )
 
+    # Un-finish the round
     round = Round.query.get(round_1_id)
+    round.ended_at = None
     for round_contest in round.round_contests:
         round_contest.results = []
 
