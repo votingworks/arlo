@@ -298,9 +298,9 @@ def calculate_risk_measurements(election: Election, round: Round):
             p_value, is_complete = macro.compute_risk(
                 election.risk_limit,
                 sampler_contest.from_db_contest(contest),
-                batch_tallies(election),
-                sampled_batch_results(election),
-                sampled_batches_by_ticket_number(election),
+                batch_tallies(contest),
+                sampled_batch_results(contest),
+                sampled_batches_by_ticket_number(contest),
             )
         elif election.audit_type == AuditType.BALLOT_COMPARISON:
             p_value, is_complete = supersimple.compute_risk(
