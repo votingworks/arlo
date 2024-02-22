@@ -505,8 +505,6 @@ def batch_round_status(election: Election, round: Round) -> Dict[str, JSONDict]:
     }
 
     discrepancy_count_by_jurisdiction: Dict[str, int] = Counter()
-    reported_results = batch_tallies(election)
-    audited_results = sampled_batch_results(election)
     batch_keys_in_round = set(
         SampledBatchDraw.query.filter_by(round_id=round.id)
         .join(Batch)
@@ -519,17 +517,19 @@ def batch_round_status(election: Election, round: Round) -> Dict[str, JSONDict]:
             Jurisdiction.name, Jurisdiction.id
         )
     )
-    assert len(list(election.contests)) == 1
-    contest = list(election.contests)[0]
-    for batch_key, audited_result in audited_results.items():
-        if batch_key in batch_keys_in_round:
-            vote_deltas = batch_vote_deltas(
-                reported_results[batch_key][contest.id], audited_result[contest.id]
-            )
-            if vote_deltas:
-                jurisdiction_name, _ = batch_key
-                jurisdiction_id = jurisdiction_name_to_id[jurisdiction_name]
-                discrepancy_count_by_jurisdiction[jurisdiction_id] += 1
+    contests = list(election.contests)
+    for contest in contests:
+        reported_results = batch_tallies(contest)
+        audited_results = sampled_batch_results(contest, include_non_rla_batches=True)
+        for batch_key, audited_result in audited_results.items():
+            if batch_key in batch_keys_in_round:
+                vote_deltas = batch_vote_deltas(
+                    reported_results[batch_key][contest.id], audited_result[contest.id]
+                )
+                if vote_deltas:
+                    jurisdiction_name, _ = batch_key
+                    jurisdiction_id = jurisdiction_name_to_id[jurisdiction_name]
+                    discrepancy_count_by_jurisdiction[jurisdiction_id] += 1
 
     def num_samples(jurisdiction_id: str) -> int:
         return sample_count_by_jurisdiction.get(jurisdiction_id, 0)
