@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Dict, List, Optional
 import uuid
 from flask import request, jsonify, Request, session
 from werkzeug.exceptions import BadRequest, NotFound, Conflict
@@ -42,15 +42,12 @@ def process_batch_tallies_file(
 ):
     jurisdiction = Jurisdiction.query.get(jurisdiction_id)
 
-    def process() -> None:
-        # We only support one contest for batch audits, so we can just take the
-        # first contest from the jurisdiction's universe.
-        assert len(list(jurisdiction.contests)) == 1
-        contest = list(jurisdiction.contests)[0]
-
+    def process_batch_tallies_for_contest(
+        contest: Contest, choice_names_across_contests: List[str]
+    ):
         columns = [CSVColumnType(BATCH_NAME, CSVValueType.TEXT, unique=True)] + [
-            CSVColumnType(choice.name, CSVValueType.NUMBER)
-            for choice in contest.choices
+            CSVColumnType(choice_name, CSVValueType.NUMBER)
+            for choice_name in choice_names_across_contests
         ]
 
         batch_tallies_file = retrieve_file(jurisdiction.batch_tallies_file.storage_path)
@@ -91,21 +88,36 @@ def process_batch_tallies_file(
                 raise UserError(
                     f"The total votes for batch \"{row[BATCH_NAME]}\" ({format_count(total_tallies, 'vote', 'votes')})"
                     + f" cannot exceed {allowed_tallies} - the number of ballots from the manifest"
-                    + f" ({format_count(num_ballots_by_batch[row[BATCH_NAME]], 'ballot', 'ballots')}) multipled by the number"
+                    + f" ({format_count(num_ballots_by_batch[row[BATCH_NAME]], 'ballot', 'ballots')}) multiplied by the number"
                     + f" of votes allowed for the contest ({format_count(contest.votes_allowed, 'vote', 'votes')} per ballot)."
                 )
 
-        # Save the tallies as a JSON blob in the format needed by the
-        # audit_math.macro module, so we can easily load it up and pass it in
-        jurisdiction.batch_tallies = {
+        return {
             row[BATCH_NAME]: {
-                contest.id: {
-                    "ballots": num_ballots_by_batch[row[BATCH_NAME]],
-                    **{choice.id: row[choice.name] for choice in contest.choices},
-                }
+                "ballots": num_ballots_by_batch[row[BATCH_NAME]],
+                **{choice.id: row[choice.name] for choice in contest.choices},
             }
             for row in batch_tallies_csv
         }
+
+    def process() -> None:
+        contests = list(jurisdiction.contests)
+        choice_names_across_contests = [
+            choice.name for contest in contests for choice in contest.choices
+        ]
+
+        # Save the tallies as a JSON blob in the format needed by the audit_math.macro module
+        batch_tallies: Dict[str, Dict[str, Dict[str, int]]] = {}
+        for contest in contests:
+            batch_tallies_for_contest = process_batch_tallies_for_contest(
+                contest, choice_names_across_contests
+            )
+            for batch_name, batch_votes in batch_tallies_for_contest.items():
+                if not batch_name in batch_tallies:
+                    batch_tallies[batch_name] = {}
+                batch_tallies[batch_name][contest.id] = batch_votes
+
+        jurisdiction.batch_tallies = batch_tallies
 
     error = None
     try:
