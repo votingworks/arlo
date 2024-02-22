@@ -1255,6 +1255,15 @@ def process_cvr_file(
                     ):
                         continue
 
+                    # Dominions CVR files sometimes contain percent values, which interfere with
+                    # integer parsing, e.g., "0 (0%)" or "1 (97%)"
+                    for interpretation in contest_interpretations.values():
+                        if re.search(r"\(\d+%\)", interpretation):
+                            raise UserError(
+                                f"Encountered an unexpected percent value: '{interpretation}'. "
+                                "Please export the CVR file without percent values."
+                            )
+
                     # Skip overvotes
                     votes = sum(
                         int(interpretation)
