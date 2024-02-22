@@ -1,7 +1,7 @@
 from collections import defaultdict
 import random
 from typing import Dict, List, Optional, Tuple, TypedDict, Union
-from sqlalchemy import and_, func, literal
+from sqlalchemy import and_, func, literal, or_
 from sqlalchemy.orm import joinedload
 
 
@@ -82,11 +82,7 @@ def samples_not_found_by_round(contest: Contest) -> Dict[str, int]:
 BatchTallies = Dict[macro.BatchKey, macro.BatchResults]
 
 
-def batch_tallies(election: Election) -> BatchTallies:
-    # We only support one contest for batch audits
-    assert len(list(election.contests)) == 1
-    contest = list(election.contests)[0]
-
+def batch_tallies(contest: Contest) -> BatchTallies:
     # Key each batch by jurisdiction name and batch name since batch names
     # are only guaranteed unique within a jurisdiction
     return {
@@ -96,20 +92,32 @@ def batch_tallies(election: Election) -> BatchTallies:
     }
 
 
-def sampled_batch_results(election: Election) -> BatchTallies:
+def sampled_batch_results(
+    contest: Contest, include_non_rla_batches=False
+) -> BatchTallies:
     results_by_batch_and_choice = (
         Batch.query.filter(
             Batch.id.in_(
                 Batch.query.join(Jurisdiction)
-                .filter_by(election_id=election.id)
+                .filter(Jurisdiction.election_id == contest.election_id)
                 .join(SampledBatchDraw)
-                # Special case: don't include extra sampled batches
-                .filter(SampledBatchDraw.ticket_number != EXTRA_TICKET_NUMBER)
+                # Don't include non-RLA batches unless explicitly requested, e.g., for discrepancy
+                # and audit reports
+                .filter(
+                    or_(
+                        and_(
+                            SampledBatchDraw.contest_id == contest.id,
+                            SampledBatchDraw.ticket_number != EXTRA_TICKET_NUMBER,
+                        ),
+                        include_non_rla_batches,
+                    )
+                )
                 .values(Batch.id)
             )
         )
         .join(Jurisdiction)
         .join(Jurisdiction.contests)
+        .filter(Contest.id == contest.id)
         .join(ContestChoice)
         .outerjoin(BatchResultTallySheet)
         .outerjoin(
@@ -131,12 +139,9 @@ def sampled_batch_results(election: Election) -> BatchTallies:
         results_by_batch_and_choice,
         key=lambda result: (result[0], result[1]),  # (jurisdiction_name, batch_name)
     )
-    # We only support one contest for batch audits
-    assert len(list(election.contests)) == 1
-    contest_id = list(election.contests)[0].id
     return {
         batch_key: {
-            contest_id: {
+            contest.id: {
                 choice_id: result for (_, _, choice_id, result) in batch_results
             }
         }
@@ -144,13 +149,18 @@ def sampled_batch_results(election: Election) -> BatchTallies:
     }
 
 
-def sampled_batches_by_ticket_number(election: Election) -> Dict[str, sampler.BatchKey]:
+def sampled_batches_by_ticket_number(contest: Contest) -> Dict[str, sampler.BatchKey]:
     batches_by_ticket_number = (
         SampledBatchDraw.query.join(Batch)
         .join(Jurisdiction)
-        .filter_by(election_id=election.id)
-        # Special case: don't include extra sampled batches
-        .filter(SampledBatchDraw.ticket_number != EXTRA_TICKET_NUMBER)
+        .filter(Jurisdiction.election_id == contest.election_id)
+        # Don't include non-RLA batches
+        .filter(
+            and_(
+                SampledBatchDraw.contest_id == contest.id,
+                SampledBatchDraw.ticket_number != EXTRA_TICKET_NUMBER,
+            )
+        )
         .order_by(SampledBatchDraw.ticket_number)
         .values(SampledBatchDraw.ticket_number, Jurisdiction.name, Batch.name)
     )
@@ -532,19 +542,16 @@ class BatchDraw(TypedDict):
     ticket_number: str
 
 
-def compute_sample_batches(
+def compute_sample_batches_for_contest(
     election: Election,
     round_num: int,
-    contest_sample_sizes: List[Tuple[Contest, SampleSize]],
+    contest: Contest,
+    contest_sample_size: SampleSize,
 ) -> List[BatchDraw]:
-    # We only support one contest for batch audits
-    assert len(contest_sample_sizes) == 1
-    contest, sample_size = contest_sample_sizes[0]
-
     # Create a mapping from batch keys used in the sampling back to batch ids
     batches = (
         Batch.query.join(Jurisdiction)
-        .filter_by(election_id=election.id)
+        .filter(Jurisdiction.election_id == contest.election_id)
         .with_entities(Jurisdiction.name, Batch.name, Batch.id)
     )
     batch_key_to_id = {
@@ -553,18 +560,25 @@ def compute_sample_batches(
     }
 
     previously_sampled_batch_keys: List[sampler.BatchKey] = list(
-        SampledBatchDraw.query.join(Batch)
-        .join(Jurisdiction)
-        .filter_by(election_id=election.id)
+        Batch.query.join(Jurisdiction)
+        .filter(Jurisdiction.election_id == contest.election_id)
+        .join(SampledBatchDraw)
+        # Don't include non-RLA batches
+        .filter(
+            and_(
+                SampledBatchDraw.contest_id == contest.id,
+                SampledBatchDraw.ticket_number != EXTRA_TICKET_NUMBER,
+            )
+        )
         .with_entities(Jurisdiction.name, Batch.name)
     )
 
     sample = sampler.draw_ppeb_sample(
         str(election.random_seed),
         sampler_contest.from_db_contest(contest),
-        sample_size["size"],
+        contest_sample_size["size"],
         previously_sampled_batch_keys,
-        batch_tallies(election),
+        batch_tallies(contest),
     )
 
     sample_batches = [
@@ -673,6 +687,19 @@ def compute_sample_batches(
                     )
                 )
 
+    return sample_batches
+
+
+def compute_sample_batches(
+    election: Election,
+    round_num: int,
+    contest_sample_sizes: List[Tuple[Contest, SampleSize]],
+) -> List[BatchDraw]:
+    sample_batches: List[BatchDraw] = []
+    for contest, sample_size in contest_sample_sizes:
+        sample_batches += compute_sample_batches_for_contest(
+            election, round_num, contest, sample_size
+        )
     return sample_batches
 
 
