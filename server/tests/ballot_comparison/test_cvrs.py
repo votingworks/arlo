@@ -868,6 +868,36 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,UniqueVotingIdentifier,REP,D
             "DOMINION",
         ),
         (
+            """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
+,,,,,,,,"Contest 1 (Vote For=1)","Contest 1 (Vote For=1)"
+,,,,,,,,Choice 1-1,Choice 1-2
+CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM
+1,TABULATOR1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,0 (0%),1 (97%)
+""",
+            "Encountered an unexpected percent value: '0 (0%)'. Please export the CVR file without percent values.",
+            "DOMINION",
+        ),
+        (
+            """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
+,,,,,,,,"Contest 1 (Vote For=1)","Contest 1 (Vote For=1)"
+,,,,,,,,Choice 1-1,Choice 1-2
+CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM
+1,TABULATOR1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,1 (97%),0 (0%)
+""",
+            "Encountered an unexpected percent value: '1 (97%)'. Please export the CVR file without percent values.",
+            "DOMINION",
+        ),
+        (
+            """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
+,,,,,,,,"Contest 1 (Vote For=1)","Contest 1 (Vote For=1)"
+,,,,,,,,Choice 1-1,Choice 1-2
+CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM
+1,TABULATOR1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,1 (100%),0 (0%)
+""",
+            "Encountered an unexpected percent value: '1 (100%)'. Please export the CVR file without percent values.",
+            "DOMINION",
+        ),
+        (
             """RowNumber,BoxID,BoxPosition,BallotID,PrecinctID,BallotStyleID,PrecinctStyleName,ScanComputerName,Status,Remade,Choice_1_1:Contest 1:Vote For 1:Choice 1-1:Non-Partisan,Choice_210_1:Contest 1:Vote For 1:Choice 1-2:Non-Partisan,Choice_34_1:Contest 2:Vote For 2:Choice 2-1:Non-Partisan,Choice_4_1:Contest 2:Vote For 2:Choice 2-2:Non-Partisan,Choice_173_1:Contest 2:Vote For 2:Choice 2-3:Non-Partisan
 1,BATCH1,1,1-1-1,p,bs,ps,TABULATO1,s,r,0,1,1,1,0
 """,
