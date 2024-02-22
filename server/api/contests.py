@@ -249,9 +249,6 @@ def validate_contests(contests: List[JSONDict], election: Election):
     if not any(contest["isTargeted"] for contest in contests):
         raise BadRequest("Must have at least one targeted contest")
 
-    if election.audit_type == AuditType.BATCH_COMPARISON and len(contests) > 1:
-        raise BadRequest("Batch comparison audits may only have one contest.")
-
     # TODO some validation for Hybrid?
     if election.audit_type == AuditType.BALLOT_POLLING:
         for contest in contests:
