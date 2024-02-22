@@ -874,7 +874,7 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,UniqueVotingIdentifier,REP,D
 CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM
 1,TABULATOR1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,0 (0%),1 (97%)
 """,
-            "Encountered an unexpected percent value: '0 (0%)'. Please export the CVR file without percent values.",
+            "Unable to parse '0 (0%)' as an integer. Please export the CVR file with plain integer values.",
             "DOMINION",
         ),
         (
@@ -882,19 +882,9 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortio
 ,,,,,,,,"Contest 1 (Vote For=1)","Contest 1 (Vote For=1)"
 ,,,,,,,,Choice 1-1,Choice 1-2
 CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM
-1,TABULATOR1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,1 (97%),0 (0%)
+1,TABULATOR1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,0 (0),1 (97)
 """,
-            "Encountered an unexpected percent value: '1 (97%)'. Please export the CVR file without percent values.",
-            "DOMINION",
-        ),
-        (
-            """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
-,,,,,,,,"Contest 1 (Vote For=1)","Contest 1 (Vote For=1)"
-,,,,,,,,Choice 1-1,Choice 1-2
-CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,REP,DEM
-1,TABULATOR1,BATCH1,1,1-1-1,Election Day,12345,COUNTY,1 (100%),0 (0%)
-""",
-            "Encountered an unexpected percent value: '1 (100%)'. Please export the CVR file without percent values.",
+            "Unable to parse '0 (0)' as an integer. Please export the CVR file with plain integer values.",
             "DOMINION",
         ),
         (
