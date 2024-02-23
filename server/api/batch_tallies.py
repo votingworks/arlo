@@ -122,6 +122,7 @@ def process_batch_tallies_file(
         }
 
         # Save the tallies as a JSON blob in the format needed by the audit_math.macro module
+        # { batch_name: { contest_id: { choice_id: vote_count } } }
         batch_tallies: Dict[str, Dict[str, Dict[str, int]]] = {}
         for contest in contests:
             batch_tallies_for_contest = process_batch_tallies_for_contest(
