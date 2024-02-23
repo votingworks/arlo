@@ -204,11 +204,14 @@ def validate_batch_results(
         )
 
     for contest in contests:
-        contest_choice_ids = set(choice.id for choice in contest.choices)
         total_votes = 0
         for tally_sheet in batch_results:
-            for choice_id, count in tally_sheet["results"].items():
-                total_votes += count if choice_id in contest_choice_ids else 0
+            for choice in contest.choices:
+                total_votes += (
+                    tally_sheet["results"][choice.id]
+                    if choice.id in tally_sheet["results"]
+                    else 0
+                )
         assert contest.votes_allowed is not None
         allowed_votes = batch.num_ballots * contest.votes_allowed
         if total_votes > allowed_votes:
