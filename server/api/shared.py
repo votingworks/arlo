@@ -1,7 +1,7 @@
 from collections import defaultdict
 import random
 from typing import Dict, List, Optional, Tuple, TypedDict, Union
-from sqlalchemy import and_, func, literal, or_
+from sqlalchemy import and_, func, literal, true
 from sqlalchemy.orm import joinedload
 
 
@@ -104,13 +104,12 @@ def sampled_batch_results(
                 # Don't include non-RLA batches unless explicitly requested, e.g., for discrepancy
                 # and audit reports
                 .filter(
-                    or_(
-                        and_(
-                            SampledBatchDraw.contest_id == contest.id,
-                            SampledBatchDraw.ticket_number != EXTRA_TICKET_NUMBER,
-                        ),
-                        include_non_rla_batches,
-                    )
+                    true()
+                    if include_non_rla_batches
+                    else and_(
+                        SampledBatchDraw.contest_id == contest.id,
+                        SampledBatchDraw.ticket_number != EXTRA_TICKET_NUMBER,
+                    ),
                 )
                 .values(Batch.id)
             )
