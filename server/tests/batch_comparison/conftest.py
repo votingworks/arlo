@@ -55,7 +55,7 @@ def contest_ids(client: FlaskClient, election_id: str, jurisdiction_ids: List[st
     return [str(c["id"]) for c in contests]
 
 
-# A convenience fixture for when there's only one contets
+# A convenience fixture for when there's only one contest
 @pytest.fixture
 def contest_id(contest_ids: List[str]) -> str:
     return contest_ids[0]
