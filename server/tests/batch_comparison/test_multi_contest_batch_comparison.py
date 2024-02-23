@@ -82,7 +82,7 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
 
 VALID_BATCH_TALLIES = [
     # Jurisdiction 1
-    b"Batch Name,Candidate 1,Candidate 2,Candidate 3,Candidate 4\n"
+    b"Batch Name,Contest 1 - Candidate 1,Contest 1 - Candidate 2,Contest 2 - Candidate 3,Contest 2 - Candidate 4\n"
     b"Batch 1,50,0,50,0\n"
     b"Batch 2,50,0,50,0\n"
     b"Batch 3,50,0,50,0\n"
@@ -94,13 +94,13 @@ VALID_BATCH_TALLIES = [
     b"Batch 9,50,0,25,25\n"
     b"Batch 10,0,50,25,25\n",
     # Jurisdiction 2
-    b"Batch Name,Candidate 1,Candidate 2\n"
+    b"Batch Name,Contest 1 - Candidate 1,Contest 1 - Candidate 2\n"
     b"Batch 1,75,25\n"
     b"Batch 2,25,25\n"
     b"Batch 3,25,25\n"
     b"Batch 4,25,25\n",
     # Jurisdiction 3
-    b"Batch Name,Candidate 1,Candidate 2\n"
+    b"Batch Name,Contest 1 - Candidate 1,Contest 1 - Candidate 2\n"
     b"Batch 1,75,25\n"
     b"Batch 2,25,25\n"
     b"Batch 3,25,25\n"
@@ -165,40 +165,48 @@ def test_multi_contest_batch_comparison_jurisdiction_upload_validation(
         (
             jurisdiction_ids[0],
             # Missing contest 2 columns for jurisdiction with both contests
-            io.BytesIO(b"Batch Name,Candidate 1,Candidate 2\n"),
-            "Missing required columns: Candidate 3, Candidate 4.",
+            io.BytesIO(b"Batch Name,Contest 1 - Candidate 1,Contest 1 - Candidate 2\n"),
+            "Missing required columns: Contest 2 - Candidate 3, Contest 2 - Candidate 4.",
         ),
         (
             jurisdiction_ids[0],
             # Missing contest 1 columns for jurisdiction with both contests
-            io.BytesIO(b"Batch Name,Candidate 3,Candidate 4\n"),
-            "Missing required columns: Candidate 1, Candidate 2.",
+            io.BytesIO(b"Batch Name,Contest 2 - Candidate 3,Contest 2 - Candidate 4\n"),
+            "Missing required columns: Contest 1 - Candidate 1, Contest 1 - Candidate 2.",
         ),
         (
             jurisdiction_ids[0],
             # Extra column
             io.BytesIO(
-                b"Batch Name,Candidate 1,Candidate 2,Candidate 3,Candidate 4,Candidate 5\n"
+                b"Batch Name,Contest 1 - Candidate 1,Contest 1 - Candidate 2,Contest 2 - Candidate 3,Contest 2 - Candidate 4,Contest 2 - Candidate 5\n"
             ),
-            "Found unexpected columns. Allowed columns: Batch Name, Candidate 1, Candidate 2, Candidate 3, Candidate 4.",
+            "Found unexpected columns. Allowed columns: Batch Name, Contest 1 - Candidate 1, Contest 1 - Candidate 2, Contest 2 - Candidate 3, Contest 2 - Candidate 4.",
+        ),
+        (
+            jurisdiction_ids[0],
+            # Missing contest name in contest choice CSV headers
+            io.BytesIO(b"Batch Name,Candidate 1,Candidate 2,Candidate 3,Candidate 4\n"),
+            "Missing required columns: Contest 1 - Candidate 1, Contest 1 - Candidate 2, Contest 2 - Candidate 3, Contest 2 - Candidate 4.",
         ),
         (
             jurisdiction_ids[1],
             # Missing contest 1 column for jurisdiction with only contest 1
-            io.BytesIO(b"Batch Name,Candidate 1\n"),
-            "Missing required column: Candidate 2.",
+            io.BytesIO(b"Batch Name,Contest 1 - Candidate 1\n"),
+            "Missing required column: Contest 1 - Candidate 2.",
         ),
         (
             jurisdiction_ids[1],
             # Including contest 2 columns for jurisdiction with only contest 1
-            io.BytesIO(b"Batch Name,Candidate 1,Candidate 2,Candidate 3,Candidate 4\n"),
-            "Found unexpected columns. Allowed columns: Batch Name, Candidate 1, Candidate 2.",
+            io.BytesIO(
+                b"Batch Name,Contest 1 - Candidate 1,Contest 1 - Candidate 2,Contest 2 - Candidate 3,Contest 2 - Candidate 4\n"
+            ),
+            "Found unexpected columns. Allowed columns: Batch Name, Contest 1 - Candidate 1, Contest 1 - Candidate 2.",
         ),
         (
             jurisdiction_ids[0],
             # Too many votes for contest 1
             io.BytesIO(
-                b"Batch Name,Candidate 1,Candidate 2,Candidate 3,Candidate 4\n"
+                b"Batch Name,Contest 1 - Candidate 1,Contest 1 - Candidate 2,Contest 2 - Candidate 3,Contest 2 - Candidate 4\n"
                 b"Batch 1,100,1,0,0\n"
                 b"Batch 2,0,0,0,0\n"
                 b"Batch 3,0,0,0,0\n"
@@ -218,7 +226,7 @@ def test_multi_contest_batch_comparison_jurisdiction_upload_validation(
             jurisdiction_ids[0],
             # Too many votes for contest 2
             io.BytesIO(
-                b"Batch Name,Candidate 1,Candidate 2,Candidate 3,Candidate 4\n"
+                b"Batch Name,Contest 1 - Candidate 1,Contest 1 - Candidate 2,Contest 2 - Candidate 3,Contest 2 - Candidate 4\n"
                 b"Batch 1,0,0,200,1\n"
                 b"Batch 2,0,0,0,0\n"
                 b"Batch 3,0,0,0,0\n"
