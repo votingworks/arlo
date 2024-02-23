@@ -1,3 +1,4 @@
+from collections import defaultdict
 from datetime import datetime
 from typing import Dict, Optional, Tuple
 import uuid
@@ -123,14 +124,12 @@ def process_batch_tallies_file(
 
         # Save the tallies as a JSON blob in the format needed by the audit_math.macro module
         # { batch_name: { contest_id: { choice_id: vote_count } } }
-        batch_tallies: Dict[str, Dict[str, Dict[str, int]]] = {}
+        batch_tallies: Dict[str, Dict[str, Dict[str, int]]] = defaultdict(dict)
         for contest in contests:
             batch_tallies_for_contest = process_batch_tallies_for_contest(
                 contest, contest_choice_csv_headers
             )
             for batch_name, batch_votes in batch_tallies_for_contest.items():
-                if not batch_name in batch_tallies:
-                    batch_tallies[batch_name] = {}
                 batch_tallies[batch_name][contest.id] = batch_votes
 
         jurisdiction.batch_tallies = batch_tallies
