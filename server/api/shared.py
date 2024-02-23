@@ -695,11 +695,13 @@ def compute_sample_batches(
     round_num: int,
     contest_sample_sizes: List[Tuple[Contest, SampleSize]],
 ) -> List[BatchDraw]:
-    sample_batches: List[BatchDraw] = []
-    for contest, sample_size in contest_sample_sizes:
-        sample_batches += compute_sample_batches_for_contest(
+    sample_batches = [
+        batch
+        for contest, sample_size in contest_sample_sizes
+        for batch in compute_sample_batches_for_contest(
             election, round_num, contest, sample_size
         )
+    ]
     return sample_batches
 
 
