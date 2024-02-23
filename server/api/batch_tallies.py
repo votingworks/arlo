@@ -95,7 +95,7 @@ def process_batch_tallies_file(
                     f"The total votes for batch \"{row[BATCH_NAME]}\" ({format_count(total_tallies, 'vote', 'votes')})"
                     + f" cannot exceed {allowed_tallies} - the number of ballots from the manifest"
                     + f" ({format_count(num_ballots_by_batch[row[BATCH_NAME]], 'ballot', 'ballots')}) multiplied by the number"
-                    + f" of votes allowed for the contest ({format_count(contest.votes_allowed, 'vote', 'votes')} per ballot)."
+                    + f" of votes allowed for the contest \"{contest.name}\" ({format_count(contest.votes_allowed, 'vote', 'votes')} per ballot)."
                 )
 
         return {

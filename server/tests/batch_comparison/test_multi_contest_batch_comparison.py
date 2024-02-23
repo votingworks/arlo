@@ -220,7 +220,7 @@ def test_multi_contest_batch_comparison_jurisdiction_upload_validation(
             ),
             'The total votes for batch "Batch 1" (101 votes) cannot exceed 100 - '
             "the number of ballots from the manifest (100 ballots) "
-            "multiplied by the number of votes allowed for the contest (1 vote per ballot).",
+            'multiplied by the number of votes allowed for the contest "Contest 1" (1 vote per ballot).',
         ),
         (
             jurisdiction_ids[0],
@@ -240,7 +240,7 @@ def test_multi_contest_batch_comparison_jurisdiction_upload_validation(
             ),
             'The total votes for batch "Batch 1" (201 votes) cannot exceed 200 - '
             "the number of ballots from the manifest (100 ballots) "
-            "multiplied by the number of votes allowed for the contest (2 votes per ballot).",
+            'multiplied by the number of votes allowed for the contest "Contest 2" (2 votes per ballot).',
         ),
     ]
 
