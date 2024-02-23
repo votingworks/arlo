@@ -518,6 +518,10 @@ def batch_round_status(election: Election, round: Round) -> Dict[str, JSONDict]:
         )
     )
     contests = list(election.contests)
+
+    # If a batch has a discrepancy in multiple contests, the discrepancy count will be incremented
+    # multiple times. In other words, the discrepancy count represents the number of batch-contest
+    # pairs with discrepancies, not the number of batches with discrepancies.
     for contest in contests:
         reported_results = batch_tallies(contest)
         audited_results = sampled_batch_results(contest, include_non_rla_batches=True)
