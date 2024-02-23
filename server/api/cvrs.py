@@ -1255,27 +1255,35 @@ def process_cvr_file(
                     ):
                         continue
 
-                    # Dominions CVR files sometimes contain percent values, which interfere with
-                    # integer parsing, e.g., "0 (0%)" or "1 (97%)"
-                    for interpretation in contest_interpretations.values():
-                        if re.search(r"\(\d+%\)", interpretation):
+                    # Dominions CVR files sometimes contain interpretation values that can't be
+                    # parsed as integers
+                    parsed_contest_interpretations: Dict[
+                        str, int
+                    ] = {}  # { choice_name: parsed_interpretation }
+                    for choice_name, interpretation in contest_interpretations.items():
+                        try:
+                            parsed_interpretation = int(interpretation)
+                        except Exception as error:
                             raise UserError(
-                                f"Encountered an unexpected percent value: '{interpretation}'. "
-                                "Please export the CVR file without percent values."
-                            )
+                                f"Unable to parse '{interpretation}' as an integer. "
+                                "Please export the CVR file with plain integer values."
+                            ) from error
+                        parsed_contest_interpretations[
+                            choice_name
+                        ] = parsed_interpretation
 
                     # Skip overvotes
-                    votes = sum(
-                        int(interpretation)
-                        for interpretation in contest_interpretations.values()
-                    )
+                    votes = sum(parsed_contest_interpretations.values())
                     if votes > contest_metadata["votes_allowed"]:
                         continue
 
-                    for choice_name, interpretation in contest_interpretations.items():
-                        contest_metadata["choices"][choice_name]["num_votes"] += int(
-                            interpretation
-                        )
+                    for (
+                        choice_name,
+                        parsed_interpretation,
+                    ) in parsed_contest_interpretations.items():
+                        contest_metadata["choices"][choice_name][
+                            "num_votes"
+                        ] += parsed_interpretation
 
                 for contest_name in contests_on_ballot:
                     contests_metadata[contest_name]["total_ballots_cast"] += 1
