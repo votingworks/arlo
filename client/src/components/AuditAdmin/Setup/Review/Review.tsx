@@ -699,7 +699,8 @@ const SelectSampleSizes: React.FC<ISelectSampleSizesProps> = ({
                       using the ballot polling or batch comparison audit type.
                     </div>
                   )}
-                  {auditType === 'BALLOT_POLLING' &&
+                  {(auditType === 'BALLOT_POLLING' ||
+                    auditType === 'BATCH_COMPARISON') &&
                     targetedContests.length > 1 && (
                       <div>
                         Arlo supports running a full hand tally for audits with
