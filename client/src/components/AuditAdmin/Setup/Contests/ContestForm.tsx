@@ -229,7 +229,6 @@ const ContestForm: React.FC<IProps> = ({
     },
   ]
 
-  const isBatch = auditType === 'BATCH_COMPARISON'
   const isHybrid = auditType === 'HYBRID'
   const isBallotPolling = auditType === 'BALLOT_POLLING'
 
@@ -520,19 +519,17 @@ const ContestForm: React.FC<IProps> = ({
                       </Card>
                     )
                   })}
-                  {!isBatch && ( // TODO support multiple contests in batch comparison audits
-                    <div style={{ paddingTop: '15px' }}>
-                      <Button
-                        icon="add"
-                        type="button"
-                        onClick={() =>
-                          contestsArrayHelpers.push({ ...contestValues[0] })
-                        }
-                      >
-                        Add Contest
-                      </Button>
-                    </div>
-                  )}
+                  <div style={{ paddingTop: '15px' }}>
+                    <Button
+                      icon="add"
+                      type="button"
+                      onClick={() =>
+                        contestsArrayHelpers.push({ ...contestValues[0] })
+                      }
+                    >
+                      Add Contest
+                    </Button>
+                  </div>
                 </>
               )}
             />

@@ -7,6 +7,22 @@ export const contestsInputMocks = {
     { key: 'Votes for Candidate/Choice 2', value: '20' },
     { key: 'Total Ballot Cards Cast for Contest', value: '30' },
   ],
+  batchAuditInputs: {
+    contest1: [
+      { key: 'Contest Name', value: 'Contest One' },
+      { key: 'Name of Candidate/Choice 1', value: 'Choice One' },
+      { key: 'Name of Candidate/Choice 2', value: 'Choice Two' },
+      { key: 'Votes for Candidate/Choice 1', value: '10' },
+      { key: 'Votes for Candidate/Choice 2', value: '20' },
+    ],
+    contest2: [
+      { key: 'Contest 2 Name', value: 'Contest Two' },
+      { key: 'Name of Candidate/Choice 1', index: 1, value: 'Choice Three' },
+      { key: 'Name of Candidate/Choice 2', index: 1, value: 'Choice Four' },
+      { key: 'Votes for Candidate/Choice 1', index: 1, value: '30' },
+      { key: 'Votes for Candidate/Choice 2', index: 1, value: '40' },
+    ],
+  },
   errorInputs: [
     { key: 'Contest Name', value: '', error: 'Required' },
     {
