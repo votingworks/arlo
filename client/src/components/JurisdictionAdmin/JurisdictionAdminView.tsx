@@ -21,6 +21,7 @@ import { StatusBar, AuditHeading } from '../Atoms/StatusBar'
 import { assert } from '../utilities'
 import { useAuthDataContext } from '../UserContext'
 import { Column } from '../Atoms/Layout'
+import { candidateTotalsByBatchTemplateFilePath } from './candidateTotalsByBatchTemplates'
 
 const JurisdictionAdminView: React.FC = () => {
   const { electionId, jurisdictionId } = useParams<{
@@ -178,7 +179,10 @@ const JurisdictionAdminView: React.FC = () => {
                   to store ballots for this particular election, plus a count of
                   how many votes were counted for each candidate in each of
                   those containers.'
-                  sampleFileLink="/sample_candidate_totals_by_batch.csv"
+                  sampleFileLink={candidateTotalsByBatchTemplateFilePath({
+                    electionId,
+                    jurisdictionId,
+                  })}
                 />
               </Card>
             )}
