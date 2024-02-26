@@ -41,7 +41,7 @@ def process_batch_tallies_file(
     jurisdiction_admin_email: str,
     support_user_email: Optional[str],
 ):
-    jurisdiction = Jurisdiction.query.get(jurisdiction_id)
+    jurisdiction: Jurisdiction = Jurisdiction.query.get(jurisdiction_id)
 
     def process_batch_tallies_for_contest(
         contest: Contest,
@@ -111,7 +111,7 @@ def process_batch_tallies_file(
 
     def process() -> None:
         contests = list(jurisdiction.contests)
-        is_multi_contest_audit = len(jurisdiction.election.contests) > 1
+        is_multi_contest_audit = len(list(jurisdiction.election.contests)) > 1
         contest_choice_csv_headers = {
             # Include contest name in contest choice CSV headers for multi-contest audits just in
             # case two choices in different contests have the same name
