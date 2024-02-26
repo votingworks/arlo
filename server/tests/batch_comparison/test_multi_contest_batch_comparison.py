@@ -1009,3 +1009,40 @@ def test_multi_contest_batch_comparison_round_2(
     rv = client.get(f"/api/election/{election_id}/report")
     assert rv.status_code == 200
     assert_match_report(rv.data, snapshot)
+
+
+def test_multi_contest_batch_comparison_batch_tallies_template_generation(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    contest_ids: List[str],  # pylint: disable=unused-argument
+):
+    for user_type, user_email in [
+        (UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL),
+        (UserType.JURISDICTION_ADMIN, default_ja_email(election_id)),
+    ]:
+        set_logged_in_user(client, user_type, user_email)
+
+        rv = client.get(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies/template"
+        )
+        assert rv.status_code == 200
+        template_contents = rv.data.decode("utf-8")
+        assert template_contents == (
+            "Batch Name,Contest 1 - Candidate 1,Contest 1 - Candidate 2,Contest 2 - Candidate 3,Contest 2 - Candidate 4\r\n"
+            "Batch 1,0,0,0,0\r\n"
+            "Batch 2,0,0,0,0\r\n"
+            "Batch 3,0,0,0,0\r\n"
+        )
+
+        rv = client.get(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/batch-tallies/template"
+        )
+        assert rv.status_code == 200
+        template_contents = rv.data.decode("utf-8")
+        assert template_contents == (
+            "Batch Name,Contest 1 - Candidate 1,Contest 1 - Candidate 2\r\n"
+            "Batch 1,0,0\r\n"
+            "Batch 2,0,0\r\n"
+            "Batch 3,0,0\r\n"
+        )
