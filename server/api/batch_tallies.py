@@ -1,6 +1,8 @@
 from collections import defaultdict
 from datetime import datetime
 from typing import Dict, Optional, Tuple
+import csv
+import io
 import uuid
 from flask import request, jsonify, Request, session
 from werkzeug.exceptions import BadRequest, NotFound, Conflict
@@ -22,7 +24,7 @@ from ..util.file import (
     store_file,
     timestamp_filename,
 )
-from ..util.csv_download import csv_response
+from ..util.csv_download import csv_response, jurisdiction_timestamp_name
 from ..util.csv_parse import (
     parse_csv,
     CSVValueType,
@@ -32,7 +34,28 @@ from ..util.csv_parse import (
 from ..util.string import format_count
 from ..activity_log.activity_log import UploadFile, activity_base, record_activity
 
+
+# { (contest_id, choice_id): csv_header }
+ContestChoiceCsvHeaders = Dict[Tuple[str, str], str]
+
 BATCH_NAME = "Batch Name"
+
+
+def construct_contest_choice_csv_headers(
+    jurisdiction: Jurisdiction,
+) -> ContestChoiceCsvHeaders:
+    contests = list(jurisdiction.contests)
+    is_multi_contest_audit = len(list(jurisdiction.election.contests)) > 1
+    contest_choice_csv_headers = {
+        # Include contest name in contest choice CSV headers for multi-contest audits just in
+        # case two choices in different contests have the same name
+        (contest.id, choice.id): f"{contest.name} - {choice.name}"
+        if is_multi_contest_audit
+        else choice.name
+        for contest in contests
+        for choice in contest.choices
+    }
+    return contest_choice_csv_headers
 
 
 @background_task
@@ -114,16 +137,7 @@ def process_batch_tallies_file(
 
     def process() -> None:
         contests = list(jurisdiction.contests)
-        is_multi_contest_audit = len(list(jurisdiction.election.contests)) > 1
-        contest_choice_csv_headers = {
-            # Include contest name in contest choice CSV headers for multi-contest audits just in
-            # case two choices in different contests have the same name
-            (contest.id, choice.id): f"{contest.name} - {choice.name}"
-            if is_multi_contest_audit
-            else choice.name
-            for contest in contests
-            for choice in contest.choices
-        }
+        contest_choice_csv_headers = construct_contest_choice_csv_headers(jurisdiction)
 
         # Save the tallies as a JSON blob in the format needed by the audit_math.macro module
         # { batch_name: { contest_id: { choice_id: vote_count } } }
@@ -269,3 +283,31 @@ def clear_batch_tallies(
         clear_batch_tallies_data(jurisdiction)
     db_session.commit()
     return jsonify(status="ok")
+
+
+@api.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch-tallies/template",
+    methods=["GET"],
+)
+@restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
+def download_batch_tallies_template(
+    election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
+):
+    string_io = io.StringIO()
+    template = csv.writer(string_io)
+
+    contest_choice_csv_headers = construct_contest_choice_csv_headers(jurisdiction)
+    csv_headers = [
+        BATCH_NAME,
+        *contest_choice_csv_headers.values(),
+    ]
+
+    template.writerow(csv_headers)
+    for i in range(0, 3):
+        template.writerow([f"Batch {i + 1}"] + ["0"] * len(contest_choice_csv_headers))
+
+    string_io.seek(0)
+    return csv_response(
+        string_io,
+        filename=f"candidate-totals-by-batch-template-{jurisdiction_timestamp_name(election, jurisdiction)}.csv",
+    )
