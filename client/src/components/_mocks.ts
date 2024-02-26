@@ -1937,11 +1937,15 @@ export const aaApiCalls = {
     url: '/api/election/1/standardized-contests/file',
     response,
   }),
-  getContests: (contests: IContest[]) => ({
+  getContests: (
+    contests: (IContest | Omit<IContest, 'totalBallotsCast'>)[]
+  ) => ({
     url: '/api/election/1/contest',
     response: { contests },
   }),
-  putContests: (contests: IContest[]) => ({
+  putContests: (
+    contests: (IContest | Omit<IContest, 'totalBallotsCast'>)[]
+  ) => ({
     url: '/api/election/1/contest',
     options: {
       method: 'PUT',

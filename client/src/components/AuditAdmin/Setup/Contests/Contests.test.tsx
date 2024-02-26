@@ -12,6 +12,7 @@ import * as utilities from '../../../utilities'
 import Contests, { IContestsProps } from './Contests'
 import { contestsInputMocks } from './_mocks'
 import { contestMocks, aaApiCalls } from '../../../_mocks'
+import { IContest } from '../../../../types'
 
 jest.mock('uuidv4')
 
@@ -461,6 +462,98 @@ describe('Audit Setup > Contests', () => {
       userEvent.click(jurisdictionOne)
 
       userEvent.click(screen.getByText(/Save & Next/))
+      await waitFor(() => {
+        expect(goToNextStage).toHaveBeenCalledTimes(1)
+      })
+    })
+  })
+
+  it('handles a multi-contest batch audit', async () => {
+    const uuids = [
+      'contest-id-1',
+      'choice-id-1',
+      'choice-id-2',
+      'contest-id-2',
+      'choice-id-3',
+      'choice-id-4',
+    ]
+    let uuidIndex = -1
+    ;((uuidv4 as unknown) as jest.Mock).mockImplementation(() => {
+      uuidIndex += 1
+      return uuids[uuidIndex] ?? 'missing-uuid-in-mock'
+    })
+
+    const expectedContests: Omit<IContest, 'totalBallotsCast'>[] = [
+      {
+        id: 'contest-id-1',
+        choices: [
+          { id: 'choice-id-1', name: 'Choice One', numVotes: 10 },
+          { id: 'choice-id-2', name: 'Choice Two', numVotes: 20 },
+        ],
+        isTargeted: true,
+        jurisdictionIds: ['jurisdiction-id-1'],
+        name: 'Contest One',
+        numWinners: 1,
+        votesAllowed: 1,
+      },
+      {
+        id: 'contest-id-2',
+        choices: [
+          { id: 'choice-id-3', name: 'Choice Three', numVotes: 30 },
+          { id: 'choice-id-4', name: 'Choice Four', numVotes: 40 },
+        ],
+        isTargeted: true,
+        jurisdictionIds: ['jurisdiction-id-1', 'jurisdiction-id-2'],
+        name: 'Contest Two',
+        numWinners: 1,
+        votesAllowed: 1,
+      },
+    ]
+    const expectedCalls = [
+      aaApiCalls.getContests(contestMocks.empty),
+      aaApiCalls.getJurisdictions,
+      aaApiCalls.getStandardizedContests(null),
+      aaApiCalls.putContests(expectedContests),
+      aaApiCalls.getContests(expectedContests),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      const { goToNextStage } = renderContests({
+        auditType: 'BATCH_COMPARISON',
+      })
+
+      await screen.findByText('Target Contests')
+
+      // Input data for first contest
+      contestsInputMocks.batchAuditInputs.contest1.forEach(inputData => {
+        const input = screen.getByLabelText(inputData.key, {
+          selector: 'input',
+        })
+        userEvent.type(input, inputData.value)
+      })
+      userEvent.click(
+        screen.getByRole('button', { name: 'Select Jurisdictions' })
+      )
+      userEvent.click(
+        screen.getByRole('checkbox', { name: 'Jurisdiction One' })
+      )
+
+      userEvent.click(screen.getByText('Add Contest'))
+
+      // Input data for second contest
+      contestsInputMocks.batchAuditInputs.contest2.forEach(inputData => {
+        const input = screen.getAllByLabelText(inputData.key, {
+          selector: 'input',
+        })[inputData.index ?? 0]
+        userEvent.type(input, inputData.value)
+      })
+      userEvent.click(
+        screen.getAllByRole('button', { name: 'Select Jurisdictions' })[1]
+      )
+      userEvent.click(
+        screen.getAllByRole('checkbox', { name: 'Select all' })[1]
+      )
+
+      userEvent.click(screen.getByRole('button', { name: /Save & Next/ }))
       await waitFor(() => {
         expect(goToNextStage).toHaveBeenCalledTimes(1)
       })
