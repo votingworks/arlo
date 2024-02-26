@@ -471,7 +471,7 @@ def test_batch_tallies_too_many_tallies(
                 "status": ProcessingStatus.ERRORED,
                 "startedAt": assert_is_date,
                 "completedAt": assert_is_date,
-                "error": 'The total votes for batch "Batch 1" (410 votes) cannot exceed 400 - the number of ballots from the manifest (200 ballots) multiplied by the number of votes allowed for the contest "Contest 1" (2 votes per ballot).',
+                "error": 'The total votes for contest "Contest 1" in batch "Batch 1" (410 votes) cannot exceed 400 - the number of ballots from the manifest (200 ballots) multiplied by the number of votes allowed for the contest (2 votes per ballot).',
             },
         },
     )
