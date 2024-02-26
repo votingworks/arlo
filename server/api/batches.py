@@ -184,14 +184,16 @@ def validate_batch_results(
 
     validate(batch_results, BATCH_RESULT_TALLY_SHEETS_SCHEMA)
 
-    # We only support one contest for batch audits
-    assert len(list(jurisdiction.contests)) == 1
-    contest = list(jurisdiction.contests)[0]
-    contest_choice_ids = {choice.id for choice in contest.choices}
+    contests = list(jurisdiction.contests)
+    choice_ids_across_contests = set(
+        choice.id for contest in contests for choice in contest.choices
+    )
 
     for tally_sheet in batch_results:
-        if tally_sheet["results"].keys() != contest_choice_ids:
+        if len(tally_sheet["results"].keys() - choice_ids_across_contests) > 0:
             raise BadRequest("Invalid choice ids")
+        if tally_sheet["results"].keys() != choice_ids_across_contests:
+            raise BadRequest("Missing choice ids")
 
     duplicate_tally_sheet_name = find_first_duplicate(
         [tally_sheet["name"] for tally_sheet in batch_results]
@@ -201,17 +203,19 @@ def validate_batch_results(
             f"Tally sheet names must be unique. '{duplicate_tally_sheet_name}' has already been used."
         )
 
-    total_votes = sum(
-        sum(tally_sheet["results"].values()) for tally_sheet in batch_results
-    )
-    assert contest.votes_allowed is not None
-    allowed_votes = batch.num_ballots * contest.votes_allowed
-    if total_votes > allowed_votes:
-        raise BadRequest(
-            f"Total votes for batch {batch.name} should not exceed {allowed_votes}"
-            f" - the number of ballots in the batch ({batch.num_ballots})"
-            f" times the number of votes allowed ({contest.votes_allowed})."
-        )
+    for contest in contests:
+        total_votes = 0
+        for tally_sheet in batch_results:
+            for choice in contest.choices:
+                total_votes += tally_sheet["results"][choice.id]
+        assert contest.votes_allowed is not None
+        allowed_votes = batch.num_ballots * contest.votes_allowed
+        if total_votes > allowed_votes:
+            raise BadRequest(
+                f"Total votes for batch {batch.name} contest {contest.name} should not exceed "
+                f"{allowed_votes} - the number of ballots in the batch ({batch.num_ballots}) "
+                f"times the number of votes allowed ({contest.votes_allowed})."
+            )
 
 
 @api.route(

@@ -432,7 +432,7 @@ def test_record_batch_results_invalid(
     invalid_results = [
         ({}, "{} is not of type 'array'"),
         ([{"name": "Tally Sheet #1", "results": None}], "None is not of type 'object'"),
-        ([{"name": "Tally Sheet #1", "results": {}}], "Invalid choice ids"),
+        ([{"name": "Tally Sheet #1", "results": {}}], "Missing choice ids"),
         (
             [{"name": "Tally Sheet #1", "results": {"not-a-real-id": 0}}],
             "Invalid choice ids",
@@ -444,7 +444,7 @@ def test_record_batch_results_invalid(
                     "results": {choice_id: 0 for choice_id in choice_ids[:1]},
                 }
             ],
-            "Invalid choice ids",
+            "Missing choice ids",
         ),
         (
             [
@@ -471,7 +471,7 @@ def test_record_batch_results_invalid(
                     "results": {choice_id: 400 for choice_id in choice_ids},
                 }
             ],
-            "Total votes for batch Batch 1 should not exceed 1000 - the number of ballots in the batch (500) times the number of votes allowed (2).",
+            "Total votes for batch Batch 1 contest Contest 1 should not exceed 1000 - the number of ballots in the batch (500) times the number of votes allowed (2).",
         ),
         (
             [
@@ -484,7 +484,7 @@ def test_record_batch_results_invalid(
                     "results": {choice_id: 300 for choice_id in choice_ids},
                 },
             ],
-            "Total votes for batch Batch 1 should not exceed 1000 - the number of ballots in the batch (500) times the number of votes allowed (2).",
+            "Total votes for batch Batch 1 contest Contest 1 should not exceed 1000 - the number of ballots in the batch (500) times the number of votes allowed (2).",
         ),
         (
             [

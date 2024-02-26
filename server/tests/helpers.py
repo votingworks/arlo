@@ -280,7 +280,7 @@ DATETIME_REGEX = re.compile(
 )
 
 TEST_JURISDICTION_ADMIN_EMAIL_REGEX = re.compile(
-    r"jurisdiction.admin-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}@example.com"
+    r"(jurisdiction\.admin|j3)-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}@example\.com"
 )
 
 

@@ -55,7 +55,7 @@ def contest_ids(client: FlaskClient, election_id: str, jurisdiction_ids: List[st
     return [str(c["id"]) for c in contests]
 
 
-# We only support one contest for now, so this is a convenience fixture
+# A convenience fixture for when there's only one contest
 @pytest.fixture
 def contest_id(contest_ids: List[str]) -> str:
     return contest_ids[0]
@@ -155,7 +155,7 @@ def round_1_id(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    contest_id: str,
+    contest_ids,  # pylint: disable=unused-argument
     election_settings,  # pylint: disable=unused-argument
     manifests,  # pylint: disable=unused-argument
     batch_tallies,  # pylint: disable=unused-argument
@@ -164,12 +164,17 @@ def round_1_id(
     rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
     assert rv.status_code == 200
     sample_size_options = json.loads(rv.data)["sampleSizes"]
-    sample_size = sample_size_options[contest_id][0]
 
     rv = post_json(
         client,
         f"/api/election/{election_id}/round",
-        {"roundNum": 1, "sampleSizes": {contest_id: sample_size}},
+        {
+            "roundNum": 1,
+            "sampleSizes": {
+                contest_id: sample_size_options_for_contest[0]
+                for contest_id, sample_size_options_for_contest in sample_size_options.items()
+            },
+        },
     )
     assert_ok(rv)
 

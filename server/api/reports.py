@@ -95,14 +95,29 @@ def pretty_ballot_ticket_numbers(
     return columns
 
 
-def pretty_batch_ticket_numbers(batch: Batch, round_id_to_num: Dict[str, int]) -> str:
+def pretty_batch_ticket_numbers_for_contest(
+    batch: Batch, round_id_to_num: Dict[str, int], contest_id: str
+) -> str:
     ticket_numbers = []
     for round_num, draws in group_by(
         list(batch.draws), key=lambda d: round_id_to_num[d.round_id]
     ).items():
-        ticket_numbers_str = ", ".join(sorted(d.ticket_number for d in draws))
-        ticket_numbers.append(f"Round {round_num}: {ticket_numbers_str}")
+        ticket_numbers_for_round = sorted(
+            d.ticket_number for d in draws if d.contest_id == contest_id
+        )
+        if len(ticket_numbers_for_round) > 0:
+            ticket_numbers_string = ", ".join(ticket_numbers_for_round)
+            ticket_numbers.append(f"Round {round_num}: {ticket_numbers_string}")
     return ", ".join(ticket_numbers)
+
+
+def pretty_batch_ticket_numbers(
+    batch: Batch, round_id_to_num: Dict[str, int], contests: List[Contest]
+) -> List[str]:
+    return [
+        pretty_batch_ticket_numbers_for_contest(batch, round_id_to_num, contest.id)
+        for contest in contests
+    ]
 
 
 # (contest_id, interpretation, selected_choice_names, comment, is_overvote, has_invalid_write_in)
@@ -744,10 +759,6 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
 
     round_id_to_num = {round.id: round.round_num for round in election.rounds}
 
-    # We only support one contest for batch audits
-    assert len(list(election.contests)) == 1
-    contest = list(election.contests)[0]
-
     audit_result_tuples = (
         BatchResultTallySheet.query.filter(
             BatchResultTallySheet.batch_id.in_(
@@ -775,83 +786,110 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
         )
     }
 
-    rows.append(
-        [
-            "Jurisdiction Name",
-            "Batch Name",
-            "Ticket Numbers",
-            "Audited?",
-            "Audit Results",
-            "Reported Results",
-            "Change in Results",
-            "Change in Margin",
-            "Last Edited By",
-        ]
+    contests = list(
+        election.contests if jurisdiction is None else jurisdiction.contests
     )
+
+    ticket_number_columns = []
+    result_columns = []
+    for contest in contests:
+        ticket_number_columns += [f"Ticket Numbers: {contest.name}"]
+        result_columns += [
+            f"Audit Results: {contest.name}",
+            f"Reported Results: {contest.name}",
+            f"Change in Results: {contest.name}",
+            f"Change in Margin: {contest.name}",
+        ]
+    column_headers = [
+        "Jurisdiction Name",
+        "Batch Name",
+        *ticket_number_columns,
+        "Audited?",
+        *result_columns,
+        "Last Edited By",
+    ]
+    rows.append(column_headers)
+
     for batch in batches:
-        reported_results = batch.jurisdiction.batch_tallies[batch.name][contest.id]
-        reported_results_by_name = {
-            choice.name: reported_results[choice.id]
-            for choice in contest.choices
-            for choice in contest.choices
-        }
-
-        is_audited = batch.id in audit_results_by_batch
-        audit_results = (
-            {
-                choice.id: audit_results_by_batch[batch.id].get(choice.id, 0)
-                for choice in contest.choices
-            }
-            if is_audited
-            else None
-        )
-        audit_results_by_name = audit_results and {
-            choice.name: audit_results[choice.id] for choice in contest.choices
-        }
-        error = (
-            macro.compute_error(
-                batch.jurisdiction.batch_tallies[batch.name],
-                {
-                    contest.id: {
-                        choice.id: audit_results_by_batch[batch.id].get(choice.id, 0)
-                        for choice in contest.choices
-                    }
-                },
-                sampler_contest.from_db_contest(contest),
-            )
-            if is_audited
-            else None
-        )
-
-        row_base = [
+        row = [
             batch.jurisdiction.name,
             batch.name,
-            pretty_batch_ticket_numbers(batch, round_id_to_num),
+            *pretty_batch_ticket_numbers(batch, round_id_to_num, contests),
         ]
-        if batch.jurisdiction.id in finalized_jurisdiction_ids:
-            row = row_base + [
-                pretty_boolean(is_audited),
+
+        # Hide audit results if jurisdiction hasn't yet finalized tallies. This will only impact
+        # the discrepancy report, since the audit report can only be generated at the end of the
+        # audit.
+        if batch.jurisdiction.id not in finalized_jurisdiction_ids:
+            row += [pretty_boolean(False)]
+            row += [""] * (len(result_columns) + 1)
+            rows.append(row)
+            continue
+
+        is_audited = batch.id in audit_results_by_batch
+        row += [pretty_boolean(is_audited)]
+
+        for contest in contests:
+            reported_results = (
+                batch.jurisdiction.batch_tallies[batch.name][contest.id]
+                if contest.id in batch.jurisdiction.batch_tallies[batch.name]
+                else None
+            )
+            reported_results_by_name = reported_results and {
+                choice.name: reported_results[choice.id] for choice in contest.choices
+            }
+
+            audit_results = (
+                {
+                    choice.id: audit_results_by_batch[batch.id].get(choice.id, 0)
+                    for choice in contest.choices
+                }
+                if is_audited and reported_results
+                else None
+            )
+            audit_results_by_name = audit_results and {
+                choice.name: audit_results[choice.id] for choice in contest.choices
+            }
+
+            error = (
+                macro.compute_error(
+                    batch.jurisdiction.batch_tallies[batch.name],
+                    {
+                        contest.id: {
+                            choice.id: audit_results_by_batch[batch.id].get(
+                                choice.id, 0
+                            )
+                            for choice in contest.choices
+                        }
+                    },
+                    sampler_contest.from_db_contest(contest),
+                )
+                if is_audited and audit_results
+                else None
+            )
+
+            row += [
                 (
                     pretty_choice_votes(audit_results_by_name)
                     if audit_results_by_name
                     else ""
                 ),
-                pretty_choice_votes(reported_results_by_name),
+                (
+                    pretty_choice_votes(reported_results_by_name)
+                    if reported_results_by_name
+                    else ""
+                ),
                 (
                     pretty_vote_deltas(
                         contest, batch_vote_deltas(reported_results, audit_results)
                     )
-                    if audit_results
+                    if reported_results and audit_results
                     else ""
                 ),
                 error["counted_as"] if error else "",
-                construct_batch_last_edited_by_string(batch),
             ]
-        else:
-            # Hide audit results if the jurisdiction hasn't finalized (this will
-            # only impact the discrepancy report, since the audit report can
-            # only be generated at the end of the audit).
-            row = row_base + [pretty_boolean(False)] + ([""] * 5)
+
+        row += [construct_batch_last_edited_by_string(batch)]
         rows.append(row)
 
     return rows

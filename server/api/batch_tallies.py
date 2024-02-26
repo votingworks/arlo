@@ -1,5 +1,6 @@
+from collections import defaultdict
 from datetime import datetime
-from typing import Optional
+from typing import Dict, Optional, Tuple
 import uuid
 from flask import request, jsonify, Request, session
 from werkzeug.exceptions import BadRequest, NotFound, Conflict
@@ -40,17 +41,16 @@ def process_batch_tallies_file(
     jurisdiction_admin_email: str,
     support_user_email: Optional[str],
 ):
-    jurisdiction = Jurisdiction.query.get(jurisdiction_id)
+    jurisdiction: Jurisdiction = Jurisdiction.query.get(jurisdiction_id)
 
-    def process() -> None:
-        # We only support one contest for batch audits, so we can just take the
-        # first contest from the jurisdiction's universe.
-        assert len(list(jurisdiction.contests)) == 1
-        contest = list(jurisdiction.contests)[0]
-
+    def process_batch_tallies_for_contest(
+        contest: Contest,
+        # { (contest_id, choice_id): csv_header }
+        contest_choice_csv_headers: Dict[Tuple[str, str], str],
+    ):
         columns = [CSVColumnType(BATCH_NAME, CSVValueType.TEXT, unique=True)] + [
-            CSVColumnType(choice.name, CSVValueType.NUMBER)
-            for choice in contest.choices
+            CSVColumnType(contest_choice_csv_header, CSVValueType.NUMBER)
+            for contest_choice_csv_header in contest_choice_csv_headers.values()
         ]
 
         batch_tallies_file = retrieve_file(jurisdiction.batch_tallies_file.storage_path)
@@ -86,26 +86,56 @@ def process_batch_tallies_file(
             allowed_tallies = (
                 num_ballots_by_batch[row[BATCH_NAME]] * contest.votes_allowed
             )
-            total_tallies = sum(int(row[choice.name]) for choice in contest.choices)
+            total_tallies = sum(
+                int(row[contest_choice_csv_headers[(contest.id, choice.id)]])
+                for choice in contest.choices
+            )
             if total_tallies > allowed_tallies:
                 raise UserError(
-                    f"The total votes for batch \"{row[BATCH_NAME]}\" ({format_count(total_tallies, 'vote', 'votes')})"
-                    + f" cannot exceed {allowed_tallies} - the number of ballots from the manifest"
-                    + f" ({format_count(num_ballots_by_batch[row[BATCH_NAME]], 'ballot', 'ballots')}) multipled by the number"
-                    + f" of votes allowed for the contest ({format_count(contest.votes_allowed, 'vote', 'votes')} per ballot)."
+                    f'The total votes for contest "{contest.name}" in batch "{row[BATCH_NAME]}" '
+                    f"({format_count(total_tallies, 'vote', 'votes')}) "
+                    f"cannot exceed {allowed_tallies} - "
+                    f"the number of ballots from the manifest "
+                    f"({format_count(num_ballots_by_batch[row[BATCH_NAME]], 'ballot', 'ballots')}) "
+                    f"multiplied by the number of votes allowed for the contest "
+                    f"({format_count(contest.votes_allowed, 'vote', 'votes')} per ballot)."
                 )
 
-        # Save the tallies as a JSON blob in the format needed by the
-        # audit_math.macro module, so we can easily load it up and pass it in
-        jurisdiction.batch_tallies = {
+        return {
             row[BATCH_NAME]: {
-                contest.id: {
-                    "ballots": num_ballots_by_batch[row[BATCH_NAME]],
-                    **{choice.id: row[choice.name] for choice in contest.choices},
-                }
+                "ballots": num_ballots_by_batch[row[BATCH_NAME]],
+                **{
+                    choice.id: row[contest_choice_csv_headers[(contest.id, choice.id)]]
+                    for choice in contest.choices
+                },
             }
             for row in batch_tallies_csv
         }
+
+    def process() -> None:
+        contests = list(jurisdiction.contests)
+        is_multi_contest_audit = len(list(jurisdiction.election.contests)) > 1
+        contest_choice_csv_headers = {
+            # Include contest name in contest choice CSV headers for multi-contest audits just in
+            # case two choices in different contests have the same name
+            (contest.id, choice.id): f"{contest.name} - {choice.name}"
+            if is_multi_contest_audit
+            else choice.name
+            for contest in contests
+            for choice in contest.choices
+        }
+
+        # Save the tallies as a JSON blob in the format needed by the audit_math.macro module
+        # { batch_name: { contest_id: { choice_id: vote_count } } }
+        batch_tallies: Dict[str, Dict[str, Dict[str, int]]] = defaultdict(dict)
+        for contest in contests:
+            batch_tallies_for_contest = process_batch_tallies_for_contest(
+                contest, contest_choice_csv_headers
+            )
+            for batch_name, batch_votes in batch_tallies_for_contest.items():
+                batch_tallies[batch_name][contest.id] = batch_votes
+
+        jurisdiction.batch_tallies = batch_tallies
 
     error = None
     try:

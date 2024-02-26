@@ -60,8 +60,13 @@ def items_list_to_dict(items):
 def process_batch_inventory_cvr_file(jurisdiction_id: str):
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction_id)
     jurisdiction = Jurisdiction.query.get(jurisdiction_id)
-    assert len(list(jurisdiction.contests)) == 1
-    contest = jurisdiction.contests[0]
+
+    contests = list(jurisdiction.contests)
+    contest = contests[0]
+    if len(contests) != 1:  # pragma: no cover
+        raise UserError(
+            "Batch inventory flow does not yet support multi-contest batch audits"
+        )
 
     cvr_file = retrieve_file(batch_inventory_data.cvr_file.storage_path)
     cvrs = csv_reader_for_cvr(cvr_file)

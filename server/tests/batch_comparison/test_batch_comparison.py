@@ -34,52 +34,9 @@ def check_discrepancies(
                 and row["Batch Name"] == batch_name
             )
             assert (
-                parse_vote_deltas(row["Change in Results"], choices)
+                parse_vote_deltas(row["Change in Results: Contest 1"], choices)
                 == batch_discrepancies
             ), f"Discrepancy mismatch for {(jurisdiction_name, batch_name)}"
-
-
-def test_batch_comparison_only_one_contest_allowed(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
-):
-    contests = [
-        {
-            "id": str(uuid.uuid4()),
-            "name": "Contest 1",
-            "isTargeted": True,
-            "choices": [
-                {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 6000},
-                {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 3500},
-                {"id": str(uuid.uuid4()), "name": "candidate 3", "numVotes": 3500},
-            ],
-            "numWinners": 1,
-            "votesAllowed": 2,
-            "jurisdictionIds": jurisdiction_ids[:2],
-        },
-        {
-            "id": str(uuid.uuid4()),
-            "name": "Contest 2",
-            "isTargeted": False,
-            "choices": [
-                {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 6000},
-                {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 3500},
-                {"id": str(uuid.uuid4()), "name": "candidate 3", "numVotes": 3500},
-            ],
-            "numWinners": 1,
-            "votesAllowed": 2,
-            "jurisdictionIds": jurisdiction_ids[:2],
-        },
-    ]
-    rv = put_json(client, f"/api/election/{election_id}/contest", contests)
-    assert rv.status_code == 400
-    assert json.loads(rv.data) == {
-        "errors": [
-            {
-                "errorType": "Bad Request",
-                "message": "Batch comparison audits may only have one contest.",
-            }
-        ]
-    }
 
 
 def test_batch_comparison_sample_size(
@@ -376,10 +333,10 @@ def test_batch_comparison_round_2(
     for row in csv.DictReader(io.StringIO(discrepancy_report)):
         if row["Jurisdiction Name"] == "J2":
             assert row["Audited?"] == "No"
-            assert row["Audit Results"] == ""
-            assert row["Reported Results"] == ""
-            assert row["Change in Results"] == ""
-            assert row["Change in Margin"] == ""
+            assert row["Audit Results: Contest 1"] == ""
+            assert row["Reported Results: Contest 1"] == ""
+            assert row["Change in Results: Contest 1"] == ""
+            assert row["Change in Margin: Contest 1"] == ""
 
     # Finalize the results
     set_logged_in_user(

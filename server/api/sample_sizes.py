@@ -148,8 +148,8 @@ def sample_size_options(election: Election) -> Dict[str, Dict[str, SampleSizeOpt
             sample_size = macro.get_sample_sizes(
                 election.risk_limit,
                 sampler_contest.from_db_contest(contest),
-                rounds.batch_tallies(election),
-                rounds.sampled_batch_results(election),
+                rounds.batch_tallies(contest),
+                rounds.sampled_batch_results(contest),
             )
             return {"macro": {"key": "macro", "size": sample_size, "prob": None}}
 
