@@ -438,10 +438,21 @@ def test_multi_contest_batch_comparison_end_to_end(
     snapshot,
 ):
     #
-    # Start audit
+    # Check jurisdictions
     #
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    assert rv.status_code == 200
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    assert [
+        jurisdiction["batchTallies"]["numBallots"] for jurisdiction in jurisdictions
+    ] == [500, 250, 250]
+
+    #
+    # Start audit
+    #
 
     rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
     assert rv.status_code == 200
