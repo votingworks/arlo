@@ -177,7 +177,7 @@ def serialize_jurisdiction(
             # Because a ballot can contain multiple contests, don't sum minimums across contests.
             # Just take the maximum minimum as the overall minimum.
             min_num_ballots = max(
-                [min_num_ballots_for_contest(contest) for contest in contests]
+                min_num_ballots_for_contest(contest) for contest in contests
             )
 
         json_jurisdiction["batchTallies"] = {
