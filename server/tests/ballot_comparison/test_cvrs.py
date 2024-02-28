@@ -427,7 +427,11 @@ def test_cvrs_clear(
         .order_by(CvrBallot.imprinted_id)
         .all()
     )
-    assert len(cvr_ballots) == 0
+    # Temporarily, we're not deleting the CVR ballots on DELETE of the file and
+    # relying instead on the background task to delete them when uploading a new
+    # CVR file.
+    # assert len(cvr_ballots) == 0
+    assert len(cvr_ballots) > 0
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(
