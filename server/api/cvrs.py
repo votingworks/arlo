@@ -1172,6 +1172,7 @@ def process_cvr_file(
     emit_progress,
 ):
     jurisdiction = Jurisdiction.query.get(jurisdiction_id)
+    clear_cvr_data(jurisdiction)
 
     working_directory = tempfile.mkdtemp()
 
@@ -1413,14 +1414,20 @@ def validate_cvr_upload(
         validate_csv_mimetype(request.files["cvrs"])
 
 
-def clear_cvr_data(jurisdiction: Jurisdiction):
-    CvrBallot.query.filter(
-        CvrBallot.batch_id.in_(
-            Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
-            .with_entities(Batch.id)
-            .subquery()
-        )
-    ).delete(synchronize_session=False)
+def clear_cvr_data(jurisdiction: Jurisdiction, keep_cvr_ballots: bool = False):
+    # Temporary fix!
+    # This query sometimes runs slowly in prod because it doesn't use the index
+    # on CvrBallot.batch_id. While we're figuring out how to address this,
+    # optionally allow callers of this function to skip it and only run it
+    # during the CVR processing background task.
+    if not keep_cvr_ballots:
+        CvrBallot.query.filter(
+            CvrBallot.batch_id.in_(
+                Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
+                .with_entities(Batch.id)
+                .subquery()
+            )
+        ).delete(synchronize_session=False)
     jurisdiction.cvr_contests_metadata = None
 
 
@@ -1432,7 +1439,6 @@ def upload_cvrs(
     election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
     validate_cvr_upload(request, election, jurisdiction)
-    clear_cvr_data(jurisdiction)
 
     if request.form["cvrFileType"] in [CvrFileType.ESS, CvrFileType.HART]:
         file_name = "cvr-files.zip"
@@ -1510,6 +1516,6 @@ def clear_cvrs(
 ):
     if jurisdiction.cvr_file_id:
         File.query.filter_by(id=jurisdiction.cvr_file_id).delete()
-        clear_cvr_data(jurisdiction)
+        clear_cvr_data(jurisdiction, keep_cvr_ballots=True)
     db_session.commit()
     return jsonify(status="ok")
