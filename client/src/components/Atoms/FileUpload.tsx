@@ -172,6 +172,17 @@ const FileUpload: React.FC<IFileUploadProps> = ({
           </>
         ) : (
           <>
+            {templateFileUrl && (
+              <AnchorButton
+                href={templateFileUrl}
+                icon="download"
+                rel="noopener noreferrer"
+                style={{ marginRight: '5px' }}
+                target="_blank"
+              >
+                Download Template
+              </AnchorButton>
+            )}
             <AnchorButton
               icon="download"
               href={downloadFileUrl}
