@@ -154,15 +154,6 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
                 class="sc-dnqmqq kGMqKN"
               >
                 Click "Browse" to choose the appropriate file from your computer. This file should be a comma-separated list of all the jurisdictions participating in the audit, plus email addresses for audit administrators in each participating jurisdiction.
-                <br />
-                <br />
-                <a
-                  href="/sample_jurisdiction_filesheet.csv"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  (Click here to view a sample file in the correct format.)
-                </a>
               </div>
             </div>
             <div>
@@ -192,6 +183,21 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
                     Replace File
                   </span>
                 </button>
+                <a
+                  class="bp3-button"
+                  href="/sample_jurisdiction_filesheet.csv"
+                  rel="noopener noreferrer"
+                  role="button"
+                  style="margin-left: 5px;"
+                  tabindex="0"
+                  target="_blank"
+                >
+                  <span
+                    class="bp3-button-text"
+                  >
+                    Download Template
+                  </span>
+                </a>
               </div>
             </div>
           </div>

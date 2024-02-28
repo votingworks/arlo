@@ -25,6 +25,7 @@ export interface IFileUploadProps extends IFileUpload {
   uploadDisabled?: boolean
   deleteDisabled?: boolean
   additionalFields?: React.ReactNode
+  templateFileUrl?: string
 }
 
 const FileUpload: React.FC<IFileUploadProps> = ({
@@ -39,6 +40,7 @@ const FileUpload: React.FC<IFileUploadProps> = ({
   uploadDisabled = false,
   deleteDisabled = false,
   additionalFields,
+  templateFileUrl,
 }: IFileUploadProps) => {
   const { register, handleSubmit, formState, watch, reset } = useForm<{
     files: FileList
@@ -141,22 +143,46 @@ const FileUpload: React.FC<IFileUploadProps> = ({
       </Row>
       <Row style={{ justifyContent: 'flex-end' }}>
         {!processing?.completedAt ? (
-          <Button
-            type="submit"
-            intent="primary"
-            icon="upload"
-            disabled={
-              uploadDisabled ||
-              numSelectedFiles === 0 ||
-              formState.isSubmitting ||
-              (processing !== null && !processing.completedAt)
-            }
-            style={{ width: buttonAndTagWidth }}
-          >
-            Upload
-          </Button>
+          <>
+            {templateFileUrl && (
+              <AnchorButton
+                href={templateFileUrl}
+                icon="download"
+                rel="noopener noreferrer"
+                style={{ marginRight: '5px' }}
+                target="_blank"
+              >
+                Download Template
+              </AnchorButton>
+            )}
+            <Button
+              type="submit"
+              intent="primary"
+              icon="upload"
+              disabled={
+                uploadDisabled ||
+                numSelectedFiles === 0 ||
+                formState.isSubmitting ||
+                (processing !== null && !processing.completedAt)
+              }
+              style={{ width: buttonAndTagWidth }}
+            >
+              Upload
+            </Button>
+          </>
         ) : (
           <>
+            {templateFileUrl && (
+              <AnchorButton
+                href={templateFileUrl}
+                icon="download"
+                rel="noopener noreferrer"
+                style={{ marginRight: '5px' }}
+                target="_blank"
+              >
+                Download Template
+              </AnchorButton>
+            )}
             <AnchorButton
               icon="download"
               href={downloadFileUrl}

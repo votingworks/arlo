@@ -423,8 +423,15 @@ describe('JurisdictionDetail', () => {
         within(talliesCard).getByRole('button', { name: /Upload/ })
       )
       await within(talliesCard).findByText('Uploaded')
+      const downloadTemplateLink = within(talliesCard).getByRole('button', {
+        name: /Download Template/,
+      })
+      expect(downloadTemplateLink).toHaveAttribute(
+        'href',
+        '/api/election/1/jurisdiction/jurisdiction-id-1/batch-tallies/template'
+      )
       const talliesLink = within(talliesCard).getByRole('button', {
-        name: /Download/,
+        name: /Download$/,
       })
       expect(talliesLink).toHaveAttribute(
         'href',
@@ -584,7 +591,7 @@ describe('JurisdictionDetail', () => {
         })
       ).closest('.bp3-card') as HTMLElement
       await within(talliesCard).findByText('Uploaded')
-      within(talliesCard).getByRole('button', { name: /Download/ })
+      within(talliesCard).getByRole('button', { name: /Download$/ })
       expect(
         within(talliesCard).getByRole('button', { name: /Delete/ })
       ).toBeDisabled()

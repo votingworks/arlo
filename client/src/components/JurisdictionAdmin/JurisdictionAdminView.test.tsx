@@ -120,6 +120,13 @@ describe('JA setup', () => {
       await screen.findByText('Audit Setup')
       const talliesInput = screen.getByLabelText('Select a file...')
       const talliesButton = screen.getByRole('button', { name: 'Upload File' })
+      const talliesTemplateButton = screen.getAllByRole('button', {
+        name: 'Download Template',
+      })[1]
+      expect(talliesTemplateButton).toHaveAttribute(
+        'href',
+        '/api/election/1/jurisdiction/jurisdiction-id-1/batch-tallies/template'
+      )
 
       userEvent.click(talliesButton)
       await screen.findByText('You must upload a file')
@@ -128,6 +135,18 @@ describe('JA setup', () => {
       userEvent.click(talliesButton)
       await screen.findByText('Uploaded at 7/8/2020, 9:39:14 PM.')
       screen.getByText('Audit setup complete')
+
+      // Verify that ballot manifests and candidate totals by batch can be replaced or deleted
+      // after upload, and that templates can still be downloaded
+      expect(
+        screen.getAllByRole('button', { name: 'Replace File' })
+      ).toHaveLength(2)
+      expect(
+        screen.getAllByRole('button', { name: 'Delete File' })
+      ).toHaveLength(2)
+      expect(
+        screen.getAllByRole('button', { name: 'Download Template' })
+      ).toHaveLength(2)
     })
   })
 

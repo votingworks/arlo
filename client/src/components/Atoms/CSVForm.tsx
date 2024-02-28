@@ -8,6 +8,7 @@ import {
   H4,
   ProgressBar,
   Intent,
+  AnchorButton,
 } from '@blueprintjs/core'
 import * as Yup from 'yup'
 import { CvrFileType, IFileInfo, FileProcessingStatus } from '../useCSV'
@@ -91,22 +92,7 @@ const CSVFile: React.FC<IProps> = ({
           <FormWrapper>
             <div>
               {title && <H4>{title}</H4>}
-              <FormSectionDescription>
-                {description}
-                {sampleFileLink && (
-                  <>
-                    <br />
-                    <br />
-                    <a
-                      href={sampleFileLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      (Click here to view a sample file in the correct format.)
-                    </a>
-                  </>
-                )}
-              </FormSectionDescription>
+              <FormSectionDescription>{description}</FormSectionDescription>
             </div>
             {showCvrFileType && (
               <p>
@@ -216,6 +202,16 @@ const CSVFile: React.FC<IProps> = ({
                   >
                     Upload File
                   </FormButton>
+                  {sampleFileLink && (
+                    <AnchorButton
+                      href={sampleFileLink}
+                      rel="noopener noreferrer"
+                      style={{ marginLeft: '5px' }}
+                      target="_blank"
+                    >
+                      Download Template
+                    </AnchorButton>
+                  )}
                 </div>
               </>
             ) : (
@@ -260,6 +256,16 @@ const CSVFile: React.FC<IProps> = ({
                       >
                         Delete File
                       </AsyncButton>
+                    )}
+                    {sampleFileLink && (
+                      <AnchorButton
+                        href={sampleFileLink}
+                        rel="noopener noreferrer"
+                        style={{ marginLeft: '5px' }}
+                        target="_blank"
+                      >
+                        Download Template
+                      </AnchorButton>
                     )}
                   </div>
                 </div>
