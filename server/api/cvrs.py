@@ -1172,7 +1172,6 @@ def process_cvr_file(
     emit_progress,
 ):
     jurisdiction = Jurisdiction.query.get(jurisdiction_id)
-    clear_cvr_data(jurisdiction)
 
     working_directory = tempfile.mkdtemp()
 
@@ -1181,6 +1180,12 @@ def process_cvr_file(
             shutil.rmtree(working_directory)
 
     def process() -> None:
+        # Clear out any existing CVR data from previous files (e.g., if we're
+        # overwriting a previous file). This query can sometimes be slow so we
+        # run it here in the background task instead of in the endpoint for
+        # uploading a CVR file (where we clear other CVR data).
+        clear_cvr_ballots(jurisdiction.id)
+
         # Ideally, the CVR should have the same number of ballots as the
         # manifest, so we can use that as an approximation of the file parsing
         # progress since we're streaming the file and don't know the size up front.
@@ -1414,21 +1419,22 @@ def validate_cvr_upload(
         validate_csv_mimetype(request.files["cvrs"])
 
 
-def clear_cvr_data(jurisdiction: Jurisdiction, keep_cvr_ballots: bool = False):
-    # Temporary fix!
-    # This query sometimes runs slowly in prod because it doesn't use the index
-    # on CvrBallot.batch_id. While we're figuring out how to address this,
-    # optionally allow callers of this function to skip it and only run it
-    # during the CVR processing background task.
-    if not keep_cvr_ballots:
-        CvrBallot.query.filter(
-            CvrBallot.batch_id.in_(
-                Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
-                .with_entities(Batch.id)
-                .subquery()
-            )
-        ).delete(synchronize_session=False)
+def clear_cvr_contests_metadata(jurisdiction: Jurisdiction):
     jurisdiction.cvr_contests_metadata = None
+
+
+@background_task
+def clear_cvr_ballots(jurisdiction_id: str):
+    # Note that this query can be slow due to the query planner sometimes
+    # choosing to not use the relevant index on CvrBallot.batch_id. So it should
+    # only be run in background tasks.
+    CvrBallot.query.filter(
+        CvrBallot.batch_id.in_(
+            Batch.query.filter_by(jurisdiction_id=jurisdiction_id)
+            .with_entities(Batch.id)
+            .subquery()
+        )
+    ).delete(synchronize_session=False)
 
 
 @api.route(
@@ -1439,6 +1445,7 @@ def upload_cvrs(
     election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
     validate_cvr_upload(request, election, jurisdiction)
+    clear_cvr_contests_metadata(jurisdiction)
 
     if request.form["cvrFileType"] in [CvrFileType.ESS, CvrFileType.HART]:
         file_name = "cvr-files.zip"
@@ -1515,7 +1522,20 @@ def clear_cvrs(
     election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
     if jurisdiction.cvr_file_id:
+        # Clear the CVR file and contests metadata immediately, but defer
+        # clearing the actual CVR ballot records to a background task, since
+        # that query can take a while and we don't want to block the request.
+        # This is generally safe for a few reasons:
+        # - The rest of Arlo looks for the file or metadata to judge whether
+        #   CVRs have been uploaded, not the CVR ballot records
+        # - The CVR upload task starts by clearing the CVR ballot records, so
+        #   there's another layer of protection to ensure there aren't multiple
+        #   sets of CVR ballot records for the same jurisdiction
+        # - The background worker only processes one task at a time, so this
+        #   task is guaranteed to be completed before a newly uploaded CVR file
+        #   will be processed.
         File.query.filter_by(id=jurisdiction.cvr_file_id).delete()
-        clear_cvr_data(jurisdiction, keep_cvr_ballots=True)
+        clear_cvr_contests_metadata(jurisdiction)
+        create_background_task(clear_cvr_ballots, dict(jurisdiction_id=jurisdiction.id))
     db_session.commit()
     return jsonify(status="ok")
