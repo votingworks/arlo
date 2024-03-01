@@ -983,9 +983,9 @@ def parse_hart_cvrs(
                 )
             scanned_ballot_information_by_cvr_id[cvr_id] = row
 
-    cvr_file_paths: Dict[
-        Tuple[str, str], str
-    ] = {}  # { (zip_file_name, file_name): file_path }
+    cvr_file_paths: Dict[Tuple[str, str], str] = (
+        {}
+    )  # { (zip_file_name, file_name): file_path }
     for cvr_zip_file_name, cvr_zip_file in cvr_zip_files.items():
         sub_working_directory = tempfile.mkdtemp(dir=working_directory)
         cvr_file_names = unzip_files(cvr_zip_file, sub_working_directory)
@@ -1263,9 +1263,9 @@ def process_cvr_file(
 
                     # Dominions CVR files sometimes contain interpretation values that can't be
                     # parsed as integers
-                    parsed_contest_interpretations: Dict[
-                        str, int
-                    ] = {}  # { choice_name: parsed_interpretation }
+                    parsed_contest_interpretations: Dict[str, int] = (
+                        {}
+                    )  # { choice_name: parsed_interpretation }
                     for choice_name, interpretation in contest_interpretations.items():
                         try:
                             parsed_interpretation = int(interpretation)
