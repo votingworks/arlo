@@ -30,7 +30,7 @@ import {
 import AuditBoardsTable from './AuditBoardsTable'
 import DownloadBatchRetrievalListButton from '../../JurisdictionAdmin/BatchRoundSteps/DownloadBatchRetrievalListButton'
 import DownloadBatchTallySheetsButton from '../../JurisdictionAdmin/BatchRoundSteps/DownloadBatchTallySheetsButton'
-import { candidateTotalsByBatchTemplateFilePath } from '../../JurisdictionAdmin/candidateTotalsByBatchTemplates'
+import { candidateTotalsByBatchTemplateCsvPath } from '../../JurisdictionAdmin/candidateTotalsByBatchTemplateCsv'
 
 const StatusCard = styled(Card)`
   &:not(:last-child) {
@@ -99,7 +99,7 @@ const JurisdictionDetail: React.FC<IJurisdictionDetailProps> = ({
                 acceptFileTypes={['csv']}
                 uploadDisabled={!isManifestUploaded || round !== null}
                 deleteDisabled={round !== null}
-                templateFileUrl={candidateTotalsByBatchTemplateFilePath({
+                templateFileUrl={candidateTotalsByBatchTemplateCsvPath({
                   electionId,
                   jurisdictionId: jurisdiction.id,
                 })}
