@@ -747,3 +747,28 @@ def test_batch_comparison_sample_preview(
         assert preview["name"] == jurisdiction["name"]
         assert preview["numSamples"] == jurisdiction["currentRoundStatus"]["numSamples"]
         assert preview["numUnique"] == jurisdiction["currentRoundStatus"]["numUnique"]
+
+
+def test_batch_tallies_summed_by_jurisdiction_csv_generation(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids,  # pylint: disable=unused-argument
+    contest_ids,  # pylint: disable=unused-argument
+    election_settings,  # pylint: disable=unused-argument
+    manifests,  # pylint: disable=unused-argument
+    batch_tallies,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+
+    rv = client.get(
+        f"/api/election/{election_id}/batch-tallies/summed-by-jurisdiction-csv"
+    )
+    assert rv.status_code == 200
+    csv_contents = rv.data.decode("utf-8")
+    assert csv_contents == (
+        "Jurisdiction,candidate 1,candidate 2,candidate 3,Total Ballots\r\n"
+        "J1,2500,1250,1250,2500\r\n"
+        "J2,2200,1100,1100,2500\r\n"
+        "J3,,,,\r\n"
+        "Total,4700,2350,2350,5000\r\n"
+    )

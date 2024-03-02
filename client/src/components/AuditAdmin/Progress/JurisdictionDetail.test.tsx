@@ -428,7 +428,7 @@ describe('JurisdictionDetail', () => {
       })
       expect(downloadTemplateLink).toHaveAttribute(
         'href',
-        '/api/election/1/jurisdiction/jurisdiction-id-1/batch-tallies/template'
+        '/api/election/1/jurisdiction/jurisdiction-id-1/batch-tallies/template-csv'
       )
       const talliesLink = within(talliesCard).getByRole('button', {
         name: /Download$/,

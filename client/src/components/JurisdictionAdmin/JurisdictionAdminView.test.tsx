@@ -125,7 +125,7 @@ describe('JA setup', () => {
       })[1]
       expect(talliesTemplateButton).toHaveAttribute(
         'href',
-        '/api/election/1/jurisdiction/jurisdiction-id-1/batch-tallies/template'
+        '/api/election/1/jurisdiction/jurisdiction-id-1/batch-tallies/template-csv'
       )
 
       userEvent.click(talliesButton)

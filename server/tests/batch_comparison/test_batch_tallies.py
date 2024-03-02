@@ -685,11 +685,11 @@ def test_batch_tallies_reprocess_after_manifest_reupload(
     assert Jurisdiction.query.get(jurisdiction_ids[0]).batch_tallies is not None
 
 
-def test_batch_tallies_template_generation(
+def test_batch_tallies_template_csv_generation(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_ids: List[str],  # pylint: disable=unused-argument
+    contest_ids,  # pylint: disable=unused-argument
 ):
     for user_type, user_email in [
         (UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL),
@@ -698,11 +698,11 @@ def test_batch_tallies_template_generation(
         set_logged_in_user(client, user_type, user_email)
 
         rv = client.get(
-            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies/template"
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies/template-csv"
         )
         assert rv.status_code == 200
-        template_contents = rv.data.decode("utf-8")
-        assert template_contents == (
+        csv_contents = rv.data.decode("utf-8")
+        assert csv_contents == (
             "Batch Name,candidate 1,candidate 2,candidate 3\r\n"
             "Batch 1,0,0,0\r\n"
             "Batch 2,0,0,0\r\n"

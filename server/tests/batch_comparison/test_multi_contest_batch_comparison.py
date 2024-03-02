@@ -1022,11 +1022,11 @@ def test_multi_contest_batch_comparison_round_2(
     assert_match_report(rv.data, snapshot)
 
 
-def test_multi_contest_batch_comparison_batch_tallies_template_generation(
+def test_multi_contest_batch_comparison_batch_tallies_template_csv_generation(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_ids: List[str],  # pylint: disable=unused-argument
+    contest_ids,  # pylint: disable=unused-argument
 ):
     for user_type, user_email in [
         (UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL),
@@ -1035,11 +1035,11 @@ def test_multi_contest_batch_comparison_batch_tallies_template_generation(
         set_logged_in_user(client, user_type, user_email)
 
         rv = client.get(
-            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies/template"
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies/template-csv"
         )
         assert rv.status_code == 200
-        template_contents = rv.data.decode("utf-8")
-        assert template_contents == (
+        csv_contents = rv.data.decode("utf-8")
+        assert csv_contents == (
             "Batch Name,Contest 1 - Candidate 1,Contest 1 - Candidate 2,Contest 2 - Candidate 3,Contest 2 - Candidate 4\r\n"
             "Batch 1,0,0,0,0\r\n"
             "Batch 2,0,0,0,0\r\n"
@@ -1047,13 +1047,39 @@ def test_multi_contest_batch_comparison_batch_tallies_template_generation(
         )
 
         rv = client.get(
-            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/batch-tallies/template"
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/batch-tallies/template-csv"
         )
         assert rv.status_code == 200
-        template_contents = rv.data.decode("utf-8")
-        assert template_contents == (
+        csv_contents = rv.data.decode("utf-8")
+        assert csv_contents == (
             "Batch Name,Contest 1 - Candidate 1,Contest 1 - Candidate 2\r\n"
             "Batch 1,0,0\r\n"
             "Batch 2,0,0\r\n"
             "Batch 3,0,0\r\n"
         )
+
+
+def test_multi_contest_batch_comparison_batch_tallies_summed_by_jurisdiction_csv_generation(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids,  # pylint: disable=unused-argument
+    contest_ids,  # pylint: disable=unused-argument
+    election_settings,  # pylint: disable=unused-argument
+    manifests,  # pylint: disable=unused-argument
+    batch_tallies,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+
+    rv = client.get(
+        f"/api/election/{election_id}/batch-tallies/summed-by-jurisdiction-csv"
+    )
+    assert rv.status_code == 200
+    csv_contents = rv.data.decode("utf-8")
+    print(csv_contents)
+    assert csv_contents == (
+        "Jurisdiction,Contest 1 - Candidate 1,Contest 1 - Candidate 2,Contest 2 - Candidate 3,Contest 2 - Candidate 4,Total Ballots\r\n"
+        "J1,450,50,450,50,1000\r\n"
+        "J2,150,100,,,250\r\n"
+        "J3,150,100,,,250\r\n"
+        "Total,750,250,450,50,1500\r\n"
+    )
