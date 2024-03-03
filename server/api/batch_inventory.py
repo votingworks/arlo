@@ -25,6 +25,7 @@ from ..util.file import (
 from ..worker.tasks import UserError, background_task, create_background_task
 from ..util.csv_download import csv_response, jurisdiction_timestamp_name
 from ..util.isoformat import isoformat
+from .batch_tallies import construct_contest_choice_csv_headers
 
 # (tabulator_id, batch_id)
 BatchKey = Tuple[str, str]
@@ -39,7 +40,7 @@ class ElectionResults(TypedDict):
     ballot_count_by_batch: Dict[BatchKey, int]
     ballot_count_by_group: Dict[str, int]
     batch_to_counting_group: Dict[BatchKey, str]
-    # { batch_key: { choice_name: count } }
+    # { batch_key: { choice_id: count } }
     batch_tallies: Dict[BatchKey, Dict[str, int]]
 
 
@@ -62,38 +63,53 @@ def process_batch_inventory_cvr_file(jurisdiction_id: str):
     jurisdiction = Jurisdiction.query.get(jurisdiction_id)
 
     contests = list(jurisdiction.contests)
-    contest = contests[0]
-    if len(contests) != 1:  # pragma: no cover
-        raise UserError(
-            "Batch inventory flow does not yet support multi-contest batch audits"
-        )
 
     cvr_file = retrieve_file(batch_inventory_data.cvr_file.storage_path)
     cvrs = csv_reader_for_cvr(cvr_file)
 
     # Parse out all the initial metadata
     _election_name = next(cvrs)[0]
-    contest_row = [" ".join(contest.splitlines()) for contest in next(cvrs)]
+    contests_row = [" ".join(contest.splitlines()) for contest in next(cvrs)]
     contest_choices_row = next(cvrs)
     headers_and_affiliations = next(cvrs)
 
-    contest_header = f"{contest.name} (Vote For={contest.votes_allowed})"
-    choice_indices = {
-        choice_name: index
-        for index, (contest_name, choice_name) in enumerate(
-            zip(contest_row, contest_choices_row)
-        )
-        if contest_name == contest_header
-    }
-    if len(choice_indices) == 0:
-        raise UserError(f"Could not find contest in CVR file: {contest.name}.")
+    expected_contest_headers = [
+        f"{contest.name} (Vote For={contest.votes_allowed})" for contest in contests
+    ]
 
-    missing_choices = set(choice.name for choice in contest.choices) - set(
-        choice_indices.keys()
-    )
-    if len(missing_choices) > 0:
+    missing_contest_headers = [
+        expected_contest_header
+        for expected_contest_header in expected_contest_headers
+        if expected_contest_header not in contests_row
+    ]
+    if len(missing_contest_headers) > 0:
         raise UserError(
-            f"Could not find contest choices in CVR file: {', '.join(missing_choices)}."
+            f"Could not find contests in CVR file: {', '.join(missing_contest_headers)}."
+        )
+
+    choice_indices = {
+        (
+            contests[expected_contest_headers.index(contest_header)].name,
+            choice_name,
+        ): index
+        for index, (contest_header, choice_name) in enumerate(
+            zip(contests_row, contest_choices_row)
+        )
+        if contest_header in expected_contest_headers
+    }
+
+    missing_choices = set(
+        (contest.name, choice.name)
+        for contest in contests
+        for choice in contest.choices
+    ) - set(choice_indices.keys())
+    if len(missing_choices) > 0:
+        missing_choices_strings = [
+            f"{choice_name} for contest {contest_name}"
+            for contest_name, choice_name in missing_choices
+        ]
+        raise UserError(
+            f"Could not find contest choices in CVR file: {', '.join(missing_choices_strings)}."
         )
 
     header_indices = get_header_indices(headers_and_affiliations)
@@ -134,21 +150,27 @@ def process_batch_inventory_cvr_file(jurisdiction_id: str):
         ballot_count_by_group[counting_group] += 1
         batch_to_counting_group[batch_key] = counting_group
 
-        choice_votes = {
-            choice.name: parse_vote(
-                column_value(
-                    row, choice.name, cvr_number, choice_indices, required=False
+        for contest in contests:
+            contest_choice_votes: Dict[str, int] = {
+                choice.id: parse_vote(
+                    column_value(
+                        row,
+                        (contest.name, choice.name),
+                        cvr_number,
+                        choice_indices,
+                        required=False,
+                        header_readable_string_override=f"{choice.name} for contest {contest.name}",
+                    )
                 )
-            )
-            for choice in contest.choices
-        }
+                for choice in contest.choices
+            }
 
-        # Skip overvotes
-        if sum(choice_votes.values()) > contest.votes_allowed:
-            continue
+            # Skip overvotes
+            if sum(contest_choice_votes.values()) > contest.votes_allowed:
+                continue
 
-        for choice_name, vote in choice_votes.items():
-            batch_tallies[batch_key][choice_name] += vote
+            for choice_id, vote in contest_choice_votes.items():
+                batch_tallies[batch_key][choice_id] += vote
 
     election_results: ElectionResults = dict(
         ballot_count_by_batch=dict_to_items_list(ballot_count_by_batch),
@@ -557,13 +579,12 @@ def download_batch_inventory_batch_tallies(
             "Batch inventory must be signed off before downloading batch tallies."
         )
 
-    assert len(list(jurisdiction.contests)) == 1
-    contest = list(jurisdiction.contests)[0]
+    contest_choice_csv_headers = construct_contest_choice_csv_headers(jurisdiction)
 
     csv_io = io.StringIO()
     batch_tallies = csv.writer(csv_io)
 
-    batch_tallies.writerow(["Batch Name"] + [choice.name for choice in contest.choices])
+    batch_tallies.writerow(["Batch Name", *contest_choice_csv_headers.values()])
     for batch_key, tallies in items_list_to_dict(
         election_results["batch_tallies"]
     ).items():
@@ -571,7 +592,8 @@ def download_batch_inventory_batch_tallies(
             batch_key, batch_inventory_data.tabulator_id_to_name
         )
         batch_tallies.writerow(
-            [batch_name] + [tallies[choice.name] for choice in contest.choices]
+            [batch_name]
+            + [tallies[choice_id] for _, choice_id in contest_choice_csv_headers.keys()]
         )
 
     csv_io.seek(0)
