@@ -3,6 +3,7 @@ from flask.testing import FlaskClient
 from ..helpers import *  # pylint: disable=wildcard-import
 from ...models import BatchInventoryData
 
+# Overvote for contest Contest 1 in row 11
 TEST_CVR = """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
 ,,,,,,,,Contest 1 (Vote For=1),Contest 1 (Vote For=1),Contest 2 (Vote For=2),Contest 2 (Vote For=2),Contest 2 (Vote For=2)
 ,,,,,,,,Choice 1-1,Choice 1-2,Choice 2-1,Choice 2-2,Choice 2-3
@@ -24,6 +25,7 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortio
 15,TABULATOR2,BATCH2,6,2-2-6,Election Day,12345,CITY,,,1,0,1
 """
 
+# Overvote for contest Contest 1 in row 11
 TEST_CVRS_WITH_LEADING_EQUAL_SIGNS = """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
 ,,,,,,,,Contest 1 (Vote For=1),Contest 1 (Vote For=1),Contest 2 (Vote For=2),Contest 2 (Vote For=2),Contest 2 (Vote For=2)
 ,,,,,,,,Choice 1-1,Choice 1-2,Choice 2-1,Choice 2-2,Choice 2-3
@@ -77,7 +79,7 @@ def contest_id(client: FlaskClient, election_id: str, jurisdiction_ids: List[str
         "name": "Contest 1",
         "isTargeted": True,
         "choices": [
-            # Double the actual number of votes in TEST_CVR
+            # Double the actual number of votes in TEST_CVR to account for the two jurisdictions
             {"id": str(uuid.uuid4()), "name": "Choice 1-1", "numVotes": 14},
             {"id": str(uuid.uuid4()), "name": "Choice 1-2", "numVotes": 8},
         ],
@@ -88,6 +90,42 @@ def contest_id(client: FlaskClient, election_id: str, jurisdiction_ids: List[str
     rv = put_json(client, f"/api/election/{election_id}/contest", [contest])
     assert_ok(rv)
     return str(contest["id"])
+
+
+@pytest.fixture
+def contest_ids(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    contest1 = {
+        "id": str(uuid.uuid4()),
+        "name": "Contest 1",
+        "isTargeted": True,
+        "choices": [
+            # Double the actual number of votes in TEST_CVR to account for the two jurisdictions
+            {"id": str(uuid.uuid4()), "name": "Choice 1-1", "numVotes": 14},
+            {"id": str(uuid.uuid4()), "name": "Choice 1-2", "numVotes": 8},
+        ],
+        "numWinners": 1,
+        "votesAllowed": 1,
+        "jurisdictionIds": jurisdiction_ids[:2],
+    }
+    contest2 = {
+        "id": str(uuid.uuid4()),
+        "name": "Contest 2",
+        "isTargeted": True,
+        "choices": [
+            # Double the actual number of votes in TEST_CVR to account for the two jurisdictions
+            {"id": str(uuid.uuid4()), "name": "Choice 2-1", "numVotes": 30},
+            {"id": str(uuid.uuid4()), "name": "Choice 2-2", "numVotes": 14},
+            {"id": str(uuid.uuid4()), "name": "Choice 2-3", "numVotes": 16},
+        ],
+        "numWinners": 1,
+        "votesAllowed": 2,
+        "jurisdictionIds": jurisdiction_ids[:2],
+    }
+    contests = [contest1, contest2]
+    rv = put_json(client, f"/api/election/{election_id}/contest", contests)
+    assert_ok(rv)
+    return [str(contest["id"]) for contest in contests]
 
 
 def test_batch_inventory_happy_path(
@@ -455,6 +493,186 @@ def test_batch_inventory_happy_path_cvrs_with_leading_equal_signs(
     assert rv.data.decode("utf-8") == TEST_TABULATOR_STATUS
 
 
+def test_batch_inventory_happy_path_multi_contest_batch_comparison(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    contest_ids,  # pylint: disable=unused-argument
+    snapshot,
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+
+    # Load batch inventory starting state (simulate JA loading the page)
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr"
+    )
+    cvr = json.loads(rv.data)
+    assert cvr == dict(file=None, processing=None)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/tabulator-status"
+    )
+    tabulator_status = json.loads(rv.data)
+    assert tabulator_status == dict(file=None, processing=None)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/sign-off"
+    )
+    sign_off = json.loads(rv.data)
+    assert sign_off == dict(signedOffAt=None)
+
+    # Upload CVR file
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr",
+        data={"cvr": (io.BytesIO(TEST_CVR.encode()), "cvrs.csv",),},
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr"
+    )
+    compare_json(
+        json.loads(rv.data),
+        {
+            "file": {"name": "cvrs.csv", "uploadedAt": assert_is_date},
+            "processing": {
+                "status": ProcessingStatus.PROCESSED,
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": None,
+            },
+        },
+    )
+
+    # Upload tabulator status file
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/tabulator-status",
+        data={
+            "tabulatorStatus": (
+                io.BytesIO(TEST_TABULATOR_STATUS.encode()),
+                "tabulator-status.xml",
+            ),
+        },
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/tabulator-status"
+    )
+    compare_json(
+        json.loads(rv.data),
+        {
+            "file": {"name": "tabulator-status.xml", "uploadedAt": assert_is_date},
+            "processing": {
+                "status": ProcessingStatus.PROCESSED,
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": None,
+            },
+        },
+    )
+
+    # Download worksheet
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/worksheet"
+    )
+    snapshot.assert_match(rv.data.decode("utf-8"))
+
+    # Sign off
+    rv = client.post(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/sign-off"
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/sign-off"
+    )
+    compare_json(json.loads(rv.data), {"signedOffAt": assert_is_date})
+    batch_inventory_data = BatchInventoryData.query.get(jurisdiction_ids[0])
+    assert (
+        batch_inventory_data.sign_off_user_id
+        == User.query.filter_by(email=default_ja_email(election_id)).one().id
+    )
+
+    # Download manifest
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/ballot-manifest"
+    )
+    ballot_manifest = rv.data.decode("utf-8")
+    snapshot.assert_match(ballot_manifest)
+
+    # Download batch tallies
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/batch-tallies"
+    )
+    batch_tallies = rv.data.decode("utf-8")
+    snapshot.assert_match(batch_tallies)
+
+    # Upload manifest
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
+        data={
+            "manifest": (io.BytesIO(ballot_manifest.encode()), "ballot-manifest.csv",),
+        },
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"
+    )
+    compare_json(
+        json.loads(rv.data),
+        {
+            "file": {"name": "ballot-manifest.csv", "uploadedAt": assert_is_date},
+            "processing": {
+                "status": ProcessingStatus.PROCESSED,
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": None,
+            },
+        },
+    )
+
+    # Upload batch tallies
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
+        data={
+            "batchTallies": (io.BytesIO(batch_tallies.encode()), "batch-tallies.csv",)
+        },
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies"
+    )
+    compare_json(
+        json.loads(rv.data),
+        {
+            "file": {"name": "batch-tallies.csv", "uploadedAt": assert_is_date},
+            "processing": {
+                "status": ProcessingStatus.PROCESSED,
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": None,
+            },
+        },
+    )
+
+    # Download CVR file
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr/file"
+    )
+    assert rv.data.decode("utf-8") == TEST_CVR
+
+    # Download tabulator status file
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/tabulator-status/file"
+    )
+    assert rv.data.decode("utf-8") == TEST_TABULATOR_STATUS
+
+
 def test_batch_inventory_download_before_upload(
     client: FlaskClient,
     election_id: str,
@@ -492,11 +710,23 @@ def test_batch_inventory_invalid_file_uploads(
     invalid_cvrs = [
         (
             TEST_CVR.replace("Contest 1", "Contest X"),
-            "Could not find contest in CVR file: Contest 1.",
+            "Could not find contests in CVR file: Contest 1 (Vote For=1).",
+        ),
+        (
+            # Expected contest name with the wrong number of allowed votes
+            TEST_CVR.replace("Contest 1 (Vote For=1)", "Contest 1 (Vote For=2)"),
+            "Could not find contests in CVR file: Contest 1 (Vote For=1).",
         ),
         (
             TEST_CVR.replace("Choice 1-1", "Choice X"),
-            "Could not find contest choices in CVR file: Choice 1-1.",
+            "Could not find contest choices in CVR file: Choice 1-1 for contest Contest 1.",
+        ),
+        (
+            # Expected choice name under the wrong contest
+            TEST_CVR.replace("Choice 1-1", "Choice X").replace(
+                "Choice 2-1", "Choice 1-1"
+            ),
+            "Could not find contest choices in CVR file: Choice 1-1 for contest Contest 1.",
         ),
     ]
     for invalid_cvr, expected_error in invalid_cvrs:
@@ -595,6 +825,51 @@ def test_batch_inventory_invalid_file_uploads(
     )
     tabulator_status = json.loads(rv.data)
     assert tabulator_status["processing"]["status"] == ProcessingStatus.PROCESSED
+
+
+def test_batch_inventory_missing_data_multi_contest_batch_comparison(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    contest_ids,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+
+    invalid_cvrs = [
+        (
+            TEST_CVR.replace("Contest 2", "Contest X"),
+            "Could not find contests in CVR file: Contest 2 (Vote For=2).",
+        ),
+        (
+            # Expected contest name with the wrong number of allowed votes
+            TEST_CVR.replace("Contest 2 (Vote For=2)", "Contest 2 (Vote For=1)"),
+            "Could not find contests in CVR file: Contest 2 (Vote For=2).",
+        ),
+        (
+            TEST_CVR.replace("Choice 2-1", "Choice X"),
+            "Could not find contest choices in CVR file: Choice 2-1 for contest Contest 2.",
+        ),
+    ]
+    for invalid_cvr, expected_error in invalid_cvrs:
+        rv = client.put(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr",
+            data={"cvr": (io.BytesIO(invalid_cvr.encode()), "cvrs.csv",)},
+        )
+        assert_ok(rv)
+
+        rv = client.get(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr"
+        )
+        cvr = json.loads(rv.data)
+        assert cvr["processing"]["status"] == ProcessingStatus.ERRORED
+        assert cvr["processing"]["error"] == expected_error
+
+        rv = client.delete(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr"
+        )
+        assert_ok(rv)
 
 
 def test_batch_inventory_wrong_tabulator_status_file(
