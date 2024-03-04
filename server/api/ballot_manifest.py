@@ -151,7 +151,8 @@ def process_ballot_manifest_file(
         # If CVR file already uploaded, try reprocessing it, since it depends on
         # batch names from the manifest
         if jurisdiction.cvr_file:
-            cvrs.clear_cvr_data(jurisdiction)
+            cvrs.clear_cvr_contests_metadata(jurisdiction)
+            cvrs.clear_cvr_ballots(jurisdiction.id)
             jurisdiction.cvr_file.task = create_background_task(
                 cvrs.process_cvr_file,
                 dict(
