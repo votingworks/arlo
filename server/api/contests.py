@@ -1,15 +1,16 @@
 import typing
 from typing import Dict, List, Optional
-from flask import request, jsonify
+from flask import request, jsonify, session
 from werkzeug.exceptions import BadRequest, Conflict
 
 from . import api
-from ..auth import restrict_access, UserType
+from ..auth import restrict_access, UserType, get_loggedin_user, get_support_user
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
 from ..util.jsonschema import validate, JSONDict
 from . import cvrs  # pylint: disable=cyclic-import
 from . import ballot_manifest  # pylint: disable=cyclic-import
+from . import batch_tallies  # pylint: disable=cyclic-import
 
 
 CONTEST_CHOICE_SCHEMA = {
@@ -285,6 +286,14 @@ def create_or_update_all_contests(election: Election):
     ]
 
     set_contest_metadata(election)
+
+    if election.audit_type == AuditType.BATCH_COMPARISON:
+        user = get_loggedin_user(session)
+        assert user[0] is not None
+        for jurisdiction in election.jurisdictions:
+            batch_tallies.reprocess_batch_tallies_file_if_uploaded(
+                jurisdiction, user, get_support_user(session),
+            )
 
     db_session.commit()
 
