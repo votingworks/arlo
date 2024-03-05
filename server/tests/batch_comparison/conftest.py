@@ -52,7 +52,7 @@ def contest_ids(client: FlaskClient, election_id: str, jurisdiction_ids: List[st
     ]
     rv = put_json(client, f"/api/election/{election_id}/contest", contests)
     assert_ok(rv)
-    return [str(c["id"]) for c in contests]
+    return [str(contest["id"]) for contest in contests]
 
 
 # A convenience fixture for when there's only one contest
