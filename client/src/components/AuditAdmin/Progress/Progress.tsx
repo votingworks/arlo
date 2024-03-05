@@ -3,7 +3,13 @@ import React, { useState, useCallback } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { Column, Cell, TableInstance, SortingRule } from 'react-table'
-import { Button, Switch, ITagProps, Icon } from '@blueprintjs/core'
+import {
+  Button,
+  Switch,
+  ITagProps,
+  Icon,
+  AnchorButton,
+} from '@blueprintjs/core'
 import H2Title from '../../Atoms/H2Title'
 import {
   JurisdictionRoundStatus,
@@ -371,6 +377,47 @@ const Progress: React.FC<IProgressProps> = ({
     [sortAndFilterState, setSortAndFilterState]
   )
 
+  const downloadButtons = (
+    <div style={{ display: 'flex', alignSelf: 'end', gap: '5px' }}>
+      <AnchorButton
+        icon="download"
+        href={`/api/election/${electionId}/batch-tallies/summed-by-jurisdiction-csv`}
+      >
+        Download Reported Results
+      </AnchorButton>
+      <Button
+        icon="download"
+        onClick={() => {
+          downloadTableAsCSV({
+            tableId: 'progress-table',
+            fileName: `audit-progress-${
+              auditSettings.auditName
+            }-${new Date().toISOString()}.csv`,
+          })
+        }}
+      >
+        Download Table as CSV
+      </Button>
+      {showDiscrepancies && (
+        <AsyncButton
+          onClick={() =>
+            apiDownload(`/election/${electionId}/discrepancy-report`)
+          }
+          icon={
+            <Icon
+              icon="flag"
+              intent={someJurisdictionHasDiscrepancies ? 'danger' : 'none'}
+            />
+          }
+        >
+          Download Discrepancy Report
+        </AsyncButton>
+      )}
+    </div>
+  )
+
+  const splitTableControlsAcrossTwoRows = Boolean(showDiscrepancies)
+
   return (
     <Wrapper>
       <H2Title>Audit Progress</H2Title>
@@ -382,58 +429,40 @@ const Progress: React.FC<IProgressProps> = ({
           auditType={auditType}
         />
       )}
-      <TableControls>
-        <div style={{ flexGrow: 1 }}>
-          <FilterInput
-            placeholder="Filter by jurisdiction name..."
-            value={filter}
-            onChange={value =>
-              setSortAndFilterState({
-                ...sortAndFilterState,
-                filter: value || undefined,
-              })
-            }
-          />
-        </div>
-        {round && (
-          <Switch
-            checked={isShowingUnique}
-            label={`Count unique sampled ${ballotsOrBatches.toLowerCase()}`}
-            onChange={() => setIsShowingUnique(!isShowingUnique)}
-            style={{ marginBottom: 0 }}
-          />
-        )}
-        <div>
-          <Button
-            icon="download"
-            onClick={() => {
-              downloadTableAsCSV({
-                tableId: 'progress-table',
-                fileName: `audit-progress-${
-                  auditSettings.auditName
-                }-${new Date().toISOString()}.csv`,
-              })
-            }}
-          >
-            Download Table as CSV
-          </Button>
-          {showDiscrepancies && (
-            <AsyncButton
-              onClick={() =>
-                apiDownload(`/election/${electionId}/discrepancy-report`)
+      <TableControls
+        style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            width: '100%',
+          }}
+        >
+          <div style={{ flexGrow: 1 }}>
+            <FilterInput
+              placeholder="Filter by jurisdiction name..."
+              value={filter}
+              onChange={value =>
+                setSortAndFilterState({
+                  ...sortAndFilterState,
+                  filter: value || undefined,
+                })
               }
-              icon={
-                <Icon
-                  icon="flag"
-                  intent={someJurisdictionHasDiscrepancies ? 'danger' : 'none'}
-                />
-              }
-              style={{ marginLeft: '5px' }}
-            >
-              Download Discrepancy Report
-            </AsyncButton>
+            />
+          </div>
+          {round && (
+            <Switch
+              checked={isShowingUnique}
+              label={`Count unique sampled ${ballotsOrBatches.toLowerCase()}`}
+              onChange={() => setIsShowingUnique(!isShowingUnique)}
+              style={{ marginBottom: 0 }}
+            />
           )}
+          {!splitTableControlsAcrossTwoRows && downloadButtons}
         </div>
+        {splitTableControlsAcrossTwoRows && downloadButtons}
       </TableControls>
       <Table
         data={filteredJurisdictions}

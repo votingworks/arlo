@@ -579,7 +579,9 @@ def download_batch_inventory_batch_tallies(
             "Batch inventory must be signed off before downloading batch tallies."
         )
 
-    contest_choice_csv_headers = construct_contest_choice_csv_headers(jurisdiction)
+    contest_choice_csv_headers = construct_contest_choice_csv_headers(
+        election, jurisdiction
+    )
 
     csv_io = io.StringIO()
     batch_tallies = csv.writer(csv_io)

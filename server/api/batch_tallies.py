@@ -24,7 +24,11 @@ from ..util.file import (
     store_file,
     timestamp_filename,
 )
-from ..util.csv_download import csv_response, jurisdiction_timestamp_name
+from ..util.csv_download import (
+    csv_response,
+    election_timestamp_name,
+    jurisdiction_timestamp_name,
+)
 from ..util.csv_parse import (
     parse_csv,
     CSVValueType,
@@ -42,10 +46,11 @@ BATCH_NAME = "Batch Name"
 
 
 def construct_contest_choice_csv_headers(
-    jurisdiction: Jurisdiction,
+    election: Election, jurisdiction: Optional[Jurisdiction] = None,
 ) -> ContestChoiceCsvHeaders:
-    contests = list(jurisdiction.contests)
-    is_multi_contest_audit = len(list(jurisdiction.election.contests)) > 1
+    audit_contests = list(election.contests)
+    contests = audit_contests if jurisdiction is None else list(jurisdiction.contests)
+    is_multi_contest_audit = len(audit_contests) > 1
     contest_choice_csv_headers = {
         # Include contest name in contest choice CSV headers for multi-contest audits just in
         # case two choices in different contests have the same name
@@ -137,7 +142,9 @@ def process_batch_tallies_file(
 
     def process() -> None:
         contests = list(jurisdiction.contests)
-        contest_choice_csv_headers = construct_contest_choice_csv_headers(jurisdiction)
+        contest_choice_csv_headers = construct_contest_choice_csv_headers(
+            jurisdiction.election, jurisdiction
+        )
 
         # Save the tallies as a JSON blob in the format needed by the audit_math.macro module
         # { batch_name: { contest_id: { choice_id: vote_count } } }
@@ -286,17 +293,19 @@ def clear_batch_tallies(
 
 
 @api.route(
-    "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch-tallies/template",
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch-tallies/template-csv",
     methods=["GET"],
 )
 @restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
-def download_batch_tallies_template(
+def download_batch_tallies_template_csv(
     election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
 ):
     string_io = io.StringIO()
     template = csv.writer(string_io)
 
-    contest_choice_csv_headers = construct_contest_choice_csv_headers(jurisdiction)
+    contest_choice_csv_headers = construct_contest_choice_csv_headers(
+        jurisdiction.election, jurisdiction
+    )
     csv_headers = [
         BATCH_NAME,
         *contest_choice_csv_headers.values(),
@@ -310,4 +319,58 @@ def download_batch_tallies_template(
     return csv_response(
         string_io,
         filename=f"candidate-totals-by-batch-template-{jurisdiction_timestamp_name(election, jurisdiction)}.csv",
+    )
+
+
+@api.route(
+    "/election/<election_id>/batch-tallies/summed-by-jurisdiction-csv", methods=["GET"],
+)
+@restrict_access([UserType.AUDIT_ADMIN])
+def download_batch_tallies_summed_by_jurisdiction_csv(election: Election):
+    string_io = io.StringIO()
+    csv_writer = csv.writer(string_io)
+
+    contest_choice_csv_headers = construct_contest_choice_csv_headers(election)
+    csv_headers = [
+        "Jurisdiction",
+        *contest_choice_csv_headers.values(),
+        "Total Ballots",
+    ]
+    csv_writer.writerow(csv_headers)
+
+    running_totals = [0] * (len(contest_choice_csv_headers) + 1)
+    for jurisdiction in election.jurisdictions:
+        # Sum vote counts across batches
+        # { (contest_id, choice_id): vote_count }
+        vote_counts: Dict[Tuple[str, str], int] = defaultdict(int)
+        if jurisdiction.batch_tallies is not None:
+            assert not isinstance(jurisdiction.batch_tallies, list)
+            for batch_tallies in jurisdiction.batch_tallies.values():
+                for contest_id, batch_tallies_for_contest in batch_tallies.items():
+                    for choice_id, vote_count in batch_tallies_for_contest.items():
+                        vote_counts[(contest_id, choice_id)] += vote_count
+
+        batches = list(jurisdiction.batches)
+        total_ballot_count = (
+            sum(batch.num_ballots for batch in batches) if len(batches) > 0 else None
+        )
+
+        counts = [
+            vote_counts.get(key, None) for key in contest_choice_csv_headers.keys()
+        ] + [total_ballot_count]
+
+        row = [jurisdiction.name, *counts]
+        csv_writer.writerow(row)
+
+        running_totals = [
+            running_total + (count or 0)
+            for running_total, count in zip(running_totals, counts)
+        ]
+
+    total_row = ["Total", *running_totals]
+    csv_writer.writerow(total_row)
+
+    string_io.seek(0)
+    return csv_response(
+        string_io, filename=f"reported-results-{election_timestamp_name(election)}.csv",
     )
