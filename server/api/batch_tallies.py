@@ -325,7 +325,7 @@ def download_batch_tallies_template_csv(
 @api.route(
     "/election/<election_id>/batch-tallies/summed-by-jurisdiction-csv", methods=["GET"],
 )
-@restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
+@restrict_access([UserType.AUDIT_ADMIN])
 def download_batch_tallies_summed_by_jurisdiction_csv(election: Election):
     string_io = io.StringIO()
     csv_writer = csv.writer(string_io)
