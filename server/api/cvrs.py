@@ -219,21 +219,21 @@ def get_header_indices(headers_row: List[str]) -> Dict[str, int]:
 
 
 # Allow a 2-string tuple for Dominion's two-row CSV headers
-DominionCsvHeader = Tuple[str, str]
+HeaderType = TypeVar("HeaderType", str, Tuple[str, str])
 
 
 def column_value(
     row: List[str],
-    header: Union[str, DominionCsvHeader],
+    header: HeaderType,
     row_number: int,
-    header_indices: Union[Dict[str, int], Dict[DominionCsvHeader, int]],
+    header_indices: Dict[HeaderType, int],
     required: bool = True,
     file_name: str = None,
     remove_leading_equal_sign: bool = False,
     header_readable_string_override: Union[str, None] = None,
 ):
     header_readable_string: str = header_readable_string_override or str(header)
-    index = header_indices.get(header)  # type: ignore
+    index = header_indices.get(header)
     if index is None:
         if required:
             raise UserError(
