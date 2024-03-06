@@ -507,7 +507,7 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
         aria-labelledby={`${Classes.TAB_PANEL}_${batch.name}_${selectedTabId}`}
         role="tabpanel"
       >
-        {contests.map(contest => (
+        {contests.map((contest, contestIndex) => (
           <BatchResultTallySheetTable key={contest.id}>
             <thead>
               <tr>
@@ -521,7 +521,7 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
               </tr>
             </thead>
             <tbody>
-              {contest.choices.map((choice, i) => (
+              {contest.choices.map((choice, choiceIndex) => (
                 <tr key={choice.id}>
                   <td>{choice.name}</td>
                   <td>
@@ -540,7 +540,11 @@ const BatchResultTallySheet: React.FC<IBatchResultTallySheetProps> = ({
                         // since we're auto-focusing after a relevant user action and the input is
                         // clearly labeled
                         // eslint-disable-next-line jsx-a11y/no-autofocus
-                        autoFocus={!isSelectedSheetNewAndUnsaved && i === 0}
+                        autoFocus={
+                          !isSelectedSheetNewAndUnsaved &&
+                          contestIndex === 0 &&
+                          choiceIndex === 0
+                        }
                         className={classnames(
                           Classes.INPUT,
                           errors.results?.[choice.id] && Classes.INTENT_DANGER

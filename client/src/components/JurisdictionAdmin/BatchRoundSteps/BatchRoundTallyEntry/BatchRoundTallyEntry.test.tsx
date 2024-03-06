@@ -136,6 +136,7 @@ describe('Batch comparison data entry', () => {
       let row2 = within(rows[3]).getAllByRole('cell')
       const choice1VotesInput = within(row1[1]).getByRole('spinbutton')
       let choice2VotesInput = within(row2[1]).getByRole('spinbutton')
+      expect(choice1VotesInput).toHaveFocus()
       userEvent.type(choice1VotesInput, '1')
       userEvent.clear(choice2VotesInput)
 
@@ -299,6 +300,7 @@ describe('Batch comparison data entry', () => {
       expect(row2).toHaveLength(2)
       let choice1VotesInput = within(row1[1]).getByRole('spinbutton')
       let choice2VotesInput = within(row2[1]).getByRole('spinbutton')
+      expect(choice1VotesInput).toHaveFocus()
       expect(choice1VotesInput).toHaveTextContent('')
       expect(choice2VotesInput).toHaveTextContent('')
 
@@ -479,6 +481,7 @@ describe('Batch comparison data entry', () => {
       let table1Row2 = within(table1Rows[3]).getAllByRole('cell')
       const choice1VotesInput = within(table1Row1[1]).getByRole('spinbutton')
       const choice2VotesInput = within(table1Row2[1]).getByRole('spinbutton')
+      expect(choice1VotesInput).toHaveFocus()
       userEvent.type(choice1VotesInput, '1')
       userEvent.type(choice2VotesInput, '2')
 
@@ -590,6 +593,7 @@ describe('Batch comparison data entry', () => {
       let choice2VotesInput = within(table1Row2[1]).getByRole('spinbutton')
       let choice3VotesInput = within(table2Row1[1]).getByRole('spinbutton')
       let choice4VotesInput = within(table2Row2[1]).getByRole('spinbutton')
+      expect(choice1VotesInput).toHaveFocus()
       expect(choice1VotesInput).toHaveTextContent('')
       expect(choice2VotesInput).toHaveTextContent('')
       expect(choice3VotesInput).toHaveTextContent('')
