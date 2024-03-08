@@ -32,10 +32,7 @@ from ..util.csv_parse import (
 from ..audit_math.suite import HybridPair
 from . import contests
 from . import cvrs
-from .batch_tallies import (
-    clear_batch_tallies_data,
-    process_batch_tallies_file,
-)
+from .batch_tallies import reprocess_batch_tallies_file_if_uploaded
 from ..activity_log.activity_log import UploadFile, activity_base, record_activity
 
 logger = logging.getLogger("arlo")
@@ -164,16 +161,11 @@ def process_ballot_manifest_file(
 
         # If batch tallies file already uploaded, try reprocessing it, since it
         # depends on batch names from the manifest
-        if jurisdiction.batch_tallies_file:
-            clear_batch_tallies_data(jurisdiction)
-            jurisdiction.batch_tallies_file.task = create_background_task(
-                process_batch_tallies_file,
-                dict(
-                    jurisdiction_id=jurisdiction.id,
-                    jurisdiction_admin_email=jurisdiction_admin_email,
-                    support_user_email=support_user_email,
-                ),
-            )
+        reprocess_batch_tallies_file_if_uploaded(
+            jurisdiction,
+            (UserType.JURISDICTION_ADMIN, jurisdiction_admin_email),
+            support_user_email,
+        )
 
     error = None
     try:

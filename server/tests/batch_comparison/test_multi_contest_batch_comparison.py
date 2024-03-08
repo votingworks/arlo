@@ -1083,3 +1083,55 @@ def test_multi_contest_batch_comparison_batch_tallies_summed_by_jurisdiction_csv
         "J3,150,100,,,250\r\n"
         "Total,750,250,450,50,1500\r\n"
     )
+
+
+def test_multi_contest_batch_comparison_editing_contests_after_uploads(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids,  # pylint: disable=unused-argument
+    contest_ids,  # pylint: disable=unused-argument
+    election_settings,  # pylint: disable=unused-argument
+    manifests,  # pylint: disable=unused-argument
+    batch_tallies,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+
+    rv = client.get(f"/api/election/{election_id}/contest")
+    assert rv.status_code == 200
+    contests = json.loads(rv.data)["contests"]
+    contest1 = contests[0]
+    contest2 = contests[1]
+    del contest1["totalBallotsCast"]
+    del contest2["totalBallotsCast"]
+
+    # Delete contest 2
+    rv = put_json(client, f"/api/election/{election_id}/contest", [contest1])
+    assert_ok(rv)
+
+    # Verify that previously uploaded batch tallies are marked as no longer valid
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    assert rv.status_code == 200
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    for jurisdiction in jurisdictions:
+        batch_tallies_status = jurisdiction["batchTallies"]["processing"]
+        assert batch_tallies_status["status"] == "ERRORED"
+        assert (
+            batch_tallies_status["error"]
+            == "Missing required columns: Candidate 1, Candidate 2."
+        )
+
+    # Recreate contest 2
+    contest2["id"] = str(uuid.uuid4())
+    contest2["choices"][0]["id"] = str(uuid.uuid4())
+    contest2["choices"][1]["id"] = str(uuid.uuid4())
+    rv = put_json(client, f"/api/election/{election_id}/contest", [contest1, contest2])
+    assert_ok(rv)
+
+    # Verify that previously uploaded batch tallies are marked as valid again
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    assert rv.status_code == 200
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    for jurisdiction in jurisdictions:
+        batch_tallies_status = jurisdiction["batchTallies"]["processing"]
+        assert batch_tallies_status["status"] == "PROCESSED"
+        assert batch_tallies_status["error"] is None

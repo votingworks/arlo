@@ -65,9 +65,7 @@ def construct_contest_choice_csv_headers(
 
 @background_task
 def process_batch_tallies_file(
-    jurisdiction_id: str,
-    jurisdiction_admin_email: str,
-    support_user_email: Optional[str],
+    jurisdiction_id: str, user: Tuple[UserType, str], support_user_email: Optional[str],
 ):
     jurisdiction: Jurisdiction = Jurisdiction.query.get(jurisdiction_id)
 
@@ -167,8 +165,7 @@ def process_batch_tallies_file(
     finally:
         session = Session(engine)
         base = activity_base(jurisdiction.election)
-        base.user_type = UserType.JURISDICTION_ADMIN
-        base.user_key = jurisdiction_admin_email
+        base.user_type, base.user_key = user
         base.support_user_email = support_user_email
         record_activity(
             UploadFile(
@@ -209,6 +206,23 @@ def clear_batch_tallies_data(jurisdiction: Jurisdiction):
     jurisdiction.batch_tallies = None
 
 
+def reprocess_batch_tallies_file_if_uploaded(
+    jurisdiction: Jurisdiction,
+    user: Tuple[UserType, str],
+    support_user_email: Optional[str],
+):
+    if jurisdiction.batch_tallies_file:
+        clear_batch_tallies_data(jurisdiction)
+        jurisdiction.batch_tallies_file.task = create_background_task(
+            process_batch_tallies_file,
+            dict(
+                jurisdiction_id=jurisdiction.id,
+                user=user,
+                support_user_email=support_user_email,
+            ),
+        )
+
+
 @api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch-tallies",
     methods=["PUT"],
@@ -237,7 +251,7 @@ def upload_batch_tallies(
         process_batch_tallies_file,
         dict(
             jurisdiction_id=jurisdiction.id,
-            jurisdiction_admin_email=get_loggedin_user(session)[1],
+            user=get_loggedin_user(session),
             support_user_email=get_support_user(session),
         ),
     )
