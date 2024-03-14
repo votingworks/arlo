@@ -288,6 +288,7 @@ describe('AA setup flow', () => {
         options: { method: 'DELETE' },
         response: { status: 'ok' },
       },
+      aaApiCalls.getJurisdictions,
       aaApiCalls.getRounds(roundMocks.empty),
       aaApiCalls.getMapData,
     ]
