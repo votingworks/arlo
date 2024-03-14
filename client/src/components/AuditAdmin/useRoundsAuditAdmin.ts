@@ -9,6 +9,7 @@ import {
 import { FileProcessingStatus } from '../useCSV'
 import { ISampleSizeOption } from './Setup/Review/useSampleSizes'
 import { fetchApi, ApiError } from '../../utils/api'
+import { jurisdictionsQueryKey } from '../useJurisdictions'
 
 export interface IRound {
   id: string
@@ -119,8 +120,9 @@ export const useUndoRoundStart = (
   const queryClient = useQueryClient()
 
   return useMutation(deleteRound, {
-    onSuccess: () => {
-      queryClient.invalidateQueries(roundsQueryKey(electionId))
+    onSuccess: async () => {
+      await queryClient.invalidateQueries(jurisdictionsQueryKey(electionId))
+      await queryClient.invalidateQueries(roundsQueryKey(electionId))
     },
   })
 }

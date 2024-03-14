@@ -193,7 +193,9 @@ def serialize_jurisdiction(
             CvrBallot.query.join(Batch)
             .filter_by(jurisdiction_id=jurisdiction.id)
             .count()
-            if processing and processing["status"] == ProcessingStatus.PROCESSED
+            if (not round_status)
+            and processing
+            and processing["status"] == ProcessingStatus.PROCESSED
             else None
         )
         json_jurisdiction["cvrs"] = {
