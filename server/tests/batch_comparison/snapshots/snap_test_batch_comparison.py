@@ -8,7 +8,6 @@ from snapshottest import Snapshot
 snapshots = Snapshot()
 
 snapshots["test_batch_comparison_batches_sampled_multiple_times 1"] = {
-    "numDiscrepancies": 0,
     "numSamples": 5,
     "numSamplesAudited": 5,
     "numUnique": 4,
@@ -17,7 +16,6 @@ snapshots["test_batch_comparison_batches_sampled_multiple_times 1"] = {
 }
 
 snapshots["test_batch_comparison_batches_sampled_multiple_times 2"] = {
-    "numDiscrepancies": 0,
     "numSamples": 2,
     "numSamplesAudited": 2,
     "numUnique": 1,
@@ -53,7 +51,6 @@ J2,Batch 3,"Round 1: 0.368061935896261076, 0.733615858338543383",Yes,candidate 1
 """
 
 snapshots["test_batch_comparison_round_1 1"] = {
-    "numDiscrepancies": None,
     "numSamples": 9,
     "numSamplesAudited": 0,
     "numUnique": 6,
@@ -62,7 +59,6 @@ snapshots["test_batch_comparison_round_1 1"] = {
 }
 
 snapshots["test_batch_comparison_round_1 2"] = {
-    "numDiscrepancies": None,
     "numSamples": 5,
     "numSamplesAudited": 0,
     "numUnique": 2,
@@ -71,7 +67,6 @@ snapshots["test_batch_comparison_round_1 2"] = {
 }
 
 snapshots["test_batch_comparison_round_2 1"] = {
-    "numDiscrepancies": None,
     "numSamples": 5,
     "numSamplesAudited": 2,
     "numUnique": 4,
@@ -80,7 +75,6 @@ snapshots["test_batch_comparison_round_2 1"] = {
 }
 
 snapshots["test_batch_comparison_round_2 10"] = {
-    "numDiscrepancies": None,
     "numSamples": 2,
     "numSamplesAudited": 0,
     "numUnique": 1,
@@ -136,7 +130,6 @@ J1,Batch 4,"Round 2: 0.9553762217707628661, 0.9782132493451071914",No,,candidate
 """
 
 snapshots["test_batch_comparison_round_2 2"] = {
-    "numDiscrepancies": None,
     "numSamples": 5,
     "numSamplesAudited": 3,
     "numUnique": 4,
@@ -145,7 +138,6 @@ snapshots["test_batch_comparison_round_2 2"] = {
 }
 
 snapshots["test_batch_comparison_round_2 3"] = {
-    "numDiscrepancies": None,
     "numSamples": 5,
     "numSamplesAudited": 4,
     "numUnique": 4,
@@ -154,7 +146,6 @@ snapshots["test_batch_comparison_round_2 3"] = {
 }
 
 snapshots["test_batch_comparison_round_2 4"] = {
-    "numDiscrepancies": None,
     "numSamples": 5,
     "numSamplesAudited": 5,
     "numUnique": 4,
@@ -163,7 +154,6 @@ snapshots["test_batch_comparison_round_2 4"] = {
 }
 
 snapshots["test_batch_comparison_round_2 5"] = {
-    "numDiscrepancies": 4,
     "numSamples": 5,
     "numSamplesAudited": 5,
     "numUnique": 4,
@@ -172,7 +162,6 @@ snapshots["test_batch_comparison_round_2 5"] = {
 }
 
 snapshots["test_batch_comparison_round_2 6"] = {
-    "numDiscrepancies": None,
     "numSamples": 2,
     "numSamplesAudited": 0,
     "numUnique": 1,
@@ -181,7 +170,6 @@ snapshots["test_batch_comparison_round_2 6"] = {
 }
 
 snapshots["test_batch_comparison_round_2 7"] = {
-    "numDiscrepancies": 4,
     "numSamples": 5,
     "numSamplesAudited": 5,
     "numUnique": 4,
@@ -190,7 +178,6 @@ snapshots["test_batch_comparison_round_2 7"] = {
 }
 
 snapshots["test_batch_comparison_round_2 8"] = {
-    "numDiscrepancies": 1,
     "numSamples": 2,
     "numSamplesAudited": 2,
     "numUnique": 1,
@@ -199,7 +186,6 @@ snapshots["test_batch_comparison_round_2 8"] = {
 }
 
 snapshots["test_batch_comparison_round_2 9"] = {
-    "numDiscrepancies": None,
     "numSamples": 3,
     "numSamplesAudited": 1,
     "numUnique": 2,

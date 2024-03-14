@@ -239,7 +239,14 @@ describe('Progress screen', () => {
   })
 
   it('shows round status for ballot comparison', async () => {
-    const expectedCalls = [aaApiCalls.getMapData]
+    const expectedCalls = [
+      aaApiCalls.getMapData,
+      aaApiCalls.getDiscrepancyCounts({
+        [jurisdictionMocks.allComplete[0].id]: 0,
+        [jurisdictionMocks.allComplete[1].id]: 2,
+        [jurisdictionMocks.allComplete[2].id]: 1,
+      }),
+    ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = render({
         auditSettings: auditSettingsMocks.ballotComparisonAll,
@@ -249,6 +256,10 @@ describe('Progress screen', () => {
 
       expect(container.querySelectorAll('.d3-component').length).toBe(1)
 
+      // One spinner for each jurisdiction's discrepancy count
+      expect(container.querySelectorAll('.bp3-spinner').length).toBe(
+        1 + jurisdictionMocks.allComplete.length
+      )
       await waitFor(() => {
         expect(container.querySelectorAll('.bp3-spinner').length).toBe(0)
       })
@@ -315,7 +326,14 @@ describe('Progress screen', () => {
   })
 
   it('shows round status for batch comparison', async () => {
-    const expectedCalls = [aaApiCalls.getMapData]
+    const expectedCalls = [
+      aaApiCalls.getMapData,
+      aaApiCalls.getDiscrepancyCounts({
+        [jurisdictionMocks.oneComplete[0].id]: 3,
+        [jurisdictionMocks.oneComplete[1].id]: 2,
+        [jurisdictionMocks.oneComplete[2].id]: 1,
+      }),
+    ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = render({
         auditSettings: auditSettingsMocks.batchComparisonAll,
@@ -346,6 +364,7 @@ describe('Progress screen', () => {
       expect(row1[0]).toHaveTextContent('Jurisdiction 1')
       expectStatusTag(row1[1], 'In progress', 'warning')
       expect(row1[2]).toHaveTextContent('2,117')
+      // Discrepancies hidden until jurisdiction is complete
       expect(row1[3]).toHaveTextContent('')
       expect(row1[4]).toHaveTextContent('4')
       expect(row1[5]).toHaveTextContent('6')
@@ -353,6 +372,7 @@ describe('Progress screen', () => {
       expect(row2[0]).toHaveTextContent('Jurisdiction 2')
       expectStatusTag(row2[1], 'Not started', 'none')
       expect(row2[2]).toHaveTextContent('2,117')
+      // Discrepancies hidden until jurisdiction is complete
       expect(row2[3]).toHaveTextContent('')
       expect(row2[4]).toHaveTextContent('0')
       expect(row2[5]).toHaveTextContent('0')
@@ -595,7 +615,14 @@ describe('Progress screen', () => {
   })
 
   it('shows a different toggle label for batch audits', async () => {
-    const expectedCalls = [aaApiCalls.getMapData]
+    const expectedCalls = [
+      aaApiCalls.getMapData,
+      aaApiCalls.getDiscrepancyCounts({
+        [jurisdictionMocks.oneComplete[0].id]: 0,
+        [jurisdictionMocks.oneComplete[1].id]: 0,
+        [jurisdictionMocks.oneComplete[2].id]: 0,
+      }),
+    ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = render({
         jurisdictions: jurisdictionMocks.oneComplete,

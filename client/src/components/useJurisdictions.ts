@@ -50,7 +50,6 @@ export interface IJurisdiction {
     numUnique: number
     numUniqueAudited: number
     numBatchesAudited?: number
-    numDiscrepancies?: number | null
   } | null
 }
 
@@ -143,4 +142,26 @@ export const useJurisdictions = (
     )
     return response.jurisdictions
   })
+}
+
+// { jurisidictionId: discrepancyCount }
+export type DiscrepancyCountsByJurisdiction = Record<string, number>
+
+const discrepancyCountsQueryKey = (electionId: string): string[] =>
+  jurisdictionsQueryKey(electionId).concat('discrepancy-counts')
+
+export const useDiscrepancyCountsByJurisdiction = (
+  electionId: string,
+  options: { enabled?: boolean }
+): UseQueryResult<DiscrepancyCountsByJurisdiction, ApiError> => {
+  return useQuery(
+    discrepancyCountsQueryKey(electionId),
+    async () => {
+      const response: DiscrepancyCountsByJurisdiction = await fetchApi(
+        `/api/election/${electionId}/discrepancy-counts`
+      )
+      return response
+    },
+    options
+  )
 }

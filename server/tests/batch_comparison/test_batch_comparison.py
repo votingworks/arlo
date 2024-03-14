@@ -287,11 +287,15 @@ def test_batch_comparison_round_2(
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
-    assert jurisdictions[0]["currentRoundStatus"]["numDiscrepancies"] == len(
-        expected_discrepancies_j1
-    )
     snapshot.assert_match(jurisdictions[0]["currentRoundStatus"])
     snapshot.assert_match(jurisdictions[1]["currentRoundStatus"])
+
+    # Check discrepancy counts
+    rv = client.get(f"/api/election/{election_id}/discrepancy-counts")
+    discrepancy_counts = json.loads(rv.data)
+    assert discrepancy_counts[jurisdictions[0]["id"]] == len(expected_discrepancies_j1)
+    # In J2, single sampled batch hasn't been audited yet. The frontend won't show this to the user.
+    assert discrepancy_counts[jurisdictions[1]["id"]] == 1
 
     # Now do the second jurisdiction
     set_logged_in_user(
@@ -352,11 +356,14 @@ def test_batch_comparison_round_2(
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
-    assert jurisdictions[1]["currentRoundStatus"]["numDiscrepancies"] == len(
-        expected_discrepancies_j2
-    )
     snapshot.assert_match(jurisdictions[0]["currentRoundStatus"])
     snapshot.assert_match(jurisdictions[1]["currentRoundStatus"])
+
+    # Check discrepancy counts
+    rv = client.get(f"/api/election/{election_id}/discrepancy-counts")
+    discrepancy_counts = json.loads(rv.data)
+    assert discrepancy_counts[jurisdictions[0]["id"]] == len(expected_discrepancies_j1)
+    assert discrepancy_counts[jurisdictions[1]["id"]] == len(expected_discrepancies_j2)
 
     # End the round
     rv = client.post(f"/api/election/{election_id}/round/current/finish")
@@ -384,8 +391,6 @@ def test_batch_comparison_round_2(
     # Check jurisdiction status after starting the new round
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
-    assert jurisdictions[0]["currentRoundStatus"]["numDiscrepancies"] is None
-    assert jurisdictions[1]["currentRoundStatus"]["numDiscrepancies"] is None
     snapshot.assert_match(jurisdictions[0]["currentRoundStatus"])
     snapshot.assert_match(jurisdictions[1]["currentRoundStatus"])
 
@@ -568,10 +573,15 @@ def test_batch_comparison_batches_sampled_multiple_times(
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
-    assert jurisdictions[0]["currentRoundStatus"]["numDiscrepancies"] == 0
-    assert jurisdictions[1]["currentRoundStatus"]["numDiscrepancies"] == 0
     snapshot.assert_match(jurisdictions[0]["currentRoundStatus"])
     snapshot.assert_match(jurisdictions[1]["currentRoundStatus"])
+
+    # Check discrepancy counts
+    rv = client.get(f"/api/election/{election_id}/discrepancy-counts")
+    discrepancy_counts = json.loads(rv.data)
+    print(discrepancy_counts)
+    assert discrepancy_counts[jurisdictions[0]["id"]] == 0
+    assert discrepancy_counts[jurisdictions[1]["id"]] == 0
 
     # End the round
     rv = client.post(f"/api/election/{election_id}/round/current/finish")
