@@ -2,7 +2,7 @@ from collections import defaultdict
 import random
 from typing import Dict, List, Optional, Tuple, TypedDict, Union
 from sqlalchemy import and_, func, literal, true
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, load_only
 
 
 from ..models import *  # pylint: disable=wildcard-import
@@ -297,9 +297,11 @@ def sampled_ballot_interpretations_to_cvrs(
         )
 
     ballots = ballots_query.options(
+        load_only(SampledBallot.id, SampledBallot.status),
         joinedload(SampledBallot.interpretations)
+        .load_only(BallotInterpretation.contest_id, BallotInterpretation.interpretation)
         .joinedload(BallotInterpretation.selected_choices)
-        .load_only(ContestChoice.id)
+        .load_only(ContestChoice.id),
     ).all()
 
     # The CVR we build should have a 1 for each choice that got voted for,
