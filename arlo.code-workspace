@@ -17,7 +17,7 @@
     ],
     "typescript.tsdk": "client/node_modules/typescript/lib",
     "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": false,
+    "editor.formatOnSave": true,
     "[python]": {
       "editor.defaultFormatter": "ms-python.black-formatter"
     }
