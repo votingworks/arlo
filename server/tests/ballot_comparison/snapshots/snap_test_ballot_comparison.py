@@ -80,7 +80,6 @@ snapshots["test_ballot_comparison_two_rounds 1"] = {
 }
 
 snapshots["test_ballot_comparison_two_rounds 10"] = {
-    "numDiscrepancies": 1,
     "numSamples": 6,
     "numSamplesAudited": 6,
     "numUnique": 5,
@@ -142,7 +141,6 @@ J2,TABULATOR2,BATCH2,4,2-2-5,Round 2: 0.583133559190710795,AUDITED,CONTEST_NOT_O
 """
 
 snapshots["test_ballot_comparison_two_rounds 2"] = {
-    "numDiscrepancies": None,
     "numSamples": 9,
     "numSamplesAudited": 0,
     "numUnique": 8,
@@ -151,7 +149,6 @@ snapshots["test_ballot_comparison_two_rounds 2"] = {
 }
 
 snapshots["test_ballot_comparison_two_rounds 3"] = {
-    "numDiscrepancies": None,
     "numSamples": 11,
     "numSamplesAudited": 0,
     "numUnique": 9,
@@ -160,7 +157,6 @@ snapshots["test_ballot_comparison_two_rounds 3"] = {
 }
 
 snapshots["test_ballot_comparison_two_rounds 4"] = {
-    "numDiscrepancies": 7,
     "numSamples": 9,
     "numSamplesAudited": 9,
     "numUnique": 8,
@@ -169,7 +165,6 @@ snapshots["test_ballot_comparison_two_rounds 4"] = {
 }
 
 snapshots["test_ballot_comparison_two_rounds 5"] = {
-    "numDiscrepancies": None,
     "numSamples": 11,
     "numSamplesAudited": 11,
     "numUnique": 9,
@@ -178,7 +173,6 @@ snapshots["test_ballot_comparison_two_rounds 5"] = {
 }
 
 snapshots["test_ballot_comparison_two_rounds 6"] = {
-    "numDiscrepancies": 7,
     "numSamples": 9,
     "numSamplesAudited": 9,
     "numUnique": 8,
@@ -187,7 +181,6 @@ snapshots["test_ballot_comparison_two_rounds 6"] = {
 }
 
 snapshots["test_ballot_comparison_two_rounds 7"] = {
-    "numDiscrepancies": 4,
     "numSamples": 11,
     "numSamplesAudited": 11,
     "numUnique": 9,
@@ -242,7 +235,6 @@ J2,TABULATOR2,BATCH2,6,,Round 1: 0.414184312862040881,AUDITED,Choice 1-1,,Ballot
 """
 
 snapshots["test_ballot_comparison_two_rounds 9"] = {
-    "numDiscrepancies": 5,
     "numSamples": 4,
     "numSamplesAudited": 4,
     "numUnique": 4,
@@ -257,25 +249,5 @@ snapshots["test_set_contest_metadata_on_contest_creation 1"] = {
         {"name": "Choice 2-3", "num_votes": 14},
     ],
     "total_ballots_cast": 30,
-    "votes_allowed": 2,
-}
-
-snapshots["test_set_contest_metadata_on_manifest_and_cvr_upload 1"] = {
-    "choices": [
-        {"name": "Choice 2-1", "num_votes": 24},
-        {"name": "Choice 2-2", "num_votes": 10},
-        {"name": "Choice 2-3", "num_votes": 14},
-    ],
-    "total_ballots_cast": 30,
-    "votes_allowed": 2,
-}
-
-snapshots["test_set_contest_metadata_on_manifest_and_cvr_upload 2"] = {
-    "choices": [
-        {"name": "Choice 2-1", "num_votes": 18},
-        {"name": "Choice 2-2", "num_votes": 8},
-        {"name": "Choice 2-3", "num_votes": 10},
-    ],
-    "total_ballots_cast": 24,
     "votes_allowed": 2,
 }

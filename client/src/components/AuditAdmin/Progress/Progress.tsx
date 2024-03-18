@@ -9,6 +9,7 @@ import {
   ITagProps,
   Icon,
   AnchorButton,
+  Spinner,
 } from '@blueprintjs/core'
 import H2Title from '../../Atoms/H2Title'
 import {
@@ -16,6 +17,7 @@ import {
   IJurisdiction,
   getJurisdictionStatus,
   JurisdictionProgressStatus,
+  useDiscrepancyCountsByJurisdiction,
 } from '../../useJurisdictions'
 import JurisdictionDetail from './JurisdictionDetail'
 import {
@@ -69,6 +71,14 @@ const Progress: React.FC<IProgressProps> = ({
   round,
 }: IProgressProps) => {
   const { electionId } = useParams<{ electionId: string }>()
+  const { auditType } = auditSettings
+  const showDiscrepancies =
+    Boolean(round) &&
+    (auditType === 'BALLOT_COMPARISON' || auditType === 'BATCH_COMPARISON')
+  const discrepancyCountsQuery = useDiscrepancyCountsByJurisdiction(
+    electionId,
+    { enabled: showDiscrepancies }
+  )
   // Store sort and filter state in URL search params to allow it to persist
   // across page refreshes
   const [sortAndFilterState, setSortAndFilterState] = useSearchParams<{
@@ -81,17 +91,12 @@ const Progress: React.FC<IProgressProps> = ({
     string | null
   >(null)
 
-  const { auditType } = auditSettings
-
   const ballotsOrBatches =
     auditType === 'BATCH_COMPARISON' ? 'Batches' : 'Ballots'
 
-  const showDiscrepancies =
-    round &&
-    (auditType === 'BALLOT_COMPARISON' || auditType === 'BATCH_COMPARISON')
-  const someJurisdictionHasDiscrepancies = jurisdictions.some(
-    jurisdiction => (jurisdiction.currentRoundStatus?.numDiscrepancies || 0) > 0
-  )
+  const someJurisdictionHasDiscrepancies = Object.values(
+    discrepancyCountsQuery.data ?? {}
+  ).some(count => count > 0)
 
   const columns: Column<IJurisdiction>[] = [
     {
@@ -306,8 +311,18 @@ const Progress: React.FC<IProgressProps> = ({
     if (showDiscrepancies) {
       columns.push({
         Header: 'Discrepancies',
-        accessor: ({ currentRoundStatus: s }) => s && s.numDiscrepancies,
+        accessor: ({ id, currentRoundStatus: s }) =>
+          s &&
+          s.status === JurisdictionRoundStatus.COMPLETE &&
+          discrepancyCountsQuery.data?.[id],
         Cell: ({ value }: { value: number | null }) => {
+          if (discrepancyCountsQuery.isLoading) {
+            return (
+              <div style={{ display: 'flex', justifyContent: 'start' }}>
+                <Spinner size={Spinner.SIZE_SMALL} />
+              </div>
+            )
+          }
           if (!value) return null
           return (
             <>
@@ -315,7 +330,9 @@ const Progress: React.FC<IProgressProps> = ({
             </>
           )
         },
-        Footer: totalFooter('Discrepancies'),
+        Footer: discrepancyCountsQuery.isLoading
+          ? () => null
+          : totalFooter('Discrepancies'),
       })
     }
     columns.push(

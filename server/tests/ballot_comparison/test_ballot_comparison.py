@@ -819,14 +819,23 @@ def test_ballot_comparison_two_rounds(
     jurisdictions = json.loads(rv.data)["jurisdictions"]
     assert jurisdictions[0]["currentRoundStatus"]["status"] == "COMPLETE"
     assert jurisdictions[1]["currentRoundStatus"]["status"] == "IN_PROGRESS"
-    discrepancy_counts = count_discrepancies(round_1_audit_results_j1)
-    assert (
-        jurisdictions[0]["currentRoundStatus"]["numDiscrepancies"]
-        == discrepancy_counts[jurisdictions[0]["name"]]
-    )
-    assert jurisdictions[1]["currentRoundStatus"]["numDiscrepancies"] is None
     snapshot.assert_match(jurisdictions[0]["currentRoundStatus"])
     snapshot.assert_match(jurisdictions[1]["currentRoundStatus"])
+
+    # Check discrepancy counts
+    rv = client.get(f"/api/election/{election_id}/discrepancy-counts")
+    discrepancy_counts = json.loads(rv.data)
+    expected_discrepancy_counts = count_discrepancies(round_1_audit_results)
+    assert (
+        discrepancy_counts[jurisdictions[0]["id"]]
+        == expected_discrepancy_counts[jurisdictions[0]["name"]]
+    )
+    # We rely on the frontend to hide the discrepancy counts for J2 until J2 is
+    # signed off to avoid duplicating the round status logic in this endpoint
+    assert (
+        discrepancy_counts[jurisdictions[1]["id"]]
+        == expected_discrepancy_counts[jurisdictions[1]["name"]]
+    )
 
     # Check the discrepancy report - only the first jurisdiction should have
     # audit results so far since the second jurisdiction hasn't signed off yet
@@ -854,15 +863,6 @@ def test_ballot_comparison_two_rounds(
     jurisdictions = json.loads(rv.data)["jurisdictions"]
     assert jurisdictions[0]["currentRoundStatus"]["status"] == "COMPLETE"
     assert jurisdictions[1]["currentRoundStatus"]["status"] == "COMPLETE"
-    discrepancy_counts = count_discrepancies(round_1_audit_results)
-    assert (
-        jurisdictions[0]["currentRoundStatus"]["numDiscrepancies"]
-        == discrepancy_counts[jurisdictions[0]["name"]]
-    )
-    assert (
-        jurisdictions[1]["currentRoundStatus"]["numDiscrepancies"]
-        == discrepancy_counts[jurisdictions[1]["name"]]
-    )
     snapshot.assert_match(jurisdictions[0]["currentRoundStatus"])
     snapshot.assert_match(jurisdictions[1]["currentRoundStatus"])
 
@@ -945,13 +945,19 @@ def test_ballot_comparison_two_rounds(
     jurisdictions = json.loads(rv.data)["jurisdictions"]
     assert jurisdictions[0]["currentRoundStatus"]["status"] == "COMPLETE"
     assert jurisdictions[1]["currentRoundStatus"]["status"] == "COMPLETE"
+    snapshot.assert_match(jurisdictions[0]["currentRoundStatus"])
+    snapshot.assert_match(jurisdictions[1]["currentRoundStatus"])
+
+    # Check discrepancy counts
+    rv = client.get(f"/api/election/{election_id}/discrepancy-counts")
+    discrepancy_counts = json.loads(rv.data)
     round_2_sampled_ballot_keys = [
         ballot_key(ballot)
         for ballot in SampledBallot.query.join(SampledBallotDraw)
         .filter_by(round_id=round_2_id)
         .all()
     ]
-    discrepancy_counts = count_discrepancies(
+    expected_discrepancy_counts = count_discrepancies(
         {
             **{
                 ballot: result
@@ -962,15 +968,13 @@ def test_ballot_comparison_two_rounds(
         }
     )
     assert (
-        jurisdictions[0]["currentRoundStatus"]["numDiscrepancies"]
-        == discrepancy_counts[jurisdictions[0]["name"]]
+        discrepancy_counts[jurisdictions[0]["id"]]
+        == expected_discrepancy_counts[jurisdictions[0]["name"]]
     )
     assert (
-        jurisdictions[1]["currentRoundStatus"]["numDiscrepancies"]
-        == discrepancy_counts[jurisdictions[1]["name"]]
+        discrepancy_counts[jurisdictions[1]["id"]]
+        == expected_discrepancy_counts[jurisdictions[1]["name"]]
     )
-    snapshot.assert_match(jurisdictions[0]["currentRoundStatus"])
-    snapshot.assert_match(jurisdictions[1]["currentRoundStatus"])
 
     # End the round
     rv = client.post(f"/api/election/{election_id}/round/current/finish")
