@@ -2,16 +2,22 @@ from collections import defaultdict
 import csv
 from datetime import datetime, timezone
 import io
-from typing import TypedDict, Dict, Tuple
+from typing import TypedDict, Dict, Tuple, Optional
 import uuid
 from xml.etree import ElementTree
 from flask import request, jsonify, session
 from werkzeug.exceptions import Conflict
+from sqlalchemy.orm import Session
 
 
-from ..database import db_session
+from ..database import db_session, engine
 from . import api
-from ..auth.auth_helpers import UserType, restrict_access, get_loggedin_user
+from ..auth.auth_helpers import (
+    UserType,
+    restrict_access,
+    get_loggedin_user,
+    get_support_user,
+)
 from .cvrs import column_value, csv_reader_for_cvr, get_header_indices
 from ..models import *  # pylint: disable=wildcard-import
 from ..util.csv_parse import validate_csv_mimetype
@@ -26,6 +32,7 @@ from ..worker.tasks import UserError, background_task, create_background_task
 from ..util.csv_download import csv_response, jurisdiction_timestamp_name
 from ..util.isoformat import isoformat
 from .batch_tallies import construct_contest_choice_csv_headers
+from ..activity_log.activity_log import UploadFile, activity_base, record_activity
 
 # (tabulator_id, batch_id)
 BatchKey = Tuple[str, str]
@@ -58,136 +65,173 @@ def items_list_to_dict(items):
 
 
 @background_task
-def process_batch_inventory_cvr_file(jurisdiction_id: str):
-    batch_inventory_data = BatchInventoryData.query.get(jurisdiction_id)
+def process_batch_inventory_cvr_file(
+    jurisdiction_id: str, user: Tuple[UserType, str], support_user_email: Optional[str],
+):
     jurisdiction = Jurisdiction.query.get(jurisdiction_id)
+    batch_inventory_data = BatchInventoryData.query.get(jurisdiction_id)
 
-    contests = list(jurisdiction.contests)
+    def process():
+        contests = list(jurisdiction.contests)
 
-    cvr_file = retrieve_file(batch_inventory_data.cvr_file.storage_path)
-    cvrs = csv_reader_for_cvr(cvr_file)
+        cvr_file = retrieve_file(batch_inventory_data.cvr_file.storage_path)
+        cvrs = csv_reader_for_cvr(cvr_file)
 
-    # Parse out all the initial metadata
-    _election_name = next(cvrs)[0]
-    contests_row = [" ".join(contest.splitlines()) for contest in next(cvrs)]
-    contest_choices_row = next(cvrs)
-    headers_and_affiliations = next(cvrs)
+        # Parse out all the initial metadata
+        _election_name = next(cvrs)[0]
+        contests_row = [" ".join(contest.splitlines()) for contest in next(cvrs)]
+        contest_choices_row = next(cvrs)
+        headers_and_affiliations = next(cvrs)
 
-    expected_contest_headers = [
-        f"{contest.name} (Vote For={contest.votes_allowed})" for contest in contests
-    ]
-
-    missing_contest_headers = [
-        expected_contest_header
-        for expected_contest_header in expected_contest_headers
-        if expected_contest_header not in contests_row
-    ]
-    if len(missing_contest_headers) > 0:
-        raise UserError(
-            f"Could not find contests in CVR file: {', '.join(missing_contest_headers)}."
-        )
-
-    choice_indices = {
-        (
-            contests[expected_contest_headers.index(contest_header)].name,
-            choice_name,
-        ): index
-        for index, (contest_header, choice_name) in enumerate(
-            zip(contests_row, contest_choices_row)
-        )
-        if contest_header in expected_contest_headers
-    }
-
-    missing_choices = set(
-        (contest.name, choice.name)
-        for contest in contests
-        for choice in contest.choices
-    ) - set(choice_indices.keys())
-    if len(missing_choices) > 0:
-        missing_choices_strings = [
-            f"{choice_name} for contest {contest_name}"
-            for contest_name, choice_name in missing_choices
+        expected_contest_headers = [
+            f"{contest.name} (Vote For={contest.votes_allowed})" for contest in contests
         ]
-        raise UserError(
-            f"Could not find contest choices in CVR file: {', '.join(missing_choices_strings)}."
+
+        missing_contest_headers = [
+            expected_contest_header
+            for expected_contest_header in expected_contest_headers
+            if expected_contest_header not in contests_row
+        ]
+        if len(missing_contest_headers) > 0:
+            raise UserError(
+                f"Could not find contests in CVR file: {', '.join(missing_contest_headers)}."
+            )
+
+        choice_indices = {
+            (
+                contests[expected_contest_headers.index(contest_header)].name,
+                choice_name,
+            ): index
+            for index, (contest_header, choice_name) in enumerate(
+                zip(contests_row, contest_choices_row)
+            )
+            if contest_header in expected_contest_headers
+        }
+
+        missing_choices = set(
+            (contest.name, choice.name)
+            for contest in contests
+            for choice in contest.choices
+        ) - set(choice_indices.keys())
+        if len(missing_choices) > 0:
+            missing_choices_strings = [
+                f"{choice_name} for contest {contest_name}"
+                for contest_name, choice_name in missing_choices
+            ]
+            raise UserError(
+                f"Could not find contest choices in CVR file: {', '.join(missing_choices_strings)}."
+            )
+
+        header_indices = get_header_indices(headers_and_affiliations)
+
+        ballot_count_by_group: Dict[str, int] = defaultdict(int)
+        ballot_count_by_batch: Dict[BatchKey, int] = defaultdict(int)
+        batch_to_counting_group: Dict[BatchKey, str] = {}
+        batch_tallies: Dict[BatchKey, Dict[str, int]] = defaultdict(
+            lambda: defaultdict(int)
         )
 
-    header_indices = get_header_indices(headers_and_affiliations)
+        def parse_vote(vote: str):
+            return int(vote if vote != "" else 0)
 
-    ballot_count_by_group: Dict[str, int] = defaultdict(int)
-    ballot_count_by_batch: Dict[BatchKey, int] = defaultdict(int)
-    batch_to_counting_group: Dict[BatchKey, str] = {}
-    batch_tallies: Dict[BatchKey, Dict[str, int]] = defaultdict(
-        lambda: defaultdict(int)
-    )
+        for row_index, row in enumerate(cvrs):
+            cvr_number = column_value(
+                row,
+                "CvrNumber",
+                row_index + 1,
+                header_indices,
+                remove_leading_equal_sign=True,
+            )
+            tabulator_number = column_value(
+                row,
+                "TabulatorNum",
+                cvr_number,
+                header_indices,
+                remove_leading_equal_sign=True,
+            )
+            batch_id = column_value(
+                row,
+                "BatchId",
+                cvr_number,
+                header_indices,
+                remove_leading_equal_sign=True,
+            )
+            counting_group = column_value(
+                row, "CountingGroup", cvr_number, header_indices
+            )
 
-    def parse_vote(vote: str):
-        return int(vote if vote != "" else 0)
+            batch_key = (tabulator_number, batch_id)
 
-    for row_index, row in enumerate(cvrs):
-        cvr_number = column_value(
-            row,
-            "CvrNumber",
-            row_index + 1,
-            header_indices,
-            remove_leading_equal_sign=True,
-        )
-        tabulator_number = column_value(
-            row,
-            "TabulatorNum",
-            cvr_number,
-            header_indices,
-            remove_leading_equal_sign=True,
-        )
-        batch_id = column_value(
-            row, "BatchId", cvr_number, header_indices, remove_leading_equal_sign=True,
-        )
-        counting_group = column_value(row, "CountingGroup", cvr_number, header_indices)
+            ballot_count_by_batch[batch_key] += 1
+            ballot_count_by_group[counting_group] += 1
+            batch_to_counting_group[batch_key] = counting_group
 
-        batch_key = (tabulator_number, batch_id)
-
-        ballot_count_by_batch[batch_key] += 1
-        ballot_count_by_group[counting_group] += 1
-        batch_to_counting_group[batch_key] = counting_group
-
-        for contest in contests:
-            contest_choice_votes: Dict[str, int] = {
-                choice.id: parse_vote(
-                    column_value(
-                        row,
-                        (contest.name, choice.name),
-                        cvr_number,
-                        choice_indices,
-                        required=False,
-                        header_readable_string_override=f"{choice.name} for contest {contest.name}",
+            for contest in contests:
+                contest_choice_votes: Dict[str, int] = {
+                    choice.id: parse_vote(
+                        column_value(
+                            row,
+                            (contest.name, choice.name),
+                            cvr_number,
+                            choice_indices,
+                            required=False,
+                            header_readable_string_override=f"{choice.name} for contest {contest.name}",
+                        )
                     )
-                )
-                for choice in contest.choices
-            }
+                    for choice in contest.choices
+                }
 
-            # Skip overvotes
-            if sum(contest_choice_votes.values()) > contest.votes_allowed:
-                continue
+                # Skip overvotes
+                if sum(contest_choice_votes.values()) > contest.votes_allowed:
+                    continue
 
-            for choice_id, vote in contest_choice_votes.items():
-                batch_tallies[batch_key][choice_id] += vote
+                for choice_id, vote in contest_choice_votes.items():
+                    batch_tallies[batch_key][choice_id] += vote
 
-    election_results: ElectionResults = dict(
-        ballot_count_by_batch=dict_to_items_list(ballot_count_by_batch),
-        ballot_count_by_group=dict(ballot_count_by_group),
-        batch_to_counting_group=dict_to_items_list(batch_to_counting_group),
-        batch_tallies=dict_to_items_list(batch_tallies),
-    )
-    batch_inventory_data.election_results = election_results
-
-    # If tabulator status file already uploaded, try reprocessing it, since it
-    # validates tabulator names against the CVR file.
-    if batch_inventory_data.tabulator_status_file:
-        batch_inventory_data.tabulator_id_to_name = None
-        batch_inventory_data.tabulator_status_file.task = create_background_task(
-            process_batch_inventory_tabulator_status_file,
-            dict(jurisdiction_id=jurisdiction.id),
+        election_results: ElectionResults = dict(
+            ballot_count_by_batch=dict_to_items_list(ballot_count_by_batch),
+            ballot_count_by_group=dict(ballot_count_by_group),
+            batch_to_counting_group=dict_to_items_list(batch_to_counting_group),
+            batch_tallies=dict_to_items_list(batch_tallies),
         )
+        batch_inventory_data.election_results = election_results
+
+        # If tabulator status file already uploaded, try reprocessing it, since it
+        # validates tabulator names against the CVR file.
+        if batch_inventory_data.tabulator_status_file:
+            batch_inventory_data.tabulator_id_to_name = None
+            batch_inventory_data.tabulator_status_file.task = create_background_task(
+                process_batch_inventory_tabulator_status_file,
+                dict(
+                    jurisdiction_id=jurisdiction.id,
+                    user=user,
+                    support_user_email=support_user_email,
+                ),
+            )
+
+    error = None
+    try:
+        process()
+    except Exception as exc:
+        error = str(exc) or str(exc.__class__.__name__)
+        raise exc
+    finally:
+        session = Session(engine)
+        base = activity_base(jurisdiction.election)
+        base.user_type, base.user_key = user
+        base.support_user_email = support_user_email
+        record_activity(
+            UploadFile(
+                timestamp=batch_inventory_data.cvr_file.uploaded_at,
+                base=base,
+                jurisdiction_id=jurisdiction.id,
+                jurisdiction_name=jurisdiction.name,
+                file_type="batch_inventory_cvrs",
+                error=error,
+            ),
+            session,
+        )
+        session.commit()
 
 
 TABULATOR_STATUS_PARSE_ERROR = (
@@ -197,35 +241,64 @@ TABULATOR_STATUS_PARSE_ERROR = (
 
 
 @background_task
-def process_batch_inventory_tabulator_status_file(jurisdiction_id: str):
+def process_batch_inventory_tabulator_status_file(
+    jurisdiction_id: str, user: Tuple[UserType, str], support_user_email: Optional[str],
+):
+    jurisdiction = Jurisdiction.query.get(jurisdiction_id)
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction_id)
-    file = retrieve_file(batch_inventory_data.tabulator_status_file.storage_path)
-    try:
-        cvr_xml = ElementTree.parse(file)
-    except Exception as error:
-        raise UserError(TABULATOR_STATUS_PARSE_ERROR) from error
 
-    tabulators = cvr_xml.findall("tabulators/tb")
-    if len(tabulators) == 0:
-        raise UserError(TABULATOR_STATUS_PARSE_ERROR)
-    tabulator_id_to_name = {
-        tabulator.get("tid"): tabulator.get("name") for tabulator in tabulators
-    }
+    def process():
+        file = retrieve_file(batch_inventory_data.tabulator_status_file.storage_path)
+        try:
+            cvr_xml = ElementTree.parse(file)
+        except Exception as error:
+            raise UserError(TABULATOR_STATUS_PARSE_ERROR) from error
 
-    ballot_count_by_batch = items_list_to_dict(
-        batch_inventory_data.election_results["ballot_count_by_batch"]
-    )
-    cvr_tabulator_ids = {
-        tabulator_id for (tabulator_id, _) in ballot_count_by_batch.keys()
-    }
-    missing_tabulators = set(cvr_tabulator_ids) - set(tabulator_id_to_name.keys())
-    if len(missing_tabulators) > 0:
-        raise UserError(
-            "Could not find some tabulators from CVR file in Tabulator Status file."
-            f" Missing tabulator IDs: {', '.join(missing_tabulators)}."
+        tabulators = cvr_xml.findall("tabulators/tb")
+        if len(tabulators) == 0:
+            raise UserError(TABULATOR_STATUS_PARSE_ERROR)
+        tabulator_id_to_name = {
+            tabulator.get("tid"): tabulator.get("name") for tabulator in tabulators
+        }
+
+        ballot_count_by_batch = items_list_to_dict(
+            batch_inventory_data.election_results["ballot_count_by_batch"]
         )
+        cvr_tabulator_ids = {
+            tabulator_id for (tabulator_id, _) in ballot_count_by_batch.keys()
+        }
+        missing_tabulators = set(cvr_tabulator_ids) - set(tabulator_id_to_name.keys())
+        if len(missing_tabulators) > 0:
+            raise UserError(
+                "Could not find some tabulators from CVR file in Tabulator Status file."
+                f" Missing tabulator IDs: {', '.join(missing_tabulators)}."
+            )
 
-    batch_inventory_data.tabulator_id_to_name = tabulator_id_to_name
+        batch_inventory_data.tabulator_id_to_name = tabulator_id_to_name
+
+    error = None
+    try:
+        process()
+    except Exception as exc:
+        error = str(exc) or str(exc.__class__.__name__)
+        raise exc
+    finally:
+        session = Session(engine)
+        base = activity_base(jurisdiction.election)
+        base.user_type, base.user_key = user
+        base.support_user_email = support_user_email
+        record_activity(
+            UploadFile(
+                timestamp=batch_inventory_data.tabulator_status_file.uploaded_at,
+                base=base,
+                jurisdiction_id=jurisdiction.id,
+                jurisdiction_name=jurisdiction.name,
+                file_type="batch_inventory_tabulator_status",
+                error=error,
+            ),
+            session,
+        )
+        session.commit()
 
 
 @api.route(
@@ -257,7 +330,12 @@ def upload_batch_inventory_cvr(election: Election, jurisdiction: Jurisdiction):
         uploaded_at=datetime.now(timezone.utc),
     )
     batch_inventory_data.cvr_file.task = create_background_task(
-        process_batch_inventory_cvr_file, dict(jurisdiction_id=jurisdiction.id,),
+        process_batch_inventory_cvr_file,
+        dict(
+            jurisdiction_id=jurisdiction.id,
+            user=get_loggedin_user(session),
+            support_user_email=get_support_user(session),
+        ),
     )
     db_session.commit()
     return jsonify(status="ok")
@@ -346,7 +424,11 @@ def upload_batch_inventory_tabulator_status(
     )
     batch_inventory_data.tabulator_status_file.task = create_background_task(
         process_batch_inventory_tabulator_status_file,
-        dict(jurisdiction_id=jurisdiction.id),
+        dict(
+            jurisdiction_id=jurisdiction.id,
+            user=get_loggedin_user(session),
+            support_user_email=get_support_user(session),
+        ),
     )
     db_session.commit()
     return jsonify(status="ok")
