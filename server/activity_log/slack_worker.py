@@ -163,6 +163,8 @@ def slack_message(activity: activity_log.Activity):
     if isinstance(activity, activity_log.UploadFile):
         file_type = dict(
             ballot_manifest="Ballot manifest",
+            batch_inventory_cvr="Batch inventory CVR",
+            batch_inventory_tabulator_status="Batch inventory tabulator status",
             batch_tallies="Batch tallies",
             cvrs="CVR",
         )[activity.file_type]
