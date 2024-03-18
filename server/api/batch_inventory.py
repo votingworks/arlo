@@ -226,7 +226,7 @@ def process_batch_inventory_cvr_file(
                 base=base,
                 jurisdiction_id=jurisdiction.id,
                 jurisdiction_name=jurisdiction.name,
-                file_type="batch_inventory_cvr",
+                file_type="batch_inventory_cvrs",
                 error=error,
             ),
             session,
