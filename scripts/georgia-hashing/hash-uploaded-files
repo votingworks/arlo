@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+AUDIT_ID="258987fd-fde9-4b2d-b7d4-fd18c30bfd19"
+ZIP_FILE_NAME="ga-2024-03-files"
+
+if [[ -z "${DATABASE_URL:-}" ]]; then
+    echo "Usage: DATABASE_URL=<database-url> hash-uploaded-files"
+    exit 1
+fi
+
+rm -rf "${ZIP_FILE_NAME}" "${ZIP_FILE_NAME}.zip" "${ZIP_FILE_NAME}.zip.sha256sum"
+mkdir "${ZIP_FILE_NAME}"
+
+# Retrieve ballot manifests
+psql "${DATABASE_URL}" -A -F "," -t -c \
+    "SELECT jurisdiction.name, file.storage_path FROM jurisdiction JOIN file ON jurisdiction.manifest_file_id = file.id WHERE jurisdiction.election_id = '${AUDIT_ID}' ORDER BY jurisdiction.name;"  \
+    | xargs -d "\n" -n 1 ./download-file-from-s3 "${ZIP_FILE_NAME}"
+
+# Retrieve candidate-totals-by-batch files
+psql "${DATABASE_URL}" -A -F "," -t -c \
+    "SELECT jurisdiction.name, file.storage_path FROM jurisdiction JOIN file ON jurisdiction.batch_tallies_file_id = file.id WHERE jurisdiction.election_id = '${AUDIT_ID}' ORDER BY jurisdiction.name;"  \
+    | xargs -d "\n" -n 1 ./download-file-from-s3 "${ZIP_FILE_NAME}"
+
+zip -r "${ZIP_FILE_NAME}.zip" "${ZIP_FILE_NAME}"
+sha256sum "${ZIP_FILE_NAME}.zip" > "${ZIP_FILE_NAME}.zip.sha256sum"

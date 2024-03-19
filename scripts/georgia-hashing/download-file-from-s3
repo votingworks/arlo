@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+destination_directory="${1}" # ga-2024-03-files
+source_data="${2}" # APPLING,s3://arlo-file-uploads-production/audits/258987fd-fde9-4b2d-b7d4-fd18c30bfd19/jurisdictions/ee89c08c-927f-4a18-94a7-a9c148bcd399/manifest_2024-03-18T14:05:35.451035+00:00.csv
+
+jurisdiction_name="$(echo "${source_data}" | cut -d "," -f1)"
+s3_file_path="$(echo "${source_data}" | cut -d "," -f2)"
+
+destination_sub_directory="${jurisdiction_name}"
+destination_file_name="$(basename "${source_data}" | sed 's/[_:+]/-/g')"
+destination="${destination_directory}/${destination_sub_directory}/${destination_file_name}"
+
+aws s3 cp "${s3_file_path}" "${destination}"
