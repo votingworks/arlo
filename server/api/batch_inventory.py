@@ -66,7 +66,9 @@ def items_list_to_dict(items):
 
 @background_task
 def process_batch_inventory_cvr_file(
-    jurisdiction_id: str, user: Tuple[UserType, str], support_user_email: Optional[str],
+    jurisdiction_id: str,
+    user: Tuple[UserType, str],
+    support_user_email: Optional[str],
 ):
     jurisdiction = Jurisdiction.query.get(jurisdiction_id)
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction_id)
@@ -242,7 +244,9 @@ TABULATOR_STATUS_PARSE_ERROR = (
 
 @background_task
 def process_batch_inventory_tabulator_status_file(
-    jurisdiction_id: str, user: Tuple[UserType, str], support_user_email: Optional[str],
+    jurisdiction_id: str,
+    user: Tuple[UserType, str],
+    support_user_email: Optional[str],
 ):
     jurisdiction = Jurisdiction.query.get(jurisdiction_id)
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction_id)
@@ -299,6 +303,38 @@ def process_batch_inventory_tabulator_status_file(
             session,
         )
         session.commit()
+
+
+@api.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch-inventory/system",
+    methods=["PUT"],
+)
+@restrict_access([UserType.JURISDICTION_ADMIN])
+def set_batch_inventory_system(election: Election, jurisdiction: Jurisdiction):
+    batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
+    if not batch_inventory_data:
+        batch_inventory_data = BatchInventoryData(jurisdiction_id=jurisdiction.id)
+        db_session.add(batch_inventory_data)
+
+    json = request.get_json()
+    print(json)
+    batch_inventory_data.system_type = json["systemType"]
+    db_session.commit()
+    return jsonify(status="ok")
+
+
+@api.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch-inventory/system",
+    methods=["GET"],
+)
+@restrict_access([UserType.JURISDICTION_ADMIN])
+def get_batch_inventory_system(
+    election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
+):
+    batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
+    if not batch_inventory_data:
+        return jsonify(None)
+    return jsonify(batch_inventory_data.system_type)
 
 
 @api.route(
@@ -364,7 +400,8 @@ def get_batch_inventory_cvr(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def clear_batch_inventory_cvr(
-    election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,
+    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
 
@@ -385,7 +422,8 @@ def clear_batch_inventory_cvr(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def download_batch_inventory_cvr(
-    election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,
+    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
     if not batch_inventory_data or not batch_inventory_data.cvr_file:
@@ -459,7 +497,8 @@ def get_batch_inventory_tabulator_status(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def clear_batch_inventory_tabulator_status(
-    election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,
+    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
 
@@ -480,7 +519,8 @@ def clear_batch_inventory_tabulator_status(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def download_batch_inventory_tabulator_status(
-    election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,
+    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
     if not batch_inventory_data or not batch_inventory_data.tabulator_status_file:
@@ -539,7 +579,11 @@ def download_batch_inventory_worksheet(election: Election, jurisdiction: Jurisdi
             batch_key, batch_inventory_data.tabulator_id_to_name
         )
         worksheet.writerow(
-            [batch_name, ballot_count, "",]
+            [
+                batch_name,
+                ballot_count,
+                "",
+            ]
         )
 
     csv_io.seek(0)

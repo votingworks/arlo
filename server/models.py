@@ -352,7 +352,9 @@ class User(BaseModel):
 
 class AuditAdministration(BaseModel):
     organization_id = Column(
-        String(200), ForeignKey("organization.id", ondelete="cascade"), nullable=False,
+        String(200),
+        ForeignKey("organization.id", ondelete="cascade"),
+        nullable=False,
     )
     user_id = Column(
         String(200), ForeignKey("user.id", ondelete="cascade"), nullable=False
@@ -374,7 +376,9 @@ class JurisdictionAdministration(BaseModel):
         String(200), ForeignKey("user.id", ondelete="cascade"), nullable=False
     )
     jurisdiction_id = Column(
-        String(200), ForeignKey("jurisdiction.id", ondelete="cascade"), nullable=False,
+        String(200),
+        ForeignKey("jurisdiction.id", ondelete="cascade"),
+        nullable=False,
     )
 
     jurisdiction = relationship(
@@ -394,7 +398,9 @@ class JurisdictionAdministration(BaseModel):
 class Batch(BaseModel):
     id = Column(String(200), primary_key=True)
     jurisdiction_id = Column(
-        String(200), ForeignKey("jurisdiction.id", ondelete="cascade"), nullable=False,
+        String(200),
+        ForeignKey("jurisdiction.id", ondelete="cascade"),
+        nullable=False,
     )
     jurisdiction = relationship("Jurisdiction", back_populates="batches")
 
@@ -490,7 +496,9 @@ class Contest(BaseModel):
 class ContestChoice(BaseModel):
     id = Column(String(200), primary_key=True)
     contest_id = Column(
-        String(200), ForeignKey("contest.id", ondelete="cascade"), nullable=False,
+        String(200),
+        ForeignKey("contest.id", ondelete="cascade"),
+        nullable=False,
     )
     contest = relationship("Contest", back_populates="choices")
 
@@ -539,7 +547,9 @@ class AuditBoard(BaseModel):
     id = Column(String(200), primary_key=True)
 
     jurisdiction_id = Column(
-        String(200), ForeignKey("jurisdiction.id", ondelete="cascade"), nullable=False,
+        String(200),
+        ForeignKey("jurisdiction.id", ondelete="cascade"),
+        nullable=False,
     )
     jurisdiction = relationship("Jurisdiction", back_populates="audit_boards")
 
@@ -573,7 +583,9 @@ class TallyEntryUser(BaseModel):
     id = Column(String(200), primary_key=True)
 
     jurisdiction_id = Column(
-        String(200), ForeignKey("jurisdiction.id", ondelete="cascade"), nullable=False,
+        String(200),
+        ForeignKey("jurisdiction.id", ondelete="cascade"),
+        nullable=False,
     )
     jurisdiction = relationship("Jurisdiction")
 
@@ -775,7 +787,9 @@ class RoundContest(BaseModel):
     round = relationship("Round", back_populates="round_contests")
 
     contest_id = Column(
-        String(200), ForeignKey("contest.id", ondelete="cascade"), nullable=False,
+        String(200),
+        ForeignKey("contest.id", ondelete="cascade"),
+        nullable=False,
     )
     contest = relationship("Contest")
 
@@ -798,7 +812,9 @@ class RoundContestResult(BaseModel):
         String(200), ForeignKey("round.id", ondelete="cascade"), nullable=False
     )
     contest_id = Column(
-        String(200), ForeignKey("contest.id", ondelete="cascade"), nullable=False,
+        String(200),
+        ForeignKey("contest.id", ondelete="cascade"),
+        nullable=False,
     )
     contest = relationship("Contest", back_populates="results")
     __table_args__ = (
@@ -825,7 +841,9 @@ class RoundContestResult(BaseModel):
 # match any of the batches in the ballot manifest.
 class FullHandTallyBatchResult(BaseModel):
     jurisdiction_id = Column(
-        String(200), ForeignKey("jurisdiction.id", ondelete="cascade"), nullable=False,
+        String(200),
+        ForeignKey("jurisdiction.id", ondelete="cascade"),
+        nullable=False,
     )
     batch_name = Column(String(200), nullable=False)
     batch_type = Column(String(200), nullable=False)
@@ -847,10 +865,14 @@ class JurisdictionResult(BaseModel):
         String(200), ForeignKey("round.id", ondelete="cascade"), nullable=False
     )
     contest_id = Column(
-        String(200), ForeignKey("contest.id", ondelete="cascade"), nullable=False,
+        String(200),
+        ForeignKey("contest.id", ondelete="cascade"),
+        nullable=False,
     )
     jurisdiction_id = Column(
-        String(200), ForeignKey("jurisdiction.id", ondelete="cascade"), nullable=False,
+        String(200),
+        ForeignKey("jurisdiction.id", ondelete="cascade"),
+        nullable=False,
     )
     contest_choice_id = Column(
         String(200),
@@ -874,7 +896,9 @@ class JurisdictionResult(BaseModel):
 # they are given a ticket number to uniquely identify each draw.
 class SampledBatchDraw(BaseModel):
     batch_id = Column(
-        String(200), ForeignKey("batch.id", ondelete="cascade"), nullable=False,
+        String(200),
+        ForeignKey("batch.id", ondelete="cascade"),
+        nullable=False,
     )
     batch = relationship("Batch")
 
@@ -898,18 +922,24 @@ class SampledBatchDraw(BaseModel):
 # special ticket number to flag them.
 EXTRA_TICKET_NUMBER = "EXTRA"
 
+
 # In a batch comparison audit, audit boards will record votes on tally sheets.
 # They may use one sheet for the whole batch, or split the batch up and use
 # multiple sheets.
 class BatchResultTallySheet(BaseModel):
     id = Column(String(200), primary_key=True)
     batch_id = Column(
-        String(200), ForeignKey("batch.id", ondelete="cascade"), nullable=False,
+        String(200),
+        ForeignKey("batch.id", ondelete="cascade"),
+        nullable=False,
     )
     name = Column(String(200), nullable=False)
 
     results = relationship(
-        "BatchResult", uselist=True, cascade="all, delete-orphan", passive_deletes=True,
+        "BatchResult",
+        uselist=True,
+        cascade="all, delete-orphan",
+        passive_deletes=True,
     )
 
     __table_args__ = (UniqueConstraint("batch_id", "name"),)
@@ -937,7 +967,9 @@ class BatchResult(BaseModel):
 # Records when the jurisdiction finalizes their batch results for a round.
 class BatchResultsFinalized(BaseModel):
     jurisdiction_id = Column(
-        String(200), ForeignKey("jurisdiction.id", ondelete="cascade"), nullable=False,
+        String(200),
+        ForeignKey("jurisdiction.id", ondelete="cascade"),
+        nullable=False,
     )
     round_id = Column(
         String(200), ForeignKey("round.id", ondelete="cascade"), nullable=False
@@ -950,7 +982,9 @@ class BatchResultsFinalized(BaseModel):
 # the audit board's interpretation of the ballot.
 class CvrBallot(Base):
     batch_id = Column(
-        String(200), ForeignKey("batch.id", ondelete="cascade"), nullable=False,
+        String(200),
+        ForeignKey("batch.id", ondelete="cascade"),
+        nullable=False,
     )
     batch = relationship("Batch")
     # record_id is the identifying number given to the ballot by the tabulator
@@ -1015,6 +1049,8 @@ class BatchInventoryData(BaseModel):
         nullable=False,
         primary_key=True,
     )
+
+    system_type = Column(String(200))
 
     cvr_file_id = Column(String(200), ForeignKey("file.id", ondelete="set null"))
     cvr_file = relationship(

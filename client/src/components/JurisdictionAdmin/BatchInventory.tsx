@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { H2, Button, H4, Checkbox } from '@blueprintjs/core'
+import { H2, Button, H4, Checkbox, HTMLSelect } from '@blueprintjs/core'
 import {
   useQueryClient,
   useMutation,
@@ -13,14 +13,14 @@ import { Wrapper, Inner } from '../Atoms/Wrapper'
 import FileUpload from '../Atoms/FileUpload'
 import { fetchApi } from '../../utils/api'
 import AsyncButton from '../Atoms/AsyncButton'
-import { FileProcessingStatus } from '../useCSV'
+import { CvrFileType, FileProcessingStatus } from '../useCSV'
 import {
   IFileUpload,
   useUploadFiles,
   useDeleteFile,
   useUploadedFile,
 } from '../useFileUpload'
-import { apiDownload } from '../utilities'
+import { apiDownload, assert } from '../utilities'
 import LinkButton from '../Atoms/LinkButton'
 import {
   StepPanel,
@@ -31,9 +31,14 @@ import {
   stepState,
   StepPanelColumn,
 } from '../Atoms/Steps'
-import { Column } from '../Atoms/Layout'
+import { Column, Row } from '../Atoms/Layout'
+import {
+  BatchInventoryConfig,
+  useBatchInventoryFeatureFlag,
+} from '../useFeatureFlag'
 
 const STEPS = [
+  'Select System',
   'Upload Election Results',
   'Inventory Batches',
   'Download Audit Files',
@@ -42,6 +47,34 @@ const STEPS = [
 const isUploaded = (fileUpload: IFileUpload) =>
   fileUpload.uploadedFile.data?.processing?.status ===
   FileProcessingStatus.PROCESSED
+
+interface ISystemQueries {
+  system: UseQueryResult<CvrFileType | null>
+  setSystem: UseMutationResult<CvrFileType, unknown, CvrFileType, unknown>
+}
+
+const useBatchInventorySystem = (
+  electionId: string,
+  jurisdictionId: string
+): ISystemQueries => {
+  const queryClient = useQueryClient()
+  const key = ['batchInventory', jurisdictionId, 'system']
+  const url = `/api/election/${electionId}/jurisdiction/${jurisdictionId}/batch-inventory/system`
+  const system = useQuery<CvrFileType | null>(key, () => fetchApi(url))
+  const setSystem = useMutation(
+    (systemType: CvrFileType) =>
+      fetchApi(url, {
+        method: 'PUT',
+        body: JSON.stringify({ systemType }),
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    { onSuccess: () => queryClient.invalidateQueries(key) }
+  )
+  return {
+    system,
+    setSystem,
+  }
+}
 
 const useBatchInventoryCVR = (
   electionId: string,
@@ -140,31 +173,94 @@ const useBatchInventorySignOff = (
   }
 }
 
-const UploadElectionResultsStep: React.FC<{
+const SelectSystemStep: React.FC<{
+  systemQueries: ISystemQueries
   nextStep: () => void
-  cvrUpload: IFileUpload
-  tabulatorStatusUpload: IFileUpload
-}> = ({ nextStep, cvrUpload, tabulatorStatusUpload }) => {
+}> = ({ systemQueries, nextStep }) => {
+  if (!systemQueries.system.isSuccess) {
+    return null
+  }
+
+  const system = systemQueries.system.data
+
+  const setSystem = async (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = event.target.value as CvrFileType
+    await systemQueries.setSystem.mutateAsync(value)
+  }
+
   return (
     <>
       <StepPanel>
-        <StepPanelColumn>
-          <FileUpload
-            title="Cast Vote Records (CVR)"
-            {...cvrUpload}
-            acceptFileTypes={['csv']}
-          />
-        </StepPanelColumn>
-        <StepPanelColumn>
-          <FileUpload
-            title="Tabulator Status"
-            {...tabulatorStatusUpload}
-            acceptFileTypes={['xml']}
-            uploadDisabled={!isUploaded(cvrUpload)}
-          />
-        </StepPanelColumn>
+        <Row alignItems="center" gap="10px" justifyContent="center">
+          <span>Select your voting system:</span>
+          <HTMLSelect large value={system ?? undefined} onChange={setSystem}>
+            {!system && <option value={undefined}></option>}
+            <option value={CvrFileType.DOMINION}>Dominion</option>
+            <option value={CvrFileType.ESS}>ES&amp;S</option>
+          </HTMLSelect>
+        </Row>
       </StepPanel>
       <StepActions
+        right={
+          <Button
+            onClick={nextStep}
+            intent="primary"
+            rightIcon="chevron-right"
+            disabled={!system}
+          >
+            Continue
+          </Button>
+        }
+      />
+    </>
+  )
+}
+
+const UploadElectionResultsStep: React.FC<{
+  system: CvrFileType
+  cvrUpload: IFileUpload
+  tabulatorStatusUpload: IFileUpload
+  prevStep: () => void
+  nextStep: () => void
+}> = ({ system, cvrUpload, tabulatorStatusUpload, prevStep, nextStep }) => {
+  return (
+    <>
+      {system === CvrFileType.DOMINION && (
+        <StepPanel>
+          <StepPanelColumn>
+            <FileUpload
+              title="Cast Vote Records (CVR)"
+              {...cvrUpload}
+              acceptFileTypes={['csv']}
+            />
+          </StepPanelColumn>
+          <StepPanelColumn>
+            <FileUpload
+              title="Tabulator Status"
+              {...tabulatorStatusUpload}
+              acceptFileTypes={['xml']}
+              uploadDisabled={!isUploaded(cvrUpload)}
+            />
+          </StepPanelColumn>
+        </StepPanel>
+      )}
+      {system === CvrFileType.ESS && (
+        <StepPanel>
+          <StepPanelColumn>
+            <FileUpload
+              title="Cast Vote Records (CVR)"
+              {...cvrUpload}
+              acceptFileTypes={['csv', 'zip']}
+            />
+          </StepPanelColumn>
+        </StepPanel>
+      )}
+      <StepActions
+        left={
+          <Button icon="chevron-left" onClick={prevStep}>
+            Back
+          </Button>
+        }
         right={
           <Button
             onClick={nextStep}
@@ -250,10 +346,11 @@ const InventoryBatchesStep: React.FC<{
 }
 
 const DownloadAuditFilesStep: React.FC<{
+  showBallotManifest: boolean
   ballotManifestUrl: string
   batchTalliesUrl: string
   prevStep: () => void
-}> = ({ ballotManifestUrl, batchTalliesUrl, prevStep }) => {
+}> = ({ showBallotManifest, ballotManifestUrl, batchTalliesUrl, prevStep }) => {
   const { electionId, jurisdictionId } = useParams<{
     electionId: string
     jurisdictionId: string
@@ -267,29 +364,45 @@ const DownloadAuditFilesStep: React.FC<{
           style={{ maxWidth: '50%' }}
         >
           <H4>Batch Inventory Complete</H4>
-          <p style={{ marginBottom: '15px' }}>
-            Next, download the Ballot Manifest and Candidate Totals by Batch
-            files, then upload them on the{' '}
-            <Link to={`/election/${electionId}/jurisdiction/${jurisdictionId}`}>
-              Audit Setup
-            </Link>{' '}
-            page.
-          </p>
+          {showBallotManifest ? (
+            <p style={{ marginBottom: '15px' }}>
+              Next, download the Ballot Manifest and Candidate Totals by Batch
+              files, then upload them on the{' '}
+              <Link
+                to={`/election/${electionId}/jurisdiction/${jurisdictionId}`}
+              >
+                Audit Setup
+              </Link>{' '}
+              page.
+            </p>
+          ) : (
+            <p style={{ marginBottom: '15px' }}>
+              Next, download this file, then upload it on the{' '}
+              <Link
+                to={`/election/${electionId}/jurisdiction/${jurisdictionId}`}
+              >
+                Audit Setup
+              </Link>{' '}
+              page.
+            </p>
+          )}
           <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <AsyncButton
-              intent="primary"
-              large
-              icon="download"
-              onClick={() => apiDownload(ballotManifestUrl)}
-            >
-              Download Ballot Manifest
-            </AsyncButton>
+            {showBallotManifest && (
+              <AsyncButton
+                intent="primary"
+                large
+                icon="download"
+                onClick={() => apiDownload(ballotManifestUrl)}
+                style={{ marginBottom: '10px' }}
+              >
+                Download Ballot Manifest
+              </AsyncButton>
+            )}
             <AsyncButton
               intent="primary"
               large
               icon="download"
               onClick={() => apiDownload(batchTalliesUrl)}
-              style={{ marginTop: '10px' }}
             >
               Download Candidate Totals by Batch
             </AsyncButton>
@@ -324,10 +437,18 @@ const HeadingRow = styled.div`
 `
 
 const BatchInventorySteps: React.FC<{
+  batchInventoryConfig: BatchInventoryConfig
+  systemQueries: ISystemQueries
   cvrUpload: IFileUpload
   tabulatorStatusUpload: IFileUpload
   signOffQueries: ISignOffQueries
-}> = ({ cvrUpload, tabulatorStatusUpload, signOffQueries }) => {
+}> = ({
+  batchInventoryConfig,
+  systemQueries,
+  cvrUpload,
+  tabulatorStatusUpload,
+  signOffQueries,
+}) => {
   const { electionId, jurisdictionId } = useParams<{
     electionId: string
     jurisdictionId: string
@@ -338,16 +459,23 @@ const BatchInventorySteps: React.FC<{
   const areFilesUploaded =
     isUploaded(cvrUpload) && isUploaded(tabulatorStatusUpload)
   const isSignedOff = signOffQueries.status.data?.signedOffAt !== null
-  const initialStep = !areFilesUploaded
+  const system = systemQueries.system.data
+  const initialStep = !system
+    ? 'Select System'
+    : !areFilesUploaded
     ? 'Upload Election Results'
     : !isSignedOff
     ? 'Inventory Batches'
     : 'Download Audit Files'
 
+  const steps = batchInventoryConfig.generateBallotManifest
+    ? STEPS
+    : STEPS.filter(step => step !== 'Inventory Batches')
+
   const [currentStep, setCurrentStep] = useState<typeof STEPS[number]>(
     initialStep
   )
-  const currentStepNumber = STEPS.indexOf(currentStep) + 1
+  const currentStepNumber = steps.indexOf(currentStep) + 1
 
   return (
     <Wrapper>
@@ -364,7 +492,7 @@ const BatchInventorySteps: React.FC<{
         </HeadingRow>
         <Steps>
           <StepList>
-            {STEPS.map((step, index) => (
+            {steps.map((step, index) => (
               <StepListItem
                 key={step}
                 stepNumber={index + 1}
@@ -376,14 +504,31 @@ const BatchInventorySteps: React.FC<{
           </StepList>
           {(() => {
             switch (currentStep) {
-              case 'Upload Election Results':
+              case 'Select System':
                 return (
-                  <UploadElectionResultsStep
-                    cvrUpload={cvrUpload}
-                    tabulatorStatusUpload={tabulatorStatusUpload}
-                    nextStep={() => setCurrentStep('Inventory Batches')}
+                  <SelectSystemStep
+                    systemQueries={systemQueries}
+                    nextStep={() => setCurrentStep('Upload Election Results')}
                   />
                 )
+              case 'Upload Election Results': {
+                assert(system !== undefined && system !== null)
+                return (
+                  <UploadElectionResultsStep
+                    system={system}
+                    cvrUpload={cvrUpload}
+                    tabulatorStatusUpload={tabulatorStatusUpload}
+                    prevStep={() => setCurrentStep('Select System')}
+                    nextStep={() =>
+                      setCurrentStep(
+                        batchInventoryConfig.generateBallotManifest
+                          ? 'Inventory Batches'
+                          : 'Download Audit Files'
+                      )
+                    }
+                  />
+                )
+              }
               case 'Inventory Batches':
                 return (
                   <InventoryBatchesStep
@@ -393,14 +538,28 @@ const BatchInventorySteps: React.FC<{
                     nextStep={() => setCurrentStep('Download Audit Files')}
                   />
                 )
-              case 'Download Audit Files':
+              case 'Download Audit Files': {
+                assert(system !== undefined && system !== null)
                 return (
                   <DownloadAuditFilesStep
+                    showBallotManifest={
+                      batchInventoryConfig.generateBallotManifest ||
+                      new URLSearchParams(window.location.search).get(
+                        'show-ballot-manifest'
+                      ) === 'true'
+                    }
                     ballotManifestUrl={`/election/${electionId}/jurisdiction/${jurisdictionId}/batch-inventory/ballot-manifest`}
                     batchTalliesUrl={`/election/${electionId}/jurisdiction/${jurisdictionId}/batch-inventory/batch-tallies`}
-                    prevStep={() => setCurrentStep('Inventory Batches')}
+                    prevStep={() =>
+                      setCurrentStep(
+                        batchInventoryConfig.generateBallotManifest
+                          ? 'Inventory Batches'
+                          : 'Upload Election Results'
+                      )
+                    }
                   />
                 )
+              }
               default:
                 throw new Error('Unknown step')
             }
@@ -416,15 +575,19 @@ const BatchInventory: React.FC = () => {
     electionId: string
     jurisdictionId: string
   }>()
+  const systemQueries = useBatchInventorySystem(electionId, jurisdictionId)
   const cvrUpload = useBatchInventoryCVR(electionId, jurisdictionId)
   const tabulatorStatusUpload = useBatchInventoryTabulatorStatus(
     electionId,
     jurisdictionId
   )
   const signOffQueries = useBatchInventorySignOff(electionId, jurisdictionId)
+  const batchInventoryConfig = useBatchInventoryFeatureFlag(jurisdictionId)
+  assert(batchInventoryConfig !== undefined)
 
   if (
     !(
+      systemQueries.system.isSuccess &&
       cvrUpload.uploadedFile.isSuccess &&
       tabulatorStatusUpload.uploadedFile.isSuccess &&
       signOffQueries.status.isSuccess
@@ -435,6 +598,8 @@ const BatchInventory: React.FC = () => {
 
   return (
     <BatchInventorySteps
+      batchInventoryConfig={batchInventoryConfig}
+      systemQueries={systemQueries}
       cvrUpload={cvrUpload}
       tabulatorStatusUpload={tabulatorStatusUpload}
       signOffQueries={signOffQueries}
