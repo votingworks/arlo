@@ -663,11 +663,6 @@ def download_batch_inventory_ballot_manifest(
     batch_inventory_data = get_or_404(BatchInventoryData, jurisdiction.id)
     election_results: ElectionResults = batch_inventory_data.election_results
 
-    if not batch_inventory_data.signed_off_at:
-        raise Conflict(
-            "Batch inventory must be signed off before downloading ballot manifest."
-        )
-
     csv_io = io.StringIO()
     ballot_manifest = csv.writer(csv_io)
 
@@ -705,11 +700,6 @@ def download_batch_inventory_batch_tallies(
 ):
     batch_inventory_data = get_or_404(BatchInventoryData, jurisdiction.id)
     election_results: ElectionResults = batch_inventory_data.election_results
-
-    if not batch_inventory_data.signed_off_at:
-        raise Conflict(
-            "Batch inventory must be signed off before downloading batch tallies."
-        )
 
     contest_choice_csv_headers = construct_contest_choice_csv_headers(
         election, jurisdiction
