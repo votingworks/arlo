@@ -1016,6 +1016,8 @@ class BatchInventoryData(BaseModel):
         primary_key=True,
     )
 
+    system_type = Column(String(200))
+
     cvr_file_id = Column(String(200), ForeignKey("file.id", ondelete="set null"))
     cvr_file = relationship(
         "File",
