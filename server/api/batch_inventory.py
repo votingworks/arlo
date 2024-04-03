@@ -302,6 +302,57 @@ def process_batch_inventory_tabulator_status_file(
 
 
 @api.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch-inventory/system-type",
+    methods=["PUT"],
+)
+@restrict_access([UserType.JURISDICTION_ADMIN])
+def set_batch_inventory_system_type(
+    election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
+):
+    system_type = request.get_json()["systemType"]
+    if system_type is None:
+        raise BadRequest("Missing systemType param")
+    if system_type not in [CvrFileType.DOMINION, CvrFileType.ESS]:
+        raise BadRequest(f"Unrecognized systemType param: {system_type}")
+
+    batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
+    if not batch_inventory_data:
+        batch_inventory_data = BatchInventoryData(jurisdiction_id=jurisdiction.id)
+        db_session.add(batch_inventory_data)
+
+    batch_inventory_data.system_type = system_type
+
+    # Clear dependent data
+    if batch_inventory_data.cvr_file_id:
+        File.query.filter_by(id=batch_inventory_data.cvr_file_id).delete()
+    if batch_inventory_data.tabulator_status_file_id:
+        File.query.filter_by(id=batch_inventory_data.tabulator_status_file_id).delete()
+    batch_inventory_data.election_results = None
+    clear_sign_off(batch_inventory_data)
+
+    db_session.commit()
+    return jsonify(status="ok")
+
+
+@api.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch-inventory/system-type",
+    methods=["GET"],
+)
+@restrict_access([UserType.JURISDICTION_ADMIN])
+def get_batch_inventory_system_type(
+    election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
+):
+    batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
+    return jsonify(
+        dict(
+            systemType=(
+                batch_inventory_data.system_type if batch_inventory_data else None
+            )
+        )
+    )
+
+
+@api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch-inventory/cvr",
     methods=["PUT"],
 )
