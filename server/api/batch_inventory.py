@@ -359,7 +359,11 @@ def get_batch_inventory_system_type(
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def upload_batch_inventory_cvr(election: Election, jurisdiction: Jurisdiction):
     if len(list(jurisdiction.contests)) == 0:
-        raise Conflict("Jurisdiction does not have any contests assigned")
+        raise Conflict("Jurisdiction does not have any contests assigned.")
+
+    batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
+    if not batch_inventory_data or not batch_inventory_data.system_type:
+        raise Conflict("Must select system type before uploading CVR file.")
 
     validate_csv_mimetype(request.files["cvr"])
     file_name = request.files["cvr"].filename
@@ -368,11 +372,6 @@ def upload_batch_inventory_cvr(election: Election, jurisdiction: Jurisdiction):
         f"audits/{election.id}/jurisdictions/{jurisdiction.id}/"
         + timestamp_filename("batch-inventory-cvrs", "csv"),
     )
-
-    batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
-    if not batch_inventory_data:
-        batch_inventory_data = BatchInventoryData(jurisdiction_id=jurisdiction.id)
-        db_session.add(batch_inventory_data)
 
     batch_inventory_data.cvr_file = File(
         id=str(uuid.uuid4()),
