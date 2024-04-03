@@ -29,7 +29,9 @@ const JurisdictionAdminView: React.FC = () => {
     jurisdictionId: string
   }>()
   const auth = useAuthDataContext()
-  const isBatchInventoryEnabled = useBatchInventoryFeatureFlag(jurisdictionId)
+  const isBatchInventoryEnabled = Boolean(
+    useBatchInventoryFeatureFlag(jurisdictionId)
+  )
 
   const auditSettings = useAuditSettingsJurisdictionAdmin(
     electionId,
