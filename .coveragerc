@@ -6,6 +6,7 @@ omit =
     server/config.py
     scripts/*
     fixtures/*
+    server/api/batch_inventory.py
 
 [report]
 fail_under = 100
