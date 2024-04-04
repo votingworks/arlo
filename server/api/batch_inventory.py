@@ -42,15 +42,25 @@ from ..activity_log.activity_log import UploadFile, activity_base, record_activi
 BatchKey = Tuple[str, str]
 
 
-def batch_key_to_name(batch_key: BatchKey, tabulator_id_to_name: Dict[str, str]) -> str:
+def batch_key_to_name(
+    batch_key: BatchKey, tabulator_id_to_name: Optional[Dict[str, str]]
+) -> str:
     tabulator_id, batch_id = batch_key
-    return f"{tabulator_id_to_name[tabulator_id]} - {batch_id}"
+
+    if not tabulator_id:
+        return batch_id
+
+    return (
+        f"{tabulator_id_to_name[tabulator_id]} - {batch_id}"
+        if tabulator_id_to_name
+        else f"{tabulator_id} - {batch_id}"
+    )
 
 
 class ElectionResults(TypedDict):
     ballot_count_by_batch: Dict[BatchKey, int]
-    ballot_count_by_group: Dict[str, int]
-    batch_to_counting_group: Dict[BatchKey, str]
+    ballot_count_by_group: Optional[Dict[str, int]]
+    batch_to_counting_group: Optional[Dict[BatchKey, str]]
     # { batch_key: { choice_id: count } }
     batch_tallies: Dict[BatchKey, Dict[str, int]]
 
@@ -590,7 +600,9 @@ def download_batch_inventory_worksheet(election: Election, jurisdiction: Jurisdi
     worksheet.writerow([])
 
     worksheet.writerow(["Ballot Group", "CVR Ballot Count", "Checked? (Type Yes/No)"])
-    for group_name, ballot_count in election_results["ballot_count_by_group"].items():
+    for group_name, ballot_count in (
+        election_results["ballot_count_by_group"] or {}
+    ).items():
         worksheet.writerow([group_name, ballot_count, ""])
     worksheet.writerow([])
 
@@ -689,13 +701,17 @@ def download_batch_inventory_ballot_manifest(
     csv_io = io.StringIO()
     ballot_manifest = csv.writer(csv_io)
 
-    ballot_manifest.writerow(["Container", "Batch Name", "Number of Ballots"])
-
-    # We originally didn't have counting group stored, so we make this
-    # optional for backwards compatibility
+    # We originally didn't have a batch_to_counting_group key at all, so we protect against the key
+    # not existing by using .get
     batch_to_counting_group = items_list_to_dict(
-        election_results.get("batch_to_counting_group", [])
+        election_results.get("batch_to_counting_group", None) or []
     )
+    should_include_container_column = len(batch_to_counting_group) > 0
+
+    if should_include_container_column:
+        ballot_manifest.writerow(["Container", "Batch Name", "Number of Ballots"])
+    else:
+        ballot_manifest.writerow(["Batch Name", "Number of Ballots"])
 
     for batch_key, ballot_count in items_list_to_dict(
         election_results["ballot_count_by_batch"]
@@ -703,8 +719,11 @@ def download_batch_inventory_ballot_manifest(
         batch_name = batch_key_to_name(
             batch_key, batch_inventory_data.tabulator_id_to_name
         )
-        counting_group = batch_to_counting_group.get(batch_key)
-        ballot_manifest.writerow([counting_group, batch_name, ballot_count])
+        if should_include_container_column:
+            counting_group = batch_to_counting_group.get(batch_key)
+            ballot_manifest.writerow([counting_group, batch_name, ballot_count])
+        else:
+            ballot_manifest.writerow([batch_name, ballot_count])
 
     csv_io.seek(0)
     return csv_response(
