@@ -1,3 +1,6 @@
+import os
+import shutil
+import tempfile
 from collections import defaultdict
 import csv
 from datetime import datetime, timezone
@@ -18,12 +21,19 @@ from ..auth.auth_helpers import (
     get_loggedin_user,
     get_support_user,
 )
-from .cvrs import column_value, csv_reader_for_cvr, get_header_indices
+from .cvrs import (
+    column_value,
+    csv_reader_for_cvr,
+    get_header_indices,
+    read_ess_ballots_file,
+    separate_ess_cvr_and_ballots_files,
+)
 from ..models import *  # pylint: disable=wildcard-import
 from ..util.csv_parse import (
     does_file_have_csv_mimetype,
     does_file_have_zip_mimetype,
     INVALID_CSV_ERROR,
+    validate_comma_delimited,
 )
 from ..util.file import (
     retrieve_file,
@@ -31,6 +41,7 @@ from ..util.file import (
     serialize_file_processing,
     store_file,
     timestamp_filename,
+    unzip_files,
 )
 from ..worker.tasks import UserError, background_task, create_background_task
 from ..util.csv_download import csv_response, jurisdiction_timestamp_name
@@ -82,13 +93,20 @@ def items_list_to_dict(items):
 def process_batch_inventory_cvr_file(
     jurisdiction_id: str, user: Tuple[UserType, str], support_user_email: Optional[str],
 ):
+    working_directory = tempfile.mkdtemp()
+
+    def clean_up_file_system():
+        if os.path.exists(working_directory):
+            shutil.rmtree(working_directory)
+
     jurisdiction = Jurisdiction.query.get(jurisdiction_id)
-    batch_inventory_data = BatchInventoryData.query.get(jurisdiction_id)
+    batch_inventory_data: BatchInventoryData = BatchInventoryData.query.get(
+        jurisdiction_id
+    )
+    contests = list(jurisdiction.contests)
+    cvr_file = retrieve_file(batch_inventory_data.cvr_file.storage_path)
 
-    def process():
-        contests = list(jurisdiction.contests)
-
-        cvr_file = retrieve_file(batch_inventory_data.cvr_file.storage_path)
+    def process_dominion():
         cvrs = csv_reader_for_cvr(cvr_file)
 
         # Parse out all the initial metadata
@@ -223,6 +241,151 @@ def process_batch_inventory_cvr_file(
                 ),
             )
 
+    def process_ess():
+        ballot_count_by_batch: Dict[BatchKey, int] = defaultdict(int)
+        batch_tallies: Dict[BatchKey, Dict[str, int]] = defaultdict(
+            lambda: defaultdict(int)
+        )
+
+        def validate_choice_name_and_get_choice_id(choice_name: str) -> Optional[str]:
+            choice_id = None
+            for choice in contest.choices:
+                if choice.name == choice_name:
+                    choice_id = choice.id
+                    break
+
+            if (
+                not choice_id
+                and choice_name
+                and choice_name != "overvote"
+                and choice_name != "undervote"
+                and choice_name != "Write-in"
+            ):
+                raise UserError(f"Unrecognized choice in CVR file: {choice_name}")
+
+            return choice_id
+
+        # ZIP file with multiple CSVs
+        if batch_inventory_data.cvr_file.storage_path.endswith(".zip"):
+            entry_names = unzip_files(cvr_file, working_directory)
+            file_names = [
+                entry_name
+                for entry_name in entry_names
+                if entry_name.endswith(".csv")
+                and not entry_name.startswith(".")
+                and not entry_name.startswith("__")
+            ]
+            cvr_file.close()
+
+            cvr_and_ballots_files = separate_ess_cvr_and_ballots_files(
+                working_directory, file_names
+            )
+            primary_cvr_file, ballots_files = (
+                cvr_and_ballots_files["cvr_file"],
+                cvr_and_ballots_files["ballots_files"],
+            )
+
+            cvr_number_to_batch = {}
+            for ballots_file in ballots_files.values():
+                _, headers, rows = read_ess_ballots_file(ballots_file)
+                header_indices = get_header_indices(headers)
+                for row_index, row in enumerate(rows):
+                    cvr_number = column_value(
+                        row,
+                        "Cast Vote Record",
+                        row_index + 1,
+                        header_indices,
+                        required=True,
+                    )
+                    batch = column_value(
+                        row, "Batch", cvr_number, header_indices, required=True
+                    )
+                    cvr_number_to_batch[cvr_number] = batch
+
+            validate_comma_delimited(primary_cvr_file)
+            cvr_csv = csv.reader(primary_cvr_file, delimiter=",")
+            headers = next(cvr_csv)
+            header_indices = get_header_indices(headers)
+
+            contest_names = [contest.name for contest in contests]
+            missing_contest_names = set(contest_names) - set(headers)
+            if len(missing_contest_names) != 0:
+                raise UserError(
+                    f"CVR file is missing contest names: {', '.join(missing_contest_names)}"
+                )
+
+            for row_index, row in enumerate(cvr_csv):
+                for contest in contests:
+                    cvr_number = column_value(
+                        row,
+                        "Cast Vote Record",
+                        row_index + 1,
+                        header_indices,
+                        required=True,
+                    )
+                    choice_name = column_value(
+                        row,
+                        contest.name,
+                        row_index + 1,
+                        header_indices,
+                        required=False,
+                    )
+
+                    if cvr_number not in cvr_number_to_batch:
+                        raise UserError(
+                            f"Unable to find batch for CVR number {cvr_number} in ballots files"
+                        )
+                    batch = cvr_number_to_batch[cvr_number]
+                    batch_key: BatchKey = ("", batch)
+                    choice_id = validate_choice_name_and_get_choice_id(choice_name)
+
+                    ballot_count_by_batch[batch_key] += 1
+                    if choice_id:
+                        batch_tallies[batch_key][choice_id] += 1
+
+        # Single CSV file
+        else:
+            cvrs = csv_reader_for_cvr(cvr_file)
+            headers = next(cvrs)
+            header_indices = get_header_indices(headers)
+            for row_index, row in enumerate(cvrs):
+                for contest in contests:
+                    batch = column_value(
+                        row, "Batch", row_index + 1, header_indices, required=True,
+                    )
+                    choice_name = column_value(
+                        row,
+                        contest.name,
+                        row_index + 1,
+                        header_indices,
+                        required=False,
+                    )
+
+                    batch_key: BatchKey = ("", batch)
+                    choice_id = validate_choice_name_and_get_choice_id(choice_name)
+
+                    ballot_count_by_batch[batch_key] += 1
+                    if choice_id:
+                        batch_tallies[batch_key][choice_id] += 1
+
+        election_results: ElectionResults = dict(
+            ballot_count_by_batch=dict_to_items_list(ballot_count_by_batch),
+            ballot_count_by_group=None,
+            batch_to_counting_group=None,
+            batch_tallies=dict_to_items_list(batch_tallies),
+        )
+        batch_inventory_data.election_results = election_results
+
+    def process():
+        if batch_inventory_data.system_type == CvrFileType.DOMINION:
+            process_dominion()
+        elif batch_inventory_data.system_type == CvrFileType.ESS:
+            process_ess()
+        else:
+            raise Exception(
+                f"Unrecognized system type: {batch_inventory_data.system_type}"
+            )
+
     error = None
     try:
         process()
@@ -246,6 +409,7 @@ def process_batch_inventory_cvr_file(
             session,
         )
         session.commit()
+        clean_up_file_system()
 
 
 TABULATOR_STATUS_PARSE_ERROR = (
