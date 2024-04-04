@@ -13,6 +13,7 @@ from typing import (
     Iterable,
     Iterator,
     List,
+    Literal,
     Optional,
     TextIO,
     Tuple,
@@ -20,6 +21,7 @@ from typing import (
     TypedDict,
     Union,
     cast as typing_cast,
+    Generator,
 )
 from collections import defaultdict
 import re
@@ -504,32 +506,15 @@ def parse_dominion_cvrs(
     return contests_metadata, parse_cvr_rows()
 
 
-def parse_ess_cvrs(
-    jurisdiction: Jurisdiction, working_directory: str,
-) -> Tuple[CVR_CONTESTS_METADATA, Iterable[CvrBallot]]:
-    # Parsing ES&S CVRs is more complicated than, say, Dominion.
-    # There are two main data sources:
-    #  - a list of ballots with their batch/tabulator metadata
-    #  - a list of CVR data (the actual interpretations)
-    # We have to join them together using a unique id for each ballot (the CVR
-    # number). What's more, the list of ballots might be split across multiple files.
-    #
-    # Here's a rough outline of the process:
-    # 1. Unzip and decode the files
-    # 2. Detect and sort out which files are ballot metadata and which is the CVR data
-    # 3. For each ballot file, parse the metadata into CVRBallot objects (w/o interpretations)
-    # 4. For the CVR file, make two passes:
-    #   - First, parse out the contest and choice names. We have to do this in
-    #     a separate pass since our storage scheme for interpretations requires
-    #     knowing all of the contest and choice names up front, and the ES&S
-    #     format doesn't tell you that - you have to look at every row.
-    #   - Second, parse out the interpretations.
-    # 5. Concatenate the parsed CVRBallot lists and join that to the parsed interpretation
+class EssCvrFiles(TypedDict):
+    cvr_file_name: str
+    cvr_file: TextIO
+    ballots_files: Dict[str, TextIO]
 
-    zip_file = retrieve_file(jurisdiction.cvr_file.storage_path)
-    file_names = unzip_files(zip_file, working_directory)
-    zip_file.close()
 
+def separate_ess_cvr_and_ballots_files(
+    working_directory: str, file_names: List[str]
+) -> EssCvrFiles:
     def decode_file(file: IO[bytes], file_name: str) -> TextIO:
         try:
             validate_not_empty(file)
@@ -571,6 +556,77 @@ def parse_ess_cvrs(
 
     [(cvr_file_name, cvr_file)] = cvr_files.items()
 
+    return {
+        "cvr_file_name": cvr_file_name,
+        "cvr_file": cvr_file,
+        "ballots_files": ballots_files,
+    }
+
+
+def read_ess_ballots_file(
+    ballots_file: TextIO,
+) -> Tuple[Literal["type1", "type2"], List[str], Generator[List[str], None, None]]:
+    validate_comma_delimited(ballots_file)
+    ballots_csv = csv.reader(ballots_file, delimiter=",")
+
+    # There are two formats of the ballots file that we support based on
+    # different versions of the ES&S system
+    ballots_file_type: Literal["type1", "type2"]
+    # pylint: disable=stop-iteration-return
+    first_row = next(ballots_csv)
+    # One format starts with metadata rows before the headers, which we want to skip
+    if first_row[0] == "Ballots":
+        _gen_tag = next(ballots_csv)
+        _county_name = next(ballots_csv)
+        _date = next(ballots_csv)
+        _empty_row = next(ballots_csv)
+        headers = next(ballots_csv)
+        ballots_file_type = "type1"
+    # The other has headers in the first row
+    else:
+        headers = first_row
+        ballots_file_type = "type2"
+
+    rows = (row for row in ballots_csv if not row[0].startswith("Total"))
+
+    return (ballots_file_type, headers, rows)
+
+
+def parse_ess_cvrs(
+    jurisdiction: Jurisdiction, working_directory: str,
+) -> Tuple[CVR_CONTESTS_METADATA, Iterable[CvrBallot]]:
+    # Parsing ES&S CVRs is more complicated than, say, Dominion.
+    # There are two main data sources:
+    #  - a list of ballots with their batch/tabulator metadata
+    #  - a list of CVR data (the actual interpretations)
+    # We have to join them together using a unique id for each ballot (the CVR
+    # number). What's more, the list of ballots might be split across multiple files.
+    #
+    # Here's a rough outline of the process:
+    # 1. Unzip and decode the files
+    # 2. Detect and sort out which files are ballot metadata and which is the CVR data
+    # 3. For each ballot file, parse the metadata into CVRBallot objects (w/o interpretations)
+    # 4. For the CVR file, make two passes:
+    #   - First, parse out the contest and choice names. We have to do this in
+    #     a separate pass since our storage scheme for interpretations requires
+    #     knowing all of the contest and choice names up front, and the ES&S
+    #     format doesn't tell you that - you have to look at every row.
+    #   - Second, parse out the interpretations.
+    # 5. Concatenate the parsed CVRBallot lists and join that to the parsed interpretation
+
+    zip_file = retrieve_file(jurisdiction.cvr_file.storage_path)
+    file_names = unzip_files(zip_file, working_directory)
+    zip_file.close()
+
+    cvr_and_ballots_files = separate_ess_cvr_and_ballots_files(
+        working_directory, file_names
+    )
+    cvr_file_name, cvr_file, ballots_files = (
+        cvr_and_ballots_files["cvr_file_name"],
+        cvr_and_ballots_files["cvr_file"],
+        cvr_and_ballots_files["ballots_files"],
+    )
+
     batches_by_key = {
         (batch.tabulator, batch.name): batch for batch in jurisdiction.batches
     }
@@ -578,35 +634,15 @@ def parse_ess_cvrs(
     def parse_ballots_file(
         ballots_file: TextIO,
     ) -> Iterator[Tuple[str, CvrBallot]]:  # (CVR number, ballot)
-        validate_comma_delimited(ballots_file)
-        ballots_csv = csv.reader(ballots_file, delimiter=",")
-
-        # There are two formats of the ballots file that we support based on
-        # different versions of the ES&S system
-        # pylint: disable=stop-iteration-return
-        first_row = next(ballots_csv)
-        # One format starts with metadata rows before the headers, which we want to skip
-        if first_row[0] == "Ballots":
-            _gen_tag = next(ballots_csv)
-            _county_name = next(ballots_csv)
-            _date = next(ballots_csv)
-            _empty_row = next(ballots_csv)
-            headers = next(ballots_csv)
-            ballots_file_type = "type1"
-        # The other has headers in the first row
-        else:
-            headers = first_row
-            ballots_file_type = "type2"
+        ballots_file_type, headers, rows = read_ess_ballots_file(ballots_file)
 
         header_indices = get_header_indices(headers)
-
-        ballot_rows = (row for row in ballots_csv if not row[0].startswith("Total"))
 
         # The rows may not be in order, but we need them sorted in order to
         # concatenate and merge the files. For now, sort them in memory, though
         # we may need to change this if it becomes a memory bottleneck.
         sorted_ballot_rows = sorted(
-            ballot_rows, key=lambda row: int(row[header_indices["Cast Vote Record"]])
+            rows, key=lambda row: int(row[header_indices["Cast Vote Record"]])
         )
 
         ten_digit_tabulator_cvr_regex = re.compile(r"^(\d{4})(\d{6})$")
