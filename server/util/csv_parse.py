@@ -53,7 +53,7 @@ CSVDictIterator = Iterator[Dict[str, Any]]
 INVALID_CSV_ERROR = (
     "Please submit a valid CSV."
     " If you are working with an Excel spreadsheet,"
-    " make sure you export it as a .csv file before uploading"
+    " make sure you export it as a .csv file before uploading."
 )
 
 
@@ -85,6 +85,10 @@ def parse_csv(file: BinaryIO, columns: List[CSVColumnType]) -> CSVDictIterator:
 def does_file_have_csv_mimetype(file: FileStorage) -> bool:
     # In Windows, CSVs have mimetype application/vnd.ms-excel
     return file.mimetype in ["text/csv", "application/vnd.ms-excel"]
+
+
+def does_file_have_zip_mimetype(file: FileStorage) -> bool:
+    return file.mimetype in ["application/zip", "application/x-zip-compressed"]
 
 
 def validate_csv_mimetype(file: FileStorage) -> None:
@@ -192,7 +196,7 @@ def skip_empty_trailing_columns(csv: CSVIterator) -> CSVIterator:
     else:
         yield headers[0:-empty_trailing_header_count]
         for r, row in enumerate(csv):  # pylint: disable=invalid-name
-            for (empty_trailing_column_index, cell) in enumerate(
+            for empty_trailing_column_index, cell in enumerate(
                 row[-empty_trailing_header_count:]
             ):
                 if len(cell) > 0:

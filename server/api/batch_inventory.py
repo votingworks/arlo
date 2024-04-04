@@ -6,7 +6,7 @@ from typing import TypedDict, Dict, Tuple, Optional
 import uuid
 from xml.etree import ElementTree
 from flask import request, jsonify, session
-from werkzeug.exceptions import Conflict
+from werkzeug.exceptions import BadRequest, Conflict
 from sqlalchemy.orm import Session
 
 
@@ -20,7 +20,11 @@ from ..auth.auth_helpers import (
 )
 from .cvrs import column_value, csv_reader_for_cvr, get_header_indices
 from ..models import *  # pylint: disable=wildcard-import
-from ..util.csv_parse import validate_csv_mimetype
+from ..util.csv_parse import (
+    does_file_have_csv_mimetype,
+    does_file_have_zip_mimetype,
+    INVALID_CSV_ERROR,
+)
 from ..util.file import (
     retrieve_file,
     serialize_file,
@@ -365,12 +369,31 @@ def upload_batch_inventory_cvr(election: Election, jurisdiction: Jurisdiction):
     if not batch_inventory_data or not batch_inventory_data.system_type:
         raise Conflict("Must select system type before uploading CVR file.")
 
-    validate_csv_mimetype(request.files["cvr"])
-    file_name = request.files["cvr"].filename
+    file = request.files["cvr"]
+    file_type = (
+        "csv"
+        if does_file_have_csv_mimetype(file)
+        else "zip"
+        if does_file_have_zip_mimetype(file)
+        else "other"
+    )
+
+    if batch_inventory_data.system_type == CvrFileType.DOMINION and file_type != "csv":
+        raise BadRequest(INVALID_CSV_ERROR)
+    elif (
+        batch_inventory_data.system_type == CvrFileType.ESS
+        and file_type != "csv"
+        and file_type != "zip"
+    ):
+        raise BadRequest("Please submit a valid CSV or ZIP file.")
+
+    assert file_type != "other"
+
+    file_name = file.filename
     storage_path = store_file(
-        request.files["cvr"].stream,
+        file.stream,
         f"audits/{election.id}/jurisdictions/{jurisdiction.id}/"
-        + timestamp_filename("batch-inventory-cvrs", "csv"),
+        + timestamp_filename("batch-inventory-cvrs", file_type),
     )
 
     batch_inventory_data.cvr_file = File(
