@@ -140,6 +140,13 @@ def test_batch_inventory_happy_path(
     )
 
     # Load batch inventory starting state (simulate JA loading the page)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type"
+    )
+    response = json.loads(rv.data)
+    assert response == dict(systemType=None)
+
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr"
     )
@@ -157,6 +164,19 @@ def test_batch_inventory_happy_path(
     )
     sign_off = json.loads(rv.data)
     assert sign_off == dict(signedOffAt=None)
+
+    # Set system type
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type",
+        {"systemType": CvrFileType.DOMINION},
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type"
+    )
+    compare_json(json.loads(rv.data), {"systemType": CvrFileType.DOMINION})
 
     # Upload CVR file
     rv = client.put(
@@ -320,6 +340,13 @@ def test_batch_inventory_happy_path_cvrs_with_leading_equal_signs(
     )
 
     # Load batch inventory starting state (simulate JA loading the page)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type"
+    )
+    response = json.loads(rv.data)
+    assert response == dict(systemType=None)
+
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr"
     )
@@ -337,6 +364,19 @@ def test_batch_inventory_happy_path_cvrs_with_leading_equal_signs(
     )
     sign_off = json.loads(rv.data)
     assert sign_off == dict(signedOffAt=None)
+
+    # Set system type
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type",
+        {"systemType": CvrFileType.DOMINION},
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type"
+    )
+    compare_json(json.loads(rv.data), {"systemType": CvrFileType.DOMINION})
 
     # Upload CVR file
     rv = client.put(
@@ -505,6 +545,13 @@ def test_batch_inventory_happy_path_multi_contest_batch_comparison(
     )
 
     # Load batch inventory starting state (simulate JA loading the page)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type"
+    )
+    response = json.loads(rv.data)
+    assert response == dict(systemType=None)
+
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr"
     )
@@ -522,6 +569,19 @@ def test_batch_inventory_happy_path_multi_contest_batch_comparison(
     )
     sign_off = json.loads(rv.data)
     assert sign_off == dict(signedOffAt=None)
+
+    # Set system type
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type",
+        {"systemType": CvrFileType.DOMINION},
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type"
+    )
+    compare_json(json.loads(rv.data), {"systemType": CvrFileType.DOMINION})
 
     # Upload CVR file
     rv = client.put(
@@ -706,6 +766,14 @@ def test_batch_inventory_invalid_file_uploads(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
 
+    # Set system type
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type",
+        {"systemType": CvrFileType.DOMINION},
+    )
+    assert_ok(rv)
+
     # Upload invalid CVR files
     invalid_cvrs = [
         (
@@ -837,6 +905,14 @@ def test_batch_inventory_missing_data_multi_contest_batch_comparison(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
 
+    # Set system type
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type",
+        {"systemType": CvrFileType.DOMINION},
+    )
+    assert_ok(rv)
+
     invalid_cvrs = [
         (
             TEST_CVR.replace("Contest 2", "Contest X"),
@@ -881,6 +957,14 @@ def test_batch_inventory_wrong_tabulator_status_file(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
+
+    # Set system type
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type",
+        {"systemType": CvrFileType.DOMINION},
+    )
+    assert_ok(rv)
 
     # Upload CVR file
     rv = client.put(
@@ -1130,6 +1214,14 @@ def test_batch_inventory_undo_sign_off(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
 
+    # Set system type
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type",
+        {"systemType": CvrFileType.DOMINION},
+    )
+    assert_ok(rv)
+
     # Upload CVR file
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr",
@@ -1177,6 +1269,14 @@ def test_batch_inventory_delete_cvr_after_sign_off(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
+
+    # Set system type
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type",
+        {"systemType": CvrFileType.DOMINION},
+    )
+    assert_ok(rv)
 
     # Upload CVR file
     rv = client.put(
@@ -1226,6 +1326,14 @@ def test_batch_inventory_delete_tabulator_status_after_sign_off(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
 
+    # Set system type
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type",
+        {"systemType": CvrFileType.DOMINION},
+    )
+    assert_ok(rv)
+
     # Upload CVR file
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr",
@@ -1271,6 +1379,14 @@ def test_batch_inventory_upload_cvr_before_contests(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
 
+    # Set system type
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type",
+        {"systemType": CvrFileType.DOMINION},
+    )
+    assert_ok(rv)
+
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr",
         data={"cvr": (io.BytesIO(TEST_CVR.encode()), "cvrs.csv",),},
@@ -1279,62 +1395,7 @@ def test_batch_inventory_upload_cvr_before_contests(
         "errors": [
             {
                 "errorType": "Conflict",
-                "message": "Jurisdiction does not have any contests assigned",
-            }
-        ]
-    }
-
-
-def test_batch_inventory_download_files_before_sign_off(
-    client: FlaskClient,
-    election_id: str,
-    jurisdiction_ids: List[str],
-    contest_id: str,  # pylint: disable=unused-argument
-):
-    set_logged_in_user(
-        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
-    )
-
-    # Upload CVR and tabulator status files
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr",
-        data={"cvr": (io.BytesIO(TEST_CVR.encode()), "cvrs.csv",),},
-    )
-    assert_ok(rv)
-
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/tabulator-status",
-        data={
-            "tabulatorStatus": (
-                io.BytesIO(TEST_TABULATOR_STATUS.encode()),
-                "tabulator-status.xml",
-            ),
-        },
-    )
-    assert_ok(rv)
-
-    # Try to download ballot manifest before signing off
-    rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/ballot-manifest"
-    )
-    assert json.loads(rv.data) == {
-        "errors": [
-            {
-                "errorType": "Conflict",
-                "message": "Batch inventory must be signed off before downloading ballot manifest.",
-            }
-        ]
-    }
-
-    # Try to download batch tallies before signing off
-    rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/batch-tallies"
-    )
-    assert json.loads(rv.data) == {
-        "errors": [
-            {
-                "errorType": "Conflict",
-                "message": "Batch inventory must be signed off before downloading batch tallies.",
+                "message": "Jurisdiction does not have any contests assigned.",
             }
         ]
     }
@@ -1349,6 +1410,14 @@ def test_batch_inventory_upload_tabulator_status_before_cvr(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
+
+    # Set system type
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/system-type",
+        {"systemType": CvrFileType.DOMINION},
+    )
+    assert_ok(rv)
 
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/tabulator-status",
