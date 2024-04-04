@@ -410,11 +410,11 @@ const DownloadAuditFilesStep: React.FC<{
           alignItems="center"
           style={{ maxWidth: '50%' }}
         >
-          <H4>Batch Inventory Complete</H4>
+          <H4>Batch Audit File Preparation Complete</H4>
           {showBallotManifest ? (
             <p style={{ marginBottom: '15px' }}>
               Next, download the Ballot Manifest and Candidate Totals by Batch
-              files, then upload them on the{' '}
+              files, and upload them on the{' '}
               <Link
                 to={`/election/${electionId}/jurisdiction/${jurisdictionId}`}
               >
@@ -424,7 +424,7 @@ const DownloadAuditFilesStep: React.FC<{
             </p>
           ) : (
             <p style={{ marginBottom: '15px' }}>
-              Next, download this file, then upload it on the{' '}
+              Next, download this file and upload it on the{' '}
               <Link
                 to={`/election/${electionId}/jurisdiction/${jurisdictionId}`}
               >
@@ -524,7 +524,7 @@ const BatchInventorySteps: React.FC<{
     <Wrapper>
       <Inner withTopPadding flexDirection="column">
         <HeadingRow>
-          <H2>Batch Inventory</H2>
+          <H2>Batch Audit File Preparation Tool</H2>
           <LinkButton
             minimal
             to={`/election/${electionId}/jurisdiction/${jurisdictionId}`}

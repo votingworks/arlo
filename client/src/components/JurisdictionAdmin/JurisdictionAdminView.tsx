@@ -29,9 +29,7 @@ const JurisdictionAdminView: React.FC = () => {
     jurisdictionId: string
   }>()
   const auth = useAuthDataContext()
-  const isBatchInventoryEnabled = Boolean(
-    useBatchInventoryFeatureFlag(jurisdictionId)
-  )
+  const batchInventoryConfig = useBatchInventoryFeatureFlag(jurisdictionId)
 
   const auditSettings = useAuditSettingsJurisdictionAdmin(
     electionId,
@@ -110,19 +108,22 @@ const JurisdictionAdminView: React.FC = () => {
                 </div>
               </Callout>
             )}
-            {isBatchComparison && isBatchInventoryEnabled && (
+            {isBatchComparison && batchInventoryConfig && (
               <Card elevation={1}>
-                <H4>Batch Inventory</H4>
+                <H4>Batch Audit File Preparation Tool</H4>
                 <p>
-                  Create your Ballot Manifest and Candidate Totals by Batch
-                  files using the batch inventory worksheet.
+                  Create your{' '}
+                  {batchInventoryConfig.showBallotManifest
+                    ? 'Ballot Manifest and Candidate Totals by Batch files'
+                    : 'Candidate Totals by Batch file'}{' '}
+                  using the batch audit file preparation tool.
                 </p>
                 <p>
                   <LinkButton
                     to={`/election/${electionId}/jurisdiction/${jurisdictionId}/batch-inventory`}
                     intent="primary"
                   >
-                    Go to Batch Inventory
+                    Go to Batch Audit File Preparation Tool
                   </LinkButton>
                 </p>
               </Card>
