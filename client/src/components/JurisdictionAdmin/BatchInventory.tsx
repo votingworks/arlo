@@ -75,9 +75,12 @@ function areAllFilesUploaded({
   return isUploaded(cvrUpload)
 }
 
+const DATA_TYPES = ['systemType', 'cvr', 'tabulatorStatus', 'signOff'] as const
+type DataType = typeof DATA_TYPES[number]
+
 function batchInventoryQueryKey(
   jurisdictionId: string,
-  dataType: 'systemType' | 'cvr' | 'tabulatorStatus' | 'signOff'
+  dataType: DataType
 ): string[] {
   return ['batchInventory', jurisdictionId, dataType]
 }
@@ -109,12 +112,8 @@ const useBatchInventorySystemType = (
       {
         onSuccess: () =>
           Promise.all(
-            ([
-              'systemType',
-              'cvr',
-              'tabulatorStatus',
-              'signOff',
-            ] as const).map(dataType =>
+            // All batch inventory data is invalidated when the system type is changed
+            DATA_TYPES.map(dataType =>
               queryClient.invalidateQueries(
                 batchInventoryQueryKey(jurisdictionId, dataType)
               )
@@ -138,6 +137,8 @@ const useBatchInventoryCVR = (
     uploadedFile: useUploadedFile(key, url, {
       onFileChange: () =>
         Promise.all(
+          // Changing the CVR file requires reprocessing the tabulator status file, if uploaded,
+          // and resetting the sign-off status
           (['tabulatorStatus', 'signOff'] as const).map(dataType =>
             queryClient.invalidateQueries(
               batchInventoryQueryKey(jurisdictionId, dataType)
@@ -168,6 +169,7 @@ const useBatchInventoryTabulatorStatus = (
   return {
     uploadedFile: useUploadedFile(key, url, {
       onFileChange: () =>
+        // Changing the tabulator status file resets the sign-off status
         queryClient.invalidateQueries(
           batchInventoryQueryKey(jurisdictionId, 'signOff')
         ),
@@ -239,7 +241,8 @@ const SelectSystemStep: React.FC<{
           >
             {!systemType && <option value={undefined}></option>}
             <option value={CvrFileType.DOMINION}>Dominion</option>
-            <option value={CvrFileType.ESS}>ES&amp;S</option>
+            {/* eslint-disable-next-line react/jsx-curly-brace-presence */}
+            <option value={CvrFileType.ESS}>{'ES&S'}</option>
           </HTMLSelect>
         </Row>
       </StepPanel>

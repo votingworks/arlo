@@ -866,7 +866,7 @@ def download_batch_inventory_ballot_manifest(
     ballot_manifest = csv.writer(csv_io)
 
     # We originally didn't have a batch_to_counting_group key at all, so we protect against the key
-    # not existing by using .get
+    # not existing by using .get for backwards compatibility
     batch_to_counting_group = items_list_to_dict(
         election_results.get("batch_to_counting_group", None) or []
     )
