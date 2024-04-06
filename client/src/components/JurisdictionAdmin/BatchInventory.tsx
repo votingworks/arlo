@@ -44,7 +44,7 @@ type Step =
   | 'Download Audit Files'
 
 const STEPS: Step[] = [
-  // 'Select System Type',
+  'Select System Type',
   'Upload Election Results',
   'Inventory Batches',
   'Download Audit Files',
