@@ -9,10 +9,14 @@ import {
   renderWithRouter,
   createQueryClient,
 } from '../testUtilities'
-import { IFileInfo } from '../useCSV'
+import { CvrFileType, IFileInfo } from '../useCSV'
 import { fileInfoMocks } from '../_mocks'
 
 jest.mock('axios')
+jest.mock('../useFeatureFlag', (): typeof import('../useFeatureFlag') => ({
+  ...jest.requireActual('../useFeatureFlag'),
+  useBatchInventoryFeatureFlag: jest.fn(() => ({ showBallotManifest: true })),
+}))
 
 const testCvrFile = new File([''], 'test-cvr.csv', {
   type: 'text/csv',
@@ -43,6 +47,11 @@ const tabulatorStatusProcessed: IFileInfo = {
 }
 
 const apiCalls = {
+  getSystemType: (systemType: CvrFileType | null) => ({
+    url:
+      '/api/election/1/jurisdiction/jurisdiction-id-1/batch-inventory/system-type',
+    response: { systemType },
+  }),
   getCvr: (fileInfo: IFileInfo) => ({
     url: '/api/election/1/jurisdiction/jurisdiction-id-1/batch-inventory/cvr',
     response: fileInfo,
@@ -56,6 +65,16 @@ const apiCalls = {
     url:
       '/api/election/1/jurisdiction/jurisdiction-id-1/batch-inventory/sign-off',
     response: { signedOffAt },
+  }),
+  putSystemType: (systemType: CvrFileType) => ({
+    url:
+      '/api/election/1/jurisdiction/jurisdiction-id-1/batch-inventory/system-type',
+    options: {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ systemType }),
+    },
+    response: { status: 'ok' },
   }),
   putCvr: {
     url: '/api/election/1/jurisdiction/jurisdiction-id-1/batch-inventory/cvr',
@@ -113,8 +132,9 @@ const expectToBeOnStep = async (name: string) => {
 // returns to the batch inventory flow after leaving on a certain step, they
 // will be returned to that step based on the saved data from the previous step.
 describe('BatchInventory', () => {
-  it('starts with Upload Election Results step', async () => {
+  it('continues to Upload Election Results step', async () => {
     const expectedCalls = [
+      apiCalls.getSystemType(CvrFileType.DOMINION),
       apiCalls.getCvr(fileInfoMocks.empty),
       apiCalls.getTabulatorStatus(fileInfoMocks.empty),
       apiCalls.getSignOff(null),
@@ -183,6 +203,7 @@ describe('BatchInventory', () => {
     window.open = jest.fn().mockReturnValue(mockDownloadWindow)
 
     const expectedCalls = [
+      apiCalls.getSystemType(CvrFileType.DOMINION),
       apiCalls.getCvr(cvrProcessed),
       apiCalls.getTabulatorStatus(tabulatorStatusProcessed),
       apiCalls.getSignOff(null),
@@ -232,6 +253,7 @@ describe('BatchInventory', () => {
     window.open = jest.fn().mockReturnValue(mockDownloadWindow)
 
     const expectedCalls = [
+      apiCalls.getSystemType(CvrFileType.DOMINION),
       apiCalls.getCvr(cvrProcessed),
       apiCalls.getTabulatorStatus(tabulatorStatusProcessed),
       apiCalls.getSignOff(new Date().toISOString()),
@@ -273,6 +295,7 @@ describe('BatchInventory', () => {
 
   it('can navigate back from each step to the previous', async () => {
     const expectedCalls = [
+      apiCalls.getSystemType(CvrFileType.DOMINION),
       apiCalls.getCvr(cvrProcessed),
       apiCalls.getTabulatorStatus(tabulatorStatusProcessed),
       apiCalls.getSignOff(new Date().toISOString()),
@@ -291,6 +314,7 @@ describe('BatchInventory', () => {
 
   it('can undo sign off', async () => {
     const expectedCalls = [
+      apiCalls.getSystemType(CvrFileType.DOMINION),
       apiCalls.getCvr(cvrProcessed),
       apiCalls.getTabulatorStatus(tabulatorStatusProcessed),
       apiCalls.getSignOff(new Date().toISOString()),
@@ -318,6 +342,7 @@ describe('BatchInventory', () => {
 
   it('always has a link to go back to Audit Setup', async () => {
     const expectedCalls = [
+      apiCalls.getSystemType(CvrFileType.DOMINION),
       apiCalls.getCvr(fileInfoMocks.empty),
       apiCalls.getTabulatorStatus(fileInfoMocks.empty),
       apiCalls.getSignOff(null),

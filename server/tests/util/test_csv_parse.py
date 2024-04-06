@@ -10,6 +10,7 @@ from ...util.csv_parse import (
     CSVColumnType,
     CSVValueType,
     validate_csv_mimetype,
+    does_file_have_zip_mimetype,
 )
 
 BALLOT_MANIFEST_COLUMNS = [
@@ -977,14 +978,22 @@ def test_parse_csv_real_world_examples():
             return list(parse_csv(csv, columns))
         return list(parse_csv_binary(csv, columns))
 
-    for (csv, expected_error, columns) in REAL_WORLD_REJECTED_CSVS:
+    for csv, expected_error, columns in REAL_WORLD_REJECTED_CSVS:
         with pytest.raises(CSVParseError) as error:
             do_parse(csv, columns)
         assert str(error.value) == expected_error
 
-    for (csv, expected_rows, columns) in REAL_WORLD_ACCEPTED_CSVS:
+    for csv, expected_rows, columns in REAL_WORLD_ACCEPTED_CSVS:
         parsed = do_parse(csv, columns)
         assert len(parsed) == expected_rows
+
+
+def test_does_file_have_zip_mimetype():
+    assert does_file_have_zip_mimetype(FileStorage(b"", content_type="application/zip"))
+    assert does_file_have_zip_mimetype(
+        FileStorage(b"", content_type="application/x-zip-compressed")
+    )
+    assert not does_file_have_zip_mimetype(FileStorage(b"", content_type="text/csv"))
 
 
 def test_validate_csv_mimetype():
@@ -1001,7 +1010,7 @@ def test_validate_csv_mimetype():
             assert error.value.description == (
                 "Please submit a valid CSV."
                 " If you are working with an Excel spreadsheet,"
-                " make sure you export it as a .csv file before uploading"
+                " make sure you export it as a .csv file before uploading."
             )
 
 
@@ -1015,7 +1024,7 @@ def test_parse_csv_excel_file():
         assert str(error.value) == (
             "Please submit a valid CSV."
             " If you are working with an Excel spreadsheet,"
-            " make sure you export it as a .csv file before uploading"
+            " make sure you export it as a .csv file before uploading."
         )
 
 
@@ -1040,7 +1049,7 @@ def test_parse_csv_cant_detect_encoding():
     assert str(error.value) == (
         "Please submit a valid CSV."
         " If you are working with an Excel spreadsheet,"
-        " make sure you export it as a .csv file before uploading"
+        " make sure you export it as a .csv file before uploading."
     )
 
 
@@ -1054,7 +1063,7 @@ def test_parse_csv_xls_mislabeled_as_csv():
     assert str(error.value) == (
         "Please submit a valid CSV."
         " If you are working with an Excel spreadsheet,"
-        " make sure you export it as a .csv file before uploading"
+        " make sure you export it as a .csv file before uploading."
         "\n\nAdditional details: Unable to decode file assuming Windows-1254 encoding"
     )
 

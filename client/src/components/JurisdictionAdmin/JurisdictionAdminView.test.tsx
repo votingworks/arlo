@@ -607,9 +607,9 @@ describe('JA setup', () => {
     await withMockFetch(expectedCalls, async () => {
       renderView()
       await screen.findByText('Audit Setup')
-      screen.getByRole('heading', { name: 'Batch Inventory' })
+      screen.getByRole('heading', { name: 'Batch Audit File Preparation Tool' })
       const button = screen.getByRole('button', {
-        name: 'Go to Batch Inventory',
+        name: 'Go to Batch Audit File Preparation Tool',
       })
       expect(button).toHaveAttribute(
         'href',

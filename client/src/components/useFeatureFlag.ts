@@ -1,26 +1,55 @@
 import { useAuthDataContext } from './UserContext'
 import { assert } from './utilities'
 
-const ENABLE_BATCH_INVENTORY_ORGANIZATION_IDS = [
-  'b216ad0d-1481-44e4-a2c1-95da40175084', // Georgia
-  'a67791e3-90a0-4d4e-a5e7-929f82bf4ce6', // VotingWorks Internal Sandbox
-  'b45800ff-a239-42b3-b285-414cb94d2b6b', // Ginny's Sandbox
-  'b7b99303-b1ac-4b52-8a02-22c10846cff3', // Audit Specialist Sandbox
-  'e348fcfd-bd23-4b96-a003-6c3a79abd240', // Verified Voting Sandbox
-]
+export interface BatchInventoryConfig {
+  showBallotManifest: boolean
+}
+
+const BATCH_INVENTORY_CONFIGS: {
+  [organizationId: string]: BatchInventoryConfig
+} = {
+  // Georgia
+  'b216ad0d-1481-44e4-a2c1-95da40175084': {
+    showBallotManifest: true,
+  },
+  // Pennsylvania
+  '210727d0-98c7-4448-a1d1-bcb1545c3ca3': {
+    showBallotManifest: false,
+  },
+  // Rhode Island
+  '0225f953-c201-46c8-8582-617eb72ce2b4': {
+    showBallotManifest: false,
+  },
+
+  // Audit Specialist Sandbox
+  'b7b99303-b1ac-4b52-8a02-22c10846cff3': {
+    showBallotManifest: true,
+  },
+  // Ginny's Sandbox
+  'b45800ff-a239-42b3-b285-414cb94d2b6b': {
+    showBallotManifest: true,
+  },
+  // Verified Voting Sandbox
+  'e348fcfd-bd23-4b96-a003-6c3a79abd240': {
+    showBallotManifest: true,
+  },
+  // VotingWorks Internal Sandbox
+  'a67791e3-90a0-4d4e-a5e7-929f82bf4ce6': {
+    showBallotManifest: false,
+  },
+}
 
 // eslint-disable-next-line import/prefer-default-export
 export const useBatchInventoryFeatureFlag = (
   jurisdictionId: string
-): boolean => {
+): BatchInventoryConfig | undefined => {
   const auth = useAuthDataContext()
   assert(auth?.user?.type === 'jurisdiction_admin')
   const jurisdiction = auth.user.jurisdictions.find(
     j => j.id === jurisdictionId
   )
   const { organizationId } = jurisdiction?.election || {}
-  return (
-    organizationId !== undefined &&
-    ENABLE_BATCH_INVENTORY_ORGANIZATION_IDS.includes(organizationId)
-  )
+  return organizationId === undefined
+    ? undefined
+    : BATCH_INVENTORY_CONFIGS[organizationId]
 }

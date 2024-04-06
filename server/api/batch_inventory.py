@@ -1,3 +1,6 @@
+import os
+import shutil
+import tempfile
 from collections import defaultdict
 import csv
 from datetime import datetime, timezone
@@ -6,7 +9,7 @@ from typing import TypedDict, Dict, Tuple, Optional
 import uuid
 from xml.etree import ElementTree
 from flask import request, jsonify, session
-from werkzeug.exceptions import Conflict
+from werkzeug.exceptions import BadRequest, Conflict
 from sqlalchemy.orm import Session
 
 
@@ -18,15 +21,27 @@ from ..auth.auth_helpers import (
     get_loggedin_user,
     get_support_user,
 )
-from .cvrs import column_value, csv_reader_for_cvr, get_header_indices
+from .cvrs import (
+    column_value,
+    csv_reader_for_cvr,
+    get_header_indices,
+    read_ess_ballots_file,
+    separate_ess_cvr_and_ballots_files,
+)
 from ..models import *  # pylint: disable=wildcard-import
-from ..util.csv_parse import validate_csv_mimetype
+from ..util.csv_parse import (
+    does_file_have_csv_mimetype,
+    does_file_have_zip_mimetype,
+    INVALID_CSV_ERROR,
+    validate_comma_delimited,
+)
 from ..util.file import (
     retrieve_file,
     serialize_file,
     serialize_file_processing,
     store_file,
     timestamp_filename,
+    unzip_files,
 )
 from ..worker.tasks import UserError, background_task, create_background_task
 from ..util.csv_download import csv_response, jurisdiction_timestamp_name
@@ -38,15 +53,25 @@ from ..activity_log.activity_log import UploadFile, activity_base, record_activi
 BatchKey = Tuple[str, str]
 
 
-def batch_key_to_name(batch_key: BatchKey, tabulator_id_to_name: Dict[str, str]) -> str:
+def batch_key_to_name(
+    batch_key: BatchKey, tabulator_id_to_name: Optional[Dict[str, str]]
+) -> str:
     tabulator_id, batch_id = batch_key
-    return f"{tabulator_id_to_name[tabulator_id]} - {batch_id}"
+
+    if not tabulator_id:
+        return batch_id
+
+    return (
+        f"{tabulator_id_to_name[tabulator_id]} - {batch_id}"
+        if tabulator_id_to_name
+        else f"{tabulator_id} - {batch_id}"
+    )
 
 
 class ElectionResults(TypedDict):
     ballot_count_by_batch: Dict[BatchKey, int]
-    ballot_count_by_group: Dict[str, int]
-    batch_to_counting_group: Dict[BatchKey, str]
+    ballot_count_by_group: Optional[Dict[str, int]]
+    batch_to_counting_group: Optional[Dict[BatchKey, str]]
     # { batch_key: { choice_id: count } }
     batch_tallies: Dict[BatchKey, Dict[str, int]]
 
@@ -68,13 +93,20 @@ def items_list_to_dict(items):
 def process_batch_inventory_cvr_file(
     jurisdiction_id: str, user: Tuple[UserType, str], support_user_email: Optional[str],
 ):
+    working_directory = tempfile.mkdtemp()
+
+    def clean_up_file_system():
+        if os.path.exists(working_directory):
+            shutil.rmtree(working_directory)
+
     jurisdiction = Jurisdiction.query.get(jurisdiction_id)
-    batch_inventory_data = BatchInventoryData.query.get(jurisdiction_id)
+    batch_inventory_data: BatchInventoryData = BatchInventoryData.query.get(
+        jurisdiction_id
+    )
+    contests = list(jurisdiction.contests)
+    cvr_file = retrieve_file(batch_inventory_data.cvr_file.storage_path)
 
-    def process():
-        contests = list(jurisdiction.contests)
-
-        cvr_file = retrieve_file(batch_inventory_data.cvr_file.storage_path)
+    def process_dominion():
         cvrs = csv_reader_for_cvr(cvr_file)
 
         # Parse out all the initial metadata
@@ -209,6 +241,159 @@ def process_batch_inventory_cvr_file(
                 ),
             )
 
+    def process_ess():
+        ballot_count_by_batch: Dict[BatchKey, int] = defaultdict(int)
+        batch_tallies: Dict[BatchKey, Dict[str, int]] = defaultdict(
+            lambda: defaultdict(int)
+        )
+
+        def validate_choice_name_and_get_choice_id(choice_name: str) -> Optional[str]:
+            choice_id = None
+            for choice in contest.choices:
+                if choice.name == choice_name:
+                    choice_id = choice.id
+                    break
+
+            if (
+                not choice_id
+                and choice_name
+                and choice_name != "overvote"
+                and choice_name != "undervote"
+                and choice_name != "Write-in"
+            ):
+                raise UserError(f"Unrecognized choice in CVR file: {choice_name}")
+
+            return choice_id
+
+        # ZIP file with multiple CSVs
+        if batch_inventory_data.cvr_file.storage_path.endswith(".zip"):
+            entry_names = unzip_files(cvr_file, working_directory)
+            file_names = [
+                entry_name
+                for entry_name in entry_names
+                if entry_name.endswith(".csv") and not entry_name.startswith(".")
+                # ZIP files created on Macs include a hidden __MACOSX folder
+                and not entry_name.startswith("__")
+            ]
+            cvr_file.close()
+
+            cvr_and_ballots_files = separate_ess_cvr_and_ballots_files(
+                working_directory, file_names
+            )
+            primary_cvr_file, ballots_files = (
+                cvr_and_ballots_files["cvr_file"],
+                cvr_and_ballots_files["ballots_files"],
+            )
+
+            cvr_number_to_batch = {}
+            for ballots_file in ballots_files.values():
+                _, headers, rows = read_ess_ballots_file(ballots_file)
+                header_indices = get_header_indices(headers)
+                for row_index, row in enumerate(rows):
+                    cvr_number = column_value(
+                        row,
+                        "Cast Vote Record",
+                        row_index + 1,
+                        header_indices,
+                        required=True,
+                    )
+                    batch = column_value(
+                        row, "Batch", cvr_number, header_indices, required=True
+                    )
+                    cvr_number_to_batch[cvr_number] = batch
+
+            validate_comma_delimited(primary_cvr_file)
+            cvr_csv = csv.reader(primary_cvr_file, delimiter=",")
+            headers = next(cvr_csv)
+            header_indices = get_header_indices(headers)
+
+            contest_names = [contest.name for contest in contests]
+            missing_contest_names = set(contest_names) - set(headers)
+            if len(missing_contest_names) != 0:
+                raise UserError(
+                    f"CVR file is missing contest names: {', '.join(missing_contest_names)}"
+                )
+
+            for row_index, row in enumerate(cvr_csv):
+                for contest in contests:
+                    cvr_number = column_value(
+                        row,
+                        "Cast Vote Record",
+                        row_index + 1,
+                        header_indices,
+                        required=True,
+                    )
+                    choice_name = column_value(
+                        row,
+                        contest.name,
+                        row_index + 1,
+                        header_indices,
+                        required=False,
+                    )
+
+                    if cvr_number not in cvr_number_to_batch:
+                        raise UserError(
+                            f"Unable to find batch for CVR number {cvr_number} in ballots files"
+                        )
+                    batch = cvr_number_to_batch[cvr_number]
+                    batch_key: BatchKey = ("", batch)
+                    choice_id = validate_choice_name_and_get_choice_id(choice_name)
+
+                    ballot_count_by_batch[batch_key] += 1
+                    if choice_id:
+                        batch_tallies[batch_key][choice_id] += 1
+
+        # Single CSV file
+        else:
+            cvrs = csv_reader_for_cvr(cvr_file)
+            headers = next(cvrs)
+            header_indices = get_header_indices(headers)
+            for row_index, row in enumerate(cvrs):
+                for contest in contests:
+                    batch = column_value(
+                        row, "Batch", row_index + 1, header_indices, required=True,
+                    )
+                    choice_name = column_value(
+                        row,
+                        contest.name,
+                        row_index + 1,
+                        header_indices,
+                        required=False,
+                    )
+
+                    batch_key: BatchKey = ("", batch)
+                    choice_id = validate_choice_name_and_get_choice_id(choice_name)
+
+                    ballot_count_by_batch[batch_key] += 1
+                    if choice_id:
+                        batch_tallies[batch_key][choice_id] += 1
+
+        # Set explicit zeros for choices with zero votes in a batch to avoid KeyErrors when
+        # generating files
+        for batch_key in batch_tallies.keys():
+            for contest in contests:
+                for choice in contest.choices:
+                    if choice.id not in batch_tallies[batch_key]:
+                        batch_tallies[batch_key][choice.id] = 0
+
+        election_results: ElectionResults = dict(
+            ballot_count_by_batch=dict_to_items_list(ballot_count_by_batch),
+            ballot_count_by_group=None,
+            batch_to_counting_group=None,
+            batch_tallies=dict_to_items_list(batch_tallies),
+        )
+        batch_inventory_data.election_results = election_results
+
+    def process():
+        if batch_inventory_data.system_type == CvrFileType.DOMINION:
+            process_dominion()
+        elif batch_inventory_data.system_type == CvrFileType.ESS:
+            process_ess()
+        else:
+            raise Exception(
+                f"Unrecognized system type: {batch_inventory_data.system_type}"
+            )
+
     error = None
     try:
         process()
@@ -232,6 +417,7 @@ def process_batch_inventory_cvr_file(
             session,
         )
         session.commit()
+        clean_up_file_system()
 
 
 TABULATOR_STATUS_PARSE_ERROR = (
@@ -302,26 +488,95 @@ def process_batch_inventory_tabulator_status_file(
 
 
 @api.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch-inventory/system-type",
+    methods=["PUT"],
+)
+@restrict_access([UserType.JURISDICTION_ADMIN])
+def set_batch_inventory_system_type(
+    election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
+):
+    system_type = request.get_json()["systemType"]
+    if system_type is None:
+        raise BadRequest("Missing systemType param")
+    if system_type not in [CvrFileType.DOMINION, CvrFileType.ESS]:
+        raise BadRequest(f"Unrecognized systemType param: {system_type}")
+
+    batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
+    if not batch_inventory_data:
+        batch_inventory_data = BatchInventoryData(jurisdiction_id=jurisdiction.id)
+        db_session.add(batch_inventory_data)
+
+    batch_inventory_data.system_type = system_type
+
+    # Clear dependent data
+    if batch_inventory_data.cvr_file_id:
+        File.query.filter_by(id=batch_inventory_data.cvr_file_id).delete()
+    if batch_inventory_data.tabulator_status_file_id:
+        File.query.filter_by(id=batch_inventory_data.tabulator_status_file_id).delete()
+    batch_inventory_data.election_results = None
+    clear_sign_off(batch_inventory_data)
+
+    db_session.commit()
+    return jsonify(status="ok")
+
+
+@api.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch-inventory/system-type",
+    methods=["GET"],
+)
+@restrict_access([UserType.JURISDICTION_ADMIN])
+def get_batch_inventory_system_type(
+    election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
+):
+    batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
+    return jsonify(
+        dict(
+            systemType=(
+                batch_inventory_data.system_type if batch_inventory_data else None
+            )
+        )
+    )
+
+
+@api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch-inventory/cvr",
     methods=["PUT"],
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def upload_batch_inventory_cvr(election: Election, jurisdiction: Jurisdiction):
     if len(list(jurisdiction.contests)) == 0:
-        raise Conflict("Jurisdiction does not have any contests assigned")
-
-    validate_csv_mimetype(request.files["cvr"])
-    file_name = request.files["cvr"].filename
-    storage_path = store_file(
-        request.files["cvr"].stream,
-        f"audits/{election.id}/jurisdictions/{jurisdiction.id}/"
-        + timestamp_filename("batch-inventory-cvrs", "csv"),
-    )
+        raise Conflict("Jurisdiction does not have any contests assigned.")
 
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
-    if not batch_inventory_data:
-        batch_inventory_data = BatchInventoryData(jurisdiction_id=jurisdiction.id)
-        db_session.add(batch_inventory_data)
+    if not batch_inventory_data or not batch_inventory_data.system_type:
+        raise Conflict("Must select system type before uploading CVR file.")
+
+    file = request.files["cvr"]
+    file_type = (
+        "csv"
+        if does_file_have_csv_mimetype(file)
+        else "zip"
+        if does_file_have_zip_mimetype(file)
+        else "other"
+    )
+
+    if batch_inventory_data.system_type == CvrFileType.DOMINION and file_type != "csv":
+        raise BadRequest(INVALID_CSV_ERROR)
+    elif (
+        batch_inventory_data.system_type == CvrFileType.ESS
+        and file_type != "csv"
+        and file_type != "zip"
+    ):
+        raise BadRequest("Please submit a valid CSV or ZIP file.")
+
+    assert file_type != "other"
+
+    file_name = file.filename
+    storage_path = store_file(
+        file.stream,
+        f"audits/{election.id}/jurisdictions/{jurisdiction.id}/"
+        + timestamp_filename("batch-inventory-cvrs", file_type),
+    )
 
     batch_inventory_data.cvr_file = File(
         id=str(uuid.uuid4()),
@@ -517,7 +772,9 @@ def download_batch_inventory_worksheet(election: Election, jurisdiction: Jurisdi
     worksheet.writerow([])
 
     worksheet.writerow(["Ballot Group", "CVR Ballot Count", "Checked? (Type Yes/No)"])
-    for group_name, ballot_count in election_results["ballot_count_by_group"].items():
+    for group_name, ballot_count in (
+        election_results["ballot_count_by_group"] or {}
+    ).items():
         worksheet.writerow([group_name, ballot_count, ""])
     worksheet.writerow([])
 
@@ -613,21 +870,20 @@ def download_batch_inventory_ballot_manifest(
     batch_inventory_data = get_or_404(BatchInventoryData, jurisdiction.id)
     election_results: ElectionResults = batch_inventory_data.election_results
 
-    if not batch_inventory_data.signed_off_at:
-        raise Conflict(
-            "Batch inventory must be signed off before downloading ballot manifest."
-        )
-
     csv_io = io.StringIO()
     ballot_manifest = csv.writer(csv_io)
 
-    ballot_manifest.writerow(["Container", "Batch Name", "Number of Ballots"])
-
-    # We originally didn't have counting group stored, so we make this
-    # optional for backwards compatibility
+    # We originally didn't have a batch_to_counting_group key at all, so we protect against the key
+    # not existing by using .get for backwards compatibility
     batch_to_counting_group = items_list_to_dict(
-        election_results.get("batch_to_counting_group", [])
+        election_results.get("batch_to_counting_group", None) or []
     )
+    should_include_container_column = len(batch_to_counting_group) > 0
+
+    if should_include_container_column:
+        ballot_manifest.writerow(["Container", "Batch Name", "Number of Ballots"])
+    else:
+        ballot_manifest.writerow(["Batch Name", "Number of Ballots"])
 
     for batch_key, ballot_count in items_list_to_dict(
         election_results["ballot_count_by_batch"]
@@ -635,8 +891,11 @@ def download_batch_inventory_ballot_manifest(
         batch_name = batch_key_to_name(
             batch_key, batch_inventory_data.tabulator_id_to_name
         )
-        counting_group = batch_to_counting_group.get(batch_key)
-        ballot_manifest.writerow([counting_group, batch_name, ballot_count])
+        if should_include_container_column:
+            counting_group = batch_to_counting_group.get(batch_key)
+            ballot_manifest.writerow([counting_group, batch_name, ballot_count])
+        else:
+            ballot_manifest.writerow([batch_name, ballot_count])
 
     csv_io.seek(0)
     return csv_response(
@@ -655,11 +914,6 @@ def download_batch_inventory_batch_tallies(
 ):
     batch_inventory_data = get_or_404(BatchInventoryData, jurisdiction.id)
     election_results: ElectionResults = batch_inventory_data.election_results
-
-    if not batch_inventory_data.signed_off_at:
-        raise Conflict(
-            "Batch inventory must be signed off before downloading batch tallies."
-        )
 
     contest_choice_csv_headers = construct_contest_choice_csv_headers(
         election, jurisdiction

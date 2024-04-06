@@ -315,7 +315,7 @@ def test_batch_tallies_upload_bad_csv(
         "errors": [
             {
                 "errorType": "Bad Request",
-                "message": "Please submit a valid CSV. If you are working with an Excel spreadsheet, make sure you export it as a .csv file before uploading",
+                "message": "Please submit a valid CSV. If you are working with an Excel spreadsheet, make sure you export it as a .csv file before uploading.",
             }
         ]
     }

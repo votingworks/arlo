@@ -27,7 +27,7 @@ def test_bad_csv_file(client: FlaskClient, election_id: str):
     assert json.loads(rv.data) == {
         "errors": [
             {
-                "message": "Please submit a valid CSV. If you are working with an Excel spreadsheet, make sure you export it as a .csv file before uploading",
+                "message": "Please submit a valid CSV. If you are working with an Excel spreadsheet, make sure you export it as a .csv file before uploading.",
                 "errorType": "Bad Request",
             }
         ]
