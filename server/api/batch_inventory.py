@@ -271,8 +271,8 @@ def process_batch_inventory_cvr_file(
             file_names = [
                 entry_name
                 for entry_name in entry_names
-                if entry_name.endswith(".csv")
-                and not entry_name.startswith(".")
+                if entry_name.endswith(".csv") and not entry_name.startswith(".")
+                # ZIP files created on Macs include a hidden __MACOSX folder
                 and not entry_name.startswith("__")
             ]
             cvr_file.close()
@@ -367,6 +367,14 @@ def process_batch_inventory_cvr_file(
                     ballot_count_by_batch[batch_key] += 1
                     if choice_id:
                         batch_tallies[batch_key][choice_id] += 1
+
+        # Set explicit zeros for choices with zero votes in a batch to avoid KeyErrors when
+        # generating files
+        for batch_key in batch_tallies.keys():
+            for contest in contests:
+                for choice in contest.choices:
+                    if choice.id not in batch_tallies[batch_key]:
+                        batch_tallies[batch_key][choice.id] = 0
 
         election_results: ElectionResults = dict(
             ballot_count_by_batch=dict_to_items_list(ballot_count_by_batch),
