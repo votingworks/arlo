@@ -12,10 +12,6 @@ const BATCH_INVENTORY_CONFIGS: {
   'b216ad0d-1481-44e4-a2c1-95da40175084': {
     showBallotManifest: true,
   },
-  // Pennsylvania
-  '210727d0-98c7-4448-a1d1-bcb1545c3ca3': {
-    showBallotManifest: false,
-  },
   // Rhode Island
   '0225f953-c201-46c8-8582-617eb72ce2b4': {
     showBallotManifest: false,
