@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react'
+import { useQueryClient } from 'react-query'
 import { api } from './utilities'
 import { IAuditSettings } from './useAuditSettings'
+import { contestsQueryKey } from './useContests'
+import { contestChoiceNameStandardizationsQueryKey } from './useContestChoiceNameStandardizations'
 
 export interface IContestNameStandardizations {
   standardizations: {
@@ -31,6 +34,7 @@ const useContestNameStandardizations = (
     standardizations,
     setStandardizations,
   ] = useState<IContestNameStandardizations | null>(null)
+  const queryClient = useQueryClient()
 
   const updateStandardizations = async (
     newStandardizations: IContestNameStandardizations['standardizations']
@@ -45,7 +49,13 @@ const useContestNameStandardizations = (
         },
       }
     )
-    if (response) setStandardizations(await getStandardizations(electionId))
+    if (response) {
+      setStandardizations(await getStandardizations(electionId))
+    }
+    await queryClient.invalidateQueries(
+      contestChoiceNameStandardizationsQueryKey(electionId)
+    )
+    await queryClient.invalidateQueries(contestsQueryKey(electionId))
     return !!response
   }
 

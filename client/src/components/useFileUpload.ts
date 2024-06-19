@@ -9,6 +9,8 @@ import { useState, useRef } from 'react'
 import { IFileInfo, CvrFileType } from './useCSV'
 import { fetchApi, ApiError, addCSRFToken } from '../utils/api'
 import { jurisdictionsQueryKey } from './useJurisdictions'
+import { contestChoiceNameStandardizationsQueryKey } from './useContestChoiceNameStandardizations'
+import { contestsQueryKey } from './useContests'
 
 interface IUseFileUploadProps {
   url: string
@@ -133,12 +135,21 @@ export const useStandardizedContestsFile = (
   electionId: string,
   options: { enabled: boolean } = { enabled: true }
 ): IFileUpload => {
+  const queryClient = useQueryClient()
   const url = `/api/election/${electionId}/standardized-contests/file`
   const key = ['elections', electionId, 'standardized-contests-file']
   const uploadFiles = useUploadFiles(key, url)
   const deleteFile = useDeleteFile(key, url)
   return {
-    uploadedFile: useUploadedFile(key, url, options),
+    uploadedFile: useUploadedFile(key, url, {
+      ...options,
+      onFileChange: () => {
+        queryClient.invalidateQueries(
+          contestChoiceNameStandardizationsQueryKey(electionId)
+        )
+        queryClient.invalidateQueries(contestsQueryKey(electionId))
+      },
+    }),
     uploadFiles: async (files: File[]) => {
       const formData = new FormData()
       formData.append('standardized-contests', files[0])
