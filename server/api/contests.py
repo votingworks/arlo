@@ -1,5 +1,6 @@
 import typing
 from typing import Dict, List, Optional
+from collections import defaultdict
 from flask import request, jsonify, session
 from werkzeug.exceptions import BadRequest, Conflict
 
@@ -335,7 +336,7 @@ def list_audit_board_contests(
     return jsonify({"contests": json_contests})
 
 
-# { jurisdiction_id: { contest_name: cvr_contest_name | null }}
+# { jurisdiction_id: { contest_name: cvr_contest_name | null } }
 CONTEST_NAME_STANDARDIZATIONS_SCHEMA = {
     "type": "object",
     "patternProperties": {
@@ -344,6 +345,29 @@ CONTEST_NAME_STANDARDIZATIONS_SCHEMA = {
             "patternProperties": {
                 "^.*$": {
                     "anyOf": [{"type": "string", "minLength": 1}, {"type": "null"}]
+                }
+            },
+        },
+    },
+}
+
+# { jurisdiction_id: { contest_id: { cvr_choice_name: choice_name | null } } }
+CONTEST_CHOICE_NAME_STANDARDIZATIONS_SCHEMA = {
+    "type": "object",
+    "patternProperties": {
+        "^.*$": {
+            "type": "object",
+            "patternProperties": {
+                "^.*$": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^.*$": {
+                            "anyOf": [
+                                {"type": "string", "minLength": 1},
+                                {"type": "null"},
+                            ]
+                        }
+                    },
                 }
             },
         },
@@ -418,3 +442,85 @@ def get_contest_name_standardizations(election: Election):
             if jurisdiction_standardizations
         },
     )
+
+
+@api.route(
+    "/election/<election_id>/contest/choice-name-standardizations", methods=["PUT"],
+)
+@restrict_access([UserType.AUDIT_ADMIN])
+def put_contest_choice_name_standardizations(election: Election):
+    if election.audit_type not in [AuditType.BALLOT_COMPARISON, AuditType.HYBRID]:
+        raise Conflict("Cannot standardize contest choice names for this audit type.")
+    if len(list(election.rounds)) > 0:
+        raise Conflict(
+            "Cannot standardize contest choice names after the audit has started."
+        )
+
+    standardizations = request.get_json()
+    validate(standardizations, CONTEST_CHOICE_NAME_STANDARDIZATIONS_SCHEMA)
+
+    for jurisdiction in election.jurisdictions:
+        jurisdiction.contest_choice_name_standardizations = standardizations.get(
+            jurisdiction.id, None
+        )
+
+    set_contest_metadata(election)
+
+    db_session.commit()
+
+    return jsonify(status="ok")
+
+
+@api.route(
+    "/election/<election_id>/contest/choice-name-standardizations", methods=["GET"],
+)
+@restrict_access([UserType.AUDIT_ADMIN])
+def get_contest_choice_name_standardizations(election: Election):
+    def get_standardizations_for_jurisdiction_and_contest(jurisdiction, contest):
+        # Get metadata with contest name standardizations applied but not contest choice name
+        # standardizations applied
+        metadata = cvrs.cvr_contests_metadata(
+            jurisdiction, should_standardize_contest_choice_names=False
+        )
+        cvr_choice_names = list(
+            (metadata or {}).get(contest.name, {}).get("choices", {}).keys()
+        )
+
+        standardized_contest_choice_names = None
+        for standardized_contest in (
+            typing.cast(Optional[List[Dict]], election.standardized_contests) or []
+        ):
+            if standardized_contest["name"] == contest.name:
+                standardized_contest_choice_names = standardized_contest.get(
+                    "choiceNames", None
+                )
+                break
+
+        raw_standardizations = (
+            typing.cast(
+                Optional[Dict[str, Dict[str, Optional[str]]]],
+                jurisdiction.contest_choice_name_standardizations,
+            )
+            or {}
+        ).get(contest.id, {})
+
+        standardizations = {
+            cvr_choice_name: raw_standardizations.get(cvr_choice_name, None)
+            for cvr_choice_name in cvr_choice_names
+            if standardized_contest_choice_names is not None
+            and cvr_choice_name not in standardized_contest_choice_names
+        }
+        return standardizations
+
+    all_standardizations: Dict[str, Dict[str, Dict[str, Optional[str]]]] = defaultdict(
+        dict
+    )
+    for jurisdiction in election.jurisdictions:
+        for contest in election.contests:
+            standardizations = get_standardizations_for_jurisdiction_and_contest(
+                jurisdiction, contest
+            )
+            if standardizations:
+                all_standardizations[jurisdiction.id][contest.id] = standardizations
+
+    return jsonify(standardizations=all_standardizations)
