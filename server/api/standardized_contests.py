@@ -31,10 +31,15 @@ from ..util.file import (
 
 CONTEST_NAME = "Contest Name"
 JURISDICTIONS = "Jurisdictions"
+CHOICE_NAMES = "Choice Names"
 
 STANDARDIZED_CONTEST_COLUMNS = [
     CSVColumnType(CONTEST_NAME, CSVValueType.TEXT, unique=True),
     CSVColumnType(JURISDICTIONS, CSVValueType.TEXT),
+    # This column is optional, but if included, every row has to have a value
+    CSVColumnType(
+        CHOICE_NAMES, CSVValueType.TEXT, required_column=False, allow_empty_rows=False
+    ),
 ]
 
 
@@ -49,7 +54,13 @@ def process_standardized_contests_file(election_id: str):
     )
 
     standardized_contests = []
-    for row in standardized_contests_csv:
+    file_has_choice_names_column = False
+    for i, row in enumerate(standardized_contests_csv):
+        # This will either be true for all rows or no rows, per the STANDARDIZED_CONTEST_COLUMNS
+        # schema
+        if i == 0:
+            file_has_choice_names_column = CHOICE_NAMES in row
+
         if row[JURISDICTIONS].strip().lower() == "all":
             jurisdictions = election.jurisdictions
         else:
@@ -78,12 +89,18 @@ def process_standardized_contests_file(election_id: str):
             if match:
                 contest_name = match[1]
 
-        standardized_contests.append(
-            dict(
-                name=contest_name,
-                jurisdictionIds=[jurisdiction.id for jurisdiction in jurisdictions],
-            )
+        parsed_row = dict(
+            name=contest_name,
+            jurisdictionIds=[jurisdiction.id for jurisdiction in jurisdictions],
         )
+
+        if file_has_choice_names_column:
+            choice_names = [
+                choice_name.strip() for choice_name in row[CHOICE_NAMES].split("/")
+            ]
+            parsed_row["choiceNames"] = choice_names
+
+        standardized_contests.append(parsed_row)
 
     standardized_contests_file.close()
 
@@ -106,6 +123,13 @@ def process_standardized_contests_file(election_id: str):
             contest.jurisdictions = Jurisdiction.query.filter(
                 Jurisdiction.id.in_(standardized_contest["jurisdictionIds"])
             ).all()
+
+    # Contest choice name standardization is only possible if the standardized contests file
+    # includes choice names. If we transition from including choice names to not, clear contest
+    # choice name standardizations under the hood.
+    if not file_has_choice_names_column:
+        for jurisdiction in election.jurisdictions:
+            jurisdiction.contest_choice_name_standardizations = None
 
     set_contest_metadata(election)
 
