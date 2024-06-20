@@ -29,6 +29,11 @@ import {
   aaApiCalls,
 } from '../../../_mocks'
 import { ISamplePreview, ISampleSizes } from '../../useRoundsAuditAdmin'
+import {
+  IContestChoiceNameStandardizations,
+  IContestChoiceNameStandardizationsResponse,
+} from '../../../useContestChoiceNameStandardizations'
+import { IStandardizedContest } from '../../../useStandardizedContests'
 
 const apiCalls = {
   getSettings: (response: IAuditSettings) => ({
@@ -78,11 +83,11 @@ const apiCalls = {
     url: '/api/election/1/contest',
     response: { contests },
   }),
-  getStandardizations: (response: IContestNameStandardizations) => ({
+  getContestNameStandardizations: (response: IContestNameStandardizations) => ({
     url: '/api/election/1/contest/standardizations',
     response,
   }),
-  putStandardizations: (
+  putContestNameStandardizations: (
     standardizations: IContestNameStandardizations['standardizations']
   ) => ({
     url: '/api/election/1/contest/standardizations',
@@ -94,6 +99,31 @@ const apiCalls = {
       },
       method: 'PUT',
     },
+  }),
+  getContestChoiceNameStandardizations: (
+    response: IContestChoiceNameStandardizationsResponse = {
+      standardizations: {},
+    }
+  ) => ({
+    url: '/api/election/1/contest/choice-name-standardizations',
+    response,
+  }),
+  putContestChoiceNameStandardizations: (
+    standardizations: IContestChoiceNameStandardizations
+  ) => ({
+    url: '/api/election/1/contest/choice-name-standardizations',
+    response: { status: 'ok' },
+    options: {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(standardizations),
+    },
+  }),
+  getStandardizedContests: (
+    standardizedContests: IStandardizedContest[] = []
+  ) => ({
+    url: '/api/election/1/standardized-contests',
+    response: standardizedContests,
   }),
 }
 
@@ -134,7 +164,9 @@ describe('Audit Setup > Review & Launch', () => {
         jurisdictions: jurisdictionMocks.allManifests,
       }),
       apiCalls.getJurisdictionFile,
+      apiCalls.getStandardizedContests(),
       apiCalls.getContests(contestMocks.filledTargetedAndOpportunistic),
+      apiCalls.getContestChoiceNameStandardizations(),
       apiCalls.getSampleSizeOptions(sampleSizeMock.ballotPolling),
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -255,7 +287,9 @@ describe('Audit Setup > Review & Launch', () => {
         jurisdictions: jurisdictionMocks.allManifests,
       }),
       apiCalls.getJurisdictionFile,
+      apiCalls.getStandardizedContests(),
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
+      apiCalls.getContestChoiceNameStandardizations(),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
@@ -287,7 +321,9 @@ describe('Audit Setup > Review & Launch', () => {
         jurisdictions: jurisdictionMocks.allManifestsAllTallies,
       }),
       apiCalls.getJurisdictionFile,
+      apiCalls.getStandardizedContests(),
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
+      apiCalls.getContestChoiceNameStandardizations(),
       apiCalls.getSampleSizeOptions(sampleSizeMock.batchComparison),
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -316,9 +352,11 @@ describe('Audit Setup > Review & Launch', () => {
         jurisdictions: jurisdictionMocks.allManifestsWithCVRs,
       }),
       apiCalls.getJurisdictionFile,
+      apiCalls.getStandardizedContests(),
       apiCalls.getContests(contestMocks.filledTargetedAndOpportunistic),
+      apiCalls.getContestChoiceNameStandardizations(),
       apiCalls.getStandardizedContestsFile,
-      apiCalls.getStandardizations({
+      apiCalls.getContestNameStandardizations({
         standardizations: {},
         cvrContestNames: {},
       }),
@@ -402,9 +440,11 @@ describe('Audit Setup > Review & Launch', () => {
         jurisdictions: jurisdictionMocks.allManifestsWithCVRs,
       }),
       apiCalls.getJurisdictionFile,
+      apiCalls.getStandardizedContests(),
       apiCalls.getContests(contestMocks.filledTargeted),
+      apiCalls.getContestChoiceNameStandardizations(),
       apiCalls.getStandardizedContestsFile,
-      apiCalls.getStandardizations({
+      apiCalls.getContestNameStandardizations({
         standardizations: {},
         cvrContestNames: {},
       }),
@@ -453,9 +493,11 @@ describe('Audit Setup > Review & Launch', () => {
         jurisdictions: jurisdictionMocks.allManifestsSomeCVRs,
       }),
       apiCalls.getJurisdictionFile,
+      apiCalls.getStandardizedContests(),
       apiCalls.getContests(contestMocks.filledTargetedAndOpportunistic),
+      apiCalls.getContestChoiceNameStandardizations(),
       apiCalls.getStandardizedContestsFile,
-      apiCalls.getStandardizations({
+      apiCalls.getContestNameStandardizations({
         standardizations: {},
         cvrContestNames: {},
       }),
@@ -491,7 +533,9 @@ describe('Audit Setup > Review & Launch', () => {
         jurisdictions: jurisdictionMocks.allManifests,
       }),
       apiCalls.getJurisdictionFile,
+      apiCalls.getStandardizedContests(),
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
+      apiCalls.getContestChoiceNameStandardizations(),
       apiCalls.getSampleSizeOptions(sampleSizeMock.ballotPolling),
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -517,7 +561,9 @@ describe('Audit Setup > Review & Launch', () => {
         jurisdictions: jurisdictionMocks.allManifests,
       }),
       apiCalls.getJurisdictionFile,
+      apiCalls.getStandardizedContests(),
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
+      apiCalls.getContestChoiceNameStandardizations(),
       apiCalls.getSampleSizeOptions(sampleSizeMock.ballotPolling),
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -543,7 +589,9 @@ describe('Audit Setup > Review & Launch', () => {
         jurisdictions: jurisdictionMocks.allManifests,
       }),
       apiCalls.getJurisdictionFile,
+      apiCalls.getStandardizedContests(),
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
+      apiCalls.getContestChoiceNameStandardizations(),
       apiCalls.getSampleSizeOptions(sampleSizeMock.ballotPolling),
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -572,7 +620,9 @@ describe('Audit Setup > Review & Launch', () => {
         jurisdictions: jurisdictionMocks.allManifests,
       }),
       apiCalls.getJurisdictionFile,
+      apiCalls.getStandardizedContests(),
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
+      apiCalls.getContestChoiceNameStandardizations(),
       apiCalls.getSampleSizeOptions(sampleSizeMock.ballotPolling),
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -616,9 +666,11 @@ describe('Audit Setup > Review & Launch', () => {
         jurisdictions: jurisdictionMocks.allManifests,
       }),
       apiCalls.getJurisdictionFile,
+      apiCalls.getStandardizedContests(),
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
+      apiCalls.getContestChoiceNameStandardizations(),
       apiCalls.getStandardizedContestsFile,
-      apiCalls.getStandardizations({
+      apiCalls.getContestNameStandardizations({
         standardizations: {},
         cvrContestNames: {},
       }),
@@ -649,7 +701,9 @@ describe('Audit Setup > Review & Launch', () => {
         jurisdictions: jurisdictionMocks.allManifestsAllTallies,
       }),
       apiCalls.getJurisdictionFile,
+      apiCalls.getStandardizedContests(),
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
+      apiCalls.getContestChoiceNameStandardizations(),
       apiCalls.getSampleSizeOptions(sampleSizeMock.batchComparison),
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -677,9 +731,11 @@ describe('Audit Setup > Review & Launch', () => {
         jurisdictions: jurisdictionMocks.allManifestsWithCVRs,
       }),
       apiCalls.getJurisdictionFile,
+      apiCalls.getStandardizedContests(),
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
+      apiCalls.getContestChoiceNameStandardizations(),
       apiCalls.getStandardizedContestsFile,
-      apiCalls.getStandardizations({
+      apiCalls.getContestNameStandardizations({
         standardizations: {},
         cvrContestNames: {},
       }),
@@ -710,7 +766,9 @@ describe('Audit Setup > Review & Launch', () => {
         jurisdictions: jurisdictionMocks.allManifests,
       }),
       apiCalls.getJurisdictionFile,
+      apiCalls.getStandardizedContests(),
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
+      apiCalls.getContestChoiceNameStandardizations(),
       apiCalls.getSampleSizeOptions({
         ...sampleSizeMock.ballotPolling,
         selected: { 'contest-id': { key: 'custom', size: 100, prob: null } },
@@ -765,13 +823,15 @@ describe('Audit Setup > Review & Launch', () => {
         jurisdictions: jurisdictionMocks.allManifestsWithCVRs,
       }),
       apiCalls.getJurisdictionFile,
+      apiCalls.getStandardizedContests(),
       apiCalls.getContests(contestMocks.filledTargetedAndOpportunistic),
+      apiCalls.getContestChoiceNameStandardizations(),
       apiCalls.getStandardizedContestsFile,
-      apiCalls.getStandardizations({
+      apiCalls.getContestNameStandardizations({
         standardizations,
         cvrContestNames,
       }),
-      apiCalls.putStandardizations({
+      apiCalls.putContestNameStandardizations({
         'jurisdiction-id-1': {
           'Contest 1': 'Contest One',
         },
@@ -779,14 +839,16 @@ describe('Audit Setup > Review & Launch', () => {
           'Contest 2': null,
         },
       }),
-      apiCalls.getStandardizations({
+      apiCalls.getContestNameStandardizations({
         standardizations: {
           ...standardizations,
           'jurisdiction-id-1': { 'Contest 1': 'Contest One' },
         },
         cvrContestNames,
       }),
-      apiCalls.putStandardizations({
+      apiCalls.getContestChoiceNameStandardizations(),
+      apiCalls.getContests(contestMocks.filledTargetedAndOpportunistic),
+      apiCalls.putContestNameStandardizations({
         'jurisdiction-id-1': {
           'Contest 1': 'Contest One',
         },
@@ -794,14 +856,16 @@ describe('Audit Setup > Review & Launch', () => {
           'Contest 2': 'Contest Two',
         },
       }),
-      apiCalls.getStandardizations({
+      apiCalls.getContestNameStandardizations({
         standardizations: {
           'jurisdiction-id-1': { 'Contest 1': 'Contest One' },
           'jurisdiction-id-2': { 'Contest 2': 'Contest Two' },
         },
         cvrContestNames,
       }),
+      apiCalls.getContestChoiceNameStandardizations(),
       apiCalls.getSampleSizeOptions(sampleSizeMock.ballotComparison),
+      apiCalls.getContests(contestMocks.filledTargetedAndOpportunistic),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView()
@@ -818,7 +882,7 @@ describe('Audit Setup > Review & Launch', () => {
 
       // Open the dialog
       screen.getByText(
-        'Some contest names in the CVR files do not match the target/opportunistic contest names.'
+        'Some contest names in the uploaded CVR files do not match the standardized contest names.'
       )
       userEvent.click(
         screen.getByRole('button', { name: 'Standardize Contest Names' })
@@ -834,7 +898,7 @@ describe('Audit Setup > Review & Launch', () => {
         within(dialog)
           .getAllByRole('columnheader')
           .map(header => header.textContent)
-      ).toEqual(['Jurisdiction', 'Target/Opportunistic Contest', 'CVR Contest'])
+      ).toEqual(['Jurisdiction', 'Standardized Contest', 'CVR Contest'])
       let rows = within(dialog).getAllByRole('row')
       within(rows[1]).getByRole('cell', { name: 'Jurisdiction 1' })
       within(rows[1]).getByRole('cell', { name: 'Contest 1' })
@@ -852,7 +916,7 @@ describe('Audit Setup > Review & Launch', () => {
 
       // Should still show warning since we didn't finish standardizing
       screen.getByText(
-        'Some contest names in the CVR files do not match the target/opportunistic contest names.'
+        'Some contest names in the uploaded CVR files do not match the standardized contest names.'
       )
 
       // Reopen the form - should show the standardization we already did
@@ -877,7 +941,7 @@ describe('Audit Setup > Review & Launch', () => {
 
       // Warning is gone, sample sizes are shown
       screen.getByText(
-        'All contest names in the CVR files have been standardized to match the target/opportunistic contest names.'
+        'All contest names in the uploaded CVR files have been standardized.'
       )
       screen.getByText(
         'Choose the initial sample size for each contest you would like to use for Round 1 of the audit from the options below.'
@@ -904,7 +968,9 @@ describe('Audit Setup > Review & Launch', () => {
         jurisdictions: jurisdictionMocks.allManifests,
       }),
       apiCalls.getJurisdictionFile,
+      apiCalls.getStandardizedContests(),
       apiCalls.getContests(contestMocks.filledTargeted),
+      apiCalls.getContestChoiceNameStandardizations(),
       apiCalls.getSampleSizeOptions(sampleSizeMock.ballotPolling),
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -935,6 +1001,7 @@ describe('Audit Setup > Review & Launch', () => {
         jurisdictions: jurisdictionMocks.allManifests,
       }),
       apiCalls.getJurisdictionFile,
+      apiCalls.getStandardizedContests(),
       apiCalls.getContests([
         contestMocks.filledTargeted[0],
         {
@@ -943,6 +1010,7 @@ describe('Audit Setup > Review & Launch', () => {
           id: 'contest-id-2',
         },
       ]),
+      apiCalls.getContestChoiceNameStandardizations(),
       apiCalls.getSampleSizeOptions({
         ...sampleSizeMock.ballotPolling,
         sampleSizes: {
@@ -984,7 +1052,9 @@ describe('Audit Setup > Review & Launch', () => {
         jurisdictions: jurisdictionMocks.allManifests,
       }),
       apiCalls.getJurisdictionFile,
+      apiCalls.getStandardizedContests(),
       apiCalls.getContests(contestMocks.filledTargeted),
+      apiCalls.getContestChoiceNameStandardizations(),
       apiCalls.getSampleSizeOptions(sampleSizeMock.ballotPolling),
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -1020,9 +1090,11 @@ describe('Audit Setup > Review & Launch', () => {
         jurisdictions: jurisdictionMocks.allManifestsWithCVRs,
       }),
       apiCalls.getJurisdictionFile,
+      apiCalls.getStandardizedContests(),
       apiCalls.getContests(contestMocks.filledTargeted),
+      apiCalls.getContestChoiceNameStandardizations(),
       apiCalls.getStandardizedContestsFile,
-      apiCalls.getStandardizations({
+      apiCalls.getContestNameStandardizations({
         standardizations: {},
         cvrContestNames: {},
       }),
@@ -1052,7 +1124,9 @@ describe('Audit Setup > Review & Launch', () => {
         jurisdictions: jurisdictionMocks.allManifestsAllTallies,
       }),
       apiCalls.getJurisdictionFile,
+      apiCalls.getStandardizedContests(),
       apiCalls.getContests(contestMocks.filledTargeted),
+      apiCalls.getContestChoiceNameStandardizations(),
       apiCalls.getSampleSizeOptions(sampleSizeMock.ballotPolling),
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -1076,7 +1150,9 @@ describe('Audit Setup > Review & Launch', () => {
         jurisdictions: jurisdictionMocks.allManifests,
       }),
       apiCalls.getJurisdictionFile,
+      apiCalls.getStandardizedContests(),
       apiCalls.getContests(contestMocks.filledTargeted),
+      apiCalls.getContestChoiceNameStandardizations(),
       apiCalls.getSampleSizeOptions(sampleSizeMock.ballotPolling),
       apiCalls.postComputeSamplePreview({
         'contest-id': sampleSizeMock.ballotPolling.sampleSizes![
@@ -1138,7 +1214,9 @@ describe('Audit Setup > Review & Launch', () => {
         jurisdictions: jurisdictionMocks.allManifests,
       }),
       apiCalls.getJurisdictionFile,
+      apiCalls.getStandardizedContests(),
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
+      apiCalls.getContestChoiceNameStandardizations(),
       aaApiCalls.getSampleSizes(sampleSizeMock.calculating),
       aaApiCalls.getSampleSizes(sampleSizeMock.ballotPolling),
     ]
@@ -1175,6 +1253,7 @@ describe('Audit Setup > Review & Launch', () => {
         jurisdictions: jurisdictionMocks.allManifestsWithCVRs,
       }),
       apiCalls.getJurisdictionFile,
+      apiCalls.getStandardizedContests(),
       apiCalls.getContests([
         {
           // Inconsistent choice names
@@ -1225,8 +1304,9 @@ describe('Audit Setup > Review & Launch', () => {
           cvrChoiceNameConsistencyError: undefined,
         },
       ]),
+      apiCalls.getContestChoiceNameStandardizations(),
       apiCalls.getStandardizedContestsFile,
-      apiCalls.getStandardizations({
+      apiCalls.getContestNameStandardizations({
         cvrContestNames: {},
         standardizations: {},
       }),
@@ -1234,33 +1314,34 @@ describe('Audit Setup > Review & Launch', () => {
     await withMockFetch(expectedCalls, async () => {
       renderView()
 
-      await screen.findByText(
+      expect(
+        await screen.findAllByText(
+          'Choice names do not match across jurisdictions. ' +
+            'Below is an example of a mismatch. ' +
+            'Address these inconsistencies by adding choice names to your standardized contests file or updating your CVR files.'
+        )
+      ).toHaveLength(2)
+      screen.getByText(
         hasTextAcrossElements(
-          'Some choice names in Jurisdiction 2 do not match other counties.' +
-            'Choice names in Jurisdiction 2 without matches: CHOICE 1 · CHOICE 2' +
+          'Choice names in Jurisdiction 2 not found in Jurisdiction 1: CHOICE 1 · CHOICE 2' +
             'Choice names in Jurisdiction 1: Choice 1 · Choice 2'
         )
       )
       screen.getByText(
         hasTextAcrossElements(
-          'Some choice names in Jurisdiction 2 do not match other counties.' +
-            'Choice names in Jurisdiction 2 without matches: Choice 3' +
+          'Choice names in Jurisdiction 2 not found in Jurisdiction 1: Choice 3' +
             'Choice names in Jurisdiction 1: Choice 1 · Choice 2'
         )
       )
 
-      screen.getByText('The following contests have inconsistent choice names:')
+      screen.getByText(
+        hasTextAcrossElements(
+          'The following contests have inconsistent choice names: Contest 1, Contest 2. ' +
+            'Resolve these inconsistencies in order to calculate the sample size.'
+        )
+      )
       screen.getByRole('link', { name: 'Contest 1' })
       screen.getByRole('link', { name: 'Contest 2' })
-      expect(
-        screen.queryByRole('link', { name: 'Contest 3' })
-      ).not.toBeInTheDocument()
-      expect(
-        screen.queryByRole('link', { name: 'Contest 4' })
-      ).not.toBeInTheDocument()
-      screen.getByText(
-        'Address these inconsistencies by updating your CVR files in order to calculate the sample size.'
-      )
 
       expect(
         screen.getByRole('button', { name: 'Launch Audit' })

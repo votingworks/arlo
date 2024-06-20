@@ -236,7 +236,9 @@ describe('Setup', () => {
       aaApiCalls.getJurisdictionFile,
       aaApiCalls.getSettings(auditSettingsMocks.blank),
       aaApiCalls.getJurisdictions,
+      aaApiCalls.getStandardizedContests([]),
       aaApiCalls.getContests(contestMocks.empty),
+      aaApiCalls.getContestChoiceNameStandardizations(),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderSetup()
@@ -256,7 +258,9 @@ describe('Setup', () => {
       aaApiCalls.getJurisdictionFile,
       aaApiCalls.getSettings(auditSettingsMocks.all),
       aaApiCalls.getJurisdictions,
+      aaApiCalls.getStandardizedContests([]),
       aaApiCalls.getContests(contestMocks.filledTargeted),
+      aaApiCalls.getContestChoiceNameStandardizations(),
       aaApiCalls.getSampleSizes(sampleSizeMock.ballotPolling),
     ]
     await withMockFetch(expectedCalls, async () => {

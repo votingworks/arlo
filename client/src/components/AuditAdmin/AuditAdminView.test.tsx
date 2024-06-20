@@ -201,6 +201,7 @@ describe('AA setup flow', () => {
       aaApiCalls.getStandardizedContestsFileWithResponse(
         standardizedContestsFileMocks.processed
       ),
+      aaApiCalls.getContests(contestMocks.filledTargeted),
     ]
     await withMockFetch(expectedCalls, async () => {
       render()
@@ -243,6 +244,8 @@ describe('AA setup flow', () => {
     const expectedCalls = [
       aaApiCalls.getUser,
       ...setupApiCalls,
+      aaApiCalls.getStandardizedContests([]),
+      aaApiCalls.getContestChoiceNameStandardizations(),
       aaApiCalls.getSampleSizes(sampleSizeMock.ballotPolling),
       aaApiCalls.postRound({
         'contest-id': sampleSizeMock.ballotPolling.sampleSizes![
