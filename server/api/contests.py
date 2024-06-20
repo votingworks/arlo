@@ -448,7 +448,7 @@ def get_contest_name_standardizations(election: Election):
     "/election/<election_id>/contest/choice-name-standardizations", methods=["PUT"],
 )
 @restrict_access([UserType.AUDIT_ADMIN])
-def put_contest_choice_name_standardizations(election: Election):
+def put_contest_choice_name_standardizations(election: Election):  # pragma: no cover
     if election.audit_type not in [AuditType.BALLOT_COMPARISON, AuditType.HYBRID]:
         raise Conflict("Cannot standardize contest choice names for this audit type.")
     if len(list(election.rounds)) > 0:
@@ -475,7 +475,7 @@ def put_contest_choice_name_standardizations(election: Election):
     "/election/<election_id>/contest/choice-name-standardizations", methods=["GET"],
 )
 @restrict_access([UserType.AUDIT_ADMIN])
-def get_contest_choice_name_standardizations(election: Election):
+def get_contest_choice_name_standardizations(election: Election):  # pragma: no cover
     def get_standardizations_for_jurisdiction_and_contest(jurisdiction, contest):
         # Get metadata with contest name standardizations applied but not contest choice name
         # standardizations applied

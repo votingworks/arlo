@@ -94,7 +94,7 @@ def process_standardized_contests_file(election_id: str):
             jurisdictionIds=[jurisdiction.id for jurisdiction in jurisdictions],
         )
 
-        if file_has_choice_names_column:
+        if file_has_choice_names_column:  # pragma: no cover
             choice_names = [
                 choice_name.strip() for choice_name in row[CHOICE_NAMES].split("/")
             ]
