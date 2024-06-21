@@ -1337,6 +1337,62 @@ Cast Vote Record,Batch,Ballot Status,Original Ballot Exception,Remaining Ballot 
 Total : 7,,,,,,,,,
 """
 
+ESS_BALLOTS_WITH_NO_METADATA_ROWS = """Cast Vote Record,Batch,Ballot Status,Original Ballot Exception,Remaining Ballot Exception,Write-in Type,Results Report,Reporting Group,Tabulator CVR,Precinct ID
+1,BATCH1,Not Reviewed,,,,N,Election Day,0001013415,p
+2,BATCH1,Not Reviewed,,,,N,Election Day,0001013416,p
+3,BATCH1,Not Reviewed,Undervote,,,N,Election Day,0001013417,p
+4,BATCH1,Not Reviewed,Overvote,,,N,Election Day,0002003171,p
+5,BATCH1,Not Reviewed,,,,N,Election Day,0002003172,p
+6,BATCH1,Not Reviewed,,,,N,Election Day,0002003173,p
+7,BATCH2,Not Reviewed,,,,N,Election Day,0001000415,p
+8,BATCH2,Not Reviewed,,,,N,Election Day,0001000416,p
+9,BATCH2,Not Reviewed,,,,N,Election Day,0001000417,p
+10,BATCH2,Not Reviewed,,,,N,Election Day,0002000171,p
+11,BATCH2,Not Reviewed,,,,N,Election Day,0002000172,p
+12,BATCH2,Not Reviewed,,,,N,Election Day,0002000173,p
+13,BATCH2,Not Reviewed,,,,N,Election Day,0002000174,p
+15,BATCH2,Not Reviewed,,,,N,Election Day,0002000175,p
+"""
+
+ESS_BALLOTS_WITH_MACHINE_COLUMN = """Ballots,,,,,,,,,
+GEN2111,,,,,,,,,
+"Test County,Test State",,,,,,,,,
+"November 5, 2021",,,,,,,,,
+,,,,,,,,,
+Cast Vote Record,Batch,Ballot Status,Original Ballot Exception,Remaining Ballot Exception,Write-in Type,Results Report,Ballot Style,Reporting Group,Tabulator CVR,Audit Number,Type,Poll Place,Poll Place ID,Precinct,Precinct ID,Machine,Adjudicated By,
+1,BATCH1,Not Reviewed,,,,N,REP 405,Election Day,02bc1dc7bc1e7774,7074480632,Card,Election Day,28,405,21,0001,
+2,BATCH1,Not Reviewed,,,,N,REP 405,Election Day,039b31b93d9a8099,7074480632,Card,Election Day,28,405,21,0001,
+3,BATCH1,Not Reviewed,"Undervote, Overvote",,,N,REP 405,Election Day,06348ce7b6d146d2,7074480632,Card,Election Day,28,405,21,0001,
+4,BATCH1,Not Reviewed,Overvote,,,N,REP 405,Election Day,09809965339bad95,7074480632,Card,Election Day,28,405,21,0001,
+5,BATCH1,Not Reviewed,,,,N,REP 405,Election Day,0002003172,7074480632,Card,Election Day,28,405,21,0002,
+6,BATCH1,Not Reviewed,,,,N,REP 405,Election Day,0002003173,7074480632,Card,Election Day,28,405,21,0002,
+7,BATCH2,Not Reviewed,,,,N,REP 405,Election Day,19882855d197f6c2,7074480632,Card,Election Day,28,405,21,0001,
+8,BATCH2,Not Reviewed,,,,N,REP 405,Election Day,1dd6b0ff8462558c,7074480632,Card,Election Day,28,405,21,0001,
+9,BATCH2,Not Reviewed,,,,N,REP 405,Election Day,1f781b866b83de9b,7074480632,Card,Election Day,28,405,21,0001,
+10,BATCH2,Not Reviewed,,,,N,REP 405,Election Day,0002000171,7074480632,Card,Election Day,28,405,21,0002,
+11,BATCH2,Not Reviewed,,,,N,REP 405,Election Day,0002000172,7074480632,Card,Election Day,28,405,21,0002,
+12,BATCH2,Not Reviewed,,,,N,REP 405,Election Day,0002000173,7074480632,Card,Election Day,28,405,21,0002,
+13,BATCH2,Not Reviewed,,,,N,REP 405,Election Day,0002000174,7074480632,Card,Election Day,28,405,21,0002,
+15,BATCH2,Not Reviewed,,,,N,REP 405,Election Day,0002000175,7074480632,Card,Election Day,28,405,21,0002,
+"""
+
+ESS_BALLOTS_WITH_MACHINE_COLUMN_AND_NO_METADATA_ROWS = """Cast Vote Record,Batch,Ballot Status,Original Ballot Exception,Remaining Ballot Exception,Write-in Type,Results Report,Ballot Style,Reporting Group,Tabulator CVR,Audit Number,Type,Poll Place,Poll Place ID,Precinct,Precinct ID,Machine,Adjudicated By,
+1,BATCH1,Not Reviewed,,,,N,REP 405,Election Day,02bc1dc7bc1e7774,7074480632,Card,Election Day,28,405,21,0001,
+2,BATCH1,Not Reviewed,,,,N,REP 405,Election Day,039b31b93d9a8099,7074480632,Card,Election Day,28,405,21,0001,
+3,BATCH1,Not Reviewed,"Undervote, Overvote",,,N,REP 405,Election Day,06348ce7b6d146d2,7074480632,Card,Election Day,28,405,21,0001,
+4,BATCH1,Not Reviewed,Overvote,,,N,REP 405,Election Day,09809965339bad95,7074480632,Card,Election Day,28,405,21,0001,
+5,BATCH1,Not Reviewed,,,,N,REP 405,Election Day,0002003172,7074480632,Card,Election Day,28,405,21,0002,
+6,BATCH1,Not Reviewed,,,,N,REP 405,Election Day,0002003173,7074480632,Card,Election Day,28,405,21,0002,
+7,BATCH2,Not Reviewed,,,,N,REP 405,Election Day,19882855d197f6c2,7074480632,Card,Election Day,28,405,21,0001,
+8,BATCH2,Not Reviewed,,,,N,REP 405,Election Day,1dd6b0ff8462558c,7074480632,Card,Election Day,28,405,21,0001,
+9,BATCH2,Not Reviewed,,,,N,REP 405,Election Day,1f781b866b83de9b,7074480632,Card,Election Day,28,405,21,0001,
+10,BATCH2,Not Reviewed,,,,N,REP 405,Election Day,0002000171,7074480632,Card,Election Day,28,405,21,0002,
+11,BATCH2,Not Reviewed,,,,N,REP 405,Election Day,0002000172,7074480632,Card,Election Day,28,405,21,0002,
+12,BATCH2,Not Reviewed,,,,N,REP 405,Election Day,0002000173,7074480632,Card,Election Day,28,405,21,0002,
+13,BATCH2,Not Reviewed,,,,N,REP 405,Election Day,0002000174,7074480632,Card,Election Day,28,405,21,0002,
+15,BATCH2,Not Reviewed,,,,N,REP 405,Election Day,0002000175,7074480632,Card,Election Day,28,405,21,0002,
+"""
+
 
 def test_ess_cvr_upload(
     client: FlaskClient,
@@ -1345,19 +1401,30 @@ def test_ess_cvr_upload(
     ess_manifests,  # pylint: disable=unused-argument
     snapshot,
 ):
-    # Upload CVRs
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={
-            "cvrs": [
-                (io.BytesIO(ESS_CVR.encode()), "ess_cvr.csv",),
-                (io.BytesIO(ESS_BALLOTS_2.encode()), "ess_ballots_2.csv",),
-                (io.BytesIO(ESS_BALLOTS_1.encode()), "ess_ballots_1.csv",),
-            ],
-            "cvrFileType": "ESS",
-        },
-    )
-    assert_ok(rv)
+    test_cases = [
+        [
+            (io.BytesIO(ESS_CVR.encode()), "ess_cvr.csv"),
+            (io.BytesIO(ESS_BALLOTS_1.encode()), "ess_ballots_1.csv"),
+            (io.BytesIO(ESS_BALLOTS_2.encode()), "ess_ballots_2.csv"),
+        ],
+        [
+            (io.BytesIO(ESS_CVR.encode()), "ess_cvr.csv"),
+            (io.BytesIO(ESS_BALLOTS_WITH_NO_METADATA_ROWS.encode()), "ess_ballots.csv"),
+        ],
+        [
+            (io.BytesIO(ESS_CVR.encode()), "ess_cvr.csv"),
+            (io.BytesIO(ESS_BALLOTS_WITH_MACHINE_COLUMN.encode()), "ess_ballots.csv"),
+        ],
+        [
+            (io.BytesIO(ESS_CVR.encode()), "ess_cvr.csv"),
+            (
+                io.BytesIO(
+                    ESS_BALLOTS_WITH_MACHINE_COLUMN_AND_NO_METADATA_ROWS.encode()
+                ),
+                "ess_ballots.csv",
+            ),
+        ],
+    ]
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
@@ -1367,63 +1434,66 @@ def test_ess_cvr_upload(
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
-    rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
-    )
-    compare_json(
-        json.loads(rv.data),
-        {
-            "file": {
-                "name": "cvr-files.zip",
-                "uploadedAt": assert_is_date,
-                "cvrFileType": "ESS",
+
+    for cvrs in test_cases:
+        rv = client.put(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
+            data={"cvrs": cvrs, "cvrFileType": "ESS"},
+        )
+        assert_ok(rv)
+
+        rv = client.get(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
+        )
+        compare_json(
+            json.loads(rv.data),
+            {
+                "file": {
+                    "cvrFileType": "ESS",
+                    "name": "cvr-files.zip",
+                    "uploadedAt": assert_is_date,
+                },
+                "processing": {
+                    "completedAt": assert_is_date,
+                    "error": None,
+                    "startedAt": assert_is_date,
+                    "status": ProcessingStatus.PROCESSED,
+                    "workProgress": manifest_num_ballots,
+                    "workTotal": manifest_num_ballots,
+                },
             },
-            "processing": {
-                "status": ProcessingStatus.PROCESSED,
-                "startedAt": assert_is_date,
-                "completedAt": assert_is_date,
-                "error": None,
-                "workProgress": manifest_num_ballots,
-                "workTotal": manifest_num_ballots,
-            },
-        },
-    )
+        )
 
-    cvr_ballots = (
-        CvrBallot.query.join(Batch)
-        .filter_by(jurisdiction_id=jurisdiction_ids[0])
-        .order_by(CvrBallot.imprinted_id)
-        .all()
-    )
-    assert len(cvr_ballots) == manifest_num_ballots - 1
-    snapshot.assert_match(
-        [
-            dict(
-                batch_name=cvr.batch.name,
-                tabulator=cvr.batch.tabulator,
-                ballot_position=cvr.ballot_position,
-                imprinted_id=cvr.imprinted_id,
-                interpretations=cvr.interpretations,
-            )
-            for cvr in cvr_ballots
-        ]
-    )
-    snapshot.assert_match(
-        Jurisdiction.query.get(jurisdiction_ids[0]).cvr_contests_metadata
-    )
+        cvr_ballots = (
+            CvrBallot.query.join(Batch)
+            .filter_by(jurisdiction_id=jurisdiction_ids[0])
+            .order_by(CvrBallot.imprinted_id)
+            .all()
+        )
+        assert len(cvr_ballots) == manifest_num_ballots - 1
+        snapshot.assert_match(
+            [
+                dict(
+                    batch_name=cvr.batch.name,
+                    tabulator=cvr.batch.tabulator,
+                    ballot_position=cvr.ballot_position,
+                    imprinted_id=cvr.imprinted_id,
+                    interpretations=cvr.interpretations,
+                )
+                for cvr in cvr_ballots
+            ]
+        )
+        snapshot.assert_match(
+            Jurisdiction.query.get(jurisdiction_ids[0]).cvr_contests_metadata
+        )
 
 
-def test_ess_cvr_invalid(
+def test_ess_cvr_upload_invalid(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
     ess_manifests,  # pylint: disable=unused-argument
 ):
-    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.get(f"/api/election/{election_id}/jurisdiction")
-    jurisdictions = json.loads(rv.data)["jurisdictions"]
-    manifest_num_ballots = jurisdictions[0]["ballotManifest"]["numBallots"]
-
     def remove_line(string: str, line: int) -> str:
         lines = string.splitlines()
         if line < 0:
@@ -1436,7 +1506,7 @@ def test_ess_cvr_invalid(
             line = len(string.splitlines()) + line
         return "\n".join(lines[:line] + [new_line] + lines[line + 1 :])
 
-    invalid_cvrs = [
+    test_cases = [
         (
             [(io.BytesIO(ESS_CVR.encode()), "ess_cvr.csv")],
             "Missing ballots files - at least one file should contain the list of tabulated ballots and their corresponding CVR identifiers.",
@@ -1473,7 +1543,7 @@ def test_ess_cvr_invalid(
                     "ess_ballots_2.csv",
                 ),
             ],
-            "ess_ballots_2.csv: Tabulator CVR should be a ten-digit number. Got 2000175 for Cast Vote Record 15. Make sure any leading zeros have not been stripped from this field.",
+            "ess_ballots_2.csv: Tabulator CVR should be a ten-digit number if there is no Machine column. Got 2000175 for Cast Vote Record 15. Make sure any leading zeros have not been stripped from this field.",
         ),
         (
             [
@@ -1481,7 +1551,7 @@ def test_ess_cvr_invalid(
                     io.BytesIO(
                         # Sometimes we see scientific notation instead of hex
                         replace_line(
-                            ESS_TYPE_2_BALLOTS,
+                            ESS_BALLOTS_WITH_MACHINE_COLUMN_AND_NO_METADATA_ROWS,
                             2,
                             "1,BATCH1,Not Reviewed,,,,N,REP 405,Election Day,4.78822E+15,7074480632,Card,Election Day,28,405,21,0001,",
                         ).encode()
@@ -1595,13 +1665,19 @@ def test_ess_cvr_invalid(
         ),
     ]
 
-    for invalid_cvr, expected_error in invalid_cvrs:
-        set_logged_in_user(
-            client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
-        )
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    manifest_num_ballots = jurisdictions[0]["ballotManifest"]["numBallots"]
+
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+
+    for invalid_cvrs, expected_error in test_cases:
         rv = client.put(
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-            data={"cvrs": invalid_cvr, "cvrFileType": "ESS"},
+            data={"cvrs": invalid_cvrs, "cvrFileType": "ESS"},
         )
         assert_ok(rv)
 
@@ -1612,112 +1688,20 @@ def test_ess_cvr_invalid(
             json.loads(rv.data),
             {
                 "file": {
+                    "cvrFileType": "ESS",
                     "name": "cvr-files.zip",
                     "uploadedAt": assert_is_date,
-                    "cvrFileType": "ESS",
                 },
                 "processing": {
-                    "status": ProcessingStatus.ERRORED,
-                    "startedAt": assert_is_date,
                     "completedAt": assert_is_date,
                     "error": expected_error,
+                    "startedAt": assert_is_date,
+                    "status": ProcessingStatus.ERRORED,
                     "workProgress": 0,
                     "workTotal": manifest_num_ballots,
                 },
             },
         )
-
-
-ESS_TYPE_2_BALLOTS = """Cast Vote Record,Batch,Ballot Status,Original Ballot Exception,Remaining Ballot Exception,Write-in Type,Results Report,Ballot Style,Reporting Group,Tabulator CVR,Audit Number,Type,Poll Place,Poll Place ID,Precinct,Precinct ID,Machine,Adjudicated By,
-1,BATCH1,Not Reviewed,,,,N,REP 405,Election Day,02bc1dc7bc1e7774,7074480632,Card,Election Day,28,405,21,0001,
-2,BATCH1,Not Reviewed,,,,N,REP 405,Election Day,039b31b93d9a8099,7074480632,Card,Election Day,28,405,21,0001,
-3,BATCH1,Not Reviewed,"Undervote, Overvote",,,N,REP 405,Election Day,06348ce7b6d146d2,7074480632,Card,Election Day,28,405,21,0001,
-4,BATCH1,Not Reviewed,Overvote,,,N,REP 405,Election Day,09809965339bad95,7074480632,Card,Election Day,28,405,21,0001,
-5,BATCH1,Not Reviewed,,,,N,REP 405,Election Day,0002003172,7074480632,Card,Election Day,28,405,21,0002,
-6,BATCH1,Not Reviewed,,,,N,REP 405,Election Day,0002003173,7074480632,Card,Election Day,28,405,21,0002,
-7,BATCH2,Not Reviewed,,,,N,REP 405,Election Day,19882855d197f6c2,7074480632,Card,Election Day,28,405,21,0001,
-8,BATCH2,Not Reviewed,,,,N,REP 405,Election Day,1dd6b0ff8462558c,7074480632,Card,Election Day,28,405,21,0001,
-9,BATCH2,Not Reviewed,,,,N,REP 405,Election Day,1f781b866b83de9b,7074480632,Card,Election Day,28,405,21,0001,
-10,BATCH2,Not Reviewed,,,,N,REP 405,Election Day,0002000171,7074480632,Card,Election Day,28,405,21,0002,
-11,BATCH2,Not Reviewed,,,,N,REP 405,Election Day,0002000172,7074480632,Card,Election Day,28,405,21,0002,
-12,BATCH2,Not Reviewed,,,,N,REP 405,Election Day,0002000173,7074480632,Card,Election Day,28,405,21,0002,
-13,BATCH2,Not Reviewed,,,,N,REP 405,Election Day,0002000174,7074480632,Card,Election Day,28,405,21,0002,
-15,BATCH2,Not Reviewed,,,,N,REP 405,Election Day,0002000175,7074480632,Card,Election Day,28,405,21,0002,
-"""
-
-
-def test_ess_cvr_type_2_upload(
-    client: FlaskClient,
-    election_id: str,
-    jurisdiction_ids: List[str],
-    ess_manifests,  # pylint: disable=unused-argument
-    snapshot,
-):
-    # Upload CVRs
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={
-            "cvrs": [
-                (io.BytesIO(ESS_CVR.encode()), "ess_cvr.csv",),
-                (io.BytesIO(ESS_TYPE_2_BALLOTS.encode()), "ess_ballots.csv",),
-            ],
-            "cvrFileType": "ESS",
-        },
-    )
-    assert_ok(rv)
-
-    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.get(f"/api/election/{election_id}/jurisdiction")
-    jurisdictions = json.loads(rv.data)["jurisdictions"]
-    manifest_num_ballots = jurisdictions[0]["ballotManifest"]["numBallots"]
-
-    set_logged_in_user(
-        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
-    )
-    rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
-    )
-    compare_json(
-        json.loads(rv.data),
-        {
-            "file": {
-                "name": "cvr-files.zip",
-                "uploadedAt": assert_is_date,
-                "cvrFileType": "ESS",
-            },
-            "processing": {
-                "status": ProcessingStatus.PROCESSED,
-                "startedAt": assert_is_date,
-                "completedAt": assert_is_date,
-                "error": None,
-                "workProgress": manifest_num_ballots,
-                "workTotal": manifest_num_ballots,
-            },
-        },
-    )
-
-    cvr_ballots = (
-        CvrBallot.query.join(Batch)
-        .filter_by(jurisdiction_id=jurisdiction_ids[0])
-        .order_by(CvrBallot.imprinted_id)
-        .all()
-    )
-    assert len(cvr_ballots) == manifest_num_ballots - 1
-    snapshot.assert_match(
-        [
-            dict(
-                batch_name=cvr.batch.name,
-                tabulator=cvr.batch.tabulator,
-                ballot_position=cvr.ballot_position,
-                imprinted_id=cvr.imprinted_id,
-                interpretations=cvr.interpretations,
-            )
-            for cvr in cvr_ballots
-        ]
-    )
-    snapshot.assert_match(
-        Jurisdiction.query.get(jurisdiction_ids[0]).cvr_contests_metadata
-    )
 
 
 def build_hart_cvr(
