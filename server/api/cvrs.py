@@ -565,31 +565,24 @@ def separate_ess_cvr_and_ballots_files(
 
 def read_ess_ballots_file(
     ballots_file: TextIO,
-) -> Tuple[Literal["type1", "type2"], List[str], Generator[List[str], None, None]]:
+) -> Tuple[List[str], Generator[List[str], None, None]]:
     validate_comma_delimited(ballots_file)
     ballots_csv = csv.reader(ballots_file, delimiter=",")
 
-    # There are two formats of the ballots file that we support based on
-    # different versions of the ES&S system
-    ballots_file_type: Literal["type1", "type2"]
-    # pylint: disable=stop-iteration-return
     first_row = next(ballots_csv)
-    # One format starts with metadata rows before the headers, which we want to skip
+    # Some ES&S ballots files begin with a series of metadata rows
     if first_row[0] == "Ballots":
         _gen_tag = next(ballots_csv)
         _county_name = next(ballots_csv)
         _date = next(ballots_csv)
         _empty_row = next(ballots_csv)
         headers = next(ballots_csv)
-        ballots_file_type = "type1"
-    # The other has headers in the first row
     else:
         headers = first_row
-        ballots_file_type = "type2"
 
     rows = (row for row in ballots_csv if not row[0].startswith("Total"))
 
-    return (ballots_file_type, headers, rows)
+    return (headers, rows)
 
 
 def parse_ess_cvrs(
@@ -614,128 +607,94 @@ def parse_ess_cvrs(
     #   - Second, parse out the interpretations.
     # 5. Concatenate the parsed CVRBallot lists and join that to the parsed interpretation
 
-    zip_file = retrieve_file(jurisdiction.cvr_file.storage_path)
-    file_names = unzip_files(zip_file, working_directory)
-    zip_file.close()
-
-    cvr_and_ballots_files = separate_ess_cvr_and_ballots_files(
-        working_directory, file_names
-    )
-    cvr_file_name, cvr_file, ballots_files = (
-        cvr_and_ballots_files["cvr_file_name"],
-        cvr_and_ballots_files["cvr_file"],
-        cvr_and_ballots_files["ballots_files"],
-    )
-
     batches_by_key = {
         (batch.tabulator, batch.name): batch for batch in jurisdiction.batches
     }
 
-    def parse_ballots_file(
-        ballots_file: TextIO,
-    ) -> Iterator[Tuple[str, CvrBallot]]:  # (CVR number, ballot)
-        ballots_file_type, headers, rows = read_ess_ballots_file(ballots_file)
+    ten_digit_tabulator_cvr_regex = re.compile(r"^(\d{4})(\d{6})$")
 
-        header_indices = get_header_indices(headers)
-
-        # The rows may not be in order, but we need them sorted in order to
-        # concatenate and merge the files. For now, sort them in memory, though
-        # we may need to change this if it becomes a memory bottleneck.
-        sorted_ballot_rows = sorted(
-            rows, key=lambda row: int(row[header_indices["Cast Vote Record"]])
+    def row_to_cvr_ballot(row: List[str], row_index: int, header_indices: Dict[str, int]) -> Tuple[str, CvrBallot]:
+        cvr_number = column_value(
+            row, "Cast Vote Record", row_index + 1, header_indices
+        )
+        batch_name = column_value(row, "Batch", cvr_number, header_indices)
+        tabulator_cvr = column_value(
+            row, "Tabulator CVR", cvr_number, header_indices
         )
 
-        ten_digit_tabulator_cvr_regex = re.compile(r"^(\d{4})(\d{6})$")
+        tabulator_number = None
+        record_id = None
+        imprinted_id = tabulator_cvr
 
-        for row_index, row in enumerate(sorted_ballot_rows):
-            cvr_number = column_value(
-                row, "Cast Vote Record", row_index + 1, header_indices
+        if "Machine" in header_indices.keys():
+            tabulator_number = column_value(
+                row, "Machine", cvr_number, header_indices
             )
-            batch_name = column_value(row, "Batch", cvr_number, header_indices)
-            tabulator_cvr = column_value(
-                row, "Tabulator CVR", cvr_number, header_indices
-            )
-
-            # In type 1 ballots files, Tabulator CVR is a 10-digit string. The
-            # first four digits are the tabulator ID, the last six are the
-            # ballot number within the batch. We use this full value as an
-            # imprinted ID even though it's not imprinted on the ballots.
-            if ballots_file_type == "type1":
-                match = ten_digit_tabulator_cvr_regex.match(tabulator_cvr)
-                if not match:
-                    raise UserError(
-                        "Tabulator CVR should be a ten-digit number."
-                        f" Got {tabulator_cvr} for Cast Vote Record {cvr_number}."
-                        " Make sure any leading zeros have not been stripped from this field."
-                    )
-                tabulator_number, ballot_number = match.groups()
-                imprinted_id = tabulator_cvr
+            match = ten_digit_tabulator_cvr_regex.match(tabulator_cvr)
+            if match:
+                _, ballot_number = match.groups()
                 record_id = int(ballot_number)
-
-            # In type 2 ballots files, we use the Machine column as the
-            # tabulator ID. Tabulator CVR has either the 10-digit string or a
-            # 16-character hex id, the latter of which is actually imprinted on
-            # the ballots. For the hex case, we attempt to use it as a ballot
-            # number, even though we don't know if it corresponds to ballot order.
-            elif ballots_file_type == "type2":
-                tabulator_number = column_value(
-                    row, "Machine", cvr_number, header_indices
-                )
-                imprinted_id = tabulator_cvr
-                match = ten_digit_tabulator_cvr_regex.match(tabulator_cvr)
-                if match:
-                    _, ballot_number = match.groups()
-                    record_id = int(ballot_number)
-                else:
-                    # Convert 16-character hex to a small-ish int that fits in
-                    # the db. Based on the data we've seen, this creates a large
-                    # enough gap between ids to order them without creating any
-                    # duplicates.
-                    try:
-                        record_id = floor(int(tabulator_cvr, 16) / 10 ** 10)
-                    except ValueError:
-                        raise UserError(  # pylint: disable=raise-missing-from
-                            "Tabulator CVR should be a ten-digit number or a sixteen-character hexadecimal string."
-                            f" Got {tabulator_cvr} for Cast Vote Record {cvr_number}."
-                            " If you opened this file in Excel, it may have changed the format of this field."
-                        )
-
-            db_batch = batches_by_key.get((tabulator_number, batch_name))
-            if db_batch:
-                yield (
-                    cvr_number,
-                    CvrBallot(
-                        batch=db_batch, record_id=record_id, imprinted_id=imprinted_id,
-                    ),
-                )
             else:
-                close_matches = difflib.get_close_matches(
-                    str((tabulator_number, batch_name)),
-                    (str(batch_key) for batch_key in batches_by_key),
-                    n=1,
-                )
-                closest_match = (
-                    ast.literal_eval(close_matches[0]) if close_matches else None
-                )
-                raise UserError(
-                    "Couldn't find a matching batch for"
-                    f" Tabulator: {tabulator_number}, Batch: {batch_name}"
-                    f" (Cast Vote Record: {cvr_number})."
-                    " The Tabulator and Batch fields in the CVR file"
-                    " must match the Tabulator and Batch Name fields in the"
-                    " ballot manifest."
-                    + (
-                        (
-                            " The closest match we found in the ballot manifest was:"
-                            f" Tabulator: {closest_match[0]}, Batch Name: {closest_match[1]}."
-                        )
-                        if closest_match
-                        else ""
+                # Convert 16-character hex to a small-ish int that fits in
+                # the db. Based on the data we've seen, this creates a large
+                # enough gap between ids to order them without creating any
+                # duplicates.
+                try:
+                    record_id = floor(int(tabulator_cvr, 16) / 10 ** 10)
+                except ValueError:
+                    raise UserError(  # pylint: disable=raise-missing-from
+                        "Tabulator CVR should be a ten-digit number or a sixteen-character hexadecimal string."
+                        f" Got {tabulator_cvr} for Cast Vote Record {cvr_number}."
+                        " If you opened this file in Excel, it may have changed the format of this field."
                     )
-                    + " Please check your CVR file and ballot manifest thoroughly"
-                    " to make sure these values match - there may be a similar"
-                    " inconsistency in other rows in the CVR file."
+        else:
+            match = ten_digit_tabulator_cvr_regex.match(tabulator_cvr)
+            if not match:
+                raise UserError(
+                    "Tabulator CVR should be a ten-digit number."
+                    f" Got {tabulator_cvr} for Cast Vote Record {cvr_number}."
+                    " Make sure any leading zeros have not been stripped from this field."
                 )
+            tabulator_number, ballot_number = match.groups()
+            record_id = int(ballot_number)
+
+        db_batch = batches_by_key.get((tabulator_number, batch_name))
+        if db_batch:
+            return (
+                cvr_number,
+                CvrBallot(
+                    batch=db_batch, record_id=record_id, imprinted_id=imprinted_id,
+                ),
+            )
+        else:
+            close_matches = difflib.get_close_matches(
+                str((tabulator_number, batch_name)),
+                (str(batch_key) for batch_key in batches_by_key),
+                n=1,
+            )
+            closest_match = (
+                ast.literal_eval(close_matches[0]) if close_matches else None
+            )
+            raise UserError(
+                "Couldn't find a matching batch for"
+                f" Tabulator: {tabulator_number}, Batch: {batch_name}"
+                f" (Cast Vote Record: {cvr_number})."
+                " The Tabulator and Batch fields in the CVR file"
+                " must match the Tabulator and Batch Name fields in the"
+                " ballot manifest."
+                + (
+                    (
+                        " The closest match we found in the ballot manifest was:"
+                        f" Tabulator: {closest_match[0]}, Batch Name: {closest_match[1]}."
+                    )
+                    if closest_match
+                    else ""
+                )
+                + " Please check your CVR file and ballot manifest thoroughly"
+                " to make sure these values match - there may be a similar"
+                " inconsistency in other rows in the CVR file."
+            )
+
 
     def parse_contest_metadata(cvr_csv: CSVIterator) -> CVR_CONTESTS_METADATA:
         headers = next(cvr_csv)
@@ -784,8 +743,30 @@ def parse_ess_cvrs(
             if len(choices) > 0
         }
 
+    def parse_row_interpretations(row: List[str], cvr_number: int, header_indices: Dict[str, int], max_interpretation_column: int) -> str:
+        interpretations = ["" for _ in range(max_interpretation_column + 1)]
+        for contest_name, contest_metadata in contests_metadata.items():
+            recorded_choice = column_value(
+                row, contest_name, cvr_number, header_indices, required=False
+            )
+            if recorded_choice:
+                for choice_name, choice_metadata in contest_metadata[
+                    "choices"
+                ].items():
+                    if recorded_choice == choice_name:
+                        interpretations[choice_metadata["column"]] = "1"
+                    elif recorded_choice == "overvote":
+                        interpretations[choice_metadata["column"]] = "o"
+                    elif recorded_choice == "undervote":
+                        interpretations[choice_metadata["column"]] = "u"
+                    else:
+                        interpretations[choice_metadata["column"]] = "0"
+
+        return ",".join(interpretations)
+
+
     def parse_interpretations(
-        cvr_csv: CSVIterator, contests_metadata: CVR_CONTESTS_METADATA
+        cvr_csv: CSVIterator, contests_metadata: CVR_CONTESTS_METADATA, cvr_file_name: str, cvr_file: TextIO
     ) -> Iterator[Tuple[str, str]]:  # (CVR number, interpretations)
         # pylint: disable=stop-iteration-return
         headers = next(cvr_csv)
@@ -797,37 +778,35 @@ def parse_ess_cvrs(
             for choice_metadata in contest_metadata["choices"].values()
         )
 
-        def parse_row_interpretations(row: List[str], cvr_number: int,) -> str:
-            interpretations = ["" for _ in range(max_interpretation_column + 1)]
-            for contest_name, contest_metadata in contests_metadata.items():
-                recorded_choice = column_value(
-                    row, contest_name, cvr_number, header_indices, required=False
-                )
-                if recorded_choice:
-                    for choice_name, choice_metadata in contest_metadata[
-                        "choices"
-                    ].items():
-                        if recorded_choice == choice_name:
-                            interpretations[choice_metadata["column"]] = "1"
-                        elif recorded_choice == "overvote":
-                            interpretations[choice_metadata["column"]] = "o"
-                        elif recorded_choice == "undervote":
-                            interpretations[choice_metadata["column"]] = "u"
-                        else:
-                            interpretations[choice_metadata["column"]] = "0"
-
-            return ",".join(interpretations)
-
         try:
             for row_index, row in enumerate(cvr_csv):
                 cvr_number = column_value(
                     row, "Cast Vote Record", row_index + 1, header_indices
                 )
-                yield (cvr_number, parse_row_interpretations(row, cvr_number))
+                yield (cvr_number, parse_row_interpretations(row, cvr_number, header_indices, max_interpretation_column))
         except UserError as error:
             raise UserError(f"{cvr_file_name}: {error}") from error
         finally:
             cvr_file.close()
+
+
+    def parse_ballots_file(
+        ballots_file: TextIO,
+    ) -> Iterator[Tuple[str, CvrBallot]]:  # (CVR number, ballot)
+        headers, rows = read_ess_ballots_file(ballots_file)
+
+        header_indices = get_header_indices(headers)
+
+        # The rows may not be in order, but we need them sorted in order to
+        # concatenate and merge the files. For now, sort them in memory, though
+        # we may need to change this if it becomes a memory bottleneck.
+        sorted_ballot_rows = sorted(
+            rows, key=lambda row: int(row[header_indices["Cast Vote Record"]])
+        )
+
+        for row_index, row in enumerate(sorted_ballot_rows):
+            yield row_to_cvr_ballot(row, row_index, header_indices)
+            
 
     def parse_and_concat_ballots_files(
         ballots_files: Dict[str, TextIO]
@@ -878,19 +857,72 @@ def parse_ess_cvrs(
             ballot.interpretations = interpretations
             yield ballot
 
-    ballots = parse_and_concat_ballots_files(ballots_files)
-    try:
-        validate_comma_delimited(cvr_file)
-        cvr_csv = csv.reader(cvr_file, delimiter=",")
-        contests_metadata = parse_contest_metadata(cvr_csv)
-        cvr_file.seek(0)
-        interpretations = parse_interpretations(cvr_csv, contests_metadata)
-        return (
-            contests_metadata,
-            join_ballots_to_interpretations(ballots, interpretations),
+
+    def work(cvr_csv, header_indices, max_interpretation_column, cvr_file):
+        try:
+            for row_index, row in enumerate(cvr_csv):
+                cvr_number, cvr_ballot = row_to_cvr_ballot(row, row_index, header_indices)
+                interpretations = parse_row_interpretations(row, cvr_number, header_indices, max_interpretation_column)
+                cvr_ballot.interpretations = interpretations
+                yield cvr_ballot
+        except UserError as error:
+            raise UserError(error) from error
+        finally:
+            cvr_file.close()
+
+    if jurisdiction.cvr_file.storage_path.endswith('.zip'):
+        zip_file = retrieve_file(jurisdiction.cvr_file.storage_path)
+        file_names = unzip_files(zip_file, working_directory)
+        zip_file.close()
+
+        cvr_and_ballots_files = separate_ess_cvr_and_ballots_files(
+            working_directory, file_names
         )
-    except UserError as error:
-        raise UserError(f"{cvr_file_name}: {error}") from error
+        cvr_file_name, cvr_file, ballots_files = (
+            cvr_and_ballots_files["cvr_file_name"],
+            cvr_and_ballots_files["cvr_file"],
+            cvr_and_ballots_files["ballots_files"],
+        )
+        ballots = parse_and_concat_ballots_files(ballots_files)
+
+        try:
+            validate_comma_delimited(cvr_file)
+            cvr_csv = csv.reader(cvr_file, delimiter=",")
+            contests_metadata = parse_contest_metadata(cvr_csv)
+            cvr_file.seek(0)
+            interpretations = parse_interpretations(cvr_csv, contests_metadata, cvr_file_name, cvr_file)
+            return (
+                contests_metadata,
+                join_ballots_to_interpretations(ballots, interpretations),
+            )
+        except UserError as error:
+            raise UserError(f"{cvr_file_name}: {error}") from error
+    else:
+        bytes = retrieve_file(jurisdiction.cvr_file.storage_path)
+        cvr_file = None
+        try:
+            cvr_file = decode_csv(bytes)
+            validate_not_empty(cvr_file)
+            validate_comma_delimited(cvr_file)
+            cvr_csv = csv.reader(cvr_file, delimiter=",")
+            contests_metadata = parse_contest_metadata(cvr_csv) # Update index?
+            cvr_file.seek(0)
+
+            headers = next(cvr_csv)
+            header_indices = get_header_indices(headers)
+
+            max_interpretation_column = max(
+                choice_metadata["column"]
+                for contest_metadata in contests_metadata.values()
+                for choice_metadata in contest_metadata["choices"].values()
+            )
+
+            return (
+                contests_metadata,
+                work(cvr_csv, header_indices, max_interpretation_column, cvr_file),
+            )
+        except UserError as error:
+            raise UserError(error) from error
 
 
 def parse_hart_cvrs(
@@ -1404,7 +1436,7 @@ def process_cvr_file(
         if isinstance(exc, UserError):
             raise exc
         # Catch all unexpected errors and wrap them with a generic message.
-        raise Exception("Could not parse CVR file") from exc
+        raise exc
     finally:
         session = Session(db_engine)
         jurisdiction = session.query(Jurisdiction).get(jurisdiction_id)
@@ -1489,7 +1521,7 @@ def upload_cvrs(
     validate_cvr_upload(request, election, jurisdiction)
     clear_cvr_contests_metadata(jurisdiction)
 
-    if request.form["cvrFileType"] in [CvrFileType.ESS, CvrFileType.HART]:
+    if request.form["cvrFileType"] == CvrFileType.HART or request.form["cvrFileType"] == CvrFileType.ESS and len(request.files.getlist("cvrs")) > 1:
         file_name = "cvr-files.zip"
         zip_file = zip_files(
             {file.filename: file.stream for file in request.files.getlist("cvrs")}
