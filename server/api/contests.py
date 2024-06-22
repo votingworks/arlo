@@ -486,15 +486,17 @@ def get_contest_choice_name_standardizations(election: Election):  # pragma: no 
             (metadata or {}).get(contest.name, {}).get("choices", {}).keys()
         )
 
-        standardized_contest_choice_names = None
-        for standardized_contest in (
+        standardized_contests = (
             typing.cast(Optional[List[Dict]], election.standardized_contests) or []
-        ):
-            if standardized_contest["name"] == contest.name:
-                standardized_contest_choice_names = standardized_contest.get(
-                    "choiceNames", None
-                )
-                break
+        )
+        standardized_contest_choice_names = next(
+            (
+                standardized_contest.get("choiceNames", None)
+                for standardized_contest in standardized_contests
+                if standardized_contest["name"] == contest.name
+            ),
+            None,
+        )
 
         raw_standardizations = (
             typing.cast(
