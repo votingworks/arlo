@@ -96,7 +96,7 @@ def process_standardized_contests_file(election_id: str):
 
         if file_has_choice_names_column:  # pragma: no cover
             choice_names = [
-                choice_name.strip() for choice_name in row[CHOICE_NAMES].split("/")
+                choice_name.strip() for choice_name in row[CHOICE_NAMES].split(";")
             ]
             parsed_row["choiceNames"] = choice_names
 
