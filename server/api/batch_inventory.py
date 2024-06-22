@@ -287,7 +287,7 @@ def process_batch_inventory_cvr_file(
 
             cvr_number_to_batch = {}
             for ballots_file in ballots_files.values():
-                _, headers, rows = read_ess_ballots_file(ballots_file)
+                headers, rows = read_ess_ballots_file(ballots_file)
                 header_indices = get_header_indices(headers)
                 for row_index, row in enumerate(rows):
                     cvr_number = column_value(

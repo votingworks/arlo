@@ -13,7 +13,6 @@ from typing import (
     Iterable,
     Iterator,
     List,
-    Literal,
     Optional,
     TextIO,
     Tuple,
@@ -565,31 +564,24 @@ def separate_ess_cvr_and_ballots_files(
 
 def read_ess_ballots_file(
     ballots_file: TextIO,
-) -> Tuple[Literal["type1", "type2"], List[str], Generator[List[str], None, None]]:
+) -> Tuple[List[str], Generator[List[str], None, None]]:
     validate_comma_delimited(ballots_file)
     ballots_csv = csv.reader(ballots_file, delimiter=",")
 
-    # There are two formats of the ballots file that we support based on
-    # different versions of the ES&S system
-    ballots_file_type: Literal["type1", "type2"]
-    # pylint: disable=stop-iteration-return
     first_row = next(ballots_csv)
-    # One format starts with metadata rows before the headers, which we want to skip
+    # Some ES&S ballots files begin with a series of metadata rows
     if first_row[0] == "Ballots":
         _gen_tag = next(ballots_csv)
         _county_name = next(ballots_csv)
         _date = next(ballots_csv)
         _empty_row = next(ballots_csv)
         headers = next(ballots_csv)
-        ballots_file_type = "type1"
-    # The other has headers in the first row
     else:
         headers = first_row
-        ballots_file_type = "type2"
 
     rows = (row for row in ballots_csv if not row[0].startswith("Total"))
 
-    return (ballots_file_type, headers, rows)
+    return (headers, rows)
 
 
 def parse_ess_cvrs(
@@ -634,7 +626,7 @@ def parse_ess_cvrs(
     def parse_ballots_file(
         ballots_file: TextIO,
     ) -> Iterator[Tuple[str, CvrBallot]]:  # (CVR number, ballot)
-        ballots_file_type, headers, rows = read_ess_ballots_file(ballots_file)
+        headers, rows = read_ess_ballots_file(ballots_file)
 
         header_indices = get_header_indices(headers)
 
@@ -652,36 +644,31 @@ def parse_ess_cvrs(
                 row, "Cast Vote Record", row_index + 1, header_indices
             )
             batch_name = column_value(row, "Batch", cvr_number, header_indices)
+
+            # Tabulator CVR is either a 10-digit string or a 16-character hex ID.
+            #
+            # When it's a 10-digit string, the first four digits are a tabulator ID, and the last
+            # six are the ballot number (record ID) within the batch. We use the full value as an
+            # imprinted ID even though it's not imprinted on the ballots.
+            #
+            # When it's a 16-character hex ID, it's actually imprinted on the ballots. We construct
+            # a ballot number (record ID) from the hex ID even though we don't know if it
+            # corresponds to ballot order.
+            #
+            # When the ballots file has a Machine column, we use that as a tabulator ID. Otherwise,
+            # we have to use the Tabulator CVR column for this purpose, and all Tabulator CVR
+            # values have to be 10-digit strings.
+            #
             tabulator_cvr = column_value(
                 row, "Tabulator CVR", cvr_number, header_indices
             )
-
-            # In type 1 ballots files, Tabulator CVR is a 10-digit string. The
-            # first four digits are the tabulator ID, the last six are the
-            # ballot number within the batch. We use this full value as an
-            # imprinted ID even though it's not imprinted on the ballots.
-            if ballots_file_type == "type1":
-                match = ten_digit_tabulator_cvr_regex.match(tabulator_cvr)
-                if not match:
-                    raise UserError(
-                        "Tabulator CVR should be a ten-digit number."
-                        f" Got {tabulator_cvr} for Cast Vote Record {cvr_number}."
-                        " Make sure any leading zeros have not been stripped from this field."
-                    )
-                tabulator_number, ballot_number = match.groups()
-                imprinted_id = tabulator_cvr
-                record_id = int(ballot_number)
-
-            # In type 2 ballots files, we use the Machine column as the
-            # tabulator ID. Tabulator CVR has either the 10-digit string or a
-            # 16-character hex id, the latter of which is actually imprinted on
-            # the ballots. For the hex case, we attempt to use it as a ballot
-            # number, even though we don't know if it corresponds to ballot order.
-            elif ballots_file_type == "type2":
+            tabulator_number = None
+            record_id = None
+            imprinted_id = tabulator_cvr
+            if "Machine" in headers:
                 tabulator_number = column_value(
                     row, "Machine", cvr_number, header_indices
                 )
-                imprinted_id = tabulator_cvr
                 match = ten_digit_tabulator_cvr_regex.match(tabulator_cvr)
                 if match:
                     _, ballot_number = match.groups()
@@ -699,6 +686,16 @@ def parse_ess_cvrs(
                             f" Got {tabulator_cvr} for Cast Vote Record {cvr_number}."
                             " If you opened this file in Excel, it may have changed the format of this field."
                         )
+            else:
+                match = ten_digit_tabulator_cvr_regex.match(tabulator_cvr)
+                if not match:
+                    raise UserError(
+                        "Tabulator CVR should be a ten-digit number if there is no Machine column."
+                        f" Got {tabulator_cvr} for Cast Vote Record {cvr_number}."
+                        " Make sure any leading zeros have not been stripped from this field."
+                    )
+                tabulator_number, ballot_number = match.groups()
+                record_id = int(ballot_number)
 
             db_batch = batches_by_key.get((tabulator_number, batch_name))
             if db_batch:
