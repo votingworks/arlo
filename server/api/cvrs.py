@@ -155,14 +155,6 @@ def cvr_contests_metadata(
         )
         or {}
     )
-    cvr_choice_name_to_standardized_choice_name_by_contest_id = {
-        contest_id: {
-            cvr_choice_name: choice_name
-            for cvr_choice_name, choice_name in standardizations.items()
-            if choice_name
-        }
-        for contest_id, standardizations in contest_choice_name_standardizations.items()
-    }
 
     contest_name_to_id = {
         contest.name: contest.id for contest in jurisdiction.election.contests
@@ -182,9 +174,13 @@ def cvr_contests_metadata(
                 {
                     **contest_metadata,
                     "choices": {
-                        cvr_choice_name_to_standardized_choice_name_by_contest_id.get(
-                            contest_id, {}
-                        ).get(cvr_choice_name, cvr_choice_name): choice_metadata
+                        contest_choice_name_standardizations.get(contest_id, {}).get(
+                            cvr_choice_name, None
+                        )
+                        # We need this "or" and can't just use cvr_choice_name as a fallback to the
+                        # .get because some keys exist in the standardizations but explicitly have
+                        # None as a value
+                        or cvr_choice_name: choice_metadata
                         for cvr_choice_name, choice_metadata in contest_metadata[
                             "choices"
                         ].items()
