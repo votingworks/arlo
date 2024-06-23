@@ -1,6 +1,9 @@
 import uuid
 import re
+import typing
 from datetime import datetime
+from typing import Dict, Optional
+from collections import defaultdict
 from flask import request, jsonify, Request
 from werkzeug.exceptions import BadRequest, Conflict
 
@@ -54,13 +57,7 @@ def process_standardized_contests_file(election_id: str):
     )
 
     standardized_contests = []
-    file_has_choice_names_column = False
-    for i, row in enumerate(standardized_contests_csv):
-        # This will either be true for all rows or no rows, per the STANDARDIZED_CONTEST_COLUMNS
-        # schema
-        if i == 0:
-            file_has_choice_names_column = CHOICE_NAMES in row
-
+    for row in standardized_contests_csv:
         if row[JURISDICTIONS].strip().lower() == "all":
             jurisdictions = election.jurisdictions
         else:
@@ -94,7 +91,9 @@ def process_standardized_contests_file(election_id: str):
             jurisdictionIds=[jurisdiction.id for jurisdiction in jurisdictions],
         )
 
-        if file_has_choice_names_column:  # pragma: no cover
+        # This will either be true for all rows or no rows, per the STANDARDIZED_CONTEST_COLUMNS
+        # schema
+        if CHOICE_NAMES in row:  # pragma: no cover
             choice_names = [
                 choice_name.strip() for choice_name in row[CHOICE_NAMES].split(";")
             ]
@@ -124,12 +123,54 @@ def process_standardized_contests_file(election_id: str):
                 Jurisdiction.id.in_(standardized_contest["jurisdictionIds"])
             ).all()
 
-    # Contest choice name standardization is only possible if the standardized contests file
-    # includes choice names. If we transition from including choice names to not, clear contest
-    # choice name standardizations under the hood.
-    if not file_has_choice_names_column:
-        for jurisdiction in election.jurisdictions:
-            jurisdiction.contest_choice_name_standardizations = None
+    # Update contest choice name standardizations to account for changes to choice names in
+    # standardized contests file
+    for jurisdiction in election.jurisdictions:  # pragma: no cover
+        contest_choice_name_standardizations = (
+            typing.cast(
+                Optional[Dict[str, Dict[str, Optional[str]]]],
+                jurisdiction.contest_choice_name_standardizations,
+            )
+            or {}
+        )
+
+        updated_contest_choice_name_standardizations = typing.cast(
+            Dict[str, Dict[str, Optional[str]]], defaultdict(dict)
+        )
+        for contest in election.contests:
+            if contest.id not in contest_choice_name_standardizations:
+                continue
+
+            standardized_contest_choice_names = next(
+                (
+                    standardized_contest.get("choiceNames", None)
+                    for standardized_contest in standardized_contests
+                    if standardized_contest["name"] == contest.name
+                ),
+                None,
+            )
+
+            if standardized_contest_choice_names is None:
+                continue
+
+            for cvr_choice_name, choice_name in contest_choice_name_standardizations[
+                contest.id
+            ].items():
+                # Carry over all standardizations for which:
+                # 1. The standardized contest still exists
+                # 2. The CVR choice name is still in need of standardization
+                # 3. The selected choice name is still a valid option
+                if (
+                    cvr_choice_name not in standardized_contest_choice_names
+                    and choice_name in standardized_contest_choice_names
+                ):
+                    updated_contest_choice_name_standardizations[contest.id][
+                        cvr_choice_name
+                    ] = choice_name
+
+        jurisdiction.contest_choice_name_standardizations = (
+            updated_contest_choice_name_standardizations
+        ) or None
 
     set_contest_metadata(election)
 
