@@ -509,6 +509,9 @@ def get_contest_choice_name_standardizations(election: Election):  # pragma: no 
         standardizations = {
             cvr_choice_name: raw_standardizations.get(cvr_choice_name, None)
             for cvr_choice_name in cvr_choice_names
+            # Include as keys all CVR choice names requiring standardization and no other CVR
+            # choice names. The frontend uses the presence of keys to determine whether
+            # standardization is needed/outstanding.
             if standardized_contest_choice_names is not None
             and cvr_choice_name not in standardized_contest_choice_names
         }
