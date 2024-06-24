@@ -383,9 +383,8 @@ const Review: React.FC<IProps> = ({
                   newStandardizations
                 )
               }}
-              // Reset the form state within the dialog component any time persisted
-              // standardizations change
-              key={JSON.stringify(contestChoiceNameStandardizations)}
+              // Reset the form state within the dialog component any time the dialog is opened
+              key={isContestChoiceNameStandardizationDialogOpen.toString()}
             />
             <div style={{ display: 'flex' }}>
               {!cvrsUploaded ? (
