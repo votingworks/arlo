@@ -1,6 +1,9 @@
 import uuid
 import re
+import typing
 from datetime import datetime
+from typing import Dict, Optional
+from collections import defaultdict
 from flask import request, jsonify, Request
 from werkzeug.exceptions import BadRequest, Conflict
 
@@ -31,10 +34,15 @@ from ..util.file import (
 
 CONTEST_NAME = "Contest Name"
 JURISDICTIONS = "Jurisdictions"
+CHOICE_NAMES = "Choice Names"
 
 STANDARDIZED_CONTEST_COLUMNS = [
     CSVColumnType(CONTEST_NAME, CSVValueType.TEXT, unique=True),
     CSVColumnType(JURISDICTIONS, CSVValueType.TEXT),
+    # This column is optional, but if included, every row has to have a value
+    CSVColumnType(
+        CHOICE_NAMES, CSVValueType.TEXT, required_column=False, allow_empty_rows=False
+    ),
 ]
 
 
@@ -78,12 +86,22 @@ def process_standardized_contests_file(election_id: str):
             if match:
                 contest_name = match[1]
 
-        standardized_contests.append(
-            dict(
-                name=contest_name,
-                jurisdictionIds=[jurisdiction.id for jurisdiction in jurisdictions],
-            )
+        parsed_row = dict(
+            name=contest_name,
+            jurisdictionIds=[jurisdiction.id for jurisdiction in jurisdictions],
         )
+
+        # This will either be true for all rows or no rows, per the STANDARDIZED_CONTEST_COLUMNS
+        # schema
+        if CHOICE_NAMES in row:  # pragma: no cover
+            choice_names = [
+                choice_name.strip()
+                for choice_name in row[CHOICE_NAMES].split(";")
+                if choice_name.strip() != ""
+            ]
+            parsed_row["choiceNames"] = choice_names
+
+        standardized_contests.append(parsed_row)
 
     standardized_contests_file.close()
 
@@ -106,6 +124,55 @@ def process_standardized_contests_file(election_id: str):
             contest.jurisdictions = Jurisdiction.query.filter(
                 Jurisdiction.id.in_(standardized_contest["jurisdictionIds"])
             ).all()
+
+    # Update contest choice name standardizations to account for changes to choice names in
+    # standardized contests file
+    for jurisdiction in election.jurisdictions:  # pragma: no cover
+        contest_choice_name_standardizations = (
+            typing.cast(
+                Optional[Dict[str, Dict[str, Optional[str]]]],
+                jurisdiction.contest_choice_name_standardizations,
+            )
+            or {}
+        )
+
+        updated_contest_choice_name_standardizations = typing.cast(
+            Dict[str, Dict[str, Optional[str]]], defaultdict(dict)
+        )
+        for contest in election.contests:
+            if contest.id not in contest_choice_name_standardizations:
+                continue
+
+            standardized_contest_choice_names = next(
+                (
+                    standardized_contest.get("choiceNames", None)
+                    for standardized_contest in standardized_contests
+                    if standardized_contest["name"] == contest.name
+                ),
+                None,
+            )
+
+            if standardized_contest_choice_names is None:
+                continue
+
+            for cvr_choice_name, choice_name in contest_choice_name_standardizations[
+                contest.id
+            ].items():
+                # Carry over all standardizations for which:
+                # 1. The standardized contest still exists
+                # 2. The CVR choice name is still in need of standardization
+                # 3. The selected choice name is still a valid option
+                if (
+                    cvr_choice_name not in standardized_contest_choice_names
+                    and choice_name in standardized_contest_choice_names
+                ):
+                    updated_contest_choice_name_standardizations[contest.id][
+                        cvr_choice_name
+                    ] = choice_name
+
+        jurisdiction.contest_choice_name_standardizations = (
+            updated_contest_choice_name_standardizations
+        ) or None
 
     set_contest_metadata(election)
 

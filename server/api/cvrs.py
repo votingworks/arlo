@@ -5,6 +5,7 @@ import csv
 import itertools
 import os
 import shutil
+import typing
 from xml.etree import ElementTree as ET
 from typing import (
     IO,
@@ -121,12 +122,12 @@ def are_uploaded_cvrs_valid(contest: Contest):
         return False
 
 
-# Wraps Jurisdiction.cvr_contest_metadata, applying any contest name
-# standardizations in Jurisdiction.contest_name_standardizations. This wrapper
-# should always be used for reading the metadata, so that the contest names
-# from the CVR will match those selected by the AA.
+# Wraps Jurisdiction.cvr_contest_metadata, applying any contest and choice name
+# standardizations. This wrapper should always be used for reading the
+# metadata, so that contest and choice names from CVR files will match those
+# provided by the AA.
 def cvr_contests_metadata(
-    jurisdiction: Jurisdiction,
+    jurisdiction: Jurisdiction, should_standardize_contest_choice_names=True
 ) -> Optional[CVR_CONTESTS_METADATA]:
     metadata = typing_cast(
         Optional[CVR_CONTESTS_METADATA], jurisdiction.cvr_contests_metadata
@@ -134,19 +135,63 @@ def cvr_contests_metadata(
     if metadata is None:
         return None
 
-    standardizations = typing_cast(
-        Optional[Dict[str, str]], jurisdiction.contest_name_standardizations
+    contest_name_standardizations = (
+        typing_cast(
+            Optional[Dict[str, Optional[str]]],
+            jurisdiction.contest_name_standardizations,
+        )
+        or {}
     )
-    standardizations = {
+    cvr_contest_name_to_standardized_contest_name = {
         cvr_contest_name: contest_name
-        for contest_name, cvr_contest_name in (standardizations or {}).items()
+        for contest_name, cvr_contest_name in contest_name_standardizations.items()
         if cvr_contest_name
     }
 
-    return {
-        standardizations.get(cvr_contest_name, cvr_contest_name): contest_metadata
-        for cvr_contest_name, contest_metadata in metadata.items()
+    contest_choice_name_standardizations = (
+        typing_cast(
+            Optional[Dict[str, Dict[str, Optional[str]]]],
+            jurisdiction.contest_choice_name_standardizations,
+        )
+        or {}
+    )
+
+    contest_name_to_id = {
+        contest.name: contest.id for contest in jurisdiction.election.contests
     }
+
+    standardized_metadata = {}
+    for cvr_contest_name, contest_metadata in metadata.items():
+        potentially_standardized_contest_name = cvr_contest_name_to_standardized_contest_name.get(
+            cvr_contest_name, cvr_contest_name
+        )
+
+        contest_id = contest_name_to_id.get(potentially_standardized_contest_name, None)
+
+        standardized_metadata[potentially_standardized_contest_name] = (
+            typing.cast(
+                CvrContestMetadata,
+                {
+                    **contest_metadata,
+                    "choices": {
+                        contest_choice_name_standardizations.get(contest_id, {}).get(
+                            cvr_choice_name, None
+                        )
+                        # We need this "or" and can't just use cvr_choice_name as a fallback to the
+                        # .get because some keys exist in the standardizations but explicitly have
+                        # None as a value
+                        or cvr_choice_name: choice_metadata
+                        for cvr_choice_name, choice_metadata in contest_metadata[
+                            "choices"
+                        ].items()
+                    },
+                },
+            )
+            if should_standardize_contest_choice_names and contest_id
+            else contest_metadata
+        )
+
+    return standardized_metadata
 
 
 def set_contest_metadata_from_cvrs(contest: Contest):

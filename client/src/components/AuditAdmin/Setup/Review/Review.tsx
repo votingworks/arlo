@@ -39,6 +39,12 @@ import { sum } from '../../../../utils/number'
 import { useJurisdictions, IJurisdiction } from '../../../useJurisdictions'
 import { isFileProcessed } from '../../../useCSV'
 import useContestNameStandardizations from '../../../useContestNameStandardizations'
+import {
+  IContestChoiceNameStandardizations,
+  useContestChoiceNameStandardizations,
+  useUpdateContestChoiceNameStandardizations,
+} from '../../../useContestChoiceNameStandardizations'
+import useStandardizedContests from '../../../useStandardizedContests'
 import { isSetupComplete, allCvrsUploaded } from '../../../Atoms/StatusBox'
 import { useAuditSettings, AuditType } from '../../../useAuditSettings'
 import { useContests } from '../../../useContests'
@@ -50,6 +56,11 @@ import SamplePreview from './SamplePreview'
 import StandardizeContestNamesDialog from './StandardizeContestNames'
 import LabeledValue from './LabeledValue'
 import CvrChoiceNameConsistencyError from './CvrChoiceNameConsistencyError'
+import {
+  isContestChoiceNameStandardizationComplete as isContestChoiceNameStandardizationCompleteHelper,
+  StandardizeContestChoiceNamesCallout,
+  StandardizeContestChoiceNamesDialog,
+} from './StandardizeContestChoiceNamesDialog'
 
 const percentFormatter = new Intl.NumberFormat(undefined, {
   style: 'percent',
@@ -93,6 +104,7 @@ const Review: React.FC<IProps> = ({
     electionId,
     { enabled: isStandardizedContestsFileEnabled }
   )
+  const standardizedContests = useStandardizedContests(electionId)
   const contestsQuery = useContests(electionId)
   const computeSamplePreview = useComputeSamplePreview(electionId)
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
@@ -101,31 +113,27 @@ const Review: React.FC<IProps> = ({
   )
 
   const [
-    standardizations,
-    updateStandardizations,
+    contestNameStandardizations,
+    updateContestNameStandardizations,
   ] = useContestNameStandardizations(
     electionId,
     auditSettingsQuery.data || null
   )
   const [
-    isStandardizationsDialogOpen,
-    setIsStandardizationsDialogOpen,
+    isContestNameStandardizationDialogOpen,
+    setIsContestNameStandardizationDialogOpen,
   ] = useState(false)
 
-  const standardizationNeeded =
-    !!standardizations &&
-    Object.values(standardizations.standardizations).length > 0
-  const standardizationOutstanding =
-    !!standardizations &&
-    Object.values(
-      standardizations.standardizations
-    ).some(jurisdictionStandardizations =>
-      Object.values(jurisdictionStandardizations).some(
-        cvrContestName => cvrContestName === null
-      )
-    )
-  const standardizationComplete =
-    !!standardizations && !(standardizationNeeded && standardizationOutstanding)
+  const contestChoiceNameStandardizationsQuery = useContestChoiceNameStandardizations(
+    electionId
+  )
+  const updateContestChoiceNameStandardizations = useUpdateContestChoiceNameStandardizations(
+    electionId
+  )
+  const [
+    isContestChoiceNameStandardizationDialogOpen,
+    setIsContestChoiceNameStandardizationDialogOpen,
+  ] = useState(false)
 
   const setupComplete =
     jurisdictionsQuery.isSuccess &&
@@ -137,14 +145,41 @@ const Review: React.FC<IProps> = ({
       auditSettingsQuery.data
     )
 
+  const isContestNameStandardizationNeeded =
+    !!contestNameStandardizations &&
+    Object.values(contestNameStandardizations.standardizations).length > 0
+  const isContestNameStandardizationOutstanding =
+    !!contestNameStandardizations &&
+    Object.values(
+      contestNameStandardizations.standardizations
+    ).some(jurisdictionStandardizations =>
+      Object.values(jurisdictionStandardizations).some(
+        cvrContestName => cvrContestName === null
+      )
+    )
+  const isContestNameStandardizationComplete =
+    !!contestNameStandardizations &&
+    !(
+      isContestNameStandardizationNeeded &&
+      isContestNameStandardizationOutstanding
+    )
+
+  const isContestChoiceNameStandardizationComplete =
+    contestChoiceNameStandardizationsQuery.isSuccess &&
+    isContestChoiceNameStandardizationCompleteHelper(
+      contestChoiceNameStandardizationsQuery.data.standardizations
+    )
+
   const areChoiceNamesConsistentForAllContests = (
     contestsQuery.data ?? []
   ).every(contest => !contest.cvrChoiceNameConsistencyError)
 
   const shouldLoadSampleSizes =
     setupComplete &&
-    standardizationComplete &&
+    isContestNameStandardizationComplete &&
+    isContestChoiceNameStandardizationComplete &&
     areChoiceNamesConsistentForAllContests
+
   const sampleSizesQuery = useSampleSizes(electionId, 1, {
     enabled: shouldLoadSampleSizes,
     refetchInterval: sampleSizesResponse =>
@@ -155,9 +190,11 @@ const Review: React.FC<IProps> = ({
   if (
     !jurisdictionsQuery.isSuccess ||
     !contestsQuery.isSuccess ||
-    !auditSettingsQuery.isSuccess
-  )
+    !auditSettingsQuery.isSuccess ||
+    !contestChoiceNameStandardizationsQuery.isSuccess
+  ) {
     return null // Still loading
+  }
   const jurisdictions = jurisdictionsQuery.data
   const contests = contestsQuery.data
   const {
@@ -167,6 +204,8 @@ const Review: React.FC<IProps> = ({
     online,
     auditType,
   } = auditSettingsQuery.data
+  const contestChoiceNameStandardizations =
+    contestChoiceNameStandardizationsQuery.data.standardizations
 
   const participatingJurisdictions = jurisdictions.filter(({ id }) =>
     contests.some(c => c.jurisdictionIds.includes(id))
@@ -237,17 +276,19 @@ const Review: React.FC<IProps> = ({
       </section>
       <section>
         <H4>Contests</H4>
-        {standardizations && standardizationNeeded && (
+        {contestNameStandardizations && isContestNameStandardizationNeeded && (
           <>
-            {standardizationOutstanding ? (
+            {isContestNameStandardizationOutstanding ? (
               <Callout intent="warning">
                 <p>
-                  Some contest names in the CVR files do not match the
-                  target/opportunistic contest names.
+                  Some contest names in the uploaded CVR files do not match the
+                  standardized contest names.
                 </p>
                 <Button
                   intent="primary"
-                  onClick={() => setIsStandardizationsDialogOpen(true)}
+                  onClick={() =>
+                    setIsContestNameStandardizationDialogOpen(true)
+                  }
                 >
                   Standardize Contest Names
                 </Button>
@@ -255,11 +296,13 @@ const Review: React.FC<IProps> = ({
             ) : (
               <Callout intent="success">
                 <p>
-                  All contest names in the CVR files have been standardized to
-                  match the target/opportunistic contest names.
+                  All contest names in the uploaded CVR files have been
+                  standardized.
                 </p>
                 <Button
-                  onClick={() => setIsStandardizationsDialogOpen(true)}
+                  onClick={() =>
+                    setIsContestNameStandardizationDialogOpen(true)
+                  }
                   disabled={locked}
                 >
                   Edit Standardized Contest Names
@@ -267,10 +310,10 @@ const Review: React.FC<IProps> = ({
               </Callout>
             )}
             <StandardizeContestNamesDialog
-              isOpen={isStandardizationsDialogOpen}
-              onClose={() => setIsStandardizationsDialogOpen(false)}
-              standardizations={standardizations}
-              updateStandardizations={updateStandardizations}
+              isOpen={isContestNameStandardizationDialogOpen}
+              onClose={() => setIsContestNameStandardizationDialogOpen(false)}
+              standardizations={contestNameStandardizations}
+              updateStandardizations={updateContestNameStandardizations}
               jurisdictionsById={jurisdictionsById}
             />
             <br />
@@ -305,14 +348,44 @@ const Review: React.FC<IProps> = ({
                 ballots cast
               </p>
             )}
-            {cvrsUploaded && contest.cvrChoiceNameConsistencyError && (
-              <Callout intent="warning" style={{ marginBottom: '10px' }}>
+            {cvrsUploaded &&
+              isContestChoiceNameStandardizationComplete &&
+              contest.cvrChoiceNameConsistencyError && (
                 <CvrChoiceNameConsistencyError
                   error={contest.cvrChoiceNameConsistencyError}
                   jurisdictionNamesById={jurisdictionsById}
                 />
-              </Callout>
-            )}
+              )}
+            <StandardizeContestChoiceNamesCallout
+              contest={contest}
+              disabled={locked}
+              openDialog={() =>
+                setIsContestChoiceNameStandardizationDialogOpen(true)
+              }
+              standardizations={contestChoiceNameStandardizations}
+            />
+            <StandardizeContestChoiceNamesDialog
+              contest={contest}
+              isOpen={isContestChoiceNameStandardizationDialogOpen}
+              jurisdictionsById={jurisdictionsById}
+              onClose={() =>
+                setIsContestChoiceNameStandardizationDialogOpen(false)
+              }
+              standardizations={contestChoiceNameStandardizations}
+              standardizedContestChoiceNames={
+                (standardizedContests ?? []).find(c => c.name === contest.name)
+                  ?.choiceNames ?? []
+              }
+              updateStandardizations={async (
+                newStandardizations: IContestChoiceNameStandardizations
+              ) => {
+                await updateContestChoiceNameStandardizations.mutateAsync(
+                  newStandardizations
+                )
+              }}
+              // Reset the form state within the dialog component any time the dialog is opened
+              key={isContestChoiceNameStandardizationDialogOpen.toString()}
+            />
             <div style={{ display: 'flex' }}>
               {!cvrsUploaded ? (
                 <div style={{ minWidth: '300px', marginRight: '20px' }}>
@@ -491,14 +564,6 @@ const Review: React.FC<IProps> = ({
                 return (
                   <form>
                     {(() => {
-                      if (!standardizationComplete)
-                        return (
-                          <p>
-                            All contest names must be standardized in order to
-                            calculate the sample size.
-                          </p>
-                        )
-
                       if (!setupComplete)
                         return (
                           <>
@@ -514,32 +579,40 @@ const Review: React.FC<IProps> = ({
                           </>
                         )
 
+                      if (!isContestNameStandardizationComplete)
+                        return (
+                          <p>
+                            All contest names must be standardized in order to
+                            calculate the sample size.
+                          </p>
+                        )
+
+                      if (!isContestChoiceNameStandardizationComplete)
+                        return (
+                          <p>
+                            All contest choice names must be standardized in
+                            order to calculate the sample size.
+                          </p>
+                        )
+
                       if (!areChoiceNamesConsistentForAllContests) {
                         return (
-                          <>
-                            <p>
-                              The following contests have inconsistent choice
-                              names:
-                            </p>
-                            <ul>
-                              {contests
-                                .filter(
-                                  contest =>
-                                    contest.cvrChoiceNameConsistencyError
-                                )
-                                .map(contest => (
-                                  <li key={contest.id}>
-                                    <a href={`#${contest.id}`}>
-                                      {contest.name}
-                                    </a>
-                                  </li>
-                                ))}
-                            </ul>
-                            <p>
-                              Address these inconsistencies by updating your CVR
-                              files in order to calculate the sample size.
-                            </p>
-                          </>
+                          <p>
+                            The following contests have inconsistent choice
+                            names:{' '}
+                            {contests
+                              .filter(
+                                contest => contest.cvrChoiceNameConsistencyError
+                              )
+                              .map((contest, i, filteredContests) => (
+                                <React.Fragment key={contest.id}>
+                                  <a href={`#${contest.id}`}>{contest.name}</a>
+                                  {i < filteredContests.length - 1 && ', '}
+                                </React.Fragment>
+                              ))}
+                            . Resolve these inconsistencies in order to
+                            calculate the sample size.
+                          </p>
                         )
                       }
 
@@ -604,7 +677,8 @@ const Review: React.FC<IProps> = ({
                             locked ||
                             !sampleSizeOptions ||
                             !setupComplete ||
-                            !standardizationComplete ||
+                            !isContestNameStandardizationComplete ||
+                            !isContestChoiceNameStandardizationComplete ||
                             !areChoiceNamesConsistentForAllContests
                           }
                           onClick={() => setIsConfirmDialogOpen(true)}

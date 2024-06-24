@@ -292,11 +292,14 @@ class Jurisdiction(BaseModel):
     cvr_file_type = Column(Enum(CvrFileType))
     cvr_contests_metadata = Column(JSON)
 
-    # Sometimes contest names in a jurisdiction's CVR don't match the contest
-    # names selected by the AA. Here we store corrections made by the AA to
-    # apply to the cvr_contests_metadata.
+    # Contest and choice names in a jurisdiction's CVR files sometimes don't match the standardized
+    # contest and choice names provided by an AA. We store corrections made by the AA to apply to
+    # the cvr_contests_metadata in these values.
+    #
     # { contest_name: cvr_contest_name }
     contest_name_standardizations = Column(JSON)
+    # { contest_id: { cvr_choice_name: choice_name } }
+    contest_choice_name_standardizations = Column(JSON)
 
     finalized_full_hand_tally_results_at = Column(UTCDateTime)
 

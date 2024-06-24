@@ -1,6 +1,16 @@
+import { Callout } from '@blueprintjs/core'
 import React from 'react'
+import styled from 'styled-components'
 
 import { ICvrChoiceNameConsistencyError } from '../../../../types'
+
+const CalloutWithBottomMargin = styled(Callout)`
+  margin-bottom: 16px;
+
+  p:last-child {
+    margin-bottom: 0;
+  }
+`
 
 interface IProps {
   error: ICvrChoiceNameConsistencyError
@@ -28,20 +38,25 @@ const CvrChoiceNameConsistencyError: React.FC<IProps> = ({
     jurisdictionNamesById[jurisdictionIdWithMostCvrChoices].name
 
   return (
-    <span>
-      Some choice names in {anomalousJurisdictionName} do not match other
-      counties.
-      <br />
-      <strong>
-        Choice names in {anomalousJurisdictionName} without matches:
-      </strong>{' '}
-      {anomalousCvrChoiceNames.join(' · ')}
-      <br />
-      <strong>
-        Choice names in {jurisdictionNameWithMostCvrChoices}:
-      </strong>{' '}
-      {cvrChoiceNamesInJurisdictionWithMostCvrChoices.join(' · ')}
-    </span>
+    <CalloutWithBottomMargin intent="warning">
+      <p>
+        Choice names do not match across jurisdictions. Below is an example of a
+        mismatch. Address these inconsistencies by adding choice names to your
+        standardized contests file or updating your CVR files.
+      </p>
+      <p>
+        <strong>
+          Choice names in {anomalousJurisdictionName} not found in{' '}
+          {jurisdictionNameWithMostCvrChoices}:
+        </strong>{' '}
+        {anomalousCvrChoiceNames.join(' · ')}
+        <br />
+        <strong>
+          Choice names in {jurisdictionNameWithMostCvrChoices}:
+        </strong>{' '}
+        {cvrChoiceNamesInJurisdictionWithMostCvrChoices.join(' · ')}
+      </p>
+    </CalloutWithBottomMargin>
   )
 }
 

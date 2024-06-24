@@ -4,6 +4,7 @@ import { api } from './utilities'
 export interface IStandardizedContest {
   name: string
   jurisdictionIds: string[]
+  choiceNames?: string[]
 }
 
 const getStandardizedContests = async (

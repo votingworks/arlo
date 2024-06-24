@@ -66,14 +66,14 @@ const StandardizeContestNamesDialog: React.FC<IStandardizeContestNamesDialogProp
           <div className={Classes.DIALOG_BODY}>
             <p>
               For each contest below, select the CVR contest name that matches
-              the standard target/opportunistic contest name.
+              the standardized contest name.
             </p>
             {
               <StandardizeContestsTable striped bordered>
                 <thead>
                   <tr>
                     <th>Jurisdiction</th>
-                    <th>Target/Opportunistic Contest</th>
+                    <th>Standardized Contest</th>
                     <th>CVR Contest</th>
                   </tr>
                 </thead>

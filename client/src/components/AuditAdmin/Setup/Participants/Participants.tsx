@@ -69,7 +69,7 @@ const Participants: React.FC<IParticipantsProps> = ({
               return true
             }}
             title="Standardized Contests"
-            description='Click "Browse" to choose the appropriate file from your computer. This file should be a comma-separated list of all the contests on the ballot, the vote choices available in each, and the jurisdiction(s) where each contest appeared on the ballot.'
+            description='Click "Browse" to choose the appropriate file from your computer. This file should be a comma-separated list of all the contests on the ballot, the jurisdiction(s) where each contest appeared on the ballot, and optionally the vote choices available in each.'
             sampleFileLink="/sample_standardized_contests.csv"
             enabled={isFileProcessed(jurisdictionsFileUpload.uploadedFile.data)}
           />

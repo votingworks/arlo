@@ -25,6 +25,7 @@ import {
 } from './useJurisdictions'
 import { IStandardizedContest } from './useStandardizedContests'
 import { ISampleSizesResponse } from './AuditAdmin/Setup/Review/useSampleSizes'
+import { IContestChoiceNameStandardizationsResponse } from './useContestChoiceNameStandardizations'
 
 export const manifestFile = new File(
   ['fake manifest - contents dont matter'],
@@ -2017,6 +2018,14 @@ export const aaApiCalls = {
     options: { method: 'DELETE' },
     response: { status: 'ok' },
   },
+  getContestChoiceNameStandardizations: (
+    response: IContestChoiceNameStandardizationsResponse = {
+      standardizations: {},
+    }
+  ) => ({
+    url: '/api/election/1/contest/choice-name-standardizations',
+    response,
+  }),
 }
 
 export const supportApiCalls = {

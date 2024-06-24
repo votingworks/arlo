@@ -9,7 +9,7 @@ import { IContest } from '../types'
 import { IAuditSettings } from './useAuditSettings'
 import { ApiError, fetchApi } from '../utils/api'
 
-const contestsQueryKey = (electionId: string) => [
+export const contestsQueryKey = (electionId: string): string[] => [
   'elections',
   electionId,
   'contests',
