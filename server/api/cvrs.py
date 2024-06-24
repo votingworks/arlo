@@ -162,13 +162,13 @@ def cvr_contests_metadata(
 
     standardized_metadata = {}
     for cvr_contest_name, contest_metadata in metadata.items():
-        standardized_contest_name = cvr_contest_name_to_standardized_contest_name.get(
+        potentially_standardized_contest_name = cvr_contest_name_to_standardized_contest_name.get(
             cvr_contest_name, cvr_contest_name
         )
 
-        contest_id = contest_name_to_id.get(standardized_contest_name, None)
+        contest_id = contest_name_to_id.get(potentially_standardized_contest_name, None)
 
-        standardized_metadata[standardized_contest_name] = (
+        standardized_metadata[potentially_standardized_contest_name] = (
             typing.cast(
                 CvrContestMetadata,
                 {
