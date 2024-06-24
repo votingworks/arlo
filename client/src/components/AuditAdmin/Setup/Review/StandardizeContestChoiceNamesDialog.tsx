@@ -87,7 +87,7 @@ export const StandardizeContestChoiceNamesDialog: React.FC<IDialogProps> = ({
       [jurisdictionId]: {
         ...formState[jurisdictionId],
         [contest.id]: {
-          ...formState[jurisdictionId][contest.id],
+          ...formState[jurisdictionId]?.[contest.id],
           [cvrChoiceName]: standardizedChoiceName,
         },
       },
@@ -132,7 +132,7 @@ export const StandardizeContestChoiceNamesDialog: React.FC<IDialogProps> = ({
                             })
                           }
                           value={
-                            formState[jurisdictionId][contest.id][
+                            formState[jurisdictionId]?.[contest.id]?.[
                               cvrChoiceName
                             ] ?? ''
                           }
