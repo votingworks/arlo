@@ -12,8 +12,16 @@ const BATCH_INVENTORY_CONFIGS: {
   'b216ad0d-1481-44e4-a2c1-95da40175084': {
     showBallotManifest: true,
   },
+  // Nevada
+  'b6f34a14-1cb2-4d44-8f29-b4fe04fd2932': {
+    showBallotManifest: false,
+  },
   // Rhode Island
   '0225f953-c201-46c8-8582-617eb72ce2b4': {
+    showBallotManifest: false,
+  },
+  // Washington
+  '541e7ab0-5d05-4635-b988-f66a254902c7': {
     showBallotManifest: false,
   },
 
