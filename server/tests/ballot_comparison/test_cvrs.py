@@ -1526,14 +1526,14 @@ def test_ess_cvr_upload_invalid(
     test_cases = [
         (
             [(io.BytesIO(ESS_CVR.encode()), "ess_cvr.csv")],
-            "Missing ballots files - at least one file should contain the list of tabulated ballots and their corresponding CVR identifiers. / Identified CVR files: ess_cvr.csv / Identified ballots files: None",
+            "Missing ballots files - at least one file should contain the list of tabulated ballots and their corresponding CVR identifiers. Identified CVR files: ess_cvr.csv. Identified ballots files: None.",
         ),
         (
             [
                 (io.BytesIO(ESS_BALLOTS_1.encode()), "ess_ballots_1.csv",),
                 (io.BytesIO(ESS_BALLOTS_2.encode()), "ess_ballots_2.csv",),
             ],
-            "Missing CVR file - one file should contain the cast vote records for each ballot. We attempt to auto-detect this file, but if we are failing to do so, you can rename the file cvr.csv to ensure that we treat it as the CVR file. / Identified CVR files: None / Identified ballots files: ess_ballots_1.csv, ess_ballots_2.csv",
+            "Missing CVR file - one file should contain the cast vote records for each ballot. We attempt to auto-detect this file, but if we are failing to do so, you can rename the file cvr.csv to ensure that we treat it as the CVR file. Identified CVR files: None. Identified ballots files: ess_ballots_1.csv, ess_ballots_2.csv.",
         ),
         (
             [
@@ -1542,7 +1542,7 @@ def test_ess_cvr_upload_invalid(
                 (io.BytesIO(ESS_CVR.encode()), "ess_cvr_1.csv",),
                 (io.BytesIO(ESS_CVR.encode()), "ess_cvr_2.csv",),
             ],
-            "Identified multiple CVR files - please upload only one CVR file containing the cast vote records for each ballot, and at least one ballots file containing the list of tabulated ballots and their corresponding CVR identifiers. / Identified CVR files: ess_cvr_1.csv, ess_cvr_2.csv / Identified ballots files: ess_ballots_1.csv, ess_ballots_2.csv",
+            "Identified multiple CVR files - please upload only one CVR file containing the cast vote records for each ballot, and at least one ballots file containing the list of tabulated ballots and their corresponding CVR identifiers. Identified CVR files: ess_cvr_1.csv, ess_cvr_2.csv. Identified ballots files: ess_ballots_1.csv, ess_ballots_2.csv.",
         ),
         (
             [
@@ -1770,8 +1770,8 @@ def test_ess_cvr_upload_cvr_file_with_tabulator_cvr_column(
             "processing": {
                 "completedAt": assert_is_date,
                 "error": "Missing CVR file - one file should contain the cast vote records for each ballot. "
-                "We attempt to auto-detect this file, but if we are failing to do so, you can rename the file cvr.csv to ensure that we treat it as the CVR file. / "
-                "Identified CVR files: None / Identified ballots files: ess_cvr.csv, ess_ballots_1.csv, ess_ballots_2.csv",
+                "We attempt to auto-detect this file, but if we are failing to do so, you can rename the file cvr.csv to ensure that we treat it as the CVR file. "
+                "Identified CVR files: None. Identified ballots files: ess_cvr.csv, ess_ballots_1.csv, ess_ballots_2.csv.",
                 "startedAt": assert_is_date,
                 "status": ProcessingStatus.ERRORED,
                 "workProgress": 0,

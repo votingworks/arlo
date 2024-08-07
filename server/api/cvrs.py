@@ -607,13 +607,11 @@ def separate_ess_cvr_and_ballots_files(
         error = "Identified multiple CVR files - please upload only one CVR file containing the cast vote records for each ballot, and at least one ballots file containing the list of tabulated ballots and their corresponding CVR identifiers."
 
     if error is not None:
-        separator = " / "
-        error_components = [
-            error,
-            f"Identified CVR files: {', '.join(cvr_files.keys()) or 'None'}",
-            f"Identified ballots files: {', '.join(ballots_files.keys()) or 'None'}",
-        ]
-        raise UserError(separator.join(error_components))
+        identified_files = (
+            f"Identified CVR files: {', '.join(cvr_files.keys()) or 'None'}. "
+            f"Identified ballots files: {', '.join(ballots_files.keys()) or 'None'}."
+        )
+        raise UserError(f"{error} {identified_files}")
 
     [(cvr_file_name, cvr_file)] = cvr_files.items()
 
