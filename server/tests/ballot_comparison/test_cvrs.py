@@ -1393,6 +1393,23 @@ ESS_BALLOTS_WITH_MACHINE_COLUMN_AND_NO_METADATA_ROWS = """Cast Vote Record,Batch
 15,BATCH2,Not Reviewed,,,,N,REP 405,Election Day,0002000175,7074480632,Card,Election Day,28,405,21,0002,
 """
 
+ESS_CVR_WITH_TABULATOR_CVR_COLUMN = """Cast Vote Record,Precinct,Ballot Style,Tabulator CVR,Contest 1,Contest 2
+1,p,bs,0001013415,Choice 1-2,Choice 2-1
+2,p,bs,0001013416,Choice 1-1,Choice 2-1
+3,p,bs,0001013417,undervote,Choice 2-1
+4,p,bs,0002003171,overvote,Choice 2-1
+5,p,bs,0002003172,Choice 1-2,Choice 2-1
+6,p,bs,0002003173,Choice 1-1,Choice 2-1
+7,p,bs,0001000415,Choice 1-2,Choice 2-1
+8,p,bs,0001000416,Choice 1-1,Choice 2-1
+9,p,bs,0001000417,Choice 1-2,Choice 2-2
+10,p,bs,0002000171,Choice 1-1,Choice 2-2
+11,p,bs,0002000172,Choice 1-2,Choice 2-2
+12,p,bs,0002000173,Choice 1-1,Choice 2-2
+13,p,bs,0002000174,Choice 1-2,Choice 2-3
+15,p,bs,0002000175,Choice 1-1,Choice 2-3
+"""
+
 
 def test_ess_cvr_upload(
     client: FlaskClient,
@@ -1509,14 +1526,14 @@ def test_ess_cvr_upload_invalid(
     test_cases = [
         (
             [(io.BytesIO(ESS_CVR.encode()), "ess_cvr.csv")],
-            "Missing ballots files - at least one file should contain the list of tabulated ballots and their corresponding CVR identifiers.",
+            "Missing ballots files - at least one file should contain the list of tabulated ballots and their corresponding CVR identifiers. / Identified CVR files: ess_cvr.csv / Identified ballots files: None",
         ),
         (
             [
                 (io.BytesIO(ESS_BALLOTS_1.encode()), "ess_ballots_1.csv",),
                 (io.BytesIO(ESS_BALLOTS_2.encode()), "ess_ballots_2.csv",),
             ],
-            "Missing CVR file - one exported file should contain the cast vote records for each ballot.",
+            "Missing CVR file - one file should contain the cast vote records for each ballot. We attempt to auto-detect this file, but if we are failing to do so, you can rename the file cvr.csv to ensure that we treat it as the CVR file. / Identified CVR files: None / Identified ballots files: ess_ballots_1.csv, ess_ballots_2.csv",
         ),
         (
             [
@@ -1525,7 +1542,7 @@ def test_ess_cvr_upload_invalid(
                 (io.BytesIO(ESS_CVR.encode()), "ess_cvr_1.csv",),
                 (io.BytesIO(ESS_CVR.encode()), "ess_cvr_2.csv",),
             ],
-            "Could not detect which files contain the list of ballots and which contains the CVR results. Please ensure you have one file with the cast vote records for each ballot and at least one file containing the list of tabulated ballots and their corresponding CVR identifiers.",
+            "Identified multiple CVR files - please upload only one CVR file containing the cast vote records for each ballot, and at least one ballots file containing the list of tabulated ballots and their corresponding CVR identifiers. / Identified CVR files: ess_cvr_1.csv, ess_cvr_2.csv / Identified ballots files: ess_ballots_1.csv, ess_ballots_2.csv",
         ),
         (
             [
@@ -1702,6 +1719,94 @@ def test_ess_cvr_upload_invalid(
                 },
             },
         )
+
+
+def test_ess_cvr_upload_cvr_file_with_tabulator_cvr_column(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    ess_manifests,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    manifest_num_ballots = jurisdictions[0]["ballotManifest"]["numBallots"]
+
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+
+    # Expect this upload to err
+    cvrs = [
+        (io.BytesIO(ESS_CVR_WITH_TABULATOR_CVR_COLUMN.encode()), "ess_cvr.csv"),
+        (io.BytesIO(ESS_BALLOTS_1.encode()), "ess_ballots_1.csv"),
+        (io.BytesIO(ESS_BALLOTS_2.encode()), "ess_ballots_2.csv"),
+    ]
+
+    # Expect this upload to succeed
+    cvrs_with_override_cvr_file_name = [
+        (io.BytesIO(ESS_CVR_WITH_TABULATOR_CVR_COLUMN.encode()), "cvr.csv"),
+        (io.BytesIO(ESS_BALLOTS_1.encode()), "ess_ballots_1.csv"),
+        (io.BytesIO(ESS_BALLOTS_2.encode()), "ess_ballots_2.csv"),
+    ]
+
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
+        data={"cvrs": cvrs, "cvrFileType": "ESS"},
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
+    )
+    compare_json(
+        json.loads(rv.data),
+        {
+            "file": {
+                "cvrFileType": "ESS",
+                "name": "cvr-files.zip",
+                "uploadedAt": assert_is_date,
+            },
+            "processing": {
+                "completedAt": assert_is_date,
+                "error": "Missing CVR file - one file should contain the cast vote records for each ballot. "
+                "We attempt to auto-detect this file, but if we are failing to do so, you can rename the file cvr.csv to ensure that we treat it as the CVR file. / "
+                "Identified CVR files: None / Identified ballots files: ess_cvr.csv, ess_ballots_1.csv, ess_ballots_2.csv",
+                "startedAt": assert_is_date,
+                "status": ProcessingStatus.ERRORED,
+                "workProgress": 0,
+                "workTotal": manifest_num_ballots,
+            },
+        },
+    )
+
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
+        data={"cvrs": cvrs_with_override_cvr_file_name, "cvrFileType": "ESS"},
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
+    )
+    compare_json(
+        json.loads(rv.data),
+        {
+            "file": {
+                "cvrFileType": "ESS",
+                "name": "cvr-files.zip",
+                "uploadedAt": assert_is_date,
+            },
+            "processing": {
+                "completedAt": assert_is_date,
+                "error": None,
+                "startedAt": assert_is_date,
+                "status": ProcessingStatus.PROCESSED,
+                "workProgress": manifest_num_ballots,
+                "workTotal": manifest_num_ballots,
+            },
+        },
+    )
 
 
 def build_hart_cvr(
