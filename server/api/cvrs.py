@@ -573,30 +573,47 @@ def separate_ess_cvr_and_ballots_files(
         for file_name in file_names
     }
 
-    def is_ballots_file(file: TextIO):
+    # Allow "hinting" which file is the CVR file when Arlo incorrectly assumes that it's a ballots
+    # file, say, because it has a "Tabulator CVR" column
+    override_cvr_file_name = "cvr.csv"
+
+    def is_ballots_file(file_name: str, file: TextIO):
         first_line = file.readline()
         file.seek(0)
+        if file_name.lower() == override_cvr_file_name:
+            return False
         return first_line.startswith("Ballots") or "Tabulator CVR" in first_line
 
     ballots_files = {
-        name: file for name, file in text_files.items() if is_ballots_file(file)
+        file_name: file
+        for file_name, file in text_files.items()
+        if is_ballots_file(file_name, file)
     }
     cvr_files = {
-        name: file for name, file in text_files.items() if not is_ballots_file(file)
+        file_name: file
+        for file_name, file in text_files.items()
+        if not is_ballots_file(file_name, file)
     }
 
+    error = None
     if len(ballots_files) == 0:
-        raise UserError(
-            "Missing ballots files - at least one file should contain the list of tabulated ballots and their corresponding CVR identifiers."
+        error = "Missing ballots files - at least one file should contain the list of tabulated ballots and their corresponding CVR identifiers."
+    elif len(cvr_files) == 0:
+        error = (
+            "Missing CVR file - one file should contain the cast vote records for each ballot. "
+            f"We attempt to auto-detect this file, but if we are failing to do so, you can rename the file {override_cvr_file_name} to ensure that we treat it as the CVR file."
         )
-    if len(cvr_files) == 0:
-        raise UserError(
-            "Missing CVR file - one exported file should contain the cast vote records for each ballot."
-        )
-    if len(cvr_files) > 1:
-        raise UserError(
-            "Could not detect which files contain the list of ballots and which contains the CVR results. Please ensure you have one file with the cast vote records for each ballot and at least one file containing the list of tabulated ballots and their corresponding CVR identifiers."
-        )
+    elif len(cvr_files) > 1:
+        error = "Identified multiple CVR files - please upload only one CVR file containing the cast vote records for each ballot, and at least one ballots file containing the list of tabulated ballots and their corresponding CVR identifiers."
+
+    if error is not None:
+        separator = " / "
+        error_components = [
+            error,
+            f"Identified CVR files: {', '.join(cvr_files.keys()) or 'None'}",
+            f"Identified ballots files: {', '.join(ballots_files.keys()) or 'None'}",
+        ]
+        raise UserError(separator.join(error_components))
 
     [(cvr_file_name, cvr_file)] = cvr_files.items()
 
