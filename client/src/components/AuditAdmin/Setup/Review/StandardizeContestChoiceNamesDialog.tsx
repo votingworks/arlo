@@ -199,7 +199,8 @@ export const StandardizeContestChoiceNamesCallout: React.FC<ICalloutProps> = ({
   let isStandardizationNeeded = false
   let isStandardizationNeededAndOutstanding = false
   for (const jurisdictionStandardizations of Object.values(standardizations)) {
-    const contestStandardization = jurisdictionStandardizations[contest.id]
+    const contestStandardization =
+      jurisdictionStandardizations[contest.id] ?? {}
     for (const standardizedChoiceName of Object.values(
       contestStandardization
     )) {
