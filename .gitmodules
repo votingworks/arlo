@@ -1,3 +1,0 @@
-[submodule "server/tests/arlo-extra-tests"]
-	path = server/tests/arlo-extra-tests
-	url = git@github.com:votingworks/arlo-extra-tests
