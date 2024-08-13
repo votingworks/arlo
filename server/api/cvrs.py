@@ -796,9 +796,23 @@ def parse_ess_cvrs(
 
     def parse_contest_metadata(cvr_csv: CSVIterator) -> CVR_CONTESTS_METADATA:
         headers = next(cvr_csv)
-        # Based on files we've seen, the first 3 columns are Cast Vote Record,
-        # Precinct, Ballot Style and the rest are contest names
-        first_contest_column = 3
+        # Based on files we've seen, the first few columns are metadata, and the
+        # rest are contest names
+        known_metadata_headers = [
+            "Election ID",
+            "Audit Number",
+            "Tabulator CVR",
+            "Cast Vote Record",
+            "Batch",
+            "Ballot Status",
+            "Precinct",
+            "Ballot Style",
+        ]
+        first_contest_column = next(
+            index
+            for index, header in enumerate(headers)
+            if header not in known_metadata_headers
+        )
         contest_names = headers[first_contest_column:]
         # { contest_name: choice_names }
         contest_choices = defaultdict(set)
