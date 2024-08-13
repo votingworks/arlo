@@ -1319,6 +1319,7 @@ Cast Vote Record,Batch,Ballot Status,Original Ballot Exception,Remaining Ballot 
 3,BATCH1,Not Reviewed,Undervote,,,N,Election Day,0001013417,p
 4,BATCH1,Not Reviewed,Overvote,,,N,Election Day,0002003171,p
 Total : 7,,,,,,,,,
+,,,,,,,,,
 """
 
 ESS_BALLOTS_2 = """Ballots,,,,,,,,,
@@ -1662,6 +1663,22 @@ def test_ess_cvr_upload_invalid(
                 (io.BytesIO(ESS_BALLOTS_2.encode()), "ess_ballots_2.csv",),
             ],
             "ess_cvr.csv: Missing required column Cast Vote Record.",
+        ),
+        (
+            [
+                (
+                    io.BytesIO(
+                        (
+                            ESS_BALLOTS_1
+                            + ",BATCH1,Not Reviewed,,,,N,Election Day,0002003172,p"
+                        ).encode()
+                    ),
+                    "ess_ballots_1.csv",
+                ),
+                (io.BytesIO(ESS_CVR.encode()), "ess_cvr.csv",),
+                (io.BytesIO(ESS_BALLOTS_2.encode()), "ess_ballots_2.csv",),
+            ],
+            "ess_ballots_1.csv: Missing required column Cast Vote Record in row 8.",
         ),
         (
             [
