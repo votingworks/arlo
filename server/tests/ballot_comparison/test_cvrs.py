@@ -1319,6 +1319,7 @@ Cast Vote Record,Batch,Ballot Status,Original Ballot Exception,Remaining Ballot 
 3,BATCH1,Not Reviewed,Undervote,,,N,Election Day,0001013417,p
 4,BATCH1,Not Reviewed,Overvote,,,N,Election Day,0002003171,p
 Total : 7,,,,,,,,,
+,,,,,,,,,
 """
 
 ESS_BALLOTS_2 = """Ballots,,,,,,,,,

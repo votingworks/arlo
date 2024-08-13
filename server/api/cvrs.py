@@ -639,7 +639,11 @@ def read_ess_ballots_file(
     else:
         headers = first_row
 
-    rows = (row for row in ballots_csv if not row[0].startswith("Total"))
+    rows = (
+        row
+        for row in ballots_csv
+        if not row[0].startswith("Total") and not all(not cell for cell in row)
+    )
 
     return (headers, rows)
 
