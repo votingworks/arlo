@@ -1666,6 +1666,22 @@ def test_ess_cvr_upload_invalid(
         ),
         (
             [
+                (
+                    io.BytesIO(
+                        (
+                            ESS_BALLOTS_1
+                            + ",BATCH1,Not Reviewed,,,,N,Election Day,0002003172,p"
+                        ).encode()
+                    ),
+                    "ess_ballots_1.csv",
+                ),
+                (io.BytesIO(ESS_CVR.encode()), "ess_cvr.csv",),
+                (io.BytesIO(ESS_BALLOTS_2.encode()), "ess_ballots_2.csv",),
+            ],
+            "ess_ballots_1.csv: Missing required column Cast Vote Record in row 8.",
+        ),
+        (
+            [
                 (io.BytesIO(ESS_BALLOTS_1.encode()), "ess_ballots_1.csv",),
                 (
                     io.BytesIO(

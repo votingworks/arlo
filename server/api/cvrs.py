@@ -697,8 +697,19 @@ def parse_ess_cvrs(
         # The rows may not be in order, but we need them sorted in order to
         # concatenate and merge the files. For now, sort them in memory, though
         # we may need to change this if it becomes a memory bottleneck.
-        sorted_ballot_rows = sorted(
-            rows, key=lambda row: int(row[header_indices["Cast Vote Record"]])
+        sorted_ballot_rows = (
+            row
+            for _, row in sorted(
+                enumerate(rows),
+                key=lambda index_and_row: int(
+                    column_value(
+                        index_and_row[1],
+                        "Cast Vote Record",
+                        index_and_row[0] + 1,
+                        header_indices,
+                    )
+                ),
+            )
         )
 
         ten_digit_tabulator_cvr_regex = re.compile(r"^(\d{4})(\d{6})$")
