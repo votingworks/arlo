@@ -131,9 +131,9 @@ const Review: React.FC<IProps> = ({
     electionId
   )
   const [
-    isContestChoiceNameStandardizationDialogOpen,
-    setIsContestChoiceNameStandardizationDialogOpen,
-  ] = useState(false)
+    contestIdForChoiceNameStandardizationDialog,
+    setContestIdForChoiceNameStandardizationDialog,
+  ] = useState<IContest['id'] | null>(null)
 
   const setupComplete =
     jurisdictionsQuery.isSuccess &&
@@ -360,16 +360,18 @@ const Review: React.FC<IProps> = ({
               contest={contest}
               disabled={locked}
               openDialog={() =>
-                setIsContestChoiceNameStandardizationDialogOpen(true)
+                setContestIdForChoiceNameStandardizationDialog(contest.id)
               }
               standardizations={contestChoiceNameStandardizations}
             />
             <StandardizeContestChoiceNamesDialog
               contest={contest}
-              isOpen={isContestChoiceNameStandardizationDialogOpen}
+              isOpen={
+                contestIdForChoiceNameStandardizationDialog === contest.id
+              }
               jurisdictionsById={jurisdictionsById}
               onClose={() =>
-                setIsContestChoiceNameStandardizationDialogOpen(false)
+                setContestIdForChoiceNameStandardizationDialog(null)
               }
               standardizations={contestChoiceNameStandardizations}
               standardizedContestChoiceNames={
@@ -384,7 +386,7 @@ const Review: React.FC<IProps> = ({
                 )
               }}
               // Reset the form state within the dialog component any time the dialog is opened
-              key={isContestChoiceNameStandardizationDialogOpen.toString()}
+              key={contestIdForChoiceNameStandardizationDialog || 'closed'}
             />
             <div style={{ display: 'flex' }}>
               {!cvrsUploaded ? (
