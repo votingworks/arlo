@@ -1,3 +1,4 @@
+import logging
 import time
 
 from server.database import db_session
@@ -9,7 +10,13 @@ from server.websession import cleanup_sessions
 # handlers get registered as background_tasks.
 from server import api  # pylint: disable=unused-import
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("arlo.worker")
+
+
 if __name__ == "__main__":
+    logger.info("Worker starting up")
+    print("Print worker starting up")
     configure_sentry()
     while True:
         run_new_tasks()
