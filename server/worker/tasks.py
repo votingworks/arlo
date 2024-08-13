@@ -13,6 +13,7 @@ from ..util.isoformat import isoformat
 from ..util.jsonschema import JSONDict
 from .. import config
 
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("arlo.worker")
 
 
