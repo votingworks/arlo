@@ -1394,21 +1394,21 @@ ESS_BALLOTS_WITH_MACHINE_COLUMN_AND_NO_METADATA_ROWS = """Cast Vote Record,Batch
 15,BATCH2,Not Reviewed,,,,N,REP 405,Election Day,0002000175,7074480632,Card,Election Day,28,405,21,0002,
 """
 
-ESS_CVR_WITH_TABULATOR_CVR_COLUMN = """Cast Vote Record,Precinct,Ballot Style,Tabulator CVR,Contest 1,Contest 2
-1,p,bs,0001013415,Choice 1-2,Choice 2-1
-2,p,bs,0001013416,Choice 1-1,Choice 2-1
-3,p,bs,0001013417,undervote,Choice 2-1
-4,p,bs,0002003171,overvote,Choice 2-1
-5,p,bs,0002003172,Choice 1-2,Choice 2-1
-6,p,bs,0002003173,Choice 1-1,Choice 2-1
-7,p,bs,0001000415,Choice 1-2,Choice 2-1
-8,p,bs,0001000416,Choice 1-1,Choice 2-1
-9,p,bs,0001000417,Choice 1-2,Choice 2-2
-10,p,bs,0002000171,Choice 1-1,Choice 2-2
-11,p,bs,0002000172,Choice 1-2,Choice 2-2
-12,p,bs,0002000173,Choice 1-1,Choice 2-2
-13,p,bs,0002000174,Choice 1-2,Choice 2-3
-15,p,bs,0002000175,Choice 1-1,Choice 2-3
+ESS_CVR_WITH_TABULATOR_CVR_COLUMN = """Unknown Column,Cast Vote Record,Precinct,Ballot Style,Tabulator CVR,Contest 1,Contest 2
+x,1,p,bs,0001013415,Choice 1-2,Choice 2-1
+x,2,p,bs,0001013416,Choice 1-1,Choice 2-1
+x,3,p,bs,0001013417,undervote,Choice 2-1
+x,4,p,bs,0002003171,overvote,Choice 2-1
+x,5,p,bs,0002003172,Choice 1-2,Choice 2-1
+x,6,p,bs,0002003173,Choice 1-1,Choice 2-1
+x,7,p,bs,0001000415,Choice 1-2,Choice 2-1
+x,8,p,bs,0001000416,Choice 1-1,Choice 2-1
+x,9,p,bs,0001000417,Choice 1-2,Choice 2-2
+x,10,p,bs,0002000171,Choice 1-1,Choice 2-2
+x,11,p,bs,0002000172,Choice 1-2,Choice 2-2
+x,12,p,bs,0002000173,Choice 1-1,Choice 2-2
+x,13,p,bs,0002000174,Choice 1-2,Choice 2-3
+x,15,p,bs,0002000175,Choice 1-1,Choice 2-3
 """
 
 
@@ -1743,6 +1743,7 @@ def test_ess_cvr_upload_cvr_file_with_tabulator_cvr_column(
     election_id: str,
     jurisdiction_ids: List[str],
     ess_manifests,  # pylint: disable=unused-argument
+    snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
@@ -1823,6 +1824,29 @@ def test_ess_cvr_upload_cvr_file_with_tabulator_cvr_column(
                 "workTotal": manifest_num_ballots,
             },
         },
+    )
+
+    cvr_ballots = (
+        CvrBallot.query.join(Batch)
+        .filter_by(jurisdiction_id=jurisdiction_ids[0])
+        .order_by(CvrBallot.imprinted_id)
+        .all()
+    )
+    assert len(cvr_ballots) == manifest_num_ballots - 1
+    snapshot.assert_match(
+        [
+            dict(
+                batch_name=cvr.batch.name,
+                tabulator=cvr.batch.tabulator,
+                ballot_position=cvr.ballot_position,
+                imprinted_id=cvr.imprinted_id,
+                interpretations=cvr.interpretations,
+            )
+            for cvr in cvr_ballots
+        ]
+    )
+    snapshot.assert_match(
+        Jurisdiction.query.get(jurisdiction_ids[0]).cvr_contests_metadata
     )
 
 
