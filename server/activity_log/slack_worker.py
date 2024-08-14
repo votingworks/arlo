@@ -60,7 +60,7 @@ def slack_message(activity: activity_log.Activity):
 
     if isinstance(activity, activity_log.JurisdictionActivity):
         jurisdiction_link = urljoin(
-            config.HTTP_ORIGIN, f"/support/orgs/{activity.jurisdiction_id}"
+            config.HTTP_ORIGIN, f"/support/jurisdictions/{activity.jurisdiction_id}"
         )
         jurisdiction_context = dict(
             type="mrkdwn",
