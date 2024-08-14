@@ -13,10 +13,11 @@ from ..util.isoformat import isoformat
 from ..util.jsonschema import JSONDict
 from .. import config
 
-# Something in the imports above is setting the root logging level to WARNING in
-# production, so we need to explicitly set it back to INFO.
-logging.basicConfig(level=logging.INFO, force=True)
 logger = logging.getLogger("arlo.worker")
+# Something is setting the root logging level to WARNING in production, so we
+# need to set this logger's level to INFO to ensure our info logs below are
+# emitted.
+logger.setLevel(logging.INFO)
 
 
 class UserError(Exception):
