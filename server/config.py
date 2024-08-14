@@ -162,6 +162,6 @@ logger.info(f"{HTTP_ORIGIN=}")
 logger.info(f"{FLASK_ENV=}")
 
 # Filter out any logging messages from athena/audit.py, in preference to our tighter logging
-logging.getLogger().addFilter(
-    lambda record: not record.pathname.endswith("athena/audit.py")
-)
+# logging.getLogger().addFilter(
+#     lambda record: not record.pathname.endswith("athena/audit.py")
+# )
