@@ -812,7 +812,11 @@ def parse_ess_cvrs(
     def parse_contest_metadata(cvr_csv: CSVIterator) -> CVR_CONTESTS_METADATA:
         headers = next(cvr_csv)
         # Based on files we've seen, the first few columns are metadata, and the
-        # rest are contest names
+        # rest are contest names. We want to figure out where the dividing line
+        # is. The challenge is that there may be metadata columns that we've
+        # never seen before. To maximize the chance of getting this right, we
+        # look for the last column that matches a known metadata header, hoping
+        # that the dividing line will be one of our known headers.
         known_metadata_headers = [
             "Election ID",
             "Audit Number",
@@ -823,11 +827,12 @@ def parse_ess_cvrs(
             "Precinct",
             "Ballot Style",
         ]
-        first_contest_column = next(
+        last_header_column = next(
             index
-            for index, header in enumerate(headers)
-            if header not in known_metadata_headers
+            for index, header in reversed(list(enumerate(headers)))
+            if header in known_metadata_headers
         )
+        first_contest_column = last_header_column + 1
         contest_names = headers[first_contest_column:]
         # { contest_name: choice_names }
         contest_choices = defaultdict(set)
