@@ -53,7 +53,7 @@ snapshots["test_slack_worker_message_format 10"] = {
                     "type": "mrkdwn",
                 },
                 {
-                    "text": ":classical_building: <http://localhost:3000/support/orgs/test_jurisdiction_id|Test Jurisdiction> ",
+                    "text": ":classical_building: <http://localhost:3000/support/jurisdictions/test_jurisdiction_id|Test Jurisdiction> ",
                     "type": "mrkdwn",
                 },
                 {
@@ -91,7 +91,7 @@ snapshots["test_slack_worker_message_format 11"] = {
                     "type": "mrkdwn",
                 },
                 {
-                    "text": ":classical_building: <http://localhost:3000/support/orgs/test_jurisdiction_id|Test Jurisdiction> ",
+                    "text": ":classical_building: <http://localhost:3000/support/jurisdictions/test_jurisdiction_id|Test Jurisdiction> ",
                     "type": "mrkdwn",
                 },
                 {
@@ -129,7 +129,7 @@ snapshots["test_slack_worker_message_format 12"] = {
                     "type": "mrkdwn",
                 },
                 {
-                    "text": ":classical_building: <http://localhost:3000/support/orgs/test_jurisdiction_id|Test Jurisdiction> ",
+                    "text": ":classical_building: <http://localhost:3000/support/jurisdictions/test_jurisdiction_id|Test Jurisdiction> ",
                     "type": "mrkdwn",
                 },
                 {
@@ -167,7 +167,7 @@ snapshots["test_slack_worker_message_format 13"] = {
                     "type": "mrkdwn",
                 },
                 {
-                    "text": ":classical_building: <http://localhost:3000/support/orgs/test_jurisdiction_id|Test Jurisdiction> ",
+                    "text": ":classical_building: <http://localhost:3000/support/jurisdictions/test_jurisdiction_id|Test Jurisdiction> ",
                     "type": "mrkdwn",
                 },
                 {
@@ -357,7 +357,7 @@ snapshots["test_slack_worker_message_format 7"] = {
                     "type": "mrkdwn",
                 },
                 {
-                    "text": ":classical_building: <http://localhost:3000/support/orgs/test_jurisdiction_id|Test Jurisdiction> ",
+                    "text": ":classical_building: <http://localhost:3000/support/jurisdictions/test_jurisdiction_id|Test Jurisdiction> ",
                     "type": "mrkdwn",
                 },
                 {
@@ -399,7 +399,7 @@ snapshots["test_slack_worker_message_format 8"] = {
                     "type": "mrkdwn",
                 },
                 {
-                    "text": ":classical_building: <http://localhost:3000/support/orgs/test_jurisdiction_id|Test Jurisdiction> ",
+                    "text": ":classical_building: <http://localhost:3000/support/jurisdictions/test_jurisdiction_id|Test Jurisdiction> ",
                     "type": "mrkdwn",
                 },
                 {
@@ -437,7 +437,7 @@ snapshots["test_slack_worker_message_format 9"] = {
                     "type": "mrkdwn",
                 },
                 {
-                    "text": ":classical_building: <http://localhost:3000/support/orgs/test_jurisdiction_id|Test Jurisdiction> ",
+                    "text": ":classical_building: <http://localhost:3000/support/jurisdictions/test_jurisdiction_id|Test Jurisdiction> ",
                     "type": "mrkdwn",
                 },
                 {
