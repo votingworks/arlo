@@ -16,6 +16,7 @@ logger = logging.getLogger("arlo.worker")
 
 if __name__ == "__main__":
     logger.info("Worker starting up")
+    logger.error("Test error log")
     print("Print worker starting up")
     configure_sentry()
     while True:
