@@ -157,6 +157,8 @@ RUN_BACKGROUND_TASKS_IMMEDIATELY = parse_bool(
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("arlo.config")
 
+print("config logger level:", logger.level)
+print("config logger effective level:", logger.getEffectiveLevel())
 logger.info(f"{DATABASE_URL=}")
 logger.info(f"{HTTP_ORIGIN=}")
 logger.info(f"{FLASK_ENV=}")

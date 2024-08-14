@@ -10,11 +10,12 @@ from server.websession import cleanup_sessions
 # handlers get registered as background_tasks.
 from server import api  # pylint: disable=unused-import
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("arlo.worker")
-
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+    logger = logging.getLogger("arlo.worker")
+    print("root level", logging.getLogger().level)
+    print("root effective level", logging.getLogger().getEffectiveLevel())
     logger.info("Worker starting up")
     logger.error("Test error log")
     print("level:", logger.level)
