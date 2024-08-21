@@ -263,7 +263,7 @@ def jurisdiction_admin_generate_code():
     message.add_alternative(
         render_template("email_login_code.html", code=user.login_code), subtype="html"
     )
-    smtp_server = smtplib.SMTP(SMTP_HOST, SMTP_PORT)
+    smtp_server = smtplib.SMTP_SSL(SMTP_HOST, SMTP_PORT)
     smtp_server.login(SMTP_USERNAME, SMTP_PASSWORD)
     smtp_server.send_message(message)
     smtp_server.quit()
