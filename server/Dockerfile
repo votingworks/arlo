@@ -7,6 +7,8 @@ ENV POETRY_VERSION=1.1.15
 RUN pip install -U poetry==$POETRY_VERSION
 
 COPY . . 
+COPY ./pyproject.toml .
+COPY ./poetry.lock .
 
 RUN poetry install
 

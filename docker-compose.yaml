@@ -1,0 +1,27 @@
+version: “3.7”
+services:
+  db:
+    image: postgresql
+    restart: always
+    volumes:
+      - ./pData:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+
+  server:
+    build: ./server
+    restart: always
+    ports:
+      - 3000:3000
+    depends_on:
+      db: 
+        condition: service_healthy
+
+        #  client:
+        #    build: client
+        #    restart: always
+        #    ports:
+        #      – 80:80
