@@ -12,9 +12,11 @@ ENV ENV LANG en_US.UTF-8
 
 RUN pip install -U poetry==$POETRY_VERSION
 
-COPY . ./server 
+COPY ./server ./server 
+COPY ./scripts ./scripts 
 COPY ./pyproject.toml .
 COPY ./poetry.lock .
+COPY ./alembic.ini .
 
 RUN poetry install
 
