@@ -1,27 +1,41 @@
 version: “3.7”
 services:
   db:
-    image: postgresql
+    image: postgres:13
     restart: always
     volumes:
-      - ./pData:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready"]
       interval: 1s
       timeout: 5s
       retries: 10
+    environment:
+      - POSTGRES_USER=arlo
+      - POSTGRES_PASSWORD=arlo
+      - POSTGRES_DB=hello_flask_dev
 
   server:
     build: ./server
-    restart: always
+    #restart: always
+    command: poetry run python -m server.main 
     ports:
       - 3000:3000
     depends_on:
       db: 
         condition: service_healthy
+    environment:
+      - FLASK_APP=server/__init__.py
+      - FLASK_DEBUG=1
+      - FLASK_ENV=development
+      - DATABASE_URL=postgresql://arlo:arlo@db:5432/hello_flask_dev
+ 
 
         #  client:
         #    build: client
         #    restart: always
         #    ports:
         #      – 80:80
+
+volumes:
+  postgres_data:
