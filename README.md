@@ -121,6 +121,10 @@ Arlo's database schema is encoded by a series of migrations. When pulling in new
 
 To run a local dev server: `./run-dev.sh`. This will also run the Arlo background worker and a local nOAuth server.
 
+### Docker
+
+If you prefer, you can run a dev instance in docker by cloning this repo and running `docker compose --profile dev up -d --build`. This will handle all of the database config for you automatically, and once it's up you should just be able to navigate to `localhost:3000` in your browser and see Arlo.
+
 ### Creating organizations and audit administrators
 
 Organizations are, for example, the State of Massachusetts. Audit administrators are individual users that administer audits for an organization.
