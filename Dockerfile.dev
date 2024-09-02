@@ -1,7 +1,17 @@
 # Build step #1: build the React front end
-FROM ubuntu:focal 
+#FROM ubuntu:focal 
+
+FROM node:16 AS frontend-build
+
+COPY ./package.json yarn.lock .
+COPY ./client ./client
+RUN yarn build
+
+
+FROM python:3.8 
 
 WORKDIR /app
+
 
 ENV PYTHONUNBUFFERED=1 \
     # prevents python creating .pyc files
@@ -25,9 +35,8 @@ ENV PATH /app/node_modules/.bin:$PATH
 ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
 
-COPY . .
 
-RUN apt update && apt install -y build-essential curl git
+RUN apt update && apt install -y build-essential curl
 
 RUN apt-get install -y locales && \
     sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
@@ -35,30 +44,25 @@ RUN apt-get install -y locales && \
 
 ARG DEBIAN_FRONTEND=noninteractive
     
-ENV POETRY_VERSION=1.1.15
 ENV LC_ALL en_US.UTF-8
 ENV ENV LANG en_US.UTF-8
 ENV TZ=Etc/UTC
 
-RUN apt-get install -y tzdata
-
-RUN apt install -y python3.8 python3.8-venv libpython3.8-dev libpq-dev graphicsmagick
-# Install node: https://github.com/nodesource/distributions/blob/master/README.md#deb		
-RUN curl -fsSL https://deb.nodesource.com/setup_16.x | grep -v 'sleep' | bash -
-RUN apt-get install -y nodejs
-
-# Install poetry: https://python-poetry.org/docs/master/#osx--linux--bashonwindows-install-instructions
-# Keep the local dev POETRY_VERSION in sync with the Heroku config var
 RUN curl -sSL https://install.python-poetry.org | python3.8 -
-RUN npm install -g yarn
 
 COPY ./server/pyproject.toml .
 COPY ./server/poetry.lock .
 COPY ./server/alembic.ini .
 
 RUN poetry install
+COPY ./server ./server
 
-RUN yarn build
+# Make sure npm/yarn are available here
+RUN curl -fsSL https://deb.nodesource.com/setup_16.x | grep -v 'sleep' | bash -
+RUN apt-get install -y nodejs
+RUN npm install -g yarn
+COPY --from=frontend-build ["/client", "./client"]
+RUN yarn --cwd client install
 
 EXPOSE 3000
 WORKDIR /app
