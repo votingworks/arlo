@@ -21,12 +21,15 @@ services:
   dev:
     build:     
       dockerfile: Dockerfile.dev
-    # TODO: Figure out putting the worker in its own container
+      #    command: >
+      #      bash -c "PORT=8080 poetry run python -m noauth &
+      #      poetry run python -m server.main &
+      #      poetry run python -m server.worker.worker &
+      #      yarn --cwd client start --host"
     command: >
       bash -c "PORT=8080 poetry run python -m noauth &
-      poetry run python -m server.main &
       poetry run python -m server.worker.worker &
-      yarn --cwd client start --host"
+      poetry run gunicorn -w 4 -b :3000 server.app:app --preload"
     ports:
       - 3000:3000
       - 3001:3001
@@ -41,6 +44,21 @@ services:
       - DATABASE_URL=postgresql://arlo:arlo@db:5432/arlo
     profiles: [dev]
  
+
+  prod:
+    build:     
+      dockerfile: Dockerfile.prod
+    # TODO: Figure out putting the worker in its own container
+    ports:
+      - 3000:3000
+    depends_on:
+      db: 
+        condition: service_healthy
+    environment:
+      - FLASK_APP=server/__init__.py
+      - FLASK_DEBUG=1
+      - FLASK_ENV=development
+      - DATABASE_URL=postgresql://arlo:arlo@db:5432/arlo
 
 
     # TODO: prod profiles 

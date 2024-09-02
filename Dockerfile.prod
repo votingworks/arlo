@@ -57,12 +57,7 @@ COPY ./alembic.ini .
 RUN poetry install
 COPY ./server ./server
 
-# Make sure npm/yarn are available here
-#RUN curl -fsSL https://deb.nodesource.com/setup_16.x | grep -v 'sleep' | bash -
-#RUN apt-get install -y nodejs
-#RUN npm install -g yarn
 COPY --from=frontend-build ["/client", "./client"]
-#RUN yarn --cwd client install
 
 EXPOSE 3000
 WORKDIR /app
