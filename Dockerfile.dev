@@ -1,0 +1,69 @@
+# Build step #1: build the React front end
+#FROM ubuntu:focal 
+
+FROM node:16 AS frontend-build
+
+COPY ./package.json yarn.lock .
+COPY ./client ./client
+RUN yarn build
+
+
+FROM python:3.8 
+
+WORKDIR /app
+
+
+ENV PYTHONUNBUFFERED=1 \
+    # prevents python creating .pyc files
+    PYTHONDONTWRITEBYTECODE=1 \
+    \
+    # pip
+    PIP_NO_CACHE_DIR=off \
+    PIP_DISABLE_PIP_VERSION_CHECK=on \
+    PIP_DEFAULT_TIMEOUT=100 \
+    \
+    # poetry
+    # https://python-poetry.org/docs/configuration/#using-environment-variables
+    POETRY_VERSION=1.1.15 \
+    # make poetry install to this location
+    POETRY_HOME="/opt/poetry" \
+    # do not ask any interactive question
+    POETRY_NO_INTERACTION=1 
+    
+ENV PATH /app/node_modules/.bin:$PATH
+# prepend poetry and venv to path
+ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
+
+
+
+RUN apt update && apt install -y build-essential curl
+
+RUN apt-get install -y locales && \
+    sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
+    dpkg-reconfigure --frontend=noninteractive locales
+
+ARG DEBIAN_FRONTEND=noninteractive
+    
+ENV LC_ALL en_US.UTF-8
+ENV ENV LANG en_US.UTF-8
+ENV TZ=Etc/UTC
+
+RUN curl -sSL https://install.python-poetry.org | python3.8 -
+
+COPY ./server/pyproject.toml .
+COPY ./server/poetry.lock .
+COPY ./server/alembic.ini .
+
+RUN poetry install
+COPY ./server ./server
+
+# Make sure npm/yarn are available here
+RUN curl -fsSL https://deb.nodesource.com/setup_16.x | grep -v 'sleep' | bash -
+RUN apt-get install -y nodejs
+RUN npm install -g yarn
+COPY --from=frontend-build ["/client", "./client"]
+RUN yarn --cwd client install
+
+EXPOSE 3000
+WORKDIR /app
+CMD ["poetry", "run", "gunicorn", "-b", ":3000", "server.app:app"]
