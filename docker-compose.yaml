@@ -1,8 +1,8 @@
-version: “3.7”
 services:
   db:
     image: postgres:13
     restart: always
+    user: postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -13,14 +13,24 @@ services:
     environment:
       - POSTGRES_USER=arlo
       - POSTGRES_PASSWORD=arlo
-      - POSTGRES_DB=hello_flask_dev
+      - POSTGRES_DB=arlo
+      - PGUSER=arlo
+    profiles: [dev]
 
-  server:
-    build: ./server
-    #restart: always
-    command: poetry run python -m server.main 
+
+  dev:
+    build:     
+      dockerfile: Dockerfile.dev
+    # TODO: Figure out putting the worker in its own container
+    command: >
+      bash -c "PORT=8080 poetry run python -m noauth &
+      poetry run python -m server.main &
+      poetry run python -m server.worker.worker &
+      yarn --cwd client start --host"
     ports:
       - 3000:3000
+      - 3001:3001
+      - 8080:8080
     depends_on:
       db: 
         condition: service_healthy
@@ -28,14 +38,12 @@ services:
       - FLASK_APP=server/__init__.py
       - FLASK_DEBUG=1
       - FLASK_ENV=development
-      - DATABASE_URL=postgresql://arlo:arlo@db:5432/hello_flask_dev
+      - DATABASE_URL=postgresql://arlo:arlo@db:5432/arlo
+    profiles: [dev]
  
 
-        #  client:
-        #    build: client
-        #    restart: always
-        #    ports:
-        #      – 80:80
+
+    # TODO: prod profiles 
 
 volumes:
   postgres_data:
