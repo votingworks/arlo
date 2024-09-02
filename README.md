@@ -123,7 +123,7 @@ To run a local dev server: `./run-dev.sh`. This will also run the Arlo backgroun
 
 ### Docker
 
-If you prefer, you can run a dev instance in docker by cloning this repo and running `docker compose --profile dev up -d --build`. This will handle all of the database config for you automatically, and once it's up you should just be able to navigate to `localhost:3000` in your browser and see Arlo.
+If you prefer, you can run a dev instance in docker by cloning this repo and running `docker compose --profile dev up -d --build`. This will handle all of the database config for you automatically, and once it's up you should just be able to navigate to `localhost:3000` in your browser and see Arlo. Please note you will still have to follow the steps in the following section to get an organization and audit admin account setup before you can run an audit.
 
 ### Creating organizations and audit administrators
 
