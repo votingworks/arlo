@@ -15,9 +15,25 @@ services:
       - POSTGRES_PASSWORD=arlo
       - POSTGRES_DB=arlo
       - PGUSER=arlo
-    profiles: [dev]
+    profiles: [dev, dev-env]
 
 
+  dev-env:
+    build:
+      dockerfile: Dockerfile.live
+    ports:
+      - 3000:3000
+      - 3001:3001
+      - 8080:8080
+    depends_on:
+      db: 
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgresql://arlo:arlo@db:5432/arlo
+    profiles: [dev-env]
+    volumes:
+      - ./:/home/arlo/arlo
+ 
   dev:
     build:     
       dockerfile: Dockerfile.dev
@@ -45,20 +61,20 @@ services:
     profiles: [dev]
  
 
-  prod:
-    build:     
-      dockerfile: Dockerfile.prod
-    # TODO: Figure out putting the worker in its own container
-    ports:
-      - 3000:3000
-    depends_on:
-      db: 
-        condition: service_healthy
-    environment:
-      - FLASK_APP=server/__init__.py
-      - FLASK_DEBUG=1
-      - FLASK_ENV=development
-      - DATABASE_URL=postgresql://arlo:arlo@db:5432/arlo
+      #prod:
+      #  build:     
+      #    dockerfile: Dockerfile.prod
+      #  # TODO: Figure out putting the worker in its own container
+      #  ports:
+      #    - 3000:3000
+      #  depends_on:
+      #    db: 
+      #      condition: service_healthy
+      #  environment:
+      #    - FLASK_APP=server/__init__.py
+      #    - FLASK_DEBUG=1
+      #    - FLASK_ENV=development
+      #    - DATABASE_URL=postgresql://arlo:arlo@db:5432/arlo
 
 
     # TODO: prod profiles 

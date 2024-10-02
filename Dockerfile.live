@@ -1,0 +1,31 @@
+# This is a persistent dev-environment container
+FROM ubuntu:focal 
+
+
+RUN apt update && apt install -y build-essential curl neovim sudo git
+
+RUN apt-get install -y locales && \
+    sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
+    dpkg-reconfigure --frontend=noninteractive locales
+
+
+ENV LC_ALL en_US.UTF-8
+ENV ENV LANG en_US.UTF-8
+RUN DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install tzdata
+
+RUN useradd -m -G sudo -s /bin/bash arlo
+RUN echo "arlo:arlo" | chpasswd
+USER arlo
+RUN mkdir /home/arlo/arlo
+VOLUME ["/home/arlo/arlo"]
+
+ENV PATH /app/node_modules/.bin:$PATH
+# prepend poetry and venv to path
+ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
+
+WORKDIR /home/arlo/arlo
+
+#RUN cd /home/arlo/arlo
+#RUN make dev-environment
+
+EXPOSE 3000
