@@ -185,7 +185,7 @@ def test_list_activities_logins(
     jurisdiction_ids: List[str],  # pylint: disable=unused-argument
 ):
     # Try to log in a jurisdiction admin
-    with patch("smtplib.SMTP", autospec=True) as smtp:
+    with patch("smtplib.SMTP_SSL", autospec=True) as smtp:
         rv = post_json(
             client,
             "/auth/jurisdictionadmin/code",
