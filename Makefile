@@ -11,6 +11,8 @@ deps:
 	# Keep the local dev POETRY_VERSION in sync with the Heroku config var
 	curl -sSL https://install.python-poetry.org | POETRY_VERSION=1.1.15 python3.8 -
 	sudo npm install -g yarn
+
+postgres:
 	sudo apt install -y postgresql
 	sudo systemctl start postgresql
 
@@ -30,7 +32,9 @@ resettestdb:
 resetdb:
 	FLASK_ENV=$${FLASK_ENV:-development} poetry run python -m scripts.resetdb
 
-dev-environment: deps initdevdb install-development resetdb
+dev-environment: deps postgres initdevdb install-development resetdb
+
+docker-dev-environment: deps install-development resetdb
 
 typecheck-server:
 	poetry run mypy server scripts fixtures

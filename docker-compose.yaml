@@ -21,6 +21,7 @@ services:
   dev-env:
     build:
       dockerfile: Dockerfile.live
+    tty: true
     ports:
       - 3000:3000
       - 3001:3001
