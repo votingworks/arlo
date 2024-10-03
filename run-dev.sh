@@ -6,4 +6,4 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 PORT=8080 poetry run python -m noauth &
 poetry run python -m server.main &
 poetry run python -m server.worker.worker &
-yarn --cwd client start
+yarn --cwd client start --host
