@@ -30,6 +30,7 @@ Talisman(
     app,
     force_https_permanent=True,
     session_cookie_http_only=True,
+    session_cookie_secure=True,
     feature_policy="camera 'none'; microphone 'none'; geolocation 'none'",
     # TODO: Configure webpack to use a nonce: https://webpack.js.org/guides/csp/.
     content_security_policy={
