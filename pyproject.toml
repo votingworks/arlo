@@ -3,9 +3,10 @@ name = "arlo"
 version = "0.1.0"
 description = ""
 authors = []
+package-mode = false
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9"
 alembic = "^1.4.3"
 Authlib = "^0.15.4"
 chardet = "^3.0.4"
@@ -15,7 +16,7 @@ flask-talisman = "^0.8.1"
 jsonschema = "^3.2.0"
 numpy = "^1.22.0"
 requests = "^2.25.1"
-SQLAlchemy-Utils = "0.36.7"
+SQLAlchemy-Utils = "0.38.3"
 xkcdpass = "^1.19.2"
 SQLAlchemy = "~1.3.20"
 typing-extensions = "^3.10.0"
@@ -28,7 +29,7 @@ consistent-sampler = {git = "https://github.com/votingworks/consistent_sampler.g
 scipy = "~1.6.0"
 Flask-SeaSurf = "^0.3.0"
 boto3 = "^1.20.8"
-r2b2 = {git = "https://github.com/gwexploratoryaudits/r2b2", rev = "128874b"}
+r2b2 = {git = "https://github.com/gwexploratoryaudits/r2b2.git"}
 MarkupSafe = "==2.0.1" # Related to this problem: https://stackoverflow.com/questions/72191560/importerror-cannot-import-name-soft-unicode-from-markupsafe
 
 [tool.poetry.dev-dependencies]
