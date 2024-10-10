@@ -7,7 +7,7 @@ orbs:
 executors:
   arlo:
     docker:
-      - image: cimg/python:3.9.5-browsers
+      - image: cimg/python:3.9.20-browsers
         environment:
           DATABASE_URL: postgresql://root@localhost:5432/arlo-test
           FLASK_ENV: test
