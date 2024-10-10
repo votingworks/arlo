@@ -47,5 +47,5 @@ sqlalchemy-stubs = "^0.3"
 noauth = {git = "https://github.com/votingworks/nOAuth.git", rev = "main"}
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
+requires = ["poetry-core>=1.8.0"]
 build-backend = "poetry.core.masonry.api"
