@@ -2,6 +2,7 @@
 Library for performing a Providence ballot polling risk-limiting audit,
 as described by Broadrick et al https://arxiv.org/abs/2210.08717
 """
+
 from collections import defaultdict
 import logging
 from typing import Dict, Optional, Tuple

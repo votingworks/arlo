@@ -280,7 +280,11 @@ def test_contest_choices_dont_match_cvrs(
             "name": "Contest 1",
             "isTargeted": True,
             "choices": [
-                {"id": str(uuid.uuid4()), "name": "Bad Choice Name", "numVotes": 1,},
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "Bad Choice Name",
+                    "numVotes": 1,
+                },
                 {"id": str(uuid.uuid4()), "name": "Choice 1-2", "numVotes": 2},
                 {
                     "id": str(uuid.uuid4()),
@@ -345,7 +349,9 @@ def test_hybrid_two_rounds(
     )
     assert_ok(rv)
 
-    rv = client.get(f"/api/election/{election_id}/round",)
+    rv = client.get(
+        f"/api/election/{election_id}/round",
+    )
     round_1_id = json.loads(rv.data)["rounds"][0]["id"]
 
     # Two separate samples (cvr/non-cvr) should have been drawn
@@ -507,7 +513,9 @@ def test_hybrid_two_rounds(
     )
     assert_ok(rv)
 
-    rv = client.get(f"/api/election/{election_id}/round",)
+    rv = client.get(
+        f"/api/election/{election_id}/round",
+    )
     round_2 = json.loads(rv.data)["rounds"][1]
     assert round_2["drawSampleTask"]["status"] == "PROCESSED"
 
@@ -543,7 +551,10 @@ def test_hybrid_manifest_validation_too_many_votes(
         rv = client.put(
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/cvrs",
             data={
-                "cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",),
+                "cvrs": (
+                    io.BytesIO(TEST_CVRS.encode()),
+                    "cvrs.csv",
+                ),
                 "cvrFileType": "DOMINION",
             },
         )
@@ -634,7 +645,10 @@ def test_hybrid_manifest_validation_too_few_cvr_ballots(
         rv = client.put(
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/cvrs",
             data={
-                "cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",),
+                "cvrs": (
+                    io.BytesIO(TEST_CVRS.encode()),
+                    "cvrs.csv",
+                ),
                 "cvrFileType": "DOMINION",
             },
         )
@@ -707,7 +721,10 @@ def test_hybrid_manifest_validation_few_non_cvr_ballots(
         rv = client.put(
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/cvrs",
             data={
-                "cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",),
+                "cvrs": (
+                    io.BytesIO(TEST_CVRS.encode()),
+                    "cvrs.csv",
+                ),
                 "cvrFileType": "DOMINION",
             },
         )
@@ -808,7 +825,10 @@ def test_hybrid_filter_cvrs(
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
         data={
-            "cvrs": (io.BytesIO(cvr.encode()), "cvrs.csv",),
+            "cvrs": (
+                io.BytesIO(cvr.encode()),
+                "cvrs.csv",
+            ),
             "cvrFileType": "DOMINION",
         },
     )
@@ -851,7 +871,10 @@ def test_hybrid_custom_sample_size(
     rv = post_json(
         client,
         f"/api/election/{election_id}/round",
-        {"roundNum": 1, "sampleSizes": {contest_ids[0]: sample_size},},
+        {
+            "roundNum": 1,
+            "sampleSizes": {contest_ids[0]: sample_size},
+        },
     )
     assert_ok(rv)
 
@@ -883,7 +906,10 @@ def test_hybrid_invalid_sample_size(
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     invalid_sample_sizes = [
-        ({"key": "custom", "prob": None}, "'sizeCvr' is a required property",),
+        (
+            {"key": "custom", "prob": None},
+            "'sizeCvr' is a required property",
+        ),
         (
             {"key": "custom", "sizeCvr": 2, "prob": None},
             "'sizeNonCvr' is a required property",
@@ -937,7 +963,10 @@ def test_hybrid_invalid_sample_size(
         rv = post_json(
             client,
             f"/api/election/{election_id}/round",
-            {"roundNum": 1, "sampleSizes": {contest_ids[0]: invalid_sample_size},},
+            {
+                "roundNum": 1,
+                "sampleSizes": {contest_ids[0]: invalid_sample_size},
+            },
         )
         assert rv.status_code == 400
         assert json.loads(rv.data) == {

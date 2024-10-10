@@ -2,6 +2,7 @@
 A Module containing the Contest class, which encapsulates useful info for RLA
 computations.
 """
+
 import operator
 from typing import Dict, Optional, TypedDict
 

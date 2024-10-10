@@ -2,6 +2,7 @@ import json
 import pytest
 from ..generate_election import *  # pylint: disable=wildcard-import
 
+
 # Each test needs its own seeded RNG since the tests may run in any order, so we
 # can't depend on a single RNG across all tests.
 @pytest.fixture

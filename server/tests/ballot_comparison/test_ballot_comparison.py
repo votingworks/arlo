@@ -60,7 +60,9 @@ def test_set_contest_metadata_on_contest_creation(
 
 
 def test_set_contest_metadata_on_manifest_and_cvr_upload(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str],
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     contest_id = str(uuid.uuid4())
@@ -137,7 +139,10 @@ def test_set_contest_metadata_on_manifest_and_cvr_upload(
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
         data={
-            "cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",),
+            "cvrs": (
+                io.BytesIO(TEST_CVRS.encode()),
+                "cvrs.csv",
+            ),
             "cvrFileType": "DOMINION",
         },
     )
@@ -153,7 +158,10 @@ def test_set_contest_metadata_on_manifest_and_cvr_upload(
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/cvrs",
         data={
-            "cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",),
+            "cvrs": (
+                io.BytesIO(TEST_CVRS.encode()),
+                "cvrs.csv",
+            ),
             "cvrFileType": "DOMINION",
         },
     )
@@ -197,7 +205,10 @@ def test_set_contest_metadata_on_manifest_and_cvr_upload(
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
         data={
-            "cvrs": (io.BytesIO(new_cvr.encode()), "cvrs.csv",),
+            "cvrs": (
+                io.BytesIO(new_cvr.encode()),
+                "cvrs.csv",
+            ),
             "cvrFileType": "DOMINION",
         },
     )
@@ -247,7 +258,10 @@ def test_cvr_choice_name_validation(
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
         data={
-            "cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",),
+            "cvrs": (
+                io.BytesIO(TEST_CVRS.encode()),
+                "cvrs.csv",
+            ),
             "cvrFileType": "DOMINION",
         },
     )
@@ -260,7 +274,10 @@ def test_cvr_choice_name_validation(
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/cvrs",
         data={
-            "cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",),
+            "cvrs": (
+                io.BytesIO(TEST_CVRS.encode()),
+                "cvrs.csv",
+            ),
             "cvrFileType": "DOMINION",
         },
     )
@@ -274,7 +291,10 @@ def test_cvr_choice_name_validation(
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/cvrs",
         data={
-            "cvrs": (io.BytesIO(modified_cvrs.encode()), "cvrs.csv",),
+            "cvrs": (
+                io.BytesIO(modified_cvrs.encode()),
+                "cvrs.csv",
+            ),
             "cvrFileType": "DOMINION",
         },
     )
@@ -286,7 +306,10 @@ def test_cvr_choice_name_validation(
         "anomalousCvrChoiceNamesByJurisdiction": {
             jurisdiction_ids[1]: ["CHOICE 1-1", "CHOICE 1-2"],
         },
-        "cvrChoiceNamesInJurisdictionWithMostCvrChoices": ["Choice 1-1", "Choice 1-2",],
+        "cvrChoiceNamesInJurisdictionWithMostCvrChoices": [
+            "Choice 1-1",
+            "Choice 1-2",
+        ],
         "jurisdictionIdWithMostCvrChoices": jurisdiction_ids[0],
     }
 
@@ -294,7 +317,10 @@ def test_cvr_choice_name_validation(
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/cvrs",
         data={
-            "cvrs": (io.BytesIO(modified_cvrs.encode()), "cvrs.csv",),
+            "cvrs": (
+                io.BytesIO(modified_cvrs.encode()),
+                "cvrs.csv",
+            ),
             "cvrFileType": "DOMINION",
         },
     )
@@ -303,8 +329,13 @@ def test_cvr_choice_name_validation(
     rv = client.get(f"/api/election/{election_id}/contest")
     contest = json.loads(rv.data)["contests"][0]
     assert contest["cvrChoiceNameConsistencyError"] == {
-        "anomalousCvrChoiceNamesByJurisdiction": {jurisdiction_ids[1]: ["CHOICE 1-1"],},
-        "cvrChoiceNamesInJurisdictionWithMostCvrChoices": ["Choice 1-1", "Choice 1-2",],
+        "anomalousCvrChoiceNamesByJurisdiction": {
+            jurisdiction_ids[1]: ["CHOICE 1-1"],
+        },
+        "cvrChoiceNamesInJurisdictionWithMostCvrChoices": [
+            "Choice 1-1",
+            "Choice 1-2",
+        ],
         "jurisdictionIdWithMostCvrChoices": jurisdiction_ids[0],
     }
 
@@ -312,7 +343,10 @@ def test_cvr_choice_name_validation(
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/cvrs",
         data={
-            "cvrs": (io.BytesIO(modified_cvrs.encode()), "cvrs.csv",),
+            "cvrs": (
+                io.BytesIO(modified_cvrs.encode()),
+                "cvrs.csv",
+            ),
             "cvrFileType": "DOMINION",
         },
     )
@@ -326,7 +360,10 @@ def test_cvr_choice_name_validation(
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/cvrs",
         data={
-            "cvrs": (io.BytesIO(modified_cvrs.encode()), "cvrs.csv",),
+            "cvrs": (
+                io.BytesIO(modified_cvrs.encode()),
+                "cvrs.csv",
+            ),
             "cvrFileType": "DOMINION",
         },
     )
@@ -589,10 +626,14 @@ def audit_all_ballots(
 
         elif interpretation_str == "not on ballot":
             audit_ballot(
-                ballot, target_contest_id, Interpretation.CONTEST_NOT_ON_BALLOT,
+                ballot,
+                target_contest_id,
+                Interpretation.CONTEST_NOT_ON_BALLOT,
             )
             audit_ballot(
-                ballot, opportunistic_contest_id, Interpretation.CONTEST_NOT_ON_BALLOT,
+                ballot,
+                opportunistic_contest_id,
+                Interpretation.CONTEST_NOT_ON_BALLOT,
             )
 
         else:
@@ -613,9 +654,11 @@ def audit_all_ballots(
                 (
                     Interpretation.CONTEST_NOT_ON_BALLOT
                     if vote_choice_1_1 == ""
-                    else Interpretation.BLANK
-                    if len(target_choices) == 0
-                    else Interpretation.VOTE
+                    else (
+                        Interpretation.BLANK
+                        if len(target_choices) == 0
+                        else Interpretation.VOTE
+                    )
                 ),
                 target_choices,
                 has_invalid_write_in=has_invalid_write_in,
@@ -632,9 +675,11 @@ def audit_all_ballots(
                 (
                     Interpretation.CONTEST_NOT_ON_BALLOT
                     if vote_choice_2_1 == ""
-                    else Interpretation.BLANK
-                    if len(opportunistic_choices) == 0
-                    else Interpretation.VOTE
+                    else (
+                        Interpretation.BLANK
+                        if len(opportunistic_choices) == 0
+                        else Interpretation.VOTE
+                    )
                 ),
                 opportunistic_choices,
                 has_invalid_write_in=has_invalid_write_in,
@@ -751,7 +796,9 @@ def test_ballot_comparison_two_rounds(
     )
     assert_ok(rv)
 
-    rv = client.get(f"/api/election/{election_id}/round",)
+    rv = client.get(
+        f"/api/election/{election_id}/round",
+    )
     round_1_id = json.loads(rv.data)["rounds"][0]["id"]
 
     # Check jurisdiction status after starting the round
@@ -804,7 +851,10 @@ def test_ballot_comparison_two_rounds(
     round_1_audit_results = {**round_1_audit_results_j1, **round_1_audit_results_j2}
 
     audit_all_ballots(
-        round_1_id, round_1_audit_results, target_contest_id, opportunistic_contest_id,
+        round_1_id,
+        round_1_audit_results,
+        target_contest_id,
+        opportunistic_contest_id,
     )
 
     # Only sign off J1
@@ -900,7 +950,9 @@ def test_ballot_comparison_two_rounds(
     )
     assert_ok(rv)
 
-    rv = client.get(f"/api/election/{election_id}/round",)
+    rv = client.get(
+        f"/api/election/{election_id}/round",
+    )
     round_2_id = json.loads(rv.data)["rounds"][1]["id"]
 
     # Sample sizes endpoint should still return round 1 sample size
@@ -1088,7 +1140,9 @@ def test_ballot_comparison_cvr_metadata(
     )
     assert_ok(rv)
 
-    rv = client.get(f"/api/election/{election_id}/round",)
+    rv = client.get(
+        f"/api/election/{election_id}/round",
+    )
     round_1_id = json.loads(rv.data)["rounds"][0]["id"]
 
     # JA creates audit boards
@@ -1098,7 +1152,9 @@ def test_ballot_comparison_cvr_metadata(
     rv = post_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
-        [{"name": "Audit Board #1"},],
+        [
+            {"name": "Audit Board #1"},
+        ],
     )
     assert_ok(rv)
 
@@ -1188,7 +1244,12 @@ def test_ballot_comparison_sample_size_validation(
         )
         assert rv.status_code == 400
         assert json.loads(rv.data) == {
-            "errors": [{"message": expected_error, "errorType": "Bad Request",}]
+            "errors": [
+                {
+                    "message": expected_error,
+                    "errorType": "Bad Request",
+                }
+            ]
         }
 
 
@@ -1243,7 +1304,9 @@ def test_ballot_comparison_multiple_targeted_contests_sample_size(
     )
     assert_ok(rv)
 
-    rv = client.get(f"/api/election/{election_id}/round",)
+    rv = client.get(
+        f"/api/election/{election_id}/round",
+    )
     round_1_id = json.loads(rv.data)["rounds"][0]["id"]
 
     sampled_ballots = (
@@ -1280,7 +1343,9 @@ def test_ballot_comparison_multiple_targeted_contests_sample_size(
     )
     assert_ok(rv)
 
-    rv = client.get(f"/api/election/{election_id}/round",)
+    rv = client.get(
+        f"/api/election/{election_id}/round",
+    )
     round_2_id = json.loads(rv.data)["rounds"][1]["id"]
 
     round_2_sample_sizes = list(
@@ -1342,9 +1407,18 @@ def test_ballot_comparison_ess(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
         data={
             "cvrs": [
-                (io.BytesIO(ESS_BALLOTS_1.encode()), "ess_ballots_1.csv",),
-                (io.BytesIO(ESS_BALLOTS_2.encode()), "ess_ballots_2.csv",),
-                (io.BytesIO(j1_cvr.encode()), "ess_cvr.csv",),
+                (
+                    io.BytesIO(ESS_BALLOTS_1.encode()),
+                    "ess_ballots_1.csv",
+                ),
+                (
+                    io.BytesIO(ESS_BALLOTS_2.encode()),
+                    "ess_ballots_2.csv",
+                ),
+                (
+                    io.BytesIO(j1_cvr.encode()),
+                    "ess_cvr.csv",
+                ),
             ],
             "cvrFileType": "ESS",
         },
@@ -1354,9 +1428,18 @@ def test_ballot_comparison_ess(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/cvrs",
         data={
             "cvrs": [
-                (io.BytesIO(ESS_BALLOTS_1.encode()), "ess_ballots_1.csv",),
-                (io.BytesIO(ESS_BALLOTS_2.encode()), "ess_ballots_2.csv",),
-                (io.BytesIO(j2_cvr.encode()), "ess_cvr.csv",),
+                (
+                    io.BytesIO(ESS_BALLOTS_1.encode()),
+                    "ess_ballots_1.csv",
+                ),
+                (
+                    io.BytesIO(ESS_BALLOTS_2.encode()),
+                    "ess_ballots_2.csv",
+                ),
+                (
+                    io.BytesIO(j2_cvr.encode()),
+                    "ess_cvr.csv",
+                ),
             ],
             "cvrFileType": "ESS",
         },
@@ -1414,7 +1497,9 @@ def test_ballot_comparison_ess(
     )
     assert_ok(rv)
 
-    rv = client.get(f"/api/election/{election_id}/round",)
+    rv = client.get(
+        f"/api/election/{election_id}/round",
+    )
     round_1_id = json.loads(rv.data)["rounds"][0]["id"]
 
     # JAs create audit boards

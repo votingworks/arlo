@@ -106,7 +106,11 @@ BALLOT_COMPARISON_CONTEST_SCHEMA = {
 
 def serialize_contest(contest: Contest) -> JSONDict:
     choices = [
-        {"id": choice.id, "name": choice.name, "numVotes": choice.num_votes,}
+        {
+            "id": choice.id,
+            "name": choice.name,
+            "numVotes": choice.num_votes,
+        }
         for choice in contest.choices
     ]
     if contest.election.audit_type == AuditType.HYBRID:
@@ -172,9 +176,9 @@ def serialize_contest(contest: Contest) -> JSONDict:
                 anomalous_cvr_choice_names.sort()
 
                 if len(anomalous_cvr_choice_names) > 0:
-                    anomalous_cvr_choice_names_by_jurisdiction[
-                        jurisdiction_id
-                    ] = anomalous_cvr_choice_names
+                    anomalous_cvr_choice_names_by_jurisdiction[jurisdiction_id] = (
+                        anomalous_cvr_choice_names
+                    )
 
             if len(anomalous_cvr_choice_names_by_jurisdiction) > 0:
                 serialized_contest["cvrChoiceNameConsistencyError"] = {
@@ -293,7 +297,9 @@ def create_or_update_all_contests(election: Election):
         assert user[0] is not None
         for jurisdiction in election.jurisdictions:
             batch_tallies.reprocess_batch_tallies_file_if_uploaded(
-                jurisdiction, user, get_support_user(session),
+                jurisdiction,
+                user,
+                get_support_user(session),
             )
 
     db_session.commit()
@@ -315,7 +321,8 @@ def list_contests(election: Election):
     [UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN, UserType.TALLY_ENTRY]
 )
 def list_jurisdictions_contests(
-    election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,
+    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
     json_contests = [serialize_contest(c) for c in jurisdiction.contests]
     return jsonify({"contests": json_contests})
@@ -445,7 +452,8 @@ def get_contest_name_standardizations(election: Election):
 
 
 @api.route(
-    "/election/<election_id>/contest/choice-name-standardizations", methods=["PUT"],
+    "/election/<election_id>/contest/choice-name-standardizations",
+    methods=["PUT"],
 )
 @restrict_access([UserType.AUDIT_ADMIN])
 def put_contest_choice_name_standardizations(election: Election):  # pragma: no cover
@@ -472,7 +480,8 @@ def put_contest_choice_name_standardizations(election: Election):  # pragma: no 
 
 
 @api.route(
-    "/election/<election_id>/contest/choice-name-standardizations", methods=["GET"],
+    "/election/<election_id>/contest/choice-name-standardizations",
+    methods=["GET"],
 )
 @restrict_access([UserType.AUDIT_ADMIN])
 def get_contest_choice_name_standardizations(election: Election):  # pragma: no cover

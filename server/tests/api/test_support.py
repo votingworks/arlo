@@ -216,9 +216,18 @@ def test_support_get_election(
                 "name": "Test Org test_support_get_election",
             },
             "jurisdictions": [
-                {"id": jurisdiction_ids[0], "name": "J1",},
-                {"id": jurisdiction_ids[1], "name": "J2",},
-                {"id": jurisdiction_ids[2], "name": "J3",},
+                {
+                    "id": jurisdiction_ids[0],
+                    "name": "J1",
+                },
+                {
+                    "id": jurisdiction_ids[1],
+                    "name": "J2",
+                },
+                {
+                    "id": jurisdiction_ids[2],
+                    "name": "J3",
+                },
             ],
             "rounds": [{"id": round_1_id, "endedAt": None, "roundNum": 1}],
             "deletedAt": None,
@@ -254,7 +263,10 @@ def test_support_permanently_delete_election(
 @patch("server.api.support.GetToken")
 @patch("server.api.support.Auth0")
 def test_support_create_audit_admin(  # pylint: disable=invalid-name
-    MockAuth0, MockGetToken, client: FlaskClient, org_id: str,
+    MockAuth0,
+    MockGetToken,
+    client: FlaskClient,
+    org_id: str,
 ):
     MockGetToken.return_value = Mock()
     MockGetToken.return_value.client_credentials = Mock(
@@ -308,7 +320,10 @@ def test_support_create_audit_admin(  # pylint: disable=invalid-name
 @patch("server.api.support.GetToken")
 @patch("server.api.support.Auth0")
 def test_support_create_audit_admin_already_in_auth0(  # pylint: disable=invalid-name
-    MockAuth0, MockGetToken, client: FlaskClient, org_id: str,
+    MockAuth0,
+    MockGetToken,
+    client: FlaskClient,
+    org_id: str,
 ):
     MockGetToken.return_value = Mock()
     MockGetToken.return_value.client_credentials = Mock(
@@ -358,7 +373,10 @@ def test_support_create_audit_admin_already_in_auth0(  # pylint: disable=invalid
 @patch("server.api.support.GetToken")
 @patch("server.api.support.Auth0")
 def test_support_create_audit_admin_already_exists(  # pylint: disable=invalid-name,unused-argument
-    MockAuth0, MockGetToken, client: FlaskClient, org_id: str,
+    MockAuth0,
+    MockGetToken,
+    client: FlaskClient,
+    org_id: str,
 ):
     # Start with an existing user that isn't already an audit admin for this org
     aa_email = "Already-exists@example.org"  # Test case-insensitivity
@@ -396,7 +414,10 @@ def test_support_create_audit_admin_already_exists(  # pylint: disable=invalid-n
 @patch("server.api.support.GetToken")
 @patch("server.api.support.Auth0")
 def test_support_create_audit_admin_already_admin(  # pylint: disable=invalid-name,unused-argument
-    MockAuth0, MockGetToken, client: FlaskClient, org_id: str,
+    MockAuth0,
+    MockGetToken,
+    client: FlaskClient,
+    org_id: str,
 ):
     set_support_user(client, DEFAULT_SUPPORT_EMAIL)
     rv = post_json(
@@ -411,7 +432,8 @@ def test_support_create_audit_admin_already_admin(  # pylint: disable=invalid-na
 
 
 def test_support_create_audit_admin_invalid_email(
-    client: FlaskClient, org_id: str,
+    client: FlaskClient,
+    org_id: str,
 ):
     set_support_user(client, DEFAULT_SUPPORT_EMAIL)
     rv = post_json(
@@ -506,7 +528,8 @@ def test_support_get_jurisdiction(
 
 
 def test_support_log_in_as_audit_admin(
-    client: FlaskClient, election_id: str,  # pylint: disable=unused-argument
+    client: FlaskClient,
+    election_id: str,  # pylint: disable=unused-argument
 ):
     set_support_user(client, DEFAULT_SUPPORT_EMAIL)
 
@@ -527,7 +550,8 @@ def test_support_log_in_as_audit_admin(
 
 
 def test_support_log_in_as_jurisdiction_admin(
-    client: FlaskClient, election_id: str,
+    client: FlaskClient,
+    election_id: str,
 ):
     set_support_user(client, DEFAULT_SUPPORT_EMAIL)
 
@@ -651,7 +675,12 @@ def test_support_clear_offline_results_ballot_polling(
     rv = client.delete(f"/api/support/jurisdictions/{jurisdiction_ids[0]}/results")
     assert rv.status_code == 409
     assert json.loads(rv.data) == {
-        "errors": [{"errorType": "Conflict", "message": "Audit has not started.",}]
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Audit has not started.",
+            }
+        ]
     }
 
     # Start the round
@@ -796,7 +825,10 @@ def test_support_clear_offline_results_wrong_audit_type(
 
 
 def test_support_undo_round_start(
-    client: FlaskClient, election_id: str, round_1_id: str, round_2_id: str,
+    client: FlaskClient,
+    election_id: str,
+    round_1_id: str,
+    round_2_id: str,
 ):
     set_support_user(client, DEFAULT_SUPPORT_EMAIL)
 
@@ -840,7 +872,10 @@ def test_support_undo_round_start(
 
 
 def test_support_reopen_current_round(
-    client: FlaskClient, election_id: str, contest_ids: List[str], round_1_id: str,
+    client: FlaskClient,
+    election_id: str,
+    contest_ids: List[str],
+    round_1_id: str,
 ):
     def is_round_completed(round_id: str) -> bool:
         rv = client.get(f"/api/support/elections/{election_id}")
@@ -876,14 +911,20 @@ def test_support_reopen_current_round(
 
 
 def test_support_reopen_current_round_when_audit_not_started(
-    client: FlaskClient, election_id: str,
+    client: FlaskClient,
+    election_id: str,
 ):
     set_support_user(client, DEFAULT_SUPPORT_EMAIL)
 
     rv = client.patch(f"/api/support/elections/{election_id}/reopen-current-round")
     assert rv.status_code == 409
     assert json.loads(rv.data) == {
-        "errors": [{"errorType": "Conflict", "message": "Audit hasn't started yet.",}]
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Audit hasn't started yet.",
+            }
+        ]
     }
 
 
@@ -897,5 +938,10 @@ def test_support_reopen_current_round_when_round_in_progress(
     rv = client.patch(f"/api/support/elections/{election_id}/reopen-current-round")
     assert rv.status_code == 409
     assert json.loads(rv.data) == {
-        "errors": [{"errorType": "Conflict", "message": "Round is in progress.",}]
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Round is in progress.",
+            }
+        ]
     }

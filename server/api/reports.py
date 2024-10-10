@@ -59,7 +59,7 @@ def pretty_pvalue(value: float) -> str:
         return ""
     elif value == 0:
         return "0"
-    elif value < 10 ** -10:
+    elif value < 10**-10:
         return "<0.0000000001"
     else:
         ret = "{:1.10f}".format(round(value, 10)).rstrip("0")
@@ -74,7 +74,8 @@ TicketNumberTuple = Tuple[str, str, str]
 
 
 def pretty_ballot_ticket_numbers(
-    ticket_number_tuples: List[TicketNumberTuple], targeted_contests: List[Contest],
+    ticket_number_tuples: List[TicketNumberTuple],
+    targeted_contests: List[Contest],
 ) -> List[str]:
     columns = []
     for contest in targeted_contests:
@@ -125,7 +126,8 @@ InterpretationTuple = Tuple[str, str, List[str], str, bool, bool]
 
 
 def pretty_ballot_interpretation(
-    interpretations: List[InterpretationTuple], contest: Contest,
+    interpretations: List[InterpretationTuple],
+    contest: Contest,
 ) -> str:
     interpretation = next((i for i in interpretations if i[0] == contest.id), None)
     # Legacy case: we used to not require an interpretation for every contest
@@ -186,7 +188,8 @@ def add_sign(value: int) -> str:
 
 
 def pretty_vote_deltas(
-    contest: Contest, vote_deltas: Optional[Union[str, ContestVoteDeltas]],
+    contest: Contest,
+    vote_deltas: Optional[Union[str, ContestVoteDeltas]],
 ) -> str:
     if vote_deltas is None:
         return ""
@@ -203,7 +206,8 @@ def pretty_vote_deltas(
 
 
 def pretty_discrepancy(
-    ballot: SampledBallot, contest_discrepancies: Dict[str, supersimple.Discrepancy],
+    ballot: SampledBallot,
+    contest_discrepancies: Dict[str, supersimple.Discrepancy],
 ) -> str:
     if ballot.id in contest_discrepancies:
         return str(contest_discrepancies[ballot.id]["counted_as"])
@@ -540,7 +544,9 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
                 == ballot_interpretation_selected_choices.c.contest_id,
             ),
         )
-        .group_by(BallotInterpretation.ballot_id,)
+        .group_by(
+            BallotInterpretation.ballot_id,
+        )
         .with_entities(
             BallotInterpretation.ballot_id,
             func.array_agg(
@@ -731,7 +737,10 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
             [jurisdiction_name]
             + ([batch.container] if show_container else [])
             + ([batch.tabulator] if show_tabulator else [])
-            + [batch.name, ballot.ballot_position,]
+            + [
+                batch.name,
+                ballot.ballot_position,
+            ]
             + ([imprinted_id] if show_cvrs else [])
             + pretty_ballot_ticket_numbers(ticket_numbers, targeted_contests)
             + result_values
@@ -908,9 +917,11 @@ def audit_admin_audit_report(election: Election):
         audit_settings_rows(election),
         audit_board_rows(election),
         round_rows(election),
-        sampled_batch_rows(election)
-        if election.audit_type == AuditType.BATCH_COMPARISON
-        else sampled_ballot_rows(election),
+        (
+            sampled_batch_rows(election)
+            if election.audit_type == AuditType.BATCH_COMPARISON
+            else sampled_ballot_rows(election)
+        ),
     ]
     row_sets = [row_set for row_set in row_sets if row_set]
 
@@ -924,7 +935,8 @@ def audit_admin_audit_report(election: Election):
 
     csv_io.seek(0)
     return csv_response(
-        csv_io, filename=f"audit-report-{election_timestamp_name(election)}.csv",
+        csv_io,
+        filename=f"audit-report-{election_timestamp_name(election)}.csv",
     )
 
 
@@ -940,9 +952,11 @@ def jursdiction_admin_audit_report(election: Election, jurisdiction: Jurisdictio
     report = csv.writer(csv_io)
 
     report.writerows(
-        sampled_batch_rows(election, jurisdiction)
-        if election.audit_type == AuditType.BATCH_COMPARISON
-        else sampled_ballot_rows(election, jurisdiction),
+        (
+            sampled_batch_rows(election, jurisdiction)
+            if election.audit_type == AuditType.BATCH_COMPARISON
+            else sampled_ballot_rows(election, jurisdiction)
+        ),
     )
 
     csv_io.seek(0)
@@ -973,5 +987,6 @@ def audit_admin_discrepancy_report(election: Election):
 
     csv_io.seek(0)
     return csv_response(
-        csv_io, filename=f"discrepancy-report-{election_timestamp_name(election)}.csv",
+        csv_io,
+        filename=f"discrepancy-report-{election_timestamp_name(election)}.csv",
     )

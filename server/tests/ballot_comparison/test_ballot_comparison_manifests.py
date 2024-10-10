@@ -92,7 +92,10 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,PrecinctPortion,BallotType,R
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
         data={
-            "cvrs": (io.BytesIO(j1_cvr.encode()), "cvrs.csv",),
+            "cvrs": (
+                io.BytesIO(j1_cvr.encode()),
+                "cvrs.csv",
+            ),
             "cvrFileType": "DOMINION",
         },
     )
@@ -115,7 +118,10 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,PrecinctPortion,BallotType,R
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/cvrs",
         data={
-            "cvrs": (io.BytesIO(j2_cvr.encode()), "cvrs.csv",),
+            "cvrs": (
+                io.BytesIO(j2_cvr.encode()),
+                "cvrs.csv",
+            ),
             "cvrFileType": "DOMINION",
         },
     )
@@ -166,7 +172,9 @@ def test_ballot_comparison_container_manifest(
     )
     assert_ok(rv)
 
-    rv = client.get(f"/api/election/{election_id}/round",)
+    rv = client.get(
+        f"/api/election/{election_id}/round",
+    )
     round_1_id = json.loads(rv.data)["rounds"][0]["id"]
 
     # JAs create audit boards

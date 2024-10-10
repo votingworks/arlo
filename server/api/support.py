@@ -86,7 +86,9 @@ def list_active_elections():
         )
         .join(Organization)
         .order_by(Organization.name, Election.audit_name)
-        .options(contains_eager(Election.organization),)
+        .options(
+            contains_eager(Election.organization),
+        )
     )
     return jsonify(
         [
@@ -439,7 +441,8 @@ def clear_offline_results(jurisdiction_id: str):
 
 
 @api.route(
-    "/support/audit-admins/<email>/login", methods=["GET"],
+    "/support/audit-admins/<email>/login",
+    methods=["GET"],
 )
 @restrict_access_support
 def log_in_as_audit_admin(email: str):
@@ -448,7 +451,8 @@ def log_in_as_audit_admin(email: str):
 
 
 @api.route(
-    "/support/jurisdiction-admins/<email>/login", methods=["GET"],
+    "/support/jurisdiction-admins/<email>/login",
+    methods=["GET"],
 )
 @restrict_access_support
 def log_in_as_jurisdiction_admin(email: str):
@@ -459,7 +463,8 @@ def log_in_as_jurisdiction_admin(email: str):
 
 
 @api.route(
-    "/support/elections/<election_id>/login", methods=["GET"],
+    "/support/elections/<election_id>/login",
+    methods=["GET"],
 )
 @restrict_access_support
 def log_in_to_audit_as_audit_admin(election_id: str):

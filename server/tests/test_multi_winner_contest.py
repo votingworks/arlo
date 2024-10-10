@@ -17,9 +17,21 @@ def contest_ids(
             "name": "Contest 1",
             "isTargeted": True,
             "choices": [
-                {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 600,},
-                {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 300,},
-                {"id": str(uuid.uuid4()), "name": "candidate 3", "numVotes": 100,},
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "candidate 1",
+                    "numVotes": 600,
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "candidate 2",
+                    "numVotes": 300,
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "candidate 3",
+                    "numVotes": 100,
+                },
             ],
             "totalBallotsCast": 1000,
             "numWinners": 2,
@@ -50,7 +62,10 @@ def test_multi_winner_sample_size(
 
 
 def run_multi_winner_audit_round(
-    round_id: str, target_contest_id: str, vote1_ratio: float, vote2_ratio: float,
+    round_id: str,
+    target_contest_id: str,
+    vote1_ratio: float,
+    vote2_ratio: float,
 ):
     contest = Contest.query.get(target_contest_id)
     ballot_draws = (

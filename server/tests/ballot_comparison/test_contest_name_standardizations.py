@@ -217,7 +217,9 @@ def test_standardize_contest_names_cvr_change(
     rv = client.get(f"/api/election/{election_id}/contest/standardizations")
     assert rv.status_code == 200
     assert json.loads(rv.data) == {
-        "standardizations": {jurisdiction_ids[0]: {"Standardized Contest 1": None},},
+        "standardizations": {
+            jurisdiction_ids[0]: {"Standardized Contest 1": None},
+        },
         "cvrContestNames": {jurisdiction_ids[0]: ["Contest 1", "Contest 2"]},
     }
 
@@ -225,7 +227,9 @@ def test_standardize_contest_names_cvr_change(
     rv = put_json(
         client,
         f"/api/election/{election_id}/contest/standardizations",
-        {jurisdiction_ids[0]: {"Standardized Contest 1": "Contest 1"},},
+        {
+            jurisdiction_ids[0]: {"Standardized Contest 1": "Contest 1"},
+        },
     )
     assert_ok(rv)
 
@@ -299,7 +303,9 @@ def test_standardize_contest_names_contest_change(
     rv = client.get(f"/api/election/{election_id}/contest/standardizations")
     assert rv.status_code == 200
     assert json.loads(rv.data) == {
-        "standardizations": {jurisdiction_ids[0]: {"Standardized Contest 1": None},},
+        "standardizations": {
+            jurisdiction_ids[0]: {"Standardized Contest 1": None},
+        },
         "cvrContestNames": {jurisdiction_ids[0]: ["Contest 1", "Contest 2"]},
     }
 
@@ -307,7 +313,9 @@ def test_standardize_contest_names_contest_change(
     rv = put_json(
         client,
         f"/api/election/{election_id}/contest/standardizations",
-        {jurisdiction_ids[0]: {"Standardized Contest 1": "Contest 1"},},
+        {
+            jurisdiction_ids[0]: {"Standardized Contest 1": "Contest 1"},
+        },
     )
     assert_ok(rv)
 

@@ -106,7 +106,8 @@ def start_computing_sample_preview(election: Election):
 
     json_preview_args = request.get_json()
     validate(
-        json_preview_args, create_sample_preview_schema(AuditType(election.audit_type)),
+        json_preview_args,
+        create_sample_preview_schema(AuditType(election.audit_type)),
     )
 
     election.sample_preview = None

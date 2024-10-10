@@ -91,7 +91,9 @@ def validate_offline_results(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def record_offline_results(
-    election: Election, jurisdiction: Jurisdiction, round: Round,
+    election: Election,
+    jurisdiction: Jurisdiction,
+    round: Round,
 ):
     results = request.get_json()
     validate_offline_results(election, jurisdiction, round, results)

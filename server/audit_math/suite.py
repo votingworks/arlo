@@ -53,7 +53,6 @@ class BallotPollingStratum:
         sample_results: SAMPLE_RESULTS,
         sample_size: int,
     ):
-
         """
         initialize this stratum.
 
@@ -221,7 +220,6 @@ class BallotComparisonStratum:
         self.sample_size = sample_size
 
     def compute_pvalue(self, reported_margin, winner, loser, null_lambda) -> float:
-
         """
         Compute a p-value for a winner-loser pair for this strata based on its math type.
 
@@ -477,7 +475,12 @@ def try_n(
     hyp_sample_size = n1
 
     hyp_misstatements: MISSTATEMENTS = {
-        (winner, loser): {"o1": o1, "o2": o2, "u1": u1, "u2": u2,}
+        (winner, loser): {
+            "o1": o1,
+            "o2": o2,
+            "u1": u1,
+            "u2": u2,
+        }
     }
 
     hyp_cvr_stratum = BallotComparisonStratum(
@@ -596,7 +599,14 @@ def get_sample_size_for_wl_pair(
         if mid_n in [low_n, high_n]:
             break
         mid_pvalue = try_n(
-            mid_n, alpha, contest, winner, loser, bp_stratum, cvr_stratum, n_ratio,
+            mid_n,
+            alpha,
+            contest,
+            winner,
+            loser,
+            bp_stratum,
+            cvr_stratum,
+            n_ratio,
         )
         if mid_pvalue <= alpha:
             high_n = mid_n
@@ -727,7 +737,9 @@ def compute_risk(
 
 
 def misstatements(
-    contest: Contest, reported_results: CVRS, audited_results: SAMPLECVRS,
+    contest: Contest,
+    reported_results: CVRS,
+    audited_results: SAMPLECVRS,
 ) -> MISSTATEMENTS:
     misstatements: MISSTATEMENTS = {}
     for winner, loser in product(contest.winners, contest.losers):

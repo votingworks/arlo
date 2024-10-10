@@ -27,10 +27,13 @@ WORDS = xp.generate_wordlist(wordfile=xp.locate_wordfile())
 
 CREATE_AUDIT_BOARD_REQUEST_SCHEMA = {
     "type": "object",
-    "properties": {"name": {"type": "string"},},
+    "properties": {
+        "name": {"type": "string"},
+    },
     "additionalProperties": False,
     "required": ["name"],
 }
+
 
 # Raises if invalid
 def validate_audit_boards(
@@ -58,7 +61,9 @@ def validate_audit_boards(
 
 
 def assign_sampled_ballots(
-    jurisdiction: Jurisdiction, round: Round, audit_boards: List[AuditBoard],
+    jurisdiction: Jurisdiction,
+    round: Round,
+    audit_boards: List[AuditBoard],
 ):
     # If containers were provided, we want all ballots from the same container
     # assigned to the same audit board. So we key batches by container.
@@ -117,7 +122,8 @@ def assign_sampled_ballots(
                 .where(
                     SampledBallot.batch_id.in_(
                         Batch.query.filter_by(
-                            jurisdiction_id=jurisdiction.id, **batch_filter,
+                            jurisdiction_id=jurisdiction.id,
+                            **batch_filter,
                         )
                         .with_entities(Batch.id)
                         .subquery()
@@ -348,6 +354,7 @@ SIGN_OFF_AUDIT_BOARD_REQUEST_SCHEMA = {
     "additionalProperties": False,
     "required": ["memberName1", "memberName2"],
 }
+
 
 # Raises if invalid
 def validate_sign_off(sign_off_request: JSONDict, audit_board: AuditBoard):

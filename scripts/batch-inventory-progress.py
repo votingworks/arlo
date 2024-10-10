@@ -33,7 +33,12 @@ if __name__ == "__main__":
         batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
         if not batch_inventory_data:
             writer.writerow(
-                [jurisdiction.name, "NOT_UPLOADED", "NOT_UPLOADED", "NO",]
+                [
+                    jurisdiction.name,
+                    "NOT_UPLOADED",
+                    "NOT_UPLOADED",
+                    "NO",
+                ]
             )
             continue
         writer.writerow(

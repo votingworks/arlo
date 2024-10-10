@@ -481,9 +481,18 @@ def test_find_best_audit_complex(contest, cvrs, ballots):
     )
 
     neb_matrix = {
-        "winner": {"loser": winner_neb_loser, "loser2": winner_neb_loser2,},
-        "loser": {"loser2": loser_neb_loser2, "winner": loser_neb_winner,},
-        "loser2": {"loser": loser2_neb_loser, "winner": loser2_neb_winner,},
+        "winner": {
+            "loser": winner_neb_loser,
+            "loser2": winner_neb_loser2,
+        },
+        "loser": {
+            "loser2": loser_neb_loser2,
+            "winner": loser_neb_winner,
+        },
+        "loser2": {
+            "loser": loser2_neb_loser,
+            "winner": loser2_neb_winner,
+        },
     }
 
     # No one has been eliminated yet
@@ -510,9 +519,15 @@ def test_find_best_with_eliminated(contest, cvrs, ballots):
     )
 
     neb_matrix = {
-        "winner": {"loser": winner_neb_loser,},
-        "loser": {"winner": loser_neb_winner,},
-        "loser2": {"winner": loser2_neb_winner,},
+        "winner": {
+            "loser": winner_neb_loser,
+        },
+        "loser": {
+            "winner": loser_neb_winner,
+        },
+        "loser2": {
+            "winner": loser2_neb_winner,
+        },
     }
 
     tree = raire_utils.RaireNode(["winner", "loser"])
@@ -544,9 +559,15 @@ def test_find_best_with_wrong_elimination(contest, cvrs, ballots):
     )
 
     neb_matrix = {
-        "winner": {"loser2": winner_neb_loser,},
-        "loser": {"loser2": loser_neb_loser2,},
-        "loser2": {"loser": loser2_neb_loser,},
+        "winner": {
+            "loser2": winner_neb_loser,
+        },
+        "loser": {
+            "loser2": loser_neb_loser2,
+        },
+        "loser2": {
+            "loser": loser2_neb_loser,
+        },
     }
 
     tree = raire_utils.RaireNode(["loser2", "loser"])
@@ -583,9 +604,18 @@ def test_perform_dive_impossible(contest, cvrs, ballots):
     )
 
     neb_matrix = {
-        "winner": {"loser": winner_neb_loser, "loser2": winner_neb_loser2,},
-        "loser": {"loser2": loser_neb_loser2, "winner": loser_neb_winner,},
-        "loser2": {"loser": loser2_neb_loser, "winner": loser2_neb_winner,},
+        "winner": {
+            "loser": winner_neb_loser,
+            "loser2": winner_neb_loser2,
+        },
+        "loser": {
+            "loser2": loser_neb_loser2,
+            "winner": loser_neb_winner,
+        },
+        "loser2": {
+            "loser": loser2_neb_loser,
+            "winner": loser2_neb_winner,
+        },
     }
 
     tree = raire_utils.RaireNode(["winner"])
@@ -620,9 +650,18 @@ def test_perform_dive_possible(contest, cvrs, ballots):
     )
 
     neb_matrix = {
-        "winner": {"loser": winner_neb_loser, "loser2": winner_neb_loser2,},
-        "loser": {"loser2": loser_neb_loser2, "winner": loser_neb_winner,},
-        "loser2": {"loser": loser2_neb_loser, "winner": loser2_neb_winner,},
+        "winner": {
+            "loser": winner_neb_loser,
+            "loser2": winner_neb_loser2,
+        },
+        "loser": {
+            "loser2": loser_neb_loser2,
+            "winner": loser_neb_winner,
+        },
+        "loser2": {
+            "loser": loser2_neb_loser,
+            "winner": loser2_neb_winner,
+        },
     }
 
     tree = raire_utils.RaireNode(["loser"])

@@ -365,7 +365,10 @@ def run_test(input_file: str, output_file: str, agap: float):
         con.winners = real_winners
 
         audit: List[RaireAssertion] = compute_raire_assertions(
-            con, cvrs, lambda m: 1 / m if m > 0 else np.inf, agap,
+            con,
+            cvrs,
+            lambda m: 1 / m if m > 0 else np.inf,
+            agap,
         )
 
         asrtns: List[str] = [str(assertion) for assertion in audit]

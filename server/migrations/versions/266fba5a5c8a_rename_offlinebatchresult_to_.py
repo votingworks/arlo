@@ -43,7 +43,11 @@ def upgrade():
     op.create_primary_key(
         "full_hand_tally_batch_result_pkey",
         "full_hand_tally_batch_result",
-        ["jurisdiction_id", "batch_name", "contest_choice_id",],
+        [
+            "jurisdiction_id",
+            "batch_name",
+            "contest_choice_id",
+        ],
     )
 
     op.alter_column(

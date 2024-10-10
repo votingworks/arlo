@@ -21,10 +21,15 @@ def ballot_comparison_stratum(contest):
     sample_results = sampled_ballot_interpretations_to_cvrs(contest)
     sample_size = sum(ballot["times_sampled"] for ballot in sample_results.values())
     misstatements = suite.misstatements(
-        suite_contest, reported_results, sample_results,
+        suite_contest,
+        reported_results,
+        sample_results,
     )
     return suite.BallotComparisonStratum(
-        contest.total_ballots_cast, vote_counts, misstatements, sample_size,
+        contest.total_ballots_cast,
+        vote_counts,
+        misstatements,
+        sample_size,
     )
 
 
@@ -137,11 +142,16 @@ if __name__ == "__main__":
         # assert a1_sampler_contest.name == a2_sampler_contest.name, f"Both audits must have the same contests! {a1_sampler_contest.name} {a2_sampler_contest.name}"
 
         overall_contest = combined_contests(
-            a1_sampler_contest, a2_sampler_contest, remap,
+            a1_sampler_contest,
+            a2_sampler_contest,
+            remap,
         )
 
         # non_cvr_stratum, cvr_stratum = hybrid_contest_strata(contest)
         p_value, is_complete = suite.compute_risk(
-            audit_1.risk_limit, overall_contest, no_cvr_stratum, cvr_stratum,
+            audit_1.risk_limit,
+            overall_contest,
+            no_cvr_stratum,
+            cvr_stratum,
         )
         print(f"{a1_sampler_contest.name}: Finished? {is_complete} p-value {p_value}")

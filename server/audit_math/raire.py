@@ -56,7 +56,10 @@ def make_neb_matrix(contest: Contest, cvrs: CVRS, asn_func) -> NEBMatrix:
 
 
 def make_frontier(
-    contest: Contest, ballots: List[Dict[str, int]], nebs: NEBMatrix, asn_func,
+    contest: Contest,
+    ballots: List[Dict[str, int]],
+    nebs: NEBMatrix,
+    asn_func,
 ) -> RaireFrontier:
     """
     Constructs the frontier for the search for the best audit
@@ -188,9 +191,11 @@ def find_assertions(
 
 
 def compute_raire_assertions(
-    contest: Contest, cvrs: CVRS, asn_func: Callable, agap: float = 0.0,
+    contest: Contest,
+    cvrs: CVRS,
+    asn_func: Callable,
+    agap: float = 0.0,
 ) -> List[RaireAssertion]:
-
     """
 
     Inputs:

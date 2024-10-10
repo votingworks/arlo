@@ -91,7 +91,9 @@ def items_list_to_dict(items):
 
 @background_task
 def process_batch_inventory_cvr_file(
-    jurisdiction_id: str, user: Tuple[UserType, str], support_user_email: Optional[str],
+    jurisdiction_id: str,
+    user: Tuple[UserType, str],
+    support_user_email: Optional[str],
 ):
     working_directory = tempfile.mkdtemp()
 
@@ -351,7 +353,11 @@ def process_batch_inventory_cvr_file(
             for row_index, row in enumerate(cvrs):
                 for contest in contests:
                     batch = column_value(
-                        row, "Batch", row_index + 1, header_indices, required=True,
+                        row,
+                        "Batch",
+                        row_index + 1,
+                        header_indices,
+                        required=True,
                     )
                     choice_name = column_value(
                         row,
@@ -428,7 +434,9 @@ TABULATOR_STATUS_PARSE_ERROR = (
 
 @background_task
 def process_batch_inventory_tabulator_status_file(
-    jurisdiction_id: str, user: Tuple[UserType, str], support_user_email: Optional[str],
+    jurisdiction_id: str,
+    user: Tuple[UserType, str],
+    support_user_email: Optional[str],
 ):
     jurisdiction = Jurisdiction.query.get(jurisdiction_id)
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction_id)
@@ -555,9 +563,7 @@ def upload_batch_inventory_cvr(election: Election, jurisdiction: Jurisdiction):
     file_type = (
         "csv"
         if does_file_have_csv_mimetype(file)
-        else "zip"
-        if does_file_have_zip_mimetype(file)
-        else "other"
+        else "zip" if does_file_have_zip_mimetype(file) else "other"
     )
 
     if batch_inventory_data.system_type == CvrFileType.DOMINION and file_type != "csv":
@@ -619,7 +625,8 @@ def get_batch_inventory_cvr(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def clear_batch_inventory_cvr(
-    election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,
+    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
 
@@ -640,7 +647,8 @@ def clear_batch_inventory_cvr(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def download_batch_inventory_cvr(
-    election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,
+    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
     if not batch_inventory_data or not batch_inventory_data.cvr_file:
@@ -714,7 +722,8 @@ def get_batch_inventory_tabulator_status(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def clear_batch_inventory_tabulator_status(
-    election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,
+    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
 
@@ -735,7 +744,8 @@ def clear_batch_inventory_tabulator_status(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def download_batch_inventory_tabulator_status(
-    election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,
+    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
     if not batch_inventory_data or not batch_inventory_data.tabulator_status_file:
@@ -796,7 +806,11 @@ def download_batch_inventory_worksheet(election: Election, jurisdiction: Jurisdi
             batch_key, batch_inventory_data.tabulator_id_to_name
         )
         worksheet.writerow(
-            [batch_name, ballot_count, "",]
+            [
+                batch_name,
+                ballot_count,
+                "",
+            ]
         )
 
     csv_io.seek(0)

@@ -113,7 +113,10 @@ def cvrs(
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
         data={
-            "cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",),
+            "cvrs": (
+                io.BytesIO(TEST_CVRS.encode()),
+                "cvrs.csv",
+            ),
             "cvrFileType": "DOMINION",
         },
     )
@@ -121,7 +124,10 @@ def cvrs(
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/cvrs",
         data={
-            "cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",),
+            "cvrs": (
+                io.BytesIO(TEST_CVRS.encode()),
+                "cvrs.csv",
+            ),
             "cvrFileType": "DOMINION",
         },
     )

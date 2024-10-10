@@ -27,7 +27,8 @@ def upgrade():
     )
     audit_type_enum.create(op.get_bind())
     op.add_column(
-        "election", sa.Column("audit_type", audit_type_enum),
+        "election",
+        sa.Column("audit_type", audit_type_enum),
     )
     op.execute(
         """

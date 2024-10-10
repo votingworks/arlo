@@ -2,6 +2,7 @@
 This is a wrapper class to accomodate using more than one test statistics for
 ballot polling audits.
 """
+
 from typing import Dict, Tuple, Optional
 
 from ..models import AuditMathType

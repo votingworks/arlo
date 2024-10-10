@@ -578,7 +578,7 @@ def test_simple_irv_election():
 
     diff = abs(p_value - expected_p)
 
-    assert diff < 10 ** -4, f"Got unexpected p-value {p_value}, expected {expected_p}"
+    assert diff < 10**-4, f"Got unexpected p-value {p_value}, expected {expected_p}"
     assert finished
 
     # Test with one two-vote discrepancy
@@ -611,7 +611,7 @@ def test_simple_irv_election():
 
     diff = abs(p_value - expected_p)
 
-    assert diff < 10 ** -4, f"Got unexpected p-value {p_value}, expected {expected_p}"
+    assert diff < 10**-4, f"Got unexpected p-value {p_value}, expected {expected_p}"
     assert not finished
 
     # Test with a one-vote discrepancy
@@ -644,7 +644,7 @@ def test_simple_irv_election():
 
     diff = abs(p_value - expected_p)
 
-    assert diff < 10 ** -4, f"Got unexpected p-value {p_value}, expected {expected_p}"
+    assert diff < 10**-4, f"Got unexpected p-value {p_value}, expected {expected_p}"
     assert not finished
 
 
@@ -721,7 +721,7 @@ def test_raire_example_1():
 
     diff = abs(p_value - expected_p)
 
-    assert diff < 10 ** -4, f"Got unexpected p-value {p_value}, expected {expected_p}"
+    assert diff < 10**-4, f"Got unexpected p-value {p_value}, expected {expected_p}"
     assert finished
 
     # Test with one two-vote discrepancy
@@ -765,7 +765,7 @@ def test_raire_example_1():
 
     diff = abs(p_value - expected_p)
 
-    assert diff < 10 ** -4, f"Got unexpected p-value {p_value}, expected {expected_p}"
+    assert diff < 10**-4, f"Got unexpected p-value {p_value}, expected {expected_p}"
     assert not finished
 
 
@@ -855,7 +855,7 @@ def test_raire_example_5():
 
     diff = abs(p_value - expected_p)
 
-    assert diff < 10 ** -4, f"Got unexpected p-value {p_value}, expected {expected_p}"
+    assert diff < 10**-4, f"Got unexpected p-value {p_value}, expected {expected_p}"
     assert finished
 
     # Test with one two-vote discrepancy
@@ -894,7 +894,7 @@ def test_raire_example_5():
 
     diff = abs(p_value - expected_p)
 
-    assert diff < 10 ** -4, f"Got unexpected p-value {p_value}, expected {expected_p}"
+    assert diff < 10**-4, f"Got unexpected p-value {p_value}, expected {expected_p}"
     assert not finished
 
 
@@ -975,7 +975,7 @@ def test_raire_example_12():
 
     diff = abs(p_value - expected_p)
 
-    assert diff < 10 ** -4, f"Got unexpected p-value {p_value}, expected {expected_p}"
+    assert diff < 10**-4, f"Got unexpected p-value {p_value}, expected {expected_p}"
     assert finished
 
     # Test with one two-vote discrepancy
@@ -1004,7 +1004,8 @@ def test_raire_example_12():
             )
         elif assertion == expected_assertions[3]:
             assert discrepancies[0] == supersimple.Discrepancy(
-                counted_as=1, weighted_error=Decimal(1) / Decimal(9500),
+                counted_as=1,
+                weighted_error=Decimal(1) / Decimal(9500),
             )
 
     p_value, finished = supersimple_raire.compute_risk(
@@ -1013,7 +1014,7 @@ def test_raire_example_12():
 
     diff = abs(p_value - expected_p)
 
-    assert diff < 10 ** -4, f"Got unexpected p-value {p_value}, expected {expected_p}"
+    assert diff < 10**-4, f"Got unexpected p-value {p_value}, expected {expected_p}"
     assert not finished
 
 

@@ -162,8 +162,10 @@ def cvr_contests_metadata(
 
     standardized_metadata = {}
     for cvr_contest_name, contest_metadata in metadata.items():
-        potentially_standardized_contest_name = cvr_contest_name_to_standardized_contest_name.get(
-            cvr_contest_name, cvr_contest_name
+        potentially_standardized_contest_name = (
+            cvr_contest_name_to_standardized_contest_name.get(
+                cvr_contest_name, cvr_contest_name
+            )
         )
 
         contest_id = contest_name_to_id.get(potentially_standardized_contest_name, None)
@@ -649,7 +651,8 @@ def read_ess_ballots_file(
 
 
 def parse_ess_cvrs(
-    jurisdiction: Jurisdiction, working_directory: str,
+    jurisdiction: Jurisdiction,
+    working_directory: str,
 ) -> Tuple[CVR_CONTESTS_METADATA, Iterable[CvrBallot]]:
     # Parsing ES&S CVRs is more complicated than, say, Dominion.
     # There are two main data sources:
@@ -754,7 +757,7 @@ def parse_ess_cvrs(
                     # enough gap between ids to order them without creating any
                     # duplicates.
                     try:
-                        record_id = floor(int(tabulator_cvr, 16) / 10 ** 10)
+                        record_id = floor(int(tabulator_cvr, 16) / 10**10)
                     except ValueError:
                         raise UserError(  # pylint: disable=raise-missing-from
                             "Tabulator CVR should be a ten-digit number or a sixteen-character hexadecimal string."
@@ -777,7 +780,9 @@ def parse_ess_cvrs(
                 yield (
                     cvr_number,
                     CvrBallot(
-                        batch=db_batch, record_id=record_id, imprinted_id=imprinted_id,
+                        batch=db_batch,
+                        record_id=record_id,
+                        imprinted_id=imprinted_id,
                     ),
                 )
             else:
@@ -888,7 +893,10 @@ def parse_ess_cvrs(
             for choice_metadata in contest_metadata["choices"].values()
         )
 
-        def parse_row_interpretations(row: List[str], cvr_number: int,) -> str:
+        def parse_row_interpretations(
+            row: List[str],
+            cvr_number: int,
+        ) -> str:
             interpretations = ["" for _ in range(max_interpretation_column + 1)]
             for contest_name, contest_metadata in contests_metadata.items():
                 recorded_choice = column_value(
@@ -985,7 +993,8 @@ def parse_ess_cvrs(
 
 
 def parse_hart_cvrs(
-    jurisdiction: Jurisdiction, working_directory: str,
+    jurisdiction: Jurisdiction,
+    working_directory: str,
 ) -> Tuple[CVR_CONTESTS_METADATA, Iterable[CvrBallot]]:
     """
     A Hart CVR export is a ZIP file containing an individual XML file for each ballot's CVR.
@@ -1278,7 +1287,9 @@ def parse_hart_cvrs(
                     )
                 else:
                     close_matches = difflib.get_close_matches(
-                        batch_number, (batch_key for batch_key in batches_by_key), n=1,
+                        batch_number,
+                        (batch_key for batch_key in batches_by_key),
+                        n=1,
                     )
                     closest_match = (
                         ast.literal_eval(close_matches[0]) if close_matches else None
@@ -1407,9 +1418,9 @@ def process_cvr_file(
                                 f"Unable to parse '{interpretation}' as an integer. "
                                 "Please export the CVR file with plain integer values."
                             ) from error
-                        parsed_contest_interpretations[
-                            choice_name
-                        ] = parsed_interpretation
+                        parsed_contest_interpretations[choice_name] = (
+                            parsed_interpretation
+                        )
 
                     # Skip overvotes
                     votes = sum(parsed_contest_interpretations.values())
@@ -1571,11 +1582,13 @@ def clear_cvr_ballots(jurisdiction_id: str):
 
 
 @api.route(
-    "/election/<election_id>/jurisdiction/<jurisdiction_id>/cvrs", methods=["PUT"],
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/cvrs",
+    methods=["PUT"],
 )
 @restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
 def upload_cvrs(
-    election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,
+    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
     validate_cvr_upload(request, election, jurisdiction)
     clear_cvr_contests_metadata(jurisdiction)
@@ -1619,7 +1632,8 @@ def upload_cvrs(
 
 
 @api.route(
-    "/election/<election_id>/jurisdiction/<jurisdiction_id>/cvrs", methods=["GET"],
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/cvrs",
+    methods=["GET"],
 )
 @restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
 def get_cvrs(
@@ -1633,11 +1647,13 @@ def get_cvrs(
 
 
 @api.route(
-    "/election/<election_id>/jurisdiction/<jurisdiction_id>/cvrs/csv", methods=["GET"],
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/cvrs/csv",
+    methods=["GET"],
 )
 @restrict_access([UserType.AUDIT_ADMIN])
 def download_cvr_file(
-    election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,
+    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
     if not jurisdiction.cvr_file:
         return NotFound()
@@ -1648,11 +1664,13 @@ def download_cvr_file(
 
 
 @api.route(
-    "/election/<election_id>/jurisdiction/<jurisdiction_id>/cvrs", methods=["DELETE"],
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/cvrs",
+    methods=["DELETE"],
 )
 @restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
 def clear_cvrs(
-    election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,
+    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
     if jurisdiction.cvr_file_id:
         # Clear the CVR file and contests metadata immediately, but defer

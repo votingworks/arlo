@@ -48,7 +48,9 @@ FULL_HAND_TALLY_BATCH_RESULT_SCHEMA = {
 
 
 def validate_full_hand_tally_batch_result_request(
-    election: Election, jurisdiction: Jurisdiction, round: Round,
+    election: Election,
+    jurisdiction: Jurisdiction,
+    round: Round,
 ):
     if len(list(election.contests)) > 1:
         raise Conflict(
@@ -287,7 +289,8 @@ def unfinalize_full_hand_tally_batch_results(
     jurisdiction.finalized_full_hand_tally_results_at = None
 
     JurisdictionResult.query.filter_by(
-        round_id=round.id, jurisdiction_id=jurisdiction.id,
+        round_id=round.id,
+        jurisdiction_id=jurisdiction.id,
     ).delete()
 
     db_session.commit()

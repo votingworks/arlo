@@ -368,7 +368,8 @@ def tally_entry_passphrase(passphrase: str):
         return redirect("/tally-entry?" + urlencode({"error": "login_link_not_found"}))
 
     tally_entry_user = TallyEntryUser(
-        id=str(uuid.uuid4()), jurisdiction_id=jurisdiction.id,
+        id=str(uuid.uuid4()),
+        jurisdiction_id=jurisdiction.id,
     )
     db_session.add(tally_entry_user)
     db_session.commit()

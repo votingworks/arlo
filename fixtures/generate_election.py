@@ -45,6 +45,7 @@ class ElectionSpec(TypedDict):
 
 ## Internal types for generation
 
+
 # Each jurisdiction is only responsible for a portion of the votes
 class JurisdictionTally(TypedDict):
     tally: ContestTally
@@ -128,7 +129,10 @@ def generate_batches(
     for batch_number in itertools.count(1):
         tabulator = "ABC"[(batch_number - 1) % 3]
         yield (
-            Batch(name=f"Batch {batch_number}", tabulator=f"Tabulator {tabulator}",),
+            Batch(
+                name=f"Batch {batch_number}",
+                tabulator=f"Tabulator {tabulator}",
+            ),
             rand.randint(min_size, max_size),
         )
 
@@ -148,7 +152,9 @@ def generate_cvrs(
     )
     for (batch, ballot_number), votes in zip(batch_ballot_numbers, contest_votes):
         yield Ballot(
-            batch=batch, ballot_number=ballot_number, votes=votes,
+            batch=batch,
+            ballot_number=ballot_number,
+            votes=votes,
         )
 
 
@@ -285,7 +291,8 @@ def random_numbers_that_sum_to_total(
 
 
 def split_contest_tallies_across_jurisdictions(
-    election_spec: ElectionSpec, rand: random.Random,
+    election_spec: ElectionSpec,
+    rand: random.Random,
 ) -> Dict[str, JurisdictionTallies]:
     jurisdiction_tallies: Dict[str, JurisdictionTallies] = {
         jurisdiction["name"]: {} for jurisdiction in election_spec["jurisdictions"]

@@ -23,7 +23,12 @@ def upgrade():
     )
     cvr_file_type_enum.create(op.get_bind())
     op.add_column(
-        "jurisdiction", sa.Column("cvr_file_type", cvr_file_type_enum, nullable=True,),
+        "jurisdiction",
+        sa.Column(
+            "cvr_file_type",
+            cvr_file_type_enum,
+            nullable=True,
+        ),
     )
 
 

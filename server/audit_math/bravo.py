@@ -228,9 +228,9 @@ def bravo_sample_sizes(
     g = minus / (plus - minus) + p_w2
 
     # The three coefficients of the quadratic:
-    q_a = g ** 2
+    q_a = g**2
     q_b = -(Decimal(z) ** 2 * d + 2 * f * g)
-    q_c = f ** 2
+    q_c = f**2
 
     # Apply the quadratic formula.
     # We want the larger root for p_completion > 0.5, the
@@ -239,7 +239,7 @@ def bravo_sample_sizes(
     # max here handles cases where, due to rounding error,
     # the base (content) of the radical is trivially
     # negative for p_completion very close to 0.5.
-    radical = (Decimal(0).max(q_b ** 2 - 4 * q_a * q_c)).sqrt()
+    radical = (Decimal(0).max(q_b**2 - 4 * q_a * q_c)).sqrt()
 
     if p_completion > 0.5:
         size = math.floor((-q_b + radical) / (2 * q_a))
@@ -274,7 +274,6 @@ def bravo_sample_sizes(
 def expected_prob(
     alpha: Decimal, p_w: Decimal, p_r: Decimal, sample_w: int, sample_r: int, asn: int
 ) -> float:
-
     """
     Analytic calculation for BRAVO round completion of the expected value, assuming
     the election outcome is correct. Adapted from Mark Lindeman.

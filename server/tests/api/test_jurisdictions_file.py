@@ -115,7 +115,10 @@ def test_replace_jurisdictions_file(client, election_id):
     assert {
         j.name: [ja.user.email for ja in j.jurisdiction_administrations]
         for j in election.jurisdictions
-    } == {"J1": ["ja@example.com"], "J2": ["ja2@example.com"],}
+    } == {
+        "J1": ["ja@example.com"],
+        "J2": ["ja2@example.com"],
+    }
 
     file_id = election.jurisdictions_file_id
 
@@ -135,7 +138,9 @@ def test_replace_jurisdictions_file(client, election_id):
     )
     assert_ok(rv)
 
-    rv = client.get(f"/api/election/{election_id}/jurisdiction/file",)
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/file",
+    )
     assert rv.status_code == 200
     response = json.loads(rv.data)
     assert response["file"]["name"] == "jurisdictions2.csv"
@@ -146,7 +151,10 @@ def test_replace_jurisdictions_file(client, election_id):
     assert {
         j.name: [ja.user.email for ja in j.jurisdiction_administrations]
         for j in election.jurisdictions
-    } == {"J2": ["ja2@example.com"], "J3": ["ja3@example.com"],}
+    } == {
+        "J2": ["ja2@example.com"],
+        "J3": ["ja3@example.com"],
+    }
 
 
 def test_no_jurisdiction(client, election_id):
@@ -287,7 +295,8 @@ def test_upload_jurisdictions_file_after_audit_starts(
 
 
 def test_upload_jurisdictions_file_duplicate_row(
-    client: FlaskClient, election_id: str,
+    client: FlaskClient,
+    election_id: str,
 ):
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/file",

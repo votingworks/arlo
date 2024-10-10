@@ -23,6 +23,7 @@ meta = MetaData(
 @as_declarative(metadata=meta)
 class Base:
     query: Query = db_session.query_property()
+
     # pylint: disable=no-self-argument,no-member
     @declared_attr
     def __tablename__(cls):

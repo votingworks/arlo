@@ -181,7 +181,12 @@ def test_batch_inventory_happy_path(
     # Upload CVR file
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr",
-        data={"cvr": (io.BytesIO(TEST_CVR.encode()), "cvrs.csv",),},
+        data={
+            "cvr": (
+                io.BytesIO(TEST_CVR.encode()),
+                "cvrs.csv",
+            ),
+        },
     )
     assert_ok(rv)
 
@@ -269,7 +274,10 @@ def test_batch_inventory_happy_path(
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
         data={
-            "manifest": (io.BytesIO(ballot_manifest.encode()), "ballot-manifest.csv",),
+            "manifest": (
+                io.BytesIO(ballot_manifest.encode()),
+                "ballot-manifest.csv",
+            ),
         },
     )
     assert_ok(rv)
@@ -294,7 +302,10 @@ def test_batch_inventory_happy_path(
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
         data={
-            "batchTallies": (io.BytesIO(batch_tallies.encode()), "batch-tallies.csv",)
+            "batchTallies": (
+                io.BytesIO(batch_tallies.encode()),
+                "batch-tallies.csv",
+            )
         },
     )
     assert_ok(rv)
@@ -474,7 +485,10 @@ def test_batch_inventory_happy_path_cvrs_with_leading_equal_signs(
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
         data={
-            "manifest": (io.BytesIO(ballot_manifest.encode()), "ballot-manifest.csv",),
+            "manifest": (
+                io.BytesIO(ballot_manifest.encode()),
+                "ballot-manifest.csv",
+            ),
         },
     )
     assert_ok(rv)
@@ -499,7 +513,10 @@ def test_batch_inventory_happy_path_cvrs_with_leading_equal_signs(
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
         data={
-            "batchTallies": (io.BytesIO(batch_tallies.encode()), "batch-tallies.csv",)
+            "batchTallies": (
+                io.BytesIO(batch_tallies.encode()),
+                "batch-tallies.csv",
+            )
         },
     )
     assert_ok(rv)
@@ -586,7 +603,12 @@ def test_batch_inventory_happy_path_multi_contest_batch_comparison(
     # Upload CVR file
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr",
-        data={"cvr": (io.BytesIO(TEST_CVR.encode()), "cvrs.csv",),},
+        data={
+            "cvr": (
+                io.BytesIO(TEST_CVR.encode()),
+                "cvrs.csv",
+            ),
+        },
     )
     assert_ok(rv)
 
@@ -674,7 +696,10 @@ def test_batch_inventory_happy_path_multi_contest_batch_comparison(
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
         data={
-            "manifest": (io.BytesIO(ballot_manifest.encode()), "ballot-manifest.csv",),
+            "manifest": (
+                io.BytesIO(ballot_manifest.encode()),
+                "ballot-manifest.csv",
+            ),
         },
     )
     assert_ok(rv)
@@ -699,7 +724,10 @@ def test_batch_inventory_happy_path_multi_contest_batch_comparison(
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
         data={
-            "batchTallies": (io.BytesIO(batch_tallies.encode()), "batch-tallies.csv",)
+            "batchTallies": (
+                io.BytesIO(batch_tallies.encode()),
+                "batch-tallies.csv",
+            )
         },
     )
     assert_ok(rv)
@@ -800,7 +828,12 @@ def test_batch_inventory_invalid_file_uploads(
     for invalid_cvr, expected_error in invalid_cvrs:
         rv = client.put(
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr",
-            data={"cvr": (io.BytesIO(invalid_cvr.encode()), "cvrs.csv",)},
+            data={
+                "cvr": (
+                    io.BytesIO(invalid_cvr.encode()),
+                    "cvrs.csv",
+                )
+            },
         )
         assert_ok(rv)
 
@@ -819,7 +852,12 @@ def test_batch_inventory_invalid_file_uploads(
     # Upload valid CVR file
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr",
-        data={"cvr": (io.BytesIO(TEST_CVR.encode()), "cvrs.csv",),},
+        data={
+            "cvr": (
+                io.BytesIO(TEST_CVR.encode()),
+                "cvrs.csv",
+            ),
+        },
     )
     assert_ok(rv)
 
@@ -931,7 +969,12 @@ def test_batch_inventory_missing_data_multi_contest_batch_comparison(
     for invalid_cvr, expected_error in invalid_cvrs:
         rv = client.put(
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr",
-            data={"cvr": (io.BytesIO(invalid_cvr.encode()), "cvrs.csv",)},
+            data={
+                "cvr": (
+                    io.BytesIO(invalid_cvr.encode()),
+                    "cvrs.csv",
+                )
+            },
         )
         assert_ok(rv)
 
@@ -969,7 +1012,12 @@ def test_batch_inventory_wrong_tabulator_status_file(
     # Upload CVR file
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr",
-        data={"cvr": (io.BytesIO(TEST_CVR.encode()), "cvrs.csv",),},
+        data={
+            "cvr": (
+                io.BytesIO(TEST_CVR.encode()),
+                "cvrs.csv",
+            ),
+        },
     )
     assert_ok(rv)
 
@@ -1225,7 +1273,12 @@ def test_batch_inventory_undo_sign_off(
     # Upload CVR file
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr",
-        data={"cvr": (io.BytesIO(TEST_CVR.encode()), "cvrs.csv",),},
+        data={
+            "cvr": (
+                io.BytesIO(TEST_CVR.encode()),
+                "cvrs.csv",
+            ),
+        },
     )
     assert_ok(rv)
 
@@ -1281,7 +1334,12 @@ def test_batch_inventory_delete_cvr_after_sign_off(
     # Upload CVR file
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr",
-        data={"cvr": (io.BytesIO(TEST_CVR.encode()), "cvrs.csv",),},
+        data={
+            "cvr": (
+                io.BytesIO(TEST_CVR.encode()),
+                "cvrs.csv",
+            ),
+        },
     )
     assert_ok(rv)
 
@@ -1337,7 +1395,12 @@ def test_batch_inventory_delete_tabulator_status_after_sign_off(
     # Upload CVR file
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr",
-        data={"cvr": (io.BytesIO(TEST_CVR.encode()), "cvrs.csv",),},
+        data={
+            "cvr": (
+                io.BytesIO(TEST_CVR.encode()),
+                "cvrs.csv",
+            ),
+        },
     )
     assert_ok(rv)
 
@@ -1373,7 +1436,9 @@ def test_batch_inventory_delete_tabulator_status_after_sign_off(
 
 
 def test_batch_inventory_upload_cvr_before_contests(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str],
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -1389,7 +1454,12 @@ def test_batch_inventory_upload_cvr_before_contests(
 
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-inventory/cvr",
-        data={"cvr": (io.BytesIO(TEST_CVR.encode()), "cvrs.csv",),},
+        data={
+            "cvr": (
+                io.BytesIO(TEST_CVR.encode()),
+                "cvrs.csv",
+            ),
+        },
     )
     assert json.loads(rv.data) == {
         "errors": [

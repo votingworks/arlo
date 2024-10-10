@@ -262,7 +262,8 @@ def get_sample_sizes(election: Election, round_num: int):
         raise BadRequest("Invalid round number")
 
     sample_sizes = SampleSizeOptions.query.filter_by(
-        election_id=election.id, round_num=round_num,
+        election_id=election.id,
+        round_num=round_num,
     ).one_or_none()
     # If we've never queried sample sizes before for this round, create a row in
     # the database to store them.

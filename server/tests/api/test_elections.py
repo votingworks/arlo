@@ -43,7 +43,10 @@ def test_create_election_not_logged_in(client: FlaskClient, org_id: str):
     )
     assert json.loads(rv.data) == {
         "errors": [
-            {"message": "Please log in to access Arlo", "errorType": "Unauthorized",}
+            {
+                "message": "Please log in to access Arlo",
+                "errorType": "Unauthorized",
+            }
         ]
     }
     assert rv.status_code == 401

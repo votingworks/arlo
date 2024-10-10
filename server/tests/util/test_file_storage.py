@@ -26,8 +26,8 @@ def test_file_storage_s3(mock_boto_client):
         file, "test_bucket", "test_dir/test_file.csv"
     )
 
-    mock_boto_client.return_value.download_fileobj.side_effect = lambda bucket, key, stream: stream.write(
-        file.read()
+    mock_boto_client.return_value.download_fileobj.side_effect = (
+        lambda bucket, key, stream: stream.write(file.read())
     )
     retrieved_file = retrieve_file("s3://test_bucket/test_dir/test_file.csv")
     mock_boto_client.return_value.download_fileobj.assert_called_once()

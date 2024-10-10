@@ -22,7 +22,9 @@ def parse_vote_deltas(
 
 
 def check_discrepancies(
-    report: str, expected_discrepancies: dict, choices: List[dict],
+    report: str,
+    expected_discrepancies: dict,
+    choices: List[dict],
 ):
     report_batches = list(csv.DictReader(io.StringIO(report)))
     for jurisdiction_name, jurisdiction_discrepancies in expected_discrepancies.items():
@@ -103,7 +105,12 @@ def test_batch_comparison_too_many_votes(
     )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/batch-tallies",
-        data={"batchTallies": (io.BytesIO(batch_tallies_file), "batchTallies.csv",)},
+        data={
+            "batchTallies": (
+                io.BytesIO(batch_tallies_file),
+                "batchTallies.csv",
+            )
+        },
     )
     assert_ok(rv)
 
@@ -228,13 +235,43 @@ def test_batch_comparison_round_2(
     batch_results_j1 = {
         # Use multiple tally sheets to make sure they get aggregated correctly
         batches[0]["id"]: [
-            {choice_ids[0]: 200, choice_ids[1]: 40, choice_ids[2]: 0,},
-            {choice_ids[0]: 150, choice_ids[1]: 10, choice_ids[2]: 0,},
-            {choice_ids[0]: 50, choice_ids[1]: 0, choice_ids[2]: 40,},
+            {
+                choice_ids[0]: 200,
+                choice_ids[1]: 40,
+                choice_ids[2]: 0,
+            },
+            {
+                choice_ids[0]: 150,
+                choice_ids[1]: 10,
+                choice_ids[2]: 0,
+            },
+            {
+                choice_ids[0]: 50,
+                choice_ids[1]: 0,
+                choice_ids[2]: 40,
+            },
         ],
-        batches[1]["id"]: [{choice_ids[0]: 400, choice_ids[1]: 50, choice_ids[2]: 40,}],
-        batches[2]["id"]: [{choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 40,}],
-        batches[3]["id"]: [{choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 40,}],
+        batches[1]["id"]: [
+            {
+                choice_ids[0]: 400,
+                choice_ids[1]: 50,
+                choice_ids[2]: 40,
+            }
+        ],
+        batches[2]["id"]: [
+            {
+                choice_ids[0]: 100,
+                choice_ids[1]: 50,
+                choice_ids[2]: 40,
+            }
+        ],
+        batches[3]["id"]: [
+            {
+                choice_ids[0]: 100,
+                choice_ids[1]: 50,
+                choice_ids[2]: 40,
+            }
+        ],
     }
 
     assert batches[0]["name"] == "Batch 1"
@@ -322,7 +359,12 @@ def test_batch_comparison_round_2(
     rv = put_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/batches/{batches[0]['id']}/results",
-        [{"name": "Tally Sheet #1", "results": batch_results_j2[batches[0]["id"]],}],
+        [
+            {
+                "name": "Tally Sheet #1",
+                "results": batch_results_j2[batches[0]["id"]],
+            }
+        ],
     )
     assert_ok(rv)
 
@@ -469,7 +511,12 @@ def test_batch_comparison_custom_sample_size_validation(
         )
         assert rv.status_code == 400
         assert json.loads(rv.data) == {
-            "errors": [{"message": expected_error, "errorType": "Bad Request",}]
+            "errors": [
+                {
+                    "message": expected_error,
+                    "errorType": "Bad Request",
+                }
+            ]
         }
 
 
@@ -508,18 +555,46 @@ def test_batch_comparison_batches_sampled_multiple_times(
         batches[0]["id"]: [
             # Use multiple tally sheets to make sure we aggregate them correctly
             # even when a batch is sampled multiple times
-            {choice_ids[0]: 300, choice_ids[1]: 200, choice_ids[2]: 50,},
-            {choice_ids[0]: 150, choice_ids[1]: 50, choice_ids[2]: 0,},
-            {choice_ids[0]: 50, choice_ids[1]: 0, choice_ids[2]: 200,},
+            {
+                choice_ids[0]: 300,
+                choice_ids[1]: 200,
+                choice_ids[2]: 50,
+            },
+            {
+                choice_ids[0]: 150,
+                choice_ids[1]: 50,
+                choice_ids[2]: 0,
+            },
+            {
+                choice_ids[0]: 50,
+                choice_ids[1]: 0,
+                choice_ids[2]: 200,
+            },
         ],
         # Batch 3
         batches[1]["id"]: [
-            {choice_ids[0]: 500, choice_ids[1]: 250, choice_ids[2]: 250,}
+            {
+                choice_ids[0]: 500,
+                choice_ids[1]: 250,
+                choice_ids[2]: 250,
+            }
         ],
         # Batch 8
-        batches[2]["id"]: [{choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 50,}],
+        batches[2]["id"]: [
+            {
+                choice_ids[0]: 100,
+                choice_ids[1]: 50,
+                choice_ids[2]: 50,
+            }
+        ],
         # Batch 6
-        batches[3]["id"]: [{choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 50,}],
+        batches[3]["id"]: [
+            {
+                choice_ids[0]: 100,
+                choice_ids[1]: 50,
+                choice_ids[2]: 50,
+            }
+        ],
     }
 
     for batch_id, results in batch_results_j1.items():
@@ -552,7 +627,11 @@ def test_batch_comparison_batches_sampled_multiple_times(
     # Record batch results that match batch tallies exactly
     batch_results_j2 = {
         # Batch 3
-        batches[0]["id"]: {choice_ids[0]: 500, choice_ids[1]: 250, choice_ids[2]: 250,}
+        batches[0]["id"]: {
+            choice_ids[0]: 500,
+            choice_ids[1]: 250,
+            choice_ids[2]: 250,
+        }
     }
 
     for batch_id, sheet_results in batch_results_j2.items():
@@ -610,7 +689,9 @@ def test_batch_comparison_batches_sampled_multiple_times(
         "J2": {"Batch 3": None},
     }
     check_discrepancies(
-        discrepancy_report, expected_discrepancies, contests[0]["choices"],
+        discrepancy_report,
+        expected_discrepancies,
+        contests[0]["choices"],
     )
 
 

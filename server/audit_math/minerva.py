@@ -134,7 +134,7 @@ def get_sample_size(
         round_num = prev_round_count + 1
 
         # Get the ith round by multiplying the first round size
-        next_round_size = int(first_round_size * MINERVA_MULTIPLE ** round_num)
+        next_round_size = int(first_round_size * MINERVA_MULTIPLE**round_num)
         logging.debug(f"{round_sizes=}, {next_round_size=}")
         return {"0.9": {"type": None, "size": next_round_size, "prob": 0.9}}
 

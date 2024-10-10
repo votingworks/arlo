@@ -39,7 +39,13 @@ if __name__ == "__main__":
             assert headers_and_affiliations[3] == "RecordId"
 
             for row in cvr:
-                [_cvr_number, tabulator_number, batch_id, _record_id, *_,] = row
+                [
+                    _cvr_number,
+                    tabulator_number,
+                    batch_id,
+                    _record_id,
+                    *_,
+                ] = row
                 batch_counts[(tabulator_number, batch_id)] += 1
 
         elif cvr_file_type == "CLEARBALLOT":

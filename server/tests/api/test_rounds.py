@@ -39,7 +39,10 @@ def test_rounds_create_one(
     rv = post_json(
         client,
         f"/api/election/{election_id}/round",
-        {"roundNum": 1, "sampleSizes": {contest_ids[0]: sample_size},},
+        {
+            "roundNum": 1,
+            "sampleSizes": {contest_ids[0]: sample_size},
+        },
     )
     assert_ok(rv)
 
@@ -183,7 +186,10 @@ def test_rounds_create_two(
 
 
 def test_rounds_complete_audit(
-    client: FlaskClient, election_id: str, contest_ids: List[str], round_1_id: str,
+    client: FlaskClient,
+    election_id: str,
+    contest_ids: List[str],
+    round_1_id: str,
 ):
     run_audit_round(round_1_id, contest_ids[0], contest_ids, 0.7)
     rv = client.post(f"/api/election/{election_id}/round/current/finish")
@@ -214,7 +220,10 @@ def test_rounds_complete_audit(
 
 
 def test_rounds_round_2_required_if_all_blanks(
-    client: FlaskClient, election_id: str, contest_ids: List[str], round_1_id: str,
+    client: FlaskClient,
+    election_id: str,
+    contest_ids: List[str],
+    round_1_id: str,
 ):
     run_audit_round_all_blanks(round_1_id, contest_ids[0], contest_ids)
     rv = client.post(f"/api/election/{election_id}/round/current/finish")
@@ -227,7 +236,10 @@ def test_rounds_round_2_required_if_all_blanks(
 
 
 def test_rounds_end_logic_unaffected_by_invalid_write_ins_1(
-    client: FlaskClient, election_id: str, contest_ids: List[str], round_1_id: str,
+    client: FlaskClient,
+    election_id: str,
+    contest_ids: List[str],
+    round_1_id: str,
 ):
     run_audit_round(
         round_1_id, contest_ids[0], contest_ids, 0.7, invalid_write_in_ratio=1
@@ -242,7 +254,10 @@ def test_rounds_end_logic_unaffected_by_invalid_write_ins_1(
 
 
 def test_rounds_end_logic_unaffected_by_invalid_write_ins_2(
-    client: FlaskClient, election_id: str, contest_ids: List[str], round_1_id: str,
+    client: FlaskClient,
+    election_id: str,
+    contest_ids: List[str],
+    round_1_id: str,
 ):
     run_audit_round(
         round_1_id, contest_ids[0], contest_ids, 0.5, invalid_write_in_ratio=1
@@ -257,7 +272,10 @@ def test_rounds_end_logic_unaffected_by_invalid_write_ins_2(
 
 
 def test_rounds_end_logic_unaffected_by_invalid_write_ins_3(
-    client: FlaskClient, election_id: str, contest_ids: List[str], round_1_id: str,
+    client: FlaskClient,
+    election_id: str,
+    contest_ids: List[str],
+    round_1_id: str,
 ):
     run_audit_round_all_blanks(
         round_1_id, contest_ids[0], contest_ids, invalid_write_in_ratio=1
@@ -288,7 +306,10 @@ def test_rounds_create_before_previous_round_complete(
     assert rv.status_code == 409
     assert json.loads(rv.data) == {
         "errors": [
-            {"message": "The current round is not complete", "errorType": "Conflict",}
+            {
+                "message": "The current round is not complete",
+                "errorType": "Conflict",
+            }
         ]
     }
 
@@ -318,7 +339,9 @@ def test_rounds_wrong_number_too_big(
 
 
 def test_rounds_wrong_number_too_small(
-    client: FlaskClient, election_id: str, contest_ids: str,
+    client: FlaskClient,
+    election_id: str,
+    contest_ids: str,
 ):
     rv = post_json(
         client,
@@ -372,7 +395,11 @@ def test_rounds_missing_round_num(
     rv = post_json(
         client,
         f"/api/election/{election_id}/round",
-        {"sampleSizes": {contest_ids[0]: {"key": "custom", "size": 10, "prob": None}},},
+        {
+            "sampleSizes": {
+                contest_ids[0]: {"key": "custom", "size": 10, "prob": None}
+            },
+        },
     )
     assert rv.status_code == 400
     assert json.loads(rv.data) == {
@@ -418,7 +445,12 @@ def test_rounds_bad_sample_sizes(
         )
         assert rv.status_code == 400
         assert json.loads(rv.data) == {
-            "errors": [{"message": expected_error, "errorType": "Bad Request",}]
+            "errors": [
+                {
+                    "message": expected_error,
+                    "errorType": "Bad Request",
+                }
+            ]
         }
 
 
@@ -432,7 +464,12 @@ def test_finish_round_after_round_already_finished(
     rv = client.post(f"/api/election/{election_id}/round/current/finish")
     assert rv.status_code == 409
     assert json.loads(rv.data) == {
-        "errors": [{"message": "Round already finished", "errorType": "Conflict",}]
+        "errors": [
+            {
+                "message": "Round already finished",
+                "errorType": "Conflict",
+            }
+        ]
     }
 
 
@@ -440,7 +477,12 @@ def test_finish_round_before_launch(client: FlaskClient, election_id: str):
     rv = client.post(f"/api/election/{election_id}/round/current/finish")
     assert rv.status_code == 409
     assert json.loads(rv.data) == {
-        "errors": [{"message": "Audit not started", "errorType": "Conflict",}]
+        "errors": [
+            {
+                "message": "Audit not started",
+                "errorType": "Conflict",
+            }
+        ]
     }
 
 
@@ -448,7 +490,12 @@ def test_undo_start_round_before_launch(client: FlaskClient, election_id: str):
     rv = client.delete(f"/api/election/{election_id}/round/current")
     assert rv.status_code == 409
     assert json.loads(rv.data) == {
-        "errors": [{"message": "Audit not started", "errorType": "Conflict",}]
+        "errors": [
+            {
+                "message": "Audit not started",
+                "errorType": "Conflict",
+            }
+        ]
     }
 
 

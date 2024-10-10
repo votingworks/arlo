@@ -458,7 +458,12 @@ class TestBalancedBucketList:
 
     def test_repr(self, balancedbucketlist):
         expected = [
-            {"name": "1", "size": 200, "batches": {"8": 200}, "largest element": "8",},
+            {
+                "name": "1",
+                "size": 200,
+                "batches": {"8": 200},
+                "largest element": "8",
+            },
             {
                 "name": "2",
                 "size": 200,

@@ -75,7 +75,12 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
     for jurisdiction_id, manifest in manifests_by_jurisdiction.items():
         rv = client.put(
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/ballot-manifest",
-            data={"manifest": (manifest, "manifest.csv",)},
+            data={
+                "manifest": (
+                    manifest,
+                    "manifest.csv",
+                )
+            },
         )
         assert_ok(rv)
 
@@ -122,10 +127,18 @@ def batch_tallies(
         jurisdiction_ids[1]: io.BytesIO(VALID_BATCH_TALLIES[1]),
         jurisdiction_ids[2]: io.BytesIO(VALID_BATCH_TALLIES[2]),
     }
-    for (jurisdiction_id, batch_tallies_file,) in batch_tallies_by_jurisdiction.items():
+    for (
+        jurisdiction_id,
+        batch_tallies_file,
+    ) in batch_tallies_by_jurisdiction.items():
         rv = client.put(
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/batch-tallies",
-            data={"batchTallies": (batch_tallies_file, "batchTallies.csv",)},
+            data={
+                "batchTallies": (
+                    batch_tallies_file,
+                    "batchTallies.csv",
+                )
+            },
         )
         assert_ok(rv)
 
@@ -249,7 +262,12 @@ def test_multi_contest_batch_comparison_jurisdiction_upload_validation(
     for jurisdiction_id, batch_tallies_file, expected_error in test_cases:
         rv = client.put(
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/batch-tallies",
-            data={"batchTallies": (batch_tallies_file, "batchTallies.csv",)},
+            data={
+                "batchTallies": (
+                    batch_tallies_file,
+                    "batchTallies.csv",
+                )
+            },
         )
         assert_ok(rv)
 
@@ -418,7 +436,12 @@ def test_multi_contest_batch_comparison_batch_results_validation(
 
     for jurisdiction_id, batch_id, batch_results, expected_error_message in test_cases:
         rv = put_batch_results(
-            client, election_id, jurisdiction_id, round_1_id, batch_id, batch_results,
+            client,
+            election_id,
+            jurisdiction_id,
+            round_1_id,
+            batch_id,
+            batch_results,
         )
         if expected_error_message is None:
             assert_ok(rv)
@@ -660,7 +683,10 @@ def test_multi_contest_batch_comparison_end_to_end(
     jurisdiction_3_batch_results = {
         # Batch 1 (with contest 1 discrepancy)
         jurisdiction_3_batches[0]["id"]: [
-            {contest_1_choice_ids[0]: 74, contest_1_choice_ids[1]: 26,}
+            {
+                contest_1_choice_ids[0]: 74,
+                contest_1_choice_ids[1]: 26,
+            }
         ],
     }
     for batch_id, results in jurisdiction_3_batch_results.items():

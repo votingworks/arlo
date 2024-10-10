@@ -63,7 +63,8 @@ def get_election_settings(election: Election):
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def get_jurisdiction_election_settings(
-    election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,
+    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
     return jsonify(serialize_election_settings(election))
 
