@@ -58,6 +58,7 @@ from ..activity_log import (
     EndRound,
 )
 from ..feature_flags import is_enabled_automatically_end_audit_after_one_round
+from ..util.get_json import safe_get_json_dict
 
 
 def is_round_ready_to_finish(election: Election, round: Round) -> bool:
@@ -564,7 +565,7 @@ def delete_round_and_corresponding_sampled_ballots(round: Round):
 @api.route("/election/<election_id>/round", methods=["POST"])
 @restrict_access([UserType.AUDIT_ADMIN])
 def create_round(election: Election):
-    json_round = request.get_json()
+    json_round = safe_get_json_dict(request)
     validate_round(json_round, election)
 
     round = Round(

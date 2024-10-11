@@ -247,7 +247,7 @@ def upload_batch_tallies(
     )
     jurisdiction.batch_tallies_file = File(
         id=str(uuid.uuid4()),
-        name=batch_tallies.filename,
+        name=batch_tallies.filename,  # type: ignore
         storage_path=storage_path,
         uploaded_at=datetime.now(timezone.utc),
     )

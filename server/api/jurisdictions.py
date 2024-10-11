@@ -600,7 +600,7 @@ def update_jurisdictions_file(election: Election):
     )
     election.jurisdictions_file = File(
         id=str(uuid.uuid4()),
-        name=jurisdictions_file.filename,
+        name=jurisdictions_file.filename,  # type: ignore
         storage_path=storage_path,
         uploaded_at=datetime.datetime.now(timezone.utc),
     )

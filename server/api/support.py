@@ -30,6 +30,7 @@ from ..util.isoformat import isoformat
 from ..util.file import delete_file
 from ..util.redirect import redirect
 from .rounds import delete_round_and_corresponding_sampled_ballots, get_current_round
+from ..util.get_json import safe_get_json_dict
 
 AUTH0_DOMAIN = urlparse(AUDITADMIN_AUTH0_BASE_URL).hostname
 
@@ -130,7 +131,7 @@ ORGANIZATION_SCHEMA = {
 @api.route("/support/organizations", methods=["POST"])
 @restrict_access_support
 def create_organization():
-    organization = request.get_json()
+    organization = safe_get_json_dict(request)
     validate(organization, ORGANIZATION_SCHEMA)
 
     if Organization.query.filter_by(name=organization["name"]).one_or_none():
@@ -189,7 +190,7 @@ def delete_organization(organization_id: str):
 @restrict_access_support
 def update_organization(organization_id: str):
     organization = get_or_404(Organization, organization_id)
-    body = request.get_json()
+    body = safe_get_json_dict(request)
     validate(
         body,
         {
@@ -272,7 +273,7 @@ AUDIT_ADMIN_SCHEMA = {
 @restrict_access_support
 def create_audit_admin(organization_id: str):
     get_or_404(Organization, organization_id)
-    audit_admin = request.get_json()
+    audit_admin = safe_get_json_dict(request)
     validate(audit_admin, AUDIT_ADMIN_SCHEMA)
 
     user = User.query.filter_by(email=audit_admin["email"].lower()).one_or_none()

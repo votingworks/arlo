@@ -1596,7 +1596,10 @@ def upload_cvrs(
     if request.form["cvrFileType"] in [CvrFileType.ESS, CvrFileType.HART]:
         file_name = "cvr-files.zip"
         zip_file = zip_files(
-            {file.filename: file.stream for file in request.files.getlist("cvrs")}
+            {
+                file.filename: file.stream  # type: ignore
+                for file in request.files.getlist("cvrs")
+            }
         )
         storage_path = store_file(
             zip_file,
@@ -1604,7 +1607,7 @@ def upload_cvrs(
             + timestamp_filename("cvrs", "zip"),
         )
     else:
-        file_name = request.files["cvrs"].filename
+        file_name = request.files["cvrs"].filename  # type: ignore
         file_extension = "csv"
         storage_path = store_file(
             request.files["cvrs"].stream,

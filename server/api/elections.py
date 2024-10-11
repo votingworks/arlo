@@ -20,6 +20,7 @@ from ..activity_log import (
     activity_base,
     record_activity,
 )
+from ..util.get_json import safe_get_json_dict
 
 ELECTION_SCHEMA = {
     "type": "object",
@@ -73,7 +74,7 @@ def validate_new_election(election: JSONDict):
 @api.route("/election", methods=["POST"])
 @allow_public_access  # Access control is implemented within the endpoint
 def create_election():
-    election = request.get_json()
+    election = safe_get_json_dict(request)
 
     validate_new_election(election)
 

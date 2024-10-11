@@ -12,6 +12,7 @@ from ..util.jsonschema import validate, JSONDict
 from . import cvrs  # pylint: disable=cyclic-import
 from . import ballot_manifest  # pylint: disable=cyclic-import
 from . import batch_tallies  # pylint: disable=cyclic-import
+from ..util.get_json import safe_get_json_dict, safe_get_json_list
 
 
 CONTEST_CHOICE_SCHEMA = {
@@ -282,7 +283,7 @@ def set_contest_metadata(election: Election):
 @api.route("/election/<election_id>/contest", methods=["PUT"])
 @restrict_access([UserType.AUDIT_ADMIN])
 def create_or_update_all_contests(election: Election):
-    json_contests = request.get_json()
+    json_contests = safe_get_json_list(request)
     validate_contests(json_contests, election)
 
     Contest.query.filter_by(election_id=election.id).delete()
@@ -390,7 +391,7 @@ def put_contest_name_standardizations(election: Election):
     if len(list(election.rounds)) > 0:
         raise Conflict("Cannot standardize contest names after the audit has started.")
 
-    standardizations = request.get_json()
+    standardizations = safe_get_json_dict(request)
     validate(standardizations, CONTEST_NAME_STANDARDIZATIONS_SCHEMA)
 
     for jurisdiction in election.jurisdictions:
@@ -464,7 +465,7 @@ def put_contest_choice_name_standardizations(election: Election):  # pragma: no 
             "Cannot standardize contest choice names after the audit has started."
         )
 
-    standardizations = request.get_json()
+    standardizations = safe_get_json_dict(request)
     validate(standardizations, CONTEST_CHOICE_NAME_STANDARDIZATIONS_SCHEMA)
 
     for jurisdiction in election.jurisdictions:

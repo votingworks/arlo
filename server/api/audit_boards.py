@@ -15,7 +15,7 @@ from ..util.jsonschema import validate, JSONDict
 from ..util.binpacking import BalancedBucketList, Bucket
 from ..util.isoformat import isoformat
 from ..util.collections import find_first_duplicate
-
+from ..util.get_json import safe_get_json_dict, safe_get_json_list
 from ..activity_log.activity_log import (
     AuditBoardSignOff,
     CreateAuditBoards,
@@ -173,7 +173,7 @@ def assign_sampled_ballots(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def create_audit_boards(election: Election, jurisdiction: Jurisdiction, round: Round):
-    json_audit_boards = request.get_json()
+    json_audit_boards = safe_get_json_list(request)
     validate_audit_boards(json_audit_boards, election, jurisdiction, round)
 
     audit_boards = [
@@ -331,7 +331,7 @@ def set_audit_board_members(
     round: Round,  # pylint: disable=unused-argument
     audit_board: AuditBoard,
 ):
-    members = request.get_json()
+    members = safe_get_json_list(request)
     validate_members(members)
 
     audit_board.member_1 = members[0]["name"].strip()
@@ -388,7 +388,7 @@ def sign_off_audit_board(
     round: Round,  # pylint: disable=unused-argument
     audit_board: AuditBoard,
 ):
-    validate_sign_off(request.get_json(), audit_board)
+    validate_sign_off(safe_get_json_dict(request), audit_board)
 
     audit_board.signed_off_at = datetime.now(timezone.utc)
 

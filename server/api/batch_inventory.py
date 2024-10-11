@@ -48,6 +48,7 @@ from ..util.csv_download import csv_response, jurisdiction_timestamp_name
 from ..util.isoformat import isoformat
 from .batch_tallies import construct_contest_choice_csv_headers
 from ..activity_log.activity_log import UploadFile, activity_base, record_activity
+from ..util.get_json import safe_get_json_dict
 
 # (tabulator_id, batch_id)
 BatchKey = Tuple[str, str]
@@ -503,7 +504,7 @@ def process_batch_inventory_tabulator_status_file(
 def set_batch_inventory_system_type(
     election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
 ):
-    system_type = request.get_json()["systemType"]
+    system_type = safe_get_json_dict(request)["systemType"]
     if system_type is None:
         raise BadRequest("Missing systemType param")
     if system_type not in [CvrFileType.DOMINION, CvrFileType.ESS]:
@@ -577,7 +578,7 @@ def upload_batch_inventory_cvr(election: Election, jurisdiction: Jurisdiction):
 
     assert file_type != "other"
 
-    file_name = file.filename
+    file_name: str = file.filename  # type: ignore
     storage_path = store_file(
         file.stream,
         f"audits/{election.id}/jurisdictions/{jurisdiction.id}/"
@@ -672,7 +673,7 @@ def upload_batch_inventory_tabulator_status(
     if not batch_inventory_data or not batch_inventory_data.cvr_file_id:
         raise Conflict("Must upload CVR file before uploading tabulator status file.")
 
-    file_name = request.files["tabulatorStatus"].filename
+    file_name: str = request.files["tabulatorStatus"].filename  # type: ignore
     storage_path = store_file(
         request.files["tabulatorStatus"].stream,
         f"audits/{election.id}/jurisdictions/{jurisdiction.id}/"

@@ -6,6 +6,7 @@ from ..auth import restrict_access, UserType
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
 from ..util.jsonschema import validate, JSONDict
+from ..util.get_json import safe_get_json_dict
 
 
 ELECTION_SETTINGS_SCHEMA = {
@@ -79,7 +80,7 @@ def validate_election_settings(settings: JSONDict, election: Election):
 @api.route("/election/<election_id>/settings", methods=["PUT"])
 @restrict_access([UserType.AUDIT_ADMIN])
 def put_election_settings(election: Election):
-    settings = request.get_json()
+    settings = safe_get_json_dict(request)
     validate_election_settings(settings, election)
 
     election.election_name = settings["electionName"]

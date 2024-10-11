@@ -2106,7 +2106,9 @@ def test_csrf(client: FlaskClient, org_id: str):
 
     rv = client.get("/")
     csrf_token = next(
-        cookie for cookie in client.cookie_jar if cookie.name == "_csrf_token"
+        cookie
+        for cookie in client.cookie_jar  # type: ignore
+        if cookie.name == "_csrf_token"
     ).value
     rv = client.post(
         "/api/election",

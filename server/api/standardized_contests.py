@@ -205,7 +205,7 @@ def upload_standardized_contests_file(election: Election):
     )
     election.standardized_contests_file = File(
         id=str(uuid.uuid4()),
-        name=file.filename,
+        name=file.filename,  # type: ignore
         storage_path=storage_path,
         uploaded_at=datetime.now(timezone.utc),
     )

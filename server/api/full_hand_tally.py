@@ -13,6 +13,7 @@ from ..models import *  # pylint: disable=wildcard-import
 from .rounds import get_current_round, is_full_hand_tally
 from ..util.jsonschema import JSONDict, validate
 from ..util.isoformat import isoformat
+from ..util.get_json import safe_get_json_dict
 
 
 class BatchType(str, enum.Enum):
@@ -141,7 +142,7 @@ def add_full_hand_tally_batch_result(
     jurisdiction: Jurisdiction,
     round: Round,
 ):
-    batch_result = request.get_json()
+    batch_result = safe_get_json_dict(request)
     validate_full_hand_tally_batch_result(election, jurisdiction, round, batch_result)
 
     if FullHandTallyBatchResult.query.filter_by(
@@ -176,7 +177,7 @@ def update_full_hand_tally_batch_result(
     round: Round,
     batch_name: str,
 ):
-    batch_result = request.get_json()
+    batch_result = safe_get_json_dict(request)
     validate_full_hand_tally_batch_result(election, jurisdiction, round, batch_result)
 
     if (

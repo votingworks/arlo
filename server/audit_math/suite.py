@@ -357,7 +357,7 @@ def maximize_fisher_combined_pvalue(
 
         fisher_pvalues = np.empty_like(test_lambdas)
         for i, test_lambda in enumerate(test_lambdas):
-            pvalue1 = np.min(
+            pvalue1: float = np.min(
                 [
                     1,
                     cvr_stratum.compute_pvalue(
@@ -365,7 +365,7 @@ def maximize_fisher_combined_pvalue(
                     ),
                 ]
             )
-            pvalue2 = np.min(
+            pvalue2: float = np.min(
                 [
                     1,
                     bp_stratum.compute_pvalue(
@@ -382,7 +382,7 @@ def maximize_fisher_combined_pvalue(
                 fisher_pvalues[i] = 1 - sp.stats.chi2.cdf(obs, df=2 * len(pvalues))
 
         pvalue = np.max(fisher_pvalues)
-        alloc_lambda = test_lambdas[np.argmax(fisher_pvalues)]
+        alloc_lambda: float = test_lambdas[np.argmax(fisher_pvalues)]  # type: ignore
 
         # If p-value is over the risk limit, then there's no need to refine the
         # maximization. We have a lower bound on the maximum.
