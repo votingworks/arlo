@@ -700,16 +700,13 @@ def test_full_hand_tally_results_validation(
     rv = post_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/full-hand-tally/batch/",
-        [
-            {
-                "batchName": "Batch 1",
-                "batchType": "Provisional",
-                "choiceResults": {
-                    choice["id"]: choice["numVotes"] / 4
-                    for choice in contest["choices"]
-                },
-            }
-        ],
+        {
+            "batchName": "Batch 1",
+            "batchType": "Provisional",
+            "choiceResults": {
+                choice["id"]: choice["numVotes"] / 4 for choice in contest["choices"]
+            },
+        },
     )
     assert rv.status_code == 409
     assert json.loads(rv.data) == {
@@ -721,16 +718,13 @@ def test_full_hand_tally_results_validation(
     rv = put_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/full-hand-tally/batch/Batch 1",
-        [
-            {
-                "batchName": "Batch 1",
-                "batchType": "Provisional",
-                "choiceResults": {
-                    choice["id"]: choice["numVotes"] / 4
-                    for choice in contest["choices"]
-                },
-            }
-        ],
+        {
+            "batchName": "Batch 1",
+            "batchType": "Provisional",
+            "choiceResults": {
+                choice["id"]: choice["numVotes"] / 4 for choice in contest["choices"]
+            },
+        },
     )
     assert rv.status_code == 409
     assert json.loads(rv.data) == {

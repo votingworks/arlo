@@ -460,7 +460,7 @@ def test_record_batch_results_invalid(
     choice_ids = [choice["id"] for choice in contests[0]["choices"]]
 
     invalid_results = [
-        ({}, "{} is not of type 'array'"),
+        ({}, "Request content must be a JSON array"),
         ([{"name": "Tally Sheet #1", "results": None}], "None is not of type 'object'"),
         ([{"name": "Tally Sheet #1", "results": {}}], "Missing choice ids"),
         (
@@ -637,7 +637,7 @@ def test_unfinalize_batch_results(
     rv = put_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/{batches[0]['id']}/results",
-        {choice_id: 0 for choice_id in choice_ids},
+        [{choice_id: 0 for choice_id in choice_ids}],
     )
     assert rv.status_code == 409
     assert json.loads(rv.data) == {
@@ -805,7 +805,7 @@ def test_record_batch_results_bad_round(
     rv = put_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/batches/{batches[0]['id']}/results",
-        {choice_id: 0 for choice_id in choice_ids},
+        [{choice_id: 0 for choice_id in choice_ids}],
     )
     assert rv.status_code == 409
     assert json.loads(rv.data) == {
@@ -826,7 +826,7 @@ def test_record_batch_results_bad_round(
     rv = put_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/{batches[0]['id']}/results",
-        {choice_id: 0 for choice_id in choice_ids},
+        [{choice_id: 0 for choice_id in choice_ids}],
     )
     assert rv.status_code == 409
     assert json.loads(rv.data) == {
@@ -838,7 +838,7 @@ def test_record_batch_results_bad_round(
     rv = put_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/not-a-round-id/batches/{batches[0]['id']}/results",
-        {choice_id: 0 for choice_id in choice_ids},
+        [{choice_id: 0 for choice_id in choice_ids}],
     )
     assert rv.status_code == 404
 

@@ -57,7 +57,7 @@ def test_file_storage_s3(mock_boto_client):
 def test_file_storage_local_file():
     with tempfile.TemporaryDirectory() as temp_dir:
         original_file_upload_storage_path = config.FILE_UPLOAD_STORAGE_PATH
-        config.FILE_UPLOAD_STORAGE_PATH = temp_dir.name
+        config.FILE_UPLOAD_STORAGE_PATH = temp_dir
 
         file = io.BytesIO(b"test file contents")
         path = f"test_dir/{datetime.now(timezone.utc).timestamp()}/test_file.csv"
