@@ -123,12 +123,15 @@ class BallotPollingStratum:
             + np.sum(np.log(v_u - np.arange(n_u)))
         )
 
-        null_logLR = (
-            lambda Nw: (n_w > 0) * np.sum(np.log(Nw - np.arange(n_w)))
-            + (n_l > 0) * np.sum(np.log(Nw - null_margin - np.arange(n_l)))
-            + (n_u > 0)
-            * np.sum(np.log(self.num_ballots - 2 * Nw + null_margin - np.arange(n_u)))
-        )
+        def null_logLR(Nw):
+            return (
+                (n_w > 0) * np.sum(np.log(Nw - np.arange(n_w)))
+                + (n_l > 0) * np.sum(np.log(Nw - null_margin - np.arange(n_l)))
+                + (n_u > 0)
+                * np.sum(
+                    np.log(self.num_ballots - 2 * Nw + null_margin - np.arange(n_u))
+                )
+            )
 
         upper_n_w_limit = (self.num_ballots - n_u + null_margin) / 2.0
         lower_n_w_limit = np.max([n_w, n_l + null_margin])
@@ -138,14 +141,18 @@ class BallotPollingStratum:
         if upper_n_w_limit < n_w or (upper_n_w_limit - null_margin) < n_l:
             return 0
 
-        LR_derivative = (
-            lambda Nw: np.sum([1 / (Nw - i) for i in range(n_w)])
-            + np.sum([1 / (Nw - null_margin - i) for i in range(n_l)])
-            - 2
-            * np.sum(
-                [1 / (self.num_ballots - 2 * Nw + null_margin - i) for i in range(n_u)]
+        def LR_derivative(Nw):
+            return (
+                np.sum([1 / (Nw - i) for i in range(n_w)])
+                + np.sum([1 / (Nw - null_margin - i) for i in range(n_l)])
+                - 2
+                * np.sum(
+                    [
+                        1 / (self.num_ballots - 2 * Nw + null_margin - i)
+                        for i in range(n_u)
+                    ]
+                )
             )
-        )
 
         # Check if the maximum occurs at an endpoint: deriv has no sign change
         if LR_derivative(upper_n_w_limit) * LR_derivative(lower_n_w_limit) > 0:
@@ -337,17 +344,22 @@ def maximize_fisher_combined_pvalue(
     assert Ln >= 0, f"{Wn, Ln, Un}"
     assert Un >= 0, f"{Wn, Ln, Un}"
 
-    T2 = (
-        lambda delta: 2
-        * cvr_stratum.sample_size
-        * np.log(1 + reported_margin * delta / (2 * cvr_stratum.num_ballots * GAMMA))
-    )
-    modulus = (
-        lambda delta: 2 * Wn * np.log(1 + reported_margin * delta)
-        + 2 * Ln * np.log(1 + reported_margin * delta)
-        + 2 * Un * np.log(1 + 2 * reported_margin * delta)
-        + T2(delta)
-    )
+    def T2(delta):
+        return (
+            2
+            * cvr_stratum.sample_size
+            * np.log(
+                1 + reported_margin * delta / (2 * cvr_stratum.num_ballots * GAMMA)
+            )
+        )
+
+    def modulus(delta):
+        return (
+            2 * Wn * np.log(1 + reported_margin * delta)
+            + 2 * Ln * np.log(1 + reported_margin * delta)
+            + 2 * Un * np.log(1 + 2 * reported_margin * delta)
+            + T2(delta)
+        )
 
     while True:
         test_lambdas = np.arange(lambda_lower, lambda_upper + stepsize, stepsize)

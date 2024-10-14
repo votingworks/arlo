@@ -64,7 +64,7 @@ class BucketList:
         return cast(float, numpy.mean([s.size for s in self.buckets]))
 
     def deviation(self) -> float:
-        return sum([abs(self.avg_size - b.size) for b in self.buckets]) / self.avg_size
+        return sum(abs(self.avg_size - b.size) for b in self.buckets) / self.avg_size
 
     def balance(self) -> "BucketList":
         """
@@ -120,6 +120,7 @@ class BucketList:
             (min_idx, _min_del) = min(
                 enumerate(
                     map(
+                        # pylint: disable=cell-var-from-loop
                         lambda bucket: bucket.size + batch[1] - self.avg_size,
                         new_buckets,
                     )
@@ -205,6 +206,7 @@ class BalancedBucketList:
             (min_idx, _min_del) = min(
                 enumerate(
                     map(
+                        # pylint: disable=cell-var-from-loop
                         lambda bucket: bucket.size + batch[1] - self.avg_size,
                         self.buckets,
                     )
@@ -219,7 +221,7 @@ class BalancedBucketList:
         return cast(float, numpy.mean([s.size for s in self.buckets]))
 
     def deviation(self) -> float:
-        return sum([abs(self.avg_size - b.size) for b in self.buckets]) / self.avg_size
+        return sum(abs(self.avg_size - b.size) for b in self.buckets) / self.avg_size
 
     def __repr__(self) -> str:
         return str(self.buckets)

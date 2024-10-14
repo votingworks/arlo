@@ -53,6 +53,7 @@ def auth0_create_audit_admin(email: str) -> Optional[str]:
     token = auth0_get_token()
     auth0 = Auth0(AUTH0_DOMAIN, token)
     try:
+        # pylint: disable=no-member
         user = auth0.users.create(
             dict(
                 email=email,
@@ -64,6 +65,7 @@ def auth0_create_audit_admin(email: str) -> Optional[str]:
     except Auth0Error as error:
         # If user already exists in Auth0, no problem!
         if error.status_code == 409:
+            # pylint: disable=no-member
             users = auth0.users_by_email.search_users_by_email(email.lower())
             return str(users[0]["user_id"])
         raise error  # pragma: no cover

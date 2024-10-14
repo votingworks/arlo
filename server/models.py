@@ -1086,6 +1086,7 @@ class ProcessingStatus(str, enum.Enum):
     ERRORED = "ERRORED"
 
 
+# pylint: disable=invalid-name
 class USState(str, enum.Enum):
     Alabama = "AL"
     Alaska = "AK"

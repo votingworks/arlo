@@ -1,3 +1,4 @@
+# pylint: disable=invalid-name,consider-using-dict-items,consider-using-f-string
 import pytest
 
 from ...audit_math.sampler_contest import Contest

@@ -62,7 +62,7 @@ def pretty_pvalue(value: float) -> str:
     elif value < 10**-10:
         return "<0.0000000001"
     else:
-        ret = "{:1.10f}".format(round(value, 10)).rstrip("0")
+        ret = f"{round(value, 10):1.10f}".rstrip("0")
         # If we've stripped off the zero right after the decimal, put it back
         if ret[-1] == ".":
             ret += "0"

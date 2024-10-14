@@ -1,3 +1,4 @@
+# pylint: disable=implicit-str-concat
 from typing import BinaryIO, Union, List
 import os, io, pytest
 from werkzeug.exceptions import BadRequest

@@ -1,3 +1,4 @@
+# pylint: disable=invalid-name,consider-using-dict-items,consider-using-f-string
 from decimal import Decimal
 from typing import cast
 import json
@@ -15,8 +16,10 @@ from ...audit_math import supersimple_raire
 ALPHA = Decimal(0.1)
 RISK_LIMIT = 10
 
+
 # Testing for now...
-asn_func = lambda m: 1 / m if m > 0 else np.inf
+def asn_func(m):
+    return 1 / m if m > 0 else np.inf
 
 
 @pytest.fixture
@@ -420,7 +423,7 @@ def test_fptp(contests, cvrs, assertions):
 
 def parse_shangrla_sample(input_file: str) -> SAMPLECVRS:
     cvrs = {}
-    with open(input_file, "r") as datafile:
+    with open(input_file, "r", encoding="utf8") as datafile:
         sample_data = json.load(datafile)
         ballots = sample_data["ballots"]
 

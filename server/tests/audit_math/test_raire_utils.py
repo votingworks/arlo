@@ -1,4 +1,4 @@
-from typing import List, Any, Dict, Callable, Set
+from typing import List, Dict, Callable, Set
 import pytest
 import numpy as np
 
@@ -175,10 +175,10 @@ def test_nebassertion_subsumes():
 
     asrtn_3.winner = "loser"
     asrtn_3.loser = "winner"
-    asrtn_3.rules_out: List[Any] = ["winner", "loser"]
+    asrtn_3.rules_out = ["winner", "loser"]
     assert asrtn_1.subsumes(asrtn_3)
 
-    asrtn_3.rules_out: List[Any] = []
+    asrtn_3.rules_out = []
     assert not asrtn_1.subsumes(asrtn_3)
 
 
@@ -348,7 +348,10 @@ def test_find_best_audit_simple():
     }
 
     tree = raire_utils.RaireNode(["loser", "winner"])
-    asn_func = lambda m: 1 / m if m > 0 else np.inf
+
+    # pylint: disable=invalid-name
+    def asn_func(m):
+        return 1 / m if m > 0 else np.inf
 
     raire_utils.find_best_audit(contest, ballots, neb_matrix, tree, asn_func)
 
@@ -372,12 +375,12 @@ def make_neb_assertion(
     assertion = raire_utils.NEBAssertion(contest.name, winner, loser)
     assertion.eliminated = eliminated
     votes_for_winner = sum(
-        [
-            assertion.is_vote_for_winner(cvr) for _, cvr in cvrs.items() if cvr
-        ]  # if is for the type checker
+        assertion.is_vote_for_winner(cvr)
+        for _, cvr in cvrs.items()
+        if cvr  # if is for the type checker
     )
     votes_for_loser = sum(
-        [assertion.is_vote_for_loser(cvr) for _, cvr in cvrs.items() if cvr]
+        assertion.is_vote_for_loser(cvr) for _, cvr in cvrs.items() if cvr
     )
 
     margin = votes_for_winner - votes_for_loser
@@ -396,10 +399,12 @@ def make_nen_assertion(
 ) -> NENAssertion:
     assertion = raire_utils.NENAssertion(contest.name, winner, loser, eliminated)
     votes_for_winner = sum(
-        [assertion.is_vote_for_winner(cvr) for _, cvr in cvrs.items() if cvr]
-    )  # if is for the type checker
+        assertion.is_vote_for_winner(cvr)
+        for _, cvr in cvrs.items()
+        if cvr  # if is for the type checker
+    )
     votes_for_loser = sum(
-        [assertion.is_vote_for_loser(cvr) for _, cvr in cvrs.items() if cvr]
+        assertion.is_vote_for_loser(cvr) for _, cvr in cvrs.items() if cvr
     )
 
     margin = votes_for_winner - votes_for_loser
@@ -455,7 +460,9 @@ def ballots() -> List[Dict[str, int]]:
     return ballots
 
 
-asn_func = lambda m: 1 / m if m > 0 else np.inf
+# pylint: disable=invalid-name
+def asn_func(m):
+    return 1 / m if m > 0 else np.inf
 
 
 def test_find_best_audit_complex(contest, cvrs, ballots):

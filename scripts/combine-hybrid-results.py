@@ -130,7 +130,7 @@ if __name__ == "__main__":
             if choice_id_to_name_audit_1[id1] == choice_id_to_name_audit_2[id2]:
                 remap[id2] = id1
 
-    for i in range(len(audit_1.contests)):
+    for i in enumerate(audit_1.contests):
         cvr_stratum = ballot_comparison_stratum(audit_1.contests[i])
         print(cvr_stratum)
         no_cvr_stratum = ballot_polling_stratum(audit_2.contests[i], remap)

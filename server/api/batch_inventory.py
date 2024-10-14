@@ -377,11 +377,11 @@ def process_batch_inventory_cvr_file(
 
         # Set explicit zeros for choices with zero votes in a batch to avoid KeyErrors when
         # generating files
-        for batch_key in batch_tallies.keys():
+        for tallies in batch_tallies.values():
             for contest in contests:
                 for choice in contest.choices:
-                    if choice.id not in batch_tallies[batch_key]:
-                        batch_tallies[batch_key][choice.id] = 0
+                    if choice.id not in tallies:
+                        tallies[choice.id] = 0
 
         election_results: ElectionResults = dict(
             ballot_count_by_batch=dict_to_items_list(ballot_count_by_batch),
@@ -626,8 +626,8 @@ def get_batch_inventory_cvr(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def clear_batch_inventory_cvr(
-    election: Election,
-    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
 ):
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
 
@@ -648,8 +648,8 @@ def clear_batch_inventory_cvr(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def download_batch_inventory_cvr(
-    election: Election,
-    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
 ):
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
     if not batch_inventory_data or not batch_inventory_data.cvr_file:
@@ -723,8 +723,8 @@ def get_batch_inventory_tabulator_status(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def clear_batch_inventory_tabulator_status(
-    election: Election,
-    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
 ):
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
 
@@ -745,8 +745,8 @@ def clear_batch_inventory_tabulator_status(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def download_batch_inventory_tabulator_status(
-    election: Election,
-    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
 ):
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
     if not batch_inventory_data or not batch_inventory_data.tabulator_status_file:

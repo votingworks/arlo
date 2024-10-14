@@ -103,7 +103,7 @@ def find_assertions(
     audit_possible = True
     while audit_possible:
         # Check whether we can stop searching for assertions.
-        max_on_frontier = max([node.estimate for node in frontier.nodes])
+        max_on_frontier = max(node.estimate for node in frontier.nodes)
 
         if agap > 0 and lowerbound > 0 and max_on_frontier - lowerbound <= agap:
             # We can rule out all branches of the tree with assertions that

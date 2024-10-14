@@ -688,6 +688,9 @@ def audit_all_ballots(
 
 # Check expected discrepancies against audit report
 def check_discrepancies(report: str, audit_results):
+    def parse_discrepancy(discrepancy: str):
+        return int(discrepancy) if discrepancy != "" else None
+
     report_ballots = list(csv.DictReader(io.StringIO(report)))
     for ballot, (_, expected_discrepancies) in audit_results.items():
         jurisdiction, tabulator, batch, position = ballot
@@ -699,7 +702,6 @@ def check_discrepancies(report: str, audit_results):
             and row["Batch Name"] == batch
             and row["Ballot Position"] == str(position)
         )
-        parse_discrepancy = lambda d: int(d) if d != "" else None
         assert (
             parse_discrepancy(row["Change in Margin: Contest 1"]),
             parse_discrepancy(row["Change in Margin: Contest 2"]),

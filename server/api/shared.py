@@ -671,7 +671,9 @@ def compute_sample_batches_for_contest(
                 selected_batch_ids, num_jurisdiction_ballots
             ):
                 num_jurisdiction_ballots_selected = sum(
-                    batch_id_to_num_ballots[batch_id] for batch_id in selected_batch_ids
+                    # pylint: disable=cell-var-from-loop
+                    batch_id_to_num_ballots[batch_id]
+                    for batch_id in selected_batch_ids
                 )
                 return num_jurisdiction_ballots_selected / num_jurisdiction_ballots
 

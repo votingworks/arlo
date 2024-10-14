@@ -1,4 +1,4 @@
-# pylint: disable=invalid-name
+# pylint: disable=invalid-name,consider-using-dict-items,consider-using-f-string
 from decimal import Decimal
 import pytest
 

@@ -322,8 +322,8 @@ def list_contests(election: Election):
     [UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN, UserType.TALLY_ENTRY]
 )
 def list_jurisdictions_contests(
-    election: Election,
-    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
 ):
     json_contests = [serialize_contest(c) for c in jurisdiction.contests]
     return jsonify({"contests": json_contests})

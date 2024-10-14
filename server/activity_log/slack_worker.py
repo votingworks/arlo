@@ -340,7 +340,11 @@ def send_new_slack_notification(organization_id: str = None) -> None:
             )
         )
 
-        rv = requests.post(config.SLACK_WEBHOOK_URL, json=slack_message(activity))
+        rv = requests.post(
+            config.SLACK_WEBHOOK_URL,
+            json=slack_message(activity),
+            timeout=10,  # seconds
+        )
         if rv.status_code != 200:
             raise Exception(f"Error posting record {record.id}:\n\n{rv.text}")
 

@@ -267,6 +267,7 @@ def get_header_indices(headers_row: List[str]) -> Dict[str, int]:
 
 
 # Allow a 2-string tuple for Dominion's two-row CSV headers
+# pylint: disable=invalid-name
 HeaderType = TypeVar("HeaderType", str, Tuple[str, str])
 
 
@@ -570,7 +571,9 @@ def separate_ess_cvr_and_ballots_files(
 
     text_files = {
         file_name: decode_file(
-            open(os.path.join(working_directory, file_name), "rb"), file_name
+            # pylint: disable=consider-using-with
+            open(os.path.join(working_directory, file_name), "rb"),
+            file_name,
         )
         for file_name in file_names
     }
@@ -1031,11 +1034,13 @@ def parse_hart_cvrs(
     scanned_ballot_information_files: List[BinaryIO] = []
     for file_name in file_names:
         if file_name.lower().endswith(".zip"):
+            # pylint: disable=consider-using-with
             cvr_zip_files[file_name] = open(
                 os.path.join(working_directory, file_name), "rb"
             )
         if file_name.lower().endswith(".csv"):
             scanned_ballot_information_files.append(
+                # pylint: disable=consider-using-with
                 open(os.path.join(working_directory, file_name), "rb")
             )
 
@@ -1171,9 +1176,7 @@ def parse_hart_cvrs(
     # { contest_name: choice_names }
     contest_choices = defaultdict(set)
     for cvr_file_path in cvr_file_paths.values():
-        cvr_file = open(cvr_file_path, "rb")
         cvr_xml = ET.parse(cvr_file_path)
-        cvr_file.close()
         for contest, choice_names in parse_contest_results(cvr_xml).items():
             contest_choices[contest].update(choice_names)
 
@@ -1239,9 +1242,7 @@ def parse_hart_cvrs(
     def parse_cvr_ballots() -> Iterable[CvrBallot]:
         for (cvr_zip_file_name, cvr_file_name), cvr_file_path in cvr_file_paths.items():
             cvr_zip_file_name_without_extension = cvr_zip_file_name[:-4]
-            cvr_file = open(cvr_file_path, "rb")
-            cvr_xml = ET.parse(cvr_file)
-            cvr_file.close()
+            cvr_xml = ET.parse(cvr_file_path)
             cvr_guid = find(cvr_xml, "CvrGuid").text
             batch_number = find(cvr_xml, "BatchNumber").text
             batch_sequence = find(cvr_xml, "BatchSequence").text
@@ -1655,8 +1656,8 @@ def get_cvrs(
 )
 @restrict_access([UserType.AUDIT_ADMIN])
 def download_cvr_file(
-    election: Election,
-    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
 ):
     if not jurisdiction.cvr_file:
         return NotFound()
@@ -1672,8 +1673,8 @@ def download_cvr_file(
 )
 @restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
 def clear_cvrs(
-    election: Election,
-    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
 ):
     if jurisdiction.cvr_file_id:
         # Clear the CVR file and contests metadata immediately, but defer

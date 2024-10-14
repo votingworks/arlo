@@ -55,20 +55,21 @@ def test_file_storage_s3(mock_boto_client):
 
 
 def test_file_storage_local_file():
-    original_file_upload_storage_path = config.FILE_UPLOAD_STORAGE_PATH
-    config.FILE_UPLOAD_STORAGE_PATH = tempfile.TemporaryDirectory().name
+    with tempfile.TemporaryDirectory() as temp_dir:
+        original_file_upload_storage_path = config.FILE_UPLOAD_STORAGE_PATH
+        config.FILE_UPLOAD_STORAGE_PATH = temp_dir.name
 
-    file = io.BytesIO(b"test file contents")
-    path = f"test_dir/{datetime.now(timezone.utc).timestamp()}/test_file.csv"
-    storage_path = store_file(file, path)
+        file = io.BytesIO(b"test file contents")
+        path = f"test_dir/{datetime.now(timezone.utc).timestamp()}/test_file.csv"
+        storage_path = store_file(file, path)
 
-    with open(f"{config.FILE_UPLOAD_STORAGE_PATH}/{path}", "rb") as stored_file:
-        assert stored_file.read() == b"test file contents"
+        with open(f"{config.FILE_UPLOAD_STORAGE_PATH}/{path}", "rb") as stored_file:
+            assert stored_file.read() == b"test file contents"
 
-    retrieved_file = retrieve_file(storage_path)
-    assert retrieved_file.read() == b"test file contents"
+        retrieved_file = retrieve_file(storage_path)
+        assert retrieved_file.read() == b"test file contents"
 
-    delete_file(storage_path)
-    assert not os.path.exists(f"{config.FILE_UPLOAD_STORAGE_PATH}/{path}")
+        delete_file(storage_path)
+        assert not os.path.exists(f"{config.FILE_UPLOAD_STORAGE_PATH}/{path}")
 
-    config.FILE_UPLOAD_STORAGE_PATH = original_file_upload_storage_path
+        config.FILE_UPLOAD_STORAGE_PATH = original_file_upload_storage_path

@@ -284,8 +284,8 @@ def get_batch_tallies(
 )
 @restrict_access([UserType.AUDIT_ADMIN])
 def download_batch_tallies_file(
-    election: Election,
-    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
 ):
     if not jurisdiction.batch_tallies_file:
         return NotFound()
@@ -302,8 +302,8 @@ def download_batch_tallies_file(
 )
 @restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
 def clear_batch_tallies(
-    election: Election,
-    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
 ):
     if jurisdiction.batch_tallies_file:
         db_session.delete(jurisdiction.batch_tallies_file)

@@ -174,7 +174,7 @@ def test_task_user_error(caplog, db_session):
 def test_task_python_error(capture_exception, caplog, db_session):
     @background_task
     def python_error():
-        return [][1]
+        return [][1]  # pylint: disable=potential-index-error
 
     task = create_background_task(python_error, {}, db_session)
 

@@ -1,3 +1,4 @@
+# pylint: disable=consider-using-f-string
 import pytest
 from ...util.binpacking import Bucket, BucketList, BalancedBucketList
 

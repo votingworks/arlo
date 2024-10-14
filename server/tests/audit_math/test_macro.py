@@ -1,3 +1,4 @@
+# pylint: disable=invalid-name,consider-using-dict-items,consider-using-f-string
 from decimal import Decimal
 from typing import Dict
 import pytest

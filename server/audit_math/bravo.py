@@ -393,9 +393,7 @@ def get_sample_size(
     quants = [0.7, 0.8, 0.9]
 
     if round_sizes:
-        num_sampled = sum(
-            [round_info.round_size for round_info in round_sizes.values()]
-        )
+        num_sampled = sum(round_info.round_size for round_info in round_sizes.values())
         # If we've already sampled all the ballots, we should never be here
         if num_sampled >= contest.ballots:
             raise ValueError("All ballots have already been audited!")
@@ -527,6 +525,7 @@ def compute_risk(
         return measurements, True
 
     finished = True
+    # pylint: disable=consider-using-dict-items
     for pair in T:
         raw = 1 / T[pair] if T[pair] > 0 else Decimal(1)
         measurements[pair] = min(float(raw), 1.0)
@@ -544,8 +543,8 @@ def is_tie(contest: Contest) -> bool:
     if not losers:
         return False
 
-    smallest_p_w = min([winner_stats["p_w"] for winner_stats in winners.values()])
-    largest_p_l = max([loser_stats["p_l"] for loser_stats in losers.values()])
+    smallest_p_w = min(winner_stats["p_w"] for winner_stats in winners.values())
+    largest_p_l = max(loser_stats["p_l"] for loser_stats in losers.values())
     return bool(smallest_p_w == largest_p_l)
 
 
@@ -555,5 +554,5 @@ def is_landslide(contest: Contest) -> bool:
     if not losers:  # pragma: no cover
         return False
 
-    largest_p_l = max([loser_stats["p_l"] for loser_stats in losers.values()])
+    largest_p_l = max(loser_stats["p_l"] for loser_stats in losers.values())
     return bool(largest_p_l == 0)

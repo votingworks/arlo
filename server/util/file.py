@@ -3,7 +3,7 @@ import shutil
 import io
 import os
 import tempfile
-from typing import BinaryIO, Dict, IO, List, Mapping, Optional, Union
+from typing import BinaryIO, IO, List, Mapping, Optional
 from urllib.parse import urlparse
 from zipfile import ZipFile
 import boto3
