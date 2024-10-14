@@ -3,7 +3,7 @@ import shutil
 import io
 import os
 import tempfile
-from typing import BinaryIO, Dict, IO, List, Optional
+from typing import BinaryIO, IO, List, Mapping, Optional
 from urllib.parse import urlparse
 from zipfile import ZipFile
 import boto3
@@ -82,7 +82,7 @@ def delete_file(storage_path: str):
         os.remove(storage_path)
 
 
-def zip_files(files: Dict[str, BinaryIO]) -> IO[bytes]:
+def zip_files(files: Mapping[str, IO[bytes]]) -> IO[bytes]:
     zip_file = tempfile.TemporaryFile()
     with ZipFile(zip_file, "w") as zip_archive:
         for file_name, contents_stream in files.items():

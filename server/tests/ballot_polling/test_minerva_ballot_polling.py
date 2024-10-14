@@ -299,7 +299,9 @@ def test_minerva_ballot_polling_two_rounds(
     )
     assert_ok(rv)
 
-    rv = client.get(f"/api/election/{election_id}/round",)
+    rv = client.get(
+        f"/api/election/{election_id}/round",
+    )
     round_2_id = json.loads(rv.data)["rounds"][1]["id"]
 
     set_logged_in_user(

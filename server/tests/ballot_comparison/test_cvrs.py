@@ -22,7 +22,11 @@ def test_dominion_cvr_upload(
     jurisdictions = json.loads(rv.data)["jurisdictions"]
     compare_json(
         jurisdictions[0]["cvrs"],
-        {"file": None, "processing": None, "numBallots": None,},
+        {
+            "file": None,
+            "processing": None,
+            "numBallots": None,
+        },
     )
     manifest_num_ballots = jurisdictions[0]["ballotManifest"]["numBallots"]
 
@@ -33,7 +37,10 @@ def test_dominion_cvr_upload(
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
         data={
-            "cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",),
+            "cvrs": (
+                io.BytesIO(TEST_CVRS.encode()),
+                "cvrs.csv",
+            ),
             "cvrFileType": "DOMINION",
         },
     )
@@ -156,7 +163,10 @@ def test_cvrs_counting_group(
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
         data={
-            "cvrs": (io.BytesIO(COUNTING_GROUP_CVR.encode()), "cvrs.csv",),
+            "cvrs": (
+                io.BytesIO(COUNTING_GROUP_CVR.encode()),
+                "cvrs.csv",
+            ),
             "cvrFileType": "DOMINION",
         },
     )
@@ -399,7 +409,10 @@ def test_cvrs_clear(
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
         data={
-            "cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",),
+            "cvrs": (
+                io.BytesIO(TEST_CVRS.encode()),
+                "cvrs.csv",
+            ),
             "cvrFileType": "DOMINION",
         },
     )
@@ -447,7 +460,10 @@ def test_cvrs_replace_as_audit_admin(
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
         data={
-            "cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",),
+            "cvrs": (
+                io.BytesIO(TEST_CVRS.encode()),
+                "cvrs.csv",
+            ),
             "cvrFileType": "DOMINION",
         },
     )
@@ -502,7 +518,8 @@ def test_cvrs_upload_missing_file(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
     rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs", data={},
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
+        data={},
     )
     assert rv.status_code == 400
     assert json.loads(rv.data) == {
@@ -560,7 +577,12 @@ def test_cvrs_wrong_audit_type(
         )
         rv = client.put(
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-            data={"cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",)},
+            data={
+                "cvrs": (
+                    io.BytesIO(TEST_CVRS.encode()),
+                    "cvrs.csv",
+                )
+            },
         )
         assert rv.status_code == 409
         assert json.loads(rv.data) == {
@@ -574,14 +596,21 @@ def test_cvrs_wrong_audit_type(
 
 
 def test_cvrs_before_manifests(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str],
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
     )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={"cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",)},
+        data={
+            "cvrs": (
+                io.BytesIO(TEST_CVRS.encode()),
+                "cvrs.csv",
+            )
+        },
     )
     assert rv.status_code == 409
     assert json.loads(rv.data) == {
@@ -631,7 +660,10 @@ def test_cvrs_newlines(
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
         data={
-            "cvrs": (io.BytesIO(NEWLINE_CVR.encode()), "cvrs.csv",),
+            "cvrs": (
+                io.BytesIO(NEWLINE_CVR.encode()),
+                "cvrs.csv",
+            ),
             "cvrFileType": "DOMINION",
         },
     )
@@ -977,7 +1009,10 @@ BATCH1,1,1-1-1,p,bs,ps,TABULATOR1,s,r,0,1,1,1,0
         rv = client.put(
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
             data={
-                "cvrs": (io.BytesIO(invalid_cvr.encode()), "cvrs.csv",),
+                "cvrs": (
+                    io.BytesIO(invalid_cvr.encode()),
+                    "cvrs.csv",
+                ),
                 "cvrFileType": cvr_file_type,
             },
         )
@@ -1176,7 +1211,10 @@ def test_clearballot_cvr_upload(
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
         data={
-            "cvrs": (io.BytesIO(CLEARBALLOT_CVRS.encode()), "cvrs.csv",),
+            "cvrs": (
+                io.BytesIO(CLEARBALLOT_CVRS.encode()),
+                "cvrs.csv",
+            ),
             "cvrFileType": "CLEARBALLOT",
         },
     )
@@ -1249,7 +1287,10 @@ def test_clearballot_cvr_upload_invalid(
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
         data={
-            "cvrs": (io.BytesIO(CLEARBALLOT_CVRS_INVALID.encode()), "cvrs.csv",),
+            "cvrs": (
+                io.BytesIO(CLEARBALLOT_CVRS_INVALID.encode()),
+                "cvrs.csv",
+            ),
             "cvrFileType": "CLEARBALLOT",
         },
     )
@@ -1531,24 +1572,48 @@ def test_ess_cvr_upload_invalid(
         ),
         (
             [
-                (io.BytesIO(ESS_BALLOTS_1.encode()), "ess_ballots_1.csv",),
-                (io.BytesIO(ESS_BALLOTS_2.encode()), "ess_ballots_2.csv",),
+                (
+                    io.BytesIO(ESS_BALLOTS_1.encode()),
+                    "ess_ballots_1.csv",
+                ),
+                (
+                    io.BytesIO(ESS_BALLOTS_2.encode()),
+                    "ess_ballots_2.csv",
+                ),
             ],
             "Missing CVR file - one file should contain the cast vote records for each ballot. We attempt to auto-detect this file, but if we are failing to do so, you can rename the file cvr.csv to ensure that we treat it as the CVR file. Identified CVR files: None. Identified ballots files: ess_ballots_1.csv, ess_ballots_2.csv.",
         ),
         (
             [
-                (io.BytesIO(ESS_BALLOTS_1.encode()), "ess_ballots_1.csv",),
-                (io.BytesIO(ESS_BALLOTS_2.encode()), "ess_ballots_2.csv",),
-                (io.BytesIO(ESS_CVR.encode()), "ess_cvr_1.csv",),
-                (io.BytesIO(ESS_CVR.encode()), "ess_cvr_2.csv",),
+                (
+                    io.BytesIO(ESS_BALLOTS_1.encode()),
+                    "ess_ballots_1.csv",
+                ),
+                (
+                    io.BytesIO(ESS_BALLOTS_2.encode()),
+                    "ess_ballots_2.csv",
+                ),
+                (
+                    io.BytesIO(ESS_CVR.encode()),
+                    "ess_cvr_1.csv",
+                ),
+                (
+                    io.BytesIO(ESS_CVR.encode()),
+                    "ess_cvr_2.csv",
+                ),
             ],
             "Identified multiple CVR files - please upload only one CVR file containing the cast vote records for each ballot, and at least one ballots file containing the list of tabulated ballots and their corresponding CVR identifiers. Identified CVR files: ess_cvr_1.csv, ess_cvr_2.csv. Identified ballots files: ess_ballots_1.csv, ess_ballots_2.csv.",
         ),
         (
             [
-                (io.BytesIO(ESS_BALLOTS_1.encode()), "ess_ballots_1.csv",),
-                (io.BytesIO(ESS_CVR.encode()), "ess_cvr.csv",),
+                (
+                    io.BytesIO(ESS_BALLOTS_1.encode()),
+                    "ess_ballots_1.csv",
+                ),
+                (
+                    io.BytesIO(ESS_CVR.encode()),
+                    "ess_cvr.csv",
+                ),
                 (
                     io.BytesIO(
                         # Simulate leading zeros getting stripped from the tabulator column
@@ -1576,14 +1641,23 @@ def test_ess_cvr_upload_invalid(
                     ),
                     "ess_ballots_1.csv",
                 ),
-                (io.BytesIO(ESS_CVR.encode()), "ess_cvr.csv",),
+                (
+                    io.BytesIO(ESS_CVR.encode()),
+                    "ess_cvr.csv",
+                ),
             ],
             "ess_ballots_1.csv: Tabulator CVR should be a ten-digit number or a sixteen-character hexadecimal string. Got 4.78822E+15 for Cast Vote Record 1. If you opened this file in Excel, it may have changed the format of this field.",
         ),
         (
             [
-                (io.BytesIO(ESS_BALLOTS_1.encode()), "ess_ballots_1.csv",),
-                (io.BytesIO(ESS_CVR.encode()), "ess_cvr.csv",),
+                (
+                    io.BytesIO(ESS_BALLOTS_1.encode()),
+                    "ess_ballots_1.csv",
+                ),
+                (
+                    io.BytesIO(ESS_CVR.encode()),
+                    "ess_cvr.csv",
+                ),
                 (
                     io.BytesIO(
                         replace_line(
@@ -1599,22 +1673,40 @@ def test_ess_cvr_upload_invalid(
         ),
         (
             [
-                (io.BytesIO(ESS_BALLOTS_1.encode()), "ess_ballots_1.csv",),
-                (io.BytesIO(b""), "ess_cvr.csv",),
+                (
+                    io.BytesIO(ESS_BALLOTS_1.encode()),
+                    "ess_ballots_1.csv",
+                ),
+                (
+                    io.BytesIO(b""),
+                    "ess_cvr.csv",
+                ),
             ],
             "ess_cvr.csv: CSV cannot be empty.",
         ),
         (
             [
-                (io.BytesIO(ESS_CVR.encode()), "ess_cvr.csv",),
-                (io.BytesIO(b"Ballots"), "ess_ballots_1.csv",),
+                (
+                    io.BytesIO(ESS_CVR.encode()),
+                    "ess_cvr.csv",
+                ),
+                (
+                    io.BytesIO(b"Ballots"),
+                    "ess_ballots_1.csv",
+                ),
             ],
             "ess_ballots_1.csv: Please submit a valid CSV file with columns separated by commas.",
         ),
         (
             [
-                (io.BytesIO(ESS_BALLOTS_1.encode()), "ess_ballots_1.csv",),
-                (io.BytesIO(ESS_CVR.encode()), "ess_cvr.csv",),
+                (
+                    io.BytesIO(ESS_BALLOTS_1.encode()),
+                    "ess_ballots_1.csv",
+                ),
+                (
+                    io.BytesIO(ESS_CVR.encode()),
+                    "ess_cvr.csv",
+                ),
                 (
                     io.BytesIO(remove_line(ESS_BALLOTS_2, 10).encode()),
                     "ess_ballots_2.csv",
@@ -1624,8 +1716,14 @@ def test_ess_cvr_upload_invalid(
         ),
         (
             [
-                (io.BytesIO(ESS_BALLOTS_1.encode()), "ess_ballots_1.csv",),
-                (io.BytesIO(ESS_CVR.encode()), "ess_cvr.csv",),
+                (
+                    io.BytesIO(ESS_BALLOTS_1.encode()),
+                    "ess_ballots_1.csv",
+                ),
+                (
+                    io.BytesIO(ESS_CVR.encode()),
+                    "ess_cvr.csv",
+                ),
                 (
                     io.BytesIO(remove_line(ESS_BALLOTS_2, -2).encode()),
                     "ess_ballots_2.csv",
@@ -1635,23 +1733,44 @@ def test_ess_cvr_upload_invalid(
         ),
         (
             [
-                (io.BytesIO(ESS_BALLOTS_1.encode()), "ess_ballots_1.csv",),
-                (io.BytesIO(remove_line(ESS_CVR, 10).encode()), "ess_cvr.csv",),
-                (io.BytesIO(ESS_BALLOTS_2.encode()), "ess_ballots_2.csv",),
+                (
+                    io.BytesIO(ESS_BALLOTS_1.encode()),
+                    "ess_ballots_1.csv",
+                ),
+                (
+                    io.BytesIO(remove_line(ESS_CVR, 10).encode()),
+                    "ess_cvr.csv",
+                ),
+                (
+                    io.BytesIO(ESS_BALLOTS_2.encode()),
+                    "ess_ballots_2.csv",
+                ),
             ],
             "Mismatch between CVR file and ballots files. Make sure the Cast Vote Record column in the CVR file and the ballots file match and include exactly the same set of ballots.",
         ),
         (
             [
-                (io.BytesIO(ESS_BALLOTS_1.encode()), "ess_ballots_1.csv",),
-                (io.BytesIO(remove_line(ESS_CVR, -1).encode()), "ess_cvr.csv",),
-                (io.BytesIO(ESS_BALLOTS_2.encode()), "ess_ballots_2.csv",),
+                (
+                    io.BytesIO(ESS_BALLOTS_1.encode()),
+                    "ess_ballots_1.csv",
+                ),
+                (
+                    io.BytesIO(remove_line(ESS_CVR, -1).encode()),
+                    "ess_cvr.csv",
+                ),
+                (
+                    io.BytesIO(ESS_BALLOTS_2.encode()),
+                    "ess_ballots_2.csv",
+                ),
             ],
             "Mismatch between CVR file and ballots files. Make sure the Cast Vote Record column in the CVR file and the ballots file match and include exactly the same set of ballots.",
         ),
         (
             [
-                (io.BytesIO(ESS_BALLOTS_1.encode()), "ess_ballots_1.csv",),
+                (
+                    io.BytesIO(ESS_BALLOTS_1.encode()),
+                    "ess_ballots_1.csv",
+                ),
                 (
                     io.BytesIO(
                         replace_line(
@@ -1660,7 +1779,10 @@ def test_ess_cvr_upload_invalid(
                     ),
                     "ess_cvr.csv",
                 ),
-                (io.BytesIO(ESS_BALLOTS_2.encode()), "ess_ballots_2.csv",),
+                (
+                    io.BytesIO(ESS_BALLOTS_2.encode()),
+                    "ess_ballots_2.csv",
+                ),
             ],
             "ess_cvr.csv: Missing required column Cast Vote Record.",
         ),
@@ -1675,14 +1797,23 @@ def test_ess_cvr_upload_invalid(
                     ),
                     "ess_ballots_1.csv",
                 ),
-                (io.BytesIO(ESS_CVR.encode()), "ess_cvr.csv",),
-                (io.BytesIO(ESS_BALLOTS_2.encode()), "ess_ballots_2.csv",),
+                (
+                    io.BytesIO(ESS_CVR.encode()),
+                    "ess_cvr.csv",
+                ),
+                (
+                    io.BytesIO(ESS_BALLOTS_2.encode()),
+                    "ess_ballots_2.csv",
+                ),
             ],
             "ess_ballots_1.csv: Missing required column Cast Vote Record in row 8.",
         ),
         (
             [
-                (io.BytesIO(ESS_BALLOTS_1.encode()), "ess_ballots_1.csv",),
+                (
+                    io.BytesIO(ESS_BALLOTS_1.encode()),
+                    "ess_ballots_1.csv",
+                ),
                 (
                     io.BytesIO(
                         replace_line(
@@ -1693,7 +1824,10 @@ def test_ess_cvr_upload_invalid(
                     ),
                     "ess_cvr.csv",
                 ),
-                (io.BytesIO(ESS_BALLOTS_2.encode()), "ess_ballots_2.csv",),
+                (
+                    io.BytesIO(ESS_BALLOTS_2.encode()),
+                    "ess_ballots_2.csv",
+                ),
             ],
             "ess_cvr.csv: Please submit a valid CSV file with columns separated by commas. This file has columns separated by tabs.",
         ),
@@ -2056,7 +2190,10 @@ def test_hart_cvr_upload(
     # Upload CVRs
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={"cvrs": [(zip_hart_cvrs(HART_CVRS), "cvrs.zip")], "cvrFileType": "HART",},
+        data={
+            "cvrs": [(zip_hart_cvrs(HART_CVRS), "cvrs.zip")],
+            "cvrFileType": "HART",
+        },
     )
     assert_ok(rv)
 
@@ -2405,7 +2542,10 @@ def test_hart_cvr_upload_with_duplicate_batch_names(
     for test_case in test_cases:
         rv = client.put(
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-            data={"cvrs": test_case["files"], "cvrFileType": "HART",},
+            data={
+                "cvrs": test_case["files"],
+                "cvrFileType": "HART",
+            },
         )
         assert_ok(rv)
 
@@ -2568,7 +2708,10 @@ def test_hart_cvr_upload_no_tabulator_plus_batch_match(
     for cvr_upload, expected_error in cvr_uploads:
         rv = client.put(
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-            data={"cvrs": cvr_upload, "cvrFileType": "HART",},
+            data={
+                "cvrs": cvr_upload,
+                "cvrFileType": "HART",
+            },
         )
         assert_ok(rv)
 
@@ -2707,7 +2850,10 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortio
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
         data={
-            "cvrs": (io.BytesIO(cvrs.encode()), "cvrs.csv",),
+            "cvrs": (
+                io.BytesIO(cvrs.encode()),
+                "cvrs.csv",
+            ),
             "cvrFileType": "DOMINION",
         },
     )
@@ -2756,11 +2902,19 @@ def test_cvr_invalid_file_type(
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
         data={
-            "cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",),
+            "cvrs": (
+                io.BytesIO(TEST_CVRS.encode()),
+                "cvrs.csv",
+            ),
             "cvrFileType": "WRONG",
         },
     )
     assert rv.status_code == 400
     assert json.loads(rv.data) == {
-        "errors": [{"errorType": "Bad Request", "message": "Invalid file type",}]
+        "errors": [
+            {
+                "errorType": "Bad Request",
+                "message": "Invalid file type",
+            }
+        ]
     }

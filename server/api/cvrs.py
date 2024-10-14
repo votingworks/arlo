@@ -162,8 +162,10 @@ def cvr_contests_metadata(
 
     standardized_metadata = {}
     for cvr_contest_name, contest_metadata in metadata.items():
-        potentially_standardized_contest_name = cvr_contest_name_to_standardized_contest_name.get(
-            cvr_contest_name, cvr_contest_name
+        potentially_standardized_contest_name = (
+            cvr_contest_name_to_standardized_contest_name.get(
+                cvr_contest_name, cvr_contest_name
+            )
         )
 
         contest_id = contest_name_to_id.get(potentially_standardized_contest_name, None)
@@ -265,6 +267,7 @@ def get_header_indices(headers_row: List[str]) -> Dict[str, int]:
 
 
 # Allow a 2-string tuple for Dominion's two-row CSV headers
+# pylint: disable=invalid-name
 HeaderType = TypeVar("HeaderType", str, Tuple[str, str])
 
 
@@ -568,7 +571,9 @@ def separate_ess_cvr_and_ballots_files(
 
     text_files = {
         file_name: decode_file(
-            open(os.path.join(working_directory, file_name), "rb"), file_name
+            # pylint: disable=consider-using-with
+            open(os.path.join(working_directory, file_name), "rb"),
+            file_name,
         )
         for file_name in file_names
     }
@@ -649,7 +654,8 @@ def read_ess_ballots_file(
 
 
 def parse_ess_cvrs(
-    jurisdiction: Jurisdiction, working_directory: str,
+    jurisdiction: Jurisdiction,
+    working_directory: str,
 ) -> Tuple[CVR_CONTESTS_METADATA, Iterable[CvrBallot]]:
     # Parsing ES&S CVRs is more complicated than, say, Dominion.
     # There are two main data sources:
@@ -754,7 +760,7 @@ def parse_ess_cvrs(
                     # enough gap between ids to order them without creating any
                     # duplicates.
                     try:
-                        record_id = floor(int(tabulator_cvr, 16) / 10 ** 10)
+                        record_id = floor(int(tabulator_cvr, 16) / 10**10)
                     except ValueError:
                         raise UserError(  # pylint: disable=raise-missing-from
                             "Tabulator CVR should be a ten-digit number or a sixteen-character hexadecimal string."
@@ -777,7 +783,9 @@ def parse_ess_cvrs(
                 yield (
                     cvr_number,
                     CvrBallot(
-                        batch=db_batch, record_id=record_id, imprinted_id=imprinted_id,
+                        batch=db_batch,
+                        record_id=record_id,
+                        imprinted_id=imprinted_id,
                     ),
                 )
             else:
@@ -888,7 +896,10 @@ def parse_ess_cvrs(
             for choice_metadata in contest_metadata["choices"].values()
         )
 
-        def parse_row_interpretations(row: List[str], cvr_number: int,) -> str:
+        def parse_row_interpretations(
+            row: List[str],
+            cvr_number: int,
+        ) -> str:
             interpretations = ["" for _ in range(max_interpretation_column + 1)]
             for contest_name, contest_metadata in contests_metadata.items():
                 recorded_choice = column_value(
@@ -985,7 +996,8 @@ def parse_ess_cvrs(
 
 
 def parse_hart_cvrs(
-    jurisdiction: Jurisdiction, working_directory: str,
+    jurisdiction: Jurisdiction,
+    working_directory: str,
 ) -> Tuple[CVR_CONTESTS_METADATA, Iterable[CvrBallot]]:
     """
     A Hart CVR export is a ZIP file containing an individual XML file for each ballot's CVR.
@@ -1022,11 +1034,13 @@ def parse_hart_cvrs(
     scanned_ballot_information_files: List[BinaryIO] = []
     for file_name in file_names:
         if file_name.lower().endswith(".zip"):
+            # pylint: disable=consider-using-with
             cvr_zip_files[file_name] = open(
                 os.path.join(working_directory, file_name), "rb"
             )
         if file_name.lower().endswith(".csv"):
             scanned_ballot_information_files.append(
+                # pylint: disable=consider-using-with
                 open(os.path.join(working_directory, file_name), "rb")
             )
 
@@ -1162,9 +1176,7 @@ def parse_hart_cvrs(
     # { contest_name: choice_names }
     contest_choices = defaultdict(set)
     for cvr_file_path in cvr_file_paths.values():
-        cvr_file = open(cvr_file_path, "rb")
         cvr_xml = ET.parse(cvr_file_path)
-        cvr_file.close()
         for contest, choice_names in parse_contest_results(cvr_xml).items():
             contest_choices[contest].update(choice_names)
 
@@ -1230,9 +1242,7 @@ def parse_hart_cvrs(
     def parse_cvr_ballots() -> Iterable[CvrBallot]:
         for (cvr_zip_file_name, cvr_file_name), cvr_file_path in cvr_file_paths.items():
             cvr_zip_file_name_without_extension = cvr_zip_file_name[:-4]
-            cvr_file = open(cvr_file_path, "rb")
-            cvr_xml = ET.parse(cvr_file)
-            cvr_file.close()
+            cvr_xml = ET.parse(cvr_file_path)
             cvr_guid = find(cvr_xml, "CvrGuid").text
             batch_number = find(cvr_xml, "BatchNumber").text
             batch_sequence = find(cvr_xml, "BatchSequence").text
@@ -1278,7 +1288,9 @@ def parse_hart_cvrs(
                     )
                 else:
                     close_matches = difflib.get_close_matches(
-                        batch_number, (batch_key for batch_key in batches_by_key), n=1,
+                        batch_number,
+                        (batch_key for batch_key in batches_by_key),
+                        n=1,
                     )
                     closest_match = (
                         ast.literal_eval(close_matches[0]) if close_matches else None
@@ -1407,9 +1419,9 @@ def process_cvr_file(
                                 f"Unable to parse '{interpretation}' as an integer. "
                                 "Please export the CVR file with plain integer values."
                             ) from error
-                        parsed_contest_interpretations[
-                            choice_name
-                        ] = parsed_interpretation
+                        parsed_contest_interpretations[choice_name] = (
+                            parsed_interpretation
+                        )
 
                     # Skip overvotes
                     votes = sum(parsed_contest_interpretations.values())
@@ -1571,11 +1583,13 @@ def clear_cvr_ballots(jurisdiction_id: str):
 
 
 @api.route(
-    "/election/<election_id>/jurisdiction/<jurisdiction_id>/cvrs", methods=["PUT"],
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/cvrs",
+    methods=["PUT"],
 )
 @restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
 def upload_cvrs(
-    election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,
+    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
     validate_cvr_upload(request, election, jurisdiction)
     clear_cvr_contests_metadata(jurisdiction)
@@ -1583,7 +1597,10 @@ def upload_cvrs(
     if request.form["cvrFileType"] in [CvrFileType.ESS, CvrFileType.HART]:
         file_name = "cvr-files.zip"
         zip_file = zip_files(
-            {file.filename: file.stream for file in request.files.getlist("cvrs")}
+            {
+                file.filename: file.stream  # type: ignore
+                for file in request.files.getlist("cvrs")
+            }
         )
         storage_path = store_file(
             zip_file,
@@ -1591,7 +1608,7 @@ def upload_cvrs(
             + timestamp_filename("cvrs", "zip"),
         )
     else:
-        file_name = request.files["cvrs"].filename
+        file_name = request.files["cvrs"].filename  # type: ignore
         file_extension = "csv"
         storage_path = store_file(
             request.files["cvrs"].stream,
@@ -1619,7 +1636,8 @@ def upload_cvrs(
 
 
 @api.route(
-    "/election/<election_id>/jurisdiction/<jurisdiction_id>/cvrs", methods=["GET"],
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/cvrs",
+    methods=["GET"],
 )
 @restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
 def get_cvrs(
@@ -1633,11 +1651,13 @@ def get_cvrs(
 
 
 @api.route(
-    "/election/<election_id>/jurisdiction/<jurisdiction_id>/cvrs/csv", methods=["GET"],
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/cvrs/csv",
+    methods=["GET"],
 )
 @restrict_access([UserType.AUDIT_ADMIN])
 def download_cvr_file(
-    election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
 ):
     if not jurisdiction.cvr_file:
         return NotFound()
@@ -1648,11 +1668,13 @@ def download_cvr_file(
 
 
 @api.route(
-    "/election/<election_id>/jurisdiction/<jurisdiction_id>/cvrs", methods=["DELETE"],
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/cvrs",
+    methods=["DELETE"],
 )
 @restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
 def clear_cvrs(
-    election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
 ):
     if jurisdiction.cvr_file_id:
         # Clear the CVR file and contests metadata immediately, but defer

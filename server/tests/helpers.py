@@ -118,7 +118,8 @@ def create_jurisdiction_admin(jurisdiction_id: str, user_email: str) -> str:
 
 
 def create_jurisdiction(
-    election_id: str, jurisdiction_name: str = "Test Jurisdiction",
+    election_id: str,
+    jurisdiction_name: str = "Test Jurisdiction",
 ):
     jurisdiction = Jurisdiction(
         id=str(uuid.uuid4()), election_id=election_id, name=jurisdiction_name
@@ -129,7 +130,9 @@ def create_jurisdiction(
 
 
 def create_jurisdiction_and_admin(
-    election_id: str, jurisdiction_name: str, user_email: str,
+    election_id: str,
+    jurisdiction_name: str,
+    user_email: str,
 ) -> Tuple[str, str]:
     jurisdiction = create_jurisdiction(election_id, jurisdiction_name)
     ja_id = create_jurisdiction_admin(jurisdiction.id, user_email)

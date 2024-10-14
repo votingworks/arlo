@@ -12,7 +12,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     cvr_file_type = sys.argv[2]
-    with open(sys.argv[1], "r") as cvr_file:
+    with open(sys.argv[1], "r", encoding="utf8") as cvr_file:
         if cvr_file_type == "ESS":
             # We've seen malformed ballots CSVs to lack of field quoting, leading to
             # commas in field values being parsed as extra columns. To hackily work
@@ -39,7 +39,13 @@ if __name__ == "__main__":
             assert headers_and_affiliations[3] == "RecordId"
 
             for row in cvr:
-                [_cvr_number, tabulator_number, batch_id, _record_id, *_,] = row
+                [
+                    _cvr_number,
+                    tabulator_number,
+                    batch_id,
+                    _record_id,
+                    *_,
+                ] = row
                 batch_counts[(tabulator_number, batch_id)] += 1
 
         elif cvr_file_type == "CLEARBALLOT":
@@ -70,7 +76,7 @@ if __name__ == "__main__":
                 batch_name = row[header_indices["Batch"]]
                 batch_counts[(tabulator, batch_name)] += 1
 
-    with open(sys.argv[3], "w") as manifest_file:
+    with open(sys.argv[3], "w", encoding="utf8") as manifest_file:
         manifest = csv.writer(manifest_file, delimiter=",")
         manifest.writerow(["Tabulator", "Batch Name", "Number of Ballots"])
         for (tabulator_number, batch_id), count in batch_counts.items():

@@ -90,7 +90,10 @@ def compute_discrepancies(
     discrepancies: Dict[str, Discrepancy] = {}
     for ballot, ballot_sample_cvr in sample_cvr.items():
         ballot_discrepancy = discrepancy(
-            cvrs.get(ballot), ballot_sample_cvr["cvr"], assertion, V,
+            cvrs.get(ballot),
+            ballot_sample_cvr["cvr"],
+            assertion,
+            V,
         )
         if ballot_discrepancy is not None:
             discrepancies[ballot] = ballot_discrepancy
@@ -346,7 +349,7 @@ def compute_risk(
             p_b = (1 - 1 / U) / (1 - (e_r / denom))
 
             multiplicity = sample_cvr[ballot]["times_sampled"]
-            p *= p_b ** multiplicity
+            p *= p_b**multiplicity
 
         # Get the largest p-value across all assertions
         if p > max_p:

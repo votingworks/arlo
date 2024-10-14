@@ -99,7 +99,11 @@ def backfill():  # pragma: no cover
 def upgrade():
     op.add_column("file", sa.Column("task_id", sa.String(length=200), nullable=True))
     op.create_foreign_key(
-        op.f("file_task_id_fkey"), "file", "background_task", ["task_id"], ["id"],
+        op.f("file_task_id_fkey"),
+        "file",
+        "background_task",
+        ["task_id"],
+        ["id"],
     )
 
     backfill()

@@ -16,7 +16,8 @@ def slack_message(activity: activity_log.Activity):
     base = activity.base
     org_link = urljoin(config.HTTP_ORIGIN, f"/support/orgs/{base.organization_id}")
     org_context = dict(
-        type="mrkdwn", text=f":flag-us: <{org_link}|{base.organization_name}>",
+        type="mrkdwn",
+        text=f":flag-us: <{org_link}|{base.organization_name}>",
     )
     user_type = (
         {
@@ -81,7 +82,8 @@ def slack_message(activity: activity_log.Activity):
                     ),
                 ),
                 dict(
-                    type="context", elements=[org_context, time_context, user_context],
+                    type="context",
+                    elements=[org_context, time_context, user_context],
                 ),
             ],
         )
@@ -98,7 +100,8 @@ def slack_message(activity: activity_log.Activity):
                     ),
                 ),
                 dict(
-                    type="context", elements=[org_context, time_context, user_context],
+                    type="context",
+                    elements=[org_context, time_context, user_context],
                 ),
             ],
         )
@@ -138,7 +141,8 @@ def slack_message(activity: activity_log.Activity):
                     ),
                 ),
                 dict(
-                    type="context", elements=[org_context, audit_context, time_context],
+                    type="context",
+                    elements=[org_context, audit_context, time_context],
                 ),
             ],
         )
@@ -336,7 +340,11 @@ def send_new_slack_notification(organization_id: str = None) -> None:
             )
         )
 
-        rv = requests.post(config.SLACK_WEBHOOK_URL, json=slack_message(activity))
+        rv = requests.post(
+            config.SLACK_WEBHOOK_URL,
+            json=slack_message(activity),
+            timeout=10,  # seconds
+        )
         if rv.status_code != 200:
             raise Exception(f"Error posting record {record.id}:\n\n{rv.text}")
 

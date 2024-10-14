@@ -45,7 +45,8 @@ def upgrade():
     # Add is_overvote field, fill in a default value of false, then make it
     # required
     op.add_column(
-        "ballot_interpretation", sa.Column("is_overvote", sa.Boolean()),
+        "ballot_interpretation",
+        sa.Column("is_overvote", sa.Boolean()),
     )
     op.execute("UPDATE ballot_interpretation SET is_overvote = false")
     op.alter_column("ballot_interpretation", "is_overvote", nullable=False)

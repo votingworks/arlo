@@ -95,7 +95,11 @@ def compute_discrepancies(
         ballot_discrepancies = []
         for winner, loser in product(contest.winners, contest.losers):
             ballot_discrepancy = discrepancy(
-                contest, winner, loser, cvrs.get(ballot), ballot_sample_cvr["cvr"],
+                contest,
+                winner,
+                loser,
+                cvrs.get(ballot),
+                ballot_sample_cvr["cvr"],
             )
             if ballot_discrepancy is not None:
                 ballot_discrepancies.append(ballot_discrepancy)
@@ -309,7 +313,7 @@ def compute_risk(
             p_b = Decimal(1.0)
 
         multiplicity = sample_cvr[ballot]["times_sampled"]
-        p *= p_b ** multiplicity
+        p *= p_b**multiplicity
 
     if 0 < p < alpha:
         result = True

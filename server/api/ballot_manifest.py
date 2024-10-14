@@ -238,7 +238,8 @@ def clear_ballot_manifest_file(jurisdiction: Jurisdiction):
 )
 @restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
 def upload_ballot_manifest(
-    election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
 ):
     validate_ballot_manifest_upload(request)
     clear_ballot_manifest_file(jurisdiction)
@@ -267,7 +268,8 @@ def get_ballot_manifest(
 )
 @restrict_access([UserType.AUDIT_ADMIN])
 def download_ballot_manifest_file(
-    election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
 ):
     if not jurisdiction.manifest_file:
         return NotFound()
@@ -284,7 +286,8 @@ def download_ballot_manifest_file(
 )
 @restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
 def clear_ballot_manifest(
-    election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
 ):
     clear_ballot_manifest_file(jurisdiction)
     db_session.commit()

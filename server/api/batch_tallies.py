@@ -46,7 +46,8 @@ BATCH_NAME = "Batch Name"
 
 
 def construct_contest_choice_csv_headers(
-    election: Election, jurisdiction: Optional[Jurisdiction] = None,
+    election: Election,
+    jurisdiction: Optional[Jurisdiction] = None,
 ) -> ContestChoiceCsvHeaders:
     audit_contests = list(election.contests)
     contests = audit_contests if jurisdiction is None else list(jurisdiction.contests)
@@ -54,9 +55,9 @@ def construct_contest_choice_csv_headers(
     contest_choice_csv_headers = {
         # Include contest name in contest choice CSV headers for multi-contest audits just in
         # case two choices in different contests have the same name
-        (contest.id, choice.id): f"{contest.name} - {choice.name}"
-        if is_multi_contest_audit
-        else choice.name
+        (contest.id, choice.id): (
+            f"{contest.name} - {choice.name}" if is_multi_contest_audit else choice.name
+        )
         for contest in contests
         for choice in contest.choices
     }
@@ -65,7 +66,9 @@ def construct_contest_choice_csv_headers(
 
 @background_task
 def process_batch_tallies_file(
-    jurisdiction_id: str, user: Tuple[UserType, str], support_user_email: Optional[str],
+    jurisdiction_id: str,
+    user: Tuple[UserType, str],
+    support_user_email: Optional[str],
 ):
     jurisdiction: Jurisdiction = Jurisdiction.query.get(jurisdiction_id)
 
@@ -229,7 +232,8 @@ def reprocess_batch_tallies_file_if_uploaded(
 )
 @restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
 def upload_batch_tallies(
-    election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,
+    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
     validate_batch_tallies_upload(request, election, jurisdiction)
 
@@ -243,7 +247,7 @@ def upload_batch_tallies(
     )
     jurisdiction.batch_tallies_file = File(
         id=str(uuid.uuid4()),
-        name=batch_tallies.filename,
+        name=batch_tallies.filename,  # type: ignore
         storage_path=storage_path,
         uploaded_at=datetime.now(timezone.utc),
     )
@@ -280,7 +284,8 @@ def get_batch_tallies(
 )
 @restrict_access([UserType.AUDIT_ADMIN])
 def download_batch_tallies_file(
-    election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
 ):
     if not jurisdiction.batch_tallies_file:
         return NotFound()
@@ -297,7 +302,8 @@ def download_batch_tallies_file(
 )
 @restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
 def clear_batch_tallies(
-    election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
 ):
     if jurisdiction.batch_tallies_file:
         db_session.delete(jurisdiction.batch_tallies_file)
@@ -337,7 +343,8 @@ def download_batch_tallies_template_csv(
 
 
 @api.route(
-    "/election/<election_id>/batch-tallies/summed-by-jurisdiction-csv", methods=["GET"],
+    "/election/<election_id>/batch-tallies/summed-by-jurisdiction-csv",
+    methods=["GET"],
 )
 @restrict_access([UserType.AUDIT_ADMIN])
 def download_batch_tallies_summed_by_jurisdiction_csv(election: Election):
@@ -386,5 +393,6 @@ def download_batch_tallies_summed_by_jurisdiction_csv(election: Election):
 
     string_io.seek(0)
     return csv_response(
-        string_io, filename=f"reported-results-{election_timestamp_name(election)}.csv",
+        string_io,
+        filename=f"reported-results-{election_timestamp_name(election)}.csv",
     )

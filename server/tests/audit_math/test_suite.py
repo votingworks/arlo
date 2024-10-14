@@ -1,4 +1,4 @@
-# pylint: disable=invalid-name
+# pylint: disable=invalid-name,consider-using-dict-items,consider-using-f-string
 from decimal import Decimal
 from itertools import product
 import pytest
@@ -102,7 +102,14 @@ def test_cvr_compute_risk(cvr_strata):
         sample_size = true_sample_sizes[contest]
 
         # No discrepancies
-        misstatements = {("winner", "loser"): {"o1": 0, "o2": 0, "u1": 0, "u2": 0,}}
+        misstatements = {
+            ("winner", "loser"): {
+                "o1": 0,
+                "o2": 0,
+                "u1": 0,
+                "u2": 0,
+            }
+        }
 
         stratum = cvr_strata[contest]
         stratum.misstatements = misstatements
@@ -120,7 +127,14 @@ def test_cvr_compute_risk(cvr_strata):
         assert p_value <= ALPHA, "Audit should have finished but didn't"
 
         # Test one-vote overstatement
-        misstatements = {("winner", "loser"): {"o1": 1, "o2": 0, "u1": 0, "u2": 0,}}
+        misstatements = {
+            ("winner", "loser"): {
+                "o1": 1,
+                "o2": 0,
+                "u1": 0,
+                "u2": 0,
+            }
+        }
 
         stratum = cvr_strata[contest]
         stratum.misstatements = misstatements
@@ -141,7 +155,14 @@ def test_cvr_compute_risk(cvr_strata):
             assert not finished, "Audit shouldn't have finished but did!"
 
         # Test two-vote overstatement
-        misstatements = {("winner", "loser"): {"o1": 0, "o2": 1, "u1": 0, "u2": 0,}}
+        misstatements = {
+            ("winner", "loser"): {
+                "o1": 0,
+                "o2": 1,
+                "u1": 0,
+                "u2": 0,
+            }
+        }
 
         stratum = cvr_strata[contest]
         stratum.misstatements = misstatements
@@ -184,11 +205,21 @@ def test_fishers_combined():
     cvr_stratum_ballots = 10000
 
     # We sample 500 ballots from the cvr strata, and find no discrepancies
-    misstatements = {("winner", "loser"): {"o1": 0, "o2": 0, "u1": 0, "u2": 0,}}
+    misstatements = {
+        ("winner", "loser"): {
+            "o1": 0,
+            "o2": 0,
+            "u1": 0,
+            "u2": 0,
+        }
+    }
 
     # Create our CVR strata
     cvr_strata = BallotComparisonStratum(
-        cvr_stratum_ballots, cvr_stratum_vote_totals, misstatements, sample_size=500,
+        cvr_stratum_ballots,
+        cvr_stratum_vote_totals,
+        misstatements,
+        sample_size=500,
     )
 
     # Compute its p-value and check, with a lambda of 0.3
@@ -248,11 +279,21 @@ def test_get_sample_size():
     cvr_stratum_num_ballots = 1900000
 
     # We sample 500 ballots from the cvr stratum, and find no discrepancies
-    misstatements = {("winner", "loser"): {"o1": 0, "o2": 0, "u1": 0, "u2": 0,}}
+    misstatements = {
+        ("winner", "loser"): {
+            "o1": 0,
+            "o2": 0,
+            "u1": 0,
+            "u2": 0,
+        }
+    }
 
     # Create our CVR stratum
     cvr_stratum = BallotComparisonStratum(
-        cvr_stratum_num_ballots, cvr_stratum_vote_totals, misstatements, sample_size=0,
+        cvr_stratum_num_ballots,
+        cvr_stratum_vote_totals,
+        misstatements,
+        sample_size=0,
     )
 
     no_cvr_stratum_vote_totals = {
@@ -321,9 +362,19 @@ def test_winner_loses_no_cvr():
     cvr_stratum_ballots = 1000
 
     # We sample 250 ballots from the cvr strata, and find no discrepancies
-    misstatements = {("winner", "loser"): {"o1": 0, "o2": 0, "u1": 0, "u2": 0,}}
+    misstatements = {
+        ("winner", "loser"): {
+            "o1": 0,
+            "o2": 0,
+            "u1": 0,
+            "u2": 0,
+        }
+    }
     cvr_strata = BallotComparisonStratum(
-        cvr_stratum_ballots, cvr_stratum_vote_totals, misstatements, sample_size=250,
+        cvr_stratum_ballots,
+        cvr_stratum_vote_totals,
+        misstatements,
+        sample_size=250,
     )
 
     # Compute its p-value and check, with a lambda of 0.3
@@ -360,11 +411,21 @@ def test_close_contest_many_undervotes():
     cvr_stratum_ballots = 10000
 
     # We sample 500 ballots from the cvr strata, and find no discrepancies
-    misstatements = {("winner", "loser"): {"o1": 0, "o2": 0, "u1": 0, "u2": 0,}}
+    misstatements = {
+        ("winner", "loser"): {
+            "o1": 0,
+            "o2": 0,
+            "u1": 0,
+            "u2": 0,
+        }
+    }
 
     # Create our CVR strata
     cvr_strata = BallotComparisonStratum(
-        cvr_stratum_ballots, cvr_stratum_vote_totals, misstatements, sample_size=500,
+        cvr_stratum_ballots,
+        cvr_stratum_vote_totals,
+        misstatements,
+        sample_size=500,
     )
 
     # Compute its p-value and check, with a lambda of 0.3
@@ -425,11 +486,21 @@ def test_wide_margin():
     cvr_stratum_ballots = 950
 
     # We sample 500 ballots from the cvr stratum, and find no discrepancies
-    misstatements = {("winner", "loser"): {"o1": 0, "o2": 0, "u1": 0, "u2": 0,}}
+    misstatements = {
+        ("winner", "loser"): {
+            "o1": 0,
+            "o2": 0,
+            "u1": 0,
+            "u2": 0,
+        }
+    }
 
     # Create our CVR stratum
     cvr_stratum = BallotComparisonStratum(
-        cvr_stratum_ballots, cvr_stratum_vote_totals, misstatements, sample_size=0,
+        cvr_stratum_ballots,
+        cvr_stratum_vote_totals,
+        misstatements,
+        sample_size=0,
     )
 
     no_cvr_stratum_vote_totals = {
@@ -440,7 +511,10 @@ def test_wide_margin():
 
     # create our ballot polling stratum
     no_cvr_stratum = BallotPollingStratum(
-        no_cvr_stratum_ballots, no_cvr_stratum_vote_totals, {}, sample_size=0,
+        no_cvr_stratum_ballots,
+        no_cvr_stratum_vote_totals,
+        {},
+        sample_size=0,
     )
 
     # Now try getting a sample size
@@ -496,11 +570,21 @@ def test_wrong_outcome():
     cvr_stratum_ballots = 950
 
     # We sample 500 ballots from the cvr stratum, and find no discrepancies
-    misstatements = {("winner", "loser"): {"o1": 0, "o2": 100, "u1": 0, "u2": 0,}}
+    misstatements = {
+        ("winner", "loser"): {
+            "o1": 0,
+            "o2": 100,
+            "u1": 0,
+            "u2": 0,
+        }
+    }
 
     # Create our CVR stratum
     cvr_stratum = BallotComparisonStratum(
-        cvr_stratum_ballots, cvr_stratum_vote_totals, misstatements, sample_size=0,
+        cvr_stratum_ballots,
+        cvr_stratum_vote_totals,
+        misstatements,
+        sample_size=0,
     )
 
     no_cvr_stratum_vote_totals = {
@@ -511,7 +595,10 @@ def test_wrong_outcome():
 
     # create our ballot polling stratum
     no_cvr_stratum = BallotPollingStratum(
-        no_cvr_stratum_ballots, no_cvr_stratum_vote_totals, {}, sample_size=0,
+        no_cvr_stratum_ballots,
+        no_cvr_stratum_vote_totals,
+        {},
+        sample_size=0,
     )
 
     # Take some silly samples
@@ -561,11 +648,21 @@ def test_escalation():
     cvr_stratum_ballots = 700
 
     # We sample 500 ballots from the cvr stratum, and find no discrepancies
-    misstatements = {("winner", "loser"): {"o1": 0, "o2": 0, "u1": 0, "u2": 0,}}
+    misstatements = {
+        ("winner", "loser"): {
+            "o1": 0,
+            "o2": 0,
+            "u1": 0,
+            "u2": 0,
+        }
+    }
 
     # Create our CVR stratum
     cvr_stratum = BallotComparisonStratum(
-        cvr_stratum_ballots, cvr_stratum_vote_totals, misstatements, sample_size=0,
+        cvr_stratum_ballots,
+        cvr_stratum_vote_totals,
+        misstatements,
+        sample_size=0,
     )
 
     no_cvr_stratum_vote_totals = {
@@ -576,7 +673,10 @@ def test_escalation():
 
     # create our ballot polling stratum
     no_cvr_stratum = BallotPollingStratum(
-        no_cvr_stratum_ballots, no_cvr_stratum_vote_totals, {}, sample_size=0,
+        no_cvr_stratum_ballots,
+        no_cvr_stratum_vote_totals,
+        {},
+        sample_size=0,
     )
 
     expected_sample_size = HybridPair(cvr=56, non_cvr=24)
@@ -622,7 +722,12 @@ def test_escalation():
     # Take another sample
 
     cvr_stratum.misstatements = {
-        ("winner", "loser"): {"o1": 4, "o2": 1, "u1": 0, "u2": 0,}
+        ("winner", "loser"): {
+            "o1": 4,
+            "o2": 1,
+            "u1": 0,
+            "u2": 0,
+        }
     }
     cvr_stratum.sample_size = 101
     expected_pvalue = 1.0
@@ -671,11 +776,21 @@ def test_really_close_race():
     cvr_stratum_ballots = 700
 
     # We sample 500 ballots from the cvr stratum, and find no discrepancies
-    misstatements = {("winner", "loser"): {"o1": 0, "o2": 0, "u1": 0, "u2": 0,}}
+    misstatements = {
+        ("winner", "loser"): {
+            "o1": 0,
+            "o2": 0,
+            "u1": 0,
+            "u2": 0,
+        }
+    }
 
     # Create our CVR stratum
     cvr_stratum = BallotComparisonStratum(
-        cvr_stratum_ballots, cvr_stratum_vote_totals, misstatements, sample_size=0,
+        cvr_stratum_ballots,
+        cvr_stratum_vote_totals,
+        misstatements,
+        sample_size=0,
     )
 
     no_cvr_stratum_vote_totals = {
@@ -686,7 +801,10 @@ def test_really_close_race():
 
     # create our ballot polling stratum
     no_cvr_stratum = BallotPollingStratum(
-        no_cvr_stratum_ballots, no_cvr_stratum_vote_totals, {}, sample_size=0,
+        no_cvr_stratum_ballots,
+        no_cvr_stratum_vote_totals,
+        {},
+        sample_size=0,
     )
 
     with pytest.raises(ValueError, match=r"One or both strata need to be recounted"):
@@ -770,7 +888,10 @@ def test_multi_winner():
 
     # Create our CVR stratum
     cvr_stratum = BallotComparisonStratum(
-        cvr_stratum_ballots, cvr_stratum_vote_totals, misstatements, sample_size=0,
+        cvr_stratum_ballots,
+        cvr_stratum_vote_totals,
+        misstatements,
+        sample_size=0,
     )
 
     no_cvr_stratum_vote_totals = {
@@ -792,7 +913,10 @@ def test_multi_winner():
 
     # create our ballot polling stratum
     no_cvr_stratum = BallotPollingStratum(
-        no_cvr_stratum_ballots, no_cvr_stratum_vote_totals, {}, sample_size=0,
+        no_cvr_stratum_ballots,
+        no_cvr_stratum_vote_totals,
+        {},
+        sample_size=0,
     )
 
     expected_sample_size = HybridPair(cvr=164, non_cvr=46)
@@ -825,13 +949,26 @@ def test_multi_candidate():
 
     # We sample 500 ballots from the cvr stratum, and find no discrepancies
     misstatements = {
-        ("winner", "loser"): {"o1": 0, "o2": 0, "u1": 0, "u2": 0,},
-        ("winner", "loser2"): {"o1": 0, "o2": 0, "u1": 0, "u2": 0,},
+        ("winner", "loser"): {
+            "o1": 0,
+            "o2": 0,
+            "u1": 0,
+            "u2": 0,
+        },
+        ("winner", "loser2"): {
+            "o1": 0,
+            "o2": 0,
+            "u1": 0,
+            "u2": 0,
+        },
     }
 
     # Create our CVR stratum
     cvr_stratum = BallotComparisonStratum(
-        cvr_stratum_ballots, cvr_stratum_vote_totals, misstatements, sample_size=0,
+        cvr_stratum_ballots,
+        cvr_stratum_vote_totals,
+        misstatements,
+        sample_size=0,
     )
 
     no_cvr_stratum_vote_totals = {"winner": 200, "loser": 100, "loser2": 0}
@@ -839,7 +976,10 @@ def test_multi_candidate():
 
     # create our ballot polling stratum
     no_cvr_stratum = BallotPollingStratum(
-        no_cvr_stratum_ballots, no_cvr_stratum_vote_totals, {}, sample_size=0,
+        no_cvr_stratum_ballots,
+        no_cvr_stratum_vote_totals,
+        {},
+        sample_size=0,
     )
 
     expected_sample_size = HybridPair(cvr=33, non_cvr=14)
@@ -895,11 +1035,21 @@ def test_tie():
     cvr_stratum_ballots = 700
 
     # We sample 500 ballots from the cvr stratum, and find no discrepancies
-    misstatements = {("winner", "loser"): {"o1": 0, "o2": 0, "u1": 0, "u2": 0,}}
+    misstatements = {
+        ("winner", "loser"): {
+            "o1": 0,
+            "o2": 0,
+            "u1": 0,
+            "u2": 0,
+        }
+    }
 
     # Create our CVR stratum
     cvr_stratum = BallotComparisonStratum(
-        cvr_stratum_ballots, cvr_stratum_vote_totals, misstatements, sample_size=0,
+        cvr_stratum_ballots,
+        cvr_stratum_vote_totals,
+        misstatements,
+        sample_size=0,
     )
 
     no_cvr_stratum_vote_totals = {
@@ -910,7 +1060,10 @@ def test_tie():
 
     # create our ballot polling stratum
     no_cvr_stratum = BallotPollingStratum(
-        no_cvr_stratum_ballots, no_cvr_stratum_vote_totals, {}, sample_size=0,
+        no_cvr_stratum_ballots,
+        no_cvr_stratum_vote_totals,
+        {},
+        sample_size=0,
     )
 
     with pytest.raises(ValueError, match=r"One or both strata need to be recounted"):
@@ -977,11 +1130,21 @@ def test_tiny_election():
     cvr_stratum_ballots = 4
 
     # We sample 500 ballots from the cvr stratum, and find no discrepancies
-    misstatements = {("winner", "loser"): {"o1": 0, "o2": 0, "u1": 0, "u2": 0,}}
+    misstatements = {
+        ("winner", "loser"): {
+            "o1": 0,
+            "o2": 0,
+            "u1": 0,
+            "u2": 0,
+        }
+    }
 
     # Create our CVR stratum
     cvr_stratum = BallotComparisonStratum(
-        cvr_stratum_ballots, cvr_stratum_vote_totals, misstatements, sample_size=0,
+        cvr_stratum_ballots,
+        cvr_stratum_vote_totals,
+        misstatements,
+        sample_size=0,
     )
 
     expected_sample_size = HybridPair(cvr=3, non_cvr=3)
@@ -1037,11 +1200,21 @@ def test_invalid_try_n():
     cvr_stratum_ballots = 4
 
     # We sample 500 ballots from the cvr stratum, and find no discrepancies
-    misstatements = {("winner", "loser"): {"o1": 0, "o2": 0, "u1": 0, "u2": 0,}}
+    misstatements = {
+        ("winner", "loser"): {
+            "o1": 0,
+            "o2": 0,
+            "u1": 0,
+            "u2": 0,
+        }
+    }
 
     # Create our CVR stratum
     cvr_stratum = BallotComparisonStratum(
-        cvr_stratum_ballots, cvr_stratum_vote_totals, misstatements, sample_size=0,
+        cvr_stratum_ballots,
+        cvr_stratum_vote_totals,
+        misstatements,
+        sample_size=0,
     )
 
     no_cvr_stratum.sample = {"round1": {"winner": 2, "loser": 0}}
@@ -1141,11 +1314,21 @@ def test_cvr_recount():
     cvr_stratum_ballots = 999
 
     # We sample 500 ballots from the cvr stratum, and find no discrepancies
-    misstatements = {("winner", "loser"): {"o1": 0, "o2": 0, "u1": 0, "u2": 0,}}
+    misstatements = {
+        ("winner", "loser"): {
+            "o1": 0,
+            "o2": 0,
+            "u1": 0,
+            "u2": 0,
+        }
+    }
 
     # Create our CVR stratum
     cvr_stratum = BallotComparisonStratum(
-        cvr_stratum_ballots, cvr_stratum_vote_totals, misstatements, sample_size=0,
+        cvr_stratum_ballots,
+        cvr_stratum_vote_totals,
+        misstatements,
+        sample_size=0,
     )
 
     cvr_stratum.sample_size = 999
@@ -1211,11 +1394,21 @@ def test_bp_recount():
     cvr_stratum_ballots = 999
 
     # We sample 500 ballots from the cvr stratum, and find no discrepancies
-    misstatements = {("winner", "loser"): {"o1": 0, "o2": 0, "u1": 0, "u2": 0,}}
+    misstatements = {
+        ("winner", "loser"): {
+            "o1": 0,
+            "o2": 0,
+            "u1": 0,
+            "u2": 0,
+        }
+    }
 
     # Create our CVR stratum
     cvr_stratum = BallotComparisonStratum(
-        cvr_stratum_ballots, cvr_stratum_vote_totals, misstatements, sample_size=0,
+        cvr_stratum_ballots,
+        cvr_stratum_vote_totals,
+        misstatements,
+        sample_size=0,
     )
 
     cvr_stratum.sample_size = 591
@@ -1281,11 +1474,21 @@ def test_full_recount():
     cvr_stratum_ballots = 999
 
     # We sample 500 ballots from the cvr stratum, and find no discrepancies
-    misstatements = {("winner", "loser"): {"o1": 0, "o2": 0, "u1": 0, "u2": 0,}}
+    misstatements = {
+        ("winner", "loser"): {
+            "o1": 0,
+            "o2": 0,
+            "u1": 0,
+            "u2": 0,
+        }
+    }
 
     # Create our CVR stratum
     cvr_stratum = BallotComparisonStratum(
-        cvr_stratum_ballots, cvr_stratum_vote_totals, misstatements, sample_size=0,
+        cvr_stratum_ballots,
+        cvr_stratum_vote_totals,
+        misstatements,
+        sample_size=0,
     )
 
     cvr_stratum.sample_size = 999
@@ -1376,7 +1579,10 @@ def test_ess_misstatements():
 
     # Missing ballots/contests not on ballot
     audited_results = {
-        "ballot-0": {"times_sampled": 1, "cvr": None,},
+        "ballot-0": {
+            "times_sampled": 1,
+            "cvr": None,
+        },
         "ballot-1": {"times_sampled": 1, "cvr": {}},
     }
     assert misstatements(contest, reported_results, audited_results) == {
@@ -1411,19 +1617,40 @@ expected_p_values = {
 
 
 sprt_contests = {
-    "contest1": {"winner": 500, "loser": 450,},
-    "contest2": {"winner": 600, "loser": 400,},
-    "contest3": {"winner": 500, "loser": 450,},
-    "contest4": {"winner": 500, "loser": 450,},
+    "contest1": {
+        "winner": 500,
+        "loser": 450,
+    },
+    "contest2": {
+        "winner": 600,
+        "loser": 400,
+    },
+    "contest3": {
+        "winner": 500,
+        "loser": 450,
+    },
+    "contest4": {
+        "winner": 500,
+        "loser": 450,
+    },
 }
 
 sprt_ballots = 1000
 
 
 analytic_sprt_contests = {
-    "contest1": {"winner": 5, "loser": 4,},
-    "contest2": {"winner": 6, "loser": 4,},
-    "contest3": {"winner": 6, "loser": 4,},
+    "contest1": {
+        "winner": 5,
+        "loser": 4,
+    },
+    "contest2": {
+        "winner": 6,
+        "loser": 4,
+    },
+    "contest3": {
+        "winner": 6,
+        "loser": 4,
+    },
 }
 analytic_sprt_ballots = 10
 
@@ -1465,11 +1692,26 @@ ss_ballots = {
 }
 
 ss_contests = {
-    "Contest A": {"winner": 60000, "loser": 40000,},
-    "Contest B": {"winner": 30000, "loser": 24000,},
-    "Contest C": {"winner": 18000, "loser": 12600,},
-    "Contest D": {"winner": 8000, "loser": 6000,},
-    "Contest E": {"winner": 10000, "loser": 0,},
+    "Contest A": {
+        "winner": 60000,
+        "loser": 40000,
+    },
+    "Contest B": {
+        "winner": 30000,
+        "loser": 24000,
+    },
+    "Contest C": {
+        "winner": 18000,
+        "loser": 12600,
+    },
+    "Contest D": {
+        "winner": 8000,
+        "loser": 6000,
+    },
+    "Contest E": {
+        "winner": 10000,
+        "loser": 0,
+    },
 }
 
 true_sample_sizes = {

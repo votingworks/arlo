@@ -17,8 +17,16 @@ def contest_ids(
             "name": "Contest 1",
             "isTargeted": True,
             "choices": [
-                {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 600,},
-                {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 400,},
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "candidate 1",
+                    "numVotes": 600,
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "candidate 2",
+                    "numVotes": 400,
+                },
             ],
             "totalBallotsCast": 1600,
             "numWinners": 1,
@@ -30,8 +38,16 @@ def contest_ids(
             "name": "Contest 2",
             "isTargeted": True,
             "choices": [
-                {"id": str(uuid.uuid4()), "name": "Yes", "numVotes": 800,},
-                {"id": str(uuid.uuid4()), "name": "No", "numVotes": 650,},
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "Yes",
+                    "numVotes": 800,
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "No",
+                    "numVotes": 650,
+                },
             ],
             "totalBallotsCast": 1600,
             "numWinners": 1,
@@ -43,9 +59,21 @@ def contest_ids(
             "name": "Contest 3",
             "isTargeted": False,
             "choices": [
-                {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 200,},
-                {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 300,},
-                {"id": str(uuid.uuid4()), "name": "candidate 3", "numVotes": 100,},
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "candidate 1",
+                    "numVotes": 200,
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "candidate 2",
+                    "numVotes": 300,
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "candidate 3",
+                    "numVotes": 100,
+                },
             ],
             "totalBallotsCast": 600,
             "numWinners": 2,

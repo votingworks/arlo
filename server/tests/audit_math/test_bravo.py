@@ -1,4 +1,4 @@
-# pylint: disable=invalid-name
+# pylint: disable=invalid-name,consider-using-dict-items,consider-using-f-string
 from decimal import Decimal
 import math
 from unittest.mock import patch
@@ -374,17 +374,38 @@ def test_compute_risk(contests):
     # Test computing sample
     expected_Ts = {
         "test1": {("cand1", "cand2"): 0.07},
-        "test2": {("cand1", "cand2"): 1.0, ("cand1", "cand3"): 0,},
+        "test2": {
+            ("cand1", "cand2"): 1.0,
+            ("cand1", "cand3"): 0,
+        },
         "test3": {("cand1", ""): 1},
         "test4": {("cand1", ""): 0},
         "test5": {("cand1", "cand2"): 0},
-        "test6": {("cand1", "cand2"): 0.08, ("cand1", "cand3"): 0.08,},
-        "test7": {("cand1", "cand3"): 0.01, ("cand2", "cand3"): 0.04,},
-        "test8": {("cand1", "cand3"): 0.0, ("cand2", "cand3"): 0.22,},
-        "test9": {("cand1", ""): 1, ("cand2", ""): 1,},
-        "test10": {("cand1", "cand3"): 0, ("cand2", "cand3"): 0.01,},
+        "test6": {
+            ("cand1", "cand2"): 0.08,
+            ("cand1", "cand3"): 0.08,
+        },
+        "test7": {
+            ("cand1", "cand3"): 0.01,
+            ("cand2", "cand3"): 0.04,
+        },
+        "test8": {
+            ("cand1", "cand3"): 0.0,
+            ("cand2", "cand3"): 0.22,
+        },
+        "test9": {
+            ("cand1", ""): 1,
+            ("cand2", ""): 1,
+        },
+        "test10": {
+            ("cand1", "cand3"): 0,
+            ("cand2", "cand3"): 0.01,
+        },
         "test11": {("cand1", "cand2"): 1},
-        "test12": {("cand1", "cand2"): 0.07, ("cand1", "cand3"): 0,},
+        "test12": {
+            ("cand1", "cand2"): 0.07,
+            ("cand1", "cand3"): 0,
+        },
         "test_small_third_candidate": {
             ("cand1", "cand2"): 0.000561,
             ("cand1", "cand3"): 0,
@@ -444,18 +465,44 @@ def test_compute_risk_empty(contests):
     # Test computing risk limit with no sample
     expected_Ts = {
         "test1": {("cand1", "cand2"): 1},
-        "test2": {("cand1", "cand2"): 1, ("cand1", "cand3"): 1,},
+        "test2": {
+            ("cand1", "cand2"): 1,
+            ("cand1", "cand3"): 1,
+        },
         "test3": {("cand1", ""): 1},
         "test4": {("cand1", ""): 1},
         "test5": {("cand1", "cand2"): 1},
-        "test6": {("cand1", "cand2"): 1, ("cand1", "cand3"): 1,},
-        "test7": {("cand1", "cand3"): 1, ("cand2", "cand3"): 1,},
-        "test8": {("cand1", "cand3"): 1, ("cand2", "cand3"): 1,},
-        "test9": {("cand1", ""): 1, ("cand2", ""): 1,},
-        "test10": {("cand1", "cand3"): 1, ("cand2", "cand3"): 1,},
-        "test11": {("cand1", "cand2"): 1,},
-        "test12": {("cand1", "cand2"): 1, ("cand1", "cand3"): 1,},
-        "test_small_third_candidate": {("cand1", "cand2"): 1, ("cand1", "cand3"): 1,},
+        "test6": {
+            ("cand1", "cand2"): 1,
+            ("cand1", "cand3"): 1,
+        },
+        "test7": {
+            ("cand1", "cand3"): 1,
+            ("cand2", "cand3"): 1,
+        },
+        "test8": {
+            ("cand1", "cand3"): 1,
+            ("cand2", "cand3"): 1,
+        },
+        "test9": {
+            ("cand1", ""): 1,
+            ("cand2", ""): 1,
+        },
+        "test10": {
+            ("cand1", "cand3"): 1,
+            ("cand2", "cand3"): 1,
+        },
+        "test11": {
+            ("cand1", "cand2"): 1,
+        },
+        "test12": {
+            ("cand1", "cand2"): 1,
+            ("cand1", "cand3"): 1,
+        },
+        "test_small_third_candidate": {
+            ("cand1", "cand2"): 1,
+            ("cand1", "cand3"): 1,
+        },
         "test_ga_presidential": {
             ("Biden", "Trump"): 1,
             ("Biden", "Jorgensen"): 1,
@@ -559,7 +606,12 @@ def test_tied_contest():
     assert not res
 
     # Now do a full hand recount
-    sample_results = {"round1": {"cand1": 501, "cand2": 499,}}
+    sample_results = {
+        "round1": {
+            "cand1": 501,
+            "cand2": 499,
+        }
+    }
 
     computed_p, res = bravo.compute_risk(RISK_LIMIT, contest, sample_results)
 
@@ -780,14 +832,30 @@ round0_sample_results = {
 
 round1_sample_results = {
     "test1": {"round1": {"cand1": 72, "cand2": 47}},
-    "test2": {"round1": {"cand1": 25, "cand2": 18, "cand3": 5,}},
+    "test2": {
+        "round1": {
+            "cand1": 25,
+            "cand2": 18,
+            "cand3": 5,
+        }
+    },
     "test3": {"round1": {"cand1": 0}},
     "test4": {"round1": {"cand1": 100}},
-    "test5": {"round1": {"cand1": 500, "cand2": 500,}},
+    "test5": {
+        "round1": {
+            "cand1": 500,
+            "cand2": 500,
+        }
+    },
     "test6": {"round1": {"cand1": 72, "cand2": 48, "cand3": 48}},
     "test7": {"round1": {"cand1": 30, "cand2": 25, "cand3": 10}},
     "test8": {"round1": {"cand1": 72, "cand2": 55, "cand3": 30}},
-    "test9": {"round1": {"cand1": 1, "cand2": 1,}},
+    "test9": {
+        "round1": {
+            "cand1": 1,
+            "cand2": 1,
+        }
+    },
     "test10": {"round1": {"cand1": 60, "cand2": 30, "cand3": 10}},
     "test11": {"round1": {"cand1": 0, "cand2": 0}},
     "test12": {"round1": {"cand1": 72, "cand2": 47, "cand3": 0}},
@@ -842,18 +910,44 @@ true_sample_sizes = {
     },
     "test3": {},
     "test4": {},
-    "test5": {"all-ballots": {"type": "all-ballots", "size": 1000, "prob": None},},
+    "test5": {
+        "all-ballots": {"type": "all-ballots", "size": 1000, "prob": None},
+    },
     "test6": {
         "asn": {"type": "ASN", "size": 238, "prob": 0.52},
         "0.7": {"type": None, "size": 368, "prob": 0.7},
         "0.8": {"type": None, "size": 488, "prob": 0.8},
         "0.9": {"type": None, "size": 702, "prob": 0.9},
     },
-    "test7": {"asn": {"type": "ASN", "size": 101, "prob": None,},},
-    "test8": {"asn": {"type": "ASN", "size": 34, "prob": None,},},
+    "test7": {
+        "asn": {
+            "type": "ASN",
+            "size": 101,
+            "prob": None,
+        },
+    },
+    "test8": {
+        "asn": {
+            "type": "ASN",
+            "size": 34,
+            "prob": None,
+        },
+    },
     "test9": {},
-    "test10": {"asn": {"type": "ASN", "size": 48, "prob": None,},},
-    "test11": {"asn": {"type": "ASN", "size": 1, "prob": 1.0,},},
+    "test10": {
+        "asn": {
+            "type": "ASN",
+            "size": 48,
+            "prob": None,
+        },
+    },
+    "test11": {
+        "asn": {
+            "type": "ASN",
+            "size": 1,
+            "prob": 1.0,
+        },
+    },
     "test12": {
         "asn": {"type": "ASN", "size": 119, "prob": 0.52},
         "0.7": {"type": None, "size": 184, "prob": 0.7},
@@ -891,10 +985,22 @@ round2_sample_sizes = {
     "test5": {},
     "test6": {},
     "test7": {},
-    "test8": {"asn": {"type": "ASN", "size": 14, "prob": None,},},
+    "test8": {
+        "asn": {
+            "type": "ASN",
+            "size": 14,
+            "prob": None,
+        },
+    },
     "test9": {},
     "test10": {},
-    "test11": {"asn": {"type": "ASN", "size": 1, "prob": 1.0,},},
+    "test11": {
+        "asn": {
+            "type": "ASN",
+            "size": 1,
+            "prob": 1.0,
+        },
+    },
     "test12": {},
     "test_small_third_candidate": {},
     "test_ga_presidential": {},

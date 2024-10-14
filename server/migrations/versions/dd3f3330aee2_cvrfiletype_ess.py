@@ -21,7 +21,10 @@ def upgrade():
     op.execute("ALTER TYPE cvrfiletype RENAME TO cvrfiletype_old")
 
     new_cvr_file_type_enum = sa.dialects.postgresql.ENUM(
-        "DOMINION", "CLEARBALLOT", "ESS", name="cvrfiletype",
+        "DOMINION",
+        "CLEARBALLOT",
+        "ESS",
+        name="cvrfiletype",
     )
     new_cvr_file_type_enum.create(op.get_bind())
 

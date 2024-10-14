@@ -45,9 +45,8 @@ def validate_schema(schema: JSONSchema):
                     )
 
                 if "required" not in node:
-                    hint = '"required": [%s]' % "".join(
-                        f'"{key}"' for key in properties
-                    )
+                    missing_keys = "".join(f'"{key}"' for key in properties)
+                    hint = f'"required": [{missing_keys}]'
                     raise jsonschema.exceptions.ValidationError(
                         f"'required' must be present on objects, maybe you want: {hint} (at {_serialize_keypath(current_keypath)})"
                     )

@@ -75,7 +75,12 @@ def test_jurisdictions_list_with_manifest(
     )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
-        data={"manifest": (io.BytesIO(manifest), "manifest.csv",)},
+        data={
+            "manifest": (
+                io.BytesIO(manifest),
+                "manifest.csv",
+            )
+        },
     )
     assert_ok(rv)
 
@@ -88,7 +93,10 @@ def test_jurisdictions_list_with_manifest(
                 "id": jurisdiction_ids[0],
                 "name": "J1",
                 "ballotManifest": {
-                    "file": {"name": "manifest.csv", "uploadedAt": assert_is_date,},
+                    "file": {
+                        "name": "manifest.csv",
+                        "uploadedAt": assert_is_date,
+                    },
                     "processing": {
                         "status": "PROCESSED",
                         "startedAt": assert_is_date,
@@ -167,7 +175,10 @@ def test_duplicate_batch_name(client, election_id, jurisdiction_ids):
                 "id": jurisdiction_ids[0],
                 "name": "J1",
                 "ballotManifest": {
-                    "file": {"name": "manifest.csv", "uploadedAt": assert_is_date,},
+                    "file": {
+                        "name": "manifest.csv",
+                        "uploadedAt": assert_is_date,
+                    },
                     "processing": {
                         "status": "ERRORED",
                         "startedAt": assert_is_date,
@@ -230,7 +241,10 @@ def test_jurisdictions_status_round_1_no_audit_boards(
 
 
 def test_jurisdictions_status_round_1_with_audit_boards(
-    client: FlaskClient, election_id: str, audit_board_round_1_ids: List[str], snapshot,
+    client: FlaskClient,
+    election_id: str,
+    audit_board_round_1_ids: List[str],
+    snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
@@ -272,7 +286,9 @@ def test_jurisdictions_status_round_1_with_audit_boards(
 
 
 def test_jurisdictions_status_round_1_with_audit_boards_without_ballots(
-    client: FlaskClient, election_id: str, audit_board_round_1_ids: List[str],
+    client: FlaskClient,
+    election_id: str,
+    audit_board_round_1_ids: List[str],
 ):
     # Unassign all ballots for one audit board. This audit board shouldn't
     # factor into the jurisdiction's status
@@ -410,5 +426,10 @@ def test_discrepancy_counts_before_audit_launch(
     rv = client.get(f"/api/election/{election_id}/discrepancy-counts")
     assert rv.status_code == 409
     assert json.loads(rv.data) == {
-        "errors": [{"errorType": "Conflict", "message": "Audit not started",}]
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Audit not started",
+            }
+        ]
     }

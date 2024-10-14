@@ -19,9 +19,21 @@ def contest_ids(
             "name": "Contest 1",
             "isTargeted": True,
             "choices": [
-                {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 1000000,},
-                {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 999000,},
-                {"id": str(uuid.uuid4()), "name": "candidate 3", "numVotes": 1000,},
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "candidate 1",
+                    "numVotes": 1000000,
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "candidate 2",
+                    "numVotes": 999000,
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "candidate 3",
+                    "numVotes": 1000,
+                },
             ],
             "totalBallotsCast": 2000000,
             "numWinners": 1,
@@ -323,7 +335,10 @@ def test_all_ballots_audit(
     assert rv.status_code == 200
     compare_json(
         json.loads(rv.data),
-        {"finalizedAt": assert_is_date, "results": updated_jurisdiction_1_results,},
+        {
+            "finalizedAt": assert_is_date,
+            "results": updated_jurisdiction_1_results,
+        },
     )
 
     # Trying to end the round should fail, since we haven't recorded results for
@@ -409,7 +424,10 @@ def test_all_ballots_audit(
     assert rv.status_code == 200
     compare_json(
         json.loads(rv.data),
-        {"finalizedAt": assert_is_date, "results": jurisdiction_2_results,},
+        {
+            "finalizedAt": assert_is_date,
+            "results": jurisdiction_2_results,
+        },
     )
 
     # End the round
@@ -682,16 +700,13 @@ def test_full_hand_tally_results_validation(
     rv = post_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/full-hand-tally/batch/",
-        [
-            {
-                "batchName": "Batch 1",
-                "batchType": "Provisional",
-                "choiceResults": {
-                    choice["id"]: choice["numVotes"] / 4
-                    for choice in contest["choices"]
-                },
-            }
-        ],
+        {
+            "batchName": "Batch 1",
+            "batchType": "Provisional",
+            "choiceResults": {
+                choice["id"]: choice["numVotes"] / 4 for choice in contest["choices"]
+            },
+        },
     )
     assert rv.status_code == 409
     assert json.loads(rv.data) == {
@@ -703,16 +718,13 @@ def test_full_hand_tally_results_validation(
     rv = put_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/full-hand-tally/batch/Batch 1",
-        [
-            {
-                "batchName": "Batch 1",
-                "batchType": "Provisional",
-                "choiceResults": {
-                    choice["id"]: choice["numVotes"] / 4
-                    for choice in contest["choices"]
-                },
-            }
-        ],
+        {
+            "batchName": "Batch 1",
+            "batchType": "Provisional",
+            "choiceResults": {
+                choice["id"]: choice["numVotes"] / 4 for choice in contest["choices"]
+            },
+        },
     )
     assert rv.status_code == 409
     assert json.loads(rv.data) == {

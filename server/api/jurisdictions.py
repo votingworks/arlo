@@ -100,7 +100,9 @@ def process_jurisdictions_file(election_id: str):
 
         if not jurisdiction:
             jurisdiction = Jurisdiction(
-                id=str(uuid.uuid4()), election=election, name=name,
+                id=str(uuid.uuid4()),
+                election=election,
+                name=name,
             )
             db_session.add(jurisdiction)
 
@@ -141,7 +143,9 @@ def process_jurisdictions_file(election_id: str):
 
 
 def serialize_jurisdiction(
-    election: Election, jurisdiction: Jurisdiction, round_status: Optional[JSONDict],
+    election: Election,
+    jurisdiction: Jurisdiction,
+    round_status: Optional[JSONDict],
 ) -> JSONDict:
     json_jurisdiction: JSONDict = {
         "id": jurisdiction.id,
@@ -229,7 +233,8 @@ class JurisdictionStatus(str, enum.Enum):
 
 
 def round_status_by_jurisdiction(
-    election: Election, round: Optional[Round],
+    election: Election,
+    round: Optional[Round],
 ) -> Mapping[str, Optional[JSONDict]]:
     if not round:
         return {j.id: None for j in election.jurisdictions}
@@ -263,9 +268,11 @@ def jurisdiction_audit_board_status(
         jurisdiction.id: (
             JurisdictionAuditBoardStatus.NOT_SET_UP
             if audit_boards_set_up.get(jurisdiction.id, 0) == 0
-            else JurisdictionAuditBoardStatus.IN_PROGRESS
-            if audit_boards_with_ballots_not_signed_off.get(jurisdiction.id, 0) > 0
-            else JurisdictionAuditBoardStatus.SIGNED_OFF
+            else (
+                JurisdictionAuditBoardStatus.IN_PROGRESS
+                if audit_boards_with_ballots_not_signed_off.get(jurisdiction.id, 0) > 0
+                else JurisdictionAuditBoardStatus.SIGNED_OFF
+            )
         )
         for jurisdiction in jurisdictions
     }
@@ -437,9 +444,9 @@ def ballot_round_status(election: Election, round: Round) -> Dict[str, JSONDict]
             )
         )
         for jurisdiction_id in statuses:
-            statuses[jurisdiction_id][
-                "numBatchesAudited"
-            ] = num_batches_by_jurisdiction.get(jurisdiction_id, 0)
+            statuses[jurisdiction_id]["numBatchesAudited"] = (
+                num_batches_by_jurisdiction.get(jurisdiction_id, 0)
+            )
 
     return statuses
 
@@ -593,7 +600,7 @@ def update_jurisdictions_file(election: Election):
     )
     election.jurisdictions_file = File(
         id=str(uuid.uuid4()),
-        name=jurisdictions_file.filename,
+        name=jurisdictions_file.filename,  # type: ignore
         storage_path=storage_path,
         uploaded_at=datetime.datetime.now(timezone.utc),
     )
@@ -632,7 +639,9 @@ def get_discrepancy_counts_by_jurisdiction(election: Election):
             audited_results = sampled_ballot_interpretations_to_cvrs(contest)
             for ballot_id, audited_result in audited_results.items():
                 vote_deltas = ballot_vote_deltas(
-                    contest, reported_results.get(ballot_id), audited_result["cvr"],
+                    contest,
+                    reported_results.get(ballot_id),
+                    audited_result["cvr"],
                 )
                 if vote_deltas and ballot_id in sampled_ballot_id_to_jurisdiction_id:
                     jurisdiction_id = sampled_ballot_id_to_jurisdiction_id[ballot_id]

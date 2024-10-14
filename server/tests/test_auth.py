@@ -151,7 +151,8 @@ def test_support_start(client: FlaskClient):
 
 
 def test_support_callback(
-    client: FlaskClient, org_id: str,  # pylint: disable=unused-argument
+    client: FlaskClient,
+    org_id: str,  # pylint: disable=unused-argument
 ):
     with patch.object(auth0_sa, "authorize_access_token", return_value=None):
         mock_response = Mock()
@@ -179,7 +180,8 @@ def test_support_callback(
 
 
 def test_support_callback_rejected(
-    client: FlaskClient, org_id: str,  # pylint: disable=unused-argument
+    client: FlaskClient,
+    org_id: str,  # pylint: disable=unused-argument
 ):
     bad_user_infos: List[Optional[JSONDict]] = [None, {}, {"email": AA_EMAIL}]
     for bad_user_info in bad_user_infos:
@@ -200,7 +202,8 @@ def test_support_callback_rejected(
 
 
 def test_support_callback_multiple_allowed_domains(
-    client: FlaskClient, org_id: str,  # pylint: disable=unused-argument
+    client: FlaskClient,
+    org_id: str,  # pylint: disable=unused-argument
 ):
     config.SUPPORT_EMAIL_DOMAINS = ["voting.works", "example.gov"]
     with patch.object(auth0_sa, "authorize_access_token", return_value=None):
@@ -409,7 +412,10 @@ def test_jurisdiction_admin_bad_code(mock_smtp, client: FlaskClient, ja_email: s
     assert rv.status_code == 400
     assert json.loads(rv.data) == {
         "errors": [
-            {"errorType": "Bad Request", "message": "Please request a new code.",}
+            {
+                "errorType": "Bad Request",
+                "message": "Please request a new code.",
+            }
         ]
     }
 
@@ -443,7 +449,12 @@ def test_jurisdiction_admin_bad_code(mock_smtp, client: FlaskClient, ja_email: s
     )
     assert rv.status_code == 400
     assert json.loads(rv.data) == {
-        "errors": [{"errorType": "Bad Request", "message": "Invalid email address.",}]
+        "errors": [
+            {
+                "errorType": "Bad Request",
+                "message": "Invalid email address.",
+            }
+        ]
     }
 
     with client.session_transaction() as session:  # type: ignore
@@ -515,7 +526,9 @@ def test_jurisdiction_admin_too_many_attempts(
 
 
 def test_audit_board_log_in(
-    client: FlaskClient, election_id: str, audit_board_id: str,
+    client: FlaskClient,
+    election_id: str,
+    audit_board_id: str,
 ):
     audit_board = AuditBoard.query.get(audit_board_id)
     db_session.expunge(audit_board)
@@ -563,7 +576,10 @@ def test_tally_entry_login(
         f"/auth/tallyentry/election/{election_id}/jurisdiction/{jurisdiction_id}"
     )
     assert rv.status_code == 200
-    assert json.loads(rv.data) == dict(passphrase=None, loginRequests=[],)
+    assert json.loads(rv.data) == dict(
+        passphrase=None,
+        loginRequests=[],
+    )
 
     # Turn on tally entry login, generating a login link passphrase
     rv = client.post(
@@ -894,7 +910,10 @@ def test_tally_entry_invalid_members(
             [{"name": "Jane Plain", "affiliation": "Democrat"}],
             "'Democrat' is not one of ['DEM', 'REP', 'LIB', 'IND', 'OTH']",
         ),
-        ([], "Must have at least one member.",),
+        (
+            [],
+            "Must have at least one member.",
+        ),
         (
             [
                 {"name": "Joe Schmo", "affiliation": "DEM"},
@@ -1019,7 +1038,10 @@ def test_tally_entry_invalid_code(
     assert rv.status_code == 400
     assert json.loads(rv.data) == {
         "errors": [
-            {"errorType": "Bad Request", "message": "Tally entry user not found.",}
+            {
+                "errorType": "Bad Request",
+                "message": "Tally entry user not found.",
+            }
         ]
     }
 
@@ -1132,7 +1154,9 @@ def test_auth0_error(client: FlaskClient):
     )
 
 
-def test_audit_board_not_found(client: FlaskClient,):
+def test_audit_board_not_found(
+    client: FlaskClient,
+):
     rv = client.get("/auditboard/not-a-real-passphrase")
     assert rv.status_code == 302
     location = urlparse(rv.location)
@@ -1193,7 +1217,8 @@ def test_auth_me_jurisdiction_admin(
 
 
 def test_auth_me_audit_board(
-    client: FlaskClient, audit_board_id: str,
+    client: FlaskClient,
+    audit_board_id: str,
 ):
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_id)
     rv = client.get("/api/me")
@@ -1385,7 +1410,9 @@ def test_restrict_access_audit_admin_audit_board_user(
 
 
 def test_restrict_access_audit_admin_tally_entry_user(
-    client: FlaskClient, batch_election_id: str, tally_entry_user_id: str,
+    client: FlaskClient,
+    batch_election_id: str,
+    tally_entry_user_id: str,
 ):
     set_logged_in_user(client, UserType.TALLY_ENTRY, tally_entry_user_id)
     rv = client.get(f"/api/election/{batch_election_id}/test_auth")
@@ -1410,7 +1437,10 @@ def test_restrict_access_audit_admin_anonymous_user(
     assert rv.status_code == 401
     assert json.loads(rv.data) == {
         "errors": [
-            {"errorType": "Unauthorized", "message": "Please log in to access Arlo",}
+            {
+                "errorType": "Unauthorized",
+                "message": "Please log in to access Arlo",
+            }
         ]
     }
 
@@ -1466,7 +1496,9 @@ def test_restrict_access_jurisdiction_admin_wrong_election(
 
 
 def test_restrict_access_jurisdiction_admin_wrong_jurisdiction(
-    client: FlaskClient, election_id: str, ja_email: str,
+    client: FlaskClient,
+    election_id: str,
+    ja_email: str,
 ):
     jurisdiction_id_2, _ = create_jurisdiction_and_admin(
         election_id, "Jurisdiction 2", "ja2@example.com"
@@ -1487,7 +1519,9 @@ def test_restrict_access_jurisdiction_admin_wrong_jurisdiction(
 
 
 def test_restrict_access_jurisdiction_admin_election_not_found(
-    client: FlaskClient, jurisdiction_id: str, ja_email: str,
+    client: FlaskClient,
+    jurisdiction_id: str,
+    ja_email: str,
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, ja_email)
     rv = client.get(
@@ -1516,7 +1550,10 @@ def test_restrict_access_jurisdiction_admin_with_audit_admin(
 
 
 def test_restrict_access_jurisdiction_admin_with_audit_board_user(
-    client: FlaskClient, election_id: str, jurisdiction_id: str, audit_board_id: str,
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_id: str,
+    audit_board_id: str,
 ):
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_id)
     rv = client.get(
@@ -1713,7 +1750,8 @@ def test_restrict_access_audit_board_wrong_org(
 
 
 def test_restrict_access_audit_board_wrong_election(
-    client: FlaskClient, audit_board_id: str,
+    client: FlaskClient,
+    audit_board_id: str,
 ):
     org_id_2, _ = create_org_and_admin("Org 4", "aa4@example.com")
     set_logged_in_user(client, UserType.AUDIT_ADMIN, "aa4@example.com")
@@ -1752,7 +1790,10 @@ def test_restrict_access_audit_board_wrong_jurisdiction(
 
 
 def test_restrict_access_audit_board_wrong_round(
-    client: FlaskClient, election_id: str, jurisdiction_id: str, audit_board_id: str,
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_id: str,
+    audit_board_id: str,
 ):
     round_id_2 = create_round(election_id, round_num=2)
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_id)
@@ -1786,7 +1827,10 @@ def test_restrict_access_audit_board_wrong_audit_board(
 
 
 def test_restrict_access_audit_board_election_not_found(
-    client: FlaskClient, jurisdiction_id: str, round_id: str, audit_board_id: str,
+    client: FlaskClient,
+    jurisdiction_id: str,
+    round_id: str,
+    audit_board_id: str,
 ):
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_id)
     rv = client.get(
@@ -1796,7 +1840,10 @@ def test_restrict_access_audit_board_election_not_found(
 
 
 def test_restrict_access_audit_board_jurisdiction_not_found(
-    client: FlaskClient, election_id: str, round_id: str, audit_board_id: str,
+    client: FlaskClient,
+    election_id: str,
+    round_id: str,
+    audit_board_id: str,
 ):
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_id)
     rv = client.get(
@@ -1806,7 +1853,10 @@ def test_restrict_access_audit_board_jurisdiction_not_found(
 
 
 def test_restrict_access_audit_board_round_not_found(
-    client: FlaskClient, election_id: str, jurisdiction_id: str, audit_board_id: str,
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_id: str,
+    audit_board_id: str,
 ):
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_id)
     rv = client.get(
@@ -1910,7 +1960,9 @@ def test_restrict_access_tally_entry_with_audit_board(
 
 
 def test_restrict_access_tally_entry_with_anonymous_user(
-    client: FlaskClient, batch_election_id: str, batch_jurisdiction_id: str,
+    client: FlaskClient,
+    batch_election_id: str,
+    batch_jurisdiction_id: str,
 ):
     clear_logged_in_user(client)
     rv = client.get(
@@ -1925,7 +1977,9 @@ def test_restrict_access_tally_entry_with_anonymous_user(
 
 
 def test_restrict_access_tally_entry_election_not_found(
-    client: FlaskClient, batch_jurisdiction_id: str, tally_entry_user_id: str,
+    client: FlaskClient,
+    batch_jurisdiction_id: str,
+    tally_entry_user_id: str,
 ):
     set_logged_in_user(client, UserType.TALLY_ENTRY, tally_entry_user_id)
     rv = client.get(
@@ -1935,7 +1989,9 @@ def test_restrict_access_tally_entry_election_not_found(
 
 
 def test_restrict_access_tally_entry_jurisdiction_not_found(
-    client: FlaskClient, batch_election_id: str, tally_entry_user_id: str,
+    client: FlaskClient,
+    batch_election_id: str,
+    tally_entry_user_id: str,
 ):
     set_logged_in_user(client, UserType.TALLY_ENTRY, tally_entry_user_id)
     rv = client.get(
@@ -1991,7 +2047,9 @@ def test_restrict_access_tally_entry_wrong_election(
 
 
 def test_restrict_access_tally_entry_wrong_jurisdiction(
-    client: FlaskClient, batch_election_id: str, tally_entry_user_id: str,
+    client: FlaskClient,
+    batch_election_id: str,
+    tally_entry_user_id: str,
 ):
     jurisdiction_id = create_jurisdiction(batch_election_id, "Other jurisdiction").id
 
@@ -2048,7 +2106,9 @@ def test_csrf(client: FlaskClient, org_id: str):
 
     rv = client.get("/")
     csrf_token = next(
-        cookie for cookie in client.cookie_jar if cookie.name == "_csrf_token"
+        cookie
+        for cookie in client.cookie_jar  # type: ignore
+        if cookie.name == "_csrf_token"
     ).value
     rv = client.post(
         "/api/election",

@@ -15,7 +15,7 @@ from ..util.jsonschema import validate, JSONDict
 from ..util.binpacking import BalancedBucketList, Bucket
 from ..util.isoformat import isoformat
 from ..util.collections import find_first_duplicate
-
+from ..util.get_json import safe_get_json_dict, safe_get_json_list
 from ..activity_log.activity_log import (
     AuditBoardSignOff,
     CreateAuditBoards,
@@ -27,10 +27,13 @@ WORDS = xp.generate_wordlist(wordfile=xp.locate_wordfile())
 
 CREATE_AUDIT_BOARD_REQUEST_SCHEMA = {
     "type": "object",
-    "properties": {"name": {"type": "string"},},
+    "properties": {
+        "name": {"type": "string"},
+    },
     "additionalProperties": False,
     "required": ["name"],
 }
+
 
 # Raises if invalid
 def validate_audit_boards(
@@ -58,7 +61,9 @@ def validate_audit_boards(
 
 
 def assign_sampled_ballots(
-    jurisdiction: Jurisdiction, round: Round, audit_boards: List[AuditBoard],
+    jurisdiction: Jurisdiction,
+    round: Round,
+    audit_boards: List[AuditBoard],
 ):
     # If containers were provided, we want all ballots from the same container
     # assigned to the same audit board. So we key batches by container.
@@ -117,7 +122,8 @@ def assign_sampled_ballots(
                 .where(
                     SampledBallot.batch_id.in_(
                         Batch.query.filter_by(
-                            jurisdiction_id=jurisdiction.id, **batch_filter,
+                            jurisdiction_id=jurisdiction.id,
+                            **batch_filter,
                         )
                         .with_entities(Batch.id)
                         .subquery()
@@ -167,7 +173,7 @@ def assign_sampled_ballots(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def create_audit_boards(election: Election, jurisdiction: Jurisdiction, round: Round):
-    json_audit_boards = request.get_json()
+    json_audit_boards = safe_get_json_list(request)
     validate_audit_boards(json_audit_boards, election, jurisdiction, round)
 
     audit_boards = [
@@ -325,7 +331,7 @@ def set_audit_board_members(
     round: Round,  # pylint: disable=unused-argument
     audit_board: AuditBoard,
 ):
-    members = request.get_json()
+    members = safe_get_json_list(request)
     validate_members(members)
 
     audit_board.member_1 = members[0]["name"].strip()
@@ -348,6 +354,7 @@ SIGN_OFF_AUDIT_BOARD_REQUEST_SCHEMA = {
     "additionalProperties": False,
     "required": ["memberName1", "memberName2"],
 }
+
 
 # Raises if invalid
 def validate_sign_off(sign_off_request: JSONDict, audit_board: AuditBoard):
@@ -381,7 +388,7 @@ def sign_off_audit_board(
     round: Round,  # pylint: disable=unused-argument
     audit_board: AuditBoard,
 ):
-    validate_sign_off(request.get_json(), audit_board)
+    validate_sign_off(safe_get_json_dict(request), audit_board)
 
     audit_board.signed_off_at = datetime.now(timezone.utc)
 

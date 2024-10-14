@@ -53,7 +53,12 @@ def test_batch_tallies_upload(
     )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
-        data={"batchTallies": (io.BytesIO(batch_tallies_file), "batchTallies.csv",)},
+        data={
+            "batchTallies": (
+                io.BytesIO(batch_tallies_file),
+                "batchTallies.csv",
+            )
+        },
     )
     assert_ok(rv)
 
@@ -63,7 +68,10 @@ def test_batch_tallies_upload(
     compare_json(
         json.loads(rv.data),
         {
-            "file": {"name": "batchTallies.csv", "uploadedAt": assert_is_date,},
+            "file": {
+                "name": "batchTallies.csv",
+                "uploadedAt": assert_is_date,
+            },
             "processing": {
                 "status": ProcessingStatus.PROCESSED,
                 "startedAt": assert_is_date,
@@ -110,7 +118,10 @@ def test_batch_tallies_upload(
     compare_json(
         jurisdictions[0]["batchTallies"],
         {
-            "file": {"name": "batchTallies.csv", "uploadedAt": assert_is_date,},
+            "file": {
+                "name": "batchTallies.csv",
+                "uploadedAt": assert_is_date,
+            },
             "processing": {
                 "status": "PROCESSED",
                 "startedAt": assert_is_date,
@@ -353,7 +364,10 @@ def test_batch_tallies_upload_missing_choice(
         compare_json(
             json.loads(rv.data),
             {
-                "file": {"name": "batchTallies.csv", "uploadedAt": assert_is_date,},
+                "file": {
+                    "name": "batchTallies.csv",
+                    "uploadedAt": assert_is_date,
+                },
                 "processing": {
                     "status": ProcessingStatus.ERRORED,
                     "startedAt": assert_is_date,
@@ -413,7 +427,12 @@ def test_batch_tallies_wrong_batch_names(
     for bad_file, expected_error in bad_files:
         rv = client.put(
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
-            data={"batchTallies": (io.BytesIO(bad_file), "batchTallies.csv",)},
+            data={
+                "batchTallies": (
+                    io.BytesIO(bad_file),
+                    "batchTallies.csv",
+                )
+            },
         )
         assert_ok(rv)
 
@@ -423,7 +442,10 @@ def test_batch_tallies_wrong_batch_names(
         compare_json(
             json.loads(rv.data),
             {
-                "file": {"name": "batchTallies.csv", "uploadedAt": assert_is_date,},
+                "file": {
+                    "name": "batchTallies.csv",
+                    "uploadedAt": assert_is_date,
+                },
                 "processing": {
                     "status": "ERRORED",
                     "startedAt": assert_is_date,
@@ -466,7 +488,10 @@ def test_batch_tallies_too_many_tallies(
     compare_json(
         json.loads(rv.data),
         {
-            "file": {"name": "batchTallies.csv", "uploadedAt": assert_is_date,},
+            "file": {
+                "name": "batchTallies.csv",
+                "uploadedAt": assert_is_date,
+            },
             "processing": {
                 "status": ProcessingStatus.ERRORED,
                 "startedAt": assert_is_date,
@@ -636,7 +661,10 @@ def test_batch_tallies_reprocess_after_manifest_reupload(
     compare_json(
         json.loads(rv.data),
         {
-            "file": {"name": "batchTallies.csv", "uploadedAt": assert_is_date,},
+            "file": {
+                "name": "batchTallies.csv",
+                "uploadedAt": assert_is_date,
+            },
             "processing": {
                 "status": ProcessingStatus.ERRORED,
                 "startedAt": assert_is_date,
@@ -672,7 +700,10 @@ def test_batch_tallies_reprocess_after_manifest_reupload(
     compare_json(
         json.loads(rv.data),
         {
-            "file": {"name": "batchTallies.csv", "uploadedAt": assert_is_date,},
+            "file": {
+                "name": "batchTallies.csv",
+                "uploadedAt": assert_is_date,
+            },
             "processing": {
                 "status": ProcessingStatus.PROCESSED,
                 "startedAt": assert_is_date,

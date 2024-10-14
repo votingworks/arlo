@@ -160,7 +160,10 @@ def test_run_offline_audit(
 
 
 def test_offline_results_without_audit_boards(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    round_1_id: str,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -349,7 +352,10 @@ def test_offline_results_bad_round(
 
 
 def test_offline_results_in_online_election(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    round_1_id: str,
 ):
     election = Election.query.get(election_id)
     election.online = True
@@ -375,7 +381,10 @@ def test_offline_results_in_online_election(
 
 
 def test_offline_results_jurisdiction_with_no_ballots(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    round_1_id: str,
 ):
     # Try submitting results for all the contests, even though J3 isn't assigned to every contest
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)

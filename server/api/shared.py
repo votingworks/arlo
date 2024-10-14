@@ -104,11 +104,13 @@ def sampled_batch_results(
                 # Don't include non-RLA batches unless explicitly requested, e.g., for discrepancy
                 # and audit reports
                 .filter(
-                    true()
-                    if include_non_rla_batches
-                    else and_(
-                        SampledBatchDraw.contest_id == contest.id,
-                        SampledBatchDraw.ticket_number != EXTRA_TICKET_NUMBER,
+                    (
+                        true()
+                        if include_non_rla_batches
+                        else and_(
+                            SampledBatchDraw.contest_id == contest.id,
+                            SampledBatchDraw.ticket_number != EXTRA_TICKET_NUMBER,
+                        )
                     ),
                 )
                 .values(Batch.id)
@@ -231,7 +233,7 @@ def cvrs_for_contest(contest: Contest) -> sampler_contest.CVRS:
         for jurisdiction in contest.jurisdictions
     }
 
-    for (jurisdiction_id, ballot_key, interpretations_str) in ballot_interpretations:
+    for jurisdiction_id, ballot_key, interpretations_str in ballot_interpretations:
         metadata = metadata_by_jurisdictions[jurisdiction_id]
         assert metadata is not None
         choices_metadata = metadata[contest.name]["choices"]
@@ -408,11 +410,16 @@ def hybrid_contest_strata(
     suite_contest = sampler_contest.from_db_contest(contest)
     cvr_sample_results = sampled_ballot_interpretations_to_cvrs(contest)
     cvr_misstatements = suite.misstatements(
-        suite_contest, cvr_reported_results, cvr_sample_results,
+        suite_contest,
+        cvr_reported_results,
+        cvr_sample_results,
     )
     # Create a stratum for CVR ballots
     cvr_stratum = suite.BallotComparisonStratum(
-        total_ballots.cvr, cvr_vote_counts, cvr_misstatements, cvr_previous_samples,
+        total_ballots.cvr,
+        cvr_vote_counts,
+        cvr_misstatements,
+        cvr_previous_samples,
     )
 
     return non_cvr_stratum, cvr_stratum
@@ -664,7 +671,9 @@ def compute_sample_batches_for_contest(
                 selected_batch_ids, num_jurisdiction_ballots
             ):
                 num_jurisdiction_ballots_selected = sum(
-                    batch_id_to_num_ballots[batch_id] for batch_id in selected_batch_ids
+                    # pylint: disable=cell-var-from-loop
+                    batch_id_to_num_ballots[batch_id]
+                    for batch_id in selected_batch_ids
                 )
                 return num_jurisdiction_ballots_selected / num_jurisdiction_ballots
 

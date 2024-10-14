@@ -40,7 +40,8 @@ def upgrade():
     )
     # Link to batch_result
     op.add_column(
-        "batch_result", sa.Column("tally_sheet_id", sa.String(length=200)),
+        "batch_result",
+        sa.Column("tally_sheet_id", sa.String(length=200)),
     )
     op.create_foreign_key(
         op.f("batch_result_tally_sheet_id_fkey"),
@@ -59,7 +60,7 @@ def upgrade():
         JOIN batch_result ON batch.id = batch_result.batch_id
         """
     )
-    for (batch_id, created_at) in batches_with_results.fetchall():  # pragma: no cover
+    for batch_id, created_at in batches_with_results.fetchall():  # pragma: no cover
         tally_sheet_id = str(uuid.uuid4())
         connection.execute(
             f"""

@@ -22,7 +22,9 @@ def org_id(client: FlaskClient, request) -> str:  # pylint: disable=unused-argum
 
 @pytest.fixture
 def manifests(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str],
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
 ):
     # Upload manifests with counting group in the Container column
     set_logged_in_user(
@@ -96,7 +98,12 @@ def batch_tallies(
     )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
-        data={"batchTallies": (io.BytesIO(batch_tallies_file), "batchTallies.csv",)},
+        data={
+            "batchTallies": (
+                io.BytesIO(batch_tallies_file),
+                "batchTallies.csv",
+            )
+        },
     )
     batch_tallies_file = (
         b"Batch Name,candidate 1,candidate 2,candidate 3\n"
@@ -109,7 +116,12 @@ def batch_tallies(
     )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/batch-tallies",
-        data={"batchTallies": (io.BytesIO(batch_tallies_file), "batchTallies.csv",)},
+        data={
+            "batchTallies": (
+                io.BytesIO(batch_tallies_file),
+                "batchTallies.csv",
+            )
+        },
     )
     assert_ok(rv)
 
@@ -189,7 +201,11 @@ def test_sample_extra_batches_by_counting_group(
             choice_ids[2]: 40,
         },
         # The extra batch
-        j1_batches[4]["id"]: {choice_ids[0]: 0, choice_ids[1]: 0, choice_ids[2]: 0,},
+        j1_batches[4]["id"]: {
+            choice_ids[0]: 0,
+            choice_ids[1]: 0,
+            choice_ids[2]: 0,
+        },
     }
 
     for batch_id, results in batch_results.items():

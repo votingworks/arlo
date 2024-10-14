@@ -127,9 +127,7 @@ def decode_csv(file: IO[bytes]) -> TextIO:
     except UnicodeDecodeError as error:
         raise CSVParseError(
             INVALID_CSV_ERROR
-            + "\n\nAdditional details: Unable to decode file assuming {0} encoding".format(
-                encoding
-            )
+            + f"\n\nAdditional details: Unable to decode file assuming {encoding} encoding"
         ) from error
 
     # Just to be safe, if we still got the encoding wrong and there are
@@ -152,7 +150,7 @@ def validate_comma_delimited(file: TextIO):
     dialect = None
     try:
         dialect = py_csv.Sniffer().sniff(line)
-        if dialect.delimiter == "," or dialect.delimiter == "i":
+        if dialect.delimiter in (",", "i"):
             return
     except Exception:
         pass

@@ -31,7 +31,10 @@ def test_ballot_manifest_upload(
     compare_json(
         json.loads(rv.data),
         {
-            "file": {"name": "manifest.csv", "uploadedAt": assert_is_date,},
+            "file": {
+                "name": "manifest.csv",
+                "uploadedAt": assert_is_date,
+            },
             "processing": {
                 "status": ProcessingStatus.PROCESSED,
                 "startedAt": assert_is_date,
@@ -216,7 +219,10 @@ def test_ballot_manifest_upload_missing_field(
         compare_json(
             json.loads(rv.data),
             {
-                "file": {"name": "manifest.csv", "uploadedAt": assert_is_date,},
+                "file": {
+                    "name": "manifest.csv",
+                    "uploadedAt": assert_is_date,
+                },
                 "processing": {
                     "status": ProcessingStatus.ERRORED,
                     "startedAt": assert_is_date,
@@ -250,7 +256,10 @@ def test_ballot_manifest_upload_invalid_num_ballots(
     compare_json(
         json.loads(rv.data),
         {
-            "file": {"name": "manifest.csv", "uploadedAt": assert_is_date,},
+            "file": {
+                "name": "manifest.csv",
+                "uploadedAt": assert_is_date,
+            },
             "processing": {
                 "status": ProcessingStatus.ERRORED,
                 "startedAt": assert_is_date,
@@ -286,7 +295,10 @@ def test_ballot_manifest_upload_duplicate_batch_name(
     compare_json(
         json.loads(rv.data),
         {
-            "file": {"name": "manifest.csv", "uploadedAt": assert_is_date,},
+            "file": {
+                "name": "manifest.csv",
+                "uploadedAt": assert_is_date,
+            },
             "processing": {
                 "status": ProcessingStatus.ERRORED,
                 "startedAt": assert_is_date,

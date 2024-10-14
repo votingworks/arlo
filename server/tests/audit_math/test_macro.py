@@ -1,3 +1,4 @@
+# pylint: disable=invalid-name,consider-using-dict-items,consider-using-f-string
 from decimal import Decimal
 from typing import Dict
 import pytest
@@ -208,9 +209,18 @@ def test_get_sample_sizes(contests, batches) -> None:
     # Add 31 batches to the sample that is correct
     for i in range(31):
         sample["Batch {}".format(i)] = {
-            "Contest A": {"winner": 200, "loser": 180,},
-            "Contest B": {"winner": 200, "loser": 160,},
-            "Contest C": {"winner": 200, "loser": 140,},
+            "Contest A": {
+                "winner": 200,
+                "loser": 180,
+            },
+            "Contest B": {
+                "winner": 200,
+                "loser": 160,
+            },
+            "Contest C": {
+                "winner": 200,
+                "loser": 140,
+            },
         }
         sample_ticket_numbers[str(i)] = "Batch {}".format(i)
 
@@ -235,8 +245,14 @@ def test_get_sample_sizes(contests, batches) -> None:
     # draws with taint of 0.04047619
     for i in range(100, 106):
         sample["Batch {}".format(i)] = {
-            "Contest A": {"winner": 190, "loser": 190,},
-            "Contest C": {"winner": 200, "loser": 140,},
+            "Contest A": {
+                "winner": 190,
+                "loser": 190,
+            },
+            "Contest C": {
+                "winner": 200,
+                "loser": 140,
+            },
         }
         sample_ticket_numbers[str(i)] = "Batch {}".format(i)
 
@@ -347,7 +363,10 @@ def test_worst_case() -> None:
 
     assert macro.compute_risk(
         RISK_LIMIT, contest, batches, sample, sample_ticket_numbers
-    ) == (Decimal(1.0), False,)
+    ) == (
+        Decimal(1.0),
+        False,
+    )
 
 
 def test_compute_risk(contests, batches) -> None:
@@ -358,17 +377,32 @@ def test_compute_risk(contests, batches) -> None:
     # Draws with taint of 0
     for i in range(31):
         sample["Batch {}".format(i)] = {
-            "Contest A": {"winner": 200, "loser": 180,},
-            "Contest B": {"winner": 200, "loser": 160,},
-            "Contest C": {"winner": 200, "loser": 140,},
+            "Contest A": {
+                "winner": 200,
+                "loser": 180,
+            },
+            "Contest B": {
+                "winner": 200,
+                "loser": 160,
+            },
+            "Contest C": {
+                "winner": 200,
+                "loser": 140,
+            },
         }
         sample_ticket_numbers[str(i)] = "Batch {}".format(i)
 
     # draws with taint of 0.04047619
     for i in range(100, 106):
         sample["Batch {}".format(i)] = {
-            "Contest A": {"winner": 190, "loser": 190,},
-            "Contest C": {"winner": 200, "loser": 140,},
+            "Contest A": {
+                "winner": 190,
+                "loser": 190,
+            },
+            "Contest C": {
+                "winner": 200,
+                "loser": 140,
+            },
         }
         sample_ticket_numbers[str(i)] = "Batch {}".format(i)
 
@@ -381,7 +415,7 @@ def test_compute_risk(contests, batches) -> None:
 
         delta = abs(expected_p - computed_p)
 
-        assert delta < 10 ** -2, "Incorrect p-value: Got {}, expected {}".format(
+        assert delta < 10**-2, "Incorrect p-value: Got {}, expected {}".format(
             computed_p, expected_p
         )
 
@@ -390,8 +424,14 @@ def test_compute_risk(contests, batches) -> None:
     # Now test that duplication works
     for i in range(100, 103):
         sample["Batch {}".format(i)] = {
-            "Contest A": {"winner": 190, "loser": 190,},
-            "Contest C": {"winner": 200, "loser": 140,},
+            "Contest A": {
+                "winner": 190,
+                "loser": 190,
+            },
+            "Contest C": {
+                "winner": 200,
+                "loser": 140,
+            },
         }
         sample_ticket_numbers[str(i)] = "Batch {}".format(i)
 
@@ -404,7 +444,7 @@ def test_compute_risk(contests, batches) -> None:
 
         delta = abs(expected_p - computed_p)
 
-        assert delta < 10 ** -2, "Incorrect p-value: Got {}, expected {}".format(
+        assert delta < 10**-2, "Incorrect p-value: Got {}, expected {}".format(
             computed_p, expected_p
         )
 
@@ -418,14 +458,20 @@ def test_compute_risk_uses_sample_order(contests, batches) -> None:
     # Draws with taint of 0
     for i in range(30):
         sample["Batch {}".format(i)] = {
-            "Contest A": {"winner": 200, "loser": 180,},
+            "Contest A": {
+                "winner": 200,
+                "loser": 180,
+            },
         }
         sample_ticket_numbers[str(i).zfill(3)] = "Batch {}".format(i)
 
     # Draws with taint of 0.0952
     for i in range(100, 110):
         sample["Batch {}".format(i)] = {
-            "Contest A": {"winner": 180, "loser": 200,},
+            "Contest A": {
+                "winner": 180,
+                "loser": 200,
+            },
         }
         sample_ticket_numbers[str(i).zfill(3)] = "Batch {}".format(i)
 
@@ -436,7 +482,7 @@ def test_compute_risk_uses_sample_order(contests, batches) -> None:
     )
     expected_p = 0.247688222
     delta = abs(expected_p - computed_p)
-    assert delta < 10 ** -2, "Incorrect p-value: Got {}, expected {}".format(
+    assert delta < 10**-2, "Incorrect p-value: Got {}, expected {}".format(
         computed_p, expected_p
     )
     assert result, "Audit did not terminate but should have"
@@ -452,7 +498,7 @@ def test_compute_risk_uses_sample_order(contests, batches) -> None:
     )
     expected_p = 0.386
     delta = abs(expected_p - computed_p)
-    assert delta < 10 ** -2, "Incorrect p-value: Got {}, expected {}".format(
+    assert delta < 10**-2, "Incorrect p-value: Got {}, expected {}".format(
         computed_p, expected_p
     )
     assert not result, "Audit terminated but shouldn't have"
@@ -529,16 +575,36 @@ def test_close_contest() -> None:
 
     batches = {}
     batches["1"] = {
-        "Tied Contest": {"winner": 100, "loser": 0, "ballots": 100, "numWinners": 1,}
+        "Tied Contest": {
+            "winner": 100,
+            "loser": 0,
+            "ballots": 100,
+            "numWinners": 1,
+        }
     }
     batches["2"] = {
-        "Tied Contest": {"winner": 100, "loser": 0, "ballots": 100, "numWinners": 1,}
+        "Tied Contest": {
+            "winner": 100,
+            "loser": 0,
+            "ballots": 100,
+            "numWinners": 1,
+        }
     }
     batches["3"] = {
-        "Tied Contest": {"winner": 0, "loser": 100, "ballots": 100, "numWinners": 1,}
+        "Tied Contest": {
+            "winner": 0,
+            "loser": 100,
+            "ballots": 100,
+            "numWinners": 1,
+        }
     }
     batches["4"] = {
-        "Tied Contest": {"winner": 0, "loser": 98, "ballots": 100, "numWinners": 1,}
+        "Tied Contest": {
+            "winner": 0,
+            "loser": 98,
+            "ballots": 100,
+            "numWinners": 1,
+        }
     }
 
     sample_results: Dict = {}

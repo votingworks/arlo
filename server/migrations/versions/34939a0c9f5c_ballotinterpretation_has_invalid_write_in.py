@@ -19,7 +19,8 @@ depends_on = None
 
 def upgrade():
     op.add_column(
-        "ballot_interpretation", sa.Column("has_invalid_write_in", sa.Boolean()),
+        "ballot_interpretation",
+        sa.Column("has_invalid_write_in", sa.Boolean()),
     )
     op.execute("UPDATE ballot_interpretation SET has_invalid_write_in = false")
     op.alter_column("ballot_interpretation", "has_invalid_write_in", nullable=False)

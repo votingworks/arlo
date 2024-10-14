@@ -45,6 +45,7 @@ class ElectionSpec(TypedDict):
 
 ## Internal types for generation
 
+
 # Each jurisdiction is only responsible for a portion of the votes
 class JurisdictionTally(TypedDict):
     tally: ContestTally
@@ -128,7 +129,10 @@ def generate_batches(
     for batch_number in itertools.count(1):
         tabulator = "ABC"[(batch_number - 1) % 3]
         yield (
-            Batch(name=f"Batch {batch_number}", tabulator=f"Tabulator {tabulator}",),
+            Batch(
+                name=f"Batch {batch_number}",
+                tabulator=f"Tabulator {tabulator}",
+            ),
             rand.randint(min_size, max_size),
         )
 
@@ -148,7 +152,9 @@ def generate_cvrs(
     )
     for (batch, ballot_number), votes in zip(batch_ballot_numbers, contest_votes):
         yield Ballot(
-            batch=batch, ballot_number=ballot_number, votes=votes,
+            batch=batch,
+            ballot_number=ballot_number,
+            votes=votes,
         )
 
 
@@ -285,7 +291,8 @@ def random_numbers_that_sum_to_total(
 
 
 def split_contest_tallies_across_jurisdictions(
-    election_spec: ElectionSpec, rand: random.Random,
+    election_spec: ElectionSpec,
+    rand: random.Random,
 ) -> Dict[str, JurisdictionTallies]:
     jurisdiction_tallies: Dict[str, JurisdictionTallies] = {
         jurisdiction["name"]: {} for jurisdiction in election_spec["jurisdictions"]
@@ -354,6 +361,7 @@ def generate_election(election_spec: ElectionSpec, output_dir_path: str):
     with open(
         os.path.join(output_dir_path, f"{election_spec['name']} - jurisdictions.csv"),
         "w",
+        encoding="utf8",
     ) as jurisdictions_file:
         write_jurisdictions(jurisdiction_admins, jurisdictions_file)
 
@@ -362,6 +370,7 @@ def generate_election(election_spec: ElectionSpec, output_dir_path: str):
             output_dir_path, f"{election_spec['name']} - standardized contests.csv"
         ),
         "w",
+        encoding="utf8",
     ) as standardized_contests_file:
         write_standardized_contests(election_spec, standardized_contests_file)
 
@@ -372,7 +381,9 @@ def generate_election(election_spec: ElectionSpec, output_dir_path: str):
     for jurisdiction_name, jurisdiction_tally in jurisdiction_tallies.items():
         cvrs = list(generate_cvrs(jurisdiction_tally, election_spec["contests"], rand))
         with open(
-            os.path.join(output_dir_path, f"{jurisdiction_name} - cvrs.csv"), "w"
+            os.path.join(output_dir_path, f"{jurisdiction_name} - cvrs.csv"),
+            "w",
+            encoding="utf8",
         ) as cvrs_file:
             write_dominion_cvrs(election_spec, cvrs, cvrs_file)
 
@@ -380,6 +391,7 @@ def generate_election(election_spec: ElectionSpec, output_dir_path: str):
         with open(
             os.path.join(output_dir_path, f"{jurisdiction_name} - ballot manifest.csv"),
             "w",
+            encoding="utf8",
         ) as manifest_file:
             write_manifest(manifest, manifest_file)
 
@@ -392,6 +404,7 @@ def generate_election(election_spec: ElectionSpec, output_dir_path: str):
                         f"{jurisdiction_name} - {contest['name']} - candidate totals by batch.csv",
                     ),
                     "w",
+                    encoding="utf8",
                 ) as batch_tallies_file:
                     write_batch_tallies(batch_tallies, contest, batch_tallies_file)
 
@@ -404,7 +417,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     election_spec_path = sys.argv[1]
-    with open(election_spec_path) as election_spec_file:
+    with open(election_spec_path, encoding="utf8") as election_spec_file:
         election_spec = json.loads(election_spec_file.read())
 
     # TODO validate election spec

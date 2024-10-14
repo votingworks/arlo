@@ -12,7 +12,8 @@ from ...util.jsonschema import JSONDict
 
 
 def assert_ballots_got_assigned_correctly(
-    audit_boards: List[AuditBoard], ballot_draws: List[SampledBallotDraw],
+    audit_boards: List[AuditBoard],
+    ballot_draws: List[SampledBallotDraw],
 ):
     # All the ballots got assigned
     assert sum(len(list(ab.sampled_ballots)) for ab in audit_boards) == len(
@@ -35,7 +36,10 @@ def assert_ballots_got_assigned_correctly(
 
 
 def test_audit_boards_list_empty(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    round_1_id: str,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -365,7 +369,10 @@ def test_audit_boards_list_round_2(
 
 
 def test_audit_boards_missing_field(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    round_1_id: str,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -378,13 +385,19 @@ def test_audit_boards_missing_field(
     assert rv.status_code == 400
     assert json.loads(rv.data) == {
         "errors": [
-            {"errorType": "Bad Request", "message": "'name' is a required property",}
+            {
+                "errorType": "Bad Request",
+                "message": "'name' is a required property",
+            }
         ]
     }
 
 
 def test_audit_boards_duplicate_name(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    round_1_id: str,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -397,13 +410,19 @@ def test_audit_boards_duplicate_name(
     assert rv.status_code == 400
     assert json.loads(rv.data) == {
         "errors": [
-            {"errorType": "Bad Request", "message": "Audit board names must be unique",}
+            {
+                "errorType": "Bad Request",
+                "message": "Audit board names must be unique",
+            }
         ]
     }
 
 
 def test_audit_boards_already_created(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    round_1_id: str,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -449,7 +468,10 @@ def test_audit_boards_wrong_round(
     assert rv.status_code == 409
     assert json.loads(rv.data) == {
         "errors": [
-            {"errorType": "Conflict", "message": "Round 1 is not the current round",}
+            {
+                "errorType": "Conflict",
+                "message": "Round 1 is not the current round",
+            }
         ]
     }
 
@@ -519,7 +541,10 @@ def test_audit_boards_set_members_invalid(
             [{"name": "Jane Plain", "affiliation": "Democrat"}],
             "'Democrat' is not one of ['DEM', 'REP', 'LIB', 'IND', 'OTH']",
         ),
-        ([], "Must have at least one member.",),
+        (
+            [],
+            "Must have at least one member.",
+        ),
         (
             [
                 {"name": "Joe Schmo", "affiliation": "DEM"},
@@ -1146,7 +1171,10 @@ def test_reopen_audit_board(
     rv = post_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/sign-off",
-        {"memberName1": member_1, "memberName2": member_2,},
+        {
+            "memberName1": member_1,
+            "memberName2": member_2,
+        },
     )
     assert_ok(rv)
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -1182,7 +1210,10 @@ def test_reopen_audit_board_error_cases(
     assert rv.status_code == 409
     assert json.loads(rv.data) == {
         "errors": [
-            {"errorType": "Conflict", "message": "Audit board has not signed off.",}
+            {
+                "errorType": "Conflict",
+                "message": "Audit board has not signed off.",
+            }
         ]
     }
 

@@ -414,7 +414,11 @@ def upgrade():
             nullable=False,
         ),
         sa.Column("comment", sa.Text(), nullable=True),
-        sa.Column("contest_choice_id", sa.String(length=200), nullable=True,),
+        sa.Column(
+            "contest_choice_id",
+            sa.String(length=200),
+            nullable=True,
+        ),
         sa.ForeignKeyConstraint(
             ["ballot_id"],
             ["sampled_ballot.id"],

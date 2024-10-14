@@ -27,7 +27,9 @@ class BatchError(TypedDict):
 
 
 def compute_error(
-    batch_results: BatchResults, sampled_results: BatchResults, contest: Contest,
+    batch_results: BatchResults,
+    sampled_results: BatchResults,
+    contest: Contest,
 ) -> Optional[BatchError]:
     """
     Computes the error in this batch

@@ -11,6 +11,7 @@ from .shared import get_current_round
 from ..auth import restrict_access, UserType
 from ..util.jsonschema import JSONDict, validate
 from ..activity_log.activity_log import RecordResults, activity_base, record_activity
+from ..util.get_json import safe_get_json_dict
 
 OFFLINE_RESULTS_SCHEMA = {
     "type": "object",
@@ -91,9 +92,11 @@ def validate_offline_results(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def record_offline_results(
-    election: Election, jurisdiction: Jurisdiction, round: Round,
+    election: Election,
+    jurisdiction: Jurisdiction,
+    round: Round,
 ):
-    results = request.get_json()
+    results = safe_get_json_dict(request)
     validate_offline_results(election, jurisdiction, round, results)
 
     for round_contest in round.round_contests:

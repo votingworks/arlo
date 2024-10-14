@@ -1,3 +1,4 @@
+# pylint: disable=invalid-name,consider-using-f-string
 from typing import List, Dict
 import pytest
 import numpy as np
@@ -72,7 +73,8 @@ def ballots() -> List[Dict[str, int]]:
     return ballots
 
 
-asn_func = lambda m: 1 / m if m > 0 else np.inf
+def asn_func(m):
+    return 1 / m if m > 0 else np.inf
 
 
 def test_make_neb_matrix(contest: Contest, cvrs: CVRS):
@@ -240,7 +242,7 @@ def test_find_assertions_many_children(
 def compare_result(path: str, contests: Dict[str, List[str]]):
     expected: Dict[str, List[str]] = {}
 
-    with open(path, "r") as exp:
+    with open(path, "r", encoding="utf8") as exp:
         lines = exp.readlines()
 
         reading_contest = None
@@ -302,7 +304,7 @@ def parse_raire_input(input_file: str):
     winners = {}
     cvrs: CVRS = {}
     # Load test contest
-    with open(input_file, "r") as data:
+    with open(input_file, "r", encoding="utf8") as data:
         lines = data.readlines()
 
         ncontests = int(lines[0])
@@ -365,7 +367,10 @@ def run_test(input_file: str, output_file: str, agap: float):
         con.winners = real_winners
 
         audit: List[RaireAssertion] = compute_raire_assertions(
-            con, cvrs, lambda m: 1 / m if m > 0 else np.inf, agap,
+            con,
+            cvrs,
+            lambda m: 1 / m if m > 0 else np.inf,
+            agap,
         )
 
         asrtns: List[str] = [str(assertion) for assertion in audit]

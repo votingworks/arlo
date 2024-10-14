@@ -233,7 +233,7 @@ class NEBAssertion(RaireAssertion):
         return hash((self.contest, self.winner, self.loser))
 
     def __repr__(self) -> str:
-        return "NEB,Winner,{},Loser,{},Eliminated".format(self.winner, self.loser)
+        return f"NEB,Winner,{self.winner},Loser,{self.loser},Eliminated"
 
 
 class NENAssertion(RaireAssertion):
@@ -479,12 +479,12 @@ def find_best_audit(
     # of votes. This means that 'first_in_tail' should not be eliminated next.
     # Tally of the candidate 'first_in_tail'
     tally_first_in_tail = sum(
-        [vote_for_cand(first_in_tail, eliminated, blt) for blt in ballots]
+        vote_for_cand(first_in_tail, eliminated, blt) for blt in ballots
     )
 
     for later_cand in node.tail[1:]:
         tally_later_cand = sum(
-            [vote_for_cand(later_cand, eliminated, blt) for blt in ballots]
+            vote_for_cand(later_cand, eliminated, blt) for blt in ballots
         )
 
         margin = tally_first_in_tail - tally_later_cand

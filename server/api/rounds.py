@@ -58,6 +58,7 @@ from ..activity_log import (
     EndRound,
 )
 from ..feature_flags import is_enabled_automatically_end_audit_after_one_round
+from ..util.get_json import safe_get_json_dict
 
 
 def is_round_ready_to_finish(election: Election, round: Round) -> bool:
@@ -258,7 +259,8 @@ def count_audited_votes(election: Election, round: Round):
                 assert election.audit_type == AuditType.BALLOT_POLLING
                 vote_counts = dict(
                     JurisdictionResult.query.filter_by(
-                        round_id=round.id, contest_id=contest.id,
+                        round_id=round.id,
+                        contest_id=contest.id,
                     )
                     .group_by(JurisdictionResult.contest_choice_id)
                     .values(
@@ -563,11 +565,13 @@ def delete_round_and_corresponding_sampled_ballots(round: Round):
 @api.route("/election/<election_id>/round", methods=["POST"])
 @restrict_access([UserType.AUDIT_ADMIN])
 def create_round(election: Election):
-    json_round = request.get_json()
+    json_round = safe_get_json_dict(request)
     validate_round(json_round, election)
 
     round = Round(
-        id=str(uuid.uuid4()), election_id=election.id, round_num=json_round["roundNum"],
+        id=str(uuid.uuid4()),
+        election_id=election.id,
+        round_num=json_round["roundNum"],
     )
     db_session.add(round)
 
@@ -599,7 +603,8 @@ def create_round(election: Election):
 
     # Create a new task to draw the sample in the background.
     round.draw_sample_task = create_background_task(
-        draw_sample, dict(election_id=election.id, round_id=round.id),
+        draw_sample,
+        dict(election_id=election.id, round_id=round.id),
     )
 
     record_activity(

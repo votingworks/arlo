@@ -10,6 +10,7 @@ from ..auth.auth_helpers import allow_public_access
 from ..audit_math import bravo, sampler_contest, supersimple
 from ..util.jsonschema import validate
 from ..models import *  # pylint: disable=wildcard-import
+from ..util.get_json import safe_get_json_dict
 
 
 # Leave enough buffer to support an election of galactic scale while making it hard for users to
@@ -63,7 +64,7 @@ COMPUTE_SAMPLE_SIZES_INPUT_SCHEMA = {
 @api.route("/public/sample-sizes", methods=["POST"])
 @allow_public_access
 def public_compute_sample_sizes():
-    contest_for_sampler = parse_compute_sample_sizes_input(request.get_json())
+    contest_for_sampler = parse_compute_sample_sizes_input(safe_get_json_dict(request))
 
     audit_types = ["ballotComparison", "ballotPolling", "batchComparison"]
     sample_sizes = {audit_type: {} for audit_type in audit_types}

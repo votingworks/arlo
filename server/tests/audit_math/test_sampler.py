@@ -1,3 +1,4 @@
+# pylint: disable=consider-using-f-string
 import random
 import pytest
 from ...audit_math import sampler
@@ -247,5 +248,5 @@ def test_ballot_labels():
     for _ in range(100):
         manifest = random_manifest()
         sample = sampler.draw_sample(SEED, manifest, 100, 0)
-        for (_, (batch, ballot_number), _) in sample:
+        for _, (batch, ballot_number), _ in sample:
             assert 1 <= ballot_number <= max(manifest[batch])

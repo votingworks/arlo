@@ -197,7 +197,10 @@ def test_standardized_contests_missing_file(
     election_id: str,
     jurisdiction_ids: List[str],  # pylint: disable=unused-argument
 ):
-    rv = client.put(f"/api/election/{election_id}/standardized-contests/file", data={},)
+    rv = client.put(
+        f"/api/election/{election_id}/standardized-contests/file",
+        data={},
+    )
     assert rv.status_code == 400
     assert json.loads(rv.data) == {
         "errors": [
@@ -479,7 +482,10 @@ def test_standardized_contests_parse_all(
     rv = client.get(f"/api/election/{election_id}/standardized-contests")
     assert json.loads(rv.data) == [
         {"name": "Contest 1", "jurisdictionIds": jurisdiction_ids},
-        {"name": "Contest 2", "jurisdictionIds": jurisdiction_ids,},
+        {
+            "name": "Contest 2",
+            "jurisdictionIds": jurisdiction_ids,
+        },
     ]
 
 

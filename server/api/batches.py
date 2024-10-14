@@ -21,6 +21,7 @@ from ..activity_log.activity_log import (
     activity_base,
     record_activity,
 )
+from ..util.get_json import safe_get_json_list
 
 
 def already_audited_batches(jurisdiction: Jurisdiction, round: Round) -> Query:
@@ -232,7 +233,7 @@ def record_batch_results(
     batch = Batch.query.filter_by(id=batch_id).with_for_update().one_or_none()
     if batch is None:
         raise NotFound()
-    batch_results = request.get_json()
+    batch_results = safe_get_json_list(request)
     validate_batch_results(election, jurisdiction, round, batch, batch_results)
 
     BatchResultTallySheet.query.filter_by(batch_id=batch.id).delete()

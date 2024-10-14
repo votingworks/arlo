@@ -18,8 +18,16 @@ def json_contests(jurisdiction_ids: List[str]) -> List[JSONDict]:
             "name": "Contest 1",
             "isTargeted": True,
             "choices": [
-                {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 48121,},
-                {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 38026,},
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "candidate 1",
+                    "numVotes": 48121,
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "candidate 2",
+                    "numVotes": 38026,
+                },
             ],
             "totalBallotsCast": 86147,
             "numWinners": 1,
@@ -31,8 +39,16 @@ def json_contests(jurisdiction_ids: List[str]) -> List[JSONDict]:
             "name": "Contest 2",
             "isTargeted": False,
             "choices": [
-                {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 200,},
-                {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 300,},
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "candidate 1",
+                    "numVotes": 200,
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "candidate 2",
+                    "numVotes": 300,
+                },
             ],
             "totalBallotsCast": 500,
             "numWinners": 1,
@@ -44,9 +60,21 @@ def json_contests(jurisdiction_ids: List[str]) -> List[JSONDict]:
             "name": "Contest 3",
             "isTargeted": False,
             "choices": [
-                {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 200,},
-                {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 400,},
-                {"id": str(uuid.uuid4()), "name": "candidate 3", "numVotes": 600,},
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "candidate 1",
+                    "numVotes": 200,
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "candidate 2",
+                    "numVotes": 400,
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "candidate 3",
+                    "numVotes": 600,
+                },
             ],
             "totalBallotsCast": 700,
             "numWinners": 2,
@@ -74,7 +102,11 @@ def test_contests_create_get_update_one(client, election_id, json_contests):
     contest["totalBallotsCast"] = contest["totalBallotsCast"] + 21
     contest["numWinners"] = 2
     contest["choices"].append(
-        {"id": str(uuid.uuid4()), "name": "candidate 3", "numVotes": 21,}
+        {
+            "id": str(uuid.uuid4()),
+            "name": "candidate 3",
+            "numVotes": 21,
+        }
     )
 
     rv = put_json(client, f"/api/election/{election_id}/contest", [contest])
@@ -111,7 +143,9 @@ def test_contests_create_get_update_multiple(
 
 
 def test_contests_order(
-    client: FlaskClient, election_id: str, json_contests: List[JSONDict],
+    client: FlaskClient,
+    election_id: str,
+    json_contests: List[JSONDict],
 ):
     json_contests[0]["name"] = "ZZZ Contest"
     json_contests[1]["name"] = "AAA Contest"
@@ -170,8 +204,16 @@ def test_update_contests_missing_field(
         "name": "Contest 1",
         "isTargeted": True,
         "choices": [
-            {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 48121,},
-            {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 38026,},
+            {
+                "id": str(uuid.uuid4()),
+                "name": "candidate 1",
+                "numVotes": 48121,
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "name": "candidate 2",
+                "numVotes": 38026,
+            },
         ],
         "totalBallotsCast": 86147,
         "numWinners": 1,
@@ -219,14 +261,24 @@ def test_update_contests_invalid_jurisdictions(
     rv = put_json(client, f"/api/election/{election_id}/contest", [json_contests[0]])
     assert rv.status_code == 400
     assert json.loads(rv.data) == {
-        "errors": [{"message": "[] is too short", "errorType": "Bad Request",}]
+        "errors": [
+            {
+                "message": "[] is too short",
+                "errorType": "Bad Request",
+            }
+        ]
     }
 
     json_contests[0]["jurisdictionIds"] = ["not a real jurisdiction id"]
     rv = put_json(client, f"/api/election/{election_id}/contest", [json_contests[0]])
     assert rv.status_code == 400
     assert json.loads(rv.data) == {
-        "errors": [{"message": "Invalid jurisdiction ids", "errorType": "Bad Request",}]
+        "errors": [
+            {
+                "message": "Invalid jurisdiction ids",
+                "errorType": "Bad Request",
+            }
+        ]
     }
 
 
@@ -238,8 +290,16 @@ def test_contest_too_many_votes(
         "name": "Contest 1",
         "isTargeted": True,
         "choices": [
-            {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 400,},
-            {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 101,},
+            {
+                "id": str(uuid.uuid4()),
+                "name": "candidate 1",
+                "numVotes": 400,
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "name": "candidate 2",
+                "numVotes": 101,
+            },
         ],
         "totalBallotsCast": 500,
         "numWinners": 1,
@@ -263,8 +323,16 @@ def test_contest_too_many_votes(
         "name": "Contest 1",
         "isTargeted": True,
         "choices": [
-            {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 700,},
-            {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 301,},
+            {
+                "id": str(uuid.uuid4()),
+                "name": "candidate 1",
+                "numVotes": 700,
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "name": "candidate 2",
+                "numVotes": 301,
+            },
         ],
         "totalBallotsCast": 500,
         "numWinners": 1,
@@ -285,7 +353,9 @@ def test_contest_too_many_votes(
 
 
 def test_jurisdictions_contests_list_empty(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str],
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, user_key=default_ja_email(election_id)
@@ -297,7 +367,10 @@ def test_jurisdictions_contests_list_empty(
 
 
 def test_jurisdictions_contests_list(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], json_contests,
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    json_contests,
 ):
     rv = put_json(client, f"/api/election/{election_id}/contest", json_contests)
     assert_ok(rv)
@@ -368,8 +441,7 @@ def test_audit_board_contests_list_order(
     )
     db_contests[0].name = "ZZZ Contest"
     db_contests[1].name = "AAA Contest"
-    key = lambda c: c.created_at
-    db_choices = sorted(db_contests[0].choices, key=key)
+    db_choices = sorted(db_contests[0].choices, key=lambda c: c.created_at)  # type: ignore
     db_choices[0].name = "ZZZ Choice"
     db_choices[1].name = "AAA Choice"
     db_session.commit()
@@ -387,8 +459,7 @@ def test_audit_board_contests_list_order(
         .order_by(Contest.created_at)
         .all()
     )
-    key = lambda c: c.created_at
-    db_choices = sorted(db_contests[0].choices, key=key)
+    db_choices = sorted(db_contests[0].choices, key=lambda c: c.created_at)  # type: ignore
 
     assert contests[0]["name"] == db_contests[0].name
     assert contests[1]["name"] == db_contests[1].name

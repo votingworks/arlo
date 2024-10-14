@@ -43,6 +43,7 @@ from ..config import (
     AUDITADMIN_AUTH0_CLIENT_SECRET,
 )
 from .. import config
+from ..util.get_json import safe_get_json_dict
 
 SUPPORT_OAUTH_CALLBACK_URL = "/auth/support/callback"
 AUDITADMIN_OAUTH_CALLBACK_URL = "/auth/auditadmin/callback"
@@ -226,7 +227,7 @@ def is_code_expired(timestamp: datetime):
 @auth.route("/auth/jurisdictionadmin/code", methods=["POST"])
 @allow_public_access
 def jurisdiction_admin_generate_code():
-    body = request.get_json()
+    body = safe_get_json_dict(request)
     user = (
         User.query.filter_by(email=body.get("email").lower())
         .join(JurisdictionAdministration)
@@ -297,7 +298,7 @@ def record_login(user: User, error: Optional[str] = None):
 @auth.route("/auth/jurisdictionadmin/login", methods=["POST"])
 @allow_public_access
 def jurisdiction_admin_login():
-    body = request.get_json()
+    body = safe_get_json_dict(request)
     user = (
         User.query.filter_by(email=body.get("email").lower())
         .join(JurisdictionAdministration)
@@ -368,7 +369,8 @@ def tally_entry_passphrase(passphrase: str):
         return redirect("/tally-entry?" + urlencode({"error": "login_link_not_found"}))
 
     tally_entry_user = TallyEntryUser(
-        id=str(uuid.uuid4()), jurisdiction_id=jurisdiction.id,
+        id=str(uuid.uuid4()),
+        jurisdiction_id=jurisdiction.id,
     )
     db_session.add(tally_entry_user)
     db_session.commit()
@@ -389,7 +391,7 @@ def tally_entry_user_generate_code():
     _, user_key = get_loggedin_user(session)
     tally_entry_user = get_or_404(TallyEntryUser, user_key)
 
-    body = request.get_json()
+    body = safe_get_json_dict(request)
     members = body.get("members", [])
     validate_members(members)
 
@@ -479,7 +481,7 @@ def tally_entry_jurisdiction_status(
 def tally_entry_jurisdiction_confirm_login_code(
     election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
 ):
-    body = request.get_json()
+    body = safe_get_json_dict(request)
     tally_entry_user = TallyEntryUser.query.get(body.get("tallyEntryUserId"))
     if not tally_entry_user or tally_entry_user.jurisdiction_id != jurisdiction.id:
         raise BadRequest("Tally entry user not found.")
@@ -502,7 +504,7 @@ def tally_entry_jurisdiction_confirm_login_code(
 def tally_entry_jurisdiction_reject_request(
     election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
 ):
-    body = request.get_json()
+    body = safe_get_json_dict(request)
     tally_entry_user = TallyEntryUser.query.get(body.get("tallyEntryUserId"))
     if not tally_entry_user or tally_entry_user.jurisdiction_id != jurisdiction.id:
         raise BadRequest("Tally entry user not found.")

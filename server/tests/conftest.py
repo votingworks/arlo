@@ -108,8 +108,16 @@ def contest_ids(
             "name": "Contest 1",
             "isTargeted": True,
             "choices": [
-                {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 600,},
-                {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 400,},
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "candidate 1",
+                    "numVotes": 600,
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "candidate 2",
+                    "numVotes": 400,
+                },
             ],
             "totalBallotsCast": 1000,
             "numWinners": 1,
@@ -121,9 +129,21 @@ def contest_ids(
             "name": "Contest 2",
             "isTargeted": False,
             "choices": [
-                {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 200,},
-                {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 300,},
-                {"id": str(uuid.uuid4()), "name": "candidate 3", "numVotes": 100,},
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "candidate 1",
+                    "numVotes": 200,
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "candidate 2",
+                    "numVotes": 300,
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "candidate 3",
+                    "numVotes": 100,
+                },
             ],
             "totalBallotsCast": 600,
             "numWinners": 2,
@@ -210,7 +230,9 @@ def round_1_id(
         },
     )
     assert_ok(rv)
-    rv = client.get(f"/api/election/{election_id}/round",)
+    rv = client.get(
+        f"/api/election/{election_id}/round",
+    )
     rounds = json.loads(rv.data)["rounds"]
     return str(rounds[0]["id"])
 
@@ -245,14 +267,19 @@ def round_2_id(
     )
     assert_ok(rv)
 
-    rv = client.get(f"/api/election/{election_id}/round",)
+    rv = client.get(
+        f"/api/election/{election_id}/round",
+    )
     rounds = json.loads(rv.data)["rounds"]
     return str(rounds[1]["id"])
 
 
 @pytest.fixture
 def audit_board_round_1_ids(
-    client: FlaskClient, election_id: str, jurisdiction_ids: str, round_1_id: str,
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: str,
+    round_1_id: str,
 ) -> List[str]:
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -272,7 +299,10 @@ def audit_board_round_1_ids(
 
 @pytest.fixture
 def audit_board_round_2_ids(
-    client: FlaskClient, election_id: str, jurisdiction_ids: str, round_2_id: str,
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: str,
+    round_2_id: str,
 ) -> List[str]:
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)

@@ -53,7 +53,6 @@ class BallotPollingStratum:
         sample_results: SAMPLE_RESULTS,
         sample_size: int,
     ):
-
         """
         initialize this stratum.
 
@@ -124,12 +123,15 @@ class BallotPollingStratum:
             + np.sum(np.log(v_u - np.arange(n_u)))
         )
 
-        null_logLR = (
-            lambda Nw: (n_w > 0) * np.sum(np.log(Nw - np.arange(n_w)))
-            + (n_l > 0) * np.sum(np.log(Nw - null_margin - np.arange(n_l)))
-            + (n_u > 0)
-            * np.sum(np.log(self.num_ballots - 2 * Nw + null_margin - np.arange(n_u)))
-        )
+        def null_logLR(Nw):
+            return (
+                (n_w > 0) * np.sum(np.log(Nw - np.arange(n_w)))
+                + (n_l > 0) * np.sum(np.log(Nw - null_margin - np.arange(n_l)))
+                + (n_u > 0)
+                * np.sum(
+                    np.log(self.num_ballots - 2 * Nw + null_margin - np.arange(n_u))
+                )
+            )
 
         upper_n_w_limit = (self.num_ballots - n_u + null_margin) / 2.0
         lower_n_w_limit = np.max([n_w, n_l + null_margin])
@@ -139,14 +141,18 @@ class BallotPollingStratum:
         if upper_n_w_limit < n_w or (upper_n_w_limit - null_margin) < n_l:
             return 0
 
-        LR_derivative = (
-            lambda Nw: np.sum([1 / (Nw - i) for i in range(n_w)])
-            + np.sum([1 / (Nw - null_margin - i) for i in range(n_l)])
-            - 2
-            * np.sum(
-                [1 / (self.num_ballots - 2 * Nw + null_margin - i) for i in range(n_u)]
+        def LR_derivative(Nw):
+            return (
+                np.sum([1 / (Nw - i) for i in range(n_w)])
+                + np.sum([1 / (Nw - null_margin - i) for i in range(n_l)])
+                - 2
+                * np.sum(
+                    [
+                        1 / (self.num_ballots - 2 * Nw + null_margin - i)
+                        for i in range(n_u)
+                    ]
+                )
             )
-        )
 
         # Check if the maximum occurs at an endpoint: deriv has no sign change
         if LR_derivative(upper_n_w_limit) * LR_derivative(lower_n_w_limit) > 0:
@@ -221,7 +227,6 @@ class BallotComparisonStratum:
         self.sample_size = sample_size
 
     def compute_pvalue(self, reported_margin, winner, loser, null_lambda) -> float:
-
         """
         Compute a p-value for a winner-loser pair for this strata based on its math type.
 
@@ -339,17 +344,22 @@ def maximize_fisher_combined_pvalue(
     assert Ln >= 0, f"{Wn, Ln, Un}"
     assert Un >= 0, f"{Wn, Ln, Un}"
 
-    T2 = (
-        lambda delta: 2
-        * cvr_stratum.sample_size
-        * np.log(1 + reported_margin * delta / (2 * cvr_stratum.num_ballots * GAMMA))
-    )
-    modulus = (
-        lambda delta: 2 * Wn * np.log(1 + reported_margin * delta)
-        + 2 * Ln * np.log(1 + reported_margin * delta)
-        + 2 * Un * np.log(1 + 2 * reported_margin * delta)
-        + T2(delta)
-    )
+    def T2(delta):
+        return (
+            2
+            * cvr_stratum.sample_size
+            * np.log(
+                1 + reported_margin * delta / (2 * cvr_stratum.num_ballots * GAMMA)
+            )
+        )
+
+    def modulus(delta):
+        return (
+            2 * Wn * np.log(1 + reported_margin * delta)
+            + 2 * Ln * np.log(1 + reported_margin * delta)
+            + 2 * Un * np.log(1 + 2 * reported_margin * delta)
+            + T2(delta)
+        )
 
     while True:
         test_lambdas = np.arange(lambda_lower, lambda_upper + stepsize, stepsize)
@@ -359,7 +369,7 @@ def maximize_fisher_combined_pvalue(
 
         fisher_pvalues = np.empty_like(test_lambdas)
         for i, test_lambda in enumerate(test_lambdas):
-            pvalue1 = np.min(
+            pvalue1: float = np.min(
                 [
                     1,
                     cvr_stratum.compute_pvalue(
@@ -367,7 +377,7 @@ def maximize_fisher_combined_pvalue(
                     ),
                 ]
             )
-            pvalue2 = np.min(
+            pvalue2: float = np.min(
                 [
                     1,
                     bp_stratum.compute_pvalue(
@@ -384,7 +394,7 @@ def maximize_fisher_combined_pvalue(
                 fisher_pvalues[i] = 1 - sp.stats.chi2.cdf(obs, df=2 * len(pvalues))
 
         pvalue = np.max(fisher_pvalues)
-        alloc_lambda = test_lambdas[np.argmax(fisher_pvalues)]
+        alloc_lambda: float = test_lambdas[np.argmax(fisher_pvalues)]  # type: ignore
 
         # If p-value is over the risk limit, then there's no need to refine the
         # maximization. We have a lower bound on the maximum.
@@ -477,7 +487,12 @@ def try_n(
     hyp_sample_size = n1
 
     hyp_misstatements: MISSTATEMENTS = {
-        (winner, loser): {"o1": o1, "o2": o2, "u1": u1, "u2": u2,}
+        (winner, loser): {
+            "o1": o1,
+            "o2": o2,
+            "u1": u1,
+            "u2": u2,
+        }
     }
 
     hyp_cvr_stratum = BallotComparisonStratum(
@@ -596,7 +611,14 @@ def get_sample_size_for_wl_pair(
         if mid_n in [low_n, high_n]:
             break
         mid_pvalue = try_n(
-            mid_n, alpha, contest, winner, loser, bp_stratum, cvr_stratum, n_ratio,
+            mid_n,
+            alpha,
+            contest,
+            winner,
+            loser,
+            bp_stratum,
+            cvr_stratum,
+            n_ratio,
         )
         if mid_pvalue <= alpha:
             high_n = mid_n
@@ -727,7 +749,9 @@ def compute_risk(
 
 
 def misstatements(
-    contest: Contest, reported_results: CVRS, audited_results: SAMPLECVRS,
+    contest: Contest,
+    reported_results: CVRS,
+    audited_results: SAMPLECVRS,
 ) -> MISSTATEMENTS:
     misstatements: MISSTATEMENTS = {}
     for winner, loser in product(contest.winners, contest.losers):

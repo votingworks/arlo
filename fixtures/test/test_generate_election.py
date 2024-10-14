@@ -2,6 +2,7 @@ import json
 import pytest
 from ..generate_election import *  # pylint: disable=wildcard-import
 
+
 # Each test needs its own seeded RNG since the tests may run in any order, so we
 # can't depend on a single RNG across all tests.
 @pytest.fixture
@@ -15,7 +16,7 @@ def test_random_numbers_that_sum_to_total(snapshot, rand):
             result = random_numbers_that_sum_to_total(total, num_numbers, rand)
             assert sum(result) == total
             assert len(result) == num_numbers
-            assert all([number >= 0 for number in result])
+            assert all(number >= 0 for number in result)
 
     assert pytest.raises(ValueError, random_numbers_that_sum_to_total, 0, 0, rand)
     assert random_numbers_that_sum_to_total(0, 1, rand) == [0]
@@ -154,7 +155,9 @@ def test_small_election(rand):
     small_election_spec_path = os.path.join(
         os.path.dirname(__file__), "../small-election/small-election.spec.json"
     )
-    with open(small_election_spec_path, "r") as small_election_spec_file:
+    with open(
+        small_election_spec_path, "r", encoding="utf8"
+    ) as small_election_spec_file:
         small_election_spec = json.loads(small_election_spec_file.read())
 
     jurisdiction_tallies = split_contest_tallies_across_jurisdictions(

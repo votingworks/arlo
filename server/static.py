@@ -6,6 +6,7 @@ from .config import STATIC_FOLDER, FLASK_ENV, SENTRY_DSN
 from .app import app
 from .auth.auth_helpers import allow_public_access
 
+
 # Serve the React App at remaining URLs that aren't static files
 @app.route("/")
 @app.route("/<path:path>")

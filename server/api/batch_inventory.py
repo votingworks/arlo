@@ -48,6 +48,7 @@ from ..util.csv_download import csv_response, jurisdiction_timestamp_name
 from ..util.isoformat import isoformat
 from .batch_tallies import construct_contest_choice_csv_headers
 from ..activity_log.activity_log import UploadFile, activity_base, record_activity
+from ..util.get_json import safe_get_json_dict
 
 # (tabulator_id, batch_id)
 BatchKey = Tuple[str, str]
@@ -91,7 +92,9 @@ def items_list_to_dict(items):
 
 @background_task
 def process_batch_inventory_cvr_file(
-    jurisdiction_id: str, user: Tuple[UserType, str], support_user_email: Optional[str],
+    jurisdiction_id: str,
+    user: Tuple[UserType, str],
+    support_user_email: Optional[str],
 ):
     working_directory = tempfile.mkdtemp()
 
@@ -351,7 +354,11 @@ def process_batch_inventory_cvr_file(
             for row_index, row in enumerate(cvrs):
                 for contest in contests:
                     batch = column_value(
-                        row, "Batch", row_index + 1, header_indices, required=True,
+                        row,
+                        "Batch",
+                        row_index + 1,
+                        header_indices,
+                        required=True,
                     )
                     choice_name = column_value(
                         row,
@@ -370,11 +377,11 @@ def process_batch_inventory_cvr_file(
 
         # Set explicit zeros for choices with zero votes in a batch to avoid KeyErrors when
         # generating files
-        for batch_key in batch_tallies.keys():
+        for tallies in batch_tallies.values():
             for contest in contests:
                 for choice in contest.choices:
-                    if choice.id not in batch_tallies[batch_key]:
-                        batch_tallies[batch_key][choice.id] = 0
+                    if choice.id not in tallies:
+                        tallies[choice.id] = 0
 
         election_results: ElectionResults = dict(
             ballot_count_by_batch=dict_to_items_list(ballot_count_by_batch),
@@ -428,7 +435,9 @@ TABULATOR_STATUS_PARSE_ERROR = (
 
 @background_task
 def process_batch_inventory_tabulator_status_file(
-    jurisdiction_id: str, user: Tuple[UserType, str], support_user_email: Optional[str],
+    jurisdiction_id: str,
+    user: Tuple[UserType, str],
+    support_user_email: Optional[str],
 ):
     jurisdiction = Jurisdiction.query.get(jurisdiction_id)
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction_id)
@@ -495,7 +504,7 @@ def process_batch_inventory_tabulator_status_file(
 def set_batch_inventory_system_type(
     election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
 ):
-    system_type = request.get_json()["systemType"]
+    system_type = safe_get_json_dict(request)["systemType"]
     if system_type is None:
         raise BadRequest("Missing systemType param")
     if system_type not in [CvrFileType.DOMINION, CvrFileType.ESS]:
@@ -555,9 +564,7 @@ def upload_batch_inventory_cvr(election: Election, jurisdiction: Jurisdiction):
     file_type = (
         "csv"
         if does_file_have_csv_mimetype(file)
-        else "zip"
-        if does_file_have_zip_mimetype(file)
-        else "other"
+        else "zip" if does_file_have_zip_mimetype(file) else "other"
     )
 
     if batch_inventory_data.system_type == CvrFileType.DOMINION and file_type != "csv":
@@ -571,7 +578,7 @@ def upload_batch_inventory_cvr(election: Election, jurisdiction: Jurisdiction):
 
     assert file_type != "other"
 
-    file_name = file.filename
+    file_name: str = file.filename  # type: ignore
     storage_path = store_file(
         file.stream,
         f"audits/{election.id}/jurisdictions/{jurisdiction.id}/"
@@ -619,7 +626,8 @@ def get_batch_inventory_cvr(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def clear_batch_inventory_cvr(
-    election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
 ):
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
 
@@ -640,7 +648,8 @@ def clear_batch_inventory_cvr(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def download_batch_inventory_cvr(
-    election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
 ):
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
     if not batch_inventory_data or not batch_inventory_data.cvr_file:
@@ -664,7 +673,7 @@ def upload_batch_inventory_tabulator_status(
     if not batch_inventory_data or not batch_inventory_data.cvr_file_id:
         raise Conflict("Must upload CVR file before uploading tabulator status file.")
 
-    file_name = request.files["tabulatorStatus"].filename
+    file_name: str = request.files["tabulatorStatus"].filename  # type: ignore
     storage_path = store_file(
         request.files["tabulatorStatus"].stream,
         f"audits/{election.id}/jurisdictions/{jurisdiction.id}/"
@@ -714,7 +723,8 @@ def get_batch_inventory_tabulator_status(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def clear_batch_inventory_tabulator_status(
-    election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
 ):
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
 
@@ -735,7 +745,8 @@ def clear_batch_inventory_tabulator_status(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def download_batch_inventory_tabulator_status(
-    election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
 ):
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
     if not batch_inventory_data or not batch_inventory_data.tabulator_status_file:
@@ -796,7 +807,11 @@ def download_batch_inventory_worksheet(election: Election, jurisdiction: Jurisdi
             batch_key, batch_inventory_data.tabulator_id_to_name
         )
         worksheet.writerow(
-            [batch_name, ballot_count, "",]
+            [
+                batch_name,
+                ballot_count,
+                "",
+            ]
         )
 
     csv_io.seek(0)

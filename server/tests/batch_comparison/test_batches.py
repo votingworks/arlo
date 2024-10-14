@@ -135,10 +135,26 @@ def test_record_batch_results(
         assert batch["lastEditedBy"] is None
 
     results = {
-        batches[0]["id"]: {choice_ids[0]: 400, choice_ids[1]: 50, choice_ids[2]: 40,},
-        batches[1]["id"]: {choice_ids[0]: 400, choice_ids[1]: 50, choice_ids[2]: 40,},
-        batches[2]["id"]: {choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 40,},
-        batches[3]["id"]: {choice_ids[0]: 0, choice_ids[1]: 50, choice_ids[2]: 20,},
+        batches[0]["id"]: {
+            choice_ids[0]: 400,
+            choice_ids[1]: 50,
+            choice_ids[2]: 40,
+        },
+        batches[1]["id"]: {
+            choice_ids[0]: 400,
+            choice_ids[1]: 50,
+            choice_ids[2]: 40,
+        },
+        batches[2]["id"]: {
+            choice_ids[0]: 100,
+            choice_ids[1]: 50,
+            choice_ids[2]: 40,
+        },
+        batches[3]["id"]: {
+            choice_ids[0]: 0,
+            choice_ids[1]: 50,
+            choice_ids[2]: 20,
+        },
     }
     for batch_id, result in results.items():
         rv = put_json(
@@ -212,11 +228,19 @@ def test_record_batch_results(
         tally_sheets = [
             {
                 "name": "Tally Sheet #1",
-                "results": {choice_ids[0]: 100, choice_ids[1]: 25, choice_ids[2]: 40,},
+                "results": {
+                    choice_ids[0]: 100,
+                    choice_ids[1]: 25,
+                    choice_ids[2]: 40,
+                },
             },
             {
                 "name": "Tally Sheet #2",
-                "results": {choice_ids[0]: 300, choice_ids[1]: 25, choice_ids[2]: 0,},
+                "results": {
+                    choice_ids[0]: 300,
+                    choice_ids[1]: 25,
+                    choice_ids[2]: 0,
+                },
             },
         ]
         rv = put_json(
@@ -294,7 +318,10 @@ def test_record_batch_results(
 
 
 def test_record_batch_results_as_support_user(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    round_1_id: str,
 ):
     set_support_user(client, DEFAULT_SUPPORT_EMAIL)
     set_logged_in_user(
@@ -336,7 +363,10 @@ def test_record_batch_results_as_support_user(
 
 
 def test_batch_tally_sheet_order(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    round_1_id: str,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -430,7 +460,7 @@ def test_record_batch_results_invalid(
     choice_ids = [choice["id"] for choice in contests[0]["choices"]]
 
     invalid_results = [
-        ({}, "{} is not of type 'array'"),
+        ({}, "Request content must be a JSON array"),
         ([{"name": "Tally Sheet #1", "results": None}], "None is not of type 'object'"),
         ([{"name": "Tally Sheet #1", "results": {}}], "Missing choice ids"),
         (
@@ -503,13 +533,26 @@ def test_record_batch_results_invalid(
             [{"results": {choice_id: 1 for choice_id in choice_ids}}],
             "'name' is a required property",
         ),
-        ([{"name": "Tally Sheet #1"}], "'results' is a required property",),
         (
-            [{"name": "", "results": {choice_id: 1 for choice_id in choice_ids},}],
+            [{"name": "Tally Sheet #1"}],
+            "'results' is a required property",
+        ),
+        (
+            [
+                {
+                    "name": "",
+                    "results": {choice_id: 1 for choice_id in choice_ids},
+                }
+            ],
             "'' is too short",
         ),
         (
-            [{"name": 1, "results": {choice_id: 1 for choice_id in choice_ids},}],
+            [
+                {
+                    "name": 1,
+                    "results": {choice_id: 1 for choice_id in choice_ids},
+                }
+            ],
             "1 is not of type 'string'",
         ),
     ]
@@ -534,7 +577,10 @@ def test_record_batch_results_invalid(
 
 
 def test_unfinalize_batch_results(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    round_1_id: str,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -571,7 +617,10 @@ def test_unfinalize_batch_results(
     assert rv.status_code == 409
     assert json.loads(rv.data) == {
         "errors": [
-            {"errorType": "Conflict", "message": "Results have not been finalized",}
+            {
+                "errorType": "Conflict",
+                "message": "Results have not been finalized",
+            }
         ]
     }
 
@@ -588,12 +637,15 @@ def test_unfinalize_batch_results(
     rv = put_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/{batches[0]['id']}/results",
-        {choice_id: 0 for choice_id in choice_ids},
+        [{choice_id: 0 for choice_id in choice_ids}],
     )
     assert rv.status_code == 409
     assert json.loads(rv.data) == {
         "errors": [
-            {"errorType": "Conflict", "message": "Results have already been finalized",}
+            {
+                "errorType": "Conflict",
+                "message": "Results have already been finalized",
+            }
         ]
     }
 
@@ -605,7 +657,10 @@ def test_unfinalize_batch_results(
     assert rv.status_code == 409
     assert json.loads(rv.data) == {
         "errors": [
-            {"errorType": "Conflict", "message": "Results have already been finalized",}
+            {
+                "errorType": "Conflict",
+                "message": "Results have already been finalized",
+            }
         ]
     }
 
@@ -750,7 +805,7 @@ def test_record_batch_results_bad_round(
     rv = put_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/batches/{batches[0]['id']}/results",
-        {choice_id: 0 for choice_id in choice_ids},
+        [{choice_id: 0 for choice_id in choice_ids}],
     )
     assert rv.status_code == 409
     assert json.loads(rv.data) == {
@@ -771,7 +826,7 @@ def test_record_batch_results_bad_round(
     rv = put_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/{batches[0]['id']}/results",
-        {choice_id: 0 for choice_id in choice_ids},
+        [{choice_id: 0 for choice_id in choice_ids}],
     )
     assert rv.status_code == 409
     assert json.loads(rv.data) == {
@@ -783,7 +838,7 @@ def test_record_batch_results_bad_round(
     rv = put_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/not-a-round-id/batches/{batches[0]['id']}/results",
-        {choice_id: 0 for choice_id in choice_ids},
+        [{choice_id: 0 for choice_id in choice_ids}],
     )
     assert rv.status_code == 404
 
@@ -910,7 +965,9 @@ def test_batches_human_sort_order(
         },
     )
     assert_ok(rv)
-    rv = client.get(f"/api/election/{election_id}/round",)
+    rv = client.get(
+        f"/api/election/{election_id}/round",
+    )
     rounds = json.loads(rv.data)["rounds"]
     round_1_id = rounds[0]["id"]
 
@@ -945,7 +1002,10 @@ def test_batches_human_sort_order(
 
 
 def test_finalize_batch_results_incomplete(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    round_1_id: str,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -965,8 +1025,16 @@ def test_finalize_batch_results_incomplete(
 
     # Don't record results for one batch
     results = {
-        batches[0]["id"]: {choice_ids[0]: 400, choice_ids[1]: 50, choice_ids[2]: 40,},
-        batches[1]["id"]: {choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 40,},
+        batches[0]["id"]: {
+            choice_ids[0]: 400,
+            choice_ids[1]: 50,
+            choice_ids[2]: 40,
+        },
+        batches[1]["id"]: {
+            choice_ids[0]: 100,
+            choice_ids[1]: 50,
+            choice_ids[2]: 40,
+        },
     }
     for batch_id, result in results.items():
         rv = put_json(

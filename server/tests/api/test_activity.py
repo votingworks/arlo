@@ -154,7 +154,8 @@ def test_list_activities(
 
 
 def test_list_activities_wrong_org(
-    client: FlaskClient, org_id: str,
+    client: FlaskClient,
+    org_id: str,
 ):
     create_org_and_admin("Test Activities Wrong Org", "other-admin@example.com")
     set_logged_in_user(client, UserType.AUDIT_ADMIN, "other-admin@example.com")
@@ -288,7 +289,10 @@ def test_list_activities_logins(
 
 
 def test_file_upload_errors(
-    client: FlaskClient, org_id: str, election_id: str, jurisdiction_ids: List[str],
+    client: FlaskClient,
+    org_id: str,
+    election_id: str,
+    jurisdiction_ids: List[str],
 ):
     rv = put_json(
         client,
@@ -347,7 +351,10 @@ def test_file_upload_errors(
 
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={"cvrs": (io.BytesIO(b""), "cvrs.csv"), "cvrFileType": "DOMINION",},
+        data={
+            "cvrs": (io.BytesIO(b""), "cvrs.csv"),
+            "cvrFileType": "DOMINION",
+        },
     )
     assert_ok(rv)
 

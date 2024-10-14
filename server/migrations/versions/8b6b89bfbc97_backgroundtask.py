@@ -22,7 +22,7 @@ def backfill():  # pragma: no cover
     # Backfill a background task for all previous rounds
     connection = op.get_bind()
     rounds = connection.execute("SELECT id, election_id, created_at FROM round")
-    for (round_id, election_id, created_at) in rounds.fetchall():
+    for round_id, election_id, created_at in rounds.fetchall():
         (new_task_id,) = connection.execute(
             f"""
             INSERT INTO background_task (

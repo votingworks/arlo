@@ -14,6 +14,7 @@ from .shared import get_current_round
 from ..models import *  # pylint: disable=wildcard-import
 from ..util.csv_download import csv_response, jurisdiction_timestamp_name
 from ..util.jsonschema import JSONDict, validate
+from ..util.get_json import safe_get_json_dict
 
 
 def ballot_retrieval_list(jurisdiction: Jurisdiction, round: Round) -> TextIO:
@@ -399,7 +400,7 @@ def audit_ballot(
     if any(draw.round_id != current_round.id for draw in ballot.draws):
         raise Conflict("Ballot was already audited in a previous round")
 
-    ballot_audit = request.get_json()
+    ballot_audit = safe_get_json_dict(request)
     validate_audit_ballot(ballot_audit, jurisdiction)
 
     ballot.status = ballot_audit["status"]

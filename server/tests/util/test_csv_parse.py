@@ -1,3 +1,4 @@
+# pylint: disable=implicit-str-concat
 from typing import BinaryIO, Union, List
 import os, io, pytest
 from werkzeug.exceptions import BadRequest
@@ -484,7 +485,8 @@ def test_parse_csv_total_row():
 def test_parse_csv_header_wrong_case():
     parsed = list(
         parse_csv(
-            ("BATCH NAME,NUMBER OF BALLOTS\n" "Batch A,20\n"), BALLOT_MANIFEST_COLUMNS,
+            ("BATCH NAME,NUMBER OF BALLOTS\n" "Batch A,20\n"),
+            BALLOT_MANIFEST_COLUMNS,
         )
     )
     assert len(parsed) == 1
@@ -493,7 +495,8 @@ def test_parse_csv_header_wrong_case():
 
     parsed = list(
         parse_csv(
-            ("BaTcH nAmE,nUmBeR oF bAlLoTs\n" "Batch A,20\n"), BALLOT_MANIFEST_COLUMNS,
+            ("BaTcH nAmE,nUmBeR oF bAlLoTs\n" "Batch A,20\n"),
+            BALLOT_MANIFEST_COLUMNS,
         )
     )
     assert len(parsed) == 1
@@ -504,7 +507,8 @@ def test_parse_csv_header_wrong_case():
 def test_parse_csv_space_in_header():
     parsed = list(
         parse_csv(
-            ("Batch Name ,Number of Ballots\n" "Batch A,20\n"), BALLOT_MANIFEST_COLUMNS,
+            ("Batch Name ,Number of Ballots\n" "Batch A,20\n"),
+            BALLOT_MANIFEST_COLUMNS,
         )
     )
     assert len(parsed) == 1
@@ -525,7 +529,8 @@ def test_parse_csv_space_in_header():
 def test_parse_csv_space_in_value():
     parsed = list(
         parse_csv(
-            ("Batch Name,Number of Ballots\n" " Batch A,20\n"), BALLOT_MANIFEST_COLUMNS,
+            ("Batch Name,Number of Ballots\n" " Batch A,20\n"),
+            BALLOT_MANIFEST_COLUMNS,
         )
     )
     assert len(parsed) == 1
@@ -615,7 +620,10 @@ def test_parse_csv_empty_trailing_columns():
 
 def test_parse_csv_excel_mac_newlines():
     parsed = list(
-        parse_csv("Batch Name,Number of Ballots\rBatch 1,20", BALLOT_MANIFEST_COLUMNS,)
+        parse_csv(
+            "Batch Name,Number of Ballots\rBatch 1,20",
+            BALLOT_MANIFEST_COLUMNS,
+        )
     )
     assert parsed == [
         {"Batch Name": "Batch 1", "Number of Ballots": 20},
@@ -1006,7 +1014,12 @@ def test_validate_csv_mimetype():
         "text/plain",
     ]:
         with pytest.raises(BadRequest) as error:
-            validate_csv_mimetype(FileStorage(b"", content_type=invalid_mimetype,))
+            validate_csv_mimetype(
+                FileStorage(
+                    b"",
+                    content_type=invalid_mimetype,
+                )
+            )
             assert error.value.description == (
                 "Please submit a valid CSV."
                 " If you are working with an Excel spreadsheet,"

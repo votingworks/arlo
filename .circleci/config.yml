@@ -1,13 +1,13 @@
 version: 2.1
 orbs:
-  python: circleci/python@2.0.3
+  python: circleci/python@2.2.0
   node: circleci/node@5.0.2
   browser-tools: circleci/browser-tools@1.4.0
 
 executors:
   arlo:
     docker:
-      - image: cimg/python:3.8.13-browsers
+      - image: cimg/python:3.9.20-browsers
         environment:
           DATABASE_URL: postgresql://root@localhost:5432/arlo-test
           FLASK_ENV: test
@@ -106,7 +106,7 @@ jobs:
       - node/install-packages:
           pkg-manager: yarn
           app-dir: client
-          cache-version: v2
+          cache-version: v3
           # In order to cache the Cypress binary, we have to cache
           # ~/.cache/Cypress (alongside the default caching of ~/.cache/yarn).
           # So we just cache all of ~/.cache.

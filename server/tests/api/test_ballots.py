@@ -13,7 +13,9 @@ BALLOT_1_POSITION = 3
 
 
 def test_ja_ballots_bad_round_id(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str],
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -259,7 +261,8 @@ def test_ab_list_ballot_round_1(
     )
 
     assert ballots == sorted(
-        ballots, key=lambda b: (b["batch"]["name"], b["position"]),
+        ballots,
+        key=lambda b: (b["batch"]["name"], b["position"]),
     )
 
     # Try auditing one ballot
@@ -500,8 +503,14 @@ def test_ab_audit_ballot_happy_path(
                 },
             ],
         },
-        {"status": "NOT_AUDITED", "interpretations": [],},
-        {"status": "NOT_FOUND", "interpretations": [],},
+        {
+            "status": "NOT_AUDITED",
+            "interpretations": [],
+        },
+        {
+            "status": "NOT_FOUND",
+            "interpretations": [],
+        },
         {
             "status": "AUDITED",
             "interpretations": [
@@ -787,7 +796,10 @@ def test_ab_audit_ballot_invalid(
         rv = put_json(
             client,
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots/{ballot['id']}",
-            {"status": "AUDITED", "interpretations": [interpretation],},
+            {
+                "status": "AUDITED",
+                "interpretations": [interpretation],
+            },
         )
         assert rv.status_code == 400
         assert json.loads(rv.data) == {
@@ -1029,7 +1041,10 @@ def test_ab_audit_ballot_invalid(
             f"Cannot specify hasInvalidWriteIn=True with interpretation CONTEST_NOT_ON_BALLOT for contest {contest_ids[1]}",
         ),
         (
-            {"status": "AUDITED", "interpretations": [],},
+            {
+                "status": "AUDITED",
+                "interpretations": [],
+            },
             "Must include an interpretation for each contest.",
         ),
         (
@@ -1092,7 +1107,7 @@ def test_ab_audit_ballot_invalid(
             "Cannot include interpretations with ballot status NOT_AUDITED.",
         ),
     ]
-    for (invalid_request, expected_message) in invalid_requests:
+    for invalid_request, expected_message in invalid_requests:
         rv = put_json(
             client,
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots/{ballot['id']}",
@@ -1105,7 +1120,9 @@ def test_ab_audit_ballot_invalid(
 
 
 def test_ja_ballot_retrieval_list_bad_round_id(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str],
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -1117,7 +1134,10 @@ def test_ja_ballot_retrieval_list_bad_round_id(
 
 
 def test_ja_ballot_retrieval_list_before_audit_boards_set_up(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    round_1_id: str,
 ):
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -1257,7 +1277,9 @@ def test_ballots_human_sort_order(
         },
     )
     assert_ok(rv)
-    rv = client.get(f"/api/election/{election_id}/round",)
+    rv = client.get(
+        f"/api/election/{election_id}/round",
+    )
     rounds = json.loads(rv.data)["rounds"]
     round_1_id = rounds[0]["id"]
 

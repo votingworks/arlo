@@ -3,13 +3,12 @@ PATH := $(PATH):$(HOME)/.local/bin
 
 deps:
 	sudo apt update
-	sudo apt install -y python3.8 python3.8-venv libpython3.8-dev libpq-dev graphicsmagick
+	sudo apt install -y python3.9 python3.9-venv libpython3.9-dev libpq-dev graphicsmagick
 	# Install node: https://github.com/nodesource/distributions/blob/master/README.md#deb		
 	curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
 	sudo apt-get install -y nodejs
-	# Install poetry: https://python-poetry.org/docs/master/#osx--linux--bashonwindows-install-instructions
-	# Keep the local dev POETRY_VERSION in sync with the Heroku config var
-	curl -sSL https://install.python-poetry.org | POETRY_VERSION=1.1.15 python3.8 -
+	# Install poetry: https://python-poetry.org/docs/#installing-with-the-official-installer
+	curl -sSL https://install.python-poetry.org | python3.9 -
 	sudo npm install -g yarn
 	sudo apt install -y postgresql
 	sudo systemctl start postgresql

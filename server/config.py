@@ -5,7 +5,9 @@ from typing import Dict
 
 
 def read_env_var(
-    name: str, default: str = None, env_defaults: Dict[str, str] = None,
+    name: str,
+    default: str = None,
+    env_defaults: Dict[str, str] = None,
 ) -> str:
     value = os.environ.get(name, (env_defaults or {}).get(FLASK_ENV, default))
     if value is None:
@@ -48,7 +50,10 @@ DATABASE_URL = read_env_var(
 
 STATIC_FOLDER = os.path.normpath(
     os.path.join(
-        __file__, "..", "..", "client" if FLASK_ENV == "test" else "client/build",
+        __file__,
+        "..",
+        "..",
+        "client" if FLASK_ENV == "test" else "client/build",
     )
 )
 

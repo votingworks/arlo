@@ -21,6 +21,7 @@ from ..worker.tasks import (
     create_background_task,
     serialize_background_task,
 )
+from ..util.get_json import safe_get_json_dict
 
 
 @background_task
@@ -104,9 +105,10 @@ def start_computing_sample_preview(election: Election):
     if election.sample_preview_task and not election.sample_preview_task.completed_at:
         raise Conflict("Arlo is already computing a sample preview.")
 
-    json_preview_args = request.get_json()
+    json_preview_args = safe_get_json_dict(request)
     validate(
-        json_preview_args, create_sample_preview_schema(AuditType(election.audit_type)),
+        json_preview_args,
+        create_sample_preview_schema(AuditType(election.audit_type)),
     )
 
     election.sample_preview = None

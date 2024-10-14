@@ -13,7 +13,10 @@ VALID_SCHEMAS = [
         "additionalProperties": False,
         "required": ["prop1"],
     },
-    {"type": "object", "patternProperties": {"^.*$": {"type": "string"}},},
+    {
+        "type": "object",
+        "patternProperties": {"^.*$": {"type": "string"}},
+    },
 ]
 
 INVALID_SCHEMAS = [
@@ -55,7 +58,7 @@ def test_validate_schema():
     for schema in VALID_SCHEMAS:
         validate_schema(schema)  # Shouldn't raise
 
-    for (schema, expected_error) in INVALID_SCHEMAS:
+    for schema, expected_error in INVALID_SCHEMAS:
         with pytest.raises(ValidationError) as error:
             validate_schema(schema)
         assert str(error.value) == expected_error

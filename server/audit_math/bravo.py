@@ -228,9 +228,9 @@ def bravo_sample_sizes(
     g = minus / (plus - minus) + p_w2
 
     # The three coefficients of the quadratic:
-    q_a = g ** 2
+    q_a = g**2
     q_b = -(Decimal(z) ** 2 * d + 2 * f * g)
-    q_c = f ** 2
+    q_c = f**2
 
     # Apply the quadratic formula.
     # We want the larger root for p_completion > 0.5, the
@@ -239,7 +239,7 @@ def bravo_sample_sizes(
     # max here handles cases where, due to rounding error,
     # the base (content) of the radical is trivially
     # negative for p_completion very close to 0.5.
-    radical = (Decimal(0).max(q_b ** 2 - 4 * q_a * q_c)).sqrt()
+    radical = (Decimal(0).max(q_b**2 - 4 * q_a * q_c)).sqrt()
 
     if p_completion > 0.5:
         size = math.floor((-q_b + radical) / (2 * q_a))
@@ -274,7 +274,6 @@ def bravo_sample_sizes(
 def expected_prob(
     alpha: Decimal, p_w: Decimal, p_r: Decimal, sample_w: int, sample_r: int, asn: int
 ) -> float:
-
     """
     Analytic calculation for BRAVO round completion of the expected value, assuming
     the election outcome is correct. Adapted from Mark Lindeman.
@@ -394,9 +393,7 @@ def get_sample_size(
     quants = [0.7, 0.8, 0.9]
 
     if round_sizes:
-        num_sampled = sum(
-            [round_info.round_size for round_info in round_sizes.values()]
-        )
+        num_sampled = sum(round_info.round_size for round_info in round_sizes.values())
         # If we've already sampled all the ballots, we should never be here
         if num_sampled >= contest.ballots:
             raise ValueError("All ballots have already been audited!")
@@ -528,6 +525,7 @@ def compute_risk(
         return measurements, True
 
     finished = True
+    # pylint: disable=consider-using-dict-items
     for pair in T:
         raw = 1 / T[pair] if T[pair] > 0 else Decimal(1)
         measurements[pair] = min(float(raw), 1.0)
@@ -545,8 +543,8 @@ def is_tie(contest: Contest) -> bool:
     if not losers:
         return False
 
-    smallest_p_w = min([winner_stats["p_w"] for winner_stats in winners.values()])
-    largest_p_l = max([loser_stats["p_l"] for loser_stats in losers.values()])
+    smallest_p_w = min(winner_stats["p_w"] for winner_stats in winners.values())
+    largest_p_l = max(loser_stats["p_l"] for loser_stats in losers.values())
     return bool(smallest_p_w == largest_p_l)
 
 
@@ -556,5 +554,5 @@ def is_landslide(contest: Contest) -> bool:
     if not losers:  # pragma: no cover
         return False
 
-    largest_p_l = max([loser_stats["p_l"] for loser_stats in losers.values()])
+    largest_p_l = max(loser_stats["p_l"] for loser_stats in losers.values())
     return bool(largest_p_l == 0)

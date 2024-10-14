@@ -94,7 +94,10 @@ def test_hybrid_manifest_missing_cvr_column(
     compare_json(
         json.loads(rv.data),
         {
-            "file": {"name": "manifest.csv", "uploadedAt": assert_is_date,},
+            "file": {
+                "name": "manifest.csv",
+                "uploadedAt": assert_is_date,
+            },
             "processing": {
                 "status": ProcessingStatus.ERRORED,
                 "startedAt": assert_is_date,
@@ -134,7 +137,10 @@ def test_hybrid_manifest_missing_cvr_column(
     compare_json(
         json.loads(rv.data),
         {
-            "file": {"name": "manifest.csv", "uploadedAt": assert_is_date,},
+            "file": {
+                "name": "manifest.csv",
+                "uploadedAt": assert_is_date,
+            },
             "processing": {
                 "status": ProcessingStatus.ERRORED,
                 "startedAt": assert_is_date,

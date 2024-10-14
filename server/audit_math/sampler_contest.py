@@ -2,6 +2,7 @@
 A Module containing the Contest class, which encapsulates useful info for RLA
 computations.
 """
+
 import operator
 from typing import Dict, Optional, TypedDict
 
@@ -109,7 +110,7 @@ class Contest:
         self.margins = {"winners": {}, "losers": {}}
 
         cand_vec = sorted(
-            [(cand, self.candidates[cand]) for cand in self.candidates],
+            self.candidates.items(),
             key=operator.itemgetter(1),
             reverse=True,
         )
@@ -124,6 +125,7 @@ class Contest:
             else:
                 self.losers[choice[0]] = choice[1]
 
+        # pylint: disable=consider-using-dict-items
         for loser in self.losers:
             self.margins["losers"][loser] = {
                 "p_l": self.losers[loser] / self.ballots,
@@ -132,6 +134,7 @@ class Contest:
 
         min_margin = self.ballots
 
+        # pylint: disable=consider-using-dict-items
         for winner in self.winners:
             s_w = self.winners[winner] / v_wl
 
@@ -159,13 +162,7 @@ class Contest:
         """
         Generates a string representation of this object, for debugging.
         """
-        return "Contest({}): numWinners: {}, votesAllowed: {}, total ballots: {}, candidates: {}".format(
-            self.name,
-            self.num_winners,
-            self.votes_allowed,
-            self.ballots,
-            self.candidates,
-        )
+        return f"Contest({self.name}): numWinners: {self.num_winners}, votesAllowed: {self.votes_allowed}, total ballots: {self.ballots}, candidates: {self.candidates}"
 
 
 # CVR: { contest_id: { choice_id: "0" | "1" | "o" | "u" }}

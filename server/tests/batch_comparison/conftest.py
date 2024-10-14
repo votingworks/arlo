@@ -132,7 +132,12 @@ def batch_tallies(
     )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
-        data={"batchTallies": (io.BytesIO(batch_tallies_file), "batchTallies.csv",)},
+        data={
+            "batchTallies": (
+                io.BytesIO(batch_tallies_file),
+                "batchTallies.csv",
+            )
+        },
     )
     batch_tallies_file = (
         b"Batch Name,candidate 1,candidate 2,candidate 3\n"
@@ -145,7 +150,12 @@ def batch_tallies(
     )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/batch-tallies",
-        data={"batchTallies": (io.BytesIO(batch_tallies_file), "batchTallies.csv",)},
+        data={
+            "batchTallies": (
+                io.BytesIO(batch_tallies_file),
+                "batchTallies.csv",
+            )
+        },
     )
     assert_ok(rv)
 
