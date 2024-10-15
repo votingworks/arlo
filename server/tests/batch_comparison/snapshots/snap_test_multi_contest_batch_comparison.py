@@ -36,9 +36,9 @@ Audit Name,Audit Type,Audit Math Type,Risk Limit,Random Seed,Online Data Entry?\
 Test Audit test_multi_contest_batch_comparison_end_to_end,BATCH_COMPARISON,MACRO,10%,1234567890,No\r
 \r
 ######## ROUNDS ########\r
-Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes\r
-1,Contest 1,Targeted,10,No,,DATETIME,,Candidate 1: 0; Candidate 2: 0\r
-1,Contest 2,Targeted,8,No,,DATETIME,,Candidate 3: 0; Candidate 4: 0\r
+Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes,# Batches,# Ballots,Reported Votes\r
+1,Contest 1,Targeted,10,No,,DATETIME,,Candidate 1: 0; Candidate 2: 0,9,900,Candidate 1: 500; Candidate 2: 50\r
+1,Contest 2,Targeted,8,No,,DATETIME,,Candidate 3: 0; Candidate 4: 0,9,900,Candidate 3: 325; Candidate 4: 25\r
 \r
 ######## SAMPLED BATCHES ########\r
 Jurisdiction Name,Batch Name,Ballots in Batch,Ticket Numbers: Contest 1,Ticket Numbers: Contest 2,Audited?,Audit Results: Contest 1,Reported Results: Contest 1,Change in Results: Contest 1,Change in Margin: Contest 1,Audit Results: Contest 2,Reported Results: Contest 2,Change in Results: Contest 2,Change in Margin: Contest 2,Last Edited By\r
@@ -69,9 +69,9 @@ Audit Name,Audit Type,Audit Math Type,Risk Limit,Random Seed,Online Data Entry?\
 Test Audit test_multi_contest_batch_comparison_end_to_end,BATCH_COMPARISON,MACRO,10%,1234567890,No\r
 \r
 ######## ROUNDS ########\r
-Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes\r
-1,Contest 1,Targeted,10,Yes,0.0771277137,DATETIME,DATETIME,Candidate 1: 500; Candidate 2: 52\r
-1,Contest 2,Targeted,8,Yes,0.096146459,DATETIME,DATETIME,Candidate 3: 325; Candidate 4: 25\r
+Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes,# Batches,# Ballots,Reported Votes\r
+1,Contest 1,Targeted,10,Yes,0.0771277137,DATETIME,DATETIME,Candidate 1: 500; Candidate 2: 52,9,900,Candidate 1: 500; Candidate 2: 50\r
+1,Contest 2,Targeted,8,Yes,0.096146459,DATETIME,DATETIME,Candidate 3: 325; Candidate 4: 25,9,900,Candidate 3: 325; Candidate 4: 25\r
 \r
 ######## SAMPLED BATCHES ########\r
 Jurisdiction Name,Batch Name,Ballots in Batch,Ticket Numbers: Contest 1,Ticket Numbers: Contest 2,Audited?,Audit Results: Contest 1,Reported Results: Contest 1,Change in Results: Contest 1,Change in Margin: Contest 1,Audit Results: Contest 2,Reported Results: Contest 2,Change in Results: Contest 2,Change in Margin: Contest 2,Last Edited By\r
@@ -102,9 +102,9 @@ Audit Name,Audit Type,Audit Math Type,Risk Limit,Random Seed,Online Data Entry?\
 Test Audit test_multi_contest_batch_comparison_round_2,BATCH_COMPARISON,MACRO,10%,1234567890,No\r
 \r
 ######## ROUNDS ########\r
-Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes\r
-1,Contest 1,Targeted,10,No,0.1689405441,DATETIME,DATETIME,Candidate 1: 450; Candidate 2: 100\r
-1,Contest 2,Targeted,8,Yes,0.0948645062,DATETIME,DATETIME,Candidate 3: 325; Candidate 4: 25\r
+Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes,# Batches,# Ballots,Reported Votes\r
+1,Contest 1,Targeted,10,No,0.1689405441,DATETIME,DATETIME,Candidate 1: 450; Candidate 2: 100,9,900,Candidate 1: 500; Candidate 2: 50\r
+1,Contest 2,Targeted,8,Yes,0.0948645062,DATETIME,DATETIME,Candidate 3: 325; Candidate 4: 25,9,900,Candidate 3: 325; Candidate 4: 25\r
 \r
 ######## SAMPLED BATCHES ########\r
 Jurisdiction Name,Batch Name,Ballots in Batch,Ticket Numbers: Contest 1,Ticket Numbers: Contest 2,Audited?,Audit Results: Contest 1,Reported Results: Contest 1,Change in Results: Contest 1,Change in Margin: Contest 1,Audit Results: Contest 2,Reported Results: Contest 2,Change in Results: Contest 2,Change in Margin: Contest 2,Last Edited By\r
@@ -135,10 +135,10 @@ Audit Name,Audit Type,Audit Math Type,Risk Limit,Random Seed,Online Data Entry?\
 Test Audit test_multi_contest_batch_comparison_round_2,BATCH_COMPARISON,MACRO,10%,1234567890,No\r
 \r
 ######## ROUNDS ########\r
-Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes\r
-1,Contest 1,Targeted,10,No,0.1689405441,DATETIME,DATETIME,Candidate 1: 450; Candidate 2: 100\r
-1,Contest 2,Targeted,8,Yes,0.0948645062,DATETIME,DATETIME,Candidate 3: 325; Candidate 4: 25\r
-2,Contest 1,Targeted,6,No,,DATETIME,,Candidate 1: 0; Candidate 2: 0\r
+Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes,# Batches,# Ballots,Reported Votes\r
+1,Contest 1,Targeted,10,No,0.1689405441,DATETIME,DATETIME,Candidate 1: 450; Candidate 2: 100,9,900,Candidate 1: 500; Candidate 2: 50\r
+1,Contest 2,Targeted,8,Yes,0.0948645062,DATETIME,DATETIME,Candidate 3: 325; Candidate 4: 25,9,900,Candidate 3: 325; Candidate 4: 25\r
+2,Contest 1,Targeted,6,No,,DATETIME,,Candidate 1: 0; Candidate 2: 0,6,600,Candidate 1: 350; Candidate 2: 50\r
 \r
 ######## SAMPLED BATCHES ########\r
 Jurisdiction Name,Batch Name,Ballots in Batch,Ticket Numbers: Contest 1,Ticket Numbers: Contest 2,Audited?,Audit Results: Contest 1,Reported Results: Contest 1,Change in Results: Contest 1,Change in Margin: Contest 1,Audit Results: Contest 2,Reported Results: Contest 2,Change in Results: Contest 2,Change in Margin: Contest 2,Last Edited By\r
@@ -170,10 +170,10 @@ Audit Name,Audit Type,Audit Math Type,Risk Limit,Random Seed,Online Data Entry?\
 Test Audit test_multi_contest_batch_comparison_round_2,BATCH_COMPARISON,MACRO,10%,1234567890,No\r
 \r
 ######## ROUNDS ########\r
-Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes\r
-1,Contest 1,Targeted,10,No,0.1689405441,DATETIME,DATETIME,Candidate 1: 450; Candidate 2: 100\r
-1,Contest 2,Targeted,8,Yes,0.0948645062,DATETIME,DATETIME,Candidate 3: 325; Candidate 4: 25\r
-2,Contest 1,Targeted,6,Yes,0.0750846863,DATETIME,DATETIME,Candidate 1: 350; Candidate 2: 50\r
+Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes,# Batches,# Ballots,Reported Votes\r
+1,Contest 1,Targeted,10,No,0.1689405441,DATETIME,DATETIME,Candidate 1: 450; Candidate 2: 100,9,900,Candidate 1: 500; Candidate 2: 50\r
+1,Contest 2,Targeted,8,Yes,0.0948645062,DATETIME,DATETIME,Candidate 3: 325; Candidate 4: 25,9,900,Candidate 3: 325; Candidate 4: 25\r
+2,Contest 1,Targeted,6,Yes,0.0750846863,DATETIME,DATETIME,Candidate 1: 350; Candidate 2: 50,6,600,Candidate 1: 350; Candidate 2: 50\r
 \r
 ######## SAMPLED BATCHES ########\r
 Jurisdiction Name,Batch Name,Ballots in Batch,Ticket Numbers: Contest 1,Ticket Numbers: Contest 2,Audited?,Audit Results: Contest 1,Reported Results: Contest 1,Change in Results: Contest 1,Change in Margin: Contest 1,Audit Results: Contest 2,Reported Results: Contest 2,Change in Results: Contest 2,Change in Margin: Contest 2,Last Edited By\r

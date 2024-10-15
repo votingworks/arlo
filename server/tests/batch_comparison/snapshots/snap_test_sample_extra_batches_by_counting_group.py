@@ -22,8 +22,8 @@ Audit Name,Audit Type,Audit Math Type,Risk Limit,Random Seed,Online Data Entry?\
 Test Audit test_sample_extra_batches_by_counting_group[TEST-ORG/sample-extra-batches-by-counting-group/automatically-end-audit-after-one-round],BATCH_COMPARISON,MACRO,10%,1234567890,No\r
 \r
 ######## ROUNDS ########\r
-Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes\r
-1,Contest 1,Targeted,7,No,0.1225641097,DATETIME,DATETIME,candidate 1: 1100; candidate 2: 300; candidate 3: 200\r
+Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes,# Batches,# Ballots,Reported Votes\r
+1,Contest 1,Targeted,7,No,0.1225641097,DATETIME,DATETIME,candidate 1: 1100; candidate 2: 300; candidate 3: 200,7,2050,candidate 1: 1900; candidate 2: 950; candidate 3: 950\r
 \r
 ######## SAMPLED BATCHES ########\r
 Jurisdiction Name,Batch Name,Ballots in Batch,Ticket Numbers: Contest 1,Audited?,Audit Results: Contest 1,Reported Results: Contest 1,Change in Results: Contest 1,Change in Margin: Contest 1,Last Edited By\r

@@ -38,8 +38,8 @@ Audit Name,Audit Type,Audit Math Type,Risk Limit,Random Seed,Online Data Entry?\
 Test Audit test_batch_comparison_batches_sampled_multiple_times,BATCH_COMPARISON,MACRO,10%,1234567890,No\r
 \r
 ######## ROUNDS ########\r
-Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes\r
-1,Contest 1,Targeted,7,Yes,0.0825517715,DATETIME,DATETIME,candidate 1: 1700; candidate 2: 850; candidate 3: 850\r
+Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes,# Batches,# Ballots,Reported Votes\r
+1,Contest 1,Targeted,7,Yes,0.0825517715,DATETIME,DATETIME,candidate 1: 1700; candidate 2: 850; candidate 3: 850,5,1700,candidate 1: 1700; candidate 2: 850; candidate 3: 850\r
 \r
 ######## SAMPLED BATCHES ########\r
 Jurisdiction Name,Batch Name,Ballots in Batch,Ticket Numbers: Contest 1,Audited?,Audit Results: Contest 1,Reported Results: Contest 1,Change in Results: Contest 1,Change in Margin: Contest 1,Last Edited By\r
@@ -103,9 +103,9 @@ Audit Name,Audit Type,Audit Math Type,Risk Limit,Random Seed,Online Data Entry?\
 Test Audit test_batch_comparison_round_2,BATCH_COMPARISON,MACRO,10%,1234567890,No\r
 \r
 ######## ROUNDS ########\r
-Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes\r
-1,Contest 1,Targeted,7,No,0.1225641097,DATETIME,DATETIME,candidate 1: 1100; candidate 2: 300; candidate 3: 200\r
-2,Contest 1,Targeted,5,No,,DATETIME,,candidate 1: 0; candidate 2: 0; candidate 3: 0\r
+Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes,# Batches,# Ballots,Reported Votes\r
+1,Contest 1,Targeted,7,No,0.1225641097,DATETIME,DATETIME,candidate 1: 1100; candidate 2: 300; candidate 3: 200,5,1700,candidate 1: 1700; candidate 2: 850; candidate 3: 850\r
+2,Contest 1,Targeted,5,No,,DATETIME,,candidate 1: 0; candidate 2: 0; candidate 3: 0,3,1500,candidate 1: 1500; candidate 2: 750; candidate 3: 750\r
 \r
 ######## SAMPLED BATCHES ########\r
 Jurisdiction Name,Batch Name,Ballots in Batch,Ticket Numbers: Contest 1,Audited?,Audit Results: Contest 1,Reported Results: Contest 1,Change in Results: Contest 1,Change in Margin: Contest 1,Last Edited By\r
