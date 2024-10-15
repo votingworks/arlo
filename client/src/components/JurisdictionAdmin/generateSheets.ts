@@ -429,6 +429,9 @@ export const downloadBatchTallySheets = async (
     // longer make that assumption.
     //
 
+    // Add 3 blank lines to contest entries table to allow for additional entries (i.e. overvotes)
+    const blankLines: string[][] = new Array(3).fill(['', ''])
+
     for (const [contestIndex, contest] of contests.entries()) {
       // autoTable automatically adds page breaks
       autoTable(doc, {
@@ -436,10 +439,12 @@ export const downloadBatchTallySheets = async (
           [{ content: contest.name, colSpan: 2 }],
           ['Candidates/Choices', 'Enter Stack Totals'],
         ],
-        body: contest.choices.map(choice => [
-          choice.name,
-          '', // Stack totals left blank for the audit board to fill out
-        ]),
+        body: contest.choices
+          .map(choice => [
+            choice.name,
+            '', // Stack totals left blank for the audit board to fill out
+          ])
+          .concat(blankLines),
         startY: y,
         margin: {
           bottom: pageMargin,
