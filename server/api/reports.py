@@ -812,6 +812,7 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
     column_headers = [
         "Jurisdiction Name",
         "Batch Name",
+        "Ballots in Batch",
         *ticket_number_columns,
         "Audited?",
         *result_columns,
@@ -823,6 +824,7 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
         row = [
             batch.jurisdiction.name,
             batch.name,
+            batch.num_ballots,
             *pretty_batch_ticket_numbers(batch, round_id_to_num, contests),
         ]
 
