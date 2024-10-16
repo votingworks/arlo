@@ -453,6 +453,7 @@ def round_rows(election: Election):
                 .join(Jurisdiction)
                 .filter_by(election_id=election.id)
                 .filter(SampledBatchDraw.round_id == round.id)
+                .filter(SampledBatchDraw.ticket_number != EXTRA_TICKET_NUMBER)
                 .all()
             )
             num_distinct_batches = len(distinct_batches)
