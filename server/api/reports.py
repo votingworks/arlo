@@ -391,6 +391,11 @@ def round_rows(election: Election):
             ["Audited Votes: CVR", "Audited Votes: Non CVR"]
             if election.audit_type == AuditType.HYBRID
             else []
+        )
+        + (
+            ["Batches Sampled", "Ballots Sampled", "Reported Votes"]
+            if election.audit_type == AuditType.BATCH_COMPARISON
+            else []
         ),
     ]
 
@@ -441,6 +446,34 @@ def round_rows(election: Election):
             total_choice_votes.update(non_cvr_choice_vote)
             total_choice_votes.update(cvr_choice_votes)
 
+        if election.audit_type == AuditType.BATCH_COMPARISON:
+            distinct_batches = (
+                Batch.query.join(SampledBatchDraw)
+                .join(Round)
+                .join(Jurisdiction)
+                .filter_by(election_id=election.id)
+                .filter(SampledBatchDraw.round_id == round.id)
+                .all()
+            )
+            num_distinct_batches = len(distinct_batches)
+            num_distinct_ballots = sum(batch.num_ballots for batch in distinct_batches)
+
+            # get the reported votes aggregated across batches
+            reported_results: dict = {choice.id: 0 for choice in contest.choices}
+            for batch in distinct_batches:
+                reported_results_for_batch = batch.jurisdiction.batch_tallies[
+                    batch.name
+                ].get(contest.id)
+                if reported_results_for_batch is not None:
+                    for choice in contest.choices:
+                        reported_results[choice.id] += reported_results_for_batch[
+                            choice.id
+                        ]
+
+            reported_results_by_name = {
+                choice.name: reported_results[choice.id] for choice in contest.choices
+            }
+
         rows.append(
             [
                 round.round_num,
@@ -459,6 +492,15 @@ def round_rows(election: Election):
                     pretty_choice_votes(non_cvr_choice_vote),
                 ]
                 if election.audit_type == AuditType.HYBRID
+                else []
+            )
+            + (
+                [
+                    num_distinct_batches,
+                    num_distinct_ballots,
+                    pretty_choice_votes(reported_results_by_name),
+                ]
+                if election.audit_type == AuditType.BATCH_COMPARISON
                 else []
             )
         )
@@ -759,6 +801,7 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
     )
     if jurisdiction:
         batches_query = batches_query.filter(Jurisdiction.id == jurisdiction.id)
+
     batches = batches_query.order_by(
         Round.round_num,
         Jurisdiction.name,
@@ -812,6 +855,7 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
     column_headers = [
         "Jurisdiction Name",
         "Batch Name",
+        "Ballots in Batch",
         *ticket_number_columns,
         "Audited?",
         *result_columns,
@@ -823,6 +867,7 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
         row = [
             batch.jurisdiction.name,
             batch.name,
+            batch.num_ballots,
             *pretty_batch_ticket_numbers(batch, round_id_to_num, contests),
         ]
 
