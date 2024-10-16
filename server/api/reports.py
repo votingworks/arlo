@@ -393,7 +393,7 @@ def round_rows(election: Election):
             else []
         )
         + (
-            ["# Batches", "# Ballots", "Reported Votes"]
+            ["Batches Sampled", "Ballots Sampled", "Reported Votes"]
             if election.audit_type == AuditType.BATCH_COMPARISON
             else []
         ),
