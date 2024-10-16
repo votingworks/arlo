@@ -981,7 +981,7 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
             pretty_choice_votes(total_audit_results_by_name),
             pretty_choice_votes(total_reported_results_by_name),
             "",  # change in results not calculated for totals
-            "",  # change in margin not calculcated for totals
+            "",  # change in margin not calculated for totals
         ]
     totals_row += ""  # last edited col
     rows.append(totals_row)
