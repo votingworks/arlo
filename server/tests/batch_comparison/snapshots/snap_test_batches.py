@@ -37,6 +37,7 @@ J1,Batch 1 - 2,20,Round 1: 0.693314966899513707,No,,,,,\r
 J1,Batch 1 - 10,20,Round 1: 0.109576900310237874,No,,,,,\r
 J1,Batch 2,20,Round 1: 0.474971525750860236,No,,,,,\r
 J1,Batch 10,20,Round 1: 0.772049767819343419,No,,,,,\r
+Totals,,120,,,candidate 1: 0; candidate 2: 0; candidate 3: 0,candidate 1: 0; candidate 2: 0; candidate 3: 0,,\r
 """
 
 snapshots["test_record_batch_results 1"] = {

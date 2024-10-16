@@ -48,6 +48,7 @@ J1,Batch 3,500,Round 1: 0.753710009967479876,Yes,candidate 1: 500; candidate 2: 
 J1,Batch 6,100,Round 1: 0.899217854763070950,Yes,candidate 1: 100; candidate 2: 50; candidate 3: 50,candidate 1: 100; candidate 2: 50; candidate 3: 50,,,jurisdiction.admin-UUID@example.com\r
 J1,Batch 8,100,Round 1: 0.9723790677174592551,Yes,candidate 1: 100; candidate 2: 50; candidate 3: 50,candidate 1: 100; candidate 2: 50; candidate 3: 50,,,jurisdiction.admin-UUID@example.com\r
 J2,Batch 3,500,"Round 1: 0.368061935896261076, 0.733615858338543383",Yes,candidate 1: 500; candidate 2: 250; candidate 3: 250,candidate 1: 500; candidate 2: 250; candidate 3: 250,,,jurisdiction.admin-UUID@example.com\r
+Totals,,1700,,,candidate 1: 1700; candidate 2: 850; candidate 3: 850,candidate 1: 1700; candidate 2: 850; candidate 3: 850,,\r
 """
 
 snapshots["test_batch_comparison_round_1 1"] = {
@@ -116,6 +117,7 @@ J1,Batch 8,100,Round 1: 0.9723790677174592551,Yes,candidate 1: 100; candidate 2:
 J2,Batch 3,500,"Round 1: 0.368061935896261076, 0.733615858338543383",Yes,candidate 1: 100; candidate 2: 100; candidate 3: 40,candidate 1: 500; candidate 2: 250; candidate 3: 250,candidate 1: +400; candidate 2: +150; candidate 3: +210,250,jurisdiction.admin-UUID@example.com\r
 J1,Batch 4,500,"Round 2: 0.9553762217707628661, 0.9782132493451071914",No,,candidate 1: 500; candidate 2: 250; candidate 3: 250,,,\r
 J2,Batch 4,500,"Round 2: 0.608147659546583410, 0.868820918994249069",No,,candidate 1: 500; candidate 2: 250; candidate 3: 250,,,\r
+Totals,,2700,,,candidate 1: 1100; candidate 2: 300; candidate 3: 200,candidate 1: 2700; candidate 2: 1350; candidate 3: 1350,,\r
 """
 
 snapshots[
@@ -127,6 +129,7 @@ J1,Batch 3,500,"Round 1: 0.753710009967479876, Round 2: 0.816608705419077476",Ye
 J1,Batch 6,100,Round 1: 0.899217854763070950,Yes,candidate 1: 100; candidate 2: 50; candidate 3: 40,candidate 1: 100; candidate 2: 50; candidate 3: 50,candidate 3: +10,-10,jurisdiction.admin-UUID@example.com\r
 J1,Batch 8,100,Round 1: 0.9723790677174592551,Yes,candidate 1: 100; candidate 2: 50; candidate 3: 40,candidate 1: 100; candidate 2: 50; candidate 3: 50,candidate 3: +10,-10,jurisdiction.admin-UUID@example.com\r
 J1,Batch 4,500,"Round 2: 0.9553762217707628661, 0.9782132493451071914",No,,candidate 1: 500; candidate 2: 250; candidate 3: 250,,,\r
+Totals,,1700,,,candidate 1: 1000; candidate 2: 200; candidate 3: 160,candidate 1: 1700; candidate 2: 850; candidate 3: 850,,\r
 """
 
 snapshots["test_batch_comparison_round_2 2"] = {

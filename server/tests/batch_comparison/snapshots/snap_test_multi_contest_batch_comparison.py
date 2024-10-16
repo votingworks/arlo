@@ -18,6 +18,7 @@ J1,Batch 5,100,"Round 1: 0.384177151866437890, 0.470460412141498108","Round 1: 0
 J1,Batch 6,100,"Round 1: 0.899217854763070950, 0.9233199163410086672",,Yes,Candidate 1: 49; Candidate 2: 1,Candidate 1: 50; Candidate 2: 0,Candidate 1: +1; Candidate 2: -1,2,Candidate 3: 50; Candidate 4: 0,Candidate 3: 50; Candidate 4: 0,,,jurisdiction.admin-UUID@example.com\r
 J1,Batch 7,100,Round 1: 0.817464900879746084,"Round 1: 0.817464900879746084, 0.864505270651837742",Yes,Candidate 1: 50; Candidate 2: 0,Candidate 1: 50; Candidate 2: 0,,,Candidate 3: 49; Candidate 4: 1,Candidate 3: 50; Candidate 4: 0,Candidate 3: +1; Candidate 4: -1,2,jurisdiction.admin-UUID@example.com\r
 J1,Batch 9,100,,Round 1: 0.734926612730309894,Yes,Candidate 1: 52; Candidate 2: 0,Candidate 1: 50; Candidate 2: 0,Candidate 1: -2,-2,Candidate 3: 26; Candidate 4: 24,Candidate 3: 25; Candidate 4: 25,Candidate 3: -1; Candidate 4: +1,-2,jurisdiction.admin-UUID@example.com\r
+Totals,,700,,,,Candidate 1: 351; Candidate 2: 1,Candidate 1: 350; Candidate 2: 0,,,Candidate 3: 325; Candidate 4: 25,Candidate 3: 325; Candidate 4: 25,,\r
 """
 
 snapshots[
@@ -51,6 +52,7 @@ J1,Batch 7,100,Round 1: 0.817464900879746084,"Round 1: 0.817464900879746084, 0.8
 J1,Batch 9,100,,Round 1: 0.734926612730309894,Yes,Candidate 1: 52; Candidate 2: 0,Candidate 1: 50; Candidate 2: 0,Candidate 1: -2,-2,Candidate 3: 26; Candidate 4: 24,Candidate 3: 25; Candidate 4: 25,Candidate 3: -1; Candidate 4: +1,-2,jurisdiction.admin-UUID@example.com\r
 J2,Batch 1,100,"Round 1: 0.562697240648997100, 0.9008218268717084008",,No,,,,,,,,,\r
 J3,Batch 1,100,Round 1: 0.544165663445275136,,No,,,,,,,,,\r
+Totals,,900,,,,Candidate 1: 351; Candidate 2: 1,Candidate 1: 350; Candidate 2: 0,,,Candidate 3: 325; Candidate 4: 25,Candidate 3: 325; Candidate 4: 25,,\r
 """
 
 snapshots[
@@ -84,6 +86,7 @@ J1,Batch 7,100,Round 1: 0.817464900879746084,"Round 1: 0.817464900879746084, 0.8
 J1,Batch 9,100,,Round 1: 0.734926612730309894,Yes,Candidate 1: 52; Candidate 2: 0,Candidate 1: 50; Candidate 2: 0,Candidate 1: -2,-2,Candidate 3: 26; Candidate 4: 24,Candidate 3: 25; Candidate 4: 25,Candidate 3: -1; Candidate 4: +1,-2,jurisdiction.admin-UUID@example.com\r
 J2,Batch 1,100,"Round 1: 0.562697240648997100, 0.9008218268717084008",,Yes,Candidate 1: 75; Candidate 2: 25,Candidate 1: 75; Candidate 2: 25,,,,,,,jurisdiction.admin-UUID@example.com\r
 J3,Batch 1,100,Round 1: 0.544165663445275136,,Yes,Candidate 1: 74; Candidate 2: 26,Candidate 1: 75; Candidate 2: 25,Candidate 1: +1; Candidate 2: -1,2,,,,,jurisdiction.admin-UUID@example.com\r
+Totals,,900,,,,Candidate 1: 500; Candidate 2: 52,Candidate 1: 500; Candidate 2: 50,,,Candidate 3: 325; Candidate 4: 25,Candidate 3: 325; Candidate 4: 25,,\r
 """
 
 snapshots[
@@ -117,6 +120,7 @@ J1,Batch 7,100,Round 1: 0.817464900879746084,"Round 1: 0.817464900879746084, 0.8
 J1,Batch 9,100,,Round 1: 0.734926612730309894,Yes,Candidate 1: 50; Candidate 2: 0,Candidate 1: 50; Candidate 2: 0,,,Candidate 3: 25; Candidate 4: 25,Candidate 3: 25; Candidate 4: 25,,,jurisdiction.admin-UUID@example.com\r
 J2,Batch 1,100,"Round 1: 0.562697240648997100, 0.9008218268717084008",,Yes,Candidate 1: 75; Candidate 2: 25,Candidate 1: 75; Candidate 2: 25,,,,,,,jurisdiction.admin-UUID@example.com\r
 J3,Batch 1,100,Round 1: 0.544165663445275136,,Yes,Candidate 1: 75; Candidate 2: 25,Candidate 1: 75; Candidate 2: 25,,,,,,,jurisdiction.admin-UUID@example.com\r
+Totals,,900,,,,Candidate 1: 450; Candidate 2: 100,Candidate 1: 500; Candidate 2: 50,,,Candidate 3: 325; Candidate 4: 25,Candidate 3: 325; Candidate 4: 25,,\r
 """
 
 snapshots[
@@ -152,6 +156,7 @@ J1,Batch 9,100,,Round 1: 0.734926612730309894,Yes,Candidate 1: 50; Candidate 2: 
 J2,Batch 1,100,"Round 1: 0.562697240648997100, 0.9008218268717084008, Round 2: 0.9809620734120025512",,Yes,Candidate 1: 75; Candidate 2: 25,Candidate 1: 75; Candidate 2: 25,,,,,,,jurisdiction.admin-UUID@example.com\r
 J3,Batch 1,100,"Round 1: 0.544165663445275136, Round 2: 0.651158228740912018",,Yes,Candidate 1: 75; Candidate 2: 25,Candidate 1: 75; Candidate 2: 25,,,,,,,jurisdiction.admin-UUID@example.com\r
 J1,Batch 8,100,Round 2: 0.9723790677174592551,,No,,Candidate 1: 50; Candidate 2: 0,,,,Candidate 3: 50; Candidate 4: 0,,,\r
+Totals,,1000,,,,Candidate 1: 450; Candidate 2: 100,Candidate 1: 550; Candidate 2: 50,,,Candidate 3: 325; Candidate 4: 25,Candidate 3: 375; Candidate 4: 25,,\r
 """
 
 snapshots[
@@ -187,4 +192,5 @@ J1,Batch 9,100,,Round 1: 0.734926612730309894,Yes,Candidate 1: 50; Candidate 2: 
 J2,Batch 1,100,"Round 1: 0.562697240648997100, 0.9008218268717084008, Round 2: 0.9809620734120025512",,Yes,Candidate 1: 75; Candidate 2: 25,Candidate 1: 75; Candidate 2: 25,,,,,,,jurisdiction.admin-UUID@example.com\r
 J3,Batch 1,100,"Round 1: 0.544165663445275136, Round 2: 0.651158228740912018",,Yes,Candidate 1: 75; Candidate 2: 25,Candidate 1: 75; Candidate 2: 25,,,,,,,jurisdiction.admin-UUID@example.com\r
 J1,Batch 8,100,Round 2: 0.9723790677174592551,,Yes,Candidate 1: 50; Candidate 2: 0,Candidate 1: 50; Candidate 2: 0,,,Candidate 3: 50; Candidate 4: 0,Candidate 3: 50; Candidate 4: 0,,,jurisdiction.admin-UUID@example.com\r
+Totals,,1000,,,,Candidate 1: 500; Candidate 2: 100,Candidate 1: 550; Candidate 2: 50,,,Candidate 3: 375; Candidate 4: 25,Candidate 3: 375; Candidate 4: 25,,\r
 """

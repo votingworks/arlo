@@ -34,4 +34,5 @@ J1,Batch 8,100,Round 1: 0.9723790677174592551,Yes,candidate 1: 100; candidate 2:
 J1,Batch 9,100,Round 1: EXTRA,Yes,candidate 1: 0; candidate 2: 0; candidate 3: 0,candidate 1: 100; candidate 2: 50; candidate 3: 50,candidate 1: +100; candidate 2: +50; candidate 3: +50,50,jurisdiction.admin-UUID@example.com\r
 J2,Batch 3,500,"Round 1: 0.368061935896261076, 0.733615858338543383",Yes,candidate 1: 100; candidate 2: 100; candidate 3: 40,candidate 1: 500; candidate 2: 250; candidate 3: 250,candidate 1: +400; candidate 2: +150; candidate 3: +210,250,jurisdiction.admin-UUID@example.com\r
 J2,Batch 6,250,Round 1: EXTRA,Yes,candidate 1: 1; candidate 2: 200; candidate 3: 200,candidate 1: 100; candidate 2: 50; candidate 3: 50,candidate 1: +99; candidate 2: -150; candidate 3: -150,249,jurisdiction.admin-UUID@example.com\r
+Totals,,2050,,,candidate 1: 1101; candidate 2: 500; candidate 3: 400,candidate 1: 1900; candidate 2: 950; candidate 3: 950,,\r
 """
