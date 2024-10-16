@@ -50,6 +50,8 @@ def create_background_task(
 
     # For testing, we often prefer tasks to run immediately, instead of asynchronously.
     if config.RUN_BACKGROUND_TASKS_IMMEDIATELY:
+        task.started_at = datetime.now(timezone.utc)
+        db_session.commit()
         run_task(task)
 
     return task
@@ -71,12 +73,9 @@ def emit_progress_for_task(task_id: str):
     return emit_progress
 
 
-# Currently, we assume that only one worker is consuming tasks at a time. There
-# are no guards to prevent parallel workers from running the same task.
-#
-# Due to this constraint, functions in this file take an optional db_session
-# argument in order for the tests to call them using isolated databases. In
-# non-test environments, using the default global db_session is fine.
+# Functions in this file take an optional db_session argument in order for the
+# tests to call them using isolated databases. In non-test environments, using
+# the default global db_session is fine.
 def run_task(task: BackgroundTask, db_session=db_session):
     task_handler = task_dispatch.get(task.task_name)
     assert task_handler, (
@@ -85,10 +84,6 @@ def run_task(task: BackgroundTask, db_session=db_session):
     )
 
     logger.info(f"TASK_START {task_log_data(task)}")
-
-    task.started_at = datetime.now(timezone.utc)
-
-    db_session.commit()
 
     task_args = dict(task.payload)
     # Inject emit_progress for handlers that want to record task progress
@@ -128,28 +123,29 @@ def run_task(task: BackgroundTask, db_session=db_session):
             sentry_sdk.capture_exception(error)
 
 
-def run_new_tasks(db_session=db_session):
-    # Cleanup any tasks that failed to finish processing last time the worker was run
-    stuck_tasks = (
-        db_session.query(BackgroundTask)
-        .filter(BackgroundTask.started_at.isnot(None))
-        .filter(BackgroundTask.completed_at.is_(None))
-        .all()
-    )
-    for task in stuck_tasks:
-        task.started_at = None
-        logger.info(f"TASK_RESET {task_log_data(task)}")
-
-    db_session.commit()
-
-    # Find and run new tasks
-    for task in (
+def claim_next_task(db_session=db_session) -> Optional[BackgroundTask]:
+    task: Optional[BackgroundTask] = (
         db_session.query(BackgroundTask)
         .filter_by(started_at=None)
         .order_by(BackgroundTask.created_at)
-        .all()
-    ):
-        run_task(task, db_session)
+        .limit(1)
+        # Use SELECT ... FOR UPDATE to lock the row so that only one worker can
+        # claim a task at a time.
+        .with_for_update()
+        .one_or_none()
+    )
+    if task:
+        task.started_at = datetime.now(timezone.utc)
+        # Commit the transaction to release the lock before running the task,
+        # allowing other workers to claim tasks in the meantime.
+        db_session.commit()
+    return task
+
+
+def reset_task(task: BackgroundTask):
+    task.started_at = None
+    logger.info(f"TASK_RESET {task_log_data(task)}")
+    db_session.commit()
 
 
 def serialize_background_task(task: Optional[BackgroundTask]) -> Optional[JSONDict]:
