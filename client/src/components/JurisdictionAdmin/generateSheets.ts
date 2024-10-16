@@ -452,6 +452,7 @@ export const downloadBatchTallySheets = async (
           right: pageMargin,
           top: pageMargin,
         },
+        pageBreak: 'avoid',
         rowPageBreak: 'avoid',
         theme: 'grid',
         styles: {
