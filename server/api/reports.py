@@ -461,18 +461,16 @@ def round_rows(election: Election):
             # get the reported votes aggregated across batches
             reported_results: dict = {choice.id: 0 for choice in contest.choices}
             for batch in distinct_batches:
-                reported_results_for_batch = (
-                    batch.jurisdiction.batch_tallies[batch.name][contest.id]
-                    if contest.id in batch.jurisdiction.batch_tallies[batch.name]
-                    else None
-                )
+                reported_results_for_batch = batch.jurisdiction.batch_tallies[
+                    batch.name
+                ].get(contest.id)
                 if reported_results_for_batch is not None:
                     for choice in contest.choices:
                         reported_results[choice.id] += reported_results_for_batch[
                             choice.id
                         ]
 
-            reported_results_by_name = reported_results and {
+            reported_results_by_name = {
                 choice.name: reported_results[choice.id] for choice in contest.choices
             }
 
