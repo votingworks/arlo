@@ -433,6 +433,19 @@ export const downloadBatchTallySheets = async (
     const blankLines: string[][] = new Array(3).fill(['', ''])
 
     for (const [contestIndex, contest] of contests.entries()) {
+      // manually add page break if table will only print header rows before the page ends
+      // as it will then re-print headers on the subsequent page
+      y = addPageBreakIfNecessary({
+        doc,
+        y,
+        yMax,
+        heightOfNextAddition:
+          doc.getLineHeight() +
+          // vertical height of three cells to ensure two header cells + at least one text cell will fit before page break
+          3 * (defaultFontSize + 2 * tableCellPadding + 2 * drawingLineWidth),
+        pageMargin,
+      })
+
       // autoTable automatically adds page breaks
       autoTable(doc, {
         head: [
@@ -472,6 +485,17 @@ export const downloadBatchTallySheets = async (
           if (data.cell.section === 'head' && data.row.index === 0) {
             // eslint-disable-next-line no-param-reassign
             data.cell.styles.fillColor = Colors.LIGHT_GRAY1
+          }
+        },
+        willDrawCell(data) {
+          // For tables that continue onto subsequent pages, update the title to indicate it is a continuation for clarity
+          if (
+            data.cell.section === 'head' &&
+            data.row.index === 0 &&
+            data.pageNumber > 1
+          ) {
+            // eslint-disable-next-line no-param-reassign
+            data.cell.text[0] += ' (continued)'
           }
         },
       })
