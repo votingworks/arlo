@@ -7,21 +7,47 @@ from werkzeug.exceptions import BadRequest, Conflict
 from sqlalchemy.orm import Query, joinedload
 from sqlalchemy import func
 
+
 from . import api
 from ..auth import get_loggedin_user, get_support_user, restrict_access, UserType
+from ..auth.auth_helpers import restrict_access_support
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
 from .shared import get_current_round
 from ..util.csv_download import csv_response, jurisdiction_timestamp_name
 from ..util.jsonschema import JSONDict, validate
 from ..util.isoformat import isoformat
-from ..util.collections import find_first_duplicate
+from ..util.collections import find_first_duplicate, group_by
 from ..activity_log.activity_log import (
     FinalizeBatchResults,
     activity_base,
     record_activity,
 )
-from ..util.get_json import safe_get_json_list
+from ..util.get_json import safe_get_json_dict, safe_get_json_list
+
+
+def combined_batch_representative(batches_to_combine: List[Batch]) -> Batch:
+    assert len(batches_to_combine) > 0
+    return next(sorted(batches_to_combine, key=lambda batch: batch.id))
+
+
+def resolve_combined_batches(batches: List[Batch]) -> List[Batch]:
+    regular_batches = []
+    combined_batches = []
+    for batch in batches:
+        if batch.combined_batch_name is None:
+            regular_batches.append(batch)
+        else:
+            combined_batches.append(batch)
+
+    representative_batches = [
+        combined_batch_representative(batches_to_combine)
+        for batches_to_combine in group_by(
+            combined_batches, lambda batch: batch.combined_batch_name
+        ).values()
+    ]
+
+    return regular_batches + representative_batches
 
 
 def already_audited_batches(jurisdiction: Jurisdiction, round: Round) -> Query:
@@ -134,9 +160,12 @@ def list_batches_for_jurisdiction(
     results_finalized = BatchResultsFinalized.query.filter_by(
         jurisdiction_id=jurisdiction.id, round_id=round.id
     ).one_or_none()
+
     return jsonify(
         {
-            "batches": [serialize_batch(batch) for batch in batches],
+            "batches": [
+                serialize_batch(batch) for batch in resolve_combined_batches(batches)
+            ],
             "resultsFinalizedAt": isoformat(
                 results_finalized and results_finalized.created_at
             ),
@@ -339,6 +368,97 @@ def unfinalize_batch_results(
     ).delete()
     if num_deleted == 0:
         raise Conflict("Results have not been finalized")
+
+    db_session.commit()
+
+    return jsonify(status="ok")
+
+
+@api.route(
+    "/support/jurisdictions/<jurisdiction_id>/combined-batches",
+    methods=["GET"],
+)
+def list_combined_batches(jurisdiction_id: str):
+    jurisdiction = get_or_404(Jurisdiction, jurisdiction_id)
+
+    combined_batches = (
+        Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
+        .filter(Batch.combined_batch_name.isnot(None))
+    )
+
+
+@api.route(
+    "/support/jurisdictions/<jurisdiction_id>/combined-batches",
+    methods=["POST"],
+)
+@restrict_access_support
+def create_combined_batch(jurisdiction_id: str):
+    jurisdiction = get_or_404(Jurisdiction, jurisdiction_id)
+    support_user_email = get_support_user(session)
+    # {
+    #    "combinedBatchName": string
+    #    "batchIds": [string]
+    # }
+    combined_batch = safe_get_json_dict(request)
+    # TODO validate request
+
+    if (
+        Batch.query.filter_by(
+            jurisdiction_id=jurisdiction.id,
+            combined_batch_name=combined_batch["combinedBatchName"],
+        ).count()
+        > 0
+    ):
+        raise Conflict("A combined batch with this name already exists")
+
+    batch_ids = combined_batch["batchIds"]
+    batches = (
+        Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
+        .filter(Batch.id.in_(batch_ids))
+        .all()
+    )
+    if len(batches) != len(batch_ids):
+        raise BadRequest("Invalid batch ids")
+
+    representative_batch = combined_batch_representative(batches)
+
+    for batch in batches:
+        batch.combined_batch_name = combined_batch["combinedBatchName"]
+        # Add 0 tallies for all but the representative batch
+        if batch.id != representative_batch.id:
+            batch.result_tally_sheets = [
+                BatchResultTallySheet(
+                    id=str(uuid.uuid4()),
+                    name="Combined Batch Zero Tally",
+                    results=[
+                        BatchResult(contest_choice_id=choice.id, result=0)
+                        for contest in list(jurisdiction.contests)
+                        for choice in contest.choices
+                    ],
+                )
+            ]
+            batch.last_edited_by_support_user_email = support_user_email
+            batch.last_edited_by_user_id = None
+            batch.last_edited_by_tally_entry_user_id = None
+
+    db_session.commit()
+
+    return jsonify(status="ok")
+
+
+@api.route(
+    "/support/jurisdictions/<jurisdiction_id>/combined-batches/<combined_batch_name>",
+    methods=["DELETE"],
+)
+@restrict_access_support
+def delete_combined_batch(jurisdiction_id: str, combined_batch_name: str):
+    jurisdiction = get_or_404(Jurisdiction, jurisdiction_id)
+
+    num_updated = Batch.query.filter_by(
+        jurisdiction_id=jurisdiction.id, combined_batch_name=combined_batch_name
+    ).update({"combined_batch_name": None})
+    if num_updated == 0:
+        raise NotFound()
 
     db_session.commit()
 
