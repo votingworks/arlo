@@ -23,13 +23,16 @@ install-development:
 	yarn install
 	yarn --cwd client install
 
+setup-git-hooks:
+	yarn prepare
+
 resettestdb:
 	FLASK_ENV=test make resetdb
 
 resetdb:
 	FLASK_ENV=$${FLASK_ENV:-development} poetry run python -m scripts.resetdb
 
-dev-environment: deps initdevdb install-development resetdb
+dev-environment: deps initdevdb install-development setup-git-hooks resetdb
 
 typecheck-server:
 	poetry run mypy server scripts fixtures

@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "build": "yarn --cwd client install && yarn --cwd client build",
-    "heroku-postbuild": "yarn build"
+    "heroku-postbuild": "yarn build",
+    "prepare": "husky install"
   },
   "lint-staged": {
     "*.+(css|graphql|json|less|md|mdx|sass|scss|yaml|yml)": [
