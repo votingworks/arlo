@@ -453,6 +453,7 @@ def round_rows(election: Election):
                 .join(Jurisdiction)
                 .filter_by(election_id=election.id)
                 .filter(SampledBatchDraw.round_id == round.id)
+                .filter(SampledBatchDraw.ticket_number != EXTRA_TICKET_NUMBER)
                 .all()
             )
             num_distinct_batches = len(distinct_batches)
@@ -863,6 +864,13 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
     ]
     rows.append(column_headers)
 
+    total_reported_results: dict = {
+        contest.id: {choice.id: 0 for choice in contest.choices} for contest in contests
+    }
+    total_audit_results: dict = {
+        contest.id: {choice.id: 0 for choice in contest.choices} for contest in contests
+    }
+
     for batch in batches:
         row = [
             batch.jurisdiction.name,
@@ -889,6 +897,12 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
                 if contest.id in batch.jurisdiction.batch_tallies[batch.name]
                 else None
             )
+            if reported_results is not None:
+                for choice in contest.choices:
+                    total_reported_results[contest.id][choice.id] += reported_results[
+                        choice.id
+                    ]
+
             reported_results_by_name = reported_results and {
                 choice.name: reported_results[choice.id] for choice in contest.choices
             }
@@ -901,6 +915,11 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
                 if is_audited and reported_results
                 else None
             )
+            if audit_results is not None:
+                for choice in contest.choices:
+                    total_audit_results[contest.id][choice.id] += audit_results[
+                        choice.id
+                    ]
             audit_results_by_name = audit_results and {
                 choice.name: audit_results[choice.id] for choice in contest.choices
             }
@@ -946,6 +965,26 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
         row += [construct_batch_last_edited_by_string(batch)]
         rows.append(row)
 
+    totals_row = ["Totals", "", sum(batch.num_ballots for batch in batches)]
+    totals_row += ["" for _ in contests]  # Ticket number cols - not relevant to totals
+    totals_row += [""]  # Audited flag - not relevant to totals
+    for contest in contests:
+        total_reported_results_by_name = {
+            choice.name: total_reported_results[contest.id][choice.id]
+            for choice in contest.choices
+        }
+        total_audit_results_by_name = {
+            choice.name: total_audit_results[contest.id][choice.id]
+            for choice in contest.choices
+        }
+        totals_row += [
+            pretty_choice_votes(total_audit_results_by_name),
+            pretty_choice_votes(total_reported_results_by_name),
+            "",  # change in results not calculated for totals
+            "",  # change in margin not calculated for totals
+        ]
+    totals_row += ""  # last edited col
+    rows.append(totals_row)
     return rows
 
 
