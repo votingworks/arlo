@@ -143,7 +143,6 @@ def list_organizations_and_elections(audit_admin_id: str):
                         "auditName": election.audit_name,
                         "electionName": election.election_name,
                         "state": election.state,
-                        "created_at": election.created_at,
                     }
                     for election in org.elections
                     if election.deleted_at is None
