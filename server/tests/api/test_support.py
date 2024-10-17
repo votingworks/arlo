@@ -54,6 +54,7 @@ def test_support_create_organization_invalid(client: FlaskClient):
 def test_support_get_organization(client: FlaskClient, org_id: str, election_id: str):
     set_support_user(client, DEFAULT_SUPPORT_EMAIL)
     rv = client.get(f"/api/support/organizations/{org_id}")
+    print(json.loads(rv.data))
     compare_json(
         json.loads(rv.data),
         {
@@ -67,6 +68,7 @@ def test_support_get_organization(client: FlaskClient, org_id: str, election_id:
                     "auditType": "BALLOT_POLLING",
                     "online": True,
                     "deletedAt": None,
+                    "createdAt": assert_is_date,
                 }
             ],
             "auditAdmins": [
