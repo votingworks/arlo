@@ -160,6 +160,7 @@ def get_organization(organization_id: str):
                 auditType=election.audit_type,
                 online=election.online,
                 deletedAt=isoformat(election.deleted_at),
+                createdAt=isoformat(election.created_at),
             )
             for election in organization.elections
         ],

@@ -329,6 +329,11 @@ const Organization = ({ organizationId }: { organizationId: string }) => {
           <List style={{ marginBottom: '30px' }}>
             {elections
               .filter(election => !election.deletedAt)
+              .sort(
+                (a, b) =>
+                  new Date(b.createdAt).getTime() -
+                  new Date(a.createdAt).getTime()
+              )
               .map(election => (
                 <LinkItem
                   key={election.id}

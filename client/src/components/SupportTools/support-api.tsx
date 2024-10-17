@@ -24,6 +24,7 @@ export interface IElectionBase {
     | 'HYBRID'
   online: boolean
   deletedAt: string | null
+  createdAt: string
 }
 
 export interface IAuditAdmin {
