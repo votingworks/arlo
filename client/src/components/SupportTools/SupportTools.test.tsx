@@ -35,6 +35,7 @@ const mockElectionBase: IElectionBase = {
   auditType: 'BALLOT_POLLING',
   online: true,
   deletedAt: null,
+  createdAt: '2021-01-21T18:19:35.493+00:00',
 }
 
 const mockJurisdictionBase: IJurisdictionBase = {
@@ -53,6 +54,7 @@ const mockOrganization: IOrganization = {
       auditType: 'BALLOT_COMPARISON',
       online: false,
       deletedAt: null,
+      createdAt: '2021-01-21T18:19:35.493+00:00',
     },
     {
       id: 'election-id-3',
@@ -60,6 +62,7 @@ const mockOrganization: IOrganization = {
       auditType: 'BATCH_COMPARISON',
       online: false,
       deletedAt: '2022-03-08T21:03:35.487Z',
+      createdAt: '2022-01-21T18:19:35.493+00:00',
     },
   ],
   auditAdmins: [
