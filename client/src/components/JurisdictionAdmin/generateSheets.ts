@@ -433,16 +433,16 @@ export const downloadBatchTallySheets = async (
     const blankLines: string[][] = new Array(3).fill(['', ''])
 
     for (const [contestIndex, contest] of contests.entries()) {
-      // manually add page break if table will only print header rows before the page ends
-      // as it will then re-print headers on the subsequent page
+      // manually add page break if table will only print header rows before the
+      // page ends as it will then re-print headers on the subsequent page
       y = addPageBreakIfNecessary({
         doc,
         y,
         yMax,
         heightOfNextAddition:
-          doc.getLineHeight() +
-          // vertical height of three cells to ensure two header cells + at least one text cell will fit before page break
-          3 * (defaultFontSize + 2 * tableCellPadding + 2 * drawingLineWidth),
+          // vertical height of three cells to ensure two header cells + at least one content cell will fit before page break
+          3 * (doc.getLineHeight() + 2 * tableCellPadding) +
+          4 * drawingLineWidth,
         pageMargin,
       })
 
@@ -488,7 +488,7 @@ export const downloadBatchTallySheets = async (
           }
         },
         willDrawCell(data) {
-          // For tables that continue onto subsequent pages, update the title to indicate it is a continuation for clarity
+          // Indicate if a table is continuing from a previous page
           if (
             data.cell.section === 'head' &&
             data.row.index === 0 &&
