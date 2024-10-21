@@ -427,17 +427,20 @@ export const downloadBatchTallySheets = async (
     const verifyPromptStart = 'Did the audit board verify '
     let verifyPromptCurrentX = pageMargin
     doc.text(verifyPromptStart, verifyPromptCurrentX, y)
-    verifyPromptCurrentX += doc.getTextDimensions(verifyPromptStart).w
+    verifyPromptCurrentX += doc.getTextWidth(verifyPromptStart)
 
     doc.setFont('Helvetica', 'bold').setFontSize(defaultFontSize)
-    const verifyPromptBold = batch.name
+    let verifyPromptBold = batch.name.slice(0, 20)
+    if (verifyPromptBold.length !== batch.name.length) {
+      verifyPromptBold += '...' // add ellipsis if we trimmed the name
+    }
     doc.text(verifyPromptBold, verifyPromptCurrentX, y)
-    verifyPromptCurrentX += doc.getTextDimensions(verifyPromptBold).w
+    verifyPromptCurrentX += doc.getTextWidth(verifyPromptBold)
 
     doc.setFont('Helvetica', 'normal').setFontSize(defaultFontSize)
     const verifyPromptEnd = ' was the batch received?'
     doc.text(verifyPromptEnd, verifyPromptCurrentX, y)
-    verifyPromptCurrentX += doc.getTextDimensions(verifyPromptEnd).w
+    verifyPromptCurrentX += doc.getTextWidth(verifyPromptEnd)
 
     verifyPromptCurrentX += checkboxLeftMargin
     const verificationCheckboxY = y - checkboxSize + checkboxTopMargin
