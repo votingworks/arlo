@@ -103,10 +103,11 @@ jobs:
           docker_layer_caching: true
       - python/install-packages:
           pkg-manager: poetry
+          cache-version: v2
       - node/install-packages:
           pkg-manager: yarn
           app-dir: client
-          cache-version: v4
+          cache-version: v3
           # In order to cache the Cypress binary, we have to cache
           # ~/.cache/Cypress (alongside the default caching of ~/.cache/yarn).
           # So we just cache all of ~/.cache.
