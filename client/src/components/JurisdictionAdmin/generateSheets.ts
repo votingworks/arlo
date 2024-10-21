@@ -424,6 +424,33 @@ export const downloadBatchTallySheets = async (
     doc.text('Yes', sealedCheckboxX + checkboxSize + checkboxRightMargin, y)
     y += sectionBottomMargin
 
+    const verifyPromptStart = 'Did the audit board verify '
+    let verifyPromptCurrentX = pageMargin
+    doc.text(verifyPromptStart, verifyPromptCurrentX, y)
+    verifyPromptCurrentX += doc.getTextDimensions(verifyPromptStart).w
+
+    doc.setFont('Helvetica', 'bold').setFontSize(defaultFontSize)
+    const verifyPromptBold = batch.name
+    doc.text(verifyPromptBold, verifyPromptCurrentX, y)
+    verifyPromptCurrentX += doc.getTextDimensions(verifyPromptBold).w
+
+    doc.setFont('Helvetica', 'normal').setFontSize(defaultFontSize)
+    const verifyPromptEnd = ' was the batch received?'
+    doc.text(verifyPromptEnd, verifyPromptCurrentX, y)
+    verifyPromptCurrentX += doc.getTextDimensions(verifyPromptEnd).w
+
+    verifyPromptCurrentX += checkboxLeftMargin
+    const verificationCheckboxY = y - checkboxSize + checkboxTopMargin
+    doc.rect(
+      verifyPromptCurrentX,
+      verificationCheckboxY,
+      checkboxSize,
+      checkboxSize
+    )
+    verifyPromptCurrentX += checkboxSize + checkboxRightMargin
+    doc.text('Yes', verifyPromptCurrentX, y)
+    y += sectionBottomMargin
+
     //
     // Assume up until this point that we won't spill onto a second page. From here onward, no
     // longer make that assumption.
