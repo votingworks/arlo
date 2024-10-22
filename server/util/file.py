@@ -3,7 +3,7 @@ import shutil
 import io
 import os
 import tempfile
-from typing import BinaryIO, IO, List, Mapping, Optional
+from typing import BinaryIO, IO, List, Mapping, Optional, Dict, Any
 from urllib.parse import urlparse
 from zipfile import ZipFile
 import boto3
@@ -41,6 +41,7 @@ def s3():  # pylint: disable=invalid-name
         "s3",
         aws_access_key_id=config.AWS_ACCESS_KEY_ID,
         aws_secret_access_key=config.AWS_SECRET_ACCESS_KEY,
+        region_name="us-west-1",
     )
 
 
@@ -59,6 +60,8 @@ def store_file(file: IO[bytes], storage_path: str) -> str:
 
 def retrieve_file(storage_path: str) -> BinaryIO:
     if config.FILE_UPLOAD_STORAGE_PATH.startswith("s3://"):
+        if not storage_path.startswith(config.FILE_UPLOAD_STORAGE_PATH):
+            raise Exception("Invalid file storage path")
         assert storage_path.startswith("s3://")
         parsed_path = urlparse(storage_path)
         bucket_name = parsed_path.netloc
@@ -98,3 +101,33 @@ def unzip_files(zip_file: BinaryIO, directory_to_extract_to: str) -> List[str]:
     with ZipFile(zip_file, "r") as zip_archive:
         zip_archive.extractall(directory_to_extract_to)
         return zip_archive.namelist()
+
+
+def get_full_storage_path(file_path: str) -> str:
+    if config.FILE_UPLOAD_STORAGE_PATH.startswith("s3://"):
+        bucket_name = urlparse(config.FILE_UPLOAD_STORAGE_PATH).netloc
+        return f"s3://{bucket_name}/{file_path}"
+    else:
+        return os.path.join(config.FILE_UPLOAD_STORAGE_PATH, file_path)
+
+
+def create_presigned_s3_upload(
+    storage_prefix: str, file_name: str, file_type: str
+) -> Optional[Dict[str, Any]]:
+    if config.FILE_UPLOAD_STORAGE_PATH.startswith("s3://"):
+        bucket_name = urlparse(config.FILE_UPLOAD_STORAGE_PATH).netloc
+        response: Dict[str, Any] = s3().generate_presigned_post(
+            bucket_name,
+            f"{storage_prefix}/{file_name}",
+            # More documentation on diffrent options to specify here:
+            # https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-HTTPPOSTConstructPolicy.html
+            Conditions=[
+                {"bucket": bucket_name},
+                {"Content-Type": file_type},
+                {"key": f"{storage_prefix}/{file_name}"},
+            ],
+            ExpiresIn=60 * 10,  # 10 minutes
+        )
+        return response
+    else:
+        return None

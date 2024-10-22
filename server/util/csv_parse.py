@@ -82,6 +82,10 @@ def parse_csv(file: BinaryIO, columns: List[CSVColumnType]) -> CSVDictIterator:
     return dict_csv
 
 
+def is_filetype_csv_mimetype(file_type: str) -> bool:
+    return file_type in ["text/csv", "application/vnd.ms-excel"]
+
+
 def does_file_have_csv_mimetype(file: FileStorage) -> bool:
     # In Windows, CSVs have mimetype application/vnd.ms-excel
     return file.mimetype in ["text/csv", "application/vnd.ms-excel"]
@@ -93,6 +97,11 @@ def does_file_have_zip_mimetype(file: FileStorage) -> bool:
 
 def validate_csv_mimetype(file: FileStorage) -> None:
     if not does_file_have_csv_mimetype(file):
+        raise BadRequest(INVALID_CSV_ERROR)
+
+
+def validate_csv_filetype(file_type: str) -> None:
+    if not is_filetype_csv_mimetype(file_type):
         raise BadRequest(INVALID_CSV_ERROR)
 
 
