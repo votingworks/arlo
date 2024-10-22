@@ -4,7 +4,7 @@ import typing
 from datetime import datetime
 from typing import Dict, Optional
 from collections import defaultdict
-from flask import request, jsonify, Request
+from flask import request, jsonify
 from werkzeug.exceptions import BadRequest, Conflict
 
 from . import api
@@ -25,10 +25,11 @@ from ..util.csv_parse import (
 )
 from ..util.csv_download import csv_response
 from ..util.file import (
+    get_file_upload_url,
+    get_standard_file_upload_request_params,
     retrieve_file,
     serialize_file,
     serialize_file_processing,
-    store_file,
     timestamp_filename,
 )
 
@@ -177,7 +178,41 @@ def process_standardized_contests_file(election_id: str):
     set_contest_metadata(election)
 
 
-def validate_standardized_contests_upload(request: Request, election: Election):
+@api.route(
+    "/election/<election_id>/standardized-contests/file/upload-url", methods=["GET"]
+)
+@restrict_access([UserType.AUDIT_ADMIN])
+def start_upload_for_standardized_contests_file(election: Election):
+    file_type = request.args.get("fileType")
+    if file_type is None:
+        raise BadRequest("Missing expected query parameter: fileType")
+
+    storage_path_prefix = f"audits/{election.id}"
+    filename = timestamp_filename("standardized_contests", "csv")
+
+    return jsonify(get_file_upload_url(storage_path_prefix, filename, file_type))
+
+
+def save_standardized_contests_file(
+    election: Election, storage_path: str, filename: str
+):
+    election.standardized_contests_file = File(
+        id=str(uuid.uuid4()),
+        name=filename,  # type: ignore
+        storage_path=storage_path,
+        uploaded_at=datetime.now(timezone.utc),
+    )
+    election.standardized_contests_file.task = create_background_task(
+        process_standardized_contests_file, dict(election_id=election.id)
+    )
+
+
+@api.route(
+    "/election/<election_id>/standardized-contests/file/upload-complete",
+    methods=["POST"],
+)
+@restrict_access([UserType.AUDIT_ADMIN])
+def complete_upload_for_standardized_contests_file(election: Election):
     if election.audit_type not in [AuditType.BALLOT_COMPARISON, AuditType.HYBRID]:
         raise Conflict("Can't upload CVR file for this audit type.")
 
@@ -186,34 +221,14 @@ def validate_standardized_contests_upload(request: Request, election: Election):
             "Must upload jurisdictions file before uploading standardized contests file."
         )
 
-    if "standardized-contests" not in request.files:
-        raise BadRequest("Missing required file parameter 'standardized-contests'")
-
-    validate_csv_mimetype(request.files["standardized-contests"])
-
-
-@api.route("/election/<election_id>/standardized-contests/file", methods=["PUT"])
-@restrict_access([UserType.AUDIT_ADMIN])
-def upload_standardized_contests_file(election: Election):
-    validate_standardized_contests_upload(request, election)
+    (storage_path, filename, file_type) = get_standard_file_upload_request_params(
+        request
+    )
+    validate_csv_mimetype(file_type)
 
     election.standardized_contests = None
-    file = request.files["standardized-contests"]
-    storage_path = store_file(
-        file.stream,
-        f"audits/{election.id}/" + timestamp_filename("standardized_contests", "csv"),
-    )
-    election.standardized_contests_file = File(
-        id=str(uuid.uuid4()),
-        name=file.filename,  # type: ignore
-        storage_path=storage_path,
-        uploaded_at=datetime.now(timezone.utc),
-    )
-    election.standardized_contests_file.task = create_background_task(
-        process_standardized_contests_file, dict(election_id=election.id)
-    )
+    save_standardized_contests_file(election, storage_path, filename)
     db_session.commit()
-
     return jsonify(status="ok")
 
 

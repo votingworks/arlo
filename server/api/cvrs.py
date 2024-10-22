@@ -33,6 +33,8 @@ from werkzeug.exceptions import BadRequest, NotFound, Conflict
 from sqlalchemy import func, and_
 from sqlalchemy.orm import Session
 
+from server.util.isoformat import isoformat
+
 from . import api
 from ..database import db_session, engine as db_engine
 from ..models import *  # pylint: disable=wildcard-import
@@ -44,23 +46,23 @@ from ..worker.tasks import (
     create_background_task,
 )
 from ..util.file import (
+    get_file_upload_url,
+    get_standard_file_upload_request_params,
     retrieve_file,
     serialize_file,
     serialize_file_processing,
-    store_file,
     timestamp_filename,
     unzip_files,
-    zip_files,
+    validate_zip_mimetype,
 )
 from ..util.csv_download import csv_response
 from ..util.csv_parse import (
     CSVIterator,
     decode_csv,
-    does_file_have_csv_mimetype,
     reject_no_rows,
     validate_comma_delimited,
-    validate_csv_mimetype,
     validate_not_empty,
+    validate_csv_mimetype,
 )
 from ..util.collections import find_first_duplicate
 from ..audit_math.suite import HybridPair
@@ -413,6 +415,7 @@ def parse_dominion_cvrs(
     jurisdiction: Jurisdiction,
 ) -> Tuple[CVR_CONTESTS_METADATA, Iterable[CvrBallot]]:
     cvr_file = retrieve_file(jurisdiction.cvr_file.storage_path)
+    print(cvr_file)
     cvrs = csv_reader_for_cvr(cvr_file)
 
     # Parse out all the initial metadata
@@ -1540,32 +1543,37 @@ def validate_cvr_upload(
     if not jurisdiction.manifest_file_id:
         raise Conflict("Must upload ballot manifest before uploading CVR file.")
 
-    if "cvrs" not in request.files:
-        raise BadRequest("Missing required file parameter 'cvrs'")
-
     cvr_file_type = request.form.get("cvrFileType")
+    if cvr_file_type is None:
+        raise BadRequest("CVR file type is required")
+
     if cvr_file_type not in [cvr_file_type.value for cvr_file_type in CvrFileType]:
         raise BadRequest("Invalid file type")
-
-    if cvr_file_type == CvrFileType.HART:
-
-        def is_zip_file(file):
-            return file.mimetype in ["application/zip", "application/x-zip-compressed"]
-
-        files = request.files.getlist("cvrs")
-        if not all(
-            is_zip_file(file) or does_file_have_csv_mimetype(file) for file in files
-        ):
-            raise BadRequest("Please submit only ZIP files and CSVs.")
-        if not any(is_zip_file(file) for file in files):
-            raise BadRequest("Please submit at least one ZIP file.")
-
-    else:
-        validate_csv_mimetype(request.files["cvrs"])
 
 
 def clear_cvr_contests_metadata(jurisdiction: Jurisdiction):
     jurisdiction.cvr_contests_metadata = None
+
+
+def finalize_cvr_upload(
+    storage_path: str, file_name: str, cvr_file_type: str, jurisdiction: Jurisdiction
+):
+
+    jurisdiction.cvr_file = File(
+        id=str(uuid.uuid4()),
+        name=file_name,
+        storage_path=storage_path,
+        uploaded_at=datetime.now(timezone.utc),
+    )
+    jurisdiction.cvr_file_type = cvr_file_type
+    jurisdiction.cvr_file.task = create_background_task(
+        process_cvr_file,
+        dict(
+            jurisdiction_id=jurisdiction.id,
+            jurisdiction_admin_email=get_loggedin_user(session)[1],
+            support_user_email=get_support_user(session),
+        ),
+    )
 
 
 @background_task
@@ -1584,59 +1592,6 @@ def clear_cvr_ballots(jurisdiction_id: str):
 
 @api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/cvrs",
-    methods=["PUT"],
-)
-@restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
-def upload_cvrs(
-    election: Election,
-    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
-):
-    validate_cvr_upload(request, election, jurisdiction)
-    clear_cvr_contests_metadata(jurisdiction)
-
-    if request.form["cvrFileType"] in [CvrFileType.ESS, CvrFileType.HART]:
-        file_name = "cvr-files.zip"
-        zip_file = zip_files(
-            {
-                file.filename: file.stream  # type: ignore
-                for file in request.files.getlist("cvrs")
-            }
-        )
-        storage_path = store_file(
-            zip_file,
-            f"audits/{election.id}/jurisdictions/{jurisdiction.id}/"
-            + timestamp_filename("cvrs", "zip"),
-        )
-    else:
-        file_name = request.files["cvrs"].filename  # type: ignore
-        file_extension = "csv"
-        storage_path = store_file(
-            request.files["cvrs"].stream,
-            f"audits/{election.id}/jurisdictions/{jurisdiction.id}/"
-            + timestamp_filename("cvrs", file_extension),
-        )
-
-    jurisdiction.cvr_file = File(
-        id=str(uuid.uuid4()),
-        name=file_name,
-        storage_path=storage_path,
-        uploaded_at=datetime.now(timezone.utc),
-    )
-    jurisdiction.cvr_file_type = request.form["cvrFileType"]
-    jurisdiction.cvr_file.task = create_background_task(
-        process_cvr_file,
-        dict(
-            jurisdiction_id=jurisdiction.id,
-            jurisdiction_admin_email=get_loggedin_user(session)[1],
-            support_user_email=get_support_user(session),
-        ),
-    )
-    db_session.commit()
-    return jsonify(status="ok")
-
-
-@api.route(
-    "/election/<election_id>/jurisdiction/<jurisdiction_id>/cvrs",
     methods=["GET"],
 )
 @restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
@@ -1648,6 +1603,55 @@ def get_cvrs(
         file=file and dict(file, cvrFileType=jurisdiction.cvr_file_type),
         processing=serialize_file_processing(jurisdiction.cvr_file),
     )
+
+
+@api.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/cvrs/upload-url",
+    methods=["GET"],
+)
+@restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
+def start_upload_for_cvrs(election: Election, jurisdiction: Jurisdiction):
+    file_type = request.args.get("fileType")
+    if file_type is None:
+        raise BadRequest("Missing expected query parameter: fileType")
+
+    storage_path_prefix = (
+        f"audits/{election.id}/jurisdictions/{jurisdiction.id}"
+        f"/cvrs_{isoformat(datetime.now(timezone.utc))}"
+    )
+
+    cvr_file_type = request.args.get("cvrFileType")
+    if cvr_file_type in [CvrFileType.ESS, CvrFileType.HART]:
+        filename = timestamp_filename("cvrs", "zip")
+    else:
+        filename = timestamp_filename("cvrs", "csv")
+
+    return jsonify(get_file_upload_url(storage_path_prefix, filename, file_type))
+
+
+@api.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/cvrs/upload-complete",
+    methods=["POST"],
+)
+@restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
+def complete_upload_for_cvrs(
+    election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
+):
+    validate_cvr_upload(request, election, jurisdiction)
+
+    (storage_path, filename, file_type) = get_standard_file_upload_request_params(
+        request
+    )
+    cvr_file_type = request.form.get("cvrFileType")
+    if cvr_file_type in [CvrFileType.ESS, CvrFileType.HART]:
+        validate_zip_mimetype(file_type)
+    else:
+        validate_csv_mimetype(file_type)
+
+    clear_cvr_contests_metadata(jurisdiction)
+    finalize_cvr_upload(storage_path, filename, cvr_file_type, jurisdiction)
+    db_session.commit()
+    return jsonify(status="ok")
 
 
 @api.route(

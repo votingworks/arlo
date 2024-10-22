@@ -33,18 +33,20 @@ from .cvrs import (
 )
 from ..models import *  # pylint: disable=wildcard-import
 from ..util.csv_parse import (
-    does_file_have_csv_mimetype,
-    does_file_have_zip_mimetype,
-    INVALID_CSV_ERROR,
     validate_comma_delimited,
+    is_filetype_csv_mimetype,
+    validate_csv_mimetype,
 )
 from ..util.file import (
+    get_file_upload_url,
+    get_standard_file_upload_request_params,
     retrieve_file,
     serialize_file,
     serialize_file_processing,
-    store_file,
     timestamp_filename,
     unzip_files,
+    validate_csv_or_zip_mimetype,
+    validate_xml_mimetype,
 )
 from ..worker.tasks import UserError, background_task, create_background_task
 from ..util.csv_download import csv_response, jurisdiction_timestamp_name
@@ -624,11 +626,33 @@ def get_batch_inventory_system_type(
 
 
 @api.route(
-    "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch-inventory/cvr",
-    methods=["PUT"],
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch-inventory/cvr/upload-url",
+    methods=["GET"],
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
-def upload_batch_inventory_cvr(election: Election, jurisdiction: Jurisdiction):
+def start_upload_for_batch_inventory_cvr(
+    election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
+):
+    file_type = request.args.get("fileType")
+    if file_type is None:
+        raise BadRequest("Missing expected query parameter: fileType")
+
+    is_csv = is_filetype_csv_mimetype(file_type)
+
+    storage_path_prefix = f"audits/{election.id}/jurisdictions/{jurisdiction.id}"
+    filename = timestamp_filename("batch-inventory-cvrs", "csv" if is_csv else "zip")
+
+    return jsonify(get_file_upload_url(storage_path_prefix, filename, file_type))
+
+
+@api.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch-inventory/cvr/upload-complete",
+    methods=["POST"],
+)
+@restrict_access([UserType.JURISDICTION_ADMIN])
+def complete_upload_for_batch_inventory_cvr(
+    election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
+):
     if len(list(jurisdiction.contests)) == 0:
         raise Conflict("Jurisdiction does not have any contests assigned.")
 
@@ -636,34 +660,21 @@ def upload_batch_inventory_cvr(election: Election, jurisdiction: Jurisdiction):
     if not batch_inventory_data or not batch_inventory_data.system_type:
         raise Conflict("Must select system type before uploading CVR file.")
 
-    file = request.files["cvr"]
-    file_type = (
-        "csv"
-        if does_file_have_csv_mimetype(file)
-        else "zip" if does_file_have_zip_mimetype(file) else "other"
+    (storage_path, filename, file_type) = get_standard_file_upload_request_params(
+        request
     )
-
-    if batch_inventory_data.system_type == CvrFileType.DOMINION and file_type != "csv":
-        raise BadRequest(INVALID_CSV_ERROR)
-    elif (
-        batch_inventory_data.system_type == CvrFileType.ESS
-        and file_type != "csv"
-        and file_type != "zip"
-    ):
-        raise BadRequest("Please submit a valid CSV or ZIP file.")
-
-    assert file_type != "other"
-
-    file_name: str = file.filename  # type: ignore
-    storage_path = store_file(
-        file.stream,
-        f"audits/{election.id}/jurisdictions/{jurisdiction.id}/"
-        + timestamp_filename("batch-inventory-cvrs", file_type),
-    )
+    if batch_inventory_data.system_type == CvrFileType.DOMINION:
+        validate_csv_mimetype(file_type)
+    elif batch_inventory_data.system_type == CvrFileType.ESS:
+        validate_csv_or_zip_mimetype(file_type)
+    else:
+        raise Conflict(
+            f"Batch Inventory CVR uploads not supported for cvr file type: {batch_inventory_data.system_type}"
+        )
 
     batch_inventory_data.cvr_file = File(
         id=str(uuid.uuid4()),
-        name=file_name,
+        name=filename,
         storage_path=storage_path,
         uploaded_at=datetime.now(timezone.utc),
     )
@@ -738,27 +749,45 @@ def download_batch_inventory_cvr(
 
 
 @api.route(
-    "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch-inventory/tabulator-status",
-    methods=["PUT"],
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch-inventory/tabulator-status/upload-url",
+    methods=["GET"],
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
-def upload_batch_inventory_tabulator_status(
+def start_upload_for_batch_inventory_tabulator_status(
     election: Election, jurisdiction: Jurisdiction
 ):
+
+    file_type = request.args.get("fileType")
+    if file_type is None:
+        raise BadRequest("Missing expected query parameter: fileType")
+
+    storage_path_prefix = f"audits/{election.id}/jurisdictions/{jurisdiction.id}"
+    filename = timestamp_filename("batch-inventory-tabulator-status", "xml")
+
+    return jsonify(get_file_upload_url(storage_path_prefix, filename, file_type))
+
+
+@api.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch-inventory/tabulator-status/upload-complete",
+    methods=["POST"],
+)
+@restrict_access([UserType.JURISDICTION_ADMIN])
+def complete_upload_for_batch_inventory_tabulator_status(
+    election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
+):
+
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
     if not batch_inventory_data or not batch_inventory_data.cvr_file_id:
         raise Conflict("Must upload CVR file before uploading tabulator status file.")
 
-    file_name: str = request.files["tabulatorStatus"].filename  # type: ignore
-    storage_path = store_file(
-        request.files["tabulatorStatus"].stream,
-        f"audits/{election.id}/jurisdictions/{jurisdiction.id}/"
-        + timestamp_filename("batch-inventory-tabulator-status", "xml"),
+    (storage_path, filename, file_type) = get_standard_file_upload_request_params(
+        request
     )
+    validate_xml_mimetype(file_type)
 
     batch_inventory_data.tabulator_status_file = File(
         id=str(uuid.uuid4()),
-        name=file_name,
+        name=filename,
         storage_path=storage_path,
         uploaded_at=datetime.now(timezone.utc),
     )
