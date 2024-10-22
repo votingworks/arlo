@@ -80,11 +80,11 @@ We recommend running Arlo on Ubuntu 20.
 
 - Clone the Arlo repository from https://github.com/votingworks/arlo.
 - `make dev-environment` or, if you prefer, look at individual make tasks like `deps`, `initdevdb`, `install-development`, and `resetdb`
+- Ensure `poetry` is available in your `PATH`. This will vary slightly depending on your shell and where `poetry` was installed. With bash, that should look like: `export PATH="$PATH:$HOME/.local/bin"`, which you can add to your `.bashrc`.
 
 Here are some troubleshooting steps for issues we've run into when installing Arlo before:
 
 - Arlo expects the Postgresql server to use the UTC timezone. You may need to edit `/etc/postgresql/10/main/postgresql.conf` and set `timezone = UTC`.
-- `psycopg2` has known issues depending on your install (see, e.g., [here](https://github.com/psycopg/psycopg2/issues/674)). If you run into issues, switch `psycopg2` to `psycopg2-binary` in pyproject.toml
 - A password may have to be set in the `DATABASE_URL` env var depending on your install of postgres. To do this, change `postgresql://postgres@localhost:5432/arlo` to `postgresql://postgres:{PASSWORD}@localhost:5432/arlo`, replacing `{PASSWORD}` with the password.
 - You may need to create `arlo` and `arlo-test` databases manually [via postgres](https://www.postgresql.org/docs/9.0/sql-createdatabase.html).
 - If you run into the error `fe_sendauth: no password supplied` when running `make dev-environment`, it means there's no password set for the default postgres user. You can change the postgres authentication method to not require a password by editing `/etc/postgresql/10/main/pg_hba.conf` and changing `md5` to `trust` for both the IPv4 and IPv6 local connections settings, and then restart postgres via `sudo systemctl restart postgresql`.
