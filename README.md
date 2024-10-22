@@ -80,7 +80,7 @@ We recommend running Arlo on Ubuntu 20.
 
 - Clone the Arlo repository from https://github.com/votingworks/arlo.
 - `make dev-environment` or, if you prefer, look at individual make tasks like `deps`, `initdevdb`, `install-development`, and `resetdb`
-- Ensure `poetry` is available in your `PATH`. This will vary slightly depending on your shell and where `poetry` was installed. With bash, that should look like: `export PATH="$PATH:$HOME/.local/bin"`, which you can add to your `.bashrc` or `.bash_profile`.
+- Ensure `poetry` is available in your `PATH`. This will vary slightly depending on your shell and where `poetry` was installed. With bash, that should look like: `export PATH="$PATH:$HOME/.local/bin"`, which you can add to your `.bashrc`.
 
 Here are some troubleshooting steps for issues we've run into when installing Arlo before:
 
