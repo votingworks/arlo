@@ -147,9 +147,7 @@ const useBatchInventoryCVR = (
         ),
     }),
     uploadFiles: files => {
-      const formData = new FormData()
-      formData.append('cvr', files[0], files[0].name)
-      return uploadFiles.mutateAsync(formData)
+      return uploadFiles.mutateAsync({ file: files[0] })
     },
     uploadProgress: uploadFiles.progress,
     deleteFile: () => deleteFile.mutateAsync(),
@@ -175,9 +173,7 @@ const useBatchInventoryTabulatorStatus = (
         ),
     }),
     uploadFiles: files => {
-      const formData = new FormData()
-      formData.append('tabulatorStatus', files[0], files[0].name)
-      return uploadFiles.mutateAsync(formData)
+      return uploadFiles.mutateAsync({ file: files[0] })
     },
     uploadProgress: uploadFiles.progress,
     deleteFile: () => deleteFile.mutateAsync(),
@@ -237,7 +233,7 @@ const SelectSystemStep: React.FC<{
           <HTMLSelect
             large
             onChange={setSystemType}
-            value={systemType ?? undefined}
+            value={systemType || undefined}
           >
             {!systemType && <option value={undefined}></option>}
             <option value={CvrFileType.DOMINION}>Dominion</option>
