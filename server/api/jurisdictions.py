@@ -11,6 +11,7 @@ from sqlalchemy.orm import joinedload
 from werkzeug.exceptions import Conflict, BadRequest
 
 from . import api
+from .. import config
 from ..models import *  # pylint: disable=wildcard-import
 from ..database import db_session
 from ..auth import restrict_access, UserType
@@ -32,6 +33,8 @@ from ..worker.tasks import (
     create_background_task,
 )
 from ..util.file import (
+    create_presigned_s3_upload,
+    get_full_storage_path,
     retrieve_file,
     serialize_file,
     serialize_file_processing,
@@ -44,6 +47,7 @@ from ..util.csv_parse import (
     CSVValueType,
     parse_csv,
     validate_csv_mimetype,
+    validate_csv_filetype,
 )
 from ..util.csv_download import csv_response
 
@@ -581,26 +585,40 @@ JURISDICTION_NAME = "Jurisdiction"
 ADMIN_EMAIL = "Admin Email"
 
 
-@api.route("/election/<election_id>/jurisdiction/file", methods=["PUT"])
+@api.route("/election/<election_id>/jurisdiction/file/upload-url", methods=["GET"])
 @restrict_access([UserType.AUDIT_ADMIN])
-def update_jurisdictions_file(election: Election):
+def start_upload_for_jurisdictions_file(election: Election):
+    print("we are here")
     if len(list(election.rounds)) > 0:
         raise Conflict("Cannot update jurisdictions after audit has started.")
 
-    if "jurisdictions" not in request.files:
-        raise BadRequest("Missing required file parameter 'jurisdictions'")
+    file_type = request.args.get("fileType")
+    if file_type is None:
+        raise BadRequest("File type is required")
+    validate_csv_filetype(file_type)
 
-    validate_csv_mimetype(request.files["jurisdictions"])
+    storage_path_prefix = f"audits/{election.id}/"
+    file_name = timestamp_filename("participating_jurisdictions", "csv")
 
-    jurisdictions_file = request.files["jurisdictions"]
-    storage_path = store_file(
-        jurisdictions_file.stream,
-        f"audits/{election.id}/"
-        + timestamp_filename("participating_jurisdictions", "csv"),
-    )
+    if not config.FILE_UPLOAD_STORAGE_PATH.startswith("s3://"):
+        return jsonify(
+            url=f"/api/election/{election.id}/jurisdiction/file",
+            fields={
+                "key": f"{storage_path_prefix}/{file_name}",
+            },
+        )
+
+    response = create_presigned_s3_upload(storage_path_prefix, file_name, file_type)
+    if response is None:
+        return jsonify(None)
+    else:
+        return jsonify(response)
+
+
+def save_jurisdiction_file(election: Election, storage_path: str, filename: str):
     election.jurisdictions_file = File(
         id=str(uuid.uuid4()),
-        name=jurisdictions_file.filename,  # type: ignore
+        name=filename,
         storage_path=storage_path,
         uploaded_at=datetime.datetime.now(timezone.utc),
     )
@@ -608,8 +626,43 @@ def update_jurisdictions_file(election: Election):
         process_jurisdictions_file, dict(election_id=election.id)
     )
 
-    db_session.commit()
 
+@api.route("/election/<election_id>/jurisdiction/file", methods=["POST"])
+@restrict_access([UserType.AUDIT_ADMIN])
+def update_jurisdictions_file_local_filesystem(
+    election: Election,  # pylint: disable=unused-argument
+):
+    if "file" not in request.files:
+        raise BadRequest("Missing required file parameter 'file'")
+
+    jurisdictions_file = request.files["file"]
+    validate_csv_mimetype(jurisdictions_file)
+
+    storage_key = request.form.get("key")
+    if storage_key is None:
+        raise BadRequest("Missing required form parameter 'key'")
+
+    store_file(
+        jurisdictions_file.stream,
+        storage_key,
+    )
+    return jsonify(status="ok")
+
+
+@api.route(
+    "/election/<election_id>/jurisdiction/file/upload-complete", methods=["POST"]
+)
+@restrict_access([UserType.AUDIT_ADMIN])
+def complete_upload_for_jurisdictions_file(election: Election):
+    storage_path = get_full_storage_path(request.form["storagePathKey"])
+    filename = request.form["fileName"]
+    if not storage_path:
+        raise BadRequest("Missing required JSON parameter: storagePathKey")
+    if not filename:
+        raise BadRequest("Missing required JSON parameter: fileName")
+
+    save_jurisdiction_file(election, storage_path, filename)
+    db_session.commit()
     return jsonify(status="ok")
 
 

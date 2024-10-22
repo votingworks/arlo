@@ -15,6 +15,7 @@ from sqlalchemy.orm import Session
 
 from ..database import db_session, engine
 from . import api
+from .. import config
 from ..auth.auth_helpers import (
     UserType,
     restrict_access,
@@ -34,8 +35,12 @@ from ..util.csv_parse import (
     does_file_have_zip_mimetype,
     INVALID_CSV_ERROR,
     validate_comma_delimited,
+    validate_csv_filetype,
+    is_filetype_csv_mimetype,
 )
 from ..util.file import (
+    create_presigned_s3_upload,
+    get_full_storage_path,
     retrieve_file,
     serialize_file,
     serialize_file_processing,
@@ -548,11 +553,13 @@ def get_batch_inventory_system_type(
 
 
 @api.route(
-    "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch-inventory/cvr",
-    methods=["PUT"],
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch-inventory/cvr/upload-url",
+    methods=["GET"],
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
-def upload_batch_inventory_cvr(election: Election, jurisdiction: Jurisdiction):
+def upload_batch_inventory_cvr(
+    election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
+):
     if len(list(jurisdiction.contests)) == 0:
         raise Conflict("Jurisdiction does not have any contests assigned.")
 
@@ -560,13 +567,50 @@ def upload_batch_inventory_cvr(election: Election, jurisdiction: Jurisdiction):
     if not batch_inventory_data or not batch_inventory_data.system_type:
         raise Conflict("Must select system type before uploading CVR file.")
 
-    file = request.files["cvr"]
+    file_type = request.args.get("fileType")
+    if file_type is None:
+        raise BadRequest("File type is required")
+
+    is_zip = file_type in ["application/zip", "application/x-zip-compressed"]
+    if batch_inventory_data.system_type == CvrFileType.DOMINION:
+        validate_csv_filetype(file_type)
+    elif not is_filetype_csv_mimetype(file_type) and not is_zip:
+        raise BadRequest("Please submit a valid CSV or ZIP file.")
+
+    storage_path_prefix = f"audits/{election.id}/jurisdictions/{jurisdiction.id}/"
+    filename = timestamp_filename("batch-inventory-cvrs", "zip" if is_zip else "csv")
+
+    if not config.FILE_UPLOAD_STORAGE_PATH.startswith("s3://"):
+        return jsonify(
+            url=f"/api/election/{election.id}/jurisdiction/{jurisdiction.id}/batch-inventory/cvr/file",
+            fields={
+                "key": f"{storage_path_prefix}/{filename}",
+            },
+        )
+
+    response = create_presigned_s3_upload(storage_path_prefix, filename, file_type)
+    if response is None:
+        return jsonify(None)
+    else:
+        return jsonify(response)
+
+
+@api.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch-inventory/cvr/file",
+    methods=["POST"],
+)
+@restrict_access([UserType.JURISDICTION_ADMIN])
+def upload_batch_inventory_cvr_to_local_filesystem(
+    election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
+):
+    file = request.files["file"]
     file_type = (
         "csv"
         if does_file_have_csv_mimetype(file)
         else "zip" if does_file_have_zip_mimetype(file) else "other"
     )
 
+    batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
     if batch_inventory_data.system_type == CvrFileType.DOMINION and file_type != "csv":
         raise BadRequest(INVALID_CSV_ERROR)
     elif (
@@ -578,16 +622,35 @@ def upload_batch_inventory_cvr(election: Election, jurisdiction: Jurisdiction):
 
     assert file_type != "other"
 
-    file_name: str = file.filename  # type: ignore
-    storage_path = store_file(
+    storage_key = request.form.get("key")
+    if storage_key is None:
+        raise BadRequest("Missing required form parameter 'key'")
+
+    store_file(
         file.stream,
-        f"audits/{election.id}/jurisdictions/{jurisdiction.id}/"
-        + timestamp_filename("batch-inventory-cvrs", file_type),
+        storage_key,
     )
+    return jsonify(status="ok")
+
+
+@api.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch-inventory/cvr/upload-complete",
+    methods=["POST"],
+)
+@restrict_access([UserType.JURISDICTION_ADMIN])
+def complete_upload_for_batch_inventory_cvr(
+    election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
+):
+    storage_path = get_full_storage_path(request.form["storagePathKey"])
+    filename = request.form["fileName"]
+    if not storage_path:
+        raise BadRequest("Missing required JSON parameter: storage_path")
+
+    batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
 
     batch_inventory_data.cvr_file = File(
         id=str(uuid.uuid4()),
-        name=file_name,
+        name=filename,
         storage_path=storage_path,
         uploaded_at=datetime.now(timezone.utc),
     )
@@ -662,23 +725,81 @@ def download_batch_inventory_cvr(
 
 
 @api.route(
-    "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch-inventory/tabulator-status",
-    methods=["PUT"],
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch-inventory/tabulator-status/upload-url",
+    methods=["GET"],
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
-def upload_batch_inventory_tabulator_status(
+def start_upload_for_batch_inventory_tabulator_status(
     election: Election, jurisdiction: Jurisdiction
 ):
     batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
     if not batch_inventory_data or not batch_inventory_data.cvr_file_id:
         raise Conflict("Must upload CVR file before uploading tabulator status file.")
 
-    file_name: str = request.files["tabulatorStatus"].filename  # type: ignore
-    storage_path = store_file(
-        request.files["tabulatorStatus"].stream,
-        f"audits/{election.id}/jurisdictions/{jurisdiction.id}/"
-        + timestamp_filename("batch-inventory-tabulator-status", "xml"),
+    file_type = request.args.get("fileType")
+    if file_type is None:
+        raise BadRequest("File type is required")
+    if file_type != "text/xml":
+        raise BadRequest("Please submit a valid XML file.")
+
+    storage_path_prefix = f"audits/{election.id}/jurisdictions/{jurisdiction.id}/"
+    filename = timestamp_filename("batch-inventory-tabulator-status", "xml")
+
+    if not config.FILE_UPLOAD_STORAGE_PATH.startswith("s3://"):
+        return jsonify(
+            url=f"/api/election/{election.id}/jurisdiction/{jurisdiction.id}/batch-inventory/tabulator-status/file",
+            fields={
+                "key": f"{storage_path_prefix}/{filename}",
+            },
+        )
+
+    response = create_presigned_s3_upload(storage_path_prefix, filename, file_type)
+    if response is None:
+        return jsonify(None)
+    else:
+        return jsonify(response)
+
+
+@api.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch-inventory/tabulator-status/file",
+    methods=["POST"],
+)
+@restrict_access([UserType.JURISDICTION_ADMIN])
+def upload_batch_inventory_tabulator_status_to_local_filesystem(
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+):
+    if "file" not in request.files:
+        raise BadRequest("Missing required file parameter 'file'")
+
+    file = request.files["file"]
+    storage_key = request.form.get("key")
+    if storage_key is None:
+        raise BadRequest("Missing required form parameter 'key'")
+
+    store_file(
+        file.stream,
+        storage_key,
     )
+    return jsonify(status="ok")
+
+
+@api.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch-inventory/tabulator-status/upload-complete",
+    methods=["POST"],
+)
+@restrict_access([UserType.JURISDICTION_ADMIN])
+def complete_upload_for_batch_inventory_tabulator_status(
+    election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
+):
+    storage_path = get_full_storage_path(request.form["storagePathKey"])
+    file_name = request.form["fileName"]
+    if not storage_path:
+        raise BadRequest("Missing required JSON parameter: storagePathKey")
+    if not file_name:
+        raise BadRequest("Missing required JSON parameter: fileName")
+
+    batch_inventory_data = BatchInventoryData.query.get(jurisdiction.id)
 
     batch_inventory_data.tabulator_status_file = File(
         id=str(uuid.uuid4()),

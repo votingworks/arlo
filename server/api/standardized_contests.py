@@ -4,10 +4,11 @@ import typing
 from datetime import datetime
 from typing import Dict, Optional
 from collections import defaultdict
-from flask import request, jsonify, Request
+from flask import request, jsonify
 from werkzeug.exceptions import BadRequest, Conflict
 
 from . import api
+from .. import config
 from ..auth import restrict_access, UserType
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
@@ -21,10 +22,13 @@ from ..util.csv_parse import (
     parse_csv,
     CSVColumnType,
     CSVValueType,
+    validate_csv_filetype,
     validate_csv_mimetype,
 )
 from ..util.csv_download import csv_response
 from ..util.file import (
+    create_presigned_s3_upload,
+    get_full_storage_path,
     retrieve_file,
     serialize_file,
     serialize_file_processing,
@@ -177,7 +181,7 @@ def process_standardized_contests_file(election_id: str):
     set_contest_metadata(election)
 
 
-def validate_standardized_contests_upload(request: Request, election: Election):
+def validate_standardized_contests_upload(election: Election):
     if election.audit_type not in [AuditType.BALLOT_COMPARISON, AuditType.HYBRID]:
         raise Conflict("Can't upload CVR file for this audit type.")
 
@@ -186,34 +190,85 @@ def validate_standardized_contests_upload(request: Request, election: Election):
             "Must upload jurisdictions file before uploading standardized contests file."
         )
 
-    if "standardized-contests" not in request.files:
-        raise BadRequest("Missing required file parameter 'standardized-contests'")
 
-    validate_csv_mimetype(request.files["standardized-contests"])
-
-
-@api.route("/election/<election_id>/standardized-contests/file", methods=["PUT"])
+@api.route(
+    "/election/<election_id>/standardized-contests/file/upload-url", methods=["GET"]
+)
 @restrict_access([UserType.AUDIT_ADMIN])
-def upload_standardized_contests_file(election: Election):
-    validate_standardized_contests_upload(request, election)
+def start_upload_for_standardized_contests_file(election: Election):
+    validate_standardized_contests_upload(election)
 
-    election.standardized_contests = None
-    file = request.files["standardized-contests"]
-    storage_path = store_file(
-        file.stream,
-        f"audits/{election.id}/" + timestamp_filename("standardized_contests", "csv"),
-    )
+    file_type = request.args.get("fileType")
+    if file_type is None:
+        raise BadRequest("File type is required")
+    validate_csv_filetype(file_type)
+
+    storage_path_prefix = f"audits/{election.id}/"
+    filename = timestamp_filename("standardized_contests", "csv")
+
+    if not config.FILE_UPLOAD_STORAGE_PATH.startswith("s3://"):
+        return jsonify(
+            url=f"/api/election/{election.id}/standardized-contests/file",
+            fields={
+                "key": f"{storage_path_prefix}/{filename}",
+            },
+        )
+
+    response = create_presigned_s3_upload(storage_path_prefix, filename, file_type)
+    if response is None:
+        return jsonify(None)
+    else:
+        return jsonify(response)
+
+
+def save_standardized_contests_file(
+    election: Election, storage_path: str, filename: str
+):
     election.standardized_contests_file = File(
         id=str(uuid.uuid4()),
-        name=file.filename,  # type: ignore
+        name=filename,  # type: ignore
         storage_path=storage_path,
         uploaded_at=datetime.now(timezone.utc),
     )
     election.standardized_contests_file.task = create_background_task(
         process_standardized_contests_file, dict(election_id=election.id)
     )
-    db_session.commit()
 
+
+@api.route("/election/<election_id>/standardized-contests/file", methods=["POST"])
+@restrict_access([UserType.AUDIT_ADMIN])
+def upload_standardized_contests_file_to_local_filesystem(
+    election: Election,  # pylint: disable=unused-argument
+):
+    if "file" not in request.files:
+        raise BadRequest("Missing required file parameter 'file'")
+
+    file = request.files["file"]
+    validate_csv_mimetype(file)
+    storage_key = request.form.get("key")
+    if storage_key is None:
+        raise BadRequest("Missing required form parameter 'key'")
+
+    store_file(file.stream, storage_key)
+    return jsonify(status="ok")
+
+
+@api.route(
+    "/election/<election_id>/standardized-contests/file/upload-complete",
+    methods=["POST"],
+)
+@restrict_access([UserType.AUDIT_ADMIN])
+def complete_upload_for_standardized_contests_file(election: Election):
+    storage_path = get_full_storage_path(request.form["storagePathKey"])
+    filename = request.form["fileName"]
+    if not storage_path:
+        raise BadRequest("Missing required JSON parameter: storagePathKey")
+    if not filename:
+        raise BadRequest("Missing required JSON parameter: fileName")
+
+    election.standardized_contests = None
+    save_standardized_contests_file(election, storage_path, filename)
+    db_session.commit()
     return jsonify(status="ok")
 
 
