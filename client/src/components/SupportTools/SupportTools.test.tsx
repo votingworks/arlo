@@ -22,6 +22,8 @@ import {
   IJurisdiction,
   IRound,
   IElectionWithOrg,
+  IBatch,
+  ICombinedBatch,
 } from './support-api'
 
 const mockOrganizationBase: IOrganizationBase = {
@@ -104,6 +106,19 @@ const mockJurisdiction: IJurisdiction = {
   recordedResultsAt: null,
 }
 
+const mockJurisdictionBatches: {
+  batches: IBatch[]
+  combinedBatches: ICombinedBatch[]
+} = {
+  batches: [
+    { id: 'batch-id-1', name: 'Batch 1' },
+    { id: 'batch-id-2', name: 'Batch 2' },
+    { id: 'batch-id-3', name: 'Batch 3' },
+    { id: 'batch-id-4', name: 'Batch 4' },
+  ],
+  combinedBatches: [],
+}
+
 const apiCalls = {
   getOrganizations: (response: IOrganizationBase[]) => ({
     url: '/api/support/organizations',
@@ -180,6 +195,31 @@ const apiCalls = {
     url: '/api/support/jurisdictions/jurisdiction-id-1',
     response,
   }),
+  getJurisdictionBatches: (response: {
+    batches: IBatch[]
+    combinedBatches: ICombinedBatch[]
+  }) => ({
+    url: '/api/support/jurisdictions/jurisdiction-id-1/batches',
+    response,
+  }),
+  postCombinedBatch: {
+    url: '/api/support/jurisdictions/jurisdiction-id-1/combined-batches',
+    options: {
+      method: 'POST',
+      body: JSON.stringify({
+        name: 'Combined Batch 1',
+        subBatchIds: ['batch-id-1', 'batch-id-2'],
+      }),
+      headers: { 'Content-Type': 'application/json' },
+    },
+    response: { status: 'ok' },
+  },
+  deleteCombinedBatch: {
+    url:
+      '/api/support/jurisdictions/jurisdiction-id-1/combined-batches/Combined Batch 1',
+    options: { method: 'DELETE' },
+    response: { status: 'ok' },
+  },
   deleteOfflineResults: {
     url: '/api/support/jurisdictions/jurisdiction-id-1/results',
     options: { method: 'DELETE' },
@@ -732,6 +772,7 @@ describe('Support Tools', () => {
       supportApiCalls.getUser,
       apiCalls.getElection(mockElection),
       apiCalls.getJurisdiction(mockJurisdiction),
+      apiCalls.getJurisdictionBatches(mockJurisdictionBatches),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { history } = renderRoute('/support/audits/election-id-1')
@@ -914,6 +955,7 @@ describe('Support Tools', () => {
     const expectedCalls = [
       supportApiCalls.getUser,
       apiCalls.getJurisdiction(mockJurisdiction),
+      apiCalls.getJurisdictionBatches(mockJurisdictionBatches),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderRoute('/support/jurisdictions/jurisdiction-id-1')
@@ -943,6 +985,7 @@ describe('Support Tools', () => {
         ...mockJurisdiction,
         election: { ...mockElection, auditType: 'BATCH_COMPARISON' },
       }),
+      apiCalls.getJurisdictionBatches(mockJurisdictionBatches),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderRoute('/support/jurisdictions/jurisdiction-id-1')
@@ -961,6 +1004,7 @@ describe('Support Tools', () => {
         'getJurisdiction',
         apiCalls.getJurisdiction(mockJurisdiction)
       ),
+      apiCalls.getJurisdictionBatches(mockJurisdictionBatches),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderRoute('/support/jurisdictions/jurisdiction-id-1')
@@ -972,6 +1016,7 @@ describe('Support Tools', () => {
     const expectedCalls = [
       supportApiCalls.getUser,
       apiCalls.getJurisdiction(mockJurisdiction),
+      apiCalls.getJurisdictionBatches(mockJurisdictionBatches),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderRoute('/support/jurisdictions/jurisdiction-id-1')
@@ -995,6 +1040,7 @@ describe('Support Tools', () => {
     const expectedCalls = [
       supportApiCalls.getUser,
       apiCalls.getJurisdiction(mockJurisdiction),
+      apiCalls.getJurisdictionBatches(mockJurisdictionBatches),
       apiCalls.deleteAuditBoards,
       apiCalls.getJurisdiction({
         ...mockJurisdiction,
@@ -1034,6 +1080,7 @@ describe('Support Tools', () => {
     const expectedCalls = [
       supportApiCalls.getUser,
       apiCalls.getJurisdiction(mockJurisdiction),
+      apiCalls.getJurisdictionBatches(mockJurisdictionBatches),
       serverError('deleteAuditBoards', apiCalls.deleteAuditBoards),
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -1068,6 +1115,7 @@ describe('Support Tools', () => {
         election: { ...mockElection, online: false },
         recordedResultsAt: '2021-06-23T18:51:56.759+00:00',
       }),
+      apiCalls.getJurisdictionBatches(mockJurisdictionBatches),
       apiCalls.deleteOfflineResults,
       apiCalls.getJurisdiction({
         ...mockJurisdiction,
@@ -1113,6 +1161,7 @@ describe('Support Tools', () => {
         election: { ...mockElection, online: false },
         recordedResultsAt: '2021-06-23T18:51:56.759+00:00',
       }),
+      apiCalls.getJurisdictionBatches(mockJurisdictionBatches),
       serverError('deleteOfflineResults', apiCalls.deleteOfflineResults),
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -1134,6 +1183,78 @@ describe('Support Tools', () => {
       )
 
       await findAndCloseToast('something went wrong: deleteOfflineResults')
+    })
+  })
+
+  it('jurisdiction screen shows form for combining batches in batch comparison audits', async () => {
+    const expectedCalls = [
+      supportApiCalls.getUser,
+      apiCalls.getJurisdiction({
+        ...mockJurisdiction,
+        election: { ...mockElection, auditType: 'BATCH_COMPARISON' },
+      }),
+      apiCalls.getJurisdictionBatches(mockJurisdictionBatches),
+      apiCalls.postCombinedBatch,
+      apiCalls.getJurisdictionBatches({
+        ...mockJurisdictionBatches,
+        combinedBatches: [
+          {
+            name: 'Combined Batch 1',
+            subBatches: [
+              {
+                id: 'batch-id-1',
+                name: 'Batch 1',
+              },
+              {
+                id: 'batch-id-2',
+                name: 'Batch 2',
+              },
+            ],
+          },
+        ],
+      }),
+      apiCalls.deleteCombinedBatch,
+      apiCalls.getJurisdictionBatches(mockJurisdictionBatches),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderRoute('/support/jurisdictions/jurisdiction-id-1')
+
+      await screen.findByRole('heading', { name: 'Jurisdiction 1' })
+
+      userEvent.type(
+        screen.getByLabelText('Combined Batch Name:'),
+        'Combined Batch 1'
+      )
+      userEvent.click(screen.getByPlaceholderText('Select batches...'))
+      const options = (await screen.findByText('Batch 3')).closest(
+        '.bp3-menu'
+      ) as HTMLElement
+      // Select and remove a batch
+      userEvent.click(within(options).getByText('Batch 3'))
+      userEvent.click(screen.getByRole('button', { name: 'Remove' }))
+      // Select and deselect a batch
+      userEvent.click(within(options).getByText('Batch 4'))
+      userEvent.click(within(options).getByText('Batch 4'))
+      // Select two batches
+      userEvent.click(screen.getByText('Batch 1'))
+      userEvent.click(screen.getByText('Batch 2'))
+      userEvent.click(
+        screen.getByRole('button', { name: /Create Combined Batch/ })
+      )
+
+      const table = (await screen.findByText('Combined Batch 1')).closest(
+        'table'
+      )!
+      expect(
+        within(table)
+          .getAllByRole('cell')
+          .map(cell => cell.textContent)
+      ).toEqual(['Combined Batch 1', 'Batch 1, Batch 2', 'deleteDelete'])
+
+      userEvent.click(screen.getByRole('button', { name: /Delete/ }))
+      await waitFor(() =>
+        expect(screen.queryByText('Combined Batch 1')).not.toBeInTheDocument()
+      )
     })
   })
 })
