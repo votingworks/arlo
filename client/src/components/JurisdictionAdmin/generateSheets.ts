@@ -443,13 +443,8 @@ export const downloadBatchTallySheets = async (
     verifyPromptCurrentX += doc.getTextWidth(verifyPromptEnd)
 
     verifyPromptCurrentX += checkboxLeftMargin
-    const verificationCheckboxY = y - checkboxSize + checkboxTopMargin
-    doc.rect(
-      verifyPromptCurrentX,
-      verificationCheckboxY,
-      checkboxSize,
-      checkboxSize
-    )
+    const verifyCheckboxY = y - checkboxSize + checkboxTopMargin
+    doc.rect(verifyPromptCurrentX, verifyCheckboxY, checkboxSize, checkboxSize)
     verifyPromptCurrentX += checkboxSize + checkboxRightMargin
     doc.text('Yes', verifyPromptCurrentX, y)
     y += sectionBottomMargin
