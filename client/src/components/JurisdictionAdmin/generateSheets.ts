@@ -801,15 +801,15 @@ export const downloadTallyEntryLoginLinkPrintout = async (
 const STACK_LABEL_MAX_CONTEST_NAME_LENGTH = 40
 const STACK_LABEL_MAX_SURNAME_LENGTH = 20
 const STACK_LABEL_TITLE_LENGTH_XL_FONT_CUTOFF = 12
-const STACK_LABEL_TEXT_COLOR = Colors.GRAY3
+const STACK_LABEL_TEXT_COLOR = Colors.GRAY2
 const STACK_LABEL_TITLE_COLORS = [
   Colors.GREEN1,
   Colors.VIOLET1,
-  Colors.ORANGE1,
-  Colors.VERMILION1,
+  Colors.ORANGE2,
   Colors.BLUE1,
-  Colors.COBALT1,
-  Colors.GOLD1,
+  Colors.GOLD4,
+  Colors.COBALT4,
+  Colors.VERMILION1,
   Colors.SEPIA1,
   Colors.DARK_GRAY1,
   Colors.INDIGO1,
@@ -875,6 +875,9 @@ export const downloadStackLabels = async (
     let x = pageMargin / 2
     let y = pageHeight / 2
     doc.text(foldCaption, x, y)
+    doc.setLineDashPattern([1, 1], 0)
+    y += pBottomMargin
+    doc.line(x, y, pageWidth - pageMargin / 2, y)
 
     // Right-side up (bottom half of page)
     const titleText = sign.title
