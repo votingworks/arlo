@@ -11,7 +11,7 @@ https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1443314 for the
 publication).
 """
 from decimal import Decimal, ROUND_CEILING
-from typing import Dict, Tuple, TypeVar, TypedDict, Optional, List
+from typing import Dict, Set, Tuple, TypeVar, TypedDict, Optional, List
 from .sampler_contest import Contest
 
 BatchKey = TypeVar("BatchKey")
@@ -166,6 +166,7 @@ def get_sample_sizes(
     reported_results: Dict[BatchKey, BatchResults],
     sample_results: Dict[BatchKey, BatchResults],
     ticket_numbers: Dict[str, BatchKey],
+    combined_batches: List[Set[BatchKey]],
 ) -> int:
     """
     Computes a sample size expected to confirm the election result
@@ -192,6 +193,9 @@ def get_sample_sizes(
         sample_results - if a sample has already been drawn, this will
                          contain its results, of the same form as
                          reported_results
+        combined_batches - a list of combined batches, where each combined batch
+                           is a set of the sub-batch keys (may include
+                           non-sampled batches)
 
     Outputs:
         sample_size - sample size (currently a single integer value)
@@ -208,7 +212,12 @@ def get_sample_sizes(
     p_mult = 1 - 1 / U
 
     risk, risk_attained = compute_risk(
-        risk_limit, contest, reported_results, sample_results, ticket_numbers
+        risk_limit,
+        contest,
+        reported_results,
+        sample_results,
+        ticket_numbers,
+        combined_batches,
     )
     if risk_attained is True:
         return 0
@@ -235,6 +244,7 @@ def compute_risk(
     reported_results: Dict[BatchKey, BatchResults],
     sample_results: Dict[BatchKey, BatchResults],
     sample_ticket_numbers: Dict[str, BatchKey],
+    combined_batches: List[Set[BatchKey]],
 ) -> Tuple[float, bool]:
     """
     Computes the risk-value of <sample_results> based on results in <contest>.
@@ -260,6 +270,9 @@ def compute_risk(
                            reported_results
         sample_ticket_numbers - a mapping from ticket numbers to the batch
                            keys in sample_results
+        combined_batches - a list of combined batches, where each combined batch
+                           is a set of the sub-batch keys (may include
+                           non-sampled batches)
     Outputs:
         measurements    - the p-value of the hypotheses that the election
                           result is correct based on the sample for each
@@ -283,7 +296,34 @@ def compute_risk(
         if contest.name not in sample_results[batch]:
             continue
 
-        error = compute_error(reported_results[batch], sample_results[batch], contest)
+        # If this batch was part of a combined batch, then the sample results
+        # will contain vote counts from all the ballots in the sub-batches of
+        # the combined batch. Thus, to compute the error, we need to also sum
+        # the reported tallies across sub-batches.
+        # Note: To be conservative, we *don't* do this for the max error,
+        # instead using the original batch's max error.
+        combined_batch = next(
+            (
+                combined_batch
+                for combined_batch in combined_batches
+                if batch in combined_batch
+            ),
+            None,
+        )
+        if combined_batch:
+            batch_reported_results = {
+                contest.name: {
+                    choice: sum(
+                        reported_results[batch][contest.name][choice]
+                        for batch in combined_batch
+                    )
+                    for choice in reported_results[batch][contest.name]
+                }
+            }
+        else:
+            batch_reported_results = reported_results[batch]
+
+        error = compute_error(batch_reported_results, sample_results[batch], contest)
         # Count negative errors (errors in favor of the winner) as 0 to be conservative
         e_p = (
             error["weighted_error"] if error and error["counted_as"] > 0 else Decimal(0)

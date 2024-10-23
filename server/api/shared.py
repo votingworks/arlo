@@ -117,6 +117,21 @@ def group_combined_batches(all_sub_batches: List[Batch]) -> List[CombinedBatch]:
     ]
 
 
+def combined_batch_keys(election_id: str) -> List[Set[sampler.BatchKey]]:
+    sub_batches = (
+        Batch.query.join(Jurisdiction)
+        .filter_by(election_id=election_id)
+        .filter(Batch.combined_batch_name.isnot(None))
+        .all()
+    )
+    return [
+        {(sub_batch.jurisdiction.name, sub_batch.name) for sub_batch in sub_batches}
+        for _, sub_batches in group_by(
+            sub_batches, lambda batch: batch.combined_batch_name
+        ).items()
+    ]
+
+
 def sampled_batch_results(
     contest: Contest, include_non_rla_batches=False
 ) -> BatchTallies:
@@ -165,7 +180,7 @@ def sampled_batch_results(
         results_by_batch_and_choice,
         key=lambda result: (result[0], result[1]),  # (jurisdiction_name, batch_name)
     )
-    return {
+    results = {
         batch_key: {
             contest.id: {
                 choice_id: result for (_, _, choice_id, result) in batch_results
@@ -173,6 +188,27 @@ def sampled_batch_results(
         }
         for batch_key, batch_results in results_by_batch.items()
     }
+
+    # For combined batches, copy the results from the representative batch to
+    # all sampled sub-batches
+    all_sub_batches = (
+        Batch.query.join(Jurisdiction)
+        .filter(Jurisdiction.election_id == contest.election_id)
+        .filter(Batch.combined_batch_name.isnot(None))
+        .all()
+    )
+    combined_batches = group_combined_batches(all_sub_batches)
+    for combined_batch in combined_batches:
+        representative_batch = combined_batch["representative_batch"]
+        representative_results = results[
+            (representative_batch.jurisdiction.name, representative_batch.name)
+        ]
+        for sub_batch in combined_batch["sub_batches"]:
+            sub_batch_key = (sub_batch.jurisdiction.name, sub_batch.name)
+            if sub_batch_key in results:
+                results[sub_batch_key] = representative_results
+
+    return results
 
 
 def sampled_batches_by_ticket_number(contest: Contest) -> Dict[str, sampler.BatchKey]:
