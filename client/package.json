@@ -50,6 +50,7 @@
   "dependencies": {
     "@babel/core": "7.8.4",
     "@blueprintjs/core": "^3.20.0",
+    "@blueprintjs/select": "^3.19.1",
     "@hookform/error-message": "^2.0.0",
     "@sentry/react": "^5.27.3",
     "@sentry/tracing": "^5.27.3",

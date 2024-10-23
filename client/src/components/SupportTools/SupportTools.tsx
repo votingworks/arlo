@@ -12,8 +12,11 @@ import {
   Tag,
   Intent,
   HTMLSelect,
+  Card,
+  MenuItem,
 } from '@blueprintjs/core'
-import { useForm } from 'react-hook-form'
+import { MultiSelect } from '@blueprintjs/select'
+import { useForm, Controller } from 'react-hook-form'
 import { useAuthDataContext } from '../UserContext'
 import { Wrapper, Inner } from '../Atoms/Wrapper'
 import {
@@ -33,6 +36,9 @@ import {
   useDeleteElection,
   IElectionBase,
   useActiveElections,
+  useJurisdictionBatches,
+  useCreateCombinedBatch,
+  useDeleteCombinedBatch,
 } from './support-api'
 import { useConfirm, Confirm } from '../Atoms/Confirm'
 import AuditBoardsTable from '../AuditAdmin/Progress/AuditBoardsTable'
@@ -491,11 +497,31 @@ const Audit = ({ electionId }: { electionId: string }) => {
   )
 }
 
+const CombinedBatchForm = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  label {
+    font-weight: 500;
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+`
+
 const Jurisdiction = ({ jurisdictionId }: { jurisdictionId: string }) => {
   const jurisdiction = useJurisdiction(jurisdictionId)
   const clearAuditBoards = useClearAuditBoards()
   const clearOfflineResults = useClearOfflineResults()
+  const batches = useJurisdictionBatches(jurisdictionId)
+  const createCombinedBatch = useCreateCombinedBatch()
+  const deleteCombinedBatch = useDeleteCombinedBatch()
   const { confirm, confirmProps } = useConfirm()
+
+  const { register, handleSubmit, reset, control, formState } = useForm<{
+    name: string
+    subBatchIds: string[]
+  }>()
 
   if (!jurisdiction.isSuccess) return null
 
@@ -532,6 +558,26 @@ const Jurisdiction = ({ jurisdictionId }: { jurisdictionId: string }) => {
         toast.success(`Cleared results for ${name}`)
       },
     })
+  }
+
+  const onSubmitCreateCombinedBatch = async ({
+    // eslint-disable-next-line no-shadow
+    name,
+    subBatchIds,
+  }: {
+    name: string
+    subBatchIds: string[]
+  }) => {
+    try {
+      await createCombinedBatch.mutateAsync({
+        jurisdictionId,
+        name,
+        subBatchIds,
+      })
+      reset()
+    } catch (error) {
+      // Do nothing - errors toasted by queryClient
+    }
   }
 
   return (
@@ -580,6 +626,130 @@ const Jurisdiction = ({ jurisdictionId }: { jurisdictionId: string }) => {
                 </>
               ) : (
                 <p>No results recorded yet.</p>
+              )}
+            </>
+          )}
+          {election.auditType === 'BATCH_COMPARISON' && batches.isSuccess && (
+            <>
+              <H3>Combined Batches</H3>
+              <Card>
+                <CombinedBatchForm>
+                  <div>
+                    <label htmlFor="combinedBatchName">
+                      Combined Batch Name:
+                    </label>
+                    <input
+                      type="text"
+                      name="name"
+                      id="combinedBatchName"
+                      className={Classes.INPUT}
+                      ref={register}
+                      style={{ flexGrow: 1 }}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="subBatchIds">Batches to Combine:</label>
+                    <Controller
+                      name="subBatchIds"
+                      control={control}
+                      defaultValue={[]}
+                      render={({
+                        value,
+                        onChange,
+                      }: {
+                        value: string[]
+                        onChange: (value: string[]) => void
+                      }) => (
+                        <MultiSelect
+                          items={batches.data.batches}
+                          selectedItems={batches.data.batches.filter(batch =>
+                            value.includes(batch.id)
+                          )}
+                          onItemSelect={item => {
+                            onChange(
+                              value.includes(item.id)
+                                ? value.filter(id => id !== item.id)
+                                : [...value, item.id]
+                            )
+                          }}
+                          onRemove={item => {
+                            onChange(
+                              value.filter((id: string) => id !== item.id)
+                            )
+                          }}
+                          itemRenderer={(item, { handleClick, modifiers }) => (
+                            <MenuItem
+                              key={item.id}
+                              text={item.name}
+                              onClick={handleClick}
+                              active={modifiers.active}
+                              icon={value.includes(item.id) ? 'tick' : 'blank'}
+                            />
+                          )}
+                          tagRenderer={item => item.name}
+                          itemPredicate={(query, item) =>
+                            item.name
+                              .toLowerCase()
+                              .includes(query.toLowerCase())
+                          }
+                          placeholder="Select batches..."
+                          resetOnSelect
+                          fill
+                          popoverProps={{ minimal: true }}
+                          tagInputProps={{ tagProps: { minimal: true } }}
+                        />
+                      )}
+                    />
+                  </div>
+                  <Button
+                    icon="insert"
+                    style={{ alignSelf: 'end' }}
+                    loading={formState.isSubmitting}
+                    onClick={handleSubmit(onSubmitCreateCombinedBatch)}
+                  >
+                    Create Combined Batch
+                  </Button>
+                </CombinedBatchForm>
+              </Card>
+              {batches.data.combinedBatches.length > 0 && (
+                <Table striped>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Batches</th>
+                      <th />
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {batches.data.combinedBatches.map(combinedBatch => (
+                      <tr key={combinedBatch.name}>
+                        <td>{combinedBatch.name}</td>
+                        <td style={{ textAlign: 'left' }}>
+                          {combinedBatch.subBatches
+                            .map(subBatch => subBatch.name)
+                            .join(', ')}
+                        </td>
+                        <td>
+                          <Button
+                            onClick={() =>
+                              deleteCombinedBatch.mutate({
+                                jurisdictionId,
+                                name: combinedBatch.name,
+                              })
+                            }
+                            loading={deleteCombinedBatch.isLoading}
+                            icon="delete"
+                            intent="danger"
+                            minimal
+                          >
+                            Delete
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
               )}
             </>
           )}
