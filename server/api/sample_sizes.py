@@ -150,6 +150,7 @@ def sample_size_options(election: Election) -> Dict[str, Dict[str, SampleSizeOpt
                 sampler_contest.from_db_contest(contest),
                 rounds.batch_tallies(contest),
                 rounds.sampled_batch_results(contest),
+                rounds.sampled_batches_by_ticket_number(contest),
             )
             return {"macro": {"key": "macro", "size": sample_size, "prob": None}}
 
