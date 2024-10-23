@@ -568,3 +568,55 @@ def test_sample_extra_batches_hmpb_and_bmd_groups_selected(
     assert (
         bmd_batch_found
     ), f"Expected to find one BMD batch. BMD batches: {bmd_batch_names}. Actual batches: {j1_batch_names}"
+
+
+@pytest.mark.parametrize(
+    "org_id",
+    [
+        "TEST-ORG/sample-extra-batches-by-counting-group",
+    ],
+    indirect=True,
+)
+def test_sample_extra_batches_with_invalid_counting_group(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    contest_id: str,  # pylint: disable=unused-argument
+    batch_tallies,  # pylint: disable=unused-argument
+    election_settings,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
+        data={
+            "manifest": (
+                io.BytesIO(
+                    b"Container,Batch Name,Number of Ballots\n"
+                    b"Invalid Counting Group,Batch 1,500\n"
+                ),
+                "manifest.csv",
+            )
+        },
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"
+    )
+    compare_json(
+        json.loads(rv.data),
+        {
+            "file": {
+                "name": "manifest.csv",
+                "uploadedAt": assert_is_date,
+            },
+            "processing": {
+                "status": ProcessingStatus.ERRORED,
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": 'Invalid value for column "Container", row 2: "Invalid Counting Group". Use the Batch Audit File Preparation Tool to create your ballot manifest, or correct this value to one of the following: Advanced Voting, Advance Voting, Election Day, Elections Day, Absentee by Mail, Provisional.',
+            },
+        },
+    )

@@ -4,8 +4,6 @@ import os, io, pytest
 from werkzeug.exceptions import BadRequest
 from werkzeug.datastructures import FileStorage
 
-from server.util.enums import ContainerType
-
 from ...api.jurisdictions import JURISDICTIONS_COLUMNS
 from ...util.csv_parse import (
     parse_csv as parse_csv_binary,
@@ -17,26 +15,6 @@ from ...util.csv_parse import (
 )
 
 BALLOT_MANIFEST_COLUMNS = [
-    CSVColumnType("Batch Name", CSVValueType.TEXT, unique=True),
-    CSVColumnType("Number of Ballots", CSVValueType.NUMBER),
-    CSVColumnType("Tabulator", CSVValueType.TEXT, required_column=False),
-    CSVColumnType("CVR", CSVValueType.YES_NO, required_column=False),
-]
-
-BALLOT_MANIFEST_COLUMNS_CONTAINER_REQUIRED = [
-    CSVColumnType(
-        "Container",
-        CSVValueType.TEXT,
-        allowed_values=set(item.value for item in ContainerType),
-    ),
-    CSVColumnType("Batch Name", CSVValueType.TEXT, unique=True),
-    CSVColumnType("Number of Ballots", CSVValueType.NUMBER),
-    CSVColumnType("Tabulator", CSVValueType.TEXT, required_column=False),
-    CSVColumnType("CVR", CSVValueType.YES_NO, required_column=False),
-]
-
-BALLOT_MANIFEST_COLUMNS_CONTAINER_REQUIRED_NO_ALLOWLIST = [
-    CSVColumnType("Container", CSVValueType.TEXT, allowed_values=set()),
     CSVColumnType("Batch Name", CSVValueType.TEXT, unique=True),
     CSVColumnType("Number of Ballots", CSVValueType.NUMBER),
     CSVColumnType("Tabulator", CSVValueType.TEXT, required_column=False),
@@ -379,41 +357,6 @@ def test_parse_csv_duplicate_value_in_unique_column():
         str(error.value)
         == "Each row must be uniquely identified by Batch Name. Found duplicate: 1."
     )
-
-
-def test_parse_csv_value_outside_allowlist():
-    with pytest.raises(CSVParseError) as error:
-        list(
-            parse_csv(
-                (
-                    "Container,Batch Name,Number of Ballots\n"
-                    "Election Day,Batch 1,2\n"
-                    "Example Invalid Value,Batch 2,3"
-                ),
-                BALLOT_MANIFEST_COLUMNS_CONTAINER_REQUIRED,
-            )
-        )
-    assert (
-        str(error.value)
-        == "Unexpected value in column Container, row 3. Got: Example Invalid Value."
-    )
-
-
-def test_parse_csv_empty_allowlist():
-    parsed = list(
-        parse_csv(
-            (
-                "Container,Batch Name,Number of Ballots\n"
-                "Election Day,Batch 1,2\n"
-                "Any Value,Batch 2,3"
-            ),
-            BALLOT_MANIFEST_COLUMNS_CONTAINER_REQUIRED_NO_ALLOWLIST,
-        )
-    )
-    assert parsed == [
-        {"Batch Name": "Batch 1", "Number of Ballots": 2, "Container": "Election Day"},
-        {"Batch Name": "Batch 2", "Number of Ballots": 3, "Container": "Any Value"},
-    ]
 
 
 def test_parse_csv_duplicate_value_with_composite_unique_columns():

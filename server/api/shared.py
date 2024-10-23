@@ -15,8 +15,7 @@ from ..audit_math import (
     supersimple,
 )
 from ..util.collections import group_by
-from .ballot_manifest import hybrid_contest_total_ballots
-from ..util.enums import ContainerType
+from .ballot_manifest import CountingGroup, hybrid_contest_total_ballots
 from .cvrs import cvr_contests_metadata, hybrid_contest_choice_vote_counts
 from ..feature_flags import is_enabled_sample_extra_batches_by_counting_group
 
@@ -624,17 +623,17 @@ def compute_sample_batches_for_contest(
                 for batch_id, container, _ in batch_ids_with_container_and_num_ballots
                 if container
                 in [
-                    ContainerType.ADVANCED_VOTING,
-                    ContainerType.ADVANCE_VOTING,
-                    ContainerType.ELECTION_DAY,
-                    ContainerType.ELECTIONS_DAY,
+                    CountingGroup.ADVANCED_VOTING,
+                    CountingGroup.ADVANCE_VOTING,
+                    CountingGroup.ELECTION_DAY,
+                    CountingGroup.ELECTIONS_DAY,
                 ]
             }
             hmpb_batch_ids = {
                 batch_id
                 for batch_id, container, _ in batch_ids_with_container_and_num_ballots
                 if container
-                in [ContainerType.ABSENTEE_BY_MAIL, ContainerType.PROVISIONAL]
+                in [CountingGroup.ABSENTEE_BY_MAIL, CountingGroup.PROVISIONAL]
             }
             sampled_batch_ids = {
                 batch_key_to_id[batch_key]

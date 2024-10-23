@@ -10,7 +10,6 @@ from typing import (
     Dict,
     Any,
     NamedTuple,
-    Set,
     TextIO,
     Tuple,
 )
@@ -45,8 +44,6 @@ class CSVColumnType(NamedTuple):
     # Can a row in the column be empty?
     allow_empty_rows: bool = False
     unique: bool = False
-    # Is there an explicit set of accepted values? Empty set allows all values.
-    allowed_values: Set[str] = set()
 
 
 CSVRow = List[str]
@@ -303,9 +300,6 @@ def validate_and_parse_values(
             if value.lower() in ["n", "no"]:
                 return False
             raise CSVParseError(f"Expected Y or N in {where}. Got: {value}.")
-
-        if len(column.allowed_values) > 0 and not value in column.allowed_values:
-            raise CSVParseError(f"Unexpected value in {where}. Got: {value}.")
 
         return value
 
