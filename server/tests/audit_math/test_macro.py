@@ -177,7 +177,7 @@ def test_get_sizes_extra_contests(contests, batches) -> None:
     sample_ticket_numbers: Dict = {}
     for contest in contests:
         computed = macro.get_sample_sizes(
-            RISK_LIMIT, contests[contest], batches, sample, sample_ticket_numbers
+            RISK_LIMIT, contests[contest], batches, sample, sample_ticket_numbers, []
         )
 
         assert (
@@ -198,7 +198,7 @@ def test_get_sample_sizes(contests, batches) -> None:
     sample_ticket_numbers: Dict = {}
     for contest in contests:
         computed = macro.get_sample_sizes(
-            RISK_LIMIT, contests[contest], batches, sample, sample_ticket_numbers
+            RISK_LIMIT, contests[contest], batches, sample, sample_ticket_numbers, []
         )
 
         assert (
@@ -233,7 +233,7 @@ def test_get_sample_sizes(contests, batches) -> None:
 
     for contest in contests:
         computed = macro.get_sample_sizes(
-            RISK_LIMIT, contests[contest], batches, sample, sample_ticket_numbers
+            RISK_LIMIT, contests[contest], batches, sample, sample_ticket_numbers, []
         )
 
         assert (
@@ -266,7 +266,7 @@ def test_get_sample_sizes(contests, batches) -> None:
 
     for contest in contests:
         computed = macro.get_sample_sizes(
-            RISK_LIMIT, contests[contest], batches, sample, sample_ticket_numbers
+            RISK_LIMIT, contests[contest], batches, sample, sample_ticket_numbers, []
         )
 
         assert (
@@ -285,7 +285,7 @@ def test_get_sample_sizes(contests, batches) -> None:
     }
     sample_ticket_numbers["9"] = "Batch 9"
     computed = macro.get_sample_sizes(
-        RISK_LIMIT, contests[contest], batches, sample, sample_ticket_numbers
+        RISK_LIMIT, contests[contest], batches, sample, sample_ticket_numbers, []
     )
 
     assert computed == 0, "Fourth round sample expected 0, got {}".format(computed)
@@ -299,11 +299,16 @@ def test_full_recount(contests, batches) -> None:
 
         with pytest.raises(ValueError, match=r"All ballots have already been counted!"):
             macro.get_sample_sizes(
-                RISK_LIMIT, contests[contest], batches, sample, sample_ticket_numbers
+                RISK_LIMIT,
+                contests[contest],
+                batches,
+                sample,
+                sample_ticket_numbers,
+                [],
             )
 
         computed_p, result = macro.compute_risk(
-            RISK_LIMIT, contests[contest], batches, sample, sample_ticket_numbers
+            RISK_LIMIT, contests[contest], batches, sample, sample_ticket_numbers, []
         )
 
         assert computed_p == 0.0, "Incorrect p-value: Got {}, expected {}".format(
@@ -324,11 +329,16 @@ def test_full_recount_with_replacement(contests, batches) -> None:
 
         with pytest.raises(ValueError, match=r"All ballots have already been counted!"):
             macro.get_sample_sizes(
-                RISK_LIMIT, contests[contest], batches, sample, sample_ticket_numbers
+                RISK_LIMIT,
+                contests[contest],
+                batches,
+                sample,
+                sample_ticket_numbers,
+                [],
             )
 
         computed_p, result = macro.compute_risk(
-            RISK_LIMIT, contests[contest], batches, sample, sample_ticket_numbers
+            RISK_LIMIT, contests[contest], batches, sample, sample_ticket_numbers, []
         )
 
         assert computed_p == 0.0, "Incorrect p-value: Got {}, expected {}".format(
@@ -357,7 +367,7 @@ def test_almost_done() -> None:
 
     with pytest.raises(ValueError, match=r"All ballots have already been counted!"):
         macro.get_sample_sizes(
-            RISK_LIMIT, contest, batches, sample, sample_ticket_numbers
+            RISK_LIMIT, contest, batches, sample, sample_ticket_numbers, []
         )
 
 
@@ -386,7 +396,7 @@ def test_worst_case() -> None:
     sample_ticket_numbers = {"1": "Batch 1"}
 
     assert macro.compute_risk(
-        RISK_LIMIT, contest, batches, sample, sample_ticket_numbers
+        RISK_LIMIT, contest, batches, sample, sample_ticket_numbers, []
     ) == (
         Decimal(1.0),
         False,
@@ -448,7 +458,7 @@ def test_compute_risk(contests, batches) -> None:
 
     for contest in contests:
         computed_p, result = macro.compute_risk(
-            RISK_LIMIT, contests[contest], batches, sample, sample_ticket_numbers
+            RISK_LIMIT, contests[contest], batches, sample, sample_ticket_numbers, []
         )
 
         expected_p = expected_ps[contest]
@@ -484,7 +494,7 @@ def test_compute_risk(contests, batches) -> None:
 
     for contest in contests:
         computed_p, result = macro.compute_risk(
-            RISK_LIMIT, contests[contest], batches, sample, sample_ticket_numbers
+            RISK_LIMIT, contests[contest], batches, sample, sample_ticket_numbers, []
         )
 
         expected_p = expected_ps[contest]
@@ -499,7 +509,6 @@ def test_compute_risk(contests, batches) -> None:
 
 
 def test_tied_contest() -> None:
-
     contest_data = {
         "winner": 50000,
         "loser": 50000,
@@ -525,7 +534,7 @@ def test_tied_contest() -> None:
     sample_ticket_numbers: Dict = {}
 
     sample_size = macro.get_sample_sizes(
-        RISK_LIMIT, contest, batches, sample_results, sample_ticket_numbers
+        RISK_LIMIT, contest, batches, sample_results, sample_ticket_numbers, []
     )
 
     assert sample_size == len(batches)
@@ -543,7 +552,7 @@ def test_tied_contest() -> None:
     sample_ticket_numbers = {"1": "0"}
 
     computed_p, res = macro.compute_risk(
-        RISK_LIMIT, contest, batches, sample_results, sample_ticket_numbers
+        RISK_LIMIT, contest, batches, sample_results, sample_ticket_numbers, []
     )
 
     assert computed_p > ALPHA
@@ -552,7 +561,7 @@ def test_tied_contest() -> None:
     # Now do a full hand recount
     sample_ticket_numbers = {str(i): batch for i, batch in enumerate(batches.keys())}
     computed_p, res = macro.compute_risk(
-        RISK_LIMIT, contest, batches, batches, sample_ticket_numbers
+        RISK_LIMIT, contest, batches, batches, sample_ticket_numbers, []
     )
 
     assert not computed_p
@@ -608,7 +617,7 @@ def test_close_contest() -> None:
     sample_ticket_numbers: Dict = {}
 
     sample_size = macro.get_sample_sizes(
-        RISK_LIMIT, contest, batches, sample_results, sample_ticket_numbers
+        RISK_LIMIT, contest, batches, sample_results, sample_ticket_numbers, []
     )
 
     assert sample_size == len(batches)
@@ -626,7 +635,7 @@ def test_close_contest() -> None:
     sample_ticket_numbers = {"1": "1"}
 
     computed_p, res = macro.compute_risk(
-        RISK_LIMIT, contest, batches, sample_results, sample_ticket_numbers
+        RISK_LIMIT, contest, batches, sample_results, sample_ticket_numbers, []
     )
 
     assert computed_p > ALPHA
@@ -635,8 +644,278 @@ def test_close_contest() -> None:
     # Now do a full hand recount
     sample_ticket_numbers = {str(i): batch for i, batch in enumerate(batches.keys())}
     computed_p, res = macro.compute_risk(
-        RISK_LIMIT, contest, batches, batches, sample_ticket_numbers
+        RISK_LIMIT, contest, batches, batches, sample_ticket_numbers, []
     )
 
     assert not computed_p
     assert res
+
+
+def test_combined_batches_no_discrepancies():
+    contest_data = {
+        "winner": 110,
+        "loser": 90,
+        "ballots": 200,
+        "numWinners": 1,
+        "votesAllowed": 1,
+    }
+    contest = Contest("Combined Batches Contest", contest_data)
+
+    batches = {}
+    batches["Batch 1"] = {
+        contest.name: {
+            "winner": 30,
+            "loser": 20,
+            "ballots": 50,
+        }
+    }
+    batches["Batch 2"] = {
+        contest.name: {
+            "winner": 10,
+            "loser": 40,
+            "ballots": 50,
+        }
+    }
+    batches["Batch 3"] = {
+        contest.name: {
+            "winner": 40,
+            "loser": 0,
+            "ballots": 40,
+        }
+    }
+    batches["Batch 4"] = {
+        contest.name: {
+            "winner": 30,
+            "loser": 30,
+            "ballots": 60,
+        }
+    }
+
+    sample_size = macro.get_sample_sizes(RISK_LIMIT, contest, batches, {}, {}, [])
+    assert sample_size == len(batches)
+
+    combined_batch_1_and_2_results = {
+        contest.name: {
+            "winner": batches["Batch 1"][contest.name]["winner"]
+            + batches["Batch 2"][contest.name]["winner"],
+            "loser": batches["Batch 1"][contest.name]["loser"]
+            + batches["Batch 2"][contest.name]["loser"],
+        }
+    }
+    sample_results = {
+        "Batch 1": combined_batch_1_and_2_results,
+        "Batch 2": combined_batch_1_and_2_results,
+        "Batch 3": batches["Batch 3"],
+    }
+    sample_ticket_numbers = {
+        "1": "Batch 1",
+        "2": "Batch 2",
+        "3": "Batch 3",
+    }
+    combined_batches = [{"Batch 1", "Batch 2"}]
+
+    computed_p, res = macro.compute_risk(
+        RISK_LIMIT,
+        contest,
+        batches,
+        sample_results,
+        sample_ticket_numbers,
+        combined_batches,
+    )
+    U = macro.compute_U(batches, contest)
+    expected_taint = 0
+    expected_p = ((1 - 1 / U) / (1 - expected_taint)) ** len(sample_results)
+    assert computed_p == float(expected_p)
+    assert res is (expected_p < ALPHA)
+
+
+def test_combined_batches_one_discrepancy():
+    contest_data = {
+        "winner": 110,
+        "loser": 90,
+        "ballots": 200,
+        "numWinners": 1,
+        "votesAllowed": 1,
+    }
+    contest = Contest("Combined Batches Contest", contest_data)
+
+    batches = {}
+    batches["Batch 1"] = {
+        contest.name: {
+            "winner": 30,
+            "loser": 20,
+            "ballots": 50,
+        }
+    }
+    batches["Batch 2"] = {
+        contest.name: {
+            "winner": 10,
+            "loser": 40,
+            "ballots": 50,
+        }
+    }
+    batches["Batch 3"] = {
+        contest.name: {
+            "winner": 40,
+            "loser": 0,
+            "ballots": 40,
+        }
+    }
+    batches["Batch 4"] = {
+        contest.name: {
+            "winner": 30,
+            "loser": 30,
+            "ballots": 60,
+        }
+    }
+
+    sample_size = macro.get_sample_sizes(RISK_LIMIT, contest, batches, {}, {}, [])
+    assert sample_size == len(batches)
+
+    discrepancy_votes = 2
+    combined_batch_1_and_2_results = {
+        contest.name: {
+            "winner": batches["Batch 1"][contest.name]["winner"]
+            + batches["Batch 2"][contest.name]["winner"],
+            "loser": batches["Batch 1"][contest.name]["loser"]
+            + batches["Batch 2"][contest.name]["loser"]
+            + discrepancy_votes,
+        }
+    }
+    sample_results = {
+        "Batch 1": combined_batch_1_and_2_results,
+        "Batch 2": combined_batch_1_and_2_results,
+        "Batch 3": batches["Batch 3"],
+    }
+    sample_ticket_numbers = {
+        "1": "Batch 1",
+        "2": "Batch 2",
+        "3": "Batch 3",
+    }
+    combined_batches = [{"Batch 1", "Batch 2"}]
+
+    computed_p, res = macro.compute_risk(
+        RISK_LIMIT,
+        contest,
+        batches,
+        sample_results,
+        sample_ticket_numbers,
+        combined_batches,
+    )
+    U = macro.compute_U(batches, contest)
+    max_error_batch_1 = (
+        batches["Batch 1"][contest.name]["winner"]
+        - batches["Batch 1"][contest.name]["loser"]
+        + batches["Batch 1"][contest.name]["ballots"]
+    )
+    max_error_batch_2 = (
+        batches["Batch 2"][contest.name]["winner"]
+        - batches["Batch 2"][contest.name]["loser"]
+        + batches["Batch 2"][contest.name]["ballots"]
+    )
+    expected_taint_batch_1 = discrepancy_votes / max_error_batch_1
+    expected_taint_batch_2 = discrepancy_votes / max_error_batch_2
+    numerator = 1 - 1 / U
+    expected_p = (
+        (numerator / (1 - Decimal(expected_taint_batch_1)))
+        * (numerator / (1 - Decimal(expected_taint_batch_2)))
+        * ((numerator / 1) ** (len(sample_results) - 2))
+    )
+    assert computed_p == float(expected_p)
+    assert res is (expected_p < ALPHA)
+
+
+def test_combined_batches_sampled_and_unsampled():
+    contest_data = {
+        "winner": 120,
+        "loser": 80,
+        "third": 50,
+        "ballots": 250,
+        "numWinners": 1,
+        "votesAllowed": 1,
+    }
+    contest = Contest("Combined Batches Contest", contest_data)
+
+    batches = {}
+    batches["Batch 1"] = {
+        contest.name: {
+            "winner": 30,
+            "loser": 20,
+            "third": 0,
+            "ballots": 50,
+        }
+    }
+    batches["Batch 2"] = {
+        contest.name: {
+            "winner": 0,
+            "loser": 40,
+            "third": 10,
+            "ballots": 50,
+        }
+    }
+    batches["Batch 3"] = {
+        contest.name: {
+            "winner": 60,
+            "loser": 10,
+            "third": 30,
+            "ballots": 100,
+        }
+    }
+    batches["Batch 4"] = {
+        contest.name: {
+            "winner": 30,
+            "loser": 10,
+            "third": 10,
+            "ballots": 50,
+        }
+    }
+
+    sample_size = macro.get_sample_sizes(RISK_LIMIT, contest, batches, {}, {}, [])
+    assert sample_size == len(batches)
+
+    discrepancy_votes = 3
+    combined_batch_1_and_4_results = {
+        contest.name: {
+            "winner": batches["Batch 1"][contest.name]["winner"]
+            + batches["Batch 4"][contest.name]["winner"],
+            "loser": batches["Batch 1"][contest.name]["loser"]
+            + batches["Batch 4"][contest.name]["loser"]
+            + discrepancy_votes,
+            "third": batches["Batch 1"][contest.name]["third"]
+            + batches["Batch 4"][contest.name]["third"],
+        }
+    }
+
+    sample_results = {
+        "Batch 1": combined_batch_1_and_4_results,
+        "Batch 2": batches["Batch 2"],
+        "Batch 3": batches["Batch 3"],
+    }
+    sample_ticket_numbers = {
+        "1": "Batch 1",
+        "2": "Batch 2",
+        "3": "Batch 3",
+    }
+    combined_batches = [{"Batch 1", "Batch 4"}]
+
+    computed_p, res = macro.compute_risk(
+        RISK_LIMIT,
+        contest,
+        batches,
+        sample_results,
+        sample_ticket_numbers,
+        combined_batches,
+    )
+    U = macro.compute_U(batches, contest)
+    max_error_batch_1 = (
+        batches["Batch 1"][contest.name]["winner"]
+        - batches["Batch 1"][contest.name]["loser"]
+        + batches["Batch 1"][contest.name]["ballots"]
+    )
+    expected_taint_batch_1 = discrepancy_votes / max_error_batch_1
+    numerator = 1 - 1 / U
+    expected_p = (numerator / (1 - Decimal(expected_taint_batch_1))) * (
+        (numerator / 1) ** (len(sample_results) - 1)
+    )
+    assert computed_p == float(expected_p)
+    assert res is (expected_p < ALPHA)

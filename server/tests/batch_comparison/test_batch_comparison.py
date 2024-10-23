@@ -863,3 +863,195 @@ def test_batch_tallies_summed_by_jurisdiction_csv_generation(
         "J3,,,,\r\n"
         "Total,4700,2350,2350,5000\r\n"
     )
+
+
+def test_batch_comparison_combined_batches(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    round_1_id: str,
+    snapshot,
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/contest")
+    assert rv.status_code == 200
+    contests = json.loads(rv.data)["contests"]
+
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches"
+    )
+    assert rv.status_code == 200
+    j1_sampled_batches_original = json.loads(rv.data)["batches"]
+
+    set_support_user(client, DEFAULT_SUPPORT_EMAIL)
+    rv = client.get(f"/api/support/jurisdictions/{jurisdiction_ids[0]}/batches")
+    j1_all_batches = json.loads(rv.data)["batches"]
+
+    # Combine some batches
+    batch_2_unsampled = next(
+        batch for batch in j1_all_batches if batch["name"] == "Batch 2"
+    )
+    assert batch_2_unsampled["id"] not in (
+        sampled_batch["id"] for sampled_batch in j1_sampled_batches_original
+    )
+    batch_1_sampled = next(
+        batch for batch in j1_all_batches if batch["name"] == "Batch 1"
+    )
+    assert batch_1_sampled["id"] in (
+        sampled_batch["id"] for sampled_batch in j1_sampled_batches_original
+    )
+    batch_3_sampled = next(
+        batch for batch in j1_all_batches if batch["name"] == "Batch 3"
+    )
+    assert batch_3_sampled["id"] in (
+        sampled_batch["id"] for sampled_batch in j1_sampled_batches_original
+    )
+    rv = post_json(
+        client,
+        f"/api/support/jurisdictions/{jurisdiction_ids[0]}/combined-batches",
+        {
+            "name": "Combined Batch",
+            "subBatchIds": [
+                batch_2_unsampled["id"],
+                batch_1_sampled["id"],
+                batch_3_sampled["id"],
+            ],
+        },
+    )
+    assert_ok(rv)
+
+    # Now the jurisdiction should only see the combined batch
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches"
+    )
+    j1_sampled_batches = json.loads(rv.data)["batches"]
+    assert len(j1_sampled_batches) == len(j1_sampled_batches_original) - 1
+    combined_batch = next(
+        batch for batch in j1_sampled_batches if batch["name"] == "Combined Batch"
+    )
+    sampled_batch_names = {batch["name"] for batch in j1_sampled_batches}
+    assert batch_2_unsampled["name"] not in sampled_batch_names
+    assert batch_1_sampled["name"] not in sampled_batch_names
+    assert batch_3_sampled["name"] not in sampled_batch_names
+
+    # Audit the combined batch
+    candidate_2_discrepancy = 5
+    candidate_3_discrepancy = -5
+    choice_ids = [choice["id"] for choice in contests[0]["choices"]]
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/{combined_batch['id']}/results",
+        [
+            {
+                "name": "Tally Sheet #1",
+                # Reported tallies from conftest.py:
+                # Batch 1: 500,250,250
+                # Batch 2: 500,250,250
+                # Batch 3: 500,250,250
+                "results": {
+                    choice_ids[0]: 500 + 500 + 500,
+                    choice_ids[1]: 250 + 250 + 250 - candidate_2_discrepancy,
+                    choice_ids[2]: 250 + 250 + 250 - candidate_3_discrepancy,
+                },
+            }
+        ],
+    )
+    assert_ok(rv)
+
+    # Audit the rest of the sampled batches correctly
+    results = {
+        "Batch 6": {choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 50},
+        "Batch 8": {choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 50},
+    }
+    for batch in j1_sampled_batches:
+        if batch["name"] == "Combined Batch":
+            continue
+        rv = put_json(
+            client,
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/{batch['id']}/results",
+            [
+                {
+                    "name": "Tally Sheet #1",
+                    "results": results[batch["name"]],
+                }
+            ],
+        )
+        assert_ok(rv)
+
+    # Finalize the results
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/finalize",
+    )
+
+    # Check discrepancy counts
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/discrepancy-counts")
+    discrepancy_counts = json.loads(rv.data)
+    assert discrepancy_counts[jurisdiction_ids[0]] == 1
+
+    # Check the discrepancy report
+    rv = client.get(f"/api/election/{election_id}/discrepancy-report")
+    discrepancy_report = rv.data.decode("utf-8")
+    expected_discrepancies = {
+        "J1": {
+            "Combined Batch": {
+                "candidate 1": 0,
+                "candidate 2": candidate_2_discrepancy,
+                "candidate 3": candidate_3_discrepancy,
+            },
+        }
+    }
+    check_discrepancies(
+        discrepancy_report, expected_discrepancies, contests[0]["choices"]
+    )
+
+    # Audit jurisdiction 2
+    set_logged_in_user(
+        client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/batches"
+    )
+    j2_sampled_batches = json.loads(rv.data)["batches"]
+    assert len(j2_sampled_batches) == 1
+
+    # Audit the single sampled batch
+    assert j2_sampled_batches[0]["name"] == "Batch 3"
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/batches/{j2_sampled_batches[0]['id']}/results",
+        [
+            {
+                "name": "Tally Sheet #1",
+                "results": {
+                    choice_ids[0]: 500,
+                    choice_ids[1]: 250,
+                    choice_ids[2]: 250,
+                },
+            }
+        ],
+    )
+    assert_ok(rv)
+
+    # Finalize the results
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/batches/finalize",
+    )
+    assert_ok(rv)
+
+    # End the round
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.post(f"/api/election/{election_id}/round/current/finish")
+    assert_ok(rv)
+
+    # Check the audit report
+    rv = client.get(f"/api/election/{election_id}/report")
+    assert_match_report(rv.data, snapshot)
