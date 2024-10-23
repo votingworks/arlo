@@ -420,7 +420,7 @@ def test_sample_extra_batches_min_percentage_of_jurisdiction_ballots_selected(
                 io.BytesIO(
                     b"Container,Batch Name,Number of Ballots\n"
                     b"Absentee by Mail,Batch 1,500\n"  # HMPB group
-                    b"Election Day,Batch 2,500\n"  # BMD group
+                    b"Election Day,Batch 2,500\n"
                     b"Election Day,Batch 3,500\n"
                     b"Election Day,Batch 4,500\n"
                     b"Election Day,Batch 5,100\n"
@@ -467,13 +467,8 @@ def test_sample_extra_batches_min_percentage_of_jurisdiction_ballots_selected(
     assert "Batch 1" in j1_batch_names  # HMPB group
     assert (
         "Batch 9" in j1_batch_names
-    )  # Must be selected to hit the 2% selection threshold
-
-    j1_batch_names.remove("Batch 1")
-    j1_batch_names.remove("Batch 9")
-    # At least one more batch must be chosen
-    nondeterministic_batch = j1_batch_names.pop()
-    assert re.match(r"Batch [2-8]$", nondeterministic_batch)
+    )  # Must be selected to hit the 2% selection threshold.
+    # Also satisfies the BMD group expectation so we test that explicitly in another test.
 
 
 @pytest.mark.parametrize(
