@@ -815,8 +815,8 @@ const STACK_LABEL_TITLE_COLORS = [
   Colors.INDIGO1,
 ]
 const DEFAULT_STACK_LABELS = [
-  { title: 'No Vote', subtitle: '(undervote, overvote, blank, etc.)' },
-  { title: 'For Review', subtitle: '(undetermined, duplicated, etc.)' },
+  { title: 'No Vote', subtitle: 'Undervote, overvote, blank, etc.' },
+  { title: 'For Review', subtitle: 'Undetermined, duplicated, etc.' },
 ]
 
 function parseSurname(fullName: string, maxLength: number) {
@@ -834,24 +834,21 @@ function parseSurname(fullName: string, maxLength: number) {
   return surname
 }
 
-function formCandidateSigns(
+function formCandidateLabelSubtitle(contestName: string) {
+  return contestName.length > STACK_LABEL_MAX_CONTEST_NAME_LENGTH
+    ? `${contestName.slice(0, STACK_LABEL_MAX_CONTEST_NAME_LENGTH)}...`
+    : contestName
+}
+
+function formCandidateLabels(
   contests: IMinimalContest[]
 ): { title: string; subtitle: string }[] {
-  const candidateSigns: { title: string; subtitle: string }[] = []
-  contests.forEach(contest => {
-    const contestName =
-      contest.name.length > STACK_LABEL_MAX_CONTEST_NAME_LENGTH
-        ? `${contest.name.slice(0, STACK_LABEL_MAX_CONTEST_NAME_LENGTH)}...`
-        : contest.name
-    contest.choices.forEach(choice => {
-      const candidate = {
-        title: parseSurname(choice.name, STACK_LABEL_MAX_SURNAME_LENGTH),
-        subtitle: `(Contest: ${contestName})`,
-      }
-      candidateSigns.push(candidate)
-    })
-  })
-  return candidateSigns
+  return contests.flatMap(contest =>
+    contest.choices.map(choice => ({
+      title: parseSurname(choice.name, STACK_LABEL_MAX_SURNAME_LENGTH),
+      subtitle: formCandidateLabelSubtitle(contest.name),
+    }))
+  )
 }
 
 export const downloadStackLabels = async (
@@ -861,7 +858,7 @@ export const downloadStackLabels = async (
 ): Promise<string> => {
   const doc = new jsPDF({ format: 'letter', unit: 'pt' })
 
-  const candidateSigns = formCandidateSigns(contests)
+  const candidateSigns = formCandidateLabels(contests)
   const allSigns = DEFAULT_STACK_LABELS.concat(candidateSigns)
   for (let i = 0; i < allSigns.length; i += 1) {
     if (i !== 0) {
