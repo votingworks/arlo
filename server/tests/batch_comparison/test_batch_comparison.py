@@ -876,6 +876,7 @@ def test_batch_comparison_combined_batches(
     rv = client.get(f"/api/election/{election_id}/contest")
     assert rv.status_code == 200
     contests = json.loads(rv.data)["contests"]
+    choice_ids = [choice["id"] for choice in contests[0]["choices"]]
 
     set_logged_in_user(
         client, UserType.JURISDICTION_ADMIN, default_ja_email(election_id)
@@ -940,24 +941,55 @@ def test_batch_comparison_combined_batches(
     assert batch_1_sampled["name"] not in sampled_batch_names
     assert batch_3_sampled["name"] not in sampled_batch_names
 
-    # Audit the combined batch
-    candidate_2_discrepancy = 5
-    candidate_3_discrepancy = -5
-    choice_ids = [choice["id"] for choice in contests[0]["choices"]]
+    # Reported tallies from conftest.py:
+    # Batch 1: 500,250,250
+    # Batch 2: 500,250,250
+    # Batch 3: 500,250,250
+    reported_tallies = {
+        choice_ids[0]: 500 + 500 + 500,
+        choice_ids[1]: 250 + 250 + 250,
+        choice_ids[2]: 250 + 250 + 250,
+    }
+
+    # Try to audit the combined batch with invalid tallies (check validation)
     rv = put_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/{combined_batch['id']}/results",
         [
             {
                 "name": "Tally Sheet #1",
-                # Reported tallies from conftest.py:
-                # Batch 1: 500,250,250
-                # Batch 2: 500,250,250
-                # Batch 3: 500,250,250
                 "results": {
-                    choice_ids[0]: 500 + 500 + 500,
-                    choice_ids[1]: 250 + 250 + 250 - candidate_2_discrepancy,
-                    choice_ids[2]: 250 + 250 + 250 - candidate_3_discrepancy,
+                    **reported_tallies,
+                    choice_ids[0]: reported_tallies[choice_ids[0]] + 1,
+                },
+            }
+        ],
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Bad Request",
+                "message": "Total votes for batch Combined Batch contest Contest 1 should not exceed 3000 - the number of ballots in the batch (1500) times the number of votes allowed (2).",
+            }
+        ]
+    }
+
+    # Audit the combined batch
+    candidate_2_discrepancy = 5
+    candidate_3_discrepancy = -5
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/{combined_batch['id']}/results",
+        [
+            {
+                "name": "Tally Sheet #1",
+                "results": {
+                    **reported_tallies,
+                    choice_ids[1]: reported_tallies[choice_ids[1]]
+                    - candidate_2_discrepancy,
+                    choice_ids[2]: reported_tallies[choice_ids[2]]
+                    - candidate_3_discrepancy,
                 },
             }
         ],

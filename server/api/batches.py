@@ -246,8 +246,10 @@ def validate_batch_results(
                 combined_batch_name=batch.combined_batch_name,
                 jurisdiction_id=jurisdiction.id,
             )
+            batch_name = batch.combined_batch_name
             num_ballots = sum(sub_batch.num_ballots for sub_batch in sub_batches)
         else:
+            batch_name = batch.name
             num_ballots = batch.num_ballots
 
         assert contest.votes_allowed is not None
@@ -255,8 +257,8 @@ def validate_batch_results(
 
         if total_votes > allowed_votes:
             raise BadRequest(
-                f"Total votes for batch {batch.name} contest {contest.name} should not exceed "
-                f"{allowed_votes} - the number of ballots in the batch ({batch.num_ballots}) "
+                f"Total votes for batch {batch_name} contest {contest.name} should not exceed "
+                f"{allowed_votes} - the number of ballots in the batch ({num_ballots}) "
                 f"times the number of votes allowed ({contest.votes_allowed})."
             )
 
