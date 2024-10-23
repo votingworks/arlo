@@ -7,11 +7,12 @@ from werkzeug.exceptions import BadRequest, Conflict
 from sqlalchemy.orm import Query, joinedload
 from sqlalchemy import func
 
+
 from . import api
 from ..auth import get_loggedin_user, get_support_user, restrict_access, UserType
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
-from .shared import get_current_round
+from .shared import get_current_round, group_combined_batches
 from ..util.csv_download import csv_response, jurisdiction_timestamp_name
 from ..util.jsonschema import JSONDict, validate
 from ..util.isoformat import isoformat
@@ -22,6 +23,27 @@ from ..activity_log.activity_log import (
     record_activity,
 )
 from ..util.get_json import safe_get_json_list
+
+
+def replace_combined_batches_with_representative_batches(
+    batches: List[Batch],
+) -> List[Batch]:
+    regular_batches = []
+    all_sub_batches = []
+    for batch in batches:
+        if batch.combined_batch_name is None:
+            regular_batches.append(batch)
+        else:
+            all_sub_batches.append(batch)
+
+    combined_batches = group_combined_batches(all_sub_batches)
+    representative_batches = [
+        combined_batch["representative_batch"] for combined_batch in combined_batches
+    ]
+    for representative_batch in representative_batches:
+        representative_batch.name = representative_batch.combined_batch_name  # type: ignore
+
+    return regular_batches + representative_batches
 
 
 def already_audited_batches(jurisdiction: Jurisdiction, round: Round) -> Query:
@@ -134,9 +156,15 @@ def list_batches_for_jurisdiction(
     results_finalized = BatchResultsFinalized.query.filter_by(
         jurisdiction_id=jurisdiction.id, round_id=round.id
     ).one_or_none()
+
     return jsonify(
         {
-            "batches": [serialize_batch(batch) for batch in batches],
+            "batches": [
+                serialize_batch(batch)
+                for batch in replace_combined_batches_with_representative_batches(
+                    batches
+                )
+            ],
             "resultsFinalizedAt": isoformat(
                 results_finalized and results_finalized.created_at
             ),
@@ -205,12 +233,26 @@ def validate_batch_results(
         )
 
     for contest in contests:
-        total_votes = 0
-        for tally_sheet in batch_results:
-            for choice in contest.choices:
-                total_votes += tally_sheet["results"][choice.id]
+        total_votes = sum(
+            tally_sheet["results"][choice.id]
+            for tally_sheet in batch_results
+            for choice in contest.choices
+        )
+
+        # Special case: if the batch is a combined batch, we need to sum the
+        # number of ballots in all sub-batches its been combined with.
+        if batch.combined_batch_name is not None:
+            sub_batches = Batch.query.filter_by(
+                combined_batch_name=batch.combined_batch_name,
+                jurisdiction_id=jurisdiction.id,
+            )
+            num_ballots = sum(sub_batch.num_ballots for sub_batch in sub_batches)
+        else:
+            num_ballots = batch.num_ballots
+
         assert contest.votes_allowed is not None
-        allowed_votes = batch.num_ballots * contest.votes_allowed
+        allowed_votes = num_ballots * contest.votes_allowed
+
         if total_votes > allowed_votes:
             raise BadRequest(
                 f"Total votes for batch {batch.name} contest {contest.name} should not exceed "
