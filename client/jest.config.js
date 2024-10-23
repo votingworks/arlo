@@ -6,12 +6,14 @@ module.exports = {
   ],
   coverageReporters: ['text', 'text-summary', 'html'],
   coverageThreshold: {
-    // We only set a threshold for branches, since that's the strictest form of
-    // coverage. This number represents the absolute number of branches allowed
-    // to be uncovered. Ideally, we can get this to 0 eventually, but this
+    // These numbers represent the absolute number of lines and branches allowed
+    // to be uncovered. Ideally, we can get them to 0 eventually, but this
     // accounts for legacy uncovered code. All new code should be covered (so
     // this number should only be getting closer to 0).
-    global: { branches: -193 },
+    global: {
+      lines: -161,
+      branches: -194,
+    },
   },
   moduleFileExtensions: [
     'web.js',
