@@ -7,6 +7,16 @@ from werkzeug.exceptions import BadRequest, NotFound
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
+from server.feature_flags import is_enabled_sample_extra_batches_by_counting_group
+from server.util.enums import (
+    BATCH_NAME,
+    CONTAINER,
+    CVR,
+    NUMBER_OF_BALLOTS,
+    TABULATOR,
+    ContainerType,
+)
+
 from . import api
 from ..database import db_session, engine
 from ..models import *  # pylint: disable=wildcard-import
@@ -36,12 +46,6 @@ from .batch_tallies import reprocess_batch_tallies_file_if_uploaded
 from ..activity_log.activity_log import UploadFile, activity_base, record_activity
 
 logger = logging.getLogger("arlo")
-
-CONTAINER = "Container"
-TABULATOR = "Tabulator"
-BATCH_NAME = "Batch Name"
-NUMBER_OF_BALLOTS = "Number of Ballots"
-CVR = "CVR"
 
 
 def all_manifests_uploaded(contest: Contest):
@@ -100,8 +104,23 @@ def process_ballot_manifest_file(
             AuditType.BALLOT_COMPARISON,
             AuditType.HYBRID,
         ]
+
+        is_container_required = is_enabled_sample_extra_batches_by_counting_group(
+            jurisdiction.election
+        )
+        container_values_allowlist = (
+            set(item.value for item in ContainerType)
+            if is_container_required
+            else set()
+        )
+
         columns = [
-            CSVColumnType(CONTAINER, CSVValueType.TEXT, required_column=False),
+            CSVColumnType(
+                CONTAINER,
+                CSVValueType.TEXT,
+                required_column=is_container_required,
+                allowed_values=container_values_allowlist,
+            ),
             CSVColumnType(
                 TABULATOR,
                 CSVValueType.TEXT,
