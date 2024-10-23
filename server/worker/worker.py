@@ -1,3 +1,4 @@
+import os
 import signal
 import sys
 import time
@@ -16,7 +17,7 @@ from server.websession import cleanup_sessions
 from server import api  # pylint: disable=unused-import
 
 
-def run_worker():
+def run_worker(worker_id: str):
     task = None
 
     # Heroku dynos are sent one or more SIGTERM signals when they are shut down,
@@ -35,7 +36,7 @@ def run_worker():
     signal.signal(signal.SIGINT, interrupt_handler)
 
     while True:
-        task = claim_next_task()
+        task = claim_next_task(worker_id)
         if task:
             run_task(task)
             # Ensure we don't reset the task on interrupt once it completes
@@ -54,5 +55,6 @@ def run_worker():
 
 
 if __name__ == "__main__":
+    worker_id = os.environ.get("HEROKU_DYNO_ID", str(os.getpid()))
     configure_sentry()
-    run_worker()
+    run_worker(worker_id)

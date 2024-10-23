@@ -58,7 +58,12 @@ def create_background_task(
 
 
 def task_log_data(task: BackgroundTask) -> JSONDict:
-    return dict(id=task.id, task_name=task.task_name, payload=task.payload)
+    return dict(
+        id=task.id,
+        task_name=task.task_name,
+        payload=task.payload,
+        worker_id=task.worker_id,
+    )
 
 
 def emit_progress_for_task(task_id: str):
@@ -123,7 +128,7 @@ def run_task(task: BackgroundTask, db_session=db_session):
             sentry_sdk.capture_exception(error)
 
 
-def claim_next_task(db_session=db_session) -> Optional[BackgroundTask]:
+def claim_next_task(worker_id: str, db_session=db_session) -> Optional[BackgroundTask]:
     task: Optional[BackgroundTask] = (
         db_session.query(BackgroundTask)
         .filter_by(started_at=None)
@@ -135,6 +140,7 @@ def claim_next_task(db_session=db_session) -> Optional[BackgroundTask]:
         .one_or_none()
     )
     if task:
+        task.worker_id = worker_id
         task.started_at = datetime.now(timezone.utc)
         # Commit the transaction to release the lock before running the task,
         # allowing other workers to claim tasks in the meantime.
@@ -143,6 +149,7 @@ def claim_next_task(db_session=db_session) -> Optional[BackgroundTask]:
 
 
 def reset_task(task: BackgroundTask):
+    task.worker_id = None
     task.started_at = None
     logger.info(f"TASK_RESET {task_log_data(task)}")
     db_session.commit()
