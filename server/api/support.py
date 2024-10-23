@@ -10,7 +10,6 @@ from auth0.v3.exceptions import Auth0Error
 from werkzeug.exceptions import BadRequest, Conflict
 from sqlalchemy.orm import contains_eager
 
-
 from . import api
 from ..models import *  # pylint: disable=wildcard-import
 from ..database import db_session
@@ -18,6 +17,7 @@ from ..auth import (
     restrict_access_support,
     set_loggedin_user,
     UserType,
+    get_support_user,
 )
 from ..config import (
     AUDITADMIN_AUTH0_BASE_URL,
@@ -31,6 +31,7 @@ from ..util.file import delete_file
 from ..util.redirect import redirect
 from .rounds import delete_round_and_corresponding_sampled_ballots, get_current_round
 from ..util.get_json import safe_get_json_dict
+from .shared import combined_batch_representative, group_combined_batches
 
 AUTH0_DOMAIN = urlparse(AUDITADMIN_AUTH0_BASE_URL).hostname
 
@@ -540,6 +541,133 @@ def reopen_current_round(election_id: str):
         round_contest.end_p_value = None
         round_contest.is_complete = None
         round_contest.results = []
+    db_session.commit()
+
+    return jsonify(status="ok")
+
+
+@api.route(
+    "/support/jurisdictions/<jurisdiction_id>/batches",
+    methods=["GET"],
+)
+@restrict_access_support
+def list_jurisdiction_batches(jurisdiction_id: str):
+    jurisdiction = get_or_404(Jurisdiction, jurisdiction_id)
+    combined_batches = group_combined_batches(
+        [batch for batch in jurisdiction.batches if batch.combined_batch_name]
+    )
+
+    def serialize_batch(batch):
+        return dict(
+            id=batch.id,
+            name=batch.name,
+        )
+
+    return jsonify(
+        batches=[serialize_batch(batch) for batch in jurisdiction.batches],
+        combinedBatches=[
+            dict(
+                name=combined_batch["name"],
+                subBatches=[
+                    serialize_batch(sub_batch)
+                    for sub_batch in combined_batch["sub_batches"]
+                ],
+            )
+            for combined_batch in sorted(
+                combined_batches, key=lambda combined_batch: combined_batch["name"]
+            )
+        ],
+    )
+
+
+COMBINED_BATCH_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "subBatchIds": {"type": "array", "items": {"type": "string"}, "minItems": 2},
+    },
+    "additionalProperties": False,
+    "required": ["name", "subBatchIds"],
+}
+
+
+@api.route(
+    "/support/jurisdictions/<jurisdiction_id>/combined-batches",
+    methods=["POST"],
+)
+@restrict_access_support
+def create_combined_batch(jurisdiction_id: str):
+    jurisdiction = get_or_404(Jurisdiction, jurisdiction_id)
+    combined_batch = safe_get_json_dict(request)
+    validate(combined_batch, COMBINED_BATCH_SCHEMA)
+
+    if (
+        Batch.query.filter_by(
+            jurisdiction_id=jurisdiction.id,
+            combined_batch_name=combined_batch["name"],
+        ).count()
+        > 0
+    ):
+        raise Conflict("A combined batch with this name already exists")
+
+    batch_ids = combined_batch["subBatchIds"]
+    batches = (
+        Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
+        .filter(Batch.id.in_(batch_ids))
+        .all()
+    )
+    if len(batches) != len(batch_ids):
+        raise BadRequest("Invalid batch ids")
+    if any(batch.combined_batch_name for batch in batches):
+        raise Conflict(
+            "One or more of these batches are already part of a combined batch"
+        )
+
+    representative_batch = combined_batch_representative(batches)
+    support_user_email = get_support_user(session)
+
+    for batch in batches:
+        batch.combined_batch_name = combined_batch["name"]
+        # Add 0 tallies for all but the representative batch
+        if batch.id != representative_batch.id:
+            batch.result_tally_sheets = [
+                BatchResultTallySheet(
+                    id=str(uuid.uuid4()),
+                    name="Combined Batch Zero Tally",
+                    results=[
+                        BatchResult(contest_choice_id=choice.id, result=0)
+                        for contest in list(jurisdiction.contests)
+                        for choice in contest.choices
+                    ],
+                )
+            ]
+            batch.last_edited_by_support_user_email = support_user_email
+            batch.last_edited_by_user_id = None
+            batch.last_edited_by_tally_entry_user_id = None
+
+    db_session.commit()
+
+    return jsonify(status="ok")
+
+
+@api.route(
+    "/support/jurisdictions/<jurisdiction_id>/combined-batches/<combined_batch_name>",
+    methods=["DELETE"],
+)
+@restrict_access_support
+def delete_combined_batch(jurisdiction_id: str, combined_batch_name: str):
+    jurisdiction = get_or_404(Jurisdiction, jurisdiction_id)
+
+    batches = Batch.query.filter_by(
+        jurisdiction_id=jurisdiction.id, combined_batch_name=combined_batch_name
+    ).all()
+    if len(batches) == 0:
+        raise NotFound()
+
+    for batch in batches:
+        batch.combined_batch_name = None
+        batch.result_tally_sheets = []
+
     db_session.commit()
 
     return jsonify(status="ok")

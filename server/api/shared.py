@@ -1,6 +1,6 @@
 from collections import defaultdict
 import random
-from typing import Dict, List, Optional, Tuple, TypedDict, Union
+from typing import Dict, List, Optional, Set, Tuple, TypedDict, Union
 from sqlalchemy import and_, func, literal, true
 from sqlalchemy.orm import joinedload, load_only
 
@@ -90,6 +90,31 @@ def batch_tallies(contest: Contest) -> BatchTallies:
         for jurisdiction in contest.jurisdictions
         for batch_name, tally in jurisdiction.batch_tallies.items()  # type: ignore
     }
+
+
+class CombinedBatch(TypedDict):
+    name: str
+    representative_batch: Batch
+    sub_batches: List[Batch]
+
+
+def combined_batch_representative(sub_batches: List[Batch]) -> Batch:
+    assert len(sub_batches) > 0
+    sampled_sub_batches = [sub_batch for sub_batch in sub_batches if sub_batch.draws]
+    return sorted(sampled_sub_batches, key=lambda batch: batch.id)[0]
+
+
+def group_combined_batches(all_sub_batches: List[Batch]) -> List[CombinedBatch]:
+    return [
+        CombinedBatch(
+            name=name,
+            representative_batch=combined_batch_representative(sub_batches),
+            sub_batches=sub_batches,
+        )
+        for name, sub_batches in group_by(
+            all_sub_batches, lambda batch: batch.combined_batch_name
+        ).items()
+    ]
 
 
 def sampled_batch_results(
