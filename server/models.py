@@ -1029,6 +1029,7 @@ class BackgroundTask(BaseModel):
     task_name = Column(String(200), nullable=False)
     payload = Column(JSON, nullable=False)
 
+    worker_id = Column(String(200))
     started_at = Column(UTCDateTime)
     completed_at = Column(UTCDateTime)
     error = Column(Text)
