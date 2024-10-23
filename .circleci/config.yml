@@ -103,15 +103,19 @@ jobs:
           docker_layer_caching: true
       - python/install-packages:
           pkg-manager: poetry
-          cache-version: v2
+          cache-version: v5
       - node/install-packages:
           pkg-manager: yarn
           app-dir: client
-          cache-version: v4
-          # In order to cache the Cypress binary, we have to cache
-          # ~/.cache/Cypress (alongside the default caching of ~/.cache/yarn).
-          # So we just cache all of ~/.cache.
-          cache-path: ~/.cache
+          cache-version: v5
+      - restore_cache:
+          name: "Restoring Cypress cache"
+          key: v1-cypress-cache-{{ checksum "client/yarn.lock" }}
+      - save_cache:
+          name: "Saving Cypress cache"
+          key: v1-cypress-cache-{{ checksum "client/yarn.lock" }}
+          paths:
+            - ~/.cache/Cypress
       - browser-tools/install-chrome
       - create-data-model
       - run:
