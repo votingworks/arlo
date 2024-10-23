@@ -814,7 +814,7 @@ def test_multi_contest_batch_comparison_round_2(
         jurisdiction_1_batches[5]["id"]: [
             {
                 contest_1_choice_ids[0]: 0,
-                contest_1_choice_ids[1]: 50,
+                contest_1_choice_ids[1]: 75,
                 contest_2_choice_ids[0]: 50,
                 contest_2_choice_ids[1]: 0,
             }
@@ -952,6 +952,7 @@ def test_multi_contest_batch_comparison_round_2(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/batches"
     )
     jurisdiction_1_batches = json.loads(rv.data)["batches"]
+    # print ("J1:", [batch["name"] for batch in jurisdiction_1_batches])
     assert [batch["name"] for batch in jurisdiction_1_batches] == ["Batch 8"]
 
     set_logged_in_user(
@@ -986,6 +987,7 @@ def test_multi_contest_batch_comparison_round_2(
         # Batch 8 (with no discrepancies)
         jurisdiction_1_batches[0]["id"]: [reported_results_for_batches_1_through_8],
     }
+
     for batch_id, results in jurisdiction_1_batch_results.items():
         rv = put_batch_results(
             client, election_id, jurisdiction_ids[0], round_2_id, batch_id, results

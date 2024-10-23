@@ -174,9 +174,10 @@ def test_get_sizes_extra_contests(contests, batches) -> None:
 
     # This should give us zeros for error
     sample: Dict = {}
+    sample_ticket_numbers: Dict = {}
     for contest in contests:
         computed = macro.get_sample_sizes(
-            RISK_LIMIT, contests[contest], batches, sample
+            RISK_LIMIT, contests[contest], batches, sample, sample_ticket_numbers
         )
 
         assert (
@@ -194,10 +195,10 @@ def test_get_sample_sizes(contests, batches) -> None:
     }
 
     sample: Dict = {}
-    sample_ticket_numbers = {}
+    sample_ticket_numbers: Dict = {}
     for contest in contests:
         computed = macro.get_sample_sizes(
-            RISK_LIMIT, contests[contest], batches, sample
+            RISK_LIMIT, contests[contest], batches, sample, sample_ticket_numbers
         )
 
         assert (
@@ -206,8 +207,8 @@ def test_get_sample_sizes(contests, batches) -> None:
             expected_first_round[contest], computed
         )
 
-    # Add 31 batches to the sample that is correct
-    for i in range(31):
+    # Add 4 discrepancy-free batches to the sample
+    for i in range(4):
         sample["Batch {}".format(i)] = {
             "Contest A": {
                 "winner": 200,
@@ -225,14 +226,14 @@ def test_get_sample_sizes(contests, batches) -> None:
         sample_ticket_numbers[str(i)] = "Batch {}".format(i)
 
     expected_second_round = {
-        "Contest A": 27,
-        "Contest B": 13,
-        "Contest C": 8,
+        "Contest A": 26,
+        "Contest B": 12,
+        "Contest C": 7,
     }
 
     for contest in contests:
         computed = macro.get_sample_sizes(
-            RISK_LIMIT, contests[contest], batches, sample
+            RISK_LIMIT, contests[contest], batches, sample, sample_ticket_numbers
         )
 
         assert (
@@ -241,9 +242,11 @@ def test_get_sample_sizes(contests, batches) -> None:
             expected_second_round[contest], computed
         )
 
-    # Now add in some errors
-    # draws with taint of 0.04047619
-    for i in range(100, 106):
+    # Now add in some errors with taint for A equal to reported margin
+    #    -- so sample size should not change.
+    # B is not in sample -> sample size should not change.
+    # taints of 0 for C -> sample size decreases by number of batches.
+    for i in range(4, 9):
         sample["Batch {}".format(i)] = {
             "Contest A": {
                 "winner": 190,
@@ -258,13 +261,13 @@ def test_get_sample_sizes(contests, batches) -> None:
 
     expected_third_round = {
         "Contest A": 26,
-        "Contest B": 13,
-        "Contest C": 7,
+        "Contest B": 12,
+        "Contest C": 2,
     }
 
     for contest in contests:
         computed = macro.get_sample_sizes(
-            RISK_LIMIT, contests[contest], batches, sample
+            RISK_LIMIT, contests[contest], batches, sample, sample_ticket_numbers
         )
 
         assert (
@@ -272,6 +275,21 @@ def test_get_sample_sizes(contests, batches) -> None:
         ), "Third round sample expected {}, got {}".format(
             expected_third_round[contest], computed
         )
+
+    # The "2" for C is conservative: audit should end after ome more 0-taint batch
+    contest = "Contest C"
+    sample["Batch 9"] = {
+        contest: {
+            "winner": 200,
+            "loser": 140,
+        }
+    }
+    sample_ticket_numbers["9"] = "Batch 9"
+    computed = macro.get_sample_sizes(
+        RISK_LIMIT, contests[contest], batches, sample, sample_ticket_numbers
+    )
+
+    assert computed == 0, "Fourth round sample expected 0, got {}".format(computed)
 
 
 def test_full_recount(contests, batches) -> None:
@@ -281,7 +299,9 @@ def test_full_recount(contests, batches) -> None:
     for contest in contests:
 
         with pytest.raises(ValueError, match=r"All ballots have already been counted!"):
-            macro.get_sample_sizes(RISK_LIMIT, contests[contest], batches, sample)
+            macro.get_sample_sizes(
+                RISK_LIMIT, contests[contest], batches, sample, sample_ticket_numbers
+            )
 
         computed_p, result = macro.compute_risk(
             RISK_LIMIT, contests[contest], batches, sample, sample_ticket_numbers
@@ -304,7 +324,9 @@ def test_full_recount_with_replacement(contests, batches) -> None:
     for contest in contests:
 
         with pytest.raises(ValueError, match=r"All ballots have already been counted!"):
-            macro.get_sample_sizes(RISK_LIMIT, contests[contest], batches, sample)
+            macro.get_sample_sizes(
+                RISK_LIMIT, contests[contest], batches, sample, sample_ticket_numbers
+            )
 
         computed_p, result = macro.compute_risk(
             RISK_LIMIT, contests[contest], batches, sample, sample_ticket_numbers
@@ -332,9 +354,12 @@ def test_almost_done() -> None:
     batches = {"Batch 1": {"test1": {"winner": 600, "loser": 400}}}
 
     sample = {"Batch 1": {"test1": {"winner": 500, "loser": 500}}}
+    sample_ticket_numbers = {"1": "Batch 1"}
 
     with pytest.raises(ValueError, match=r"All ballots have already been counted!"):
-        macro.get_sample_sizes(RISK_LIMIT, contest, batches, sample)
+        macro.get_sample_sizes(
+            RISK_LIMIT, contest, batches, sample, sample_ticket_numbers
+        )
 
 
 def test_worst_case() -> None:
@@ -374,8 +399,12 @@ def test_compute_risk(contests, batches) -> None:
     sample = {}
     sample_ticket_numbers = {}
 
+    # Contest A: margin = 0.05, U = 21
+    # Contest B: margin = 0.1, U = 11
+    # Contest C: margin = 0.15, U = 23/3 = 7.666...
+
     # Draws with taint of 0
-    for i in range(31):
+    for i in range(30):
         sample["Batch {}".format(i)] = {
             "Contest A": {
                 "winner": 200,
@@ -392,7 +421,8 @@ def test_compute_risk(contests, batches) -> None:
         }
         sample_ticket_numbers[str(i)] = "Batch {}".format(i)
 
-    # draws with taint of 0.04047619
+    # draws with taint of 0.04047619 (proportional to margin) for A, which
+    # neither increase nor decrease the p value
     for i in range(100, 106):
         sample["Batch {}".format(i)] = {
             "Contest A": {
@@ -406,22 +436,31 @@ def test_compute_risk(contests, batches) -> None:
         }
         sample_ticket_numbers[str(i)] = "Batch {}".format(i)
 
+    # base multiplier for 0 taint is 1 - 1/U
+    # (but last 6 batches don't affect A or B)
+    expected_ps = {
+        "Contest A": (20 / 21) ** 30,
+        "Contest B": (10 / 11) ** 30,
+        "Contest C": (20 / 23) ** 36,
+    }
+
     for contest in contests:
         computed_p, result = macro.compute_risk(
             RISK_LIMIT, contests[contest], batches, sample, sample_ticket_numbers
         )
 
-        expected_p = 0.247688222
+        expected_p = expected_ps[contest]
 
         delta = abs(expected_p - computed_p)
 
-        assert delta < 10**-2, "Incorrect p-value: Got {}, expected {}".format(
+        assert delta < 10**-4, "Incorrect p-value: Got {}, expected {}".format(
             computed_p, expected_p
         )
 
         assert result, "Audit did not terminate but should have"
 
-    # Now test that duplication works
+    # Now test that duplication works (ensure unique ticket names)
+    # (p value for A is unchanged, p value for C decreases)
     for i in range(100, 103):
         sample["Batch {}".format(i)] = {
             "Contest A": {
@@ -433,75 +472,28 @@ def test_compute_risk(contests, batches) -> None:
                 "loser": 140,
             },
         }
-        sample_ticket_numbers[str(i)] = "Batch {}".format(i)
+        sample_ticket_numbers[str(i + 6)] = "Batch {}".format(i)
+
+    expected_ps = {
+        "Contest A": (20 / 21) ** 30,
+        "Contest B": (10 / 11) ** 30,
+        "Contest C": (20 / 23) ** 39,
+    }
 
     for contest in contests:
         computed_p, result = macro.compute_risk(
             RISK_LIMIT, contests[contest], batches, sample, sample_ticket_numbers
         )
 
-        expected_p = 0.247688222
+        expected_p = expected_ps[contest]
 
         delta = abs(expected_p - computed_p)
 
-        assert delta < 10**-2, "Incorrect p-value: Got {}, expected {}".format(
+        assert delta < 10**-4, "Incorrect p-value: Got {}, expected {}".format(
             computed_p, expected_p
         )
 
         assert result, "Audit did not terminate but should have"
-
-
-def test_compute_risk_uses_sample_order(contests, batches) -> None:
-    sample = {}
-    sample_ticket_numbers = {}
-
-    # Draws with taint of 0
-    for i in range(30):
-        sample["Batch {}".format(i)] = {
-            "Contest A": {
-                "winner": 200,
-                "loser": 180,
-            },
-        }
-        sample_ticket_numbers[str(i).zfill(3)] = "Batch {}".format(i)
-
-    # Draws with taint of 0.0952
-    for i in range(100, 110):
-        sample["Batch {}".format(i)] = {
-            "Contest A": {
-                "winner": 180,
-                "loser": 200,
-            },
-        }
-        sample_ticket_numbers[str(i).zfill(3)] = "Batch {}".format(i)
-
-    # In the original sample order, we should reach the risk limit before
-    # hitting the tainted draws
-    computed_p, result = macro.compute_risk(
-        RISK_LIMIT, contests["Contest A"], batches, sample, sample_ticket_numbers
-    )
-    expected_p = 0.247688222
-    delta = abs(expected_p - computed_p)
-    assert delta < 10**-2, "Incorrect p-value: Got {}, expected {}".format(
-        computed_p, expected_p
-    )
-    assert result, "Audit did not terminate but should have"
-
-    # Now reorder the sample so the tainted draws come first - the taint should
-    # be too large to ever hit the risk limit
-    sample_ticket_numbers = {
-        str(len(sample_ticket_numbers) - i).zfill(3): batch
-        for i, batch in enumerate(sample_ticket_numbers.values())
-    }
-    computed_p, result = macro.compute_risk(
-        RISK_LIMIT, contests["Contest A"], batches, sample, sample_ticket_numbers
-    )
-    expected_p = 0.386
-    delta = abs(expected_p - computed_p)
-    assert delta < 10**-2, "Incorrect p-value: Got {}, expected {}".format(
-        computed_p, expected_p
-    )
-    assert not result, "Audit terminated but shouldn't have"
 
 
 def test_tied_contest() -> None:
@@ -528,8 +520,11 @@ def test_tied_contest() -> None:
         }
 
     sample_results: Dict = {}
+    sample_ticket_numbers: Dict = {}
 
-    sample_size = macro.get_sample_sizes(RISK_LIMIT, contest, batches, sample_results)
+    sample_size = macro.get_sample_sizes(
+        RISK_LIMIT, contest, batches, sample_results, sample_ticket_numbers
+    )
 
     assert sample_size == len(batches)
 
@@ -608,8 +603,11 @@ def test_close_contest() -> None:
     }
 
     sample_results: Dict = {}
+    sample_ticket_numbers: Dict = {}
 
-    sample_size = macro.get_sample_sizes(RISK_LIMIT, contest, batches, sample_results)
+    sample_size = macro.get_sample_sizes(
+        RISK_LIMIT, contest, batches, sample_results, sample_ticket_numbers
+    )
 
     assert sample_size == len(batches)
 
