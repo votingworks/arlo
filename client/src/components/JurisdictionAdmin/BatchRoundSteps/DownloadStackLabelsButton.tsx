@@ -24,6 +24,7 @@ const DownloadStackLabelsButton = ({
   const contestsQuery = useContestsJurisdictionAdmin(electionId, jurisdictionId)
 
   const onClick = async () => {
+    /* istanbul ignore next */
     while (!contestsQuery.isSuccess) {
       if (contestsQuery.isError) return
       // eslint-disable-next-line no-await-in-loop
