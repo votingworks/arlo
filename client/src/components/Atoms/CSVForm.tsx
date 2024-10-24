@@ -117,16 +117,17 @@ const CSVFile: React.FC<IProps> = ({
                   <FileInput
                     inputProps={{
                       // While this component is named CSVFile, it can accept zip files in the case
-                      // of Hart CVRs
+                      // of Hart and ESS CVRs
                       // TODO: Consider renaming the component and its internals accordingly
                       accept:
-                        values.cvrFileType === CvrFileType.HART
-                          ? '.zip,.csv'
+                        values.cvrFileType &&
+                        [CvrFileType.HART, CvrFileType.ESS].includes(
+                          values.cvrFileType
+                        )
+                          ? '.zip'
                           : '.csv',
                       name: 'csv',
-                      multiple:
-                        values.cvrFileType === CvrFileType.ESS ||
-                        values.cvrFileType === CvrFileType.HART,
+                      multiple: false,
                     }}
                     onInputChange={e => {
                       const { files } = e.currentTarget
@@ -138,10 +139,7 @@ const CSVFile: React.FC<IProps> = ({
                     hasSelection={!!values.csv}
                     text={(() => {
                       if (!values.csv) {
-                        return values.cvrFileType === CvrFileType.ESS ||
-                          values.cvrFileType === CvrFileType.HART
-                          ? 'Select files...'
-                          : 'Select a file...'
+                        return 'Select a file...'
                       }
                       if (values.csv.length === 1) return values.csv[0].name
                       return `${values.csv.length} files selected`
