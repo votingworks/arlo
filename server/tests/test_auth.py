@@ -465,7 +465,7 @@ def test_jurisdiction_admin_bad_code(mock_smtp, client: FlaskClient, ja_email: s
 def test_jurisdiction_admin_too_many_attempts(
     mock_smtp, client: FlaskClient, ja_email: str
 ):
-    config.LOGIN_CODE_LIFETIME = timedelta(seconds=1)
+    config.LOGIN_CODE_LIFETIME = timedelta(seconds=3)
     clear_logged_in_user(client)
 
     rv = post_json(client, "/auth/jurisdictionadmin/code", dict(email=ja_email))
@@ -513,7 +513,7 @@ def test_jurisdiction_admin_too_many_attempts(
         ]
     }
 
-    time.sleep(1)
+    time.sleep(3)
 
     rv = post_json(client, "/auth/jurisdictionadmin/code", dict(email=ja_email))
     assert_ok(rv)
