@@ -18,6 +18,8 @@ const pageContentWidth = pageWidth - pageMargin * 2
 // Note that these aren't used consistently yet, since they were added later
 const defaultFontSize = 12
 const headingFontSize = 18
+const largeFontSize = 40
+const extraLargeFontSize = 80
 const subHeadingFontSize = 16
 const sectionBottomMargin = 24
 const pBottomMargin = 10
@@ -794,4 +796,126 @@ export const downloadTallyEntryLoginLinkPrintout = async (
     { returnPromise: true }
   )
   return doc.output() // returned for test snapshots
+}
+
+const STACK_LABEL_MAX_CONTEST_NAME_LENGTH = 40
+const STACK_LABEL_MAX_SURNAME_LENGTH = 20
+const STACK_LABEL_TITLE_LENGTH_XL_FONT_CUTOFF = 12
+const STACK_LABEL_TEXT_COLOR = Colors.GRAY2
+const STACK_LABEL_TITLE_COLORS = [
+  Colors.GREEN1,
+  Colors.VIOLET1,
+  Colors.ORANGE2,
+  Colors.BLUE1,
+  Colors.GOLD4,
+  Colors.COBALT4,
+  Colors.VERMILION1,
+  Colors.SEPIA1,
+  Colors.DARK_GRAY1,
+  Colors.INDIGO1,
+]
+const DEFAULT_STACK_LABELS = [
+  { title: 'No Vote', subtitle: 'Undervote, overvote, blank, etc.' },
+  { title: 'For Review', subtitle: 'Undetermined, duplicated, etc.' },
+]
+
+function parseSurname(fullName: string, maxLength: number) {
+  const suffixes = ['sr.', 'sr', 'jr.', 'jr', 'ii', 'iii', 'iv', 'v']
+  const nameParts = fullName.trim().split(' ')
+  const lastNameIndex = suffixes.includes(
+    nameParts[nameParts.length - 1].toLowerCase()
+  )
+    ? nameParts.length - 2
+    : nameParts.length - 1
+  let surname = nameParts.slice(lastNameIndex).join(' ')
+  if (surname.length > maxLength) {
+    surname = `${surname.slice(0, maxLength)}...`
+  }
+  return surname
+}
+
+function formCandidateLabelSubtitle(contestName: string) {
+  return contestName.length > STACK_LABEL_MAX_CONTEST_NAME_LENGTH
+    ? `${contestName.slice(0, STACK_LABEL_MAX_CONTEST_NAME_LENGTH)}...`
+    : contestName
+}
+
+function formCandidateLabels(
+  contests: IMinimalContest[]
+): { title: string; subtitle: string }[] {
+  return contests.flatMap(contest =>
+    contest.choices.map(choice => ({
+      title: parseSurname(choice.name, STACK_LABEL_MAX_SURNAME_LENGTH),
+      subtitle: formCandidateLabelSubtitle(contest.name),
+    }))
+  )
+}
+
+export const downloadStackLabels = async (
+  auditName: string,
+  contests: IMinimalContest[],
+  jurisdictionName: string
+): Promise<string> => {
+  const doc = new jsPDF({ format: 'letter', unit: 'pt' })
+
+  const candidateSigns = formCandidateLabels(contests)
+  const allSigns = DEFAULT_STACK_LABELS.concat(candidateSigns)
+  for (let i = 0; i < allSigns.length; i += 1) {
+    if (i !== 0) {
+      doc.addPage()
+    }
+    const sign = allSigns[i]
+    const titleColor =
+      STACK_LABEL_TITLE_COLORS[i % STACK_LABEL_TITLE_COLORS.length]
+
+    // Mid-page fold
+    doc.setFont('Helvetica', 'normal').setFontSize(defaultFontSize)
+    doc.setTextColor(STACK_LABEL_TEXT_COLOR)
+    const foldCaption = 'Fold here and place at edge or table or tray'
+    let x = pageMargin / 2
+    let y = pageHeight / 2
+    doc.text(foldCaption, x, y)
+    doc.setLineDashPattern([1, 1], 0)
+    y += pBottomMargin
+    doc.line(x, y, pageWidth - pageMargin / 2, y)
+
+    // Right-side up (bottom half of page)
+    const titleText = sign.title
+    const titleFontSize =
+      titleText.length > STACK_LABEL_TITLE_LENGTH_XL_FONT_CUTOFF
+        ? largeFontSize
+        : extraLargeFontSize
+    doc.setFont('Helvetica', 'bold').setFontSize(titleFontSize)
+    doc.setTextColor(titleColor)
+    const titleDimensions = doc.getTextDimensions(titleText)
+    x = (pageWidth - titleDimensions.w) / 2
+    y = (pageHeight * 3) / 4 - titleDimensions.h / 2
+    doc.text(titleText, x, y)
+
+    doc.setFont('Helvetica', 'normal').setFontSize(defaultFontSize)
+    doc.setTextColor(STACK_LABEL_TEXT_COLOR)
+    const subtitleText = sign.subtitle
+    const subtitleDimensions = doc.getTextDimensions(subtitleText)
+    x = (pageWidth - subtitleDimensions.w) / 2
+    y += sectionBottomMargin * 2
+    doc.text(subtitleText, x, y)
+
+    // Mirrored (top half of page)
+    doc.setFont('Helvetica', 'bold').setFontSize(titleFontSize)
+    doc.setTextColor(titleColor)
+    x = (pageWidth + titleDimensions.w) / 2
+    y = pageHeight / 4 - titleDimensions.h / 2
+    doc.text(titleText, x, y, { angle: 180 })
+
+    doc.setFont('Helvetica', 'normal').setFontSize(defaultFontSize)
+    doc.setTextColor(STACK_LABEL_TEXT_COLOR)
+    x = (pageWidth + subtitleDimensions.w) / 2
+    y -= sectionBottomMargin * 2
+    doc.text(subtitleText, x, y, { angle: 180 })
+  }
+
+  await doc.save(`Stack Labels - ${jurisdictionName} - ${auditName}.pdf`, {
+    returnPromise: true,
+  })
+  return doc.output() // Returned for snapshot tests
 }

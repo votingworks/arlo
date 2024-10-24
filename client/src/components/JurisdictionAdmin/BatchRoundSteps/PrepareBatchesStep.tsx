@@ -6,6 +6,7 @@ import { StepPanel, StepPanelColumn, StepActions } from '../../Atoms/Steps'
 import DownloadBatchTallySheetsButton from './DownloadBatchTallySheetsButton'
 import LinkButton from '../../Atoms/LinkButton'
 import DownloadBatchRetrievalListButton from './DownloadBatchRetrievalListButton'
+import DownloadStackLabelsButton from './DownloadStackLabelsButton'
 
 interface IPrepareBatchesStepProps {
   nextStepUrl: string
@@ -52,6 +53,23 @@ const PrepareBatchesStep: React.FC<IPrepareBatchesStepProps> = ({
         <p>
           There will be one tally sheet for each batch. Use these tally sheets
           when recording the audited votes in each batch.
+        </p>
+      </StepPanelColumn>
+      <StepPanelColumn>
+        <H5>Print Stack Labels</H5>
+        <p>
+          <DownloadStackLabelsButton
+            auditName={jurisdiction.election.auditName}
+            electionId={jurisdiction.election.id}
+            jurisdictionId={jurisdiction.id}
+            jurisdictionName={jurisdiction.name}
+            intent="primary"
+          />
+        </p>
+        <p>
+          There will be one stack label per candidate, along with labels for
+          votes requiring additional review. Use these labels when sorting
+          audited votes.
         </p>
       </StepPanelColumn>
     </StepPanel>

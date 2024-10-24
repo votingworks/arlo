@@ -31,6 +31,7 @@ import AuditBoardsTable from './AuditBoardsTable'
 import DownloadBatchRetrievalListButton from '../../JurisdictionAdmin/BatchRoundSteps/DownloadBatchRetrievalListButton'
 import DownloadBatchTallySheetsButton from '../../JurisdictionAdmin/BatchRoundSteps/DownloadBatchTallySheetsButton'
 import { candidateTotalsByBatchTemplateCsvPath } from '../../JurisdictionAdmin/candidateTotalsByBatchTemplateCsv'
+import DownloadStackLabelsButton from '../../JurisdictionAdmin/BatchRoundSteps/DownloadStackLabelsButton'
 
 const StatusCard = styled(Card)`
   &:not(:last-child) {
@@ -383,6 +384,12 @@ const RoundStatusSection = ({
             jurisdictionId={jurisdiction.id}
             jurisdictionName={jurisdiction.name}
             roundId={round.id}
+          />
+          <DownloadStackLabelsButton
+            auditName={auditSettings.auditName}
+            electionId={electionId}
+            jurisdictionId={jurisdiction.id}
+            jurisdictionName={jurisdiction.name}
           />
         </ButtonGroup>
       )

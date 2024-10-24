@@ -191,6 +191,23 @@ describe('BatchRoundSteps', () => {
         )
       )
       expect(batchTallySheetButton).toBeEnabled()
+
+      // Download stack labels
+      screen.getByRole('heading', { name: 'Print Stack Labels' })
+      const StackLabelsButton = screen.getByRole('button', {
+        name: /Download Stack Labels/,
+      })
+      userEvent.click(StackLabelsButton)
+      expect(StackLabelsButton).toBeDisabled()
+      await waitFor(() =>
+        expect(mockSavePDF).toHaveBeenCalledWith(
+          'Stack Labels - Jurisdiction One - audit one.pdf',
+          {
+            returnPromise: true,
+          }
+        )
+      )
+      expect(StackLabelsButton).toBeEnabled()
     })
   })
 
@@ -209,6 +226,27 @@ describe('BatchRoundSteps', () => {
         })
       )
       await findAndCloseToast('Error preparing batch tally sheets for download')
+      await waitFor(() =>
+        expect(Sentry.captureException).toHaveBeenCalledTimes(1)
+      )
+    })
+  })
+
+  it('handles failures to generate stack labels PDF', async () => {
+    const expectedCalls = [
+      jaApiCalls.getBatches(batchesMocks.emptyInitial),
+      jaApiCalls.getJurisdictionContests(contestMocks.one),
+    ]
+    mockSavePDF.mockImplementationOnce(() => Promise.reject(new Error('Whoa!')))
+    await withMockFetch(expectedCalls, async () => {
+      renderComponent('/prepare-batches')
+
+      userEvent.click(
+        await screen.findByRole('button', {
+          name: /Download Stack Labels/,
+        })
+      )
+      await findAndCloseToast('Error preparing stack labels for download')
       await waitFor(() =>
         expect(Sentry.captureException).toHaveBeenCalledTimes(1)
       )

@@ -8,6 +8,7 @@ import {
   downloadBatchTallySheets,
   downloadTallyEntryLoginLinkPrintout,
   IMinimalContest,
+  downloadStackLabels,
 } from './generateSheets'
 import { IAuditBoard } from '../useAuditBoards'
 import { jaApiCalls, auditBoardMocks } from '../_mocks'
@@ -559,6 +560,76 @@ describe('generateSheets', () => {
       ).toHaveBeenCalledWith(
         'Tally Entry Login Link - Jurisdiction One - audit one.pdf',
         { returnPromise: true }
+      )
+    })
+  })
+
+  const names = [
+    'Aaron Adams',
+    'Barry Batts',
+    'Crazy Cabbs',
+    'Danny Durnham Sr.',
+    'Elliot Ezekiel III',
+    'Farrih Fallahahahah ii',
+    'Farrih Fallahahahahah Jr',
+    'Hubert Blaine Wolfeschlegelsteinhausenbergerdorff Sr',
+  ]
+
+  describe('downloadStackLabels', () => {
+    it('Generates stack labels for multiple contests', async () => {
+      const pdf = await downloadStackLabels(
+        mockJurisdiction.election.auditName,
+        [
+          constructMinimalContest('Contest 1', 4),
+          constructMinimalContest('Contest 2', 4),
+        ],
+        mockJurisdiction.name
+      )
+      await expect(Buffer.from(pdf)).toMatchPdfSnapshot()
+      expect(mockSavePDF).toHaveBeenCalledWith(
+        `Stack Labels - ${mockJurisdiction.name} - ${mockJurisdiction.election.auditName}.pdf`,
+        {
+          returnPromise: true,
+        }
+      )
+    })
+
+    it('Generates stack labels for long names', async () => {
+      const choices = []
+      for (let i = 0; i < names.length; i += 1) {
+        choices.push({ name: names[i] })
+      }
+      const contest = { name: 'Secretary of State', choices }
+
+      const pdf = await downloadStackLabels(
+        mockJurisdiction.election.auditName,
+        [contest],
+        mockJurisdiction.name
+      )
+      await expect(Buffer.from(pdf)).toMatchPdfSnapshot()
+      expect(mockSavePDF).toHaveBeenCalledWith(
+        `Stack Labels - ${mockJurisdiction.name} - ${mockJurisdiction.election.auditName}.pdf`,
+        {
+          returnPromise: true,
+        }
+      )
+    })
+
+    it('Generates stack labels with long contest name', async () => {
+      const allStarLyrics =
+        "Hey now, you're an all-star, get your game on, go play / Hey now, you're a rock star, get the show on, get paid / And all that glitters is gold / Only shooting stars break the mold"
+
+      const pdf = await downloadStackLabels(
+        mockJurisdiction.election.auditName,
+        [constructMinimalContest(allStarLyrics, 8)],
+        mockJurisdiction.name
+      )
+      await expect(Buffer.from(pdf)).toMatchPdfSnapshot()
+      expect(mockSavePDF).toHaveBeenCalledWith(
+        `Stack Labels - ${mockJurisdiction.name} - ${mockJurisdiction.election.auditName}.pdf`,
+        {
+          returnPromise: true,
+        }
       )
     })
   })
