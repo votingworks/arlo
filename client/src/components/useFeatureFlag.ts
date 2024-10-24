@@ -29,10 +29,6 @@ const BATCH_INVENTORY_CONFIGS: {
   'b7b99303-b1ac-4b52-8a02-22c10846cff3': {
     showBallotManifest: true,
   },
-  // Ginny's Sandbox
-  'b45800ff-a239-42b3-b285-414cb94d2b6b': {
-    showBallotManifest: true,
-  },
   // Verified Voting Sandbox
   'e348fcfd-bd23-4b96-a003-6c3a79abd240': {
     showBallotManifest: true,
