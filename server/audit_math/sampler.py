@@ -117,7 +117,7 @@ def draw_ppeb_sample(
     int_seed = int(consistent_sampler.sha256_hex(seed), 16)  # type: ignore
     generator = default_rng(int_seed)
 
-    U = macro.compute_U(batch_results, cast(Dict, {}), contest)
+    U = macro.compute_U(batch_results, contest)
 
     # Should only be possible if the specified contest isn't in any batches
     if U == 0:

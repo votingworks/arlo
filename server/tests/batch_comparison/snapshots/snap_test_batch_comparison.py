@@ -39,7 +39,7 @@ Test Audit test_batch_comparison_batches_sampled_multiple_times,BATCH_COMPARISON
 \r
 ######## ROUNDS ########\r
 Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes,Batches Sampled,Ballots Sampled,Reported Votes\r
-1,Contest 1,Targeted,7,Yes,0.0825517715,DATETIME,DATETIME,candidate 1: 1700; candidate 2: 850; candidate 3: 850,5,1700,candidate 1: 1700; candidate 2: 850; candidate 3: 850\r
+1,Contest 1,Targeted,7,Yes,0.0544729376,DATETIME,DATETIME,candidate 1: 1700; candidate 2: 850; candidate 3: 850,5,1700,candidate 1: 1700; candidate 2: 850; candidate 3: 850\r
 \r
 ######## SAMPLED BATCHES ########\r
 Jurisdiction Name,Batch Name,Ballots in Batch,Ticket Numbers: Contest 1,Audited?,Audit Results: Contest 1,Reported Results: Contest 1,Change in Results: Contest 1,Change in Margin: Contest 1,Last Edited By\r
@@ -76,7 +76,7 @@ snapshots["test_batch_comparison_round_2 1"] = {
 }
 
 snapshots["test_batch_comparison_round_2 10"] = {
-    "numSamples": 2,
+    "numSamples": 1,
     "numSamplesAudited": 0,
     "numUnique": 1,
     "numUniqueAudited": 0,
@@ -106,17 +106,17 @@ Test Audit test_batch_comparison_round_2,BATCH_COMPARISON,MACRO,10%,1234567890,N
 ######## ROUNDS ########\r
 Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes,Batches Sampled,Ballots Sampled,Reported Votes\r
 1,Contest 1,Targeted,7,No,0.1225641097,DATETIME,DATETIME,candidate 1: 1100; candidate 2: 300; candidate 3: 200,5,1700,candidate 1: 1700; candidate 2: 850; candidate 3: 850\r
-2,Contest 1,Targeted,5,No,,DATETIME,,candidate 1: 0; candidate 2: 0; candidate 3: 0,3,1500,candidate 1: 1500; candidate 2: 750; candidate 3: 750\r
+2,Contest 1,Targeted,2,No,,DATETIME,,candidate 1: 0; candidate 2: 0; candidate 3: 0,2,1000,candidate 1: 1000; candidate 2: 500; candidate 3: 500\r
 \r
 ######## SAMPLED BATCHES ########\r
 Jurisdiction Name,Batch Name,Ballots in Batch,Ticket Numbers: Contest 1,Audited?,Audit Results: Contest 1,Reported Results: Contest 1,Change in Results: Contest 1,Change in Margin: Contest 1,Last Edited By\r
 J1,Batch 1,500,"Round 1: 0.720194360819624066, 0.777128466487428756",Yes,candidate 1: 400; candidate 2: 50; candidate 3: 40,candidate 1: 500; candidate 2: 250; candidate 3: 250,candidate 1: +100; candidate 2: +200; candidate 3: +210,-100,jurisdiction.admin-UUID@example.com\r
-J1,Batch 3,500,"Round 1: 0.753710009967479876, Round 2: 0.816608705419077476",Yes,candidate 1: 400; candidate 2: 50; candidate 3: 40,candidate 1: 500; candidate 2: 250; candidate 3: 250,candidate 1: +100; candidate 2: +200; candidate 3: +210,-100,jurisdiction.admin-UUID@example.com\r
+J1,Batch 3,500,Round 1: 0.753710009967479876,Yes,candidate 1: 400; candidate 2: 50; candidate 3: 40,candidate 1: 500; candidate 2: 250; candidate 3: 250,candidate 1: +100; candidate 2: +200; candidate 3: +210,-100,jurisdiction.admin-UUID@example.com\r
 J1,Batch 6,100,Round 1: 0.899217854763070950,Yes,candidate 1: 100; candidate 2: 50; candidate 3: 40,candidate 1: 100; candidate 2: 50; candidate 3: 50,candidate 3: +10,-10,jurisdiction.admin-UUID@example.com\r
 J1,Batch 8,100,Round 1: 0.9723790677174592551,Yes,candidate 1: 100; candidate 2: 50; candidate 3: 40,candidate 1: 100; candidate 2: 50; candidate 3: 50,candidate 3: +10,-10,jurisdiction.admin-UUID@example.com\r
 J2,Batch 3,500,"Round 1: 0.368061935896261076, 0.733615858338543383",Yes,candidate 1: 100; candidate 2: 100; candidate 3: 40,candidate 1: 500; candidate 2: 250; candidate 3: 250,candidate 1: +400; candidate 2: +150; candidate 3: +210,250,jurisdiction.admin-UUID@example.com\r
-J1,Batch 4,500,"Round 2: 0.9553762217707628661, 0.9782132493451071914",No,,candidate 1: 500; candidate 2: 250; candidate 3: 250,,,\r
-J2,Batch 4,500,"Round 2: 0.608147659546583410, 0.868820918994249069",No,,candidate 1: 500; candidate 2: 250; candidate 3: 250,,,\r
+J1,Batch 4,500,Round 2: 0.9553762217707628661,No,,candidate 1: 500; candidate 2: 250; candidate 3: 250,,,\r
+J2,Batch 4,500,Round 2: 0.608147659546583410,No,,candidate 1: 500; candidate 2: 250; candidate 3: 250,,,\r
 Totals,,2700,,,candidate 1: 1100; candidate 2: 300; candidate 3: 200,candidate 1: 2700; candidate 2: 1350; candidate 3: 1350,,\r
 """
 
@@ -125,10 +125,10 @@ snapshots[
 ] = """######## SAMPLED BATCHES ########\r
 Jurisdiction Name,Batch Name,Ballots in Batch,Ticket Numbers: Contest 1,Audited?,Audit Results: Contest 1,Reported Results: Contest 1,Change in Results: Contest 1,Change in Margin: Contest 1,Last Edited By\r
 J1,Batch 1,500,"Round 1: 0.720194360819624066, 0.777128466487428756",Yes,candidate 1: 400; candidate 2: 50; candidate 3: 40,candidate 1: 500; candidate 2: 250; candidate 3: 250,candidate 1: +100; candidate 2: +200; candidate 3: +210,-100,jurisdiction.admin-UUID@example.com\r
-J1,Batch 3,500,"Round 1: 0.753710009967479876, Round 2: 0.816608705419077476",Yes,candidate 1: 400; candidate 2: 50; candidate 3: 40,candidate 1: 500; candidate 2: 250; candidate 3: 250,candidate 1: +100; candidate 2: +200; candidate 3: +210,-100,jurisdiction.admin-UUID@example.com\r
+J1,Batch 3,500,Round 1: 0.753710009967479876,Yes,candidate 1: 400; candidate 2: 50; candidate 3: 40,candidate 1: 500; candidate 2: 250; candidate 3: 250,candidate 1: +100; candidate 2: +200; candidate 3: +210,-100,jurisdiction.admin-UUID@example.com\r
 J1,Batch 6,100,Round 1: 0.899217854763070950,Yes,candidate 1: 100; candidate 2: 50; candidate 3: 40,candidate 1: 100; candidate 2: 50; candidate 3: 50,candidate 3: +10,-10,jurisdiction.admin-UUID@example.com\r
 J1,Batch 8,100,Round 1: 0.9723790677174592551,Yes,candidate 1: 100; candidate 2: 50; candidate 3: 40,candidate 1: 100; candidate 2: 50; candidate 3: 50,candidate 3: +10,-10,jurisdiction.admin-UUID@example.com\r
-J1,Batch 4,500,"Round 2: 0.9553762217707628661, 0.9782132493451071914",No,,candidate 1: 500; candidate 2: 250; candidate 3: 250,,,\r
+J1,Batch 4,500,Round 2: 0.9553762217707628661,No,,candidate 1: 500; candidate 2: 250; candidate 3: 250,,,\r
 Totals,,1700,,,candidate 1: 1000; candidate 2: 200; candidate 3: 160,candidate 1: 1700; candidate 2: 850; candidate 3: 850,,\r
 """
 
@@ -189,11 +189,11 @@ snapshots["test_batch_comparison_round_2 8"] = {
 }
 
 snapshots["test_batch_comparison_round_2 9"] = {
-    "numSamples": 3,
-    "numSamplesAudited": 1,
-    "numUnique": 2,
-    "numUniqueAudited": 1,
-    "status": "IN_PROGRESS",
+    "numSamples": 1,
+    "numSamplesAudited": 0,
+    "numUnique": 1,
+    "numUniqueAudited": 0,
+    "status": "NOT_STARTED",
 }
 
 snapshots["test_batch_comparison_sample_preview 1"] = [

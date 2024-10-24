@@ -443,7 +443,7 @@ def test_batch_comparison_round_2(
 
     # Check that we automatically select the sample size
     batch_draws = SampledBatchDraw.query.filter_by(round_id=rounds[1]["id"]).all()
-    assert len(batch_draws) == 5
+    assert len(batch_draws) == 2
 
     # Check that we're sampling batches from the jurisdiction that uploaded manifests
     sampled_jurisdictions = {draw.batch.jurisdiction_id for draw in batch_draws}

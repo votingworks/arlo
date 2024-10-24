@@ -11,7 +11,7 @@ https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1443314 for the
 publication).
 """
 from decimal import Decimal, ROUND_CEILING
-from typing import Dict, Tuple, TypeVar, TypedDict, Optional, List, cast
+from typing import Dict, Tuple, TypeVar, TypedDict, Optional, List
 from .sampler_contest import Contest
 
 BatchKey = TypeVar("BatchKey")
@@ -52,9 +52,6 @@ def compute_error(
     Outputs:
         the maximum across-contest relative overstatement for batch p
     """
-
-    if contest.name not in batch_results:
-        return None
 
     def error_for_candidate_pair(winner, loser) -> Optional[BatchError]:
         v_wp = batch_results[contest.name][winner]
@@ -132,7 +129,6 @@ def compute_max_error(batch_results: BatchResults, contest: Contest) -> Decimal:
 
 def compute_U(
     reported_results: Dict[BatchKey, BatchResults],
-    sample_results: Dict[BatchKey, BatchResults],
     contest: Contest,
 ) -> Decimal:
     """
@@ -159,14 +155,7 @@ def compute_U(
     """
     U = Decimal(0.0)
     for batch in reported_results:
-        if batch in sample_results:
-            error = compute_error(
-                reported_results[batch], sample_results[batch], contest
-            )
-            # Count negative errors (errors in favor of the winner) as 0 to be conservative
-            U += error["weighted_error"] if error and error["counted_as"] > 0 else 0
-        else:
-            U += compute_max_error(reported_results[batch], contest)
+        U += compute_max_error(reported_results[batch], contest)
 
     return U
 
@@ -176,11 +165,13 @@ def get_sample_sizes(
     contest: Contest,
     reported_results: Dict[BatchKey, BatchResults],
     sample_results: Dict[BatchKey, BatchResults],
+    ticket_numbers: Dict[str, BatchKey],
 ) -> int:
     """
-    Computes initial sample sizes parameterized by likelihood that the
-    initial sample will confirm the election result, assuming no
-    discrepancies.
+    Computes a sample size expected to confirm the election result
+    (attain the risk limit). The base computation assumes no discrepancies;
+    1 is added to accommodate small discrepancies. For rounds after the first,
+    the sample size depends on the measured risk so far.
 
     Inputs:
         risk_limit       - the risk-limit for this audit
@@ -203,15 +194,7 @@ def get_sample_sizes(
                          reported_results
 
     Outputs:
-        samples - dictionary mapping confirmation likelihood to sample size:
-                {
-                   contest1:  {
-                        likelihood1: sample_size,
-                        likelihood2: sample_size,
-                        ...
-                    },
-                    ...
-                }
+        sample_size - sample size (currently a single integer value)
     """
     alpha = Decimal(risk_limit) / 100
     assert alpha < 1, "The risk-limit must be less than one!"
@@ -219,26 +202,29 @@ def get_sample_sizes(
     if len(reported_results) == len(sample_results):
         raise ValueError("All ballots have already been counted!")
 
-    # Computing U with the max error for already sampled batches knocked out
-    # to try to provide a sense of "how close" the audit is to finishing.
-    U = compute_U(reported_results, sample_results, contest)
+    U = compute_U(reported_results, contest)
+    if U.is_infinite():
+        return len(reported_results)  # tied: full hand count
+    p_mult = 1 - 1 / U
 
-    if U == 0:
-        return 1  # pragma: no cover
-    elif U < 0 or U == Decimal("inf"):
-        # This means we have a tie
-        return len(reported_results)
-    elif U == 1:
-        # In this case, there is just enough potential error left to cause an
-        # outcome change. Since U is so close to being less than one, we probably
-        # only need to look at one more batch.
-        return 1  # pragma: no cover
-
-    retval = (
-        int((alpha.ln() / ((1 - (1 / U))).ln()).quantize(Decimal(1), ROUND_CEILING))
-        # Add one per a recommendation from Mark Lindeman
-        + 1
+    risk, risk_attained = compute_risk(
+        risk_limit, contest, reported_results, sample_results, ticket_numbers
     )
+    if risk_attained is True:
+        return 0
+
+    # For the first round, assuming no discrepancies, the required sample size n must
+    # satisfy p_mult**n <= alpha; for subsequent rounds, it must satisfy
+    # risk * p_mult**n <= alpha, where risk is the measured risk (p-value) in
+    # completed rounds including observed taint values. Taking natural logs:
+    # ln(risk) + n * ln(p_mult) <= ln(alpha), so n >= (ln(alpha) - ln(risk) / p_mult.
+    # Note that ln(p_mult) is negative, hence the reversal from <= to =>.
+    # Before the first round, risk = 1, so ln(risk) = 0.
+
+    est_sample_size = (alpha.ln() - Decimal(risk).ln()) / p_mult.ln()
+
+    # Add 1 to allow for small discrepancies (may be very conservative if sample size is small)
+    retval = int(est_sample_size.quantize(Decimal(1), ROUND_CEILING) + 1)
 
     return min(retval, len(reported_results))
 
@@ -289,8 +275,7 @@ def compute_risk(
 
     p = Decimal(1.0)
 
-    # Computing U without the sample preserves conservative-ness
-    U = compute_U(reported_results, cast(Dict, {}), contest)
+    U = compute_U(reported_results, contest)
 
     for _, batch in sorted(
         sample_ticket_numbers.items(), key=lambda entry: entry[0]  # ticket_number
@@ -316,8 +301,5 @@ def compute_risk(
             p = Decimal("inf")  # Our p-value blows up
         else:
             p *= (1 - 1 / U) / (1 - taint)
-
-        if p <= alpha:
-            return float(p), True
 
     return min(float(p), 1.0), p <= alpha
