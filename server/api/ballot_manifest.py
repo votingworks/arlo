@@ -24,6 +24,7 @@ from ..util.file import (
 )
 from ..util.csv_download import csv_response
 from ..util.csv_parse import (
+    CSVParseError,
     CSVValueType,
     CSVColumnType,
     parse_csv,
@@ -34,8 +35,20 @@ from . import contests
 from . import cvrs
 from .batch_tallies import reprocess_batch_tallies_file_if_uploaded
 from ..activity_log.activity_log import UploadFile, activity_base, record_activity
+from ..feature_flags import is_enabled_sample_extra_batches_by_counting_group
+
+
+class CountingGroup(str, enum.Enum):
+    ADVANCED_VOTING = "Advanced Voting"
+    ADVANCE_VOTING = "Advance Voting"
+    ELECTION_DAY = "Election Day"
+    ELECTIONS_DAY = "Elections Day"
+    ABSENTEE_BY_MAIL = "Absentee by Mail"
+    PROVISIONAL = "Provisional"
+
 
 logger = logging.getLogger("arlo")
+
 
 CONTAINER = "Container"
 TABULATOR = "Tabulator"
@@ -100,8 +113,17 @@ def process_ballot_manifest_file(
             AuditType.BALLOT_COMPARISON,
             AuditType.HYBRID,
         ]
+
+        is_counting_group_required = is_enabled_sample_extra_batches_by_counting_group(
+            jurisdiction.election
+        )
+
         columns = [
-            CSVColumnType(CONTAINER, CSVValueType.TEXT, required_column=False),
+            CSVColumnType(
+                CONTAINER,
+                CSVValueType.TEXT,
+                required_column=is_counting_group_required,
+            ),
             CSVColumnType(
                 TABULATOR,
                 CSVValueType.TEXT,
@@ -122,9 +144,22 @@ def process_ballot_manifest_file(
         manifest_file = retrieve_file(jurisdiction.manifest_file.storage_path)
         manifest_csv = parse_csv(manifest_file, columns)
 
+        counting_group_allowlist = [item.value for item in CountingGroup]
+        counting_group_allowset = set(counting_group_allowlist)
+
         num_batches = 0
         num_ballots = 0
-        for row in manifest_csv:
+
+        for row_index, row in enumerate(manifest_csv):
+            counting_group = row.get(CONTAINER, None)
+            if (
+                is_counting_group_required
+                and not counting_group in counting_group_allowset
+            ):
+                raise CSVParseError(
+                    f"Invalid value for column \"Container\", row {row_index+2}: \"{counting_group}\". Use the Batch Audit File Preparation Tool to create your ballot manifest, or correct this value to one of the following: {', '.join(counting_group_allowlist)}."
+                )
+
             batch = Batch(
                 id=str(uuid.uuid4()),
                 name=row[BATCH_NAME],

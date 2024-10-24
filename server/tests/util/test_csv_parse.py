@@ -21,6 +21,7 @@ BALLOT_MANIFEST_COLUMNS = [
     CSVColumnType("CVR", CSVValueType.YES_NO, required_column=False),
 ]
 
+
 BALLOT_MANIFEST_COLUMNS_COMPOSITE_KEY = [
     CSVColumnType("Batch Name", CSVValueType.TEXT, unique=True),
     CSVColumnType("Number of Ballots", CSVValueType.NUMBER),
