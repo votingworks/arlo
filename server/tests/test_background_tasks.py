@@ -1,10 +1,13 @@
-from datetime import datetime
 import logging
+import multiprocessing
+import random
+import time
 from unittest.mock import patch
 import sqlalchemy
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy_utils import create_database, drop_database
 import pytest
+
 
 from .. import config
 from ..models import *  # pylint: disable=wildcard-import
@@ -16,16 +19,18 @@ from .helpers import (
     find_log,
 )
 from ..worker.tasks import (
+    claim_next_task,
     create_background_task,
     background_task,
+    reset_task,
+    run_task,
     serialize_background_task,
     UserError,
-    run_new_tasks,
 )
+from ..worker.worker import run_worker
 
 
-# Since the worker code assumes that only one worker is running at a time, we
-# give each test case with its own database to work with so there is no
+# We give each test case its own database to work with so there is no
 # interference with tests running concurrently (both among tests in this file
 # and with the other tests).
 @pytest.fixture
@@ -94,7 +99,7 @@ def test_task_happy_path(caplog, db_session):
 
     assert task_ran is False
 
-    run_new_tasks(db_session)
+    run_task(claim_next_task("test_worker", db_session), db_session)
 
     task = db_session.query(BackgroundTask).get(task_id)
     compare_json(
@@ -115,7 +120,8 @@ def test_task_happy_path(caplog, db_session):
         (
             f"TASK_START {{'id': '{task_id}', "
             "'task_name': 'happy_path',"
-            f" 'payload': {{'arg2': 2, 'arg1': 1}}}}"
+            f" 'payload': {{'arg2': 2, 'arg1': 1}},"
+            " 'worker_id': 'test_worker'}"
         ),
     )
     assert find_log(
@@ -124,7 +130,8 @@ def test_task_happy_path(caplog, db_session):
         (
             f"TASK_COMPLETE {{'id': '{task_id}', "
             "'task_name': 'happy_path',"
-            f" 'payload': {{'arg2': 2, 'arg1': 1}}}}"
+            f" 'payload': {{'arg2': 2, 'arg1': 1}},"
+            " 'worker_id': 'test_worker'}"
         ),
     )
 
@@ -136,7 +143,7 @@ def test_task_user_error(caplog, db_session):
 
     task = create_background_task(user_error, {}, db_session)
 
-    run_new_tasks(db_session)
+    run_task(claim_next_task("test_worker", db_session), db_session)
 
     task = db_session.query(BackgroundTask).get(task.id)
     compare_json(
@@ -155,7 +162,8 @@ def test_task_user_error(caplog, db_session):
         (
             f"TASK_START {{'id': '{task.id}', "
             "'task_name': 'user_error',"
-            f" 'payload': {{}}}}"
+            f" 'payload': {{}},"
+            " 'worker_id': 'test_worker'}"
         ),
     )
     assert find_log(
@@ -165,6 +173,7 @@ def test_task_user_error(caplog, db_session):
             f"TASK_USER_ERROR {{'id': '{task.id}', "
             "'task_name': 'user_error',"
             f" 'payload': {{}},"
+            " 'worker_id': 'test_worker',"
             " 'error': 'something went wrong'}"
         ),
     )
@@ -178,7 +187,7 @@ def test_task_python_error(capture_exception, caplog, db_session):
 
     task = create_background_task(python_error, {}, db_session)
 
-    run_new_tasks(db_session)
+    run_task(claim_next_task("test_worker", db_session), db_session)
 
     task = db_session.query(BackgroundTask).get(task.id)
     compare_json(
@@ -197,7 +206,8 @@ def test_task_python_error(capture_exception, caplog, db_session):
         (
             f"TASK_START {{'id': '{task.id}', "
             "'task_name': 'python_error',"
-            f" 'payload': {{}}}}"
+            f" 'payload': {{}},"
+            " 'worker_id': 'test_worker'}"
         ),
     )
     assert find_log(
@@ -207,6 +217,7 @@ def test_task_python_error(capture_exception, caplog, db_session):
             f"TASK_ERROR {{'id': '{task.id}', "
             "'task_name': 'python_error',"
             f" 'payload': {{}},"
+            " 'worker_id': 'test_worker',"
             " 'error': 'list index out of range', 'traceback':"
         ),
     )
@@ -223,7 +234,7 @@ def test_task_python_error_format(capture_exception, caplog, db_session):
 
     task = create_background_task(error_format, {}, db_session)
 
-    run_new_tasks(db_session)
+    run_task(claim_next_task("test_worker", db_session), db_session)
 
     task = db_session.query(BackgroundTask).get(task.id)
     compare_json(
@@ -242,7 +253,8 @@ def test_task_python_error_format(capture_exception, caplog, db_session):
         (
             f"TASK_START {{'id': '{task.id}', "
             "'task_name': 'error_format',"
-            f" 'payload': {{}}}}"
+            f" 'payload': {{}},"
+            " 'worker_id': 'test_worker'}"
         ),
     )
     assert find_log(
@@ -252,6 +264,7 @@ def test_task_python_error_format(capture_exception, caplog, db_session):
             f"TASK_ERROR {{'id': '{task.id}', "
             "'task_name': 'error_format',"
             f" 'payload': {{}},"
+            " 'worker_id': 'test_worker',"
             " 'error': 'StopIteration', 'traceback':"
         ),
     )
@@ -268,7 +281,7 @@ def test_task_db_error(capture_exception, caplog, db_session):
 
     task = create_background_task(db_error, {}, db_session)
 
-    run_new_tasks(db_session)
+    run_task(claim_next_task("test_worker", db_session), db_session)
 
     task = db_session.query(BackgroundTask).get(task.id)
     compare_json(
@@ -289,7 +302,8 @@ def test_task_db_error(capture_exception, caplog, db_session):
         (
             f"TASK_START {{'id': '{task.id}', "
             "'task_name': 'db_error',"
-            f" 'payload': {{}}}}"
+            f" 'payload': {{}},"
+            " 'worker_id': 'test_worker'}"
         ),
     )
     assert find_log(
@@ -299,6 +313,7 @@ def test_task_db_error(capture_exception, caplog, db_session):
             f"TASK_ERROR {{'id': '{task.id}', "
             "'task_name': 'db_error',"
             f" 'payload': {{}},"
+            " 'worker_id': 'test_worker',"
             " 'error': '(psycopg2.errors.NotNullViolation) null value in column \"audit_name\""
         ),
     )
@@ -319,7 +334,9 @@ def test_task_multiple_run_in_order(db_session):
     create_background_task(multiple, dict(num=2), db_session)
     create_background_task(multiple, dict(num=3), db_session)
 
-    run_new_tasks(db_session)
+    run_task(claim_next_task("test_worker", db_session), db_session)
+    run_task(claim_next_task("test_worker", db_session), db_session)
+    run_task(claim_next_task("test_worker", db_session), db_session)
 
     assert results == [1, 2, 3]
 
@@ -336,10 +353,13 @@ def test_task_interrupted(caplog, db_session):
     create_background_task(interrupted, dict(num=2), db_session)
 
     # Simulate that the worker got interrupted mid-task
-    task1.started_at = datetime.now(timezone.utc)
+    claim_next_task("test_worker", db_session)
+    db_session.commit()
+    reset_task(task1, db_session)
     db_session.commit()
 
-    run_new_tasks(db_session)
+    run_task(claim_next_task("test_worker", db_session), db_session)
+    run_task(claim_next_task("test_worker", db_session), db_session)
 
     assert results == [1, 2]
 
@@ -349,7 +369,8 @@ def test_task_interrupted(caplog, db_session):
         (
             f"TASK_RESET {{'id': '{task1.id}', "
             "'task_name': 'interrupted',"
-            f" 'payload': {{'num': 1}}}}"
+            f" 'payload': {{'num': 1}},"
+            " 'worker_id': 'test_worker'}"
         ),
     )
     assert find_log(
@@ -358,7 +379,8 @@ def test_task_interrupted(caplog, db_session):
         (
             f"TASK_START {{'id': '{task1.id}', "
             "'task_name': 'interrupted',"
-            f" 'payload': {{'num': 1}}}}"
+            f" 'payload': {{'num': 1}},"
+            " 'worker_id': 'test_worker'}"
         ),
     )
     assert find_log(
@@ -367,6 +389,72 @@ def test_task_interrupted(caplog, db_session):
         (
             f"TASK_COMPLETE {{'id': '{task1.id}', "
             "'task_name': 'interrupted',"
-            f" 'payload': {{'num': 1}}}}"
+            f" 'payload': {{'num': 1}},"
+            " 'worker_id': 'test_worker'}"
         ),
     )
+
+
+def test_multiple_workers(db_session):
+    context = multiprocessing.get_context()
+    num_tasks = 40
+    num_workers = 4
+    expected_results = list(range(num_tasks))
+    manager = context.Manager()
+    results = manager.list()
+
+    @background_task
+    def count(num: int):
+        nonlocal results
+        time.sleep(random.randint(0, 2) / 10)
+        results.append(num)
+
+    # Enqueue tasks
+    for num in expected_results:
+        create_background_task(count, dict(num=num), db_session)
+    db_session.commit()
+
+    db_url = db_session.bind.url
+
+    def run_test_worker():
+        engine = sqlalchemy.create_engine(db_url)
+        db_session = scoped_session(
+            sessionmaker(autocommit=False, autoflush=True, bind=engine)
+        )
+        name = context.current_process().name
+        run_worker(
+            name, db_session, pause_between_tasks_seconds=random.randint(0, 3) / 10
+        )
+
+    # Start worker processes. This simulates how workers are run in production -
+    # each one in its own process.
+    workers = [context.Process(target=run_test_worker) for _ in range(num_workers)]
+    for worker in workers:
+        worker.start()
+
+    def num_completed_tasks():
+        return (
+            db_session.query(BackgroundTask)
+            .filter_by(task_name="count")
+            .filter(BackgroundTask.completed_at.isnot(None))
+            .count()
+        )
+
+    while num_completed_tasks() < num_tasks / 2:
+        time.sleep(0.1)
+
+    # Terminate some workers to make sure their tasks are reset and picked up by others
+    workers[0].terminate()
+    workers[1].terminate()
+
+    while num_completed_tasks() < num_tasks:
+        time.sleep(0.1)
+
+    for worker in workers:
+        worker.terminate()
+
+    expected_sorted_results = list(range(num_tasks))
+    # Each task should have run exactly once
+    assert sorted(results) == expected_sorted_results
+    # Tasks should not have run in order, since some got interrupted and reset
+    assert results != expected_sorted_results
