@@ -260,9 +260,8 @@ def test_get_sample_sizes(contests, batches) -> None:
         sample_ticket_numbers[str(i)] = "Batch {}".format(i)
 
     expected_third_round = {
-        "Contest A": 26,
-        "Contest B": 12,
-        "Contest C": 2,
+        **expected_second_round,
+        "Contest C": expected_second_round["Contest C"] - 5,
     }
 
     for contest in contests:
@@ -276,7 +275,7 @@ def test_get_sample_sizes(contests, batches) -> None:
             expected_third_round[contest], computed
         )
 
-    # The "2" for C is conservative: audit should end after ome more 0-taint batch
+    # The "2" for C is conservative: audit should end after one more 0-taint batch
     contest = "Contest C"
     sample["Batch 9"] = {
         contest: {
@@ -403,8 +402,9 @@ def test_compute_risk(contests, batches) -> None:
     # Contest B: margin = 0.1, U = 11
     # Contest C: margin = 0.15, U = 23/3 = 7.666...
 
-    # Draws with taint of 0
-    for i in range(30):
+    # 30 draws with taint of 0
+    num_clean_batches = 30
+    for i in range(num_clean_batches):
         sample["Batch {}".format(i)] = {
             "Contest A": {
                 "winner": 200,
@@ -421,9 +421,11 @@ def test_compute_risk(contests, batches) -> None:
         }
         sample_ticket_numbers[str(i)] = "Batch {}".format(i)
 
-    # draws with taint of 0.04047619 (proportional to margin) for A, which
-    # neither increase nor decrease the p value
-    for i in range(100, 106):
+    # 6 draws with taint of 0.04047619 (proportional to margin) for A, which
+    # neither increase nor decrease the p value. (These start at 100 because
+    # of how Contest C is assigned to batches in the fixture.)
+    num_tainted_batches = 6
+    for i in range(100, 100 + num_tainted_batches):
         sample["Batch {}".format(i)] = {
             "Contest A": {
                 "winner": 190,
@@ -439,9 +441,9 @@ def test_compute_risk(contests, batches) -> None:
     # base multiplier for 0 taint is 1 - 1/U
     # (but last 6 batches don't affect A or B)
     expected_ps = {
-        "Contest A": (20 / 21) ** 30,
-        "Contest B": (10 / 11) ** 30,
-        "Contest C": (20 / 23) ** 36,
+        "Contest A": (20 / 21) ** num_clean_batches,
+        "Contest B": (10 / 11) ** num_clean_batches,
+        "Contest C": (20 / 23) ** (num_clean_batches + num_tainted_batches),
     }
 
     for contest in contests:

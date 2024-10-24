@@ -952,7 +952,6 @@ def test_multi_contest_batch_comparison_round_2(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/batches"
     )
     jurisdiction_1_batches = json.loads(rv.data)["batches"]
-    # print ("J1:", [batch["name"] for batch in jurisdiction_1_batches])
     assert [batch["name"] for batch in jurisdiction_1_batches] == ["Batch 8"]
 
     set_logged_in_user(

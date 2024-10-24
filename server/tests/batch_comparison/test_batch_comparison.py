@@ -55,7 +55,6 @@ def test_batch_comparison_sample_size(
     rv = client.get(f"/api/election/{election_id}/sample-sizes/1")
     assert rv.status_code == 200
     sample_size_options = json.loads(rv.data)["sampleSizes"]
-    print("SSO:", sample_size_options)
     assert len(sample_size_options) == 1
     snapshot.assert_match(sample_size_options[contest_id])
 
