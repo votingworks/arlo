@@ -1082,7 +1082,7 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
 
             combined_batch_row += [
                 construct_batch_last_edited_by_string(representative_batch),
-                f"Combines {', '.join(sub_batch.name for sub_batch in sub_batches)}",
+                f"Combines {', '.join(sub_batch.name for sub_batch in sorted(sub_batches, key=lambda batch: batch.name))}",
             ]
             rows.append(combined_batch_row)
 
