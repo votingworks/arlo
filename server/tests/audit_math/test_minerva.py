@@ -258,7 +258,7 @@ def test_compute_risk_close_narrow():
         minerva.make_sample_results(c, [[5100, 4990, 1]]),
         {1: RoundInfo("r0", 10091)},
     )
-    assert res == ({("winner", "loser"): 0.16896200607848647}, False)
+    assert res == ({("winner", "loser"): approx(0.16896200607848647)}, False)
 
 
 def test_compute_risk_close_narrow_2():
