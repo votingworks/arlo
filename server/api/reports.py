@@ -448,7 +448,7 @@ def round_rows(election: Election):
             total_choice_votes.update(cvr_choice_votes)
 
         if election.audit_type == AuditType.BATCH_COMPARISON:
-            distinct_batches = (
+            sampled_batches = (
                 Batch.query.join(SampledBatchDraw)
                 .join(Round)
                 .join(Jurisdiction)
@@ -465,22 +465,28 @@ def round_rows(election: Election):
             )
             combined_batches = group_combined_batches(combined_sub_batches)
 
-            num_distinct_batches = (
-                len(distinct_batches)
+            num_sampled_batches = (
+                len(sampled_batches)
+                # Instead of counting sub batches that got combined, count the
+                # combined batches
                 - len(combined_sub_batches)
                 + len(combined_batches)
             )
 
+            # To get the total ballots/reported results in the sampled batches,
+            # we need to include all combined sub batches (even unsampled ones)
             for combined_batch in combined_batches:
                 for sub_batch in combined_batch["sub_batches"]:
-                    if not any(sub_batch.id == batch.id for batch in distinct_batches):
-                        distinct_batches.append(sub_batch)
+                    if not any(sub_batch.id == batch.id for batch in sampled_batches):
+                        sampled_batches.append(sub_batch)
 
-            num_distinct_ballots = sum(batch.num_ballots for batch in distinct_batches)
+            num_ballots_in_sampled_batches = sum(
+                batch.num_ballots for batch in sampled_batches
+            )
 
             # Get the reported votes aggregated across batches
             reported_results: dict = {choice.id: 0 for choice in contest.choices}
-            for batch in distinct_batches:
+            for batch in sampled_batches:
                 reported_results_for_batch = batch.jurisdiction.batch_tallies[
                     batch.name
                 ].get(contest.id)
@@ -516,8 +522,8 @@ def round_rows(election: Election):
             )
             + (
                 [
-                    num_distinct_batches,
-                    num_distinct_ballots,
+                    num_sampled_batches,
+                    num_ballots_in_sampled_batches,
                     pretty_choice_votes(reported_results_by_name),
                 ]
                 if election.audit_type == AuditType.BATCH_COMPARISON
@@ -930,10 +936,9 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
                 contest.id
             )
             if reported_results is not None:
-                # For combined batches, we need to add the combined batch reported
-                # results to the total, since it may include some unsampled batches.
-                # However, for audit results, we want to use only the sampled
-                # batches to avoid double counting.
+                # For combined batches, we need to add the combined batch
+                # reported results to the total, since it may include some
+                # unsampled batches. We add these below, so we skip them here.
                 if not is_combined:
                     for choice in contest.choices:
                         total_reported_results[contest.id][

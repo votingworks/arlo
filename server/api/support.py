@@ -622,6 +622,8 @@ def create_combined_batch(jurisdiction_id: str):
         raise Conflict(
             "One or more of these batches are already part of a combined batch"
         )
+    if all(len(batch.draws) == 0 for batch in batches):
+        raise Conflict("At least one batch must be part of the sample")
 
     representative_batch = combined_batch_representative(batches)
     support_user_email = get_support_user(session)

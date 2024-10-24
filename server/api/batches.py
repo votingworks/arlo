@@ -7,7 +7,6 @@ from werkzeug.exceptions import BadRequest, Conflict
 from sqlalchemy.orm import Query, joinedload
 from sqlalchemy import func
 
-
 from . import api
 from ..auth import get_loggedin_user, get_support_user, restrict_access, UserType
 from ..database import db_session

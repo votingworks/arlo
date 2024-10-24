@@ -182,6 +182,9 @@ def test_support_invalid_combined_batches(
     jurisdiction_1_batches = Batch.query.filter_by(
         jurisdiction_id=jurisdiction_ids[0]
     ).all()
+    unsampled_j1_batches = [
+        batch for batch in jurisdiction_1_batches if len(batch.draws) == 0
+    ]
     jurisdiction_2_batches = Batch.query.filter_by(
         jurisdiction_id=jurisdiction_ids[1]
     ).all()
@@ -222,6 +225,17 @@ def test_support_invalid_combined_batches(
         ),
     )
     assert rv.status_code == 400
+
+    # No sampled batches
+    rv = post_json(
+        client,
+        f"/api/support/jurisdictions/{jurisdiction_ids[0]}/combined-batches",
+        dict(
+            name="Combined Batch 1",
+            subBatchIds=[batch.id for batch in unsampled_j1_batches],
+        ),
+    )
+    assert rv.status_code == 409
 
     # Create one valid combined batch
     rv = post_json(
