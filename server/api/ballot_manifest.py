@@ -2,7 +2,7 @@ from typing import Optional
 import uuid
 import logging
 from datetime import datetime
-from flask import request, jsonify, Request, session
+from flask import request, jsonify, session
 from werkzeug.exceptions import BadRequest, NotFound
 from sqlalchemy import func
 from sqlalchemy.orm import Session
@@ -28,7 +28,6 @@ from ..util.csv_parse import (
     CSVValueType,
     CSVColumnType,
     parse_csv,
-    validate_csv_mimetype,
 )
 from ..audit_math.suite import HybridPair
 from . import contests
@@ -192,14 +191,6 @@ def process_ballot_manifest_file(
             session,
         )
         session.commit()
-
-
-# Raises if invalid
-def validate_ballot_manifest_upload_local(request: Request):
-    if "file" not in request.files:
-        raise BadRequest("Missing required file parameter 'file'")
-
-    validate_csv_mimetype(request.files["file"])
 
 
 def save_ballot_manifest_file(

@@ -23,7 +23,6 @@ from ..util.file import (
     retrieve_file,
     serialize_file,
     serialize_file_processing,
-    store_file,
     timestamp_filename,
 )
 from ..util.csv_download import (
@@ -35,7 +34,6 @@ from ..util.csv_parse import (
     parse_csv,
     CSVValueType,
     CSVColumnType,
-    validate_csv_mimetype,
 )
 from ..util.string import format_count
 from ..activity_log.activity_log import UploadFile, activity_base, record_activity
@@ -276,34 +274,6 @@ def complete_upload_for_batch_tallies(
         ),
     )
     db_session.commit()
-    return jsonify(status="ok")
-
-
-@api.route(
-    "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch-tallies/file",
-    methods=["POST"],
-)
-@restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
-def upload_batch_tallies(
-    election: Election,
-    jurisdiction: Jurisdiction,
-):
-    validate_batch_tallies_upload(election, jurisdiction)
-
-    if "file" not in request.files:
-        raise BadRequest("Missing required file parameter 'file'")
-
-    batch_tallies = request.files["file"]
-    validate_csv_mimetype(batch_tallies)
-
-    storage_key = request.form.get("key")
-    if storage_key is None:
-        raise BadRequest("Missing required form parameter 'key'")
-
-    store_file(
-        batch_tallies.stream,
-        storage_key,
-    )
     return jsonify(status="ok")
 
 
