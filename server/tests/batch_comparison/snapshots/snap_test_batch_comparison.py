@@ -67,7 +67,7 @@ Test Audit test_batch_comparison_combined_batches,BATCH_COMPARISON,MACRO,10%,123
 \r
 ######## ROUNDS ########\r
 Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes,Batches Sampled,Ballots Sampled,Reported Votes\r
-1,Contest 1,Targeted,7,Yes,0.0842250678,DATETIME,DATETIME,candidate 1: 2200; candidate 2: 1095; candidate 3: 1105,3,2200,candidate 1: 2200; candidate 2: 1100; candidate 3: 1100\r
+1,Contest 1,Targeted,7,Yes,0.0555770855,DATETIME,DATETIME,candidate 1: 2200; candidate 2: 1095; candidate 3: 1105,3,2200,candidate 1: 2200; candidate 2: 1100; candidate 3: 1100\r
 \r
 ######## SAMPLED BATCHES ########\r
 Jurisdiction Name,Batch Name,Ballots in Batch,Ticket Numbers: Contest 1,Audited?,Audit Results: Contest 1,Reported Results: Contest 1,Change in Results: Contest 1,Change in Margin: Contest 1,Last Edited By,Combined Batch\r
