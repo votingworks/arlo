@@ -17,7 +17,7 @@ from server.websession import cleanup_sessions
 from server import api  # pylint: disable=unused-import
 
 
-def run_worker(worker_id: str):
+def run_worker(worker_id: str, db_session, pause_between_tasks_seconds):
     task = None
 
     # Heroku dynos are sent one or more SIGTERM signals when they are shut down,
@@ -27,8 +27,8 @@ def run_worker(worker_id: str):
     def interrupt_handler(*_args):
         nonlocal task
         if task:
-            reset_task(task)
-            task = None
+            reset_task(task, db_session)
+            task = None  # Guard against multiple interrupts
         sys.exit(1)
 
     signal.signal(signal.SIGTERM, interrupt_handler)
@@ -36,9 +36,9 @@ def run_worker(worker_id: str):
     signal.signal(signal.SIGINT, interrupt_handler)
 
     while True:
-        task = claim_next_task(worker_id)
+        task = claim_next_task(worker_id, db_session)
         if task:
-            run_task(task)
+            run_task(task, db_session)
             # Ensure we don't reset the task on interrupt once it completes
             # successfully
             task = None
@@ -51,10 +51,10 @@ def run_worker(worker_id: str):
         # we will have "idle in transaction" queries that will lock the
         # database, which gets in the way of migrations.
         db_session.commit()
-        time.sleep(2)
+        time.sleep(pause_between_tasks_seconds)
 
 
 if __name__ == "__main__":
     worker_id = os.environ.get("HEROKU_DYNO_ID", str(os.getpid()))
     configure_sentry()
-    run_worker(worker_id)
+    run_worker(worker_id, db_session, pause_between_tasks_seconds=2)

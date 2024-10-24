@@ -36,7 +36,10 @@ def background_task(task_handler: Callable):
 
 # All tasks should have election_id in the payload in order to easily identify their logs.
 def create_background_task(
-    task_handler: Callable, payload: JSONDict, db_session=db_session
+    task_handler: Callable,
+    payload: JSONDict,
+    # Use the global db_session by default, but allow it to be overridden for testing.
+    db_session=db_session,
 ) -> BackgroundTask:
     assert task_handler.__name__ in task_dispatch, (
         f"No task handler registered for {task_handler.__name__}."
@@ -52,7 +55,7 @@ def create_background_task(
     if config.RUN_BACKGROUND_TASKS_IMMEDIATELY:
         task.started_at = datetime.now(timezone.utc)
         db_session.commit()
-        run_task(task)
+        run_task(task, db_session)
 
     return task
 
@@ -78,10 +81,7 @@ def emit_progress_for_task(task_id: str):
     return emit_progress
 
 
-# Functions in this file take an optional db_session argument in order for the
-# tests to call them using isolated databases. In non-test environments, using
-# the default global db_session is fine.
-def run_task(task: BackgroundTask, db_session=db_session):
+def run_task(task: BackgroundTask, db_session):
     task_handler = task_dispatch.get(task.task_name)
     assert task_handler, (
         f"No task handler registered for {task.task_name}."
@@ -128,7 +128,7 @@ def run_task(task: BackgroundTask, db_session=db_session):
             sentry_sdk.capture_exception(error)
 
 
-def claim_next_task(worker_id: str, db_session=db_session) -> Optional[BackgroundTask]:
+def claim_next_task(worker_id: str, db_session) -> Optional[BackgroundTask]:
     task: Optional[BackgroundTask] = (
         db_session.query(BackgroundTask)
         .filter_by(started_at=None)
@@ -148,10 +148,10 @@ def claim_next_task(worker_id: str, db_session=db_session) -> Optional[Backgroun
     return task
 
 
-def reset_task(task: BackgroundTask):
+def reset_task(task: BackgroundTask, db_session):
+    logger.info(f"TASK_RESET {task_log_data(task)}")
     task.worker_id = None
     task.started_at = None
-    logger.info(f"TASK_RESET {task_log_data(task)}")
     db_session.commit()
 
 
