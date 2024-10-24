@@ -94,6 +94,7 @@ const putCSVFiles = async (
     // Tell the server that the upload has finished to save the file path reference and kick off processing
     const finalizeUploadformData: FormData = new FormData()
     finalizeUploadformData.append('fileName', file.name)
+    finalizeUploadformData.append('fileType', file.type)
     if (cvrFileType) finalizeUploadformData.append('cvrFileType', cvrFileType)
     finalizeUploadformData.append(
       'storagePathKey',
