@@ -87,12 +87,12 @@ class ArloSessionInterface(SessionInterface):
         )
 
 
-def cleanup_sessions():
+def cleanup_sessions(db_session):
     """
     Because we keep session freshness information in fields embedded inside the data column,
     the only marker in the database that we can safely and cleanly use to clean up a session is the updated_at field.
     """
-    query = WebSession.query.filter(
+    query = db_session.query(WebSession).filter(
         WebSession.updated_at
         < datetime.now(timezone.utc) - config.SESSION_INACTIVITY_TIMEOUT
     )
