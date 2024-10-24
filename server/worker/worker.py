@@ -1,7 +1,14 @@
+import os
+import signal
+import sys
 import time
 
 from server.database import db_session
-from server.worker.tasks import run_new_tasks
+from server.worker.tasks import (
+    claim_next_task,
+    reset_task,
+    run_task,
+)
 from server.sentry import configure_sentry
 from server.websession import cleanup_sessions
 
@@ -9,13 +16,45 @@ from server.websession import cleanup_sessions
 # handlers get registered as background_tasks.
 from server import api  # pylint: disable=unused-import
 
-if __name__ == "__main__":
-    configure_sentry()
+
+def run_worker(worker_id: str, db_session, pause_between_tasks_seconds):
+    task = None
+
+    # Heroku dynos are sent one or more SIGTERM signals when they are shut down,
+    # then a SIGKILL if they don't exit after 30 seconds. If we're interrupted
+    # in the middle of a task, reset it before exiting so it can be picked up by
+    # another worker.
+    def interrupt_handler(*_args):
+        nonlocal task
+        if task:
+            reset_task(task, db_session)
+            task = None  # Guard against multiple interrupts
+        sys.exit(1)
+
+    signal.signal(signal.SIGTERM, interrupt_handler)
+    # Also handle SIGINT for local development
+    signal.signal(signal.SIGINT, interrupt_handler)
+
     while True:
-        run_new_tasks()
-        cleanup_sessions()
+        task = claim_next_task(worker_id, db_session)
+        if task:
+            run_task(task, db_session)
+            # Ensure we don't reset the task on interrupt once it completes
+            # successfully
+            task = None
+
+        # Unrelated, we use the same worker process to clean up expired web
+        # sessions, since it's a convenient place to essentially run a cron job.
+        cleanup_sessions(db_session)
+
         # Before sleeping, we need to commit the current transaction, otherwise
         # we will have "idle in transaction" queries that will lock the
         # database, which gets in the way of migrations.
         db_session.commit()
-        time.sleep(2)
+        time.sleep(pause_between_tasks_seconds)
+
+
+if __name__ == "__main__":
+    worker_id = os.environ.get("HEROKU_DYNO_ID", str(os.getpid()))
+    configure_sentry()
+    run_worker(worker_id, db_session, pause_between_tasks_seconds=2)
