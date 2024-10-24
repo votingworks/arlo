@@ -16,12 +16,11 @@ from ..worker.tasks import (
     create_background_task,
 )
 from ..util.file import (
-    create_presigned_s3_upload,
+    get_file_upload_url,
     get_full_storage_path,
     retrieve_file,
     serialize_file,
     serialize_file_processing,
-    store_file,
     timestamp_filename,
 )
 from ..util.csv_download import csv_response
@@ -29,10 +28,8 @@ from ..util.csv_parse import (
     CSVValueType,
     CSVColumnType,
     parse_csv,
-    validate_csv_filetype,
     validate_csv_mimetype,
 )
-from .. import config
 from ..audit_math.suite import HybridPair
 from . import contests
 from . import cvrs
@@ -245,48 +242,13 @@ def start_upload_for_ballot_manifest(
     file_type = request.args.get("fileType")
     if file_type is None:
         raise BadRequest("File type is required")
-    validate_csv_filetype(file_type)
 
     storage_path_prefix = (
         f"audits/{jurisdiction.election_id}/jurisdictions/{jurisdiction.id}/"
     )
-    file_name = timestamp_filename("manifest", "csv")
+    filename = timestamp_filename("manifest", "csv")
 
-    if not config.FILE_UPLOAD_STORAGE_PATH.startswith("s3://"):
-        return jsonify(
-            url=f"/api/election/{election.id}/jurisdiction/{jurisdiction.id}/ballot-manifest/file",
-            fields={
-                "key": f"{storage_path_prefix}/{file_name}",
-            },
-        )
-
-    response = create_presigned_s3_upload(storage_path_prefix, file_name, file_type)
-    if response is None:
-        return jsonify(None)
-    else:
-        return jsonify(response)
-
-
-@api.route(
-    "/election/<election_id>/jurisdiction/<jurisdiction_id>/ballot-manifest/file",
-    methods=["POST"],
-)
-@restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
-def upload_ballot_manifest_to_local_filesystem(
-    election: Election,  # pylint: disable=unused-argument
-    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
-):
-    validate_ballot_manifest_upload_local(request)
-    manifest = request.files["file"]
-    storage_key = request.form.get("key")
-    if storage_key is None:
-        raise BadRequest("Missing required form parameter 'key'")
-
-    store_file(
-        manifest.stream,
-        storage_key,
-    )
-    return jsonify(status="ok")
+    return jsonify(get_file_upload_url(storage_path_prefix, filename, file_type))
 
 
 @api.route(

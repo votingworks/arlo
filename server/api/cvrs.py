@@ -45,14 +45,12 @@ from ..worker.tasks import (
     background_task,
     create_background_task,
 )
-from .. import config
 from ..util.file import (
-    create_presigned_s3_upload,
+    get_file_upload_url,
     get_full_storage_path,
     retrieve_file,
     serialize_file,
     serialize_file_processing,
-    store_file,
     timestamp_filename,
     unzip_files,
 )
@@ -62,8 +60,6 @@ from ..util.csv_parse import (
     decode_csv,
     reject_no_rows,
     validate_comma_delimited,
-    validate_csv_filetype,
-    validate_csv_mimetype,
     validate_not_empty,
 )
 from ..util.collections import find_first_duplicate
@@ -1548,44 +1544,12 @@ def validate_cvr_upload(
     if not jurisdiction.manifest_file_id:
         raise Conflict("Must upload ballot manifest before uploading CVR file.")
 
-    cvr_file_type = request.args.get("cvrFileType")
+    cvr_file_type = request.form["cvrFileType"]
     if cvr_file_type is None:
         raise BadRequest("CVR file type is required")
 
     if cvr_file_type not in [cvr_file_type.value for cvr_file_type in CvrFileType]:
         raise BadRequest("Invalid file type")
-
-    if not config.FILE_UPLOAD_STORAGE_PATH.startswith("s3://"):
-        raise BadRequest("This endpoint is only for s3 file uploads.")
-
-    file_type = request.args.get("fileType")
-    if file_type is None:
-        raise BadRequest("File type is required")
-
-    if cvr_file_type in [CvrFileType.HART, CvrFileType.ESS]:
-        if not file_type in ["application/zip", "application/x-zip-compressed"]:
-            raise BadRequest("Please submit a ZIP file.")
-    else:
-        validate_csv_filetype(file_type)
-
-
-def validate_cvr_upload_local(request: Request):
-    if "file" not in request.files:
-        raise BadRequest("Missing required file parameter 'file'")
-
-    file = request.files["file"]
-
-    cvr_file_type = request.form.get("cvrFileType")
-    if cvr_file_type in [CvrFileType.HART, CvrFileType.ESS]:
-
-        def is_zip_file(file):
-            return file.mimetype in ["application/zip", "application/x-zip-compressed"]
-
-        if not is_zip_file(file):
-            raise BadRequest("Please submit a ZIP file.")
-
-    else:
-        validate_csv_mimetype(file)
 
 
 def clear_cvr_contests_metadata(jurisdiction: Jurisdiction):
@@ -1595,7 +1559,7 @@ def clear_cvr_contests_metadata(jurisdiction: Jurisdiction):
 def finalize_cvr_upload(
     storage_path: str, file_name: str, cvr_file_type: str, jurisdiction: Jurisdiction
 ):
-    print(storage_path)
+
     jurisdiction.cvr_file = File(
         id=str(uuid.uuid4()),
         name=file_name,
@@ -1648,55 +1612,22 @@ def get_cvrs(
 )
 @restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
 def start_upload_for_cvrs(election: Election, jurisdiction: Jurisdiction):
-    validate_cvr_upload(request, election, jurisdiction)
+    file_type = request.args.get("fileType")
+    if file_type is None:
+        raise BadRequest("File type is required")
+
     storage_path_prefix = (
         f"audits/{election.id}/jurisdictions/{jurisdiction.id}"
         f"/cvrs_{isoformat(datetime.now(timezone.utc))}"
     )
+
     cvr_file_type = request.args.get("cvrFileType")
     if cvr_file_type in [CvrFileType.ESS, CvrFileType.HART]:
         filename = timestamp_filename("cvrs", "zip")
     else:
         filename = timestamp_filename("cvrs", "csv")
 
-    file_type: str = request.args.get("fileType")  # type: ignore
-
-    if not config.FILE_UPLOAD_STORAGE_PATH.startswith("s3://"):
-        return jsonify(
-            url=f"/api/election/{election.id}/jurisdiction/{jurisdiction.id}/cvrs/file",
-            fields={
-                "key": f"{storage_path_prefix}/{filename}",
-                "cvrFileType": request.form["cvrFileType"],
-            },
-        )
-
-    response = create_presigned_s3_upload(storage_path_prefix, filename, file_type)
-    if response is None:
-        return jsonify(None)
-    else:
-        return jsonify(response)
-
-
-@api.route(
-    "/election/<election_id>/jurisdiction/<jurisdiction_id>/cvrs/file",
-    methods=["POST"],
-)
-@restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
-def upload_cvrs_to_local_filesystem(
-    election: Election,  # pylint: disable=unused-argument
-    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
-):
-    validate_cvr_upload_local(request)
-    cvr_file = request.files["file"]
-    storage_key = request.form.get("key")
-    if storage_key is None:
-        raise BadRequest("Missing required form parameter 'key'")
-
-    store_file(
-        cvr_file.stream,
-        storage_key,
-    )
-    return jsonify(status="ok")
+    return jsonify(get_file_upload_url(storage_path_prefix, filename, file_type))
 
 
 @api.route(
@@ -1707,6 +1638,8 @@ def upload_cvrs_to_local_filesystem(
 def complete_upload_for_cvrs(
     election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
 ):
+    validate_cvr_upload(request, election, jurisdiction)
+
     storage_path = get_full_storage_path(request.form["storagePathKey"])
     filename = request.form["fileName"]
     if not storage_path:

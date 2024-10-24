@@ -9,7 +9,6 @@ from werkzeug.exceptions import BadRequest, NotFound, Conflict
 from sqlalchemy.orm import Session
 
 from . import api
-from .. import config
 from ..database import db_session, engine
 from ..models import *  # pylint: disable=wildcard-import
 from ..auth import restrict_access, UserType, get_loggedin_user, get_support_user
@@ -19,7 +18,7 @@ from ..worker.tasks import (
     create_background_task,
 )
 from ..util.file import (
-    create_presigned_s3_upload,
+    get_file_upload_url,
     get_full_storage_path,
     retrieve_file,
     serialize_file,
@@ -36,7 +35,6 @@ from ..util.csv_parse import (
     parse_csv,
     CSVValueType,
     CSVColumnType,
-    validate_csv_filetype,
     validate_csv_mimetype,
 )
 from ..util.string import format_count
@@ -229,39 +227,40 @@ def reprocess_batch_tallies_file_if_uploaded(
 )
 @restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
 def start_upload_for_batch_tallies(
-    election: Election,
-    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
 ):
-    validate_batch_tallies_upload(election, jurisdiction)
-
     file_type = request.args.get("fileType")
     if file_type is None:
         raise BadRequest("File type is required")
-    validate_csv_filetype(file_type)
-
-    clear_batch_tallies_data(jurisdiction)
 
     storage_path_prefix = (
         f"audits/{jurisdiction.election_id}/jurisdictions/{jurisdiction.id}/"
     )
     filename = timestamp_filename("batch_tallies", "csv")
 
-    if not config.FILE_UPLOAD_STORAGE_PATH.startswith("s3://"):
-        return jsonify(
-            url=f"/api/election/{election.id}/jurisdiction/{jurisdiction.id}/batch-tallies/file",
-            fields={
-                "key": f"{storage_path_prefix}/{filename}",
-            },
-        )
-
-    response = create_presigned_s3_upload(storage_path_prefix, filename, file_type)
-    if response is None:
-        return jsonify(None)
-    else:
-        return jsonify(response)
+    return jsonify(get_file_upload_url(storage_path_prefix, filename, file_type))
 
 
-def save_batch_tallies(jurisdiction: Jurisdiction, storage_path: str, filename: str):
+@api.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch-tallies/upload-complete",
+    methods=["POST"],
+)
+@restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
+def complete_upload_for_batch_tallies(
+    election: Election,
+    jurisdiction: Jurisdiction,
+):
+    validate_batch_tallies_upload(election, jurisdiction)
+
+    storage_path = get_full_storage_path(request.form["storagePathKey"])
+    filename = request.form["fileName"]
+    if not storage_path:
+        raise BadRequest("Missing required JSON parameter: storagePathKey")
+    if not filename:
+        raise BadRequest("Missing required JSON parameter: fileName")
+    clear_batch_tallies_data(jurisdiction)
+
     jurisdiction.batch_tallies_file = File(
         id=str(uuid.uuid4()),
         name=filename,
@@ -276,25 +275,6 @@ def save_batch_tallies(jurisdiction: Jurisdiction, storage_path: str, filename: 
             support_user_email=get_support_user(session),
         ),
     )
-
-
-@api.route(
-    "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch-tallies/upload-complete",
-    methods=["POST"],
-)
-@restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
-def complete_upload_for_batch_tallies(
-    election: Election,  # pylint: disable=unused-argument
-    jurisdiction: Jurisdiction,
-):
-    storage_path = get_full_storage_path(request.form["storagePathKey"])
-    filename = request.form["fileName"]
-    if not storage_path:
-        raise BadRequest("Missing required JSON parameter: storagePathKey")
-    if not filename:
-        raise BadRequest("Missing required JSON parameter: fileName")
-
-    save_batch_tallies(jurisdiction, storage_path, filename)
     db_session.commit()
     return jsonify(status="ok")
 
