@@ -111,7 +111,7 @@ def get_full_storage_path(file_path: str) -> str:
         return os.path.join(config.FILE_UPLOAD_STORAGE_PATH, file_path)
 
 
-def create_presigned_s3_upload(
+def get_file_upload_url(
     storage_prefix: str, file_name: str, file_type: str
 ) -> Optional[Dict[str, Any]]:
     if config.FILE_UPLOAD_STORAGE_PATH.startswith("s3://"):
@@ -130,4 +130,9 @@ def create_presigned_s3_upload(
         )
         return response
     else:
-        return None
+        return {
+            "url": "/api/file-upload",
+            "fields": {
+                "key": f"{storage_prefix}/{file_name}",
+            },
+        }

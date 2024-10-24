@@ -100,11 +100,6 @@ def validate_csv_mimetype(file: FileStorage) -> None:
         raise BadRequest(INVALID_CSV_ERROR)
 
 
-def validate_csv_filetype(file_type: str) -> None:
-    if not is_filetype_csv_mimetype(file_type):
-        raise BadRequest(INVALID_CSV_ERROR)
-
-
 def read_chunks(file: IO[bytes], chunk_size: int) -> Iterable[bytes]:
     while True:
         chunk = file.read(chunk_size)
