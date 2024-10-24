@@ -6,6 +6,7 @@ import tempfile
 from typing import BinaryIO, IO, List, Mapping, Optional, Dict, Any
 from urllib.parse import urlparse
 from zipfile import ZipFile
+from werkzeug.exceptions import BadRequest
 import boto3
 
 from .. import config
@@ -49,8 +50,7 @@ def store_file(file: IO[bytes], storage_path: str) -> str:
     assert not os.path.isabs(storage_path)
     full_path = os.path.join(config.FILE_UPLOAD_STORAGE_PATH, storage_path)
     if config.FILE_UPLOAD_STORAGE_PATH.startswith("s3://"):
-        bucket_name = urlparse(config.FILE_UPLOAD_STORAGE_PATH).netloc
-        s3().upload_fileobj(file, bucket_name, storage_path)
+        raise Exception("This method should only be used for local file storage.")
     else:
         os.makedirs(os.path.dirname(full_path), exist_ok=True)
         with open(full_path, "wb") as system_file:
@@ -136,3 +136,21 @@ def get_file_upload_url(
                 "key": f"{storage_prefix}/{file_name}",
             },
         }
+
+
+def is_filetype_zip_mimetype(file_type: str) -> bool:
+    return file_type in ["application/zip", "application/x-zip-compressed"]
+
+
+def is_filetype_xml_mimetype(file_type: str) -> bool:
+    return file_type in ["text/xml"]
+
+
+def validate_zip_mimetype(file_type: str) -> None:
+    if not is_filetype_zip_mimetype(file_type):
+        raise BadRequest("Please submit a valid ZIP file.")
+
+
+def validate_xml_mimetype(file_type: str) -> None:
+    if not is_filetype_xml_mimetype(file_type):
+        raise BadRequest("Please submit a valid XML file.")

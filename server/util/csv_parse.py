@@ -16,7 +16,6 @@ from typing import (
 import csv as py_csv
 import io, re, locale, chardet
 from werkzeug.exceptions import BadRequest
-from werkzeug.datastructures import FileStorage
 
 from .jsonschema import EMAIL_REGEX
 from .collections import find_first_duplicate
@@ -86,17 +85,8 @@ def is_filetype_csv_mimetype(file_type: str) -> bool:
     return file_type in ["text/csv", "application/vnd.ms-excel"]
 
 
-def does_file_have_csv_mimetype(file: FileStorage) -> bool:
-    # In Windows, CSVs have mimetype application/vnd.ms-excel
-    return file.mimetype in ["text/csv", "application/vnd.ms-excel"]
-
-
-def does_file_have_zip_mimetype(file: FileStorage) -> bool:
-    return file.mimetype in ["application/zip", "application/x-zip-compressed"]
-
-
-def validate_csv_mimetype(file: FileStorage) -> None:
-    if not does_file_have_csv_mimetype(file):
+def validate_csv_mimetype(file_type: str) -> None:
+    if not is_filetype_csv_mimetype(file_type):
         raise BadRequest(INVALID_CSV_ERROR)
 
 
