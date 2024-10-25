@@ -570,7 +570,9 @@ def list_jurisdiction_batches(jurisdiction_id: str):
                 name=combined_batch["name"],
                 subBatches=[
                     serialize_batch(sub_batch)
-                    for sub_batch in combined_batch["sub_batches"]
+                    for sub_batch in sorted(
+                        combined_batch["sub_batches"], key=lambda batch: batch.name
+                    )
                 ],
             )
             for combined_batch in sorted(
