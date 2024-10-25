@@ -2,7 +2,7 @@ from typing import Optional
 import uuid
 import logging
 from datetime import datetime
-from flask import request, jsonify, Request, session
+from flask import request, jsonify, session
 from werkzeug.exceptions import BadRequest, NotFound
 from sqlalchemy import func
 from sqlalchemy.orm import Session
@@ -16,10 +16,11 @@ from ..worker.tasks import (
     create_background_task,
 )
 from ..util.file import (
+    get_file_upload_url,
+    get_full_storage_path,
     retrieve_file,
     serialize_file,
     serialize_file_processing,
-    store_file,
     timestamp_filename,
 )
 from ..util.csv_download import csv_response
@@ -28,7 +29,6 @@ from ..util.csv_parse import (
     CSVValueType,
     CSVColumnType,
     parse_csv,
-    validate_csv_mimetype,
 )
 from ..audit_math.suite import HybridPair
 from . import contests
@@ -228,23 +228,12 @@ def process_ballot_manifest_file(
         session.commit()
 
 
-# Raises if invalid
-def validate_ballot_manifest_upload(request: Request):
-    if "manifest" not in request.files:
-        raise BadRequest("Missing required file parameter 'manifest'")
-
-    validate_csv_mimetype(request.files["manifest"])
-
-
-def save_ballot_manifest_file(manifest, jurisdiction: Jurisdiction):
-    storage_path = store_file(
-        manifest.stream,
-        f"audits/{jurisdiction.election_id}/jurisdictions/{jurisdiction.id}/"
-        + timestamp_filename("manifest", "csv"),
-    )
+def save_ballot_manifest_file(
+    storage_path: str, file_name: str, jurisdiction: Jurisdiction
+):
     jurisdiction.manifest_file = File(
         id=str(uuid.uuid4()),
-        name=manifest.filename,
+        name=file_name,
         storage_path=storage_path,
         uploaded_at=datetime.now(timezone.utc),
     )
@@ -268,17 +257,44 @@ def clear_ballot_manifest_file(jurisdiction: Jurisdiction):
 
 
 @api.route(
-    "/election/<election_id>/jurisdiction/<jurisdiction_id>/ballot-manifest",
-    methods=["PUT"],
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/ballot-manifest/upload-url",
+    methods=["GET"],
 )
 @restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
-def upload_ballot_manifest(
+def start_upload_for_ballot_manifest(
     election: Election,  # pylint: disable=unused-argument
     jurisdiction: Jurisdiction,
 ):
-    validate_ballot_manifest_upload(request)
+    file_type = request.args.get("fileType")
+    if file_type is None:
+        raise BadRequest("File type is required")
+
+    storage_path_prefix = (
+        f"audits/{jurisdiction.election_id}/jurisdictions/{jurisdiction.id}/"
+    )
+    filename = timestamp_filename("manifest", "csv")
+
+    return jsonify(get_file_upload_url(storage_path_prefix, filename, file_type))
+
+
+@api.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/ballot-manifest/upload-complete",
+    methods=["POST"],
+)
+@restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
+def complete_upload_for_ballot_manifest(
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
+):
+    storage_path = get_full_storage_path(request.form["storagePathKey"])
+    file_name = request.form["fileName"]
+    if not storage_path:
+        raise BadRequest("Missing required JSON parameter: storagePathKey")
+    if not file_name:
+        raise BadRequest("Missing required JSON parameter: fileName")
+
     clear_ballot_manifest_file(jurisdiction)
-    save_ballot_manifest_file(request.files["manifest"], jurisdiction)
+    save_ballot_manifest_file(storage_path, file_name, jurisdiction)
     db_session.commit()
     return jsonify(status="ok")
 

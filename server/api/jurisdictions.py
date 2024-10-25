@@ -33,10 +33,11 @@ from ..worker.tasks import (
     create_background_task,
 )
 from ..util.file import (
+    get_file_upload_url,
+    get_full_storage_path,
     retrieve_file,
     serialize_file,
     serialize_file_processing,
-    store_file,
     timestamp_filename,
 )
 from ..util.jsonschema import JSONDict
@@ -44,7 +45,6 @@ from ..util.csv_parse import (
     CSVColumnType,
     CSVValueType,
     parse_csv,
-    validate_csv_mimetype,
 )
 from ..util.csv_download import csv_response
 
@@ -582,35 +582,44 @@ JURISDICTION_NAME = "Jurisdiction"
 ADMIN_EMAIL = "Admin Email"
 
 
-@api.route("/election/<election_id>/jurisdiction/file", methods=["PUT"])
+@api.route("/election/<election_id>/jurisdiction/file/upload-url", methods=["GET"])
 @restrict_access([UserType.AUDIT_ADMIN])
-def update_jurisdictions_file(election: Election):
+def start_upload_for_jurisdictions_file(election: Election):
+    file_type = request.args.get("fileType")
+    if file_type is None:
+        raise BadRequest("File type is required")
+
+    storage_path_prefix = f"audits/{election.id}/"
+    file_name = timestamp_filename("participating_jurisdictions", "csv")
+
+    return jsonify(get_file_upload_url(storage_path_prefix, file_name, file_type))
+
+
+@api.route(
+    "/election/<election_id>/jurisdiction/file/upload-complete", methods=["POST"]
+)
+@restrict_access([UserType.AUDIT_ADMIN])
+def complete_upload_for_jurisdictions_file(election: Election):
+    storage_path = get_full_storage_path(request.form["storagePathKey"])
+    filename = request.form["fileName"]
+    if not storage_path:
+        raise BadRequest("Missing required JSON parameter: storagePathKey")
+    if not filename:
+        raise BadRequest("Missing required JSON parameter: fileName")
+
     if len(list(election.rounds)) > 0:
         raise Conflict("Cannot update jurisdictions after audit has started.")
 
-    if "jurisdictions" not in request.files:
-        raise BadRequest("Missing required file parameter 'jurisdictions'")
-
-    validate_csv_mimetype(request.files["jurisdictions"])
-
-    jurisdictions_file = request.files["jurisdictions"]
-    storage_path = store_file(
-        jurisdictions_file.stream,
-        f"audits/{election.id}/"
-        + timestamp_filename("participating_jurisdictions", "csv"),
-    )
     election.jurisdictions_file = File(
         id=str(uuid.uuid4()),
-        name=jurisdictions_file.filename,  # type: ignore
+        name=filename,
         storage_path=storage_path,
         uploaded_at=datetime.datetime.now(timezone.utc),
     )
     election.jurisdictions_file.task = create_background_task(
         process_jurisdictions_file, dict(election_id=election.id)
     )
-
     db_session.commit()
-
     return jsonify(status="ok")
 
 

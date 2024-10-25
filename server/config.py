@@ -142,10 +142,14 @@ FILE_UPLOAD_STORAGE_PATH = read_env_var(
     env_defaults=dict(development="/tmp/arlo", test="/tmp/arlo-test"),
 )
 # If using S3, AWS credentials are required as well
-AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY = (
-    (read_env_var("AWS_ACCESS_KEY_ID"), read_env_var("AWS_SECRET_ACCESS_KEY"))
+AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_DEFAULT_REGION = (
+    (
+        read_env_var("AWS_ACCESS_KEY_ID"),
+        read_env_var("AWS_SECRET_ACCESS_KEY"),
+        read_env_var("AWS_DEFAULT_REGION", default="us-west-1"),
+    )
     if FILE_UPLOAD_STORAGE_PATH.startswith("s3://")
-    else (None, None)
+    else (None, None, None)
 )
 
 # Configure round size growth from ARLO_MINERVA_MULTIPLE (a float) if given, otherwise 1.5

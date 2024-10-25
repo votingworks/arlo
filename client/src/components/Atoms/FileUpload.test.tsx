@@ -36,11 +36,7 @@ const TestFileUpload = ({
   const fileUpload: IFileUpload = {
     uploadedFile,
     uploadFiles: files => {
-      const formData = new FormData()
-      for (const file of files) {
-        formData.append('files', file, file.name)
-      }
-      return uploadFiles.mutateAsync(formData)
+      return uploadFiles.mutateAsync({ file: files[0] })
     },
     uploadProgress: uploadFiles.progress,
     deleteFile: () => deleteFile.mutateAsync(),
