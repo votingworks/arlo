@@ -423,6 +423,11 @@ class Batch(BaseModel):
     # ballot polling math).
     has_cvrs = Column(Boolean)
 
+    # For batch comparison audits, if auditors discover after sampling that some
+    # batches' ballots were commingled and can't be separated, allow auditing
+    # those batches together by labeling them with a combined batch name.
+    combined_batch_name = Column(String(200))
+
     draws = relationship(
         "SampledBatchDraw",
         uselist=True,

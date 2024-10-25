@@ -1,6 +1,6 @@
 from collections import defaultdict
 import random
-from typing import Dict, List, Optional, Tuple, TypedDict, Union
+from typing import Dict, List, Optional, Set, Tuple, TypedDict, Union
 from sqlalchemy import and_, func, literal, true
 from sqlalchemy.orm import joinedload, load_only
 
@@ -92,6 +92,46 @@ def batch_tallies(contest: Contest) -> BatchTallies:
     }
 
 
+class CombinedBatch(TypedDict):
+    name: str
+    representative_batch: Batch
+    sub_batches: List[Batch]
+
+
+def combined_batch_representative(sub_batches: List[Batch]) -> Batch:
+    assert len(sub_batches) > 0
+    sampled_sub_batches = [sub_batch for sub_batch in sub_batches if sub_batch.draws]
+    return sorted(sampled_sub_batches, key=lambda batch: batch.id)[0]
+
+
+def group_combined_batches(all_sub_batches: List[Batch]) -> List[CombinedBatch]:
+    return [
+        CombinedBatch(
+            name=name,
+            representative_batch=combined_batch_representative(sub_batches),
+            sub_batches=sub_batches,
+        )
+        for name, sub_batches in group_by(
+            all_sub_batches, lambda batch: batch.combined_batch_name
+        ).items()
+    ]
+
+
+def combined_batch_keys(election_id: str) -> List[Set[sampler.BatchKey]]:
+    sub_batches = (
+        Batch.query.join(Jurisdiction)
+        .filter_by(election_id=election_id)
+        .filter(Batch.combined_batch_name.isnot(None))
+        .all()
+    )
+    return [
+        {(sub_batch.jurisdiction.name, sub_batch.name) for sub_batch in sub_batches}
+        for _, sub_batches in group_by(
+            sub_batches, lambda batch: batch.combined_batch_name
+        ).items()
+    ]
+
+
 def sampled_batch_results(
     contest: Contest, include_non_rla_batches=False
 ) -> BatchTallies:
@@ -140,7 +180,7 @@ def sampled_batch_results(
         results_by_batch_and_choice,
         key=lambda result: (result[0], result[1]),  # (jurisdiction_name, batch_name)
     )
-    return {
+    results = {
         batch_key: {
             contest.id: {
                 choice_id: result for (_, _, choice_id, result) in batch_results
@@ -148,6 +188,27 @@ def sampled_batch_results(
         }
         for batch_key, batch_results in results_by_batch.items()
     }
+
+    # For combined batches, copy the results from the representative batch to
+    # all sampled sub-batches
+    all_sub_batches = (
+        Batch.query.join(Jurisdiction)
+        .filter(Jurisdiction.election_id == contest.election_id)
+        .filter(Batch.combined_batch_name.isnot(None))
+        .all()
+    )
+    combined_batches = group_combined_batches(all_sub_batches)
+    for combined_batch in combined_batches:
+        representative_batch = combined_batch["representative_batch"]
+        representative_results = results[
+            (representative_batch.jurisdiction.name, representative_batch.name)
+        ]
+        for sub_batch in combined_batch["sub_batches"]:
+            sub_batch_key = (sub_batch.jurisdiction.name, sub_batch.name)
+            if sub_batch_key in results:
+                results[sub_batch_key] = representative_results
+
+    return results
 
 
 def sampled_batches_by_ticket_number(contest: Contest) -> Dict[str, sampler.BatchKey]:

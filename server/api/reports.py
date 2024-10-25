@@ -29,6 +29,7 @@ from .shared import (
     ballot_vote_deltas,
     batch_vote_deltas,
     cvrs_for_contest,
+    group_combined_batches,
     is_full_hand_tally,
     sampled_ballot_interpretations_to_cvrs,
     samples_not_found_by_round,
@@ -447,7 +448,7 @@ def round_rows(election: Election):
             total_choice_votes.update(cvr_choice_votes)
 
         if election.audit_type == AuditType.BATCH_COMPARISON:
-            distinct_batches = (
+            sampled_batches = (
                 Batch.query.join(SampledBatchDraw)
                 .join(Round)
                 .join(Jurisdiction)
@@ -456,12 +457,36 @@ def round_rows(election: Election):
                 .filter(SampledBatchDraw.ticket_number != EXTRA_TICKET_NUMBER)
                 .all()
             )
-            num_distinct_batches = len(distinct_batches)
-            num_distinct_ballots = sum(batch.num_ballots for batch in distinct_batches)
+            combined_sub_batches = (
+                Batch.query.join(Jurisdiction)
+                .filter_by(election_id=election.id)
+                .filter(Batch.combined_batch_name.isnot(None))
+                .all()
+            )
+            combined_batches = group_combined_batches(combined_sub_batches)
 
-            # get the reported votes aggregated across batches
+            num_sampled_batches = (
+                len(sampled_batches)
+                # Instead of counting sub batches that got combined, count the
+                # combined batches
+                - len(combined_sub_batches)
+                + len(combined_batches)
+            )
+
+            # To get the total ballots/reported results in the sampled batches,
+            # we need to include all combined sub batches (even unsampled ones)
+            for combined_batch in combined_batches:
+                for sub_batch in combined_batch["sub_batches"]:
+                    if not any(sub_batch.id == batch.id for batch in sampled_batches):
+                        sampled_batches.append(sub_batch)
+
+            num_ballots_in_sampled_batches = sum(
+                batch.num_ballots for batch in sampled_batches
+            )
+
+            # Get the reported votes aggregated across batches
             reported_results: dict = {choice.id: 0 for choice in contest.choices}
-            for batch in distinct_batches:
+            for batch in sampled_batches:
                 reported_results_for_batch = batch.jurisdiction.batch_tallies[
                     batch.name
                 ].get(contest.id)
@@ -497,8 +522,8 @@ def round_rows(election: Election):
             )
             + (
                 [
-                    num_distinct_batches,
-                    num_distinct_ballots,
+                    num_sampled_batches,
+                    num_ballots_in_sampled_batches,
                     pretty_choice_votes(reported_results_by_name),
                 ]
                 if election.audit_type == AuditType.BATCH_COMPARISON
@@ -839,6 +864,17 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
         )
     }
 
+    combined_sub_batches = (
+        Batch.query.join(Jurisdiction)
+        .filter_by(election_id=election.id)
+        .filter(Jurisdiction.id == jurisdiction.id if jurisdiction else True)
+        .filter(Batch.combined_batch_name.isnot(None))
+        .all()
+    )
+    combined_batches = group_combined_batches(combined_sub_batches)
+    combined_sub_batch_ids = {batch.id for batch in combined_sub_batches}
+    has_combined_batches = len(combined_batches) > 0
+
     contests = list(
         election.contests if jurisdiction is None else jurisdiction.contests
     )
@@ -862,6 +898,8 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
         *result_columns,
         "Last Edited By",
     ]
+    if has_combined_batches:
+        column_headers.append("Combined Batch")
     rows.append(column_headers)
 
     total_reported_results: dict = {
@@ -891,17 +929,21 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
         is_audited = batch.id in audit_results_by_batch
         row += [pretty_boolean(is_audited)]
 
+        is_combined = batch.id in combined_sub_batch_ids
+
         for contest in contests:
-            reported_results = (
-                batch.jurisdiction.batch_tallies[batch.name][contest.id]
-                if contest.id in batch.jurisdiction.batch_tallies[batch.name]
-                else None
+            reported_results = batch.jurisdiction.batch_tallies[batch.name].get(
+                contest.id
             )
             if reported_results is not None:
-                for choice in contest.choices:
-                    total_reported_results[contest.id][choice.id] += reported_results[
-                        choice.id
-                    ]
+                # For combined batches, we need to add the combined batch
+                # reported results to the total, since it may include some
+                # unsampled batches. We add these below, so we skip them here.
+                if not is_combined:
+                    for choice in contest.choices:
+                        total_reported_results[contest.id][
+                            choice.id
+                        ] += reported_results[choice.id]
 
             reported_results_by_name = reported_results and {
                 choice.name: reported_results[choice.id] for choice in contest.choices
@@ -926,25 +968,18 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
 
             error = (
                 macro.compute_error(
-                    batch.jurisdiction.batch_tallies[batch.name],
-                    {
-                        contest.id: {
-                            choice.id: audit_results_by_batch[batch.id].get(
-                                choice.id, 0
-                            )
-                            for choice in contest.choices
-                        }
-                    },
+                    {contest.id: reported_results},
+                    {contest.id: audit_results},
                     sampler_contest.from_db_contest(contest),
                 )
-                if is_audited and audit_results
+                if is_audited and audit_results and not is_combined
                 else None
             )
 
             row += [
                 (
                     pretty_choice_votes(audit_results_by_name)
-                    if audit_results_by_name
+                    if audit_results_by_name and not is_combined
                     else ""
                 ),
                 (
@@ -956,14 +991,100 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
                     pretty_vote_deltas(
                         contest, batch_vote_deltas(reported_results, audit_results)
                     )
-                    if reported_results and audit_results
+                    if reported_results and audit_results and not is_combined
                     else ""
                 ),
                 error["counted_as"] if error else "",
             ]
 
         row += [construct_batch_last_edited_by_string(batch)]
+        if has_combined_batches:
+            row.append(batch.combined_batch_name or "")
+
         rows.append(row)
+
+    if has_combined_batches:
+        for combined_batch in combined_batches:
+            representative_batch = combined_batch["representative_batch"]
+            sub_batches = combined_batch["sub_batches"]
+            is_audited = representative_batch.id in audit_results_by_batch
+            combined_batch_row = [
+                representative_batch.jurisdiction.name,
+                representative_batch.combined_batch_name,
+                sum(batch.num_ballots for batch in sub_batches),
+                "",  # Ticket number cols - not relevant to combined batches
+                pretty_boolean(is_audited),
+            ]
+            for contest in contests:
+                sub_batch_reported_results = list(
+                    sub_batch.jurisdiction.batch_tallies[sub_batch.name].get(contest.id)  # type: ignore
+                    for sub_batch in sub_batches
+                )
+                reported_results = {
+                    choice.id: sum(
+                        reported_results[choice.id]
+                        for reported_results in sub_batch_reported_results
+                        if reported_results is not None
+                    )
+                    for choice in contest.choices
+                }
+                for choice in contest.choices:
+                    total_reported_results[contest.id][choice.id] += reported_results[
+                        choice.id
+                    ]
+
+                reported_results_by_name = {
+                    choice.name: reported_results[choice.id]
+                    for choice in contest.choices
+                }
+
+                audit_results = (
+                    {
+                        choice.id: audit_results_by_batch[representative_batch.id].get(
+                            choice.id, 0
+                        )
+                        for choice in contest.choices
+                    }
+                    if is_audited
+                    else None
+                )
+                audit_results_by_name = audit_results and {
+                    choice.name: audit_results[choice.id] for choice in contest.choices
+                }
+
+                error = (
+                    macro.compute_error(
+                        {contest.id: reported_results},
+                        {contest.id: audit_results},
+                        sampler_contest.from_db_contest(contest),
+                    )
+                    if is_audited and audit_results and not is_combined
+                    else None
+                )
+
+                combined_batch_row += [
+                    (
+                        pretty_choice_votes(audit_results_by_name)
+                        if audit_results_by_name
+                        else ""
+                    ),
+                    pretty_choice_votes(reported_results_by_name),
+                    (
+                        pretty_vote_deltas(
+                            contest,
+                            batch_vote_deltas(reported_results, audit_results),
+                        )
+                        if audit_results
+                        else ""
+                    ),
+                    error["counted_as"] if error else "",
+                ]
+
+            combined_batch_row += [
+                construct_batch_last_edited_by_string(representative_batch),
+                f"Combines {', '.join(sub_batch.name for sub_batch in sorted(sub_batches, key=lambda batch: batch.name))}",
+            ]
+            rows.append(combined_batch_row)
 
     totals_row = ["Totals", "", sum(batch.num_ballots for batch in batches)]
     totals_row += ["" for _ in contests]  # Ticket number cols - not relevant to totals

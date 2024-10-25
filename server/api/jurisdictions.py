@@ -20,6 +20,7 @@ from .shared import (
     batch_vote_deltas,
     cvrs_for_contest,
     get_current_round,
+    group_combined_batches,
     is_full_hand_tally,
     sampled_ballot_interpretations_to_cvrs,
     sampled_batch_results,
@@ -661,6 +662,24 @@ def get_discrepancy_counts_by_jurisdiction(election: Election):
             )
         )
         contests = list(election.contests)
+        combined_batches = group_combined_batches(
+            Batch.query.join(Jurisdiction)
+            .filter_by(election_id=election.id)
+            .filter(Batch.combined_batch_name.isnot(None))
+            .all()
+        )
+        all_combined_batch_keys = {
+            (sub_batch.jurisdiction.name, sub_batch.name)
+            for combined_batch in combined_batches
+            for sub_batch in combined_batch["sub_batches"]
+        }
+        representative_combined_batch_keys = {
+            (
+                combined_batch["representative_batch"].jurisdiction.name,
+                combined_batch["representative_batch"].name,
+            )
+            for combined_batch in combined_batches
+        }
 
         # If a batch has a discrepancy in multiple contests, the discrepancy count will be incremented
         # multiple times. In other words, the discrepancy count represents the number of batch-contest
@@ -671,6 +690,14 @@ def get_discrepancy_counts_by_jurisdiction(election: Election):
                 contest, include_non_rla_batches=True
             )
             for batch_key, audited_batch_result in audited_batch_results.items():
+
+                # Special case: for combined batches, only count discrepancies in the representative batch
+                if (
+                    batch_key in all_combined_batch_keys
+                    and batch_key not in representative_combined_batch_keys
+                ):
+                    continue
+
                 if batch_key in batch_keys_in_round:
                     vote_deltas = batch_vote_deltas(
                         reported_batch_results[batch_key][contest.id],

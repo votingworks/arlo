@@ -69,6 +69,16 @@ export interface IAuditBoard {
   signedOffAt: string | null
 }
 
+export interface IBatch {
+  id: string
+  name: string
+}
+
+export interface ICombinedBatch {
+  name: string
+  subBatches: IBatch[]
+}
+
 export const useActiveElections = () =>
   useQuery<IElectionWithOrg[], Error>(['elections', 'active'], () =>
     fetchApi('/api/support/elections/active')
@@ -266,5 +276,64 @@ export const useReopenCurrentRound = () => {
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries(['elections', variables.electionId])
     },
+  })
+}
+
+export const useJurisdictionBatches = (jurisdictionId: string) =>
+  useQuery<{ batches: IBatch[]; combinedBatches: ICombinedBatch[] }, Error>(
+    ['jurisdiction', jurisdictionId, 'batches'],
+    () => fetchApi(`/api/support/jurisdictions/${jurisdictionId}/batches`)
+  )
+
+export const useCreateCombinedBatch = () => {
+  const createCombinedBatch = async ({
+    jurisdictionId,
+    name,
+    subBatchIds,
+  }: {
+    jurisdictionId: string
+    name: string
+    subBatchIds: string[]
+  }) =>
+    fetchApi(`/api/support/jurisdictions/${jurisdictionId}/combined-batches`, {
+      method: 'POST',
+      body: JSON.stringify({ name, subBatchIds }),
+      headers: { 'Content-Type': 'application/json' },
+    })
+
+  const queryClient = useQueryClient()
+
+  return useMutation(createCombinedBatch, {
+    onSuccess: (_data, variables) =>
+      queryClient.invalidateQueries([
+        'jurisdiction',
+        variables.jurisdictionId,
+        'batches',
+      ]),
+  })
+}
+
+export const useDeleteCombinedBatch = () => {
+  const deleteCombinedBatch = async ({
+    jurisdictionId,
+    name,
+  }: {
+    jurisdictionId: string
+    name: string
+  }) =>
+    fetchApi(
+      `/api/support/jurisdictions/${jurisdictionId}/combined-batches/${name}`,
+      { method: 'DELETE' }
+    )
+
+  const queryClient = useQueryClient()
+
+  return useMutation(deleteCombinedBatch, {
+    onSuccess: (_data, variables) =>
+      queryClient.invalidateQueries([
+        'jurisdiction',
+        variables.jurisdictionId,
+        'batches',
+      ]),
   })
 }

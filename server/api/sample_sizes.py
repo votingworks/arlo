@@ -8,7 +8,7 @@ from werkzeug.exceptions import BadRequest
 from . import api
 from ..models import *  # pylint: disable=wildcard-import
 from ..database import db_session
-from .shared import BatchTallies
+from .shared import BatchTallies, combined_batch_keys
 from ..auth import restrict_access, UserType
 from ..audit_math import (
     ballot_polling,
@@ -151,6 +151,7 @@ def sample_size_options(election: Election) -> Dict[str, Dict[str, SampleSizeOpt
                 rounds.batch_tallies(contest),
                 rounds.sampled_batch_results(contest),
                 rounds.sampled_batches_by_ticket_number(contest),
+                combined_batch_keys(election.id),
             )
             return {"macro": {"key": "macro", "size": sample_size, "prob": None}}
 
