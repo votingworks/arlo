@@ -415,7 +415,6 @@ def parse_dominion_cvrs(
     jurisdiction: Jurisdiction,
 ) -> Tuple[CVR_CONTESTS_METADATA, Iterable[CvrBallot]]:
     cvr_file = retrieve_file(jurisdiction.cvr_file.storage_path)
-    print(cvr_file)
     cvrs = csv_reader_for_cvr(cvr_file)
 
     # Parse out all the initial metadata
@@ -1035,19 +1034,31 @@ def parse_hart_cvrs(
 
     cvr_zip_files: Dict[str, BinaryIO] = {}  # { file_name: file }
     scanned_ballot_information_files: List[BinaryIO] = []
+    hasNonCsvZipFiles = []
     for file_name in file_names:
         if file_name.lower().endswith(".zip"):
             # pylint: disable=consider-using-with
             cvr_zip_files[file_name] = open(
                 os.path.join(working_directory, file_name), "rb"
             )
-        if file_name.lower().endswith(".csv"):
+        elif file_name.lower().endswith(".csv"):
             scanned_ballot_information_files.append(
                 # pylint: disable=consider-using-with
                 open(os.path.join(working_directory, file_name), "rb")
             )
+        else:
+            hasNonCsvZipFiles.append(file_name)
 
-    assert len(cvr_zip_files) != 0  # Validated during file upload
+    # If there are no zip files inside the "wrapper" we assume it was not a wrapper and there was only one cvr zip file uploaded, unwrapped.
+    if len(cvr_zip_files) == 0 and len(scanned_ballot_information_files) == 0:
+        cvr_zip_files[jurisdiction.cvr_file.name] = retrieve_file(
+            jurisdiction.cvr_file.storage_path
+        )
+    # If the wrapper was a "wrapper" zip it should only contain csv and zip files
+    elif len(hasNonCsvZipFiles) > 0:
+        raise UserError(
+            f"Unsupported file type. Expected either a ZIP file or a CSV file, but found {(','.join(hasNonCsvZipFiles))}."
+        )
 
     def parse_scanned_ballot_information_file(
         scanned_ballot_information_file: BinaryIO,
@@ -1649,7 +1660,7 @@ def complete_upload_for_cvrs(
         validate_csv_mimetype(file_type)
 
     clear_cvr_contests_metadata(jurisdiction)
-    finalize_cvr_upload(storage_path, filename, cvr_file_type, jurisdiction)
+    finalize_cvr_upload(storage_path, filename, cvr_file_type, jurisdiction)  # type: ignore
     db_session.commit()
     return jsonify(status="ok")
 
